@@ -177,14 +177,14 @@ def test_raw_to_dict():
     url_test = splunk.rawToDict(URL_TESTING_IN)
     character_check = splunk.rawToDict(RESPONSE)
 
-    assert response == EXPECTED
+    assert EXPECTED == response
     assert {} == list_response
     assert raw_message.get('SCOPE[29]') == 'autopay\/events\/payroll\/v1\/earning-configuration.configuration-tags' \
                                            '.modify'
     assert isinstance(raw_message, dict)
     assert empty == {}
-    assert url_test == URL_TESTING_OUT
-    assert character_check == POSITIVE
+    assert URL_TESTING_OUT == url_test
+    assert POSITIVE == character_check
     assert splunk.rawToDict(RAW_JSON) == RAW_JSON_AND_STANDARD_OUTPUT
     assert splunk.rawToDict(RAW_STANDARD) == RAW_JSON_AND_STANDARD_OUTPUT
 
@@ -253,7 +253,7 @@ data_test_replace_keys = [
 @pytest.mark.parametrize('dict_in, dict_out', data_test_replace_keys)
 def test_replace_keys(dict_in, dict_out):
     out = splunk.replace_keys(deepcopy(dict_in))
-    assert out == dict_out, f'replace_keys({dict_in}) got: {out} instead: {dict_out}'
+    assert out == dict_out, 'replace_keys({}) got: {} instead: {}'.format(dict_in, out, dict_out)
 
 
 def test_parse_time_to_minutes_no_error():
@@ -471,7 +471,7 @@ def test_get_kv_store_config(fields, expected_output, mocker):
 
     mocker.patch('SplunkPyPreRelease.get_keys_and_types', return_value=fields)
     output = splunk.get_kv_store_config(Name())
-    expected_output = f'{START_OUTPUT}{expected_output}'
+    expected_output = '{}{}'.format(START_OUTPUT, expected_output)
     assert output == expected_output
 
 
@@ -631,8 +631,8 @@ def test_store_incidents_for_mapping(integration_context, incidents, output):
 
 @pytest.mark.parametrize('notable_data, raw, status, earliest, latest', [
     ({}, {}, False, "", ""),
-    ({"drilldown_earliest": f"${splunk.INFO_MIN_TIME}$",
-      "drilldown_latest": f"${splunk.INFO_MAX_TIME}$"},
+    ({"drilldown_earliest": "${}$".format(splunk.INFO_MIN_TIME),
+      "drilldown_latest": "${}$".format(splunk.INFO_MAX_TIME)},
      {splunk.INFO_MIN_TIME: '1', splunk.INFO_MAX_TIME: '2'}, True, '1', '2'),
     ({"drilldown_earliest": '1', "drilldown_latest": '2', }, {}, True, '1', '2')
 ])
@@ -1442,7 +1442,7 @@ def test_module__exception_raised(mocker, credentials):
 
     # prepare
     def exception_raiser():
-        raise AuthenticationError
+        raise AuthenticationError()
 
     mocker.patch.object(AuthenticationError, '__init__', return_value=None)
     mocker.patch.object(client.Service, 'info', side_effect=exception_raiser)
