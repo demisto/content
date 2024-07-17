@@ -7,10 +7,12 @@ configuration:
   name: public_key
   required: true
   type: 12
+  additionalinfo: Sender public key required for signing emails.
 - display: Private Key
   name: private_key
   required: true
   type: 14
+  additionalinfo: Sender private key required for decrypting and signing emails.
 description: Use the S/MIME (Secure Multipurpose Internet Mail Extensions) integration to send and receive secure MIME data.
 display: SMIME Messaging
 name: SMIME Messaging
@@ -27,6 +29,7 @@ script:
       - 'false'
       - 'true'
     description: Retrieves items from the service.
+    deprecated: true
     name: smime-sign-email
     outputs:
     - contextPath: SMIME.Signed.Message
@@ -40,6 +43,7 @@ script:
       name: message
       required: true
     description: Encrypts an email message with S/MIME protocol by using a public RSA certificate.
+    deprecated: true
     name: smime-encrypt-email-body
     outputs:
     - contextPath: SMIME.Encrypted.Message
@@ -70,6 +74,40 @@ script:
     - description: The message body to encrypt and sign.
       name: message
       required: true
+    - description: list of recipients and their public keys
+      name: recipient
+      type: keyValue
+    - description: list of cc recipients and their public keys
+      name: cc
+      type: keyValue
+    - description: list of bcc recipients and their public keys
+      name: bcc
+      type: keyValue
+    - description: list of war room entry id's of files to attach to the mail
+      name: attachment_entry_id
+      isList: true
+    - description: Define whether the mail should be signed.
+      name: signed
+      defaultValue: 'true'
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Define whether the mail should be encrypted.
+      name: encrypted
+      defaultValue: 'true'
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Sender email address
+      name: sender
+    - description: Email Subject
+      name: subject
+    - auto: PREDEFINED
+      description: Set 'true' to use content transfer encoding.
+      name: use_transport_encoding
+      predefined:
+      - 'false'
+      - 'true'
     description: Encrypts and signs an email message with S/MIME protocol by using a public RSA certificate.
     name: smime-sign-and-encrypt
     outputs:
