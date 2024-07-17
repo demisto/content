@@ -67,24 +67,6 @@ QRadar fetches incidents using a long-running execution, not in real time. There
 
 # System Integration Setup (Device side steps)
 
-<details><summary><h3 style={{display: 'inline'}}> PAT (API Key) Authentication</h3></summary> 
-
-#### Use the API Token Instead of Username and Password
- - In the **Username / API Key** field, type **_api_token_key**.  
- - In the **Password** field, type your API token.
-
-</details>
-
-<details><summary><h3 style={{display: 'inline'}}> View Your QRadar Version</h3> </summary> 
-
-1. Enter QRadar service.
-2. Click the **Menu** toolbar. A scrolling toolbar will appear.
-3. Click **About**. A new window will appear with the details of your QRadar version.  
-If you're uncertain which API version to use, it is recommended to use the latest API version listed in the **Supported REST API versions** column in the line corresponding to your QRadar version. 
-
-
-</details>
-   
 
 # Permissions
 | Component | Permission |
@@ -127,6 +109,13 @@ If you're uncertain which API version to use, it is recommended to use the lates
 | Fetch Incidents Interval | The interval between fetch-incidents executions (in seconds). | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+   
+<details><summary><h3 style={{display: 'inline'}}> API Token Instead of Username and Password</h3></summary> 
+
+ - In the **Username / API Key** field, type **_api_token_key**.  
+ - In the **Password** field, type your API token.
+
+</details>
    
 <details><summary><h3 id="get-qradar-version" style={{display: 'inline'}}> Get Your QRadar Version</h3> </summary> 
 
