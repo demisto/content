@@ -234,7 +234,7 @@ script:
       description: The last time any of the country IP addresses accessed the host console.
       type: Date
   - name: prisma-cloud-compute-profile-container-list
-    description: Get information about the containers and their profile events. This command supports asterisks which allows you to get container profiles by filtering its fields according to a specific substring.
+    description: Get information about the containers and their profile events. This command supports asterisks which allow you to get container profiles by filtering its fields according to a specific substring.
     arguments:
     - name: cluster
       description: A comma-separated list of runtime profile Kubernetes clusters.
@@ -284,7 +284,7 @@ script:
       description: Whether the container is allowed to write binaries to disk and run them based on static analysis.
       type: Boolean
     - contextPath: PrismaCloudCompute.ProfileContainer.capabilities.cloudMetadata
-      description: Whether the given container can query cloud metadata API based on static analysis.
+      description: Whether the given container can query a cloud metadata API based on static analysis.
       type: Boolean
     - contextPath: PrismaCloudCompute.ProfileContainer.capabilities.dnsCache
       description: Whether the DNS services used by all the pods in the cluster were added to the profile based on static analysis.
@@ -320,7 +320,7 @@ script:
       description: The profile creation time.
       type: Date
     - contextPath: PrismaCloudCompute.ProfileContainer.entrypoint
-      description: The image entrypoint.
+      description: The image entry point.
       type: String
     - contextPath: PrismaCloudCompute.ProfileContainer.events._id
       description: The history event entity.
@@ -755,10 +755,10 @@ script:
       defaultValue: ""
     outputs: []
   - name: prisma-cloud-compute-custom-feeds-malware-list
-    description: List all custom uploaded md5 malwares.
+    description: List all custom uploaded MD5 malwares.
     arguments:
     - name: limit
-      description: The maximum number of records of custom md5 malwares to return.
+      description: The maximum number of records of custom MD5 malwares to return.
       defaultValue: "50"
     outputs:
     - contextPath: PrismaCloudCompute.CustomFeedMalware.digest
@@ -1040,7 +1040,7 @@ script:
       description: The offset by which to begin listing image scan results.
       defaultValue: "0"
     - name: all_results
-      description: Whether to retrieve all results. The "limit_record" and "limit_stats" arguments will be ignored. Might slow down the command run time.
+      description: Whether to retrieve all results. The "limit_record" and "limit_stats" arguments will be ignored. Using this argument may return a lot of results and might slow down the command run time. Therefore, it is not recommended to be used often.
       defaultValue: "false"
       predefined:
       - "true"
@@ -1152,7 +1152,7 @@ script:
       description: Operating system distribution release.
       type: String
     - contextPath: PrismaCloudCompute.ReportsImagesScan.osDistroVersion
-      description: Operating system  distribution version.
+      description: Operating system distribution version.
       type: String
     - contextPath: PrismaCloudCompute.ReportsImagesScan.packageManager
       description: Whether the package manager is installed for the operating system.
@@ -1265,7 +1265,7 @@ script:
       description: The offset by which to begin listing host scan results.
       defaultValue: "0"
     - name: all_results
-      description: Whether to retrieve all results. The "limit_record" and "limit_stats" arguments will be ignored. Might slow down the command run time.
+      description: Whether to retrieve all results. The "limit_record" and "limit_stats" arguments will be ignored. Using this argument may return a lot of results and might slow down the command run time. Therefore, it is not recommended to be used often.
       defaultValue: "false"
       predefined:
       - "true"
@@ -1432,7 +1432,7 @@ script:
       description: The offset by which to begin listing impacted hosts/images records.
       defaultValue: "0"
     - name: resourceType
-      description: ResourceType is the single resource type to return vulnerability data for.
+      description: The single resource type to return vulnerability data for.
       auto: PREDEFINED
       predefined:
       - 'container'
@@ -1443,44 +1443,44 @@ script:
       - 'registryImage'
     outputs:
     - contextPath: PrismaCloudCompute.VulnerabilitiesImpactedResource._id
-      description: Id is the CVE ID (index for the impacted resources).
+      description: The CVE ID (index for the impacted resources).
       type: String
     - contextPath: PrismaCloudCompute.VulnerabilitiesImpactedResource.codeRepos
-      description: CodeRepos is a list of impacted code repositories.
+      description: A list of impacted code repositories.
       type: Array
     - contextPath: PrismaCloudCompute.VulnerabilitiesImpactedResource.codeReposCount
-      description: CodeReposCount is the total impacted code repositories count.
+      description: The total impacted code repositories count.
       type: integer
     - contextPath: PrismaCloudCompute.VulnerabilitiesImpactedResource.functions
-      description: Functions is a map between function id to its details.
+      description: A map between the function ID to its details.
       type: Array
     - contextPath: PrismaCloudCompute.VulnerabilitiesImpactedResource.functionsCount
-      description: FunctionsCount is the total impacted functions count.
+      description: The total impacted functions count.
       type: integer
     - contextPath: PrismaCloudCompute.VulnerabilitiesImpactedResource.hosts
-      description: Hosts is the list of impacted hosts.
+      description: The list of impacted hosts.
       type: Array
     - contextPath: PrismaCloudCompute.VulnerabilitiesImpactedResource.hostsCount
-      description: HostsCount is the total impacted hosts count.
+      description: HThe total impacted hosts count.
       type: integer
     - contextPath: PrismaCloudCompute.VulnerabilitiesImpactedResource.images
-      description: Images is the list of impacted hosts.
+      description: The list of impacted hosts.
       type: Array
     - contextPath: PrismaCloudCompute.VulnerabilitiesImpactedResource.imagesCount
-      description: ImagesCount is the total impacted images count.
+      description: The total impacted images count.
       type: integer
     - contextPath: PrismaCloudCompute.VulnerabilitiesImpactedResource.registryImages
-      description: RegistryImages is a list of impacted registry images.
+      description: A list of impacted registry images.
       type: Array
     - contextPath: PrismaCloudCompute.VulnerabilitiesImpactedResource.registryImagesCount
-      description: RegistryImagesCount is the total impacted registry images count.
+      description: The total impacted registry images count.
       type: integer
   - name: prisma-cloud-compute-get-waas-policies
     arguments: []
-    description: "Get the Waas Container Policies from Defend >> WAAS >> Containers."
+    description: "Get the WaaS Container Policies from Defend >> WAAS >> Containers."
     outputs:
     - contextPath: PrismaCloudCompute.Policies.Name
-      description: The Policy Name.
+      description: The policy name.
       type: String
     - contextPath: PrismaCloudCompute.Policies.WaasPolicy.ATP
       description: The WaaS policy state for Advanced Threat Protection.
@@ -1546,14 +1546,14 @@ script:
     - name: rule_name
       required: true
       description: The rule name for the WaaS policy settings.
-    description: Update the Waas Policy for containers.
+    description: Update the Waas policy for containers.
   - name: prisma-cloud-compute-get-audit-firewall-container-alerts
     arguments:
     - name: ImageName
       required: true
       description: The image name to get the alerts for.
     - name: FromDays
-      description: The Number of days back to look.
+      description: The number of days back to look.
     - name: audit_type
       required: true
       description: The type of audit alert to retrieve.
@@ -1564,7 +1564,7 @@ script:
   - arguments:
     - description: The project to get the alert profiles for.
       name: project
-    description: Get the available alert alert profiles from a specific project.
+    description: Get the available alert profiles from a specific project.
     name: prisma-cloud-compute-get-alert-profiles
     outputs:
     - contextPath: PrismaCloudCompute.AlertProfiles.Cortex.Application
@@ -1610,7 +1610,7 @@ script:
       description: The Jira base URL.
       type: String
     - contextPath: PrismaCloudCompute.AlertProfiles.Jira.CaCert
-      description: The Jira CA Cert.
+      description: The Jira CA certificate.
       type: String
     - contextPath: PrismaCloudCompute.AlertProfiles.Jira.CredentialId
       description: The Jira credential ID.
@@ -1628,7 +1628,7 @@ script:
       description: The last error.
       type: String
     - contextPath: PrismaCloudCompute.AlertProfiles.Modified
-      description: The modified time.
+      description: The time the alert profiles were modified.
       type: Date
     - contextPath: PrismaCloudCompute.AlertProfiles.Name
       description: The alert profile name.
@@ -1778,7 +1778,7 @@ script:
       description: Whether the registry vulnerability rule is enabled.
       type: Boolean
     - contextPath: PrismaCloudCompute.AlertProfiles.Policy.ServerlessAppFirewall.AllRules
-      description: The servervless app firewall rules.
+      description: The serverless app firewall rules.
       type: Boolean
     - contextPath: PrismaCloudCompute.AlertProfiles.Policy.ServerlessAppFirewall.Enabled
       description: Whether the serverless app firewall rule is enabled.
@@ -1802,10 +1802,10 @@ script:
       description: Whether the VM vulnerability rules are enabled.
       type: Boolean
     - contextPath: PrismaCloudCompute.AlertProfiles.Policy.WaasHealth.AllRules
-      description: The WAAS health rules.
+      description: The WaaS health rules.
       type: Boolean
     - contextPath: PrismaCloudCompute.AlertProfiles.Policy.WaasHealth.Enabled
-      description: Whether the WAAS health rules are enabled.
+      description: Whether the WaaS health rules are enabled.
       type: Boolean
     - contextPath: PrismaCloudCompute.AlertProfiles.PreviousName
       description: The alert profile previous name.
@@ -1826,7 +1826,7 @@ script:
       description: The security advisor token URL.
       type: String
     - contextPath: PrismaCloudCompute.AlertProfiles.SecurityCenter.CredentialId
-      description: The security center crendential ID.
+      description: The security center credential ID.
       type: String
     - contextPath: PrismaCloudCompute.AlertProfiles.SecurityCenter.Enabled
       description: Whether the security center is enabled.
@@ -1892,16 +1892,16 @@ script:
     name: prisma-cloud-compute-get-settings-defender
     outputs:
     - contextPath: PrismaCloudCompute.DefenderSettings.AdmissionControlEnabled
-      description: The admission control setting.
+      description: Whether the admission control setting is enabled.
       type: Boolean
     - contextPath: PrismaCloudCompute.DefenderSettings.AdmissionControlWebhookSuffix
       description: The webhook suffix.
       type: String
     - contextPath: PrismaCloudCompute.DefenderSettings.AppEmbeddedFileSystemTracingEnabled
-      description: The file tracing setting.
+      description: Whether the file tracing setting is enabled.
       type: Boolean
     - contextPath: PrismaCloudCompute.DefenderSettings.AutomaticUpgrade
-      description: The automatic upgrade setting.
+      description: Whether the automatic upgrade setting is enabled.
       type: Boolean
     - contextPath: PrismaCloudCompute.DefenderSettings.DisconnectPeriodDays
       description: The disconnect period in days.
@@ -1939,14 +1939,14 @@ script:
     - description: The number of log lines to fetch.
       name: lines
       defaultValue: 100
-    description: Download a zip of all Defender logs.
+    description: Download a zip file of all Defender logs.
     name: prisma-cloud-compute-logs-defender-download
     outputs:
     - contextPath: InfoFile.Name
       description: The file name.
       type: String
     - contextPath: InfoFile.EntryID
-      description: The File entry ID.
+      description: The file entry ID.
       type: String
     - contextPath: InfoFile.Size
       description: The file size.
@@ -2012,7 +2012,7 @@ script:
       description: The cloud account ID.
       type: string
     - contextPath: PrismaCloudCompute.FileIntegrity.User
-      description: The user that initiated the event.
+      description: The user who initiated the event.
       type: string
     - contextPath: PrismaCloudCompute.FileIntegrity.Time
       description: The time of the event.
@@ -2021,7 +2021,7 @@ script:
       description: The hostname on which the event was found.
       type: string
     - contextPath: PrismaCloudCompute.FileIntegrity.EventType
-      description: 'Represents the type of the file integrity event. Possible values: [metadata,read,write].'
+      description: 'The type of the file integrity event. Possible values: [metadata,read,write].'
       type: string
     - contextPath: PrismaCloudCompute.FileIntegrity.Collections
       description: Collections to which this event applies.
@@ -2029,7 +2029,7 @@ script:
       description: The current fully qualified domain name used in audit alerts.
       type: string
     - contextPath: PrismaCloudCompute.FileIntegrity.FileType
-      description: Represents the file type.
+      description: The file type.
       type: number
     - contextPath: PrismaCloudCompute.FileIntegrity.ProcessName
       description: The name of the process that initiated the event.
@@ -2065,10 +2065,10 @@ script:
       description: A comma-separated list of Jenkins job names.
       isArray: true
     - name: search
-      description: Retrieves the result for a search term.
+      description: The search term for which to return results
       isArray: true
     - name: pass
-      description: Indicates whether to filter on passed scans (true) or not (false).
+      description: Whether to filter on passed scans (true) or not (false).
       defaultValue: "true"
       predefined:
       - "true"
@@ -2084,7 +2084,7 @@ script:
       description: The offset by which to begin listing CI scan results.
       defaultValue: "0"
     - name: all_results
-      description: Whether to retrieve all results. The "limit" argument will be ignored. Might slow down the command run time. Using this argument may return a lot of results and is not recommended to be used often.
+      description: Whether to retrieve all results. The "limit" argument will be ignored. Using this argument may return a lot of results and might slow down the command run time. Therefore, it is not recommended to be used often.
       defaultValue: "false"
       predefined:
       - "true"
@@ -2133,13 +2133,13 @@ script:
       description: Startup binaries in the scanned entity.
       type: Unknown
     - contextPath: PrismaCloudCompute.CIScan.entityInfo.osDistro
-      description: The OS distribution.
+      description: The operating system distribution.
       type: String
     - contextPath: PrismaCloudCompute.CIScan.entityInfo.osDistroVersion
-      description: The OS distribution version.
+      description: The operating system distribution version.
       type: String
     - contextPath: PrismaCloudCompute.CIScan.entityInfo.osDistroRelease
-      description: The OS distribution release.
+      description: The operating system distribution release.
       type: String
     - contextPath: PrismaCloudCompute.CIScan.entityInfo.distro
       description: The distribution.
@@ -2334,11 +2334,11 @@ script:
       description: The images in the trusted image group.
       type: Unknown
   - name: prisma-cloud-compute-trusted-images-update
-    description: Updates a trusted image to the system. Specify trusted images using either the image name or layers properties. This is a potentially harmful command which overwrites the existing list, so use with caution. We recommend that is only be used in a playbook by a script that uses it.
+    description: Updates a trusted image to the system. Specify trusted images using either the image name or layers properties. This is a potentially harmful command which overwrites the existing list, so use with caution. We recommend that it is only used in a playbook by a script that uses it.
     execution: true
     arguments:
     - name: images_list_json
-      description: JSON containing the list of trusted images to update. In order to view the structure, use ***prisma-cloud-compute-trusted-images-list*** to retrieve the current state of the list.
+      description: JSON containing the list of trusted images to update. In order to view the structure, use prisma-cloud-compute-trusted-images-list command to retrieve the current state of the list.
       required: true
   - name: prisma-cloud-compute-container-scan-results-list
     description: Retrieves container scan reports. Maps to Monitor > Compliance > Containers in the Console UI.
@@ -2541,13 +2541,13 @@ script:
       description: Secrets found on the host.
       type: Unknown
     - contextPath: PrismaCloudCompute.Hosts.osDistro
-      description: The OS distribution.
+      description: The operating system distribution.
       type: String
     - contextPath: PrismaCloudCompute.Hosts.osDistroVersion
-      description: The OS distribution version.
+      description: The operating system distribution version.
       type: String
     - contextPath: PrismaCloudCompute.Hosts.osDistroRelease
-      description: The OS distribution release.
+      description: The operating system distribution release.
       type: String
     - contextPath: PrismaCloudCompute.Hosts.distro
       description: The host distribution.
@@ -2786,9 +2786,9 @@ script:
         description: A comma-separated list of hostnames.
         isArray: true
       - name: time
-        description: Time is used to filter by audit time, format '%Y-%m-%dT%H:%M:%S.%SZ'.
+        description: Filter by audit time, format '%Y-%m-%dT%H:%M:%S.%SZ'.
       - name: attack_type
-        description: AttackTypes is used to filter by runtime audit attack type.
+        description: Filter by runtime audit attack type.
       - name: limit
         description: The maximum number of container scan reports to return. Must be between 1-50.
         defaultValue: "50"
