@@ -1335,6 +1335,7 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run:
     last_fetched_alerts_ids = last_run.get('last_fetched_alerts_ids', [])
     if not last_fetched_alert_create_time:
         last_fetched_alert_create_time, _ = parse_date_range(fetch_time, date_format='%Y-%m-%dT%H:%M:%S.000Z')
+        demisto.debug(f'No last_fetched_alert_create_time, setting it to {last_fetched_alert_create_time}')
 
     incidents = []
 
