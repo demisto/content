@@ -18,7 +18,7 @@ To generate your personal access token, visit:[GitHub](https://github.com/settin
 - `Feed type:` The type of indicators to publish
 - `Branch name:` The required head branch
 - `Files extensions to fetch:` A list of file extensions from which only the indicators will be extracted
-
+testinggg
 #### Owner, Repo sources example
 
 ![exa photo](../../doc_files/owner-repo-example.png)
