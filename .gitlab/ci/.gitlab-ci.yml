@@ -3,7 +3,7 @@ variables:
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: $INFRA_BRANCH
+    ref: "dynamic-api-key"
     project: "${CI_PROJECT_NAMESPACE}/infra"
 
 default:
