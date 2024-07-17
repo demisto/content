@@ -1,9 +1,9 @@
 variables:
-  CURRENT_BRANCH_NAME: "new-ng-machine"
+  CURRENT_BRANCH_NAME: "increase-sleep-time-set-marketplace"
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: "new-ng-machine"
+    ref: "increase-sleep-time-set-marketplace"
     project: "${CI_PROJECT_NAMESPACE}/infra"
 
 default:
