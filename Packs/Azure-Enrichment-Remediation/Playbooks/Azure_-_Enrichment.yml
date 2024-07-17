@@ -144,7 +144,7 @@ tasks:
         complex:
           root: inputs.AzureIP
     separatecontext: false
-    skipunavailable: false
+    skipunavailable: true
     task:
       brand: Azure Compute v2
       description: Gets the properties of a given public IP address.
@@ -246,7 +246,7 @@ tasks:
                   simple: /providers
             operator: ExtractInbetween
     separatecontext: false
-    skipunavailable: false
+    skipunavailable: true
     task:
       brand: Azure Compute v2
       description: Gets the properties of a given network interface.
@@ -345,7 +345,7 @@ tasks:
                   simple: virtualMachines/
             operator: substringFrom
     separatecontext: false
-    skipunavailable: false
+    skipunavailable: true
     task:
       brand: Azure Compute v2
       description: Gets the properties of a given virtual machine.
