@@ -85,7 +85,7 @@
 <h5>Context Example</h5>
 <p>root:{} 3 items<br>BitDam:{} 1 item<br>FileScan:{} 1 item<br>SHA1:68f009dc92a405d1015026e8e30e6d1598047124</p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/12241410/47354978-daf39580-d6c8-11e8-9b26-7919dbdc7d4a.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/12241410/47354978-daf39580-d6c8-11e8-9b26-7919dbdc7d4a.png" alt="image" width="751" height="175"></a></p>
+<p><a href="../../doc_files/47354978-daf39580-d6c8-11e8-9b26-7919dbdc7d4a.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/47354978-daf39580-d6c8-11e8-9b26-7919dbdc7d4a.png" alt="image" width="751" height="175"></a></p>
 <h3 id="h_56122540381540898358695">2. Get the verdict of a file</h3>
 <hr>
 <p>Returns the verdict of a scanned file.</p>
@@ -182,4 +182,4 @@
 <h5>Context Example</h5>
 <p>root:{} 4 items<br>BitDam:{} 2 items<br>Analysis:{} 3 items<br>ID:68f009dc92a405d1015026e8e30e6d1598047124<br>Status:DONE<br>Verdict:CLEAN<br>FileScan:{} 1 item<br>SHA1:68f009dc92a405d1015026e8e30e6d1598047124<br>DBotScore:{} 4 items<br>Indicator:68f009dc92a405d1015026e8e30e6d1598047124<br>Score:1<br>Type:File<br>Vendor:BitDam</p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/12241410/47355146-4473a400-d6c9-11e8-8ded-a3f99e31ddb7.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/12241410/47355146-4473a400-d6c9-11e8-8ded-a3f99e31ddb7.png" alt="image" width="752" height="258"></a></p>
+<p><a href="../../doc_files/47355146-4473a400-d6c9-11e8-8ded-a3f99e31ddb7.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/47355146-4473a400-d6c9-11e8-8ded-a3f99e31ddb7.png" alt="image" width="752" height="258"></a></p>
