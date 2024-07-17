@@ -13,8 +13,8 @@ import urllib.parse
 
 # Disable insecure warnings
 urllib3.disable_warnings()
-BATCH_SIZE = 2000
-CHUNK_SIZE = 1024 * 1024 * 10 * 2  # 20 MB
+BATCH_SIZE = 10000
+CHUNK_SIZE = 1024 * 1024 * 10 * 5  # 50 MB
 DEFAULT_MALICIOUS_THRESHOLD_VALUE: int = 65
 DEFAULT_SUSPICIOUS_THRESHOLD_VALUE: int = 25
 DEFAULT_RISK_SCORE_THRESHOLD_VALUE: int = 0
