@@ -2924,7 +2924,7 @@
                 "Image OCR",
                 "Rasterize"
             ],
-            "timeout": 700,
+            "timeout": 900,
             "memory_threshold": 300,
             "pid_threshold": 200,
             "fromversion": "4.5.0"
