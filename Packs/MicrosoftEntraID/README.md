@@ -3,7 +3,10 @@
 <html>
 
 <h1>Microsoft Entra ID</h1>
-<h2>What does this pack do</h2>
+
+<details>
+<summary><h1>What does this pack do</h1></summary>
+
 <h3>Log Normalization - One Data Model</h3>
 <p>This pack support normalization of the below log categories of Microsoft Entra ID:</p>
 <ol>
@@ -14,6 +17,10 @@
     <li>ManagedIdentitySignInLogs</li>
     <li>ADFSSignInLogs</li>
     <li>ProvisioningLogs</li>
+    <li>RiskyUsers</li>
+    <li>UserRiskEvents</li>
+    <li>RiskyServicePrincipals</li>
+    <li>ServicePrincipalRiskEvents</li>
 </ol>
 
 <h3>Timestamp Parsing</h3>
@@ -32,9 +39,18 @@
         <li>ServicePrincipalSignInLogs</li>
         <li>ManagedIdentitySignInLogs</li>
         <li>ADFSSignInLogs</li>
+        <li>UserRiskEvents</li>
+        <li>ServicePrincipalRiskEvents</li>
+    </ol>
+  </li>
+  <li>`properties.riskLastUpdatedDateTime`
+    <ol>
+        <li>RiskyUsers</li>
+        <li>RiskyServicePrincipals</li>
     </ol>
   </li>
 </ol>
+</details>
 <hr>
 
 <h2>Data Collection</h2>
@@ -102,7 +118,26 @@ datamodel dataset = msft_azure_raw
 | fields xdm.event.original_event_type, xdm.event.duration, xdm.event.type, xdm.event.outcome, xdm.event.outcome_reason, xdm.event.description, xdm.source.cloud.project_id, xdm.event.id, xdm.session_context_id, xdm.event.operation_sub_type, xdm.source.application.name, xdm.target.application.name, xdm.source.user.username, xdm.source.user.identifier, xdm.target.resource.id, xdm.target.resource.type, xdm.target.resource.name, xdm.target.resource.value
   ```
 </details>
-
+<br>
+<details>
+<summary>RiskyUsers, RiskyServicePrincipals</summary>
+    
+  ```sql
+datamodel dataset = msft_azure_raw 
+| filter xdm.event.original_event_type in ("RiskyUsers", "RiskyServicePrincipals")
+| fields xdm.event.original_event_type, xdm.session_context_id, xdm.source.cloud.project_id, xdm.event.type, xdm.event.id, xdm.source.user.username, xdm.source.user.upn, xdm.alert.name, xdm.alert.severity, xdm.source.application.name, xdm.source.user.is_disabled
+  ```
+</details>
+<br>
+<details>
+<summary>UserRiskEvents, ServicePrincipalRiskEvents</summary>
+    
+  ```sql
+datamodel dataset = msft_azure_raw 
+| filter xdm.event.original_event_type in ("UserRiskEvents", "ServicePrincipalRiskEvents")
+| fields xdm.event.original_event_type, xdm.event.description, xdm.session_context_id, xdm.source.cloud.project_id, xdm.event.type, xdm.event.id, xdm.source.ipv4, xdm.source.ipv6, xdm.logon.logon_guid, xdm.alert.subcategory, xdm.alert.severity, xdm.alert.name, xdm.observer.type, xdm.source.location.country, xdm.source.location.city, xdm.source.location.latitude, xdm.source.location.longitude, xdm.source.user.username, xdm.source.user.upn, xdm.source.user.identifier, xdm.auth.privilege_level, xdm.source.application.name
+  ```
+</details>
 </html>
 
 </~XSIAM>

@@ -92,3 +92,45 @@ filter category = "ProvisioningLogs"
         xdm.target.resource.type = if(json_extract_scalar(properties, "$.targetIdentity.identityType") != "", json_extract_scalar(properties, "$.targetIdentity.identityType"), null),
         xdm.target.resource.name = if(json_extract_scalar(properties, "$.targetIdentity.Name") != "", json_extract_scalar(properties, "$.targetIdentity.Name"), null),
         xdm.target.resource.value = json_extract_scalar(properties, "$.targetIdentity.details.UserPrincipalName");
+
+filter category in ("RiskyUsers", "RiskyServicePrincipals")
+| alter
+        xdm.event.original_event_type = category,
+        xdm.session_context_id = correlationId,
+        xdm.source.cloud.project_id = tenantId,
+        xdm.event.type = operationName,
+        xdm.event.id = json_extract_scalar(properties, "$.id"),
+        xdm.source.user.username = json_extract_scalar(properties, "$.userDisplayName"),
+        xdm.source.user.upn = json_extract_scalar(properties, "$.userPrincipalName"),
+        xdm.alert.name = json_extract_scalar(properties, "$.riskDetail"),
+        xdm.alert.severity = json_extract_scalar(properties, "$.riskLevel"),
+        xdm.source.application.name = json_extract_scalar(properties, "$.displayName"),
+        xdm.source.user.is_disabled = if(to_boolean(json_extract(properties, "$.accountEnabled")) = to_boolean("true"), to_boolean("false"), to_boolean("true"));
+
+filter category in ("UserRiskEvents", "ServicePrincipalRiskEvents")
+| alter
+        xdm.event.original_event_type = category,
+        xdm.event.description = json_extract_scalar(properties, "$.additionalInfo"),
+        xdm.session_context_id = coalesce(json_extract_scalar(properties, "$.correlationId"), correlationId),
+        xdm.source.cloud.project_id = tenantId,
+        xdm.event.type = json_extract_scalar(properties, "$.activity"),
+        xdm.event.id = json_extract_scalar(properties, "$.id"),
+        xdm.source.ipv4 = if(callerIpAddress ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", callerIpAddress, null),
+        xdm.source.ipv6 = if(callerIpAddress ~= "[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}", callerIpAddress, null),
+        xdm.logon.logon_guid = json_extract_scalar(properties, "$.requestId"),
+        xdm.alert.subcategory = json_extract_scalar(properties, "$.riskEventType"),
+        xdm.alert.severity = json_extract_scalar(properties, "$.riskLevel"),
+        xdm.alert.name = json_extract_scalar(properties, "$.riskDetail"),
+        xdm.observer.type = json_extract_scalar(properties, "$.source"),
+        xdm.source.location.country = if(json_extract_scalar(properties, "$.location.countryOrRegion") != null and json_extract_scalar(properties, "$.location.countryOrRegion") != "", json_extract_scalar(properties, "$.location.countryOrRegion"), null),
+        xdm.source.location.city = if(json_extract_scalar(properties, "$.location.city") != null and json_extract_scalar(properties, "$.location.city") != "", json_extract_scalar(properties, "$.location.city"), null),
+        xdm.source.location.latitude = to_float(if(json_extract_scalar(properties, "$.location.geoCoordinates.latitude") != null, json_extract_scalar(properties, "$.location.geoCoordinates.latitude"), null)),
+        xdm.source.location.longitude = to_float(if(json_extract_scalar(properties, "$.location.geoCoordinates.longitude") != null, json_extract_scalar(properties, "$.location.geoCoordinates.longitude"), null)),
+        xdm.source.user.username = json_extract_scalar(properties, "$.userDisplayName"),
+        xdm.source.user.upn = json_extract_scalar(properties, "$.userPrincipalName"),
+        xdm.source.user.identifier = json_extract_scalar(properties, "$.userId"),
+        xdm.auth.privilege_level = if(lowercase(json_extract_scalar(properties, "$.userType")) = "member", XDM_CONST.PRIVILEGE_LEVEL_USER, lowercase(json_extract_scalar(properties, "$.userType")) = "guest", XDM_CONST.PRIVILEGE_LEVEL_GUEST, null),
+        xdm.source.application.name = json_extract_scalar(properties, "$.servicePrincipalDisplayName");
+
+
+
