@@ -21,7 +21,7 @@ import pytest
 """ TEST CONSTANTS """
 
 
-USERNAME = "user@domain.com"
+USERNAME = "user@domain.com" # type: ignore
 PORTFOLIO_ID = "1"
 PORTFOLIO_ID_NE = "2"
 DOMAIN = "domain1.com"
