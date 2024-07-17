@@ -663,15 +663,15 @@
             "is_array": false
         },
         "RecordType": {
-            "type": "string",
+            "type": "int",
             "is_array": false
         },
         "UserType": {
-            "type": "string",
+            "type": "int",
             "is_array": false
         },
         "Scope": {
-            "type": "string",
+            "type": "int",
             "is_array": false
         }        
     }    
