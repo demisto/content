@@ -21,4 +21,5 @@ To generate your personal access token, visit:[GitHub](https://github.com/settin
 
 #### Owner, Repo sources example
 
-![exa photo](https://github.com/demisto/content/blob/9835-GitHub-Feed/Packs/FeedGithub/Integrations/FeedGithub/owner-repo-example.png?raw=true)
+![exa photo](../../doc_files/owner-repo-example.png)
+

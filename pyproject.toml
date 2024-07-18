@@ -15,7 +15,7 @@ python = "^3.8,<3.11"
 defusedxml = "^0.7.1"
 
 [tool.poetry.group.dev.dependencies]
-demisto-sdk = "1.30.0"
+demisto-sdk = "1.31.3"
 requests = "^2.22.0"
 pre-commit = "^3.5.0"
 dateparser = "^1.1.8"
@@ -59,7 +59,7 @@ optional = true
 [tool.poetry.group.ci.dependencies]
 google-cloud-bigquery = "^3.2.0"
 google-cloud-secret-manager = "^2.13.0"
-google-cloud-compute = "^1.8.0"
+google-cloud-compute = "^1.19.1"
 blessings = "^1.7"
 coloredlogs = "^15.0.1"
 pandas = "^1.3.3"
@@ -82,7 +82,7 @@ db-dtypes = "^1.0.1"
 json5 = "^0.9.10"
 tqdm = "^4.66.1"
 tabulate = ">=0.8.9,<0.10.0"
-jira = "^3.5.2"
+jira = "^3.8.0"
 junitparser = "^3.1.0"
 tenacity = "^8.2.3"
 
