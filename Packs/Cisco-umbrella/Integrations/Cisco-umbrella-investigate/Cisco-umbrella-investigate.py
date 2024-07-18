@@ -153,8 +153,7 @@ def format_string_to_table_header_format(string):
     if type(string) in STRING_TYPES:
         return " ".join(word.capitalize() for word in string.replace("_", " ").split())
     else:
-        return_error(f'The key is not a string: {string}')
-        return None
+        raise DemistoException(f'The key is not a string: {string}')
 
 
 def format_string_to_context_key_format(string):
@@ -162,8 +161,7 @@ def format_string_to_context_key_format(string):
     if type(string) in STRING_TYPES:
         return "".join(word.capitalize() for word in string.split('_'))
     else:
-        return_error(f'The key is not a string: {string}')
-        return None
+        raise DemistoException(f'The key is not a string: {string}')
 
 
 def date_to_timestamp_func(date):
@@ -1324,13 +1322,13 @@ def get_domains_for_nameserver_command():
     limit = demisto.args().get('limit', '')
     # user input validation
     if not isinstance(nameservers, list):
-        return_error('Name Servers list is not formatted correctly, please try again.')
+        raise DemistoException('Name Servers list is not formatted correctly, please try again.')
     if sort and sort not in ['created', 'updated']:
-        return_error('The parameter sort accept only these values: created/updated/expired.')
+        raise DemistoException('The parameter sort accept only these values: created/updated/expired.')
     for nameserver in nameservers:
         if re.match('^(([a-zA-Z]|[a-zA-Z][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z]|[A-Za-z][A-Za-z0-9\-]*[A-Za-z0-9])$',
                     nameserver) is None:
-            return_error('The provided name server is not valid: ' + nameserver)
+            raise DemistoException('The provided name server is not valid: ' + nameserver)
     # Fetch data
     res = get_domains_for_nameserver(nameservers, offset, sort, limit)
     if res:
