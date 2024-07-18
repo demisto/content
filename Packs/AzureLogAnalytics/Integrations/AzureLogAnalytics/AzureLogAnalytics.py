@@ -60,7 +60,6 @@ class Client:
             ok_codes=(200, 202, 204, 400, 401, 403, 404, 409),
             multi_resource=True,
             resources=resources_list,
-            # resources=[self.azure_cloud.endpoints.resource_manager, self.azure_cloud.endpoints.log_analytics_resource_id],
             certificate_thumbprint=certificate_thumbprint,
             private_key=private_key,
             managed_identities_client_id=managed_identities_client_id,
