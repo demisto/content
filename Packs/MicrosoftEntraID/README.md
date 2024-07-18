@@ -5,7 +5,7 @@
 <h1>Microsoft Entra ID</h1>
 
 <details>
-<summary><h1>What does this pack do</h1></summary>
+    <summary><h2 style="display:inline-block">What does this pack do</h2></summary>
 
 <h3>Log Normalization - One Data Model</h3>
 <p>This pack support normalization of the below log categories of Microsoft Entra ID:</p>
@@ -53,8 +53,9 @@
 </details>
 <hr>
 
-<h2>Data Collection</h2>
-<h3>Entra ID Side</h3>
+<details>
+<summary><h2 style="display:inline-block">Data Collection</h2></summary>
+<h3 >Entra ID Side</h3>
 <p>To configure Microsoft Entra ID to send logs to XSIAM, follow the below steps.</p>
 <h4>Prerequisites</h4>
 <ol>
@@ -84,57 +85,57 @@
     <li>Leave the <b>Use audit logs in analytics</b> checkbox selected, unless you were told otherwise.</li>
 </ol>
 <p>More information can be found <a href="https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Ingest-Logs-from-Microsoft-Azure-Event-Hub?tocId=yjPDSlvRYtlNncGBLHOzvw">here</a></p>
-
+</details>
 <hr>
 
-<h2>XQL Queries</h2>
+<details>
+<summary><h2 style="display:inline-block">XQL Queries</h2></summary>
 <p>Use the below queries to review the mapped logs (post installation).</p> 
 <details>
-    <summary>AuditLogs</summary>
-
-  ```sql
-datamodel dataset = msft_azure_raw 
+<summary>AuditLogs</summary>
+<br>
+<pre><code>datamodel dataset = msft_azure_raw 
 | filter xdm.event.original_event_type = "AuditLogs"
-| fields xdm.event.original_event_type, xdm.event.type, xdm.event.id,  xdm.session_context_id, xdm.event.description, xdm.event.operation_sub_type, xdm.event.outcome_reason, xdm.event.outcome, xdm.source.cloud.project_id, xdm.source.cloud.geo_region, xdm.observer.type, xdm.source.user.upn, xdm.source.user.identifier, xdm.source.user.username, xdm.source.application.name, xdm.target.resource.sub_type, xdm.target.resource.id, xdm.target.resource.name, xdm.target.resource.type, xdm.source.ipv4, xdm.source.ipv6, xdm.source.user_agent
-  ```
+| fields xdm.event.original_event_type, xdm.event.type, xdm.event.id,  xdm.session_context_id, xdm.event.description, xdm.event.operation_sub_type, xdm.event.outcome_reason, xdm.event.outcome, xdm.source.cloud.project_id, xdm.source.cloud.geo_region, xdm.observer.type, xdm.source.user.upn, xdm.source.user.identifier, xdm.source.user.username, xdm.source.application.name, xdm.target.resource.sub_type, xdm.target.resource.id, xdm.target.resource.name, xdm.target.resource.type, xdm.source.ipv4, xdm.source.ipv6, xdm.source.user_agent</code></pre>
+
 </details>
 <br>
 <details>
 <summary>SignInLogs, NonInteractiveUserSignInLogs, ServicePrincipalSignInLogs, ManagedIdentitySignInLogs, ADFSSignInLogs</summary>
-    
-  ```sql
-datamodel dataset = msft_azure_raw 
+<br>
+<pre><code>datamodel dataset = msft_azure_raw 
 | filter xdm.event.original_event_type in ("SignInLogs", "NonInteractiveUserSignInLogs", "ServicePrincipalSignInLogs", "ManagedIdentitySignInLogs", "ADFSSignInLogs")
-| fields xdm.event.original_event_type, xdm.event.type, xdm.event.duration, xdm.event.id, xdm.session_context_id, xdm.source.cloud.project_id, xdm.event.outcome_reason, xdm.event.outcome, xdm.source.user.username, xdm.source.user.upn, xdm.source.user.identifier, xdm.source.application.name, xdm.auth.service, xdm.source.host.device_id, xdm.source.host.os, xdm.source.host.os_family, xdm.network.http.browser, xdm.source.location.country, xdm.source.location.city, xdm.source.location.latitude, xdm.source.location.longitude, xdm.logon.type, xdm.alert.severity, xdm.alert.risks, xdm.target.resource.name, xdm.target.resource.id, xdm.auth.auth_method, xdm.auth.is_mfa_needed, xdm.auth.privilege_level, xdm.source.asn.as_number, xdm.source.ipv4, xdm.source.ipv6, xdm.source.user_agent
-  ```
+| fields xdm.event.original_event_type, xdm.event.type, xdm.event.duration, xdm.event.id, xdm.session_context_id, xdm.source.cloud.project_id, xdm.event.outcome_reason, xdm.event.outcome, xdm.source.user.username, xdm.source.user.upn, xdm.source.user.identifier, xdm.source.application.name, xdm.auth.service, xdm.source.host.device_id, xdm.source.host.os, xdm.source.host.os_family, xdm.network.http.browser, xdm.source.location.country, xdm.source.location.city, xdm.source.location.latitude, xdm.source.location.longitude, xdm.logon.type, xdm.alert.severity, xdm.alert.risks, xdm.target.resource.name, xdm.target.resource.id, xdm.auth.auth_method, xdm.auth.is_mfa_needed, xdm.auth.privilege_level, xdm.source.asn.as_number, xdm.source.ipv4, xdm.source.ipv6, xdm.source.user_agent</code></pre>
+
 </details>
 <br>
 <details>
 <summary>ProvisioningLogs</summary>
-    
-  ```sql
-datamodel dataset = msft_azure_raw 
+<br>
+<pre><code>datamodel dataset = msft_azure_raw 
 | filter xdm.event.original_event_type = "ProvisioningLogs"
-| fields xdm.event.original_event_type, xdm.event.duration, xdm.event.type, xdm.event.outcome, xdm.event.outcome_reason, xdm.event.description, xdm.source.cloud.project_id, xdm.event.id, xdm.session_context_id, xdm.event.operation_sub_type, xdm.source.application.name, xdm.target.application.name, xdm.source.user.username, xdm.source.user.identifier, xdm.target.resource.id, xdm.target.resource.type, xdm.target.resource.name, xdm.target.resource.value
-  ```
+| fields xdm.event.original_event_type, xdm.event.duration, xdm.event.type, xdm.event.outcome, xdm.event.outcome_reason, xdm.event.description, xdm.source.cloud.project_id, xdm.event.id, xdm.session_context_id, xdm.event.operation_sub_type, xdm.source.application.name, xdm.target.application.name, xdm.source.user.username, xdm.source.user.identifier, xdm.target.resource.id, xdm.target.resource.type, xdm.target.resource.name, xdm.target.resource.value</code></pre>
+
 </details>
 <br>
 <details>
 <summary>RiskyUsers, RiskyServicePrincipals</summary>
-    
-  ```sql
-datamodel dataset = msft_azure_raw 
+<br>
+<pre><code>datamodel dataset = msft_azure_raw 
 | filter xdm.event.original_event_type in ("RiskyUsers", "RiskyServicePrincipals")
-| fields xdm.event.original_event_type, xdm.session_context_id, xdm.source.cloud.project_id, xdm.event.type, xdm.event.id, xdm.source.user.username, xdm.source.user.upn, xdm.alert.name, xdm.alert.severity, xdm.source.application.name, xdm.source.user.is_disabled
-  ```
+| fields xdm.event.original_event_type, xdm.session_context_id, xdm.source.cloud.project_id, xdm.event.type, xdm.event.id, xdm.source.user.username, xdm.source.user.upn, xdm.alert.name, xdm.alert.severity, xdm.source.application.name, xdm.source.user.is_disabled</code></pre>
 </details>
 <br>
 <details>
 <summary>UserRiskEvents, ServicePrincipalRiskEvents</summary>
+<br>
 <pre><code>datamodel dataset = msft_azure_raw 
 | filter xdm.event.original_event_type in ("UserRiskEvents", "ServicePrincipalRiskEvents")
 | fields xdm.event.original_event_type, xdm.event.description, xdm.session_context_id, xdm.source.cloud.project_id, xdm.event.type, xdm.event.id, xdm.source.ipv4, xdm.source.ipv6, xdm.logon.logon_guid, xdm.alert.subcategory, xdm.alert.severity, xdm.alert.name, xdm.observer.type, xdm.source.location.country, xdm.source.location.city, xdm.source.location.latitude, xdm.source.location.longitude, xdm.source.user.username, xdm.source.user.upn, xdm.source.user.identifier, xdm.auth.privilege_level, xdm.source.application.name</code></pre>
 </details>
+</details>
+
 </html>
+
 
 </~XSIAM>

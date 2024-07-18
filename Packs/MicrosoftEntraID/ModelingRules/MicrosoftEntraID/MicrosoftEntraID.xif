@@ -117,7 +117,7 @@ filter category in ("UserRiskEvents", "ServicePrincipalRiskEvents")
         xdm.event.id = json_extract_scalar(properties, "$.id"),
         xdm.source.ipv4 = if(callerIpAddress ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", callerIpAddress, null),
         xdm.source.ipv6 = if(callerIpAddress ~= "[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}", callerIpAddress, null),
-        xdm.logon.logon_guid = json_extract_scalar(properties, "$.requestId"),
+        xdm.logon.logon_guid = if(json_extract_scalar(properties, "$.requestId") != "", json_extract_scalar(properties, "$.requestId"), null),
         xdm.alert.subcategory = json_extract_scalar(properties, "$.riskEventType"),
         xdm.alert.severity = json_extract_scalar(properties, "$.riskLevel"),
         xdm.alert.name = json_extract_scalar(properties, "$.riskDetail"),
