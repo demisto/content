@@ -984,7 +984,7 @@ def module_test():  # pragma: no cover
         file_path = f'file://{os.path.realpath(test_file.name)}'
 
         # Rasterize the file
-        perform_rasterize(path=file_path)
+        perform_rasterize(path=file_path, wait_time=0)
 
     demisto.results('ok')
 
