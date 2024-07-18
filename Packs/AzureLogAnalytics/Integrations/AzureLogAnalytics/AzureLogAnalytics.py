@@ -31,16 +31,18 @@ class Client:
         tenant_id = refresh_token if self_deployed else ''
         refresh_token = get_integration_context().get('current_refresh_token') or refresh_token
         self.azure_cloud = azure_cloud or AZURE_WORLDWIDE_CLOUD
-        demisto.debug(f'##### demisto.debug ##### {self.azure_cloud.name=}')
         suffix = (
             f"subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/"
             + f"providers/Microsoft.OperationalInsights/workspaces/{workspace_name}"
         )
-        auth_code_scope = f"https://api.loganalytics.io/Data.Read%20{self.azure_cloud.endpoints.resource_manager}/user_impersonation"
+        auth_code_scope = f"{self.azure_cloud.endpoints.log_analytics_resource_id}/Data.Read%20{self.azure_cloud.endpoints.resource_manager}user_impersonation"
         resources_list = [self.azure_cloud.endpoints.resource_manager, self.azure_cloud.endpoints.log_analytics_resource_id]
         base_url = urljoin(url=self.azure_cloud.endpoints.resource_manager, suffix=suffix)
+
+        demisto.debug(f"##### demisto.debug ##### {self.azure_cloud.name=}")
         demisto.debug(f'##### demisto.debug ##### {base_url=}')
-        demisto.debug(f'##### demisto.debug ##### {self.azure_cloud.endpoints=}')
+        demisto.debug(f"##### demisto.debug ##### {resources_list=}")
+        demisto.debug(f"##### demisto.debug ##### {auth_code_scope=}")
 
         self.ms_client = MicrosoftClient(
             self_deployed=self_deployed,
@@ -207,7 +209,8 @@ def execute_query_command(client: Client, args: dict[str, Any]) -> CommandResult
     timeout = arg_to_number(args.get('timeout', 10))
     workspace_id = args.get('workspace_id') or demisto.params().get('workspaceID')
 
-    full_url = f'https://api.loganalytics.io/v1/workspaces/{workspace_id}/query'
+    # full_url = f"https://api.loganalytics.us/v1/workspaces/{workspace_id}/query" # DELETE
+    full_url = f"{client.azure_cloud.endpoints.log_analytics_resource_id}/v1/workspaces/{workspace_id}/query"
 
     data = {
         "timespan": args.get('timespan'),
