@@ -1,0 +1,97 @@
+{
+    "object": "list",
+    "data": [
+        {
+            "object": "event",
+            "type": 1000,
+            "itemId": "string",
+            "collectionId": "string",
+            "groupId": "string",
+            "policyId": "string",
+            "memberId": "string",
+            "actingUserId": "string",
+            "date": "2020-11-04T15:01:21.698Z",
+            "device": 0,
+            "ipAddress": "xxx.xx.xxx.x"
+        },
+        {
+            "object": "event",
+            "type": 1002,
+            "itemId": "event_with_the_same_date_as_other_event",
+            "collectionId": "string",
+            "groupId": "string",
+            "policyId": "string",
+            "memberId": "string",
+            "actingUserId": "string",
+            "date": "2020-11-04T15:01:21.698Z",
+            "device": 0,
+            "ipAddress": "xxx.xx.xxx.x"
+        },
+        {
+            "object": "event",
+            "type": 1000,
+            "itemId": "string",
+            "collectionId": "string",
+            "groupId": "string",
+            "policyId": "string",
+            "memberId": "string",
+            "actingUserId": "string",
+            "date": "2020-11-03T15:01:21.698Z",
+            "device": 0,
+            "ipAddress": "xxx.xx.xxx.x"
+        },
+        {
+            "object": "event",
+            "type": 1000,
+            "itemId": "string",
+            "collectionId": "string",
+            "groupId": "string",
+            "policyId": "string",
+            "memberId": "string",
+            "actingUserId": "string",
+            "date": "2020-11-02T15:01:21.698Z",
+            "device": 0,
+            "ipAddress": "xxx.xx.xxx.x"
+        },
+        {
+            "object": "event",
+            "type": 1000,
+            "itemId": "string",
+            "collectionId": "string",
+            "groupId": "string",
+            "policyId": "string",
+            "memberId": "string",
+            "actingUserId": "string",
+            "date": "2020-11-01T15:01:21.698Z",
+            "device": 0,
+            "ipAddress": "xxx.xx.xxx.x"
+        },
+        {
+            "object": "event",
+            "type": 1000,
+            "itemId": "string",
+            "collectionId": "string",
+            "groupId": "string",
+            "policyId": "string",
+            "memberId": "string",
+            "actingUserId": "string",
+            "date": "2020-10-31T15:01:21.698Z",
+            "device": 0,
+            "ipAddress": "xxx.xx.xxx.x"
+        },
+        {
+            "object": "event",
+            "type": 1007,
+            "itemId": "event_with_the_same_date_as_other_event",
+            "collectionId": "string",
+            "groupId": "string",
+            "policyId": "string",
+            "memberId": "string",
+            "actingUserId": "string",
+            "date": "2020-10-31T15:01:21.698Z",
+            "device": 0,
+            "ipAddress": "xxx.xx.xxx.x"
+        }
+    ],
+    "continuationToken": null
+}
