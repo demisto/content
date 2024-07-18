@@ -1,0 +1,77 @@
+{
+    "id": "indicator_sigmadetection",
+    "version": -1,
+    "modified": "2024-07-15T10:09:29.954957281Z",
+    "name": "Sigma Detection",
+    "ownerOnly": false,
+    "cliName": "sigmadetection",
+    "type": "grid",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 2,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Sigma Rule"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "columns": [
+        {
+            "key": "selection",
+            "displayName": "Selection",
+            "type": "shortText",
+            "orgType": "",
+            "required": false,
+            "script": "",
+            "width": 150,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "keyandmodifiers",
+            "displayName": "Key and Modifiers",
+            "type": "shortText",
+            "orgType": "",
+            "required": false,
+            "script": "",
+            "width": 150,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "values",
+            "displayName": "Values",
+            "type": "longText",
+            "orgType": "",
+            "required": false,
+            "script": "",
+            "width": 150,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        }
+    ],
+    "defaultRows": [
+        {},
+        {},
+        {}
+    ],
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}

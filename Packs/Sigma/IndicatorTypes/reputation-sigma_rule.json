@@ -1,0 +1,18 @@
+{
+    "id": "Sigma Rule",
+    "version": -1,
+    "modified": "2024-07-15T10:29:49.893450726Z",
+    "shouldCommit": false,
+    "regex": "",
+    "details": "Sigma Rule",
+    "prevDetails": "Sigma Rule",
+    "system": false,
+    "locked": false,
+    "disabled": false,
+    "file": false,
+    "updateAfter": 0,
+    "mergeContext": false,
+    "expiration": 0,
+    "layout": "e22fa684-9f5c-4f7b-81c9-581a1f2e69c2",
+    "fromVersion": "6.10.0"
+}
