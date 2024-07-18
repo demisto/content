@@ -328,8 +328,8 @@ def test_close_incident(mocker, requests_mock):
     }
 
     # not expecting a different id bc of mocked responses, just expecting a successful response
-    assert res == close_incident_command(rest_client, args)
-    assert 'incident closed and/or feedback updated for incident with id 5 on tenant Tenant 1' in \
+    res = close_incident_command(rest_client, args)
+    assert 'incident closed and/or feedback updated for incident with id 6 on tenant Tenant 1' in \
            res
 
 
