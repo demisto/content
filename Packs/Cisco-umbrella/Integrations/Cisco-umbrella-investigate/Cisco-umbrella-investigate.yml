@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: Cisco Umbrella Investigate
+  id: Cisco Umbrella Investigate_test
   version: -1
 configuration:
 - display: Cisco Umbrella API token
@@ -54,8 +54,8 @@ configuration:
 
   required: false
 description: Cisco Umbrella Investigate.
-display: Cisco Umbrella Investigate
-name: Cisco Umbrella Investigate
+display: Cisco Umbrella Investigate_test
+name: Cisco Umbrella Investigate_test
 script:
   commands:
   - arguments:

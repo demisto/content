@@ -720,26 +720,29 @@ def create_dbot_Score(domain: dict, reliability: str) -> Common.DBotScore:
 
 
 def get_ip_malicious_domains_command():
+    demisto.debug('get_ip_malicious_domains_command')
     args = demisto.args()
     ip = args.get('ip')
     reliability = args.get('Reliability', '')
-    # Fetch data
     command_results_list = []
     ip_malicious_domains = get_ip_malicious_domains(ip)
     if not ip_malicious_domains:
         raise DemistoException('not found')
+    demisto.debug(f'{ip_malicious_domains=}')
     for ip_domain in ip_malicious_domains:
+        demisto.debug(f'{ip_domain}')
         cve_dbot_score = create_dbot_Score(domain=ip_domain, reliability=reliability)
         cve_indicator = Common.Domain(domain=ip_domain.get('name'), dbot_score=cve_dbot_score)
         cve_human_readable = {'ID': ip_domain.get('id'),
-                              'name': ip_domain.get('name')}
+                              'Name': ip_domain.get('name')}
         human_readable = tableToMarkdown('Cisco Umbrella Investigate DOMAIN', cve_human_readable,
                                          headers=['ID', 'Name'])
         command_results = CommandResults(raw_response=ip_domain, readable_output=human_readable,
                                          indicator=cve_indicator).to_context()
         if command_results not in command_results_list:
             command_results_list.append(command_results)
-    return command_results
+    demisto.debug(f'{command_results_list}')
+    return command_results_list
 
 
 def get_ip_malicious_domains(ip):
