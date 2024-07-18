@@ -33,7 +33,7 @@ filter category = "AuditLogs"
 filter category in ("SignInLogs", "NonInteractiveUserSignInLogs", "ServicePrincipalSignInLogs", "ManagedIdentitySignInLogs", "ADFSSignInLogs")
 | call EntraID_Common_fields
 | alter
-        operatingSystem = if(json_extract_scalar(properties, "$.deviceDetail.operatingSystem") != null and json_extract_scalar(properties, "$.deviceDetail.operatingSystem") != "", json_extract_scalar(properties, "$.deviceDetail.operatingSystem"), null),
+        operatingSystem = lowercase(if(json_extract_scalar(properties, "$.deviceDetail.operatingSystem") != null and json_extract_scalar(properties, "$.deviceDetail.operatingSystem") != "", json_extract_scalar(properties, "$.deviceDetail.operatingSystem"), null)),
         authenticationMethod = json_extract_scalar(arrayindex(json_extract_array(properties, "$.authenticationDetails"), 0), "$.authenticationMethod"),
         authenticationMethodDetail = json_extract_scalar(arrayindex(json_extract_array(properties, "$.authenticationDetails"), 0), "$.authenticationMethodDetail")
 | alter
