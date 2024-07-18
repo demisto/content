@@ -1413,15 +1413,7 @@ tasks:
     type: title
     view: "{\n  \"position\": {\n    \"x\": 750,\n    \"y\": 735\n  }\n}"
 view: "{\n  \"linkLabelsPosition\": {\n    \"25_19_yes\": 0.6,\n    \"3_42_#default#\": 0.32,\n    \"3_9_yes\": 0.5,\n    \"4_11_yes\": 0.43,\n    \"4_42_#default#\": 0.31,\n    \"7_18_yes\": 0.5\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 3005,\n      \"width\": 2750,\n      \"x\": -440,\n      \"y\": -360\n    }\n  }\n}"
-inputs:
-- key: RemoteIP
-  value:
-    complex:
-      root: inputs
-      accessor: remoteip
-  required: false
-  description: IP address of the service.
-  playbookInputQuery:
+inputs: []
 outputs: []
 fromversion: 6.5.0
 tests:
