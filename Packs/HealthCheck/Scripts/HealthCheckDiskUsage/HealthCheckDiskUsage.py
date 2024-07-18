@@ -2,8 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-RESOLUTION = 'Free up Disk Space with Data Archiving: https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/' \
-             'cortex-xsoar-admin/manage-data/free-up-disc-space-with-data-archiving'
+RESOLUTION = 'Free up Disk Space with Data Archiving: https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.12/Cortex-XSOAR-Administrator-Guide/Free-up-Disk-Space-with-Data-Archiving'
 
 
 def analyze_data(res):

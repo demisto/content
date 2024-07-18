@@ -27,8 +27,7 @@ if need_update > 0:
 if len(packs) > 70:
     res.append({"category": "Content packs", "severity": "Medium",
                 "description": "There are too many packs installed on your system",
-                "resolution": "Delete unneeded packs, refer to:  https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-6/"
-                "cortex-xsoar-admin/marketplace/content-pack-installation/delete-a-content-pack"
+                "resolution": "Delete unneeded packs, refer to:  https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.12/Cortex-XSOAR-Administrator-Guide/Delete-a-Content-Pack"
                 })
 
 demisto.executeCommand("setIncident", {

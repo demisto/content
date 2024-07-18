@@ -66,15 +66,13 @@ knownerrors = [
     {
         "in pool reached high watermark": [
             "Error Found: `amount of active containers in pool reached high watermark`",
-            "Check and increase high watermark for docker: https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/"
-            "cortex-xsoar-admin/cortex-xsoar-overview/performance-tuning-of-cortex-xsoar-server"
+            "Check and increase high watermark for docker: https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.12/Cortex-XSOAR-Administrator-Guide/Performance-Tuning-for-Cortex-XSOAR"
         ]
     },
     {
         "no space left on device": [
             "Error Found: `no space left on device`",
-            "Free up Disk Space with Data Archiving: https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/"
-            "Cortex-XSOAR-Administrator-Guide/Free-up-Disk-Space-with-Data-Archiving"
+            "https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.12/Cortex-XSOAR-Administrator-Guide/Free-up-Disk-Space-with-Data-Archiving"
         ]
     },
     {
@@ -93,8 +91,7 @@ knownerrors = [
     {
         "fatal error: runtime: out of memory": [
             "Error Found: `fatal error: runtime: out of memory.`",
-            "Performance Tuning of Cortex XSOAR Server: https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/"
-            "cortex-xsoar-admin/cortex-xsoar-overview/performance-tuning-of-cortex-xsoar-server"
+            "Performance Tuning of Cortex XSOAR Server: https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.12/Cortex-XSOAR-Administrator-Guide/Performance-Tuning-for-Cortex-XSOAR"
         ]
     },
     {
@@ -107,8 +104,7 @@ knownerrors = [
         "error Failed on ensure function for": [
             "Error Found: `error Failed on ensure function for`",
             "Reindex the Entire Database: "
-            "https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/"
-            "Cortex-XSOAR-Administrator-Guide/Reindex-the-Entire-Database"
+            "https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.12/Cortex-XSOAR-Administrator-Guide/Reindex-the-Entire-Database"
         ]
     },
     {

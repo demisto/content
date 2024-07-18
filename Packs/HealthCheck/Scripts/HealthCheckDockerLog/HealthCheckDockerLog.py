@@ -10,8 +10,7 @@ DESCRIPTION = [
     "There are {} containers that are running with over 10% RAM Usage - Please check docker.log",
 ]
 
-RESOLUTION = 'Docker containers overloaded: https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/' \
-             'cortex-xsoar-admin/cortex-xsoar-overview/performance-tuning-of-cortex-xsoar-server'
+RESOLUTION = 'Docker containers overloaded: https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.12/Cortex-XSOAR-Administrator-Guide/Performance-Tuning-for-Cortex-XSOAR'
 
 
 def container_analytics(containers):

@@ -60,11 +60,9 @@ RESOLUTION = [
 
     "Consider joining some of the setIncident tasks",
 
-    "Communication Tasks: https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/"
-    + "cortex-xsoar-admin/playbooks/playbook-tasks/communication-tasks",
+    "Communication Tasks: https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.12/Cortex-XSOAR-Administrator-Guide/Create-a-Data-Collection-Task",
 
-    "Sub-playbook Tutorial: https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/"
-    + "cortex-xsoar-admin/playbooks/configure-a-sub-playbook-loop/sub-playbook-tutorial",
+    "Sub-playbook Tutorial: https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.12/Cortex-XSOAR-Administrator-Guide/Configure-a-Sub-playbook-Loop",
 ]
 
 

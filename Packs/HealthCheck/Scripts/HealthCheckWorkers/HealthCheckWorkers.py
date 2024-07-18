@@ -4,8 +4,7 @@ from datetime import datetime
 
 DESCRIPTION = '{} busy workers has reached {} of total workers'
 
-RESOLUTION = 'Performance Tuning of Cortex XSOAR Server: https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/' \
-             'cortex-xsoar-admin/cortex-xsoar-overview/performance-tuning-of-cortex-xsoar-server'
+RESOLUTION = 'Performance Tuning of Cortex XSOAR Server: https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.12/Cortex-XSOAR-Administrator-Guide/Performance-Tuning-for-Cortex-XSOAR'
 
 
 def analyze_data(res):
