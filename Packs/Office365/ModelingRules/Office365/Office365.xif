@@ -46,7 +46,7 @@ call o365_common_fields
 	xdm.source.user.user_type = if(user_type_string ~= "0|1|2|3", XDM_CONST.USER_TYPE_REGULAR, user_type_string ~= "4|5|6|7|8", XDM_CONST.USER_TYPE_SERVICE_ACCOUNT),
 	xdm.source.user.identity_type = if(user_type_string ~= "0|1|2|3", XDM_CONST.IDENTITY_TYPE_USER, user_type_string ~= "4|5|6|7|8", XDM_CONST.IDENTITY_TYPE_MACHINE),
 	xdm.auth.privilege_level = if(userrole = "owner", XDM_CONST.PRIVILEGE_LEVEL_USER, userrole = "admin", XDM_CONST.PRIVILEGE_LEVEL_ADMIN, members_role = "2", XDM_CONST.PRIVILEGE_LEVEL_GUEST, members_role = "1", XDM_CONST.PRIVILEGE_LEVEL_ADMIN, members_role = "0", XDM_CONST.PRIVILEGE_LEVEL_USER, user_type_string ~= "0|1", XDM_CONST.PRIVILEGE_LEVEL_USER, user_type_string ~= "2|3", XDM_CONST.PRIVILEGE_LEVEL_ADMIN, user_type_string ~= "4|5|6|7|8", XDM_CONST.PRIVILEGE_LEVEL_SYSTEM),
-	xdm.source.user.identifier = coalesce(ActorYammerUserId, UserKey),
+	xdm.source.user.identifier = coalesce(to_string(ActorYammerUserId), UserKey),
 	xdm.alert.subcategory = coalesce(verdict, investigationtype, Category, Scope_name),
 	xdm.event.description = coalesce(to_string(ModifiedProperties), to_string(messages), to_string(FileData), `fields`, ExtraProperties, details, detail, PolicyMatchInfo, to_string(Data), to_string(dataexporttype)),
 	xdm.alert.description = to_string(AppAccessContext),
