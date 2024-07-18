@@ -32,7 +32,7 @@ configuration:
   name: appUrl
   type: 0
   hiddenusername: true
-  additionalinfo: Required if "Long running instance" is enabled.
+  additionalinfo: The XSOAR URL. Required if "Long running instance" is enabled.
 - display: Long running instance
   name: longRunning
   type: 8

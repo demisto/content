@@ -1,6 +1,6 @@
 Google Chat integration allows you to send messages and conduct surveys.
 
-This integration was integrated and tested with version xx of GoogleChat.
+This integration was integrated and tested with version xx of Google Chat.
 
 ## Configure Google Chat on Cortex XSOAR
 
@@ -14,13 +14,14 @@ This integration was integrated and tested with version xx of GoogleChat.
     | Google Chat Space Key |  | False |
     | Google Chat Service Account JSON |  | False |
     | Long running instance | Enable in order to use GoogleChat-ask. | False |
-    | Listen Port | Listener port number.<br/> Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances. | False |
+    | Listen Port | Listener port number.<br/> Requires a unique port for each long-running integration instance.<br/> Do not use the same port for multiple instances. | False |
+    |App Url | The XSOAR URL. <br/> Required if "Long running instance" is enabled.| False|
     | Trust any certificate (not secure) |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
 ### Server configuration (XSOAR 6.x)
-
+Navigate to **settings>about**. <br/>
 In the Server Configuration section, verify that the value for the `instance.execute.external.INTEGRATION-INSTANCE-NAME` key is set to true. If this key does not exist:
 
 1. Click **+ Add Server Configuration**.
