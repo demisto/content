@@ -4,30 +4,44 @@ commonfields:
   version: -1
 configuration:
 - section: Connect
-  display: Google Chat Space ID
-  name: space_id
+  display: Server URL
+  name: server_url
   type: 0
   required: true
-- displaypassword: Google Chat Space Key
+  defaultvalue: 'https://chat.googleapis.com'
+- section: Connect
+  display: Space ID
+  name: space_id
+  type: 0
+  required: false
+- section: Connect
+  displaypassword: Space Key
   name: space_key
   required: false
-  section: Connect
   hiddenusername: true
   type: 9
-- displaypassword: Google Chat Service Account JSON
+- section: Connect
+  displaypassword: Service Account JSON
   name: service_account_json
-  required: false
-  section: Connect
+  required: true
   hiddenusername: true
   type: 9
+- section: Connect
+  display: App URL
+  required: false
+  name: appUrl
+  type: 0
+  hiddenusername: true
+  additionalinfo: Required if "Long running instance" is enabled.
 - display: Long running instance
   name: longRunning
   type: 8
   required: false
+  additionalinfo: Required if using GoogleChat-Ask Script.
 - display: Listen Port
   name: longRunningPort
   type: 0
-  section: Collect
+  section: Connect
   required: false
   additionalinfo: You must enable Long running instance to run the web server on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances.
 - display: Trust any certificate (not secure)
@@ -50,8 +64,8 @@ script:
       description: The recipient of the message.
       type: textArea
     - name: space_id
-      required: true
-      description: The ID of the space to which to send the message.
+      required: false
+      description: The ID of the space to which to send the message. If configured, this argument will override the Space ID from the instance configuration.
       type: textArea
     - name: thread_id
       description: If replying to a thread, use this argument to specify the thread
@@ -61,17 +75,21 @@ script:
       description: 'Card to send. See Card Builder here: https://addons.gsuite.google.com/uikit/builder.'
       type: textArea
     - name: entitlement
+      hidden: true
       description: Full entitlement for GoogleChatAsk script.
       type: textArea
-      hidden: true
     - name: expiry
+      hidden: true
       description: Expiry time for waiting to the user response.
       type: textArea
-      hidden: true
     - name: default_response
+      hidden: true
       description: Default response if the expiration time of the message has exceeded.
       type: textArea
+    - name: reply
       hidden: true
+      description: The reply which is being sent to the user after the survey is answered.
+      type: textArea
     description: Send messages through google chat.
     outputs:
     - contextPath: GoogleChat.sender.name

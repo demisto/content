@@ -3,11 +3,11 @@ args:
   description: The recipient of the message.
   type: textArea
 - name: message
-  required: true
+  required: false
   description: The message to send to the user or channel.
   type: textArea
 - name: space_id
-  required: true
+  required: false
   description: The ID of the space where the message will be send to.
   type: textArea
 - name: option1
@@ -36,6 +36,13 @@ args:
   type: textArea
 - name: default_reply
   description: The default reply if the user does not response after lifetime exceeded.
+  type: textArea
+- name: reply
+  description: >
+    The reply which is being sent to the user after the survey is answered.
+    If not specified, the following reply will be used: "Thank you {user} for your response: {response}."
+    Use the templates {user} and {response} to incorporate these in the reply.
+    For example: "Thank you {user}. You have answered {response}."
   type: textArea
 comment: Sends a message (question) to either user (in a direct message) or to a channel. The message includes predefined reply options. The response can also close a task (might be conditional) in a playbook.
 commonfields:

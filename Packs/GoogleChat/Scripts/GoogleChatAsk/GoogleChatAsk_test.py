@@ -37,8 +37,29 @@ def test_parse_option_text_invalid_color():
     assert e.value.message == 'The option: yes#black has invalid color: black, the color options are red, green, blue.'
 
 
-expected_card1 = {'cardId': 'survey-card', 'card': {'header':
-    {'title': 'Feedback request', 'subtitle': 'Is the website easy to understand?'},
+expected_card1 = {'cardId': 'survey-card', 'card': {'header': {
+    'title': 'Feedback request', 'subtitle': 'Is the website easy to understand?'},
+    'sections': [{
+        'header': 'Choose one option:',
+        'collapsible': 'false',
+        'uncollapsibleWidgetsCount': 1,
+        'widgets': [{'selectionInput': {'name': 'survey',
+                                        'label': '',
+                                        'type': 'DROPDOWN',
+                                        'items': [{'text': 'yes',
+                                                   'value': 'yes'},
+                                                  {'text': 'no',
+                                                   'value': 'no'},
+                                                  {'text': 'other',
+                                                   'value': 'other'}]}},
+                    {'buttonList': {'buttons': [{
+                        'text': 'Submit',
+                        'onClick': {'action': {
+                            'function': 'handleSurveyResponse',
+                            'parameters': [{'key': 'response',
+                                            'value': '${survey}'}]}}}]}}]}]}}
+expected_card2 = {'cardId': 'survey-card', 'card': {'header': {
+    'title': 'Feedback request', 'subtitle': 'Is the website easy to understand?'},
     'sections': [{
         'header': 'Choose one option:',
         'collapsible': 'false',
@@ -46,28 +67,29 @@ expected_card1 = {'cardId': 'survey-card', 'card': {'header':
         'widgets': [{
             'selectionInput': {
                 'name': 'survey',
-                'label': '',
-                'type': 'DROPDOWN',
-                'items': [{'text': 'yes', 'value': 'yes'},
-                          {'text': 'no', 'value': 'no'},
-                          {'text': 'other', 'value': 'other'}]}},
-                    {'buttonList': {'buttons': [{
-                        'text': 'Submit',
-                        'onClick': {'action': {
-                            'function': 'handleSurveyResponse',
-                            'parameters': [{
-                                'key': 'response', 'value': '${survey}'}]}}}]}}]}]}}
-expected_card2 = {'cardId': 'survey-card', 'card': {'header':
-                                                    {'title': 'Feedback request', 'subtitle': 'Is the website easy to understand?'},
-                                                    'sections': [{'header': 'Choose one option:',
-                                                                  'collapsible': 'false', 'uncollapsibleWidgetsCount': 1,
-                                                                  'widgets': [{'selectionInput': {'name': 'a', 'label': 'a', 'type': 'RADIO_BUTTON'}},
-                                                                              {'buttonList': {'buttons': [{'text': 'yes', 'color': {'red': '0', 'green': '0', 'blue': '0'},
-                                                                                                           'onClick': {'action': {'function': 'yes'}}},
-                                                                                                          {'text': 'no', 'color': {'red': '1', 'green': '0', 'blue': '0'},
-                                                                                                           'onClick': {'action': {'function': 'no'}}},
-                                                                                                          {'text': 'other', 'color': {'red': '0', 'green': '0', 'blue': '0'},
-                                                                                                           'onClick': {'action': {'function': 'other'}}}]}}]}]}}
+                'label': '', 'type':
+                'RADIO_BUTTON'}}, {
+            'buttonList': {
+                'buttons': [{
+                    'text': 'yes',
+                    'color': {
+                        'red': '0',
+                        'green': '0',
+                        'blue': '0'},
+                    'onClick': {'action': {'function': 'yes'}}},
+                    {'text': 'no', 'color': {
+                        'red': '1',
+                        'green': '0',
+                        'blue': '0'},
+                     'onClick': {'action': {
+                                 'function': 'no'
+                                 }}}, {
+                    'text': 'other', 'color':
+                    {'red': '0', 'green': '0',
+                     'blue': '0'},
+                    'onClick': {'action': {
+                        'function': 'other'
+                    }}}]}}]}]}}
 
 
 @pytest.mark.parametrize(
@@ -128,60 +150,30 @@ def test_main(mocker):
     call_args = demisto.executeCommand.call_args[0]
     expected_args = {'entitlement': '123456789@123|1',
                      'expiry': '2019-09-26 18:38:25',
-                     'adaptive_card': {'cardId': 'survey-card',
-                                       'card': {
-                                           'header': {
-                                               'title': 'Feedback request',
-                                               'subtitle': 'Is the website helpful?'},
-                                           'sections': [{'header': 'Choose one option:',
-                                                         'collapsible': 'false',
-                                                         'uncollapsibleWidgetsCount': 1,
-                                                         'widgets': [{
-                                                             'selectionInput': {
-                                                                 'name': 'a', 'label': 'a', 'type': 'DROPDOWN'
-                                                             }},
-                                                             {'buttonList': {
-                                                                 'buttons': [{'text': 'Option1',
-                                                                                      'color': {
-                                                                                          'red': '0',
-                                                                                          'green': '0',
-                                                                                          'blue': '0'},
-                                                                                      'onClick': {
-                                                                                          'action': {
-                                                                                              'function': 'Option1'
-                                                                                          }
-                                                                                      }
-                                                                              },
-                                                                             {'text': 'Option2',
-                                                                                      'color': {
-                                                                                          'red': '0',
-                                                                                          'green': '0',
-                                                                                          'blue': '0'},
-                                                                                      'onClick': {
-                                                                                          'action': {
-                                                                                              'function': 'Option2'
-                                                                                          }
-                                                                                      }
-                                                                              },
-                                                                             {'text': 'Option3',
-                                                                                      'color': {
-                                                                                          'red': '0',
-                                                                                          'green': '0',
-                                                                                          'blue': '0'
-                                                                                      }, 'onClick': {
-                                                                                          'action': {
-                                                                                              'function': 'Option3'
-                                                                                          }
-                                                                                      }
-                                                                              }
-                                                                             ]
-                                                             }
-                                                         }
-                                                         ]
-                                                         }
-                                                        ]
-                                       }
-                                       },
-                     'default_reply': 'Default Response', 'message': 'no_message', 'space_id': '098'}
+                     'adaptive_card': {
+                         'cardId': 'survey-card',
+                         'card': {'header': {
+                             'title': 'Feedback request',
+                             'subtitle': 'Is the website helpful?'
+                         }, 'sections': [{
+                             'header': 'Choose one option:',
+                             'collapsible': 'false',
+                             'uncollapsibleWidgetsCount': 1,
+                             'widgets': [{'selectionInput': {
+                                 'name': 'survey',
+                                 'label': '',
+                                 'type': 'DROPDOWN',
+                                 'items': [{
+                                         'text': 'Option1',
+                                         'value': 'Option1'
+                                 }, {'text': 'Option2',
+                                     'value': 'Option2'},
+                                     {'text': 'Option3', 'value': 'Option3'}]}},
+                                 {'buttonList': {'buttons': [{
+                                     'text': 'Submit',
+                                                 'onClick': {'action': {
+                                                     'function': 'handleSurveyResponse',
+                                                     'parameters': [{'key': 'response', 'value': '${survey}'}]}}}]}}]}]}},
+                     'default_response': 'Default Response', 'message': 'no_message', 'reply': None, 'space_id': '098'}
 
     assert call_args[1] == expected_args

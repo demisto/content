@@ -41,6 +41,10 @@ See the [following refernce](https://xsoar.pan.dev/docs/reference/articles/long-
     - Service Account:
         - Under the **Grant this service account** section set the role to owner.
         - After is was created click on **manage service account** > actions > manage keys > ADD KEY > create new key- save the json which is automatically downloaded.
+
+![-](../../doc_files/authentication1.gif)
+
+
 8. Navigate to [here](https://console.cloud.google.com/apis/api/chat.googleapis.com) and enable the Google Chat API.
 9. Under the Enabled APIs & service click on the Google Chat API
 10. Click the CONFIGURATION tab:
@@ -52,10 +56,15 @@ See the [following refernce](https://xsoar.pan.dev/docs/reference/articles/long-
         - For Cortex XSOAR 8.x / XSIAM: `https://ext-<CORTEXT-XSOAR-SERVER-ADDRESSS>/xsoar/instance/execute/<INTEGRATION-INSTANCE-NAME>`, e.g., https://ext-my.demisto.live/xsoar/instance/execute/google-chat-instance-1.
     - Under **Visibility** - choose your desired option.
 
+![-](../../doc_files/authentication1.gif)
+
+
 ## Add the Google Chat App to your Google Chat
 1. Click on New chat > search for the app which was created in the previous step.
 2. Click on New chat > create a space.
 3. Under the space which was created click on the dropdown > Apps & integrations > + Add apps > choose the app which was created in the previous step.
+
+![-](../../doc_files/appAndSpace.gif)
 
 
 ## Commands
@@ -140,4 +149,3 @@ Send messages through google chat
 >|Message Name|Sender Name|Sender Display Name|Sender Type|Space Display Name|Space Name|Space Type|Thread Name|
 >|---|---|---|---|---|---|---|---|
 >| spaces/AAAAAAAAAA/messages/11111111.11111111 | users/12345678 | mySpace | BOT | myNewProject | spaces/AAAAAAAAAA | ROOM | spaces/AAAAAAAAAA/threads/1 |
-

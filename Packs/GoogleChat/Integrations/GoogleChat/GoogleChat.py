@@ -8,10 +8,12 @@ from typing import Any
 import uvicorn
 from fastapi import Depends, FastAPI, Request, Response, status
 from fastapi_utils.tasks import repeat_every
-from fastapi.security.api_key import APIKey, APIKeyHeader
+from fastapi.security.api_key import APIKeyHeader
 from uvicorn.logging import AccessFormatter
 import time
 import jwt
+from jwt.algorithms import RSAAlgorithm
+
 
 ''' CONSTANTS '''
 
@@ -24,8 +26,15 @@ OBJECTS_TO_KEYS = {
 OPTION_1 = ''
 basic_auth = HTTPBasic(auto_error=False)
 token_auth = APIKeyHeader(auto_error=False, name='Authorization')
+AUDIENCE = demisto.params().get("appUrl")
+CHAT_ISSUER = 'chat@system.gserviceaccount.com'
 
 ''' CLIENT CLASS '''
+
+
+class GooglePublicClient(BaseClient):
+    def __init__(self):
+        super().__init__(base_url='https://www.googleapis.com/oauth2/v3/certs')
 
 
 class UserAgentFormatter(AccessFormatter):
@@ -54,8 +63,8 @@ class UserAgentFormatter(AccessFormatter):
 
 
 class GoogleChatClient(BaseClient):
-    def __init__(self, space_id, space_key):
-        super().__init__(base_url='https://chat.googleapis.com/v1')
+    def __init__(self, server_url, space_id, space_key):
+        super().__init__(base_url=f'{server_url}/v1')
         self._space_id = space_id
         self._space_key = space_key
 
@@ -69,6 +78,10 @@ class GoogleChatClient(BaseClient):
             previous_token_expiry_time = integration_context.get(service_account_expiry_time)
             if previous_token and previous_token_expiry_time and previous_token_expiry_time > date_to_timestamp(datetime.now()):
                 self._access_token = previous_token
+                self._headers = {
+                    'Authorization': f'Bearer {self._access_token}',
+                    'Content-Type': 'application/json; charset=UTF-8'
+                }
             else:
                 expiry_time = date_to_timestamp(datetime.now(), date_format=DATE_FORMAT)
                 scopes = ["https://www.googleapis.com/auth/chat.bot"]
@@ -111,6 +124,10 @@ class GoogleChatClient(BaseClient):
                 # stores received token and expiration time in the integration context
                 set_integration_context(new_token)
                 self._access_token = response_data["access_token"]
+                self._headers = {
+                    'Authorization': f'Bearer {self._access_token}',
+                    'Content-Type': 'application/json; charset=UTF-8'
+                }
         except Exception as e:
             raise DemistoException(f"Could not generate an access token. Error: {e}.")
 
@@ -121,23 +138,18 @@ class GoogleChatClient(BaseClient):
                                   thread_id: str | None = None,
                                   adaptive_card: dict[str, Any] | None = None):
         params = {"key": self._space_key}
-        headers = {
-            'Authorization': f'Bearer {self._access_token}',
-            'Content-Type': 'application/json; charset=UTF-8'
+        body = {
+            "text": message_body,
+            "privateMessageViewer": {'name': f'users/{message_to}'} if message_to else None,
+            "thread": {"threadKey": thread_id} if thread_id else None,
+            "cardsV2": adaptive_card if adaptive_card else None
         }
-        body = {}
-        body['text'] = message_body
-        if message_to:
-            body['privateMessageViewer'] = {'name': f'users/{message_to}'}
-        if thread_id:
-            body['thread'] = {"threadKey": thread_id}
-        if adaptive_card:
-            body['cardsV2'] = adaptive_card
+        body = {key: value for key, value in body.items() if value is not None}
         try:
             response = self._http_request('POST', f'/spaces/{space_id or self._space_id}/messages',
                                           params=params,
                                           json_data=body,
-                                          headers=headers,
+                                          headers=self._headers,
                                           return_empty_response=True)
             return response
         except DemistoException as e:
@@ -145,22 +157,14 @@ class GoogleChatClient(BaseClient):
 
     def send_chat_reply_request(self, url_suffix, params, body):
         try:
-            headers = {
-                'Authorization': f'Bearer {self._access_token}',
-                'Content-Type': 'application/json; charset=UTF-8'
-            }
-            self._http_request('PATCH', url_suffix=url_suffix, params=params, json_data=body, headers=headers)
+            self._http_request('PATCH', url_suffix=url_suffix, params=params, json_data=body, headers=self._headers)
         except DemistoException as e:
             raise DemistoException(f"Could not send a chat-reply to the user with {body.get('text')}. Error : {e}.")
 
     def get_space_for_test_module_request(self):
         try:
-            headers = {
-                'Authorization': f'Bearer {self._access_token}',
-                'Content-Type': 'application/json; charset=UTF-8'
-            }
             params = {"key": self._space_key}
-            response = self._http_request('GET', f'spaces/{self._space_id}', params=params, headers=headers)
+            response = self._http_request('GET', f'spaces/{self._space_id}', params=params, headers=self._headers)
             return response
         except DemistoException as e:
             raise DemistoException(f"Could not get spaces. Error: {e}.")
@@ -190,7 +194,6 @@ def create_hr_response(response: dict[str, Any]):
 
 
 def test_module(client: GoogleChatClient) -> str:
-    # TODO added get space for test-module
     message: str = ''
     try:
         client.create_access_token(demisto.params().get('service_account_json', {}).get('password'))
@@ -213,23 +216,26 @@ def test_module(client: GoogleChatClient) -> str:
 
 def send_notification_command(client: GoogleChatClient, args: dict[str, Any]) -> CommandResults:
 
-    message_body = args.get('message')
+    message_body = args.get('message', '')
     message_to = args.get('to')
     space_id = args.get('space_id', client._space_id)
     thread_id = args.get('thread_id')
-    try:
-        adaptive_card = json.loads(args.get('adaptive_card')) if args.get('adaptive_card') else None  # type: ignore
-    except Exception as e:
-        raise DemistoException(f"Could not parse the adaptive card which was uploaded. Error: {e}")
     entitlement = args.get('entitlement')
     expiry = args.get('expiry')
     default_response = args.get('default_response')
-
+    reply = args.get('reply')
+    if not space_id:
+        raise DemistoException("Space ID args is missing. Please add a space_id in the instance configuration or as an argument "
+                               "for the command.")
+    try:
+        adaptive_card = json.loads(args.get('adaptive_card')) if args.get('adaptive_card') else None
+    except Exception as e:
+        raise DemistoException(f"Could not parse the adaptive card which was uploaded. Error: {e}")
     result = client.send_notification_request(message_body if message_body != 'no_message' else '',
                                               message_to, space_id, thread_id, adaptive_card)
     message_id_hierarchy = result.get('name')
     if result.get('name') and entitlement and expiry and default_response:
-        save_entitlement(entitlement, message_id_hierarchy, space_id, expiry, message_to, thread_id, default_response)
+        save_entitlement(entitlement, message_id_hierarchy, expiry, message_to, thread_id, default_response, reply)
     headers = ['Message name', 'Sender Name', 'Sender display Name', 'Sender Type', 'Space Display Name', 'Space Name',
                'Space Type', 'Thread Name', 'Thread Key']
     adjusted_response = create_hr_response(result)
@@ -245,7 +251,7 @@ def send_notification_command(client: GoogleChatClient, args: dict[str, Any]) ->
     return command_results
 
 
-def save_entitlement(entitlement, message_id_hierarchy, space_id, expiry, message_to, thread_id, default_reply):
+def save_entitlement(entitlement, message_id_hierarchy, expiry, message_to, thread_id, default_reply, reply):
     """
     Saves an entitlement.
 
@@ -264,11 +270,11 @@ def save_entitlement(entitlement, message_id_hierarchy, space_id, expiry, messag
     messages.append({
         'message_id_hierarchy': message_id_hierarchy,
         'entitlement': entitlement,
-        'space_id': space_id,
         'expiry': expiry,
         'message_to': message_to,
         'thread_id': thread_id,
-        'default_reply': default_reply
+        'default_reply': default_reply,
+        'reply': reply
     })
 
     set_to_integration_context_with_retries({'messages': messages}, OBJECTS_TO_KEYS)
@@ -331,7 +337,6 @@ async def answer_survey(message: dict):
         await process_entitlement_reply(entitlement_reply, message_id_hierarchy)
     except Exception as e:
         demisto.error(f'Failed handling entitlement {entitlement}: {str(e)}')
-    message['remove'] = True
     return incident_id
 
 
@@ -352,7 +357,12 @@ async def check_and_handle_entitlement(user_name, action_selected, message_id_hi
     if message_filter:
         message = message_filter[0]
         entitlement = message.get('entitlement')
-        reply = message.get('reply', f'Thank you {user_name} for your response: {action_selected}.')
+        if reply := message.get('reply'):
+            if '{user}' in reply:
+                reply = reply.replace('{user}', user_name)
+            if '{response}' in reply and action_selected:
+                reply = reply.replace('{response}', action_selected)
+        entitlement_reply = reply or f'Thank you {user_name} for your response: {action_selected}.'
         guid, incident_id, task_id = extract_entitlement(entitlement)
         try:
             demisto.handleEntitlementForUser(incident_id, guid, user_name, action_selected, task_id)
@@ -360,7 +370,7 @@ async def check_and_handle_entitlement(user_name, action_selected, message_id_hi
             set_to_integration_context_with_retries({'messages': messages}, OBJECTS_TO_KEYS)
         except Exception as e:
             demisto.error(f'Failed handling entitlement {entitlement}: {str(e)}.')
-    return reply
+    return entitlement_reply
 
 
 async def googleChat_send_chat_reply_async(url_suffix, params, body):
@@ -376,7 +386,7 @@ async def process_entitlement_reply(entitlement_reply, message_hierarchy):
     :param action_selected: str: The text attached to the button, used for string replacement.
     :return: None
     """
-    url_suffix = f"{message_hierarchy}"
+    url_suffix = message_hierarchy
     params = {
         "updateMask": "*"
     }
@@ -408,9 +418,48 @@ async def check_for_expired_messages():
             set_to_integration_context_with_retries({'messages': messages}, OBJECTS_TO_KEYS)
 
 
+def get_google_public_keys():
+    response = GooglePublicClient()._http_request(method='GET')
+    jwks = response.json()
+    return {key['kid']: RSAAlgorithm.from_jwk(key) for key in jwks['keys']}
+
+
+def verify_incoming_request(auth_header):
+    if not auth_header or not auth_header.startswith('Bearer '):
+        return 'Authorization header is missing or invalid'
+
+    BEARER_TOKEN = auth_header.split('Bearer ')[1]
+    try:
+        public_keys = get_google_public_keys()
+
+        unverified_header = jwt.get_unverified_header(BEARER_TOKEN)
+
+        # Get the key ID (kid) from the token header
+        kid = unverified_header.get('kid')
+        if not kid or kid not in public_keys:
+            demisto.error('Invalid token: Key ID not found')
+
+        # Verify the token
+        jwt_token = jwt.decode(
+            BEARER_TOKEN,
+            public_keys[kid],  # type: ignore
+            algorithms=['RS256'],
+            audience=AUDIENCE,
+        )
+        if jwt_token['email'] != CHAT_ISSUER:
+            demisto.error("Invalid token: invalid sender.")
+
+    except jwt.ExpiredSignatureError as e:
+        demisto.error(f'Invalid token: Token has expired with error {e}.')
+    except jwt.InvalidTokenError as e:
+        demisto.error(f'Invalid token: with error {e}.')
+    except Exception as e:
+        demisto.error(f'Error: {e}.')
+
+
 @app.post('/')
 async def handle_googleChat_response(request: Request, credentials: HTTPBasicCredentials = Depends(basic_auth),
-                                     token: APIKey = Depends(token_auth)):
+                                     auth_header=Depends(token_auth)):
     """handle any response that came from Google Chat app.
     Args:
         request : Google Chat response to survey.
@@ -418,7 +467,7 @@ async def handle_googleChat_response(request: Request, credentials: HTTPBasicCre
         JSONResponse: response from Google Chat survey
     """
     request = await request.json()
-    # TODO ensure verifying the response
+    verify_incoming_request(auth_header)
     event_type = request['type']
     try:
         if event_type == "CARD_CLICKED":
@@ -451,13 +500,17 @@ def main() -> None:
     if LONG_RUNNING:
         if not params.get('longRunningPort'):
             raise DemistoException("The Listen Port field must be populated if the long-running instance is enabled.")
+        if not params.get('appUrl'):
+            raise DemistoException("The App Url field must be populated if the long-running instance is enabled.")
         try:
             port = arg_to_number(params.get('longRunningPort'))
         except ValueError as e:
-            raise ValueError(f'Invalid listen port - {e}')
+            raise DemistoException(f'Invalid listen port - {e}')
     try:
-        client = GoogleChatClient(params.get('space_id'),
-                                  params.get('space_key', {}).get('password'))
+        client = GoogleChatClient(params.get('server_url'),
+                                  params.get('space_id'),
+                                  params.get('space_key', {}).get('password')
+                                  )
         global CLIENT
         CLIENT = client
         if command == 'long-running-execution':

@@ -26,8 +26,8 @@ This script uses the following commands and scripts.
 | user | The recipient of the message |
 | message | The message to send to the user or channel. |
 | space_id | The ID of the space where the message will be send to. |
-| option1 | The first reply option. The default is "Yes" with a blue button. To change the color of the button, add the pound sign \(\#\) followed by the name of the new color \(Blue, White, or Red\). For example, "Yes\#blue". |
-| option2 | The second reply option. The default is "No" with a red button. To change the button color, add the pound sign \(\#\) followed by the name of the new color \(Blue, White, or Red\). For example, "No\#red". |
+| option1 | The first reply option. The default is "Yes" with a blue button. To change the color of the button, add the pound sign \(\#\) followed by the name of the new color \(Blue, Green, or Red\). For example, "Yes\#blue". |
+| option2 | The second reply option. The default is "No" with a red button. To change the button color, add the pound sign \(\#\) followed by the name of the new color \(Blue, Green, or Red\). For example, "No\#red". |
 | additional_options | A CSV list of additional options. |
 | task_id | The task_id to close with the reply. If empty, then no playbook tasks will be closed. |
 | lifetime | Time until the question expires. For example - 1 day. When it expires, a default response is sent. |
