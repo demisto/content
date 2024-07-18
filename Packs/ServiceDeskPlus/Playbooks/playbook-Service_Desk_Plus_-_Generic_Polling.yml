@@ -30,8 +30,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "1":
     id: "1"
     taskid: e2044667-4290-4fc3-86a1-7d58d05a7b28
@@ -86,8 +84,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "2":
     id: "2"
     taskid: 9f900310-4434-49d1-8fd0-61900f39172b
@@ -121,8 +117,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "3":
     id: "3"
     taskid: 8e0d6b9e-9dcc-4442-8266-fad3d042f692
@@ -162,8 +156,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "4":
     id: "4"
     taskid: a8ee09dd-692a-4e27-8145-73198cb12267
@@ -188,8 +180,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "5":
     id: "5"
     taskid: 5f07445f-7a29-445c-8357-5189ce6d1ac5
@@ -219,8 +209,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
 system: true
 view: |-
   {
@@ -260,3 +248,6 @@ outputs:
 - contextPath: ${ServiceDeskPlus.Request.ClosureInfo.closure_code}
   description: The closure code added to the request
   type: unknown
+fromversion: 5.0.0	
+tests:	
+- Service Desk Plus - Generic Polling Test
