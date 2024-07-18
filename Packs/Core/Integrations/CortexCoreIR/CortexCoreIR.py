@@ -150,7 +150,7 @@ def main():  # pragma: no cover
     args["integration_name"] = INTEGRATION_NAME
     headers = {}
     url_suffix = '/xsiam' if command in PREVALENCE_COMMANDS else "/public_api/v1"
-    if not FORWARD_USER_RUN_RBAC:
+    if not FORWARD_USER_RUN_RBAC or command in COMMANDS_SHOULD_NOT_RUN_RBAC:
         api_key = demisto.params().get('apikey')
         api_key_id = demisto.params().get('apikey_id')
         url = demisto.params().get('url')

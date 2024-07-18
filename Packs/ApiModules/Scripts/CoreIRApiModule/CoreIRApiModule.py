@@ -142,6 +142,9 @@ ALERT_EVENT_AZURE_FIELDS = {
     "resourceType",
     "tenantId",
 }
+
+COMMANDS_SHOULD_NOT_RUN_RBAC = {'core-retrieve-file-details'}
+
 RBAC_VALIDATIONS_VERSION = '8.6.0'
 RBAC_VALIDATIONS_BUILD_NUMBER = '992980'
 FORWARD_USER_RUN_RBAC = is_xsiam() and is_demisto_version_ge(version=RBAC_VALIDATIONS_VERSION,
@@ -201,7 +204,7 @@ class CoreClient(BaseClient):
                 establish a connection to a remote machine before a timeout occurs.
                 can be only float (Connection Timeout) or a tuple (Connection Timeout, Read Timeout).
         '''
-        if (not FORWARD_USER_RUN_RBAC):
+        if (not FORWARD_USER_RUN_RBAC or demisto.command() in COMMANDS_SHOULD_NOT_RUN_RBAC):
             return BaseClient._http_request(self,  # we use the standard base_client http_request without overriding it
                                             method=method,
                                             url_suffix=url_suffix,
