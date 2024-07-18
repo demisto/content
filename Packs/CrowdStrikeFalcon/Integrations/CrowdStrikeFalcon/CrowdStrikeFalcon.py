@@ -318,7 +318,7 @@ SCHEDULE_INTERVAL_STR_TO_INT = {
 
 class IncidentType(Enum):
     INCIDENT = 'inc'
-    DETECTION = 'ldt'
+    DETECTION = 'ldt' if LEGACY_VERSION else ':ind:'
     IDP_OR_MOBILE_DETECTION = ':ind:'
     IOM_CONFIGURATIONS = 'iom_configurations'
     IOA_EVENTS = 'ioa_events'
