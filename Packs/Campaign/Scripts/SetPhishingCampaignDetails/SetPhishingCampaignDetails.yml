@@ -1,7 +1,7 @@
 commonfields:
-  id: SetPhishingCampaignDetails-try
+  id: SetPhishingCampaignDetails
   version: -1
-name: SetPhishingCampaignDetails-try
+name: SetPhishingCampaignDetails
 script: ''
 type: python
 tags: []

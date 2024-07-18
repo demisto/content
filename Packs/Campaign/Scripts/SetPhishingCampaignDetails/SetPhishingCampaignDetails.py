@@ -35,17 +35,6 @@ class SetPhishingCampaignDetails:
         incidents_ids = [incident["id"] for incident in incidents]
         return incident_id not in incidents_ids
 
-    def is_incident_removed_from_campaign(self, campaign_id: str) -> bool:
-        """
-        Args:
-            campaign_id (str): The ID of the campaign to check if the incident is removed from. Required.
-
-        Returns:
-            bool: True if the incident has been removed from the campaign, False otherwise.
-        """
-        incident_context = demisto.incident()
-        removed_list = self.dt(incident_context, "CustomFields.removedfromcampaigns") or []
-        return campaign_id in removed_list
 
     def add_current_incident_to_campaign(self, current_incident_data: dict, campaign_data: dict) -> None:
         # Add the incident entry to the existing incidents.
@@ -55,7 +44,6 @@ class SetPhishingCampaignDetails:
         current_incidents_in_campaign.append(incident_campaign_data)
         campaign_data['incidents'] = current_incidents_in_campaign
         campaign_data["involvedIncidentsCount"] = int(campaign_data["involvedIncidentsCount"]) + 1
-        
 
     def _get_most_updated_incident_id(self, campaign_incidents: list) -> str:
         # Assuming campaign_incidents contains at least the new incident.
@@ -91,11 +79,6 @@ class SetPhishingCampaignDetails:
         if not campaign_data:
             demisto.debug("Creating new Campaign with the current incident data.")
             return current_incident_data
-
-        if self.is_incident_removed_from_campaign(campaign_id):
-            demisto.debug("Current incident was previously removed from the campaign.")
-
-            return campaign_data
 
         elif self.is_incident_new_in_campaign(demisto.incident()["id"], campaign_data):
             demisto.debug("Adding current incident as new incident to Campaign.")

@@ -13,11 +13,11 @@ comment: |-
   For more information, see the section about permissions here:
   https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
 commonfields:
-  id: PerformActionOnCampaignIncidents-try
+  id: PerformActionOnCampaignIncidents
   version: -1
 dockerimage: demisto/python3:3.10.14.96411
 enabled: true
-name: PerformActionOnCampaignIncidents-try
+name: PerformActionOnCampaignIncidents
 script: ''
 scripttarget: 0
 subtype: python3

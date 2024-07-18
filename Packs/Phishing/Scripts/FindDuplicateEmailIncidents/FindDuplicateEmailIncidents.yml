@@ -65,9 +65,9 @@ args:
   name: exsitingIncidentsLookback
 comment: Can be used to find duplicate emails for incidents of type phishing, including  malicious, spam, and legitimate emails.
 commonfields:
-  id: FindDuplicateEmailIncidents-try
+  id: FindDuplicateEmailIncidents
   version: -1
-name: FindDuplicateEmailIncidents-try
+name: FindDuplicateEmailIncidents
 outputs:
 - contextPath: duplicateIncident
   description: The oldest duplicate incident found with the highest similarity to the current incident.

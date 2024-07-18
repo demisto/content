@@ -87,7 +87,7 @@ def get_existing_incidents(input_args, current_incident_type):
     if is_error(incidents_query_res):
         return_error(get_error(incidents_query_res))
     incidents_query_contents = '{}'
-    
+
     for res in incidents_query_res:
         if res['Contents']:
             incidents_query_contents = res['Contents']
@@ -288,7 +288,7 @@ def close_new_incident_and_link_to_existing(new_incident, duplicate_incidents_df
     min_similarity = duplicate_incidents_df.iloc[-1]['similarity']
     formatted_incident, headers = format_incident_hr(duplicate_incidents_df)
     incident = 'incidents' if len(duplicate_incidents_df) > 1 else 'incident'
-    
+
     if max_similarity > min_similarity:
         title = "Duplicate {} found with similarity {:.1f}%-{:.1f}%".format(incident, min_similarity * 100,
                                                                             max_similarity * 100)
@@ -396,7 +396,7 @@ def main():
         create_new_incident_low_similarity(duplicate_incidents_df)
         return None
     else:
-        
+
         return close_new_incident_and_link_to_existing(new_incident_df, duplicate_incidents_df)
 
 
