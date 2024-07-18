@@ -1,5 +1,6 @@
 import demistomock as demisto  # noqa: F401
-from CommonServerPython import *
+from CommonServerPython import *  # noqa: F401
+
 
 ''' IMPORTS '''
 import base64
@@ -390,7 +391,7 @@ def error_handler(res):
     raise DemistoException(f'Error in API call to CrowdStrike Falcon: code: {res.status_code} - reason: {reason}')
 
 
-def http_request(method, url_suffix, params=None, data=None, files=None, headers=HEADERS,
+def http_request(method, url_suffix, params=None, data=None, files=None, headers=HEADERS, safe=False,
                  get_token_flag=True, no_json=False, json=None, status_code=None, timeout=None):
     """
         A wrapper for requests lib to send our requests and handle requests and responses better.
@@ -413,6 +414,9 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
         :type headers: ``dict``
         :param headers: Request headers
 
+        :type safe: ``bool``
+        :param safe: If set to true will return None in case of http error
+
         :type get_token_flag: ``bool``
         :param get_token_flag: If set to True will call get_token()
 
@@ -432,24 +436,12 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
     if get_token_flag:
         token = get_token()
         headers['Authorization'] = f'Bearer {token}'
-        retries = 0
-        status_list_to_retry = []
-        # in case of 401,403,429 status codes we want to return the response, generate a new token and try again with retries.
-        valid_status_codes = [200, 201, 202, 204, 401, 403, 429]
-    else:
-        # get_token_flag=False means that get_token_request() called http_request() with /oauth2/token, and we want to retry
-        # to create the token in case of 429 in the first call to generic_http_request and not in the second call to avoid a
-        # loop of calls to get_token_request().
-        retries = 5
-        # error code 401 - isn't relevant for requesting a token.
-        # error code 403 - The IP is missing from the IP allowlist, no need to retry.
-        status_list_to_retry = [429]
-        valid_status_codes = [200, 201, 202, 204]
-        demisto.debug(f'In http_request {get_token_flag=} updated retries, status_list_to_retry, valid_status_codes')
 
     headers['User-Agent'] = 'PANW-XSOAR'
     int_timeout = int(timeout) if timeout else 10  # 10 is the default in generic_http_request
 
+    # in case of 401,403,429 status codes we want to return the response, generate a new token and try again with retries.
+    valid_status_codes = [200, 201, 202, 204, 401, 403, 429]
     # Handling a case when we want to return an entry for 404 status code.
     if status_code:
         # To cover the condition when status_code is a list of status codes
@@ -473,20 +465,16 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
             error_handler=error_handler,
             json_data=json,
             timeout=int_timeout,
-            ok_codes=valid_status_codes,
-            retries=retries,
-            status_list_to_retry=status_list_to_retry
+            ok_codes=valid_status_codes
         )
-        demisto.debug(f'In http_request after the first call to generic_http_request {res=} {res.status_code=}')
     except requests.exceptions.RequestException as e:
         return_error(f'Error in connection to the server. Please make sure you entered the URL correctly.'
                      f' Exception is {str(e)}.')
     try:
-        if get_token_flag:
-            # removing 401,403,429 status codes, now we want to generate a new token and try again
-            valid_status_codes.remove(401)
-            valid_status_codes.remove(403)
-            valid_status_codes.remove(429)
+        # removing 401,403,429 status codes, now we want to generate a new token and try again
+        valid_status_codes.remove(401)
+        valid_status_codes.remove(403)
+        valid_status_codes.remove(429)
         if res.status_code not in valid_status_codes:
             # try to create a new token
             if res.status_code in (401, 403, 429) and get_token_flag:
@@ -511,12 +499,9 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
                     timeout=int_timeout,
                     ok_codes=valid_status_codes
                 )
-                demisto.debug(f'In http_request after the second call to generic_http_request {res=} {res.status_code=}')
                 return res if no_json else res.json()
-            else:
-                demisto.debug(f'In invalid status code and {get_token_flag=}')
-                error_handler(res)
-        demisto.debug('In http_request end')
+            elif safe:
+                return None
         return res if no_json else res.json()
     except ValueError as exception:
         raise ValueError(
@@ -1436,8 +1421,8 @@ def get_token_request():
     headers = {
         'Content-Type': 'application/x-www-form-urlencoded'
     }
-    token_res = http_request('POST', '/oauth2/token', data=body, headers=headers, get_token_flag=False)
-    demisto.debug(f'In get_token_request, token_res is not None {token_res is not None}')
+    token_res = http_request('POST', '/oauth2/token', data=body, headers=headers, safe=True,
+                             get_token_flag=False)
     if not token_res:
         err_msg = 'Authorization Error: User has no authorization to create a token. Please make sure you entered the' \
                   ' credentials correctly.'
@@ -6571,6 +6556,261 @@ def create_gql_client(url_suffix="identity-protection/combined/graphql/v1"):
     return client
 
 
+def list_identity_incidents(args: dict) -> CommandResults:
+    """List identity entities
+    Args:
+        args: The demisto.args() dict object.  The key incident_id is used.  incident_id is not the same for both Endpoint and Identity.
+    Returns:
+        The command result object.
+    """
+    client = create_gql_client()
+    incident_id = args.get('incident_id')
+    idp_query = gql("""
+    query ($id: String!, $limit: Int!) {
+      incident(incidentId: $id) {
+        type
+        severity
+        startTime
+        endTime
+        comments {
+          timestamp
+          text
+          author {
+            ...SystemUser
+          }
+        }
+        timeline(includeContextualEvents: true, excludedTypes: [NEW_INCIDENT], first: $limit) {
+          nodes {
+            timestamp
+            startTime
+            endTime
+            eventType
+            eventId
+            eventSeverity
+            ...TimelineEntityEvents
+            ... on TimelineEntityEvent {
+              entityDescriptor: entity {
+                ...MinimalEntityDescriptor
+              }
+            }
+            ... on TimelineIncidentLifeCycleStageChangeEvent {
+              previousStage
+              currentStage
+              systemUser {
+                ...SystemUser
+              }
+            }
+            ... on TimelineIncidentTypeChange {
+              previousIncidentType
+              currentIncidentType
+            }
+            ... on TimelineIncidentSeverityChange {
+              previousIncidentSeverity
+              currentIncidentSeverity
+            }
+            ... on TimelineAlertEvent {
+              alertType
+              alertId
+              patternId
+              resolved
+              state {
+                lifeCycleStage
+                timestamp
+                reason
+                author {
+                  ...SystemUser
+                }
+              }
+            }
+          }
+        }
+        compromisedEntityDescriptors: compromisedEntities {
+          ...MinimalEntityDescriptor
+          ...MinimalEntityBadgesDescriptor
+          accounts {
+            type: __typename
+            ... on SsoUserAccountDescriptor {
+              mostRecentActivity
+            }
+            ... on ActiveDirectoryAccountDescriptor {
+              mostRecentActivity
+            }
+          }
+        }
+      }
+    }
+
+    fragment TimelineEntityEvents on TimelineEntityEvent {
+      ... on TimelineAccountNameChangeEvent {
+        previousName
+        currentName
+      }
+      ... on TimelineDepartmentChangeEvent {
+        previousDepartment
+        currentDepartment
+      }
+      ... on TimelineOuChangeEvent {
+        previousOu
+        currentOu
+      }
+      ... on TimelineEmailAddressChangeEvent {
+        previousEmailAddresses
+        currentEmailAddresses
+      }
+      ... on TimelineAuthorizerChangeNotificationEvent {
+        removedAuthorizers {
+          ...MinimalEntityDescriptor
+        }
+        addedAuthorizers {
+          ...MinimalEntityDescriptor
+        }
+      }
+      ... on TimelineEntityStaleEvent {
+        mostRecentActivity
+      }
+      ... on TimelineEntityInactiveEvent {
+        mostRecentActivity
+      }
+      ... on TimelineEntityResurgenceEvent {
+        precedingActivity
+        mostRecentActivity
+      }
+      ... on TimelinePrivilegeEscalationEvent {
+        addedPrivileges
+      }
+      ... on TimelinePrivilegeDeEscalationEvent {
+        removedPrivileges
+      }
+      ... on TimelineScoreEscalationEvent {
+        previousScore
+        previousSeverity
+        currentScore
+        currentSeverity
+      }
+      ... on TimelineScoreDeEscalationEvent {
+        previousScore
+        previousSeverity
+        currentScore
+        currentSeverity
+      }
+      ... on TimelineEntityWatchedEvent {
+        systemUser {
+          displayName
+        }
+      }
+      ... on TimelineEntityUnwatchedEvent {
+        systemUser {
+          displayName
+        }
+      }
+    }
+
+    fragment MinimalEntityDescriptor on Entity {
+      type
+      primaryDisplayName
+      secondaryDisplayName
+      archived
+      ... on UserEntity {
+        emailAddresses
+      }
+      roles {
+        fullPath
+        type
+      }
+      ... on EntityContainerEntity {
+        containerType
+        accounts {
+          dataSource
+        }
+      }
+    }
+
+    fragment SystemUser on SystemUser {
+      type
+      displayName
+    }
+
+    fragment MinimalEntityBadgesDescriptor on Entity {
+      markTime
+      watched
+      archived
+      type
+      riskScore
+      accounts {
+        enabled
+        dataSource
+        archived
+        ... on ActiveDirectoryAccountDescriptor {
+          lockoutTime
+          passwordAttributes {
+            strength
+            mayExpire
+          }
+        }
+        ... on SsoUserAccountDescriptor {
+          passwordAttributes {
+            strength
+            mayExpire
+          }
+        }
+      }
+      roles {
+        fullPath
+        ... on HumanUserAccountRole {
+          businessRole
+        }
+      }
+      ... on EndpointEntity {
+        operatingSystemInfo {
+          vulnerability
+        }
+      }
+      ... on ActivityParticipatingEntity {
+        mostRecentActivity
+        inactive
+        stale
+      }
+      ... on EntityContainerEntity {
+        containerType
+      }
+    }
+    """)
+
+    variables = {
+        "id": incident_id,
+        "limit": 1
+    }
+    res = client.execute(idp_query, variable_values=variables)
+    incident_list = res.get('incident', {}).get('timeline', {}).get('nodes', None)
+
+    return CommandResults(
+        outputs_prefix="CrowdStrike.IdentityIncident",
+        outputs=createContext(response_to_context(res), removeNull=True),
+        readable_output=tableToMarkdown("Identity entities", incident_list, removeNull=True),
+        raw_response=res,
+    )
+
+
+def identity_protection_generic_graphql(args: dict) -> CommandResults:
+    """Generic GraphQL endpoint for CrowdStrike Identities product
+    Args:
+        args: The demisto.args() dict object.  The keys idp_query and variables are used within this function.
+    Returns:
+        The command result object.
+    """
+    client = create_gql_client()
+    idp_query = args.get('idp_query')
+    variables = args.get('variables')
+
+    res = client.execute(idp_query, variable_values=variables)
+
+    return CommandResults(
+        outputs_prefix="CrowdStrike.IdentityIncident",
+        outputs=createContext(response_to_context(res), removeNull=True),
+        raw_response=res,
+    )
+
+
 def cspm_list_policy_details_request(policy_ids: list[str]) -> dict[str, Any]:
     """Do an API call to retrieve policy details.
 
@@ -7188,6 +7428,10 @@ def main():
             return_results(get_incident_behavior_command(args=args))
         elif command == 'cs-falcon-get-ioarules':
             return_results(get_ioarules_command(args=args))
+        elif command == 'cs-falcon-list-identity-incidents':
+            return_results(list_identity_incidents(args))
+        elif command == 'cs-falcon-identity-protection-graphql':
+            return_results(identity_protection_generic_graphql(args))
         else:
             raise NotImplementedError(f'CrowdStrike Falcon error: '
                                       f'command {command} is not implemented')
