@@ -237,6 +237,7 @@ from CommonServerUserPython import *
 
 
 ''' CONSTANTS '''
+TEST_VARIABLE = "test"
 LOG_LINE = 'HelloWorldDebugLog: '  # Make sure to use a line easily to search and read in logs.
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 MAX_ALERTS_TO_FETCH = 50

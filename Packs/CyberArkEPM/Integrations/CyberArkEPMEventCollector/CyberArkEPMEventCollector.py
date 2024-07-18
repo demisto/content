@@ -7,7 +7,7 @@ from collections.abc import Callable
 
 
 """ CONSTANTS """
-
+TEST_VARIABLE = "test"
 MAX_LIMIT = 1000
 ADMIN_AUDITS_MAX_LIMIT = 500
 DEFAULT_LIMIT = 250
