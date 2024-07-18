@@ -156,7 +156,7 @@ configuration:
   required: false
   type: 0
 - additionalinfo: 'Improve the feed performance by removing the rawJSON from the indicators. Note: a loss of data may occure if checking this box'
-  display: Improve performance
+  display: Remove rawJSON from indicators
   name: performance
   type: 8
   required: false

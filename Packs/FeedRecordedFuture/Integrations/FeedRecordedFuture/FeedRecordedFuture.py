@@ -87,7 +87,7 @@ class Client(BaseClient):
         self.risk_score_threshold = int(risk_score_threshold) if risk_score_threshold else DEFAULT_RISK_SCORE_THRESHOLD_VALUE
         self.tags = tags
         self.tlp_color = tlp_color
-        self.performance = argToBoolean(performance)
+        self.performance = performance
 
         if self.malicious_threshold <= self.suspicious_threshold:
             raise DemistoException('The Suspicious Threshold must be less than the Malicious Threshold.')
@@ -590,7 +590,7 @@ def main():  # pragma: no cover
                     params.get('risk_rule'), params.get('fusion_file_path'), params.get('insecure'),
                     params.get('polling_timeout'), params.get('proxy'), params.get('threshold'),
                     params.get('suspicious_threshold'), params.get('risk_score_threshold'),
-                    argToList(params.get('feedTags')), params.get('tlp_color'), params.get('performance'))
+                    argToList(params.get('feedTags')), params.get('tlp_color'), argToBoolean(params.get('performance'))
     demisto.debug('RF: Finished initializing client')
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
