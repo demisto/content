@@ -34,11 +34,8 @@ INCIDENT_EXAMPLE = [
 ]
 CONTEXT_WITH_CAMPAIGN = {
     EMAIL_CAMPAIGN_KEY: {
-        "incidents": [
-            {"id": "field_example"},
-            {"id": "field_example_2"},
-            {"id": "2"}
-        ],
+        "field_example": "field_example",
+        "field_example_2": "field_example",
     },
     'NotCampaign': 'field_example'
 }
@@ -266,21 +263,6 @@ COMPLETE_FLOW_CASES = [
           'recipients': ['victim-test7@demistodev.onmicrosoft.com'], 'recipientsdomain': ['onmicrosoft.com'],
           'severity': 3, 'similarity': 0.85, 'status': 1}]
         # expected, all incidents and similarity found in incident '5'
-    ),
-    (
-        '0', '6',  # case incident removed from campaign before
-        [{'emailfrom': 'examplesupport@example2.com', 'emailfromdomain': 'example.com', 'id': '1',
-          'name': 'Verify your example account 798', 'occurred': '2021-11-21T14:00:07.119800133Z',
-          'recipients': ['victim-test6@demistodev.onmicrosoft.com'], 'recipientsdomain': ['onmicrosoft.com'],
-          'severity': 0, 'similarity': 1, 'status': 1},
-         {'emailfrom': 'examplesupport@example2.com', 'emailfromdomain': 'example2.com', 'id': '2',
-          'name': 'Verify your example account 798', 'occurred': '2021-11-21T14:59:01.690685509Z',
-          'recipients': ['victim-test1@demistodev.onmicrosoft.com'], 'recipientsdomain': ['onmicrosoft.com'],
-          'severity': 0, 'similarity': 0.9999999999999999, 'status': 1},
-         {'emailfrom': 'examplesupport@example2.com', 'emailfromdomain': 'example.com', 'id': '3',
-          'name': 'Verify your example account 798', 'occurred': '2021-11-21T15:00:07.425185504Z',
-          'recipients': ['victim-test7@demistodev.onmicrosoft.com'], 'recipientsdomain': ['onmicrosoft.com'],
-          'severity': 3, 'similarity': 1, 'status': 1}]  # expected same campaign data as before
     )
 
 ]
@@ -309,62 +291,3 @@ def test_run_flow(mocker, campaign_id, incident_to_add_id, expected):
                         return_value=INCIDENTS_BY_ID[incident_to_add_id].get(EMAIL_CAMPAIGN_KEY))
     mocker.patch.object(demisto, 'incident', return_value={'id': incident_to_add_id})
     test_obj.run(campaign_id, False)
-
-
-def test_is_incident_removed_from_campaign(mocker):
-    """
-    Given:  A mocked incident context with removedfromcampaigns field containing campaign IDs
-            A SetPhishingCampaignDetails instance
-    When:   Calling is_incident_removed_from_campaign method with a campaign ID to check
-    Then:   Assert that the method returns True if the given campaign ID is in the removedfromcampaigns field,
-            False otherwise
-    """
-    mock_incident_context = {'CustomFields': {'removedfromcampaigns': ['campaign_id_1', 'campaign_id_2']}}
-    mocker.patch('CommonServerPython.demisto.incident', return_value=mock_incident_context)
-    mocker.patch('CommonServerPython.demisto.dt',
-                 return_value=mock_incident_context['CustomFields']['removedfromcampaigns'])
-
-    set_phishing_campaign_details = SetPhishingCampaignDetails()
-
-    campaign_id_to_check = 'campaign_id_1'
-    assert set_phishing_campaign_details.is_incident_removed_from_campaign(campaign_id_to_check) is True
-
-    campaign_id_to_check = 'campaign_id_3'
-    assert set_phishing_campaign_details.is_incident_removed_from_campaign(campaign_id_to_check) is False
-
-
-def test_merge_contexts(mocker):
-    """
-    Given:  A mocked current incident data, campaign data, and campaign ID
-            A SetPhishingCampaignDetails instance
-    When:   Calling merge_contexts method with the mocked data
-    Then:   Validate the logic of updating campaign data with current incident data
-    """
-    current_incident_data = {'id': 'incident_id_1', 'other_fields': 'value'}
-    campaign_data_new_campaign = None
-    campaign_data_existing_campaign = {'id': 'campaign_id_1', 'incidents': [{'id': 'incident_id_2'}]}
-    campaign_id = 'campaign_id_1'
-
-    mocker.patch.object(SetPhishingCampaignDetails, 'is_incident_removed_from_campaign', return_value=False)
-    mocker.patch.object(SetPhishingCampaignDetails, 'is_incident_new_in_campaign', return_value=True)
-
-    mocker.patch.object(SetPhishingCampaignDetails, 'add_current_incident_to_campaign')
-    mocker.patch.object(SetPhishingCampaignDetails, 'update_similarity_to_last_incident')
-
-    set_phishing_campaign_details = SetPhishingCampaignDetails()
-
-    # Test for creating a new campaign with current incident data
-    merged_data_new_campaign = set_phishing_campaign_details.merge_contexts(
-        current_incident_data, campaign_data_new_campaign, campaign_id)
-    assert merged_data_new_campaign == current_incident_data
-
-    # Test for adding current incident to an existing campaign
-    merged_data_existing_campaign = set_phishing_campaign_details.merge_contexts(
-        current_incident_data, campaign_data_existing_campaign, campaign_id)
-    assert merged_data_existing_campaign == campaign_data_existing_campaign
-
-    # Test for returning campaign data if incident is removed from campaign
-    mocker.patch.object(SetPhishingCampaignDetails, 'is_incident_removed_from_campaign', return_value=True)
-    merged_data_removed_from_campaign = set_phishing_campaign_details.merge_contexts(
-        current_incident_data, campaign_data_existing_campaign, campaign_id)
-    assert merged_data_removed_from_campaign == campaign_data_existing_campaign

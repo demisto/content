@@ -35,7 +35,6 @@ class SetPhishingCampaignDetails:
         incidents_ids = [incident["id"] for incident in incidents]
         return incident_id not in incidents_ids
 
-
     def add_current_incident_to_campaign(self, current_incident_data: dict, campaign_data: dict) -> None:
         # Add the incident entry to the existing incidents.
         current_incidents_in_campaign = campaign_data.get('incidents', [])
@@ -68,7 +67,7 @@ class SetPhishingCampaignDetails:
             if incident['id'] in similarities_according_to_last_updated:
                 incident['similarity'] = similarities_according_to_last_updated[incident['id']]
 
-    def merge_contexts(self, current_incident_data: dict, campaign_data: dict, campaign_id: str) -> dict:
+    def merge_contexts(self, current_incident_data: dict, campaign_data: dict) -> dict:
         """
         This will update the existing incident's campaign data with the rest of the campaign data,
         according to the following logic:
@@ -80,7 +79,7 @@ class SetPhishingCampaignDetails:
             demisto.debug("Creating new Campaign with the current incident data.")
             return current_incident_data
 
-        elif self.is_incident_new_in_campaign(demisto.incident()["id"], campaign_data):
+        if self.is_incident_new_in_campaign(demisto.incident()["id"], campaign_data):
             demisto.debug("Adding current incident as new incident to Campaign.")
 
             self.add_current_incident_to_campaign(current_incident_data, campaign_data)
@@ -106,7 +105,7 @@ class SetPhishingCampaignDetails:
 
         current_incident_campaign_data = self.get_current_incident_campaign_data()
         campaign_data = self.get_campaign_context_from_incident(campaign_incident_id)
-        merged_campaign = self.merge_contexts(current_incident_campaign_data, campaign_data, campaign_incident_id)
+        merged_campaign = self.merge_contexts(current_incident_campaign_data, campaign_data)
         self.copy_campaign_data_to_incident(campaign_incident_id, merged_campaign, append)
 
 
