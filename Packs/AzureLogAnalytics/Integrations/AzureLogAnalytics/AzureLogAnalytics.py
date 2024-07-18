@@ -86,7 +86,11 @@ class Client:
         """
         filter_by_tag = azure_tag_formatter(tag) if tag else None
         params = {'$filter': filter_by_tag, '$top': limit, 'api-version': RESOURCE_GROUP_LIST_API_VERSION} if not full_url else {}
-        full_url = full_url if full_url else f'https://management.azure.com/subscriptions/{self.subscription_id}/resourcegroups'
+        full_url = (
+            full_url
+            if full_url
+            else f"{self.azure_cloud.endpoints.resource_manager}subscriptions/{self.subscription_id}/resourcegroups"
+        )
         return self.http_request('GET', full_url=full_url, params=params, resource=self.azure_cloud.endpoints.resource_manager)
 
     def http_request(self, method, url_suffix=None, full_url=None, params=None,
@@ -353,8 +357,12 @@ def delete_saved_search_command(client: Client, args: dict[str, Any]) -> str:
 
 
 def subscriptions_list_command(client: Client) -> CommandResults:
-    response = client.http_request('GET', full_url='https://management.azure.com/subscriptions',
-                                   params={'api-version': SUBSCRIPTION_LIST_API_VERSION}, resource=client.azure_cloud.endpoints.resource_manager)
+    response = client.http_request(
+        "GET",
+        full_url=f"{client.azure_cloud.endpoints.resource_manager}subscriptions",
+        params={"api-version": SUBSCRIPTION_LIST_API_VERSION},
+        resource=client.azure_cloud.endpoints.resource_manager,
+    )
     value = response.get('value', [])
 
     subscriptions = []
@@ -384,8 +392,10 @@ def workspace_list_command(client: Client) -> CommandResults:
     Returns:
         List[dict]: API response from Azure.
     """
-    full_url = f'https://management.azure.com/subscriptions/{client.subscription_id}/resourceGroups/' \
-        f'{client.resource_group_name}/providers/Microsoft.OperationalInsights/workspaces'
+    full_url = (
+        f"{client.azure_cloud.endpoints.resource_manager}subscriptions/{client.subscription_id}/resourceGroups/"
+        f"{client.resource_group_name}/providers/Microsoft.OperationalInsights/workspaces"
+    )
     response = client.http_request('GET', full_url=full_url, params={
                                    'api-version': API_VERSION}, resource=client.azure_cloud.endpoints.resource_manager)
     value = response.get('value', [])
