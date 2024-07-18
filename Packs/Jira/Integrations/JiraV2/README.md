@@ -1000,7 +1000,7 @@ Add a new custom field and add it to the incident type&#39;s layout:
    *Note: If you want to work with a specific incident, in "Get data" select the option: "Upload JSON" and provide the wanted incident as JSON.  
    In order to get the incident as JSON, you can see the section: "how to get an incident as JSON" below.  
    On the left side, You&#39;ll see all Jira incident fields.
-![](../../doc_files/incoming_editor_5.png )
+![](../../doc_files/incoming_editor_5.png)
   3.Use "Search Cortex XSOAR field…" in order to find your new incident field by searching its name.  
   4.Once found, click on "Choose data path" and map it to the custom jira field:
     a.Find the jira field you want to map to this incident field on the right side, and click on its value.
