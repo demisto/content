@@ -43,7 +43,7 @@ def load_test_data(json_path):
 
 def assert_results_ok():
     assert demisto.results.call_count == 1  # type: ignore
-    # call_args is tuple (args list, kwargs). we only need the first one
+    # call_args is tuple (args list, kwargs).we only need the first one
     results = demisto.results.call_args[0]  # type: ignore
     assert len(results) == 1
     assert results[0] == 'ok'
