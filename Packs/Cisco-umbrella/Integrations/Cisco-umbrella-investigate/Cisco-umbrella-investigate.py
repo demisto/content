@@ -1210,7 +1210,7 @@ def get_domains_for_email_registrar_command():
     # user input validation
     if not isinstance(emails, list):
         return_error('Emails list is not formatted correctly, please try again.')
-    if sort and sort != 'created' and sort != 'updated':
+    if sort and sort not in ['created', 'updated']:
         return_error('The parameter sort accept only these values: created/updated/expired.')
     for email in emails:
         if not re.match(emailRegex, email):
@@ -1325,8 +1325,8 @@ def get_domains_for_nameserver_command():
     # user input validation
     if not isinstance(nameservers, list):
         return_error('Name Servers list is not formatted correctly, please try again.')
-    if sort and sort != 'created' and sort != 'updated':
-        return_error('The parameter sort accept only these values: created/updated')
+    if sort and sort not in ['created', 'updated']:
+        return_error('The parameter sort accept only these values: created/updated/expired.')
     for nameserver in nameservers:
         if re.match('^(([a-zA-Z]|[a-zA-Z][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z]|[A-Za-z][A-Za-z0-9\-]*[A-Za-z0-9])$',
                     nameserver) is None:
