@@ -77,8 +77,9 @@ def register_module_line(module_name, start_end, line, wrapper=0):
     """
     global _MODULES_LINE_MAPPING
     default_module_info = {'start': 0, 'start_wrapper': 0, 'end': float('inf'), 'end_wrapper': float('inf')}
-    if os.environ.get("PACK_VERSION"):
-        print("pack version = {}".format(os.environ.get("PACK_VERSION")))
+    pack_version = os.environ.get("PACK_VERSION")
+    if pack_version:
+        demisto.debug("pack version = {}".format(pack_version))
     try:
         if start_end not in ('start', 'end'):
             raise ValueError('Invalid start_end argument. Acceptable values are: start, end.')
