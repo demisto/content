@@ -3,8 +3,8 @@ commonfields:
   id: CyberChef
   version: -1
 configuration:
-- display: Host CyberChef server instance
-  name: host_instance
+- display: Use the local npm package to execute the bake function
+  name: local_execution
   required: false
   type: 8
 - additionalinfo: URL or your CyberChef server or https://prod.apifor.io/
