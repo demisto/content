@@ -149,7 +149,7 @@
         },
         {
             "id":"CyrenThreatInDepthRenderRelated",
-            "reason": "This integration support only from python 3.11",
+            "reason": "CIAC-11186, This integration support only from python 3.11",
             "ignored_native_images":[
                 "native:8.6",
                 "native:candidate"
@@ -157,7 +157,23 @@
         },
         {
             "id": "rapid7_threat_command",
-            "reason": "This integration support only from python 3.11",
+            "reason": "CIAC-11186, This integration support only from python 3.11",
+            "ignored_native_images": [
+                "native:8.6",
+                "native:candidate"
+            ]
+        },
+        {
+            "id": "Respond_Analyst",
+            "reason": "CIAC-11186, This integration support only from python 3.11",
+            "ignored_native_images": [
+                "native:8.6",
+                "native:candidate"
+            ]
+        },
+        {
+            "id": "rapid7appsec",
+            "reason": "CIAC-11186, This integration support only from python 3.11",
             "ignored_native_images": [
                 "native:8.6",
                 "native:candidate"
