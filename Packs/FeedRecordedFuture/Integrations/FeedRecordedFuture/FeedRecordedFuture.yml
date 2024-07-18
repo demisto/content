@@ -155,7 +155,7 @@ configuration:
   name: risk_score_threshold
   required: false
   type: 0
-- additionalinfo: 'Improve the feed performance by removing the rawJSON from the indicators. Note: a loss of data may occure if checking this box'
+- additionalinfo: 'Improve the feed performance by removing the rawJSON from the indicators. Note: A loss of data may occur if selecting this checkbox.'
   display: Remove rawJSON from indicators
   name: performance
   type: 8
