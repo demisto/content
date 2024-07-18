@@ -1,26 +1,34 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: FlashpointFeed
+  id: IgniteFeed
   version: -1
 configuration:
-- additionalinfo: Server URL to connect to Flashpoint.
-  defaultvalue: https://fp.tools
+- additionalinfo: Server URL to connect to Ignite.
+  defaultvalue: https://api.flashpoint.io
   display: Server URL
   name: url
   required: true
   type: 0
-- display: API Key
-  name: api_key
+- displaypassword: API Key
+  additionalinfo: API key used for secure communication with the Ignite platform.
+  name: credentials
+  hiddenusername: true
   required: true
-  type: 4
-- additionalinfo: 'Supports multiple values such as url, domain, ip-src. Supports comma separated values. If not specified, it fetches all the indicators. See all available types: https://www.circl.lu/doc/misp/categories-and-types/#types.'
+  type: 9
+- additionalinfo: 'Supports multiple values such as url, domain. Supports comma separated values. If not specified, it fetches all the indicators. See all available types: https://www.circl.lu/doc/misp/categories-and-types/#types.'
   display: Types of the indicators to fetch
   name: types
-  type: 0
+  options:
+  - IP
+  - Domain
+  - URL
+  - Email
+  - File
+  type: 16
   required: false
 - additionalinfo: 'Backfill indicators by providing date or relative timestamp. (Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc)'
   defaultvalue: 3 days
-  display: First fetch time interval
+  display: First fetch time
   name: first_fetch
   type: 0
   required: false
@@ -29,7 +37,7 @@ configuration:
   name: feed
   type: 8
   required: false
-- additionalinfo: Indicators from this integration instance will be marked with this reputation
+- additionalinfo: Indicators from this integration instance will be marked with this reputation.
   defaultvalue: Bad
   display: Indicator Reputation
   name: feedReputation
@@ -40,7 +48,7 @@ configuration:
   - Bad
   type: 18
   required: false
-- additionalinfo: Reliability of the source providing the intelligence data
+- additionalinfo: Reliability of the source providing the intelligence data.
   display: Source Reliability
   name: feedReliability
   options:
@@ -81,7 +89,7 @@ configuration:
   name: feedTags
   type: 0
   required: false
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed.
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
@@ -108,18 +116,19 @@ configuration:
   name: defaultMap
   type: 8
   required: false
-- display: Trust any certificate (not secure)
+- additionalinfo: Indicates whether to allow connections without verifying SSL certificate's validity.
+  display: Trust any certificate (not secure)
   name: insecure
-  type: 8
   required: false
-- display: Use system proxy settings
+  type: 8
+- additionalinfo: Indicates whether to use XSOAR's system proxy settings to connect to the API.
+  display: Use system proxy settings
   name: proxy
-  type: 8
   required: false
-deprecated: true
-description: Deprecated. Use Flashpoint Ignite Feed instead.
-display: Flashpoint Feed (Deprecated)
-name: FlashpointFeed
+  type: 8
+description: Flashpoint Ignite Feed Integration allows importing indicators of compromise that occur in the context of an event on the Flashpoint Ignite platform which contains finished intelligence reports data, data from illicit forums, marketplaces, chat services, blogs, paste sites, technical data, card shops, and vulnerabilities. The indicators of compromise are ingested as indicators on the Cortex XSOAR and displayed in the War Room using a command.
+display: Flashpoint Ignite Feed
+name: IgniteFeed
 script:
   commands:
   - arguments:
@@ -132,16 +141,24 @@ script:
 
         Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.
       name: updated_since
-    - description: 'Search by Attribute types. Can have multiple terms. Example: url, domain, ip-src. See all available types: https://www.circl.lu/doc/misp/categories-and-types/#types.'
+    - auto: PREDEFINED
+      description: 'Search by Attribute types. Can have multiple terms. See all available types: https://www.circl.lu/doc/misp/categories-and-types/#types.'
+      isArray: true
       name: types
-    description: Retrieves indicators from the Flashpoint API. It displays the content of the fetch-indicators command.
-    name: flashpoint-get-indicators
-  dockerimage: demisto/python3:3.10.14.91134
+      predefined:
+      - IP
+      - Domain
+      - URL
+      - Email
+      - File
+    description: Retrieves indicators from the Ignite API. It displays the content of the fetch-indicators command.
+    name: flashpoint-ignite-get-indicators
   feed: true
   runonce: false
   script: '-'
-  subtype: python3
   type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.11.9.103066
 tests:
 - No tests (auto formatted)
-fromversion: 6.0.0
+fromversion: 6.10.0
