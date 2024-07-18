@@ -27,7 +27,7 @@ Untagged
 CC
 BCC
 CreateIncidentUntaggedEmail
-imageName
+attachmentName
 
 [file:classifier-MSGraphMail_-_Classifier_-_Email_Communication.json]
 ignore=BA101
