@@ -3219,7 +3219,7 @@ def main() -> None:
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
-
+        print("Hi this is empty test")
         client = Client(
             base_url=base_url,
             verify=verify_certificate,
