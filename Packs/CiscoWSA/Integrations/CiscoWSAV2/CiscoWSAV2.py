@@ -1502,8 +1502,9 @@ def access_policy_output_handler(response: List[dict[str, Any]]) -> List[dict[st
     """
     outputs = []
     for policy in response:
-        if (policy_expiry := policy.get('policy_expiry')) and (policy_datetime := arg_to_datetime(policy_expiry)):
-            policy['policy_expiry'] = policy_datetime.strftime(ISO8601_CONFIG)
+        if policy_expiry := policy.get('policy_expiry'):
+            if policy_datetime := arg_to_datetime(policy_expiry):
+                policy['policy_expiry'] = policy_datetime.strftime(ISO8601_CONFIG)
 
         outputs.append(policy)
     return outputs

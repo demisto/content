@@ -118,7 +118,7 @@ def run_setup_post_action():
     xsoar_proxy = demisto.args().get('xsoarproxy')
 
     link_tracker = {}
-    for _ind, email in enumerate(user_emails):
+    for ind, email in enumerate(user_emails):
         html_dict = {}
         link_uuid = str(uuid.uuid4())
         partial_link = f'{xsoar_external_url}/instance/execute/{integration_instance_name}/processform/{entry_uuid}/{link_uuid}/'

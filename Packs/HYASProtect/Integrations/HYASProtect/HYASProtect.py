@@ -131,14 +131,15 @@ def check_valid_indicator_value(indicator_type: str,
             raise ValueError(
                 f'Invalid indicator_value: {indicator_value}'
                 f' for indicator_type {indicator_type}')
-    elif indicator_type == IP_PARAM and not re.match(ipv4Regex, indicator_value):
-        if not re.match(ipv6Regex, indicator_value):
+    elif indicator_type == IP_PARAM:
+        if not re.match(ipv4Regex, indicator_value):
+            if not re.match(ipv6Regex, indicator_value):
+                raise ValueError(
+                    f'Invalid indicator_value: {indicator_value}'
+                    f' for indicator_type {indicator_type}')
             raise ValueError(
                 f'Invalid indicator_value: {indicator_value}'
                 f' for indicator_type {indicator_type}')
-        raise ValueError(
-            f'Invalid indicator_value: {indicator_value}'
-            f' for indicator_type {indicator_type}')
 
     return True
 

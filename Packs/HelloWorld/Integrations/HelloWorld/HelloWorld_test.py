@@ -52,7 +52,6 @@ https://xsoar.pan.dev/docs/integrations/unit-testing
 
 """
 
-# mypy: disable-error-code="attr-defined"
 import json
 from CommonServerPython import DemistoException
 from HelloWorld import (Client, ip_reputation_command, alert_list_command, validate_api_key,

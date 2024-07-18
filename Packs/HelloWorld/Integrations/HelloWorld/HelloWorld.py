@@ -270,7 +270,7 @@ class Client(BaseClient):
         #   otherwise, the ``self._http_request method`` will fail when parsing it.
         # 4. If the URL parameters are complex (filters, etc.) -
         #   it is possible to pass them using the ``params`` argument.
-        # mypy: disable-error-code="attr-defined"
+
         url = f'/api/endpoint/{param1}/{param2}'
         response = self._http_request(
             method='GET',
