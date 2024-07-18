@@ -72,7 +72,7 @@ ujson = "^5.1.0"
 yamlordereddictloader = "^0.4.0"
 parinx = { git = "https://github.com/npsolve/parinx.git", rev = "6493798ceba8089345d970f71be4a896eb6b081d" }
 python-gitlab = "^3.0.0"
-PyGithub = { git = "https://github.com/kgal-pan/PyGithub.git", rev = "fix-graphql-variables" }
+PyGithub = { git = "https://github.com/kgal-pan/PyGithub.git", branch = "fix-graphql-variables" }
 ansible-runner = "^2.2.0"
 paramiko = "^2.11.0"
 scp = "^0.14.5"

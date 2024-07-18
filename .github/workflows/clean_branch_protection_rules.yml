@@ -1,9 +1,11 @@
-name: Handle Deleted Branch
+name: Handle Deleted Branch 
+
+run-name: "Handle Deleted Branch '${{ github.event.ref }}'"
 
 on:
   delete:
     branches:
-      - 'contrib/**'
+      - 'contrib/**/*'
 
 jobs:
   delete_protection_rule:
