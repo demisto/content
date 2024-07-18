@@ -19,7 +19,7 @@ runas: DBotWeakRole
 type: python
 subtype: python3
 dockerimage: demisto/python3:3.11.9.103066
-fromversion: 8.7.0
+fromversion: 8.6.0
 marketplaces:
 - marketplacev2
 tests:
