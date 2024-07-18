@@ -8,7 +8,7 @@ context_path = demisto.args()['context_path']
 list_of_items = list(list_of_items.split(","))
 
 batch_size = int(batch_size)
-batch_list = list()
+batch_list = []
 
 for i in range(0, len(list_of_items), batch_size):
     batch_list.append(list_of_items[i:i + batch_size])
