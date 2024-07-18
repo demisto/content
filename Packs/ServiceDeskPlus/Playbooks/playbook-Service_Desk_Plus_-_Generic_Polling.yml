@@ -250,6 +250,6 @@ outputs:
 - contextPath: ${ServiceDeskPlus.Request.ClosureInfo.closure_code}
   description: The closure code added to the request
   type: unknown
-fromversion: 5.0.0	
-tests:	
+fromversion: 5.0.0
+tests:
 - Service Desk Plus - Generic Polling Test
