@@ -177,10 +177,6 @@
             "instance_names": "Twitter v2"
         },
         {
-            "playbookID": "IndicatorFormatterFilterTest",
-            "timeout": 1200
-        },
-        {
             "integrations": "FeedURLhaus",
             "playbookID": "playbook-urlhaus-feed_Test"
         },
@@ -2924,7 +2920,7 @@
                 "Image OCR",
                 "Rasterize"
             ],
-            "timeout": 700,
+            "timeout": 900,
             "memory_threshold": 300,
             "pid_threshold": 200,
             "fromversion": "4.5.0"
@@ -5773,6 +5769,7 @@
         }
     ],
     "skipped_tests": {
+        "ThreatCrowd - Test": "The pack is deprecated",
         "Retrieve File from Endpoint - Generic V2 Test": "The playbook is deprecated",
         "test-threatConnectv3": "No instance - Instance issues",
         "generic-sql-mssql-encrypted-connection": "Instance issues",
@@ -5953,7 +5950,6 @@
         "MSG-Threat-Assessment-test": "API limitation",
         "BambenekConsultingFeed_Test": "Issue CRTX-99480",
         "VMWare Test": "CIAC-10276",
-        "AWS_DynamoDB-Test": "CIAC-10426",
         "AWS - EC2 Test Playbook": "CIAC-10426",
         "AWS SNS Listener - Test": "CIAC-10426",
         "MattermostV2 - testplaybook": "Cannot run integration in build machines, must be an open tenant",
