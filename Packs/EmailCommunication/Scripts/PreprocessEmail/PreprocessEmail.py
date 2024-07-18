@@ -64,8 +64,8 @@ def create_email_html(email_html='', entry_id_list=None):
     content_id = "None"
     # Replacing the images' sources
     for image_name, image_entry_id in entry_id_list:
-        if '-imageName:' in image_name:
-            content_id = image_name.split('-imageName:', 1)[0]
+        if '-attachmentName-' in image_name:
+            content_id = image_name.split('-attachmentName-', 1)[0]
         if re.search(rf'(src="cid:{content_id}")', email_html):
             email_html = re.sub(f'src="cid:{content_id}"', f'src=entry/download/{image_entry_id}',
                                 email_html)
@@ -97,8 +97,8 @@ def get_entry_id_list(attachments, files, email_html):
     files = [files] if not isinstance(files, list) else files
     for attachment in attachments:
         attachment_name = attachment.get('name', '')
-        if '-imageName:' in attachment_name:
-            identifier_id = attachment_name.split('-imageName:', 1)[0]
+        if '-attachmentName-' in attachment_name:
+            identifier_id = attachment_name.split('-attachmentName-', 1)[0]
             for file in files:
                 file_name = file.get('Name')
                 if attachment_name == file_name and identifier_id in matches:
@@ -261,7 +261,7 @@ def find_attachments_to_download(attachments, email_related_incident):
             if attachment_name not in previous_file_names:
                 if new_attachment_identifiers_list == ["dummyFileIdentifier"]:
                     new_attachment_identifiers_list = []
-                identifier_id = attachment.get('name', '').split('-imageName:', 1)[0]
+                identifier_id = attachment.get('name', '').split('-attachmentName-', 1)[0]
                 new_attachment_identifiers_list.append(identifier_id)
                 new_attachments.append(attachment)
         return ",".join(new_attachment_identifiers_list), new_attachments
