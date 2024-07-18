@@ -137,7 +137,7 @@ def get_stock_data(client: Client, args: Dict[str, Any]) -> List[CommandResults]
         raise ValueError('symbol not specified')
 
     # Call the Client function and get the raw response
-    results = []
+    results = list()
     for symbol in symbols:
         raw_api_response = client.get_stock_data(symbol)
         outputs = remove_indexing_from_dictionary_keys(raw_api_response.get('Global Quote', {}))
@@ -160,7 +160,7 @@ def get_stock_history(client: Client, args: Dict[str, Any]) -> List[CommandResul
         raise ValueError('symbol not specified')
 
     # Call the Client function and get the raw response
-    results = []
+    results = list()
     for symbol in symbols:
         raw_api_response = client.get_stock_history(symbol=symbol, interval=interval, output_size=output_size)
         outputs = {
