@@ -53,14 +53,13 @@ https://xsoar.pan.dev/docs/integrations/unit-testing
 """
 
 import json
-import io
 import os
 import demistomock as demisto
 
 
 def util_load_json(path):
     path = os.path.join(os.path.dirname(__file__), path)
-    with io.open(path, mode="r", encoding="utf-8") as f:
+    with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
 
 

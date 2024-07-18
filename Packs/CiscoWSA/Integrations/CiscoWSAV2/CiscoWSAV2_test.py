@@ -23,7 +23,7 @@ def load_mock_response(file_name: str) -> str:
         str: Mock file content.
     """
     with open(
-        os.path.join("test_data/outputs", file_name), mode="r", encoding="utf-8"
+        os.path.join("test_data/outputs", file_name), encoding="utf-8"
     ) as mock_file:
         return json.loads(mock_file.read())
 
@@ -76,7 +76,7 @@ def test_fail_handle_request_headers_command_request(
     requests_mock.post(url=url, status_code=HTTPStatus.UNAUTHORIZED, json=mock_response)
     with pytest.raises(DemistoException) as error:
         mock_client.handle_request_headers()
-    assert "Authorization Error: make sure username and password are set correctly." == str(error.value)
+    assert str(error.value) == "Authorization Error: make sure username and password are set correctly."
 
 
 def test_handle_request_headers_command_new_request(
