@@ -180,7 +180,6 @@ repos:
   - id: validate-deleted-files
     name: validate-deleted-files
     entry: validate-deleted-files
-    skip:docker_autoupdate: true
     language: system
     require_serial: true
     pass_filenames: false
@@ -192,7 +191,6 @@ repos:
 
   - id: validate-content-paths
     name: validate-content-paths
-    skip:docker_autoupdate: true
     entry: validate-content-path
     language: system
     require_serial: true
@@ -216,7 +214,6 @@ repos:
     files: Tests/conf.json
     skip:commit: true
     skip:nightly: true
-    skip:docker_autoupdate: true
     entry: validate-conf-json
     pass_filenames: false
     language: system
