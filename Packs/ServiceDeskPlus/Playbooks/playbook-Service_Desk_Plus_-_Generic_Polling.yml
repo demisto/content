@@ -1,15 +1,5 @@
 id: Service Desk Plus - Generic Polling
-version: 5
-contentitemexportablefields:
-  contentitemfields:
-    packID: ServiceDeskPlus
-    packName: Manage Engine Service Desk Plus
-    itemVersion: 2.0.31
-    fromServerVersion: 5.0.0
-    toServerVersion: ""
-    definitionid: ""
-    prevname: ""
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: Service Desk Plus - Generic Polling
 description: This playbook uses generic polling to wait until a request is closed.
 starttaskid: "0"
@@ -28,7 +18,6 @@ tasks:
       '#none#':
       - "1"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -80,7 +69,6 @@ tasks:
       dt:
         simple: ServiceDeskPlus.Request(val.Status !== 'Closed').Id
     separatecontext: true
-    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -121,7 +109,6 @@ tasks:
       request_id:
         simple: ${inputs.RequestId}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -163,7 +150,6 @@ tasks:
     results:
     - AreValuesEqual
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -190,7 +176,6 @@ tasks:
       iscommand: false
       brand: ""
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -222,7 +207,6 @@ tasks:
       message:
         simple: The ID '${ServiceDeskPlus.Request.Id}' wasn't closed.
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
