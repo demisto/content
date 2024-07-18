@@ -533,9 +533,7 @@ def is_clustering_valid(clustering_model: Clustering) -> bool:
     """
     n_labels = len(set(clustering_model.model.labels_))  # type: ignore
     n_samples = len(clustering_model.raw_data)  # type: ignore
-    if not 1 < n_labels < n_samples:
-        return False
-    return True
+    return 1 < n_labels < n_samples
 
 
 def create_clusters_json(model_processed: PostProcessing, incidents_df: pd.DataFrame, type: str,
