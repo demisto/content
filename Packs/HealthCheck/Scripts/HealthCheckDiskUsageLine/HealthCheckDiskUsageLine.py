@@ -2,13 +2,16 @@ from CommonServerPython import *  # noqa: F401
 
 
 def main():
+    if is_demisto_version_ge("8.0.0"):
+        return_results("Not Available for XSOAR v8")
+        sys.exit()
     ctx = demisto.context()
     dataFromCtx = ctx.get("widgets")
     if not dataFromCtx:
         res = execute_command("core-api-get", {"uri": "/system/config"})
 
-        config_json = res['response']
-        partition = config_json.get('sysConf', {}).get('disk.partitions.to.monitor') or '/'
+        config_json = res["response"]
+        partition = config_json.get("sysConf", {}).get("disk.partitions.to.monitor") or "/"
 
         res = execute_command(
             "core-api-post",
@@ -29,7 +32,8 @@ def main():
                     },
                     "widgetType": "line",
                 },
-            })
+            },
+        )
 
         stats = res["response"]
         output = []
@@ -44,14 +48,7 @@ def main():
         data = {
             "Type": 17,
             "ContentsFormat": "line",
-            "Contents": {
-                "stats": output,
-                "params": {
-                    "timeFrame": "minutes",
-                    "format": "HH:mm",
-                    "layout": "vertical"
-                }
-            }
+            "Contents": {"stats": output, "params": {"timeFrame": "minutes", "format": "HH:mm", "layout": "vertical"}},
         }
 
     else:
@@ -59,16 +56,12 @@ def main():
             "Type": 17,
             "ContentsFormat": "line",
             "Contents": {
-                "stats": dataFromCtx['DiskUsagePerLine'],
-                "params": {
-                    "timeFrame": "minutes",
-                    "format": "HH:mm",
-                    "layout": "vertical"
-                }
-            }
+                "stats": dataFromCtx["DiskUsagePerLine"],
+                "params": {"timeFrame": "minutes", "format": "HH:mm", "layout": "vertical"},
+            },
         }
     return data
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
+if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover
     return_results(main())

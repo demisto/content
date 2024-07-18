@@ -66,6 +66,6 @@ if commonTable:
         'category': 'Server',
         'severity': 'High',
         'description': DESCRIPTION[0],
-        'resolution': '{}'.format(RESOLUTION[0]),
+        'resolution': f'{RESOLUTION[0]}',
     })
 return_outputs(readable_output=tableToMarkdown("Panic", commonTable, ['panicvalue', 'numberofoccurrences']))
