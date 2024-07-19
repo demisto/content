@@ -94,7 +94,7 @@ script:
                 }
                 response = self._http_request(
                     method = "POST",
-                    url_suffix = f"/v1/document/create-folder",
+                    url_suffix = "/v1/document/create-folder",
                     json_data = data
                 )
             except Exception as e:
@@ -118,7 +118,7 @@ script:
                 }
                 response = self._http_request(
                     method = "POST",
-                    url_suffix = f"/v1/document/move-files",
+                    url_suffix = "/v1/document/move-files",
                     json_data = data
                 )
             except Exception as e:
@@ -133,9 +133,9 @@ script:
             try:
                 try:
                     exists = False
-                    name = document_name("custom-documents", title, self.document_list())
+                    document_name("custom-documents", title, self.document_list())
                     exists = True
-                except:
+                except Exception:
                     data = {
                         "textContent": text,
                         "metadata": {
@@ -165,9 +165,9 @@ script:
             try:
                 try:
                     exists = False
-                    name = document_name("custom-documents", title, self.document_list())
+                    document_name("custom-documents", title, self.document_list())
                     exists = True
-                except:
+                except Exception:
                     data = {
                         "link": link,
                         "metadata": {
@@ -201,9 +201,9 @@ script:
                 file_name = demisto.getFilePath(entry_id)['name']
                 try:
                     exists = False
-                    name = document_name("custom-documents", file_name, self.document_list())
+                    document_name("custom-documents", file_name, self.document_list())
                     exists = True
-                except:
+                except Exception:
                     shutil.copy(file_path, file_name)
                     response = self._http_request(
                         method = 'POST',
@@ -232,7 +232,7 @@ script:
                     exists = False
                     workspace_slug(workspace, self.workspace_list())
                     exists = True
-                except:
+                except Exception:
                     data = {
                         'name': workspace
                     }
@@ -386,7 +386,7 @@ script:
 
                 try:
                     ws = self.workspace_get(workspace)
-                except Exception as e:
+                except Exception:
                     raise Exception(f"workspace [{workspace}] not found")
 
                 if action == "adds":
