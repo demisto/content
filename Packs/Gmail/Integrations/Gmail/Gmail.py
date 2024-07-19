@@ -44,7 +44,7 @@ SCOPES = ['https://www.googleapis.com/auth/admin.directory.user.readonly']
 PROXY = demisto.params().get('proxy')
 DISABLE_SSL = demisto.params().get('insecure', False)
 FETCH_TIME = demisto.params().get('fetch_time', '1 days')
-LEGACY_NAME = argToBoolean(demisto.params.get('legacy_name', False))
+LEGACY_NAME = argToBoolean(demisto.params().get('legacy_name', False))
 
 SEND_AS_SMTP_FIELDS = ['host', 'port', 'username', 'password', 'securitymode']
 DATE_FORMAT = '%Y-%m-%d'  # sample - 2020-08-23
