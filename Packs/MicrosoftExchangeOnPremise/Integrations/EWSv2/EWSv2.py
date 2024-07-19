@@ -403,15 +403,11 @@ def get_time_zone() -> EWSTimeZone | None:
 
 
 def get_attachment_name(attachment_name, content_id="", attachment_id=""):  # pragma: no cover
-    if content_id and content_id != "None":
-        if not LEGACY_NAME:
-            identifier_id = content_id
-            if not identifier_id or identifier_id == "None":
-                identifier_id = attachment_id
-            if attachment_name is None or attachment_name == "":
-                return f'{identifier_id}-attachmentName-demisto_untitled_attachment'
-            return f'{identifier_id}-attachmentName-{attachment_name}'
-    elif attachment_name is None or attachment_name == "":
+    if content_id and content_id != "None" and not LEGACY_NAME:
+        if attachment_name is None or attachment_name == "":
+            return f'{content_id}-attachmentName-demisto_untitled_attachment'
+        return f'{content_id}-attachmentName-{attachment_name}'
+    if attachment_name is None or attachment_name == "":
         return 'demisto_untitled_attachment'
     return attachment_name
 

@@ -598,19 +598,15 @@ def get_attachment_name(attachment_name, eml_extension=False, content_id="", att
     :param eml_extension: Indicates whether the eml extension should be added
     :return: string
     """
-    if content_id and content_id != "None":
-        if not LEGACY_NAME:
-            identifier_id = content_id
-            if not identifier_id or identifier_id == "None":
-                identifier_id = attachment_id
-            if attachment_name is None or attachment_name == "":
-                return (f"{identifier_id}-attachmentName-demisto_untitled_attachment.eml"
-                        if eml_extension
-                        else f"{identifier_id}-attachmentName-demisto_untitled_attachment")
-            elif eml_extension and not attachment_name.endswith(".eml"):
-                return f'{identifier_id}-attachmentName-{attachment_name}.eml'
-            return f'{identifier_id}-attachmentName-{attachment_name}'
-    elif attachment_name is None or attachment_name == "":
+    if content_id and content_id != "None" and not LEGACY_NAME:
+        if attachment_name is None or attachment_name == "":
+            return (f"{content_id}-attachmentName-demisto_untitled_attachment.eml"
+                    if eml_extension
+                    else f"{content_id}-attachmentName-demisto_untitled_attachment")
+        elif eml_extension and not attachment_name.endswith(".eml"):
+            return f'{content_id}-attachmentName-{attachment_name}.eml'
+        return f'{content_id}-attachmentName-{attachment_name}'
+    if attachment_name is None or attachment_name == "":
         return "demisto_untitled_attachment.eml" if eml_extension else "demisto_untitled_attachment"
     elif eml_extension and not attachment_name.endswith(".eml"):
         return f'{attachment_name}.eml'

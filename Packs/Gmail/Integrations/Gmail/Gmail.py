@@ -1528,7 +1528,6 @@ def get_attachments_command():
     args = demisto.args()
     user_id = args.get('user-id')
     _id = args.get('message-id')
-    identifiers_filter = args.get('identifiers-filter', "")
 
     attachments = get_attachments(user_id, _id)
 
