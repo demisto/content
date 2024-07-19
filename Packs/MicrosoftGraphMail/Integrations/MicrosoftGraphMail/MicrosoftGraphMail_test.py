@@ -82,7 +82,8 @@ def test_params_working(mocker, params, expected_results):
                                                       emails_fetch_limit=50, timeout=10, endpoint='com',
                                                       certificate_thumbprint='', private_key='',
                                                       display_full_email_body=False, mark_fetched_read=False, look_back=0,
-                                                      managed_identities_client_id=None)
+                                                      managed_identities_client_id=None,
+                                                      legacy_name=False)
 
 
 def test_build_mail_object():
