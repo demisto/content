@@ -44,6 +44,7 @@ SCOPES = ['https://www.googleapis.com/auth/admin.directory.user.readonly']
 PROXY = demisto.params().get('proxy')
 DISABLE_SSL = demisto.params().get('insecure', False)
 FETCH_TIME = demisto.params().get('fetch_time', '1 days')
+LEGACY_NAME = argToBoolean(demisto.params.get('legacy_name', False))
 
 SEND_AS_SMTP_FIELDS = ['host', 'port', 'username', 'password', 'securitymode']
 DATE_FORMAT = '%Y-%m-%d'  # sample - 2020-08-23
@@ -184,15 +185,18 @@ def parse_mail_parts(parts):
 
         else:
             if part['body'].get('attachmentId') is not None and part.get('headers'):
-                identifier_id = ""
-                for header in part['headers']:
-                    if header.get('name') == 'Content-ID':
-                        identifier_id = header.get('value').strip("<>")
-                    if not identifier_id or identifier_id == "None":
-                        identifier_id = part['body'].get('attachmentId').strip("<>")
+                attachmentName = part['filename']
+                if not LEGACY_NAME:
+                    identifier_id = ""
+                    for header in part['headers']:
+                        if header.get('name') == 'Content-ID':
+                            identifier_id = header.get('value').strip("<>")
+                        if not identifier_id or identifier_id == "None":
+                            identifier_id = part['body'].get('attachmentId').strip("<>")
+                        attachmentName = f"{identifier_id}-attachmentName-{part['filename']}"
                 attachments.append({
                     'ID': part['body']['attachmentId'],
-                    'Name': f"{identifier_id}-attachmentName-{part['filename']}",
+                    'Name': attachmentName,
                 })
 
     return body, html, attachments
@@ -1556,9 +1560,13 @@ def get_attachments(user_id, _id, identifiers_filter=""):
         identifiers_filter_array = argToList(identifiers_filter)
         command_args['id'] = attachment['ID']
         result = service.users().messages().attachments().get(**command_args).execute()
-        if (not identifiers_filter_array
-                or ('-attachmentName-' in attachment['Name']
-                    and attachment['Name'].split('-attachmentName-')[0] in identifiers_filter_array)):
+        if not LEGACY_NAME:
+            if (not identifiers_filter_array
+                    or ('-attachmentName-' in attachment['Name']
+                        and attachment['Name'].split('-attachmentName-')[0] in identifiers_filter_array)):
+                file_data = base64.urlsafe_b64decode(result['data'].encode('ascii'))
+                files.append((attachment['Name'], file_data))
+        else:
             file_data = base64.urlsafe_b64decode(result['data'].encode('ascii'))
             files.append((attachment['Name'], file_data))
     return files

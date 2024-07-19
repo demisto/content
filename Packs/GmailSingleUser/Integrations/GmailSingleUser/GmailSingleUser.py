@@ -40,6 +40,7 @@ FETCH_TIME = params.get('fetch_time', '1 days')
 MAX_FETCH = int(params.get('fetch_limit') or 50)
 AUTH_CODE = params.get('auth_code_creds', {}).get('password') or params.get('code')
 AUTH_CODE_UNQUOTE_PREFIX = 'code='
+LEGACY_NAME = argToBoolean(params.get('legacy_name', False))
 
 OOB_CLIENT_ID = "391797357217-pa6jda1554dbmlt3hbji2bivphl0j616.apps.googleusercontent.com"  # guardrails-disable-line
 CLIENT_ID = params.get('credentials', {}).get('identifier') or params.get('client_id') or OOB_CLIENT_ID
@@ -315,9 +316,12 @@ class Client:
                             if not identifier_id or identifier_id == "None":
                                 identifier_id = part['body'].get('attachmentId')
                             identifier_id = identifier_id.strip("<>")
+                    attachmentName = part['filename']
+                    if not LEGACY_NAME:
+                        attachmentName = f"{identifier_id}-attachmentName-{part['filename']}"
                     attachments.append({
                         'ID': part['body']['attachmentId'],
-                        'Name': f"{identifier_id}-attachmentName-{part['filename']}",
+                        'Name': attachmentName,
                     })
 
         return body, html, attachments
@@ -343,9 +347,13 @@ class Client:
             identifiers_filter_array = argToList(identifiers_filter)
             command_args['id'] = attachment['ID']
             result = execute_gmail_action(service, "get_attachments", command_args)
-            if (not identifiers_filter_array
-                or ('-attachmentName-' in attachment['Name']
-                    and attachment['Name'].split('-attachmentName-')[0] in identifiers_filter_array)):
+            if not LEGACY_NAME:
+                if (not identifiers_filter_array
+                    or ('-attachmentName-' in attachment['Name']
+                        and attachment['Name'].split('-attachmentName-')[0] in identifiers_filter_array)):
+                    file_data = base64.urlsafe_b64decode(result['data'].encode('ascii'))
+                    files.append((attachment['Name'], file_data))
+            else:
                 file_data = base64.urlsafe_b64decode(result['data'].encode('ascii'))
                 files.append((attachment['Name'], file_data))
         return files

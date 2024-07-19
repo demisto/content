@@ -116,6 +116,12 @@ configuration:
   section: Connect
   advanced: true
   required: false
+- display: Use legacy attachment name
+  name: legacy_name
+  section: Collect
+  type: 8
+  advanced: true
+  defaultvalue: 'false'
 description: Exchange Web Services and Office 365 (mail).
 display: EWS v2
 name: EWS v2
