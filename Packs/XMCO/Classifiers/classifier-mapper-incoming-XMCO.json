@@ -8,13 +8,20 @@
         "XMCO Serenety Alert": {
             "dontMapEventToLabels": false,
             "internalMapping": {
+                "Rendered HTML": {
+                    "simple": "description"
+                },
+                "Sub Category": {
+                    "simple": "custom_fields.subcategory"
+                },
                 "XMCO Serenety identification": {
-                    "complex": null,
-                    "simple": "identification"
+                    "simple": "custom_fields.identification"
                 },
                 "XMCO Serenety monitoring": {
-                    "complex": null,
-                    "simple": "monitoring"
+                    "simple": "custom_fields.scope"
+                },
+                "rawJSON": {
+                    "simple": "data"
                 }
             }
         }

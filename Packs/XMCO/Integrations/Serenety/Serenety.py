@@ -153,18 +153,11 @@ def fetch_incidents(client: Client,
                 created = dateparser.parse(data['_created'])
                 incident = {
                     'name': data['title'],
-                    'detail': data['description'],
                     'severity': convert_to_demisto_severity(data.get('severity', 'low')),
                     'occurred': created.strftime(ISO_8601_FORMAT),  # type: ignore[union-attr]
-                    'rawJSON': json.dumps(data),
                     'type': 'XMCO Serenety Alert',
                     'Category': data['custom_fields']['category'],
-                    'CustomFields': {
-                        'subcategory': data['custom_fields']['subcategory'],
-                        'xmcoserenetyidentification': data['custom_fields']['identification'],
-                        'xmcoserenetymonitoring': data['custom_fields']['scope'],
-                        'renderedhtml': data['description']
-                    }
+                    'rawJSON': json.dumps(data),
                 }
 
                 incidents.append(incident)
