@@ -80,7 +80,7 @@ def create_email_html(email_html='', entry_id_list=None):
     return email_html
 
 
-def get_entry_id_list(attachments, files, email_html):
+def get_entry_id_list(attachments, files, email_html, legacy_name= False):
     """Get the entry ids for the email attachments from the email's related incident's files entry.
     Args:
         attachments (list): The attachments of the email.
@@ -97,12 +97,18 @@ def get_entry_id_list(attachments, files, email_html):
     files = [files] if not isinstance(files, list) else files
     for attachment in attachments:
         attachment_name = attachment.get('name', '')
-        if '-attachmentName-' in attachment_name:
-            identifier_id = attachment_name.split('-attachmentName-', 1)[0]
+        if not legacy_name:
+            if '-attachmentName-' in attachment_name:
+                identifier_id = attachment_name.split('-attachmentName-', 1)[0]
+                for file in files:
+                    file_name = file.get('Name')
+                    if attachment_name == file_name and identifier_id in matches:
+                        entry_id_list.append((attachment_name, file.get('EntryID')))
+        else:
             for file in files:
-                file_name = file.get('Name')
-                if attachment_name == file_name and identifier_id in matches:
+                if attachment_name == file.get('Name') and attachment.get('description', '') != FileAttachmentType.ATTACHED:
                     entry_id_list.append((attachment_name, file.get('EntryID')))
+
     return entry_id_list
 
 
@@ -440,6 +446,7 @@ def main():
     email_latest_message = custom_fields.get('emaillatestmessage', '')
 
     reputation_calc_async = argToBoolean(args.get('reputation_calc_async', False))
+    legacy_name = argToBoolean(args.get('legacy_name', False))
 
     try:
         email_related_incident_code = email_subject.split('<')[1].split('>')[0]
@@ -454,17 +461,13 @@ def main():
         check_incident_status(incident_details, email_related_incident)
 
         email_html = remove_html_conversation_history(email_html)
-
-        # Get attachments IDs for new attacments
-        attachment_identifiers_array, attachments = find_attachments_to_download(attachments,
-                                                                                 email_related_incident
-                                                                                 )
-        get_attachments_using_instance(email_related_incident, incident.get('labels'), email_to, attachment_identifiers_array)
+        
+        get_attachments_using_instance(email_related_incident, incident.get('labels'), email_to)
 
         # Adding a 5 seconds sleep in order to wait for all the attachments to get uploaded to the server.
         time.sleep(5)
         files = get_incident_related_files(email_related_incident)
-        entry_id_list = get_entry_id_list(attachments, files, email_html)
+        entry_id_list = get_entry_id_list(attachments, files, email_html, legacy_name)
         html_body = create_email_html(email_html, entry_id_list)
 
         if incident_details['type'] == 'Email Communication':

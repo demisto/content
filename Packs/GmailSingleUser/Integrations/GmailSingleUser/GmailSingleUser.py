@@ -308,17 +308,13 @@ class Client:
                     body += text
 
             else:
-                if part['body'].get('attachmentId') is not None and part.get('headers'):
-                    identifier_id = ""
+                if part['body'].get('attachmentId') is not None:
+                    attachmentName = part['filename']
                     for header in part['headers']:
                         if header.get('name') == 'Content-ID':
-                            identifier_id = header.get('value')
-                            if not identifier_id or identifier_id == "None":
-                                identifier_id = part['body'].get('attachmentId')
-                            identifier_id = identifier_id.strip("<>")
-                    attachmentName = part['filename']
-                    if not LEGACY_NAME:
-                        attachmentName = f"{identifier_id}-attachmentName-{part['filename']}"
+                            content_id = header.get('value').strip("<>")
+                    if content_id and content_id != "None" and not LEGACY_NAME:
+                        attachmentName = f"{content_id}-attachmentName-{part['filename']}"
                     attachments.append({
                         'ID': part['body']['attachmentId'],
                         'Name': attachmentName,
@@ -344,18 +340,10 @@ class Client:
         }
         files = []
         for attachment in result.get('Attachments', []):
-            identifiers_filter_array = argToList(identifiers_filter)
             command_args['id'] = attachment['ID']
             result = execute_gmail_action(service, "get_attachments", command_args)
-            if not LEGACY_NAME:
-                if (not identifiers_filter_array
-                    or ('-attachmentName-' in attachment['Name']
-                        and attachment['Name'].split('-attachmentName-')[0] in identifiers_filter_array)):
-                    file_data = base64.urlsafe_b64decode(result['data'].encode('ascii'))
-                    files.append((attachment['Name'], file_data))
-            else:
-                file_data = base64.urlsafe_b64decode(result['data'].encode('ascii'))
-                files.append((attachment['Name'], file_data))
+            file_data = base64.urlsafe_b64decode(result['data'].encode('ascii'))
+            files.append((attachment['Name'], file_data))
         return files
 
     @staticmethod

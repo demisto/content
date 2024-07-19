@@ -184,16 +184,14 @@ def parse_mail_parts(parts):
                 body += text
 
         else:
-            if part['body'].get('attachmentId') is not None and part.get('headers'):
+            if part['body'].get('attachmentId') is not None:
                 attachmentName = part['filename']
-                if not LEGACY_NAME:
-                    identifier_id = ""
-                    for header in part['headers']:
-                        if header.get('name') == 'Content-ID':
-                            identifier_id = header.get('value').strip("<>")
-                        if not identifier_id or identifier_id == "None":
-                            identifier_id = part['body'].get('attachmentId').strip("<>")
-                        attachmentName = f"{identifier_id}-attachmentName-{part['filename']}"
+                for header in part.get('headers', []):
+                    if header.get('name') == 'Content-ID':
+                        content_id = header.get('value').strip("<>")
+                attachmentName = part['filename']
+                if content_id and content_id != "None" and not LEGACY_NAME:
+                        attachmentName = f"{content_id}-attachmentName-{part['filename']}"
                 attachments.append({
                     'ID': part['body']['attachmentId'],
                     'Name': attachmentName,
@@ -1532,12 +1530,12 @@ def get_attachments_command():
     _id = args.get('message-id')
     identifiers_filter = args.get('identifiers-filter', "")
 
-    attachments = get_attachments(user_id, _id, identifiers_filter)
+    attachments = get_attachments(user_id, _id)
 
     return [fileResult(name, data) for name, data in attachments]
 
 
-def get_attachments(user_id, _id, identifiers_filter=""):
+def get_attachments(user_id, _id):
     mail_args = {
         'userId': user_id,
         'id': _id,
@@ -1557,18 +1555,10 @@ def get_attachments(user_id, _id, identifiers_filter=""):
     }
     files = []
     for attachment in result.get('Attachments', []):
-        identifiers_filter_array = argToList(identifiers_filter)
         command_args['id'] = attachment['ID']
         result = service.users().messages().attachments().get(**command_args).execute()
-        if not LEGACY_NAME:
-            if (not identifiers_filter_array
-                    or ('-attachmentName-' in attachment['Name']
-                        and attachment['Name'].split('-attachmentName-')[0] in identifiers_filter_array)):
-                file_data = base64.urlsafe_b64decode(result['data'].encode('ascii'))
-                files.append((attachment['Name'], file_data))
-        else:
-            file_data = base64.urlsafe_b64decode(result['data'].encode('ascii'))
-            files.append((attachment['Name'], file_data))
+        file_data = base64.urlsafe_b64decode(result['data'].encode('ascii'))
+        files.append((attachment['Name'], file_data))
     return files
 
 

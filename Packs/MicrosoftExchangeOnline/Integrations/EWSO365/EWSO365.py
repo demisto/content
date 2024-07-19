@@ -598,23 +598,23 @@ def get_attachment_name(attachment_name, eml_extension=False, content_id="", att
     :param eml_extension: Indicates whether the eml extension should be added
     :return: string
     """
-    if not LEGACY_NAME:
-        identifier_id = content_id
-        if not identifier_id or identifier_id == "None":
-            identifier_id = attachment_id
-        if attachment_name is None or attachment_name == "":
-            return (f"{identifier_id}-attachmentName-demisto_untitled_attachment.eml"
-                    if eml_extension
-                    else f"{identifier_id}-attachmentName-demisto_untitled_attachment")
-        elif eml_extension and not attachment_name.endswith(".eml"):
-            return f'{identifier_id}-attachmentName-{attachment_name}.eml'
-        return f'{identifier_id}-attachmentName-{attachment_name}'
-    else:
-        if attachment_name is None or attachment_name == "":
-            return "demisto_untitled_attachment.eml" if eml_extension else "demisto_untitled_attachment"
-        elif eml_extension and not attachment_name.endswith(".eml"):
-            return f'{attachment_name}.eml'
-        return attachment_name
+    if content_id and content_id != "None":
+        if not LEGACY_NAME:
+            identifier_id = content_id
+            if not identifier_id or identifier_id == "None":
+                identifier_id = attachment_id
+            if attachment_name is None or attachment_name == "":
+                return (f"{identifier_id}-attachmentName-demisto_untitled_attachment.eml"
+                        if eml_extension
+                        else f"{identifier_id}-attachmentName-demisto_untitled_attachment")
+            elif eml_extension and not attachment_name.endswith(".eml"):
+                return f'{identifier_id}-attachmentName-{attachment_name}.eml'
+            return f'{identifier_id}-attachmentName-{attachment_name}'
+    elif attachment_name is None or attachment_name == "":
+        return "demisto_untitled_attachment.eml" if eml_extension else "demisto_untitled_attachment"
+    elif eml_extension and not attachment_name.endswith(".eml"):
+        return f'{attachment_name}.eml'
+    return attachment_name
 
 
 def get_entry_for_object(title, context_key, obj, headers=None):
@@ -1086,55 +1086,28 @@ def fetch_attachments_for_message(
     attachments = client.get_attachments_for_item(item_id, account, attachment_ids)
     entries = []
     for attachment in attachments:
-        if not client.legacy_name:
-            if (not identifiers_filter
-                or attachment.content_id in identifiers_filter
-                    or attachment.attachment_id.id in identifiers_filter):
-                if isinstance(attachment, FileAttachment):
-                    try:
-                        if attachment.content:
-                            entries.append(get_entry_for_file_attachment(item_id, attachment))
-                    except TypeError as e:
-                        if str(e) != "must be string or buffer, not None":
-                            raise
-                else:
-                    entries.append(
-                        get_entry_for_item_attachment(
-                            item_id, attachment, account.primary_smtp_address
-                        )
-                    )
-                    if attachment.item.mime_content:
-                        entries.append(
-                            fileResult(
-                                get_attachment_name(attachment_name=attachment.name, eml_extension=True,
-                                                    content_id=attachment.content_id,
-                                                    attachment_id=attachment.attachment_id.id),
-                                attachment.item.mime_content,
-                            )
-                        )
+        if isinstance(attachment, FileAttachment):
+            try:
+                if attachment.content:
+                    entries.append(get_entry_for_file_attachment(item_id, attachment))
+            except TypeError as e:
+                if str(e) != "must be string or buffer, not None":
+                    raise
         else:
-            if isinstance(attachment, FileAttachment):
-                try:
-                    if attachment.content:
-                        entries.append(get_entry_for_file_attachment(item_id, attachment))
-                except TypeError as e:
-                    if str(e) != "must be string or buffer, not None":
-                        raise
-            else:
+            entries.append(
+                get_entry_for_item_attachment(
+                    item_id, attachment, account.primary_smtp_address
+                )
+            )
+            if attachment.item.mime_content:
                 entries.append(
-                    get_entry_for_item_attachment(
-                        item_id, attachment, account.primary_smtp_address
+                    fileResult(
+                        get_attachment_name(attachment_name=attachment.name, eml_extension=True,
+                                            content_id=attachment.content_id,
+                                            attachment_id=attachment.attachment_id.id),
+                        attachment.item.mime_content,
                     )
                 )
-                if attachment.item.mime_content:
-                    entries.append(
-                        fileResult(
-                            get_attachment_name(attachment_name=attachment.name, eml_extension=True,
-                                                content_id=attachment.content_id,
-                                                attachment_id=attachment.attachment_id.id),
-                            attachment.item.mime_content,
-                        )
-                    )
 
     return entries
 

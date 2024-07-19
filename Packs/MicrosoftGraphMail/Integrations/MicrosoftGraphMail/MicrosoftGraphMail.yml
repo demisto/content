@@ -458,10 +458,6 @@ script:
     - deprecated: true
       description: flag for rate limit retry.
       name: ran_once_flag
-    - description: Identifier ids to download to XSOAR (to avoid downloading all files to XSOAR during the preprocessing script).
-      name: identifiers_filter
-      required: false
-      hidden: true
     description: Gets an attachment from the email.
     name: msgraph-mail-get-attachment
     outputs:

@@ -211,10 +211,6 @@ script:
     - description: The user's email address. The "me" special value can be used to indicate the authenticated user.
       name: user-id
       required: true
-    - description: Identifier ids to download to XSOAR (to avoid downloading all files to XSOAR during the preprocessing script).
-      name: identifiers-filter
-      required: false
-      hidden: true
     description: Retrieves attachments from a sent Gmail message.
     name: gmail-get-attachments
     outputs:

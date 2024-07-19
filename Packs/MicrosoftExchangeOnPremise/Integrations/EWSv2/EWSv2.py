@@ -403,17 +403,17 @@ def get_time_zone() -> EWSTimeZone | None:
 
 
 def get_attachment_name(attachment_name, content_id="", attachment_id=""):  # pragma: no cover
-    if not LEGACY_NAME:
-        identifier_id = content_id
-        if not identifier_id or identifier_id == "None":
-            identifier_id = attachment_id
-        if attachment_name is None or attachment_name == "":
-            return f'{identifier_id}-attachmentName-demisto_untitled_attachment'
-        return f'{identifier_id}-attachmentName-{attachment_name}'
-    else:
-        if attachment_name is None or attachment_name == "":
-            return 'demisto_untitled_attachment'
-        return attachment_name
+    if content_id and content_id != "None":
+        if not LEGACY_NAME:
+            identifier_id = content_id
+            if not identifier_id or identifier_id == "None":
+                identifier_id = attachment_id
+            if attachment_name is None or attachment_name == "":
+                return f'{identifier_id}-attachmentName-demisto_untitled_attachment'
+            return f'{identifier_id}-attachmentName-{attachment_name}'
+    elif attachment_name is None or attachment_name == "":
+        return 'demisto_untitled_attachment'
+    return attachment_name
 
 
 def switch_hr_headers(obj, hr_header_changes):
@@ -1444,36 +1444,17 @@ def fetch_attachments_for_message(item_id, target_mailbox=None, attachment_ids=N
     attachments = get_attachments_for_item(item_id, account, attachment_ids)
     entries = []
     for attachment in attachments:
-        if not LEGACY_NAME:
-            if (not identifiers_filter
-                or attachment.content_id in identifiers_filter
-                    or attachment.attachment_id.id in identifiers_filter):
-                if isinstance(attachment, FileAttachment):
-                    try:
-                        if attachment.content:
-                            entries.append(get_entry_for_file_attachment(item_id, attachment))
-                    except TypeError as e:
-                        if str(e) != "must be string or buffer, not None":
-                            raise
-                else:
-                    entries.append(get_entry_for_item_attachment(item_id, attachment, account.primary_smtp_address))
-                    if attachment.item.mime_content:
-                        entries.append(fileResult(get_attachment_name(attachment_name=attachment.name,
-                                                                      content_id=attachment.content_id,
-                                                                      attachment_id=attachment.attachment_id.id) + ".eml",
-                                                  attachment.item.mime_content))
+        if isinstance(attachment, FileAttachment):
+            try:
+                if attachment.content:
+                    entries.append(get_entry_for_file_attachment(item_id, attachment))
+            except TypeError as e:
+                if str(e) != "must be string or buffer, not None":
+                    raise
         else:
-            if isinstance(attachment, FileAttachment):
-                try:
-                    if attachment.content:
-                        entries.append(get_entry_for_file_attachment(item_id, attachment))
-                except TypeError as e:
-                    if str(e) != "must be string or buffer, not None":
-                        raise
-            else:
-                entries.append(get_entry_for_item_attachment(item_id, attachment, account.primary_smtp_address))
-                if attachment.item.mime_content:
-                    entries.append(fileResult(get_attachment_name(attachment.name) + ".eml", attachment.item.mime_content))
+            entries.append(get_entry_for_item_attachment(item_id, attachment, account.primary_smtp_address))
+            if attachment.item.mime_content:
+                entries.append(fileResult(get_attachment_name(attachment.name) + ".eml", attachment.item.mime_content))
 
     return entries
 
