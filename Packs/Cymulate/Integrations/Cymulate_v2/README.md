@@ -1,9 +1,7 @@
 Multi-Vector Cyber Attack, Breach and Attack Simulation.
 This integration was integrated and tested with API version 1 of cymulate
 
-<~XSIAM>
-This is the default integration for this content pack when configured by the Data Onboarder.
-</~XSIAM>
+This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
 
 ## Configure cymulate_v2 on Cortex XSOAR
 

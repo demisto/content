@@ -4,7 +4,7 @@ import urllib3
 import copy
 import re
 from operator import itemgetter
-
+import json
 from typing import Tuple, Callable
 
 # Disable insecure warnings
@@ -142,6 +142,10 @@ ALERT_EVENT_AZURE_FIELDS = {
     "resourceType",
     "tenantId",
 }
+RBAC_VALIDATIONS_VERSION = '8.6.0'
+RBAC_VALIDATIONS_BUILD_NUMBER = '992980'
+FORWARD_USER_RUN_RBAC = is_xsiam() and is_demisto_version_ge(version=RBAC_VALIDATIONS_VERSION,
+                                                             build_number=RBAC_VALIDATIONS_BUILD_NUMBER) and not is_using_engine()
 
 
 class CoreClient(BaseClient):
@@ -149,6 +153,84 @@ class CoreClient(BaseClient):
     def __init__(self, base_url: str, headers: dict, timeout: int = 120, proxy: bool = False, verify: bool = False):
         super().__init__(base_url=base_url, headers=headers, proxy=proxy, verify=verify)
         self.timeout = timeout
+        # For Xpanse tenants requiring direct use of the base client HTTP request instead of the _apiCall,
+
+    def _http_request(self, method, url_suffix='', full_url=None, headers=None, json_data=None,
+                      params=None, data=None, timeout=None, raise_on_status=False, ok_codes=None,
+                      error_handler=None, with_metrics=False, resp_type='json'):
+        '''
+        """A wrapper for requests lib to send our requests and handle requests and responses better.
+
+            :type method: ``str``
+            :param method: The HTTP method, for example: GET, POST, and so on.
+
+
+            :type url_suffix: ``str``
+            :param url_suffix: The API endpoint.
+
+
+            :type full_url: ``str``
+            :param full_url:
+                Bypasses the use of self._base_url + url_suffix. This is useful if you need to
+                make a request to an address outside of the scope of the integration
+                API.
+
+
+            :type headers: ``dict``
+            :param headers: Headers to send in the request. If None, will use self._headers.
+
+
+            :type params: ``dict``
+            :param params: URL parameters to specify the query.
+
+
+            :type data: ``dict``
+            :param data: The data to send in a 'POST' request.
+
+
+            :type raise_on_status ``bool``
+                :param raise_on_status: Similar meaning to ``raise_on_redirect``:
+                    whether we should raise an exception, or return a response,
+                    if status falls in ``status_forcelist`` range and retries have
+                    been exhausted.
+
+
+            :type timeout: ``float`` or ``tuple``
+            :param timeout:
+                The amount of time (in seconds) that a request will wait for a client to
+                establish a connection to a remote machine before a timeout occurs.
+                can be only float (Connection Timeout) or a tuple (Connection Timeout, Read Timeout).
+        '''
+        if (not FORWARD_USER_RUN_RBAC):
+            return BaseClient._http_request(self,  # we use the standard base_client http_request without overriding it
+                                            method=method,
+                                            url_suffix=url_suffix,
+                                            full_url=full_url,
+                                            headers=headers,
+                                            json_data=json_data, params=params, data=data,
+                                            timeout=timeout,
+                                            raise_on_status=raise_on_status,
+                                            ok_codes=ok_codes,
+                                            error_handler=error_handler,
+                                            with_metrics=with_metrics,
+                                            resp_type=resp_type)
+        headers = headers if headers else self._headers
+        data = json.dumps(json_data) if json_data else data
+        address = full_url if full_url else urljoin(self._base_url, url_suffix)
+        response = demisto._apiCall(
+            method=method,
+            path=address,
+            data=data,
+            headers=headers,
+            timeout=timeout
+        )
+        if ok_codes and response.get('status') not in ok_codes:
+            self._handle_error(error_handler, response, with_metrics)
+        try:
+            return json.loads(response['data'])
+        except json.JSONDecodeError:
+            demisto.debug(f"Converting data to json was failed. Return it as is. The data's type is {type(response['data'])}")
+            return response['data']
 
     def get_incidents(self, incident_id_list=None, lte_modification_time=None, gte_modification_time=None,
                       lte_creation_time=None, gte_creation_time=None, status=None, starred=None,
@@ -349,15 +431,13 @@ class CoreClient(BaseClient):
 
         request_data['filters'] = filters
 
-        reply = self._http_request(
+        response = self._http_request(
             method='POST',
             url_suffix='/endpoints/get_endpoint/',
             json_data={'request_data': request_data},
             timeout=self.timeout
         )
-        demisto.debug(f"get_endpoints response = {reply}")
-
-        endpoints = reply.get('reply').get('endpoints', [])
+        endpoints = response.get('reply', {}).get('endpoints', [])
         return endpoints
 
     def set_endpoints_alias(self, filters: list[dict[str, str]], new_alias_name: str | None) -> dict:  # pragma: no cover
@@ -470,7 +550,6 @@ class CoreClient(BaseClient):
             json_data={},
             timeout=self.timeout
         )
-
         return reply.get('reply')
 
     def create_distribution(self, name, platform, package_type, agent_version, description):
@@ -2889,6 +2968,7 @@ def resolve_xdr_close_reason(xsoar_close_reason: str) -> str:
     """
     # Initially setting the close reason according to the default mapping.
     xdr_close_reason = XSOAR_RESOLVED_STATUS_TO_XDR.get(xsoar_close_reason, 'resolved_other')
+
     # Reading custom XSOAR->XDR close-reason mapping.
     custom_xsoar_to_xdr_close_reason_mapping = comma_separated_mapping_to_dict(
         demisto.params().get("custom_xsoar_to_xdr_close_reason_mapping")
@@ -2896,16 +2976,15 @@ def resolve_xdr_close_reason(xsoar_close_reason: str) -> str:
 
     # Overriding default close-reason mapping if there exists a custom one.
     if xsoar_close_reason in custom_xsoar_to_xdr_close_reason_mapping:
-        xdr_close_reason_candidate = custom_xsoar_to_xdr_close_reason_mapping[xsoar_close_reason]
+        xdr_close_reason_candidate = custom_xsoar_to_xdr_close_reason_mapping.get(xsoar_close_reason)
         # Transforming resolved close-reason into snake_case format with known prefix to match XDR status format.
-        demisto.debug(
-            f"resolve_xdr_close_reason XSOAR->XDR custom close-reason exists, using {xsoar_close_reason}={xdr_close_reason}")
         xdr_close_reason_candidate = "resolved_" + "_".join(xdr_close_reason_candidate.lower().split(" "))
-
         if xdr_close_reason_candidate not in XDR_RESOLVED_STATUS_TO_XSOAR:
             demisto.debug("Warning: Provided XDR close-reason does not exist. Using default XDR close-reason mapping. ")
         else:
             xdr_close_reason = xdr_close_reason_candidate
+            demisto.debug(
+                f"resolve_xdr_close_reason XSOAR->XDR custom close-reason exists, using {xsoar_close_reason}={xdr_close_reason}")
     else:
         demisto.debug(f"resolve_xdr_close_reason using default mapping {xsoar_close_reason}={xdr_close_reason}")
 

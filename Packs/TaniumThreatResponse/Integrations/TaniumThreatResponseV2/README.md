@@ -1,9 +1,7 @@
 Use the Tanium Threat Response integration to manage endpoints processes, evidence, alerts, files, snapshots, and connections. This Integration works with Tanium Threat Response version 3.0.159 and above.
 This integration was integrated and tested with versions 3.5.284 and 4.x of Tanium Threat Response v2.
 
-<~XSIAM>
-This is the default integration for this content pack when configured by the Data Onboarder.
-</~XSIAM>
+This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
 
 ## Configure Tanium Threat Response v2 on Cortex XSOAR
 

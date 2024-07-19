@@ -724,7 +724,7 @@ def test_generate_login_url():
 
     expected_url = f'[login URL](https://login.microsoftonline.com/{TENANT}/oauth2/v2.0/authorize?' \
                    f'response_type=code&scope=offline_access%20https://graph.microsoft.com/.default' \
-                   f'&client_id={CLIENT_ID}&redirect_uri=https://localhost/myapp&prompt=consent)'
+                   f'&client_id={CLIENT_ID}&redirect_uri=https://localhost/myapp)'
     assert expected_url in result.readable_output, "Login URL is incorrect"
 
 

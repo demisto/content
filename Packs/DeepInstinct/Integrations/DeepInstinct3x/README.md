@@ -1,9 +1,7 @@
 Deep Instinct is a prevention-first approach to stopping ransomware and other malware using the world's first purpose-built, deep learning cybersecurity framework.
 This integration was integrated and tested with version 3.3.x of DeepInstinct v3
 
-<~XSIAM>
-This is the default integration for this content pack when configured by the Data Onboarder.
-</~XSIAM>
+This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
 
 ## Configure DeepInstinct v3 on Cortex XSOAR
 

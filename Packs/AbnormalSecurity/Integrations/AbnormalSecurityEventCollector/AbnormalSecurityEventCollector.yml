@@ -17,7 +17,8 @@ configuration:
   type: 0
   defaultvalue: 1 day
   required: false
-  hidden: true
+  hidden:
+  - marketplacev2
 - display: Use system proxy settings
   name: proxy
   type: 8

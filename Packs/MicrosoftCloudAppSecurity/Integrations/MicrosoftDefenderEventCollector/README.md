@@ -1,8 +1,6 @@
 Microsoft Defender for Cloud Apps Event Collector integration.
 
-<~XSIAM>
-This is the default integration for this content pack when configured by the Data Onboarder.
-</~XSIAM>
+This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
 
 ## Configure Microsoft Defender for Cloud Apps Event Collector on Cortex XSOAR
 
@@ -23,6 +21,7 @@ This is the default integration for this content pack when configured by the Dat
     | Fetch events                                                                     |                                                                                                                                                  | False        |
     | Verify SSL Certificate                                                           |                                                                                                                                                  | False        |
     | Use system proxy settings                                                        |                                                                                                                                                  | False        |
+    | Event types to fetch |  | True |
 
     Endpoint Type options
 

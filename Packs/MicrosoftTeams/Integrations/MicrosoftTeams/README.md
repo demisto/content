@@ -47,7 +47,7 @@ In order to verify that the messaging endpoint is open as expected, you can surf
     - microsoft.com
     - botframework.com
     - microsoftonline.com
-
+When [installing the bot in Microsoft Teams](#add-the-demisto-bot-to-a-team), according to [Microsoft](https://learn.microsoft.com/en-us/answers/questions/1600179/ms-teams-custom-app-takes-very-long-time-to-show-u), it usually takes up to 3-5 business days for the app to reflect in the "built for your org" section.
 
 ## Migration from Cortex XSOAR 6 to Cortex XSOAR 8 and Cortex XSIAM.
 
@@ -231,6 +231,8 @@ Note: The [microsoft-teams-ring-user](https://learn.microsoft.com/en-us/graph/ap
       - Chat.Create
       - TeamsAppInstallation.ReadWriteForChat
       - TeamsAppInstallation.ReadWriteSelfForChat
+      - User.Read.All
+      - AppCatalog.Read.All
 5. Verify that all permissions were added, and click **Grant admin consent for Demisto**.
 6. When prompted to verify granting permissions, click **Yes**, and verify that permissions were successfully added.
 7. Click **Expose an API** and add **Application ID URI**
@@ -299,7 +301,9 @@ Note: The [microsoft-teams-ring-user](https://learn.microsoft.com/en-us/graph/ap
 
 ### Add the Demisto Bot to a Team
 
-- Note: The following needs to be done after configuring the integration on Cortex XSOAR/Cortex XSIAM (the previous step).
+**Notes:**
+- The following needs to be done after configuring the integration on Cortex XSOAR/Cortex XSIAM (the previous step).
+- According to [Microsoft](https://learn.microsoft.com/en-us/answers/questions/1600179/ms-teams-custom-app-takes-very-long-time-to-show-u) it usually takes up to 3-5 business days for the app to reflect in the "built for your org" section.
 
 1. Download the ZIP file located at the bottom of this article.
 2. Uncompress the ZIP file. You should see 3 files (`manifest.json`, `color.png` and `outline.png`).
@@ -1067,8 +1071,8 @@ There is no context output for this command.
 
 ### microsoft-teams-generate-login-url
 ***
-Generate the login url used for Authorization code flow.
-
+Generate the login url used for Authorization code flow.  
+Note: Authorization codes are short-lived. Typically, they expire after about 10 minutes.
 
 #### Base Command
 
@@ -1166,7 +1170,7 @@ Note: To enrich an incident created via the Demisto BOT (`new incident` command)
 
 4. The integration stores in cache metadata about the teams, members and channels. Starting from Cortex XSOAR version 6.1.0, you can clear the integration cache in the integration instance config:
 
-   <img height="75" src="./doc_files/cache.png" />
+   <img height="75" src="../../doc_files/cache.png" />
 
    First, make sure to remove the bot from the team (only via the Teams app), before clearing the integration cache, and add it back after done.
    If the bot belongs to multiple teams, make sure to remove it from all the teams it was added to, and then clear the cache.
