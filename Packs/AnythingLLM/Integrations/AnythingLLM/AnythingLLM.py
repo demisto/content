@@ -6,21 +6,21 @@ import shutil
 
 
 ''' CLIENT CLASS '''
-
-
 class Client(BaseClient):
     def test_module(self):
         self._http_request("GET", "/v1/auth")
 
+
     def document_list(self):
         return self._list("documents")
+
 
     def document_get(self, folder: str, document: str):
         try:
             name = document_name(folder, document, self.document_list())
             response = self._http_request(
-                method="GET",
-                url_suffix=f"/v1/document/{name}"
+                method = "GET",
+                url_suffix = f"/v1/document/{name}"
             )
         except Exception as e:
             msg = f"AnythingLLM: document_get: exception getting document details - {str(e)}"
@@ -28,6 +28,7 @@ class Client(BaseClient):
             raise Exception(msg)
 
         return response
+
 
     def document_delete(self, folder: str, document: str):
         try:
@@ -38,9 +39,9 @@ class Client(BaseClient):
                 ]
             }
             response = self._http_request(
-                method="DELETE",
-                url_suffix="/v1/system/remove-documents",
-                json_data=data
+                method = "DELETE",
+                url_suffix = "/v1/system/remove-documents",
+                json_data = data
             )
         except Exception as e:
             msg = f"AnythingLLM: document_delete: exception deleting document - {str(e)}"
@@ -49,15 +50,16 @@ class Client(BaseClient):
 
         return {"message": response}
 
+
     def document_createfolder(self, folder: str):
         try:
             data = {
                 "name": folder
             }
             response = self._http_request(
-                method="POST",
-                url_suffix=f"/v1/document/create-folder",
-                json_data=data
+                method = "POST",
+                url_suffix = "/v1/document/create-folder",
+                json_data = data
             )
         except Exception as e:
             msg = f"AnythingLLM: document_createfolder: exception creating folder - {str(e)}"
@@ -66,21 +68,22 @@ class Client(BaseClient):
 
         return response
 
+
     def document_move(self, srcfolder: str, dstfolder: str, document: str):
         try:
             name = document_name(srcfolder, document, self.document_list())
             data = {
                 "files": [
                     {
-                        "from": f"{srcfolder}/{name}",
-                        "to": f"{dstfolder}/{name}"
+                    "from": f"{srcfolder}/{name}",
+                    "to": f"{dstfolder}/{name}"
                     }
                 ]
             }
             response = self._http_request(
-                method="POST",
-                url_suffix=f"/v1/document/move-files",
-                json_data=data
+                method = "POST",
+                url_suffix = "/v1/document/move-files",
+                json_data = data
             )
         except Exception as e:
             msg = f"AnythingLLM: document_move: exception moving document - {str(e)}"
@@ -89,13 +92,14 @@ class Client(BaseClient):
 
         return response
 
+
     def document_upload_text(self, text: str, title: str, description: str, author: str, source: str):
         try:
             try:
                 exists = False
-                name = document_name("custom-documents", title, self.document_list())
+                document_name("custom-documents", title, self.document_list())
                 exists = True
-            except:
+            except Exception:
                 data = {
                     "textContent": text,
                     "metadata": {
@@ -106,9 +110,9 @@ class Client(BaseClient):
                     }
                 }
                 response = self._http_request(
-                    method="POST",
-                    url_suffix="/v1/document/raw-text",
-                    json_data=data
+                    method = "POST",
+                    url_suffix = "/v1/document/raw-text",
+                    json_data = data
                 )
             finally:
                 if exists:
@@ -120,13 +124,14 @@ class Client(BaseClient):
 
         return response
 
+
     def document_upload_link(self, link: str, title: str, description: str, author: str, source: str):
         try:
             try:
                 exists = False
-                name = document_name("custom-documents", title, self.document_list())
+                document_name("custom-documents", title, self.document_list())
                 exists = True
-            except:
+            except Exception:
                 data = {
                     "link": link,
                     "metadata": {
@@ -137,9 +142,9 @@ class Client(BaseClient):
                     }
                 }
                 response = self._http_request(
-                    method="POST",
-                    url_suffix="/v1/document/raw-text",
-                    json_data=data
+                    method = "POST",
+                    url_suffix = "/v1/document/raw-text",
+                    json_data = data
                 )
             finally:
                 if exists:
@@ -151,6 +156,7 @@ class Client(BaseClient):
 
         return response
 
+
     def document_upload_file(self, entry_id):
         try:
             headers = self._headers
@@ -159,15 +165,15 @@ class Client(BaseClient):
             file_name = demisto.getFilePath(entry_id)['name']
             try:
                 exists = False
-                name = document_name("custom-documents", file_name, self.document_list())
+                document_name("custom-documents", file_name, self.document_list())
                 exists = True
-            except:
+            except Exception:
                 shutil.copy(file_path, file_name)
                 response = self._http_request(
-                    method='POST',
-                    headers=headers,
-                    url_suffix="/v1/document/upload",
-                    files={'file': (file_name, open(file_name, 'rb'))}
+                    method = 'POST',
+                    headers = headers,
+                    url_suffix = "/v1/document/upload",
+                    files = {'file': (file_name, open(file_name, 'rb'))}
                 )
             finally:
                 if exists:
@@ -181,6 +187,7 @@ class Client(BaseClient):
 
         return response
 
+
     def workspace_new(self, workspace: str):
         try:
             if len(workspace.strip()) == 0:
@@ -189,14 +196,14 @@ class Client(BaseClient):
                 exists = False
                 workspace_slug(workspace, self.workspace_list())
                 exists = True
-            except:
+            except Exception:
                 data = {
                     'name': workspace
                 }
                 response = self._http_request(
-                    method="POST",
-                    url_suffix="/v1/workspace/new",
-                    json_data=data
+                    method = "POST",
+                    url_suffix = "/v1/workspace/new",
+                    json_data = data
                 )
                 return response
             finally:
@@ -207,21 +214,25 @@ class Client(BaseClient):
             demisto.debug(msg)
             raise Exception(msg)
 
+
     def workspace_chat(self, workspace: str, message: str, mode: str):
         return self._chat(workspace, message, mode, "chat")
+
 
     def workspace_stream_chat(self, workspace: str, message: str, mode: str):
         return self._chat(workspace, message, mode, "stream-chat")
 
+
     def workspace_list(self):
         return self._list("workspaces")
 
-    def workspace_get(self, workspace: str):
+
+    def workspace_get(self, workspace:str ):
         try:
             slug = workspace_slug(workspace, self.workspace_list())
             response = self._http_request(
-                method="GET",
-                url_suffix=f"/v1/workspace/{slug}",
+                method = "GET",
+                url_suffix = f"/v1/workspace/{slug}",
             )
         except Exception as e:
             msg = f"AnythingLLM: workspace_get: exception getting workspace details - {str(e)}"
@@ -230,12 +241,13 @@ class Client(BaseClient):
 
         return response
 
-    def workspace_delete(self, workspace: str):
+
+    def workspace_delete(self, workspace:str ):
         try:
             slug = workspace_slug(workspace, self.workspace_list())
             self._http_request(
-                method="DELETE",
-                url_suffix=f"/v1/workspace/{slug}",
+                method = "DELETE",
+                url_suffix = f"/v1/workspace/{slug}",
                 resp_type='bytes'
             )
         except Exception as e:
@@ -245,14 +257,15 @@ class Client(BaseClient):
 
         return {"message": {"success": True, "message": "Workspace removed successfully"}}
 
-    def workspace_settings(self, workspace: str, settings: dict):
+
+    def workspace_settings(self, workspace:str, settings: dict ):
         try:
             settings = validate_workspace_settings(settings)
             slug = workspace_slug(workspace, self.workspace_list())
             response = self._http_request(
-                method="POST",
-                url_suffix=f"/v1/workspace/{slug}/update",
-                json_data=settings
+                method = "POST",
+                url_suffix = f"/v1/workspace/{slug}/update",
+                json_data = settings
             )
         except Exception as e:
             msg = f"AnythingLLM: workspace_settings: exception updating workspace settings - {str(e)}"
@@ -261,13 +274,16 @@ class Client(BaseClient):
 
         return response
 
+
     def workspace_add_embedding(self, workspace: str, folder: str, document: str):
         return self._embedding(workspace, folder, document, "adds")
+
 
     def workspace_delete_embedding(self, workspace: str, folder: str, document: str):
         return self._embedding(workspace, folder, document, "deletes")
 
-    def workspace_pin(self, workspace: str, folder: str, document: str, status: str):
+
+    def workspace_pin(self, workspace:str, folder:str, document:str, status: str):
         try:
             if status.lower() == "true":
                 pinst = True
@@ -282,9 +298,9 @@ class Client(BaseClient):
             }
             slug = workspace_slug(workspace, self.workspace_list())
             response = self._http_request(
-                method="POST",
-                url_suffix=f"/v1/workspace/{slug}/update-pin",
-                json_data=data
+                method = "POST",
+                url_suffix = f"/v1/workspace/{slug}/update-pin",
+                json_data = data
             )
         except Exception as e:
             msg = f"AnythingLLM: workspace_pin: exception pinning embedded document to workspace - {str(e)}"
@@ -292,6 +308,7 @@ class Client(BaseClient):
             raise Exception(msg)
 
         return response
+
 
     def _chat(self, workspace: str, message: str, mode: str, type: str):
         try:
@@ -301,9 +318,9 @@ class Client(BaseClient):
             }
             slug = workspace_slug(workspace, self.workspace_list())
             response = self._http_request(
-                method="POST",
-                url_suffix=f"/v1/workspace/{slug}/{type}",
-                json_data=data
+                method = "POST",
+                url_suffix = f"/v1/workspace/{slug}/{type}",
+                json_data = data
             )
         except Exception as e:
             msg = f"AnythingLLM: _chat: exception chatting - {str(e)}"
@@ -311,6 +328,7 @@ class Client(BaseClient):
             raise Exception(msg)
 
         return response
+
 
     def _list(self, items: str):
         try:
@@ -325,13 +343,14 @@ class Client(BaseClient):
 
         return response
 
+
     def _embedding(self, workspace: str, folder: str, document: str, action: str):
         try:
             name = document_name(folder, document, self.document_list())
 
             try:
                 ws = self.workspace_get(workspace)
-            except Exception as e:
+            except Exception:
                 raise Exception(f"workspace [{workspace}] not found")
 
             if action == "adds":
@@ -346,9 +365,9 @@ class Client(BaseClient):
             }
             slug = workspace_slug(workspace, self.workspace_list())
             response = self._http_request(
-                method="POST",
-                url_suffix=f"/v1/workspace/{slug}/update-embeddings",
-                json_data=data
+                method = "POST",
+                url_suffix = f"/v1/workspace/{slug}/update-embeddings",
+                json_data = data
             )
         except Exception as e:
             msg = f"AnythingLLM: _embedding: exception [{action}] a document embedding - {str(e)}"
@@ -357,9 +376,7 @@ class Client(BaseClient):
 
         return response
 
-
 ''' HELPER FUNCTIONS '''
-
 
 def embedding_exists(docname: str, ws: dict) -> bool:
     for doc in ws['workspace']['documents']:
@@ -399,7 +416,7 @@ def validate_workspace_settings(settings: dict):
     new_settings = {}
     if "name" in settings:
         new_settings['name'] = settings['name']
-    # if "vectorTag" in settings:
+    #if "vectorTag" in settings:
     #    new_settings['vectorTag'] = settings['vectorTag']
     if "openAiTemp" in settings:
         new_settings['openAiTemp'] = float(settings['openAiTemp'])
@@ -409,9 +426,9 @@ def validate_workspace_settings(settings: dict):
         new_settings['openAiPrompt'] = settings['openAiPrompt']
     if "similarityThreshold" in settings:
         new_settings['similarityThreshold'] = float(settings['similarityThreshold'])
-    # if "chatProvider" in settings:
+    #if "chatProvider" in settings:
     #    new_settings['chatProvider'] = settings['chatProvider']
-    # if "chatModel" in settings:
+    #if "chatModel" in settings:
     #    new_settings['chatModel'] = settings['chatModel']
     if "topN" in settings:
         new_settings['topN'] = int(settings['topN'])
@@ -427,7 +444,7 @@ def DictMarkdown(nested, indent):
     if indent == "":
         indent = "-"
     else:
-        indent = "  " + indent
+        indent = "  "+indent
     if isinstance(nested, dict):
         for key, val in nested.items():
             if isinstance(val, dict):
@@ -470,72 +487,72 @@ def test_module(client: Client, args: dict) -> str:
 def list_command(client: Client, args: dict) -> CommandResults:
     response: dict = {}
     return CommandResults(
-        outputs_prefix='AnythingLLM.list',
-        readable_output=DictMarkdown(response, ""),
-        outputs=response
+        outputs_prefix = 'AnythingLLM.list',
+        readable_output = DictMarkdown(response, ""),
+        outputs = response
     )
 
 
 def settings_command(client: Client, args: dict) -> CommandResults:
     response: dict = {}
     return CommandResults(
-        outputs_prefix='AnythingLLM.settings',
-        readable_output=DictMarkdown(response, ""),
-        outputs=response
+        outputs_prefix = 'AnythingLLM.settings',
+        readable_output = DictMarkdown(response, ""),
+        outputs = response
     )
 
 
 def document_list_command(client: Client, args: dict) -> CommandResults:
     response = client.document_list()
     return CommandResults(
-        outputs_prefix='AnythingLLM.workspace_list',
-        readable_output=DictMarkdown(response, ""),
-        outputs=response
+        outputs_prefix = 'AnythingLLM.workspace_list',
+        readable_output = DictMarkdown(response, ""),
+        outputs = response
     )
 
 
 def document_createfolder_command(client: Client, args: dict) -> CommandResults:
     response = client.document_createfolder(args['folder'])
     return CommandResults(
-        outputs_prefix='AnythingLLM.document_createfolder',
-        readable_output=DictMarkdown(response, ""),
-        outputs=response
+        outputs_prefix = 'AnythingLLM.document_createfolder',
+        readable_output = DictMarkdown(response, ""),
+        outputs = response
     )
 
 
 def document_delete_command(client: Client, args: dict) -> CommandResults:
     response = client.document_delete(args['folder'], args['document'])
     return CommandResults(
-        outputs_prefix='AnythingLLM.document_delete',
-        readable_output=DictMarkdown(response, ""),
-        outputs=response
+        outputs_prefix = 'AnythingLLM.document_delete',
+        readable_output = DictMarkdown(response, ""),
+        outputs = response
     )
 
 
 def document_move_command(client: Client, args: dict) -> CommandResults:
     response = client.document_move(args['srcfolder'], args['dstfolder'], args['document'])
     return CommandResults(
-        outputs_prefix='AnythingLLM.document_move',
-        readable_output=DictMarkdown(response, ""),
-        outputs=response
+        outputs_prefix = 'AnythingLLM.document_move',
+        readable_output = DictMarkdown(response, ""),
+        outputs = response
     )
 
 
 def document_get_command(client: Client, args: dict) -> CommandResults:
     response = client.document_get(args['folder'], args['document'])
     return CommandResults(
-        outputs_prefix='AnythingLLM.document_move',
-        readable_output=DictMarkdown(response, ""),
-        outputs=response
+        outputs_prefix = 'AnythingLLM.document_move',
+        readable_output = DictMarkdown(response, ""),
+        outputs = response
     )
 
 
 def document_upload_file_command(client: Client, args: dict) -> CommandResults:
     response = client.document_upload_file(args['fileentry'])
     return CommandResults(
-        outputs_prefix='AnythingLLM.upload_file',
-        readable_output=DictMarkdown(response, ""),
-        outputs=response
+        outputs_prefix = 'AnythingLLM.upload_file',
+        readable_output = DictMarkdown(response, ""),
+        outputs = response
     )
 
 
@@ -548,9 +565,9 @@ def document_upload_link_command(client: Client, args: dict) -> CommandResults:
         args['source']
     )
     return CommandResults(
-        outputs_prefix='AnythingLLM.upload_link',
-        readable_output=DictMarkdown(response, ""),
-        outputs=response
+        outputs_prefix = 'AnythingLLM.upload_link',
+        readable_output = DictMarkdown(response, ""),
+        outputs = response
     )
 
 
@@ -563,104 +580,104 @@ def document_upload_text_command(client: Client, args: dict) -> CommandResults:
         args['source']
     )
     return CommandResults(
-        outputs_prefix='AnythingLLM.upload_text',
-        readable_output=DictMarkdown(response, ""),
-        outputs=response
+        outputs_prefix = 'AnythingLLM.upload_text',
+        readable_output = DictMarkdown(response, ""),
+        outputs = response
     )
 
 
 def workspace_delete_command(client: Client, args: dict) -> CommandResults:
     response = client.workspace_delete(args['workspace'])
     return CommandResults(
-        outputs_prefix='AnythingLLM.workspace_delete',
-        readable_output=DictMarkdown(response, ""),
-        outputs=response
+        outputs_prefix = 'AnythingLLM.workspace_delete',
+        readable_output = DictMarkdown(response, ""),
+        outputs = response
     )
 
 
 def workspace_get_command(client: Client, args: dict) -> CommandResults:
     response = client.workspace_get(args['workspace'])
     return CommandResults(
-        outputs_prefix='AnythingLLM.workspace_get',
-        readable_output=DictMarkdown(response, ""),
-        outputs=response
+        outputs_prefix = 'AnythingLLM.workspace_get',
+        readable_output = DictMarkdown(response, ""),
+        outputs = response
     )
 
 
 def workspace_list_command(client: Client, args: dict) -> CommandResults:
     response = client.workspace_list()
     return CommandResults(
-        outputs_prefix='AnythingLLM.workspace_list',
-        readable_output=DictMarkdown(response, ""),
-        outputs=response
+        outputs_prefix = 'AnythingLLM.workspace_list',
+        readable_output = DictMarkdown(response, ""),
+        outputs = response
     )
 
 
 def workspace_new_command(client: Client, args: dict) -> CommandResults:
-    # if 'workspace' in args:
+    #if 'workspace' in args:
     response = client.workspace_new(args['workspace'])
     return CommandResults(
-        outputs_prefix='AnythingLLM.workspace_new',
-        readable_output=DictMarkdown(response, ""),
-        outputs=response
+        outputs_prefix ='AnythingLLM.workspace_new',
+        readable_output = DictMarkdown(response, ""),
+        outputs = response
     )
 
-    # msg = f"AnythingLLM: workspace_new_command: missing command arguments [workspace]"
-    # demisto.debug(msg)
-    # raise Exception(msg)
+    #msg = f"AnythingLLM: workspace_new_command: missing command arguments [workspace]"
+    #demisto.debug(msg)
+    #raise Exception(msg)
 
 
 def workspace_chat_command(client: Client, args: dict) -> CommandResults:
     response = client.workspace_chat(args['workspace'], args['message'], args['mode'])
     return CommandResults(
-        outputs_prefix='AnythingLLM.workspace_chat',
-        readable_output=DictMarkdown(response, ""),
-        outputs=response
+        outputs_prefix ='AnythingLLM.workspace_chat',
+        readable_output = DictMarkdown(response, ""),
+        outputs = response
     )
 
 
 def workspace_stream_chat_command(client: Client, args: dict) -> CommandResults:
     response = client.workspace_stream_chat(args['workspace'], args['message'], args['mode'])
     return CommandResults(
-        outputs_prefix='AnythingLLM.workspace_stream_chat',
-        readable_output=DictMarkdown(response, ""),
-        outputs=response
+        outputs_prefix = 'AnythingLLM.workspace_stream_chat',
+        readable_output = DictMarkdown(response, ""),
+        outputs = response
     )
 
 
 def workspace_delete_embedding_command(client: Client, args: dict) -> CommandResults:
     response = client.workspace_delete_embedding(args['workspace'], args['folder'], args['document'])
     return CommandResults(
-        outputs_prefix='AnythingLLM.workspace_delete_embedding',
-        readable_output=DictMarkdown(response, ""),
-        outputs=response
+        outputs_prefix = 'AnythingLLM.workspace_delete_embedding',
+        readable_output = DictMarkdown(response, ""),
+        outputs = response
     )
 
 
 def workspace_add_embedding_command(client: Client, args: dict) -> CommandResults:
     response = client.workspace_add_embedding(args['workspace'], args['folder'], args['document'])
     return CommandResults(
-        outputs_prefix='AnythingLLM.workspace_add_embedding',
-        readable_output=DictMarkdown(response, ""),
-        outputs=response
+        outputs_prefix = 'AnythingLLM.workspace_add_embedding',
+        readable_output = DictMarkdown(response, ""),
+        outputs = response
     )
 
 
 def workspace_pin_command(client: Client, args: dict) -> CommandResults:
     response = client.workspace_pin(args['workspace'], args['folder'], args['document'], args['status'])
     return CommandResults(
-        outputs_prefix='AnythingLLM.workspace_pin',
-        readable_output=DictMarkdown(response, ""),
-        outputs=response
+        outputs_prefix = 'AnythingLLM.workspace_pin',
+        readable_output = DictMarkdown(response, ""),
+        outputs = response
     )
 
 
 def workspace_settings_command(client: Client, args: dict) -> CommandResults:
     response = client.workspace_settings(args['workspace'], json.loads(args['settings']))
     return CommandResults(
-        outputs_prefix='AnythingLLM.workspace_settings',
-        readable_output=DictMarkdown(response, ""),
-        outputs=response
+        outputs_prefix = 'AnythingLLM.workspace_settings',
+        readable_output = DictMarkdown(response, ""),
+        outputs = response
     )
 
 
@@ -678,10 +695,10 @@ def main() -> None:  # pragma: no cover
             'Content-Type': "application/json"
         }
         client = Client(
-            base_url=params.get('url') + "/api",
-            verify=not params.get('insecure', False),
-            headers=headers,
-            proxy=params.get('proxy', False)
+            base_url = params.get('url') + "/api",
+            verify = not params.get('insecure', False),
+            headers = headers,
+            proxy = params.get('proxy', False)
         )
 
         if command == 'test-module':
@@ -689,9 +706,9 @@ def main() -> None:  # pragma: no cover
             result = test_module(client, params)
             return_results(result)
 
-        # elif command == "anyllm-list":
+        #elif command == "anyllm-list":
         #    return_results(list_command(client, args))
-        # elif command == "anyllm-settings":
+        #elif command == "anyllm-settings":
         #    return_results(settings_command(client, args))
 
         elif command == "anyllm-document-list":
