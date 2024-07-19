@@ -9,7 +9,6 @@ Retrieval Augmented Generation (RAG) with LLM and Vector DB that can be local fo
     | --- | --- |
     | AnythingLLM URL (e.g., http://&lt;url to AnythingLLM&gt;:3001) | True |
     | AnythingLLM API Key | True |
-    | AnythingLLM API Key | True |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
