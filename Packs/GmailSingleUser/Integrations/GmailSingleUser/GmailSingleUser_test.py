@@ -538,7 +538,7 @@ part_test3 = [{
     [
         (part_test1, ('', '', [{'ID': '1234', 'Name': '5678-attachmentName-image-1.png'}])),
         (part_test2, ('', '', [{'ID': '1234', 'Name': '5678-attachmentName-image-1.png'}])),
-        (part_test3, ('', '', [{'ID': '1234', 'Name': '1234-attachmentName-image-1.png'}])),
+        (part_test3, ('', '', [{'ID': '1234', 'Name': 'image-1.png'}])),
     ],
 )
 def test_parse_mail_parts(part, expected_result):
