@@ -186,6 +186,7 @@ def parse_mail_parts(parts):
         else:
             if part['body'].get('attachmentId') is not None:
                 attachmentName = part['filename']
+                content_id = ""
                 for header in part.get('headers', []):
                     if header.get('name') == 'Content-ID':
                         content_id = header.get('value').strip("<>")
