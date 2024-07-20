@@ -494,24 +494,24 @@ def test_same_cluster_name(mocker):
     assert "nmap_0" in clusters_name
 
 
-# @freeze_time('2024-07-16 14:56:00 UTC')
-# def test_no_retrain_model(mocker: MockerFixture):
-#     global FETCHED_INCIDENT
-#     global sub_dict_1
-#     global sub_dict_0
-#     FETCHED_INCIDENT = FETCHED_INCIDENT_RETRAIN
-#     args = PARAMETERS_DICT | {
-#         "fieldsForClustering": "field_1, field_2, wrong_field",
-#         "fieldForClusterName": "entityname",
-#         'forceRetrain': 'False',
-#         'modelName': 'from_file'
-#     }
-#     mocker.patch.object(demisto, "args", return_value=args)
-#     execute_command_mock = mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
-#     model, output_clustering_json, msg = main()
-#     output_json = json.loads(output_clustering_json)
+@freeze_time('2024-07-16 14:56:00 UTC')
+def test_no_retrain_model(mocker: MockerFixture):
+    global FETCHED_INCIDENT
+    global sub_dict_1
+    global sub_dict_0
+    FETCHED_INCIDENT = FETCHED_INCIDENT_RETRAIN
+    args = PARAMETERS_DICT | {
+        "fieldsForClustering": "field_1, field_2, wrong_field",
+        "fieldForClusterName": "entityname",
+        'forceRetrain': 'False',
+        'modelName': 'from_file'
+    }
+    mocker.patch.object(demisto, "args", return_value=args)
+    execute_command_mock = mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
+    model, output_clustering_json, msg = main()
+    output_json = json.loads(output_clustering_json)
     
-#     assert output_json["data"][0]['incidents_ids'] == ['5', '7']
-#     assert output_json["data"][1]['incidents_ids'] == ['6', '8']
-#     assert MESSAGE_INCORRECT_FIELD % "wrong_field" in msg
-#     execute_command_mock.assert_any_call("getMLModel", {"modelName": 'from_file'})
+    assert output_json["data"][0]['incidents_ids'] == ['5', '7']
+    assert output_json["data"][1]['incidents_ids'] == ['6', '8']
+    assert MESSAGE_INCORRECT_FIELD % "wrong_field" in msg
+    execute_command_mock.assert_any_call("getMLModel", {"modelName": 'from_file'})

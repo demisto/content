@@ -7,12 +7,13 @@ import math
 from datetime import datetime
 
 import dill as pickle
-import hdbscan
 import numpy as np
 import pandas as pd
 from CommonServerUserPython import *
 from sklearn import cluster
 from sklearn.base import BaseEstimator, TransformerMixin
+from sklearn.metrics import DistanceMetric
+EuclideanDistance = type(DistanceMetric.get_metric('euclidean'))
 from sklearn.compose import ColumnTransformer
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.manifold import TSNE
@@ -42,7 +43,7 @@ REPLACE_COMMAND_LINE = {"=": " = ", "\\": "/", "[": "", "]": "", '"': "", "'": "
 TFIDF_PARAMS = {'max_features': 500, 'ngram_range': (2, 4)}
 
 HDBSCAN_PARAMS = {
-    'algorithm': 'best',
+    'algorithm': 'auto',
     'n_jobs': -1,
     'prediction_data': True
 }
@@ -67,7 +68,6 @@ class Clustering:
         """
 
         self.model_name = model_name
-        self.model_glo = None
         self.model = None
 
         # Data
@@ -109,8 +109,7 @@ class Clustering:
         elif self.model_name == "KMeans":
             self.model = cluster.KMeans()
         elif self.model_name == "hdbscan":
-            self.model_glo = hdbscan
-            self.model = self.model_glo.HDBSCAN()
+            self.model = cluster.HDBSCAN()
 
         for key, value in parameters.items():
             setattr(self.model, key, value)
@@ -153,7 +152,8 @@ class Clustering:
         :return:
         """
         if not self.TSNE_:
-            tsne = TSNE(n_jobs=-1, n_components=dimension, learning_rate=1000)
+            perplexity = 1  # TEMP
+            tsne = TSNE(perplexity=perplexity, n_jobs=-1, n_components=dimension, learning_rate=1000)
             self.data_2d = tsne.fit_transform(pd.DataFrame(self.centers).T)
             for coordinates, center in zip(self.data_2d, pd.DataFrame(self.centers).T.index):
                 self.centers_2d[center] = coordinates
@@ -211,11 +211,11 @@ class PostProcessing:
             self.stats[number_cluster]['number_samples'] = sum(
                 self.clustering.model.labels_ == number_cluster)  # type: ignore
             ind = np.where(self.clustering.model.labels_ == number_cluster)[0]  # type: ignore
-            selected_data = [x for x in self.clustering.raw_data.iloc[ind][FAMILY_COLUMN_NAME]]  # type: ignore
+            selected_data = list(self.clustering.raw_data.iloc[ind][FAMILY_COLUMN_NAME])  # type: ignore
             counter = collections.Counter(selected_data)
             total = sum(dict(counter).values(), 0.0)
             dist = {k: v * 100 / total for k, v in counter.items()}
-            dist = dict((k, v) for k, v in dist.items() if v >= 1)
+            dist = {k: v for k, v in dist.items() if v >= 1}
             self.stats[number_cluster]['distribution sample'] = dist
 
     def compute_dist(self):
@@ -724,7 +724,7 @@ def remove_not_valid_field(fields_for_clustering: list[str], incidents_df: pd.Da
     :param max_ratio_of_missing_value: max ratio of missing values we accept
     :return: List of valid fields, message
     """
-    missing_values_percentage = incidents_df[fields_for_clustering].applymap(lambda x: x == '').sum(axis=0) / len(
+    missing_values_percentage = incidents_df[fields_for_clustering].map(lambda x: x == '').sum(axis=0) / len(
         incidents_df)
     mask = missing_values_percentage < max_ratio_of_missing_value
     valid_field = mask[mask].index.tolist()
@@ -771,8 +771,14 @@ def load_model64(model_base64: str):
     :param model_base64: string base64 model
     :return: PostProcessing model
     """
+    old_find_class = pickle._dill.Unpickler.find_class
+    def new_find_class(self, module, name):
+        if module == 'sklearn.neighbors._dist_metrics' and name == 'EuclideanDistance':
+            module = __name__
+        return old_find_class(self, module, name)
+    pickle._dill.Unpickler.find_class = new_find_class
     try:
-        return pickle.loads(base64.b64decode(model_base64))  # guardrails-disable-line
+        return pickle.loads(base64.b64decode(model_base64), ignore=True)  # guardrails-disable-line
     except pickle.UnpicklingError:
         return_error("Model exist but cannot be loaded")
 
