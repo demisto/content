@@ -80,7 +80,7 @@ def create_email_html(email_html='', entry_id_list=None):
     return email_html
 
 
-def get_entry_id_list(attachments, files, email_html, legacy_name= False):
+def get_entry_id_list(attachments, files, email_html, legacy_name=False):
     """Get the entry ids for the email attachments from the email's related incident's files entry.
     Args:
         attachments (list): The attachments of the email.
@@ -461,7 +461,7 @@ def main():
         check_incident_status(incident_details, email_related_incident)
 
         email_html = remove_html_conversation_history(email_html)
-        
+
         get_attachments_using_instance(email_related_incident, incident.get('labels'), email_to)
 
         # Adding a 5 seconds sleep in order to wait for all the attachments to get uploaded to the server.

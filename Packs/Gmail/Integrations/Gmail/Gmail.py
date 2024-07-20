@@ -192,7 +192,7 @@ def parse_mail_parts(parts):
                         content_id = header.get('value').strip("<>")
                 attachmentName = part['filename']
                 if content_id and content_id != "None" and not LEGACY_NAME:
-                        attachmentName = f"{content_id}-attachmentName-{part['filename']}"
+                    attachmentName = f"{content_id}-attachmentName-{part['filename']}"
                 attachments.append({
                     'ID': part['body']['attachmentId'],
                     'Name': attachmentName,
