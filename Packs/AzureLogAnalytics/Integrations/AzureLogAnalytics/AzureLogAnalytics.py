@@ -213,7 +213,6 @@ def execute_query_command(client: Client, args: dict[str, Any]) -> CommandResult
     timeout = arg_to_number(args.get('timeout', 10))
     workspace_id = args.get('workspace_id') or demisto.params().get('workspaceID')
 
-    # full_url = f"https://api.loganalytics.us/v1/workspaces/{workspace_id}/query" # DELETE
     full_url = f"{client.azure_cloud.endpoints.log_analytics_resource_id}/v1/workspaces/{workspace_id}/query"
 
     data = {
