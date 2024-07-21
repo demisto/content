@@ -12,8 +12,6 @@ import pandas as pd
 from CommonServerUserPython import *
 from sklearn import cluster
 from sklearn.base import BaseEstimator, TransformerMixin
-from sklearn.metrics import DistanceMetric
-EuclideanDistance = type(DistanceMetric.get_metric('euclidean'))
 from sklearn.compose import ColumnTransformer
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.manifold import TSNE
@@ -771,12 +769,6 @@ def load_model64(model_base64: str):
     :param model_base64: string base64 model
     :return: PostProcessing model
     """
-    old_find_class = pickle._dill.Unpickler.find_class
-    def new_find_class(self, module, name):
-        if module == 'sklearn.neighbors._dist_metrics' and name == 'EuclideanDistance':
-            module = __name__
-        return old_find_class(self, module, name)
-    pickle._dill.Unpickler.find_class = new_find_class
     try:
         return pickle.loads(base64.b64decode(model_base64), ignore=True)  # guardrails-disable-line
     except pickle.UnpicklingError:

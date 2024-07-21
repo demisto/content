@@ -97,7 +97,7 @@ tags:
 - ml
 timeout: 3.6µs
 type: python
-dockerimage: devdemisto/mlclustering:1.0.0.103528
+dockerimage: devdemisto/mlclustering:1.0.0.104173
 tests:
 - No tests (auto formatted)
 fromversion: 6.2.0
