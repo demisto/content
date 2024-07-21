@@ -266,7 +266,7 @@ class Client:
         elif resp.loginState == APIRequest_pb2.REQUIRES_AUTH_HASH:  # type: ignore
             raise DemistoException(
                 "Device is already registered, try running the 'ksm-event-collector-auth-complete'"
-                "command without supplying a code argument."
+                " command without supplying a code argument."
             )
         else:
             raise DemistoException(f"Unknown login state {resp.loginState}")  # type: ignore
@@ -443,8 +443,8 @@ def fetch_events(client: Client, last_run: dict[str, Any], max_fetch_limit: int)
     last_fetch_epoch_time: int = int(last_run.get("last_fetch_epoch_time", "0"))
 
     # (if 0) returns False
-    last_fetch_epoch_time = last_fetch_epoch_time if last_fetch_epoch_time else int(datetime.now().timestamp())
-    last_fetch_epoch_time = 0
+    # last_fetch_epoch_time = last_fetch_epoch_time if last_fetch_epoch_time else int(datetime.now().timestamp())
+    # last_fetch_epoch_time = 0
     last_fetched_ids: set[str] = set(last_run.get("last_fetch_ids", []))
     audit_log = get_audit_logs(
         client=client,
@@ -454,6 +454,14 @@ def fetch_events(client: Client, last_run: dict[str, Any], max_fetch_limit: int)
     )
     return audit_log
 
+
+def start_login_command(client: Client):
+    client.start_login()
+    return CommandResults(readable_output="Code was sent successfully to the user's email")
+
+def complete_login_command(client: Client, code: str):
+    client.complete_login(code=code)
+    return CommandResults(readable_output="Login completed")
 
 def test_authorization(
     client: Client,
@@ -480,17 +488,14 @@ def main() -> None:
         password=password,
     )
     client.refresh_session_token_if_needed()
-    # client.start_login()
-    # client.complete_login(code=args.get("code", ""))
     demisto.debug(f"Come one work Command being called is {demisto.command()}")
     try:
         if command == "test-module":
-            # This is the call made when pressing the integration Test button.
             return_results(test_module())
         elif command == "ksm-event-collector-auth-start":
-            client.start_login()
+            return_results(start_login_command(client=client))
         elif command == "ksm-event-collector-auth-complete":
-            client.complete_login(code=args.get("code", ""))
+            return_results(complete_login_command(client=client, code=args.get("code", "")))
         elif command == "ksm-event-collector-auth-test":
             return_results(test_authorization(client=client))
         elif command == "fetch-events":
