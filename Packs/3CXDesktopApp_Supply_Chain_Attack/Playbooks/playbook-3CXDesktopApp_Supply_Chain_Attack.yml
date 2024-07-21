@@ -78,7 +78,7 @@ tasks:
       id: f2ab5164-963b-4da0-8a23-27dcff31da94
       version: -1
       name: Collect IoCs from Huntress
-      description: This script will extract indicators from given HTML and will handle bad top-level domains to avoid false positives caused by file extensions.
+      description: This script will extract indicators from given HTML and will handle bad top-level domains to avoid false positives caused by file extensions. test
       scriptName: ParseHTMLIndicators
       type: regular
       iscommand: false
