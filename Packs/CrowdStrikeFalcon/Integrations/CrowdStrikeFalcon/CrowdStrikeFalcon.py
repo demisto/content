@@ -2683,7 +2683,7 @@ def get_modified_remote_data_command(args: dict[str, Any]):
         ).get('resources', [])
     if ON_DEMAND_SCANS_DETECTION_TYPE in fetch_types:
         raw_ids += get_detections_ids(
-            filter_arg=f"updated_timestamp:>'{last_update_utc.strftime(DETECTION_DATE_FORMAT)}'+product:'ods'"
+            filter_arg=f"updated_timestamp:>'{last_update_utc.strftime(DETECTION_DATE_FORMAT)}'+type:'ods'"
 
         ).get('resources', [])
 
