@@ -1,5 +1,5 @@
 [RULE: EntraID_Common_fields]
-filter category in("AuditLogs", "SignInLogs", "NonInteractiveUserSignInLogs", "userAgent	xdm.source.user_agent", "ManagedIdentitySignInLogs", "ADFSSignInLogs", "ProvisioningLogs")
+filter category in("AuditLogs", "SignInLogs", "NonInteractiveUserSignInLogs", "ManagedIdentitySignInLogs", "ADFSSignInLogs")
 | alter
         xdm.source.ipv4 = if(callerIpAddress ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", callerIpAddress, null),
         xdm.source.ipv6 = if(callerIpAddress ~= "[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}", callerIpAddress, null),
