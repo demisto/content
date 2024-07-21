@@ -61,15 +61,27 @@ name: ThreatFox Feed
 script:
   commands:
   - arguments:
-    - description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
-      name: dummy
-      required: true
-    description: '[Enter a description of the command, including any important information users need to know, for example required permissions.]'
-    name: baseintegration-dummy
-    outputs:
-    - contextPath: BaseIntegration.Output
-      description: '[Enter a description of the data returned in this output.]'
-      type: String
+    - description: need to check this
+      name: search_term
+      required: false
+    - description: need to check this
+      name: id
+      required: false
+    - description: need to check this
+      name: hash
+      required: false
+    - description: need to check this
+      name: tag
+      required: false
+    - description: need to check this
+      name: malware
+      required: false
+    - description: need to check this
+      name: limit
+      required: false
+      defaultValue: '50'
+    description: Retrieves indicators from the ThreatFox API.
+    name: threatfox-get-indicators
   runonce: false
   script: '-'
   type: python
