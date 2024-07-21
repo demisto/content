@@ -177,7 +177,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 60,
+          "x": 50,
           "y": 1215
         }
       }
@@ -256,7 +256,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 60,
+          "x": 50,
           "y": 1040
         }
       }
@@ -366,7 +366,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 60,
+          "x": 50,
           "y": 1390
         }
       }
@@ -395,7 +395,7 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": 1565
+          "y": 1580
         }
       }
     note: false
@@ -447,12 +447,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: dc0ff408-8409-4b40-831f-43664af8b5b0
+    taskid: f8dc3b52-f833-451e-82f7-4d9cb4f5dd49
     type: regular
     task:
-      id: dc0ff408-8409-4b40-831f-43664af8b5b0
+      id: f8dc3b52-f833-451e-82f7-4d9cb4f5dd49
       version: -1
-      name: Set emails key
+      name: Set invalid email key
       description: Set a value in context under the key you entered.
       scriptName: Set
       type: regular
@@ -472,7 +472,7 @@ tasks:
       {
         "position": {
           "x": 490,
-          "y": 690
+          "y": 1215
         }
       }
     note: false
@@ -484,10 +484,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 541f23ff-5c7f-4d16-8a62-3ada461fd6e0
+    taskid: 03f3549e-de89-4645-8262-d2760df70c29
     type: regular
     task:
-      id: 541f23ff-5c7f-4d16-8a62-3ada461fd6e0
+      id: 03f3549e-de89-4645-8262-d2760df70c29
       version: -1
       name: IsEmailAddressInternal
       description: Checks if the email address is part of the internal domains
@@ -497,7 +497,7 @@ tasks:
       brand: ""
     nexttasks:
       '#error#':
-      - "5"
+      - "9"
       '#none#':
       - "20"
     scriptarguments:
@@ -514,7 +514,7 @@ tasks:
       {
         "position": {
           "x": 490,
-          "y": 865
+          "y": 1390
         }
       }
     note: false
@@ -546,7 +546,7 @@ tasks:
       {
         "position": {
           "x": 500,
-          "y": 1040
+          "y": 1565
         }
       }
     note: false
@@ -561,7 +561,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1580,
+        "height": 1610,
         "width": 830,
         "x": 50,
         "y": 50
