@@ -3746,6 +3746,6 @@ script:
   subtype: python3
   type: python
 tests:
-- No tests
+- carbonBlackEndpointStandardV3TestPlaybook
 fromversion: 6.10.0
 defaultmapperin: "Carbon Black Endpoint Standard-mapper"
