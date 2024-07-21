@@ -36,8 +36,10 @@ class Client:
             f"subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/"
             + f"providers/Microsoft.OperationalInsights/workspaces/{workspace_name}"
         )
-        auth_code_scope = f"{self.azure_cloud.endpoints.log_analytics_resource_id}/Data.Read%20\
-            {self.azure_cloud.endpoints.resource_manager}user_impersonation"
+        auth_code_scope = (
+            f"{self.azure_cloud.endpoints.log_analytics_resource_id}"
+            + f"/Data.Read%20{self.azure_cloud.endpoints.resource_manager}user_impersonation"
+        )
         resources_list = [self.azure_cloud.endpoints.resource_manager, self.azure_cloud.endpoints.log_analytics_resource_id]
         base_url = urljoin(url=self.azure_cloud.endpoints.resource_manager, suffix=suffix)
 
