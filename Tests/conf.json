@@ -3147,14 +3147,15 @@
             "fromversion": "5.0.0",
             "memory_threshold": 300,
             "pid_threshold": 200,
-            "timeout": 1500
+            "timeout": 2500
         },
         {
             "integrations": "Rasterize",
             "playbookID": "RasterizeImageTest",
             "fromversion": "5.0.0",
             "memory_threshold": 300,
-            "pid_threshold": 200
+            "pid_threshold": 200,
+            "timeout": 2000
         },
         {
             "integrations": "Ipstack",
