@@ -1,22 +1,25 @@
+import os
+from datetime import datetime
+from pathlib import Path
+
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import tempfile
-
-
 import re
-
 from base64 import b64decode
-from flask import Flask, Response, request
+from flask import Flask, Response, request, send_file
 from netaddr import IPSet, IPNetwork
-from typing import Any, cast, IO
+from typing import IO
 from collections.abc import Iterable, Callable
 from math import ceil
+from enum import Enum
 import tldextract
 import urllib3
-import dateparser
 import hashlib
-import json
 import ipaddress
+import zipfile
+import glob
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -41,8 +44,13 @@ MAX_LIST_SIZE_WITH_URL_QUERY = 100000
 
 EDL_ON_DEMAND_KEY: str = 'UpdateEDL'
 EDL_ON_DEMAND_CACHE_PATH: str = ''
+EDL_FULL_LOG_PATH: str = f'full_log_{demisto.uniqueFile()}'
+EDL_FULL_LOG_PATH_WIP: str = f'wip_log_{demisto.uniqueFile()}'
+LOGS_ZIP_FILE_PREFIX: str = 'log_download'
 EDL_ON_DEMAND_CACHE_ORIGINAL_SIZE: int = 0
 EDL_SEARCH_LOOP_LIMIT: int = 10
+MAX_DISPLAY_LOG_FILE_SIZE = 100000
+LARGE_LOG_DISPLAY_MSG = '# Log exceeds max size. Refresh to download as file.'
 
 ''' REFORMATTING REGEXES '''
 _PROTOCOL_REMOVAL = re.compile('^(?:[a-z]+:)*//')
@@ -74,6 +82,14 @@ FORMAT_PROXYSG: str = "Symantec ProxySG"
 MWG_TYPE_OPTIONS = ["string", "applcontrol", "dimension", "category", "ip", "mediatype", "number", "regex"]
 
 INCREASE_LIMIT = 1.1
+
+
+class IndicatorAction(Enum):
+    ADDED = 'Added'
+    MODIFIED = 'Modified'
+    DROPPED = 'Dropped'
+
+
 '''Request Arguments Class'''
 
 
@@ -264,7 +280,7 @@ def log_iocs_file_data(formatted_indicators: str, max_length: int = 100) -> None
 
 
 @debug_function
-def create_new_edl(request_args: RequestArguments) -> tuple[str, int]:
+def create_new_edl(request_args: RequestArguments) -> tuple[str, int, dict]:
     """
     Get indicators from the server using IndicatorsSearcher and format them.
 
@@ -285,13 +301,14 @@ def create_new_edl(request_args: RequestArguments) -> tuple[str, int]:
     )
     demisto.debug(f"Creating a new EDL file in {request_args.out_format} format")
     formatted_indicators = ''
+    new_log_stats = {}
     if request_args.out_format == FORMAT_TEXT:
         if request_args.drop_invalids or request_args.collapse_ips != "Don't Collapse":
             # Because there may be illegal indicators or they may turn into cider, the limit is increased
             indicator_searcher.limit = int(limit * INCREASE_LIMIT)
         new_iocs_file, original_indicators_count = get_indicators_to_format(indicator_searcher, request_args)
         # we collect first all indicators because we need all ips to collapse_ips
-        new_iocs_file = create_text_out_format(new_iocs_file, request_args)
+        new_iocs_file, new_log_stats = create_text_out_format(new_iocs_file, request_args)
         new_iocs_file.seek(0)
         iocs_set = set()
         for count, line in enumerate(new_iocs_file):
@@ -310,7 +327,7 @@ def create_new_edl(request_args: RequestArguments) -> tuple[str, int]:
         formatted_indicators = new_iocs_file.read()
     new_iocs_file.close()
     log_iocs_file_data(formatted_indicators)
-    return formatted_indicators, original_indicators_count
+    return formatted_indicators, original_indicators_count, new_log_stats
 
 
 @debug_function
@@ -688,10 +705,63 @@ def list_to_str(inp_list: list, delimiter: str = ',', map_func: Callable = str) 
     return str_res
 
 
-@debug_function
-def create_text_out_format(iocs: IO, request_args: RequestArguments) -> Union[IO, IO[str]]:
+def log_indicator_line(raw_indicator: str, indicator: str, action: str, reason: str, log_stats: dict) -> dict:
+    """Create and store a log line for the indicator.
+
+    Args:
+        raw_indicator (str): The raw indicator before modification.
+        indicator (str): The indicator after modification.
+        action (str): The action preformed, Added / Dropped / Modified.
+        reason (str): The reason for the action.
+        log_stats (dict): Stats of previous log entries.
+
+    Returns:
+        (dict) Updated log stats
     """
-    Create a list in new file of formatted_indicators
+    log_line = f"\n{action} | {indicator} | {raw_indicator} | {reason}"
+    append_log_edl_data(log_line)
+    log_stats[action] = log_stats.get(action, 0) + 1
+
+    return log_stats
+
+
+def store_log_data(request_args: RequestArguments, created: datetime, log_stats: dict) -> None:
+    """Add the header to the log string.
+
+    Args:
+        request_args (RequestArguments): The request args, they will be added to the header.
+        created (datetime): The time the log was created. This will be added to the header.
+        log_stats (dict): A statistics dict for the indicator modifications (e.g. {'Added': 5, 'Dropped': 3, 'Modified': 2}
+    """
+    log_file_wip = Path(EDL_FULL_LOG_PATH_WIP)
+    if log_file_wip.exists():
+        added_count = log_stats.get(IndicatorAction.ADDED.value, 0)
+        dropped_count = log_stats.get(IndicatorAction.DROPPED.value, 0)
+        modified_count = log_stats.get(IndicatorAction.MODIFIED.value, 0)
+
+        total_count = added_count + dropped_count + modified_count
+
+        header = f"# Created new EDL at {created.isoformat()}\n\n" \
+            f"## Configuration Arguments: {request_args.to_context_json()}\n\n" \
+            f"## EDL stats: {total_count} indicators in total, {modified_count} modified, {dropped_count} dropped, " \
+            f"{added_count} added.\n" \
+            f"\nAction | Indicator | Raw Indicator | Reason"
+
+        with open(EDL_FULL_LOG_PATH, 'w+') as new_full_log_file, log_file_wip.open('r') as log_file_data:
+            # Finalize the current log: write the headers and the WIP log to full_log_path
+            new_full_log_file.write(header)
+            for log_line in log_file_data:
+                new_full_log_file.write(log_line)
+
+        with open(EDL_FULL_LOG_PATH_WIP, 'w+') as log_file_data:
+            # Empty WIP log file after finalization.
+            log_file_data.seek(0)
+
+
+@debug_function
+def create_text_out_format(iocs: IO, request_args: RequestArguments) -> tuple[Union[IO, IO[str]], dict]:
+    """
+    Create a list in new file of formatted_indicators, and log the modifications.
      * IP / CIDR:
          1) if collapse_ips, collapse IPs/CIDRs
      * URL:
@@ -708,33 +778,47 @@ def create_text_out_format(iocs: IO, request_args: RequestArguments) -> Union[IO
     ipv6_formatted_indicators = set()
     iocs.seek(0)
     formatted_indicators = tempfile.TemporaryFile(mode='w+t')
+    log_stats: dict = {}
     new_line = ''  # For the first time he will not add a new line
     for str_ioc in iocs:
         ioc = json.loads(str_ioc.rstrip())
-        indicator = ioc.get('value')
-        if not indicator:
+        indicator_raw = ioc.get('value')
+        if not indicator_raw:
             continue
         if enforce_ascii:
             try:
-                indicator.encode('ascii')
+                indicator_raw.encode('ascii')
             except UnicodeEncodeError:
                 continue
         ioc_type = ioc.get('indicator_type')
 
+        indicator = indicator_raw
+
         if ioc_type not in [FeedIndicatorType.IP, FeedIndicatorType.IPv6,
                             FeedIndicatorType.CIDR, FeedIndicatorType.IPv6CIDR]:
 
-            indicator = url_handler(indicator, request_args.url_protocol_stripping,
+            indicator = url_handler(indicator_raw, request_args.url_protocol_stripping,
                                     request_args.url_port_stripping, request_args.url_truncate)
 
             if request_args.drop_invalids:
-                if indicator != _PORT_REMOVAL.sub(_URL_WITHOUT_PORT, indicator) or\
+                if indicator != _PORT_REMOVAL.sub(_URL_WITHOUT_PORT, indicator) or \
                         indicator != _INVALID_TOKEN_REMOVAL.sub('*', indicator):
                     # check if the indicator held invalid tokens or port
+                    log_stats = log_indicator_line(raw_indicator=indicator_raw,
+                                                   indicator=indicator,
+                                                   action=IndicatorAction.DROPPED.value,
+                                                   reason='Invalid tokens or port.',
+                                                   log_stats=log_stats)
                     continue
 
                 if ioc_type == FeedIndicatorType.URL and len(indicator) >= PAN_OS_MAX_URL_LEN:
                     # URL indicator exceeds allowed length - ignore the indicator
+                    log_stats = log_indicator_line(raw_indicator=indicator_raw,
+                                                   indicator=indicator,
+                                                   action=IndicatorAction.DROPPED.value,
+                                                   reason=f'URL exceeds max length {PAN_OS_MAX_URL_LEN}.',
+                                                   log_stats=log_stats)
+
                     continue
 
             # for PAN-OS *.domain.com does not match domain.com
@@ -744,11 +828,21 @@ def create_text_out_format(iocs: IO, request_args: RequestArguments) -> Union[IO
                 domain = str(indicator.lstrip('*.'))
                 # if we should ignore TLDs and the domain is a TLD
                 if request_args.no_wildcard_tld and tldextract.extract(domain).suffix == domain:
+                    log_stats = log_indicator_line(raw_indicator=indicator_raw,
+                                                   indicator=domain,
+                                                   action=IndicatorAction.DROPPED.value,
+                                                   reason='Domain is a TLD.',
+                                                   log_stats=log_stats)
                     continue
                 formatted_indicators.write(new_line + domain)
                 new_line = '\n'
 
         if ioc_type == FeedIndicatorType.CIDR and is_large_cidr(indicator, request_args.maximum_cidr_size):
+            log_stats = log_indicator_line(raw_indicator=indicator_raw,
+                                           indicator=indicator,
+                                           action=IndicatorAction.DROPPED.value,
+                                           reason=f'CIDR exceeds max length {request_args.maximum_cidr_size}.',
+                                           log_stats=log_stats)
             continue
 
         if request_args.collapse_ips != DONT_COLLAPSE and ioc_type in (FeedIndicatorType.IP, FeedIndicatorType.CIDR):
@@ -760,20 +854,56 @@ def create_text_out_format(iocs: IO, request_args: RequestArguments) -> Union[IO
         else:
             formatted_indicators.write(new_line + str(indicator))
             new_line = '\n'
+            log_stats = log_indicator_line(raw_indicator=indicator_raw,
+                                           indicator=indicator,
+                                           action=IndicatorAction.ADDED.value,
+                                           reason=f'Found new {ioc_type}.',
+                                           log_stats=log_stats)
+
     iocs.close()
     if len(ipv4_formatted_indicators) > 0:
-        ipv4_formatted_indicators = ips_to_ranges(ipv4_formatted_indicators, request_args.collapse_ips)
-        for ip in ipv4_formatted_indicators:
+        ipv4_formatted_indicators_collapsed = ips_to_ranges(ipv4_formatted_indicators, request_args.collapse_ips)
+        for ip in ipv4_formatted_indicators_collapsed:
             formatted_indicators.write(new_line + str(ip))
             new_line = '\n'
+
+        for ip in ipv4_formatted_indicators:
+            if ip not in ipv4_formatted_indicators_collapsed:
+                log_stats = log_indicator_line(raw_indicator=ip,
+                                               indicator=ip,
+                                               action=IndicatorAction.MODIFIED.value,
+                                               reason=f'Collapsed IPv4 {request_args.collapse_ips}.',
+                                               log_stats=log_stats)
+
+            else:
+                log_stats = log_indicator_line(raw_indicator=ip,
+                                               indicator=ip,
+                                               action=IndicatorAction.ADDED.value,
+                                               reason='Found new IPv4.',
+                                               log_stats=log_stats)
 
     if len(ipv6_formatted_indicators) > 0:
-        ipv6_formatted_indicators = ips_to_ranges(ipv6_formatted_indicators, request_args.collapse_ips)
-        for ip in ipv6_formatted_indicators:
+        ipv6_formatted_indicators_collapsed = ips_to_ranges(ipv6_formatted_indicators, request_args.collapse_ips)
+        for ip in ipv6_formatted_indicators_collapsed:
             formatted_indicators.write(new_line + str(ip))
             new_line = '\n'
 
-    return formatted_indicators
+        for ip in ipv6_formatted_indicators:
+            if ip not in ipv6_formatted_indicators_collapsed:
+                log_stats = log_indicator_line(raw_indicator=ip,
+                                               indicator=ip,
+                                               action=IndicatorAction.MODIFIED.value,
+                                               reason=f'Collapsed IPv6 {request_args.collapse_ips}.',
+                                               log_stats=log_stats)
+
+            else:
+                log_stats = log_indicator_line(raw_indicator=ip,
+                                               indicator=ip,
+                                               action=IndicatorAction.ADDED.value,
+                                               reason='Found new IPv6.',
+                                               log_stats=log_stats)
+
+    return formatted_indicators, log_stats
 
 
 def url_handler(indicator: str, url_protocol_stripping: bool, url_port_stripping: bool, url_truncate: bool) -> str:
@@ -810,6 +940,21 @@ def get_outbound_mimetype(request_args: RequestArguments) -> str:
         return MIMETYPE_TEXT
 
 
+def append_log_edl_data(log_edl_data: str) -> None:
+    """Store the generated log string in the log file.
+
+    Args:
+        log_edl_data (str): The generated log data string.
+    """
+    try:
+        with open(EDL_FULL_LOG_PATH_WIP, 'a') as last_full_log_file:
+            last_full_log_file.write(log_edl_data)
+
+    except Exception as e:
+        demisto.debug(f"edl: Error in writing to log file: {str(e)}")
+        raise e
+
+
 @debug_function
 def get_edl_on_demand() -> tuple[str, int]:
     """
@@ -826,7 +971,9 @@ def get_edl_on_demand() -> tuple[str, int]:
     if EDL_ON_DEMAND_KEY in ctx:
         ctx.pop(EDL_ON_DEMAND_KEY, None)
         request_args = RequestArguments.from_context_json(ctx)
-        edl_data, EDL_ON_DEMAND_CACHE_ORIGINAL_SIZE = create_new_edl(request_args)
+        edl_data, EDL_ON_DEMAND_CACHE_ORIGINAL_SIZE, edl_data_stats = create_new_edl(request_args)
+        created_time = datetime.now(timezone.utc)
+        store_log_data(request_args, created_time, edl_data_stats)
 
         try:
             demisto.debug("edl: Writing EDL data to cache")
@@ -852,7 +999,7 @@ def get_edl_on_demand() -> tuple[str, int]:
             demisto.debug(f"edl: Error reading cache file: {str(e)}")
             raise e
 
-        demisto.debug("edl: Finished reading EDL data from cache")
+    demisto.debug("edl: Finished reading EDL data from cache")
 
     return edl_data, EDL_ON_DEMAND_CACHE_ORIGINAL_SIZE
 
@@ -887,20 +1034,23 @@ def get_bool_arg_or_param(args: dict, params: dict, key: str):
 ''' ROUTE FUNCTIONS '''
 
 
-@APP.route('/', methods=['GET'])
-def route_edl() -> Response:
-    """
-    Main handler for values saved in the integration context
-    """
-    params = demisto.params()
+def authenticate_app(params: dict, request_headers: Any) -> Optional[Response]:
+    """Make sure the user is authenticated on API request.
 
-    credentials = params.get('credentials') if params.get('credentials') else {}
+    Args:
+        params (dict): The demisto params, where the credentials are stored.
+        request_headers: The request headers.
+
+    Returns:
+        (Response) '401 Login Required' on failure to authenticate.
+        None on success.
+    """
+    credentials = params.get('credentials', {})
     username: str = credentials.get('identifier', '')
     password: str = credentials.get('password', '')
-    cache_refresh_rate: str = params.get('cache_refresh_rate')
 
     if username and password:
-        headers: dict = cast(dict[Any, Any], request.headers)
+        headers: dict = cast(dict[Any, Any], request_headers)
         if not validate_basic_authentication(headers, username, password):
             err_msg: str = 'Basic authentication failed. Make sure you are using the right credentials.'
             demisto.debug(err_msg)
@@ -908,10 +1058,66 @@ def route_edl() -> Response:
                 ('WWW-Authenticate', 'Basic realm="Login Required"'),
             ])
 
+    return None
+
+
+def get_edl_log_file() -> str:
+    """Check if edl log file exists, if it does return its contents (str)."""
+    edl_data_log = ''
+    if os.path.exists(EDL_FULL_LOG_PATH):
+        demisto.debug("found log file")
+        if os.path.getsize(EDL_FULL_LOG_PATH) > MAX_DISPLAY_LOG_FILE_SIZE:
+            return LARGE_LOG_DISPLAY_MSG
+
+        with open(EDL_FULL_LOG_PATH) as log_file:
+            log_file.seek(0)
+            edl_data_log = log_file.read()
+            log_file.seek(0)
+
+    return edl_data_log
+
+
+def prepare_response_data(data: str, prepend_str: str, append_str: str) -> str:
+    """Prepare data for app response.
+
+    Args:
+        data (str): The raw data.
+        prepend_str (str): The string to prepend to the data.
+        append_str (str): The string to append to the data.
+
+    Returns:
+        (str) The prepared data.
+    """
+    if append_str:
+        append_str = append_str.replace("\\n", "\n")
+        data = f"{data}{append_str}"
+    if prepend_str:
+        prepend_str = prepend_str.replace("\\n", "\n")
+        data = f"{prepend_str}\n{data}"
+
+    return data
+
+
+@APP.route('/', methods=['GET'])
+def route_edl() -> Response:
+    """
+    Main handler for values saved in the integration context
+    """
+    params = demisto.params()
+    cache_refresh_rate: str = params.get('cache_refresh_rate')
+    auth_resp = authenticate_app(params, request.headers)
+    if auth_resp:
+        return auth_resp
+
     request_args = get_request_args(request.args, params)
     on_demand = params.get('on_demand')
     created = datetime.now(timezone.utc)
-    edl_data, original_indicators_count = get_edl_on_demand() if on_demand else create_new_edl(request_args)
+    if on_demand:
+        edl_data, original_indicators_count = get_edl_on_demand()
+    else:
+        edl_data, original_indicators_count, edl_data_stats = create_new_edl(request_args)
+        store_log_data(request_args, created, edl_data_stats)
+
     query_time = (datetime.now(timezone.utc) - created).total_seconds()
     etag = f'"{hashlib.sha1(edl_data.encode()).hexdigest()}"'  # nosec
     edl_size = 0
@@ -925,16 +1131,9 @@ def route_edl() -> Response:
 
     # if the case there are strings to add to the EDL, add them if the output type is text
     elif request_args.out_format == FORMAT_TEXT:
-        append_str = params.get("append_string")
-        prepend_str = params.get("prepend_string")
-
-        if append_str:
-            append_str = append_str.replace("\\n", "\n")
-            edl_data = f"{edl_data}{append_str}"
-
-        if prepend_str:
-            prepend_str = prepend_str.replace("\\n", "\n")
-            edl_data = f"{prepend_str}\n{edl_data}"
+        edl_data = prepare_response_data(data=edl_data,
+                                         append_str=params.get("append_string"),
+                                         prepend_str=params.get("prepend_string"))
 
     mimetype = get_outbound_mimetype(request_args)
     max_age = ceil((datetime.now() - dateparser.parse(cache_refresh_rate)).total_seconds())  # type: ignore[operator]
@@ -951,6 +1150,105 @@ def route_edl() -> Response:
                   f'{[f"{header[0]}: {header[1]}" for header in headers]}')
 
     resp = Response(edl_data, status=200, mimetype=mimetype, headers=headers)
+    resp.cache_control.max_age = max_age
+    # number of seconds we are willing to serve stale content when there is an error
+    resp.cache_control['stale-if-error'] = '600'
+
+    return resp
+
+
+@APP.route('/log_download', methods=['GET'])
+def log_download() -> Response:
+    params = demisto.params()
+
+    auth_resp = authenticate_app(params, request.headers)
+    if auth_resp:
+        return auth_resp
+
+    demisto.debug("Getting log file to show")
+
+    created = datetime.now(timezone.utc)
+
+    for previous_zip in glob.glob(f'{LOGS_ZIP_FILE_PREFIX}_*.zip'):
+        os.remove(previous_zip)
+    log_zip_filename = f'{LOGS_ZIP_FILE_PREFIX}_{created.strftime("%Y%m%d-%H%M%S")}.zip'
+    zipf = zipfile.ZipFile(log_zip_filename, 'w', zipfile.ZIP_DEFLATED)
+    zipf.write(EDL_FULL_LOG_PATH)
+    zipf.close()
+    return send_file(log_zip_filename,
+                     mimetype='zip',
+                     download_name=log_zip_filename,
+                     as_attachment=True)
+
+
+@APP.route('/log', methods=['GET'])
+def route_edl_log() -> Response:
+    """Show the edl indicators log on '/log' API request. """
+    params = demisto.params()
+
+    cache_refresh_rate: str = params.get('cache_refresh_rate')
+    auth_resp = authenticate_app(params, request.headers)
+    if auth_resp:
+        return auth_resp
+
+    demisto.debug("Getting log file to show")
+
+    edl_data_log = get_edl_log_file() or '# Empty'
+    request_args = get_request_args(request.args, params)
+    created = datetime.now(timezone.utc)
+    ctx = demisto.getIntegrationContext()
+
+    # If edl_data_log is too large, first return a corresponding message as text.
+    # Second, return the log as a file.
+    # Alternate between the two via log_as_file context data key.
+    if edl_data_log == LARGE_LOG_DISPLAY_MSG:
+        # If we should return the log as a file this time
+        if ctx.get('log_as_file', False):
+            # Reset the log_as_file context key. Next time a message will be returned.
+            ctx['log_as_file'] = False
+            set_integration_context(ctx)
+            # Remove previous zip versions of the log file if they exist.
+            for previous_zip in glob.glob(f'{LOGS_ZIP_FILE_PREFIX}_*.zip'):
+                os.remove(previous_zip)
+            # zip the current log file and return it.
+            log_zip_filename = f'{LOGS_ZIP_FILE_PREFIX}_{created.strftime("%Y%m%d-%H%M%S")}.zip'
+            zipf = zipfile.ZipFile(log_zip_filename, 'w', zipfile.ZIP_DEFLATED)
+            zipf.write(EDL_FULL_LOG_PATH)
+            zipf.close()
+            return send_file(log_zip_filename,
+                             mimetype='zip',
+                             download_name=log_zip_filename,
+                             as_attachment=True)
+        else:
+            # Reset the log_as_file context key. Next time a file will be returned.
+            ctx['log_as_file'] = True
+            set_integration_context(ctx)
+
+    if request_args.out_format == FORMAT_TEXT and edl_data_log not in ['# Empty', LARGE_LOG_DISPLAY_MSG]:
+        ctx['log_as_file'] = False
+        set_integration_context(ctx)
+        edl_data_log = prepare_response_data(data=edl_data_log,
+                                             append_str=params.get("append_string"),
+                                             prepend_str=params.get("prepend_string"))
+
+    etag = f'"{hashlib.sha3_256(edl_data_log.encode()).hexdigest()}"'
+    headers = [
+        ('X-EDL-LOG-Request-Created', created.isoformat()),
+        ('ETag', etag)
+    ]  # type: ignore[assignment]
+    headers_str = f'{[f"{header[0]}: {header[1]}" for header in headers]}'
+    demisto.debug(f'edl: Returning log response with the following headers:\n{headers_str}')
+    max_age = ceil((datetime.now() - dateparser.parse(cache_refresh_rate)).total_seconds())  # type: ignore[operator]
+    if edl_data_log == '# Empty':
+        # If log file content was not created yet, refresh after 15 seconds.
+        # If EDL indicator list refresh rate is less than 30s, refresh the log after half of the time.
+        # This way, the corresponding log will be shown after at most 15 seconds.
+        max_age = min(ceil(max_age / 2), 15)
+    if edl_data_log == LARGE_LOG_DISPLAY_MSG:
+        max_age = 0
+
+    mimetype = get_outbound_mimetype(request_args)
+    resp = Response(edl_data_log, status=200, mimetype=mimetype, headers=headers)
     resp.cache_control.max_age = max_age
     # number of seconds we are willing to serve stale content when there is an error
     resp.cache_control['stale-if-error'] = '600'
@@ -1197,9 +1495,11 @@ def initialize_edl_context(params: dict):
                                     no_wildcard_tld)
 
     EDL_ON_DEMAND_CACHE_PATH = demisto.uniqueFile()
+    demisto.debug(f"The full log path: {EDL_FULL_LOG_PATH}")
     ctx = request_args.to_context_json()
     ctx[EDL_ON_DEMAND_KEY] = True
     set_integration_context(ctx)
+    demisto.debug("Setting context data on demand to true.")
 
 
 def check_platform_and_version(params: dict) -> bool:
@@ -1238,7 +1538,7 @@ def main():
     commands = {
         'test-module': test_module,
         'edl-update': update_edl_command,
-        'export-indicators-list-update': update_edl_command,
+        'export-indicators-list-update': update_edl_command
     }
 
     try:

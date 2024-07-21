@@ -156,6 +156,14 @@ def test_module():
         demisto.error('Mirroring is enabled, however long running is disabled. For mirrors to work correctly,'
                       ' long running must be enabled.')
 
+    # validation for permitted_notifications since not all the options are supported by xsiam
+    if is_xsiam():
+        xsiam_permitted_notification_types = {"investigationClosed", "investigationDeleted", "incidentReminderSLA",
+                                              "taskCompleted", "failedFetchIncidents", "mentionNew", "mentionOld"}
+
+        if not_allowed := set(CUSTOM_PERMITTED_NOTIFICATION_TYPES).difference(xsiam_permitted_notification_types):
+            demisto.error(f"The {','.join(sorted(not_allowed))} 'Types of Notifications to Send' are not supported in XSIAM.")
+
     demisto.results('ok')
 
 
@@ -1027,6 +1035,10 @@ class SlackLogger(IntegrationLogger):
         self.messages.append(text)
 
     def error(self, message):
+        text = self.encode(message)
+        self.messages.append(text)
+
+    def exception(self, message):
         text = self.encode(message)
         self.messages.append(text)
 

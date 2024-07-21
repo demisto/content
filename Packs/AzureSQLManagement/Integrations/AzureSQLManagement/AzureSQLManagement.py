@@ -25,14 +25,22 @@ class Client:
                  enc_key=None, auth_code=None, redirect_uri=None, azure_ad_endpoint='https://login.microsoftonline.com',
                  managed_identities_client_id=None):
         self.resource_group_name = resource_group_name
-        AUTH_TYPES_DICT: dict = {'Authorization Code': {
-            'grant_type': AUTHORIZATION_CODE,
-            'resource': None,
-            'scope': 'https://management.azure.com/.default'},
+        AUTH_TYPES_DICT: dict = {
+            'Authorization Code': {
+                'grant_type': AUTHORIZATION_CODE,
+                'resource': None,
+                'scope': 'https://management.azure.com/.default'
+            },
             'Device Code': {
-            'grant_type': DEVICE_CODE,
-            'resource': 'https://management.core.windows.net',
-            'scope': 'https://management.azure.com/user_impersonation offline_access user.read'}
+                'grant_type': DEVICE_CODE,
+                'resource': 'https://management.core.windows.net',
+                'scope': 'https://management.azure.com/user_impersonation offline_access user.read'
+            },
+            'Client Credentials': {
+                'grant_type': CLIENT_CREDENTIALS,
+                'resource': None,
+                'scope': 'https://management.azure.com/.default'
+            }
         }
         if '@' in app_id:
             app_id, refresh_token = app_id.split('@')
@@ -45,7 +53,8 @@ class Client:
             # deployed machine, the DEVICE_CODE flow should behave somewhat like a self deployed
             # flow and most of the same arguments should be set, as we're !not! using OProxy.
             auth_id=app_id,
-            token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token',
+            token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token' if 'Device Code' in
+                                                                                                       auth_type else None,
             grant_type=AUTH_TYPES_DICT.get(auth_type, {}).get('grant_type'),  # disable-secrets-detection
             base_url=base_url,
             verify=verify,
@@ -404,7 +413,6 @@ def azure_sql_db_threat_policy_get_command(client: Client, args: Dict[str, str])
         server_name: server name for which we want to receive threat detection policies
         db_name: database for which we want to receive threat detection policies
 
-    Returns:
         A ``CommandResults`` object that is then passed to ``return_results``,
         that contains a threat detection policy of a database
     """
@@ -633,7 +641,7 @@ def test_module(client):
     elif params.get('auth_type') == 'Authorization Code':
         raise Exception("When using user auth flow configuration, "
                         "Please enable the integration and run the !azure-sql-auth-test command in order to test it")
-    elif params.get('auth_type') == 'Azure Managed Identities':
+    elif params.get('auth_type') == 'Azure Managed Identities' or params.get('auth_type') == 'Client Credentials':
         client.ms_client.get_access_token()
         return 'ok'
     return None

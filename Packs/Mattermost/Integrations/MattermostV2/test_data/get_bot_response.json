@@ -1,0 +1,39 @@
+{
+    "id": "id",
+    "create_at": 1696501254734,
+    "update_at": 1696501465092,
+    "delete_at": 0,
+    "username": "testbot",
+    "auth_data": "",
+    "auth_service": "",
+    "email": "testbot@test",
+    "nickname": "",
+    "first_name": "testbot",
+    "last_name": "",
+    "position": "",
+    "roles": "system_user system_post_all",
+    "notify_props": {
+        "channel": "true",
+        "comments": "never",
+        "desktop": "mention",
+        "desktop_sound": "true",
+        "desktop_threads": "all",
+        "email": "true",
+        "email_threads": "all",
+        "first_name": "false",
+        "mention_keys": "",
+        "push": "mention",
+        "push_status": "away",
+        "push_threads": "all"
+    },
+    "last_password_update": 1696501254734,
+    "last_picture_update": -1696501254843,
+    "locale": "en",
+    "timezone": {
+        "automaticTimezone": "",
+        "manualTimezone": "",
+        "useAutomaticTimezone": "true"
+    },
+    "is_bot": true,
+    "disable_welcome_email": false
+}

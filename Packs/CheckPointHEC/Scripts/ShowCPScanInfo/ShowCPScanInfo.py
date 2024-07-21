@@ -3,24 +3,32 @@ from CommonServerPython import *
 SCAN_INFO_FIELD = 'checkpointhecscaninfo'
 
 
-def get_scan_info(entity: str) -> str:
+def get_scan_info(entity: str, instance: str) -> tuple[bool, str]:
     scan_info = demisto.executeCommand(
         "checkpointhec-get-scan-info",
-        {'entity': entity}
+        {'entity': entity, 'using': instance}
     )[0]['Contents']
+
+    if isinstance(scan_info, str):
+        return False, scan_info
 
     for k, v in scan_info.items():
         scan_info[k] = json.loads(v)
 
-    return json.dumps(scan_info)
+    return True, json.dumps(scan_info)
 
 
 def main():  # pragma: no cover
     try:
-        custom_fields = demisto.incident()['CustomFields']
+        incident = demisto.incident()
+        instance = incident['sourceInstance']
+        custom_fields = incident['CustomFields']
         if not (scan_info := custom_fields.get(SCAN_INFO_FIELD)):
             entity = custom_fields.get('checkpointhecentity')
-            scan_info = get_scan_info(entity)
+            success, scan_info = get_scan_info(entity, instance)
+            if not success:
+                raise Exception(scan_info)
+
             demisto.executeCommand(
                 "setIncident",
                 {

@@ -10,7 +10,14 @@ Self-deployed configuration:
 
 After you finish configuring your application,
 add a “Security Reader” role to the application from the subscription.
-In order to add a role to a subscription, refer to:
+1. In the Azure portal, go to the subscription > **Access control (IAM)**.
+2. Click **Add**.
+3. Click **Add role assignment**.
+4.  in the *Role* tab search for and select **Security Reader**.
+5.  In the *Members* tab, click **Select members** and  select the the created application.
+6. Click **Review + assign**.
+
+For additional information about roles, refer to:
 * [Azure AD built-in roles](https://learn.microsoft.com/en-us/azure/active-directory/roles/permissions-reference)
 
 #### Additional information

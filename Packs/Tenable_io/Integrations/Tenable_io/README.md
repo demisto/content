@@ -52,7 +52,7 @@ This integration was integrated and tested with January 2023 release of Tenable.
 | Two concurrent asset exports per container. Tenable.io also prevents duplicate exports from running concurrently. <br>For example, export requests with the same filters. | tenable-io-export-assets<br>tenable-io-export-vulnerabilities                                                                                                                                                                                                                      |
 
 ## Notes:
-- ***Fetch assets and vulnerabilities*** command fetches assets and vulnerabilities from the last 90 days only.
+- ***Fetch assets and vulnerabilities (Beta)*** command fetches assets and vulnerabilities from the last 90 days only.
 
 ## Commands
 

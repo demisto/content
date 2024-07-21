@@ -1,0 +1,120 @@
+{
+    "feed": false,
+    "fromVersion": "6.12.0",
+    "mapping": {
+        "Gem Alert": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Account ID": {
+                    "simple": "account.name"
+                },
+                "Account Name": {
+                    "simple": "account.display_name"
+                },
+                "Gem Account Provider": {
+                    "simple": "account.cloud_provider"
+                },
+                "Alert ID": {
+                    "simple": "event.alert_id"
+                },
+                "Alert Source": {
+                    "simple": "event.alert_source"
+                },
+                "occurred": {
+                    "simple": "event_datetime"
+                },
+                "Description": {
+                    "simple": "description"
+                },
+                "Gem Events Count": {
+                    "simple": "event.events_total_count"
+                },
+                "External Link": {
+                    "complex": {
+                        "accessor": "threat_id",
+                        "filters": [],
+                        "root": "event",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "prefix": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "https://app.gem.security/threats/"
+                                        }
+                                    },
+                                    "suffix": {
+                                        "isContext": false
+                                    }
+                                },
+                                "operator": "concat"
+                            }
+                        ]
+                    }
+                },
+                "Gem Main Entity ID": {
+                    "simple": "event.main_entity.id"
+                },
+                "Gem Main Entity Name": {
+                    "simple": "event.main_entity.name"
+                },
+                "Gem Main Entity Region": {
+                    "simple": "event.main_entity.metadata.region"
+                },
+                "Gem Main Entity Type": {
+                    "simple": "event.main_entity.type"
+                },
+                "Gem Threat ID": {
+                    "simple": "event.threat_id"
+                },
+                "Title": {
+                    "simple": "title"
+                },
+                "Gem TTP ID": {
+                    "simple": "event.ttp_id"
+                },
+                "name": {
+                    "simple": "title"
+                },
+                "severity": {
+                    "complex": {
+                        "filters": [],
+                        "root": "severity",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "1,2,3,4,5,6,7,8,9,10"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "1,1,1,2,2,2,2,3,3,3"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "occurred": {
+                    "simple": "event_datetime"
+                }
+            }
+        }
+    },
+    "id": "Gem Mapper Webhook",
+    "name": "Gem Mapper Webhook",
+    "type": "mapping-incoming",
+    "description": "Maps incoming Gem Alert fields when received via webhook.",
+    "version": -1
+}

@@ -52,7 +52,7 @@ Returns a dictionary with the following components.
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| value | Input date or time in a format that is supported by the dateparser.parse\(\) function as outlined here- https://dateparser.readthedocs.io/en/latest/\#popular-formats. For example: '2020-01-01' or '1999/02/03 12:01:59'. \(Default is the current time\). Assume given time is in UTC if time zone is not detected. |
+| value | Input date or time in a format that is supported by the dateparser.parse\(\) function as outlined here- https://dateparser.readthedocs.io/en/latest/#popular-formats. For example: '2020-01-01' or '1999/02/03 12:01:59'. \(Default is the current time\). Assume given time is in UTC if time zone is not detected. |
 | time_zone | The time zone \(e.g. -0400, \+09:00\) or time string to extract a time zone |
 | key | The name of a key to choose which time component to return |
 

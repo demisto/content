@@ -416,11 +416,14 @@ def fetch_incidents(client: Client, first_fetch: str, saas_apps: List[str], stat
 
 def checkpointhec_get_entity(client: Client, entity: str) -> CommandResults:
     result = client.get_entity(entity)
-    if entities := result['responseData']:
+    if entities := result.get('responseData'):
+        entity = entities[0]['entityPayload']
+        human_readable = tableToMarkdown('entity', entity, removeNull=True)
         return CommandResults(
             outputs_prefix='CheckPointHEC.Entity',
             outputs_key_field='internetMessageId',
-            outputs=entities[0]['entityPayload']
+            readable_output=human_readable,
+            outputs=entity,
         )
     else:
         return CommandResults(
@@ -435,11 +438,14 @@ def checkpointhec_get_events(client: Client, start_date: str, end_date: str = No
         start_date=start_date, end_date=end_date, saas_apps=saas_apps, states=states, severities=severities,
         threat_types=threat_types
     )
-    if events := result['responseData']:
+    if events := result.get('responseData'):
+        _events = events[:min(limit, len(events))]
+        human_readable = tableToMarkdown('events', _events, removeNull=True)
         return CommandResults(
             outputs_prefix='CheckPointHEC.Event',
             outputs_key_field='eventId',
-            outputs=events[:min(limit, len(events))]
+            readable_output=human_readable,
+            outputs=_events,
         )
     else:
         return CommandResults(
@@ -450,7 +456,7 @@ def checkpointhec_get_events(client: Client, start_date: str, end_date: str = No
 def checkpointhec_get_scan_info(client: Client, entity: str) -> CommandResults:
     result = client.get_entity(entity)
     outputs = {}
-    if entities := result['responseData']:
+    if entities := result.get('responseData'):
         sec_result = entities[0]['entitySecurityResult']
         for tool, verdict in sec_result['combinedVerdict'].items():
             if verdict not in (None, 'clean'):
@@ -540,7 +546,7 @@ def checkpointhec_search_emails(client: Client, date_last: str = None, date_from
 
 def checkpointhec_send_action(client: Client, entities: list, entity_type: str, action: str) -> CommandResults:
     result = client.send_action(entities, entity_type, action)
-    if resp := result['responseData']:
+    if resp := result.get('responseData'):
         return CommandResults(
             outputs_prefix='CheckPointHEC.Task',
             outputs={'task': resp[0]['taskId']}
@@ -553,7 +559,7 @@ def checkpointhec_send_action(client: Client, entities: list, entity_type: str, 
 
 def checkpointhec_get_action_result(client: Client, task: str) -> CommandResults:
     result = client.get_task(task)
-    if resp := result['responseData']:
+    if resp := result.get('responseData'):
         return CommandResults(
             outputs_prefix='CheckPointHEC.ActionResult',
             outputs=resp

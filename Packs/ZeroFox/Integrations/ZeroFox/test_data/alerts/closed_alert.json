@@ -3,6 +3,13 @@
         "alert_type": "search query",
         "logs": [
             {
+                "id": 349599074,
+                "timestamp": "2023-06-01T08:58:07+00:00",
+                "actor": "me@zerofox.com",
+                "subject": "",
+                "action": "close"
+            },
+            {
                 "id": 390795944,
                 "timestamp": "2023-06-01T07:07:58+00:00",
                 "actor": "",

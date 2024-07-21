@@ -1,10 +1,6 @@
-import urllib3
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-# disable insecure warnings
-urllib3.disable_warnings()
 
 """ GLOBAL VARS """
 ADD = "ADD_TO_LIST"
@@ -24,8 +20,6 @@ USE_SSL = not demisto.params().get("insecure", False)
 PROXY = demisto.params().get("proxy", True)
 REQUEST_TIMEOUT = int(demisto.params().get("requestTimeout", 15))
 DEFAULT_HEADERS = {"content-type": "application/json"}
-EXCEEDED_RATE_LIMIT_STATUS_CODE = 429
-MAX_SECONDS_TO_WAIT = 100
 SESSION_ID_KEY = "session_id"
 ERROR_CODES_DICT = {
     400: "Invalid or bad request",
@@ -78,7 +72,7 @@ class AuthorizationError(DemistoException):
 
 def error_handler(res):
     """
-        Deals with unsuccessfull calls
+        Deals with unsuccessful calls
     """
     if res.status_code in (401, 403):
         raise AuthorizationError(res.content)
@@ -94,23 +88,24 @@ def error_handler(res):
     else:
         if res.status_code in ERROR_CODES_DICT:
             raise Exception(
-                "Your request failed with the following error: {}.\nMessage: {}".format(
-                    ERROR_CODES_DICT[res.status_code], res.text
-                )
+                f"The request failed with the following error: {ERROR_CODES_DICT[res.status_code]}.\nMessage: {res.text}"
             )
         else:
             raise Exception(
-                "Your request failed with the following error: {}.\nMessage: {}".format(
-                    res.status_code, res.text
-                )
+                f"The request failed with the following error: {res.status_code}.\nMessage: {res.text}"
             )
 
 
 def http_request(method, url_suffix, data=None, headers=None, resp_type='json'):
+    time_sensitive = is_time_sensitive()
+    demisto.debug(f'{time_sensitive=}')
+    retries = 0 if time_sensitive else 3
+    status_list_to_retry = None if time_sensitive else [429]
+    timeout = 2 if time_sensitive else REQUEST_TIMEOUT
     try:
         res = generic_http_request(method=method,
                                    server_url=BASE_URL,
-                                   timeout=REQUEST_TIMEOUT,
+                                   timeout=timeout,
                                    verify=USE_SSL,
                                    proxy=PROXY,
                                    client_headers=DEFAULT_HEADERS,
@@ -119,8 +114,8 @@ def http_request(method, url_suffix, data=None, headers=None, resp_type='json'):
                                    data=data or {},
                                    ok_codes=(200, 204),
                                    error_handler=error_handler,
-                                   retries=3,
-                                   status_list_to_retry=[429],
+                                   retries=retries,
+                                   status_list_to_retry=status_list_to_retry,
                                    resp_type=resp_type)
 
     except Exception as e:
@@ -1317,8 +1312,8 @@ def main():  # pragma: no cover
     elif command == "zscaler-logout":
         return_results(logout_command())
     else:
-        login()
         try:
+            login()
             if command == "test-module":
                 return_results(test_module())
             elif command == "url":
@@ -1387,7 +1382,6 @@ def main():  # pragma: no cover
                 return_results(delete_ip_destination_groups(demisto.args()))
         except Exception as e:
             return_error(f"Failed to execute {command} command. Error: {str(e)}")
-            raise
         finally:
             try:
                 # activate changes only when required
@@ -1399,7 +1393,7 @@ def main():  # pragma: no cover
                 if demisto.params().get("auto_logout"):
                     logout()
             except Exception as err:
-                demisto.info("Zscaler error: " + str(err))
+                return_error("Zscaler error: " + str(err))
 
 
 # python2 uses __builtin__ python3 uses builtins

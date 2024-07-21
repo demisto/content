@@ -399,6 +399,21 @@ EXTERNAL_SERVICE_RESULTS = [
         "externally_detected_providers": [
             "Amazon Web Services"
         ],
+        "ipv6s": [
+            "2600:1900:4000:9664:0:7::"
+        ],
+        "aws_cloud_tags": [
+            "Name:AD Lab"
+        ],
+        "gcp_cloud_tags": [
+            "Name:gcp Lab"
+        ],
+        "azure_cloud_tags": [
+            "Name:azure Lab"
+        ],
+        "mac_address": ["00:11:22:33:44:55"],
+        "has_bu_overrides": False,
+        "has_xdr_agent": "NO",
         "externally_inferred_cves": [
             "CVE-2020-15778",
             "CVE-2021-41617",
@@ -1101,6 +1116,161 @@ LIST_ALERTS_RESULTS = [
         "action": "NOT_AVAILABLE",
         "action_pretty": "N/A",
         "tags": null
+    },
+    {
+        "external_id": "FAKE-GUID-3",
+        "severity": "high",
+        "matching_status": "MATCHED",
+        "end_match_attempt_ts": null,
+        "local_insert_ts": 1659455246813,
+        "last_modified_ts": 1660240426055,
+        "bioc_indicator": null,
+        "matching_service_rule_id": null,
+        "attempt_counter": null,
+        "bioc_category_enum_key": null,
+        "is_whitelisted": false,
+        "starred": false,
+        "deduplicate_tokens": null,
+        "filter_rule_id": null,
+        "mitre_technique_id_and_name": null,
+        "mitre_tactic_id_and_name": null,
+        "agent_version": null,
+        "agent_ip_addresses_v6": null,
+        "agent_device_domain": null,
+        "agent_fqdn": null,
+        "agent_os_type": "NO_HOST",
+        "agent_os_sub_type": null,
+        "agent_data_collection_status": null,
+        "mac": null,
+        "is_pcap": false,
+        "alert_type": "Unclassified",
+        "resolution_status": "STATUS_230_REOPENED",
+        "resolution_comment": "ASM alert reopened",
+        "dynamic_fields": null,
+        "events": [
+                    {
+                        "agent_install_type": "NA",
+                        "agent_host_boot_time": null,
+                        "event_sub_type": null,
+                        "module_id": null,
+                        "association_strength": null,
+                        "dst_association_strength": null,
+                        "story_id": null,
+                        "event_id": null,
+                        "event_type": null,
+                        "event_timestamp": 1659452809020,
+                        "actor_process_instance_id": null,
+                        "actor_process_image_path": null,
+                        "actor_process_image_name": null,
+                        "actor_process_command_line": null,
+                        "actor_process_signature_status": "N/A",
+                        "actor_process_signature_vendor": null,
+                        "actor_process_image_sha256": null,
+                        "actor_process_image_md5": null,
+                        "actor_process_causality_id": null,
+                        "actor_causality_id": null,
+                        "actor_process_os_pid": null,
+                        "actor_thread_thread_id": null,
+                        "causality_actor_process_image_name": null,
+                        "causality_actor_process_command_line": null,
+                        "causality_actor_process_image_path": null,
+                        "causality_actor_process_signature_vendor": null,
+                        "causality_actor_process_signature_status": "N/A",
+                        "causality_actor_causality_id": null,
+                        "causality_actor_process_execution_time": null,
+                        "causality_actor_process_image_md5": null,
+                        "causality_actor_process_image_sha256": null,
+                        "action_file_path": null,
+                        "action_file_name": null,
+                        "action_file_md5": null,
+                        "action_file_sha256": null,
+                        "action_file_macro_sha256": null,
+                        "action_registry_data": null,
+                        "action_registry_key_name": null,
+                        "action_registry_value_name": null,
+                        "action_registry_full_key": null,
+                        "action_local_ip": null,
+                        "action_local_ip_v6": null,
+                        "action_local_port": null,
+                        "action_remote_ip": null,
+                        "action_remote_ip_v6": null,
+                        "action_remote_port": 80,
+                        "action_external_hostname": null,
+                        "action_country": "UNKNOWN",
+                        "action_process_instance_id": null,
+                        "action_process_causality_id": null,
+                        "action_process_image_name": null,
+                        "action_process_image_sha256": null,
+                        "action_process_image_command_line": null,
+                        "action_process_signature_status": "N/A",
+                        "action_process_signature_vendor": null,
+                        "os_actor_effective_username": null,
+                        "os_actor_process_instance_id": null,
+                        "os_actor_process_image_path": null,
+                        "os_actor_process_image_name": null,
+                        "os_actor_process_command_line": null,
+                        "os_actor_process_signature_status": "N/A",
+                        "os_actor_process_signature_vendor": null,
+                        "os_actor_process_image_sha256": null,
+                        "os_actor_process_causality_id": null,
+                        "os_actor_causality_id": null,
+                        "os_actor_process_os_pid": null,
+                        "os_actor_thread_thread_id": null,
+                        "fw_app_id": null,
+                        "fw_interface_from": null,
+                        "fw_interface_to": null,
+                        "fw_rule": null,
+                        "fw_rule_id": null,
+                        "fw_device_name": null,
+                        "fw_serial_number": null,
+                        "fw_url_domain": null,
+                        "fw_email_subject": null,
+                        "fw_email_sender": null,
+                        "fw_email_recipient": null,
+                        "fw_app_subcategory": null,
+                        "fw_app_category": null,
+                        "fw_app_technology": null,
+                        "fw_vsys": null,
+                        "fw_xff": null,
+                        "fw_misc": null,
+                        "fw_is_phishing": "N/A",
+                        "dst_agent_id": null,
+                        "dst_causality_actor_process_execution_time": null,
+                        "dns_query_name": null,
+                        "dst_action_external_hostname": null,
+                        "dst_action_country": null,
+                        "dst_action_external_port": null,
+                        "contains_featured_host": "NO",
+                        "contains_featured_user": "NO",
+                        "contains_featured_ip": "NO",
+                        "image_name": null,
+                        "container_id": null,
+                        "cluster_name": null,
+                        "referenced_resource": null,
+                        "operation_name": null,
+                        "identity_sub_type": null,
+                        "identity_type": null,
+                        "project": null,
+                        "cloud_provider": null,
+                        "resource_type": null,
+                        "resource_sub_type": null,
+                        "user_agent": null,
+                        "user_name": null
+                    }
+        ],
+        "alert_id": "34",
+        "detection_timestamp": 1659452809020,
+        "name": "Networking Infrastructure",
+                "category": null,
+                "endpoint_id": null,
+                "description": "Networking and security infrastructure, such as firewalls and routers, generally should not have their administration panels open to public Internet. Compromise of these devices, often though password guessing or vulnerability exploitation, provides privileged access to an enterprise network.",
+                "host_ip": null,
+                "host_name": null,
+                "mac_addresses": null,
+                "source": "ASM",
+                "action": "NOT_AVAILABLE",
+                "action_pretty": "N/A",
+                "tags": null
     }
 ]
 
@@ -1314,6 +1484,67 @@ INCIDENT_UPDATE_RESULTS = "Update operation successful: True"
 
 ALERT_UPDATE_RESULTS = "Updated alerts: [602]"
 
+DOMAIN_RESULTS = {
+    "asm_ids": [
+        "4b1f3765-de40-3a1a-8535-667420408fd9"
+    ],
+    "asset_explainers": [],
+    "asset_type": "DOMAIN",
+    "domain": "*.acme.com",
+    "domain_details": {
+        "admin": {},
+        "alignedRegistrar": "MarkMonitor",
+        "collectionTime": 1695942091000,
+        "creationDate": 785376000000,
+        "dnssec": null,
+        "domainName": "acme.com",
+        "domainStatuses": [
+            "clientUpdateProhibited",
+            "clientTransferProhibited",
+            "clientDeleteProhibited"
+        ],
+        "dropped": false,
+        "nameServers": [],
+        "registrant": {},
+        "registrar": {},
+        "registryDomainId": null,
+        "registryExpiryDate": 1732060800000,
+        "reseller": null,
+        "retrievedDate": 1696075229360,
+        "tech": {},
+        "updatedDate": 1666137600000
+    },
+    "first_observed": 1679457579382,
+    "last_observed": 1697361335282,
+    "name": "*.acme.com",
+            "recent_ips": [
+                {
+                    "firstObserved": 1692418207732,
+                    "id": "218b3cc9-2d26-3a17-aadd-9eac08cc30ec",
+                    "ip": "1.1.1.1",
+                    "ipv6": null,
+                    "lastObserved": 1697361335282,
+                    "provider": {
+                        "additionalProviderInfo": null,
+                        "cdn": false,
+                        "displayName": "Amazon Web Services",
+                        "isCdn": false,
+                        "legacyName": "AWS",
+                        "name": "AWS"
+                    },
+                    "source": {
+                        "name": "DOMAIN_RESOLUTION"
+                    }
+                }
+    ],
+    "service_type": [
+                "HttpServer"
+    ],
+    "tags": [
+                "BU:Xpanse VanDelay Demo 3"
+    ]
+}
+
 IP_RESULTS = [{
     "asm_ids": [
         "4b1f3765-de40-3a1a-8535-667420408fd9"
@@ -1375,6 +1606,22 @@ IP_RESULTS = [{
                 "BU:Xpanse VanDelay Demo 3"
     ]
 }]
+
+XSOAR_SEARCH_INDICATOR_DOMAIN_RESULTS = {
+    "id": "abcd1b2abcd1a0b20c7a8bc5d67e8eea",
+    "indicator_type": "Domain",
+    "name": "www.toysrus.com",
+    "reliability": "A+ - 3rd party enrichment",
+    "score": 0
+}
+
+XSOAR_SEARCH_INDICATOR_IP_RESULTS = {
+    "id": "abcd1b2abcd1a0b20c7a8bc5d67e8eea",
+    "indicator_type": "IP",
+    "name": "1.1.1.2",
+    "reliability": "A+ - 3rd party enrichment",
+    "score": 0
+}
 
 EXTERNAL_WEBSITES_RESULTS = {
     "ExternalWebsite": {

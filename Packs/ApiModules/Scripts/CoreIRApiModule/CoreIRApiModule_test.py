@@ -7,6 +7,7 @@ from typing import Any
 from pytest_mock import MockerFixture
 import pytest
 
+import demistomock
 import demistomock as demisto
 from CommonServerPython import Common, tableToMarkdown, pascalToSpace, DemistoException
 from CoreIRApiModule import CoreClient, handle_outgoing_issue_closure, XSOAR_RESOLVED_STATUS_TO_XDR
@@ -3788,15 +3789,25 @@ class TestGetIncidents:
         }
         assert expected_output == outputs
 
-    def test_get_starred_incident_list(self, requests_mock):
+    @freeze_time("2024-01-15 17:00:00 UTC")
+    @pytest.mark.parametrize('starred, expected_starred',
+                             [(True, True),
+                              (False, False),
+                              ('true', True),
+                              ('false', False),
+                              (None, None),
+                              ('', None)])
+    def test_get_starred_incident_list_from_get(self, mocker, requests_mock, starred, expected_starred):
         """
         Given: A query with starred parameters.
         When: Running get_incidents_command.
-        Then: Ensure the starred output is returned.
+        Then: Ensure the starred output is returned and the request filters are set correctly.
         """
 
         get_incidents_list_response = load_test_data('./test_data/get_starred_incidents_list.json')
-        requests_mock.post(f'{Core_URL}/public_api/v1/incidents/get_incidents/', json=get_incidents_list_response)
+        get_incidents_request = requests_mock.post(f'{Core_URL}/public_api/v1/incidents/get_incidents/',
+                                                   json=get_incidents_list_response)
+        mocker.patch.object(demisto, 'command', return_value='get-incidents')
 
         client = CoreClient(
             base_url=f'{Core_URL}/public_api/v1', headers={}
@@ -3804,11 +3815,138 @@ class TestGetIncidents:
 
         args = {
             'incident_id_list': '1 day',
-            'starred': True,
+            'starred': starred,
             'starred_incidents_fetch_window': '3 days'
         }
+
+        starred_filter_true = {
+            'field': 'starred',
+            'operator': 'eq',
+            'value': True
+        }
+
+        starred_filter_false = {
+            'field': 'starred',
+            'operator': 'eq',
+            'value': False
+        }
+
+        starred_fetch_window_filter = {
+            'field': 'creation_time',
+            'operator': 'gte',
+            'value': 1705078800000
+        }
+
         _, outputs, _ = get_incidents_command(client, args)
 
+        request_filters = get_incidents_request.last_request.json()['request_data']['filters']
+        assert len(outputs['CoreApiModule.Incident(val.incident_id==obj.incident_id)']) >= 1
+        if expected_starred:
+            assert starred_filter_true in request_filters
+            assert starred_fetch_window_filter in request_filters
+            assert outputs['CoreApiModule.Incident(val.incident_id==obj.incident_id)'][0]['starred'] is True
+        elif expected_starred is False:
+            assert starred_filter_false in request_filters
+            assert starred_fetch_window_filter not in request_filters
+        else:  # expected_starred is None
+            assert starred_filter_true not in request_filters
+            assert starred_filter_false not in request_filters
+            assert starred_fetch_window_filter not in request_filters
+
+    @freeze_time("2024-01-15 17:00:00 UTC")
+    @pytest.mark.parametrize('starred', [False, "False", 'false', None, ''])
+    def test_get_starred_false_incident_list_from_fetch(self, mocker, requests_mock, starred):
+        """
+        Given: A query with starred=false parameter.
+        When: Running get_incidents_command from fetch-incidents.
+        Then: Ensure the request doesn't filter on starred incidents.
+        """
+
+        get_incidents_list_response = load_test_data('./test_data/get_starred_incidents_list.json')
+        mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
+        get_incidents_request = requests_mock.post(f'{Core_URL}/public_api/v1/incidents/get_incidents/',
+                                                   json=get_incidents_list_response)
+
+        client = CoreClient(
+            base_url=f'{Core_URL}/public_api/v1', headers={}
+        )
+
+        args = {
+            'incident_id_list': '1 day',
+            'starred': starred,
+            'starred_incidents_fetch_window': '3 days'
+        }
+
+        starred_filter_true = {
+            'field': 'starred',
+            'operator': 'eq',
+            'value': True
+        }
+
+        starred_filter_false = {
+            'field': 'starred',
+            'operator': 'eq',
+            'value': False
+        }
+
+        starred_fetch_window_filter = {
+            'field': 'creation_time',
+            'operator': 'gte',
+            'value': 1705078800000
+        }
+
+        _, outputs, _ = get_incidents_command(client, args)
+
+        request_filters = get_incidents_request.last_request.json()['request_data']['filters']
+        assert len(outputs['CoreApiModule.Incident(val.incident_id==obj.incident_id)']) >= 1
+        assert starred_filter_true not in request_filters
+        assert starred_filter_false not in request_filters
+        assert starred_fetch_window_filter not in request_filters
+
+    @freeze_time("2024-01-15 17:00:00 UTC")
+    @pytest.mark.parametrize('starred', [True, 'true', "True"])
+    def test_get_starred_true_incident_list_from_fetch(self, mocker, starred):
+        """
+        Given: A query with starred=true parameter.
+        When: Running get_incidents_command from fetch-incidents.
+        Then: Ensure the request filters on starred incidents and contains the starred_fetch_window_filter filter.
+        """
+
+        get_incidents_list_response = load_test_data('./test_data/get_starred_incidents_list.json')
+        mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
+        handle_fetch_starred_mock = mocker.patch.object(CoreClient,
+                                                        'handle_fetch_starred_incidents',
+                                                        return_value=get_incidents_list_response["reply"]['incidents'])
+
+        client = CoreClient(
+            base_url=f'{Core_URL}/public_api/v1', headers={}
+        )
+
+        args = {
+            'incident_id_list': '1 day',
+            'starred': starred,
+            'starred_incidents_fetch_window': '3 days'
+        }
+
+        starred_filter_true = {
+            'field': 'starred',
+            'operator': 'eq',
+            'value': True
+        }
+
+        starred_fetch_window_filter = {
+            'field': 'creation_time',
+            'operator': 'gte',
+            'value': 1705078800000
+        }
+
+        _, outputs, _ = get_incidents_command(client, args)
+
+        handle_fetch_starred_mock.assert_called()
+        request_filters = handle_fetch_starred_mock.call_args.args[2]['filters']
+        assert len(outputs['CoreApiModule.Incident(val.incident_id==obj.incident_id)']) >= 1
+        assert starred_filter_true in request_filters
+        assert starred_fetch_window_filter in request_filters
         assert outputs['CoreApiModule.Incident(val.incident_id==obj.incident_id)'][0]['starred'] is True
 
 
@@ -3915,3 +4053,30 @@ def test_xsoar_to_xdr_flexible_close_reason_mapping(capfd, mocker, custom_mappin
 
         assert remote_args.delta.get('status')
         assert remote_args.delta['status'] == expected_resolved_status[i]
+
+
+@pytest.mark.parametrize('data, expected_result',
+                         [('{"reply": {"container": ["1.1.1.1"]}}', {"reply": {"container": ["1.1.1.1"]}}),
+                          (b'XXXXXXX', b'XXXXXXX')])
+def test_http_request_demisto_call(mocker, data, expected_result):
+    """
+    Given:
+        - An XSIAM machine with a build version that supports demisto._apiCall() with RBAC validations.
+    When:
+        - Calling the http_request method.
+    Then:
+        - Make sure demisto._apiCall() is being called and the method returns the expected result.
+        - converting to json is possible - do it and return json
+        - converting to json is impossible - catch the error and return the data as is
+    """
+    from CoreIRApiModule import CoreClient
+    client = CoreClient(
+        base_url=f'{Core_URL}/public_api/v1', headers={},
+    )
+    mocker.patch("CoreIRApiModule.FORWARD_USER_RUN_RBAC", new=True)
+    mocker.patch.object(demisto, "_apiCall", return_value={'name': '/api/webapp/public_api/v1/distributions/get_versions/',
+                                                           'status': 200,
+                                                           'data': data})
+    res = client._http_request(method="POST",
+                               url_suffix="/distributions/get_versions/")
+    assert expected_result == res
