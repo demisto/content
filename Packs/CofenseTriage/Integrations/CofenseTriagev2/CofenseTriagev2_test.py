@@ -18,6 +18,7 @@ def fixture_from_file():
             return file.read()
     return _fixture_from_file
 
+
 DEMISTO_ARGS = {}
 
 
