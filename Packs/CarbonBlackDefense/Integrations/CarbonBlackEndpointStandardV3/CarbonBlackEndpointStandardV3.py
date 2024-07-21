@@ -435,7 +435,7 @@ def fetch_incidents(client: Client, params: dict):
     fetch_limit = int(params.get('max_fetch', 50))
 
     last_run = demisto.getLastRun()
-    last_fetched_alert_create_time = last_run.get('last_fetched_alert_create_time', )
+    last_fetched_alert_create_time = last_run.get('last_fetched_alert_create_time')
     last_fetched_alert_ids = last_run.get('last_fetched_alert_id', [])
     if not last_fetched_alert_create_time:
         last_fetched_alert_create_time = arg_to_datetime(fetch_time).strftime('%Y-%m-%dT%H:%M:%S.000Z')  # type: ignore
