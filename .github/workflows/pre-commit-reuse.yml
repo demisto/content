@@ -44,8 +44,6 @@ jobs:
         DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
         BRANCH_NAME: ${{ github.head_ref }}
       run: |
-        export IS_CONTRIBUTION=${{ contains(github.event.pull_request.labels.*.name, 'Contribution') }}
-        echo "${IS_CONTRIBUTION}"
         source .venv/bin/activate
         if [[ "$BRANCH_NAME" =~ ^AUD-demisto/.* ]]; then
           echo "In docker auto update branch, pre commit on docker_autoupdate mode."
