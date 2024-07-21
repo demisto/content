@@ -26,19 +26,19 @@
 <h3>Timestamp Parsing</h3>
 <p>Timestamp parsing relies on 2 fields, which depends on the log category:</p>
 <ol>
-  <li>`properties.activityDateTime`
-    <ol>
-        <li>AuditLogs</li>
-        <li>ProvisioningLogs</li>
-    </ol>
-  </li>
-  <li>`properties.activityDateTime`
+  <li>`properties.createdDateTime`
     <ol>
         <li>SignInLogs</li>
         <li>NonInteractiveUserSignInLogs</li>
         <li>ServicePrincipalSignInLogs</li>
         <li>ManagedIdentitySignInLogs</li>
         <li>ADFSSignInLogs</li>
+    </ol>
+  </li>
+  <li>`properties.activityDateTime`
+    <ol>
+        <li>AuditLogs</li>
+        <li>ProvisioningLogs</li>
         <li>UserRiskEvents</li>
         <li>ServicePrincipalRiskEvents</li>
     </ol>
