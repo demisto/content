@@ -136,7 +136,7 @@ def test_module(client: Client) -> str:
     try:
         fetch_events(
             client=client,
-            max_events_per_fetch=1,
+            limit=1,
             last_run={},
         )
 
@@ -171,14 +171,15 @@ def get_events(client: Client, from_date: str, from_id: str| None, limit: int = 
 
 
 def fetch_events(client: Client,
-                 max_events_per_fetch: int, last_run: dict[str, str],
+                 limit: int, last_run: dict[str, str],
+                 filter_by_time: bool = False
                  ) -> tuple[Dict, List[Dict]]:
     """
     Fetches events from the SailPoint IdentityNow API
     Args:
         client: Client object with the API client
         last_run: Dict containing the last run data
-        max_events_per_fetch: Maximum number of events to fetch per call
+        limit: Maximum number of events to fetch per call
     Returns:
         Tuple with the next run data and the list of events fetched
     """
@@ -187,17 +188,16 @@ def fetch_events(client: Client,
     last_fetched_creation_date = last_run.get('prev_date', DEFAULT_LOOKBACK)
 
     all_events = []
-    
-    #formatted_now = datetime.now().strftime(DATE_FORMAT)
-    # since we allow the user to set the max_events_per_fetch to 50,000, but the API only allows 10000 events per call
+    remaining_events_to_fetch = limit
+    # since we allow the user to set the limit to 50,000, but the API only allows 10000 events per call
     # we need to make multiple calls to the API to fetch all the events
-    while max_events_per_fetch > 0:     #TODO change name
-        current_batch_to_fetch = min(max_events_per_fetch, 10000)
+    while remaining_events_to_fetch > 0:
+        current_batch_to_fetch = min(remaining_events_to_fetch, 10000)
         demisto.debug(f'trying to fetch {current_batch_to_fetch} events.')
         demisto.debug(f'last_fetched_id = {last_fetched_id}.')
 
         events = client.search_events(
-            prev_id=last_fetched_id,       #the first cycle will use the last id from the last run
+            prev_id=last_fetched_id if not filter_by_time else None,
             from_date= last_fetched_creation_date,
             limit=current_batch_to_fetch,
         )
@@ -210,17 +210,43 @@ def fetch_events(client: Client,
             last_fetched_creation_date = last_fetched_event['created']
             demisto.debug(f"last event = {last_fetched_event}")
             demisto.debug(f'information of the last event in this cycle: id: {last_fetched_id}, created: {last_fetched_creation_date}.')
-            max_events_per_fetch -= len(events)
-            demisto.debug(f'{max_events_per_fetch} events are left to fetch in the next calls.')
+            remaining_events_to_fetch -= len(events)
+            demisto.debug(f'{remaining_events_to_fetch} events are left to fetch in the next calls.')
         else:
             break
-
-    next_run = {'prev_id': last_fetched_id, 'prev_date': last_fetched_creation_date}
+    last_fetched_ids = get_last_fetched_ids(all_events, last_fetched_creation_date)
+    next_run = {'prev_id': last_fetched_id, 'prev_date': last_fetched_creation_date, 'last_fetched_ids': last_fetched_ids}
     demisto.debug(f'Done fetching. Sum of all events: {len(all_events)}, the next run is {next_run}.')
+    all_events = dedup(all_events)
     return next_run, all_events
 
 
-''' MAIN FUNCTION '''
+def dedup(events: List[Dict], last_run) -> List[Dict]:
+    last_creation_date = last_run.get('prev_date')
+    last_fetched_ids = last_run.get('last_fetched_ids', [])
+    
+    if not last_creation_date or not last_fetched_ids:
+        return events
+
+    for event in events:
+        if event['created'] != last_creation_date:
+            demisto.debug(f"Done deduping. Number of events after deduping: {len(events)}")
+            return events
+        if event['id'] in last_fetched_ids:
+            events.remove(event)
+            demisto.debug(f"Removed event with id: {event['id']}")
+    demisto.debug(f"Done deduping. Number of events after deduping: {len(events)}")
+    return events
+
+
+def get_last_fetched_ids(events: List[Dict],last_creation_date) -> List[str]:
+    list_of_ids = []
+    for event in reversed(events):
+        if event['created'] != last_creation_date:
+            return list_of_ids
+        else:
+            list_of_ids.append(event['id'])
+    return list_of_ids
 
 
 def add_time_and_status_to_events(events: List[Dict] | None) -> None:
@@ -248,6 +274,8 @@ def add_time_and_status_to_events(events: List[Dict] | None) -> None:
                 event["_ENTRY_STATUS"] = "new"
 
 
+''' MAIN FUNCTION '''
+
 def main() -> None:
     """
     main function, parses params and runs command functions
@@ -261,7 +289,8 @@ def main() -> None:
     base_url = params['url']
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
-    max_events_per_fetch = arg_to_number(params.get('max_events_per_fetch')) or 50000
+    limit = arg_to_number(params.get('limit')) or 50000
+    filter_by_time = argToBoolean(params.get('filter_by_time', False))
 
     demisto.debug(f'Command being called is {command}')
     try:
@@ -299,8 +328,9 @@ def main() -> None:
             last_run = demisto.getLastRun()
             next_run, events = fetch_events(
                 client=client,
-                max_events_per_fetch=max_events_per_fetch,
+                limit=limit,
                 last_run=last_run,
+                filter_by_time = filter_by_time
             )
 
             add_time_and_status_to_events(events)

@@ -19,11 +19,16 @@ configuration:
 - defaultvalue: 50000
   section: Collect
   display: Max number of events per fetch
-  name: max_events_per_fetch
+  name: limit
   required: false
   type: 0
 - display: Trust any certificate (not secure)
   name: insecure
+  required: false
+  type: 8
+  section: Connect
+- display: Don't rely on SailPoint's filtering
+  name: filter_by_time
   required: false
   type: 8
   section: Connect
