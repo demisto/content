@@ -1,4 +1,4 @@
-![lumu_logo](https://raw.githubusercontent.com/demisto/content/master/Packs/Lumu/Integrations/Lumu/Lumu_image.png)
+![lumu_logo](../../doc_files/Lumu_image.png)
 
 ## Cortex - XSOAR and LUMU Integration
 
@@ -6,7 +6,7 @@ SecOps operations, reflect and manage the Lumu Incidents either from XSOAR Corte
 
 #### Diagram
 
-![diagram](https://raw.githubusercontent.com/demisto/content/master/Packs/Lumu//doc_files/Cortex_Lumu_draw.png)
+![diagram](../../doc_files/Cortex_Lumu_draw.png)
 
 #### Lumu API Specifications
 
@@ -31,7 +31,7 @@ here the short list of the http endpoint used in the Cortex-Lumu Integration
 
 ##### Marketplace
 
-![marketplace](https://raw.githubusercontent.com/demisto/content/master/Packs/Lumu/doc_files/LumuLocalMarketPlace.png)
+![marketplace](../../doc_files/LumuLocalMarketPlace.png)
 
 
 ##### Configure: Set Off the integration
@@ -44,7 +44,7 @@ here the short list of the http endpoint used in the Cortex-Lumu Integration
 Once the Lumu package was downloaded from the Cortex Marketplace, then next the Lumu integration initialization
 
 - from the left panel select the `gear` settings, go to `Integrations` Tab and `Instances`, Sub-tab, search for **Lumu** and add a new instance.
-    ![](https://raw.githubusercontent.com/demisto/content/master/Packs/Lumu//doc_files/integrationConfig1.png)
+    ![](../../doc_files/integrationConfig1.png)
     <br>
 
 - Instance Settings
@@ -69,8 +69,8 @@ Once the Lumu package was downloaded from the Cortex Marketplace, then next the 
  -  Submit
     -  Click `Test` button and expect the green successful output.
     -  Submit the setup, click `Save and Exit`
-    ![](https://raw.githubusercontent.com/demisto/content/master/Packs/Lumu//doc_files/integrationConfig2.png)
-    ![](https://raw.githubusercontent.com/demisto/content/master/Packs/Lumu//doc_files/integrationConfig3.png)
+    ![](../../doc_files/integrationConfig2.png)
+    ![](../../doc_files/integrationConfig3.png)
 
 
 ##### Dashboard: Incident list
@@ -78,7 +78,7 @@ Once the Lumu package was downloaded from the Cortex Marketplace, then next the 
 - These two are the main windows to list, select and check the Lumu incidents which have been mirrored for the Lumu integration in Cortex
     > Note: Lumu Portal to the left screen and Cortex to the right screen.
 
-    ![](https://raw.githubusercontent.com/demisto/content/master/Packs/Lumu//doc_files/incidentsDashboardBoth.png)
+    ![](../../doc_files/incidentsDashboardBoth.png)
     <br>
 
 
@@ -90,13 +90,13 @@ Once the Lumu package was downloaded from the Cortex Marketplace, then next the 
     - Creation
     > Note: Cortex to the left screen and Lumu Portal to the right screen.
 
-    ![](https://raw.githubusercontent.com/demisto/content/master/Packs/Lumu//doc_files/incidentCreation.png)
+    ![](../../doc_files/incidentCreation.png)
     <br>
 
     - Updates
     > Note: Cortex to the left screen and Lumu Portal to the right screen.
 
-    ![](https://raw.githubusercontent.com/demisto/content/master/Packs/Lumu//doc_files/incidentEventUpdate.png)
+    ![](../../doc_files/incidentEventUpdate.png)
     <br>
 
 
@@ -108,7 +108,7 @@ Once the Lumu package was downloaded from the Cortex Marketplace, then next the 
 
     - hover and click in the comment field to edit, overwrite the new comment and click on the `ok` icon.
     `wait 1 minute tops until the changes are mirrored`
-        ![](https://raw.githubusercontent.com/demisto/content/master/Packs/Lumu//doc_files/incidentCommentFromCortexToLumu.png)
+        ![](../../doc_files/incidentCommentFromCortexToLumu.png)
         <br>
 
 -  Comment an incident from Lumu Portal
@@ -116,7 +116,7 @@ Once the Lumu package was downloaded from the Cortex Marketplace, then next the 
 
     - click in **Take Actions** button, go to `Comment`, fill in the text box field  and submit the form.
     `wait 1 minute tops until the changes are mirrored`
-        ![](https://raw.githubusercontent.com/demisto/content/master/Packs/Lumu//doc_files/incidentCommentFromLumuToCortex.png)
+        ![](../../doc_files/incidentCommentFromLumuToCortex.png)
         <br>
 
 
@@ -128,7 +128,7 @@ Once the Lumu package was downloaded from the Cortex Marketplace, then next the 
     - hover and click in the `comment` field to edit, overwrite the new comment and click on the `ok` icon.
     - hover and click in the `lumu_status` field to edit, overwrite the field typing `mute` or `muted` magic words and click on the `ok` icon.
     `wait 1 minute tops until the changes are mirrored`
-        ![](https://raw.githubusercontent.com/demisto/content/master/Packs/Lumu//doc_files/incidentMuteFromCortexToLumu.png)
+        ![](../../doc_files/incidentMuteFromCortexToLumu.png)
         <br>
 
 -  Mute an incident from Lumu Portal
@@ -136,7 +136,7 @@ Once the Lumu package was downloaded from the Cortex Marketplace, then next the 
 
     - click in **Take Actions** button, go to `Mute`, fill in the text box field  and submit the form.
     `wait 1 minute tops until the changes are mirrored`
-        ![](https://raw.githubusercontent.com/demisto/content/master/Packs/Lumu//doc_files/incidentMuteFromLumuToCortex.png)
+        ![](../../doc_files/incidentMuteFromLumuToCortex.png)
         <br>
 
 
@@ -150,7 +150,7 @@ Once the Lumu package was downloaded from the Cortex Marketplace, then next the 
     - hover and click in the `comment` field to edit, overwrite the new comment and click on the `ok` icon.
     - hover and click in the `lumu_status` field to edit, overwrite the field typing `unmute` or `unmuted` magic words and click on the `ok` icon.
     `wait 1 minute tops until the changes are mirrored`
-        ![](https://raw.githubusercontent.com/demisto/content/master/Packs/Lumu//doc_files/incidentUnmuteFromCortexToLumu.png)
+        ![](../../doc_files/incidentUnmuteFromCortexToLumu.png)
         <br>
 
 -  Unmute an incident from Lumu Portal
@@ -158,7 +158,7 @@ Once the Lumu package was downloaded from the Cortex Marketplace, then next the 
 
     - click in **Take Actions** button, go to `Unmute`, fill in the text box field  and submit the form.
     `wait 1 minute tops until the changes are mirrored`
-        ![](https://raw.githubusercontent.com/demisto/content/master/Packs/Lumu//doc_files/incidentUnmuteFromLumuToCortex.png)
+        ![](../../doc_files/incidentUnmuteFromLumuToCortex.png)
         <br>
 
 
@@ -171,22 +171,22 @@ Once the Lumu package was downloaded from the Cortex Marketplace, then next the 
 
     - click in **Actions** button, fill in the `Close Reason` and yhe `Close Notes` fields and submit the form.
 
-        ![inc_close_1](https://raw.githubusercontent.com/demisto/content/master/Packs/Lumu//doc_files/incidentCloseFromCortex.png)
+        ![inc_close_1](../../doc_files/incidentCloseFromCortex.png)
         <br>
     - Incident closed in both sides triggered by Cortex side.
         `wait 1 minute tops until the changes are mirrored`
-        ![](https://raw.githubusercontent.com/demisto/content/master/Packs/Lumu//doc_files/incidentCloseFromCortexToLumu.png)
+        ![](../../doc_files/incidentCloseFromCortexToLumu.png)
         <br>
 
 -  Closing an incident from Lumu Portal
     > Note: Lumu Portal to the left screen and Cortex to the right screen.
 
     - click in **Take Actions** button, go to `Close Incident`, fill in the text box field  and submit the form.
-        ![](https://raw.githubusercontent.com/demisto/content/master/Packs/Lumu//doc_files/incidentCloseFromLumu.png)
+        ![](../../doc_files/incidentCloseFromLumu.png)
         <br>
     - Incident closed in both sides triggered by Cortex side.
         `wait 1 minute tops until the changes are mirrored`
-        ![](https://raw.githubusercontent.com/demisto/content/master/Packs/Lumu//doc_files/incidentCloseFromLumuToCortex.png)
+        ![](../../doc_files/incidentCloseFromLumuToCortex.png)
         <br>
 
 
@@ -194,12 +194,12 @@ Once the Lumu package was downloaded from the Cortex Marketplace, then next the 
 
 - War Room
     it is a kind a CLI where you can crank manual command and check the entries of the integration.
-    ![](https://raw.githubusercontent.com/demisto/content/master/Packs/Lumu//doc_files/warRoomCLIHistory.png)
+    ![](../../doc_files/warRoomCLIHistory.png)
     <br>
 
 - Check the fetch history
     it is a table which print every `fetch-incidents` command execution and show the output data result.
-    ![fetch_history](https://raw.githubusercontent.com/demisto/content/master/Packs/Lumu//doc_files/fetchHistoryRecords.png)
+    ![fetch_history](../../doc_files/fetchHistoryRecords.png)
     <br>
 
 - integration-instance.log (ssh)

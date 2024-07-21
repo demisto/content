@@ -2633,6 +2633,37 @@ def test_basic_authentication_param(mocker, username, expected_username, basic_a
     assert ('basic' in client.connect.call_args[1]) == basic_auth
 
 
+@pytest.mark.parametrize(argnames='host, expected_base_url', argvalues=[
+    ('8.8.8.8', 'https://8.8.8.8:8089/'),
+    ('https://www.test.com', 'https://www.test.com:8089/'),
+    ('http://www.test.com', 'https://http://www.test.com:8089/'),  # we don't want to silently replace http with https
+])
+def test_base_url(mocker, host, expected_base_url):
+    """
+    Given: - Different host values
+    When:  - Running the splunk-notable-event-edit command
+    Then:  - Ensure the base URL is built as expected
+
+    """
+    mocked_params = {
+        'host': host,
+        'port': '8089',
+        'proxy': 'false',
+        'authentication': {
+            'identifier': 'username',
+            'password': 'test_password'
+        }
+    }
+    mocker.patch.object(demisto, 'command', return_value='splunk-notable-event-edit')
+    mocker.patch.object(demisto, 'params', return_value=mocked_params)
+    mocker.patch.object(client, 'connect')
+
+    cmd = mocker.patch.object(splunk, 'splunk_edit_notable_event_command')
+    splunk.main()
+
+    assert cmd.call_args[0][0] == expected_base_url
+
+
 @pytest.mark.parametrize(
     'item, expected',
     [
@@ -2679,6 +2710,10 @@ def test_single_drilldown_searches(mocker):
     [({'drilldown_search': 'test'}, ['test']),
      ({'drilldown_searches': '{"search_1":"test_1"}'}, [{'search_1': 'test_1'}]),
      ({'drilldown_searches': ['{"search_1":"test_1"}', '{"search_2":"test_2"}']},
+      [{'search_1': 'test_1'}, {'search_2': 'test_2'}]),
+     ({'drilldown_searches': '[{"search_1":"test_1"}]'},
+      [{'search_1': 'test_1'}]),
+     ({'drilldown_searches': '[{"search_1":"test_1"}, {"search_2":"test_2"}]'},
       [{'search_1': 'test_1'}, {'search_2': 'test_2'}])
      ]
 )
@@ -2686,10 +2721,12 @@ def test_get_drilldown_searches(drilldown_data, expected):
     """
     Given:  -
         1. A notable data with a single 'old' (string value in the 'drilldown_search' key) drilldown enrichment data .
-        4. A notable data with a single drilldown enrichments as json string in the 'new' key (drilldown_searches).
-        5. A notable data with multiple drilldown enrichments as json string in the 'new' key (drilldown_searches).
+        2. A notable data with a single drilldown enrichments as json string in the 'new' key (drilldown_searches).
+        3. A notable data with multiple drilldown enrichments as json string in the 'new' key (drilldown_searches).
+        4. A notable data with a single drilldown enrichments as json list string in the 'new' key (drilldown_searches).
+        5. A notable data with a multiple drilldown enrichments as json list string in the 'new' key (drilldown_searches).
     When:   - call to get_drilldown_searches.
-    Then:   - validate the result are as expectedץ
+    Then:   - validate the result are as expected.
     """
 
     assert splunk.get_drilldown_searches(drilldown_data) == expected
