@@ -562,7 +562,6 @@ def main():
         return_error(get_error(res))
     res = res[-1]
     incidents = json.loads(res['Contents'])
-    # return_results(CommandResults(readable_output=tableToMarkdown("incidents",incidents)))
     if is_number_of_incidents_too_low(res, incidents):
         return
     if is_number_of_unique_recipients_is_too_low(incidents):

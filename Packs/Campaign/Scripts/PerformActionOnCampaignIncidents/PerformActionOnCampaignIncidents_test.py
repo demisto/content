@@ -23,9 +23,9 @@ from PerformActionOnCampaignIncidents import (
     _parse_incident_context_to_valid_incident_campaign_context,
     perform_add_to_campaign,
     perform_remove_from_campaign,
-    _set_removed_from_campaigns_field
+    _set_removed_from_campaigns_field,
+    ACTIONS
 )
-
 NUM_OF_INCIDENTS = 5
 INCIDENT_IDS = [str(i) for i in range(NUM_OF_INCIDENTS)]
 CUSTOM_FIELDS = {
@@ -697,12 +697,12 @@ def test_perform_remove_from_campaign_no_incidents_to_remove(
 @pytest.mark.parametrize(
     "campaign_ids_removed, action, expected_campaign_ids_removed",
     [
-        (["campaign1", "campaign2"], "remove", ["campaign1", "campaign2", "campaign_id"]),
-        (None, "remove", ["campaign_id"]),
-        ([], "remove", ["campaign_id"]),
-        (None, "add", []),
-        ([], "add", []),
-        (["campaign1", "campaign_id"], "add", ["campaign1"]),
+        (["campaign1", "campaign2"], ACTIONS.ADD, ["campaign1", "campaign2", "campaign_id"]),
+        (None, ACTIONS.ADD, ["campaign_id"]),
+        ([], ACTIONS.ADD, ["campaign_id"]),
+        (None, ACTIONS.REMOVE, []),
+        ([], ACTIONS.REMOVE, []),
+        (["campaign1", "campaign_id"], ACTIONS.REMOVE, ["campaign1"]),
     ]
 )
 def test_set_removed_from_campaigns_field(
