@@ -15,6 +15,7 @@ If you are using the integration to rasterize un-trusted URLs or HTML content, s
 | wait_time | Time to wait before taking a screenshot \(in seconds\). | False |
 | max_page_load_time | Maximum amount of time to wait for a page to load \(in seconds\). | False |
 | chrome_options | Chrome options (Advanced. See `Configuration Notes`.) | False |
+| is_https | Use secure requests protocol \(HTTPS\). | False |
 | proxy | Use system proxy settings. | False |
 | rasterize_mode | Rasterize Mode. (See `Configuration Notes`.) | False |
 
