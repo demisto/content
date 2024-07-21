@@ -168,3 +168,4 @@ class TestSiverfort(object):
         jwt_token = get_jwt_token(app_user_id, app_user_secret, current_time)
 
         assert jwt_token == expected_jwt_token
+
