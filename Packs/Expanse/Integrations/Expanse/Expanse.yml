@@ -144,7 +144,7 @@ script:
       description: The number of ROUTINE Events for this IP address.
       type: Number
     - contextPath: Expanse.IP.SeverityCounts.WARNING
-      description: The number of WARNING Events for this IP address
+      description: The number of WARNING Events for this IP address.
       type: Number
     - contextPath: Expanse.IP.Geo.Description
       description: Additional information about the location.
@@ -162,10 +162,10 @@ script:
     name: domain
     outputs:
     - contextPath: Domain.Name
-      description: 'The domain name, for example: "google.com"'
+      description: 'The domain name, for example: "google.com".'
       type: String
     - contextPath: Domain.DNS
-      description: A list of IP objects resolved by DNS
+      description: A list of IP objects resolved by DNS.
       type: String
     - contextPath: Domain.CreationDate
       description: The date that the domain was created.
@@ -300,10 +300,10 @@ script:
       description: Service Status that Expanse sees for this domain.
       type: String
     - contextPath: Expanse.Domain.LastSampledIP
-      description: Last seen IP address for this domain
+      description: Last seen IP address for this domain.
       type: String
     - contextPath: Expanse.Domain.DNS
-      description: A list of IP objects resolved by DNS
+      description: A list of IP objects resolved by DNS.
       type: String
     - contextPath: Expanse.Domain.CreationDate
       description: The date that the domain was created.
@@ -486,7 +486,7 @@ script:
       description: Organization of the subject.
       type: String
     - contextPath: Expanse.Certificate.Subject.Unit
-      description: Organizational Unit of subject
+      description: Organizational Unit of subject.
       type: String
     - contextPath: Expanse.Certificate.Subject.AltNames
       description: Alternative names from the subject.
@@ -536,7 +536,7 @@ script:
       description: Array of flow objects.
       type: Unknown
     - contextPath: Expanse.Behavior.Flows.InternalAddress
-      description: Internal IP address for flow
+      description: Internal IP address for flow.
       type: String
     - contextPath: Expanse.Behavior.Flows.InternalPort
       description: Internal port for the flow.
@@ -578,59 +578,59 @@ script:
       description: The ip that was searched.
       type: String
     - contextPath: Expanse.Exposures.TotalExposureCount
-      description: The total count of exposures for the IP
+      description: The total count of exposures for the IP.
       type: Number
     - contextPath: Expanse.Exposures.CriticalExposureCount
-      description: The total count of CRITICAL exposures for the IP
+      description: The total count of CRITICAL exposures for the IP.
       type: Number
     - contextPath: Expanse.Exposures.WarningExposureCount
-      description: The total count of WARNING exposures for the IP
+      description: The total count of WARNING exposures for the IP.
       type: Number
     - contextPath: Expanse.Exposures.RoutineExposureCount
-      description: The total count of ROUTINE exposures for the IP
+      description: The total count of ROUTINE exposures for the IP.
       type: Number
     - contextPath: Expanse.Exposures.UnknownExposureCount
-      description: The total count of UNKNOWN exposures for the IP
+      description: The total count of UNKNOWN exposures for the IP.
       type: Number
     - contextPath: Expanse.Exposures.ExposureSummaries
-      description: Summaries of exposures for the IP address
+      description: Summaries of exposures for the IP address.
       type: String
     - contextPath: Expanse.Exposures.Exposures
-      description: Array of Exposures for the IP address
+      description: Array of Exposures for the IP address.
       type: Unknown
     - contextPath: Expanse.Exposures.Exposures.ExposureType
-      description: Exposure type of the Exposure
+      description: Exposure type of the Exposure.
       type: String
     - contextPath: Expanse.Exposures.Exposures.BusinessUnit
-      description: Business Unit of the Exposure
+      description: Business Unit of the Exposure.
       type: String
     - contextPath: Expanse.Exposures.Exposures.Ip
-      description: IP Address the Exposure was found on
+      description: IP Address the Exposure was found on.
       type: String
     - contextPath: Expanse.Exposures.Exposures.Port
-      description: Port the Exposure was found on
+      description: Port the Exposure was found on.
       type: String
     - contextPath: Expanse.Exposures.Exposures.Severity
-      description: Severity of the Exposure
+      description: Severity of the Exposure.
       type: String
     - contextPath: Expanse.Exposures.Exposures.Certificate
-      description: Certificate details associated with Exposure
+      description: Certificate details associated with Exposure.
       type: Unknown
     - contextPath: Expanse.Exposures.Exposures.FirstObservsation
-      description: First Observation of the Exposure
+      description: First Observation of the Exposure.
       type: Unknown
     - contextPath: Expanse.Exposures.Exposures.LastObservsation
-      description: Last Observation of the Exposure
+      description: Last Observation of the Exposure.
       type: Unknown
     - contextPath: Expanse.Exposures.Exposures.Status
-      description: Status details of the Exposure
+      description: Status details of the Exposure.
       type: Unknown
     - contextPath: Expanse.Exposures.Exposures.Provider
-      description: Provider details of the Exposure
+      description: Provider details of the Exposure.
       type: Unknown
   - arguments:
     - default: true
-      description: The certificate common name. Fuzzy matching is done on this name, however query times can grow quite large when searching for short strings. Ex. "*.myhost.com" is a better search term than "host"
+      description: The certificate common name. Fuzzy matching is done on this name, however query times can grow quite large when searching for short strings. Ex. "*.myhost.com" is a better search term than "host".
       name: common_name
       required: true
     description: Returns all domains which have been seen with the specified certificate.
@@ -648,9 +648,11 @@ script:
     - contextPath: Expanse.IPDomains.DomainList
       description: An array of domain objects. This is truncated at 50.
       type: Unknown
-  dockerimage: demisto/python3:3.9.5.21272
+  dockerimage: demisto/python3:3.11.9.103842
   isfetch: true
   runonce: false
   script: '-'
   subtype: python3
   type: python
+tests:
+- test-Expanse
