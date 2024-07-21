@@ -7,7 +7,7 @@ import pytest
 import CommonServerPython
 
 
-class TestClient(object):
+class TestClient:
     def test_headers(self, requests_mock):
         apikey = 'abcdef'
         c = DNSDB.Client(DNSDB.DEFAULT_DNSDB_SERVER, apikey)
@@ -527,7 +527,7 @@ class TestClient(object):
 
         with pytest.raises(CommonServerPython.DemistoException):
             for rrset in c.lookup_rrset(name):
-                pytest.fail('received {0}'.format(rrset))  # pragma: no cover
+                pytest.fail(f'received {rrset}')  # pragma: no cover
 
     def test_limit(self, requests_mock):
         c = DNSDB.Client(DNSDB.DEFAULT_DNSDB_SERVER, '')
@@ -547,7 +547,7 @@ class TestClient(object):
             text=_saf_wrap([]))
 
         for rrset in c.lookup_rrset(name, limit=limit):
-            pytest.fail('received {0}'.format(rrset))  # pragma: no cover
+            pytest.fail(f'received {rrset}')  # pragma: no cover
 
     def test_time_first_before(self, requests_mock):
         self._test_time_param(requests_mock, "time_first_before")
@@ -579,7 +579,7 @@ class TestClient(object):
             text=_saf_wrap([]))
 
         for rrset in c.lookup_rrset(name, aggr=aggr):
-            pytest.fail('received {0}'.format(rrset))  # pragma: no cover
+            pytest.fail(f'received {rrset}')  # pragma: no cover
 
     def test_offset(self, requests_mock):
         c = DNSDB.Client(DNSDB.DEFAULT_DNSDB_SERVER, '')
@@ -599,7 +599,7 @@ class TestClient(object):
             text=_saf_wrap([]))
 
         for rrset in c.lookup_rrset(name, offset=offset):
-            pytest.fail('received {0}'.format(rrset))  # pragma: no cover
+            pytest.fail(f'received {rrset}')  # pragma: no cover
 
     def test_max_count(self, requests_mock):
         c = DNSDB.Client(DNSDB.DEFAULT_DNSDB_SERVER, '')
@@ -619,7 +619,7 @@ class TestClient(object):
 
         with pytest.raises(DNSDB.QueryError):
             for rrset in c.summarize_rrset(name, max_count=max_count):
-                pytest.fail('received {0}'.format(rrset))  # pragma: no cover
+                pytest.fail(f'received {rrset}')  # pragma: no cover
 
     @staticmethod
     def _test_time_param(requests_mock, param: str):
@@ -641,10 +641,10 @@ class TestClient(object):
             text=_saf_wrap([]))
 
         for rrset in c.lookup_rrset(name, **{param: when}):
-            pytest.fail('received {0}'.format(rrset))  # pragma: no cover
+            pytest.fail(f'received {rrset}')  # pragma: no cover
 
 
-class TestBuildResultContext(object):
+class TestBuildResultContext:
     def test_lookup_rrset(self):
         self._run_test(
             {
@@ -727,7 +727,7 @@ class TestBuildResultContext(object):
         assert DNSDB.build_result_context(input) == expected
 
 
-class TestBuildLimitsContext(object):
+class TestBuildLimitsContext:
     def test_no_rate(self):
         with pytest.raises(ValueError):
             DNSDB.build_rate_limits_context({})

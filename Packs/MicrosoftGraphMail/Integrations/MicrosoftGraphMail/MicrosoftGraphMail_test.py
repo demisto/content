@@ -672,8 +672,8 @@ def test_get_attachments_without_attachment_id(mocker, client):
 
     """
     from MicrosoftGraphMail import get_attachment_command
-    file_attachments_result = {'2': 'f1145f66-90fe-4604-a7ea-faac8c33684e-imageName:image2.png',
-                               '3': 'exampleID3-imageName:image3.png'}
+    file_attachments_result = {'2': 'f1145f66-90fe-4604-a7ea-faac8c33684e-attachmentName-image2.png',
+                               '3': 'exampleID3-attachmentName-image3.png'}
     output_prefix = 'MSGraphMail(val.ID && val.ID == obj.ID)'
     with open('test_data/mail_with_attachments') as mail_json:
         user_id = 'ex@example.com'

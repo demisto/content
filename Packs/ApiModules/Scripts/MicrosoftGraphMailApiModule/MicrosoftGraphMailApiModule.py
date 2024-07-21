@@ -280,7 +280,7 @@ class MsGraphMailBaseClient(MicrosoftClient):
             attachment_identifier_id = attachment.get('contentId')
             if not attachment_identifier_id or attachment_identifier_id == "None":
                 attachment_identifier_id = attachment.get('id', '')
-            attachment_name = f"{attachment_identifier_id}-imageName:{attachment.get('name', 'untitled_attachment')}"
+            attachment_name = f"{attachment_identifier_id}-attachmentName-{attachment.get('name', 'untitled_attachment')}"
 
             if not attachment_name.isascii():
                 try:
@@ -1302,7 +1302,7 @@ class GraphMailUtils:
         identifier_id = raw_attachment.get('contentId')
         if not identifier_id or identifier_id == "None":
             identifier_id = raw_attachment.get('id', '')
-        name = f"{identifier_id}-imageName:{raw_attachment.get('name','')}"
+        name = f"{identifier_id}-attachmentName-{raw_attachment.get('name','')}"
         data = raw_attachment.get('contentBytes')
         try:
             data = base64.b64decode(data)  # type: ignore

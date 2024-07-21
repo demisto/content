@@ -599,12 +599,12 @@ def get_attachment_name(attachment_name, eml_extension=False, content_id="", att
     if not identifier_id or identifier_id == "None":
         identifier_id = attachment_id
     if attachment_name is None or attachment_name == "":
-        return (f"{identifier_id}-imageName:demisto_untitled_attachment.eml"
+        return (f"{identifier_id}-attachmentName-demisto_untitled_attachment.eml"
                 if eml_extension
-                else f"{identifier_id}-imageName:demisto_untitled_attachment")
+                else f"{identifier_id}-attachmentName-demisto_untitled_attachment")
     elif eml_extension and not attachment_name.endswith(".eml"):
-        return f'{identifier_id}-imageName:{attachment_name}.eml'
-    return f'{identifier_id}-imageName:{attachment_name}'
+        return f'{identifier_id}-attachmentName-{attachment_name}.eml'
+    return f'{identifier_id}-attachmentName-{attachment_name}'
 
 
 def get_entry_for_object(title, context_key, obj, headers=None):

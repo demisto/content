@@ -21,6 +21,7 @@ ignore=PB118
 
 [known_words]
 powershell
+attachmentName
 
 [file:GetEWSFolder.yml]
 ignore=BA124

@@ -754,8 +754,8 @@ def test_get_attachments_without_attachment_id(mocker, client):
 
     """
     from MicrosoftGraphListener import get_attachment_command
-    file_attachments_result = {'2': 'f1145f66-90fe-4604-a7ea-faac8c33684e-imageName:image2.png',
-                               '3': 'exampleID3-imageName:image3.png'}
+    file_attachments_result = {'2': 'f1145f66-90fe-4604-a7ea-faac8c33684e-attachmentName-image2.png',
+                               '3': 'exampleID3-attachmentName-image3.png'}
     output_prefix = 'MSGraphMail(val.ID && val.ID == obj.ID)'
     with open('test_data/mail_with_attachments.txt') as mail_json:
         test_args = {}
@@ -1222,7 +1222,7 @@ def test_special_chars_in_attachment_name(mocker):
 
     res = client._get_email_attachments('message_id')
 
-    assert res[0].get('name') == f'123-imageName:{attachment_file_name}'
+    assert res[0].get('name') == f'123-attachmentName-{attachment_file_name}'
 
 
 @pytest.mark.parametrize('attachment_file_name', ['1.png', 'file_example_JPG_100kB.jpg', 'sdsdagdsga.png'])
@@ -1243,7 +1243,7 @@ def test_regular_chars_in_attachment_name(mocker, attachment_file_name):
 
     res = client._get_email_attachments('message_id')
 
-    assert res[0].get('name') == f'1234-imageName:{attachment_file_name}'
+    assert res[0].get('name') == f'1234-attachmentName-{attachment_file_name}'
 
 
 @pytest.mark.parametrize('str_to_check, expected_result', [('slabiky, ale liší se podle významu', False),

@@ -1,0 +1,796 @@
+description: Playbook to enrich domain information.
+id: 'Cortex ASM - Domain Enrichment'
+inputSections:
+- description: Generic group for inputs.
+  inputs:
+  - Hostname
+  name: General (Inputs group)
+inputs:
+- description: Input for domain enrichment.
+  key: Hostname
+  playbookInputQuery:
+  required: false
+  value:
+    simple: ${alert.hostname}
+name: Cortex ASM - Domain Enrichment
+outputSections:
+- description: Generic group for outputs.
+  name: General (Outputs group)
+  outputs: []
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "20"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 6e4679ff-3bf7-4cb4-8f56-23991a74e959
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 6e4679ff-3bf7-4cb4-8f56-23991a74e959
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -70
+        }
+      }
+  "1":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: CSCDomainManager
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+          right:
+            value: {}
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.Hostname
+          operator: isExists
+      label: "yes"
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "14"
+      "yes":
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks if there’s an active instance of the CSCDomainManager integration enabled and input is defined.
+      id: d9197b1e-217d-4dca-88e2-e4ba3a9b1a9c
+      iscommand: false
+      name: Is CSC Domain Manager enabled and Input defined?
+      type: condition
+      version: -1
+    taskid: d9197b1e-217d-4dca-88e2-e4ba3a9b1a9c
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 215
+        }
+      }
+  "2":
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      domain:
+        simple: ${inputs.Hostname}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: CSCDomainManager
+      description: Will contain the domain information.
+      id: a745fa47-3530-4db5-82f9-4db83eb53eb1
+      iscommand: true
+      name: Get Domain information from CSC Domain Manager
+      script: CSCDomainManager|||domain
+      type: regular
+      version: -1
+    taskid: a745fa47-3530-4db5-82f9-4db83eb53eb1
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 400
+        }
+      }
+  "3":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Domain
+          operator: isNotEmpty
+      label: "yes"
+    continueonerrortype: ""
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "14"
+      "yes":
+      - "8"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Are there any results from CSC Domain Manager?
+      id: fbe264d5-44d8-4301-895c-0ea46a3e7148
+      iscommand: false
+      name: Are there any results from CSC Domain Manager?
+      type: condition
+      version: -1
+    taskid: fbe264d5-44d8-4301-895c-0ea46a3e7148
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 600
+        }
+      }
+  "6":
+    continueonerrortype: ""
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: afaf5017-e913-42e3-8ca6-b773ed4b803e
+      iscommand: false
+      name: Service Owner
+      type: title
+      version: -1
+      description: ''
+    taskid: afaf5017-e913-42e3-8ca6-b773ed4b803e
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 90,
+          "y": 1050
+        }
+      }
+  "7":
+    continueonerrortype: ""
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "17"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 6b732184-8fcb-48a1-8e38-9dd2752ca9b3
+      iscommand: false
+      name: System IDs
+      type: title
+      version: -1
+      description: ''
+    taskid: 6b732184-8fcb-48a1-8e38-9dd2752ca9b3
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 860,
+          "y": 1050
+        }
+      }
+  "8":
+    continueonerrortype: ""
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "7"
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e1e91024-e789-4db8-8c5b-9b6d963658f0
+      iscommand: false
+      name: Set fields
+      type: title
+      version: -1
+      description: ''
+    taskid: e1e91024-e789-4db8-8c5b-9b6d963658f0
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 810
+        }
+      }
+  "9":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ${CSCDomainManager.Domain.whoisContacts}
+          operator: isNotEmpty
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
+    id: "9"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "14"
+      "yes":
+      - "11"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Is there service owner information?
+      id: 3b05d602-39ef-4dcc-82d6-01d19ddd41ee
+      iscommand: false
+      name: Is there Service Owner information?
+      type: condition
+      version: -1
+    taskid: 3b05d602-39ef-4dcc-82d6-01d19ddd41ee
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 90,
+          "y": 1180
+        }
+      }
+  "10":
+    continueonerrortype: ""
+    id: "10"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "16"
+      - "15"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: asm_fields_set_for_domain
+      value:
+        simple: "true"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 701804f9-b1b3-42c6-8d9e-c257df8a4b29
+      iscommand: false
+      name: Set true flag for completed enrichment
+      script: Set
+      type: regular
+      version: -1
+    taskid: 701804f9-b1b3-42c6-8d9e-c257df8a4b29
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 90,
+          "y": 1570
+        }
+      }
+  "11":
+    continueonerrortype: ""
+    id: "11"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      gridfield:
+        simple: asmserviceownerunrankedraw
+      keys:
+        simple: name,email,source,timestamp
+      val1:
+        simple: n/a
+      val2:
+        complex:
+          accessor: whoisContacts}
+          root: ${CSCDomainManager.Domain
+          transformers:
+          - args:
+              field:
+                value:
+                  simple: email
+            operator: getField
+          - operator: uniq
+      val3:
+        simple: CSC-Domain
+      val4:
+        simple: TIMESTAMP
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
+        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
+      id: e641400f-17b9-4aa3-8222-b875fdfd5dd9
+      iscommand: false
+      name: Set service owner grid field
+      script: GridFieldSetup
+      type: regular
+      version: -1
+    taskid: e641400f-17b9-4aa3-8222-b875fdfd5dd9
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 90,
+          "y": 1390
+        }
+      }
+  "12":
+    continueonerrortype: ""
+    id: "12"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      gridfield:
+        simple: asmenrichmentstatus
+      keys:
+        simple: source,record_exists,timestamp
+      val1:
+        simple: Domain
+      val2:
+        simple: "true"
+      val3:
+        simple: TIMESTAMP
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Instead of a value you can enter `TIMESTAMP` to get the current timestamp in ISO format. For example:
+        `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
+      id: 735ba84f-d6af-47b6-8bd9-bca969b250a4
+      iscommand: false
+      name: Set ASM enrichment status to true
+      script: GridFieldSetup
+      type: regular
+      version: -1
+    taskid: 735ba84f-d6af-47b6-8bd9-bca969b250a4
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -830,
+          "y": 2020
+        }
+      }
+  "13":
+    continueonerrortype: ""
+    id: "13"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      gridfield:
+        simple: asmenrichmentstatus
+      keys:
+        simple: source,record_exists,timestamp
+      val1:
+        simple: Domain
+      val2:
+        simple: "false"
+      val3:
+        simple: TIMESTAMP
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Instead of a value you can enter `TIMESTAMP` to get the current timestamp in ISO format. For example:
+        `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
+      id: 730080ea-0041-4fa3-8369-6e08e1bb7470
+      iscommand: false
+      name: Set ASM enrichment status to false
+      script: GridFieldSetup
+      type: regular
+      version: -1
+    taskid: 730080ea-0041-4fa3-8369-6e08e1bb7470
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -320,
+          "y": 2020
+        }
+      }
+  "14":
+    continueonerrortype: ""
+    id: "14"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: a54d0ea3-217b-4fac-8d10-2ecc92fa7498
+      iscommand: false
+      name: Closing stage
+      type: title
+      version: -1
+      description: ''
+    taskid: a54d0ea3-217b-4fac-8d10-2ecc92fa7498
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -580,
+          "y": 1600
+        }
+      }
+  "15":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: asm_fields_set_for_domain
+          operator: isTrue
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
+    id: "15"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "12"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check if enrichment is performed.
+      id: bd167f83-de0b-46f8-8233-4003cbc73dcf
+      iscommand: false
+      name: Was enrichment performed?
+      type: condition
+      version: -1
+    taskid: bd167f83-de0b-46f8-8233-4003cbc73dcf
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -580,
+          "y": 1840
+        }
+      }
+  "16":
+    continueonerrortype: ""
+    id: "16"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 29b8bf3b-30f7-42c8-89b2-3e9eb0434c1a
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 29b8bf3b-30f7-42c8-89b2-3e9eb0434c1a
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 90,
+          "y": 2330
+        }
+      }
+  "17":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: CSCDomainManager.Domain.account.accountNumber
+          operator: isNotEmpty
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
+    id: "17"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "14"
+      "yes":
+      - "18"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Is there service ID information?
+      id: 69e35ce9-0142-4de3-814b-ce9f2e22b81f
+      iscommand: false
+      name: Is there System ID information?
+      type: condition
+      version: -1
+    taskid: 69e35ce9-0142-4de3-814b-ce9f2e22b81f
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 860,
+          "y": 1200
+        }
+      }
+  "18":
+    continueonerrortype: ""
+    id: "18"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      gridfield:
+        simple: asmserviceownerunrankedraw
+      keys:
+        simple: name,email,source,timestamp
+      val1:
+        simple: n/a
+      val2:
+        simple: ${CSCDomainManager.Domain.account.accountNumber}
+      val3:
+        simple: CSC-Account-Number
+      val4:
+        simple: TIMESTAMP
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
+        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
+      id: d9c7e19b-56a4-4173-89ee-32455ca88966
+      iscommand: false
+      name: Set System ID grid field (Account number)
+      script: GridFieldSetup
+      type: regular
+      version: -1
+    taskid: d9c7e19b-56a4-4173-89ee-32455ca88966
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 860,
+          "y": 1390
+        }
+      }
+  "19":
+    continueonerrortype: ""
+    id: "19"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "15"
+      - "16"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: asm_fields_set_for_domain
+      value:
+        simple: "true"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: db971b0d-e158-446a-86b4-26aabceac352
+      iscommand: false
+      name: Set true flag for completed enrichment
+      script: Set
+      type: regular
+      version: -1
+    taskid: db971b0d-e158-446a-86b4-26aabceac352
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 860,
+          "y": 1570
+        }
+      }
+  "20":
+    continueonerrortype: ""
+    id: "20"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e6ee1596-34cc-40aa-89e6-77a9d4287486
+      iscommand: false
+      name: CSC Domain Manager
+      type: title
+      version: -1
+      description: ''
+    taskid: e6ee1596-34cc-40aa-89e6-77a9d4287486
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 80
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2465,
+        "width": 2070,
+        "x": -830,
+        "y": -70
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0

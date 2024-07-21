@@ -11,6 +11,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * Cortex ASM - Azure Enrichment
 * Cortex ASM - Certificate Enrichment
 * Cortex ASM - Cortex Endpoint Enrichment_Core_Combo
+* Cortex ASM - Domain Enrichment
 * Cortex ASM - GCP Enrichment
 * Cortex ASM - On Prem Enrichment
 * Cortex ASM - Prisma Cloud Enrichment

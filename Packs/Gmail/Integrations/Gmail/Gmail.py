@@ -192,7 +192,7 @@ def parse_mail_parts(parts):
                         identifier_id = part['body'].get('attachmentId').strip("<>")
                 attachments.append({
                     'ID': part['body']['attachmentId'],
-                    'Name': f"{identifier_id}-imageName:{part['filename']}",
+                    'Name': f"{identifier_id}-attachmentName-{part['filename']}",
                 })
 
     return body, html, attachments
@@ -1557,8 +1557,8 @@ def get_attachments(user_id, _id, identifiers_filter=""):
         command_args['id'] = attachment['ID']
         result = service.users().messages().attachments().get(**command_args).execute()
         if (not identifiers_filter_array
-                or ('-imageName:' in attachment['Name']
-                    and attachment['Name'].split('-imageName:')[0] in identifiers_filter_array)):
+                or ('-attachmentName-' in attachment['Name']
+                    and attachment['Name'].split('-attachmentName-')[0] in identifiers_filter_array)):
             file_data = base64.urlsafe_b64decode(result['data'].encode('ascii'))
             files.append((attachment['Name'], file_data))
     return files
