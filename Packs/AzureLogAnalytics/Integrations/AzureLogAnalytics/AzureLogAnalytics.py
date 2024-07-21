@@ -23,6 +23,7 @@ SAVED_SEARCH_HEADERS = [
     'etag', 'id', 'category', 'displayName', 'functionAlias', 'functionParameters', 'query', 'tags', 'version', 'type'
 ]
 
+
 class Client:
     def __init__(self, self_deployed, refresh_token, auth_and_token_url, enc_key, redirect_uri, auth_code,
                  subscription_id, resource_group_name, workspace_name, verify, proxy, certificate_thumbprint,
@@ -35,7 +36,8 @@ class Client:
             f"subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/"
             + f"providers/Microsoft.OperationalInsights/workspaces/{workspace_name}"
         )
-        auth_code_scope = f"{self.azure_cloud.endpoints.log_analytics_resource_id}/Data.Read%20{self.azure_cloud.endpoints.resource_manager}user_impersonation"
+        auth_code_scope = f"{self.azure_cloud.endpoints.log_analytics_resource_id}/Data.Read%20\
+            {self.azure_cloud.endpoints.resource_manager}user_impersonation"
         resources_list = [self.azure_cloud.endpoints.resource_manager, self.azure_cloud.endpoints.log_analytics_resource_id]
         base_url = urljoin(url=self.azure_cloud.endpoints.resource_manager, suffix=suffix)
 
@@ -195,7 +197,8 @@ def test_connection(client: Client, params: dict[str, Any]) -> str:
     ):
         raise DemistoException('You must enter an authorization code in a self-deployed configuration.')
 
-    client.ms_client.get_access_token(client.azure_cloud.endpoints.resource_manager)  # If fails, MicrosoftApiModule returns an error
+    # If fails, MicrosoftApiModule returns an error
+    client.ms_client.get_access_token(client.azure_cloud.endpoints.resource_manager)
     try:
         execute_query_command(client, {'query': 'Usage | take 1'})
     except Exception as e:
