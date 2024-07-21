@@ -201,13 +201,6 @@ repos:
     -  --skip-markdown
     -  --skip-suffix
 
-  - id: validate-file-permission-changes
-    name: validate-file-permission-changes
-    description: Validate that file permissions haven't been changed.
-    language: system
-    entry: validate-file-permission-changes
-    files: ^Packs/
-
   - id: validate-conf-json
     name: validate-conf-json
     description: validate conf.json
