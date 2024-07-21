@@ -5,9 +5,11 @@ This integration allows you to use the Binalyze AIR's isolation and evidence col
 Collect your forensics data under 10 minutes.
 This integration was integrated and tested with version 2.6.2 of Binalyze AIR
 
-## Configure Binalyze AIR on Cortex XSOAR
+## Configure Binalyze AIR on Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+1. * For XSOAR 6.x users: Navigate to **Settings** > **Integrations** > **Instances**.
+   * For XSOAR 8.x users: Navigate to **Settings & Info** > **Settings** > **Integrations** > **Instances**.
+   * For XSIAM users: Navigate to **Settings** > **Configurations** > **Data Collection** > **Automation & Feed Integrations**.
 2. Search for Binalyze AIR.
 3. Click **Add instance** to create and configure a new integration instance.
 4. Click **Test** to validate the URLs, token, and connection.
@@ -21,7 +23,7 @@ This integration was integrated and tested with version 2.6.2 of Binalyze AIR
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### binalyze-air-isolate

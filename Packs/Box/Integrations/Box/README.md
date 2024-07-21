@@ -1,7 +1,9 @@
 Deprecated. Use the Box v2 integration instead.
 
-## Configure Box on Cortex XSOAR
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+## Configure Box on Cortex
+1. * For XSOAR 6.x users: Navigate to **Settings** > **Integrations** > **Instances**.
+   * For XSOAR 8.x users: Navigate to **Settings & Info** > **Settings** > **Integrations** > **Instances**.
+   * For XSIAM users: Navigate to **Settings** > **Configurations** > **Data Collection** > **Automation & Feed Integrations**.
 2. Search for Box.
 3. Click **Add instance** to create and configure a new integration instance.
 
@@ -29,7 +31,7 @@ Deprecated. Use the Box v2 integration instead.
 
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### box_get_current_user
 ***
