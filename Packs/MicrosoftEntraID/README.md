@@ -84,7 +84,7 @@
     <li>Fill in the attributes based on the Azure Event Hub you streamed your data to.</li>
     <li>Leave the <b>Use audit logs in analytics</b> checkbox selected, unless you were told otherwise.</li>
 </ol>
-<p>More information can be found <a href="https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Ingest-Logs-from-Microsoft-Azure-Event-Hub?tocId=yjPDSlvRYtlNncGBLHOzvw">here</a></p>
+<p>More information can be found <a href="https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Ingest-Logs-from-Microsoft-Azure-Event-Hub?tocId=yjPDSlvRYtlNncGBLHOzvw">here</a>.</p>
 </details>
 <hr>
 
