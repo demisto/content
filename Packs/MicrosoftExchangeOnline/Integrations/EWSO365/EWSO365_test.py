@@ -581,7 +581,7 @@ def test_parse_incident_from_item(mocker, mime_content, expected_data, expected_
     assert incident["rawJSON"]
     raw_json = json.loads(incident["rawJSON"])
     assert raw_json['attachments'][0]['attachmentSHA256'] == expected_attachmentSHA256
-    mock_file_result.assert_called_once_with("None-imageName:demisto_untitled_attachment.eml", expected_data)
+    mock_file_result.assert_called_once_with("None-attachmentName-demisto_untitled_attachment.eml", expected_data)
 
 
 def test_parse_incident_from_item_with_attachments():
@@ -675,7 +675,7 @@ def test_parse_incident_from_item_with_eml_attachment_header_integrity(mocker):
     mock_file_result = mocker.patch('EWSO365.fileResult')
     parse_incident_from_item(message)
     # assert the fileResult is created with the expected results
-    mock_file_result.assert_called_once_with("None-imageName:demisto_untitled_attachment.eml", expected_data)
+    mock_file_result.assert_called_once_with("None-attachmentName-demisto_untitled_attachment.eml", expected_data)
 
 
 @pytest.mark.parametrize('params, expected_result', [
@@ -958,9 +958,9 @@ def test_handle_incorrect_message_id(message_id, expected_message_id_output):
 
 
 @pytest.mark.parametrize("attachment_name, content_id, attachment_id, expected_result", [
-    pytest.param('image1.png', "", '123', "123-imageName:image1.png"),
-    pytest.param('image1.png', '123', '456', "123-imageName:image1.png"),
-    pytest.param('image1.png', None, '456', "456-imageName:image1.png"),
+    pytest.param('image1.png', "", '123', "123-attachmentName-image1.png"),
+    pytest.param('image1.png', '123', '456', "123-attachmentName-image1.png"),
+    pytest.param('image1.png', None, '456', "456-attachmentName-image1.png"),
 
 ])
 def test_get_attachment_name(attachment_name, content_id, attachment_id, expected_result):
