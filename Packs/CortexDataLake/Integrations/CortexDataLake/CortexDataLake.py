@@ -51,64 +51,43 @@ BAD_REQUEST_REGEX = r'^Error in API call \[400\].*'
 def iter_job_results(
     query_service: QueryService,
     job_id=None,
-    max_wait=None,
-    offset=None,
-    page_cursor=None,
     page_number=None,
-    page_size=None,
-    result_format=None,
-    **kwargs
+    page_size=None
 ):
     """Retrieve results iteratively in a non-greedy manner using scroll token.
 
     Args:
         query_service (QueryService): An instance of the QueryService class.
         job_id (str): Specifies the ID of the query job.
-        max_wait (int): How long to wait in ms for a job to complete. Max 2000.
-        offset (int): Along with pageSize, offset can be used to page through result set.
-        page_cursor (str): Token/handle that can be used to fetch more data.
-        page_number (int): Return the nth page from the result set as specified by this parameter.
-        page_size (int): If specified, limits the size of a batch of results to the specified value.
-        If un-specified, backend picks a size that may provide best performance.
-        result_format (str): valuesArray or valuesJson.
-        **kwargs: Supported :meth:`~pancloud.httpclient.HTTPClient.request` parameters.
 
     Yields:
         requests.Response: Requests Response() object.
 
     """
-    credentials = kwargs.pop("credentials", None)
-    params = kwargs.pop("params", {})
-    for name, value in [
-        ("maxWait", max_wait),
-        ("offset", offset),
-        ("pageCursor", page_cursor),
-        ("pageNumber", page_number),
-        ("pageSize", page_size),
-        ("resultFormat", result_format),
-    ]:
-        if value is not None:
-            params.update({name: value})
+    params = {
+        "maxWait": 2000,  # How long to wait in ms for a job to complete. Max 2000.
+        "resultFormat": 'valuesDictionary',
+        "pageNumber": page_number,
+        "pageSize": page_size,
+    }
     while True:
         r = query_service.get_job_results(
             job_id=job_id,
             params=params,
             enforce_json=True,
-            credentials=credentials,
-            **kwargs
         )
         if not r.ok:
             raise HTTPError("%s" % r.text)
         if r.json()["state"] == "DONE":
             scroll_token = r.json()["page"].get("pageCursor")
-            if scroll_token is not None:
-                params["pageCursor"] = scroll_token
-                # params.pop("pageNumber", None)
+            r.json()
+            if scroll_token is not None and not page_number:
+                params["pageCursor"] = scroll_token  # Token/handle that can be used to fetch more data.
                 yield r
             else:
                 yield r
                 break
-        elif r.json()["state"] == ('RUNNING'):
+        elif r.json()["state"] == "RUNNING":
             yield r
             time.sleep(1)
         elif r.json()["state"] == "FAILED":
@@ -321,29 +300,8 @@ class Client(BaseClient):
             raise DemistoException(f'Error in query to Cortex Data Lake XSOAR Connector [{status_code}] - {error_message}')
 
         try:
-            if page:
-                page = arg_to_number(page)
-                page_size = arg_to_number(page_size) or 50
-            #     r = query_service.get_job_results(
-            #         job_id=query_result.get('jobId'),
-            #         params={
-            #             "maxWait": 2000,
-            #             "pageNumber": page,
-            #             "pageSize": page_size or 50,
-            #             "resultFormat": 'valuesDictionary'
-            #         },
-            #         enforce_json=True,
-            #     )
-            #     if not r.ok:
-            #         raise HTTPError("%s" % r.text)
-            #     raw_results = [r.json()]
-            # else:
-            raw_results = [r.json() for r in iter_job_results(query_service, job_id=query_result.get('jobId'),
-                                                              result_format='valuesDictionary',
-                                                              max_wait=2000,
-                                                              page_number = page,
-                                                              page_size=page_size
-                                                              )]
+            raw_results = [r.json() for r in iter_job_results(query_service, job_id=query_result.get(
+                'jobId'), page_number=arg_to_number(page), page_size=arg_to_number(page_size) or 50)]
         except exceptions.HTTPError as e:
             raise DemistoException(f'Received error {str(e)} when querying logs.')
 
@@ -1206,11 +1164,9 @@ def build_query(args, table_name):
                            f'TIMESTAMP("{query_end_time}") '
     where += f' AND {timestamp_limitation}' if where else timestamp_limitation
     query = f'SELECT {fields} FROM `firewall.{table_name}` WHERE {where}'  # noqa: S608
-    if args.get('page'):
-        limit = args.get('page_size') or '50'
-    else:
+    if not args.get('page'):
         limit = args.get('limit', '5')
-    query += f' LIMIT {limit}'
+        query += f' LIMIT {limit}'
     return fields, query
 
 

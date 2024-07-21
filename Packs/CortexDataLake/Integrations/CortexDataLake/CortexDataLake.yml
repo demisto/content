@@ -807,6 +807,10 @@ script:
     - defaultValue: '5'
       description: The maximum number of logs to return. Default is 5.
       name: limit
+    - description: page.
+      name: page
+    - description: page size.
+      name: page_size
     - description: A destination IP address or an array of destination IPs addresses for which to search, for example 1.1.1.1,2.2.2.2.
       name: dest_ip
     - description: Destination port utilized by the session. Can be port number or an array of destination port numbers to search. For example '443' or '443,445'.
@@ -1129,6 +1133,10 @@ script:
     - defaultValue: '5'
       description: The maximum number of logs to return. Default is 5.
       name: limit
+    - description: page.
+      name: page
+    - description: page size.
+      name: page_size
     - description: The IP address or an array of IP addresses for which to search. For example 1.1.1.1,2.2.2.2. Used instead of the source/destination IP address.
       name: ip
     - description: The port or array of ports to search. Used instead of the source/destination port.
