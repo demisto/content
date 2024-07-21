@@ -115,4 +115,4 @@ script:
   type: python
 fromversion: 5.5.0
 tests:
-- No tests (auto formatted)
+- SSL Blacklist test
