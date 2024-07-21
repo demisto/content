@@ -656,3 +656,4 @@ script:
   type: python
 tests:
 - test-Expanse
+- test-Expanse-Playbook
