@@ -31,7 +31,14 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo Deleting branch protection rule for deleted branch '${{ github.event.ref }}'
-          poetry run python .github/github_workflow_scripts/delete_branch_protection.py delete "${{ github.event.ref }}"  
+          poetry run python .github/github_workflow_scripts/manage_branch_protection.py delete "${{ github.event.ref }}" 
+          
+      - name: Upload Log to Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: manage_branch_protection_log_delete_branch
+          path: .github/github_workflow_scripts/manage_branch_protection.log
+
 
   delete_orphaned_protection_rules:
     runs-on: ubuntu-latest
@@ -57,4 +64,10 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo Checking for any leftover branch protection rules that need to be deleted...
-          poetry run python .github/github_workflow_scripts/delete_branch_protection.py purge
+          poetry run python .github/github_workflow_scripts/manage_branch_protection.py purge
+
+      - name: Upload Log to Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: manage_branch_protection_log_purge
+          path: .github/github_workflow_scripts/manage_branch_protection.log
