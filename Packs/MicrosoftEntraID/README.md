@@ -69,7 +69,7 @@
     <li>Select <b>+ Add diagnostic setting</b> to create a new integration or select <b>Edit setting</b> for an existing integration.</li>
     <li>Enter a <b>Diagnostic setting name</b>. If you're editing an existing integration, you can't change the name.</li>
     <li>Select the log categories that you want to stream. Refer to the <b>Log Normalization</b> section for the supported log categories for normalization.</li>
-    <li>Select the Stream to an event hub check box.</li>
+    <li>Select the <b>Stream to an event hub </b>checkbox.</li>
     <li>Select the Azure subscription, Event Hubs namespace, and optional event hub where you want to route the logs.</li>
 </ol>
 
