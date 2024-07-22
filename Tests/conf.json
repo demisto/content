@@ -4042,9 +4042,9 @@
             "playbookID": "Trend Micro Deep Security - Test"
         },
         {
-            "integrations": "Carbon Black Endpoint Standard",
-            "playbookID": "carbonBlackEndpointStandardTestPlaybook",
-            "fromversion": "5.5.0",
+            "integrations": "Carbon Black Endpoint Standard V3",
+            "playbookID": "carbonBlackEndpointStandardV3TestPlaybook",
+            "fromversion": "6.10.0",
             "is_mockable": false
         },
         {
@@ -5865,7 +5865,6 @@
         "AutoFocusTagsFeed-test": "shares API quota with the other test",
         "Carbon Black Edr - Test": "Jira ticket XDR-43185",
         "Phishing v2 - Test - Actual Incident": "Issue 41322",
-        "carbonBlackEndpointStandardTestPlaybook": "Issue 36936",
         "test_Qradar_v2": "the integration is deprecated as we released Qradar V3",
         "XsoarPowershellTesting-Test": "Issue 32689",
         "MicrosoftManagementActivity - Test": "Issue 43922",

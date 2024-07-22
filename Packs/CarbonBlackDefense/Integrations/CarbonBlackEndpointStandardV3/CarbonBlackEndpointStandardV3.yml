@@ -15,13 +15,13 @@ configuration:
   required: true
   section: connect
 - name: custom_credentials
-  display: Custom Api Key (for API)
+  display: Custom Api Key
   type: 9
   required: false
   additionalinfo: Also required for fetch
   section: connect
 - name: live_response_credentials
-  display: Api Key (Api/Live Response key for API)
+  display: Api Key (Api/Live Response key)
   type: 9
   required: false
   section: connect

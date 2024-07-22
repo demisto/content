@@ -51,9 +51,9 @@ The following commands from the Carbon Black Endpoint Standard v2 integration ha
     | --- | --- | --- |
     | URL |  | True |
     | Organization Key | The organization unique key. This is required for all use cases \(and for fetching incidents\). | True |
-    | Custom Api Key (for API) | This Custom API key is required for all use cases and for fetch except the policy use cases. | False |
+    | Custom Api Key | This Custom API key is required for all use cases and for fetch except the policy use cases. | False |
     | Password | This Custom API key is required for all use cases and for fetch except the policy use cases. | False |
-    | Api Key (Api/Live Response key for API) | This Live Response API key is required only for the policy use cases. | False |
+    | Api Key (Api/Live Response key) | This Live Response API key is required only for the policy use cases. | False |
     | Password | This Live Response API key is required only for the policy use cases. | False |
     | Incident type |  | False |
     | Fetch incidents |  | False |
