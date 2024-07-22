@@ -215,13 +215,13 @@ def fetch_events(client: Client,
             demisto.debug(f'information of the last event in this cycle: id: {last_fetched_id}, created: {last_fetched_creation_date}.')
             remaining_events_to_fetch -= len(events)
             demisto.debug(f'{remaining_events_to_fetch} events are left to fetch in the next calls.')
-            last_fetched_ids = get_last_fetched_ids(events, last_fetched_creation_date)
+            last_fetched_ids = get_last_fetched_ids(events)
             all_events.extend(events)
         else:
             #to avoid infinite loop, if no events are fetched, or all events are duplicates, exit the loop
             break
 
-    last_fetched_ids = get_last_fetched_ids(all_events, last_fetched_creation_date)
+
     next_run = {'prev_id': last_fetched_id, 'prev_date': last_fetched_creation_date, 'last_fetched_ids': last_fetched_ids}
     demisto.debug(f'Done fetching. Sum of all events: {len(all_events)}, the next run is {next_run}.')
     return next_run, all_events
@@ -247,8 +247,9 @@ def dedup(events: List[Dict],last_event_creation_date, last_fetched_ids) -> List
     return events
 
 
-def get_last_fetched_ids(events: List[Dict],last_creation_date) -> List[str]:
-    list_of_ids = []
+def get_last_fetched_ids(events: List[Dict]) -> List[str]:
+    last_creation_date = events[-1]['created']
+    list_of_ids = [events[-1]['id']]
     for event in reversed(events):
         if event['created'] != last_creation_date:
             return list_of_ids
@@ -337,6 +338,7 @@ def main() -> None:
                 )
 
         elif command == 'fetch-events':
+
             last_run = demisto.getLastRun()
             next_run, events = fetch_events(
                 client=client,
