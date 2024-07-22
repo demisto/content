@@ -267,7 +267,7 @@ def executeCommand(command, args):
 
 
 def test_preprocess_incidents_field():
-    assert preprocess_incidents_field("incident.commandline") == "commandline"
+    assert preprocess_incidents_field("incident.commandline")  == "commandline"
     assert preprocess_incidents_field("commandline") == "commandline"
 
 
@@ -510,7 +510,7 @@ def test_no_retrain_model(mocker: MockerFixture):
     execute_command_mock = mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
     model, output_clustering_json, msg = main()
     output_json = json.loads(output_clustering_json)
-
+    
     assert output_json["data"][0]['incidents_ids'] == ['5', '7']
     assert output_json["data"][1]['incidents_ids'] == ['6', '8']
     assert MESSAGE_INCORRECT_FIELD % "wrong_field" in msg

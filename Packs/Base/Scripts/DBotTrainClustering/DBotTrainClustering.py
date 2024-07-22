@@ -239,7 +239,7 @@ class PostProcessing:
                 dist_total[cluster_number]['distribution'] = dist
                 cluster_name = ' , '.join(chosen)[:15]
                 if cluster_name in duplicate_family:
-                    new_cluster_name = f'{cluster_name}_{str(duplicate_family[cluster_name])}'
+                    new_cluster_name = '%s_%s' % (cluster_name, str(duplicate_family[cluster_name]))
                     duplicate_family[cluster_name] += 1
                 else:
                     new_cluster_name = cluster_name
@@ -455,7 +455,6 @@ def normalize_global(obj):
         return normalize_json(obj)
     if isinstance(obj, (str, list)):
         return normalize_command_line(obj)
-    return None
 
 
 def normalize_json(obj) -> str:  # type: ignore
@@ -480,7 +479,7 @@ def json_extract(obj):
     def extract(obj, arr):
         """Recursively search for values of key in JSON tree."""
         if isinstance(obj, dict):
-            for _k, v in obj.items():
+            for k, v in obj.items():
                 if isinstance(v, (dict, list)):
                     extract(v, arr)
                 else:
@@ -558,8 +557,8 @@ def create_clusters_json(model_processed: PostProcessing, incidents_df: pd.DataF
              'dataType': 'incident',
              'color': PALETTE_COLOR[divmod(cluster_number, len(PALETTE_COLOR))[1]],
              'pivot': "clusterId:" + str(cluster_number),
-             'incidents_ids': list(incidents_df[  # type: ignore
-                 clustering.model.labels_ == cluster_number].id.values.tolist()),  # type: ignore
+             'incidents_ids': [x for x in incidents_df[  # type: ignore
+                 clustering.model.labels_ == cluster_number].id.values.tolist()],  # type: ignore
              'incidents': incidents_df[clustering.model.labels_ == cluster_number]  # type: ignore
              [display_fields + fields_for_clustering_remove_display].to_json(  # type: ignore
                  orient='records'),  # type: ignore
@@ -567,8 +566,8 @@ def create_clusters_json(model_processed: PostProcessing, incidents_df: pd.DataF
              'data': [int(model_processed.stats[cluster_number]['number_samples'])]}
         data['data'].append(d)
     d_outliers = {
-        'incidents_ids': list(incidents_df[  # type: ignore
-            clustering.model.labels_ == -1].id.values.tolist()),  # type: ignore
+        'incidents_ids': [x for x in incidents_df[  # type: ignore
+            clustering.model.labels_ == -1].id.values.tolist()],  # type: ignore
         'incidents': incidents_df[clustering.model.labels_ == -1][display_fields].to_json(  # type: ignore
             orient='records'),  # type: ignore
     }
@@ -631,13 +630,15 @@ def create_summary(model_processed: PostProcessing, fields_for_clustering: list[
     percentage_clusterized_samples = round(100 * (number_of_clusterized / number_of_sample), 0)
     summary = {
         'Total number of samples ': str(number_of_sample),
-        'Percentage of clusterized samples after selection (after Phase 1 and Phase 2)': "{}  ({}/{})".format(
-            str(percentage_selected_samples),
-            str(nb_clusterized_after_selection),
-            str(number_of_sample)),
-        'Percentage of clusterized samples (after Phase 1)': "{}  ({}/{})".format(str(percentage_clusterized_samples),
-                                                                                  str(number_of_clusterized),
-                                                                                  str(number_of_sample)),
+        'Percentage of clusterized samples after selection (after Phase 1 and Phase 2)': "%s  (%s/%s)"
+                                                                                         % (
+                                                                                             str(percentage_selected_samples),
+                                                                                             str(nb_clusterized_after_selection),
+                                                                                             str(number_of_sample)),
+        'Percentage of clusterized samples (after Phase 1)': "%s  (%s/%s)" %
+                                                             (str(percentage_clusterized_samples),
+                                                              str(number_of_clusterized),
+                                                              str(number_of_sample)),
         'Percentage of cluster selected (Number of high quality groups/Total number of groups)':
             f"{percentage_clusters_selected}  ({number_clusters_selected}/{nb_clusters})",
         'Fields used for training': ' , '.join(fields_for_clustering),
@@ -900,11 +901,11 @@ def main():
 
     fields_for_clustering, field_for_cluster_name, display_fields = \
         remove_fields_not_in_incident(fields_for_clustering, field_for_cluster_name, display_fields,
-                                      incorrect_fields=incorrect_fields)
+                                        incorrect_fields=incorrect_fields)
 
     # Remove fields that are not valid (like too small number of sample)
     fields_for_clustering, global_msg = remove_not_valid_field(fields_for_clustering, incidents_df, global_msg,
-                                                               max_percentage_of_missing_value)  # type: ignore
+                                                                max_percentage_of_missing_value)  # type: ignore
 
     # Case where no field for clustrering or field for cluster name if not empty and incorrect)
     if not fields_for_clustering or (not field_for_cluster_name and not generic_cluster_name):
@@ -941,7 +942,7 @@ def main():
     model.named_steps[CLUSTERING_STEP_PIPELINE].compute_centers()
     model.named_steps[CLUSTERING_STEP_PIPELINE].reduce_dimension()
     model_processed = PostProcessing(model.named_steps[CLUSTERING_STEP_PIPELINE], min_homogeneity_cluster,
-                                     generic_cluster_name)
+                                        generic_cluster_name)
 
     # Create summary of the training and assign it the the summary attribute of the model
     summary = create_summary(model_processed, fields_for_clustering, field_for_cluster_name)
@@ -963,7 +964,7 @@ def main():
 
     # return Entry and summary
     output_clustering_json = create_clusters_json(model_processed, incidents_df, incident_type, display_fields,
-                                                  fields_for_clustering)
+                                                    fields_for_clustering)
     model_processed.json = output_clustering_json
     return_entry_clustering(output_clustering=model_processed.json, tag="trained")  # type: ignore
     if store_model:
