@@ -9,6 +9,11 @@ from tempfile import NamedTemporaryFile
 
 from charset_normalizer import from_bytes
 import quopri
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.mime.base import MIMEBase
+from email import charset, encoders
+import pytz
 
 
 ''' HELPER FUNCTIONS '''
@@ -17,6 +22,22 @@ import quopri
 def makebuf(text):
     return BIO.MemoryBuffer(text)
 
+def create_pem_string(base64_cert) -> str:
+    """This function takes the base64 encoded certificate received via
+    ad-search in the "UserCertificate" attribute and converts it to a PEM
+
+    Args:
+        base64_cert (_type_): _description_
+
+    Returns:
+        str: PEM string for the certificate
+    """
+    pemstring = "-----BEGIN CERTIFICATE-----\n"
+    pemstring += "\n".join(
+        [base64_cert[i: i + 64] for i in range(0, len(base64_cert), 64)]
+    )
+    pemstring += "\n-----END CERTIFICATE-----\n"
+    return pemstring
 
 class Client:
     def __init__(self, private_key, public_key):
@@ -146,6 +167,8 @@ def verify(client: Client, args: dict):
             v = client.smime.verify(p7, flags=SMIME.PKCS7_NOVERIFY)
             return_results(fileResult(f'unwrapped-{signed_message["name"]}', v))
             human_readable = 'The signature verified\n\n'
+        else:
+            raise e
 
     return human_readable, {}
 
@@ -184,6 +207,7 @@ def decrypt_email_body(client: Client, args: dict, file_path=None):
         encrypt_message = file_path
     else:
         encrypt_message = demisto.getFilePath(args.get('encrypt_message'))
+        demisto.debug(f'\n\nFile Name:{encrypt_message["name"]}; Type:{type(encrypt_message["name"])}\n\n')
 
     encoding = args.get('encoding', '')
     msg = ''
@@ -218,51 +242,122 @@ def decrypt_email_body(client: Client, args: dict, file_path=None):
 
 def sign_and_encrypt(client: Client, args: dict):
 
-    message = args.get('message', '').encode('utf-8')
-    msg_bio = BIO.MemoryBuffer(message)
-    sign = client.private_key_file
-    encrypt = client.public_key_file
+    message = args.get('message', '')
+    sign = argToBoolean(args.get('signed', 'true'))
+    encrypt = argToBoolean(args.get('encrypted', 'true'))
+    sender = args.get('sender', '')
+    subject = args.get('subject', '')
+    use_transport_encoding = argToBoolean(args.get('use_transport_encoding', 'false'))
+    recipients = args.get('recipients', {}) # type: dict[str,str]
+    cc = args.get('cc', {}) # type: dict[str,str]
+    bcc = args.get('bcc', {}) # type: dict[str,str]
+    attachment_ids = argToList(args.get('attachment_entry_id', '')) # type: list[str]
+
+    if type(recipients) != dict:
+        raise DemistoException("Failed to parse recipients. (format `{'some@email':'pub_key', 'other@email':'other_key'}`)")
+    if type(cc) != dict:
+        raise DemistoException("Failed to parse cc , (format `{'some@email':'pub_key', 'other@email':'other_key'}`)")
+    if type(bcc) != dict:
+        raise DemistoException("Failed to parse bcc, (format `{'some@email':'pub_key', 'other@email':'other_key'}`)")
+
+    # Prepare message
+    msg = MIMEMultipart()
+    #TODO: what to do for transport encoding?
+    #cs = charset.Charset('utf-8')
+    #if use_transport_encoding:
+    #    cs.header_encoding = charset.QP
+    #    cs.body_encoding = charset.QP
+    #    msg.set_charset(cs)
+    
+    is_html = bool(re.search(r'<.*?>', message))
+    if is_html:
+        msg.attach(MIMEText(message, 'html'))
+    else:
+        msg.attach(MIMEText(message, 'plain'))
+    
+    # Add attachments to message
+    for attach_id in attachment_ids:
+        try:
+            fp = demisto.getFilePath(attach_id)
+            file_path = fp['path']
+            attach_name = fp['name']
+        except Exception as ex:
+            raise Exception(f'Error while opening attachment id {attach_id}: {str(ex)}')
+        if isinstance(attach_name , list):
+            attach_name = attach_name[0]
+        part = MIMEBase('application', 'octet-stream')
+        with open(file_path, 'rb') as f:
+            part.set_payload(f.read())
+            encoders.encode_base64(part)
+            part.add_header('Content-Disposition', 'attachment; filename="%s"' % attach_name)
+            msg.attach(part)
+    
+    msg_str = msg.as_string()
+    demisto.results(f'\n\nMessage:\n\n {msg_str} \n\nMessage end\n')
+
+    msg_bio = BIO.MemoryBuffer(msg_str.encode('utf-8'))
 
     if sign:
         client.smime.load_key(client.private_key_file, client.public_key_file)
-        if encrypt:
-            p7 = client.smime.sign(msg_bio, flags=SMIME.PKCS7_TEXT)
-        else:
-            p7 = client.smime.sign(msg_bio, flags=SMIME.PKCS7_TEXT | SMIME.PKCS7_DETACHED)
-        msg_bio = BIO.MemoryBuffer(message)  # Recreate coz sign() has consumed it.
+        p7 = client.smime.sign(msg_bio, algo='sha256')
+        msg_bio = BIO.MemoryBuffer(msg_str.encode('utf-8'))  # Recreate since sign() has consumed it.
 
     if encrypt:
-        x509 = X509.load_cert(client.public_key_file)
+        pub_certs = [cert for dest in [recipients, cc, bcc] for cert in dest.values()] # all keys are used the same
         sk = X509.X509_Stack()
-        sk.push(x509)
-        client.smime.set_x509_stack(sk)
+        if not pub_certs:
+            demisto.debug("No certs given, using instance cert")
+            sk.push(X509.load_cert(client.public_key_file))
+        for cert in pub_certs:
+            if cert == 'instancePublicKey':
+                sk.push(X509.load_cert(client.public_key_file))
+                continue
+            if ("-----BEGIN CERTIFICATE-----") not in cert:
+                cert = create_pem_string(cert)
+            
+            with NamedTemporaryFile(delete=False) as public_key_file:
+                public_key_file.write(bytes(cert, "utf-8"))
+                public_key_file.close()
+                sk.push(X509.load_cert(public_key_file.name))
+                os.unlink(public_key_file.name)
 
+        client.smime.set_x509_stack(sk)
         client.smime.set_cipher(SMIME.Cipher('des_ede3_cbc'))
         tmp_bio = BIO.MemoryBuffer()
         if sign:
             client.smime.write(tmp_bio, p7)
         else:
-            tmp_bio.write(message)
+            tmp_bio.write(msg_str)
         p7 = client.smime.encrypt(tmp_bio)
 
     out = BIO.MemoryBuffer()
-    if encrypt:
+    # Add email plain-text header
+    current_time = datetime.now(pytz.timezone('UTC')).strftime("%a, %d %b %Y %H:%M:%S %z")
+    out.write(f'Date: {current_time}\r\n')
+    out.write(f'From: {sender}\r\n')
+    out.write(f'To: {", ".join(recipients.keys())}\r\n')
+    out.write(f'CC: {", ".join(cc.keys())}\r\n')
+    out.write(f'BCC: {", ".join(bcc.keys())}\r\n')
+    out.write(f'Subject: {subject}\r\n')
+
+    if encrypt or sign:
         client.smime.write(out, p7)
     else:
-        if sign:
-            client.smime.write(out, p7, msg_bio, SMIME.PKCS7_TEXT)
-        else:
-            out.write('\r\n')
-            out.write(message)
+        out.write(msg_str)
 
     msg = out.read().decode('utf-8')
-    entry_context = {
-        'SMIME.SignedAndEncrypted': {
-            'Message': msg
-        }
-    }
 
-    return msg, entry_context
+    file_results = fileResult(filename=f'SMIME-{demisto.uniqueFile()[:8]}.p7', data=msg, file_type=EntryType.FILE)
+    command_results = CommandResults(
+        readable_output=msg,
+        outputs_prefix='SMIME.SignedAndEncrypted',
+        outputs={'Message':msg,
+                 'Recipient Ids':[id for dest in [recipients, cc, bcc] for id in dest],
+                 'File Name': file_results.get('File'),
+        }
+    )
+    # TODO: Get final output design from TPM
+    return [command_results, file_results]
 
 
 def test_module(client, *_):
@@ -300,7 +395,7 @@ def main():  # pragma: no cover
     try:
         command = demisto.command()
         if command in commands:
-            return_outputs(*commands[command](client, demisto.args()))  # type: ignore
+            return_results(commands[command](client, demisto.args()))  # type: ignore
 
     except Exception as e:
         return_error(str(e))
