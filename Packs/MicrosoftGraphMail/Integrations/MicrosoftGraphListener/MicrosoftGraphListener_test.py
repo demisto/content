@@ -1301,3 +1301,48 @@ def test_generate_login_url(mocker):
                    f'&client_id={client_id}&redirect_uri={redirect_uri}'
     res = MicrosoftGraphListener.return_results.call_args[0][0].readable_output
     assert expected_url in res
+
+
+@pytest.mark.parametrize("raw_attachment, legacy_name, expected_name, expect_exception", [
+    (
+        {'name': 'test.png', 'contentId': '123', 'isInline': True, 'contentBytes': base64.b64encode(b'test data').decode('utf-8')},
+        False,
+        "123-attachmentName-test.png",
+        False
+    ),
+    (
+        {'name': 'test.png', 'contentId': None, 'isInline': False, 'contentBytes': base64.b64encode(b'test data').decode('utf-8')},
+        False,
+        "test.png",
+        False
+    ),
+    (
+        {'name': 'test.png', 'contentId': '123', 'isInline': True, 'contentBytes': base64.b64encode(b'test data').decode('utf-8')},
+        True,
+        "test.png",
+        False
+    ),
+    (
+        {'name': 'test.png', 'contentId': 'None', 'isInline': True, 'contentBytes': base64.b64encode(b'test data').decode('utf-8')},
+        False,
+        "test.png",
+        False
+    ),
+    (
+        {'name': 'test.png', 'contentId': '123', 'isInline': True, 'contentBytes': 'invalid_base64'},
+        False,
+        None,
+        True
+    )
+])
+def test_file_result_creator(monkeypatch, raw_attachment, legacy_name, expected_name, expect_exception):
+    from MicrosoftGraphMailApiModule import GraphMailUtils
+    monkeypatch.setattr('MicrosoftGraphListener.fileResult', fileResult)
+    monkeypatch.setattr('MicrosoftGraphListener.DemistoException', DemistoException)
+
+    if expect_exception:
+        with pytest.raises(DemistoException):
+            GraphMailUtils.file_result_creator(raw_attachment, legacy_name)
+    else:
+        result = GraphMailUtils.file_result_creator(raw_attachment, legacy_name)
+        assert result['File'] == expected_name
