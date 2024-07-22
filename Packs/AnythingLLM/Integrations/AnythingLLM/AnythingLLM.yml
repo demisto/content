@@ -1,28 +1,13 @@
 commonfields:
   id: AnythingLLM
   version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: AnythingLLM
 display: AnythingLLM
 category: Utilities
-image: data:image/png;base64,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
-description: "Retrieval Augmented Generation (RAG) with LLM and Vector DB that can
-  be local for full data privacy or cloud-based for greater functionality.\n\nAPIs
-  are documented at:  <Anything LLM URL> /api/docs \n\nProduct documentation:   https://docs.useanything.com/"
-detaileddescription: |
-  ### Community Contributed Integration
-   #### Integration Author: Randy Uhrlaub
-   No support or maintenance is provided by the author. Customers are encouraged to engage with the user community for questions and guidance at the [Cortex XSOAR Live Discussions](https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions).
-  ***
-  ## AnythingLLM
-  - Install AnythingLLM on a Windows/Linux/Mac host
-  - In AnythingLLM, generate an API key in AnythingLLM
-  - In the integration instance, configure the **url** parameter to the AnythingLLM host
-  - In the integration instance, configure the **apikey** parameter
+description: "Retrieval Augmented Generation (RAG) with LLM and Vector DB that can be local for full data privacy or cloud-based for greater functionality.\n\nAPIs are documented at:  <Anything LLM URL> /api/docs \n\nProduct documentation:   https://docs.useanything.com/"
 configuration:
 - section: Connect
-  display: AnythingLLM URL (e.g., http://<url to local AnythingLLM>:3001) or https://<Anything
-    LLM cloud url>
+  display: AnythingLLM URL (e.g., http://<url to local AnythingLLM>:3001) or https://<Anything LLM cloud url>
   name: url
   defaultvalue: http://localhost:3001
   type: 0
@@ -35,950 +20,193 @@ configuration:
   required: true
   hiddenusername: true
 script:
-  script: |2+
-
-    import json
-    import shutil
-
-
-    ''' CLIENT CLASS '''
-    class Client(BaseClient):
-        def test_module(self):
-            self._http_request("GET", "/v1/auth")
-
-
-        def document_list(self):
-            return self._list("documents")
-
-
-        def document_get(self, folder: str, document: str):
-            try:
-                name = document_name(folder, document, self.document_list())
-                response = self._http_request(
-                    method = "GET",
-                    url_suffix = f"/v1/document/{name}"
-                )
-            except Exception as e:
-                msg = f"AnythingLLM: document_get: exception getting document details - {str(e)}"
-                demisto.debug(msg)
-                raise Exception(msg)
-
-            return response
-
-
-        def document_delete(self, folder: str, document: str):
-            try:
-                name = document_name(folder, document, self.document_list())
-                data = {
-                    "names": [
-                        f"{folder}/{name}"
-                    ]
-                }
-                response = self._http_request(
-                    method = "DELETE",
-                    url_suffix = "/v1/system/remove-documents",
-                    json_data = data
-                )
-            except Exception as e:
-                msg = f"AnythingLLM: document_delete: exception deleting document - {str(e)}"
-                demisto.debug(msg)
-                raise Exception(msg)
-
-            return {"message": response}
-
-
-        def document_createfolder(self, folder: str):
-            try:
-                data = {
-                    "name": folder
-                }
-                response = self._http_request(
-                    method = "POST",
-                    url_suffix = "/v1/document/create-folder",
-                    json_data = data
-                )
-            except Exception as e:
-                msg = f"AnythingLLM: document_createfolder: exception creating folder - {str(e)}"
-                demisto.debug(msg)
-                raise Exception(msg)
-
-            return response
-
-
-        def document_move(self, srcfolder: str, dstfolder: str, document: str):
-            try:
-                name = document_name(srcfolder, document, self.document_list())
-                data = {
-                    "files": [
-                        {
-                        "from": f"{srcfolder}/{name}",
-                        "to": f"{dstfolder}/{name}"
-                        }
-                    ]
-                }
-                response = self._http_request(
-                    method = "POST",
-                    url_suffix = "/v1/document/move-files",
-                    json_data = data
-                )
-            except Exception as e:
-                msg = f"AnythingLLM: document_move: exception moving document - {str(e)}"
-                demisto.debug(msg)
-                raise Exception(msg)
-
-            return response
-
-
-        def document_upload_text(self, text: str, title: str, description: str, author: str, source: str):
-            try:
-                try:
-                    exists = False
-                    document_name("custom-documents", title, self.document_list())
-                    exists = True
-                except Exception:
-                    data = {
-                        "textContent": text,
-                        "metadata": {
-                            "title": title,
-                            "docAuthor": author,
-                            "description": description,
-                            "docSource": source
-                        }
-                    }
-                    response = self._http_request(
-                        method = "POST",
-                        url_suffix = "/v1/document/raw-text",
-                        json_data = data
-                    )
-                finally:
-                    if exists:
-                        raise Exception(f"document already exists [{title}]")
-            except Exception as e:
-                msg = f"AnythingLLM: document_upload_text: exception uploading text - {str(e)}"
-                demisto.debug(msg)
-                raise Exception(msg)
-
-            return response
-
-
-        def document_upload_link(self, link: str, title: str, description: str, author: str, source: str):
-            try:
-                try:
-                    exists = False
-                    document_name("custom-documents", title, self.document_list())
-                    exists = True
-                except Exception:
-                    data = {
-                        "link": link,
-                        "metadata": {
-                            "title": title,
-                            "docAuthor": author,
-                            "description": description,
-                            "docSource": source
-                        }
-                    }
-                    response = self._http_request(
-                        method = "POST",
-                        url_suffix = "/v1/document/raw-text",
-                        json_data = data
-                    )
-                finally:
-                    if exists:
-                        raise Exception(f"document already exists [{title}]")
-            except Exception as e:
-                msg = f"AnythingLLM: document_upload_link: exception uploading link [{link}] - {str(e)}"
-                demisto.debug(msg)
-                raise Exception(msg)
-
-            return response
-
-
-        def document_upload_file(self, entry_id):
-            try:
-                headers = self._headers
-                del headers['Content-Type']
-                file_path = demisto.getFilePath(entry_id)['path']
-                file_name = demisto.getFilePath(entry_id)['name']
-                try:
-                    exists = False
-                    document_name("custom-documents", file_name, self.document_list())
-                    exists = True
-                except Exception:
-                    shutil.copy(file_path, file_name)
-                    response = self._http_request(
-                        method = 'POST',
-                        headers = headers,
-                        url_suffix = "/v1/document/upload",
-                        files = {'file': (file_name, open(file_name, 'rb'))}
-                    )
-                finally:
-                    if exists:
-                        raise Exception(f"document already exists [{file_name}]")
-            except Exception as e:
-                msg = f"AnythingLLM: document_upload_file: exception uploading a file entry [{entry_id}] from the war room - {str(e)}"
-                demisto.debug(msg)
-                raise Exception(msg)
-            finally:
-                shutil.rmtree(file_name, ignore_errors=True)
-
-            return response
-
-
-        def workspace_new(self, workspace: str):
-            try:
-                if len(workspace.strip()) == 0:
-                    raise Exception("workspace parameter is blank")
-                try:
-                    exists = False
-                    workspace_slug(workspace, self.workspace_list())
-                    exists = True
-                except Exception:
-                    data = {
-                        'name': workspace
-                    }
-                    response = self._http_request(
-                        method = "POST",
-                        url_suffix = "/v1/workspace/new",
-                        json_data = data
-                    )
-                    return response
-                finally:
-                    if exists:
-                        raise Exception("workspace already exists")
-            except Exception as e:
-                msg = f"AnythingLLM: workspace_new: exception creating a new workspace [{workspace}] - {str(e)}"
-                demisto.debug(msg)
-                raise Exception(msg)
-
-
-        def workspace_chat(self, workspace: str, message: str, mode: str):
-            return self._chat(workspace, message, mode, "chat")
-
-
-        def workspace_stream_chat(self, workspace: str, message: str, mode: str):
-            return self._chat(workspace, message, mode, "stream-chat")
-
-
-        def workspace_list(self):
-            return self._list("workspaces")
-
-
-        def workspace_get(self, workspace:str ):
-            try:
-                slug = workspace_slug(workspace, self.workspace_list())
-                response = self._http_request(
-                    method = "GET",
-                    url_suffix = f"/v1/workspace/{slug}",
-                )
-            except Exception as e:
-                msg = f"AnythingLLM: workspace_get: exception getting workspace details - {str(e)}"
-                demisto.debug(msg)
-                raise Exception(msg)
-
-            return response
-
-
-        def workspace_delete(self, workspace:str ):
-            try:
-                slug = workspace_slug(workspace, self.workspace_list())
-                self._http_request(
-                    method = "DELETE",
-                    url_suffix = f"/v1/workspace/{slug}",
-                    resp_type='bytes'
-                )
-            except Exception as e:
-                msg = f"AnythingLLM: workspace_delete: exception deleting workspace - {str(e)}"
-                demisto.debug(msg)
-                raise Exception(msg)
-
-            return {"message": {"success": True, "message": "Workspace removed successfully"}}
-
-
-        def workspace_settings(self, workspace:str, settings: dict ):
-            try:
-                settings = validate_workspace_settings(settings)
-                slug = workspace_slug(workspace, self.workspace_list())
-                response = self._http_request(
-                    method = "POST",
-                    url_suffix = f"/v1/workspace/{slug}/update",
-                    json_data = settings
-                )
-            except Exception as e:
-                msg = f"AnythingLLM: workspace_settings: exception updating workspace settings - {str(e)}"
-                demisto.debug(msg)
-                raise Exception(msg)
-
-            return response
-
-
-        def workspace_add_embedding(self, workspace: str, folder: str, document: str):
-            return self._embedding(workspace, folder, document, "adds")
-
-
-        def workspace_delete_embedding(self, workspace: str, folder: str, document: str):
-            return self._embedding(workspace, folder, document, "deletes")
-
-
-        def workspace_pin(self, workspace:str, folder:str, document:str, status: str):
-            try:
-                if status.lower() == "true":
-                    pinst = True
-                elif status.lower() == "false":
-                    pinst = False
-                else:
-                    raise Exception("document pin status of [true] or [false] not passed")
-                name = document_name(folder, document, self.document_list())
-                data = {
-                    "docPath": f"{folder}/{name}",
-                    "pinStatus": pinst
-                }
-                slug = workspace_slug(workspace, self.workspace_list())
-                response = self._http_request(
-                    method = "POST",
-                    url_suffix = f"/v1/workspace/{slug}/update-pin",
-                    json_data = data
-                )
-            except Exception as e:
-                msg = f"AnythingLLM: workspace_pin: exception pinning embedded document to workspace - {str(e)}"
-                demisto.debug(msg)
-                raise Exception(msg)
-
-            return response
-
-
-        def _chat(self, workspace: str, message: str, mode: str, type: str):
-            try:
-                data = {
-                    'message': message,
-                    'mode': validate_chat_mode(mode)
-                }
-                slug = workspace_slug(workspace, self.workspace_list())
-                response = self._http_request(
-                    method = "POST",
-                    url_suffix = f"/v1/workspace/{slug}/{type}",
-                    json_data = data
-                )
-            except Exception as e:
-                msg = f"AnythingLLM: _chat: exception chatting - {str(e)}"
-                demisto.debug(msg)
-                raise Exception(msg)
-
-            return response
-
-
-        def _list(self, items: str):
-            try:
-                response = self._http_request(
-                    method="GET",
-                    url_suffix=f"/v1/{items}",
-                )
-            except Exception as e:
-                msg = f"AnythingLLM: _list: exception listing {items} - {str(e)}"
-                demisto.debug(msg)
-                raise Exception(msg)
-
-            return response
-
-
-        def _embedding(self, workspace: str, folder: str, document: str, action: str):
-            try:
-                name = document_name(folder, document, self.document_list())
-
-                try:
-                    ws = self.workspace_get(workspace)
-                except Exception:
-                    raise Exception(f"workspace [{workspace}] not found")
-
-                if action == "adds":
-                    if embedding_exists(name, ws):
-                        raise Exception(f"[{document}] already embedded")
-                elif action == "deletes":
-                    if not embedding_exists(name, ws):
-                        raise Exception(f"[{document}] not embedded")
-
-                data = {
-                    action: [f"{folder}/{name}"]
-                }
-                slug = workspace_slug(workspace, self.workspace_list())
-                response = self._http_request(
-                    method = "POST",
-                    url_suffix = f"/v1/workspace/{slug}/update-embeddings",
-                    json_data = data
-                )
-            except Exception as e:
-                msg = f"AnythingLLM: _embedding: exception [{action}] a document embedding - {str(e)}"
-                demisto.debug(msg)
-                raise Exception(msg)
-
-            return response
-
-    ''' HELPER FUNCTIONS '''
-
-    def embedding_exists(docname: str, ws: dict) -> bool:
-        for doc in ws['workspace']['documents']:
-            if doc['filename'] == docname:
-                return True
-        return False
-
-
-    def workspace_slug(workspace: str, workspaces) -> str:
-        for w in workspaces['workspaces']:
-            if w['name'] == workspace:
-                return w['slug']
-        raise Exception(f"workspace name not found [{workspace}]")
-
-
-    def normal_document_title(title: str):
-        title = ' '.join(title.strip().split())
-        return title.lower().replace(" ", "-") + ".txt"
-
-
-    def document_name(folder: str, title: str, documents) -> str:
-        for f in documents['localFiles']['items']:
-            if f['name'] == folder:
-                for d in f['items']:
-                    if d['title'] in [title, normal_document_title(title)]:
-                        return d['name']
-        raise Exception(f"document title not found [{title}]")
-
-
-    def validate_chat_mode(mode: str):
-        if mode not in ['chat', 'query']:
-            raise Exception(f"Invalid chat mode [{mode}]")
-        return mode
-
-
-    def validate_workspace_settings(settings: dict):
-        new_settings = {}
-        if "name" in settings:
-            new_settings['name'] = settings['name']
-        #if "vectorTag" in settings:
-        #    new_settings['vectorTag'] = settings['vectorTag']
-        if "openAiTemp" in settings:
-            new_settings['openAiTemp'] = float(settings['openAiTemp'])
-        if "openAiHistory" in settings:
-            new_settings['openAiHistory'] = int(settings['openAiHistory'])
-        if "openAiPrompt" in settings:
-            new_settings['openAiPrompt'] = settings['openAiPrompt']
-        if "similarityThreshold" in settings:
-            new_settings['similarityThreshold'] = float(settings['similarityThreshold'])
-        #if "chatProvider" in settings:
-        #    new_settings['chatProvider'] = settings['chatProvider']
-        #if "chatModel" in settings:
-        #    new_settings['chatModel'] = settings['chatModel']
-        if "topN" in settings:
-            new_settings['topN'] = int(settings['topN'])
-        if "chatMode" in settings:
-            new_settings['chatMode'] = settings['chatMode']
-        if "queryRefusalResponse" in settings:
-            new_settings['queryRefusalResponse'] = settings['queryRefusalResponse']
-        return new_settings
-
-
-    def DictMarkdown(nested, indent):
-        md = ""
-        if indent == "":
-            indent = "-"
-        else:
-            indent = "  "+indent
-        if isinstance(nested, dict):
-            for key, val in nested.items():
-                if isinstance(val, dict):
-                    md += f"{indent} {key}\n"
-                    md += DictMarkdown(val, indent)
-                elif isinstance(val, list):
-                    md += f"{indent} {key}\n"
-                    md += DictMarkdown(val, indent)
-                else:
-                    md += f"{indent} {key}: {val}\n"
-        elif isinstance(nested, list):
-            for val in nested:
-                md += f"{indent} []\n"
-                if isinstance(val, dict):
-                    md += DictMarkdown(val, indent)
-                elif isinstance(val, list):
-                    md += f"{indent} {val}\n"
-                    md += DictMarkdown(val, indent)
-                else:
-                    md += f"  {indent} {val}\n"
-
-        return md
-
-
-    ''' COMMAND FUNCTIONS '''
-
-
-    def test_module(client: Client, args: dict) -> str:
-        try:
-            client.test_module()
-        except DemistoException as e:
-            if 'Forbidden' in str(e):
-                return 'Authorization Error: ensure API Key is correctly set'
-            else:
-                raise e
-
-        return 'ok'
-
-
-    def list_command(client: Client, args: dict) -> CommandResults:
-        response: dict = {}
-        return CommandResults(
-            outputs_prefix = 'AnythingLLM.list',
-            readable_output = DictMarkdown(response, ""),
-            outputs = response
-        )
-
-
-    def settings_command(client: Client, args: dict) -> CommandResults:
-        response: dict = {}
-        return CommandResults(
-            outputs_prefix = 'AnythingLLM.settings',
-            readable_output = DictMarkdown(response, ""),
-            outputs = response
-        )
-
-
-    def document_list_command(client: Client, args: dict) -> CommandResults:
-        response = client.document_list()
-        return CommandResults(
-            outputs_prefix = 'AnythingLLM.workspace_list',
-            readable_output = DictMarkdown(response, ""),
-            outputs = response
-        )
-
-
-    def document_createfolder_command(client: Client, args: dict) -> CommandResults:
-        response = client.document_createfolder(args['folder'])
-        return CommandResults(
-            outputs_prefix = 'AnythingLLM.document_createfolder',
-            readable_output = DictMarkdown(response, ""),
-            outputs = response
-        )
-
-
-    def document_delete_command(client: Client, args: dict) -> CommandResults:
-        response = client.document_delete(args['folder'], args['document'])
-        return CommandResults(
-            outputs_prefix = 'AnythingLLM.document_delete',
-            readable_output = DictMarkdown(response, ""),
-            outputs = response
-        )
-
-
-    def document_move_command(client: Client, args: dict) -> CommandResults:
-        response = client.document_move(args['srcfolder'], args['dstfolder'], args['document'])
-        return CommandResults(
-            outputs_prefix = 'AnythingLLM.document_move',
-            readable_output = DictMarkdown(response, ""),
-            outputs = response
-        )
-
-
-    def document_get_command(client: Client, args: dict) -> CommandResults:
-        response = client.document_get(args['folder'], args['document'])
-        return CommandResults(
-            outputs_prefix = 'AnythingLLM.document_move',
-            readable_output = DictMarkdown(response, ""),
-            outputs = response
-        )
-
-
-    def document_upload_file_command(client: Client, args: dict) -> CommandResults:
-        response = client.document_upload_file(args['fileentry'])
-        return CommandResults(
-            outputs_prefix = 'AnythingLLM.upload_file',
-            readable_output = DictMarkdown(response, ""),
-            outputs = response
-        )
-
-
-    def document_upload_link_command(client: Client, args: dict) -> CommandResults:
-        response = client.document_upload_text(
-            args['link'],
-            args['title'],
-            args['description'],
-            args['author'],
-            args['source']
-        )
-        return CommandResults(
-            outputs_prefix = 'AnythingLLM.upload_link',
-            readable_output = DictMarkdown(response, ""),
-            outputs = response
-        )
-
-
-    def document_upload_text_command(client: Client, args: dict) -> CommandResults:
-        response = client.document_upload_text(
-            args['text'],
-            args['title'],
-            args['description'],
-            args['author'],
-            args['source']
-        )
-        return CommandResults(
-            outputs_prefix = 'AnythingLLM.upload_text',
-            readable_output = DictMarkdown(response, ""),
-            outputs = response
-        )
-
-
-    def workspace_delete_command(client: Client, args: dict) -> CommandResults:
-        response = client.workspace_delete(args['workspace'])
-        return CommandResults(
-            outputs_prefix = 'AnythingLLM.workspace_delete',
-            readable_output = DictMarkdown(response, ""),
-            outputs = response
-        )
-
-
-    def workspace_get_command(client: Client, args: dict) -> CommandResults:
-        response = client.workspace_get(args['workspace'])
-        return CommandResults(
-            outputs_prefix = 'AnythingLLM.workspace_get',
-            readable_output = DictMarkdown(response, ""),
-            outputs = response
-        )
-
-
-    def workspace_list_command(client: Client, args: dict) -> CommandResults:
-        response = client.workspace_list()
-        return CommandResults(
-            outputs_prefix = 'AnythingLLM.workspace_list',
-            readable_output = DictMarkdown(response, ""),
-            outputs = response
-        )
-
-
-    def workspace_new_command(client: Client, args: dict) -> CommandResults:
-        #if 'workspace' in args:
-        response = client.workspace_new(args['workspace'])
-        return CommandResults(
-            outputs_prefix ='AnythingLLM.workspace_new',
-            readable_output = DictMarkdown(response, ""),
-            outputs = response
-        )
-
-        #msg = f"AnythingLLM: workspace_new_command: missing command arguments [workspace]"
-        #demisto.debug(msg)
-        #raise Exception(msg)
-
-
-    def workspace_chat_command(client: Client, args: dict) -> CommandResults:
-        response = client.workspace_chat(args['workspace'], args['message'], args['mode'])
-        return CommandResults(
-            outputs_prefix ='AnythingLLM.workspace_chat',
-            readable_output = DictMarkdown(response, ""),
-            outputs = response
-        )
-
-
-    def workspace_stream_chat_command(client: Client, args: dict) -> CommandResults:
-        response = client.workspace_stream_chat(args['workspace'], args['message'], args['mode'])
-        return CommandResults(
-            outputs_prefix = 'AnythingLLM.workspace_stream_chat',
-            readable_output = DictMarkdown(response, ""),
-            outputs = response
-        )
-
-
-    def workspace_delete_embedding_command(client: Client, args: dict) -> CommandResults:
-        response = client.workspace_delete_embedding(args['workspace'], args['folder'], args['document'])
-        return CommandResults(
-            outputs_prefix = 'AnythingLLM.workspace_delete_embedding',
-            readable_output = DictMarkdown(response, ""),
-            outputs = response
-        )
-
-
-    def workspace_add_embedding_command(client: Client, args: dict) -> CommandResults:
-        response = client.workspace_add_embedding(args['workspace'], args['folder'], args['document'])
-        return CommandResults(
-            outputs_prefix = 'AnythingLLM.workspace_add_embedding',
-            readable_output = DictMarkdown(response, ""),
-            outputs = response
-        )
-
-
-    def workspace_pin_command(client: Client, args: dict) -> CommandResults:
-        response = client.workspace_pin(args['workspace'], args['folder'], args['document'], args['status'])
-        return CommandResults(
-            outputs_prefix = 'AnythingLLM.workspace_pin',
-            readable_output = DictMarkdown(response, ""),
-            outputs = response
-        )
-
-
-    def workspace_settings_command(client: Client, args: dict) -> CommandResults:
-        response = client.workspace_settings(args['workspace'], json.loads(args['settings']))
-        return CommandResults(
-            outputs_prefix = 'AnythingLLM.workspace_settings',
-            readable_output = DictMarkdown(response, ""),
-            outputs = response
-        )
-
-
-    def main() -> None:  # pragma: no cover
-        params = demisto.params()
-        args = demisto.args()
-        command = demisto.command()
-
-        demisto.debug(f'Command being called is {command}')
-
-        try:
-            headers = {
-                'accept': "application/json",
-                'Authorization': f"Bearer {params.get('apikey')['password']}",
-                'Content-Type': "application/json"
-            }
-            client = Client(
-                base_url = params.get('url') + "/api",
-                verify = not params.get('insecure', False),
-                headers = headers,
-                proxy = params.get('proxy', False)
-            )
-
-            if command == 'test-module':
-                # This is the call made when pressing the integration Test button.
-                result = test_module(client, params)
-                return_results(result)
-
-            #elif command == "anyllm-list":
-            #    return_results(list_command(client, args))
-            #elif command == "anyllm-settings":
-            #    return_results(settings_command(client, args))
-
-            elif command == "anyllm-document-list":
-                return_results(document_list_command(client, args))
-            elif command == "anyllm-document-createfolder":
-                return_results(document_createfolder_command(client, args))
-            elif command == "anyllm-document-get":
-                return_results(document_get_command(client, args))
-            elif command == "anyllm-document-move":
-                return_results(document_move_command(client, args))
-            elif command == "anyllm-document-delete":
-                return_results(document_delete_command(client, args))
-            elif command == "anyllm-document-upload-file":
-                return_results(document_upload_file_command(client, args))
-            elif command == "anyllm-document-upload-link":
-                return_results(document_upload_link_command(client, args))
-            elif command == "anyllm-document-upload-text":
-                return_results(document_upload_text_command(client, args))
-
-            elif command == "anyllm-workspace-get":
-                return_results(workspace_get_command(client, args))
-            elif command == "anyllm-workspace-list":
-                return_results(workspace_list_command(client, args))
-            elif command == "anyllm-workspace-new":
-                return_results(workspace_new_command(client, args))
-            elif command == "anyllm-workspace-chat":
-                return_results(workspace_chat_command(client, args))
-            elif command == "anyllm-workspace-stream-chat":
-                return_results(workspace_stream_chat_command(client, args))
-            elif command == "anyllm-workspace-delete-embedding":
-                return_results(workspace_delete_embedding_command(client, args))
-            elif command == "anyllm-workspace-add-embedding":
-                return_results(workspace_add_embedding_command(client, args))
-            elif command == "anyllm-workspace-pin":
-                return_results(workspace_pin_command(client, args))
-            elif command == "anyllm-workspace-delete":
-                return_results(workspace_delete_command(client, args))
-            elif command == "anyllm-workspace-settings":
-                return_results(workspace_settings_command(client, args))
-            else:
-                raise NotImplementedError(f'Command {command} is not implemented')
-        except Exception as e:
-            return_error(f'Failed to execute {command} command.\nError: {str(e)}')
-
-
-    if __name__ in ('__main__', '__builtin__', 'builtins'):
-        main()
-
+  script: ''
   type: python
   commands:
   - name: anyllm-document-upload-file
     arguments:
     - name: fileentry
       required: true
-      description: 'XSOAR file entry to upload - example: 181@24789'
-    description: Uploads an XSOAR file entry to the custom-documents folder
+      description: 'XSOAR file entry to upload - example: 181@24789.'
+    description: Uploads an XSOAR file entry to the custom-documents folder.
   - name: anyllm-document-upload-link
     arguments:
     - name: link
       required: true
-      description: 'Web link to upload - example:  https://unit42.paloaltonetworks.com/darkgate-malware-uses-excel-files"'
+      description: 'Web link to upload - example:  https://unit42.paloaltonetworks.com/darkgate-malware-uses-excel-files".'
     - name: title
       required: true
-      description: Document title to use
+      description: Document title to use.
     - name: description
       required: true
-      description: Description of the content in the document
+      description: Description of the content in the document.
     - name: author
       required: true
-      description: Who is the author of the document
+      description: Who is the author of the document.
     - name: source
       required: true
-      description: What is the source of the document
-    description: Uploads a web link to the custom-documents folder
+      description: What is the source of the document.
+    description: Uploads a web link to the custom-documents folder.
   - name: anyllm-document-upload-text
     arguments:
     - name: text
       required: true
-      description: Raw text content that is the document
+      description: Raw text content that is the document.
     - name: title
       required: true
-      description: Document title to use when uploading
+      description: Document title to use when uploading.
     - name: description
-      description: Description of the  content in the document
+      description: Description of the  content in the document.
     - name: author
-      description: Author of the document
+      description: Author of the document.
     - name: source
-      description: Source of the document
-    description: Upload text content as a document to the custom-documents folder
+      description: Source of the document.
+    description: Upload text content as a document to the custom-documents folder.
   - name: anyllm-workspace-new
     arguments:
     - name: workspace
       required: true
-      description: Name of the workspace to create
-    description: Creates a new workspace in AnythingLLM
+      description: Name of the workspace to create.
+    description: Creates a new workspace in AnythingLLM.
   - name: anyllm-workspace-delete
     arguments:
     - name: workspace
       required: true
-      description: Name of the workspace to delete
-    description: Deletes an AnythingLLM workspace
+      description: Name of the workspace to delete.
+    description: Deletes an AnythingLLM workspace.
   - name: anyllm-workspace-list
     arguments: []
-    description: List all the workspaces in AnythingLLM
+    description: List all the workspaces in AnythingLLM.
   - name: anyllm-workspace-get
     arguments:
     - name: workspace
       required: true
-      description: Name of the workspace
-    description: Get a specific workspace details
+      description: Name of the workspace.
+    description: Get a specific workspace details.
   - name: anyllm-workspace-settings
     arguments:
     - name: workspace
       required: true
-      description: Name of the workspace
+      description: Name of the workspace.
     - name: settings
       required: true
-      description: JSON object for the settings
-    description: 'Update workspace settings.  Anything LLM APIs are documented at:   <URL>/api/docs '
+      description: JSON object for the settings.
+    description: 'Update workspace settings.  Anything LLM APIs are documented at:   <URL>/api/docs.'
   - name: anyllm-workspace-add-embedding
     arguments:
     - name: workspace
       required: true
-      description: Name of the workspace
+      description: Name of the workspace.
     - name: folder
       required: true
-      description: Folder name containing the document
+      description: Folder name containing the document.
     - name: document
       required: true
-      description: Document name to add as an embedding
-    description: Add a document to a workspace and create its vector embedding in
-      the workspace
+      description: Document name to add as an embedding.
+    description: Add a document to a workspace and create its vector embedding in the workspace.
   - name: anyllm-workspace-delete-embedding
     arguments:
     - name: workspace
       required: true
-      description: Name of the workspace
+      description: Name of the workspace.
     - name: folder
       required: true
-      description: Folder the document originated from
+      description: Folder the document originated from.
     - name: document
       required: true
-      description: Name of the document to have its embedding deleted
-    description: Delete a document embedding from the workspace
+      description: Name of the document to have its embedding deleted.
+    description: Delete a document embedding from the workspace.
   - name: anyllm-document-createfolder
     arguments:
     - name: folder
       required: true
-      description: Name of the folder to create
-    description: Create a new document folder
+      description: Name of the folder to create.
+    description: Create a new document folder.
   - name: anyllm-document-move
     arguments:
     - name: srcfolder
       required: true
-      description: Name of the source folder
+      description: Name of the source folder.
     - name: dstfolder
-      description: Name of the destination folder
+      description: Name of the destination folder.
     - name: document
-      description: Document name to move
-    description: Move a document from a source folder to a destination folder
+      description: Document name to move.
+    description: Move a document from a source folder to a destination folder.
   - name: anyllm-document-delete
     arguments:
     - name: folder
       required: true
-      description: Name of the folder
+      description: Name of the folder.
     - name: document
       required: true
-      description: Name of the document to delete
-    description: Delete a document
+      description: Name of the document to delete.
+    description: Delete a document.
   - name: anyllm-workspace-chat
     arguments:
     - name: workspace
       required: true
-      description: Name of the workspace
+      description: Name of the workspace.
     - name: message
       required: true
-      description: Message to send
+      description: Message to send.
     - name: mode
       required: true
       auto: PREDEFINED
       predefined:
       - query
       - chat
-      description: Mode to chat, query or chat
-    description: Send a chat message to a workspace (default thread). Query mode is
-      based on embedded documents in chat, whereas chat mode is more general
+      description: Mode to chat, query or chat.
+    description: Send a chat message to a workspace (default thread). Query mode is based on embedded documents in chat, whereas chat mode is more general.
   - name: anyllm-workspace-stream-chat
     arguments:
     - name: workspace
       required: true
-      description: Name of the workspace
+      description: Name of the workspace.
     - name: message
       required: true
-      description: Message to send
+      description: Message to send.
     - name: mode
       required: true
       auto: PREDEFINED
       predefined:
       - query
       - chat
-      description: Chat mode, query or chat
-    description: Send a stream chat message to a workspace (default thread). Query
-      mode is based on embedded documents in chat, whereas chat mode is more general
+      description: Chat mode, query or chat.
+    description: Send a stream chat message to a workspace (default thread). Query mode is based on embedded documents in chat, whereas chat mode is more general.
   - name: anyllm-document-list
     arguments: []
-    description: List all document details
+    description: List all document details.
   - name: anyllm-document-get
     arguments:
     - name: folder
       required: true
-      description: Folder containing the document
+      description: Folder containing the document.
     - name: document
       required: true
-      description: Document name
-    description: Get a specific document details
+      description: Document name.
+    description: Get a specific document details.
   - name: anyllm-workspace-pin
     arguments:
     - name: workspace
       required: true
-      description: Workspace name
+      description: Workspace name.
     - name: folder
       required: true
-      description: Folder the document originated from
+      description: Folder the document originated from.
     - name: document
       required: true
-      description: Document name
+      description: Document name.
     - name: status
       required: true
       auto: PREDEFINED
       predefined:
-      - "true"
-      - "false"
-      description: Set pin status to true or false
-    description: Set the pinned status of a document embedding
+      - 'true'
+      - 'false'
+      description: Set pin status to true or false.
+    description: Set the pinned status of a document embedding.
   dockerimage: demisto/python3:3.10.14.96411
   runonce: false
   subtype: python3
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
