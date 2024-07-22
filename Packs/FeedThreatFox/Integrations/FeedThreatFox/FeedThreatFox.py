@@ -159,10 +159,16 @@ def threatfox_get_indicators_command(client: Client, args: dict[str, Any]) -> Co
     return CommandResults(readable_output=human_readable)
 
 
+def fetch_indicators_command(client: Client):
+    return None
+
+
 ''' MAIN FUNCTION '''
 
 
 def main() -> None:
+    
+    command = demisto.command()
     
     params = demisto.params()
     base_url = urljoin(params['url'], '/api/v1')
@@ -175,12 +181,17 @@ def main() -> None:
 
         client = Client(base_url=base_url)
         
-        if demisto.command() == 'test-module':
+        if command == 'test-module':
             result = client.test_module()
             return_results(result)
 
-        elif demisto.command() == 'threatfox-get-indicators':
+        elif command == 'threatfox-get-indicators':
             return_results(threatfox_get_indicators_command(client, demisto.args()))
+            
+        elif command == 'fetch-indicators':
+            res = fetch_indicators_command(client=client, tags=tags, tlp_color=tlp_color)
+            for iter_ in batch(res, batch_size=2000):
+                demisto.createIndicators(iter_)
 
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
