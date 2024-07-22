@@ -4,6 +4,7 @@ from CommonServerPython import *
 import builtins
 import collections
 import math
+import hdbscan
 from datetime import datetime
 
 import dill as pickle
@@ -107,7 +108,7 @@ class Clustering:
         elif self.model_name == "KMeans":
             self.model = cluster.KMeans()
         elif self.model_name == "hdbscan":
-            self.model = cluster.HDBSCAN()
+            self.model = hdbscan.HDBSCAN()
 
         for key, value in parameters.items():
             setattr(self.model, key, value)
