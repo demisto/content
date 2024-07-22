@@ -157,7 +157,6 @@ if (overwrite_by_src.filter((v) => overwrite_by_dst.indexOf(v) >= 0).length !==0
     throw 'A key is conflict in overwrite_by_source and overwrite_by_destination.';
 }
 if (src_array && args.merge_with !== null) {
-    dst_value = JSON.parse(JSON.stringify(dst_value)); // Deep copy before modifying dst_value
     if (args.array_path) {
         dst_value.forEach(v => {
             let dst_array = dq(v, args.array_path);
