@@ -73,7 +73,7 @@
     <li>Select the Azure subscription, Event Hubs namespace, and optional event hub where you want to route the logs.</li>
 </ol>
 
-<p>For more information, refer to Microsoft's official <a href="https://learn.microsoft.com/en-us/entra/identity/monitoring-health/howto-stream-logs-to-event-hub">documetaion</a>.</p>
+<p>For more information, refer to Microsoft's official <a href="https://learn.microsoft.com/en-us/entra/identity/monitoring-health/howto-stream-logs-to-event-hub">documentation</a>.</p>
 
 <h3>XSIAM side</h3>
 <p>To connect XSIAM to the Azure Event Hub, follow the below steps.</p>
