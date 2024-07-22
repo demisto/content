@@ -93,22 +93,57 @@ class Client(BaseClient):
         ignore_mismatch (str): Ignores the mismatch if server certificate doesn't match the assessment
             hostname and proceeds with assessments if set to on.
         """
-
+        cmd = 'ssl-labs-analyze'
+        ScheduledCommand.raise_error_if_not_supported()
+        polling_timeout = int(600)
+        interval_in_secs = int(60)
         url_suffix = (
             f'/analyze?host={host}&publish={publish}&startNew={start_new}'
             f'&fromCache={from_cache}&maxAge={max_age}&all={all_endpoints}'
             f'&ignoreMismatch={ignore_mismatch}'
         )
-
         res = self._http_request(
             method='GET',
             raise_on_status=True,
             url_suffix=url_suffix
         )
-
-        demisto.info(f'Analyze Request Sent. Response {res}')
-
-        return res
+        outputs = []
+        polling_args = {
+            'host': host,
+            'publish': publish,
+            'start_new': start_new,
+            'from_cache': from_cache,
+            'max_age': max_age,
+            'all_endpoints': all_endpoints,
+            'ignore_mismatch': ignore_mismatch,
+            'interval_in_seconds': interval_in_secs,
+            'polling': True,
+        }
+        if res['status'] != 'READY':
+            scheduled_command = ScheduledCommand(
+                command=cmd,
+                next_run_in_seconds=interval_in_secs,
+                args=polling_args,
+                timeout_in_seconds=polling_timeout
+            )
+            command_results = CommandResults(scheduled_command=scheduled_command,
+                                             readable_output="Waiting for the polling execution")
+            return command_results
+        else:
+            outputs.append({
+                'host': res.get('host'),
+                'port': res.get('port'),
+                'protocol': res.get('protocol'),
+                'status': res.get('status'),
+                'start_time': res.get('startTime'),
+                'test_time': res.get('testTime')
+            })
+            headers = ['host', 'port', 'protocol', 'status', 'start_time', 'test_time']
+        return CommandResults(outputs_prefix='sslLabs.analysis',
+                              outputs=outputs,
+                              readable_output=tableToMarkdown('SSL Labs Analysis', outputs, headers, removeNull=True),
+                              raw_response=res
+                              )
 
     def is_valid(self, host: str):
         """
@@ -127,20 +162,26 @@ class Client(BaseClient):
 
 def register_email_command(client: Client, first_name: str, last_name: str, email: str, org: str) -> CommandResults:
     """
-    SSLLabs has been available directly for all its users directly via UI and API to be consumed freely. It will remain the same with slight change
-    with introduction to this new registration API. Now you need to register yourself with first name, last name, organization's name and
-    organization's email.
+    SSLLabs has been available directly for all its users directly
+    via UI and API to be consumed freely. It will remain the same with
+    slight change with introduction to this new registration API. Now
+    you need to register yourself with first name, last name,
+    organization's name and organization's email.
 
     Args:
         client (Client): SSL Labs client to use.
-        first_name (str): The users first name used for registering to the API service
-        last_name (str): The users last name used for registering to the API service
-        email (str): The users email used for registering to the API service
+        first_name (str): The users first name used for registering
+        to the API service
+        last_name (str): The users last name used for registering to
+        the API service
+        email (str): The users email used for registering to the
+        API service
         org (str): The organization registering to the API service
 
     Returns:
-        CommandResults/dict: A 'CommandResults' Compatible to return 'return_results()',
-        which contains the readable_output indicating the message was sent.
+        CommandResults/dict: A 'CommandResults' Compatible to return
+        'return_results()', which contains the readable_output
+        indicating the message was sent.
     """
     res = client.register(first_name, last_name, email, org)
     if res:
@@ -161,15 +202,17 @@ def register_email_command(client: Client, first_name: str, last_name: str, emai
 
 def info_command(client: Client) -> CommandResults:
     """
-    This API request should be used to check the availability of the SSL Labs servers,
-    retrieve the engine and criteria version, and initialize the maximum number of concurrent assessments.
+    This API request should be used to check the availability of
+    the SSL Labs servers, retrieve the engine and criteria version,
+    and initialize the maximum number of concurrent assessments.
 
     Args:
         client (Client): SSL Labs client to use.
 
     Returns:
-        CommandResults/dict: A 'CommandResults' Compatible to return 'return_results()',
-        which contains the readable_output indicating the message was sent.
+        CommandResults/dict: A 'CommandResults' Compatible to return
+        'return_results()', which contains the readable_output
+        indicating the message was sent.
     """
     res = client.info()
     if res:
@@ -228,7 +271,7 @@ def analyze_command(client: Client, host: str, publish: Optional[str], start_new
     """
 
     is_url = client.is_valid(host)
-    if is_url == False:
+    if is_url is False:
         raise Exception(
             f'Input is not a valid URL.\n'
             f'http://example.com OR https://example.com \n'
@@ -237,40 +280,7 @@ def analyze_command(client: Client, host: str, publish: Optional[str], start_new
 
     res = client.analyze(host, publish, start_new, from_cache, max_age, all_endpoints,
                          ignore_mismatch)
-    if res:
-        result = {
-            'host': res.get('host'),
-            'port': res.get('port'),
-            'protocol': res.get('protocol'),
-            'isPublic': res.get('isPublic'),
-            'status': res.get('status'),
-            'startTime': res.get('startTime'),
-            'testTime': res.get('testTime'),
-            'engineVersion': res.get('engineVersion'),
-            'criteriaVersion': res.get('criteriaVersion'),
-            'cacheExpiryTime': res.get('cacheExpiryTime'),
-            'certHostnames': res.get('certHostnames'),
-            'endpoints': res.get('endpoints'),
-            'certs': res.get('certs')
-        }
-
-        table = {
-            'host': res.get('host'),
-            'port': res.get('port'),
-            'protocol': res.get('protocol'),
-            'status': res.get('status'),
-            'startTime': res.get('startTime'),
-            'testTime': res.get('testTime')
-        }
-        markdown = '### SSL Labs Analyze\n'
-        markdown += tableToMarkdown('Response', table)
-        results = CommandResults(
-            readable_output=markdown,
-            outputs_prefix='SslLabs.Analyze',
-            outputs_key_field='name',
-            outputs=result
-        )
-        return results
+    return res
 
 
 def test_module(client):
