@@ -1,0 +1,7 @@
+{
+    "GoogleChronicleBackstory.VerifyReferenceList(val.command_name == obj.command_name)": {
+        "success": true,
+        "command_name": "gcb-verify-reference-list",
+        "errors": []
+    }
+}
