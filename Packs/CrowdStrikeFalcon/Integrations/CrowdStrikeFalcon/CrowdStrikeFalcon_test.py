@@ -3494,7 +3494,7 @@ def test_search_device_command(requests_mock):
         json=response,
         status_code=200,
     )
-    requests_mock.get(
+    requests_mock.post(
         f'{SERVER_URL}/devices/entities/devices/v2?ids=meta&ids=resources&ids=errors',
         json=test_data2,
         status_code=200,
@@ -3563,7 +3563,7 @@ def test_get_endpoint_command(requests_mock, mocker):
         json=response,
         status_code=200,
     )
-    requests_mock.get(
+    requests_mock.post(
         f'{SERVER_URL}/devices/entities/devices/v2?ids=meta&ids=resources&ids=errors',
         json=test_data2,
         status_code=200,
