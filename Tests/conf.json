@@ -245,7 +245,10 @@
             "playbookID": "SetIfEmpty_Test"
         },
         {
-            "playbookID": "IsEmailAddressInternal_Test"
+            "playbookID": "IsEmailAddressInternal_Test",
+            "scripts": [
+                "WhereFieldEquals"
+            ]
         },
         {
             "playbookID": "SetAndHandleEmpty_Test"
