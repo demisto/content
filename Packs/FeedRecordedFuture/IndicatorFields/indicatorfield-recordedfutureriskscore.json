@@ -4,6 +4,7 @@
     "modified": "2024-07-17T12:28:16.838935726Z",
     "name": "Recorded Future Risk Score",
     "ownerOnly": false,
+    "description": "Recorded Future Risk Score",
     "cliName": "recordedfutureriskscore",
     "type": "shortText",
     "closeForm": false,
