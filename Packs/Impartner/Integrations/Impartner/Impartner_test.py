@@ -22,14 +22,12 @@ def test_list_command(mocker):
     from Impartner import Client, impartner_get_account_list_command
 
     client = Client(base_url='some_mock_url', verify=False)
-    args = {'dummy': 'dummy arg'}
+    args = {'all_fields': 'FALSE'}
     api_response = util_load_json('test_data/list_command_response.json')
     mocker.patch('Impartner.Client.get_accounts_list', return_value=api_response)
     response = impartner_get_account_list_command(client, args)
 
-    mock_response = util_load_json('test_data/list_command_commandresults.json')
-
-    assert response.outputs == mock_response
+    assert response.outputs == api_response.get('data')
 
 
 def test_id_command(mocker):
@@ -48,11 +46,9 @@ def test_id_command(mocker):
     from Impartner import Client, impartner_get_account_id_command
 
     client = Client(base_url='some_mock_url', verify=False)
-    args = {'id': '1111'}
+    args = {'id': '1111', 'all_fields': 'FALSE'}
     api_response = util_load_json('test_data/id_command_response.json')
     mocker.patch('Impartner.Client.get_accounts_id', return_value=api_response)
     response = impartner_get_account_id_command(client, args)
 
-    mock_response = util_load_json('test_data/id_command_commandresults.json')
-
-    assert response.outputs == mock_response
+    assert response.outputs == api_response.get('data')

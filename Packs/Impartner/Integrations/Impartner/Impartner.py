@@ -65,50 +65,71 @@ def test_module(client: Client) -> str:  # pragma: no cover
 
 def impartner_get_account_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
-    query = args.get('query', None)
-    fields = args.get('fields', None)
-    filter = args.get('filter', None)
-    orderby = args.get('orderby', None)
-    skip = args.get('skip', None)
-    take = args.get('take', None)
-    all_fields = argToBoolean(args.get('all_fields', ""))
-    if all_fields:
-        fields = ""
+    query = args.get('query', '')
+    fields = args.get('fields', 'name, id, recordLink, tech_BD_Assigned_for_XSOAR__cf')
+    filter = args.get('filter', '')
+    orderby = args.get('orderby', '')
+    skip = args.get('skip', '0')
+    take = args.get('take', '10')
     params = assign_params(q=query, fields=fields, filter=filter, orderby=orderby, skip=skip, take=take)
 
     # Call the Client function and get the raw response
     result = client.get_accounts_list(params)
     parsed_result = result.get('data', {})
-    readable_output = tableToMarkdown('List of account ID\'s', parsed_result.get('results'))
+    readable_output = tableToMarkdown('List of accounts', parsed_result.get('results'))
     return CommandResults(
-        outputs_prefix='Impartner.Accounts.List',
+        outputs_prefix='Impartner.Account',
         readable_output=readable_output,
         outputs_key_field='id',
         outputs=parsed_result)
 
-
 def impartner_get_account_id_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     id = args.get('id')
-    fields = args.get('fields', None)
-    all_fields = argToBoolean(args.get('all_fields', ""))
+    fields = args.get('fields')
+    all_fields = argToBoolean(args.get('all_fields', False))
     if all_fields:
         fields = ""
     params = assign_params(fields=fields)
     # Call the Client function and get the raw response
     result = client.get_accounts_id(id, params)
     parsed_result = result.get('data', {})
-    readable_list = {'name': parsed_result['name'], 'ID': parsed_result['id'], 'link': parsed_result['recordLink'],
-                     'PST Engineer': parsed_result['tech_BD_Assigned_for_XSOAR__cf']}
+    if all_fields:
+        context_result = {'id': parsed_result.get('id'), 'isActive': parsed_result.get('isActive'),
+                          'mailingCity': parsed_result.get('mailingCity'), 'mailingCountry': parsed_result.get('mailingCountry'),
+                          'mailingPostalCode': parsed_result.get('mailingPostalCode'),
+                          'mailingState': parsed_result.get('mailingState'), 'mailingStreet': parsed_result.get('mailingStreet'),
+                          'name': parsed_result.get('name'), 'recordLink': parsed_result.get('recordLink'),
+                          'website': parsed_result.get('website'),
+                          'mainProductToIntegrate': parsed_result.get('what_is_your_main_product_you_are_looking_to_integrate_with'
+                                                                      '_Palo_Alto_Networks__cf'),
+                          'mutualCustomer': parsed_result.get('if_yes_please_share_at_least_1_mutual_customer_that_will_use_and_test'
+                                                              '_the_integration__cf'),
+                          'tpA_Product_s__cf': parsed_result.get('tpA_Product_s__cf'),
+                          'integration_Status__cf': parsed_result.get('integration_Status__cf'),
+                          'target_customers__cf': parsed_result.get('target_customers__cf'),
+                          'company_Main_Market_Segment__cf': parsed_result.get('company_Main_Market_Segment__cf'),
+
+                          'panW_Integration_Product__cf': parsed_result.get('panW_Integration_Product__cf'),
+                          'account_Integration_Status__cf': parsed_result.get('account_Integration_Status__cf'),
+                          'accountTimeline': parsed_result.get('if_there_is_a_timeline_to_complete_the_integration_please_enter_the'
+                                                               '_date__cf')
+        }
+    else:
+        context_result = {'name': parsed_result.get('name'), 'id': parsed_result.get('id'),
+                          'link': parsed_result.get('recordLink'),
+                          'PST Engineer': parsed_result.get('tech_BD_Assigned_for_XSOAR__cf')}
+    readable_list = {'name': parsed_result.get('name'), 'ID': parsed_result.get('id'), 'link': parsed_result.get('recordLink'),
+                     'PST Engineer': parsed_result.get('tech_BD_Assigned_for_XSOAR__cf')}
     readable_output = tableToMarkdown('Account Details', readable_list,
                                       ['name', 'ID', 'link', 'PST Engineer'],
-                                      headerTransform=pascalToSpace, removeNull=False)
+                                      headerTransform=pascalToSpace)
 
     return CommandResults(
         outputs_prefix='Impartner.Account',
         readable_output=readable_output,
         outputs_key_field='id',
-        outputs=parsed_result,
+        outputs=context_result,
     )
 
 
