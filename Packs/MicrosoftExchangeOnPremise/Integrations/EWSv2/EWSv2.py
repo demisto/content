@@ -406,8 +406,8 @@ def get_attachment_name(attachment_name, content_id="", attachment_id=""):  # pr
     if not identifier_id or identifier_id == "None":
         identifier_id = attachment_id
     if attachment_name is None or attachment_name == "":
-        return f'{identifier_id}-imageName:demisto_untitled_attachment'
-    return f'{identifier_id}-imageName:{attachment_name}'
+        return f'{identifier_id}-attachmentName-demisto_untitled_attachment'
+    return f'{identifier_id}-attachmentName-{attachment_name}'
 
 
 def switch_hr_headers(obj, hr_header_changes):
