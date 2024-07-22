@@ -1968,7 +1968,7 @@ script:
       description: Type of the L7 Rule. Must be 'application', 'applicationCategory', 'host', 'port' or 'ipRange'
       type: String
     - contextPath: CiscoMeraki.GroupPolicy.firewallAndTrafficShaping.l7FirewallRules.value
-      description: The 'value' of what you want to block. If 'type' is 'host', 'port' or 'ipRange', 'value' must be a string matching either a hostname (e.g. somewhere.com), a port (e.g. 8080), or an IP range (e.g. 192.1.0.0/16). If 'type' is 'application' or 'applicationCategory', then 'value' must be an object with an ID for the application.
+      description: The 'value' of what you want to block. If 'type' is 'host', 'port' or 'ipRange', 'value' must be a string matching either a hostname (e.g. somewhere.com), a port (e.g. 8080), or an IP range (e.g. 0.0.0.0/16). If 'type' is 'application' or 'applicationCategory', then 'value' must be an object with an ID for the application.
       type: String
     - contextPath: CiscoMeraki.GroupPolicy.firewallAndTrafficShaping.trafficShapingRules.dscpTagValue
       description: The DSCP tag applied by your rule. null means 'Do not change DSCP tag'.
@@ -1992,7 +1992,7 @@ script:
       description: The type of definition. Can be one of 'application', 'applicationCategory', 'host', 'port', 'ipRange' or 'localNet'.
       type: String
     - contextPath: CiscoMeraki.GroupPolicy.firewallAndTrafficShaping.trafficShapingRules.definitions.value
-      description: If "type" is 'host', 'port', 'ipRange' or 'localNet', then "value" must be a string, matching either a hostname (e.g. "somesite.com"), a port (e.g. 8080), or an IP range ("192.1.0.0", "192.1.0.0/16", or "10.1.0.0/16:80"). 'localNet' also supports CIDR notation, excluding custom ports.
+      description: If "type" is 'host', 'port', 'ipRange' or 'localNet', then "value" must be a string, matching either a hostname (e.g. "somesite.com"), a port (e.g. 8080), or an IP range ("0.0.0.0", "0.0.0.0/16", or "10.1.0.0/16:80"). 'localNet' also supports CIDR notation, excluding custom ports.
       type: String
     - contextPath: CiscoMeraki.GroupPolicy.scheduling.enabled
       description: Whether scheduling is enabled (true) or disabled (false). Defaults to false. If true, the schedule objects for each day of the week (monday - sunday) are parsed.

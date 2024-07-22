@@ -1153,7 +1153,7 @@ List the clients that have used this network in the time span. The data is updat
             "id": "0000000",
             "ip": "0.0.0.0",
             "ip6": null,
-            "ip6Local": "fe80:0:0:0:57ba:3cd0:a681:d40b",
+            "ip6Local": "0000:0:0:0:0000:0000:0000:0000",
             "lastSeen": "2024-07-18T13:51:54Z",
             "mac": "00:00:00:00:00:00",
             "manufacturer": "Hon Hai/Foxconn",
@@ -2304,7 +2304,7 @@ List the group policies in a network.
 | CiscoMeraki.GroupPolicy.firewallAndTrafficShaping.l3FirewallRules.protocol | String | The type of protocol \(must be 'tcp', 'udp', 'icmp', 'icmp6' or 'any'\). |
 | CiscoMeraki.GroupPolicy.firewallAndTrafficShaping.l7FirewallRules.policy | String | The policy applied to matching traffic. Must be 'deny'. |
 | CiscoMeraki.GroupPolicy.firewallAndTrafficShaping.l7FirewallRules.type | String | Type of the L7 Rule. Must be 'application', 'applicationCategory', 'host', 'port' or 'ipRange' |
-| CiscoMeraki.GroupPolicy.firewallAndTrafficShaping.l7FirewallRules.value | String | The 'value' of what you want to block. If 'type' is 'host', 'port' or 'ipRange', 'value' must be a string matching either a hostname \(e.g. somewhere.com\), a port \(e.g. 8080\), or an IP range \(e.g. 192.1.0.0/16\). If 'type' is 'application' or 'applicationCategory', then 'value' must be an object with an ID for the application. |
+| CiscoMeraki.GroupPolicy.firewallAndTrafficShaping.l7FirewallRules.value | String | The 'value' of what you want to block. If 'type' is 'host', 'port' or 'ipRange', 'value' must be a string matching either a hostname \(e.g. somewhere.com\), a port \(e.g. 8080\), or an IP range \(e.g. 0.0.0.0/16\). If 'type' is 'application' or 'applicationCategory', then 'value' must be an object with an ID for the application. |
 | CiscoMeraki.GroupPolicy.firewallAndTrafficShaping.trafficShapingRules.dscpTagValue | Number | The DSCP tag applied by your rule. null means 'Do not change DSCP tag'. |
 | CiscoMeraki.GroupPolicy.firewallAndTrafficShaping.trafficShapingRules.pcpTagValue | Number | The PCP tag applied by your rule. Can be 0 \(lowest priority\) through 7 \(highest priority\). null means 'Do not set PCP tag'. |
 | CiscoMeraki.GroupPolicy.firewallAndTrafficShaping.trafficShapingRules.priority | String | A string, indicating the priority level for packets bound to your rule. Can be 'low', 'normal' or 'high'. |
@@ -2312,7 +2312,7 @@ List the group policies in a network.
 | CiscoMeraki.GroupPolicy.firewallAndTrafficShaping.trafficShapingRules.perClientBandwidthLimits.bandwidthLimits.limitDown | Number | The maximum download limit \(integer, in Kbps\). |
 | CiscoMeraki.GroupPolicy.firewallAndTrafficShaping.trafficShapingRules.perClientBandwidthLimits.bandwidthLimits.limitUp | Number | The maximum upload limit \(integer, in Kbps\). |
 | CiscoMeraki.GroupPolicy.firewallAndTrafficShaping.trafficShapingRules.definitions.type | String | The type of definition. Can be one of 'application', 'applicationCategory', 'host', 'port', 'ipRange' or 'localNet'. |
-| CiscoMeraki.GroupPolicy.firewallAndTrafficShaping.trafficShapingRules.definitions.value | String | If "type" is 'host', 'port', 'ipRange' or 'localNet', then "value" must be a string, matching either a hostname \(e.g. "somesite.com"\), a port \(e.g. 8080\), or an IP range \("192.1.0.0", "192.1.0.0/16", or "10.1.0.0/16:80"\). 'localNet' also supports CIDR notation, excluding custom ports. |
+| CiscoMeraki.GroupPolicy.firewallAndTrafficShaping.trafficShapingRules.definitions.value | String | If "type" is 'host', 'port', 'ipRange' or 'localNet', then "value" must be a string, matching either a hostname \(e.g. "somesite.com"\), a port \(e.g. 8080\), or an IP range \("0.0.0.0", "0.0.0.0/16", or "10.1.0.0/16:80"\). 'localNet' also supports CIDR notation, excluding custom ports. |
 | CiscoMeraki.GroupPolicy.scheduling.enabled | Boolean | Whether scheduling is enabled \(true\) or disabled \(false\). Defaults to false. If true, the schedule objects for each day of the week \(monday - sunday\) are parsed. |
 | CiscoMeraki.GroupPolicy.scheduling.friday.from | Date | The time, from '00:00' to '24:00'. Must be less than the time specified in 'to'. Defaults to '00:00'. Only 30 minute increments are allowed. |
 | CiscoMeraki.GroupPolicy.scheduling.friday.to | Date | The time, from '00:00' to '24:00'. Must be greater than the time specified in 'from'. Defaults to '24:00'. Only 30 minute increments are allowed. |
