@@ -1491,7 +1491,7 @@ script:
       - 'false'
       - 'true'
     - name: entry_id
-      description: 'An entry ID of a JSON file to pass only rules. The format of a rule can be seen in the following link: https://developer.cisco.com/meraki/api-v1/update-network-appliance-firewall-l-3-firewall-rules/. Example: [{"comment": "Hello World!", "policy": "allow", "protocol": "tcp", "destPort": "443", "destCidr": "0.0.0.0/24", "srcPort": "Any", "srcCidr": "Any", "syslogEnabled": false}]'
+      description: 'An entry ID of a JSON file to pass only rules. The format of a rule can be seen in the following link: https://developer.cisco.com/meraki/api-v1/update-network-appliance-firewall-l-3-firewall-rules/. Example: [{"comment": "Hello World!", "policy": "allow", "protocol": "tcp", "destPort": "443", "destCidr": "0.0.0.0/24", "srcPort": "Any", "srcCidr": "Any", "syslogEnabled": false}].'
     - name: comment
       description: Description of the rule.
     - name: dest_cidr
@@ -1594,7 +1594,7 @@ script:
       - 'false'
       - 'true'
     - name: entry_id
-      description: 'An entry ID of a JSON file to pass only rules. The format of a rule can be seen in the following link: https://developer.cisco.com/meraki/api-v1/update-network-appliance-firewall-l-7-firewall-rules/. Example: [{"policy": "deny", "type": "host", "value": "http://www.example.com"}]'
+      description: 'An entry ID of a JSON file to pass only rules. The format of a rule can be seen in the following link: https://developer.cisco.com/meraki/api-v1/update-network-appliance-firewall-l-7-firewall-rules/. Example: [{"policy": "deny", "type": "host", "value": "http://www.example.com"}].'
     - name: value
       description: A value of what needs to get blocked. Format of the value varies depending on type of the firewall rule selected.
     - name: type
@@ -1935,7 +1935,7 @@ script:
       description: How URL categories are applied. Can be 'network default', 'append' or 'override'.
       type: String
     - contextPath: CiscoMeraki.GroupPolicy.contentFiltering.blockedUrlCategories.categories
-      description: A list of URL categories to block
+      description: A list of URL categories to block.
       type: String
     - contextPath: CiscoMeraki.GroupPolicy.contentFiltering.blockedUrlPatterns.settings
       description: How URL patterns are applied. Can be 'network default', 'append' or 'override'.
@@ -1965,7 +1965,7 @@ script:
       description: The policy applied to matching traffic. Must be 'deny'.
       type: String
     - contextPath: CiscoMeraki.GroupPolicy.firewallAndTrafficShaping.l7FirewallRules.type
-      description: Type of the L7 Rule. Must be 'application', 'applicationCategory', 'host', 'port' or 'ipRange'
+      description: Type of the L7 Rule. Must be 'application', 'applicationCategory', 'host', 'port' or 'ipRange'.
       type: String
     - contextPath: CiscoMeraki.GroupPolicy.firewallAndTrafficShaping.l7FirewallRules.value
       description: The 'value' of what you want to block. If 'type' is 'host', 'port' or 'ipRange', 'value' must be a string matching either a hostname (e.g. somewhere.com), a port (e.g. 8080), or an IP range (e.g. 0.0.0.0/16). If 'type' is 'application' or 'applicationCategory', then 'value' must be an object with an ID for the application.
