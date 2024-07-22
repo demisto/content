@@ -4186,7 +4186,7 @@ def test_get_remote_detection_data(mocker):
                               'behaviors.display_name': 'SampleTemplateDetection'}
 
 
-def test_get_remote_edpoint_or_idp_or_mobile_detection_data_idp(mocker):
+def test_get_remote_edpoint_or_idp_or_mobile_detection_data__idp(mocker):
     """
     Given
         - an idp detection ID on the remote system
@@ -4230,6 +4230,29 @@ def test_get_remote_epp_or_idp_or_mobile_detection_data__mobile_detection(mocker
     assert updated_object == {'incident_type': 'MOBILE detection',
                               'status': 'new',
                               'mobile_detection_id': '1111111111111111111'}
+    
+    
+def test_get_remote_epp_or_idp_or_mobile_detection_data__endpoint_detection(mocker):
+    """
+    Given
+        - an idp detection ID on the remote system
+    When
+        - running get_remote_data_command with changes to make on a detection
+    Then
+        - returns the relevant detection entity from the remote system with the relevant incoming mirroring fields
+    """
+    from CrowdStrikeFalcon import get_remote_epp_or_idp_or_mobile_detection_data
+    detection_entity = input_data.response_detection_new_version.copy()
+    mocker.patch('CrowdStrikeFalcon.get_detection_entities', return_value={'resources': [detection_entity.copy()]})
+    mocker.patch.object(demisto, 'debug', return_value=None)
+    mirrored_data, updated_object, detection_type = get_remote_epp_or_idp_or_mobile_detection_data(
+        input_data.remote_detection_id_new_version)
+    detection_entity['severity'] = 90
+    assert mirrored_data == detection_entity
+    assert detection_type == 'Detection'
+    assert updated_object == {'incident_type': 'detection',
+                              'status': 'new',
+                              'severity': 90}
 
 
 @pytest.mark.parametrize('updated_object, entry_content, close_incident', input_data.set_xsoar_incident_entries_args)
