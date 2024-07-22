@@ -1,3 +1,5 @@
+import base64
+from unittest.mock import MagicMock, patch
 import uuid
 from freezegun import freeze_time
 import demistomock as demisto
@@ -1029,3 +1031,56 @@ def test_parse_mail_parts_use_legacy_name(monkeypatch, part, expected_result):
     monkeypatch.setattr('Gmail.LEGACY_NAME', True)
     result = parse_mail_parts(part)
     assert result == expected_result
+
+
+def mock_get_service(service_name, version, scopes, delegated_user):
+    # Create a mock service object
+    service = MagicMock()
+    service.users().messages().get().execute.return_value = {
+        'payload': {
+            'parts': [
+                {
+                    'filename': 'test.txt',
+                    'body': {
+                        'attachmentId': '123',
+                    },
+                },
+            ],
+        },
+    }
+    service.users().messages().attachments().get().execute.return_value = {
+        'data': base64.urlsafe_b64encode(b'test content').decode('ascii')
+    }
+    return service
+
+
+def mock_get_email_context(result, user_id):
+    # Mock get_email_context function to return expected value
+    return [{
+        'Attachments': [
+            {'ID': '123', 'Name': 'test.txt'}
+        ]
+    }]
+
+
+def mock_demisto_args():
+    return {
+        'user-id': 'user@example.com',
+        'message-id': 'abc123',
+    }
+
+
+def mock_file_result(name, data):
+    return {'name': name, 'data': data}
+
+
+@patch('Gmail.get_service', return_value=mock_get_service('gmail', 'v1', [], 'user@example.com'))
+@patch('Gmail.get_email_context', return_value=mock_get_email_context(None, 'user@example.com'))
+@patch('Gmail.demisto.args', return_value=mock_demisto_args())
+@patch('Gmail.fileResult', return_value=mock_file_result('test.txt', b'test content'))
+def test_get_attachments_command(mock_get_service, mock_get_email_context, mock_demisto_args, mock_file_result):
+    from Gmail import get_attachments_command
+    results = get_attachments_command()
+    assert len(results) == 1
+    assert results[0]['name'] == 'test.txt'
+    assert results[0]['data'] == b'test content'
