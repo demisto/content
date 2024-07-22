@@ -9,7 +9,7 @@
 
 <h3>Log Normalization - One Data Model</h3>
 <p>This pack supports normalization of the below log categories of Microsoft Entra ID:</p>
-<ol>
+<ul>
     <li>AuditLogs</li>
     <li>SignInLogs</li>
     <li>NonInteractiveUserSignInLogs</li>
@@ -21,35 +21,35 @@
     <li>UserRiskEvents</li>
     <li>RiskyServicePrincipals</li>
     <li>ServicePrincipalRiskEvents</li>
-</ol>
+</ul>
 
 <h3>Timestamp Parsing</h3>
-<p>Timestamp parsing relies on 2 fields, which depends on the log category:</p>
-<ol>
+<p>Timestamp parsing relies on 3 fields, which depends on the log category:</p>
+<ul>
   <li>`properties.createdDateTime`
-    <ol>
+    <ul>
         <li>SignInLogs</li>
         <li>NonInteractiveUserSignInLogs</li>
         <li>ServicePrincipalSignInLogs</li>
         <li>ManagedIdentitySignInLogs</li>
         <li>ADFSSignInLogs</li>
-    </ol>
+    </ul>
   </li>
   <li>`properties.activityDateTime`
-    <ol>
+    <ul>
         <li>AuditLogs</li>
         <li>ProvisioningLogs</li>
         <li>UserRiskEvents</li>
         <li>ServicePrincipalRiskEvents</li>
-    </ol>
+    </ul>
   </li>
   <li>`properties.riskLastUpdatedDateTime`
-    <ol>
+    <ul>
         <li>RiskyUsers</li>
         <li>RiskyServicePrincipals</li>
-    </ol>
+    </ul>
   </li>
-</ol>
+</ul>
 </details>
 <hr>
 
