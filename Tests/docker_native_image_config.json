@@ -95,7 +95,7 @@
                 "netutils",
                 "auth-utils"
             ],
-            "docker_ref": "demisto/py3-native:8.6.0.98251"
+            "docker_ref": "demisto/py3-native:8.6.0.104287"
         }
     },
     "ignored_content_items":[
@@ -103,24 +103,21 @@
             "id":"EWSO365",
             "reason":"Issue: CIAC-10245 - Microsoft broke their API, and it was fixed in a newer version of the exchangelib package.",
             "ignored_native_images":[
-                "native:8.6",
-                "native:candidate"
+                "native:8.6"
             ]
         },
         {
             "id":"Rasterize",
             "reason":"Issue: CRTX-72338 and CIAC-7694",
             "ignored_native_images":[
-                "native:8.6",
-                "native:candidate"
+                "native:8.6"
             ]
         },
         {
             "id":"Intezer v2",
             "reason":"Issue: CIAC-10263",
             "ignored_native_images":[
-                "native:8.6",
-                "native:candidate"
+                "native:8.6"
             ]
         },
         {
@@ -150,32 +147,28 @@
             "id":"CyrenThreatInDepthRenderRelated",
             "reason": "CIAC-11186, This integration support only from python 3.11",
             "ignored_native_images":[
-                "native:8.6",
-                "native:candidate"
+                "native:8.6"
             ]
         },
         {
             "id": "rapid7_threat_command",
             "reason": "CIAC-11186, This integration support only from python 3.11",
             "ignored_native_images": [
-                "native:8.6",
-                "native:candidate"
+                "native:8.6"
             ]
         },
         {
             "id": "Respond_Analyst",
             "reason": "CIAC-11186, This integration support only from python 3.11",
             "ignored_native_images": [
-                "native:8.6",
-                "native:candidate"
+                "native:8.6"
             ]
         },
         {
             "id": "rapid7appsec",
             "reason": "CIAC-11186, This integration support only from python 3.11",
             "ignored_native_images": [
-                "native:8.6",
-                "native:candidate"
+                "native:8.6"
             ]
         }
     ],
