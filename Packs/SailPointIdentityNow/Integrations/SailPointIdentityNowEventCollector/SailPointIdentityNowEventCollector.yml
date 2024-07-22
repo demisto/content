@@ -60,7 +60,7 @@ script:
       name: from_id
       required: false
     - default: false
-      description: Date from which to get events in the format of %Y-%m-%dT%H:%M:%SZ. If not provided, the default is 1 hour ago.
+      description: Date from which to get events in the format of %Y-%m-%dT%H:%M:%SZ.
       name: from_date
     deprecated: false
     description: Gets events from SailPoint IdentityNow.

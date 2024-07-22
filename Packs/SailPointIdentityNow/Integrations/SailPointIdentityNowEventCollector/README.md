@@ -38,7 +38,7 @@ Gets events from SailPoint IdentityNow.
 | --- | --- | --- |
 | should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Optional | 
 | limit | Maximum number of results to return. Default is 50. | Optional | 
-| from_date | Date from which to get events in the format of %Y-%m-%dT%H:%M:%S. If not provided, the default is 1 hour ago. | Optional |
+| from_date | Date from which to get events in the format of %Y-%m-%dT%H:%M:%S. | Optional |
 | from_id | An ID of the event to retrieve events from.| Optional |
 
 #### Context Output

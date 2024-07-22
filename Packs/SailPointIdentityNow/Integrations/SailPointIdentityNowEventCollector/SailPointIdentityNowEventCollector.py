@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 import demistomock as demisto
 from CommonServerPython import *
 import urllib3
@@ -12,8 +12,7 @@ urllib3.disable_warnings()
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 VENDOR = 'sailpoint'
 PRODUCT = 'identitynow'
-# Default lookback is 1 hour from current time
-DEFAULT_LOOKBACK = (datetime.now() - timedelta(hours=1)).strftime(DATE_FORMAT)
+DEFAULT_NOW = datetime.now().strftime(DATE_FORMAT)
 
 ''' CLIENT CLASS '''
 
@@ -89,7 +88,7 @@ class Client(BaseClient):
 
         return token
 
-    def search_events(self, prev_id: str| None, from_date: str, limit: int) -> List[Dict]:
+    def search_events(self, prev_id: str| None, from_date: str, limit: int, filter_by_time: bool) -> List[Dict]:
         """
         Searches for events in SailPoint IdentityNow
         Args:
@@ -101,13 +100,15 @@ class Client(BaseClient):
         """
         if not prev_id:
             demisto.debug("No ID provided, using timestamp" )
+            field_to_sort_by = "created" if filter_by_time else "id"
+            demisto.debug(f"{field_to_sort_by =}")
             query = {"indices": ["events"],
                     "queryType": "SAILPOINT",
                     "queryVersion": "5.2",
                     "query":
                     {"query": f"type:* AND created: [{from_date} TO now]"},
-                    "timeZone": "America/Los_Angeles",
-                    "sort": ["+id"]
+                    "timeZone": "GMT",
+                    "sort": ["+" + field_to_sort_by],
                     }
         else:
              query = {"indices": ["events"],
@@ -149,7 +150,8 @@ def test_module(client: Client) -> str:
     return 'ok'
 
 
-def get_events(client: Client, from_date: str, from_id: str| None, limit: int = 50) -> tuple[List[Dict], CommandResults]:
+def get_events(client: Client, from_date: str, from_id: str| None, limit: int = 50,
+               filter_by_time: bool =False) -> tuple[List[Dict], CommandResults]:
     """
     Gets events from the SailPoint IdentityNow API
     Args:
@@ -164,6 +166,7 @@ def get_events(client: Client, from_date: str, from_id: str| None, limit: int = 
         prev_id=from_id,
         from_date=from_date,
         limit=limit,
+        filter_by_time= filter_by_time
     )
     demisto.debug(f'Fetched {len(events)} events.')
     hr = tableToMarkdown(name='Test Events', t=events)
@@ -185,7 +188,7 @@ def fetch_events(client: Client,
     """
     demisto.debug(f'last_run: {last_run}.')
     last_fetched_id = last_run.get('prev_id')
-    last_fetched_creation_date = last_run.get('prev_date', DEFAULT_LOOKBACK)
+    last_fetched_creation_date = last_run.get('prev_date', DEFAULT_NOW)
 
     all_events = []
     remaining_events_to_fetch = limit
@@ -200,6 +203,7 @@ def fetch_events(client: Client,
             prev_id=last_fetched_id if not filter_by_time else None,
             from_date= last_fetched_creation_date,
             limit=current_batch_to_fetch,
+            filter_by_time = filter_by_time
         )
         demisto.debug(f'Successfully fetched {len(events)} events in this cycle.')
 
@@ -224,8 +228,11 @@ def fetch_events(client: Client,
 def dedup(events: List[Dict], last_run) -> List[Dict]:
     last_creation_date = last_run.get('prev_date')
     last_fetched_ids = last_run.get('last_fetched_ids', [])
+    len_events_before_dedup = len(events)
+    demisto.debug(f"Starting deduping. {len_events_before_dedup=} last_fetched_ids={last_fetched_ids}")
     
     if not last_creation_date or not last_fetched_ids:
+        demisto.debug("No last run data provided, skipping deduping.")
         return events
 
     for event in events:
@@ -310,9 +317,12 @@ def main() -> None:
             limit = arg_to_number(args.get('limit', 50))
             should_push_events = argToBoolean(args.get('should_push_events', False))
             time_to_start = arg_to_datetime(args.get('from_date'))
-            formatted_time_to_start = time_to_start.strftime(DATE_FORMAT) if time_to_start else DEFAULT_LOOKBACK
+            formatted_time_to_start = time_to_start.strftime(DATE_FORMAT) if time_to_start else DEFAULT_NOW
             id_to_start = args.get('from_id')
-            #TODO handle a case the user entered both, id and date
+            if not (id_to_start or time_to_start):
+                raise DemistoException("Either from_id or from_date must be provided.")
+            if id_to_start and time_to_start:
+                raise DemistoException("Both from_id and from_date cannot be provided.")
             events, results = get_events(client,from_date=formatted_time_to_start,
                                          from_id=id_to_start, limit=limit)   # type:ignore
             return_results(results)
