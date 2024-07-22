@@ -311,10 +311,12 @@ class Client:
                 if part['body'].get('attachmentId') is not None:
                     content_id = ""
                     attachmentName = part['filename']
-                    for header in part['headers']:
+                    for header in part.get('headers', []):
                         if header.get('name') == 'Content-ID':
                             content_id = header.get('value').strip("<>")
-                    if content_id and content_id != "None" and not LEGACY_NAME:
+                        if header.get('name') == 'Content-Disposition':
+                            is_inline = 'inline' in header.get('value').strip('<>')
+                    if is_inline and content_id and content_id != "None" and not LEGACY_NAME:
                         attachmentName = f"{content_id}-attachmentName-{part['filename']}"
                     attachments.append({
                         'ID': part['body']['attachmentId'],
@@ -323,7 +325,7 @@ class Client:
 
         return body, html, attachments
 
-    def get_attachments(self, user_id, _id, identifiers_filter=""):
+    def get_attachments(self, user_id, _id):
         mail_args = {
             'userId': user_id,
             'id': _id,
@@ -1133,9 +1135,8 @@ def reply_mail_command(client: Client):
 def get_attachments_command(client: Client):
     args = demisto.args()
     _id = args.get('message-id')
-    content_ids = args.get('identifiers-filter', "")
 
-    attachments = client.get_attachments('me', _id, content_ids)
+    attachments = client.get_attachments('me', _id)
 
     return [fileResult(name, data) for name, data in attachments]
 

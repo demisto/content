@@ -1006,3 +1006,26 @@ def test_parse_mail_parts(part, expected_result):
     from Gmail import parse_mail_parts
     result = parse_mail_parts(part)
     assert result == expected_result
+
+
+@pytest.mark.parametrize(
+    "part, expected_result",
+    [
+        (part_test1, ('', '', [{'ID': '1234', 'Name': 'image-1.png'}])),
+        (part_test2, ('', '', [{'ID': '1234', 'Name': 'image-1.png'}])),
+        (part_test3, ('', '', [{'ID': '1234', 'Name': 'image-1.png'}])),
+    ],
+)
+def test_parse_mail_parts_use_legacy_name(monkeypatch, part, expected_result):
+    """
+    Given:
+        - Part of message from Gmail API response.
+    When:
+        - Run parse_mail_parts function LEGACY_NAME is true.
+    Then:
+        - Ensure attachment's name was correctly constructed and parsing was correctly done.
+    """
+    from Gmail import parse_mail_parts
+    monkeypatch.setattr('Gmail.LEGACY_NAME', True)
+    result = parse_mail_parts(part)
+    assert result == expected_result

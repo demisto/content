@@ -190,8 +190,9 @@ def parse_mail_parts(parts):
                 for header in part.get('headers', []):
                     if header.get('name') == 'Content-ID':
                         content_id = header.get('value').strip("<>")
-                attachmentName = part['filename']
-                if content_id and content_id != "None" and not LEGACY_NAME:
+                    if header.get('name') == 'Content-Disposition':
+                        is_inline = 'inline' in header.get('value').strip('<>')
+                if is_inline and content_id and content_id != "None" and not LEGACY_NAME:
                     attachmentName = f"{content_id}-attachmentName-{part['filename']}"
                 attachments.append({
                     'ID': part['body']['attachmentId'],
