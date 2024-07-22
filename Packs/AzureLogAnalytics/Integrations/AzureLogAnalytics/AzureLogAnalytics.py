@@ -86,7 +86,7 @@ class Client:
         """
         filter_by_tag = azure_tag_formatter(tag) if tag else None
         params = {'$filter': filter_by_tag, '$top': limit, 'api-version': RESOURCE_GROUP_LIST_API_VERSION} if not full_url else {}
-        default_url = "self.azure_cloud.endpoints.resource_manager}subscriptions/{self.subscription_id}/resourcegroups"
+        default_url = f"{self.azure_cloud.endpoints.resource_manager}subscriptions/{self.subscription_id}/resourcegroups"
         full_url = full_url if full_url else default_url
         return self.http_request('GET', full_url=full_url, params=params, resource=self.azure_cloud.endpoints.resource_manager)
 
