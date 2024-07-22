@@ -17,27 +17,23 @@
 				},
 				"manual_severity": {
 					"complex": {
-						"accessor": "",
 						"filters": [],
 						"root": "severity",
 						"transformers": [
 							{
 								"args": {
 									"limit": {
-										"isContext": false,
-										"value": null
+										"isContext": false
 									},
 									"replaceWith": {
 										"isContext": false,
 										"value": {
-											"complex": null,
 											"simple": "low"
 										}
 									},
 									"toReplace": {
 										"isContext": false,
 										"value": {
-											"complex": null,
 											"simple": "1"
 										}
 									}
@@ -47,20 +43,17 @@
 							{
 								"args": {
 									"limit": {
-										"isContext": false,
-										"value": null
+										"isContext": false
 									},
 									"replaceWith": {
 										"isContext": false,
 										"value": {
-											"complex": null,
 											"simple": "medium"
 										}
 									},
 									"toReplace": {
 										"isContext": false,
 										"value": {
-											"complex": null,
 											"simple": "2"
 										}
 									}
@@ -70,20 +63,17 @@
 							{
 								"args": {
 									"limit": {
-										"isContext": false,
-										"value": null
+										"isContext": false
 									},
 									"replaceWith": {
 										"isContext": false,
 										"value": {
-											"complex": null,
 											"simple": "high"
 										}
 									},
 									"toReplace": {
 										"isContext": false,
 										"value": {
-											"complex": null,
 											"simple": "3"
 										}
 									}
@@ -93,20 +83,17 @@
 							{
 								"args": {
 									"limit": {
-										"isContext": false,
-										"value": null
+										"isContext": false
 									},
 									"replaceWith": {
 										"isContext": false,
 										"value": {
-											"complex": null,
-											"simple": "high"
+											"simple": "critical"
 										}
 									},
 									"toReplace": {
 										"isContext": false,
 										"value": {
-											"complex": null,
 											"simple": "4"
 										}
 									}
@@ -114,8 +101,7 @@
 								"operator": "replace"
 							}
 						]
-					},
-					"simple": ""
+					}
 				},
 				"resolve_comment": {
 					"complex": null,
@@ -157,13 +143,17 @@
 						"transformers": [
 							{
 								"args": {
-									"limit": {},
+									"limit": {
+										"isContext": false
+									},
 									"replaceWith": {
+										"isContext": false,
 										"value": {
 											"simple": "low"
 										}
 									},
 									"toReplace": {
+										"isContext": false,
 										"value": {
 											"simple": "1"
 										}
@@ -173,13 +163,17 @@
 							},
 							{
 								"args": {
-									"limit": {},
+									"limit": {
+										"isContext": false
+									},
 									"replaceWith": {
+										"isContext": false,
 										"value": {
 											"simple": "medium"
 										}
 									},
 									"toReplace": {
+										"isContext": false,
 										"value": {
 											"simple": "2"
 										}
@@ -189,13 +183,17 @@
 							},
 							{
 								"args": {
-									"limit": {},
+									"limit": {
+										"isContext": false
+									},
 									"replaceWith": {
+										"isContext": false,
 										"value": {
 											"simple": "high"
 										}
 									},
 									"toReplace": {
+										"isContext": false,
 										"value": {
 											"simple": "3"
 										}
@@ -205,13 +203,17 @@
 							},
 							{
 								"args": {
-									"limit": {},
+									"limit": {
+										"isContext": false
+									},
 									"replaceWith": {
+										"isContext": false,
 										"value": {
-											"simple": "high"
+											"simple": "critical"
 										}
 									},
 									"toReplace": {
+										"isContext": false,
 										"value": {
 											"simple": "4"
 										}
