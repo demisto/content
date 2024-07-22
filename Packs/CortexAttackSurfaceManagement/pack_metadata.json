@@ -29,6 +29,10 @@
             "mandatory": false,
             "display_name": "Active Directory Query"
         },
+        "CSCDomainManager": {
+            "mandatory": false,
+            "display_name": "CSCDomainManager"
+        },
         "qualys": {
             "mandatory": false,
             "display_name": "Qualys"
@@ -103,6 +107,7 @@
     ],
     "displayedImages": [
         "Active_Directory_Query",
+        "CSCDomainManager",
         "qualys",
         "Rapid7_Nexpose",
         "GCP-Enrichment-Remediation",
