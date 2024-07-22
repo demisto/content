@@ -290,13 +290,12 @@ def test_get_entry_id_list():
 def test_get_entry_id_list_with_attached_file():
     """
         Given
-        - List of the email's attachments - but one attachment is marked as ATTACHED (not inline image)
+        - List of the email's attachments
         - List of files of the email's related incident
         When
         - building an entry id list in order to replace the email's attachments source path.
         Then
         - Ensures that only the email attachments entry id's were returned and not all files entries
-        - Ensures that the attached file (attachment_1.pdf) is excluded since it is marked as ATTACHED
     """
     from PreprocessEmail import get_entry_id_list
     attachments = [
@@ -376,6 +375,99 @@ def test_get_entry_id_list_with_attached_file():
             "Type": "PNG image data, 264 x 60, 8-bit/color RGBA, non-interlaced"
         }]
     expected = [('123-attachmentName-image_1.png', '35@119'), ('456-attachmentName-image_2.png', '36@119')]
+    email_html = '<src="cid:456"><src="cid:123">'
+    assert expected == get_entry_id_list(attachments, files, email_html)
+
+
+def test_get_entry_id_list_no_attachmentName():
+    """
+        Given
+        - List of the email's attachments - but one attachment is marked as ATTACHED (not inline image)
+        - List of files of the email's related incident
+        When
+        - building an entry id list in order to replace the email's attachments source path.
+        Then
+        - Ensures that only the email attachments entry id's were returned and not all files entries
+        - Ensures that the attached file (attachment_1.pdf) is excluded since it is marked as ATTACHED
+    """
+    from PreprocessEmail import get_entry_id_list
+    attachments = [
+        {
+            "description": "",
+            "name": "attachment_1.pdf",
+            "path": "131_dd98957a-d5c3-42e0-8a81-f3ce7fa68215",
+            "showMediaFile": False,
+            "type": ""
+        },
+        {
+            "description": "",
+            "name": "image_1.png",
+            "path": "131_dd98957a-d5c3-42e0-8a81-f3ce7fa68215",
+            "showMediaFile": False,
+            "type": ""
+        },
+        {
+            "description": "attached_file",
+            "name": "image_2.png",
+            "path": "131_17545998-4b16-4e58-8e6c-2221ada856d4",
+            "showMediaFile": False,
+            "type": ""
+        }
+    ]
+    files = [
+        {
+            "EntryID": "30@119",
+            "Extension": "pdf",
+            "Info": "application/pdf",
+            "MD5": "md5",
+            "Name": "attachment_1.pdf",
+            "SHA1": "sha1",
+            "SHA256": "sha256",
+            "SHA512": "sha512",
+            "SSDeep": "ssdeep",
+            "Size": 63111,
+            "Type": "PDF document, version 1.4"
+        },
+        {
+            "EntryID": "34@119",
+            "Extension": "png",
+            "Info": "image/png",
+            "MD5": "md5",
+            "Name": "attachment_2.png",
+            "SHA1": "4sha1",
+            "SHA256": "sha256",
+            "SHA512": "sha512",
+            "SSDeep": "ssdeep",
+            "Size": 9580,
+            "Type": "PNG image data, 264 x 60, 8-bit/color RGBA, non-interlaced"
+        },
+        {
+            "EntryID": "35@119",
+            "Extension": "png",
+            "Info": "image/png",
+            "MD5": "md5",
+            "Name": "image_1.png",
+            "SHA1": "4sha1",
+            "SHA256": "sha256",
+            "SHA512": "sha512",
+            "SSDeep": "ssdeep",
+            "Size": 9580,
+            "Type": "PNG image data, 264 x 60, 8-bit/color RGBA, non-interlaced"
+        },
+        {
+            "EntryID": "36@119",
+            "Extension": "png",
+            "Info": "image/png",
+            "MD5": "md5",
+            "Name": "image_2.png",
+            "SHA1": "4sha1",
+            "SHA256": "sha256",
+            "SHA512": "sha512",
+            "SSDeep": "ssdeep",
+            "Size": 9580,
+            "Type": "PNG image data, 264 x 60, 8-bit/color RGBA, non-interlaced"
+        }]
+    expected = [('attachment_1.pdf', '30@119'), ('image_1.png', '35@119')]
     email_html = '<src="cid:456"><src="cid:123">'
     assert expected == get_entry_id_list(attachments, files, email_html)
 
@@ -669,18 +761,18 @@ def test_main_untagged_email(mocker):
     [
         ([{'type': 'Email/ID', 'value': 'foo@test.com'}, {'type': 'Instance', 'value': 'ews'},
           {'type': 'Brand', 'value': 'EWSO365'}], 'test@test.com',
-         {'arguments': {'item-id': 'foo@test.com', 'identifiers-filter': '', 'using': 'ews'},
+         {'arguments': {'item-id': 'foo@test.com', 'using': 'ews'},
           'command': 'ews-get-attachment', 'incidents': None}
          ),
         ([{'type': 'Email/ID', 'value': 'foo@test.com'}, {'type': 'Instance', 'value': 'gmail'},
           {'type': 'Brand', 'value': 'Gmail'}], 'test@gmail.com',
-         {'arguments': {'message-id': 'foo@test.com', 'user-id': 'me', 'identifiers-filter': '', 'using': 'gmail'},
+         {'arguments': {'message-id': 'foo@test.com', 'user-id': 'me', 'using': 'gmail'},
           'command': 'gmail-get-attachments', 'incidents': None}
          ),
         ([{'type': 'Email/ID', 'value': 'foo@outlook.com'}, {'type': 'Instance', 'value': 'MicrosoftGraphMail'},
           {'type': 'Brand', 'value': 'MicrosoftGraphMail'}], 'test@outlook.com',
          {'command': 'msgraph-mail-get-attachment', 'incidents': None,
-         'arguments': {'user_id': 'test@outlook.com', 'message_id': 'foo@outlook.com', 'identifiers_filter': '',
+         'arguments': {'user_id': 'test@outlook.com', 'message_id': 'foo@outlook.com',
                        'using': 'MicrosoftGraphMail'}}
          ),
     ]
@@ -787,3 +879,4 @@ def test_find_attachments_to_download(attachments, email_related_incident, files
     result = PreprocessEmail.find_attachments_to_download(attachments, email_related_incident)
     assert result[0] == expected_result[0]
     assert result[1] == expected_result[1]
+    
