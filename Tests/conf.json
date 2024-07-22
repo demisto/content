@@ -549,7 +549,8 @@
             "integrations": "ServiceDeskPlus",
             "playbookID": "Service Desk Plus - Generic Polling Test",
             "instance_names": "sdp_instance_2",
-            "fromversion": "6.0.0"
+            "fromversion": "6.0.0",
+            "timeout": 600
         },
         {
             "integrations": "ThreatConnect Feed",
