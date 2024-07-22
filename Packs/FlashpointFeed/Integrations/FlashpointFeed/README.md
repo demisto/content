@@ -1,4 +1,4 @@
-Flashpoint Feed Integration allows importing indicators of compromise that occur in the context of an event on the Flashpoint platform which contains finished intelligence reports data, data from illicit forums, marketplaces, chat services, blogs, paste sites, technical data, card shops, and vulnerabilities. The indicators of compromise are ingested as indicators on the Cortex XSOAR and displayed in the War Room using a command.
+Deprecated. Use Flashpoint Ignite Feed instead.
 This integration was integrated and tested with version 4.0.0 of FlashpointFeed
 
 ## Fetch Indicators
