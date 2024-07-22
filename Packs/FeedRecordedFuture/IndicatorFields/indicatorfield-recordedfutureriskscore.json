@@ -5,7 +5,7 @@
     "name": "Recorded Future Risk Score",
     "ownerOnly": false,
     "cliName": "recordedfutureriskscore",
-    "type": "number",
+    "type": "shortText",
     "closeForm": false,
     "editForm": true,
     "required": false,

@@ -469,10 +469,8 @@ def fetch_indicators_command(client, indicator_type, risk_rule: str | None = Non
                 indicators_value_set.add(value)
                 raw_json['type'] = get_indicator_type(indicator_type, item)
                 score = 0
-                risk_score = 0
                 risk = item.get('Risk')
                 if isinstance(risk, str) and risk.isdigit():
-                    risk_score = int(risk)
                     raw_json['score'] = score = client.calculate_indicator_score(risk)
                     raw_json['Criticality Label'] = calculate_recorded_future_criticality_label(risk)
                     # If the indicator risk score is lower than the risk score threshold we shouldn't create it.
@@ -497,7 +495,7 @@ def fetch_indicators_command(client, indicator_type, risk_rule: str | None = Non
                     'fields': {
                         'recordedfutureevidencedetails': lower_case_evidence_details_keys,
                         'tags': client.tags,
-                        'recordedfutureriskscore': risk_score,
+                        'recordedfutureriskscore': risk,
                     },
                     'score': score
                 }
