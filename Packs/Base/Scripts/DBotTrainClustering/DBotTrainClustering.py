@@ -659,7 +659,7 @@ def return_entry_clustering(output_clustering: dict, tag: str = None) -> None:
         "Type": entryTypes["note"],
         "ContentsFormat": formats['json'],
         "Contents": output_clustering,
-        "EntryContext": {'DBotTrainClustering': output_clustering},
+        "EntryContext": {'DBotTrainClustering': json.loads(output_clustering)},
     }
     if tag is not None:
         return_entry["Tags"] = [f'Clustering_{tag}']
@@ -723,7 +723,7 @@ def remove_not_valid_field(fields_for_clustering: list[str], incidents_df: pd.Da
     :param max_ratio_of_missing_value: max ratio of missing values we accept
     :return: List of valid fields, message
     """
-    missing_values_percentage = incidents_df[fields_for_clustering].map(lambda x: x == '').sum(axis=0) / len(
+    missing_values_percentage = incidents_df[fields_for_clustering].applymap(lambda x: x == '').sum(axis=0) / len(
         incidents_df)
     mask = missing_values_percentage < max_ratio_of_missing_value
     valid_field = mask[mask].index.tolist()
@@ -741,9 +741,9 @@ def get_model_data(model_name):
     """
     res_model = demisto.executeCommand("getMLModel", {"modelName": model_name})[0]
     if is_error(res_model):
-        return None, MESSAGE_ERROR_MESSAGE
-    model_data = res_model['Contents']['modelData']
-    return model_data
+        demisto.debug(MESSAGE_ERROR_MESSAGE)
+        return None
+    return res_model['Contents']['modelData']
 
 
 def is_model_needs_retrain(force_retrain: bool, model_expiration: float, model_name: str):
@@ -862,7 +862,7 @@ def main():
         data_clusters_json = model_processed.json  # pylint: disable=E1101
         search_query = demisto.args().get('searchQuery')
         if search_query:
-            data_clusters = json.loads(model_processed.json)  # pylint: disable=E1101
+            data_clusters = json.loads(data_clusters_json)  # pylint: disable=E1101
             filtered_clusters_data = []
             for row in data_clusters['data']:
                 if row['pivot'] in search_query.split(" "):
