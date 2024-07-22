@@ -10,7 +10,7 @@ Use Cases
 
 
 
-## Configure Box v2 on Cortex XSOAR
+## Configure Bonusly on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Bonusly.
