@@ -43,10 +43,7 @@ class Client:
         resources_list = [self.azure_cloud.endpoints.resource_manager, self.azure_cloud.endpoints.log_analytics_resource_id]
         base_url = urljoin(url=self.azure_cloud.endpoints.resource_manager, suffix=suffix)
 
-        demisto.debug(f"##### demisto.debug ##### {self.azure_cloud.name=}")
-        demisto.debug(f'##### demisto.debug ##### {base_url=}')
-        demisto.debug(f"##### demisto.debug ##### {resources_list=}")
-        demisto.debug(f"##### demisto.debug ##### {auth_code_scope=}")
+        demisto.debug(f"##### AzureLogAnalytics #####{self.azure_cloud.name=} \n{base_url=} \n{resources_list=} \n{auth_code_scope=}")
 
         self.ms_client = MicrosoftClient(
             self_deployed=self_deployed,
@@ -73,8 +70,7 @@ class Client:
             command_prefix="azure-log-analytics",
             azure_cloud=azure_cloud
         )
-        demisto.debug('##### demisto.debug ##### MicrosoftClient created successfully')
-        demisto.debug(f'##### demisto.debug ##### {self.ms_client._base_url}=')
+        demisto.debug('##### AzureLogAnalytics ##### MicrosoftClient created successfully. Using {self.ms_client._base_url=}')
         self.subscription_id = subscription_id
         self.resource_group_name = resource_group_name
 
@@ -90,11 +86,8 @@ class Client:
         """
         filter_by_tag = azure_tag_formatter(tag) if tag else None
         params = {'$filter': filter_by_tag, '$top': limit, 'api-version': RESOURCE_GROUP_LIST_API_VERSION} if not full_url else {}
-        full_url = (
-            full_url
-            if full_url
-            else f"{self.azure_cloud.endpoints.resource_manager}subscriptions/{self.subscription_id}/resourcegroups"
-        )
+        default_url = "self.azure_cloud.endpoints.resource_manager}subscriptions/{self.subscription_id}/resourcegroups"
+        full_url = full_url if full_url else default_url
         return self.http_request('GET', full_url=full_url, params=params, resource=self.azure_cloud.endpoints.resource_manager)
 
     def http_request(self, method, url_suffix=None, full_url=None, params=None,
@@ -215,7 +208,7 @@ def test_connection(client: Client, params: dict[str, Any]) -> str:
 
 def execute_query_command(client: Client, args: dict[str, Any]) -> CommandResults:
     query = args['query']
-    timeout = arg_to_number(args.get('timeout', 10))
+    timeout = arg_to_number(args.get('timeout', 10)) or 10
     workspace_id = args.get('workspace_id') or demisto.params().get('workspaceID')
 
     full_url = f"{client.azure_cloud.endpoints.log_analytics_resource_id}/v1/workspaces/{workspace_id}/query"
@@ -644,7 +637,7 @@ def main():
     args = demisto.args()
 
     demisto.debug(f'Command being called is {command}')
-    demisto.debug(f"##### demisto.debug ##### {params.get('azure_cloud')=}")
+    demisto.debug(f"##### AzureLogAnalytics ##### {params.get('azure_cloud')=}")
 
     try:
         self_deployed = params.get('self_deployed', False)
