@@ -1,7 +1,3 @@
-# EWS O365
-
-## Introduction
-
 Exchange Web Services (EWS) provides the functionality to enable client applications to communicate with the Exchange server. EWS provides access to much of the same data that is made available through Microsoft Office Outlook.
 
 The EWS O365 integration implants EWS leading services. The integration allows getting information on emails and activities in a target mailbox, and some active operations on the mailbox such as deleting emails and attachments or moving emails from folder to folder.
@@ -57,15 +53,14 @@ For more details about the authentication used in this integration, see [Microso
 
 ## Permissions
 
-In order to function as expected, the service account should have:
+`Impersonation rights` - Most command require this permission to function correctly.  In order to perform actions on the target mailbox of other users, the _service account_ must be part of the `ApplicationImpersonation` role. For more information and guide on how to set up the permission, follow the [Microsoft Documentation](https://learn.microsoft.com/en-us/exchange/client-developer/exchange-web-services/impersonation-and-ews-in-exchange).
+The need for this permission is specified in each relevant command's Permission section.
 
-**Impersonation rights** - Most command require this permission to function correctly. This permission is specified in each relevant command's Permission section. For more information follow the [Microsoft Documentation](https://learn.microsoft.com/en-us/exchange/client-developer/exchange-web-services/impersonation-and-ews-in-exchange). 
+`eDiscovery` permissions to the Exchange Server. For Users to be able to use Exchange Server In-Place eDiscovery, they must be added to the Discovery Management role group. Members of the Discovery Management role group have Full Access mailbox permissions to the default discovery mailbox, which is called Discovery Search Mailbox, including access to sensitive message content. For more information see the [Microsoft documentation](https://technet.microsoft.com/en-us/library/dd298059(v=exchg.160).aspx).
+The need for this permission is specified in each relevant command's Permission section.
 
-Note: In order to perform actions on the target mailbox of other users, the service account must be part of the _ApplicationImpersonation_ role.
-
-In order to function as expected, the application used to authenticate should have:
-
-**full_access_as_app** - To set this permission follow these steps:
+`full_access_as_app` - The _application used for authentication_ requires this permission to gain access to the Exchange Web Services.
+To set this permission follow these steps:
 
 1. Navigate to Home > App registrations.
 2. Search for your app under ‘all applications’.
@@ -128,7 +123,7 @@ Pay special attention to the following fields in the instance settings:
 
 #### Permissions
 
-Impersonation rights required. In order to perform actions on the target mailbox of other users, the service account must be part of the _ApplicationImpersonation_ role.
+Impersonation rights required. In order to perform actions on the target mailbox of other users, the service account must be part of the `ApplicationImpersonation` role.
 
 #### Limitations
 
@@ -147,7 +142,7 @@ Retrieves the actual attachments from an email message. To get all attachments f
 
 #### Permissions
 
-Impersonation rights required. In order to perform actions on the target mailbox of other users, the service account must be part of the _ApplicationImpersonation_ role.
+Impersonation rights required. In order to perform actions on the target mailbox of other users, the service account must be part of the `ApplicationImpersonation` role.
 
 #### Limitations
 
@@ -249,7 +244,7 @@ Deletes the attachments of an item (email message).
 
 #### Permissions
 
-Impersonation rights required. In order to perform actions on the target mailbox of other users, the service account must be part of the _ApplicationImpersonation_ role.
+Impersonation rights required. In order to perform actions on the target mailbox of other users, the service account must be part of the `ApplicationImpersonation` role.
 
 #### Limitations
 
@@ -378,7 +373,7 @@ Move an item to a different folder in the mailbox.
 
 #### Permissions
 
-Impersonation rights required. In order to perform actions on the target mailbox of other users, the service account must be part of the _ApplicationImpersonation_ role.
+Impersonation rights required. In order to perform actions on the target mailbox of other users, the service account must be part of the `ApplicationImpersonation` role.
 
 #### Limitations
 
@@ -444,7 +439,7 @@ Delete an item from a mailbox
 
 #### Permissions
 
-Impersonation rights required. In order to perform actions on the target mailbox of other users, the service account must be part of the _ApplicationImpersonation_ role.
+Impersonation rights required. In order to perform actions on the target mailbox of other users, the service account must be part of the `ApplicationImpersonation` role.
 
 #### Limitations
 
@@ -506,7 +501,7 @@ Searches for items in the specified mailbox. Specific permissions are needed for
 
 #### Permissions
 
-Impersonation rights required. To perform actions on the target mailbox of other users, the service account must be part of the _ApplicationImpersonation_ role.
+Impersonation rights required. To perform actions on the target mailbox of other users, the service account must be part of the `ApplicationImpersonation` role.
 
 #### Limitations
 
@@ -627,7 +622,7 @@ Retrieves contacts for a specified mailbox.
 
 #### Permissions
 
-Impersonation rights required. In order to perform actions on the target mailbox of other users, the service account must be part of the _ApplicationImpersonation_ role.
+Impersonation rights required. In order to perform actions on the target mailbox of other users, the service account must be part of the `ApplicationImpersonation` role.
 
 #### Limitations
 
@@ -710,7 +705,7 @@ Retrieves the out-of-office status for a specified mailbox.
 
 #### Permissions
 
-Impersonation rights are required. To perform actions on the target mailbox of other users, the service account must be part the _ApplicationImpersonation_ role.
+Impersonation rights are required. To perform actions on the target mailbox of other users, the service account must be part the `ApplicationImpersonation` role.
 
 #### Limitations
 
@@ -782,7 +777,7 @@ Recovers messages that were soft-deleted.
 
 #### Permissions
 
-Impersonation rights are required. To perform actions on the target mailbox of other users, the service account must be part of the _ApplicationImpersonation_ role.
+Impersonation rights are required. To perform actions on the target mailbox of other users, the service account must be part of the `ApplicationImpersonation` role.
 
 #### Limitations
 
@@ -847,7 +842,7 @@ Creates a new folder in a specified mailbox.
 
 #### Permissions
 
-Impersonation rights are required. To perform actions on the target mailbox of other users, the service account must be part of the _ApplicationImpersonation_ role.
+Impersonation rights are required. To perform actions on the target mailbox of other users, the service account must be part of the `ApplicationImpersonation` role.
 
 #### Limitations
 
@@ -890,7 +885,7 @@ Marks an item as junk. This is commonly used to block an email address. For more
 
 #### Permissions
 
-Impersonation rights are required. To perform actions on the target mailbox of other users, the service account must be part of the _ApplicationImpersonation_ role.
+Impersonation rights are required. To perform actions on the target mailbox of other users, the service account must be part of the `ApplicationImpersonation` role.
 
 #### Limitations
 
@@ -950,7 +945,7 @@ Retrieves information for the folders of the specified mailbox. Only folders wit
 
 #### Permissions
 
-Impersonation rights are required. To perform actions on the target mailbox of other users, the service account must be part of the _ApplicationImpersonation_ role.
+Impersonation rights are required. To perform actions on the target mailbox of other users, the service account must be part of the `ApplicationImpersonation` role.
 
 #### Limitations
 
@@ -1059,7 +1054,7 @@ Retrieves items from a specified folder in a mailbox. The items are ordered by t
 
 #### Permissions
 
-Impersonation rights are required. To perform actions on the target mailbox of other users, the service account must be part of the _ApplicationImpersonation_ role.
+Impersonation rights are required. To perform actions on the target mailbox of other users, the service account must be part of the `ApplicationImpersonation` role.
 
 #### Limitations
 
@@ -1180,7 +1175,7 @@ Retrieves items by item ID.
 
 #### Permissions
 
-Impersonation rights are required. To perform actions on the target mailbox of other users, the service account must be part of the _ApplicationImpersonation_ role.
+Impersonation rights are required. To perform actions on the target mailbox of other users, the service account must be part of the `ApplicationImpersonation` role.
 
 #### Limitations
 
@@ -1252,7 +1247,7 @@ Moves an item from one mailbox to a different mailbox.
 
 #### Permissions
 
-Impersonation rights are required. To perform actions on the target mailbox of other users, the service account must be part of the _ApplicationImpersonation_ role.
+Impersonation rights are required. To perform actions on the target mailbox of other users, the service account must be part of the `ApplicationImpersonation` role.
 
 #### Limitations
 
@@ -1314,7 +1309,7 @@ Retrieves a single folder.
 
 #### Permissions
 
-Impersonation rights are required. To perform actions on the target mailbox of other users, the service account must be part of the _ApplicationImpersonation_ role.
+Impersonation rights are required. To perform actions on the target mailbox of other users, the service account must be part of the `ApplicationImpersonation` role.
 
 #### Limitations
 
@@ -1383,7 +1378,7 @@ Expands a distribution list to display all members. By default, expands only the
 
 #### Permissions
 
-Impersonation rights required. In order to perform actions on the target mailbox of other users, the service account must be part of the _ApplicationImpersonation_ role.
+Impersonation rights required. In order to perform actions on the target mailbox of other users, the service account must be part of the `ApplicationImpersonation` role.
 
 #### Limitations
 
@@ -1443,7 +1438,7 @@ Marks items as read or unread.
 
 #### Permissions
 
-Impersonation rights are required. To perform actions on the target mailbox of other users, the service account must be part of the _ApplicationImpersonation_ role.
+Impersonation rights are required. To perform actions on the target mailbox of other users, the service account must be part of the `ApplicationImpersonation` role.
 
 #### Limitations
 
@@ -1506,7 +1501,7 @@ Sends an email.
 
 #### Permissions
 
-Impersonation rights are required. To perform actions on the target mailbox of other users, the service account must be part of the _ApplicationImpersonation_ role.
+Impersonation rights are required. To perform actions on the target mailbox of other users, the service account must be part of the `ApplicationImpersonation` role.
 
 
 #### Limitations
@@ -1565,7 +1560,7 @@ Retrieves items by item ID and uploads its content as an EML file.
 
 #### Permissions
 
-Impersonation rights are required. To perform actions on the target mailbox of other users, the service account must be part of the _ApplicationImpersonation_ role.
+Impersonation rights are required. To perform actions on the target mailbox of other users, the service account must be part of the `ApplicationImpersonation` role.
 
 #### Limitations
 
@@ -1611,7 +1606,7 @@ Reply to an email
 
 #### Permissions
 
-Impersonation rights are required. To perform actions on the target mailbox of other users, the service account must be part of the _ApplicationImpersonation_ role.
+Impersonation rights are required. To perform actions on the target mailbox of other users, the service account must be part of the `ApplicationImpersonation` role.
 
 
 #### Limitations
