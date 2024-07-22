@@ -1,0 +1,49 @@
+{
+    "headers": {
+        "server": "GitHub.com",
+        "date": "Tue, 16 Jul 2024 10:55:35 GMT",
+        "content-type": "application/json; charset=utf-8",
+        "x-github-media-type": "github.v4; format=json",
+        "x-ratelimit-limit": "5000",
+        "x-ratelimit-remaining": "4997",
+        "x-ratelimit-reset": "1721130684",
+        "x-ratelimit-used": "3",
+        "x-ratelimit-resource": "graphql"
+    },
+    "data": {
+        "repository": {
+            "branchProtectionRules": {
+                "nodes": [
+                    {
+                        "id": "ABCD",
+                        "pattern": "contrib/**/*",
+                        "matchingRefs": {
+                            "totalCount": 100
+                        }
+                    },
+                    {
+                        "id": "ABCE",
+                        "pattern": "contrib/some_leftover",
+                        "matchingRefs": {
+                            "totalCount": 0
+                        }
+                    },
+                    {
+                        "id": "ABCF",
+                        "pattern": "contrib/currently_deleted_branch",
+                        "matchingRefs": {
+                            "totalCount": 0
+                        }
+                    },
+                    {
+                        "id": "ABCG",
+                        "pattern": "some_old_protection",
+                        "matchingRefs": {
+                            "totalCount": 3
+                        }
+                    }
+                ]
+            }
+        }
+    }
+}
