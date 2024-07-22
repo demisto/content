@@ -9,7 +9,7 @@ configuration:
   required: false
   type: 0
 description: 'Analyze a host or a URL. '
-display: SSL Labs
+display: SSL Labs (Community Contribution)
 name: SSL Labs
 script:
   commands:
@@ -143,6 +143,7 @@ script:
   script: ''
   subtype: python3
   type: python
+system: true
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)

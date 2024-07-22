@@ -22,4 +22,10 @@ Below is a detailed description of each parameter that can be set when running t
 - **ignoreMismatch:** Ignores the mismatch if server certificate doesn't match the assessment hostname and proceeds with assessments if set to on. Default: off Note: This parameter is ignored if a cached report is returned.
 
 ---
+
+## SSL Labs Info
+
+Check the availability of the SSL Labs servers, retrieve the engine and criteria version, and initialize the maximum number of concurrent assessments.
+
+
 [View Integration Documentation](PLACEHOLDER)

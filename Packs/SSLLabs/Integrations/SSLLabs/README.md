@@ -1,8 +1,8 @@
 Analyze a host or a URL. 
-## Configure SSL Labs on Cortex XSOAR
+## Configure SSL Labs (Community Contribution) on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for SSL Labs.
+2. Search for SSL Labs (Community Contribution).
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
