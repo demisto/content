@@ -91,7 +91,7 @@ script:
       name: limit
     description: Gets the feed indicators.
     name: dshield-get-indicators
-  dockerimage: demisto/python3:3.10.13.74666
+  dockerimage: demisto/python3:3.11.9.103842
   feed: true
   runonce: false
   script: '-'
@@ -99,4 +99,4 @@ script:
   type: python
 fromversion: 5.5.0
 tests:
-- No tests (auto formatted)
+- playbook-DshieldFeed_test
