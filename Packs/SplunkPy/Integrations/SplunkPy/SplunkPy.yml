@@ -6,7 +6,7 @@ sectionOrder:
 - Connect
 - Collect
 configuration:
-- display: Host - IP (x.x.x.x)
+- display: Server URL
   name: host
   required: true
   type: 0
