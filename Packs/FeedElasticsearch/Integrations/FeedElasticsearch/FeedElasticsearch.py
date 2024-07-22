@@ -271,7 +271,7 @@ def fetch_indicators_command(client, feed_type, src_val, src_type, default_type,
             # ensure batch sizes don't exceed 2000
             for b in batch(enrch_batch, batch_size=2000):
                 demisto.createIndicators(b)
-    demisto.debug(f'fetch_indicators_command: {last_calculated_timestamp}')
+    demisto.debug(f'fetch_indicators_command: {last_calculated_timestamp=}')
     demisto.setLastRun({'time': str(last_calculated_timestamp), 'ids': last_ids})
 
 
