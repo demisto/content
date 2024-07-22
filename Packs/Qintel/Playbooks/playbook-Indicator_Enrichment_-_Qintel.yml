@@ -183,6 +183,8 @@ tasks:
     nexttasks:
       "yes":
       - "9"
+      "no":
+      - "16"
     scriptarguments:
       brandname:
         simple: QintelQSentry
@@ -460,12 +462,6 @@ inputs:
     simple: ${IP}
   required: false
   description: IPs to be enriched
-  playbookInputQuery:
-- key: Domain
-  value:
-    simple: ${Domain}
-  required: false
-  description: Domains to be enriched
   playbookInputQuery:
 - key: CVE
   value:
