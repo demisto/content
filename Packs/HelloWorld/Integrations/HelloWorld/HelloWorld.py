@@ -8,7 +8,6 @@ your integration follows the Code Conventions and passes the Linting phase.
 Developer Documentation: https://xsoar.pan.dev/docs/welcome
 Code Conventions: https://xsoar.pan.dev/docs/integrations/code-conventions
 Linting: https://xsoar.pan.dev/docs/integrations/linting
-
 When building a Cortex XSOAR integration that is reusable, a lot of effort
 must be placed in the design. We recommend to fill a Design Document template,
 that allows you to capture Use Cases, Requirements and Inputs/Outputs.
