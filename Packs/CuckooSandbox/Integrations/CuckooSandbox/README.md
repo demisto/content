@@ -132,9 +132,9 @@
 <h5>Command Example</h5>
 <pre>!cuckoo-create-task-from-file entryID=814@a969c6ba-e443-4287-8dce-378aa183e2d5</pre>
 <h5>Context Example</h5>
-<p><a href="https://user-images.githubusercontent.com/11165655/49157108-adcd7f00-f327-11e8-9ffb-3b57b4327a0c.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/11165655/49157108-adcd7f00-f327-11e8-9ffb-3b57b4327a0c.png" alt="image"></a></p>
+<p><a href="../../doc_files/49157108-adcd7f00-f327-11e8-9ffb-3b57b4327a0c.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/49157108-adcd7f00-f327-11e8-9ffb-3b57b4327a0c.png" alt="image"></a></p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/11165655/49157027-824a9480-f327-11e8-8813-15f08d63acee.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/11165655/49157027-824a9480-f327-11e8-8813-15f08d63acee.png" alt="image"></a></p>
+<p><a href="../../doc_files/49157027-824a9480-f327-11e8-8813-15f08d63acee.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/49157027-824a9480-f327-11e8-8813-15f08d63acee.png" alt="image"></a></p>
 <h3 id="h_8399443619771543479089826">2. Get a task report</h3>
 <hr>
 <p>Retrieves a task report by a task ID.</p>
@@ -305,9 +305,9 @@
 <h5>Command Example</h5>
 <pre>!cuckoo-get-task-report id=86</pre>
 <h5>Context Example</h5>
-<p><a href="https://user-images.githubusercontent.com/11165655/49157277-16b4f700-f328-11e8-8b31-fb08c628d6da.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/11165655/49157277-16b4f700-f328-11e8-8b31-fb08c628d6da.png" alt="image"></a></p>
+<p><a href="../../doc_files/49157277-16b4f700-f328-11e8-8b31-fb08c628d6da.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/49157277-16b4f700-f328-11e8-8b31-fb08c628d6da.png" alt="image"></a></p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/11165655/49157339-3e0bc400-f328-11e8-9ddd-da51c00ac0f9.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/11165655/49157339-3e0bc400-f328-11e8-9ddd-da51c00ac0f9.png" alt="image" width="750" height="625"></a></p>
+<p><a href="../../doc_files/49157339-3e0bc400-f328-11e8-9ddd-da51c00ac0f9.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/49157339-3e0bc400-f328-11e8-9ddd-da51c00ac0f9.png" alt="image" width="750" height="625"></a></p>
 <h3 id="h_3333473918321543479054045">3. Get a list of all tasks</h3>
 <hr>
 <p>Returns a list of all tasks.</p>
@@ -410,9 +410,9 @@
 <h5>Command Example</h5>
 <pre>!cuckoo-list-tasks</pre>
 <h5>Context Example</h5>
-<p><a href="https://user-images.githubusercontent.com/11165655/49157518-a6f33c00-f328-11e8-8539-2870fdbde759.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/11165655/49157518-a6f33c00-f328-11e8-8539-2870fdbde759.png" alt="image"></a></p>
+<p><a href="../../doc_files/49157518-a6f33c00-f328-11e8-8539-2870fdbde759.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/49157518-a6f33c00-f328-11e8-8539-2870fdbde759.png" alt="image"></a></p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/11165655/49157703-1c5f0c80-f329-11e8-8f21-4f9dbcaf3c87.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/11165655/49157703-1c5f0c80-f329-11e8-8f21-4f9dbcaf3c87.png" alt="image"></a></p>
+<p><a href="../../doc_files/49157703-1c5f0c80-f329-11e8-8f21-4f9dbcaf3c87.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/49157703-1c5f0c80-f329-11e8-8f21-4f9dbcaf3c87.png" alt="image"></a></p>
 <h3 id="h_9023664726051543479018156">4. Submit a URL for analysis</h3>
 <hr>
 <p>Submits a URL to Cuckoo Sandbox for analysis.</p>
@@ -456,9 +456,9 @@
 <h5>Command Example</h5>
 <pre>!cuckoo-create-task-from-url url=google.com</pre>
 <h5>Context Example</h5>
-<p><a href="https://user-images.githubusercontent.com/11165655/49157787-516b5f00-f329-11e8-81b0-0d595faf30e7.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/11165655/49157787-516b5f00-f329-11e8-81b0-0d595faf30e7.png" alt="image"></a></p>
+<p><a href="../../doc_files/49157787-516b5f00-f329-11e8-81b0-0d595faf30e7.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/49157787-516b5f00-f329-11e8-81b0-0d595faf30e7.png" alt="image"></a></p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/11165655/49157767-457f9d00-f329-11e8-8f01-10e753777cd8.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/11165655/49157767-457f9d00-f329-11e8-8f01-10e753777cd8.png" alt="image"></a></p>
+<p><a href="../../doc_files/49157767-457f9d00-f329-11e8-8f01-10e753777cd8.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/49157767-457f9d00-f329-11e8-8f01-10e753777cd8.png" alt="image"></a></p>
 <h3 id="h_2390913185341543479012736">5. Get task information</h3>
 <hr>
 <p>Returns information for a specified task.</p>
@@ -577,9 +577,9 @@
 <h5>Command Example</h5>
 <p>!cuckoo-view-task id=88</p>
 <h5>Context Example</h5>
-<p><a href="https://user-images.githubusercontent.com/11165655/49157858-7a8bef80-f329-11e8-808b-01796ac94398.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/11165655/49157858-7a8bef80-f329-11e8-808b-01796ac94398.png" alt="image"></a></p>
+<p><a href="../../doc_files/49157858-7a8bef80-f329-11e8-808b-01796ac94398.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/49157858-7a8bef80-f329-11e8-808b-01796ac94398.png" alt="image"></a></p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/11165655/49157878-87a8de80-f329-11e8-89ef-0bdd15b6bb77.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/11165655/49157878-87a8de80-f329-11e8-89ef-0bdd15b6bb77.png" alt="image"></a></p>
+<p><a href="../../doc_files/49157878-87a8de80-f329-11e8-89ef-0bdd15b6bb77.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/49157878-87a8de80-f329-11e8-89ef-0bdd15b6bb77.png" alt="image"></a></p>
 <h3 id="h_4659596363021543478987257">6. Delete a task</h3>
 <hr>
 <p>Deletes a task from Cuckoo Sandbox.</p>
@@ -690,9 +690,9 @@
 <h5>Command Example</h5>
 <pre>!cuckoo-task-screenshot id=90</pre>
 <h5>Context Example</h5>
-<p><a href="https://user-images.githubusercontent.com/11165655/49158077-030a9000-f32a-11e8-989f-12f8770db8e9.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/11165655/49158077-030a9000-f32a-11e8-989f-12f8770db8e9.png" alt="image"></a></p>
+<p><a href="../../doc_files/49158077-030a9000-f32a-11e8-989f-12f8770db8e9.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/49158077-030a9000-f32a-11e8-989f-12f8770db8e9.png" alt="image"></a></p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/11165655/49158053-f128ed00-f329-11e8-9b81-722afff6f14f.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/11165655/49158053-f128ed00-f329-11e8-9b81-722afff6f14f.png" alt="image" width="750" height="461"></a></p>
+<p><a href="../../doc_files/49158053-f128ed00-f329-11e8-9b81-722afff6f14f.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/49158053-f128ed00-f329-11e8-9b81-722afff6f14f.png" alt="image" width="750" height="461"></a></p>
 <h3 id="h_1430595341521543478937829">8 Get a list of analysis machines</h3>
 <hr>
 <p>Returns a list with details on the analysis machines available to Cuckoo.</p>
@@ -771,9 +771,9 @@
 <h5>Command Example</h5>
 <pre>!cuckoo-machines-list</pre>
 <h5>Context Example</h5>
-<p><a href="https://user-images.githubusercontent.com/11165655/49158230-57ae0b00-f32a-11e8-8c6d-c01004978697.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/11165655/49158230-57ae0b00-f32a-11e8-8c6d-c01004978697.png" alt="image"></a></p>
+<p><a href="../../doc_files/49158230-57ae0b00-f32a-11e8-8c6d-c01004978697.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/49158230-57ae0b00-f32a-11e8-8c6d-c01004978697.png" alt="image"></a></p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/11165655/49158254-64326380-f32a-11e8-811e-dad6b1030eeb.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/11165655/49158254-64326380-f32a-11e8-811e-dad6b1030eeb.png" alt="image"></a></p>
+<p><a href="../../doc_files/49158254-64326380-f32a-11e8-811e-dad6b1030eeb.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/49158254-64326380-f32a-11e8-811e-dad6b1030eeb.png" alt="image"></a></p>
 <h3 id="h_56128075761543478931427">9. Get analysis machine information</h3>
 <hr>
 <p>Returns details about the analysis machine associated with the specified machine name.</p>
@@ -868,6 +868,6 @@
 <h5>Command Example</h5>
 <pre>!cuckoo-machine-view name=windowsxp</pre>
 <h5>Context Example</h5>
-<p><a href="https://user-images.githubusercontent.com/11165655/49158413-bffcec80-f32a-11e8-8ed2-e4d40f5a615e.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/11165655/49158413-bffcec80-f32a-11e8-8ed2-e4d40f5a615e.png" alt="image"></a></p>
+<p><a href="../../doc_files/49158413-bffcec80-f32a-11e8-8ed2-e4d40f5a615e.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/49158413-bffcec80-f32a-11e8-8ed2-e4d40f5a615e.png" alt="image"></a></p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/11165655/49158380-ad82b300-f32a-11e8-9655-6958941205b7.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/11165655/49158380-ad82b300-f32a-11e8-9655-6958941205b7.png" alt="image"></a></p>
+<p><a href="../../doc_files/49158380-ad82b300-f32a-11e8-9655-6958941205b7.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/49158380-ad82b300-f32a-11e8-9655-6958941205b7.png" alt="image"></a></p>

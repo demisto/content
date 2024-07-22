@@ -390,7 +390,7 @@ def error_handler(res):
     raise DemistoException(f'Error in API call to CrowdStrike Falcon: code: {res.status_code} - reason: {reason}')
 
 
-def http_request(method, url_suffix, params=None, data=None, files=None, headers=HEADERS, safe=False,
+def http_request(method, url_suffix, params=None, data=None, files=None, headers=HEADERS,
                  get_token_flag=True, no_json=False, json=None, status_code=None, timeout=None):
     """
         A wrapper for requests lib to send our requests and handle requests and responses better.
@@ -413,9 +413,6 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
         :type headers: ``dict``
         :param headers: Request headers
 
-        :type safe: ``bool``
-        :param safe: If set to true will return None in case of http error
-
         :type get_token_flag: ``bool``
         :param get_token_flag: If set to True will call get_token()
 
@@ -435,12 +432,24 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
     if get_token_flag:
         token = get_token()
         headers['Authorization'] = f'Bearer {token}'
+        retries = 0
+        status_list_to_retry = []
+        # in case of 401,403,429 status codes we want to return the response, generate a new token and try again with retries.
+        valid_status_codes = [200, 201, 202, 204, 401, 403, 429]
+    else:
+        # get_token_flag=False means that get_token_request() called http_request() with /oauth2/token, and we want to retry
+        # to create the token in case of 429 in the first call to generic_http_request and not in the second call to avoid a
+        # loop of calls to get_token_request().
+        retries = 5
+        # error code 401 - isn't relevant for requesting a token.
+        # error code 403 - The IP is missing from the IP allowlist, no need to retry.
+        status_list_to_retry = [429]
+        valid_status_codes = [200, 201, 202, 204]
+        demisto.debug(f'In http_request {get_token_flag=} updated retries, status_list_to_retry, valid_status_codes')
 
     headers['User-Agent'] = 'PANW-XSOAR'
     int_timeout = int(timeout) if timeout else 10  # 10 is the default in generic_http_request
 
-    # in case of 401,403,429 status codes we want to return the response, generate a new token and try again with retries.
-    valid_status_codes = [200, 201, 202, 204, 401, 403, 429]
     # Handling a case when we want to return an entry for 404 status code.
     if status_code:
         # To cover the condition when status_code is a list of status codes
@@ -464,16 +473,20 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
             error_handler=error_handler,
             json_data=json,
             timeout=int_timeout,
-            ok_codes=valid_status_codes
+            ok_codes=valid_status_codes,
+            retries=retries,
+            status_list_to_retry=status_list_to_retry
         )
+        demisto.debug(f'In http_request after the first call to generic_http_request {res=} {res.status_code=}')
     except requests.exceptions.RequestException as e:
         return_error(f'Error in connection to the server. Please make sure you entered the URL correctly.'
                      f' Exception is {str(e)}.')
     try:
-        # removing 401,403,429 status codes, now we want to generate a new token and try again
-        valid_status_codes.remove(401)
-        valid_status_codes.remove(403)
-        valid_status_codes.remove(429)
+        if get_token_flag:
+            # removing 401,403,429 status codes, now we want to generate a new token and try again
+            valid_status_codes.remove(401)
+            valid_status_codes.remove(403)
+            valid_status_codes.remove(429)
         if res.status_code not in valid_status_codes:
             # try to create a new token
             if res.status_code in (401, 403, 429) and get_token_flag:
@@ -498,9 +511,12 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
                     timeout=int_timeout,
                     ok_codes=valid_status_codes
                 )
+                demisto.debug(f'In http_request after the second call to generic_http_request {res=} {res.status_code=}')
                 return res if no_json else res.json()
-            elif safe:
-                return None
+            else:
+                demisto.debug(f'In invalid status code and {get_token_flag=}')
+                error_handler(res)
+        demisto.debug('In http_request end')
         return res if no_json else res.json()
     except ValueError as exception:
         raise ValueError(
@@ -1420,8 +1436,8 @@ def get_token_request():
     headers = {
         'Content-Type': 'application/x-www-form-urlencoded'
     }
-    token_res = http_request('POST', '/oauth2/token', data=body, headers=headers, safe=True,
-                             get_token_flag=False)
+    token_res = http_request('POST', '/oauth2/token', data=body, headers=headers, get_token_flag=False)
+    demisto.debug(f'In get_token_request, token_res is not None {token_res is not None}')
     if not token_res:
         err_msg = 'Authorization Error: User has no authorization to create a token. Please make sure you entered the' \
                   ' credentials correctly.'
@@ -1981,7 +1997,7 @@ def search_device(filter_operator='AND'):
     if not device_ids:
         return None
     demisto.debug(f"number of devices returned from the api call is: {len(device_ids)}")
-    return http_request('GET', '/devices/entities/devices/v2', params={'ids': device_ids})
+    return http_request('POST', '/devices/entities/devices/v2', params={'ids': device_ids})
 
 
 def behavior_to_entry_context(behavior):
@@ -2520,32 +2536,30 @@ def get_remote_idp_or_mobile_detection_data(remote_incident_id):
 
 def set_xsoar_incident_entries(updated_object: dict[str, Any], entries: list, remote_incident_id: str,
                                reopen_statuses_list: list):
-    reopen_statuses_set = {str(status).strip() for status in reopen_statuses_list} \
-        if reopen_statuses_list else set(STATUS_TEXT_TO_NUM.keys()) - {'Closed'}
-    demisto.debug(f'In set_xsoar_incident_entries {reopen_statuses_set=}')
+    reopen_statuses_set = {str(status).strip() for status in reopen_statuses_list}
+    demisto.debug(f'In set_xsoar_incident_entries {reopen_statuses_set=} {remote_incident_id=}')
     if demisto.params().get('close_incident'):
         if updated_object.get('status') == 'Closed':
             close_in_xsoar(entries, remote_incident_id, 'Incident')
         elif updated_object.get('status', '') in reopen_statuses_set:
             reopen_in_xsoar(entries, remote_incident_id, 'Incident')
         else:
-            demisto.debug(f"In set_xsoar_incident_entries not closing and not reopening since {updated_object.get('status')=}  "
-                          f"and {reopen_statuses_set=}.")
+            demisto.debug(f"In set_xsoar_incident_entries not closing and not reopening {remote_incident_id=} since "
+                          f"{updated_object.get('status')=} and {reopen_statuses_set=}.")
 
 
 def set_xsoar_detection_entries(updated_object: dict[str, Any], entries: list, remote_detection_id: str,
                                 reopen_statuses_list: list):
-    reopen_statuses_set = {str(status).lower().strip().replace(' ', '_') for status in reopen_statuses_list} \
-        if reopen_statuses_list else (set(DETECTION_STATUS) - {'closed'})
-    demisto.debug(f'In set_xsoar_detection_entries {reopen_statuses_set=}')
+    reopen_statuses_set = {str(status).lower().strip().replace(' ', '_') for status in reopen_statuses_list}
+    demisto.debug(f'In set_xsoar_detection_entries {reopen_statuses_set=} {remote_detection_id=}')
     if demisto.params().get('close_incident'):
         if updated_object.get('status') == 'closed':
             close_in_xsoar(entries, remote_detection_id, 'Detection')
         elif updated_object.get('status') in reopen_statuses_set:
             reopen_in_xsoar(entries, remote_detection_id, 'Detection')
         else:
-            demisto.debug(f"In set_xsoar_detection_entries not closing and not reopening since {updated_object.get('status')=}  "
-                          f"and {reopen_statuses_set=}.")
+            demisto.debug(f"In set_xsoar_detection_entries not closing and not reopening {remote_detection_id=} "
+                          f"since {updated_object.get('status')=} and {reopen_statuses_set=}.")
 
 
 def set_xsoar_idp_or_mobile_detection_entries(updated_object: dict[str, Any], entries: list, remote_idp_detection_id: str,
@@ -2565,17 +2579,16 @@ def set_xsoar_idp_or_mobile_detection_entries(updated_object: dict[str, Any], en
         :return: The response.
         :rtype ``dict``
     """
-    reopen_statuses_set = {str(status).lower().strip().replace(' ', '_') for status in reopen_statuses_list} \
-        if reopen_statuses_list else (set(IDP_AND_MOBILE_DETECTION_STATUS) - {'closed'})
-    demisto.debug(f'In set_xsoar_idp_or_mobile_detection_entries {reopen_statuses_set=}')
+    reopen_statuses_set = {str(status).lower().strip().replace(' ', '_') for status in reopen_statuses_list}
+    demisto.debug(f'In set_xsoar_idp_or_mobile_detection_entries {reopen_statuses_set=} {remote_idp_detection_id=}')
     if demisto.params().get('close_incident'):
         if updated_object.get('status') == 'closed':
             close_in_xsoar(entries, remote_idp_detection_id, incident_type_name)
         elif updated_object.get('status') in reopen_statuses_set:
             reopen_in_xsoar(entries, remote_idp_detection_id, incident_type_name)
         else:
-            demisto.debug(f"In set_xsoar_idp_or_mobile_detection_entries not closing and not reopening since "
-                          f"{updated_object.get('status')=}  and {reopen_statuses_set=}.")
+            demisto.debug(f"In set_xsoar_idp_or_mobile_detection_entries not closing and not reopening {remote_idp_detection_id=}"
+                          f" since {updated_object.get('status')=} and {reopen_statuses_set=}.")
 
 
 def close_in_xsoar(entries: list, remote_incident_id: str, incident_type_name: str):
