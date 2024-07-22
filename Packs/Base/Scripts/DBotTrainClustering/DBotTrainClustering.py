@@ -513,6 +513,7 @@ def normalize_command_line(command) -> str:
 def store_model_in_demisto(model: PostProcessing, model_name: str, model_override: bool,
                            model_hidden: bool) -> None:
     model_data = base64.b64encode(pickle.dumps(model)).decode('utf-8')  # guardrails-disable-line
+    return_results('created model')
     res = demisto.executeCommand('createMLModel', {'modelData': model_data,
                                                    'modelName': model_name,
                                                    'modelOverride': model_override,
@@ -648,18 +649,25 @@ def create_summary(model_processed: PostProcessing, fields_for_clustering: list[
     return summary
 
 
-def return_entry_clustering(output_clustering: dict, tag: str = None) -> None:
+def return_entry_clustering(output_clustering: str, tag: str = None) -> None:
     """
     Create and return entry with the JSON containing the clusters
     :param output_clustering: json with the cluster
     :param tag: tag
     :return: Return entry to demisto
     """
+    outputs = [
+        {
+            'name': clst['name'],
+            'incidents_ids': clst['incidents_ids']
+        }
+        for clst in json.loads(output_clustering)['data']
+    ]
     return_entry = {
         "Type": entryTypes["note"],
         "ContentsFormat": formats['json'],
         "Contents": output_clustering,
-        "EntryContext": {'DBotTrainClustering': json.loads(output_clustering)},
+        "EntryContext": {'DBotTrainClustering': outputs},
     }
     if tag is not None:
         return_entry["Tags"] = [f'Clustering_{tag}']
@@ -740,9 +748,11 @@ def get_model_data(model_name):
     :return:
     """
     res_model = demisto.executeCommand("getMLModel", {"modelName": model_name})[0]
+    return_results('loaded model')
     if is_error(res_model):
         demisto.debug(MESSAGE_ERROR_MESSAGE)
         return None
+    return_results(f'loaded model: {model_name}')
     return res_model['Contents']['modelData']
 
 

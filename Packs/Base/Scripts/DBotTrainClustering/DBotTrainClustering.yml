@@ -83,9 +83,12 @@ args:
   - char
   - word
 outputs:
-- contextPath: DBotTrainClustering
-  description: The data of the clusters in json format.
+- contextPath: DBotTrainClustering.name
+  description: The name of the cluster.
   type: String
+- contextPath: DBotTrainClustering.incidents_ids
+  description: The IDs of the incidents in the cluster.
+  type: Number
 comment: Train clustering model on any incident type.
 commonfields:
   id: DBotTrainClustering
@@ -97,7 +100,7 @@ tags:
 - ml
 timeout: 3.6µs
 type: python
-dockerimage: devdemisto/mlclustering:1.0.0.104445
+dockerimage: demisto/mlclustering:1.0.0.23151
 tests:
-- No tests (auto formatted)
+- DBotTrainClustering-test
 fromversion: 6.2.0
