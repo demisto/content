@@ -140,7 +140,7 @@ def create_context_for_campaign_details(campaign_found=False, incidents_df=None,
         incidents_df['recipientsdomain'] = incidents_df.apply(lambda row: extract_domain_from_recipients(row), axis=1)
         if 'removedfromcampaigns' not in incidents_df.columns.tolist():
             incidents_df['removedfromcampaigns'] = pd.NA
-            
+
         incidents_df['removedfromcampaigns'] = incidents_df['removedfromcampaigns'].apply(lambda x: [] if pd.isna(x) else x)
         context_keys = {'id', 'similarity', FROM_FIELD, FROM_DOMAIN_FIELD, 'recipients', 'recipientsdomain',
                         'removedfromcampaigns'}
