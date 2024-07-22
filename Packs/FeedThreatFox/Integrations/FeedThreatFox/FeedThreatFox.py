@@ -67,14 +67,14 @@ def create_query(query_arg, id: str | None = None, search_term: str | None = Non
         days = days,
         limit = q_limit
     )
-        
+    
+    # Only queries searching by tag or malware can specify a limit.
     if query_arg != 'tag' and query_arg != 'malware':
        del query['limit']
     
     return query
 
 
-# TODO
 def parse_indicators(indicators):
     
     res = []
@@ -130,7 +130,7 @@ def test_module(client: Client) -> str:
     return message
 
 
-def threatfox_get_indicators_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def threatfox_get_indicators_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
     search_term = args.get('search_term')
     id = args.get('id')
@@ -157,7 +157,6 @@ def threatfox_get_indicators_command(client: Client, args: Dict[str, Any]) -> Co
         raise DemistoException(f'failed to run command {query_status} {query_data}')
     
     parsed_indicators = parse_indicators(result.get('data') or result)
-    demisto.debug(f'{LOG} got {parse_indicators=}')
     
     human_readable = tableToMarkdown(name='Indicators', t=parsed_indicators,
                                      headers=['ID', 'value', 'Tags1', 'Description', 'malware_family_tags',

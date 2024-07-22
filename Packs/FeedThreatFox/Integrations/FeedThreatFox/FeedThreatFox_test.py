@@ -112,18 +112,9 @@ def test_create_query(query_arg, args, expected_query):
                          tag=args['tag'], malware=args['malware'], days=args['days'], limit=args['limit'])
     assert query == expected_query
  
- 
- 
-"""
-test_threatfox_get_indicators_command__bad_args_data = [
-    ( {'days': 1, 'tag': 'bla'},  # case two argument are given
-     (False, None)),  # expected
-    ({},  # case no arguments are given
-     (False, None))  # expected
-]
-@pytest.mark.parametrize('args', test_create_query_data)
-def test_threatfox_get_indicators_command__bad_args(mocker, args):
-    
+
+def test_threatfox_get_indicators_command__bad_args():
+    """
         Given:
             - Invalid arguments.
         
@@ -132,10 +123,43 @@ def test_threatfox_get_indicators_command__bad_args(mocker, args):
         
         Then:
             - An exception is thrown.
-    
-    from FeedThreatFox import threatfox_get_indicators_command, check_params_for_query, create_query
-    is_valid, query_type = check_params_for_query(args, return_value={'query_status': 'not okay', 'data': 'details about the problem'})
-    http_request = mocker.patch.object(CLIENT, '_http_request', return_value={}
-"""
-    
-    
+    """
+    from FeedThreatFox import threatfox_get_indicators_command
+    from CommonServerPython import DemistoException
+    with pytest.raises(DemistoException):
+        threatfox_get_indicators_command(CLIENT, {'days': 1, 'tag': 'bla'})
+        
+        
+def test_threatfox_get_indicators_command__bad_response(mocker):
+    """
+        Given:
+            - Arguments with no relevant indicators.
+        
+        When:
+            - Running threatfox-get-indicators command.
+        
+        Then:
+            - An exception is thrown.
+    """
+    from FeedThreatFox import threatfox_get_indicators_command
+    from CommonServerPython import DemistoException
+    mocker.patch.object(CLIENT, '_http_request', return_value={'query_status': 'not okay', 'data': 'details about the problem'})
+    with pytest.raises(DemistoException):
+        threatfox_get_indicators_command(CLIENT, {'tag': 'bla'})
+
+
+def test_threatfox_get_indicators_command(mocker):
+    """
+        Given:
+            - Arguments.
+        
+        When:
+            - Running threatfox-get-indicators command.
+        
+        Then:
+            - The http request is called with the right argument.
+    """
+    from FeedThreatFox import threatfox_get_indicators_command
+    http = mocker.patch.object(CLIENT, '_http_request', return_value={'query_status': 'ok', 'data': {}})
+    threatfox_get_indicators_command(CLIENT, {'id': '41'})
+    assert http.call_args.kwargs['json_data'] == {'id': 41, 'query': 'ioc'}
