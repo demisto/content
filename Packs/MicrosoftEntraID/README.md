@@ -75,7 +75,7 @@
 
 <p>For more information, refer to Microsoft's official <a href="https://learn.microsoft.com/en-us/entra/identity/monitoring-health/howto-stream-logs-to-event-hub">documentation</a>.</p>
 
-<h3>XSIAM side</h3>
+<h3>Cortex XSIAM side</h3>
 <p>To connect XSIAM to the Azure Event Hub, follow the below steps.</p>
 <h4>Azure Event Hub Collector</h4>
 <ol>
