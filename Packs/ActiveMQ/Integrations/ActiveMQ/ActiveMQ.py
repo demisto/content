@@ -92,7 +92,7 @@ def send_message(conn):
         try:
             headers_demisto = json.loads(demisto.args()['headers'])
         except Exception as e:
-            demisto.error('Failed to parse "headers". Error: {}'.format(e))
+            demisto.error(f'Failed to parse "headers". Error: {e}')
             raise ValueError('Failed to parse "headers" argument to JSON. "headers"={}'
                              .format(demisto.args()['headers']))
 
