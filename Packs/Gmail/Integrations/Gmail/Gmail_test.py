@@ -1034,7 +1034,6 @@ def test_parse_mail_parts_use_legacy_name(monkeypatch, part, expected_result):
 
 
 def mock_get_service(service_name, version, scopes, delegated_user):
-    # Create a mock service object
     service = MagicMock()
     service.users().messages().get().execute.return_value = {
         'payload': {
@@ -1055,7 +1054,6 @@ def mock_get_service(service_name, version, scopes, delegated_user):
 
 
 def mock_get_email_context(result, user_id):
-    # Mock get_email_context function to return expected value
     return [{
         'Attachments': [
             {'ID': '123', 'Name': 'test.txt'}
