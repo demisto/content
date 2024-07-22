@@ -1,8 +1,12 @@
-## BaseIntegration Help
+## Keeper Secrets Manager Event Collector
 
-Markdown file for integration configuration  help snippet. In this file add:
+### Authentication
 
-- Brief information about how to retrieve the API key of your product
-- Other useful information on how to configure your integration in XSOAR
+#### Basic Authentication
+Supply your username and password of the account that you want to use.
+To create a new user:
 
-Since this is a Markdown file, we encourage you to use MD formatting for sections, sub-sections, lists, etc.
+1. Login in as admin in [Keeper Admin Console](https://keepersecurity.com/console/).
+2. Go to the **Admin** panel, foun in the left side bar.
+3. Press on **Add User**, and complete the registration process.
+4. Once the user has been created, press on the **Edit** icon, and in the **User Actions** dropdown, click **Disable 2FA** (2FA is currently not supported).
