@@ -879,4 +879,3 @@ def test_find_attachments_to_download(attachments, email_related_incident, files
     result = PreprocessEmail.find_attachments_to_download(attachments, email_related_incident)
     assert result[0] == expected_result[0]
     assert result[1] == expected_result[1]
-    

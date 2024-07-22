@@ -282,7 +282,7 @@ class MsGraphMailBaseClient(MicrosoftClient):
             attachment_content_id = attachment.get('contentId')
             attachment_is_inline = attachment.get('isInline')
             attachment_name = attachment.get('name', 'untitled_attachment')
-            if attachment_is_inline  and not self.legacy_name and attachment_content_id and attachment_content_id != "None":
+            if attachment_is_inline and not self.legacy_name and attachment_content_id and attachment_content_id != "None":
                 attachment_name = f"{attachment_content_id}-attachmentName-{attachment_name}"
             if not attachment_name.isascii():
                 try:

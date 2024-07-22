@@ -1406,29 +1406,33 @@ def test_test_module_command_with_managed_identities(mocker, requests_mock, clie
     qs = get_mock.last_request.qs
     assert qs['resource'] == [Resources.graph]
     assert client_id and qs['client_id'] == [client_id] or 'client_id' not in qs
-    
-    
+
+
 @pytest.mark.parametrize("raw_attachment, legacy_name, expected_name, expect_exception", [
     (
-        {'name': 'test.png', 'contentId': '123', 'isInline': True, 'contentBytes': base64.b64encode(b'test data').decode('utf-8')},
+        {'name': 'test.png', 'contentId': '123', 'isInline': True,
+            'contentBytes': base64.b64encode(b'test data').decode('utf-8')},
         False,
         "123-attachmentName-test.png",
         False
     ),
     (
-        {'name': 'test.png', 'contentId': None, 'isInline': False, 'contentBytes': base64.b64encode(b'test data').decode('utf-8')},
+        {'name': 'test.png', 'contentId': None, 'isInline': False,
+            'contentBytes': base64.b64encode(b'test data').decode('utf-8')},
         False,
         "test.png",
         False
     ),
     (
-        {'name': 'test.png', 'contentId': '123', 'isInline': True, 'contentBytes': base64.b64encode(b'test data').decode('utf-8')},
+        {'name': 'test.png', 'contentId': '123', 'isInline': True,
+            'contentBytes': base64.b64encode(b'test data').decode('utf-8')},
         True,
         "test.png",
         False
     ),
     (
-        {'name': 'test.png', 'contentId': 'None', 'isInline': True, 'contentBytes': base64.b64encode(b'test data').decode('utf-8')},
+        {'name': 'test.png', 'contentId': 'None', 'isInline': True,
+            'contentBytes': base64.b64encode(b'test data').decode('utf-8')},
         False,
         "test.png",
         False
@@ -1451,4 +1455,3 @@ def test_file_result_creator(monkeypatch, raw_attachment, legacy_name, expected_
     else:
         result = GraphMailUtils.file_result_creator(raw_attachment, legacy_name)
         assert result['File'] == expected_name
-
