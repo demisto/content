@@ -1285,6 +1285,9 @@ tasks:
       - '2'
     note: false
     quietmode: 0
+    scriptarguments:
+      AzureIP:
+        simple: ${inputs.RemoteIP}
     separatecontext: true
     skipunavailable: false
     task:
@@ -1413,8 +1416,20 @@ tasks:
     type: title
     view: "{\n  \"position\": {\n    \"x\": 750,\n    \"y\": 735\n  }\n}"
 view: "{\n  \"linkLabelsPosition\": {\n    \"25_19_yes\": 0.6,\n    \"3_42_#default#\": 0.32,\n    \"3_9_yes\": 0.5,\n    \"4_11_yes\": 0.43,\n    \"4_42_#default#\": 0.31,\n    \"7_18_yes\": 0.5\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 3005,\n      \"width\": 2750,\n      \"x\": -440,\n      \"y\": -360\n    }\n  }\n}"
-inputs: []
-outputs: []
+inputSections:
+- description: Generic group for inputs
+  inputs:
+  - RemoteIP
+  name: General (Inputs group)
+inputs:
+- description: IP address of the service.
+  key: RemoteIP
+  playbookInputQuery:
+  required: false
+  value:
+    complex:
+      accessor: remoteip
+      root: inputs
 fromversion: 6.5.0
 tests:
 - No tests (auto formatted)
