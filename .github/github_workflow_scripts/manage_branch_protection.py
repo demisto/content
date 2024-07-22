@@ -19,8 +19,7 @@ import github
 import github.Requester
 
 
-DEFAULT_ORG = "demisto"
-DEFAULT_REPO = "content"
+DEFAULT_REPO = "demisto/content"
 
 GH_TOKEN_ENV_VAR = "GITHUB_TOKEN"
 
@@ -31,7 +30,7 @@ GH_REPO_ENV_VAR = "GITHUB_REPOSITORY"
 GH_JOB_SUMMARY_ENV_VAR = "GITHUB_STEP_SUMMARY"
 
 # Logging setup
-LOG_FORMAT = "%(levelname)s %(asctime)s - %(message)s"
+LOG_FORMAT = "%(asctime)s %(levelname)s %(message)s"
 logging.basicConfig(level=logging.DEBUG,
                     format=LOG_FORMAT,
                     handlers=[
@@ -116,6 +115,7 @@ class GitHubBranchProtectionRulesManager:
     def __init__(self, gh: Github, repo: str = None) -> None:
         self.gh_client = gh
         self.owner, self.repo_name = self._get_repo_name_and_owner(repo)
+        self.existing_rules: list[BranchProtectionRule] = self.get_branch_protection_rules()
         self.deleted: list[BranchProtectionRule] = []
 
     def _get_repo_name_and_owner(self, repo: str | None) -> tuple[str, str]:
@@ -133,8 +133,9 @@ class GitHubBranchProtectionRulesManager:
         """
 
         if not repo:
+            logger.debug("No repo passed as an argument. Taking from env var or defaults...")
             # Try to get the repo from the env var
-            repo = os.getenv(GH_REPO_ENV_VAR, f"{DEFAULT_ORG}/{DEFAULT_REPO}")
+            repo = os.getenv(GH_REPO_ENV_VAR, DEFAULT_REPO)
 
         parts = repo.split('/')
 
@@ -207,43 +208,44 @@ class GitHubBranchProtectionRulesManager:
 
         return result
 
-    def delete_branch_protection_rule(self, rule: BranchProtectionRule) -> None:
+    def delete_branch_protection_rule(self, pattern: str) -> None:
         """
-        Delete a specified branch protection rule.
+        Delete a specified branch protection rule. If no pattern
+        is supplied, delete all branch protection rules.
 
         Arguments:
-        - `rule_id` (``BranchProtectionRule``): The rule to remove.
-
-        Returns:
-        - `0` if operation was successful, `1` otherwise.
+        - `pattern` (``str``): The rule pattern to remove.
         """
 
-        if self._should_delete_rule(rule):
-            logger.debug(f"Deleting branch protection rule {rule}...")
-            self.send_request(
-                query=self.DELETE_BRANCH_PROTECTION_RULE_QUERY_TEMPLATE,
-                variables={"branchProtectionRuleId": rule.id}
-            )
+        rule_to_delete = None
 
-            logger.debug(f"Rule {rule} was deleted successfully.")
-            self.deleted.append(rule)
+        # If a pattern is supplied, we try to find the rule
+        # matching this pattern
+        for rule in self.existing_rules:
+            if pattern and rule.pattern == pattern:
+                rule_to_delete = rule
+                break
 
-    def purge_branch_protection_rules(self) -> int:
+        if rule_to_delete and self._should_delete_rule(rule_to_delete):
+            logger.debug(f"Deleting branch protection rule {rule_to_delete}...")
+            self.send_rule_delete_request(rule_to_delete.id)
+            logger.info(f"Rule {rule_to_delete} was deleted successfully.")
+            self.deleted.append(rule_to_delete)
+        else:
+            logger.info(f"Rule with pattern '{pattern}' was not deleted as it was either not found or exists in the list of exceptions.")
+
+    def purge_branch_protection_rules(self) -> None:
         """
-        Purge all branch protection rules that have no matching
-        refs/branches.
-
-        Returns:
-        - `0` if operation was successful, `1` otherwise.
-
+        Delete all branch protection rules except for the ones
+        specified in the exception list.
         """
 
-        logger.info(f"Purging branch protection rules for repo {self.owner}/{self.repo_name}")
-
-        rules = self.get_branch_protection_rules()
-
-        for rule in rules:
-            self.delete_branch_protection_rule(rule)
+        for rule in self.existing_rules:
+            if self._should_delete_rule(rule):
+                logger.debug(f"Deleting branch protection rule {rule}...")
+                self.send_rule_delete_request(rule.id)
+                logger.info(f"Rule {rule} was deleted successfully.")
+                self.deleted.append(rule)
 
     def _convert_dict_to_bpr(self, response: dict[str, Any]) -> list[BranchProtectionRule]:
 
@@ -305,6 +307,24 @@ class GitHubBranchProtectionRulesManager:
         except github.GithubException as gh_exc:
             logger.error(f"Error sending GraphQL request: {gh_exc}")
             sys.exit(1)
+
+    def send_rule_delete_request(self, rule_id: str):
+        """
+        Send a request to GitHub GraphQL API to delete a specific
+        branch protection rule.
+
+        Arguments:
+        - `rule_id` (``str``): The rule ID to delete
+        """
+
+        variables = {
+            "branchProtectionRuleId": rule_id
+        }
+
+        self.send_request(
+            self.DELETE_BRANCH_PROTECTION_RULE_QUERY_TEMPLATE,
+            variables=variables
+        )
 
     def write_deleted_summary_to_file(self) -> None:
         """
@@ -411,9 +431,9 @@ def main(args: list[str] | None):
                 manager = GitHubBranchProtectionRulesManager(gh=gh)
 
             if args.command == "purge":
-                exit_code = manager.purge_branch_protection_rules()
+                manager.purge_branch_protection_rules()
             elif args.command == "delete":
-                exit_code = manager.delete_branch_protection_rule(branch=args.branch_name)
+                manager.delete_branch_protection_rule(pattern=args.branch_name)
             else:
                 raise NotImplementedError
 
