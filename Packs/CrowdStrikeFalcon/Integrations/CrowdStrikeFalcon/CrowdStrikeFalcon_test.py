@@ -4199,7 +4199,8 @@ def test_get_remote_edpoint_or_idp_or_mobile_detection_data_idp(mocker):
     detection_entity = input_data.response_idp_detection.copy()
     mocker.patch('CrowdStrikeFalcon.get_detection_entities', return_value={'resources': [detection_entity.copy()]})
     mocker.patch.object(demisto, 'debug', return_value=None)
-    mirrored_data, updated_object, detection_type = get_remote_epp_or_idp_or_mobile_detection_data(input_data.remote_idp_detection_id)
+    mirrored_data, updated_object, detection_type = get_remote_epp_or_idp_or_mobile_detection_data(
+        input_data.remote_idp_detection_id)
     detection_entity['severity'] = 2
     assert mirrored_data == detection_entity
     assert detection_type == 'IDP'
@@ -4221,7 +4222,8 @@ def test_get_remote_epp_or_idp_or_mobile_detection_data__mobile_detection(mocker
     detection_entity = input_data.response_mobile_detection.copy()
     mocker.patch('CrowdStrikeFalcon.get_detection_entities', return_value={'resources': [detection_entity.copy()]})
     mocker.patch.object(demisto, 'debug', return_value=None)
-    mirrored_data, updated_object, detection_type = get_remote_epp_or_idp_or_mobile_detection_data(input_data.remote_mobile_detection_id)
+    mirrored_data, updated_object, detection_type = get_remote_epp_or_idp_or_mobile_detection_data(
+        input_data.remote_mobile_detection_id)
     detection_entity['severity'] = 90
     assert mirrored_data == detection_entity
     assert detection_type == 'Mobile'
