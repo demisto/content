@@ -5791,7 +5791,7 @@
         "Symantec Data Loss Prevention - Test": "Issue 20134",
         "NetWitness Endpoint Test": "Issue 19878",
         "InfoArmorVigilanteATITest": "Test issue 17358",
-        "ArcSight Logger test": "Issue 19117",
+        "ArcSight Logger test": "CIAC-1893",
         "AWS - CloudTrail Test Playbook": "Issue 19837",
         "d66e5f86-e045-403f-819e-5058aa603c32": "pr 3220",
         "IntSights Mssp Test": "Issue #16351",
