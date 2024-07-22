@@ -3465,16 +3465,6 @@
             "memory_threshold": 86
         },
         {
-            "integrations": "Expanse",
-            "playbookID": "test-Expanse-Playbook",
-            "fromversion": "5.0.0"
-        },
-        {
-            "integrations": "Expanse",
-            "playbookID": "test-Expanse",
-            "fromversion": "5.0.0"
-        },
-        {
             "integrations": "DShield Feed",
             "playbookID": "playbook-DshieldFeed_test",
             "fromversion": "5.5.0",
