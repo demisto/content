@@ -189,6 +189,7 @@ def fetch_events(client: Client,
     demisto.debug(f'last_run: {last_run}.')
     last_fetched_id = last_run.get('prev_id')
     last_fetched_creation_date = last_run.get('prev_date', DEFAULT_NOW)
+    last_fetched_ids = last_run.get('last_fetched_ids', [])
 
     all_events = []
     remaining_events_to_fetch = limit
@@ -197,7 +198,6 @@ def fetch_events(client: Client,
     while remaining_events_to_fetch > 0:
         current_batch_to_fetch = min(remaining_events_to_fetch, 10000)
         demisto.debug(f'trying to fetch {current_batch_to_fetch} events.')
-        demisto.debug(f'last_fetched_id = {last_fetched_id}.')
 
         events = client.search_events(
             prev_id=last_fetched_id if not filter_by_time else None,
@@ -206,9 +206,8 @@ def fetch_events(client: Client,
             filter_by_time = filter_by_time
         )
         demisto.debug(f'Successfully fetched {len(events)} events in this cycle.')
-
+        events = dedup(events =events, last_run=last_run)
         if events:
-            all_events.extend(events)
             last_fetched_event = events[-1]
             last_fetched_id = last_fetched_event['id']
             last_fetched_creation_date = last_fetched_event['created']
@@ -216,23 +215,28 @@ def fetch_events(client: Client,
             demisto.debug(f'information of the last event in this cycle: id: {last_fetched_id}, created: {last_fetched_creation_date}.')
             remaining_events_to_fetch -= len(events)
             demisto.debug(f'{remaining_events_to_fetch} events are left to fetch in the next calls.')
+            last_fetched_ids = get_last_fetched_ids(events, last_fetched_creation_date)
+            all_events.extend(events)
         else:
+            #to avoid infinite loop, if no events are fetched, or all events are duplicates, exit the loop
             break
+
     last_fetched_ids = get_last_fetched_ids(all_events, last_fetched_creation_date)
     next_run = {'prev_id': last_fetched_id, 'prev_date': last_fetched_creation_date, 'last_fetched_ids': last_fetched_ids}
     demisto.debug(f'Done fetching. Sum of all events: {len(all_events)}, the next run is {next_run}.')
-    all_events = dedup(all_events)
     return next_run, all_events
 
 
-def dedup(events: List[Dict], last_run) -> List[Dict]:
+''' HELPER FUNCTIONS '''
+
+
+def dedup(events: List[Dict], last_run: Dict) -> List[Dict]:
     last_creation_date = last_run.get('prev_date')
     last_fetched_ids = last_run.get('last_fetched_ids', [])
-    len_events_before_dedup = len(events)
-    demisto.debug(f"Starting deduping. {len_events_before_dedup=} last_fetched_ids={last_fetched_ids}")
-    
+    demisto.debug(f"Starting deduping. {len(events)=} {last_creation_date=} {last_fetched_ids=}")
+
     if not last_creation_date or not last_fetched_ids:
-        demisto.debug("No last run data provided, skipping deduping.")
+        demisto.debug("Last run is missing data, skipping deduping.")
         return events
 
     for event in events:
@@ -282,6 +286,7 @@ def add_time_and_status_to_events(events: List[Dict] | None) -> None:
 
 
 ''' MAIN FUNCTION '''
+
 
 def main() -> None:
     """
