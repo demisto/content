@@ -5,14 +5,14 @@ commonfields:
 configuration:
 - name: base_url
   display: Base URL
-  additional_info: The API base URL.
+  additionalinfo: The API base URL.
   required: true
   type: 0
   section: Connect
   defaultvalue: https://api.meraki.com
 - name: api_key
   displaypassword: API Key
-  additional_info: An API key can be generated through 'My Profile'  in 'API access'.
+  additionalinfo: An API key can be generated through 'My Profile'  in 'API access'.
   required: true
   type: 9
   hiddenusername: true
@@ -32,13 +32,13 @@ configuration:
   defaultvalue: 'false'
 - name: organization_id
   display: Organization ID
-  additional_info: A default ID to be used in all commands that require an organization.
+  additionalinfo: A default ID to be used in all commands that require an organization.
   required: false
   type: 0
   section: Collect
 - name: network_id
   display: Network ID
-  additional_info: A default ID to be used in all commands that require an network.
+  additionalinfo: A default ID to be used in all commands that require an network.
   required: false
   type: 0
   section: Collect

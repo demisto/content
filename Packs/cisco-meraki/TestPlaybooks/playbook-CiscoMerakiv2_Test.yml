@@ -3,6 +3,7 @@ version: 11
 vcShouldKeepItemLegacyProdMachine: false
 name: CiscoMerakiv2
 starttaskid: "0"
+fromversion: 5.0.0
 tasks:
   "0":
     id: "0"

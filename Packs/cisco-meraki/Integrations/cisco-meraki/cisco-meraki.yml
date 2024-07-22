@@ -27,7 +27,6 @@ configuration:
   required: false
   type: 8
 script:
-  comment: Deprecated. Use CiscoMerakiv2 instead.
   script: >
     /**
        * flatten nested object to top level fields
