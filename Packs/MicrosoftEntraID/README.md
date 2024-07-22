@@ -56,7 +56,7 @@
 <details>
 <summary><h2 style="display:inline-block">Data Collection</h2></summary>
 <h3 >Entra ID Side</h3>
-<p>To configure Microsoft Entra ID to send logs to XSIAM, follow the below steps.</p>
+<p>To configure Microsoft Entra ID to send logs to Cortex XSIAM, follow the below steps.</p>
 <h4>Prerequisites</h4>
 <ol>
     <li>Create an <b>Azure event hub</b>. For more information, refer to Microsoft's official <a href="https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-create">documetaion</a>.</li>
