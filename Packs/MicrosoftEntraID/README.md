@@ -8,7 +8,7 @@
     <summary><h2 style="display:inline-block">What does this pack do</h2></summary>
 
 <h3>Log Normalization - One Data Model</h3>
-<p>This pack support normalization of the below log categories of Microsoft Entra ID:</p>
+<p>This pack supports normalization of the below log categories of Microsoft Entra ID:</p>
 <ol>
     <li>AuditLogs</li>
     <li>SignInLogs</li>
