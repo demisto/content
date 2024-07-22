@@ -21,6 +21,27 @@ class Client(BaseClient):
         url_suffix = '/api/v1'
         body = query
         return self._http_request('POST', url_suffix=url_suffix, json_data=body)
+    
+    def test_module(self) -> str:
+        """Tests API connectivity and authentication'
+
+        Returning 'ok' indicates that the integration works like it is supposed to.
+        Connection to the service is successful.
+        Raises exceptions if something goes wrong.
+
+        :type client: ``Client``
+        :param Client: client to use
+
+        :return: 'ok' if test passed, anything else will fail the test.
+        :rtype: ``str``
+        """
+        message: str = ''
+        try:
+            self.get_indicators_request({'days': 1, 'limit': 5})
+            message = 'ok'
+        except DemistoException as e:
+                raise e
+        return message
         
 def check_params_for_query(args: dict):
     """Checks that there are no extra params and no missing ones for the query.
@@ -102,34 +123,6 @@ def parse_indicators(indicators):
     return res
 
 
-def test_module(client: Client) -> str:
-    """Tests API connectivity and authentication'
-
-    Returning 'ok' indicates that the integration works like it is supposed to.
-    Connection to the service is successful.
-    Raises exceptions if something goes wrong.
-
-    :type client: ``Client``
-    :param Client: client to use
-
-    :return: 'ok' if test passed, anything else will fail the test.
-    :rtype: ``str``
-    """
-
-    message: str = ''
-    try:
-        # TODO: ADD HERE some code to test connectivity and authentication to your service.
-        # This  should validate all the inputs given in the integration configuration panel,
-        # either manually or by using an API that uses them.
-        message = 'ok'
-    except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
-            message = 'Authorization Error: make sure API Key is correctly set'
-        else:
-            raise e
-    return message
-
-
 def threatfox_get_indicators_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
     search_term = args.get('search_term')
@@ -181,17 +174,14 @@ def main() -> None:
     try:
 
         client = Client(base_url=base_url)
+        
         if demisto.command() == 'test-module':
-            # This is the call made when pressing the integration Test button.
-            result = test_module(client)
+            result = client.test_module()
             return_results(result)
 
-        # TODO: REMOVE the following dummy command case:
         elif demisto.command() == 'threatfox-get-indicators':
             return_results(threatfox_get_indicators_command(client, demisto.args()))
-        # TODO: ADD command cases for the commands you will implement
 
-    # Log exceptions and return errors
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 

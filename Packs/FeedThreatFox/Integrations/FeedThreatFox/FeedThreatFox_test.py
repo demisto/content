@@ -162,4 +162,4 @@ def test_threatfox_get_indicators_command(mocker):
     from FeedThreatFox import threatfox_get_indicators_command
     http = mocker.patch.object(CLIENT, '_http_request', return_value={'query_status': 'ok', 'data': {}})
     threatfox_get_indicators_command(CLIENT, {'id': '41'})
-    assert http.call_args.kwargs['json_data'] == {'id': 41, 'query': 'ioc'}
+    assert http.call_args.kwargs['json_data'] == { "query": "ioc", "id": 41 }
