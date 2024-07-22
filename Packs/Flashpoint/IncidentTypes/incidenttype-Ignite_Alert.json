@@ -5,7 +5,7 @@
     "locked": false,
     "name": "Ignite Alert",
     "prevName": "Ignite Alert",
-    "color": "#D693F9",
+    "color": "#fb8521",
     "hours": 0,
     "days": 0,
     "weeks": 0,
@@ -22,8 +22,43 @@
     "layout": "Ignite Alert",
     "detached": false,
     "extractSettings": {
-        "mode": "All",
-        "fieldCliNameToExtractSettings": {}
+        "mode": "Specific",
+        "fieldCliNameToExtractSettings": {
+            "flashpointalerttext": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": true,
+                "extractIndicatorTypesIDs": []
+            },
+            "flashpointcontainer": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": true,
+                "extractIndicatorTypesIDs": []
+            },
+            "flashpointreasontext": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": true,
+                "extractIndicatorTypesIDs": []
+            },
+            "flashpointshodanhost": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": [
+                    "ASN"
+                ]
+            },
+            "flashpointsourcesnippet": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": true,
+                "extractIndicatorTypesIDs": []
+            },
+            "sha1": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": [
+                    "unifiedFileRep"
+                ]
+            }
+        }
     },
     "fromVersion": "6.10.0"
 }

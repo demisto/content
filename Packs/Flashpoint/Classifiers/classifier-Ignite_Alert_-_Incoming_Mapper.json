@@ -290,9 +290,20 @@
                 },
                 "Flashpoint Shodan Host": {
                     "complex": {
-                        "accessor": "shodan_host",
-                        "filters": [],
-                        "root": "resource",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "resource.shodan_host"
+                                        }
+                                    },
+                                    "operator": "isNotEmpty"
+                                }
+                            ]
+                        ],
+                        "root": "resource.shodan_host",
                         "transformers": [
                             {
                                 "args": {

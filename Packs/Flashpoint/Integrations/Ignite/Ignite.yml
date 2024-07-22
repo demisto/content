@@ -14,6 +14,7 @@ configuration:
   name: incidentType
   type: 13
   required: false
+  defaultvalue: 'Flashpoint Compromised Credentials'
 - display: Server URL
   additionalinfo: Server URL to connect to Ignite.
   name: url
@@ -1364,10 +1365,11 @@ script:
     description: Looks up the "File" type indicator details. The reputation of File hash is considered malicious if there's at least one IoC event in the Ignite database matching the File hash indicator.
   script: ''
   type: python
-  dockerimage: demisto/python3:3.11.9.103066
+  dockerimage: demisto/python3:3.11.9.103842
   isfetch: true
   runonce: false
   subtype: python3
 tests:
 - Ignite-Test
+defaultmapperin: "Flashpoint Compromised Credentials - Incoming Mapper"
 fromversion: 6.10.0
