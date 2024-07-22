@@ -591,14 +591,14 @@ def start_logging():
 """ Helper Functions """
 
 
-def get_attachment_name(attachment_name, eml_extension=False, content_id="", attachment_id=""):
+def get_attachment_name(attachment_name, eml_extension=False, content_id="", is_inline=False):
     """
     Retrieve attachment name or error string if none is provided
     :param attachment_name: attachment name to retrieve
     :param eml_extension: Indicates whether the eml extension should be added
     :return: string
     """
-    if content_id and content_id != "None" and not LEGACY_NAME:
+    if is_inline and content_id and content_id != "None" and not LEGACY_NAME:
         if attachment_name is None or attachment_name == "":
             return (f"{content_id}-attachmentName-demisto_untitled_attachment.eml"
                     if eml_extension
@@ -898,7 +898,7 @@ def get_entry_for_file_attachment(item_id, attachment):
     :return: file entry dict for attachment
     """
     entry = fileResult(get_attachment_name(attachment_name=attachment.name, content_id=attachment.content_id,
-                       attachment_id=attachment.attachment_id.id), attachment.content)
+                       is_inline=attachment.is_inline), attachment.content)
     entry["EntryContext"] = {
         CONTEXT_UPDATE_EWS_ITEM_FOR_ATTACHMENT
         + CONTEXT_UPDATE_FILE_ATTACHMENT: parse_attachment_as_dict(item_id, attachment)
@@ -926,7 +926,7 @@ def parse_attachment_as_dict(item_id, attachment):
             ATTACHMENT_ID: attachment.attachment_id.id,
             "attachmentName": get_attachment_name(attachment_name=attachment.name,
                                                   content_id=attachment.content_id,
-                                                  attachment_id=attachment.attachment_id.id),
+                                                  is_inline=attachment.is_inline),
             "attachmentSHA256": hashlib.sha256(attachment_content).hexdigest()
             if attachment_content
             else None,
@@ -948,7 +948,7 @@ def parse_attachment_as_dict(item_id, attachment):
             ATTACHMENT_ID: attachment.attachment_id.id,
             "attachmentName": get_attachment_name(attachment_name=attachment.name,
                                                   content_id=attachment.content_id,
-                                                  attachment_id=attachment.attachment_id.id),
+                                                  is_inline=attachment.is_inline),
             "attachmentSHA256": None,
             "attachmentContentType": attachment.content_type,
             "attachmentContentId": attachment.content_id,
@@ -976,7 +976,7 @@ def get_entry_for_item_attachment(item_id, attachment, target_email):  # pragma:
         parse_item_as_dict(item, target_email, camel_case=True, compact_fields=True)
     )
     title = (f'EWS get attachment got item for "{target_email}", '
-             f'"{get_attachment_name(attachment_name=attachment.name, content_id=attachment.content_id, attachment_id=attachment.attachment_id.id)}"')  # noqa: E501
+             f'"{get_attachment_name(attachment_name=attachment.name, content_id=attachment.content_id, is_inline=attachment.is_inline)}"')  # noqa: E501
 
     return get_entry_for_object(
         title,
@@ -1100,7 +1100,7 @@ def fetch_attachments_for_message(
                     fileResult(
                         get_attachment_name(attachment_name=attachment.name, eml_extension=True,
                                             content_id=attachment.content_id,
-                                            attachment_id=attachment.attachment_id.id),
+                                            is_inline=attachment.is_inline),
                         attachment.item.mime_content,
                     )
                 )
@@ -2215,7 +2215,7 @@ def parse_incident_from_item(item):  # pragma: no cover
                         # save the attachment
                         file_name = get_attachment_name(attachment_name=attachment.name,
                                                         content_id=attachment.content_id,
-                                                        attachment_id=attachment.attachment_id.id)
+                                                        is_inline=attachment.is_inline)
                         demisto.debug(f"saving content number {attachment_counter}, "
                                       f"of size {sys.getsizeof(attachment.content)}, of email with id {item.id}")
                         file_result = fileResult(file_name, attachment.content)
@@ -2231,7 +2231,8 @@ def parse_incident_from_item(item):  # pragma: no cover
                                 "path": file_result["FileID"],
                                 "name": get_attachment_name(attachment_name=attachment.name,
                                                             content_id=attachment.content_id,
-                                                            attachment_id=attachment.attachment_id.id),
+                                                            is_inline=attachment.is_inline),
+                                "description": FileAttachmentType.ATTACHED if not attachment.is_inline else "",
                             }
                         )
                 except TypeError as e:
@@ -2292,7 +2293,7 @@ def parse_incident_from_item(item):  # pragma: no cover
                     data = decode_email_data(attached_email)
                     file_result = fileResult(get_attachment_name(attachment_name=attachment.name,
                                              eml_extension=True, content_id=attachment.content_id,
-                                             attachment_id=attachment.attachment_id.id), data)
+                                             is_inline=attachment.is_inline), data)
 
                 if file_result:
                     # check for error
@@ -2307,7 +2308,7 @@ def parse_incident_from_item(item):  # pragma: no cover
                             "name": get_attachment_name(attachment_name=attachment.name,
                                                         eml_extension=True,
                                                         content_id=attachment.content_id,
-                                                        attachment_id=attachment.attachment_id.id),
+                                                        is_inline=attachment.is_inline),
                         }
                     )
 
@@ -2316,7 +2317,7 @@ def parse_incident_from_item(item):  # pragma: no cover
                     "type": label_attachment_type,
                     "value": get_attachment_name(attachment_name=attachment.name,
                                                  content_id=attachment.content_id,
-                                                 attachment_id=attachment.attachment_id.id),
+                                                 is_inline=attachment.is_inline),
                 }
             )
             labels.append(

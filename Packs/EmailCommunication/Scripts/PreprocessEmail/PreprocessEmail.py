@@ -71,7 +71,7 @@ def create_email_html(email_html='', entry_id_list=None):
                                 email_html)
         elif re.search(f'src="[^>]+"(?=[^>]+alt="{image_name}")', email_html):
             email_html = re.sub(f'src="[^>]+"(?=[^>]+alt="{image_name}")', f'src=entry/download/{image_entry_id}',
-                                email_html)
+                                email_html, count=1)
         # Handling inline attachments from Outlook mailboxes
         # Note: when tested, entry id list and inline attachments were in the same order, so there was no need in
         # special validation that the right src was being replaced.
@@ -80,7 +80,7 @@ def create_email_html(email_html='', entry_id_list=None):
     return email_html
 
 
-def get_entry_id_list(attachments, files, email_html, legacy_name=False):
+def get_entry_id_list(attachments, files, email_html):
     """Get the entry ids for the email attachments from the email's related incident's files entry.
     Args:
         attachments (list): The attachments of the email.
@@ -95,6 +95,7 @@ def get_entry_id_list(attachments, files, email_html, legacy_name=False):
     matches = re.findall(r'src="cid:([^"]+)"', email_html) or []
     entry_id_list = []
     files = [files] if not isinstance(files, list) else files
+    legacy_name = not any('-attachmentName-' in attachment.get('name') for attachment in attachments)
     for attachment in attachments:
         attachment_name = attachment.get('name', '')
         if not legacy_name:
@@ -227,22 +228,17 @@ def get_attachments_using_instance(email_related_incident, labels, email_to, ide
     if integration_name in ['EWS v2', 'EWSO365']:
         demisto.executeCommand("executeCommandAt",
                                {'command': 'ews-get-attachment', 'incidents': email_related_incident,
-                                'arguments': {'item-id': str(message_id),
-                                              'identifiers-filter': identifier_ids,
-                                              'using': instance_name}})
+                                'arguments': {'item-id': str(message_id), 'using': instance_name}})
 
     elif integration_name in ['Gmail', 'Gmail Single User']:
         demisto.executeCommand("executeCommandAt",
                                {'command': 'gmail-get-attachments', 'incidents': email_related_incident,
-                                'arguments': {'user-id': 'me', 'message-id': str(message_id),
-                                              'identifiers-filter': identifier_ids,
-                                              'using': instance_name}})
+                                'arguments': {'user-id': 'me', 'message-id': str(message_id), 'using': instance_name}})
 
     elif integration_name in ['MicrosoftGraphMail', 'Microsoft Graph Mail Single User']:
         demisto.executeCommand("executeCommandAt",
                                {'command': 'msgraph-mail-get-attachment', 'incidents': email_related_incident,
-                                'arguments': {'user_id': email_to, 'message_id': str(message_id),
-                                              'identifiers_filter': identifier_ids, 'using': instance_name}})
+                                'arguments': {'user_id': email_to, 'message_id': str(message_id), 'using': instance_name}})
 
     else:
         demisto.debug('Attachments could only be retrieved from EWS v2 or Gmail')
@@ -446,7 +442,6 @@ def main():
     email_latest_message = custom_fields.get('emaillatestmessage', '')
 
     reputation_calc_async = argToBoolean(args.get('reputation_calc_async', False))
-    legacy_name = argToBoolean(args.get('legacy_name', False))
 
     try:
         email_related_incident_code = email_subject.split('<')[1].split('>')[0]
@@ -467,7 +462,7 @@ def main():
         # Adding a 5 seconds sleep in order to wait for all the attachments to get uploaded to the server.
         time.sleep(5)
         files = get_incident_related_files(email_related_incident)
-        entry_id_list = get_entry_id_list(attachments, files, email_html, legacy_name)
+        entry_id_list = get_entry_id_list(attachments, files, email_html)
         html_body = create_email_html(email_html, entry_id_list)
 
         if incident_details['type'] == 'Email Communication':

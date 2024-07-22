@@ -15,12 +15,6 @@ args:
   - 'false'
   description: Specify whether to calculate the reputation in an asynchronous way.
   defaultValue: 'false'
-- display: Use legacy attachment name
-  description: Enable in order to use the plain attachment name. Configure this param with the same value as in the Mail integrations.
-  name: legacy_name
-  type: 8
-  advanced: true
-  defaultvalue: 'false'
 comment: |-
   Preprocessing script for email communication layout.
   This script checks if the incoming email contains an Incident ID to link the mail to an existing incident, and tags the email as "email-thread".
