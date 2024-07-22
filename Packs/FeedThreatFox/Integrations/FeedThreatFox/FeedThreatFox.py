@@ -140,20 +140,25 @@ def threatfox_get_indicators_command(client: Client, args: Dict[str, Any]) -> Co
     limit = args.get('limit')
     
     is_valid, query_type = check_params_for_query(args)
+    
+    if not is_valid:
+        raise DemistoException("Arguments given are invalid.")
+    
     query = create_query(query_type, id, search_term, hash, tag, malware, limit=limit)
 
     demisto.debug(f'{LOG} calling api with {query=}')
     result = client.get_indicators_request(query)
     demisto.debug(f'{LOG} got {result=}')
     
-    query_status = result['query_status']
-    query_data = result['data']
+    query_status = result.get('query_status')
+    query_data = result.get('data')
     
     if query_status != 'ok':
         raise DemistoException(f'failed to run command {query_status} {query_data}')
     
     parsed_indicators = parse_indicators(result.get('data') or result)
     demisto.debug(f'{LOG} got {parse_indicators=}')
+    
     human_readable = tableToMarkdown(name='Indicators', t=parsed_indicators,
                                      headers=['ID', 'value', 'Tags1', 'Description', 'malware_family_tags',
                                               'aliases_tags', 'first_seen_by_source', 'last_seen_by_source', 'reported_by',
@@ -169,7 +174,6 @@ def main() -> None:
     
     params = demisto.params()
     base_url = urljoin(params['url'], '/api/v1')
-    # fetch_interval = params['interval'] server
     with_ports = params.get('with_ports', False)
     confidence_threshold = params.get('confidence_threshold', 75)
     create_relationship = params.get('create_relationship', True)

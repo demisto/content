@@ -111,4 +111,31 @@ def test_create_query(query_arg, args, expected_query):
     query = create_query(query_arg, id = args['id'], search_term=args['search_term'], hash=args['hash'],
                          tag=args['tag'], malware=args['malware'], days=args['days'], limit=args['limit'])
     assert query == expected_query
+ 
+ 
+ 
+"""
+test_threatfox_get_indicators_command__bad_args_data = [
+    ( {'days': 1, 'tag': 'bla'},  # case two argument are given
+     (False, None)),  # expected
+    ({},  # case no arguments are given
+     (False, None))  # expected
+]
+@pytest.mark.parametrize('args', test_create_query_data)
+def test_threatfox_get_indicators_command__bad_args(mocker, args):
+    
+        Given:
+            - Invalid arguments.
+        
+        When:
+            - Running threatfox-get-indicators command.
+        
+        Then:
+            - An exception is thrown.
+    
+    from FeedThreatFox import threatfox_get_indicators_command, check_params_for_query, create_query
+    is_valid, query_type = check_params_for_query(args, return_value={'query_status': 'not okay', 'data': 'details about the problem'})
+    http_request = mocker.patch.object(CLIENT, '_http_request', return_value={}
+"""
+    
     
