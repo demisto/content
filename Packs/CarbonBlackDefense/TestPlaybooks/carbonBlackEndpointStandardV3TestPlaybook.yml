@@ -1,6 +1,6 @@
-id: carbonBlackEndpointStandardTestPlaybook
+id: carbonBlackEndpointStandardV3TestPlaybook
 version: -1
-name: carbonBlackEndpointStandardTestPlaybook
+name: carbonBlackEndpointStandardV3TestPlaybook
 description: A test playbook of the Carbon Black Endpoint Standard pack.
 starttaskid: "0"
 tasks:
@@ -2033,4 +2033,4 @@ inputs:
   description: ""
   playbookInputQuery:
 outputs: []
-fromversion: 5.5.0
+fromversion: 6.10.0
