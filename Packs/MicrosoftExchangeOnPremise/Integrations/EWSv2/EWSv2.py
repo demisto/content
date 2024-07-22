@@ -403,7 +403,6 @@ def get_time_zone() -> EWSTimeZone | None:
 
 
 def get_attachment_name(attachment_name, content_id="", is_inline=False):  # pragma: no cover
-    demisto.debug(f"{is_inline=}")
     if is_inline and content_id and content_id != "None" and not LEGACY_NAME:
         if attachment_name is None or attachment_name == "":
             return f'{content_id}-attachmentName-demisto_untitled_attachment'
