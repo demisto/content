@@ -1,7 +1,6 @@
-id: bc993d1a-98f5-4554-8075-68a38004c119
+id: Gamma Warning Notice
 fromversion: 5.0.0
-version: 5
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: Gamma Warning Notice
 starttaskid: "0"
 tasks:
@@ -15,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -53,9 +53,7 @@ tasks:
       entry: {}
       ignoreAddURL: {}
       message:
-        simple: Hello, you are receiving this notice because you shared information
-          inappropriately through unapproved channels. Please reach out to your Information
-          Security team for more information.
+        simple: Hello, you are receiving this notice because you shared information inappropriately through unapproved channels. Please reach out to your Information Security team for more information.
       threadID: {}
       to:
         simple: ${ExtractedIndicators.Email}
@@ -88,8 +86,7 @@ tasks:
     scriptarguments:
       assetid: {}
       closeNotes:
-        simple: 'File in question: ${incident.labels.file_labels_map}. More information
-          available at ${incident.labels.dashboard_url}'
+        simple: 'File in question: ${incident.labels.file_labels_map}. More information available at ${incident.labels.dashboard_url}'
       closeReason: {}
       code42alerttype: {}
       emailclassification: {}
@@ -159,3 +156,4 @@ view: |-
   }
 inputs: []
 outputs: []
+description: ''
