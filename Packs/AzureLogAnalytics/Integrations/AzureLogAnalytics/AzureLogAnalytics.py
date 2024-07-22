@@ -43,7 +43,9 @@ class Client:
         resources_list = [self.azure_cloud.endpoints.resource_manager, self.azure_cloud.endpoints.log_analytics_resource_id]
         base_url = urljoin(url=self.azure_cloud.endpoints.resource_manager, suffix=suffix)
 
-        demisto.debug(f"##### AzureLogAnalytics #####{self.azure_cloud.name=} \n{base_url=} \n{resources_list=} \n{auth_code_scope=}")
+        demisto.debug(
+            f"##### AzureLogAnalytics #####{self.azure_cloud.name=} \n{base_url=} \n{resources_list=} \n{auth_code_scope=}"
+        )
 
         self.ms_client = MicrosoftClient(
             self_deployed=self_deployed,
