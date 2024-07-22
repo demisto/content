@@ -42,7 +42,7 @@ REPLACE_COMMAND_LINE = {"=": " = ", "\\": "/", "[": "", "]": "", '"': "", "'": "
 TFIDF_PARAMS = {'max_features': 500, 'ngram_range': (2, 4)}
 
 HDBSCAN_PARAMS = {
-    'algorithm': 'auto',
+    'algorithm': 'best',
     'n_jobs': -1,
     'prediction_data': True
 }
