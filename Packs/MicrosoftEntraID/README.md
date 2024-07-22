@@ -1,4 +1,4 @@
-<~XSIAM>  
+<~XSIAM>
 
 <html>
 
@@ -10,7 +10,9 @@
 <h3>Log Normalization - One Data Model</h3>
 <p>This pack supports normalization of the below log categories of Microsoft Entra ID:</p>
 <ul>
-    <li>AuditLogs</li>
+    <li>
+        AuditLogs
+    </li>
     <li>SignInLogs</li>
     <li>NonInteractiveUserSignInLogs</li>
     <li>ServicePrincipalSignInLogs</li>

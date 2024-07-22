@@ -1,6 +1,6 @@
 {
-    "name": "Microsoft Entra ID",
-    "description": "Microsoft Entra ID (formerly known as AAD) is a cloud-based identity and access management service, that can be used to access both internal and external resources.",
+    "name": "Microsoft Entra ID (formerly Azure Active Directory)",
+    "description": "Microsoft Entra ID (formerly Azure Active Directory) is a cloud-based identity and access management service, that can be used to access both internal and external resources.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
