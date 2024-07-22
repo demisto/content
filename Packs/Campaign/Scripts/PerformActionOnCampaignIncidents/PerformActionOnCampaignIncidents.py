@@ -89,13 +89,10 @@ def _set_removed_from_campaigns_field(incident_id: str, campaign_id: str, action
 
     set_campaign_ids_removed: set = set(campaign_ids_removed)
 
-    is_campaign_in_list: bool = campaign_id in set_campaign_ids_removed
-
     if action == ACTIONS.ADD:
-        if not is_campaign_in_list:
-            set_campaign_ids_removed.add(campaign_id)
+        set_campaign_ids_removed.add(campaign_id)
     else:
-        if is_campaign_in_list:
+        if campaign_id in set_campaign_ids_removed:
             set_campaign_ids_removed.remove(campaign_id)
 
     res = demisto.executeCommand(

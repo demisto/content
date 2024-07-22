@@ -703,6 +703,8 @@ def test_perform_remove_from_campaign_no_incidents_to_remove(
         (None, ACTIONS.REMOVE, []),
         ([], ACTIONS.REMOVE, []),
         (["campaign1", "campaign_id"], ACTIONS.REMOVE, ["campaign1"]),
+        (["campaign1", "campaign2", "campaign_id"], ACTIONS.ADD, ["campaign1", "campaign2", "campaign_id"]),
+        (["campaign1"], ACTIONS.REMOVE, ["campaign1"])
     ]
 )
 def test_set_removed_from_campaigns_field(
