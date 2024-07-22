@@ -70,7 +70,7 @@ INCOMING_MIRRORED_FIELDS = ['ID', 'Etag', 'Title', 'Description', 'Severity', 'S
                                   'AlertProductNames', 'Tactics', 'relatedAnalyticRuleIds', 'IncidentUrl', 'classification',
                                   'classificationComment', 'alerts', 'entities', 'comments', 'relations']
 OUTGOING_MIRRORED_FIELDS = {'etag', 'title', 'description', 'severity', 'status', 'tags', 'firstActivityTimeUtc',
-                            'lastActivityTimeUtc', 'classification', 'classificationComment', 'classificationReason'}
+                            'lastActivityTimeUtc', 'classification', 'classificationComment', 'classificationReason', 'owner', 'comments'}
 OUTGOING_MIRRORED_FIELDS = {filed: pascalToSpace(filed) for filed in OUTGOING_MIRRORED_FIELDS}
 
 LEVEL_TO_SEVERITY = {0: 'Informational', 0.5: 'Informational', 1: 'Low', 2: 'Medium', 3: 'High', 4: 'High'}
@@ -223,7 +223,7 @@ def incident_data_to_xsoar_format(inc_data, is_fetch_incidents=False):
     :param is_fetch_incidents: (bool) Is it part of a fetch incidents command.
     """
     properties = inc_data.get('properties', {})
-
+    demisto.debug(f"\n{inc_data=}\n{is_fetch_incidents=}\n")
     formatted_data = {
         'ID': inc_data.get('name'),
         'IncidentNumber': properties.get('incidentNumber'),
@@ -264,6 +264,7 @@ def incident_data_to_xsoar_format(inc_data, is_fetch_incidents=False):
             "classificationComment": properties.get('classificationComment'),
             "classificationReason": properties.get('classificationReason')
         }
+    demisto.debug(f"{formatted_data=}")
     return formatted_data
 
 
@@ -655,6 +656,7 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
         incident_type_scheme.add_field(name=argument, description=description)
     mapping_response.add_scheme_type(incident_type_scheme)
 
+    demisto.debug(f'@@@@get_mapping_fields_command return:\n {mapping_response=}')
     return mapping_response
 
 
@@ -667,6 +669,35 @@ def close_incident_in_remote(delta: Dict[str, Any], data: Dict[str, Any]) -> boo
     closing_field = 'classification'
     closing_reason = delta.get(closing_field, data.get(closing_field, ''))
     return demisto.params().get('close_ticket') and bool(closing_reason)
+
+
+def find_owner_diff(server_owner: Dict[str, str], remote_owner: Dict[str, str]) -> Optional[Dict[str, str]]:
+    """
+    Compare server owner and remote owner dictionaries and return the differences.
+
+    Args:
+    server_owner (Dict[str, str]): Dictionary containing server owner details.
+    remote_owner (Dict[str, str]): Dictionary containing remote owner details.
+
+    Returns:
+    Optional[Dict[str, str]]: A dictionary of differences, or None if both inputs are empty.
+    """
+    if not server_owner or not remote_owner:
+        return None
+    owner_key_mapping = {
+        "assignedto": "assignedTo",
+        "email": "email",
+        "objectid": "objectId",
+        "userprincipalname": "userPrincipalName",
+    }
+    normalized_server_owner = {
+        owner_key_mapping.get(k.lower(), k): v for k, v in server_owner.items()
+    }
+    return {
+        key: value
+        for key, value in normalized_server_owner.items()
+        if value != "null" and value != remote_owner.get(key)
+    }
 
 
 def update_incident_request(client: AzureSentinelClient, incident_id: str, data: Dict[str, Any], delta: Dict[str, Any],
@@ -684,10 +715,12 @@ def update_incident_request(client: AzureSentinelClient, incident_id: str, data:
         Dict[str, Any]: the response of the update incident request
     """
     fetched_incident_data = get_incident_by_id_command(client, {'incident_id': incident_id}).raw_response
+    demisto.debug(f'@@@@in update_incident_request  Fetched incident data::\n{fetched_incident_data=}')
     required_fields = ('severity', 'status', 'title')
     if any(field not in data for field in required_fields):
         raise DemistoException(f'Update incident request is missing one of the required fields for the '
                                f'API: {required_fields}')
+    demisto.debug(f'create properties ::\n{data=}\n{delta=}')
     properties = {
         'title': data.get('title'),
         'description': delta.get('description'),
@@ -695,7 +728,11 @@ def update_incident_request(client: AzureSentinelClient, incident_id: str, data:
         'status': 'Active',
         'firstActivityTimeUtc': delta.get('firstActivityTimeUtc'),
         'lastActivityTimeUtc': delta.get('lastActivityTimeUtc'),
-        'owner': demisto.get(fetched_incident_data, 'properties.owner', {}),
+        "owner": find_owner_diff(
+            delta.get("microsoftsentinelowner", [{}])[0],
+            demisto.get(fetched_incident_data, "properties.owner", {}),
+        ),
+
         'labels': demisto.get(fetched_incident_data, 'properties.labels', [])
     }
 
@@ -733,7 +770,7 @@ def update_remote_incident(client: AzureSentinelClient, data: Dict[str, Any], de
             return str(update_incident_request(client, incident_id, data, delta))
 
     elif incident_status == IncidentStatus.ACTIVE:
-        demisto.debug(f'Updating incident with remote ID {incident_id} in remote system.')
+        demisto.debug(f'@@@@Updating incident with remote ID {incident_id=} in remote system.\n{data=}::\n{delta=}')
         return str(update_incident_request(client, incident_id, data, delta))
 
     demisto.debug(f'Incident with remote ID {incident_id} is not Active or Closed, not updating. (status: {incident_status})')
@@ -752,7 +789,8 @@ def update_remote_system_command(client: AzureSentinelClient, args: Dict[str, An
     delta = parsed_args.delta
     data = parsed_args.data
     remote_incident_id = parsed_args.remote_incident_id
-    demisto.debug(f'Got the following data {data}, and delta {delta}.')
+    demisto.debug(f'Got the following data \n{data=}, and delta \n{delta=}.')
+    demisto.debug(f'@@@@Got the following args \n{args=}')
     if parsed_args.incident_changed and delta:
         demisto.debug(f'Got the following delta keys {list(delta.keys())}.')
         try:
@@ -1080,7 +1118,6 @@ def list_incident_comments_command(client, args):
 
 def incident_add_comment_command(client, args):
     import random
-
     inc_id = args.get('incident_id')
     url_suffix = f'incidents/{inc_id}/comments/{str(random.getrandbits(128))}'
     comment_data = {
@@ -1975,6 +2012,7 @@ def main():
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
+    demisto.debug(f"\n{params=}\n{command=}\n{args=}")
 
     demisto.debug(f'Command being called is {command}')
     try:

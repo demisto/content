@@ -10,7 +10,7 @@
     "editForm": true,
     "required": false,
     "neverSetAsRequired": false,
-    "isReadOnly": false,
+    "isReadOnly": true,
     "useAsKpi": false,
     "locked": false,
     "system": false,
