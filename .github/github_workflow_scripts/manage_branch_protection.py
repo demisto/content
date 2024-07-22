@@ -28,6 +28,7 @@ GH_TOKEN_ENV_VAR = "GITHUB_TOKEN"
 # e.g. 'demisto/content'
 GH_REPO_ENV_VAR = "GITHUB_REPOSITORY"
 
+GH_JOB_SUMMARY_ENV_VAR = "GITHUB_STEP_SUMMARY"
 
 # Logging setup
 LOG_FORMAT = "%(levelname)s %(asctime)s - %(message)s"
@@ -115,6 +116,7 @@ class GitHubBranchProtectionRulesManager:
     def __init__(self, gh: Github, repo: str = None) -> None:
         self.gh_client = gh
         self.owner, self.repo_name = self._get_repo_name_and_owner(repo)
+        self.deleted: list[BranchProtectionRule] = []
 
     def _get_repo_name_and_owner(self, repo: str | None) -> tuple[str, str]:
         """
@@ -224,6 +226,7 @@ class GitHubBranchProtectionRulesManager:
             )
 
             logger.debug(f"Rule {rule} was deleted successfully.")
+            self.deleted.append(rule)
 
     def purge_branch_protection_rules(self) -> int:
         """
@@ -303,6 +306,29 @@ class GitHubBranchProtectionRulesManager:
             logger.error(f"Error sending GraphQL request: {gh_exc}")
             sys.exit(1)
 
+    def write_deleted_summary_to_file(self) -> None:
+        """
+        Helper function to create a Markdown summary file for deleted branches.
+        """
+
+        if os.getenv(GH_JOB_SUMMARY_ENV_VAR):
+            fp = Path(os.getenv(GH_JOB_SUMMARY_ENV_VAR))
+
+            header = "## Deleted Branch Protection Rules"
+            table_header = "| ID | Pattern | Matching Refs |\n| --- | ------- | ------------- |"
+            table_rows = [f"| {rule.id} | {rule.pattern} | {rule.matching_refs} |" for rule in self.deleted]
+
+            table_body = "\n".join(table_rows)
+
+            markdown_content = f"{header}\n\n{table_header}\n{table_body}\n"
+
+            logger.debug(f"Writing deleted jobs summary to Markdown to file '{fp}'...")
+            logger.debug(markdown_content)
+            fp.write_text(markdown_content)
+            logger.debug("Finished writing jobs summary to Markdown to file")
+        else:
+            logger.info(f"Environmental variable '{GH_JOB_SUMMARY_ENV_VAR}' not set. Skipping writing job summary for deleted rules...")
+
 
 def validate_gh_token() -> str:
     """
@@ -342,6 +368,7 @@ def main(args: list[str] | None):
         help="The GitHub repo name."
     )
 
+    # TODO implement
     parser.add_argument(
         "-d",
         "--dry-run",
@@ -367,31 +394,37 @@ def main(args: list[str] | None):
 
     args = parser.parse_args()
 
-    if args.command in ["purge", "delete"]:
-        token = validate_gh_token()
+    try:
+        if args.command in ["purge", "delete"]:
+            token = validate_gh_token()
 
-        logger.info("Authenticating with GitHub...")
-        auth = github.Auth.Token(token)
+            logger.info("Authenticating with GitHub...")
+            auth = github.Auth.Token(token)
 
-        # TODO rm verify after testing (throwing self-signed cert errors)
-        gh = Github(auth=auth, verify=False)
-        logger.info("Finished authenticating with GitHub")
+            # TODO rm verify after testing (throwing self-signed cert errors)
+            gh = Github(auth=auth, verify=False)
+            logger.info("Finished authenticating with GitHub")
 
-        if args.org and args.repo:
-            manager = GitHubBranchProtectionRulesManager(gh=gh, repo=f"{args.org}/{args.repo}")
+            if args.org and args.repo:
+                manager = GitHubBranchProtectionRulesManager(gh=gh, repo=f"{args.org}/{args.repo}")
+            else:
+                manager = GitHubBranchProtectionRulesManager(gh=gh)
+
+            if args.command == "purge":
+                exit_code = manager.purge_branch_protection_rules()
+            elif args.command == "delete":
+                exit_code = manager.delete_branch_protection_rule(branch=args.branch_name)
+            else:
+                raise NotImplementedError
+
+            manager.write_deleted_summary_to_file()
         else:
-            manager = GitHubBranchProtectionRulesManager(gh=gh)
-
-        if args.command == "purge":
-            exit_code = manager.purge_branch_protection_rules()
-        elif args.command == "delete":
-            exit_code = manager.delete_branch_protection_rule(branch=args.branch_name)
-        else:
-            raise NotImplementedError
-    else:
-        parser.print_help()
-
-    sys.exit(exit_code)
+            parser.print_help()
+    except Exception as e:
+        logger.error(f"Error running script '{__file__}': {e}")
+        exit_code = 1
+    finally:
+        sys.exit(exit_code)
 
 
 if __name__ == "__main__":

@@ -31,9 +31,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo Deleting branch protection rule for deleted branch '${{ github.event.ref }}'
-          poetry run python .github/github_workflow_scripts/delete_branch_protection.py "${{ github.event.ref }}" 
+          poetry run python .github/github_workflow_scripts/delete_branch_protection.py delete "${{ github.event.ref }}"  
 
-  find_orphaned_protection_rules:
+  delete_orphaned_protection_rules:
     runs-on: ubuntu-latest
     needs: delete_protection_rule
     steps:
@@ -56,5 +56,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo Checking for any branches that need to be deleted...
-          # python .github/github_workflow_scripts/find_orphaned_protection_rules.py
+          echo Checking for any leftover branch protection rules that need to be deleted...
+          poetry run python .github/github_workflow_scripts/delete_branch_protection.py purge
