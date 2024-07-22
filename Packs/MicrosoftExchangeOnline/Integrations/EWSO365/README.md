@@ -2,7 +2,7 @@ Exchange Web Services (EWS) provides the functionality to enable client applicat
 
 The EWS O365 integration implants EWS leading services. The integration allows getting information on emails and activities in a target mailbox, and some active operations on the mailbox such as deleting emails and attachments or moving emails from folder to folder.
 
-## Supported Versions and license needed
+## Supported versions and license needed
 
 **?**
  
@@ -18,7 +18,7 @@ The EWS integration can be used for the following use cases.
 
     1. Use the `ews-search-mailbox` command to search for all emails in a specific folder within the target mailbox.  
         Use the query argument to narrow the search for emails sent from a specific account and more.
-    2. This command retrieve the _ItemID_ field for each email item listed in the results. The `ItemID` can be used in the `ews-get-items` command in order to get more information about the email item itself.
+    2. This command retrieves the _ItemID_ field for each email item listed in the results. The `ItemID` value can be used in the `ews-get-items` command in order to get more information about the email item itself.
 
 * Get email attachment information.  
     Use the `ews-get-attachment` command to retrieve information on one attachment or all attachments of a message at once. It supports both file attachments and item attachments (e.g., email messages).
@@ -53,21 +53,23 @@ For more details about the authentication used in this integration, see [Microso
 
 ## Permissions
 
-`Impersonation rights` - Most command require this permission to function correctly.  In order to perform actions on the target mailbox of other users, the _service account_ must be part of the `ApplicationImpersonation` role. For more information and guide on how to set up the permission, follow the [Microsoft Documentation](https://learn.microsoft.com/en-us/exchange/client-developer/exchange-web-services/impersonation-and-ews-in-exchange).
+In order to function as expected, the service account should have:
+
+**Impersonation rights** - In order to perform actions on the target mailbox of other users, the _service account_ must be part of the `ApplicationImpersonation` role. For more information and guide on how to set up the permission, follow the [Microsoft Documentation](https://learn.microsoft.com/en-us/exchange/client-developer/exchange-web-services/impersonation-and-ews-in-exchange).
+Most command require this permission to function correctly. This permission is specified in each relevant command's Permission section. For more information follow the [Microsoft Documentation](https://learn.microsoft.com/en-us/exchange/client-developer/exchange-web-services/impersonation-and-ews-in-exchange). 
+
+**eDiscovery** permissions to the Exchange Server. For Users to be able to use Exchange Server In-Place eDiscovery, they must be added to the Discovery Management role group. Members of the Discovery Management role group have Full Access mailbox permissions to the default discovery mailbox, which is called Discovery Search Mailbox, including access to sensitive message content. For more information see the [Microsoft documentation](https://technet.microsoft.com/en-us/library/dd298059(v=exchg.160).aspx).
 The need for this permission is specified in each relevant command's Permission section.
 
-`eDiscovery` permissions to the Exchange Server. For Users to be able to use Exchange Server In-Place eDiscovery, they must be added to the Discovery Management role group. Members of the Discovery Management role group have Full Access mailbox permissions to the default discovery mailbox, which is called Discovery Search Mailbox, including access to sensitive message content. For more information see the [Microsoft documentation](https://technet.microsoft.com/en-us/library/dd298059(v=exchg.160).aspx).
-The need for this permission is specified in each relevant command's Permission section.
-
-`full_access_as_app` - The _application used for authentication_ requires this permission to gain access to the Exchange Web Services.
+**full_access_as_app** - The _application used for authentication_ requires this permission to gain access to the Exchange Web Services.
 To set this permission follow these steps:
 
-1. Navigate to Home > App registrations.
+1. Navigate to **Home** > **App registrations**.
 2. Search for your app under ‘all applications’.
-3. Click API permissions > Add permission.
-4. Search for the `Office 365 Exchange Online` API -> `Application Permission`-> `full_access_as_app` permission. 
+3. Click **API permissions** > **Add permission**.
+4. Search for `Office 365 Exchange Online` API > `Application Permission`> `full_access_as_app` permission. 
 
-for more information on this permission, visit [the Microsoft documentation](https://docs.microsoft.com/en-us/exchange/client-developer/exchange-web-services/how-to-authenticate-an-ews-application-by-using-oauth#configure-for-app-only-authentication).
+For more information on this permission, visit [the Microsoft documentation](https://docs.microsoft.com/en-us/exchange/client-developer/exchange-web-services/how-to-authenticate-an-ews-application-by-using-oauth#configure-for-app-only-authentication).
 
 
 To limit the application's permissions to only specific mailboxes, follow the [Microsoft documentation](https://docs.microsoft.com/en-us/graph/auth-limit-mailbox-access). Note that it may take about an hour for permissions changes to take effect.
@@ -84,9 +86,9 @@ To limit the application's permissions to only specific mailboxes, follow the [M
 | Token / Tenant ID | Token can be received after following the System Integration Setup (Device side steps). | False |
 | Key / Application Secret | Key can be received after following the System Integration Setup (Device side steps). | False |
 | Azure Cloud | Azure Cloud environment. Options are: _Worldwide_ (The publicly accessible Azure Cloud), _US GCC_ (Azure cloud for the USA Government Cloud Community), _US GCC-High_ (Azure cloud for the USA Government Cloud Community High), _DoD_ (Azure cloud for the USA Department of Defense), _Germany_ (Azure cloud for the German Government) | False|
-| Email Address | Mailbox to run commands on and to fetch incidents from. To use this functionality, your account must have impersonation rights or delegation for the account specified. For more information, see https://xsoar.pan.dev/docs/reference/integrations/ewso365\#additional-information | True |
+| Email Address | Mailbox to run commands on and to fetch incidents from. To use this functionality, your account must have impersonation rights or delegation for the account specified. For more information, see https://xsoar.pan.dev/docs/reference/integrations/ewso365/#additional-information | True |
 | UPN Address | When provided, the target mailbox if it's different from the Email Address. Otherwise, the Email Address is used. | False |
-| Name of the folder from which to fetch incidents | Supports Exchange Folder ID and sub-folders e.g. Inbox/Phishing. | True |
+| Name of the folder from which to fetch incidents | Supports Exchange Folder ID and sub-folders, e.g., Inbox/Phishing. | True |
 | Access Type | Run the commands using `Delegate` or `Impersonation` access types. | False |
 | Public Folder |  Whether the folder to be fetched from is public. Public folders can store and organize emails on specific topics or projects. Public folders are usually listed under the "Public Folders" section in the navigation pane in the product itself. | False |
 | Fetch incidents |  | False |
@@ -113,13 +115,13 @@ The integration imports email messages from the destination folder in the target
 To use Fetch incidents, configure a new instance and select the `Fetches incidents` option in the instance settings.
 
 **IMPORTANT**:  
-`First fetch timestamp` field is used to determine how much time back to fetch incidents from. The default value is the previous 10 minutes, Meaning: If this is the first time emails are fetched from the destination folder, all emails from 10 minutes prior to the instance configuration and up to the current time will be fetched.
+`First fetch timestamp` field is used to determine how much time back to fetch incidents from. The default value is the previous 10 minutes, Meaning, if this is the first time emails are fetched from the destination folder, all emails from 10 minutes prior to the instance configuration and up to the current time will be fetched.
 When set to get a long period of time, the `Timeout` field might need to be set to a higher value.
 
 Pay special attention to the following fields in the instance settings:
 
-`Email Address` – mailbox to fetch incidents from.  
-`Name of the folder from which to fetch incidents` – use this field to configure the destination folder from where emails should be fetched. The default is Inbox folder.
+- `Email Address` – mailbox to fetch incidents from.  
+- `Name of the folder from which to fetch incidents` – use this field to configure the destination folder from where emails should be fetched. The default is Inbox folder.
 
 #### Permissions
 
@@ -127,7 +129,7 @@ Impersonation rights required. In order to perform actions on the target mailbox
 
 #### Limitations
 
-If Exchange is configured with an international flavor `Inbox` will be named according to the configured language.
+If Exchange is configured with an international flavor, `Inbox` will be named according to the configured language.
 
 ## Commands
 
@@ -154,7 +156,7 @@ No known limitations.
 |--- |--- |--- |
 |item-id |The ID of the email message for which to get the attachments.|Required|
 |target-mailbox |The mailbox in which this attachment was found. If empty, the default mailbox is used. Otherwise, the user might require impersonation rights to this mailbox.|Optional|
-|attachment-ids |The attachments ids to get. If none - all attachments will be retrieved from the message. Support multiple attachments with comma-separated value or array.|Optional|
+|attachment-ids |The attachments IDs to get. If none, all attachments will be retrieved from the message. Support multiple attachments with comma-separated values or an array. |Optional|
 
 #### Outputs
 
@@ -790,7 +792,7 @@ No known limitations.
 |message-ids|A CSV list of message IDs. Run the py-ews-delete-items command to retrieve the message IDs|Required|
 |target-folder-path|The folder path to recover the messages to.|Required|
 |target-mailbox|The mailbox in which the messages found. If empty, will use the default mailbox. If you specify a different mailbox, you might need impersonation rights to the mailbox.|Optional|
-|is-public|Whether the target folder is a Public Folder.|Optional|
+|is-public|Whether the target folder is a public folder.|Optional|
 
 #### Outputs
 
@@ -901,9 +903,7 @@ No known limitations.
 
 #### Outputs
 
-```
 There is no context output for this command.
-```
 
 #### Examples
 
@@ -956,7 +956,7 @@ No known limitations.
 |**Argument Name**|**Description**|**Required**|
 |--- |--- |--- |
 |target-mailbox|The mailbox on which to apply the command.|Optional|
-|is-public|Whether to find Public Folders.|Optional|
+|is-public|Whether to find public folders.|Optional|
 
 #### Outputs
 
@@ -1050,7 +1050,7 @@ root
 
 #### Description
 
-Retrieves items from a specified folder in a mailbox. The items are ordered by the item created time, most recent is first.
+Retrieves items from a specified folder in a mailbox. The items are ordered by the item created time. Most recent is first.
 
 #### Permissions
 
@@ -1067,7 +1067,7 @@ No known limitations.
 |folder-path|The folder path from which to get the items.|Required|
 |limit|Maximum number of items to return.|Optional|
 |target-mailbox|The mailbox on which to apply the command.|Optional|
-|is-public|Whether the folder is a Public Folder. Default is 'False'.|Optional|
+|is-public|Whether the folder is a public folder. Default is 'False'.|Optional|
 |get-internal-items|If the email item contains another email as an attachment (EML or MSG file), whether to retrieve the EML/MSG file attachment. Can be "yes" or "no". Default is "no".|Optional|
 
 
@@ -1313,7 +1313,7 @@ Impersonation rights are required. To perform actions on the target mailbox of o
 
 #### Limitations
 
-If Exchange is configured with an international flavor `Inbox` will be named according to the configured language.
+If Exchange is configured with an international flavor, `Inbox` will be named according to the configured language.
 
 #### Inputs
 
@@ -1321,7 +1321,7 @@ If Exchange is configured with an international flavor `Inbox` will be named acc
 |--- |--- |--- |
 |target-mailbox|The mailbox on which to apply the search.|Optional|
 |folder-path|The path of the folder to retrieve. If empty, will retrieve the folder "AllItems".|Optional|
-|is-public|Whether the folder is a Public Folder. Default is "False".|Optional|
+|is-public|Whether the folder is a public folder. Default is "False".|Optional|
 
 #### Outputs
 
@@ -1506,7 +1506,7 @@ Impersonation rights are required. To perform actions on the target mailbox of o
 
 #### Limitations
 
-When sending the email to an Outlook account, Outlook UI fails to display custom headers. This does not happens when sending to Gmail account.
+When sending the email to an Outlook account, Outlook UI fails to display custom headers. This does not happen when sending to a Gmail account.
 
 #### Inputs
 
@@ -1660,7 +1660,7 @@ Run this command if for some reason you need to rerun the authentication process
 
 #### Permissions
 
-No additional Permissions needed.
+No additional permissions are needed.
 
 #### Limitations
 
@@ -1688,7 +1688,7 @@ There is no context output for this command.
 <details><summary><h3 style={{display: 'inline'}}> Fetch command </h3></summary>
 
 * If incidents are not being fetched, verify no `pre-process` rule is configured that might filter some incidents out.
-* "address parts cannot contain CR or LF" error message in the logs means an corrupted email might have fail the process. In order to solve you might need to remove the email from the folder being fetched. Contact Support Team if you believe the email is not corrupted. 
+* "address parts cannot contain CR or LF" error message in the logs means an corrupted email might have failed the process. In order to solve, you might need to remove the email from the folder being fetched. Contact Support Team if you believe the email is not corrupted. 
 
 </details>
 
