@@ -261,6 +261,7 @@ def fetch_indicators_command(client, feed_type, src_val, src_type, default_type,
         for b in batch(ioc_lst, batch_size=2000):
             demisto.createIndicators(b)
     last_calculated_timestamp, last_ids = update_last_fetch(client, ioc_lst)
+    demisto.debug(f'fetch_indicators_command: {len(last_ids)=}')
     if str(last_calculated_timestamp) == last_fetch:
         last_ids.extend(prev_iocs_ids)
     if ioc_enrch_lst:
