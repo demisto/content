@@ -280,8 +280,9 @@ class MsGraphMailBaseClient(MicrosoftClient):
 
             attachment_type = attachment.get('@odata.type', '')
             attachment_content_id = attachment.get('contentId')
+            attachment_is_inline = attachment.get('isInline')
             attachment_name = attachment.get('name', 'untitled_attachment')
-            if attachment_content_id and attachment_content_id != "None" and not self.legacy_name:
+            if attachment_is_inline  and not self.legacy_name and attachment_content_id and attachment_content_id != "None":
                 attachment_name = f"{attachment_content_id}-attachmentName-{attachment_name}"
             if not attachment_name.isascii():
                 try:
@@ -1302,7 +1303,8 @@ class GraphMailUtils:
         """
         name = raw_attachment.get('name', '')
         content_id = raw_attachment.get('contentId')
-        if content_id and content_id != "None" and not legacy_name:
+        is_inline = raw_attachment.get('isInline')
+        if is_inline and content_id and content_id != "None" and not legacy_name:
             name = f"{content_id}-attachmentName-{name}"
         data = raw_attachment.get('contentBytes')
         try:
