@@ -268,13 +268,13 @@ class Client(BaseClient):
 
         demisto.setIntegrationContext(integration_context)
 
-    def query_loggings(self, query: str, page: Optional[int] = None, page_size: Optional[int] = None) -> tuple[list[dict], list]:
+    def query_loggings(self, query: str, page_number: Optional[int] = None, page_size: Optional[int] = None) -> tuple[list[dict], list]:
         """
         This function handles all the querying of Cortex Logging service
 
         Args:
             query: The sql string query.
-            page: The page number to query.
+            page_number: The page number to query.
             page_size: The page size to query.
 
         Returns:
@@ -301,7 +301,7 @@ class Client(BaseClient):
 
         try:
             raw_results = [r.json() for r in iter_job_results(query_service, job_id=query_result.get(
-                'jobId'), page_number=arg_to_number(page), page_size=arg_to_number(page_size) or 50)]
+                'jobId'), page_number=arg_to_number(page_number), page_size=arg_to_number(page_size) or 50)]
         except exceptions.HTTPError as e:
             raise DemistoException(f'Received error {str(e)} when querying logs.')
 
@@ -982,7 +982,7 @@ def query_logs_command(args: dict, client: Client) -> tuple[str, dict[str, list[
     if not args.get('page') and 'limit' not in query.lower():
         query += f' LIMIT {limit}'
 
-    records, raw_results = client.query_loggings(query, page=args.get('page'), page_size=args.get('page_size'))
+    records, raw_results = client.query_loggings(query, page_number=args.get('page'), page_size=args.get('page_size'))
 
     table_name = get_table_name(query)
     output_results = records if not transform_results else [common_context_transformer(record) for record in records]
@@ -1017,9 +1017,12 @@ def get_critical_logs_command(args: dict, client: Client) -> tuple[str, dict[str
     query_start_time, query_end_time = query_timestamp(args)
     query = 'SELECT * FROM `firewall.threat` WHERE severity = "Critical" '  # guardrails-disable-line
     query += f'AND time_generated BETWEEN TIMESTAMP("{query_start_time}") AND ' \
-             f'TIMESTAMP("{query_end_time}") LIMIT {logs_amount}'
+             f'TIMESTAMP("{query_end_time}")'
 
-    records, raw_results = client.query_loggings(query)
+    if not args.get('page'):
+        query += f' LIMIT {logs_amount}'
+
+    records, raw_results = client.query_loggings(query, page_number=args.get('page'), page_size=args.get('page_size'))
 
     transformed_results = [threat_context_transformer(record) for record in records]
 
@@ -1147,7 +1150,7 @@ def query_table_logs(args: dict,
         table_context_path: the context path where the parsed data should be located
     """
     fields, query = build_query(args, table_name)
-    results, raw_results = client.query_loggings(query, page=args.get('page'), page_size=args.get('page_size'))
+    results, raw_results = client.query_loggings(query, page_number=args.get('page'), page_size=args.get('page_size'))
     outputs = [context_transformer_function(record) for record in results]
     human_readable = records_to_human_readable_output(fields, table_name, results)
 

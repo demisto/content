@@ -244,6 +244,10 @@ script:
       predefined:
       - 'true'
       - 'false'
+    - description: page.
+      name: page
+    - description: page size.
+      name: page_size
     description: Runs a query on the threat table according to preset queries.
     name: cdl-get-critical-threat-logs
     outputs:
