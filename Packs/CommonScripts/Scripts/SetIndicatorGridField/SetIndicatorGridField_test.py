@@ -2,7 +2,7 @@ import pytest
 import demistomock as demisto
 from unittest.mock import patch
 import SetIndicatorGridField
-from SetIndicatorGridField import parse_rows, main
+from SetIndicatorGridField import parse_rows, main, get_existing_grid_records
 
 VALID_ROWS_STR = '[[192.168.1.1,"example.com"], [192.168.1.2, ""], ["", "example.net"]]'
 INVALID_ROWS_STR = '[[192.168.1.1, "example.com"],[192.168.1.2],[""]]}'
@@ -43,6 +43,40 @@ def test_parse_rows(rows_str, expected_result, expect_exception):
     else:
         assert parse_rows(rows_str) == expected_result
 
+@pytest.mark.parametrize(
+    "indicator_value, grid_field, mock_response, expected_records, expect_exception",
+    [
+        (
+            'example.com', 'gridField',
+            INDICATOR_RESPONSE,
+            [
+                {"IP": "192.168.1.1", "Hostname": "example.com"},
+                {"IP": "192.168.1.2", "Hostname": "example.org"}
+            ],
+            False
+        ),
+        (
+            'example.com', 'gridField', [{'Type': 4, 'Contents': 'Error'}],
+            'Failed to find indicator example.com. Error: Error',
+            True
+        )
+    ]
+)
+@patch.object(SetIndicatorGridField, 'return_error')
+@patch.object(demisto, 'executeCommand')
+def test_get_existing_grid_records(mock_executeCommand, mock_return_error, indicator_value,
+                                   grid_field, mock_response, expected_records, expect_exception):
+    # Mocking the response for 'findIndicators' command
+    mock_executeCommand.return_value = mock_response
+
+    if expect_exception:
+        mock_return_error.side_effect = Exception(expected_records)
+        with pytest.raises(Exception, match=expected_records):
+            get_existing_grid_records(indicator_value, grid_field)
+        mock_return_error.assert_called_with(expected_records)
+    else:
+        records = get_existing_grid_records(indicator_value, grid_field)
+        assert records == expected_records
 
 @pytest.mark.parametrize(
     "args, append, indicator_response, expected_results, expect_exception",
@@ -50,7 +84,8 @@ def test_parse_rows(rows_str, expected_result, expect_exception):
         (
             # Test Case 1: Valid context input, no append
             {
-                "input": [{"ip_addr": "192.168.1.3", "hostname": "example.net"}],
+                "input": [{"ip_addr": "192.168.1.2", "hostname": "example.net"},
+                          {"ip_addr": "192.168.1.3", "hostname": "example.com"}],
                 "headers": "IP,Hostname",
                 "indicator": "example.com",
                 "grid_field": "gridField",
@@ -60,7 +95,8 @@ def test_parse_rows(rows_str, expected_result, expect_exception):
             False,
             INDICATOR_RESPONSE,
             [
-                {"IP": "192.168.1.3", "Hostname": "example.net"}
+                {"IP": "192.168.1.2", "Hostname": "example.net"},
+                {"IP": "192.168.1.3", "Hostname": "example.com"}
             ],
             False
         ),
@@ -146,7 +182,21 @@ def test_parse_rows(rows_str, expected_result, expect_exception):
             INDICATOR_RESPONSE,
             'Each row must have the same number of elements as there are headers.',
             True
-        )
+        ),
+        (
+            # Test Case 7: No keys from context, bad keys in dictionary
+            {
+                "input": [{"ip_addr": "192.168.1.2", "hostname": "example.net"}],
+                "headers": "IP,Hostname",
+                "indicator": "example.com",
+                "grid_field": "gridField",
+                "append": "false"
+            },
+            False,
+            INDICATOR_RESPONSE,
+            'Input dictionary keys must match headers when context keys are not provided.',
+            True
+        ),
     ]
 )
 @patch.object(demisto, 'executeCommand')

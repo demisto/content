@@ -30,6 +30,36 @@ def parse_rows(rows: str) -> list[list[str]]:
     return row_list
 
 
+def get_existing_grid_records(indicator_value: str, grid_field: str) -> list[dict[str, str | None]]:
+    """
+    Retrieve the existing grid field records from the indicator.
+
+    Args:
+        indicator_value (str): The value of the indicator.
+        grid_field (str): The name of the grid field.
+
+    Returns:
+        list[dict[str, str | None]]: The existing grid field records.
+
+    Raises:
+        Exception: If the indicator or grid field is not found or if any errors occur.
+    """
+    search_result = demisto.executeCommand('findIndicators', {'value': indicator_value})
+    if isError(search_result):
+        return_error(f'Failed to find indicator {indicator_value}. Error: {get_error(search_result)}')
+
+    indicators = search_result[0]['Contents']
+    if not indicators:
+        return_error(f'No indicator found with value {indicator_value}.')
+
+    indicator = indicators[0]
+    existing_grid_records = indicator.get('CustomFields', {}).get(grid_field, [])
+    if not isinstance(existing_grid_records, list):
+        existing_grid_records = []
+
+    return existing_grid_records
+
+
 def main() -> None:
     """
     Main function to update an indicator's grid field with provided row data.
@@ -63,7 +93,10 @@ def main() -> None:
             rows: list[list[str]] = [[row.get(key, '') for key in keys[:len(headers)]] for row in raw_input_data]
             demisto.debug(f'{rows}')
         else:
-            rows = [[row.get(header, '') for header in headers] for row in raw_input_data]
+            # Ensure input dictionary keys match headers
+            for row in raw_input_data:
+                if set(row.keys()) != set(headers):
+                    return_error('Input dictionary keys must match headers when context keys are not provided.')
 
         demisto.debug('Changed the data into list format')
 
@@ -95,22 +128,10 @@ def main() -> None:
         new_grid_records.append(record)
 
     if append:
-        # Get the existing data in the grid field
-        search_result = demisto.executeCommand('findIndicators', {'value': indicator_value})
-        if isError(search_result):
-            return_error(f'Failed to find indicator {indicator_value}. Error: {get_error(search_result)}')
-
-        indicators = search_result[0]['Contents']
-        if not indicators:
-            return_error(f'No indicator found with value {indicator_value}.')
-
-        indicator = indicators[0]
-        existing_grid_records = indicator.get('CustomFields', {}).get(grid_field, [])
-        if not isinstance(existing_grid_records, list):
-            existing_grid_records = []
-
         # Append new records to existing ones
+        existing_grid_records = get_existing_grid_records(indicator_value, grid_field)
         grid_records = existing_grid_records + new_grid_records
+        
     else:
         # Overwrite the grid field with new records
         grid_records = new_grid_records
