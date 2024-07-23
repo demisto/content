@@ -888,7 +888,7 @@ def test_gti_add_comments_command(mocker, requests_mock):
     Then:
     - Validate the command results are valid
     """
-    from GoogleThreatIntelligence import add_comments_command, encode_url_to_base64, Client
+    from GoogleThreatIntelligence import add_comments_command, Client
     import CommonServerPython
 
     mocker.patch.object(demisto, 'params', return_value=DEFAULT_PARAMS)
@@ -1242,3 +1242,88 @@ def test_get_upload_url(mocker, requests_mock):
         'GoogleThreatIntelligence.FileUploadURL': 'https://www.upload_url.com',
         'vtUploadURL': 'https://www.upload_url.com',
     }
+
+
+def test_gti_curated_collections_commands(mocker, requests_mock):
+    """
+    Given:
+    - A valid IoC
+
+    When:
+    - Running the !gti-curated-campaigns-get command
+    - Running the !gti-curated-malware-families-get command
+    - Running the !gti-curated-threat-actors-get command
+
+    Then:
+    - Validate the command results are valid
+    """
+    from GoogleThreatIntelligence import (
+        get_curated_campaigns_command,
+        get_curated_malware_families_command,
+        get_curated_threat_actors_command,
+        Client
+    )
+    import CommonServerPython
+
+    data_json = {
+        'data': [
+            {
+                'id': 'collection-1',
+                'attributes': {
+                    'name': 'Name 1',
+                    'description': 'Description 1',
+                    'last_modification_date': 1718719985,
+                    'targeted_regions': ['UK', 'FR'],
+                    'targeted_industries': ['Industry 1', 'Industry 2'],
+                }
+            },
+            {
+                'id': 'collection-2',
+                'attributes': {
+                    'name': 'Name 2',
+                    'description': 'Description 2',
+                    'last_modification_date': 1718720000,
+                    'targeted_regions': ['FR'],
+                    'targeted_industries': [],
+                }
+            }
+        ],
+    }
+
+    for func, collection_type in [
+        (get_curated_campaigns_command, 'campaign'),
+        (get_curated_malware_families_command, 'malware-family'),
+        (get_curated_threat_actors_command, 'threat-actor'),
+    ]:
+        for resource, resource_type, endpoint in [
+            ('0000000000000000000000000000000000000000000000000000000000000000', 'file', 'files'),
+            ('8.8.8.8', 'ip', 'ip_addresses'),
+            ('www.example.com', 'domain', 'domains'),
+            ('https://www.example.com', 'url', 'urls'),
+        ]:
+            mocker.patch.object(demisto, 'args', return_value={'resource': resource, 'resource_type': resource_type})
+            mocker.patch.object(demisto, 'params', return_value=DEFAULT_PARAMS)
+            mocker.patch.object(CommonServerPython, 'is_demisto_version_ge', return_value=True)
+
+            # Assign arguments
+            params = demisto.params()
+            client = Client(params=params)
+
+            # Load assertions and mocked request data
+            endpoint_resource = encode_url_to_base64(resource) if resource_type == 'url' else resource
+            filter_query = 'owner%3AMandiant%20'
+            if collection_type == 'malware-family':
+                filter_query += '%28collection_type%3Amalware-family%20OR%20collection_type%3Asoftware-tookit%29'
+            else:
+                filter_query += f'collection_type%3A{collection_type}'
+            requests_mock.get(f'https://www.virustotal.com/api/v3/{endpoint}/{endpoint_resource}/collections'
+                              f'?filter={filter_query}', json=data_json)
+
+            # Run command and collect result array
+            results = func(client=client, args=demisto.args())
+
+            assert results.execution_metrics is None
+            assert results.outputs == {
+                'id': resource,
+                'collections': data_json['data'],
+            }
