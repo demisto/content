@@ -1054,9 +1054,12 @@ def get_social_applications_command(args: dict,
     query_start_time, query_end_time = query_timestamp(args)
     query = 'SELECT * FROM `firewall.traffic` WHERE app_sub_category = "social-networking" '  # guardrails-disable-line
     query += f' AND time_generated BETWEEN TIMESTAMP("{query_start_time}") AND ' \
-             f'TIMESTAMP("{query_end_time}") LIMIT {logs_amount}'
+             f'TIMESTAMP("{query_end_time}")'
 
-    records, raw_results = client.query_loggings(query)
+    if not args.get('page'):
+        query += f' LIMIT {logs_amount}'
+
+    records, raw_results = client.query_loggings(query, page_number=args.get('page'), page_size=args.get('page_size'))
 
     transformed_results = [traffic_context_transformer(record) for record in records]
 

@@ -389,6 +389,10 @@ script:
     - auto: PREDEFINED
       description: First log time (<number> <time unit>, e.g., 12 minutes, 7 days, 3 weeks).
       name: time_range
+    - description: page.
+      name: page
+    - description: page size.
+      name: page_size
     description: Runs a query on traffic table where app_sub_category = "social networking".
     name: cdl-get-social-applications
     outputs:
