@@ -34,4 +34,4 @@ There are no scripts for this playbook.
 
 ## Playbook Image
 ---
-![Cortex ASM - Extract IP Indicator](https://raw.githubusercontent.com/demisto/content/15935bbaa183dd38239aada567b1eb7cbae9b704/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Extract_IP_Indicator.png)
+![Cortex ASM - Extract IP Indicator](../doc_files/Cortex_ASM_-_Extract_IP_Indicator.png)

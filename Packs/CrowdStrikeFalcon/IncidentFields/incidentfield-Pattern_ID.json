@@ -19,8 +19,7 @@
     "hidden": false,
     "openEnded": false,
     "associatedTypes": [
-        "CrowdStrike Falcon IDP Detection",
-        "CrowdStrike Falcon On-Demand Scans Detection"
+        "CrowdStrike Falcon IDP Detection"
     ],
     "associatedToAll": false,
     "unmapped": false,

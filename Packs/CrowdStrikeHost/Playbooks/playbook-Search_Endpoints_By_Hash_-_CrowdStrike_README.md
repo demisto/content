@@ -35,4 +35,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![Search_Endpoints_By_Hash_CrowdStrike](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Search_Endpoints_By_Hash_CrowdStrike.png)
+![Search_Endpoints_By_Hash_CrowdStrike](../doc_files/Search_Endpoints_By_Hash_CrowdStrike.png)
