@@ -17,7 +17,7 @@ filter category = "AuditLogs"
         xdm.event.description = to_string(json_extract_array(target_resource, "$.modifiedProperties")),
         xdm.event.operation_sub_type = json_extract_scalar(properties, "$.operationName"),
         xdm.event.outcome_reason = resultDescription,
-        //xdm.event.outcome = if(lowercase(json_extract_scalar(properties, "$.result")) = "success", XDM_CONST.OUTCOME_SUCCESS, lowercase(json_extract_scalar(properties, "$.result")) = "failure", XDM_CONST.OUTCOME_FAILED, null),
+        xdm.event.outcome = if(lowercase(json_extract_scalar(properties, "$.result")) = "success", XDM_CONST.OUTCOME_SUCCESS, lowercase(json_extract_scalar(properties, "$.result")) = "failure", XDM_CONST.OUTCOME_FAILED, null),
         xdm.source.cloud.project_id = tenantId,
         xdm.source.cloud.geo_region = json_extract_scalar(properties, "$.tenantGeo"),
         xdm.observer.type = json_extract_scalar(properties, "$.loggedByService"),
@@ -27,7 +27,6 @@ filter category = "AuditLogs"
         xdm.source.application.name = coalesce(json_extract_scalar(properties, "$.initiatedBy.app.displayName"),json_extract_scalar(properties, "$.initiatedBy.app.servicePrincipalName")),
         xdm.target.resource.sub_type = json_extract_scalar(properties, "$.category"),
         xdm.target.resource.id = arraystring(arraymap(json_extract_array(properties, "$.targetResources"), if(json_extract_scalar("@element", "$.id") != null, json_extract_scalar("@element", "$.id"), "-")), ", "),
-        y = arraymap(json_extract_array(properties, "$.targetResources"), json_extract_scalar("@element", "$.id")),
         xdm.target.resource.name = arraystring(arraymap(json_extract_array(properties, "$.targetResources"), if((json_extract_scalar("@element", "$.displayName") = null or json_extract_scalar("@element", "$.displayName") = "") and json_extract_scalar("@element", "$.userPrincipalName") = null, " - ", json_extract_scalar("@element", "$.userPrincipalName") != null, json_extract_scalar("@element", "$.userPrincipalName"), json_extract_scalar("@element", "$.displayName") != null, json_extract_scalar("@element", "$.displayName"))), ", "),
         xdm.target.resource.type = arraystring(arraymap(json_extract_array(properties, "$.targetResources"), if(json_extract_scalar("@element", "$.type") != null, json_extract_scalar("@element", "$.type"), "-")), ", ");
 
