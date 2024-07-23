@@ -129,8 +129,7 @@ def main() -> None:
 
     if append:
         # Append new records to existing ones
-        existing_grid_records = get_existing_grid_records(indicator_value, grid_field)
-        grid_records = existing_grid_records + new_grid_records
+        grid_records = get_existing_grid_records(indicator_value, grid_field) + new_grid_records
         
     else:
         # Overwrite the grid field with new records
