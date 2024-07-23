@@ -1352,7 +1352,7 @@ script:
       type: string
     description: Displays a list of Observed Attack Techniques events that match the specified criteria.
     name: trendmicro-visionone-get-observed-attack-techniques
-  dockerimage: demisto/pytmv1:0.8.3.98410
+  dockerimage: demisto/pytmv1:0.8.7.104820
   isFetchSamples: true
   isfetch: true
   script: ''
