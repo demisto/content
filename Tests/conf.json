@@ -134,7 +134,6 @@
             "instance_names": "microsoft_defender_atp_dev",
             "timeout": 1200,
             "is_mockable": false
-
         },
         {
             "integrations": "CrowdstrikeFalcon",
@@ -494,7 +493,10 @@
         {
             "integrations": "Azure Network Security Groups",
             "fromversion": "5.0.0",
-            "instance_names": ["azure_nsg_client_cred", "azure_nsg_prod"],
+            "instance_names": [
+                "azure_nsg_client_cred",
+                "azure_nsg_prod"
+            ],
             "playbookID": "Azure NSG - Test"
         },
         {
@@ -3895,7 +3897,10 @@
         {
             "integrations": "Azure Storage",
             "playbookID": "Azure Storage - Test",
-            "instance_names": ["Azure_Storage", "azure_storage_client_cred"],
+            "instance_names": [
+                "Azure_Storage",
+                "azure_storage_client_cred"
+            ],
             "is_mockable": false
         },
         {
@@ -5487,7 +5492,9 @@
                 "Whois",
                 "Rasterize"
             ],
-            "instance_names": ["legacy_context_output"],
+            "instance_names": [
+                "legacy_context_output"
+            ],
             "memory_threshold": 300,
             "pid_threshold": 200,
             "marketplaces": "xsoar_on_prem"
