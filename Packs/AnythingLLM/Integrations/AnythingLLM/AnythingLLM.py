@@ -176,7 +176,7 @@ class Client(BaseClient):
                     files = {'file': (file_name, open(file_name, 'rb'))}
                 )
             finally:
-                if exists:
+                if exists:  # pylint: disable=E0601
                     raise Exception(f"document already exists [{file_name}]")
         except Exception as e:
             msg = f"AnythingLLM: document_upload_file: exception uploading a file entry [{entry_id}] from the war room - {str(e)}"
