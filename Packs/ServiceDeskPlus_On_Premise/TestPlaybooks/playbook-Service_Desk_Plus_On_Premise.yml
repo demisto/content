@@ -13,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "14"
@@ -97,6 +98,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -118,8 +120,7 @@ tasks:
       id: 87613ed2-81cd-47c3-8871-eb4f80ae0388
       version: -1
       name: service-desk-plus-requests-list
-      description: View the details of requests. If no parameters are given the details
-        of all requests will be shown.
+      description: View the details of requests. If no parameters are given the details of all requests will be shown.
       script: ServiceDeskPlus (On-Premise)|||service-desk-plus-requests-list
       type: regular
       iscommand: true
@@ -155,8 +156,7 @@ tasks:
       id: d0fabbce-9af0-4a26-8a3f-95216a6d57f8
       version: -1
       name: Verify service-desk-plus-requests-list-output
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
       type: condition
       iscommand: false
       brand: ""
@@ -238,6 +238,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "10"
@@ -262,8 +263,7 @@ tasks:
       id: ef02abe2-65ca-4d45-8690-ae813b6c3929
       version: -1
       name: service-desk-plus-requests-list
-      description: View the details of requests. If no parameters are given the details
-        of all requests will be shown.
+      description: View the details of requests. If no parameters are given the details of all requests will be shown.
       script: ServiceDeskPlus (On-Premise)|||service-desk-plus-requests-list
       type: regular
       iscommand: true
@@ -299,8 +299,7 @@ tasks:
       id: 3b5397be-7f6b-4316-8b0c-0aceb4e07d41
       version: -1
       name: service-desk-plus-requests-list
-      description: View the details of requests. If no parameters are given the details
-        of all requests will be shown.
+      description: View the details of requests. If no parameters are given the details of all requests will be shown.
       script: ServiceDeskPlus (On-Premise)|||service-desk-plus-requests-list
       type: regular
       iscommand: true
@@ -336,8 +335,7 @@ tasks:
       id: d44e9ce1-4c33-4c85-81c2-0d1b5f3b496f
       version: -1
       name: Verify service-desk-plus-requests-list-output
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
       scriptName: AreValuesEqual
       type: condition
       iscommand: false
@@ -373,8 +371,7 @@ tasks:
       id: b65da235-45a4-45ba-8053-aeb3d6247607
       version: -1
       name: Verify service-desk-plus-requests-list-output
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
       scriptName: AreValuesEqual
       type: condition
       iscommand: false
@@ -519,6 +516,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "18"
@@ -637,8 +635,7 @@ tasks:
       id: ad3e3b78-a6a2-49a8-8982-e70d146ff3d8
       version: -1
       name: service-desk-plus-requests-list
-      description: View the details of requests. If no parameters are given the details
-        of all requests will be shown.
+      description: View the details of requests. If no parameters are given the details of all requests will be shown.
       script: ServiceDeskPlus (On-Premise)|||service-desk-plus-requests-list
       type: regular
       iscommand: true
@@ -676,8 +673,7 @@ tasks:
       id: 0bb15d90-7ae0-4ba9-8066-50670c8dd9c3
       version: -1
       name: Verify assign
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
       type: condition
       iscommand: false
       brand: ""
@@ -713,8 +709,7 @@ tasks:
       id: b05e62b0-c94f-4905-84d0-427e89eff2d6
       version: -1
       name: Verify update
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
       scriptName: AreValuesEqual
       type: condition
       iscommand: false
@@ -750,8 +745,7 @@ tasks:
       id: efa14364-6bf9-4d50-8b30-a255f7c69383
       version: -1
       name: Verify update
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
       scriptName: AreValuesEqual
       type: condition
       iscommand: false
@@ -826,6 +820,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "26"
@@ -850,8 +845,7 @@ tasks:
       id: cc5a25da-9c6e-4092-8f74-be936766f6a5
       version: -1
       name: service-desk-plus-requests-list
-      description: View the details of requests. If no parameters are given the details
-        of all requests will be shown.
+      description: View the details of requests. If no parameters are given the details of all requests will be shown.
       script: ServiceDeskPlus (On-Premise)|||service-desk-plus-requests-list
       type: regular
       iscommand: true
@@ -887,8 +881,7 @@ tasks:
       id: 4f4a7b44-2d25-4f03-852e-0f60d3ac9031
       version: -1
       name: Verify closed
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
       scriptName: AreValuesEqual
       type: condition
       iscommand: false
@@ -1129,6 +1122,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "31"
@@ -1290,6 +1284,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "40"
@@ -1352,8 +1347,7 @@ tasks:
       id: 97580aad-2077-4701-8a13-02746d24ff1e
       version: -1
       name: Verify Linked Request
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
       scriptName: AreValuesEqual
       type: condition
       iscommand: false
@@ -1490,8 +1484,7 @@ tasks:
       id: eaffb3b0-c77b-4432-8ed3-2459772e9daf
       version: -1
       name: Verify No Linked Request
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
       type: condition
       iscommand: false
       brand: ""
@@ -1530,6 +1523,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "47"
@@ -1654,8 +1648,7 @@ tasks:
       id: 7f99087e-253f-4964-8685-8a652d4a42ed
       version: -1
       name: Verify Resolution of Linked Request
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
       scriptName: AreValuesEqual
       type: condition
       iscommand: false
@@ -1691,8 +1684,7 @@ tasks:
       id: 113e8176-4376-42bf-8de5-027a4449c760
       version: -1
       name: service-desk-plus-request-pickup
-      description: Allows the technician to pickup the request with the given request
-        id on his name.
+      description: Allows the technician to pickup the request with the given request id on his name.
       script: ServiceDeskPlus (On-Premise)|||service-desk-plus-request-pickup
       type: regular
       iscommand: true
@@ -1724,8 +1716,7 @@ tasks:
       id: 909784d6-9ddf-413b-874d-0724e14c4721
       version: -1
       name: service-desk-plus-requests-list
-      description: View the details of requests. If no parameters are given the details
-        of all requests will be shown.
+      description: View the details of requests. If no parameters are given the details of all requests will be shown.
       script: ServiceDeskPlus (On-Premise)|||service-desk-plus-requests-list
       type: regular
       iscommand: true
@@ -1761,8 +1752,7 @@ tasks:
       id: 679a7084-b285-41b0-8863-abc51f555fa3
       version: -1
       name: Verify Pickup
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
       type: condition
       iscommand: false
       brand: ""
@@ -1805,3 +1795,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
+deprecated: true
