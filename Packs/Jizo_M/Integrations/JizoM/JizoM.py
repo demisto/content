@@ -313,7 +313,7 @@ def get_protocols_command(client: Client, args: dict[str, Any]) -> List[CommandR
             CommandResults(
                 readable_output=readable_output,
                 outputs_prefix=f"JizoM.Protocols.{alert_type}",
-                outputs_key_field='idx',
+                outputs_key_field='flow_id',
                 outputs=result[alert_type],
             ))
 
@@ -357,7 +357,7 @@ def get_peers_command(client: Client, args: dict[str, Any]) -> List[CommandResul
             CommandResults(
                 readable_output=readable_output,
                 outputs_prefix=f"JizoM.Peers.{alert_type}",
-                outputs_key_field='idx',
+                outputs_key_field='flow_id',
                 outputs=result[alert_type],
             ))
         
