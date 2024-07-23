@@ -6,7 +6,6 @@ from SetIndicatorGridField import parse_rows, main
 
 VALID_ROWS_STR = '[[192.168.1.1,"example.com"], [192.168.1.2, ""], ["", "example.net"]]'
 INVALID_ROWS_STR = '[[192.168.1.1, "example.com"],[192.168.1.2],[""]]}'
-
 INDICATOR_RESPONSE = [
     {
         "Type": 1,

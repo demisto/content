@@ -121,8 +121,12 @@ def main() -> None:
         grid_field: grid_records
     })
 
+    
     if isError(set_indicator_result):
-        return_error(f'Failed to set grid field for indicator {indicator_value}. Error: {get_error(set_indicator_result)}')
+        if get_error(set_indicator_result) == 'setIndicator must contain at least one field to set (7)':
+            return_error(f'Indicator {indicator_value} has no grid field called {grid_field}.')
+        else:
+            return_error(f'Failed to set grid field for indicator {indicator_value}. Error: {get_error(set_indicator_result)}')
     else:
         demisto.results(f'Successfully updated indicator {indicator_value} grid field {grid_field}.')
 
