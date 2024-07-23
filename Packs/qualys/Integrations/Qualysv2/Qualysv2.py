@@ -3003,7 +3003,6 @@ def fetch_assets(client, since_datetime=None):
         else:
             demisto.setAssetsLastRun({'stage': 'vulnerabilities', 'next_page': '', 'total_assets': 0,
                                       'nextTrigger': '30', "type": FETCH_COMMAND.get('assets')})
-
             return assets, [], str(total_assets), snapshot_id
 
     else:
@@ -3497,7 +3496,8 @@ def main():  # pragma: no cover
             assets, vulnerabilities, total_assets, snapshot_id = fetch_assets(client=client)
             if assets:
                 demisto.debug('send assets')
-                send_data_to_xsiam(data=assets, vendor=VENDOR, product='assets', data_type='assets', snapshot_id=str(snapshot_id), items_count=total_assets)
+                send_data_to_xsiam(data=assets, vendor=VENDOR, product='assets', data_type='assets', snapshot_id=str(snapshot_id),
+                                   items_count=total_assets)
             if vulnerabilities:
                 demisto.debug('send vulnerabilities')
                 send_data_to_xsiam(data=vulnerabilities, vendor=VENDOR, product='vulnerabilities', data_type='assets')
