@@ -83,6 +83,7 @@ def impartner_get_account_list_command(client: Client, args: Dict[str, Any]) -> 
         outputs_key_field='id',
         outputs=parsed_result)
 
+
 def impartner_get_account_id_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     id = args.get('id')
