@@ -150,9 +150,10 @@ class Clustering:
         :return:
         """
         if not self.TSNE_:
-            perplexity = 1  # TEMP
+            samples = pd.DataFrame(self.centers).T
+            perplexity = 30 #  min(30, samples.shape[0] - 1)
             tsne = TSNE(perplexity=perplexity, n_jobs=-1, n_components=dimension, learning_rate=1000)
-            self.data_2d = tsne.fit_transform(pd.DataFrame(self.centers).T)
+            self.data_2d = tsne.fit_transform(samples)
             for coordinates, center in zip(self.data_2d, pd.DataFrame(self.centers).T.index):
                 self.centers_2d[center] = coordinates
             self.TSNE_ = True
@@ -764,9 +765,11 @@ def is_model_needs_retrain(force_retrain: bool, model_expiration: float, model_n
     if force_retrain:
         return None, True
     model_data = get_model_data(model_name)
-    if not model_data:
+    if model_data is None:
         return None, True
     model = load_model64(model_data)
+    if model is None:
+        return None, True
     model_training_time = pd.to_datetime(model.date_training)
     return model, model_training_time < datetime.now() - timedelta(hours=model_expiration)
 
@@ -778,9 +781,10 @@ def load_model64(model_base64: str):
     :return: PostProcessing model
     """
     try:
-        return pickle.loads(base64.b64decode(model_base64), ignore=True)  # guardrails-disable-line
-    except pickle.UnpicklingError:
-        return_error("Model exist but cannot be loaded")
+        return pickle.loads(base64.b64decode(model_base64))  # guardrails-disable-line
+    except (pickle.UnpicklingError, ModuleNotFoundError):
+        demisto.debug(f'Unable to load docker: {model_base64}')
+    return None
 
 
 def prepare_data_for_training(generic_cluster_name, incidents_df, field_for_cluster_name):
