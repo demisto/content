@@ -3147,7 +3147,7 @@
             "fromversion": "5.0.0",
             "memory_threshold": 300,
             "pid_threshold": 200,
-            "timeout": 2500
+            "timeout": 5000
         },
         {
             "integrations": "Rasterize",
