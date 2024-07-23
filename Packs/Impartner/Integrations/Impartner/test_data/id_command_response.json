@@ -226,7 +226,7 @@
         "nfR_VM_Series_Notify__cf": null,
         "nfR_Wildfire_Notify__cf": null,
         "nfR_5G_OT_Nofity__cf": null,
-        "tech_BD_Assigned_for_XSOAR__cf": null,
+        "tech_BD_Assigned_for_XSOAR__cf": "Edi",
         "does_the_Company_have_other_Business_Address_or_Place_of_Business__cf": null,
         "does_your_company_have_subsidiaries__cf": null,
         "integration_was_expired__cf": null,

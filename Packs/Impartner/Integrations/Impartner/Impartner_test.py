@@ -34,10 +34,10 @@ def test_list_command(mocker):
 @pytest.mark.parametrize(
     "args, res",
     [
-        ({'id': '1111', 'all_fields': 'TRUE'},{'id': 11111111, 'isActive': True, 'mailingCity': 'Palo Alto',
-                                               'mailingCountry': 'United States', 'mailingPostalCode': '11111',
-                                               'mailingState': 'California', 'mailingStreet': '236 test Ave',
-                                               'name': 'test_account',
+        ({'id': '1111', 'all_fields': 'TRUE'},{'id': 11111111, 'isActive': True, 'tech_BD_Assigned_for_XSOAR__cf': 'Edi',
+                                               'mailingCity': 'Palo Alto', 'mailingCountry': 'United States',
+                                               'mailingPostalCode': '11111', 'mailingState': 'California',
+                                               'mailingStreet': '236 test Ave', 'name': 'test_account',
                                                'recordLink': 'https://prod.impartner.live/load/ACT/11111111',
                                                'website': 'https://www.test-account.ai/', 'mainProductToIntegrate': 'test',
                                                'mutualCustomer': 'test', 'tpA_Product_s__cf': 'test',
@@ -48,7 +48,7 @@ def test_list_command(mocker):
                                                'panW_Integration_Product__cf': ['test'],
                                                'account_Integration_Status__cf': ['Integrations in Process'],
                                                'accountTimeline': '2022-06-30T00:00:00'}),
-        ({'id': '1111', 'all_fields': 'FALSE'},{'PST Engineer': None, 'id': 11111111,
+        ({'id': '1111', 'all_fields': 'FALSE'},{'PST Engineer': 'Edi', 'id': 11111111,
                                                 'link': 'https://prod.impartner.live/load/ACT/11111111', 'name': 'test_account'})
     ]
 )

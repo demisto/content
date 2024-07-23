@@ -97,6 +97,7 @@ def impartner_get_account_id_command(client: Client, args: Dict[str, Any]) -> Co
     parsed_result = result.get('data', {})
     if all_fields:
         context_result = {'id': parsed_result.get('id'), 'isActive': parsed_result.get('isActive'),
+                          'tech_BD_Assigned_for_XSOAR__cf': parsed_result.get('tech_BD_Assigned_for_XSOAR__cf'),
                           'mailingCity': parsed_result.get('mailingCity'), 'mailingCountry': parsed_result.get('mailingCountry'),
                           'mailingPostalCode': parsed_result.get('mailingPostalCode'),
                           'mailingState': parsed_result.get('mailingState'), 'mailingStreet': parsed_result.get('mailingStreet'),
@@ -110,7 +111,6 @@ def impartner_get_account_id_command(client: Client, args: Dict[str, Any]) -> Co
                           'integration_Status__cf': parsed_result.get('integration_Status__cf'),
                           'target_customers__cf': parsed_result.get('target_customers__cf'),
                           'company_Main_Market_Segment__cf': parsed_result.get('company_Main_Market_Segment__cf'),
-
                           'panW_Integration_Product__cf': parsed_result.get('panW_Integration_Product__cf'),
                           'account_Integration_Status__cf': parsed_result.get('account_Integration_Status__cf'),
                           'accountTimeline': parsed_result.get('if_there_is_a_timeline_to_complete_the_integration_please_enter'
