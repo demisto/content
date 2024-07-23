@@ -103,8 +103,8 @@ class TestPrevalenceCommands:
 
         error_message = '[/api/webapp/public_api/v1/hash_exceptions/blocklist/] failed client execute - error:' \
             'request to [/api/webapp/public_api/v1/hash_exceptions/blocklist/] returned non-whitelisted status [500] body: ' \
-            '{"reply": {"err_code": 500, "err_msg": "An error occurred while processing XDR public API", "err_extra": "All hashes ' \
-            'have already been added to the allow or block list"}}\n'
+            '{"reply": {"err_code": 500, "err_msg": "An error occurred while processing XDR public API", "err_extra": ' \
+            '"All hashes have already been added to the allow or block list"}}\n'
         mocker.patch.object(mock_client, '_http_request', side_effect=Exception(error_message))
         mocker.patch('CoreIRApiModule.validate_sha256_hashes', return_value='')
 
@@ -126,8 +126,8 @@ class TestPrevalenceCommands:
 
         error_message = '[/api/webapp/public_api/v1/hash_exceptions/blocklist/] failed client execute - error:' \
             'request to [/api/webapp/public_api/v1/hash_exceptions/blocklist/] returned non-whitelisted status [500] body: ' \
-            '{"reply": {"err_code": 500, "err_msg": "An error occurred while processing XDR public API", "err_extra": "All hashes ' \
-            'have already been added to the allow or block list"}}\n'
+            '{"reply": {"err_code": 500, "err_msg": "An error occurred while processing XDR public API", "err_extra": ' \
+            '"All hashes have already been added to the allow or block list"}}\n'
         mocker.patch.object(mock_client, '_http_request', side_effect=Exception(error_message))
         mocker.patch('CoreIRApiModule.validate_sha256_hashes', return_value='')
 
