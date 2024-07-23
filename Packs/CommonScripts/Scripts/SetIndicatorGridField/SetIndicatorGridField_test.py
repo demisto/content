@@ -43,6 +43,7 @@ def test_parse_rows(rows_str, expected_result, expect_exception):
     else:
         assert parse_rows(rows_str) == expected_result
 
+
 @pytest.mark.parametrize(
     "indicator_value, grid_field, mock_response, expected_records, expect_exception",
     [
@@ -77,6 +78,7 @@ def test_get_existing_grid_records(mock_executeCommand, mock_return_error, indic
     else:
         records = get_existing_grid_records(indicator_value, grid_field)
         assert records == expected_records
+
 
 @pytest.mark.parametrize(
     "args, append, indicator_response, expected_results, expect_exception",

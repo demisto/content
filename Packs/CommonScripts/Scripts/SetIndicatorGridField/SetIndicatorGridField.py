@@ -97,7 +97,7 @@ def main() -> None:
             for row in raw_input_data:
                 if set(row.keys()) != set(headers):
                     return_error('Input dictionary keys must match headers when context keys are not provided.')
-            
+
             rows = [[row.get(header, '') for header in headers] for row in raw_input_data]
 
         demisto.debug('Changed the data into list format')
@@ -132,7 +132,7 @@ def main() -> None:
     if append:
         # Append new records to existing ones
         grid_records = get_existing_grid_records(indicator_value, grid_field) + new_grid_records
-        
+
     else:
         # Overwrite the grid field with new records
         grid_records = new_grid_records
@@ -143,7 +143,6 @@ def main() -> None:
         grid_field: grid_records
     })
 
-    
     if isError(set_indicator_result):
         if get_error(set_indicator_result) == 'setIndicator must contain at least one field to set (7)':
             return_error(f'Indicator {indicator_value} has no grid field called {grid_field}.')
