@@ -94,7 +94,7 @@ if [ -n "${CI}" ]; then
     poetry check --no-interaction
     exit_on_error $? "Failed to check poetry files"
     echo "Installing dependencies..."
-    poetry install --no-interaction && exit_code=0 && break || exit_code=$?
+    poetry install --no-interaction
     exit_on_error "${exit_code}" "Failed to install dependencies"
 else
     echo "Detected local environment"
