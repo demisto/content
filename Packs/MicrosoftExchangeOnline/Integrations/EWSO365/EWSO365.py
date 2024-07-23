@@ -377,7 +377,7 @@ class EWSClient:
             raise Exception(item_to_reply_to)
 
         subject = subject or item_to_reply_to.subject
-        htmlBody, htmlAttachments = handle_html(htmlBody) if htmlBody else None, []  # type: ignore
+        htmlBody, htmlAttachments = handle_html(htmlBody) if htmlBody else (None, [])
         message_body = HTMLBody(htmlBody) if htmlBody else body
         reply = item_to_reply_to.create_reply(subject='Re: ' + subject, body=message_body, to_recipients=to,
                                               cc_recipients=cc,
@@ -599,12 +599,12 @@ def get_attachment_name(attachment_name, eml_extension=False, content_id="", att
     if not identifier_id or identifier_id == "None":
         identifier_id = attachment_id
     if attachment_name is None or attachment_name == "":
-        return (f"{identifier_id}-imageName:demisto_untitled_attachment.eml"
+        return (f"{identifier_id}-attachmentName-demisto_untitled_attachment.eml"
                 if eml_extension
-                else f"{identifier_id}-imageName:demisto_untitled_attachment")
+                else f"{identifier_id}-attachmentName-demisto_untitled_attachment")
     elif eml_extension and not attachment_name.endswith(".eml"):
-        return f'{identifier_id}-imageName:{attachment_name}.eml'
-    return f'{identifier_id}-imageName:{attachment_name}'
+        return f'{identifier_id}-attachmentName-{attachment_name}.eml'
+    return f'{identifier_id}-attachmentName-{attachment_name}'
 
 
 def get_entry_for_object(title, context_key, obj, headers=None):
@@ -1934,8 +1934,13 @@ def add_additional_headers(additional_headers):
         try:
             Message.register(header_name, TempClass)
             headers[header_name] = header_value
-        except ValueError as e:
-            demisto.debug('EWSO365 - Header ' + header_name + ' could not be registered. ' + str(e))
+        except ValueError:
+            Message.deregister(header_name)
+            try:
+                Message.register(header_name, TempClass)
+                headers[header_name] = header_value
+            except ValueError as e:
+                demisto.debug('EWSO365 - Header ' + header_name + ' could not be registered. ' + str(e))
 
     return headers
 

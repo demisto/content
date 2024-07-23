@@ -133,11 +133,11 @@ Write
 
 ##### Authenticating using custom callback URL
 
-![Custom callback URL](doc_files/jira-oauth-custom-callback-url.gif)
+![Custom callback URL](../../doc_files/jira-oauth-custom-callback-url.gif)
 
 ##### Authenticating using the oproxy callback URL
 
-![Oproxy callback URL](doc_files/jira-oauth-oproxy-callback-url.gif)
+![Oproxy callback URL](../../doc_files/jira-oauth-oproxy-callback-url.gif)
 
 ## Fetch Incidents
 
@@ -2725,7 +2725,7 @@ In order for the mirroring to work properly, please keep the timezone of the Jir
   * You can set the tags for incoming entries in the instance configuration, using **Attachment Entry Tag from Jira**, and **Comment Entry Tag from Jira**.
   * You can set the tags for outgoing entries in the instance configuration, using **Attachment Entry Tag to Jira**, and **Comment Entry Tag to Jira**.
 * **Jira Issue Type** - Shows the type of the Jira issue.
-* **JiraV3 Status** - Shows the status of the Jira issue. You can press on it in the **JiraV3 Incident Layout** to see the available statuses that you can transition into, and press on one of them to change the status of the issue. ![Show Jira statuses](doc_files/jira-status.png)
+* **JiraV3 Status** - Shows the status of the Jira issue. You can press on it in the **JiraV3 Incident Layout** to see the available statuses that you can transition into, and press on one of them to change the status of the issue. ![Show Jira statuses](../../doc_files/jira-status.png)
 * **Jira Estimate** - Shows the estimate of the Jira issue. The field can also be edited and mirrored out. Use the format 2w 4d 6h 45m (w - weeks, d - days, h - hours, m - minutes). Please add the `Time Tracking` field to the screen in your Jira projects in order for this field to work properly.
 * **Jira Component** - Shows the components of the Jira issue. The field can also be edited and mirrored out.
 * **Source Created By** - Shows the display name, and email of the user who created the Jira issue.
@@ -2751,7 +2751,7 @@ screen shows the Cortex XSOAR fields by which you are mapping.
 3. Under **Schema Type**, select **JiraV3 Incident**. The Schema Type represents the Jira entity that
 you are mapping to. In our example it is an incident, but it can also be any other kind of ticket that
 Jira supports.
-![Outgoing editor](doc_files/outgoing-editor.png)
+![Outgoing editor](../../doc_files/outgoing-editor.png)
 4. Under the **Incident Type** dropdown, select **JiraV3 Incident**.
 5. On the right side of the screen, under **Incident**, select the incident based on which you want to
 match.
@@ -2777,13 +2777,13 @@ match.
 
 1. Create an incident in Jira. For the purpose of this use case, it can be a very simple incident. In Cortex XSOAR, the new ticket will be ingested in approximately one minute
 2. Add a note to the incident, which can be done using the `Add Comment` section in the `JiraV3 Incident Layout`. In the example below, we have written a comment from Cortex XSOAR to Jira.
-![Add comment button](doc_files/add-comment-button.png)
+![Add comment button](../../doc_files/add-comment-button.png)
 3. Add the **Comment Entry Tag to Jira** tag that you've configured in the instance before. The default is: "comment tag".
 4. Add a file to the incident's War Room.
 5. Click Actions -> Tags and add the **Attachment Entry Tag to Jira** tag that you've configured in the instance before. The default is: "attachment tag".  
-![Add attachment with tag](doc_files/add-attachment-with-tag.png)
+![Add attachment with tag](../../doc_files/add-attachment-with-tag.png)
 6. Go back to **Incident Info** and locate a field you've configured, or was already configured in the outgoing mapper that is displayed in the incident's layout. Change its value and click 'V' in the 'V/X' menu to save the changes.
-![Changed value in layout](doc_files/changed-value-in-layout.png)
+![Changed value in layout](../../doc_files/changed-value-in-layout.png)
 7. Navigate back to the issue in Jira, and within approximately one minute, the changes will be reflected there as well.
 8. Change a Jira field you've configured in the incoming mapper.
 9. Go back to Cortex XSOAR and within approximately one minute, the changes will be reflected there as well.
@@ -2795,25 +2795,25 @@ match.
 1. Press on the `Press to add comment to Jira issue` button in the `Add Comment` section.
 2. Add a comment and the tag that was configured in the **Comment Entry Tag to Jira** parameter.
 3. Once the comment is mirrored out to Jira, it will include the sentence **Mirrored from Cortex XSOAR**, to differentiate between comments mirrored from XSOAR, and normal comments.
-![Mirrored out comment](doc_files/mirrored-out-comment.png)
+![Mirrored out comment](../../doc_files/mirrored-out-comment.png)
 
 ##### Mirror in Comment
 
 1. Add a comment inside the Jira issue.
 2. The newly added comment will be mirrored in to XSOAR as a note, with the addition of the sentence **Jira Author: {Author name}**, to know the author of the comment, and tagged with the tag configured in **Comment Entry Tag from Jira** parameter.
-![Mirrored in comment](doc_files/mirrored-in-comment.png)
+![Mirrored in comment](../../doc_files/mirrored-in-comment.png)
 
 ##### Mirror out Attachment
 
 1. Add an attachment to the incident, and add the tag that was configured in the **Attachment Entry Tag to Jira** parameter.
 2. Once the attachment is reflected in Jira, the name of the file will have **_mirrored_from_xsoar** in it, to differentiate between attachments mirrored from XSOAR, and normal attachments.
 
-![Mirror out attachment](doc_files/mirror-out-attachment.png)
+![Mirror out attachment](../../doc_files/mirror-out-attachment.png)
 
 ##### Mirror in Attachment
 
 1. Once an attachment is mirrored in from Jira into XSOAR, the attachment will be tagged with the tag configured in **Attahcment Entry Tag from Jira** parameter.
-![Mirror in attachment](doc_files/mirror-in-attachment.png)
+![Mirror in attachment](../../doc_files/mirror-in-attachment.png)
 
 **Notes**
 
@@ -2838,10 +2838,10 @@ Add a new custom field and add it to the incident type&#39;s layout:
   4. Click on `Attributes`:  
     - Uncheck `Add to incident types` checkbox.
     - For `Add to associated type`, select the incident type you want to work with, preferably choose `JiraV3 Incident`.
-![New incident field](doc_files/new-incident-field.png)
+![New incident field](../../doc_files/new-incident-field.png)
 
 2.Add the new incident field you&#39;ve just created to the layout associated with the integration&#39;s incident type. In this example, the layout is "JiraV3 Incident Layout":
-![Layout](doc_files/layouts.png)
+![Layout](../../doc_files/layouts.png)
 
 ### Add the new field to the incoming mapper
 
@@ -2866,7 +2866,7 @@ Add a new custom field and add it to the incident type&#39;s layout:
     4.Once found, click on "Choose data path" and map it to the custom jira field:
         a.Find the jira field you want to map to this incident field on the right side, and click on its value.
         b.Then you will see the path you&#39;ve selected under your new added field:
-        ![New incident field mapping in](doc_files/new-incident-field-mapping-in.png)
+        ![New incident field mapping in](../../doc_files/new-incident-field-mapping-in.png)
         *Note: In this example: **customfield_10097** is the Jira field ID we want to map. You can find IDs of custom fields for your field in Jira using this guide:[Click Here](https://confluence.atlassian.com/jirakb/how-to-find-id-for-custom-field-s-744522503.html)
         *Note: You can also type the path manually.
 5. Click "Save Version".
@@ -2882,7 +2882,7 @@ Add a new custom field and add it to the incident type&#39;s layout:
     1.On the right side you are now able to see your selected incident.  
     2.On the left side you are able to see all the Jira fields you can map in the system.
 7. Search for the Jira field you want to map on the left side. In this example, we want to map **customfield_10097**
-![New incident field mapping out](doc_files/new-incident-field-mapping-out.png)
+![New incident field mapping out](../../doc_files/new-incident-field-mapping-out.png)
 8. Map the Jira field to the incident field you&#39;ve created by clicking on `Select incident field` and type its name.  
 *The name of the incident will not include spaces, underscores, capital letters, etc. for example: Jira Transitions will be transformed to "jiratransitions" once saved in the incident&#39;s context (you can see the name you need to select by fetching incidents after configuring the mapper in. In the "Incident" field select one of the new incidents that the edited mapper in has worked on. On the right side you should be able to see the new added field and the name you need to provide).
 9. Click the "Save Version" button.
@@ -2902,8 +2902,8 @@ Add a new custom field and add it to the incident type&#39;s layout:
 2. In order to change an incident status, open the incident you would like to update.
 3. Under **Incident Info** search for the `Jira Transitions`, or `Jira Status` field.
 4. Click on "Select" and choose the name of the transition or status to apply.
-![Jira transition](doc_files/jira-transition.png)
-![Jira status](doc_files/jira-status.png)
+![Jira transition](../../doc_files/jira-transition.png)
+![Jira status](../../doc_files/jira-status.png)
 5. Click on the 'V' option in the 'V/X' menu.
 6. You can see the new status under 'Jira Status'.
 7. Go to Jira, and you will be able to see the new status there as well.
