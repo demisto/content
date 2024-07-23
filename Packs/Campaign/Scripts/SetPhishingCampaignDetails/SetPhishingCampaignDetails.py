@@ -38,13 +38,11 @@ class SetPhishingCampaignDetails:
     def add_current_incident_to_campaign(self, current_incident_data: dict, campaign_data: dict) -> None:
         # Add the incident entry to the existing incidents.
         current_incidents_in_campaign = campaign_data.get('incidents', [])
-
         # Current incident is always the first in the incident list in its campaign data.
         incident_campaign_data = current_incident_data['incidents'][0]
         current_incidents_in_campaign.append(incident_campaign_data)
         campaign_data['incidents'] = current_incidents_in_campaign
-
-        campaign_data["involvedIncidentsCount"] += 1
+        campaign_data["involvedIncidentsCount"] = int(campaign_data["involvedIncidentsCount"]) + 1
 
     def _get_most_updated_incident_id(self, campaign_incidents: list) -> str:
         # Assuming campaign_incidents contains at least the new incident.
