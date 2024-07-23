@@ -4235,7 +4235,7 @@ def test_get_remote_epp_or_idp_or_mobile_detection_data__mobile_detection(mocker
 def test_get_remote_epp_or_idp_or_mobile_detection_data__endpoint_detection(mocker):
     """
     Given
-        - an idp detection ID on the remote system
+        - an endpoint detection ID on the remote system
     When
         - running get_remote_data_command with changes to make on a detection
     Then
