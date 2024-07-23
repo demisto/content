@@ -292,3 +292,6 @@ inputs:
     Value can be either true/false only.
   playbookInputQuery: null
 outputs: []
+fromversion: 6.6.0
+tests:
+- No tests (auto formatted)

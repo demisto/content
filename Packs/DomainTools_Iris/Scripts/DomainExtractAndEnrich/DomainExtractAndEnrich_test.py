@@ -183,7 +183,7 @@ def test_domain_extract_and_enrich_output(mocker):
 
     mocker.patch.object(
         demisto, "args", return_value={
-            "url": "demisto.com".encode('utf-8')
+            "url": b"demisto.com"
         }
     )
 
@@ -207,4 +207,5 @@ def test_domain_extract_and_enrich_output(mocker):
 
     assert results[0]["Type"] == entryTypes["note"]
     assert results[0]["ContentsFormat"] == formats["json"]
-    assert "domaintools" in results[0]["Contents"] and "domain" in results[0]["Contents"]
+    assert "domaintools" in results[0]["Contents"]
+    assert "domain" in results[0]["Contents"]
