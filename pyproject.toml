@@ -18,7 +18,6 @@ optional = true
 [tool.poetry.group.documentation.dependencies]
 parinx = { git = "https://github.com/npsolve/parinx.git", rev = "6493798ceba8089345d970f71be4a896eb6b081d" }
 
-[tool.poetry.group.github-actions]
 [tool.poetry.group.github-actions.dependencies]
 packaging = "^24"
 pytest = "^7.4.4"
