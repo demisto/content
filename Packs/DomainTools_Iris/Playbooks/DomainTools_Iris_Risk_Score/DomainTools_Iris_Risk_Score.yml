@@ -1,0 +1,297 @@
+id: DomainTools Iris Risk Score
+version: -1
+name: DomainTools Iris Risk Score
+description: This playbook retrieves the Domain Risk Score of the given domain and
+  check if the risk score is over the threshold and throws an Alert for the Analyst
+  to manually review the domain indicator.
+tags:
+- Domaintools
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 9c6c76b5-b569-472c-8fac-76143665eda6
+    type: start
+    task:
+      id: 9c6c76b5-b569-472c-8fac-76143665eda6
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 8c2f0cca-82d2-41c6-8d22-eb150746c936
+    type: regular
+    task:
+      id: 8c2f0cca-82d2-41c6-8d22-eb150746c936
+      version: -1
+      name: Lookup Domain
+      description: Returns a complete profile of the domain (SLD.TLD) using Iris Investigate.
+        If parsing of FQDNs is desired, see domainExtractAndInvestigate.
+      script: DomainTools Iris|||domaintoolsiris-investigate
+      type: regular
+      iscommand: true
+      brand: DomainTools Iris
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      domain:
+        simple: ${inputs.domains}
+      include_context:
+        simple: "true"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: f7f6f3a3-cc62-496d-86eb-348656dc8d14
+    type: condition
+    task:
+      id: f7f6f3a3-cc62-496d-86eb-348656dc8d14
+      version: -1
+      name: Is there any domain over the risk score threshold?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: DomainTools.Analytics.OverallRiskScore
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: inputs.dt_min_riskscore_threshold
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 8c731add-1f8e-4ab0-8628-a9988f5d8f7a
+    type: regular
+    task:
+      id: 8c731add-1f8e-4ab0-8628-a9988f5d8f7a
+      version: -1
+      name: Add High Risk Domain to Indicator
+      description: Sets Data for a Domain in the Indicator Table.
+      scriptName: SetIndicatorTableData
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      domaintools_data:
+        complex:
+          root: DomainTools
+          filters:
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DomainTools.Analytics.OverallRiskScore
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.dt_min_riskscore_threshold
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -90,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 711f5d69-283a-454d-859c-b62c88a037c8
+    type: title
+    task:
+      id: 711f5d69-283a-454d-859c-b62c88a037c8
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 36663ecc-f81b-4fc5-82c8-9f2d2f2be29a
+    type: condition
+    task:
+      id: 36663ecc-f81b-4fc5-82c8-9f2d2f2be29a
+      version: -1
+      name: Should wait for an analyst review?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              simple: inputs.should_wait_for_analyst_review
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -90,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 06a88ea3-97ec-4d32-8980-d2dc655b47c4
+    type: regular
+    task:
+      id: 06a88ea3-97ec-4d32-8980-d2dc655b47c4
+      version: -1
+      name: Manually Review High Risk Score Domains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    defaultassigneecomplex:
+      simple: Analyst
+    restrictedcompletion: true
+    view: |-
+      {
+        "position": {
+          "x": -90,
+          "y": 900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1085,
+        "width": 632.5,
+        "x": -90,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: domains
+  value: {}
+  required: true
+  description: "The domain(s) to query. Can lookup multiple domains using a comma-separated
+    values. \n\ne.g mydomain1.com,mydomain2.com"
+  playbookInputQuery: null
+- key: dt_min_riskscore_threshold
+  value:
+    simple: "70"
+  required: true
+  description: The minimum risk score threshold.
+  playbookInputQuery: null
+- key: should_wait_for_analyst_review
+  value:
+    simple: "true"
+  required: true
+  description: Flags if users should wait for an analyst to review. Default is true.
+    Value can be either true/false only.
+  playbookInputQuery: null
+outputs: []
+fromversion: 6.6.0
+tests:
+- No tests (auto formatted)
