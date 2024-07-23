@@ -48,7 +48,6 @@ HDBSCAN_PARAMS = {
 }
 FAMILY_COLUMN_NAME = 'label'
 UNKNOWN_MODEL_TYPE = 'UNKNOWN_MODEL_TYPE'
-MESSAGE_ERROR_MESSAGE = 'Model cannot be loaded'
 CLUSTERING_STEP_PIPELINE = 'clustering'
 PREPROCESSOR_STEP_PIPELINE = 'preprocessor'
 
@@ -513,7 +512,6 @@ def normalize_command_line(command) -> str:
 def store_model_in_demisto(model: PostProcessing, model_name: str, model_override: bool,
                            model_hidden: bool) -> None:
     model_data = base64.b64encode(pickle.dumps(model)).decode('utf-8')  # guardrails-disable-line
-    return_results('created model')
     res = demisto.executeCommand('createMLModel', {'modelData': model_data,
                                                    'modelName': model_name,
                                                    'modelOverride': model_override,
@@ -533,6 +531,7 @@ def is_clustering_valid(clustering_model: Clustering) -> bool:
     """
     n_labels = len(set(clustering_model.model.labels_))  # type: ignore
     n_samples = len(clustering_model.raw_data)  # type: ignore
+    demisto.debug(f'{n_labels=}, {n_samples=}')
     return 1 < n_labels < n_samples
 
 
@@ -748,11 +747,9 @@ def get_model_data(model_name):
     :return:
     """
     res_model = demisto.executeCommand("getMLModel", {"modelName": model_name})[0]
-    return_results('loaded model')
     if is_error(res_model):
-        demisto.debug(MESSAGE_ERROR_MESSAGE)
+        demisto.debug(f'Couldn\'t get model: {model_name=}, {res_model=}')
         return None
-    return_results(f'loaded model: {model_name}')
     return res_model['Contents']['modelData']
 
 
@@ -946,6 +943,7 @@ def main():
     # Check is clustering is valid
     if not is_clustering_valid(model.named_steps[CLUSTERING_STEP_PIPELINE]):
         global_msg += "%s \n" % MESSAGE_CLUSTERING_NOT_VALID
+        return_results(global_msg)
         return None, {}, global_msg
 
     # Reduce dimension
