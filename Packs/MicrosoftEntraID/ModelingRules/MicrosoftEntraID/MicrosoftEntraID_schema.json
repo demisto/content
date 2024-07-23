@@ -43,10 +43,6 @@
       "tenantId": {
           "type": "string",
           "is_array": false
-      },
-      "target_resource": {
-          "type": "string",
-          "is_array": false
       }
   }
 }
