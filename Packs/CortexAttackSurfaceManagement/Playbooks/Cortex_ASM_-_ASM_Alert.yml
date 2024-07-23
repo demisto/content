@@ -2052,6 +2052,27 @@ tasks:
               complex:
                 root: inputs.AcceptedRiskOther
             iscontext: true
+        - operator: inList
+          left:
+            value:
+              complex:
+                root: alert.asmsystemids
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: alert.asmsystemids.type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ASSET-RG
+                accessor: id
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: inputs.AcceptedRiskProjects
+            iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -3504,7 +3525,7 @@ inputs:
 - key: AcceptedRiskProjects
   value: {}
   required: false
-  description: Comma-separated list of projects numbers that are considered an accepted risk and that should be closed.  For example, a list of GCP projects and AWS accounts.
+  description: Comma-separated list of projects numbers that are considered an accepted risk and that should be closed.  For example, a list of GCP projects, names of Azure Resource Groups, and AWS accounts.
   playbookInputQuery:
 - key: AcceptedRiskOther
   value: {}
