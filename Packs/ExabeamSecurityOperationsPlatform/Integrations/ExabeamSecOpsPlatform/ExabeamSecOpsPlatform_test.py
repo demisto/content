@@ -1,5 +1,7 @@
 import json
+from freezegun import freeze_time
 import pytest
+from datetime import datetime, timezone
 from CommonServerPython import DemistoException, CommandResults
 from ExabeamSecOpsPlatform import Client, search_command, get_limit, get_date, transform_string, process_string, _parse_group_by
 
@@ -194,7 +196,7 @@ def test_search_request(mocker):
     THEN:
         It should send a POST request to the specified URL with the provided data and headers.
     """
-    mocker.patch('ExabeamSecOpsPlatform.Client._login')
+    mocker.patch('ExabeamSecOpsPlatform.Client._authenticate')
     mock_http_request = mocker.patch('ExabeamSecOpsPlatform.Client._http_request')
     base_url = "https://example-api.com"
     client_id = "your_client_id"
@@ -271,3 +273,51 @@ def test_parse_group_by():
         'Message': 'This is a message.'
     }
     assert _parse_group_by(entry, titles) == expected_result
+
+
+valid_expiry_time = (datetime(2024, 7, 23, 13, 0, tzinfo=timezone.utc)).isoformat()
+expired_expiry_time = (datetime(2024, 7, 23, 11, 0, tzinfo=timezone.utc)).isoformat()
+
+
+@pytest.mark.parametrize(
+    "access_token, expiry_time_str, expected_result",
+    [
+        ("token", valid_expiry_time, True),
+        ("token", expired_expiry_time, False),
+        (None, valid_expiry_time, False),
+        ("token", None, False),
+    ]
+)
+@freeze_time("2024-07-23 12:00:00")
+def test_is_token_valid(mocker, access_token, expiry_time_str, expected_result):
+    mocker.patch.object(Client, "_http_request", return_value={"access_token": "token", "expires_in": 0})
+    client = Client(base_url="https://api.exabeam.com", client_id="abc123", client_secret="ABC123", verify=False, proxy=False)
+
+    result = client._is_token_valid(access_token, expiry_time_str)
+    assert result == expected_result
+
+
+@pytest.mark.parametrize(
+    "expected_response, expected_token",
+    [
+        (
+            {"access_token": "token", "expires_in": 3600},
+            "token",
+        ),
+    ],
+)
+def test_get_new_token(mocker, expected_response, expected_token):
+    http_request = mocker.patch.object(Client, "_http_request", return_value=expected_response)
+    client = Client(base_url="https://api.exabeam.com", client_id="abc123", client_secret="ABC123", verify=False, proxy=False)
+
+    result = client._get_new_token()
+    assert result == expected_token
+    http_request.assert_called_with(
+        method="POST",
+        full_url="https://api.exabeam.com/auth/v1/token",
+        data={
+            "client_id": "abc123",
+            "client_secret": "ABC123",
+            "grant_type": "client_credentials",
+        },
+    )

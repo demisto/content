@@ -11,7 +11,7 @@ urllib3.disable_warnings()
 ''' CONSTANTS '''
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-
+TOKEN_EXPIRY_BUFFER = timedelta(seconds=10)
 
 ''' CLIENT CLASS '''
 
@@ -28,22 +28,63 @@ class Client(BaseClient):
         self.client_secret = client_secret
         self.access_token = None
 
-        self._login()
+        self._authenticate()
 
-    def _login(self):
+    def _authenticate(self):
         """
-        Logs in to the Exabeam API using the provided client_id and client_password.
+        Authenticates to the Exabeam API using the provided client_id and client_password.
         This function must be called before any other API calls.
         Note: the session is automatically closed in BaseClient's __del__
         """
-        data = {"client_id": self.client_id, "client_secret": self.client_secret, "grant_type": "client_credentials"}
+        integration_context = demisto.getIntegrationContext()
+        access_token = integration_context.get("access_token")
+        expiry_time_str = integration_context.get("expiry_time_utc")
+
+        if self._is_token_valid(access_token, expiry_time_str):
+            self.access_token = access_token
+        else:
+            self.access_token = self._get_new_token()
+
+    def _is_token_valid(self, access_token, expiry_time_str):
+        """
+        Checks if the current token is valid and not expired with a security buffer.
+        """
+        if not access_token or not expiry_time_str:
+            return False
+
+        current_time_utc = datetime.now(timezone.utc)
+        expiry_time_utc = datetime.fromisoformat(expiry_time_str)
+        return current_time_utc < (expiry_time_utc - TOKEN_EXPIRY_BUFFER)
+
+    def _get_new_token(self):
+        """
+        Fetches a new token from the Exabeam API and updates the integration context.
+        """
+        data = {
+            "client_id": self.client_id,
+            "client_secret": self.client_secret,
+            "grant_type": "client_credentials",
+        }
 
         response = self._http_request(
-            "POST",
+            method="POST",
             full_url=f"{self._base_url}/auth/v1/token",
             data=data,
         )
-        self.access_token = response.get('access_token')
+
+        new_token = response.get('access_token')
+        expires_in = response.get("expires_in")
+        current_time_utc = datetime.now(timezone.utc)
+        expiry_time_utc = current_time_utc + timedelta(seconds=expires_in)
+
+        demisto.setIntegrationContext(
+            {
+                "access_token": new_token,
+                "expiry_time_utc": expiry_time_utc.isoformat()
+            }
+        )
+
+        return new_token
 
     def search_request(self, data_dict: dict) -> dict:
         """
@@ -76,7 +117,7 @@ def get_date(time: str, arg_name: str):
     """
     date_time = arg_to_datetime(arg=time, arg_name=arg_name, required=True)
     if not date_time:
-        raise DemistoException(f"There was an issue parsing the {arg_name} provided.")
+        raise DemistoException(f"There was an issue parsing the {arg_name}  0 .")
     date = date_time.strftime(DATE_FORMAT)
     return date
 
