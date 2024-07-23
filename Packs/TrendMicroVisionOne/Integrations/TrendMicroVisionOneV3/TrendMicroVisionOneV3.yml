@@ -895,7 +895,7 @@ script:
     - description: URL pointing to the location of the file to be submitted. e.g. file_url="https://someurl.com/test.txt".
       name: file_url
       required: true
-    - description: Name of the file (including extension) to be analyzed. e.g. file_name="some-file.txt".
+    - description: Name of the file (including extension) to be analyzed. e.g. filename="some-file.txt".
       name: filename
       required: true
     - description: The Base64 encoded password for decrypting the submitted document sample. e.g. document_password="dGVzdA==".
