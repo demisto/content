@@ -6502,4 +6502,4 @@ Retrieve vulnerability details for a specific ID and host. Supported with the Cr
 
 ## Troubleshooting
 * When encountering connectivity or authorization errors within Cortex XSOAR 8, it is necessary to include the IP address corresponding to the relevant region in the CrowdStrike Falcon allow list.
-* When encountering a 429 error code returned from Crowdstrike Falcon within Cortex XSOAR 8, the solution is to use a load balancer as explained in this [link](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Administrator-Guide/Engines).
+* When encountering a 429 error code returned from Crowdstrike Falcon within Cortex XSOAR 8, the solution is to use an engine as explained in this [link](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Administrator-Guide/Engines).
