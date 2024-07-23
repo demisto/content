@@ -896,7 +896,7 @@ script:
       name: file_url
       required: true
     - description: Name of the file (including extension) to be analyzed. e.g. file_name="some-file.txt".
-      name: file_name
+      name: filename
       required: true
     - description: The Base64 encoded password for decrypting the submitted document sample. e.g. document_password="dGVzdA==".
       name: document_password
