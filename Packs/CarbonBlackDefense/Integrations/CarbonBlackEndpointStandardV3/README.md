@@ -1,5 +1,5 @@
 Endpoint Standard is an industry-leading next-generation antivirus (NGAV) and behavioral endpoint detection and response (EDR) solution. Endpoint Standard is delivered through the Carbon Black Cloud, an endpoint protection platform that consolidates security in the cloud using a single agent, console and data set.
-This integration was integrated and tested with version 7 of Carbon Black Endpoint Standard v3.
+This integration was integrated and tested with version 1.1.2 of Carbon Black Endpoint Standard v3.
 ### Migration to Carbon Black Endpoint Standard v3
 
 #### Deprecated Commands in Carbon Black Endpoint Standard v2
@@ -51,9 +51,9 @@ The following commands from the Carbon Black Endpoint Standard v2 integration ha
     | --- | --- | --- |
     | URL |  | True |
     | Organization Key | The organization unique key. This is required for all use cases \(and for fetching incidents\). | True |
-    | Custom Api Key (for API version 7) | This Custom API key is required for all use cases and for fetch except the policy use cases. | False |
+    | Custom Api Key | This Custom API key is required for all use cases and for fetch except the policy use cases. | False |
     | Password | This Custom API key is required for all use cases and for fetch except the policy use cases. | False |
-    | Api Key (Api/Live Response key for API version 1) | This Live Response API key is required only for the policy use cases. | False |
+    | Api Key (Api/Live Response key) | This Live Response API key is required only for the policy use cases. | False |
     | Password | This Live Response API key is required only for the policy use cases. | False |
     | Incident type |  | False |
     | Fetch incidents |  | False |
@@ -2555,7 +2555,7 @@ Fetches Carbon Black events details based on specified parameters. Supports poll
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CarbonBlackDefense.Process.job_id | String | The process job id when polling set to false. | 
+| CarbonBlackDefense.EventDetails.job_id | String | The process job id when polling set to false. | 
 | CarbonBlackDefense.EventDetails.Results.alert_category | String | The category of the alert associated with the observation. | 
 | CarbonBlackDefense.EventDetails.Results.alert_id | String | The unique ID of the alert associated with the observation. | 
 | CarbonBlackDefense.EventDetails.Results.backend_timestamp | Date | The timestamp when the observation data was collected from the backend. | 
@@ -2800,79 +2800,79 @@ Fetches Carbon Black events details based on specified parameters. Supports poll
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CarbonBlackDefense.Process.job_id | String | The process job id when polling set to false. | 
-| CarbonBlackDefense.Events.alert_category | String | Category of the alert associated with the event. | 
-| CarbonBlackDefense.Events.alert_id | String | The unique alert ID. | 
-| CarbonBlackDefense.Events.backend_timestamp | Date | Timestamp when the event was processed on the backend. | 
-| CarbonBlackDefense.Events.childproc_count | Number | Number of child processes spawned by the process. | 
-| CarbonBlackDefense.Events.crossproc_count | Number | Number of cross-process operations performed by the process. | 
-| CarbonBlackDefense.Events.device_external_ip | String | External IP address of the device. | 
-| CarbonBlackDefense.Events.device_group_id | Number | The device group ID. | 
-| CarbonBlackDefense.Events.device_id | Number | The unique device ID. | 
-| CarbonBlackDefense.Events.device_installed_by | String | User or entity that installed the device. | 
-| CarbonBlackDefense.Events.device_internal_ip | String | Internal IP address of the device. | 
-| CarbonBlackDefense.Events.device_location | String | Physical or network location of the device. | 
-| CarbonBlackDefense.Events.device_name | String | Name of the device. | 
-| CarbonBlackDefense.Events.device_os | String | Operating system running on the device. | 
-| CarbonBlackDefense.Events.device_os_version | String | Version of the operating system running on the device. | 
-| CarbonBlackDefense.Events.device_policy | String | Security policy applied to the device. | 
-| CarbonBlackDefense.Events.device_policy_id | Number | The the security policy ID applied to the device. | 
-| CarbonBlackDefense.Events.device_sensor_version | String | Version of the sensor installed on the device. | 
-| CarbonBlackDefense.Events.device_target_priority | String | Priority of the device as a target. | 
-| CarbonBlackDefense.Events.device_timestamp | Date | Timestamp of the event as recorded by the device. | 
-| CarbonBlackDefense.Events.document_guid | String | The global unique ID for the document associated with the event. | 
-| CarbonBlackDefense.Events.enriched | Boolean | Indicates whether the event data has been enriched. | 
-| CarbonBlackDefense.Events.enriched_event_type | String | Type of the enriched event. | 
-| CarbonBlackDefense.Events.event_threat_score | Number | Threat score assigned to the event. | 
-| CarbonBlackDefense.Events.filemod_count | Number | Number of file modifications performed by the process. | 
-| CarbonBlackDefense.Events.ingress_time | Date | Time when the event was ingested by the system. | 
-| CarbonBlackDefense.Events.legacy | Boolean | Indicates whether the event is considered a legacy event. | 
-| CarbonBlackDefense.Events.modload_count | Number | Number of modules loaded by the process. | 
-| CarbonBlackDefense.Events.netconn_count | Number | Number of network connections established by the process. | 
-| CarbonBlackDefense.Events.observation_description | String | Description of the observation associated with the event. | 
-| CarbonBlackDefense.Events.observation_id | String | The unique observation ID. | 
-| CarbonBlackDefense.Events.observation_type | String | Type of the observation associated with the event. | 
-| CarbonBlackDefense.Events.org_id | String | The organization ID associated with the event. | 
-| CarbonBlackDefense.Events.parent_cmdline | String | Command line used to execute the parent process. | 
-| CarbonBlackDefense.Events.parent_cmdline_length | Number | Length of the command line used to execute the parent process. | 
-| CarbonBlackDefense.Events.parent_effective_reputation | String | Effective reputation of the parent process. | 
-| CarbonBlackDefense.Events.parent_effective_reputation_source | String | Source of the effective reputation of the parent process. | 
-| CarbonBlackDefense.Events.parent_guid | String | The global unique ID for the parent process. | 
-| CarbonBlackDefense.Events.parent_hash | String | Hash of the parent process. | 
-| CarbonBlackDefense.Events.parent_name | String | Name of the parent process. | 
-| CarbonBlackDefense.Events.parent_pid | Number | The parent process ID. | 
-| CarbonBlackDefense.Events.parent_publisher | String | Publisher of the parent process. | 
-| CarbonBlackDefense.Events.parent_publisher_state | String | Publisher state of the parent process. | 
-| CarbonBlackDefense.Events.parent_reputation | String | Reputation of the parent process. | 
-| CarbonBlackDefense.Events.process_cmdline | String | Command line used to execute the process. | 
-| CarbonBlackDefense.Events.process_cmdline_length | Number | Length of the command line used to execute the process. | 
-| CarbonBlackDefense.Events.process_company_name | String | Company name associated with the process. | 
-| CarbonBlackDefense.Events.process_effective_reputation | String | Effective reputation of the process. | 
-| CarbonBlackDefense.Events.process_effective_reputation_source | String | Source of the effective reputation of the process. | 
-| CarbonBlackDefense.Events.process_elevated | Boolean | Indicates whether the process is running with elevated privileges. | 
-| CarbonBlackDefense.Events.process_file_description | String | File description of the process. | 
-| CarbonBlackDefense.Events.process_guid | String | The global unique process ID. | 
-| CarbonBlackDefense.Events.process_hash | String | Hash of the process. | 
-| CarbonBlackDefense.Events.process_integrity_level | String | Integrity level of the process. | 
-| CarbonBlackDefense.Events.process_internal_name | String | Internal name of the process. | 
-| CarbonBlackDefense.Events.process_name | String | Name of the process. | 
-| CarbonBlackDefense.Events.process_original_filename | String | Original filename of the process. | 
-| CarbonBlackDefense.Events.process_pid | Number | The process ID of the process. | 
-| CarbonBlackDefense.Events.process_privileges | String | Privileges associated with the process. | 
-| CarbonBlackDefense.Events.process_product_name | String | Product name associated with the process. | 
-| CarbonBlackDefense.Events.process_product_version | String | Product version associated with the process. | 
-| CarbonBlackDefense.Events.process_publisher | String | Publisher of the process. | 
-| CarbonBlackDefense.Events.process_publisher_state | String | Publisher state of the process. | 
-| CarbonBlackDefense.Events.process_reputation | String | Reputation of the process. | 
-| CarbonBlackDefense.Events.process_service_name | String | Service name associated with the process. | 
-| CarbonBlackDefense.Events.process_sha256 | String | SHA-256 hash of the process. | 
-| CarbonBlackDefense.Events.process_start_time | Date | Start time of the process. | 
-| CarbonBlackDefense.Events.process_username | String | Username under which the process is running. | 
-| CarbonBlackDefense.Events.regmod_count | Number | Number of registry modifications performed by the process. | 
-| CarbonBlackDefense.Events.scriptload_count | Number | Number of scripts loaded by the process. | 
-| CarbonBlackDefense.Events.sensor_action | String | Action taken by the sensor for the event. | 
-| CarbonBlackDefense.Events.ttp | String | Tactics, techniques, and procedures associated with the event. | 
-| CarbonBlackDefense.Events.watchlist_hit | String | Indicates if the event matches a watchlist entry. | 
+| CarbonBlackDefense.Events.job_id | String | The process job id when polling set to false. | 
+| CarbonBlackDefense.Events.Results.alert_category | String | Category of the alert associated with the event. | 
+| CarbonBlackDefense.Events.Results.alert_id | String | The unique alert ID. | 
+| CarbonBlackDefense.Events.Results.backend_timestamp | Date | Timestamp when the event was processed on the backend. | 
+| CarbonBlackDefense.Events.Results.childproc_count | Number | Number of child processes spawned by the process. | 
+| CarbonBlackDefense.Events.Results.crossproc_count | Number | Number of cross-process operations performed by the process. | 
+| CarbonBlackDefense.Events.Results.device_external_ip | String | External IP address of the device. | 
+| CarbonBlackDefense.Events.Results.device_group_id | Number | The device group ID. | 
+| CarbonBlackDefense.Events.Results.device_id | Number | The unique device ID. | 
+| CarbonBlackDefense.Events.Results.device_installed_by | String | User or entity that installed the device. | 
+| CarbonBlackDefense.Events.Results.device_internal_ip | String | Internal IP address of the device. | 
+| CarbonBlackDefense.Events.Results.device_location | String | Physical or network location of the device. | 
+| CarbonBlackDefense.Events.Results.device_name | String | Name of the device. | 
+| CarbonBlackDefense.Events.Results.device_os | String | Operating system running on the device. | 
+| CarbonBlackDefense.Events.Results.device_os_version | String | Version of the operating system running on the device. | 
+| CarbonBlackDefense.Events.Results.device_policy | String | Security policy applied to the device. | 
+| CarbonBlackDefense.Events.Results.device_policy_id | Number | The the security policy ID applied to the device. | 
+| CarbonBlackDefense.Events.Results.device_sensor_version | String | Version of the sensor installed on the device. | 
+| CarbonBlackDefense.Events.Results.device_target_priority | String | Priority of the device as a target. | 
+| CarbonBlackDefense.Events.Results.device_timestamp | Date | Timestamp of the event as recorded by the device. | 
+| CarbonBlackDefense.Events.Results.document_guid | String | The global unique ID for the document associated with the event. | 
+| CarbonBlackDefense.Events.Results.enriched | Boolean | Indicates whether the event data has been enriched. | 
+| CarbonBlackDefense.Events.Results.enriched_event_type | String | Type of the enriched event. | 
+| CarbonBlackDefense.Events.Results.event_threat_score | Number | Threat score assigned to the event. | 
+| CarbonBlackDefense.Events.Results.filemod_count | Number | Number of file modifications performed by the process. | 
+| CarbonBlackDefense.Events.Results.ingress_time | Date | Time when the event was ingested by the system. | 
+| CarbonBlackDefense.Events.Results.legacy | Boolean | Indicates whether the event is considered a legacy event. | 
+| CarbonBlackDefense.Events.Results.modload_count | Number | Number of modules loaded by the process. | 
+| CarbonBlackDefense.Events.Results.netconn_count | Number | Number of network connections established by the process. | 
+| CarbonBlackDefense.Events.Results.observation_description | String | Description of the observation associated with the event. | 
+| CarbonBlackDefense.Events.Results.observation_id | String | The unique observation ID. | 
+| CarbonBlackDefense.Events.Results.observation_type | String | Type of the observation associated with the event. | 
+| CarbonBlackDefense.Events.Results.org_id | String | The organization ID associated with the event. | 
+| CarbonBlackDefense.Events.Results.parent_cmdline | String | Command line used to execute the parent process. | 
+| CarbonBlackDefense.Events.Results.parent_cmdline_length | Number | Length of the command line used to execute the parent process. | 
+| CarbonBlackDefense.Events.Results.parent_effective_reputation | String | Effective reputation of the parent process. | 
+| CarbonBlackDefense.Events.Results.parent_effective_reputation_source | String | Source of the effective reputation of the parent process. | 
+| CarbonBlackDefense.Events.Results.parent_guid | String | The global unique ID for the parent process. | 
+| CarbonBlackDefense.Events.Results.parent_hash | String | Hash of the parent process. | 
+| CarbonBlackDefense.Events.Results.parent_name | String | Name of the parent process. | 
+| CarbonBlackDefense.Events.Results.parent_pid | Number | The parent process ID. | 
+| CarbonBlackDefense.Events.Results.parent_publisher | String | Publisher of the parent process. | 
+| CarbonBlackDefense.Events.Results.parent_publisher_state | String | Publisher state of the parent process. | 
+| CarbonBlackDefense.Events.Results.parent_reputation | String | Reputation of the parent process. | 
+| CarbonBlackDefense.Events.Results.process_cmdline | String | Command line used to execute the process. | 
+| CarbonBlackDefense.Events.Results.process_cmdline_length | Number | Length of the command line used to execute the process. | 
+| CarbonBlackDefense.Events.Results.process_company_name | String | Company name associated with the process. | 
+| CarbonBlackDefense.Events.Results.process_effective_reputation | String | Effective reputation of the process. | 
+| CarbonBlackDefense.Events.Results.process_effective_reputation_source | String | Source of the effective reputation of the process. | 
+| CarbonBlackDefense.Events.Results.process_elevated | Boolean | Indicates whether the process is running with elevated privileges. | 
+| CarbonBlackDefense.Events.Results.process_file_description | String | File description of the process. | 
+| CarbonBlackDefense.Events.Results.process_guid | String | The global unique process ID. | 
+| CarbonBlackDefense.Events.Results.process_hash | String | Hash of the process. | 
+| CarbonBlackDefense.Events.Results.process_integrity_level | String | Integrity level of the process. | 
+| CarbonBlackDefense.Events.Results.process_internal_name | String | Internal name of the process. | 
+| CarbonBlackDefense.Events.Results.process_name | String | Name of the process. | 
+| CarbonBlackDefense.Events.Results.process_original_filename | String | Original filename of the process. | 
+| CarbonBlackDefense.Events.Results.process_pid | Number | The process ID of the process. | 
+| CarbonBlackDefense.Events.Results.process_privileges | String | Privileges associated with the process. | 
+| CarbonBlackDefense.Events.Results.process_product_name | String | Product name associated with the process. | 
+| CarbonBlackDefense.Events.Results.process_product_version | String | Product version associated with the process. | 
+| CarbonBlackDefense.Events.Results.process_publisher | String | Publisher of the process. | 
+| CarbonBlackDefense.Events.Results.process_publisher_state | String | Publisher state of the process. | 
+| CarbonBlackDefense.Events.Results.process_reputation | String | Reputation of the process. | 
+| CarbonBlackDefense.Events.Results.process_service_name | String | Service name associated with the process. | 
+| CarbonBlackDefense.Events.Results.process_sha256 | String | SHA-256 hash of the process. | 
+| CarbonBlackDefense.Events.Results.process_start_time | Date | Start time of the process. | 
+| CarbonBlackDefense.Events.Results.process_username | String | Username under which the process is running. | 
+| CarbonBlackDefense.Events.Results.regmod_count | Number | Number of registry modifications performed by the process. | 
+| CarbonBlackDefense.Events.Results.scriptload_count | Number | Number of scripts loaded by the process. | 
+| CarbonBlackDefense.Events.Results.sensor_action | String | Action taken by the sensor for the event. | 
+| CarbonBlackDefense.Events.Results.ttp | String | Tactics, techniques, and procedures associated with the event. | 
+| CarbonBlackDefense.Events.Results.watchlist_hit | String | Indicates if the event matches a watchlist entry. | 
 
 #### Command example
 ```!cbd-find-observation device_id=12345```
@@ -4532,78 +4532,78 @@ Retrieves the search results using the specified job ID.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CarbonBlackDefense.Events.alert_category | String | Category of the alert associated with the event. | 
-| CarbonBlackDefense.Events.alert_id | String | The unique alert ID. | 
-| CarbonBlackDefense.Events.backend_timestamp | Date | Timestamp when the event was processed on the backend. | 
-| CarbonBlackDefense.Events.childproc_count | Number | Number of child processes spawned by the process. | 
-| CarbonBlackDefense.Events.crossproc_count | Number | Number of cross-process operations performed by the process. | 
-| CarbonBlackDefense.Events.device_external_ip | String | External IP address of the device. | 
-| CarbonBlackDefense.Events.device_group_id | Number | The device group ID. | 
-| CarbonBlackDefense.Events.device_id | Number | The unique device ID. | 
-| CarbonBlackDefense.Events.device_installed_by | String | User or entity that installed the device. | 
-| CarbonBlackDefense.Events.device_internal_ip | String | Internal IP address of the device. | 
-| CarbonBlackDefense.Events.device_location | String | Physical or network location of the device. | 
-| CarbonBlackDefense.Events.device_name | String | Name of the device. | 
-| CarbonBlackDefense.Events.device_os | String | Operating system running on the device. | 
-| CarbonBlackDefense.Events.device_os_version | String | Version of the operating system running on the device. | 
-| CarbonBlackDefense.Events.device_policy | String | Security policy applied to the device. | 
-| CarbonBlackDefense.Events.device_policy_id | Number | The ID of the security policy applied to the device. | 
-| CarbonBlackDefense.Events.device_sensor_version | String | Version of the sensor installed on the device. | 
-| CarbonBlackDefense.Events.device_target_priority | String | Priority of the device as a target. | 
-| CarbonBlackDefense.Events.device_timestamp | Date | Timestamp of the event as recorded by the device. | 
-| CarbonBlackDefense.Events.document_guid | String | The global unique ID for the document associated with the event. | 
-| CarbonBlackDefense.Events.enriched | Boolean | Indicates whether the event data has been enriched. | 
-| CarbonBlackDefense.Events.enriched_event_type | String | Type of the enriched event. | 
-| CarbonBlackDefense.Events.event_threat_score | Number | Threat score assigned to the event. | 
-| CarbonBlackDefense.Events.filemod_count | Number | Number of file modifications performed by the process. | 
-| CarbonBlackDefense.Events.ingress_time | Date | Time when the event was ingested by the system. | 
-| CarbonBlackDefense.Events.legacy | Boolean | Indicates whether the event is considered a legacy event. | 
-| CarbonBlackDefense.Events.modload_count | Number | Number of modules loaded by the process. | 
-| CarbonBlackDefense.Events.netconn_count | Number | Number of network connections established by the process. | 
-| CarbonBlackDefense.Events.observation_description | String | Description of the observation associated with the event. | 
-| CarbonBlackDefense.Events.observation_id | String | The unique observation ID. | 
-| CarbonBlackDefense.Events.observation_type | String | Type of the observation associated with the event. | 
-| CarbonBlackDefense.Events.org_id | String | The ID of the organization associated with the event. | 
-| CarbonBlackDefense.Events.parent_cmdline | String | Command line used to execute the parent process. | 
-| CarbonBlackDefense.Events.parent_cmdline_length | Number | Length of the command line used to execute the parent process. | 
-| CarbonBlackDefense.Events.parent_effective_reputation | String | Effective reputation of the parent process. | 
-| CarbonBlackDefense.Events.parent_effective_reputation_source | String | Source of the effective reputation of the parent process. | 
-| CarbonBlackDefense.Events.parent_guid | String | The global unique ID for the parent process. | 
-| CarbonBlackDefense.Events.parent_hash | String | Hash of the parent process. | 
-| CarbonBlackDefense.Events.parent_name | String | Name of the parent process. | 
-| CarbonBlackDefense.Events.parent_pid | Number | The process ID of the parent process. | 
-| CarbonBlackDefense.Events.parent_publisher | String | Publisher of the parent process. | 
-| CarbonBlackDefense.Events.parent_publisher_state | String | Publisher state of the parent process. | 
-| CarbonBlackDefense.Events.parent_reputation | String | Reputation of the parent process. | 
-| CarbonBlackDefense.Events.process_cmdline | String | Command line used to execute the process. | 
-| CarbonBlackDefense.Events.process_cmdline_length | Number | Length of the command line used to execute the process. | 
-| CarbonBlackDefense.Events.process_company_name | String | Company name associated with the process. | 
-| CarbonBlackDefense.Events.process_effective_reputation | String | Effective reputation of the process. | 
-| CarbonBlackDefense.Events.process_effective_reputation_source | String | Source of the effective reputation of the process. | 
-| CarbonBlackDefense.Events.process_elevated | Boolean | Indicates whether the process is running with elevated privileges. | 
-| CarbonBlackDefense.Events.process_file_description | String | File description of the process. | 
-| CarbonBlackDefense.Events.process_guid | String | The global unique process ID. | 
-| CarbonBlackDefense.Events.process_hash | String | Hash of the process. | 
-| CarbonBlackDefense.Events.process_integrity_level | String | Integrity level of the process. | 
-| CarbonBlackDefense.Events.process_internal_name | String | Internal name of the process. | 
-| CarbonBlackDefense.Events.process_name | String | Name of the process. | 
-| CarbonBlackDefense.Events.process_original_filename | String | Original filename of the process. | 
-| CarbonBlackDefense.Events.process_pid | Number | The process ID of the process. | 
-| CarbonBlackDefense.Events.process_privileges | String | Privileges associated with the process. | 
-| CarbonBlackDefense.Events.process_product_name | String | Product name associated with the process. | 
-| CarbonBlackDefense.Events.process_product_version | String | Product version associated with the process. | 
-| CarbonBlackDefense.Events.process_publisher | String | Publisher of the process. | 
-| CarbonBlackDefense.Events.process_publisher_state | String | Publisher state of the process. | 
-| CarbonBlackDefense.Events.process_reputation | String | Reputation of the process. | 
-| CarbonBlackDefense.Events.process_service_name | String | Service name associated with the process. | 
-| CarbonBlackDefense.Events.process_sha256 | String | SHA-256 hash of the process. | 
-| CarbonBlackDefense.Events.process_start_time | Date | Start time of the process. | 
-| CarbonBlackDefense.Events.process_username | String | Username under which the process is running. | 
-| CarbonBlackDefense.Events.regmod_count | Number | Number of registry modifications performed by the process. | 
-| CarbonBlackDefense.Events.scriptload_count | Number | Number of scripts loaded by the process. | 
-| CarbonBlackDefense.Events.sensor_action | String | Action taken by the sensor for the event. | 
-| CarbonBlackDefense.Events.ttp | String | Tactics, techniques, and procedures associated with the event. | 
-| CarbonBlackDefense.Events.watchlist_hit | String | Indicates if the event matches a watchlist entry. | 
+| CarbonBlackDefense.Events.Results.alert_category | String | Category of the alert associated with the event. | 
+| CarbonBlackDefense.Events.Results.alert_id | String | The unique alert ID. | 
+| CarbonBlackDefense.Events.Results.backend_timestamp | Date | Timestamp when the event was processed on the backend. | 
+| CarbonBlackDefense.Events.Results.childproc_count | Number | Number of child processes spawned by the process. | 
+| CarbonBlackDefense.Events.Results.crossproc_count | Number | Number of cross-process operations performed by the process. | 
+| CarbonBlackDefense.Events.Results.device_external_ip | String | External IP address of the device. | 
+| CarbonBlackDefense.Events.Results.device_group_id | Number | The device group ID. | 
+| CarbonBlackDefense.Events.Results.device_id | Number | The unique device ID. | 
+| CarbonBlackDefense.Events.Results.device_installed_by | String | User or entity that installed the device. | 
+| CarbonBlackDefense.Events.Results.device_internal_ip | String | Internal IP address of the device. | 
+| CarbonBlackDefense.Events.Results.device_location | String | Physical or network location of the device. | 
+| CarbonBlackDefense.Events.Results.device_name | String | Name of the device. | 
+| CarbonBlackDefense.Events.Results.device_os | String | Operating system running on the device. | 
+| CarbonBlackDefense.Events.Results.device_os_version | String | Version of the operating system running on the device. | 
+| CarbonBlackDefense.Events.Results.device_policy | String | Security policy applied to the device. | 
+| CarbonBlackDefense.Events.Results.device_policy_id | Number | The ID of the security policy applied to the device. | 
+| CarbonBlackDefense.Events.Results.device_sensor_version | String | Version of the sensor installed on the device. | 
+| CarbonBlackDefense.Events.Results.device_target_priority | String | Priority of the device as a target. | 
+| CarbonBlackDefense.Events.Results.device_timestamp | Date | Timestamp of the event as recorded by the device. | 
+| CarbonBlackDefense.Events.Results.document_guid | String | The global unique ID for the document associated with the event. | 
+| CarbonBlackDefense.Events.Results.enriched | Boolean | Indicates whether the event data has been enriched. | 
+| CarbonBlackDefense.Events.Results.enriched_event_type | String | Type of the enriched event. | 
+| CarbonBlackDefense.Events.Results.event_threat_score | Number | Threat score assigned to the event. | 
+| CarbonBlackDefense.Events.Results.filemod_count | Number | Number of file modifications performed by the process. | 
+| CarbonBlackDefense.Events.Results.ingress_time | Date | Time when the event was ingested by the system. | 
+| CarbonBlackDefense.Events.Results.legacy | Boolean | Indicates whether the event is considered a legacy event. | 
+| CarbonBlackDefense.Events.Results.modload_count | Number | Number of modules loaded by the process. | 
+| CarbonBlackDefense.Events.Results.netconn_count | Number | Number of network connections established by the process. | 
+| CarbonBlackDefense.Events.Results.observation_description | String | Description of the observation associated with the event. | 
+| CarbonBlackDefense.Events.Results.observation_id | String | The unique observation ID. | 
+| CarbonBlackDefense.Events.Results.observation_type | String | Type of the observation associated with the event. | 
+| CarbonBlackDefense.Events.Results.org_id | String | The ID of the organization associated with the event. | 
+| CarbonBlackDefense.Events.Results.parent_cmdline | String | Command line used to execute the parent process. | 
+| CarbonBlackDefense.Events.Results.parent_cmdline_length | Number | Length of the command line used to execute the parent process. | 
+| CarbonBlackDefense.Events.Results.parent_effective_reputation | String | Effective reputation of the parent process. | 
+| CarbonBlackDefense.Events.Results.parent_effective_reputation_source | String | Source of the effective reputation of the parent process. | 
+| CarbonBlackDefense.Events.Results.parent_guid | String | The global unique ID for the parent process. | 
+| CarbonBlackDefense.Events.Results.parent_hash | String | Hash of the parent process. | 
+| CarbonBlackDefense.Events.Results.parent_name | String | Name of the parent process. | 
+| CarbonBlackDefense.Events.Results.parent_pid | Number | The process ID of the parent process. | 
+| CarbonBlackDefense.Events.Results.parent_publisher | String | Publisher of the parent process. | 
+| CarbonBlackDefense.Events.Results.parent_publisher_state | String | Publisher state of the parent process. | 
+| CarbonBlackDefense.Events.Results.parent_reputation | String | Reputation of the parent process. | 
+| CarbonBlackDefense.Events.Results.process_cmdline | String | Command line used to execute the process. | 
+| CarbonBlackDefense.Events.Results.process_cmdline_length | Number | Length of the command line used to execute the process. | 
+| CarbonBlackDefense.Events.Results.process_company_name | String | Company name associated with the process. | 
+| CarbonBlackDefense.Events.Results.process_effective_reputation | String | Effective reputation of the process. | 
+| CarbonBlackDefense.Events.Results.process_effective_reputation_source | String | Source of the effective reputation of the process. | 
+| CarbonBlackDefense.Events.Results.process_elevated | Boolean | Indicates whether the process is running with elevated privileges. | 
+| CarbonBlackDefense.Events.Results.process_file_description | String | File description of the process. | 
+| CarbonBlackDefense.Events.Results.process_guid | String | The global unique process ID. | 
+| CarbonBlackDefense.Events.Results.process_hash | String | Hash of the process. | 
+| CarbonBlackDefense.Events.Results.process_integrity_level | String | Integrity level of the process. | 
+| CarbonBlackDefense.Events.Results.process_internal_name | String | Internal name of the process. | 
+| CarbonBlackDefense.Events.Results.process_name | String | Name of the process. | 
+| CarbonBlackDefense.Events.Results.process_original_filename | String | Original filename of the process. | 
+| CarbonBlackDefense.Events.Results.process_pid | Number | The process ID of the process. | 
+| CarbonBlackDefense.Events.Results.process_privileges | String | Privileges associated with the process. | 
+| CarbonBlackDefense.Events.Results.process_product_name | String | Product name associated with the process. | 
+| CarbonBlackDefense.Events.Results.process_product_version | String | Product version associated with the process. | 
+| CarbonBlackDefense.Events.Results.process_publisher | String | Publisher of the process. | 
+| CarbonBlackDefense.Events.Results.process_publisher_state | String | Publisher state of the process. | 
+| CarbonBlackDefense.Events.Results.process_reputation | String | Reputation of the process. | 
+| CarbonBlackDefense.Events.Results.process_service_name | String | Service name associated with the process. | 
+| CarbonBlackDefense.Events.Results.process_sha256 | String | SHA-256 hash of the process. | 
+| CarbonBlackDefense.Events.Results.process_start_time | Date | Start time of the process. | 
+| CarbonBlackDefense.Events.Results.process_username | String | Username under which the process is running. | 
+| CarbonBlackDefense.Events.Results.regmod_count | Number | Number of registry modifications performed by the process. | 
+| CarbonBlackDefense.Events.Results.scriptload_count | Number | Number of scripts loaded by the process. | 
+| CarbonBlackDefense.Events.Results.sensor_action | String | Action taken by the sensor for the event. | 
+| CarbonBlackDefense.Events.Results.ttp | String | Tactics, techniques, and procedures associated with the event. | 
+| CarbonBlackDefense.Events.Results.watchlist_hit | String | Indicates if the event matches a watchlist entry. | 
 
 #### Command example
 ```!cbd-find-observation-results job_id=abc-1234 rows=2```
