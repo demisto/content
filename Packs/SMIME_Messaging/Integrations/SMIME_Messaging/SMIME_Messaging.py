@@ -332,7 +332,7 @@ def sign_and_encrypt(client: Client, args: dict):
                 os.unlink(public_key_file.name)
 
         client.smime.set_x509_stack(sk)
-        client.smime.set_cipher(SMIME.Cipher('des_ede3_cbc'))
+        client.smime.set_cipher(SMIME.Cipher('aes_256_cbc'))
         tmp_bio = BIO.MemoryBuffer()
         if sign:
             client.smime.write(tmp_bio, p7)
