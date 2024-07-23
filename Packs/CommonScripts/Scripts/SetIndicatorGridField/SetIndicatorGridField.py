@@ -97,6 +97,8 @@ def main() -> None:
             for row in raw_input_data:
                 if set(row.keys()) != set(headers):
                     return_error('Input dictionary keys must match headers when context keys are not provided.')
+            
+            rows = [[row.get(header, '') for header in headers] for row in raw_input_data]
 
         demisto.debug('Changed the data into list format')
 

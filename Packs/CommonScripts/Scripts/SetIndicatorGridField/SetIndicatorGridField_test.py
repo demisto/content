@@ -197,6 +197,22 @@ def test_get_existing_grid_records(mock_executeCommand, mock_return_error, indic
             'Input dictionary keys must match headers when context keys are not provided.',
             True
         ),
+        (
+            # Test Case 7: No keys from context, valid keys in dictionary
+            {
+                "input": [{"IP": "192.168.1.2", "Hostname": "example.net"}],
+                "headers": "IP,Hostname",
+                "indicator": "example.com",
+                "grid_field": "gridField",
+                "append": "false"
+            },
+            False,
+            INDICATOR_RESPONSE,
+            [
+                {"IP": "192.168.1.2", "Hostname": "example.net"}
+            ],
+            False
+        ),
     ]
 )
 @patch.object(demisto, 'executeCommand')
