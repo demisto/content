@@ -28,4 +28,3 @@ if [[ $errors -ne 0 ]]; then
 fi
 
 echo "Finished mypy run - no errors were found"
-
