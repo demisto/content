@@ -12,7 +12,7 @@ import quopri
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
-from email import charset, encoders
+from email import encoders
 import pytz
 
 
@@ -21,6 +21,7 @@ import pytz
 
 def makebuf(text):
     return BIO.MemoryBuffer(text)
+
 
 def create_pem_string(base64_cert) -> str:
     """This function takes the base64 encoded certificate received via
@@ -38,6 +39,7 @@ def create_pem_string(base64_cert) -> str:
     )
     pemstring += "\n-----END CERTIFICATE-----\n"
     return pemstring
+
 
 class Client:
     def __init__(self, private_key, public_key):
@@ -143,14 +145,22 @@ def verify(client: Client, args: dict):
 
     """
     signed_message = demisto.getFilePath(args.get('signed_message'))
+    cert = args.get('public_key', 'instancePublicKey')
 
-    x509 = X509.load_cert(client.public_key_file)
     sk = X509.X509_Stack()
-    sk.push(x509)
-    client.smime.set_x509_stack(sk)
-
     st = X509.X509_Store()
-    st.load_info(client.public_key_file)
+    if cert == 'instancePublicKey':
+        sk.push(X509.load_cert(client.public_key_file))
+        st.load_info(client.public_key_file)
+    elif cert:
+        public_key_file = NamedTemporaryFile(delete=False)
+        public_key_file.write(bytes(cert, "utf-8"))
+        public_key_file.close()
+        sk.push(X509.load_cert(public_key_file.name))
+        st.load_info(public_key_file.name)
+        os.unlink(public_key_file.name)
+
+    client.smime.set_x509_stack(sk)
     client.smime.set_x509_store(st)
     try:
         p7, data = SMIME.smime_load_pkcs7(signed_message['path'])
@@ -170,7 +180,9 @@ def verify(client: Client, args: dict):
         else:
             raise e
 
-    return human_readable, {}
+    return CommandResults(
+        readable_output=human_readable,
+    )
 
 
 def decode_str(decrypted_text: bytes, encoding: str) -> tuple[str, str]:
@@ -230,14 +242,12 @@ def decrypt_email_body(client: Client, args: dict, file_path=None):
         else:
             raise
 
-    entry_context = {
-        'SMIME.Decrypted': {
-            'Message': out
-        }
-    }
-    human_readable = f'{msg}The decrypted message is: \n{out}'
-
-    return human_readable, entry_context
+    return CommandResults(
+        readable_output=f'{msg}The decrypted message is: \n{out}',
+        outputs_prefix='SMIME.Decrypted',
+        outputs_key_field='Message',
+        outputs=out,
+    )
 
 
 def sign_and_encrypt(client: Client, args: dict):
@@ -247,11 +257,11 @@ def sign_and_encrypt(client: Client, args: dict):
     encrypt = argToBoolean(args.get('encrypted', 'true'))
     sender = args.get('sender', '')
     subject = args.get('subject', '')
-    use_transport_encoding = argToBoolean(args.get('use_transport_encoding', 'false'))
-    recipients = args.get('recipients', {}) # type: dict[str,str]
-    cc = args.get('cc', {}) # type: dict[str,str]
-    bcc = args.get('bcc', {}) # type: dict[str,str]
-    attachment_ids = argToList(args.get('attachment_entry_id', '')) # type: list[str]
+    # use_transport_encoding = argToBoolean(args.get('use_transport_encoding', 'false'))
+    recipients = args.get('recipients', {})  # type: dict[str,str]
+    cc = args.get('cc', {})  # type: dict[str,str]
+    bcc = args.get('bcc', {})  # type: dict[str,str]
+    attachment_ids = argToList(args.get('attachment_entry_id', ''))  # type: list[str]
 
     if type(recipients) != dict:
         raise DemistoException("Failed to parse recipients. (format `{'some@email':'pub_key', 'other@email':'other_key'}`)")
@@ -262,19 +272,19 @@ def sign_and_encrypt(client: Client, args: dict):
 
     # Prepare message
     msg = MIMEMultipart()
-    #TODO: what to do for transport encoding?
-    #cs = charset.Charset('utf-8')
-    #if use_transport_encoding:
+    # TODO: what to do for transport encoding?
+    # cs = charset.Charset('utf-8')
+    # if use_transport_encoding:
     #    cs.header_encoding = charset.QP
     #    cs.body_encoding = charset.QP
     #    msg.set_charset(cs)
-    
+
     is_html = bool(re.search(r'<.*?>', message))
     if is_html:
         msg.attach(MIMEText(message, 'html'))
     else:
         msg.attach(MIMEText(message, 'plain'))
-    
+
     # Add attachments to message
     for attach_id in attachment_ids:
         try:
@@ -283,7 +293,7 @@ def sign_and_encrypt(client: Client, args: dict):
             attach_name = fp['name']
         except Exception as ex:
             raise Exception(f'Error while opening attachment id {attach_id}: {str(ex)}')
-        if isinstance(attach_name , list):
+        if isinstance(attach_name, list):
             attach_name = attach_name[0]
         part = MIMEBase('application', 'octet-stream')
         with open(file_path, 'rb') as f:
@@ -291,9 +301,9 @@ def sign_and_encrypt(client: Client, args: dict):
             encoders.encode_base64(part)
             part.add_header('Content-Disposition', 'attachment; filename="%s"' % attach_name)
             msg.attach(part)
-    
+
     msg_str = msg.as_string()
-    demisto.results(f'\n\nMessage:\n\n {msg_str} \n\nMessage end\n')
+    demisto.debug(f'\n\nMessage:\n\n {msg_str} \n\nMessage end\n')
 
     msg_bio = BIO.MemoryBuffer(msg_str.encode('utf-8'))
 
@@ -303,7 +313,7 @@ def sign_and_encrypt(client: Client, args: dict):
         msg_bio = BIO.MemoryBuffer(msg_str.encode('utf-8'))  # Recreate since sign() has consumed it.
 
     if encrypt:
-        pub_certs = [cert for dest in [recipients, cc, bcc] for cert in dest.values()] # all keys are used the same
+        pub_certs = [cert for dest in [recipients, cc, bcc] for cert in dest.values()]  # all keys are used the same
         sk = X509.X509_Stack()
         if not pub_certs:
             demisto.debug("No certs given, using instance cert")
@@ -314,7 +324,7 @@ def sign_and_encrypt(client: Client, args: dict):
                 continue
             if ("-----BEGIN CERTIFICATE-----") not in cert:
                 cert = create_pem_string(cert)
-            
+
             with NamedTemporaryFile(delete=False) as public_key_file:
                 public_key_file.write(bytes(cert, "utf-8"))
                 public_key_file.close()
@@ -351,10 +361,10 @@ def sign_and_encrypt(client: Client, args: dict):
     command_results = CommandResults(
         readable_output=msg,
         outputs_prefix='SMIME.SignedAndEncrypted',
-        outputs={'Message':msg,
-                 'Recipient Ids':[id for dest in [recipients, cc, bcc] for id in dest],
+        outputs={'Message': msg,
+                 'Recipient Ids': [id for dest in [recipients, cc, bcc] for id in dest],
                  'File Name': file_results.get('File'),
-        }
+                 }
     )
     # TODO: Get final output design from TPM
     return [command_results, file_results]

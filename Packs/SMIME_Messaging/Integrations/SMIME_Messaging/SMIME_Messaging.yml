@@ -53,9 +53,12 @@ script:
       description: The encryption headers.
       type: String
   - arguments:
-    - description: The signed email with .p7 extension.
+    - description: entity_id of the file with .p7 extension containing the signed message
       name: signed_message
       required: true
+    - description: Sender's public key to verify
+      name: public_key
+      defaultValue: instancePublicKey
     description: Verifies the signature.
     name: smime-verify-sign
   - arguments:
