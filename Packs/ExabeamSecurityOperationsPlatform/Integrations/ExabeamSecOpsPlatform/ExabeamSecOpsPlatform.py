@@ -43,7 +43,7 @@ class Client(BaseClient):
         if self._is_token_valid(access_token, expiry_time_str):
             self.access_token = access_token
         else:
-            self.access_token = self._get_new_token()
+            self._get_new_token()
 
     def _is_token_valid(self, access_token, expiry_time_str):
         """
@@ -77,14 +77,8 @@ class Client(BaseClient):
         current_time_utc = datetime.now(timezone.utc)
         expiry_time_utc = current_time_utc + timedelta(seconds=expires_in)
 
-        demisto.setIntegrationContext(
-            {
-                "access_token": new_token,
-                "expiry_time_utc": expiry_time_utc.isoformat()
-            }
-        )
-
-        return new_token
+        demisto.setIntegrationContext({"access_token": new_token, "expiry_time_utc": expiry_time_utc.isoformat()})
+        self.access_token = new_token
 
     def search_request(self, data_dict: dict) -> dict:
         """
@@ -92,16 +86,36 @@ class Client(BaseClient):
         """
         data = json.dumps(data_dict)
         full_url = f"{self._base_url}/search/v2/events"
-        response = self._http_request(
-            "POST",
+        response = self.request(
+            method="POST",
             full_url=full_url,
             data=data,
-            headers={"Authorization": f"Bearer {self.access_token}", "Content-Type": "application/json"}
+            headers={"Authorization": f"Bearer {self.access_token}", "Content-Type": "application/json"},
         )
         return response
 
+    def request(self, method, full_url, data, headers, **kwargs):
+        try:
+            return self._http_request(method=method, full_url=full_url, data=data, headers=headers, **kwargs)
+        except Exception as e:
+            if not hasattr(e, "res") or not hasattr(e.res, "status_code"):  # type: ignore
+                raise
 
-''' HELPER FUNCTIONS '''
+            if e.res.status_code == 401 and "Jwt is expired" in e.res.text:  # type: ignore
+                self._get_new_token()
+                headers["Authorization"] = f"Bearer {self.access_token}"
+                return self._http_request(
+                    method=method,
+                    full_url=full_url,
+                    data=data,
+                    headers=headers,
+                    **kwargs,
+                )
+            else:
+                raise
+
+
+""" HELPER FUNCTIONS """
 
 
 def get_date(time: str, arg_name: str):

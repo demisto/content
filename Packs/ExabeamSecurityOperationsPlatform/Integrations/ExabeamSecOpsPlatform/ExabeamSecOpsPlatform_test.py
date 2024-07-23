@@ -216,7 +216,7 @@ def test_search_request(mocker):
     result = instance.search_request(data_dict)
 
     mock_http_request.assert_called_once_with(
-        "POST",
+        method="POST",
         full_url=expected_url,
         data=json.dumps(data_dict),
         headers=expected_headers
@@ -310,8 +310,7 @@ def test_get_new_token(mocker, expected_response, expected_token):
     http_request = mocker.patch.object(Client, "_http_request", return_value=expected_response)
     client = Client(base_url="https://api.exabeam.com", client_id="abc123", client_secret="ABC123", verify=False, proxy=False)
 
-    result = client._get_new_token()
-    assert result == expected_token
+    client._get_new_token()
     http_request.assert_called_with(
         method="POST",
         full_url="https://api.exabeam.com/auth/v1/token",
