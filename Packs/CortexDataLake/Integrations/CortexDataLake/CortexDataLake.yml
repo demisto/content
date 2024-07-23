@@ -525,6 +525,10 @@ script:
     - description: The SHA256 hash of the file for the query. For example, SHA256="503ca1a4fc0d48b18c0336f544ba0f0abf305ae3a3f49b3c2b86b8645d6572dc" would return all logs associated with this file.
       name: SHA256
       required: true
+    - description: page.
+      name: page
+    - description: page size.
+      name: page_size
     description: Runs a query on the threat table with the query 'SELECT * FROM `firewall.threat` WHERE file_sha_256 = <file_hash>'.
     name: cdl-search-by-file-hash
     outputs:

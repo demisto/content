@@ -1080,9 +1080,12 @@ def search_by_file_hash_command(args: dict, client: Client) -> tuple[str, dict[s
     query_start_time, query_end_time = query_timestamp(args)
     query = f'SELECT * FROM `firewall.threat` WHERE file_sha_256 = "{file_hash}" '  # guardrails-disable-line  # noqa: S608
     query += f'AND time_generated BETWEEN TIMESTAMP("{query_start_time}") AND ' \
-             f'TIMESTAMP("{query_end_time}") LIMIT {logs_amount}'
+             f'TIMESTAMP("{query_end_time}")'
 
-    records, raw_results = client.query_loggings(query)
+    if not args.get('page'):
+        query += f' LIMIT {logs_amount}'
+
+    records, raw_results = client.query_loggings(query, page_number=args.get('page'), page_size=args.get('page_size'))
 
     transformed_results = [threat_context_transformer(record) for record in records]
 
