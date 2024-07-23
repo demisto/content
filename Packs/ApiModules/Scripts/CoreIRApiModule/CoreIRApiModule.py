@@ -2409,13 +2409,13 @@ def blocklist_files_command(client, args):
     detailed_response = argToBoolean(args.get('detailed_response', False))
     try:
         res = client.blocklist_files(hash_list=hash_list,
-                                    comment=comment,
-                                    incident_id=incident_id,
-                                    detailed_response=detailed_response)
+                                     comment=comment,
+                                     incident_id=incident_id,
+                                     detailed_response=detailed_response)
     except Exception as e:
         if 'All the hashes already been added to the allow or block list' in str(e):
             return CommandResults(
-            readable_output='All the hashes already been added to the block list.'
+                readable_output='All the hashes already been added to the block list.'
             )
         raise e
 
@@ -2467,13 +2467,13 @@ def allowlist_files_command(client, args):
     detailed_response = argToBoolean(args.get('detailed_response', False))
     try:
         res = client.allowlist_files(hash_list=hash_list,
-                                    comment=comment,
-                                    incident_id=incident_id,
-                                    detailed_response=detailed_response)
+                                     comment=comment,
+                                     incident_id=incident_id,
+                                     detailed_response=detailed_response)
     except Exception as e:
         if 'All the hashes already been added to the allow or block list' in str(e):
             return CommandResults(
-            readable_output='All the hashes already been added to the allow list.'
+                readable_output='All the hashes already been added to the allow list.'
             )
         raise e
 
