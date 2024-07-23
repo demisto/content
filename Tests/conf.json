@@ -5756,14 +5756,6 @@
             "playbookID": "MattermostV2 - testplaybook"
         },
         {
-            "integrations": "PingOne",
-            "playbookID": "TestPingOnePlaybook"
-        },
-        {
-            "integrations": "TaegisXDRv2",
-            "playbookID": "TaegisXDR"
-        },
-        {
             "playbookID": "MattermostAskUser_testplaybook",
             "scripts": [
                 "MattermostAskUser"
