@@ -5760,6 +5760,10 @@
             "playbookID": "TestPingOnePlaybook"
         },
         {
+            "integrations": "TaegisXDRv2",
+            "playbookID": "TaegisXDR"
+        },
+        {
             "playbookID": "MattermostAskUser_testplaybook",
             "scripts": [
                 "MattermostAskUser"
