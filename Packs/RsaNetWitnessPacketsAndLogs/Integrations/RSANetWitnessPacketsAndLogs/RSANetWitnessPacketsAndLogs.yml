@@ -466,4 +466,4 @@ script:
     description: Dumps information out of the database in nwd formatted files
 fromversion: 5.0.0
 tests:
-- No tests (auto formatted)
+- rsa_packets_and_logs_test
