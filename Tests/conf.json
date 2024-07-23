@@ -4052,6 +4052,12 @@
             "is_mockable": false
         },
         {
+            "integrations": "Carbon Black Endpoint Standard v3",
+            "playbookID": "carbonBlackEndpointStandardV3TestPlaybook",
+            "fromversion": "6.10.0",
+            "is_mockable": false
+        },
+        {
             "integrations": "Proofpoint TAP v2",
             "playbookID": "ProofpointTAP-Test"
         },
