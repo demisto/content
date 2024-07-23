@@ -22,6 +22,29 @@ configuration:
   name: proxy
   type: 8
   required: false
+- display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: first_fetch
+  defaultvalue: 3 days
+  type: 0
+  section: Collect
+  advanced: true
+- display: Maximum Incidents Per Fetch
+  name: max_fetch
+  defaultvalue: 50
+  type: 0
+  section: Collect
+  advanced: true
+- display: Fetch query
+  name: fetch_query
+  type: 0
+  section: Collect
+  advanced: true
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+- display: Incident type
+  name: incidentType
+  type: 13
 description: Exabeam Security Operations Platform offers a centralized and scalable platform for log management.
 display: Exabeam Security Operations Platform
 name: ExabeamSecOpsPlatform
@@ -70,6 +93,7 @@ script:
   runonce: false
   script: '-'
   type: python
+  isfetch: true
   subtype: python3
   dockerimage: demisto/python3:3.10.14.95956
 fromversion: 6.10.0
