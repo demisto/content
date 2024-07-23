@@ -178,3 +178,57 @@ def test_imgaes_not_attached_to_incident(mocker, email_html, expected):
     main({})
 
     assert expected in DisplayHTMLWithImages.return_results.call_args[0][0]['Contents']
+
+
+def test_2_imgaes_with_same_name(mocker):
+    """
+        Given
+        - Html contained 2 images with same name and another file.
+        When
+        - All images were uploaded to the server
+        Then
+        - The images' src attribute would be replaced as expected with the correct entry id
+    """
+    import DisplayHTMLWithImages
+    from DisplayHTMLWithImages import main
+
+    mocked_incident = {
+        'CustomFields': {
+            'emailbody': '<img src="cid:ii_lyfigebl1"><img src="cid:ii_wweegebl1">'
+        },
+    }
+    mocked_files = [
+        {'Name': 'test.pdf', 'EntryID': '36@119'},
+        {'Name': 'image_1.png', 'EntryID': '37@119'},
+        {'Name': 'image_1.png', 'EntryID': '38@119'}
+    ]
+
+    mocked_context = {
+        'Email': {
+            'AttachmentsData': [
+                {
+                    'Content-ID': '<ii_FFFFFFFFF>',
+                    'Name': 'test.pdf'
+                },
+                {
+                    'Content-ID': '<ii_lyfigebl1>',
+                    'Name': 'image_1.png'
+                },
+                {
+                    'Content-ID': '<ii_wweegebl1>',
+                    'Name': 'image_1.png'
+                }
+            ]
+        },
+        'File': mocked_files
+    }
+
+    mocker.patch.object(demisto, 'demistoUrls', return_value={'server': 'test_url'})
+    mocker.patch.object(demisto, 'incident', return_value=mocked_incident)
+    mocker.patch.object(demisto, 'context', return_value=mocked_context)
+    mocker.patch.object(DisplayHTMLWithImages, 'return_results')
+
+    main({})
+
+    expected = '<img src=/entry/download/37@119><img src=/entry/download/38@119>'
+    assert expected in DisplayHTMLWithImages.return_results.call_args[0][0]['Contents']

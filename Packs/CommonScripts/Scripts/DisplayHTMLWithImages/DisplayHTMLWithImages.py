@@ -3,6 +3,13 @@ from CommonServerPython import *  # noqa: F401
 import re
 
 
+IMG_FORMATS = ['jpeg', 'gif', 'bmp', 'png', 'jfif', 'tiff', 'eps', 'indd', 'jpg']
+
+
+def is_image(file_name: str):
+    return file_name and file_name.split('.')[-1] in IMG_FORMATS
+
+
 def create_html_with_images(email_html='', entry_id_list=None):
     if not entry_id_list:
         return email_html
@@ -17,10 +24,10 @@ def create_html_with_images(email_html='', entry_id_list=None):
                                 email_html
                                 )
         # Handling inline attachments from Outlook mailboxes
-        # Note: when tested, entry id list and inline attachments were in the same order, so there was no need in
-        # special validation that the right src was being replaced.
+        # Note: the format of an image src are like this src="cid:THE CONTENT ID"
+        # and entry_id[0] should cotained the Content ID
         else:
-            email_html = re.sub('(src="cid(.*?"))',
+            email_html = re.sub(f'(src="cid(.*?{entry_id[0]}.*?"))',
                                 f'src={account_name}/entry/download/{entry_id[1]}',
                                 email_html, count=1,
                                 )
@@ -42,7 +49,7 @@ def get_entry_id_list_by_incident_attachments(attachments, files):
     entry_id_list = []
     for attachment in attachments:
         attachment_name = attachment.get('name', '')
-        if attachment_name and not attachment_name.endswith('eml'):
+        if is_image(attachment_name):
             for file in files:
                 if attachment_name == file.get('Name'):
                     entry_id_list.append((attachment_name, file.get('EntryID')))
@@ -61,14 +68,20 @@ def get_entry_id_list_by_parsed_email_attachments(attachments, files):
     if not (attachments and files):
         return []
 
-    entry_id_list = []
+    img_data_list = []
+    entry_ids = set()
     for attachment in attachments:
-        attachment_name = attachment.get('Name', '')
-        for file in files:
-            if attachment_name == file.get('Name'):
-                entry_id_list.append((attachment_name, file.get('EntryID')))
-    demisto.info(f'\n\n idlist by parsed email attachments\n\n{entry_id_list}')
-    return entry_id_list
+        attach_name = attachment.get('Name', '')
+        attach_id = attachment.get('Content-ID', '').replace('<', '').replace('>', '')
+        if is_image(attach_name) and attach_id:
+            for file in files:
+                # we use the entry_ids set to avoid taking the wrong file in case there is two different images with same name
+                if attach_name == file.get('Name') and file.get('EntryID') not in entry_ids:
+                    entry_ids.add(file.get('EntryID'))
+                    img_data_list.append((attach_id, file.get('EntryID')))
+                    break
+    demisto.info(f'\n\n idlist by parsed email attachments\n\n{img_data_list}')
+    return img_data_list
 
 
 def main(args):
