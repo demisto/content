@@ -757,9 +757,9 @@ def prepare_security_rule_params(api_action: str = None, rulename: str = None, s
             raise Exception('Please provide the pre_post argument when configuring '
                             'a security rule in Panorama instance.')
         else:
-            params['xpath'] = f"{XPATH_SECURITY_RULES}{PRE_POST}/security/rules/entry[@name='{rulename}']"
+            params['xpath'] = f"{XPATH_RULEBASE}{PRE_POST}/security/rules/entry[@name='{rulename}']"
     else:
-        params['xpath'] = f"{XPATH_SECURITY_RULES}[@name='{rulename}']"
+         params['xpath'] = f"{XPATH_RULEBASE}rulebase/security/rules/entry[@name='{rulename}']"
 
     return params
 
@@ -3941,7 +3941,6 @@ def panorama_create_rule_command(args: dict):
 
     if args.get('audit_comment'):
         params['audit-comment'] = args.get('audit_comment')
-
     result = http_request(
         URL,
         'POST',
