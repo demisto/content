@@ -207,7 +207,7 @@ class Client(BaseClient):
                 )
                 return response
             finally:
-                if exists:
+                if exists:  # pylint: disable=E0601
                     raise Exception("workspace already exists")
         except Exception as e:
             msg = f"AnythingLLM: workspace_new: exception creating a new workspace [{workspace}] - {str(e)}"
