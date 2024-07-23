@@ -11,9 +11,6 @@ from typing import Any, Callable, Type, TypeVar
 
 """ Global Variables """
 
-DEFAULT_ORGANIZATION_ID = None
-DEFAULT_NETWORK_ID = None
-
 DEFAULT_PAGE_SIZE = 50
 
 INTEGRATION_NAME = "meraki"
@@ -2239,14 +2236,12 @@ def create_appliance_vlan_table(obj: list[dict[str, Any]]) -> list[dict[str, Any
     ]
 
 
-def get_valid_arg(args: dict[str, Any], key: str, default_value: str | None = None) -> str:
+def get_valid_arg(args: dict[str, Any], key: str) -> str:
     """Get the value of a key from the arguments.
 
     Args:
         args (dict[str, Any]): The arguments to get the value from.
         key (str): The key to get the value of.
-        default_value (str | None, optional): The default value to return if the key is not found.
-            Defaults to None.
 
     Raises:
         ValueError: If the key is not found and no default value is provided.
@@ -2254,7 +2249,7 @@ def get_valid_arg(args: dict[str, Any], key: str, default_value: str | None = No
     Returns:
         str: The value of the key.
     """
-    if not (value := args.get(key, default_value)):
+    if not (value := args.get(key)):
         raise DemistoException(f"Missing required argument: {key}")
 
     return value
@@ -2388,7 +2383,7 @@ def list_network_command(client: Client, args: dict[str, Any]) -> list[CommandRe
     elif network_id := args.get("network_id"):
         raw_response = [client.get_network(network_id)]
     # Handle LIST request.
-    elif organization_id := args.get("organization_id", DEFAULT_ORGANIZATION_ID):
+    elif organization_id := args.get("organization_id"):
         tags_filter_type = args.get("tags_filter_type")
         request_args = remove_empty_elements(
             {
@@ -2453,7 +2448,7 @@ def list_organization_license_state_command(client: Client, args: dict[str, Any]
     Returns:
         CommandResults: Outputs of the command that represent an entry in warroom.
     """
-    organization_id = get_valid_arg(args, "organization_id", DEFAULT_ORGANIZATION_ID)
+    organization_id = get_valid_arg(args, "organization_id")
 
     raw_response = client.list_organization_license_state(organization_id)
     raw_response["organizationId"] = organization_id
@@ -2493,7 +2488,7 @@ def list_organization_inventory_command(client: Client, args: dict[str, Any]) ->
     if next_token := args.get("next_token"):
         raw_response, links = client.call_link(next_token)
     # Handle LIST request.
-    elif organization_id := args.get("organization_id", DEFAULT_ORGANIZATION_ID):
+    elif organization_id := args.get("organization_id"):
         # Handle GET request.
         if serial := args.get("serial"):
             raw_response = [client.get_organization_inventory(organization_id, serial)]
@@ -2574,7 +2569,7 @@ def claim_device_command(client: Client, args: dict[str, Any]) -> CommandResults
     Returns:
         CommandResults: Outputs of the command that represent an entry in warroom.
     """
-    network_id = get_valid_arg(args, "network_id", DEFAULT_NETWORK_ID)
+    network_id = get_valid_arg(args, "network_id")
 
     raw_response = client.claim_device(network_id, argToList(args["serials"]))
     readable_output = ""
@@ -2615,7 +2610,7 @@ def search_organization_device_command(client: Client, args: dict[str, Any]) -> 
     if next_token := args.get("next_token"):
         raw_response, links = client.call_link(next_token)
     # Handle LIST request.
-    elif organization_id := args.get("organization_id", DEFAULT_ORGANIZATION_ID):
+    elif organization_id := args.get("organization_id"):
         tags_filter_type = args.get("tags_filter_type")
         request_args = remove_empty_elements(
             {
@@ -2692,7 +2687,7 @@ def list_device_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     if serial := args.get("serial"):
         raw_response = [client.get_device(serial)]
-    elif network_id := args.get("network_id", DEFAULT_NETWORK_ID):
+    elif network_id := args.get("network_id"):
         raw_response = client.list_device(network_id)
     else:
         raise DemistoException("Must input one of: `network_id` or `serial`.")
@@ -2772,7 +2767,7 @@ def remove_device_command(client: Client, args: dict[str, Any]) -> CommandResult
     Returns:
         CommandResults: Outputs of the command that represent an entry in warroom.
     """
-    network_id = get_valid_arg(args, "network_id", DEFAULT_NETWORK_ID)
+    network_id = get_valid_arg(args, "network_id")
     serial = args["serial"]
 
     client.remove_device(network_id, serial)
@@ -2805,7 +2800,7 @@ def list_device_status_command(client: Client, args: dict[str, Any]) -> list[Com
     if next_token := args.get("next_token"):
         raw_response, links = client.call_link(next_token)
     # Handle LIST request.
-    elif organization_id := args.get("organization_id", DEFAULT_ORGANIZATION_ID):
+    elif organization_id := args.get("organization_id"):
         tags_filter_type = args.get("tags_filter_type")
         request_args = remove_empty_elements(
             {
@@ -2879,7 +2874,7 @@ def list_organization_uplink_status_command(client: Client, args: dict[str, Any]
     if next_token := args.get("next_token"):
         raw_response, links = client.call_link(next_token)
     # Handle LIST request.
-    elif organization_id := args.get("organization_id", DEFAULT_ORGANIZATION_ID):
+    elif organization_id := args.get("organization_id"):
         request_args = remove_empty_elements(
             {
                 "organization_id": organization_id,
@@ -2948,7 +2943,7 @@ def list_organization_client_command(client: Client, args: dict[str, Any]) -> li
     if next_token := args.get("next_token"):
         raw_response, links = client.call_link(next_token)
     # Handle LIST request.
-    elif (organization_id := args.get("organization_id", DEFAULT_ORGANIZATION_ID)) and (mac := args.get("mac")):
+    elif (organization_id := args.get("organization_id")) and (mac := args.get("mac")):
         request_args = {
             "organization_id": organization_id,
             "mac": mac,
@@ -3025,7 +3020,7 @@ def list_network_client_command(client: Client, args: dict[str, Any]) -> list[Co
     if next_token := args.get("next_token"):
         raw_response, links = client.call_link(next_token)
     # Handle LIST request.
-    elif network_id := args.get("network_id", DEFAULT_NETWORK_ID):
+    elif network_id := args.get("network_id"):
         # Handle GET request.
         if client_id := args.get("client_id"):
             raw_response = [client.get_network_client(network_id, client_id)]
@@ -3144,7 +3139,7 @@ def list_ssid_appliance_command(client: Client, args: dict[str, Any]) -> Command
     Returns:
         CommandResults: Outputs of the command that represent an entry in warroom.
     """
-    network_id = get_valid_arg(args, "network_id", DEFAULT_NETWORK_ID)
+    network_id = get_valid_arg(args, "network_id")
 
     if number := args.get("number"):
         raw_response = [client.get_network_appliance_ssid(network_id, number)]
@@ -3184,7 +3179,7 @@ def list_ssid_wireless_command(client: Client, args: dict[str, Any]) -> CommandR
     Returns:
         CommandResults: Outputs of the command that represent an entry in warroom.
     """
-    network_id = get_valid_arg(args, "network_id", DEFAULT_NETWORK_ID)
+    network_id = get_valid_arg(args, "network_id")
 
     if number := args.get("number"):
         raw_response = [client.get_network_wireless_ssid(network_id, number)]
@@ -3224,7 +3219,7 @@ def list_network_l3firewall_rule_command(client: Client, args: dict[str, Any]) -
     Returns:
         CommandResults: Outputs of the command that represent an entry in warroom.
     """
-    network_id = get_valid_arg(args, "network_id", DEFAULT_NETWORK_ID)
+    network_id = get_valid_arg(args, "network_id")
 
     raw_response = client.list_network_l3firewall_rule(network_id)
     readable_output = tableToMarkdown(
@@ -3259,7 +3254,7 @@ def update_network_l3firewall_rule_command(client: Client, args: dict[str, Any])
     Returns:
         CommandResults: Outputs of the command that represent an entry in warroom.
     """
-    network_id = get_valid_arg(args, "network_id", DEFAULT_NETWORK_ID)
+    network_id = get_valid_arg(args, "network_id")
 
     syslog_default_rule = arg_to_optional_bool(args.get("syslog_default_rule"))
 
@@ -3327,7 +3322,7 @@ def delete_network_l3firewall_rule_command(client: Client, args: dict[str, Any])
     Returns:
         CommandResults: Outputs of the command that represent an entry in warroom.
     """
-    network_id = get_valid_arg(args, "network_id", DEFAULT_NETWORK_ID)
+    network_id = get_valid_arg(args, "network_id")
 
     client.update_network_l3firewall_rule(network_id)
 
@@ -3350,7 +3345,7 @@ def list_network_l7firewall_rule_command(client: Client, args: dict[str, Any]) -
     Returns:
         CommandResults: Outputs of the command that represent an entry in warroom.
     """
-    network_id = get_valid_arg(args, "network_id", DEFAULT_NETWORK_ID)
+    network_id = get_valid_arg(args, "network_id")
 
     raw_response = client.list_network_l7firewall_rule(network_id)
     readable_output = tableToMarkdown(
@@ -3385,7 +3380,7 @@ def update_network_l7firewall_rule_command(client: Client, args: dict[str, Any])
     Returns:
         CommandResults: Outputs of the command that represent an entry in warroom.
     """
-    network_id = get_valid_arg(args, "network_id", DEFAULT_NETWORK_ID)
+    network_id = get_valid_arg(args, "network_id")
 
     l7firewall_rules: list[L7FirewallRule] = []
 
@@ -3440,7 +3435,7 @@ def delete_network_l7firewall_rule_command(client: Client, args: dict[str, Any])
     Returns:
         CommandResults: Outputs of the command that represent an entry in warroom.
     """
-    network_id = get_valid_arg(args, "network_id", DEFAULT_NETWORK_ID)
+    network_id = get_valid_arg(args, "network_id")
 
     client.update_network_l7firewall_rule(network_id)
 
@@ -3463,7 +3458,7 @@ def list_organization_adaptive_policy_acl_command(client: Client, args: dict[str
     Returns:
         CommandResults: Outputs of the command that represent an entry in warroom.
     """
-    organization_id = get_valid_arg(args, "organization_id", DEFAULT_ORGANIZATION_ID)
+    organization_id = get_valid_arg(args, "organization_id")
 
     if acl_id := args.get("acl_id"):
         raw_response = [client.get_organization_adaptive_policy_acl(organization_id, acl_id)]
@@ -3503,7 +3498,7 @@ def list_organization_adaptive_policy_command(client: Client, args: dict[str, An
     Returns:
         CommandResults: Outputs of the command that represent an entry in warroom.
     """
-    organization_id = get_valid_arg(args, "organization_id", DEFAULT_ORGANIZATION_ID)
+    organization_id = get_valid_arg(args, "organization_id")
 
     if adaptive_policy_id := args.get("adaptive_policy_id"):
         raw_response = [client.get_organization_adaptivepolicy(organization_id, adaptive_policy_id)]
@@ -3543,7 +3538,7 @@ def list_organization_adaptive_policy_group_command(client: Client, args: dict[s
     Returns:
         CommandResults: Outputs of the command that represent an entry in warroom.
     """
-    organization_id = get_valid_arg(args, "organization_id", DEFAULT_ORGANIZATION_ID)
+    organization_id = get_valid_arg(args, "organization_id")
 
     if adaptive_policy_group_id := args.get("adaptive_policy_group_id"):
         raw_response = [client.get_organization_adaptive_policy_group(organization_id, adaptive_policy_group_id)]
@@ -3583,7 +3578,7 @@ def list_organization_adaptive_policy_settings_command(client: Client, args: dic
     Returns:
         CommandResults: Outputs of the command that represent an entry in warroom.
     """
-    organization_id = get_valid_arg(args, "organization_id", DEFAULT_ORGANIZATION_ID)
+    organization_id = get_valid_arg(args, "organization_id")
 
     raw_response = client.list_organization_adaptive_policy_settings(organization_id)
 
@@ -3619,7 +3614,7 @@ def list_organization_branding_policy_command(client: Client, args: dict[str, An
     Returns:
         CommandResults: Outputs of the command that represent an entry in warroom.
     """
-    organization_id = get_valid_arg(args, "organization_id", DEFAULT_ORGANIZATION_ID)
+    organization_id = get_valid_arg(args, "organization_id")
 
     if branding_policy_id := args.get("branding_policy_id"):
         raw_response = [client.get_organization_branding_policy(organization_id, branding_policy_id)]
@@ -3659,7 +3654,7 @@ def list_network_group_policy_command(client: Client, args: dict[str, Any]) -> C
     Returns:
         CommandResults: Outputs of the command that represent an entry in warroom.
     """
-    network_id = get_valid_arg(args, "network_id", DEFAULT_NETWORK_ID)
+    network_id = get_valid_arg(args, "network_id")
 
     if group_policy_id := args.get("group_policy_id"):
         raw_response = [client.get_network_grouppolicy(network_id, group_policy_id)]
@@ -3705,7 +3700,7 @@ def list_network_client_policy_command(client: Client, args: dict[str, Any]) -> 
     if next_token := args.get("next_token"):
         raw_response, links = client.call_link(next_token)
     # Handle LIST request.
-    elif network_id := args.get("network_id", DEFAULT_NETWORK_ID):
+    elif network_id := args.get("network_id"):
         request_args = remove_empty_elements(
             {
                 "network_id": network_id,
@@ -3767,7 +3762,7 @@ def list_network_vlan_profile_command(client: Client, args: dict[str, Any]) -> C
     Returns:
         CommandResults: Outputs of the command that represent an entry in warroom.
     """
-    network_id = get_valid_arg(args, "network_id", DEFAULT_NETWORK_ID)
+    network_id = get_valid_arg(args, "network_id")
 
     if iname := args.get("iname"):
         raw_response = [client.get_network_vlan_profile(network_id, iname)]
@@ -3807,7 +3802,7 @@ def list_network_appliance_vlan_command(client: Client, args: dict[str, Any]) ->
     Returns:
         CommandResults: Outputs of the command that represent an entry in warroom.
     """
-    network_id = get_valid_arg(args, "network_id", DEFAULT_NETWORK_ID)
+    network_id = get_valid_arg(args, "network_id")
 
     if vlan_id := args.get("vlan_id"):
         raw_response = [client.get_network_appliance_vlan(network_id, vlan_id)]
@@ -3851,9 +3846,11 @@ def main() -> None:
     verify_certificate: bool = not argToBoolean(params.get("insecure", False))
     proxy: bool = argToBoolean(params.get("proxy", False))
 
-    global DEFAULT_ORGANIZATION_ID, DEFAULT_NETWORK_ID
-    DEFAULT_ORGANIZATION_ID = params.get("organization_id")
-    DEFAULT_NETWORK_ID = params.get("network_id")
+    if not args.get("organization_id"):
+        args["organization_id"] = params.get("organization_id")
+
+    if not args.get("network_id"):
+        args["network_id"] = params.get("network_id")
 
     demisto.debug(f"Command being called is {command}")
 
