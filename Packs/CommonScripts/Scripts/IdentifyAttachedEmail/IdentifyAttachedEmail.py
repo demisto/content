@@ -13,27 +13,29 @@ CONFIDENT_EMAIL_INFOS = {
 
 
 # IMPORTANT: If you modify the logic here make sure to update ParseEmailFiles too
-def is_email(file_metadata: dict, file_name: str):
-    file_info = file_metadata.get('info', '')
+def is_email(file_metadata: dict, file_name: str) -> bool:
+    file_info = file_metadata.get('info', '').strip().lower()
+    file_name = file_name.strip().lower()
     return any((
         file_metadata.get('type') == 'eml',
-        CONFIDENT_EMAIL_INFOS.intersection(file_info),
+        any(info in file_info for info in CONFIDENT_EMAIL_INFOS),
         file_name.endswith('.eml') and ('text' in file_info or file_info == 'data'),
         file_name.endswith('.msg') and 'composite document file v2 document' in file_info
     ))
 
 
-def is_entry_email(entry: dict):
+def get_email_entry_id(entry: dict) -> None | str:
     """
     Return entry ID if this is an email entry otherwise None
 
     Arguments:
         entry {dict} -- Entry object as returned from getEntries or getEntry
     """
-    file_metadata = entry.get('FileMetadata', {})
-    name = entry.get('File', '')
-    if is_email(file_metadata, name):
-        return entry.get('ID')
+    if isinstance(entry, dict):
+        file_metadata = entry.get('FileMetadata', {})
+        name = entry.get('File', '')
+        if is_email(file_metadata, name):
+            return entry.get('ID')
     return None
 
 
@@ -53,7 +55,7 @@ def identify_attached_mail(args):
             for ent_id in entry_ids:
                 res = demisto.executeCommand('getEntry', {'id': ent_id})
                 if not is_error(res):
-                    id = is_entry_email(res[0])
+                    id = get_email_entry_id(res[0])
                     if id:
                         # return the first email entry that we find.
                         return 'yes', {'reportedemailentryid': id}
@@ -64,7 +66,7 @@ def identify_attached_mail(args):
         return 'no', None
 
     for e in entries:
-        id = is_entry_email(e)
+        id = get_email_entry_id(e)
         if id:
             # leave the following comment as server used it to detect the additional context path used beyond the condition values
             # demisto.setContext('reportedemailentryid', id)
