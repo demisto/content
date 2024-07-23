@@ -111,48 +111,6 @@ class Client(BaseClient):
         else:
             raise DemistoException(response.text, response.status_code, response.reason)
 
-    def get_alert_rules(self, args: dict[str, Any]):
-        """
-        Get jizo alert rules
-
-        """
-        url = f"{self.base_url}/jizo_get_alert_rules"
-
-        response = requests.get(url, params=args, headers=self.headers, verify=False)
-
-        if response.status_code == 200:
-            return response.json()
-        else:
-            raise DemistoException(response.text, response.status_code, response.reason)
-
-    def get_device_records(self, args: dict[str, Any]):
-        """
-        Get jizo device records. You can filter by ip_src, mac, hostname.
-        One of this params is mandatory. You can filter also by timestamp or probe name
-
-        """
-        url = f"{self.base_url}/jizo_device_records"
-
-        response = requests.get(url, params=args, headers=self.headers, verify=False)
-        if response.status_code == 200:
-            return response.json()
-        else:
-            raise DemistoException(response.text, response.status_code, response.reason)
-
-    def get_device_alerts(self, args: dict[str, Any]):
-        """
-        Get jizo device alerts. You can filter by ip_src, ip_dest.
-        One of this params is mandatory. You can filter also by timestamp or probe name
-
-        """
-        url = f"{self.base_url}/jizo_get_devicealerts"
-
-        response = requests.get(url, params=args, headers=self.headers, verify=False)
-        if response.status_code == 200:
-            return response.json()
-        else:
-            raise DemistoException(response.text, response.status_code, response.reason)
-
     def get_alert_list(
         self, limit: int, start_time: str, last_id: int = 0, first_fetched_ids: list = []
     ):
@@ -241,6 +199,16 @@ def formatting_date(date: str) -> str:
     return datetime.strftime(formatted, DATE_FORMAT)
 
 
+def convert_date(date: str) -> str:
+    """
+    Converts date of format n days ago to datetime
+    """
+
+    formatted = datetime.now() - timedelta(days=int(date.split(' ')[0]))
+
+    return formatted.strftime(JIZO_DATE_FORMAT)
+
+
 def convert_to_demisto_severity(severity: str) -> int:
     """
     Maps Jizo severity to Cortex XSOAR severity.
@@ -302,7 +270,7 @@ def get_token(client: Client):
         return_error(f"An error occurred: {e}")
 
 
-def get_protocols_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def get_protocols_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
     """
     Returns response of jizo_get_protocols endpoint
 
@@ -310,83 +278,139 @@ def get_protocols_command(client: Client, args: dict[str, Any]) -> CommandResult
         client (Client): JizoM client to use.
 
     Returns:
-        CommandResults: A ``CommandResults`` object that will be then passed to ``return_results``
+        CommandResults: A  list of ``CommandResults`` object that will be then passed to ``return_results``
     """
 
     # Call the Client function and get the raw response
     result = client.get_protocols(args)
 
-    return CommandResults(
-        readable_output=tableToMarkdown(name="Jizo Protocols", t=result),
-        outputs_prefix="JizoM.Protocols",
-        outputs_key_field='flow_id',
-        outputs=result,
-    )
+    command_results = []
+
+    headers = {'alerts_flows': ['Protocol', 'Probe name', 'Flow id', 'IP source', 'IP destination'],
+               'alerts_files': ['Protocol', 'Probe name', 'Flow id', 'IP source', 'IP destination'],
+               'alerts_usecase': ['Protocol', 'Probe name', 'Flow id', 'IP source', 'IP destination']}
+
+    for alert_type in result:
+        alert_data = result[alert_type]["data"]
+        human_readable = []
+        for protocol in alert_data:
+            for data in alert_data[protocol]:
+                d = {'Protocol': protocol,
+                     'Probe name': data.get('probe_name', 'None'),
+                     'Flow id': data.get('flow_id', 'None'),
+                     'IP source': data.get('src_ip', 'None'),
+                     'IP destination': data.get('dest_ip', 'None')}
+
+                human_readable.append(d)
+
+        readable_output = tableToMarkdown(
+            name=alert_type.replace("_", " "),
+            t=human_readable,
+            removeNull=True,
+            headers=headers[alert_type]
+        )
+        command_results.append(
+            CommandResults(
+                readable_output=readable_output,
+                outputs_prefix=f"JizoM.Protocols.{alert_type}",
+                outputs_key_field='idx',
+                outputs=result[alert_type],
+            ))
+
+    return command_results
 
 
-def get_peers_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def get_peers_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
 
     # Call the Client function and get the raw response
     result = client.get_peers(args)
 
-    return CommandResults(
-        readable_output=tableToMarkdown(name="Jizo Peers", t=result),
-        outputs_prefix="JizoM.Peers",
-        outputs_key_field='flow_id',
-        outputs=result,
-    )
+    command_results = []
+
+    headers = {'alerts_flows': ['Probe name', 'IP source', 'IP destination', 'Protocol', 'Flow id'],
+               'alerts_files': ['Probe name', 'IP source', 'IP destination', 'Protocol', 'Flow id'],
+               'alerts_usecase': ['Probe name', 'IP source', 'IP destination', 'Protocol', 'Flow id']}
+
+    for alert_type in result:
+        alert_data = result[alert_type]["data"]
+        human_readable = []
+        for probe in alert_data:
+            for ip in alert_data[probe]:
+                for data in alert_data[probe][ip]:
+                    d = {
+                        'Probe name': probe,
+                        'IP source': ip,
+                        'IP destination': data.get('dest_ip', 'None'),
+                        'Protocol': data.get('protocol', 'None'),
+                        'Flow id': data.get('flow_id', 'None'),
+                    }
+
+                    human_readable.append(d)
+
+        readable_output = tableToMarkdown(
+            name=alert_type.replace("_", " "),
+            t=human_readable,
+            removeNull=True,
+            headers=headers[alert_type],
+        )
+        command_results.append(
+            CommandResults(
+                readable_output=readable_output,
+                outputs_prefix=f"JizoM.Peers.{alert_type}",
+                outputs_key_field='idx',
+                outputs=result[alert_type],
+            ))
+        
+    return command_results
 
 
-def get_query_records_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def get_query_records_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
 
     # Call the Client function and get the raw response
     result = client.get_query_records(args)
 
-    return CommandResults(
-        readable_output=tableToMarkdown(name="Jizo Query Records", t=result),
-        outputs_prefix="JizoM.QueryRecords",
-        outputs_key_field='idx',
-        outputs=result,
-    )
+    command_results = []
 
+    headers = {'alerts_flows': ['Probe name', 'IP source', 'IP destination', 'Alert category', 'Severity'],
+               'alerts_files': ['Probe name', 'Rule name', 'Rule type', 'Message'],
+               'alerts_usecase': ['Probe id', 'IP source', 'IP destination']}
+    for alert_type in result:
+        alert_data = result[alert_type]["data"]
+        human_readable = []
+        for value in alert_data:
+            if 'flows' in alert_type:
+                d = {'Probe name': value.get('ip_probe', 'None'),
+                     'IP source': value.get('ip_src', 'None'),
+                     'IP destination': value.get('ip_dest', 'None'),
+                     'Alert category': value.get('alert_category', 'None'),
+                     'Severity': convert_to_demisto_severity(str(value.get('severity', '4')))}
+            elif 'files' in alert_type:
+                d = {'Probe name': value.get('probe_name', 'None'),
+                     'Rule name': value.get('rule_name', 'None'),
+                     'Rule type': value.get('type_rule', 'None'),
+                     'File name': value.get('filename', 'None'),
+                     'Message': value.get('message', 'None')}
+            else:
+                d = {'Probe name': value.get('probe_name', 'None'),
+                     'IP source': value.get('ip_src', 'None'),
+                     'IP destination': value.get('ip_dest', 'None')}
+            human_readable.append(d)
 
-def get_alert_rules_command(client: Client, args: dict[str, Any]) -> CommandResults:
+        readable_output = tableToMarkdown(
+            name=alert_type.replace("_", " "),
+            t=human_readable,
+            removeNull=True,
+            headers=headers[alert_type]
+        )
+        command_results.append(
+            CommandResults(
+                readable_output=readable_output,
+                outputs_prefix=f"JizoM.QueryRecords.{alert_type}",
+                outputs_key_field='idx',
+                outputs=result[alert_type],
+            ))
 
-    # Call the Client function and get the raw response
-    result = client.get_alert_rules(args)
-
-    return CommandResults(
-        readable_output=tableToMarkdown(name="Jizo Alert Rules", t=result),
-        outputs_prefix="JizoM.AlertRules",
-        outputs_key_field='idx',
-        outputs=result,
-    )
-
-
-def get_device_records_command(client: Client, args: dict[str, Any]) -> CommandResults:
-
-    # Call the Client function and get the raw response
-    result = client.get_device_records(args)
-
-    return CommandResults(
-        readable_output=tableToMarkdown(name="Jizo Device Records", t=result),
-        outputs_prefix="JizoM.Device.Records",
-        outputs_key_field='idx',
-        outputs=result,
-    )
-
-
-def get_device_alerts_command(client: Client, args: dict[str, Any]) -> CommandResults:
-
-    # Call the Client function and get the raw response
-    result = client.get_device_alerts(args)
-
-    return CommandResults(
-        readable_output=tableToMarkdown(name="Jizo Device Alerts", t=result),
-        outputs_prefix="JizoM.Device.Alerts",
-        outputs_key_field='idx',
-        outputs=result,
-    )
+    return command_results
 
 
 def fetch_incidents(
@@ -475,6 +499,12 @@ def main() -> None:  # pragma: no cover
     username = demisto.params().get("credentials", {}).get("identifier")
     password = demisto.params().get("credentials", {}).get("password")
     demisto.debug(f"Command being called is {command}")
+    # convert date to jizo date format
+    if "datetime_from" in args and "days" in args["datetime_from"]:
+        args["datetime_from"] = convert_date(args["datetime_from"])
+    if "datetime_to" in args and "days" in args["datetime_to"]:
+        args["datetime_to"] = convert_date(args["datetime_to"])
+
     try:
 
         client = Client(
@@ -522,15 +552,6 @@ def main() -> None:  # pragma: no cover
 
         elif command == "jizo-m-query-records-get":
             return_results(get_query_records_command(client, args))
-
-        elif command == "jizo-m-alert-rules-get":
-            return_results(get_alert_rules_command(client, args))
-
-        elif command == "jizo-m-device-records-get":
-            return_results(get_device_records_command(client, args))
-
-        elif command == "jizo-m-device-alerts-get":
-            return_results(get_device_alerts_command(client, args))
 
         else:
             raise NotImplementedError(f"Command {command} is not implemented")

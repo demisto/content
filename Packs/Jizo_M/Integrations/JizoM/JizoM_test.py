@@ -4,9 +4,6 @@ from JizoM import (
     get_query_records_command,
     get_protocols_command,
     get_peers_command,
-    get_alert_rules_command,
-    get_device_records_command,
-    get_device_alerts_command,
 )
 
 MOCK_URL = "http://123-fake-api.com"
@@ -73,9 +70,9 @@ def test_get_protocols_command(requests_mock):
         json=load_mock_response("protocols.json"),
     )
     response = get_protocols_command(client, {})
-    assert len(response.outputs) == 3
-    assert response.outputs_prefix == "JizoM.Protocols"
-    assert response.outputs["alerts_files"]["total"]["total"] == 200000
+    assert len(response) == 3
+    assert response[1].outputs_prefix == "JizoM.Protocols.alerts_files"
+    assert response[1].outputs["total"]["total"] == 200000
 
 
 def test_get_peers_command(requests_mock):
@@ -86,13 +83,9 @@ def test_get_peers_command(requests_mock):
     )
 
     response = get_peers_command(client, {})
-    assert list(response.outputs.keys()) == [
-        "alerts_flows",
-        "alerts_files",
-        "alerts_usecase",
-    ]
-    assert response.outputs_prefix == "JizoM.Peers"
-    assert "Probe_02" in response.outputs["alerts_usecase"]["data"]
+    assert response[2].outputs_prefix == "JizoM.Peers.alerts_usecase"
+    assert "Probe_02" in response[2].outputs["data"]
+    assert response[0].outputs["data"]["Probe_01"]["2919"][0]["protocol"] == "TLS"
 
 
 def test_get_query_records_command(requests_mock):
@@ -104,49 +97,11 @@ def test_get_query_records_command(requests_mock):
 
     response = get_query_records_command(client, {})
     assert (
-        len(response.outputs["alerts_flows"]["data"])
-        == response.outputs["alerts_flows"]["count"]
+        len(response[0].outputs["data"])
+        == response[0].outputs["count"]
     )
-    assert response.outputs_prefix == "JizoM.QueryRecords"
-    assert "data" in response.outputs["alerts_flows"]
-
-
-def test_get_alert_rules_command(requests_mock):
-
-    requests_mock.get(
-        f"{MOCK_URL}/jizo_get_alert_rules",
-        json=load_mock_response("alert_rules.json"),
-    )
-
-    response = get_alert_rules_command(client, {})
-    assert len(response.outputs) == 1
-    assert response.outputs_prefix == "JizoM.AlertRules"
-    assert response.outputs["alerts_flows"]["data"][0]["idx"] == 295
-
-
-def test_get_device_records_command(requests_mock):
-
-    requests_mock.get(
-        f"{MOCK_URL}/jizo_device_records",
-        json=load_mock_response("device_records.json"),
-    )
-
-    response = get_device_records_command(client, {})
-    assert response.outputs_prefix == "JizoM.Device.Records"
-    assert "severity" in response.outputs["alerts_flows"]["data"][0]
-
-
-def test_get_device_alerts_command(requests_mock):
-
-    requests_mock.get(
-        f"{MOCK_URL}/jizo_get_devicealerts",
-        json=load_mock_response("device_alerts.json"),
-    )
-
-    response = get_device_alerts_command(client, {})
-
-    assert response.outputs_prefix == "JizoM.Device.Alerts"
-    assert type(response.outputs["alerts_flows"]["data"][0]["port_src"]) == int
+    assert response[0].outputs_prefix == "JizoM.QueryRecords.alerts_flows"
+    assert "data" in response[0].outputs
 
 
 def test_fetch_incidents(requests_mock):
@@ -160,16 +115,15 @@ def test_fetch_incidents(requests_mock):
 
     from JizoM import fetch_incidents, formatting_date, convert_to_demisto_severity
     requests_mock.get(f"{MOCK_URL}/jizo_query_records", json=load_mock_response("fetch_incidents.json"))
-    next_run, incidents = fetch_incidents(client,max_results=2,last_run={},first_fetch_time="2024-01-01")
-    
-    assert len(incidents)==2
-    assert incidents[0]["type"]== "Jizo Alert"
-    raw_alert= json.loads(incidents[0]["rawJSON"])
+    next_run, incidents = fetch_incidents(client, max_results=2, last_run={}, first_fetch_time="2024-01-01")
+
+    assert len(incidents) == 2
+    assert incidents[0]["type"] == "Jizo Alert"
+    raw_alert = json.loads(incidents[0]["rawJSON"])
     assert "295" in incidents[0]["name"]
-    assert incidents[0]["severity"]==convert_to_demisto_severity(raw_alert["severity"])
-    assert incidents[0]["occurred"]== formatting_date("2024-03-14 17:20:10.000000")
+    assert incidents[0]["severity"] == convert_to_demisto_severity(raw_alert["severity"])
+    assert incidents[0]["occurred"] == formatting_date("2024-03-14 17:20:10.000000")
     assert "last_fetch" in next_run
-    assert next_run["last_fetch"]== incidents[-1]["occurred"]
+    assert next_run["last_fetch"] == incidents[-1]["occurred"]
     assert 294 in next_run["last_ids"]
-    assert next_run["first_fetched_ids"]==[295]
-    
+    assert next_run["first_fetched_ids"] == [295]
