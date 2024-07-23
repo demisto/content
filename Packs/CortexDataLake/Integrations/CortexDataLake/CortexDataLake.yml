@@ -163,6 +163,10 @@ script:
       predefined:
       - 'true'
       - 'false'
+    - description: page.
+      name: page
+    - description: page size.
+      name: page_size
     description: Runs a query on  any table or field.
     execution: true
     name: cdl-query-logs

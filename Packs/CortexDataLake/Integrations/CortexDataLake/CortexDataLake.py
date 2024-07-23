@@ -979,10 +979,10 @@ def query_logs_command(args: dict, client: Client) -> tuple[str, dict[str, list[
     limit = args.get('limit', '')
     transform_results = argToBoolean(args.get('transform_results', 'true'))
 
-    if 'limit' not in query.lower():
+    if not args.get('page') and 'limit' not in query.lower():
         query += f' LIMIT {limit}'
 
-    records, raw_results = client.query_loggings(query)
+    records, raw_results = client.query_loggings(query, page=args.get('page'), page_size=args.get('page_size'))
 
     table_name = get_table_name(query)
     output_results = records if not transform_results else [common_context_transformer(record) for record in records]
