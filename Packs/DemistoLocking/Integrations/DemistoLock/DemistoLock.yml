@@ -38,6 +38,8 @@ script:
       description: Additional information to provide for the lock instance.
     - name: timeout
       description: Timeout (seconds) for wait on lock to be freed.
+    - name: polling_interval
+      description: Polling interval (seconds) between each lock acquire attempt.
     - name: guid
       description: Unique identifier value of the lock.
       hidden: true
