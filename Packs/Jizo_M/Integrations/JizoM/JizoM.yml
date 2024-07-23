@@ -17,7 +17,7 @@ configuration:
   required: true
   additionalinfo: Reliability of the source providing the intelligence data.
 - section: Connect
-  display: Server URL
+  display: Server URL. e.g., https://127.0.0.1:9001
   name: url
   type: 0
   required: true
@@ -113,7 +113,7 @@ script:
     - contextPath: JizoM.Protocols.alerts_usecase.total
       description: The total number of alerts.
       type: Number
-    description: Get jizo protocols.
+    description: Get list of alerts sorted by protocols.
   - name: jizo-m-peers-get
     arguments:
     - name: ip_src
@@ -165,7 +165,7 @@ script:
     - contextPath: JizoM.Peers.alerts_usecase.total
       description: The total number of alerts.
       type: Number
-    description: Get jizo peers.
+    description: Get list of ip addresses connected to a specific one.
   - name: jizo-m-query-records-get
     arguments:
     - name: ip_src
@@ -269,190 +269,7 @@ script:
     - contextPath: JizoM.QueryRecords.alerts_usecase.total
       description: The total number of alerts.
       type: Number
-    description: Get jizo query records.
-  - name: jizo-m-alert-rules-get
-    arguments:
-    - name: flow_id
-      description: The id of the flow.
-      type: textArea
-    - name: sid
-      description: The id if the rule.
-      type: textArea
-    - name: probe_name
-      description: The name of the jizo probe.
-      type: textArea
-    - name: port
-      description: The alert port.
-      type: textArea
-    - name: datetime_from
-      description: Get the alerts that were occurred from this date, for example, "3 days ago", "2020-01-01-00:00:00". The default value is 7 days ago.
-      type: textArea
-    - name: datetime_to
-      description: Get the alerts that were occurred up to this date, for example, "3 days ago", "2020-01-01-00:00:00". The default is now.
-      type: textArea
-    - name: severity
-      description: Relevance/importance of alert varies from 1-4.
-      type: textArea
-    - name: category
-      description: The alert category (e.g., Fraud, Abusive Content).
-      type: textArea
-    - name: type_data
-      description: The data type (default IDS).
-      type: textArea
-    - name: page
-      description: A page number for pagination.
-      type: keyValue
-    - name: limit
-      description: The maximum number of samples to display per alert.
-      type: keyValue
-    outputs:
-    - contextPath: JizoM.AlertRules.alerts_flows.count
-      description: The number of displayed alerts.
-      type: Number
-    - contextPath: JizoM.AlertRules.alerts_flows.data
-      description: The details of alerts.
-      type: String
-    - contextPath: JizoM.AlertRules.alerts_flows.total
-      description: The total number of alerts.
-      type: Number
-    - contextPath: JizoM.AlertRules.alerts_files.count
-      description: The number of displayed alerts.
-      type: Number
-    - contextPath: JizoM.AlertRules.alerts_files.data
-      description: The details of alerts.
-      type: String
-    - contextPath: JizoM.AlertRules.alerts_files.total
-      description: The total number of alerts.
-      type: Number
-    - contextPath: JizoM.AlertRules.alerts_usecase.count
-      description: The number of displayed alerts.
-      type: Number
-    - contextPath: JizoM.AlertRules.alerts_usecase.data
-      description: The details of alerts.
-      type: String
-    - contextPath: JizoM.AlertRules.alerts_usecase.total
-      description: The total number of alerts.
-      type: Number
-    description: Get jizo alerts rules.
-  - name: jizo-m-device-records-get
-    arguments:
-    - name: flow_id
-      description: The id of the flow.
-      type: textArea
-    - name: mac
-      description: The mac address.
-      type: textArea
-    - name: hostname
-      description: The name of the device.
-      type: textArea
-    - name: probe_name
-      description: The name of the jizo probe.
-      type: textArea
-    - name: port
-      description: The alert port.
-      type: textArea
-    - name: datetime_from
-      description: Get the alerts that were occurred from this date, for example, "3 days ago", "2020-01-01-00:00:00". The default value is 7 days ago.
-      type: textArea
-    - name: datetime_to
-      description: Get the alerts that were occurred up to this date, for example, "3 days ago", "2020-01-01-00:00:00". The default is now.
-      type: textArea
-    - name: page
-      description: A page number for pagination.
-      type: keyValue
-    - name: limit
-      description: The maximum number of samples to display per alert.
-      type: keyValue
-    outputs:
-    - contextPath: JizoM.Device.Records.alerts_flows.count
-      description: The number of displayed alerts.
-      type: Number
-    - contextPath: JizoM.Device.Records.alerts_flows.data
-      description: The details of alerts.
-      type: String
-    - contextPath: JizoM.Device.Records.alerts_flows.total
-      description: The total number of alerts.
-      type: Number
-    - contextPath: JizoM.Device.Records.alerts_files.count
-      description: The number of displayed alerts.
-      type: Number
-    - contextPath: JizoM.Device.Records.alerts_files.data
-      description: The details of alerts.
-      type: String
-    - contextPath: JizoM.Device.Records.alerts_files.total
-      description: The total number of alerts.
-      type: Number
-    - contextPath: JizoM.Device.Records.alerts_usecase.count
-      description: The number of displayed alerts.
-      type: Number
-    - contextPath: JizoM.Device.Records.alerts_usecase.data
-      description: The details of alerts.
-      type: String
-    - contextPath: JizoM.Device.Records.alerts_usecase.total
-      description: The total number of alerts.
-      type: Number
-    description: Get jizo device records.
-  - name: jizo-m-device-alerts-get
-    arguments:
-    - name: ip_src
-      description: Ipv4 or Ipv6 of the source.
-      type: textArea
-    - name: ip_dest
-      description: Ipv4 or Ipv6 of the destination.
-      type: textArea
-    - name: port_src
-      description: The source port.
-      type: textArea
-    - name: port_dest
-      description: The destination port.
-      type: textArea
-    - name: probe_name
-      description: The name of the jizo probe.
-      type: textArea
-    - name: port
-      description: The alert port.
-      type: textArea
-    - name: datetime_from
-      description: Get the alerts that were occurred from this date, for example, "3 days ago", "2020-01-01-00:00:00". The default value is 7 days ago.
-      type: textArea
-    - name: datetime_to
-      description: Get the alerts that were occurred up to this date, for example, "3 days ago", "2020-01-01-00:00:00". The default is now.
-      type: textArea
-    - name: page
-      description: A page number for pagination.
-      type: keyValue
-    - name: limit
-      description: The maximum number of samples to display per alert.
-      type: keyValue
-    outputs:
-    - contextPath: JizoM.Device.Alerts.alerts_flows.count
-      description: The number of displayed alerts.
-      type: Number
-    - contextPath: JizoM.Device.Alerts.alerts_flows.data
-      description: The details of alerts.
-      type: String
-    - contextPath: JizoM.Device.Alerts.alerts_flows.total
-      description: The total number of alerts.
-      type: Number
-    - contextPath: JizoM.Device.Alerts.alerts_files.count
-      description: The number of displayed alerts.
-      type: Number
-    - contextPath: JizoM.Device.Alerts.alerts_files.data
-      description: The details of alerts.
-      type: String
-    - contextPath: JizoM.Device.Alerts.alerts_files.total
-      description: The total number of alerts.
-      type: Number
-    - contextPath: JizoM.Device.Alerts.alerts_usecase.count
-      description: The number of displayed alerts.
-      type: Number
-    - contextPath: JizoM.Device.Alerts.alerts_usecase.data
-      description: The details of alerts.
-      type: String
-    - contextPath: JizoM.Device.Alerts.alerts_usecase.total
-      description: The total number of alerts.
-      type: Number
-    description: Get jizo device alerts.
+    description: Retrieve all information available on jizo M, mainly alerts.
   dockerimage: demisto/python3:3.10.14.97608
   isfetch: true
   runonce: false

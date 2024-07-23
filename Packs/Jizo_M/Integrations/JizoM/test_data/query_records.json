@@ -51,7 +51,7 @@
         ],
         "total": {"total": 295}
     },
-    "Alerts_usecase": {"count": 0, "data": [], "total": 0},
+    "alerts_usecase": {"count": 0, "data": [], "total": 0},
     "alerts_files": {
         "count": 2,
         "data": [
