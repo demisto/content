@@ -19,7 +19,7 @@ args:
   description: A comma-separated string listing the column headers for the grid.
 - name: input
   required: true
-  description: required, either JSON or list of lists.
+  description: Either a JSON or list of lists. This argument is mandatory.
   isArray: true
 - name: keys_from_context
   description: A comma-separated string listing the keys to extract values from the provided dictionaries in the input. The extracted values will be mapped to the headers in the order provided.
