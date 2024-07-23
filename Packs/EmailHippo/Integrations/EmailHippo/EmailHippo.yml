@@ -192,9 +192,9 @@ script:
       description: The expiration date of the domain.
       type: Date
     description: Returns domain information and reputation.
-  dockerimage: demisto/python3:3.10.14.91134
+  dockerimage: demisto/python3:3.11.9.104657
   runonce: false
   subtype: python3
 fromversion: 6.9.0
 tests:
-- No tests (auto formatted)
+- HippoEmailTest

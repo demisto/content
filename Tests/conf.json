@@ -1572,6 +1572,10 @@
             "playbookID": "BigFixTest"
         },
         {
+            "integrations": "Email Hippo",
+            "playbookID": "HippoEmailTest"
+        },
+        {
             "integrations": "Lastline v2",
             "playbookID": "Lastline v2 - Test"
         },
