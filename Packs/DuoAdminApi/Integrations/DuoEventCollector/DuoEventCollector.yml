@@ -57,6 +57,10 @@ script:
       - 'True'
       - 'False'
       required: true
+    - defaultvalue: 'AUTHENTICATION,ADMINISTRATION,TELEPHONY'
+      description: The wanted log type. The default value is AUTHENTICATION,ADMINISTRATION,TELEPHONY.
+      name: logs_type_array
+      required: false
     description: Manual command to fetch events and display them.
     name: duo-get-events
   dockerimage: demisto/vendors-sdk:1.0.0.96124

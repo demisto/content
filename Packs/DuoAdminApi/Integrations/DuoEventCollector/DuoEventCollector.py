@@ -30,6 +30,7 @@ class Params(BaseModel):
     secret_key: dict
 
     def set_next_offset_value(self, mintime: Any, log_type: LogType) -> None:
+        demisto.debug(f'in set_next_offset_value {mintime=} {log_type=}')
         self.mintime[log_type] = mintime
 
 
@@ -83,12 +84,14 @@ class Client:
         get_authentication_log: If not provided takes mintime to 24 hours and maxtime to time.now - 2 min.
         """
         if not self.params.mintime[LogType.AUTHENTICATION].get('next_offset'):
+            demisto.debug(f'handle_authentication_logs, no next_offset, mintime={self.params.mintime[LogType.AUTHENTICATION].get("min_time")}')
             response = self.admin_api.get_authentication_log(
                 mintime=self.params.mintime[LogType.AUTHENTICATION].get('min_time'),
                 api_version=2, limit=str(min(int(self.params.limit), int('1000'))), sort='ts:asc')
         else:
             next_offset = self.params.mintime[LogType.AUTHENTICATION].get('next_offset')
             mintime = next_offset[0]
+            demisto.debug(f'handle_authentication_logs {next_offset=}')
             response = self.admin_api.get_authentication_log(
                 next_offset=self.params.mintime[LogType.AUTHENTICATION].get('next_offset'), mintime=mintime,
                 api_version=2, limit=str(min(int(self.params.limit), int('1000'))), sort='ts:asc')
@@ -261,6 +264,7 @@ def parse_mintime(last_run: float) -> tuple:
     """Returns the last run precision of 10 digits(seconds) for v1 and 13 digits(milliseconds) for v2"""
     last_run_v1 = int(last_run)
     last_run_v2 = int(last_run * 1000)
+    demisto.debug(f'in parse_mintime {last_run=} {last_run_v1=} {last_run_v2=}')
     return last_run_v1, last_run_v2
 
 
@@ -321,7 +325,7 @@ def main():
             events = get_events.aggregated_results()
             if command == 'duo-get-events':
                 command_results = CommandResults(
-                    readable_output=tableToMarkdown('Duo Logs', events, headerTransform=pascalToSpace),
+                    readable_output=tableToMarkdown(f'Duo Logs {len(events)}', events, headerTransform=pascalToSpace),
                     raw_response=events,
                 )
                 return_results(command_results)
