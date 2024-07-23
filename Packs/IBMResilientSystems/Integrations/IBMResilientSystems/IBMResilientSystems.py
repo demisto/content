@@ -224,7 +224,7 @@ def search_incidents_command(client, args):
         return 'No results found.'
 
 
-def search_incidents(client, args):
+def search_incidents(rs_client: SimpleClient, args: dict):
     conditions = []  # type: Any
     if 'severity' in args:
         value = []
@@ -243,14 +243,14 @@ def search_incidents(client, args):
             'value': value
         })
     if 'date-created-before' in args:
-        value = date_to_timestamp(args['date-created-before'], date_format='%Y-%m-%dT%H:%M:%SZ')
+        value = date_to_timestamp(args['date-created-before'])
         conditions.append({
             'field_name': 'create_date',
             'method': 'lte',
             'value': value
         })
     elif 'date-created-after' in args:
-        value = date_to_timestamp(args['date-created-after'], date_format='%Y-%m-%dT%H:%M:%SZ')
+        value = date_to_timestamp(args['date-created-after'])
         conditions.append({
             'field_name': 'create_date',
             'method': 'gte',
@@ -280,14 +280,14 @@ def search_incidents(client, args):
                 'value': from_time * 1000
             }))
     if 'date-occurred-before' in args:
-        value = date_to_timestamp(args['date-occurred-before'], date_format='%Y-%m-%dT%H:%M:%SZ')
+        value = date_to_timestamp(args['date-occurred-before'])
         conditions.append({
             'field_name': 'start_date',
             'method': 'lte',
             'value': value
         })
     elif 'date-occurred-after' in args:
-        value = date_to_timestamp(args['date-occurred-after'], date_format='%Y-%m-%dT%H:%M:%SZ')
+        value = date_to_timestamp(args['date-occurred-after'])
         conditions.append({
             'field_name': 'start_date',
             'method': 'gte',
@@ -367,9 +367,9 @@ def search_incidents(client, args):
         }]
     }
     # Pagination mechanism.
-    page = int(args.get('page'))
-    page_size = int(args.get('page_size'))
-    limit = int(args.get('limit'))
+    page = int(args.get('page', '0'))
+    page_size = int(args.get('page_size', '0'))
+    limit = int(args.get('limit', '1000'))
     data['length'] = limit
     # 'limit' parameter is redundant in case proper 'page' and 'page_size' were provided.
     if page_size > 0 and page > 0:
@@ -381,7 +381,8 @@ def search_incidents(client, args):
     search_incidents_endpoint = '/incidents/query_paged'
     if return_level := args.get("return_level"):
         search_incidents_endpoint += f'?return_level={return_level}'
-    response = client.post(search_incidents_endpoint, data)
+    response = rs_client.post(search_incidents_endpoint, data)
+    return_outputs(f"\n{response}\n")
     return response['data']
 
 
@@ -1070,10 +1071,34 @@ def add_artifact_command(client, incident_id, artifact_type, artifact_value, art
     return entry
 
 
+def date_to_timestamp(date_str_or_dt, date_format='%Y-%m-%dT%H:%M:%SZ'):
+    """
+      Parses date_str_or_dt in the given format (default: %Y-%m-%dT%H:%M:%S) to milliseconds
+      Examples: ('2018-11-06T08:56:41', '2018-11-06T08:56:41', etc.)
+
+      :type date_str_or_dt: ``str`` or ``datetime.datetime``
+      :param date_str_or_dt: The date to be parsed. (required)
+
+      :type date_format: ``str``
+      :param date_format: The date format of the date string (will be ignored if date_str_or_dt is of type
+        datetime.datetime). (optional)
+
+      :return: The parsed timestamp.
+      :rtype: ``int``
+    """
+    if isinstance(date_str_or_dt, STRING_OBJ_TYPES):
+        # return_error(f"[1] - {date_str_or_dt=} | {type(date_str_or_dt)=} | {date_format=}")
+        return int(time.mktime(time.strptime(date_str_or_dt, date_format)) * 1000)
+
+    return_error(f"[2] - {date_str_or_dt=} | {type(date_str_or_dt)=} | {date_format=}")
+    # otherwise datetime.datetime
+    return int(time.mktime(date_str_or_dt.timetuple()) * 1000)
+
+
 def fetch_incidents(client):
     last_run = demisto.getLastRun() and demisto.getLastRun().get('time')
     if not last_run:
-        last_run = date_to_timestamp(FETCH_TIME, date_format='%Y-%m-%dT%H:%M:%SZ')
+        last_run = date_to_timestamp(FETCH_TIME)
         args = {'date-created-after': FETCH_TIME}
     else:
         args = {'date-created-after': normalize_timestamp(last_run)}
@@ -1387,7 +1412,7 @@ def test_module():
         'ok' if test passed, anything else will fail the test.
     """
     # TODO - test client connectivity as well
-
+    # TODO - test - test first fetch time
     if FETCH_TIME:
         try:
             datetime.strptime(FETCH_TIME, TIME_FORMAT)
