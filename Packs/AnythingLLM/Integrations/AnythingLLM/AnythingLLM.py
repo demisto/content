@@ -122,7 +122,7 @@ class Client(BaseClient):
             demisto.debug(msg)
             raise Exception(msg)
 
-        return response
+        return response  # pylint: disable=E0601
 
 
     def document_upload_link(self, link: str, title: str, description: str, author: str, source: str):
