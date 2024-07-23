@@ -14,7 +14,7 @@ CONFIDENT_EMAIL_INFOS = {
 
 # IMPORTANT: If you modify the logic here make sure to update ParseEmailFiles too
 def is_email(file_metadata: dict, file_name: str):
-    file_info = file_metadata.get('info')
+    file_info = file_metadata.get('info', '')
     return any((
         file_metadata.get('type') == 'eml',
         CONFIDENT_EMAIL_INFOS.intersection(file_info),
@@ -31,9 +31,9 @@ def is_entry_email(entry: dict):
         entry {dict} -- Entry object as returned from getEntries or getEntry
     """
     file_metadata = entry.get('FileMetadata', {})
-    name = demisto.get(entry, 'File')
+    name = entry.get('File', '')
     if is_email(file_metadata, name):
-        return demisto.get(entry, 'ID')
+        return entry.get('ID')
     return None
 
 
