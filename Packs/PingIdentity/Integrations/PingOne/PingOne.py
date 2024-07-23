@@ -1,10 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-# IMPORTS
-# Disable insecure warnings
-import urllib3
-urllib3.disable_warnings()
 
 PROFILE_ARGS = [
     'formatted',

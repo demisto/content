@@ -5752,6 +5752,10 @@
             "playbookID": "MattermostV2 - testplaybook"
         },
         {
+            "integrations": "PingOne",
+            "playbookID": "TestPingOnePlaybook"
+        },
+        {
             "playbookID": "MattermostAskUser_testplaybook",
             "scripts": [
                 "MattermostAskUser"
