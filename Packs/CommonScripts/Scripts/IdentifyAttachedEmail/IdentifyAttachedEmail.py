@@ -3,42 +3,36 @@ from CommonServerPython import *
 
 
 # file info types which identify emails
-CONFIDENT_EMAIL_INFOS = [
+CONFIDENT_EMAIL_INFOS = {
     'cdfv2 microsoft outlook message',
     'rfc 822 mail',
     'smtp mail',
     'multipart/signed',
     'news or mail text',
-]
+}
 
 
 # IMPORTANT: If you modify the logic here make sure to update ParseEmailFiles too
-def is_email(file_info, file_name):
-    if not file_info:
-        demisto.info(f"IdentifyAttachedEmail: No file info for file: {file_name}. Returning false.")
-        return False
-    file_info = file_info.lower().strip()
-    for info in CONFIDENT_EMAIL_INFOS:
-        if info in file_info:
-            return True
-    file_name = file_name.lower().strip() if file_name else ''
-    if file_name.endswith('.eml') and ('text' in file_info or file_info == 'data'):
-        return True
-    if file_name.endswith('.msg') and 'composite document file v2 document' in file_info:
-        return True
-    return False
+def is_email(file_metadata: dict, file_name: str):
+    file_info = file_metadata.get('info')
+    return any((
+        file_metadata.get('type') == 'eml',
+        CONFIDENT_EMAIL_INFOS.intersection(file_info),
+        file_name.endswith('.eml') and ('text' in file_info or file_info == 'data'),
+        file_name.endswith('.msg') and 'composite document file v2 document' in file_info
+    ))
 
 
-def is_entry_email(entry):
+def is_entry_email(entry: dict):
     """
     Return entry ID if this is an email entry otherwise None
 
     Arguments:
         entry {dict} -- Entry object as returned from getEntries or getEntry
     """
-    info = demisto.get(entry, 'FileMetadata.info')
+    file_metadata = entry.get('FileMetadata', {})
     name = demisto.get(entry, 'File')
-    if is_email(info, name):
+    if is_email(file_metadata, name):
         return demisto.get(entry, 'ID')
     return None
 
