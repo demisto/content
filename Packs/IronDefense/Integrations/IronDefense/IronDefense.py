@@ -1,7 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import functools
-from typing import List, Dict
 from http.client import HTTPException
 
 import urllib3
@@ -31,7 +30,7 @@ class IronDefense:
         self.session = session
         self.host = host
         self.port = port
-        self.base_url = 'https://{}:{}/IronApi'.format(host, port)
+        self.base_url = f'https://{host}:{port}/IronApi'
         self.credentials = credentials
         self.request_timeout = request_timeout
         self.logger = logger
@@ -110,7 +109,7 @@ class IronDefense:
         # convert context from column format to row format for display
         num_rows = functools.reduce(lambda acc, col: len(col.get('values')) if len(col.get('values')) > acc else acc,
                                     event_context_table.get('columns'), 0)
-        new_table_data: List[Dict[str, str]] = [{} for row in range(num_rows)]
+        new_table_data: list[dict[str, str]] = [{} for row in range(num_rows)]
 
         for column in event_context_table.get('columns'):
             # add the column to the table
@@ -118,8 +117,8 @@ class IronDefense:
                 # check if the column has the row data
                 if len(column.get('values')) - row > 0:
                     # insert column data
-                    val = list(map(lambda d: str(list(d.values())[0]) if len(list(d.values())) > 0 else '',
-                                   column.get('values')[row].get('data')))
+                    val = [str(list(d.values())[0]) if len(list(d.values()))
+                           > 0 else '' for d in column.get('values')[row].get('data')]
                     table_row = new_table_data[row]
                     column_name = column.get('name')
                     table_row[column_name] = ','.join(val)
@@ -132,17 +131,13 @@ class IronDefense:
     def event_context_table_to_dict(self, event_context_table):
         table_data = {}
         for column in event_context_table.get('columns'):
-            val = list(map(lambda d: str(list(d.values())[0]) if len(list(d.values())) > 0 else '',
-                           column.get('values')[0].get('data')))
+            val = [str(list(d.values())[0]) if len(list(d.values())) > 0 else '' for d in column.get('values')[0].get('data')]
             table_data[column.get('name')] = ','.join(val)
 
         return table_data
 
     def event_context_table_contains_multi_columns(self, event_context_table):
-        for column in event_context_table.get('columns'):
-            if len(column.get('values')) > 1:
-                return True
-        return False
+        return any(len(column.get('values')) > 1 for column in event_context_table.get('columns'))
 
     def create_markdown_link(self, link_text, url):
         return f'[{link_text}]({url})'
@@ -184,7 +179,7 @@ class IronDefense:
         else:
             raise Exception('Fetch for DomeNotifications failed. Status code was ' + str(resp.status_code))
 
-        self.logger.debug('{} Dome incident(s) fetched'.format(len(res)))
+        self.logger.debug(f'{len(res)} Dome incident(s) fetched')
         return res
 
     def fetch_alert_incidents(self, alert_categories=None, alert_subcategories=None, alert_severity_lower=None,
@@ -240,7 +235,7 @@ class IronDefense:
         else:
             raise Exception('Fetch for AlertNotifications failed. Status code was ' + str(resp.status_code))
 
-        self.logger.debug('{} Alert incident(s) fetched'.format(len(res)))
+        self.logger.debug(f'{len(res)} Alert incident(s) fetched')
         return res
 
     def fetch_event_incidents(self, event_categories=None, event_subcategories=None, event_severity_lower=None,
@@ -296,7 +291,7 @@ class IronDefense:
         else:
             raise Exception('Fetch for EventNotifications failed. Status code was ' + str(resp.status_code))
 
-        self.logger.debug('{} Event incident(s) fetched'.format(len(res)))
+        self.logger.debug(f'{len(res)} Event incident(s) fetched')
         return res
 
     def test_module(self):
@@ -327,9 +322,9 @@ class IronDefense:
             err_msg = self._get_error_msg_from_response(response)
             self.logger.error('Failed to rate alert ({}). The response failed with status code {}. The response was: '
                               '{}'.format(alert_id, response.status_code, response.text))
-            raise HTTPException('Failed to rate alert {} ({}): {}'.format(alert_id, response.status_code, err_msg))
+            raise HTTPException(f'Failed to rate alert {alert_id} ({response.status_code}): {err_msg}')
         else:
-            self.logger.debug('Successfully submitted rating for alert ({})'.format(alert_id))
+            self.logger.debug(f'Successfully submitted rating for alert ({alert_id})')
             return 'Submitted analyst rating to IronDefense!'
 
     def add_comment_to_alert(self, alert_id, comment='', share_irondome=False):
@@ -349,7 +344,7 @@ class IronDefense:
             raise HTTPException('Failed to add comment to alert {} ({}): {}'.format(alert_id, response.status_code,
                                                                                     err_msg))
         else:
-            self.logger.debug('Successfully added comment to alert ({})'.format(alert_id))
+            self.logger.debug(f'Successfully added comment to alert ({alert_id})')
             return 'Submitted comment to IronDefense!'
 
     def set_alert_status(self, alert_id, status='STATUS_NONE', comments='', share_irondome=False):
@@ -370,7 +365,7 @@ class IronDefense:
             raise HTTPException('Failed to set status for alert {} ({}): {}'.format(alert_id, response.status_code,
                                                                                     err_msg))
         else:
-            self.logger.debug('Successfully submitted status for alert ({})'.format(alert_id))
+            self.logger.debug(f'Successfully submitted status for alert ({alert_id})')
             return 'Submitted status to IronDefense!'
 
     def report_observed_bad_activity(self, name, description='', ip='', domain='',
@@ -390,7 +385,7 @@ class IronDefense:
         }
         response = self._http_request('POST', '/ReportObservedBadActivity', body=json.dumps(req_body))
         if response.ok:
-            self.logger.debug('Successfully submitted observed bad activity for IP={} and Domain={}'.format(ip, domain))
+            self.logger.debug(f'Successfully submitted observed bad activity for IP={ip} and Domain={domain}')
             return 'Submitted observed bad activity to IronDefense!'
         else:
             err_msg = self._get_error_msg_from_response(response)
@@ -401,7 +396,7 @@ class IronDefense:
                                 .format(ip, domain, response.status_code, err_msg))
 
     def get_event(self, event_id):
-        self.logger.debug('Retrieving Event: Event ID={}'.format(event_id))
+        self.logger.debug(f'Retrieving Event: Event ID={event_id}')
 
         req_body = {
             'event_id': event_id,
@@ -414,11 +409,11 @@ class IronDefense:
             raise HTTPException('Failed to retrieve event with ID {} ({}): {}'.format(event_id, response.status_code,
                                                                                       err_msg))
         else:
-            self.logger.debug('Successfully retrieved event ({})'.format(event_id))
+            self.logger.debug(f'Successfully retrieved event ({event_id})')
             return response.json()
 
     def get_events(self, alert_id, limit=None, offset=None):
-        self.logger.debug('Retrieving Events: Alert ID={}, Limit={} Offset={}'.format(alert_id, limit, offset))
+        self.logger.debug(f'Retrieving Events: Alert ID={alert_id}, Limit={limit} Offset={offset}')
 
         req_body = {
             'alert_id': alert_id
@@ -439,7 +434,7 @@ class IronDefense:
             raise HTTPException('Failed to retrieve event with ID {} ({}): {}'.format(alert_id, response.status_code,
                                                                                       err_msg))
         else:
-            self.logger.debug('Successfully retrieved events for alert ({})'.format(alert_id))
+            self.logger.debug(f'Successfully retrieved events for alert ({alert_id})')
             events = response.json()
             return events
 
@@ -541,7 +536,7 @@ class IronDefense:
                                 .format(response.status_code, err_msg))
 
     def get_alert_irondome_information(self, alert_id):
-        self.logger.debug('Retrieving Alert IronDome Information: Alert ID={}'.format(alert_id))
+        self.logger.debug(f'Retrieving Alert IronDome Information: Alert ID={alert_id}')
 
         req_body = {
             'alert_id': alert_id,
@@ -555,7 +550,7 @@ class IronDefense:
             raise HTTPException('Failed to retrieve IronDome information for alert with ID {} ({}): {}'
                                 .format(alert_id, response.status_code, err_msg))
         else:
-            self.logger.debug('Successfully retrieved IronDome information for alert ({})'.format(alert_id))
+            self.logger.debug(f'Successfully retrieved IronDome information for alert ({alert_id})')
             dome_alert_info = response.json()
             return dome_alert_info
 
@@ -643,7 +638,7 @@ def update_analyst_ratings_command():
     expectation = demisto.getArg('expectation')
     comments = demisto.getArg('comments')
     share_irondome_arg = demisto.getArg('share_comment_with_irondome')
-    share_irondome = True if share_irondome_arg.lower() == 'true' else False
+    share_irondome = share_irondome_arg.lower() == 'true'
     results = IRON_DEFENSE.update_analyst_ratings(alert_id, severity=severity, expectation=expectation,
                                                   comments=comments,
                                                   share_irondome=share_irondome)
@@ -654,7 +649,7 @@ def add_comment_to_alert_command():
     alert_id = demisto.getArg('alert_id')
     comment = demisto.getArg('comment')
     share_irondome_arg = demisto.getArg('share_comment_with_irondome')
-    share_irondome = True if share_irondome_arg.lower() == 'true' else False
+    share_irondome = share_irondome_arg.lower() == 'true'
     results = IRON_DEFENSE.add_comment_to_alert(alert_id, comment=comment, share_irondome=share_irondome)
     demisto.results(results)
 
@@ -664,7 +659,7 @@ def set_alert_status_command():
     status = demisto.getArg('status')
     comments = demisto.getArg('comments')
     share_irondome_arg = demisto.getArg('share_comment_with_irondome')
-    share_irondome = True if share_irondome_arg.lower() == 'true' else False
+    share_irondome = share_irondome_arg.lower() == 'true'
     results = IRON_DEFENSE.set_alert_status(alert_id, status=status, comments=comments,
                                             share_irondome=share_irondome)
     demisto.results(results)
@@ -970,7 +965,7 @@ if __name__ == 'builtins':
                                    request_timeout=REQUEST_TIMEOUT)
 
         LOGGER.debug('Invoking integration with Command: ' + demisto.command())
-        if demisto.command() in COMMANDS.keys():
+        if demisto.command() in COMMANDS:
             COMMANDS[demisto.command()]()
         else:
             return_error('Command not found: ' + demisto.command())
