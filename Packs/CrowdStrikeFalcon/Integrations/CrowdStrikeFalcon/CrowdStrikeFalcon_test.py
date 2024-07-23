@@ -4230,8 +4230,8 @@ def test_get_remote_epp_or_idp_or_mobile_detection_data__mobile_detection(mocker
     assert updated_object == {'incident_type': 'MOBILE detection',
                               'status': 'new',
                               'mobile_detection_id': '1111111111111111111'}
-    
-    
+
+
 def test_get_remote_epp_or_idp_or_mobile_detection_data__endpoint_detection(mocker):
     """
     Given
