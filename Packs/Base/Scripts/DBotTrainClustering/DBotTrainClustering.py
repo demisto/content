@@ -151,7 +151,7 @@ class Clustering:
         """
         if not self.TSNE_:
             samples = pd.DataFrame(self.centers).T
-            perplexity = 30 #  min(30, samples.shape[0] - 1)
+            perplexity = min(30, samples.shape[0] - 1)
             tsne = TSNE(perplexity=perplexity, n_jobs=-1, n_components=dimension, learning_rate=1000)
             self.data_2d = tsne.fit_transform(samples)
             for coordinates, center in zip(self.data_2d, pd.DataFrame(self.centers).T.index):
