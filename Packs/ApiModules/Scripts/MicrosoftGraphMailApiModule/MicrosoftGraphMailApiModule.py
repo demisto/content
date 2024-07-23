@@ -1831,7 +1831,8 @@ def get_attachment_command(client: MsGraphMailBaseClient, args) -> list[CommandR
     kwargs = {arg_key: args.get(arg_key) for arg_key in ['message_id', 'folder_id', 'attachment_id']}
     kwargs['user_id'] = args.get('user_id', client._mailbox_to_fetch)
     raw_response = client.get_attachment(**kwargs)
-    return [GraphMailUtils.create_attachment(attachment, user_id=kwargs['user_id'], legacy_name=client.legacy_name) for attachment in raw_response]
+    return [GraphMailUtils.create_attachment(attachment, user_id=kwargs['user_id'], legacy_name=client.legacy_name)
+            for attachment in raw_response]
 
 
 def create_folder_command(client: MsGraphMailBaseClient, args) -> CommandResults:
