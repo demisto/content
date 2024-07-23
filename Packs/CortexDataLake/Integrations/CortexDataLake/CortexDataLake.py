@@ -268,7 +268,8 @@ class Client(BaseClient):
 
         demisto.setIntegrationContext(integration_context)
 
-    def query_loggings(self, query: str, page_number: Optional[int] = None, page_size: Optional[int] = None) -> tuple[list[dict], list]:
+    def query_loggings(self, query: str, page_number: Optional[str] = None, page_size: Optional[str] = None)\
+        -> tuple[list[dict], list]:
         """
         This function handles all the querying of Cortex Logging service
 
