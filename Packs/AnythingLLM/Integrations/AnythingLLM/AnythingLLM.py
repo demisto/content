@@ -185,7 +185,7 @@ class Client(BaseClient):
         finally:
             shutil.rmtree(file_name, ignore_errors=True)
 
-        return response
+        return response  # pylint: disable=E0601
 
 
     def workspace_new(self, workspace: str):
