@@ -2,6 +2,7 @@
 
 <html>
 <body>
+<span>
 <h1>Microsoft Entra ID</h1>
 
 <details>
@@ -9,6 +10,7 @@
 
 <h3>Log Normalization - One Data Model</h3>
 <p>This pack supports normalization of the below log categories of Microsoft Entra ID:</p>
+
 <ul>
     <li>AuditLogs</li>
     <li>SignInLogs</li>
@@ -134,6 +136,8 @@
 | fields xdm.event.original_event_type, xdm.event.description, xdm.session_context_id, xdm.source.cloud.project_id, xdm.event.type, xdm.event.id, xdm.source.ipv4, xdm.source.ipv6, xdm.logon.logon_guid, xdm.alert.subcategory, xdm.alert.severity, xdm.alert.name, xdm.observer.type, xdm.source.location.country, xdm.source.location.city, xdm.source.location.latitude, xdm.source.location.longitude, xdm.source.user.username, xdm.source.user.upn, xdm.source.user.identifier, xdm.auth.privilege_level, xdm.source.application.name</code></pre>
 </details>
 </details>
+
+</span>
 </body>
 </html>
 
