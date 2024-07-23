@@ -2413,9 +2413,9 @@ def blocklist_files_command(client, args):
                                      incident_id=incident_id,
                                      detailed_response=detailed_response)
     except Exception as e:
-        if 'All the hashes already been added to the allow or block list' in str(e):
+        if 'All hashes have already been added to the allow or block list' in str(e):
             return CommandResults(
-                readable_output='All the hashes already been added to the block list.'
+                readable_output='All hashes have already been added to the block list.'
             )
         raise e
 
@@ -2471,9 +2471,9 @@ def allowlist_files_command(client, args):
                                      incident_id=incident_id,
                                      detailed_response=detailed_response)
     except Exception as e:
-        if 'All the hashes already been added to the allow or block list' in str(e):
+        if 'All hashes have already been added to the allow or block list' in str(e):
             return CommandResults(
-                readable_output='All the hashes already been added to the allow list.'
+                readable_output='All hashes have already been added to the allow list.'
             )
         raise e
 
