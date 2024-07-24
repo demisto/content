@@ -1,3 +1,4 @@
+from typing import Optional
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import json
@@ -11,7 +12,7 @@ def build_params(data: dict) -> list[str]:
         params.append(f'{json.dumps(value)}')
     return params
 
-def test_module(client: BaseClient, local_execution: bool):
+def test_module(client: Optional[BaseClient], local_execution: bool):
     data = {'input': 'One, two, three, four.',
             'recipe': 'to decimal'}
     if not local_execution:
