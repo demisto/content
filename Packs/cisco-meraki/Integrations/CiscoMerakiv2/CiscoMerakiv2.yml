@@ -822,7 +822,7 @@ script:
       description: Comma-separated list of ICCIDs to search for.
       isArray: true
     - name: limit
-      description: The maximum number of records to return. Default is 50.
+      description: The maximum number of records to return.
       defaultValue: 50
     - name: page_size
       description: The maximum number of records to return per page. To receive additional pages after the first call, use `next_token`. Acceptable range is 3 - 1000. Default is 50.
