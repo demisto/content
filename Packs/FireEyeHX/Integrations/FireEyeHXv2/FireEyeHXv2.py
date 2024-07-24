@@ -3220,6 +3220,7 @@ def main() -> None:
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
         print("Hi this is empty test")
+        test = "http://test_test"
         client = Client(
             base_url=base_url,
             verify=verify_certificate,
