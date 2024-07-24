@@ -1144,7 +1144,7 @@ script:
       description: The operating system of the client.
       type: String
     - contextPath: CiscoMeraki.NetworkClient.pskGroup
-      description: iPSK name of the client.
+      description: IPSK name of the client.
       type: String
     - contextPath: CiscoMeraki.NetworkClient.recentDeviceConnection
       description: Client's most recent connection type enum = [Wired, Wireless].
