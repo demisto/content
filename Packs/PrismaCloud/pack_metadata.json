@@ -2,7 +2,11 @@
     "name": "Prisma Cloud by Palo Alto Networks",
     "description": "Automate and unify security incident response across your cloud environments, while still giving a degree of control to dedicated cloud teams.",
     "support": "xsoar",
+<<<<<<< HEAD
     "currentVersion": "4.3.9",
+=======
+    "currentVersion": "4.3.7",
+>>>>>>> 7898236091544771d19bd5811e4f54285eb645c9
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
