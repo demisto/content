@@ -109,7 +109,7 @@ script:
     - name: organization_id
       description: ID of the organization to retrieve from. Use `meraki-organization-list` to fetch all organization IDs. This overrides the organization ID instance parameter.
     - name: config_template_id
-      description: ID of a config template. Will return all networks bound to that template.
+      description: ID of a configuration template. Will return all networks bound to that template.
     - name: is_bound_to_config_template
       description: Filter config template bound networks. If config_template_id is set, this cannot be false.
       auto: PREDEFINED
