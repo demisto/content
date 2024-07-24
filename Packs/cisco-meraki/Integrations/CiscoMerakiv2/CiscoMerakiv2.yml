@@ -376,7 +376,7 @@ script:
       description: ID of the organization to retrieve from. Use `meraki-organization-list` to fetch all organization IDs. This overrides the organization ID instance parameter.
       default: true
     - name: configuration_updated_after
-      description: 'Filter results by whether or not the devices configuration has been updated after the given timestamp. Accepted formats: datetime any substring of yyyy-mm-ddThh:mm:ssZ, epoch 1720617001, relative 1 day 2h 3 minute.'
+      description: 'Filter results by whether the devices configuration has been updated after the given timestamp. Accepted formats: datetime any substring of yyyy-mm-ddThh:mm:ssZ, epoch 1720617001, relative 1 day 2h 3 minute.'
     - name: network_ids
       description: Comma-separated list of network IDs to retrieve from. Use `meraki-network-list` to fetch all network IDs.
       isArray: true
