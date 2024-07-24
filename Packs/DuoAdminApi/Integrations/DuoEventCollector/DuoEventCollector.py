@@ -1,5 +1,7 @@
 from collections import deque
 from enum import Enum
+
+import dateparser
 import duo_client
 from pydantic import BaseModel, Field  # pylint: disable=E0611
 from CommonServerPython import *
@@ -131,12 +133,14 @@ class Client:
 
     def handle_telephony_logs_v1(self) -> list:
         # TELEPHONY end point uses the V1 api endpoint.
+        demisto.debug(f'handle_telephony_logs_v1 mintime={self.params.mintime[LogType.TELEPHONY]}')
         events = self.admin_api.get_telephony_log(mintime=self.params.mintime[LogType.TELEPHONY])
         events = sorted(events, key=lambda e: e['timestamp'])
         return events
 
     def handle_administration_logs(self) -> list:
         # ADMINISTRATION end point uses the V1 api endpoint.
+        demisto.debug(f'handle_administration_logs mintime={self.params.mintime[LogType.ADMINISTRATION]}')
         events = self.admin_api.get_administrator_log(mintime=self.params.mintime[LogType.ADMINISTRATION])
         events = sorted(events, key=lambda e: e['timestamp'])
         return events
@@ -166,7 +170,9 @@ class GetEvents:
 
     def make_sdk_call(self) -> tuple:
         events, metadata = self.client.call(self.request_order)
+        demisto.debug(f'make_sdk_call {len(events)=}')
         events = events[: int(self.client.params.limit)]
+        demisto.debug(f'make_sdk_call after update {len(events)=}')
         return events, metadata
 
     def _iter_events(self) -> Generator:
@@ -204,6 +210,8 @@ class GetEvents:
             stored_events.extend(events)
             if len(stored_events) >= int(self.client.params.limit) or not events:
                 return stored_events
+            demisto.debug(f'updating the limit current value is {self.client.params.limit} the new value will be '
+                          f'{int(self.client.params.limit) - len(stored_events)}')
             self.client.params.limit = str(int(self.client.params.limit) - len(stored_events))
         return stored_events
 
