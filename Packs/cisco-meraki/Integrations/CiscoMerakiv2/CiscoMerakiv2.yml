@@ -413,7 +413,7 @@ script:
       description: Comma-separated list of MAC addresses to search. All returned devices will have a MAC address that is an exact match.
       isArray: true
     - name: serials
-      description: Comma-separated list of serials to search. All returned devices will have a serial number that is an exact match.
+      description: Comma-separated list of serial numbers to search. All returned devices will have a serial number that is an exact match.
       isArray: true
     - name: sensor_metrics
       description: Comma-separated list of metrics that they provide. Only applies to sensor devices.
