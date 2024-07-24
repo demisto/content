@@ -180,13 +180,13 @@ script:
       description: Total number of licenses (per-device licensing only).
       type: Number
     - contextPath: CiscoMeraki.LicenseState.expirationDate
-      description: License expiration date (Co-termination licensing only).
+      description: License expiration date (co-termination licensing only).
       type: String
     - contextPath: CiscoMeraki.LicenseState.status
-      description: License status (Co-termination licensing only).
+      description: License status (co-termination licensing only).
       type: String
     - contextPath: CiscoMeraki.LicenseState.licensedDeviceCounts
-      description: License counts (Co-termination licensing only).
+      description: License counts (co-termination licensing only).
       type: Number
     - contextPath: CiscoMeraki.LicenseState.states.active.count
       description: The number of active licenses.
