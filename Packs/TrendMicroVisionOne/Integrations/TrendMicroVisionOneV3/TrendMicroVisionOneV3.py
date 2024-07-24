@@ -2137,7 +2137,7 @@ def submit_file_to_sandbox(
     """
     # Required Params
     file_url = args.get(FILE_URL, EMPTY_STRING)
-    file_name = args.get(FILE_NAME, EMPTY_STRING)
+    file_name = args.get("file_name", EMPTY_STRING)
     # Optional Params
     document_pass = args.get(DOCUMENT_PASSWORD, EMPTY_STRING)
     archive_pass = args.get(ARCHIVE_PASSWORD, EMPTY_STRING)
