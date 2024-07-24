@@ -378,6 +378,10 @@ script:
       name: top
     - description: 'List of fields to include in the search results. If no fields are specified, the query returns all supported fields. e.g. select="dpt,dst,endpointHostName".'
       name: select
+    - description: 'Do you want to fetch all matching records or only records matching the top value.'
+      name: fetch_all
+    - description: 'Max results to be fetched by call.'
+      name: fetch_max_count
     description: Displays search results from the Endpoint Activity Data source that match the parameters provided.
     name: trendmicro-visionone-get-endpoint-activity-data
     outputs:
@@ -552,6 +556,10 @@ script:
       name: top
     - description: 'List of fields to include in the search results. If no fields are specified, the query returns all supported fields. e.g. select="mailMsgSubject,mailFromAddresses,mailToAddresses".'
       name: select
+    - description: 'Do you want to fetch all matching records or only records matching the top value.'
+      name: fetch_all
+    - description: 'Max results to be fetched by call.'
+      name: fetch_max_count
     description: Displays search results from the Email Activity Data source that match the parameters provided.
     name: trendmicro-visionone-get-email-activity-data
     outputs:
