@@ -38,7 +38,7 @@ configuration:
   section: Collect
 - name: network_id
   display: Network ID
-  additionalinfo: A default ID to be used in all commands that require an network.
+  additionalinfo: A default ID to be used in all commands that require a network.
   required: false
   type: 0
   section: Collect
