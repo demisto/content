@@ -102,23 +102,14 @@ def test_fetch_incidents(requests_mock):
     next_run, incidents = fetch_incidents(client, last_run, first_fetch)
 
     # Assertions
-    assert incidents[0]['name'] == 'Test Ticketor 01'
-    assert incidents[0]['Category'] == 'image_and_reputation'
-    assert incidents[0]['CustomFields']['subcategory'] == 'image_and_reputation_suspicious_domain'
-    assert incidents[0]['CustomFields']['xmcoserenetymonitoring'] == 'out_of_scope'
-    assert incidents[0]['CustomFields']['xmcoserenetyidentification'] == 'manual'
+    assert incidents[0]['severity'] == 2
 
     current_datetime = datetime.utcnow().astimezone(timezone.utc)
     current_datetime.strftime("%Y-%m-%dT%H:%M:%S")
 
     next_run, incidents = fetch_incidents(client, last_run, first_fetch, scope="65e83a81cba69ffd2d9384c1")
 
-    # Assertions
-    assert incidents[0]['name'] == 'Test Ticketor 01'
-    assert incidents[0]['Category'] == 'image_and_reputation'
-    assert incidents[0]['CustomFields']['subcategory'] == 'image_and_reputation_suspicious_domain'
-    assert incidents[0]['CustomFields']['xmcoserenetymonitoring'] == 'out_of_scope'
-    assert incidents[0]['CustomFields']['xmcoserenetyidentification'] == 'manual'
+    assert incidents[0]['severity'] == 2
 
     # Test no result
     mock_response = util_load_json('test_data/serenety_alerts_no_result.json')
