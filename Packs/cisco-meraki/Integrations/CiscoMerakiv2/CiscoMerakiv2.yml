@@ -12,7 +12,7 @@ configuration:
   defaultvalue: https://api.meraki.com
 - name: api_key
   displaypassword: API Key
-  additionalinfo: An API key can be generated through 'My Profile'  in 'API access'.
+  additionalinfo: An API key can be generated through 'My Profile' in 'API access'.
   required: true
   type: 9
   hiddenusername: true
