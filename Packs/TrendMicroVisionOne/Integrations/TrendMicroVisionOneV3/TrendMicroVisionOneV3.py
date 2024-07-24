@@ -7,7 +7,7 @@ from CommonServerUserPython import *  # noqa: F401
 
 import json
 import urllib3
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta, UTC
 from typing import Any, TypeVar
 import pytmv1
 from pytmv1 import (
@@ -478,8 +478,8 @@ def get_workbench_histories(v1_client: pytmv1.Client, start, end) -> list:
     if not check_datetime_aware(end):
         end = end.astimezone()
     # Date time format before formatting -> 2020-06-15T10:00:00.000Z
-    start = start.astimezone(datetime.UTC)
-    end = end.astimezone(datetime.UTC)
+    start = start.astimezone(UTC)
+    end = end.astimezone(UTC)
     start = start.isoformat(timespec="milliseconds").replace("+00:00", "Z")
     end = end.isoformat(timespec="milliseconds").replace("+00:00", "Z")
     # Format start and end to remove decimal values so that the request
@@ -1179,7 +1179,7 @@ def fetch_incidents(v1_client: pytmv1.Client):
     This function executes to get all workbench alerts by using
     startDateTime, endDateTime and sends the result to war room.
     """
-    end = datetime.now(datetime.UTC)
+    end = datetime.now(UTC)
     days = int(demisto.params().get("first_fetch", ""))
 
     last_run = demisto.getLastRun()
@@ -1977,7 +1977,7 @@ def download_analysis_report(
 
     # Create name for pdf report file to be downloaded
     name = "Trend_Micro_Sandbox_Analysis_Report"
-    file_name = f"{name}_{datetime.now(datetime.UTC).replace(microsecond=0).strftime('%Y-%m-%d:%H:%M:%S')}.pdf"
+    file_name = f"{name}_{datetime.now(UTC).replace(microsecond=0).strftime('%Y-%m-%d:%H:%M:%S')}.pdf"
 
     # Make rest call
     resp = v1_client.sandbox.download_analysis_result(
@@ -2037,7 +2037,7 @@ def download_investigation_package(
 
     # Create name for zip package to be downloaded
     name = "Sandbox_Investigation_Package"
-    file_name = f"{name}_{datetime.now(datetime.UTC).replace(microsecond=0).strftime('%Y-%m-%d:%H:%M:%S')}.zip"
+    file_name = f"{name}_{datetime.now(UTC).replace(microsecond=0).strftime('%Y-%m-%d:%H:%M:%S')}.zip"
 
     # Make rest call
     resp = v1_client.sandbox.download_investigation_package(
