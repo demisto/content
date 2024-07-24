@@ -2744,18 +2744,19 @@ List the VLANs for an MX network.
 The following sections list the changes in this version.
 
 ### Commands
-#### The following commands were removed in this version:
-* *meraki-fetch-organizations* - this command was replaced by *meraki-organization-list*.
-* *meraki-get-organization-license-state* - this command was replaced by *meraki-organization-license-state-list*.
-* *meraki-fetch-organization-inventory* - this command was replaced by *meraki-organization-inventory-list*.
-* *meraki-fetch-networks* - this command was replaced by *meraki-network-list*.
-* *meraki-fetch-devices* - this command was replaced by *meraki-device-list*.
-* *meraki-fetch-device-uplink* - this command was replaced by *meraki-organization-uplink-status-list*.
-* *meraki-fetch-ssids* - this command was replaced by *meraki-network-appliance-ssid-list*.
-* *meraki-fetch-clients* - this command was replaced by *meraki-device-client-list*.
-* *meraki-fetch-firewall-rules* - this command was replaced by *meraki-network-l3firewall-rule-list*.
-* *meraki-remove-device* - this command was replaced by *meraki-device-remove*.
-* *meraki-get-device* - this command was replaced by *meraki-device-list*.
-* *meraki-update-device* - this command was replaced by *meraki-device-update*.
-* *meraki-claim-device* - this command was replaced by *meraki-device-claim*.
-* *meraki-update-firewall-rules* - this command was replaced by *meraki-network-l3firewall-rule-update*.
+### Commands
+The following commands were removed in this version:
+* ***meraki-fetch-organizations*** - this command was replaced by ***meraki-organization-list***.
+* ***meraki-get-organization-license-state*** - this command was replaced by ***meraki-organization-license-state-list***.
+* ***meraki-fetch-organization-inventory*** - this command was replaced by ***meraki-organization-inventory-list***.
+* ***meraki-fetch-networks*** - this command was replaced by ***meraki-network-list***.
+* ***meraki-fetch-devices*** - this command was replaced by ***meraki-device-list***.
+* ***meraki-fetch-device-uplink*** - this command was replaced by ***meraki-organization-uplink-status-list***.
+* ***meraki-fetch-ssids*** - this command was replaced by ***meraki-network-appliance-ssid-list***.
+* ***meraki-fetch-clients*** - this command was replaced by ***meraki-device-client-list***.
+* ***meraki-fetch-firewall-rules*** - this command was replaced by ***meraki-network-l3firewall-rule-list***.
+* ***meraki-remove-device*** - this command was replaced by ***meraki-device-remove***.
+* ***meraki-get-device*** - this command was replaced by ***meraki-device-list***.
+* ***meraki-update-device*** - this command was replaced by ***meraki-device-update***.
+* ***meraki-claim-device*** - this command was replaced by ***meraki-device-claim***.
+* ***meraki-update-firewall-rules*** - this command was replaced by ***meraki-network-l3firewall-rule-update****.
