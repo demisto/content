@@ -2253,7 +2253,7 @@ script:
       description: Interfaces associated with the prefix.
       type: String
     - contextPath: CiscoMeraki.ApplianceVlan.mandatoryDhcp.enabled
-      description: Enable Mandatory DHCP on VLAN.
+      description: Whether to enable mandatory DHCP on VLAN.
       type: Boolean
     - contextPath: CiscoMeraki.ApplianceVlan.dhcpOptions.code
       description: The code for the DHCP option. This should be an integer between 2 and 254.
