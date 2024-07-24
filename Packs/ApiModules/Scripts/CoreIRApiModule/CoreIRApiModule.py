@@ -2407,11 +2407,17 @@ def blocklist_files_command(client, args):
     comment = args.get('comment')
     incident_id = arg_to_number(args.get('incident_id'))
     detailed_response = argToBoolean(args.get('detailed_response', False))
-
-    res = client.blocklist_files(hash_list=hash_list,
-                                 comment=comment,
-                                 incident_id=incident_id,
-                                 detailed_response=detailed_response)
+    try:
+        res = client.blocklist_files(hash_list=hash_list,
+                                     comment=comment,
+                                     incident_id=incident_id,
+                                     detailed_response=detailed_response)
+    except Exception as e:
+        if 'All hashes have already been added to the allow or block list' in str(e):
+            return CommandResults(
+                readable_output='All hashes have already been added to the block list.'
+            )
+        raise e
 
     if detailed_response:
         return CommandResults(
@@ -2459,11 +2465,18 @@ def allowlist_files_command(client, args):
     comment = args.get('comment')
     incident_id = arg_to_number(args.get('incident_id'))
     detailed_response = argToBoolean(args.get('detailed_response', False))
+    try:
+        res = client.allowlist_files(hash_list=hash_list,
+                                     comment=comment,
+                                     incident_id=incident_id,
+                                     detailed_response=detailed_response)
+    except Exception as e:
+        if 'All hashes have already been added to the allow or block list' in str(e):
+            return CommandResults(
+                readable_output='All hashes have already been added to the allow list.'
+            )
+        raise e
 
-    res = client.allowlist_files(hash_list=hash_list,
-                                 comment=comment,
-                                 incident_id=incident_id,
-                                 detailed_response=detailed_response)
     if detailed_response:
         return CommandResults(
             readable_output=tableToMarkdown('Allowlist Files', res),
