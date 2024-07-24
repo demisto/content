@@ -110,7 +110,7 @@ class BaseCondition(ABC):
     """Base abstract class for conditions"""
 
     def __init__(self, pr: PullRequest, git_repo: Repo, **kwargs):
-        self.pr = pr
+        self.pr: PullRequest = pr
         self.git_repo = git_repo
         self.next_cond = None
 
