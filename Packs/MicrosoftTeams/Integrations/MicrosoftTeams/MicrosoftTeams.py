@@ -1,6 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+
 ''' IMPORTS '''
 from enum import Enum
 import re
@@ -164,7 +165,7 @@ def error_parser(resp_err: requests.Response, api: str = 'graph') -> str:
     """
     try:
         response: dict = resp_err.json()
-        demisto.debug(f"Error response from {api=}: {response=}")
+
         if api == 'graph':
             error_codes = response.get("error_codes", [""])
             if set(error_codes).issubset(TOKEN_EXPIRED_ERROR_CODES):
@@ -316,8 +317,11 @@ def process_incident_create_message(demisto_user: dict, message: str, request_bo
         server_links: dict = demisto.demistoUrls()
         server_link: str = server_links.get('server', '')
         server_link = server_link + '/#' if not is_demisto_version_ge('8.0.0') else server_link
-        data = f"Successfully created incident {created_incident.get('name', '')}.\n" \
-               f"View it on: {server_link}/WarRoom/{created_incident.get('id', '')}"
+        newIncidentWelcomeMessage = demisto.params().get('newIncidentWelcomeMessage', '')
+        if newIncidentWelcomeMessage and ('<incident_name>' in newIncidentWelcomeMessage) and ('<incident_link>' in newIncidentWelcomeMessage):
+            newIncidentWelcomeMessage = newIncidentWelcomeMessage.replace('<incident_name>', f"{created_incident.get('name', '')}").replace(
+                '<incident_link>', f"{server_link}/WarRoom/{created_incident.get('id', '')}")
+        data = newIncidentWelcomeMessage
 
     return data
 
@@ -537,6 +541,7 @@ def process_ask_user(message: str) -> dict:
         body.append({
             'type': 'TextBlock',
             'text': text,
+            'wrap': True
         })
 
         for option in options:
@@ -561,7 +566,8 @@ def process_ask_user(message: str) -> dict:
                 'horizontalAlignment': 'Center',
                 'size': 'Medium',
                 'weight': 'Bolder',
-                'color': 'Accent'
+                'color': 'Accent',
+                'wrap': True
             },
             {
                 'type': 'Container',

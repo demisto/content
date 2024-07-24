@@ -252,27 +252,32 @@ Note: The [microsoft-teams-ring-user](https://learn.microsoft.com/en-us/graph/ap
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Name | The integration instance name.<br />If using Cortex XSOAR rerouting configuration, insert here the instance name you configured in the messaging endpoint. | True |
-    | Bot ID | Bot ID. | True |
-    | Bot Password | Bot Password. | True |
-    | Authentication Type |  | True |
+    | Bot ID |  | False |
+    | Bot Password |  | False |
+    | Bot ID |  | False |
+    | Bot Password |  | False |
+    | Authentication Type |  | False |
     | Application redirect URI (for Authorization Code mode) |  | False |
-    | Authorization code | For Authorization Code flow mode. Received from the authorization step. See the Detailed Instructions \(?\) section | False |
-    | Default team | The team to which messages and notifications are sent. If a team is specified as a command argument, it overrides this parameter. | True |
+    | Authorization code |  | False |
+    | Default team |  | True |
     | Notifications channel |  | True |
+    | Certificate (Required for HTTPS) |  | False |
+    | Private Key (Required for HTTPS) |  | False |
     | Certificate (Required for HTTPS) |  | False |
     | Private Key (Required for HTTPS) |  | False |
     | Minimum incident severity to send notifications to Teams by |  | False |
     | Disable Automatic Notifications | Whether to disable automatic notifications to the configured notifications channel. | False |
     | Allow external users to create incidents via direct message |  | False |
     | The header of an external form hyperlink. |  | False |
-    | Trust any certificate (not secure) | Do not check for Cortex XSOAR version 8 and Cortex XSIAM. | False |
+    | Trust any certificate (not secure) | Do not check for Cortex XSOAR version 8 | False |
     | Use system proxy settings |  | False |
-    | Long running instance |  | True |
-    | Listen port, e.g., 7000 (Required for investigation mirroring and direct messages) | longRunningPort | False |
-    | Incident type | Incident type. | False |
+    | Long running instance |  | False |
+    | Listen port, e.g. 7000 (Required for investigation mirroring and direct messages) |  | False |
+    | Incident type |  | False |
+    | New Incident Welcome Message | Optional - Welcome message when creating new incidents using the bot. \(Default: Successfully created incident &lt;incident_name&gt;. View it on: &lt;incident_link&gt;\). | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 5. Click the **Save & exit** button.
 
 #### Configuring the instance with the chosen authentication flow
@@ -504,40 +509,26 @@ There is no context output for this command.
 Calling Avishai Brandeis
 
 ### microsoft-teams-add-user-to-channel
+
 ***
 Adds a member (user) to a private/shared channel.
-For a comparison of Teams features for each channel type, see the Microsoft documentation:  [Channel feature comparison](https://learn.microsoft.com/en-us/MicrosoftTeams/teams-channels-overview#channel-feature-comparison).
 
-
-##### Base Command
+#### Base Command
 
 `microsoft-teams-add-user-to-channel`
 
-##### Required Permissions
+#### Input
 
-`User.Read.All`
-`ChannelMember.ReadWrite.All`
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| channel | The channel to which to add the member. | Required | 
+| team | The channel's team. | Required | 
+| member | The display name of the member to add to the channel. | Required | 
+| owner | Whether to add the member with the owner role. Possible values are: true, false. Default is false. | Optional | 
 
-##### Input
-
-| **Argument Name** | **Description**                                                    | **Required** |
-|-------------------|--------------------------------------------------------------------|--------------|
-| channel           | The channel to which to add the member.                            | Required     | 
-| team              | The channel's team.                                                | Required     | 
-| member            | The display name of the member to add to the channel.              | Required     | 
-| owner             | Whether to add the member with the owner role.  Default is 'false' | Optional     | 
-
-
-##### Context Output
+#### Context Output
 
 There is no context output for this command.
-
-##### Command Example
-```!microsoft-teams-add-user-to-channel channel="example channel" member=itayadmin team=DemistoTeam```
-
-##### Human Readable Output
-The User "itayadmin" has been added to channel "example channel" successfully.
-
 ### microsoft-teams-create-channel
 ***
 Creates a new channel in a Microsoft Teams team.
@@ -845,39 +836,26 @@ Adds a member (user) to a group chat.
 `ChatMember.ReadWrite` - Delegated
 `Chat.ReadWrite` - Delegated
 
+### microsoft-teams-chat-add-user
+
+***
+Adds a member (user) to a group chat.
+
+#### Base Command
+
+`microsoft-teams-chat-add-user`
+
 #### Input
 
-| **Argument Name** | **Description**                                                                                    | **Required** |
-|-------------------|----------------------------------------------------------------------------------------------------|--------------|
-| chat              | The chat ID or group chat name (topic) to which to add the member.                                 | Required     | 
-| member            | Display name/mail/UPN of user that should be added to the chat. Can be an array.                   | Required     | 
-| share_history     | Whether to share the whole history of the chat. Possible values are: true, false. Default is True. | Optional     | 
-
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| chat | The chat ID or group chat name (topic) to which to add the member. | Required | 
+| member | Display name/mail/UPN of user that should be added to the chat. Can be an array. | Required | 
+| share_history | Whether to share the whole history of the chat. Possible values are: true, false. Default is true. | Optional | 
 
 #### Context Output
 
 There is no context output for this command.
-
-##### Command Example
-```!microsoft-teams-chat-add-user chat="example chat" member="Bruce Willis" share_history=false```
-
-##### Human Readable Output
-The User "Bruce Willis" has been added to chat "example chat" successfully.
-
-### microsoft-teams-chat-member-list
-***
-Retrieves a list of members from a chat.
-
-
-#### Base Command
-
-`microsoft-teams-chat-member-list`
-
-##### Required Permissions
-`Chat.ReadWrite` - Delegated
-`ChatMember.ReadWrite` - Delegated
-
-#### Input
 
 | **Argument Name** | **Description**                                                                  | **Required** |
 |-------------------|----------------------------------------------------------------------------------|--------------|
@@ -934,117 +912,89 @@ Retrieves a list of chats that the user is part of. If 'chat' is specified - ret
 
 #### Context Output
 
-| **Path**                                    | **Type** | **Description**                                                                                                                                            |
-|---------------------------------------------|----------|------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| MicrosoftTeams.ChatList.chatId              | String   | The chat's unique identifier.                                                                                                                              | 
-| MicrosoftTeams.ChatList.topic               | String   | Subject or topic for the chat. Only available for group chats.                                                                                             | 
-| MicrosoftTeams.ChatList.createdDateTime     | String   | Date and time at which the chat was created.                                                                                                               | 
-| MicrosoftTeams.ChatList.lastUpdatedDateTime | String   | Date and time at which the chat was renamed or list of members were last changed.                                                                          | 
-| MicrosoftTeams.ChatList.chatType            | String   | Specifies the type of chat.                                                                                                                                | 
-| MicrosoftTeams.ChatList.webUrl              | String   | The URL for the chat in Microsoft Teams. The URL should be treated as an opaque blob, and not parsed.                                                      | 
-| MicrosoftTeams.ChatList.tenantId            | String   | The identifier of the tenant in which the chat was created.                                                                                                | 
-| MicrosoftTeams.ChatList.viewpoint           | String   | Represents caller-specific information about the chat, such as last message read date and time.                                                            | 
-| MicrosoftTeams.ChatList.onlineMeetingInfo   | String   | Represents details about an online meeting. If the chat isn't associated with an online meeting, the property is empty.                                    | 
-| MicrosoftTeams.ChatListNextLink             | String   | Used if an operation returns partial results. If a response contains a NextLink element, its value specifies a starting point to use for subsequent calls. | 
+### microsoft-teams-chat-list
 
-##### Command Example
-```!microsoft-teams-chat-list filter="topic eq 'testing'"```
+***
+Retrieves a list of chats that the user is part of. If 'chat' is specified, retrieves this chat only.
 
-##### Human Readable Output
->### Chats List:
->| Chat Id                                       | Chat name | Created Date Time        | Last Updated Date Time   | Chat Type | webUrl | Tenant Id | Last Message Read Date Time |
->|-----------------------------------------------|-----------|--------------------------|--------------------------|-----------|--------|-----------|-----------------------------|
->| 19:561082c0f3f847a58069deb8eb300807@thread.v2 | testing   | 2023-01-08T14:15:45.412Z | 2023-01-08T14:15:45.412Z | group     | webUrl | tenantId  | 2023-01-08T14:16:48.662Z    |
->| 19:2da4c29f6d7041eca70b638b43d45437@thread.v2 | testing   | 2022-12-29T11:10:49.173Z | 2022-12-29T11:10:49.173Z | group     | webUrl | tenantId  | 2022-12-29T12:00:07.317Z    |
+#### Base Command
+
+`microsoft-teams-chat-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| chat | The chat ID / group chat name (topic) / oneOnOne member (Display name/mail/UPN). | Optional | 
+| filter | Filters results. For example: topic eq 'testing'. For more query examples, see https://learn.microsoft.com/en-us/graph/filter-query-parameter?tabs=http. . | Optional | 
+| expand | Expands the results to include members or lastMessagePreview properties. Possible values are: members, lastMessagePreview. | Optional | 
+| limit | The number of results to retrieve. Default is 50. | Optional | 
+| next_link | A link that specifies a starting point to use for subsequent calls. | Optional | 
+| page_size | Number of results to return per page. Default is 50. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftTeams.ChatList.chatId | String | The chat's unique identifier. | 
+| MicrosoftTeams.ChatList.topic | String | Subject or topic for the chat. Only available for group chats. | 
+| MicrosoftTeams.ChatList.createdDateTime | String | Date and time when the chat was created. | 
+| MicrosoftTeams.ChatList.lastUpdatedDateTime | String | Date and time when the chat was renamed or list of members were last changed. | 
+| MicrosoftTeams.ChatList.chatType | String | Specifies the type of chat. | 
+| MicrosoftTeams.ChatList.webUrl | String | The URL for the chat in Microsoft Teams. The URL should be treated as an opaque blob, and not parsed. | 
+| MicrosoftTeams.ChatList.tenantId | String | The identifier of the tenant in which the chat was created. | 
+| MicrosoftTeams.ChatList.viewpoint | String | Represents caller-specific information about the chat, such as last message read date and time. | 
+| MicrosoftTeams.ChatList.onlineMeetingInfo | String | Represents details about an online meeting. If the chat isn't associated with an online meeting, the property is empty. | 
+| MicrosoftTeams.ChatListNextLink | String | Used if an operation returns partial results. If a response contains a NextLink element, its value specifies a starting point to use for subsequent calls. | 
 
 ### microsoft-teams-chat-message-list
+
 ***
 Retrieves a list of messages in a chat.
-
 
 #### Base Command
 
 `microsoft-teams-chat-message-list`
 
-##### Required Permissions
-`Chat.ReadWrite` - Delegated
-
 #### Input
 
-| **Argument Name** | **Description**                                                                                                                                                                       | **Required** |
-|-------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
-| chat              | The chat ID / group chat name (topic) / oneOnOne member (Display name/mail/UPN).                                                                                                      | Required     | 
-| limit             | The number of results to retrieve. Default is 50.                                                                                                                                     | Optional     | 
-| order_by          | Orders results by lastModifiedDateTime (default) or createdDateTime in descending order. Possible values are: lastModifiedDateTime, createdDateTime. Default is lastModifiedDateTime. | Optional     | 
-| next_link         | A link that specifies a starting point to use for subsequent calls.                                                                                                                   | Optional     | 
-| page_size         | Number of results to return per page. Default is 50.                                                                                                                                  | Optional     | 
-
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| chat | The chat ID / group chat name (topic) / oneOnOne member (Display name/mail/UPN). | Required | 
+| limit | The number of results to retrieve. Default is 50. | Optional | 
+| order_by | Orders results by lastModifiedDateTime (default) or createdDateTime in descending order. Possible values are: lastModifiedDateTime, createdDateTime. Default is lastModifiedDateTime. | Optional | 
+| next_link | A link that specifies a starting point to use for subsequent calls. | Optional | 
+| page_size | Number of results to return per page. Default is 50. | Optional | 
 
 #### Context Output
 
-| **Path**                                              | **Type** | **Description**                                                                                                                                            |
-|-------------------------------------------------------|----------|------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| MicrosoftTeams.ChatList.chatId                        | String   | The chat's unique identifier.                                                                                                                              | 
-| MicrosoftTeams.ChatList.messages.id                   | String   | Unique ID of the message.                                                                                                                                  | 
-| MicrosoftTeams.ChatList.messages.replyToId            | String   | ID of the parent chat message or root chat message of the thread.                                                                                          | 
-| MicrosoftTeams.ChatList.messages.etag                 | String   | Version number of the chat message.                                                                                                                        | 
-| MicrosoftTeams.ChatList.messages.messageType          | String   | The type of chat message.                                                                                                                                  | 
-| MicrosoftTeams.ChatList.messages.createdDateTime      | String   | Timestamp of when the chat message was created.                                                                                                            | 
-| MicrosoftTeams.ChatList.messages.lastModifiedDateTime | String   | Timestamp when the chat message is created \(initial setting\) or modified, including when a reaction is added or removed.                                 | 
-| MicrosoftTeams.ChatList.messages.lastEditedDateTime   | String   | Timestamp when edits to the chat message were made. Triggers an "Edited" flag in the Teams UI. If no edits are made the value is null.                     | 
-| MicrosoftTeams.ChatList.messages.deletedDateTime      | String   | Timestamp at which the chat message was deleted, or null if not deleted.                                                                                   | 
-| MicrosoftTeams.ChatList.messages.subject              | String   | The subject of the chat message, in plaintext.                                                                                                             | 
-| MicrosoftTeams.ChatList.messages.summary              | String   | Summary text of the chat message that could be used for push notifications and summary views or fall back views.                                           | 
-| MicrosoftTeams.ChatList.messages.chatId               | String   | If the message was sent in a chat, represents the identity of the chat.                                                                                    | 
-| MicrosoftTeams.ChatList.messages.importance           | String   | The importance of the chat message.                                                                                                                        | 
-| MicrosoftTeams.ChatList.messages.locale               | String   | Locale of the chat message set by the client.                                                                                                              | 
-| MicrosoftTeams.ChatList.messages.webUrl               | String   | Link to the message in Microsoft Teams.                                                                                                                    | 
-| MicrosoftTeams.ChatList.messages.channelIdentity      | String   | If the message was sent in a channel, represents identity of the channel.                                                                                  | 
-| MicrosoftTeams.ChatList.messages.policyViolation      | String   | Defines the properties of a policy violation set by a data loss prevention \(DLP\) application.                                                            | 
-| MicrosoftTeams.ChatList.messages.eventDetail          | String   | If present, represents details of an event that happened in a chat, a channel, or a team, for example, adding new members.                                 | 
-| MicrosoftTeams.ChatList.messages.from                 | String   | Details of the sender of the chat message.                                                                                                                 | 
-| MicrosoftTeams.ChatList.messages.body                 | String   | Plaintext/HTML representation of the content of the chat message. Representation is specified by the contentType inside the body.                          | 
-| MicrosoftTeams.ChatList.messages.attachments          | String   | References to attached objects like files, tabs, meetings etc.                                                                                             | 
-| MicrosoftTeams.ChatList.messages.mentions             | String   | List of entities mentioned in the chat message.                                                                                                            | 
-| MicrosoftTeams.ChatList.messages.reactions            | String   | Reactions for this chat message \(for example, Like\).                                                                                                     | 
-| MicrosoftTeams.MessageListNextLink                    | String   | Used if an operation returns partial results. If a response contains a NextLink element, its value specifies a starting point to use for subsequent calls. | 
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftTeams.ChatList.chatId | String | The chat's unique identifier. | 
+| MicrosoftTeams.ChatList.messages.id | String | Unique ID of the message. | 
+| MicrosoftTeams.ChatList.messages.replyToId | String | ID of the parent chat message or root chat message of the thread. | 
+| MicrosoftTeams.ChatList.messages.etag | String | Version number of the chat message. | 
+| MicrosoftTeams.ChatList.messages.messageType | String | The type of chat message. | 
+| MicrosoftTeams.ChatList.messages.createdDateTime | String | Timestamp of when the chat message was created. | 
+| MicrosoftTeams.ChatList.messages.lastModifiedDateTime | String | Timestamp when the chat message is created \(initial setting\) or modified, including when a reaction is added or removed. | 
+| MicrosoftTeams.ChatList.messages.lastEditedDateTime | String | Timestamp when edits to the chat message were made. Triggers an "Edited" flag in the Teams UI. If no edits are made the value is null. | 
+| MicrosoftTeams.ChatList.messages.deletedDateTime | String | Timestamp when the chat message was deleted, or null if not deleted. | 
+| MicrosoftTeams.ChatList.messages.subject | String | The subject of the chat message, in plaintext. | 
+| MicrosoftTeams.ChatList.messages.summary | String | Summary text of the chat message that could be used for push notifications and summary views or fall back views. | 
+| MicrosoftTeams.ChatList.messages.chatId | String | If the message was sent in a chat, represents the identity of the chat. | 
+| MicrosoftTeams.ChatList.messages.importance | String | The importance of the chat message. | 
+| MicrosoftTeams.ChatList.messages.locale | String | Locale of the chat message set by the client. | 
+| MicrosoftTeams.ChatList.messages.webUrl | String | Link to the message in Microsoft Teams. | 
+| MicrosoftTeams.ChatList.messages.channelIdentity | String | If the message was sent in a channel, represents the identity of the channel. | 
+| MicrosoftTeams.ChatList.messages.policyViolation | String | Defines the properties of a policy violation set by a data loss prevention \(DLP\) application. | 
+| MicrosoftTeams.ChatList.messages.eventDetail | String | If present, represents details of an event that happened in a chat, a channel, or a team, for example, adding new members. | 
+| MicrosoftTeams.ChatList.messages.from | String | Details of the sender of the chat message. | 
+| MicrosoftTeams.ChatList.messages.body | String | Plaintext/HTML representation of the content of the chat message. Representation is specified by the contentType inside the body. | 
+| MicrosoftTeams.ChatList.messages.attachments | String | References to attached objects like files, tabs, meetings, etc. | 
+| MicrosoftTeams.ChatList.messages.mentions | String | List of entities mentioned in the chat message. | 
+| MicrosoftTeams.ChatList.messages.reactions | String | Reactions for this chat message \(for example, Like\). | 
+| MicrosoftTeams.MessageListNextLink | String | Used if an operation returns partial results. If a response contains a NextLink element, its value specifies a starting point to use for subsequent calls. | 
 
-##### Command Example
-```!!microsoft-teams-chat-message-list chat="example chat" order_by=createdDateTime```
-
-##### Human Readable Output
->### Messages list in "example chat" chat:
->| Chat Id                                       | Created DateTime        | Etag          | From user | From user id                         | From user userIdentityType | Importance | Message Content | Message Type | Message contentType | Message id    | lastModified DateTime   |
->|-----------------------------------------------|-------------------------|---------------|-----------|--------------------------------------|----------------------------|------------|-----------------|--------------|---------------------|---------------|-------------------------|
->| 19:2da4c29f6d7041eca70b638b43d45437@thread.v2 | 2021-03-29T04:17:43.15Z | 1616991463150 | itayadmin | 8ea0e38b-efb3-4757-924a-5f94061cf8c2 | aadUser                    | normal     | Hello World     | message      | text                | 1616991463150 | 2021-03-29T04:17:43.15Z |
-
-### microsoft-teams-chat-update
-***
-Updates the chat name. It can only be set for group chats.
-
-
-#### Base Command
-
-`microsoft-teams-chat-update`
-
-##### Required Permissions
-
-`Chat.ReadWrite` - Delegated
-
-#### Input
-
-| **Argument Name** | **Description**                                                                 | **Required** |
-|-------------------|---------------------------------------------------------------------------------|--------------|
-| chat              | The chat ID / group chat name (topic).                                          | Required     | 
-| chat_name         | The new chat name. Maximum length is 250 characters. Use of ':' is not allowed. | Required     | 
-
-
-#### Context Output
-
-There is no context output for this command.
-
-##### Command Example
-```!microsoft-teams-chat-update chat="example chat" chat_name="update chat_name"```
 
 ##### Human Readable Output
 The name of chat 'example chat' has been successfully changed to 'update chat_name'.

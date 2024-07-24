@@ -1,7 +1,4 @@
 category: Messaging and Conferencing
-sectionOrder:
-- Connect
-- Collect
 commonfields:
   id: Microsoft Teams
   version: -1
@@ -92,7 +89,7 @@ configuration:
   - Critical
   required: false
   hidden:
-    - marketplacev2
+  - marketplacev2
 - display: Disable Automatic Notifications
   name: auto_notifications
   type: 8
@@ -143,6 +140,12 @@ configuration:
   type: 13
   section: Connect
   required: false
+- additionalinfo: 'Optional - Welcome message when creating new incidents using the bot. (Default: Successfully created incident <incident_name>. View it on: <incident_link>).'
+  defaultvalue: 'Successfully created incident <incident_name>. View it on: <incident_link>'
+  display: New Incident Welcome Message
+  name: newIncidentWelcomeMessage
+  required: false
+  type: 0
 description: Send messages and notifications to your team members.
 display: Microsoft Teams
 name: Microsoft Teams
@@ -259,7 +262,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-      defaultValue: false
+      defaultValue: 'false'
     description: Adds a member (user) to a private/shared channel.
     name: microsoft-teams-add-user-to-channel
   - arguments:
@@ -516,7 +519,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-      defaultValue: true
+      defaultValue: 'true'
     description: Adds a member (user) to a group chat.
     name: microsoft-teams-chat-add-user
   - arguments:
@@ -556,7 +559,7 @@ script:
       required: true
     - description: The number of results to retrieve.
       name: limit
-      defaultValue: 50
+      defaultValue: '50'
     - description: Orders results by lastModifiedDateTime (default) or createdDateTime in descending order.
       name: order_by
       auto: PREDEFINED
@@ -568,7 +571,7 @@ script:
       name: next_link
     - description: Number of results to return per page.
       name: page_size
-      defaultValue: 50
+      defaultValue: '50'
     description: Retrieves a list of messages in a chat.
     name: microsoft-teams-chat-message-list
     outputs:
@@ -657,12 +660,12 @@ script:
       - 'lastMessagePreview'
     - description: The number of results to retrieve.
       name: limit
-      defaultValue: 50
+      defaultValue: '50'
     - description: A link that specifies a starting point to use for subsequent calls.
       name: next_link
     - description: Number of results to return per page.
       name: page_size
-      defaultValue: 50
+      defaultValue: '50'
     description: Retrieves a list of chats that the user is part of. If 'chat' is specified, retrieves this chat only.
     name: microsoft-teams-chat-list
     outputs:
@@ -711,7 +714,7 @@ script:
   - description: Run this command if you need to rerun the authentication process.
     name: microsoft-teams-auth-reset
     arguments: []
-  dockerimage: demisto/teams:1.0.0.99724
+  dockerimage: demisto/teams:1.0.0.105296
   longRunning: true
   longRunningPort: true
   script: ''
@@ -719,6 +722,7 @@ script:
   type: python
   resetContext: true
   isFetchSamples: true
+  runonce: false
 tests:
 - Microsoft Teams - Test
 fromversion: 5.0.0
