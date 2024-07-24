@@ -158,7 +158,7 @@ script:
       description: URL to the network dashboard UI.
       type: String
     - contextPath: CiscoMeraki.Network.isBoundToConfigTemplate
-      description: If the network is bound to a config template.
+      description: If the network is bound to a configuration template.
       type: Boolean
     - contextPath: CiscoMeraki.Network.productTypes
       description: List of the product types that the network supports.
