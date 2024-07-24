@@ -65,12 +65,11 @@ def identify_attached_mail(args):
     if not entries:
         return 'no', None
 
-    for e in entries:
-        entry_id = get_email_entry_id(e)
-        if entry_id:
-            # leave the following comment as server used it to detect the additional context path used beyond the condition values
-            # demisto.setContext('reportedemailentryid', id)
-            return 'yes', {'reportedemailentryid': entry_id}
+    entry_ids = list(filter(None, map(get_email_entry_id, entries)))
+    if entry_ids:
+        # leave the following comment as server used it to detect the additional context path used beyond the condition values
+        # demisto.setContext('reportedemailentryid', id)
+        return 'yes', {'reportedemailentryid': entry_ids}
 
     return 'no', None
 
