@@ -271,7 +271,7 @@ script:
       description: Comma-separated list of network IDs to search for in inventory. Use explicit 'null' value to get available devices only. Use `meraki-network-list` to fetch all network IDs.
       isArray: true
     - name: serials
-      description: Comma-separated list of serials to search for in inventory. Use `meraki-device-list` or `meraki-organization-device-search` to fetch serial numbers.
+      description: Comma-separated list of serial numbers to search for in inventory. Use `meraki-device-list` or `meraki-organization-device-search` to fetch serial numbers.
       isArray: true
     - name: models
       description: Comma-separated list of models to search for in inventory.
