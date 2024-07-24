@@ -2,7 +2,7 @@ Cisco Meraki is a cloud-managed IT company that simplifies networking, security,
 This integration was integrated and tested with version MR 30.7 and MX 18.211.2 of Cisco Meraki v2.
 
 Some changes have been made that might affect your existing content.
-If you are upgrading from a previous version of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-cisco-meraki-v2).
+If you are upgrading from a previous version of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration---cisco-meraki-v2).
 
 ## Configure Cisco Meraki v2 on Cortex XSOAR
 
