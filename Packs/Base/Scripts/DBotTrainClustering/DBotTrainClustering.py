@@ -741,17 +741,22 @@ def remove_not_valid_field(fields_for_clustering: list[str], incidents_df: pd.Da
     return valid_field, global_msg
 
 
-def get_model_data(model_name):
+def get_model(model_name):
     """
-    Return model in base 64 and message about the load of the model
+    Return model
     :param model_name: model_name
-    :return:
+    :return: PostProcessing model
     """
     res_model = demisto.executeCommand("getMLModel", {"modelName": model_name})[0]
     if is_error(res_model):
         demisto.debug(f'Couldn\'t get model: {model_name=}, {res_model=}')
         return None
-    return res_model['Contents']['modelData']
+    model_base64 = res_model['Contents']['modelData']
+    try:
+        return pickle.loads(base64.b64decode(model_base64))  # guardrails-disable-line
+    except Exception as e:
+        demisto.debug(f'Unable to load data: {model_base64}, {e=}')
+    return None
 
 
 def is_model_needs_retrain(force_retrain: bool, model_expiration: float, model_name: str):
@@ -764,27 +769,11 @@ def is_model_needs_retrain(force_retrain: bool, model_expiration: float, model_n
     """
     if force_retrain:
         return None, True
-    model_data = get_model_data(model_name)
-    if model_data is None:
-        return None, True
-    model = load_model64(model_data)
+    model = get_model(model_name)
     if model is None:
         return None, True
     model_training_time = pd.to_datetime(model.date_training)
     return model, model_training_time < datetime.now() - timedelta(hours=model_expiration)
-
-
-def load_model64(model_base64: str):
-    """
-    Load model from base64 model
-    :param model_base64: string base64 model
-    :return: PostProcessing model
-    """
-    try:
-        return pickle.loads(base64.b64decode(model_base64))  # guardrails-disable-line
-    except (pickle.UnpicklingError, ModuleNotFoundError):
-        demisto.debug(f'Unable to load docker: {model_base64}')
-    return None
 
 
 def prepare_data_for_training(generic_cluster_name, incidents_df, field_for_cluster_name):
@@ -822,7 +811,7 @@ def keep_high_level_field(incidents_field: list[str]) -> list[str]:
     :param incidents_field: list of incident fields
     :return: Return list of fields
     """
-    return [x.split('.')[0] if '.' in x else x for x in incidents_field]
+    return [x.split('.')[0] for x in incidents_field]
 
 
 def calculate_range(data):
