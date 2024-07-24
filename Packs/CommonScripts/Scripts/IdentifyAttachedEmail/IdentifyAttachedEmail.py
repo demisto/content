@@ -17,7 +17,7 @@ def is_email(file_metadata: dict, file_name: str) -> bool:
     file_info = file_metadata.get('info', '').strip().lower()
     file_name = file_name.strip().lower()
     return any((
-        file_metadata.get('type') == 'eml',
+        file_metadata.get('type') in ('eml', 'eml}'),
         any(info in file_info for info in CONFIDENT_EMAIL_INFOS),
         file_name.endswith('.eml') and ('text' in file_info or file_info == 'data'),
         file_name.endswith('.msg') and 'composite document file v2 document' in file_info
@@ -55,10 +55,7 @@ def identify_attached_mail(args):
             for ent_id in entry_ids:
                 res = demisto.executeCommand('getEntry', {'id': ent_id})
                 if not is_error(res):
-                    entry_id = get_email_entry_id(res[0])
-                    if entry_id:
-                        # return the first email entry that we find.
-                        return 'yes', {'reportedemailentryid': entry_id}
+                    entries.append(res[0])
     else:
         entries = demisto.executeCommand('getEntries', {"filter": {"categories": ["attachments"]}})
 

@@ -31,6 +31,7 @@ def execute_command(command, args):
 
 
 def test_is_email():
+    assert is_email({'type': 'eml}'}, 'test.txt')
     assert is_email({'type': 'eml'}, 'test.txt')
     assert not is_email({'type': 'other'}, 'test.txt')
     assert is_email({'info': 'news or mail text, ASCII text'}, 'test.txt')
