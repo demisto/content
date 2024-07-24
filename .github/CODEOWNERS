@@ -77,3 +77,6 @@ Packs/ApiModules/Scripts/DemistoClassApiModule/DemistoClassApiModule.py @dantavo
 /Packs/Base/Scripts/DBotSuggestClassifierMapping/ @jlevypaloalto
 /Packs/Base/Scripts/GetMLModelEvaluation/ @jlevypaloalto
 /Packs/Base/Scripts/DBotMLFetchData/ @jlevypaloalto
+
+# Test Collection
+/Tests/conf.json @sapirshuker
