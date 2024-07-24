@@ -365,7 +365,7 @@ script:
     - name: network_id
       description: ID of the network to claim the devices into. Use `meraki-network-list` to fetch all network IDs. This overrides the network ID instance parameter.
     - name: serials
-      description: Comma-separated list of serials of the devices to claim. Use `meraki-device-list` or `meraki-organization-device-search` to fetch serial numbers.
+      description: Comma-separated list of serial numbers of the devices to claim. Use `meraki-device-list` or `meraki-organization-device-search` to fetch serial numbers.
       required: true
       isArray: true
       default: true
