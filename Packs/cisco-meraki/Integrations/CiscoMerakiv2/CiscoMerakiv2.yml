@@ -513,13 +513,13 @@ script:
     - name: network_id
       description: ID of a specific network to retrieve from. Use `meraki-network-list` to fetch all network IDs. This overrides the network ID instance parameter.
     - name: serial
-      description: Serial of a specific device to retrieve.
+      description: Serial number of a specific device to retrieve.
       default: true
     - name: limit
       description: The maximum number of records to return.
       defaultValue: 50
     - name: all_results
-      description: Retrieve all the results by overriding the default limit.
+      description: Whether to retrieve all the results by overriding the default limit.
       auto: PREDEFINED
       predefined:
       - 'false'
@@ -597,7 +597,7 @@ script:
     - name: switch_profile_id
       description: The ID of a switch template to bind to the device (for available switch templates, see the 'Switch Templates' endpoint). Use explicit 'null' value to unbind the switch device from the current profile. For a device to be bindable to a switch template, it must (1) be a switch, and (2) belong to a network that is bound to a configuration template.
     - name: move_map_marker
-      description: Whether or not to set the latitude and longitude of a device based on the new address. Only applies when lat and lng are not specified.
+      description: Whether to set the latitude and longitude of a device based on the new address. Only applies when lat and lng are not specified.
       auto: PREDEFINED
       predefined:
       - 'false'
@@ -795,7 +795,7 @@ script:
       description: Model of the power supply.
       type: String
     - contextPath: CiscoMeraki.DeviceStatus.components.powerSupplies.serial
-      description: Serial of the power supply.
+      description: Serial number of the power supply.
       type: String
     - contextPath: CiscoMeraki.DeviceStatus.components.powerSupplies.status
       description: Status of the power supply.
@@ -813,7 +813,7 @@ script:
       description: ID of the organization to retrieve from. Use `meraki-organization-list` to fetch all organization IDs. This overrides the organization ID instance parameter.
       default: true
     - name: network_ids
-      description: Comma-separated list of network ids to search for. Use `meraki-network-list` to fetch all network IDs.
+      description: Comma-separated list of network IDs to search for. Use `meraki-network-list` to fetch all network IDs.
       isArray: true
     - name: serials
       description: Comma-separated list of serial numbers to search for. Use `meraki-device-list` or `meraki-organization-device-search` to fetch serial numbers.
@@ -851,10 +851,10 @@ script:
       description: Network identifier.
       type: String
     - contextPath: CiscoMeraki.UplinkStatus.serial
-      description: The uplink serial.
+      description: The uplink serial number.
       type: String
     - contextPath: CiscoMeraki.UplinkStatus.highAvailability.role
-      description: The HA role of the device on the network. For devices that do not support HA, this will be 'primary'.
+      description: The High Availability role of the device on the network. For devices that do not support HA, this will be 'primary'.
       type: String
     - contextPath: CiscoMeraki.UplinkStatus.highAvailability.enabled
       description: Indicates whether High Availability is enabled for the device. For devices that do not support HA, this will be 'false'.
@@ -863,7 +863,7 @@ script:
       description: Access Point Name.
       type: String
     - contextPath: CiscoMeraki.UplinkStatus.uplinks.connectionType
-      description: Connection Type.
+      description: Connection type.
       type: String
     - contextPath: CiscoMeraki.UplinkStatus.uplinks.dns1
       description: Primary DNS IP.
@@ -875,31 +875,31 @@ script:
       description: Gateway IP.
       type: String
     - contextPath: CiscoMeraki.UplinkStatus.uplinks.iccid
-      description: Integrated Circuit Card Identification Number.
+      description: Integrated Circuit Card Identification number.
       type: String
     - contextPath: CiscoMeraki.UplinkStatus.uplinks.interface
       description: Uplink interface enum = [cellular, wan1, wan2, wan3].
       type: String
     - contextPath: CiscoMeraki.UplinkStatus.uplinks.ip
-      description: Uplink IP.
+      description: Uplink IP address.
       type: String
     - contextPath: CiscoMeraki.UplinkStatus.uplinks.ipAssignedBy
-      description: The way in which the IP is assigned.
+      description: The way in which the IP address is assigned.
       type: String
     - contextPath: CiscoMeraki.UplinkStatus.uplinks.primaryDns
-      description: Primary DNS IP.
+      description: Primary DNS IP address.
       type: String
     - contextPath: CiscoMeraki.UplinkStatus.uplinks.provider
-      description: Network Provider.
+      description: Network provider.
       type: String
     - contextPath: CiscoMeraki.UplinkStatus.uplinks.publicIp
-      description: Public IP.
+      description: Public IP address.
       type: String
     - contextPath: CiscoMeraki.UplinkStatus.uplinks.secondaryDns
-      description: Secondary DNS IP.
+      description: Secondary DNS IP address.
       type: String
     - contextPath: CiscoMeraki.UplinkStatus.uplinks.signalType
-      description: Signal Type.
+      description: Signal type.
       type: String
     - contextPath: CiscoMeraki.UplinkStatus.uplinks.status
       description: Uplink status enum = [active, connecting, failed, not connected, ready].
@@ -919,7 +919,7 @@ script:
     - name: mac
       description: The MAC address of the client.
     - name: limit
-      description: The maximum number of records to return. Default is 5.
+      description: The maximum number of records to return.
       defaultValue: 5
     - name: page_size
       description: The maximum number of records to return per page. To receive additional pages after the first call, use `next_token`. Acceptable range is 3 - 5. Default is 5.
@@ -987,7 +987,7 @@ script:
       description: Wireless capabilities of the client.
       type: String
     - contextPath: CiscoMeraki.Client.records.smInstalled
-      description: Status of SM for the client.
+      description: Whether the system manager for the client is installed.
       type: Boolean
     - contextPath: CiscoMeraki.Client.records.cdp
       description: The Cisco discover protocol settings for the client.
@@ -1020,7 +1020,7 @@ script:
       description: If the network is bound to a configuration template.
       type: Boolean
     - contextPath: CiscoMeraki.Client.records.network.productTypes
-      description: The product types of the network..
+      description: The product types of the network.
       type: String
     - contextPath: CiscoMeraki.Client.records.network.tags
       description: The network tags.
@@ -1041,9 +1041,9 @@ script:
       description: ID of the network to retrieve from. Use `meraki-network-list` to fetch all network IDs. This overrides the network ID instance parameter.
       default: true
     - name: client_id
-      description: ID of a specific client to retrieve. Clients can be identified by a client key or either the MAC or IP depending on whether the network uses Track-by-IP.
+      description: ID of a specific client to retrieve. Clients can be identified by a client key or either the MAC or IP address depending on whether the network uses Track-by-IP.
     - name: t0
-      description: 'The time span in days for which the information will be fetched. The maximum look back period is 31 days from today. Accepted formats: datetime any substring of yyyy-mm-ddThh:mm:ssZ, epoch 1720617001, relative 1 day 2h 3 minute.'
+      description: 'The time span in days for which the information will be fetched. The maximum lookback period is 31 days from today. Accepted formats: datetime any substring of yyyy-mm-ddThh:mm:ssZ, epoch 1720617001, relative 1 day 2h 3 minute.'
     - name: time_span
       description: The time span number in seconds for which the information will be fetched. If specifying time span, do not specify parameter t0. The value must be in seconds and be less than or equal to 31 days (2678400 seconds). The default is 1 day.
     - name: statuses
@@ -1054,17 +1054,17 @@ script:
       - online
       - offline
     - name: ip
-      description: Filters clients based on a partial or full match for the ip address field.
+      description: Filters clients based on a partial or full match for the IP address field.
     - name: ip6
-      description: Filters clients based on a partial or full match for the ip6 address field.
+      description: Filters clients based on a partial or full match for the IPv6 address field.
     - name: ip6_local
-      description: Filters clients based on a partial or full match for the ip6_local address field.
+      description: Filters clients based on a partial or full match for the local IPv6 address field.
     - name: mac
-      description: Filters clients based on a partial or full match for the mac address field.
+      description: Filters clients based on a partial or full match for the MAC address field.
     - name: os
-      description: Filters clients based on a partial or full match for the os (operating system) field.
+      description: Filters clients based on a partial or full match for the operating system field.
     - name: psk_group
-      description: Filters clients based on partial or full match for the iPSK name field.
+      description: Filters clients based on partial or full match for the IPSK name field.
     - name: description
       description: Filters clients based on a partial or full match for the description field.
     - name: vlan
@@ -1177,7 +1177,7 @@ script:
       description: Wireless capabilities of the client.
       type: String
     - contextPath: CiscoMeraki.NetworkClient.smInstalled
-      description: Status of SM for the client.
+      description: Whether the service manager for the client is installed.
       type: Boolean
     - contextPath: CiscoMeraki.NetworkClient.cdp
       description: The Cisco discover protocol settings for the client.
@@ -1208,14 +1208,14 @@ script:
       required: true
       default: true
     - name: t0
-      description: 'The time span in days for which the information will be fetched. The maximum look back period is 31 days from today. Accepted formats: datetime any substring of yyyy-mm-ddThh:mm:ssZ, epoch 1720617001, relative 1 day 2h 3 minute.'
+      description: 'The time span in days for which the information will be fetched. The maximum lookback period is 31 days from today. Accepted formats: datetime any substring of yyyy-mm-ddThh:mm:ssZ, epoch 1720617001, relative 1 day 2h 3 minute.'
     - name: time_span
       description: The time span number in seconds for which the information will be fetched. If specifying time span, do not specify parameter t0. The value must be in seconds and be less than or equal to 31 days (2678400 seconds). The default is 1 day.
     - name: limit
       description: The maximum number of records to return.
       defaultValue: 50
     - name: all_results
-      description: Retrieve all the results by overriding the default limit.
+      description: Whether to retrieve all the results by overriding the default limit.
       auto: PREDEFINED
       predefined:
       - 'false'
@@ -1272,7 +1272,7 @@ script:
       description: The maximum number of records to return.
       defaultValue: 50
     - name: all_results
-      description: Retrieve all the results by overriding the default limit.
+      description: Whether to retrieve all the results by overriding the default limit.
       auto: PREDEFINED
       predefined:
       - 'false'
@@ -1288,7 +1288,7 @@ script:
       description: The association control method for the SSID.
       type: String
     - contextPath: CiscoMeraki.SSID.Appliance.encryptionMode
-      description: The psk encryption mode for the SSID.
+      description: The PSK encryption mode for the SSID.
       type: String
     - contextPath: CiscoMeraki.SSID.Appliance.name
       description: The name of the SSID.
@@ -1297,10 +1297,10 @@ script:
       description: WPA encryption mode for the SSID.
       type: String
     - contextPath: CiscoMeraki.SSID.Appliance.enabled
-      description: Whether or not the SSID is enabled.
+      description: Whether the SSID is enabled.
       type: Boolean
     - contextPath: CiscoMeraki.SSID.Appliance.visible
-      description: Boolean indicating whether the MX should advertise or hide this SSID.
+      description: Whether the MX should advertise or hide this SSID.
       type: Boolean
     - contextPath: CiscoMeraki.SSID.Appliance.radiusServers.port
       description: The UDP port your RADIUS servers listens on for Access-requests.
@@ -1320,7 +1320,7 @@ script:
       description: The maximum number of records to return.
       defaultValue: 50
     - name: all_results
-      description: Retrieve all the results by overriding the default limit.
+      description: Whether to retrieve all the results by overriding the default limit.
       auto: PREDEFINED
       predefined:
       - 'false'
@@ -1354,7 +1354,7 @@ script:
       description: The client-serving radio frequencies of this SSID in the default indoor RF profile enum = [5 GHz band only, Dual band operation, Dual band operation with Band Steering].
       type: String
     - contextPath: CiscoMeraki.SSID.Wireless.encryptionMode
-      description: The psk encryption mode for the SSID enum = [wep, wpa].
+      description: The PSK encryption mode for the SSID enum = [wep, wpa].
       type: String
     - contextPath: CiscoMeraki.SSID.Wireless.ipAssignmentMode
       description: The client IP assignment mode enum = [Bridge mode, Ethernet over GRE, Layer 3 roaming, Layer 3 roaming with a concentrator, NAT mode, VPN].
@@ -1384,7 +1384,7 @@ script:
       description: Whether all APs broadcast the SSID or if it's restricted to APs matching any availability tags.
       type: Boolean
     - contextPath: CiscoMeraki.SSID.Wireless.enabled
-      description: Whether or not the SSID is enabled.
+      description: Whether the SSID is enabled.
       type: Boolean
     - contextPath: CiscoMeraki.SSID.Wireless.localAuth
       description: Extended local auth flag for Enterprise NAC.
@@ -1405,7 +1405,7 @@ script:
       description: Whether the SSID is advertised or hidden by the AP.
       type: Boolean
     - contextPath: CiscoMeraki.SSID.Wireless.walledGardenEnabled
-      description: Allow users to access a configurable list of IP ranges prior to sign-on.
+      description: Whether to allow users to access a configurable list of IP ranges prior to sign-on.
       type: Boolean
     - contextPath: CiscoMeraki.SSID.Wireless.availabilityTags
       description: List of tags for this SSID. If availableOnAllAps is false, then the SSID is only broadcast by APs with tags matching any of the tags in this list.
@@ -1522,7 +1522,7 @@ script:
       - allow
       - deny
     - name: syslog_enabled
-      description: Whether to log this rule to syslog, only applicable if a syslog has been configured.
+      description: Whether to log this rule to syslog. Only applicable if a syslog has been configured.
       auto: PREDEFINED
       predefined:
       - 'false'
@@ -1596,7 +1596,7 @@ script:
     - name: entry_id
       description: 'An entry ID of a JSON file to pass only rules. The format of a rule can be seen in the following link: https://developer.cisco.com/meraki/api-v1/update-network-appliance-firewall-l-7-firewall-rules/. Example: [{"policy": "deny", "type": "host", "value": "http://www.example.com"}].'
     - name: value
-      description: A value of what needs to get blocked. Format of the value varies depending on type of the firewall rule selected.
+      description: A value of what needs to get blocked. Format of the value varies depending on the type of the firewall rule selected.
     - name: type
       description: The type of the L7 firewall rule.
       auto: PREDEFINED
@@ -1642,7 +1642,7 @@ script:
       description: The maximum number of records to return.
       defaultValue: 50
     - name: all_results
-      description: Retrieve all the results by overriding the default limit.
+      description: Whether to retrieve all the results by overriding the default limit.
       auto: PREDEFINED
       predefined:
       - 'false'
@@ -1690,7 +1690,7 @@ script:
       description: The maximum number of records to return.
       defaultValue: 50
     - name: all_results
-      description: Retrieve all the results by overriding the default limit.
+      description: Whether to retrieve all the results by overriding the default limit.
       auto: PREDEFINED
       predefined:
       - 'false'
@@ -1744,7 +1744,7 @@ script:
       description: The maximum number of records to return.
       defaultValue: 50
     - name: all_results
-      description: Retrieve all the results by overriding the default limit.
+      description: Whether to retrieve all the results by overriding the default limit.
       auto: PREDEFINED
       predefined:
       - 'false'
@@ -1805,7 +1805,7 @@ script:
       description: The maximum number of records to return.
       defaultValue: 50
     - name: all_results
-      description: Retrieve all the results by overriding the default limit.
+      description: Whether to retrieve all the results by overriding the default limit.
       auto: PREDEFINED
       predefined:
       - 'false'
@@ -1824,13 +1824,13 @@ script:
       description:  If 'appliesTo' is set to one of 'Specific admins...', 'All admins of networks...' or 'All admins of networks tagged...', then you must specify this 'values' property to provide the set of entities to apply the branding policy to. For 'Specific admins...', specify an array of admin IDs. For 'All admins of networks...', specify an array of network IDs and/or configuration template IDs. For 'All admins of networks tagged...', specify an array of tag names.
       type: String
     - contextPath: CiscoMeraki.BrandingPolicy.customLogo.enabled
-      description: Whether or not there is a custom logo enabled.
+      description: Whether there is a custom logo enabled.
       type: Boolean
     - contextPath: CiscoMeraki.BrandingPolicy.customLogo.image.preview.expiresAt
       description: Timestamp of the preview image.
       type: Date
     - contextPath: CiscoMeraki.BrandingPolicy.customLogo.image.preview.url
-      description: Url of the preview image.
+      description: URL of the preview image.
       type: String
     - contextPath: CiscoMeraki.BrandingPolicy.helpSettings.apiDocsSubtab
       description: The 'Help -> API docs' subtab where a detailed description of the Dashboard API is listed. Can be one of 'default or inherit', 'hide' or 'show'.
@@ -1889,7 +1889,7 @@ script:
       description: The maximum number of records to return.
       defaultValue: 50
     - name: all_results
-      description: Retrieve all the results by overriding the default limit.
+      description: Whether to retrieve all the results by overriding the default limit.
       auto: PREDEFINED
       predefined:
       - 'false'
@@ -1953,7 +1953,7 @@ script:
       description: Destination IP address (in IP or CIDR notation), a fully-qualified domain name (FQDN, if your network supports it) or 'any'.
       type: String
     - contextPath: CiscoMeraki.GroupPolicy.firewallAndTrafficShaping.l3FirewallRules.destPort
-      description: Destination port (integer in the range 1-65535), a port range (e.g. 8080-9090), or 'any'.
+      description: Destination port (integer in the range 1-65535), a port range (e.g., 8080-9090), or 'any'.
       type: String
     - contextPath: CiscoMeraki.GroupPolicy.firewallAndTrafficShaping.l3FirewallRules.policy
       description: Allow or deny traffic specified by this rule.
@@ -1968,7 +1968,7 @@ script:
       description: Type of the L7 Rule. Must be 'application', 'applicationCategory', 'host', 'port' or 'ipRange'.
       type: String
     - contextPath: CiscoMeraki.GroupPolicy.firewallAndTrafficShaping.l7FirewallRules.value
-      description: The 'value' of what you want to block. If 'type' is 'host', 'port' or 'ipRange', 'value' must be a string matching either a hostname (e.g. somewhere.com), a port (e.g. 8080), or an IP range (e.g. 0.0.0.0/16). If 'type' is 'application' or 'applicationCategory', then 'value' must be an object with an ID for the application.
+      description: The 'value' of what you want to block. If 'type' is 'host', 'port' or 'ipRange', 'value' must be a string matching either a hostname (e.g. somewhere.com), a port (e.g., 8080), or an IP range (e.g., 0.0.0.0/16). If 'type' is 'application' or 'applicationCategory', then 'value' must be an object with an ID for the application.
       type: String
     - contextPath: CiscoMeraki.GroupPolicy.firewallAndTrafficShaping.trafficShapingRules.dscpTagValue
       description: The DSCP tag applied by your rule. null means 'Do not change DSCP tag'.
@@ -1992,7 +1992,7 @@ script:
       description: The type of definition. Can be one of 'application', 'applicationCategory', 'host', 'port', 'ipRange' or 'localNet'.
       type: String
     - contextPath: CiscoMeraki.GroupPolicy.firewallAndTrafficShaping.trafficShapingRules.definitions.value
-      description: If "type" is 'host', 'port', 'ipRange' or 'localNet', then "value" must be a string, matching either a hostname (e.g. "somesite.com"), a port (e.g. 8080), or an IP range ("0.0.0.0", "0.0.0.0/16", or "10.1.0.0/16:80"). 'localNet' also supports CIDR notation, excluding custom ports.
+      description: If "type" is 'host', 'port', 'ipRange' or 'localNet', then "value" must be a string, matching either a hostname (e.g., "somesite.com"), a port (e.g., 8080), or an IP range ("0.0.0.0", "0.0.0.0/16", or "10.1.0.0/16:80"). 'localNet' also supports CIDR notation, excluding custom ports.
       type: String
     - contextPath: CiscoMeraki.GroupPolicy.scheduling.enabled
       description: Whether scheduling is enabled (true) or disabled (false). Defaults to false. If true, the schedule objects for each day of the week (monday - sunday) are parsed.
@@ -2064,7 +2064,7 @@ script:
       description: How VLAN tagging is applied. Can be 'network default', 'ignore' or 'custom'.
       type: String
     - contextPath: CiscoMeraki.GroupPolicy.vlanTagging.vlanId
-      description: The ID of the vlan you want to tag. This only applies if 'settings' is set to 'custom'.
+      description: The ID of the VLAN you want to tag. This only applies if 'settings' is set to 'custom'.
       type: String
   - name: meraki-network-client-policy-list
     description: List all policies owned by each client.
@@ -2073,7 +2073,7 @@ script:
       description: ID of the network to retrieve from. Use `meraki-network-list` to fetch all network IDs. This overrides the network ID instance parameter.
       default: true
     - name: t0
-      description: 'The time span in days for which the information will be fetched. The maximum look back period is 31 days from today. Accepted formats: datetime any substring of yyyy-mm-ddThh:mm:ssZ, epoch 1720617001, relative 1 day 2h 3 minute.'
+      description: 'The time span in days for which the information will be fetched. The maximum lookback period is 31 days from today. Accepted formats: datetime any substring of yyyy-mm-ddThh:mm:ssZ, epoch 1720617001, relative 1 day 2h 3 minute.'
     - name: time_span
       description: The time span number in seconds for which the information will be fetched. If specifying time span, do not specify parameter t0. The value must be in seconds and be less than or equal to 31 days (2678400 seconds). The default is 1 day.
     - name: limit
@@ -2115,7 +2115,7 @@ script:
       description: Type of policy.
       type: String
     - contextPath: CiscoMeraki.ClientPolicy.assigned.ssid.ssidNumber
-      description: Number of ssid.
+      description: SSID number.
       type: Number
   - name: meraki-network-vlan-profile-list
     description: List VLAN profiles for a network.
@@ -2129,20 +2129,20 @@ script:
       description: The maximum number of records to return.
       defaultValue: 50
     - name: all_results
-      description: Retrieve all the results by overriding the default limit.
+      description: Whether to retrieve all the results by overriding the default limit.
       auto: PREDEFINED
       predefined:
       - 'false'
       - 'true'
     outputs:
     - contextPath: CiscoMeraki.VlanProfile.iname
-      description: IName of the VLAN profile.
+      description: Iname of the VLAN profile.
       type: String
     - contextPath: CiscoMeraki.VlanProfile.name
       description: Name of the profile, string length must be from 1 to 255 characters.
       type: String
     - contextPath: CiscoMeraki.VlanProfile.isDefault
-      description: Boolean indicating the default VLAN Profile for any device that does not have a profile explicitly assigned.
+      description: The default VLAN Profile for any device that does not have a profile explicitly assigned.
       type: Boolean
     - contextPath: CiscoMeraki.VlanProfile.vlanGroups.name
       description: Name of the VLAN, string length must be from 1 to 32 characters.
@@ -2174,7 +2174,7 @@ script:
       description: The maximum number of records to return.
       defaultValue: 50
     - name: all_results
-      description: Retrieve all the results by overriding the default limit.
+      description: Whether to retrieve all the results by overriding the default limit.
       auto: PREDEFINED
       predefined:
       - 'false'
@@ -2184,7 +2184,7 @@ script:
       description: Mask used for the subnet of all bound to the template networks. Applicable only for template network.
       type: Number
     - contextPath: CiscoMeraki.ApplianceVlan.applianceIp
-      description: The local IP of the appliance on the VLAN.
+      description: The local IP address of the appliance on the VLAN.
       type: String
     - contextPath: CiscoMeraki.ApplianceVlan.cidr
       description: CIDR of the pool of subnets. Applicable only for template network. Each network bound to the template will automatically pick a subnet from this pool to build its own VLAN.
