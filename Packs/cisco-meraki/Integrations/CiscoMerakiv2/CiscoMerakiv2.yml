@@ -360,7 +360,7 @@ script:
       description: Additional property value.
       type: String
   - name: meraki-device-claim
-    description: 'Claim devices into a network. (Note: for recently claimed devices, it may take a few minutes for API requests against that device to succeed). This operation can be used up to ten times within a single five minute window.'
+    description: 'Claim devices into a network. (Note: For recently claimed devices, it may take a few minutes for API requests against that device to succeed). This operation can be used up to ten times within a single five minute window.'
     arguments:
     - name: network_id
       description: ID of the network to claim the devices into. Use `meraki-network-list` to fetch all network IDs. This overrides the network ID instance parameter.
