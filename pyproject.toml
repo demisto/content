@@ -457,3 +457,9 @@ omit = ["*/test_data/*", "*_test.py", "demistomock.py", "conftest.py", "**/conft
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.tomlsort]
+all = true
+ignore_case = true
+in_place = true
+trailing_comma_inline_array = true
