@@ -1017,7 +1017,7 @@ script:
       description: The network URL.
       type: String
     - contextPath: CiscoMeraki.Client.records.network.isBoundToConfigTemplate
-      description: If the network is bound to a config template.
+      description: If the network is bound to a configuration template.
       type: Boolean
     - contextPath: CiscoMeraki.Client.records.network.productTypes
       description: The product types of the network..
