@@ -800,10 +800,15 @@ script:
     outputs:
     - contextPath: ActiveDirectory.ValidCredentials
       description: List of usernames that successfully logged in.
-  dockerimage: demisto/ldap:2.9.1.98188
+  dockerimage: demisto/ldap:2.9.1.105101
   ismappable: true
   isremotesyncout: true
   runonce: false
 fromversion: 5.0.0
 tests:
 - Active Directory Test
+- active directory search user with parentheses test
+- Active Directory - ad-get-user limit check
+- Active Directory Query V2 configuration with port
+- Active Directory - automatic pagination check
+- Active Directory - manual pagination check

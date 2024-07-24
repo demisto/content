@@ -5776,6 +5776,10 @@
             "scripts": [
                 "MattermostAskUser"
             ]
+        },
+        {
+            "playbookID": "MattermostAskUser_testplaybook",
+            "scripts": "IAMInitADUser - Test"
         }
     ],
     "skipped_tests": {
