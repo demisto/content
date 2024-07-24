@@ -583,7 +583,7 @@ script:
     description: Update the attributes of a device.
     arguments:
     - name: serial
-      description: Serial of the device to update. Use `meraki-device-list` or `meraki-organization-device-search` to fetch serial numbers.
+      description: Serial number of the device to update. Use `meraki-device-list` or `meraki-organization-device-search` to fetch serial numbers.
       required: true
       default: true
     - name: address
