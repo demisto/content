@@ -6152,7 +6152,8 @@
         "ExpanseV2",
         "PrismaSaasSecurity",
         "PaloAltoNetworks_IoT",
-        "PaloAltoNetworksAIOps"
+        "PaloAltoNetworksAIOps",
+        "Cisco Meraki"
     ],
     "unmockable_integrations": {
         "NetscoutArborSightline": "Uses timestamp",
