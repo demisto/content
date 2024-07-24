@@ -120,7 +120,7 @@ script:
       description: Comma-separated list of tags to filter networks by. The filtering is case-sensitive. If tags are included, 'tags_filter_type' should also be included.
       isArray: true
     - name: tags_filter_type
-      description: Indicate whether to return networks which contain ANY or ALL of the included tags. If no type is included, 'withAnyTags' will be selected.
+      description: Indicate whether to return networks that contain ANY or ALL of the included tags. If no type is included, 'withAnyTags' will be selected.
       auto: PREDEFINED
       predefined:
       - 'withAnyTags'
