@@ -616,7 +616,7 @@ script:
       description: Firmware version of the device.
       type: String
     - contextPath: CiscoMeraki.Device.floorPlanId
-      description: The floor plan to associate to this device. Use explicit 'null' value to disassociate the device from the floorplan.
+      description: The floor plan to associate to this device. Use explicit 'null' value to disassociate the device from the floor plan.
       type: String
     - contextPath: CiscoMeraki.Device.imei
       description: IMEI of the device, if applicable.
