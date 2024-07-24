@@ -12,4 +12,4 @@ In order to interact with the Dashboard API, you must first obtain an API key.
 - Open your Meraki dashboard: https://dashboard.meraki.com.
 - Once logged in, navigate to the **Organization** > **Settings** page.
 - Ensure that the API Access is set to “Enable access to the Cisco Meraki Dashboard API”.
-- Then go to your profile by clicking on your account email address (on the upper-right) > My profile to generate the API key.
+- Go to your profile by clicking on your account email address (on the upper-right) > **My profile** to generate the API key.
