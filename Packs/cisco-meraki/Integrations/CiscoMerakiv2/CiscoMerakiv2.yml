@@ -268,7 +268,7 @@ script:
       description: Comma-separated list of MAC addresses to search for in inventory.
       isArray: true
     - name: network_ids
-      description: Comma-separated list of network ids to search for in inventory. Use explicit 'null' value to get available devices only. Use `meraki-network-list` to fetch all network IDs.
+      description: Comma-separated list of network IDs to search for in inventory. Use explicit 'null' value to get available devices only. Use `meraki-network-list` to fetch all network IDs.
       isArray: true
     - name: serials
       description: Comma-separated list of serials to search for in inventory. Use `meraki-device-list` or `meraki-organization-device-search` to fetch serial numbers.
