@@ -105,7 +105,7 @@ filter category in ("RiskyUsers", "RiskyServicePrincipals")
         xdm.alert.name = json_extract_scalar(properties, "$.riskDetail"),
         xdm.alert.severity = json_extract_scalar(properties, "$.riskLevel"),
         xdm.source.application.name = json_extract_scalar(properties, "$.displayName"),
-        xdm.source.user.is_disabled = if(to_boolean(json_extract(properties, "$.accountEnabled")) = to_boolean("true"), to_boolean("false"), to_boolean("true"));
+        xdm.source.user.is_disabled = if(to_boolean(json_extract(properties, "$.accountEnabled")) = to_boolean("true"), to_boolean("false"), to_boolean(json_extract(properties, "$.accountEnabled")) = to_boolean("false"), to_boolean("true"), null);
 
 filter category in ("UserRiskEvents", "ServicePrincipalRiskEvents")
 | alter
