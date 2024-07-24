@@ -879,6 +879,9 @@
                         ]
                     }
                 },
+                "Device Id": {
+                    "simple": "device.device_id"
+                },
                 "Device Internal IPs": {
                     "complex": {
                         "accessor": "local_ip",
@@ -1128,58 +1131,19 @@
                     }
                 },
                 "MITRE Tactic ID": {
-                    "complex": {
-                        "accessor": "tactic_id",
-                        "filters": [],
-                        "root": "behaviors",
-                        "transformers": []
-                    }
+                    "simple": "tactic_id"
                 },
                 "MITRE Tactic Name": {
-                    "complex": {
-                        "accessor": "tactic",
-                        "filters": [],
-                        "root": "behaviors",
-                        "transformers": [
-                            {
-                                "args": {
-                                    "item": {
-                                        "isContext": true,
-                                        "value": {
-                                            "simple": "tactics"
-                                        }
-                                    }
-                                },
-                                "operator": "append"
-                            }
-                        ]
-                    }
+                    "simple": "tactic"
                 },
                 "MITRE Technique ID": {
-                    "simple": "behaviors.technique_id"
+                    "simple": "technique_id"
                 },
                 "MITRE Technique Name": {
-                    "complex": {
-                        "accessor": "technique",
-                        "filters": [],
-                        "root": "behaviors",
-                        "transformers": [
-                            {
-                                "args": {
-                                    "item": {
-                                        "isContext": true,
-                                        "value": {
-                                            "simple": "techniques"
-                                        }
-                                    }
-                                },
-                                "operator": "append"
-                            }
-                        ]
-                    }
+                    "simple": "technique"
                 },
                 "Parent Process CMD": {
-                    "simple": "behaviors.parent_details.parent_cmdline"
+                    "simple": "parent_details.cmdline"
                 },
                 "Parent Process SHA256": {
                     "simple": "behaviors.parent_details.parent_sha256"
@@ -1188,7 +1152,7 @@
                     "simple": "behaviors.parent_details.parent_md5"
                 },
                 "Process CMD": {
-                    "simple": "behaviors.cmdline"
+                    "simple": "parent_details.cmdline"
                 },
                 "Process MD5": {
                     "simple": "behaviors.md5"
@@ -1206,7 +1170,7 @@
                     "simple": "tags"
                 },
                 "Users": {
-                    "simple": "behaviors.user_name"
+                    "simple": "user_name"
                 },
                 "name": {
 					"complex": {
