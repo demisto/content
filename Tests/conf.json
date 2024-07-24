@@ -2202,7 +2202,7 @@
         },
         {
             "integrations": "Cisco Meraki",
-            "playbookID": "Cisco-Meraki-Test"
+            "playbookID": "CiscoMerakiv2"
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
