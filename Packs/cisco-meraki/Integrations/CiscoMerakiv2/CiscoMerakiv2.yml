@@ -2268,10 +2268,10 @@ script:
       description: A text comment for the reserved range.
       type: String
     - contextPath: CiscoMeraki.ApplianceVlan.reservedIpRanges.end
-      description: The last IP in the reserved range.
+      description: The last IP address in the reserved range.
       type: String
     - contextPath: CiscoMeraki.ApplianceVlan.reservedIpRanges.start
-      description: The first IP in the reserved range.
+      description: The first IP address in the reserved range.
       type: String
   type: python
   subtype: python3
