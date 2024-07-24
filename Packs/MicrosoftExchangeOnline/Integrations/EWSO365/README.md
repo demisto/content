@@ -41,7 +41,7 @@ No known disclaimers.
 
 No known limitations.
 
-## System Integration Setup (Device side steps)
+## Set up the Third Party System
 
 There are two application authentication methods available.
 Follow your preferred method's guide on how to use the admin consent flow in order to receive your authentication information:
@@ -75,10 +75,6 @@ For more information on this permission, visit [the Microsoft documentation](htt
 To limit the application's permissions to only specific mailboxes, follow the [Microsoft documentation](https://docs.microsoft.com/en-us/graph/auth-limit-mailbox-access). Note that it may take about an hour for permissions changes to take effect.
 
 ## Configure Integration on XSOAR (Parameters)
-
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for EWS O365.
-3. Click **Add instance** to create and configure a new integration instance.  
 
 | **Parameter** | **Description** |**Required**|
 | --- | --- | --- |
