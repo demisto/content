@@ -111,7 +111,7 @@ script:
     - name: config_template_id
       description: ID of a configuration template. Will return all networks bound to that template.
     - name: is_bound_to_config_template
-      description: Filter config template bound networks. If config_template_id is set, this cannot be false.
+      description: Whether to filter configuration template bound networks. If config_template_id is set, this cannot be false.
       auto: PREDEFINED
       predefined:
       - 'false'
