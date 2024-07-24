@@ -4,7 +4,7 @@ from CommonServerUserPython import *
 
 ''' IMPORTS '''
 
-from M2Crypto import BIO, SMIME, X509, m2
+from M2Crypto import BIO, SMIME, X509
 from tempfile import NamedTemporaryFile
 
 from charset_normalizer import from_bytes
@@ -173,7 +173,7 @@ def verify(client: Client, args: dict):
             with open(signed_message['path'], "rb") as message_file:
                 p7data = message_file.read()
             p7bio = BIO.MemoryBuffer(p7data)
-            p7 = SMIME.PKCS7(m2.pkcs7_read_bio_der(p7bio._ptr()))
+            p7 = SMIME.load_pkcs7_bio_der(p7bio)
             v = client.smime.verify(p7, flags=SMIME.PKCS7_NOVERIFY)
             return_results(fileResult(f'unwrapped-{signed_message["name"]}', v))
             human_readable = 'The signature verified\n\n'
@@ -235,7 +235,7 @@ def decrypt_email_body(client: Client, args: dict, file_path=None):
             with open(encrypt_message['path'], "rb") as message_file:
                 p7data = message_file.read()
             p7bio = BIO.MemoryBuffer(p7data)
-            p7 = SMIME.PKCS7(m2.pkcs7_read_bio_der(p7bio._ptr()))
+            p7 = SMIME.load_pkcs7_bio_der(p7bio)
             decrypted_text = client.smime.decrypt(p7, flags=SMIME.PKCS7_NOVERIFY)
             out, msg = decode_str(decrypted_text, encoding)
 
