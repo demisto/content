@@ -11850,10 +11850,10 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
     :param add_proxy_to_request: whether to add proxy to the send evnets request.
 
     :type snapshot_id: ``str``
-    :param data_type: the snapshot id.
+    :param snapshot_id: the snapshot id.
 
     :type items_count: ``str``
-    :param data_type: the asset snapshot items count.
+    :param items_count: the asset snapshot items count.
 
     :return: None
     :rtype: ``None``
@@ -11910,7 +11910,6 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
             snapshot_id = str(round(time.time() * 1000))
         headers['snapshot-id'] = instance_name + snapshot_id
         headers['total-items-count'] = str(items_count)
-    demisto.debug(f'{headers=}')
 
     header_msg = 'Error sending new {data_type} into XSIAM.\n'.format(data_type=data_type)
 
