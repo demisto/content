@@ -263,7 +263,7 @@ script:
       - used
       - unused
     - name: search
-      description: Search for devices in inventory based on serial number, mac address, or model.
+      description: Search for devices in inventory based on serial number, MAC address, or model.
     - name: macs
       description: Comma-separated list of mac addresses to search for in inventory.
       isArray: true
