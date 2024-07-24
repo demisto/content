@@ -2202,7 +2202,7 @@
         },
         {
             "integrations": "Cisco Meraki",
-            "playbookID": "Cisco-Meraki-Test"
+            "playbookID": "CiscoMerakiv2"
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
@@ -5964,7 +5964,8 @@
         "AWS SNS Listener - Test": "CIAC-10426",
         "MattermostV2 - testplaybook": "Cannot run integration in build machines, must be an open tenant",
         "MattermostAskUser_testplaybook": "Cannot run script in build machines, must be an open tenant",
-        "CloudConvert-test": "CRTX-122593"
+        "CloudConvert-test": "CRTX-122593",
+        "CiscoMerakiv2": "CIAC-11322"
     },
     "skipped_integrations": {
         "AWS - Lambda": "No instance - wrong creds, issue CRTX-110456",
