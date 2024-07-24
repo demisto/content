@@ -139,7 +139,7 @@ def test_fetch_logs_events_command(requests_mock, activity_log_last_run, logs_nu
     assert logs_next_run.get(ACTIVITY_LOGS_NEWEST_EVENT_DATETIME) == "2023-05-24T09:55:35Z"
 
 
-def test_fetch_assets_command(requests_mock):
+def test_fetch_assets_command(requests_mock, mocker):
     """
     Given:
     - fetch_assets_command
@@ -160,6 +160,7 @@ def test_fetch_assets_command(requests_mock):
     requests_mock.post(f'{base_url}api/2.0/fo/knowledge_base/vuln/'
                        f'?action=list&last_modified_after={arg_to_datetime(ASSETS_FETCH_FROM).strftime(ASSETS_DATE_FORMAT)}',
                        text=vulnerabilities)
+    mocker.patch.object(demisto, 'getAssetsLastRun', return_value={'stage': 'assets'})
 
     client = Client(base_url=base_url,
                     verify=True,
@@ -168,11 +169,15 @@ def test_fetch_assets_command(requests_mock):
                     username='demisto',
                     password='demisto',
                     )
-    assets, vulnerabilities = fetch_assets(client=client)
-
+    assets, vulnerabilities, total_assets, snapshot_id = fetch_assets(client=client)
     assert len(assets) == 8
-    assert len(vulnerabilities) == 2
+    assert len(vulnerabilities) == 0
 
+    mocker.patch.object(demisto, 'getAssetsLastRun', return_value={'stage': 'vulnerabilities'})
+
+    assets, vulnerabilities, total_assets, snapshot_id = fetch_assets(client=client)
+    assert len(assets) == 0
+    assert len(vulnerabilities) == 2
 
 class TestIsEmptyResult:
     def test_is_empty_xml_empty_input(self):
