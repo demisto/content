@@ -675,7 +675,7 @@ script:
     - name: network_id
       description: ID of the network to remove the device from. Use `meraki-network-list` to fetch all network IDs. This overrides the network ID instance parameter.
     - name: serial
-      description: Serial of the device to remove. Use `meraki-device-list` or `meraki-organization-device-search` to fetch serial numbers.
+      description: Serial number of the device to remove. Use `meraki-device-list` or `meraki-organization-device-search` to fetch serial numbers.
       required: true
       default: true
   - name: meraki-device-status-list
