@@ -68,7 +68,7 @@ Parameters used:
         "instance-name": "test_integration_instance",
         "final-reporting-device": "www.test_url.com",
         "collector-type": "assets",
-        "snapshot-id": "123000",
+        "snapshot-id": "test_integration_instance123000",
         "total-items-count": "2"
 }}
 

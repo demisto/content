@@ -179,6 +179,7 @@ def test_fetch_assets_command(requests_mock, mocker):
     assert len(assets) == 0
     assert len(vulnerabilities) == 2
 
+
 class TestIsEmptyResult:
     def test_is_empty_xml_empty_input(self):
         """
