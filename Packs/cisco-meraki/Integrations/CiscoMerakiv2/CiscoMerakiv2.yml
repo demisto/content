@@ -1212,7 +1212,7 @@ script:
     - name: time_span
       description: The time span number in seconds for which the information will be fetched. If specifying time span, do not specify parameter t0. The value must be in seconds and be less than or equal to 31 days (2678400 seconds). The default is 1 day.
     - name: limit
-      description: The maximum number of records to return. Default is 50.
+      description: The maximum number of records to return.
       defaultValue: 50
     - name: all_results
       description: Retrieve all the results by overriding the default limit.
