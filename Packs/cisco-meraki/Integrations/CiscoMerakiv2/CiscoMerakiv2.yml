@@ -2232,10 +2232,10 @@ script:
       description: The DHCP fixed IP assignments on the VLAN. This should be an object that contains mappings from MAC addresses to objects that themselves each contain "ip" and "name" string fields. See the sample request/response for more details.
       type: String
     - contextPath: CiscoMeraki.ApplianceVlan.dhcpRelayServerIps
-      description: The IPs of the DHCP servers that DHCP requests should be relayed to.
+      description: The IP addresses of the DHCP servers that DHCP requests should be relayed to.
       type: String
     - contextPath: CiscoMeraki.ApplianceVlan.ipv6.enabled
-      description: Enable IPv6 on VLAN.
+      description: Whether to enable IPv6 on VLAN.
       type: Boolean
     - contextPath: CiscoMeraki.ApplianceVlan.ipv6.prefixAssignments.staticApplianceIp6
       description: Manual configuration of the IPv6 Appliance IP.
