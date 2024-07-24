@@ -1156,7 +1156,7 @@ script:
       description: The name of the node the device was last connected to.
       type: String
     - contextPath: CiscoMeraki.NetworkClient.recentDeviceSerial
-      description: The serial of the node the device was last connected to.
+      description: The serial number of the node the device was last connected to.
       type: String
     - contextPath: CiscoMeraki.NetworkClient.ssid
       description: The name of the SSID that the client is connected to.
