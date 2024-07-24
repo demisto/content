@@ -96,7 +96,7 @@ def fetch_events(event_type: EventType, connection: Connection, fetch_interval: 
         event["event_type"] = event_type.value
         events.append(event)
         event_ids.add(event_id)
-    demisto.debug(f"Fetched {len(events)} events of type {event_type}")
+    demisto.debug(f"Fetched {len(events)} events of type {event_type.value}")
     demisto.debug("The fetched events ids are: " + ", ".join([str(event_id) for event_id in event_ids]))
     return events
 
