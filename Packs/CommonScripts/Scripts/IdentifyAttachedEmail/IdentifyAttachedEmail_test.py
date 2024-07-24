@@ -60,7 +60,7 @@ def test_identify_attached_mail(mocker):
         'entryid': entry_ids
     }
     results = identify_attached_mail(args)
-    assert results == ('yes', {'reportedemailentryid': '24@2'})
+    assert results == ('yes', {'reportedemailentryid': ['24@2']})
 
 
 def test_identify_attached_mail_no_email_attached(mocker):
@@ -122,7 +122,7 @@ def test_identify_attached_mail_in_xsoar_saas_list_of_entries_passed(mocker):
         'entryid': entry_ids
     }
     results = identify_attached_mail(args)
-    assert results == ('yes', {'reportedemailentryid': '23@2'})
+    assert results == ('yes', {'reportedemailentryid': ['23@2']})
 
 
 def test_identify_attached_mail_no_entries_passed(mocker):
@@ -168,7 +168,7 @@ def test_identify_attached_mail_no_entries_passed(mocker):
     mocker.patch.object(demisto, 'executeCommand', side_effect=execute_command)
 
     results = identify_attached_mail({})
-    assert results == ('yes', {'reportedemailentryid': '23@2'})
+    assert results == ('yes', {'reportedemailentryid': ['23@2']})
 
 
 def test_identify_attached_mail_no_email_found(mocker):
