@@ -2244,7 +2244,7 @@ script:
       description: Manual configuration of a /64 prefix on the VLAN.
       type: String
     - contextPath: CiscoMeraki.ApplianceVlan.ipv6.prefixAssignments.autonomous
-      description: Auto assign a /64 prefix from the origin to the VLAN.
+      description: Whether to auto assign a /64 prefix from the origin to the VLAN.
       type: Boolean
     - contextPath: CiscoMeraki.ApplianceVlan.ipv6.prefixAssignments.origin.type
       description: Type of the origin enum = [independent, internet].
