@@ -265,7 +265,7 @@ script:
     - name: search
       description: Search for devices in inventory based on serial number, MAC address, or model.
     - name: macs
-      description: Comma-separated list of mac addresses to search for in inventory.
+      description: Comma-separated list of MAC addresses to search for in inventory.
       isArray: true
     - name: network_ids
       description: Comma-separated list of network ids to search for in inventory. Use explicit 'null' value to get available devices only. Use `meraki-network-list` to fetch all network IDs.
