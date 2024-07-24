@@ -2367,21 +2367,6 @@ url = "https://pypi.org/simple"
 reference = "pypi-public"
 
 [[package]]
-name = "parinx"
-version = "0.1.1"
-description = "Parinx implements a basic Sphinx docstring parser language                    which provides an interface to extract the relavant parameters.                  You might find it most useful for tasks involving automated                   data extraction from sphinx docs."
-optional = false
-python-versions = "*"
-files = []
-develop = false
-
-[package.source]
-type = "git"
-url = "https://github.com/npsolve/parinx.git"
-reference = "6493798ceba8089345d970f71be4a896eb6b081d"
-resolved_reference = "6493798ceba8089345d970f71be4a896eb6b081d"
-
-[[package]]
 name = "pbr"
 version = "6.0.0"
 description = "Python Build Reasonableness"
@@ -4284,4 +4269,4 @@ reference = "pypi-public"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8,<3.11"
-content-hash = "1a49e051a3f4d29e6ecdd4462bdaca0a3dfcaabfcab9c15134142ee89c86ade5"
+content-hash = "71a37cbcaeba3356671530e2aab23a967d8d67328f146b31d4c7e2c1e6aac3e9"
