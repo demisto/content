@@ -15,7 +15,7 @@ def build_params(data: dict) -> list[str]:
 def test_module(client: Optional[BaseClient], local_execution: bool):
     data = {'input': 'One, two, three, four.',
             'recipe': 'to decimal'}
-    if not local_execution:
+    if not local_execution and client:
         result = client._http_request('POST', '/bake', json_data=data)
     else:
         params = build_params(data)
@@ -30,8 +30,8 @@ def test_module(client: Optional[BaseClient], local_execution: bool):
         return 'Test failed: ' + str(result)
 
 
-def run_command(client: BaseClient, data: dict, endpoint: str, local_execution: bool):
-    if not local_execution:
+def run_command(client: Optional[BaseClient], data: dict, endpoint: str, local_execution: bool):
+    if not local_execution and client:
         response = client._http_request('POST', endpoint, json_data=data)
     else:
         params = build_params(data)
