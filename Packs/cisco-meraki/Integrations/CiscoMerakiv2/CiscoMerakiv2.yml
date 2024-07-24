@@ -2205,7 +2205,7 @@ script:
       description: The DNS nameservers used for DHCP responses, either "upstream_dns", "google_dns", "opendns", or a newline separated string of IP addresses or domain names.
       type: String
     - contextPath: CiscoMeraki.ApplianceVlan.groupPolicyId
-      description: The id of the desired group policy to apply to the VLAN.
+      description: The ID of the desired group policy to apply to the VLAN.
       type: String
     - contextPath: CiscoMeraki.ApplianceVlan.id
       description: The VLAN ID of the VLAN.
