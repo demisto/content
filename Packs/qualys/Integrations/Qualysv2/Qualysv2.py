@@ -2718,10 +2718,6 @@ def csv2json(csv_data: str):
     Returns:
         the same data in json formal
     """
-    import sys
-    import csv
-
-    csv.field_size_limit(sys.maxsize)
     reader = csv.DictReader(io.StringIO(csv_data))
     json_data = list(reader)
     return json_data
@@ -2745,15 +2741,6 @@ def get_next_page_activity_logs(footer):
     next_url = footer.get('URL', '')
     max_id = get_next_page_from_url(next_url, 'id_max')
     return max_id
-
-
-def get_next_page_host(footer):
-    """
-    Extracts the next token from activity logs response.
-    """
-    if isinstance(footer, list):
-        footer = footer[0]
-    return footer.get('Next ID', '')
 
 
 def handle_host_list_detection_result(raw_response: requests.Response) -> tuple[list, Optional[str]]:
@@ -2919,9 +2906,9 @@ def get_host_list_detections_events(client, since_datetime, next_page='', limit=
     """ Get host list detections from qualys
     Args:
         client: Qualys client
-        next_page:
+        next_page: pagination marking
         since_datetime: The start fetch date.
-        limit:
+        limit: The limit of the host list detections
     Returns:
         Host list detections assets
     """

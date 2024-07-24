@@ -11850,10 +11850,10 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
     :param add_proxy_to_request: whether to add proxy to the send evnets request.
 
     :type snapshot_id: ``str``
-    :param data_type: snapshot_id.
+    :param data_type: the snapshot id.
 
     :type items_count: ``str``
-    :param data_type: the asset snapshot items_count.
+    :param data_type: the asset snapshot items count.
 
     :return: None
     :rtype: ``None``
