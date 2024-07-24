@@ -2171,7 +2171,7 @@ script:
       description: ID of a specific VLAN profile to retrieve.
       default: true
     - name: limit
-      description: The maximum number of records to return. Default is 50.
+      description: The maximum number of records to return.
       defaultValue: 50
     - name: all_results
       description: Retrieve all the results by overriding the default limit.
