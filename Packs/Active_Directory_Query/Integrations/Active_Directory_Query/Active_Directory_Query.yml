@@ -811,4 +811,3 @@ tests:
 - Active Directory - ad-get-user limit check
 - Active Directory Query V2 configuration with port
 - Active Directory - automatic pagination check
-- Active Directory - manual pagination check
