@@ -30,6 +30,7 @@ from TrendMicroVisionOneV3 import (
     get_email_activity_data_count,
     add_or_remove_from_block_list,
     isolate_or_restore_connection,
+    get_observed_attack_techniques,
     enable_or_disable_user_account,
     download_investigation_package,
     download_suspicious_object_list,
@@ -45,10 +46,12 @@ from pytmv1 import (
     BaseTaskResp,
     CollectFileTaskResp,
     Digest,
+    OatEvent,
     EmailActivity,
     Endpoint,
     EndpointActivity,
     GetAlertResp,
+    ListOatsResp,
     AddCustomScriptResp,
     ListCustomScriptsResp,
     ListEmailActivityResp,
@@ -1612,7 +1615,7 @@ def test_update_custom_script(mocker):
     Given:
         - filename -> Name of the custom script
         - filetype -> Filetype of the custom script
-        - script_id => ID of the custom script to update
+        - script_id -> ID of the custom script to update
         - script_contents -> New contents of the custom script
         - description -> Optional description for the custom script
     When:
@@ -1635,3 +1638,53 @@ def test_update_custom_script(mocker):
     assert result.outputs["status"] == "SUCCESS"
     assert result.outputs_prefix == "VisionOne.Update_Custom_Script"
     assert result.outputs_key_field == "status"
+
+
+# Mock response for get observed attack techniques events
+def get_observed_attack_techniques_mock_response(*args, **kwargs):
+    with open("./test_data/get_observed_attack_techniques.json") as f:
+        attack_techniques: dict[str, Any] = json.load(f)
+    return Result(
+        result_code=ResultCode.SUCCESS,
+        response=ListOatsResp(
+            next_link="https://somelink.com",
+            items=[OatEvent(**attack_techniques)],
+            total_count=30,
+            count=10,
+        ),
+    )
+
+
+# Test case for fetching observed attack techniques
+def test_get_observed_attack_techniques(mocker):
+    """
+    Given:
+        - detected_start -> Detection start date time
+        - detected_end -> Detection end date time
+        - ingested_start -> Ingestion start date time
+        - ingested_end -> Ingestion end date time
+        - top -> Number of records displayed on a page.
+        - query_op -> Conditional operator used to build request that allows
+            user to retrieve a subset of the collected Observed Attack Techniques events
+        - fields -> Required filter (A dictionary object with key/value used to create a query string) for
+            retrieving a subset of the collected Observed Attack Techniques events
+    When:
+        - Execute get_observed_attack_techniques command
+    Then:
+        - validate a string id response
+    """
+    client = Mock()
+    client.oat.list = Mock(return_value=get_observed_attack_techniques_mock_response())
+    args = {
+        "detected_start": "2024-01-15T10:00:00Z",
+        "detected_end": "2024-05-15T10:00:00Z",
+        "ingested_start": "2024-01-15T10:00:00Z",
+        "ingested_end": "2024-05-15T10:00:00Z",
+        "top": 10,
+        "query_op": "or",
+        "fields": json.dumps({"endpointName": "sample-host", "riskLevel": "low"}),
+    }
+    result = get_observed_attack_techniques(client, args)
+    assert isinstance(result.outputs[0]["id"], str)
+    assert result.outputs_prefix == "VisionOne.Get_Observed_Attack_Techniques"
+    assert result.outputs_key_field == "id"
