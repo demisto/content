@@ -40,13 +40,13 @@ def get_email_entry_id(entry: dict) -> None | str:
 
 
 def identify_attached_mail(args):
+    entries: list[dict] = []
     entry_ids = args.get('entryid')
     if entry_ids:
         if isinstance(entry_ids, STRING_TYPES):
             # playbook inputs may be in the form: [\"23@2\",\"24@2\"] if passed as a string and not array
             entry_ids = entry_ids.strip().replace(r'\"', '"')  # type:ignore
         entry_ids = argToList(entry_ids)
-        entries = []  # type: List[str]
 
         if is_xsiam_or_xsoar_saas():
             entry_ids_str = ",".join(entry_ids)
@@ -55,10 +55,10 @@ def identify_attached_mail(args):
             for ent_id in entry_ids:
                 res = demisto.executeCommand('getEntry', {'id': ent_id})
                 if not is_error(res):
-                    id = get_email_entry_id(res[0])
-                    if id:
+                    entry_id = get_email_entry_id(res[0])
+                    if entry_id:
                         # return the first email entry that we find.
-                        return 'yes', {'reportedemailentryid': id}
+                        return 'yes', {'reportedemailentryid': entry_id}
     else:
         entries = demisto.executeCommand('getEntries', {"filter": {"categories": ["attachments"]}})
 
@@ -66,11 +66,11 @@ def identify_attached_mail(args):
         return 'no', None
 
     for e in entries:
-        id = get_email_entry_id(e)
-        if id:
+        entry_id = get_email_entry_id(e)
+        if entry_id:
             # leave the following comment as server used it to detect the additional context path used beyond the condition values
             # demisto.setContext('reportedemailentryid', id)
-            return 'yes', {'reportedemailentryid': id}
+            return 'yes', {'reportedemailentryid': entry_id}
 
     return 'no', None
 
