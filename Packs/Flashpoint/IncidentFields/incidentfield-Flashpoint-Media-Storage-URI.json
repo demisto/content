@@ -1,0 +1,32 @@
+{
+    "id": "incident_flashpointmediastorageuri",
+    "version": -1,
+    "modified": "2024-06-20T10:23:01.662841443+05:30",
+    "name": "Flashpoint Media Storage URI",
+    "ownerOnly": false,
+    "description": "Storage URI of Flashpoint alert resource's media.",
+    "cliName": "flashpointmediastorageuri",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Ignite Alert"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}
