@@ -121,6 +121,7 @@ class Client(BaseClient):
             'polling': True,
         }
         if res['status'] != 'READY':
+            status = res['status']
             scheduled_command = ScheduledCommand(
                 command=cmd,
                 next_run_in_seconds=interval_in_secs,
@@ -128,7 +129,7 @@ class Client(BaseClient):
                 timeout_in_seconds=polling_timeout
             )
             command_results = CommandResults(scheduled_command=scheduled_command,
-                                             readable_output="Waiting for the polling execution")
+                                             readable_output=f"Scan Status: {status}")
             return command_results
         else:
             outputs.append({
