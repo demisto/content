@@ -51,6 +51,9 @@ else
 fi
 
 echo "======================="
+echo "pyproject.toml head:"
+cat pyproject.toml | head
+echo "======================="
 if [ -z "${INSTALL_POETRY}" ]; then
     if ! command -v poetry >/dev/null 2>&1; then
         echo "ERROR: poetry is missing. Please run the following command to install poetry:
