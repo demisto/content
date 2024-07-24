@@ -508,7 +508,7 @@ script:
       description: Additional property value.
       type: String
   - name: meraki-device-list
-    description: List the devices in an network or fetch a specific with a serial number. Input must contain 1 parameter.
+    description: List the devices in an network or fetch a specific device with a serial number. Input must contain 1 parameter.
     arguments:
     - name: network_id
       description: ID of a specific network to retrieve from. Use `meraki-network-list` to fetch all network IDs. This overrides the network ID instance parameter.
