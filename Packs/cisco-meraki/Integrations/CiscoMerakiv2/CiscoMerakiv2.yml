@@ -339,7 +339,7 @@ script:
       description: Name of the device.
       type: String
     - contextPath: CiscoMeraki.Inventory.networkId
-      description: Network Id of the device.
+      description: Network ID of the device.
       type: String
     - contextPath: CiscoMeraki.Inventory.orderNumber
       description: Order number of the device.
