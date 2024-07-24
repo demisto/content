@@ -27,7 +27,7 @@ To configure Microsoft Entra ID to send logs to Cortex XSIAM, follow the below s
 
 ### Prerequisites
 - Create an **Azure event hub**. For more information, refer to Microsoft's official [documentation](https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-create).
-- Make sure that you have at least Security Administrator role.
+- Make sure that you have at least a Security Administrator role.
 
 ### Stream logs to an event hub
 1. Sign in to the **Microsoft Entra admin center**.
@@ -38,7 +38,7 @@ To configure Microsoft Entra ID to send logs to Cortex XSIAM, follow the below s
 6. Select the **Stream to an event hub** checkbox.
 7. Select the Azure subscription, Event Hubs namespace, and optional event hub where you want to route the logs.
 
-For more information, refer to Microsoft's official [documentation](https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-create">documentation).
+For more information, refer to Microsoft's official [documentation](https://learn.microsoft.com/en-us/entra/identity/monitoring-health/howto-stream-logs-to-event-hub).
 
 ### Cortex XSIAM side
 To connect Cortex XSIAM to the Azure Event Hub, follow the below steps.
