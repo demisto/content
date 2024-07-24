@@ -685,7 +685,7 @@ script:
       description: ID of the organization to retrieve from. Use `meraki-organization-list` to fetch all organization IDs. This overrides the organization ID instance parameter.
       default: true
     - name: network_ids
-      description: Comma-separated list of network ids to search for. Use `meraki-network-list` to fetch all network IDs.
+      description: Comma-separated list of network IDs to search for. Use `meraki-network-list` to fetch all network IDs.
       isArray: true
     - name: serials
       description: Comma-separated list of serial numbers to search for. Use `meraki-device-list` or `meraki-organization-device-search` to fetch serial numbers.
