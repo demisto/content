@@ -177,7 +177,7 @@ script:
       description: The organization the license state belongs to.
       type: String
     - contextPath: CiscoMeraki.LicenseState.licenseCount
-      description: Total number of licenses (Per-device licensing only).
+      description: Total number of licenses (per-device licensing only).
       type: Number
     - contextPath: CiscoMeraki.LicenseState.expirationDate
       description: License expiration date (Co-termination licensing only).
