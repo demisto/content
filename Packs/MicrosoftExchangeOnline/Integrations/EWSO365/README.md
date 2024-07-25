@@ -2,10 +2,6 @@ Exchange Web Services (EWS) provides the functionality to enable client applicat
 
 The EWS O365 integration implants EWS leading services. The integration allows getting information on emails and activities in a target mailbox, and some active operations on the mailbox such as deleting emails and attachments or moving emails from folder to folder.
 
-## Supported versions and license needed
-
-**?**
- 
 ## Use cases
 
 The EWS integration can be used for the following use cases.
@@ -33,13 +29,6 @@ The EWS integration can be used for the following use cases.
 
 This integration is based on the `exchangelib` python module. For more information about the module check the [documentation](https://ecederstrand.github.io/exchangelib/).
 
-## Special Notes/Disclaimers
-
-No known disclaimers.
-
-## Limitations
-
-No known limitations.
 
 ## Set up the Third Party System
 
@@ -70,7 +59,6 @@ To set this permission follow these steps:
 4. Search for `Office 365 Exchange Online` API > `Application Permission`> `full_access_as_app` permission. 
 
 For more information on this permission, visit [the Microsoft documentation](https://docs.microsoft.com/en-us/exchange/client-developer/exchange-web-services/how-to-authenticate-an-ews-application-by-using-oauth#configure-for-app-only-authentication).
-
 
 To limit the application's permissions to only specific mailboxes, follow the [Microsoft documentation](https://docs.microsoft.com/en-us/graph/auth-limit-mailbox-access). Note that it may take about an hour for permissions changes to take effect.
 
