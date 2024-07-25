@@ -1,0 +1,39 @@
+[
+    {
+        "name": "My Branding Policy",
+        "enabled": true,
+        "adminSettings": {
+            "appliesTo": "All admins of networks...",
+            "values": [
+                "N_1234",
+                "L_5678"
+            ]
+        },
+        "helpSettings": {
+            "helpTab": "show",
+            "getHelpSubtab": "default or inherit",
+            "communitySubtab": "show",
+            "casesSubtab": "hide",
+            "dataProtectionRequestsSubtab": "default or inherit",
+            "getHelpSubtabKnowledgeBaseSearch": "<h1>Some custom HTML content</h1>",
+            "universalSearchKnowledgeBaseSearch": "hide",
+            "ciscoMerakiProductDocumentation": "show",
+            "supportContactInfo": "show",
+            "newFeaturesSubtab": "show",
+            "firewallInfoSubtab": "hide",
+            "apiDocsSubtab": "default or inherit",
+            "hardwareReplacementsSubtab": "hide",
+            "smForums": "hide",
+            "helpWidget": "hide"
+        },
+        "customLogo": {
+            "enabled": true,
+            "image": {
+                "preview": {
+                    "url": "http://www.example.com",
+                    "expiresAt": "2022-04-06T06:19:27-07:00"
+                }
+            }
+        }
+    }
+]

@@ -245,7 +245,10 @@
             "playbookID": "SetIfEmpty_Test"
         },
         {
-            "playbookID": "IsEmailAddressInternal_Test"
+            "playbookID": "IsEmailAddressInternal_Test",
+            "scripts": [
+                "WhereFieldEquals"
+            ]
         },
         {
             "playbookID": "SetAndHandleEmpty_Test"
@@ -549,7 +552,8 @@
             "integrations": "ServiceDeskPlus",
             "playbookID": "Service Desk Plus - Generic Polling Test",
             "instance_names": "sdp_instance_2",
-            "fromversion": "6.0.0"
+            "fromversion": "6.0.0",
+            "timeout": 600
         },
         {
             "integrations": "ThreatConnect Feed",
@@ -964,7 +968,8 @@
             "integrations": "Cortex XDR - IR",
             "playbookID": "Test XDR Playbook general commands",
             "fromversion": "4.1.0",
-            "timeout": 2500
+            "timeout": 2500,
+            "memory_threshold": 90
         },
         {
             "integrations": "Cortex XDR - IR",
@@ -2198,7 +2203,7 @@
         },
         {
             "integrations": "Cisco Meraki",
-            "playbookID": "Cisco-Meraki-Test"
+            "playbookID": "CiscoMerakiv2"
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
@@ -4045,6 +4050,12 @@
             "integrations": "Carbon Black Endpoint Standard",
             "playbookID": "carbonBlackEndpointStandardTestPlaybook",
             "fromversion": "5.5.0",
+            "is_mockable": false
+        },
+        {
+            "integrations": "Carbon Black Endpoint Standard v3",
+            "playbookID": "carbonBlackEndpointStandardV3TestPlaybook",
+            "fromversion": "6.10.0",
             "is_mockable": false
         },
         {
@@ -5953,7 +5964,9 @@
         "AWS - EC2 Test Playbook": "CIAC-10426",
         "AWS SNS Listener - Test": "CIAC-10426",
         "MattermostV2 - testplaybook": "Cannot run integration in build machines, must be an open tenant",
-        "MattermostAskUser_testplaybook": "Cannot run script in build machines, must be an open tenant"
+        "MattermostAskUser_testplaybook": "Cannot run script in build machines, must be an open tenant",
+        "CloudConvert-test": "CRTX-122593",
+        "CiscoMerakiv2": "CIAC-11322"
     },
     "skipped_integrations": {
         "AWS - Lambda": "No instance - wrong creds, issue CRTX-110456",
