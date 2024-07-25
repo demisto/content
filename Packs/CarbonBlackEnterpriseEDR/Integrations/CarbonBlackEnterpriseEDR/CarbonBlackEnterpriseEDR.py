@@ -61,7 +61,6 @@ class Client(BaseClient):
                 device_name=device_name,
                 process_name=process_name
             ),
-            'time_range': create_time,
             'sort': [
                 {
                     'field': sort_field,
@@ -72,6 +71,9 @@ class Client(BaseClient):
             'start': 1
         }
 
+        if create_time:
+            body['time_range'] = create_time
+        
         return self._http_request('POST', suffix_url, json_data=body)
 
     def alert_workflow_update_get_request(self, request_id: str) -> dict:
