@@ -53,7 +53,7 @@ def remove_html_conversation_history(email_html):
     return email_html
 
 
-def create_email_html(email_html='', entry_id_list=None):
+def create_email_html(email_html='', entry_id_list=[]):
     """Modify the email's html body to use entry IDs instead of CIDs and remove the original message body if exists.
     Args:
         email_html (str): The attachments of the email.
@@ -242,32 +242,6 @@ def get_attachments_using_instance(email_related_incident, labels, email_to, ide
 
     else:
         demisto.debug('Attachments could only be retrieved from EWS v2 or Gmail')
-
-
-def find_attachments_to_download(attachments, email_related_incident):
-    """ Filter only new attachment and their identifier.
-
-    Args:
-        attachments (Attachment): All attachments from the current thread mail
-        email_related_incident (str): email related incident to retrieve previous files
-        labels : labels to find the integration name
-    """
-    if attachments:
-        new_attachment_identifiers_list = ["dummyFileIdentifier"]
-        new_attachments = []
-        previous_files = get_incident_related_files(email_related_incident)
-        previous_files = [previous_files] if not isinstance(previous_files, list) else previous_files
-        previous_file_names = [file.get("Name") for file in previous_files]
-        for attachment in attachments:
-            attachment_name = attachment.get('name', '')
-            if attachment_name not in previous_file_names:
-                if new_attachment_identifiers_list == ["dummyFileIdentifier"]:
-                    new_attachment_identifiers_list = []
-                identifier_id = attachment.get('name', '').split('-attachmentName-', 1)[0]
-                new_attachment_identifiers_list.append(identifier_id)
-                new_attachments.append(attachment)
-        return ",".join(new_attachment_identifiers_list), new_attachments
-    return "", []
 
 
 def get_incident_related_files(incident_id):

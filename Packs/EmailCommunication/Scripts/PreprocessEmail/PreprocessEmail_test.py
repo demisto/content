@@ -744,7 +744,6 @@ def test_main_untagged_email(mocker):
     Then
     - Validate that no relevant incident was created
     """
-
     from PreprocessEmail import main
     mocker.patch.object(demisto, 'incident', return_value={'CustomFields': {}})
     mocker.patch.object(demisto, 'args', return_value={"CreateIncidentUntaggedEmail": False})
@@ -786,6 +785,20 @@ def test_get_attachments_using_instance(labels, email_to, result, mocker):
 
 ATTACHMENTS = [{
     "description": "",
+    "name": "image_1.png",
+            "path": "131_dd98957a-d5c3-42e0-8a81-f3ce7fa68215",
+            "showMediaFile": False,
+            "type": ""
+}, {
+    "description": "",
+    "name": "image_2.png",
+            "path": "131_dd98957a-d5c3-42e0-8a81-f3ce7fa68215",
+            "showMediaFile": False,
+            "type": ""
+}]
+
+ATTACHMENTS_2 = [{
+    "description": "",
     "name": "123-attachmentName-image_1.png",
             "path": "131_dd98957a-d5c3-42e0-8a81-f3ce7fa68215",
             "showMediaFile": False,
@@ -796,9 +809,41 @@ ATTACHMENTS = [{
             "path": "131_dd98957a-d5c3-42e0-8a81-f3ce7fa68215",
             "showMediaFile": False,
             "type": ""
+}, {
+    "description": "",
+    "name": "image_3.png",
+            "path": "131_dd98957a-d5c3-42e0-8a81-f3ce7fa68215",
+            "showMediaFile": False,
+            "type": ""
 }]
 
 FILES_TEST1 = [{
+    "EntryID": "4@131",
+    "Extension": "png",
+    "Info": "image/png",
+    "MD5": "605ebf7bc83a00840a3ea90c8ed56515",
+    "Name": "image_1.png",
+    "SHA1": "SHA1",
+    "SHA256": "SHA256",
+    "SHA512": "SHA512",
+    "SSDeep": "SSDeep",
+    "Size": 127884,
+    "Type": "PNG image data, 275 x 184, 8-bit/color RGBA, non-interlaced"
+}, {
+    "EntryID": "5@131",
+    "Extension": "png",
+    "Info": "image/png",
+    "MD5": "605ebf7bc83a00840a3ea90c8ed56515",
+    "Name": "image_2.png",
+    "SHA1": "SHA1",
+    "SHA256": "SHA256",
+    "SHA512": "SHA512",
+    "SSDeep": "SSDeep",
+    "Size": 127884,
+    "Type": "PNG image data, 275 x 184, 8-bit/color RGBA, non-interlaced"
+}]
+
+FILES_TEST2 = [{
     "EntryID": "4@131",
     "Extension": "png",
     "Info": "image/png",
@@ -822,60 +867,145 @@ FILES_TEST1 = [{
     "SSDeep": "SSDeep",
     "Size": 127884,
     "Type": "PNG image data, 275 x 184, 8-bit/color RGBA, non-interlaced"
-}]
-
-FILES_TEST2 = {
-    "EntryID": "4@131",
+}, {
+    "EntryID": "5@131",
     "Extension": "png",
     "Info": "image/png",
     "MD5": "605ebf7bc83a00840a3ea90c8ed56515",
-    "Name": "123-attachmentName-image_1.png",
+    "Name": "image_3.png",
     "SHA1": "SHA1",
     "SHA256": "SHA256",
     "SHA512": "SHA512",
     "SSDeep": "SSDeep",
     "Size": 127884,
     "Type": "PNG image data, 275 x 184, 8-bit/color RGBA, non-interlaced"
-}
-
-FILES_TEST3 = {}
+}]
 
 
 @pytest.mark.parametrize(
-    "attachments, email_related_incident, files, expected_result",
+    "attachments, files, html, expected_result",
     [
-        (ATTACHMENTS, 'test@gmail.com', FILES_TEST1, ('dummyFileIdentifier', [])),
-        (ATTACHMENTS, 'test@gmail.com', FILES_TEST2, ('456', [{'description': '', 'name': '456-attachmentName-image_2.png',
-                                                               'path': '131_dd98957a-d5c3-42e0-8a81-f3ce7fa68215',
-                                                               'showMediaFile': False, 'type': ''}])),
-        (ATTACHMENTS, 'test@gmail.com', FILES_TEST3, ('123,456', [{'description': '',
-                                                                   'name': '123-attachmentName-image_1.png',
-                                                                   'path': '131_dd98957a-d5c3-42e0-8a81-f3ce7fa68215',
-                                                                   'showMediaFile': False, 'type': ''},
-                                                                  {'description': '',
-                                                                   'name': '456-attachmentName-image_2.png',
-                                                                   'path': '131_dd98957a-d5c3-42e0-8a81-f3ce7fa68215',
-                                                                   'showMediaFile': False, 'type': ''}])),
+        (ATTACHMENTS, FILES_TEST1, "", [('image_1.png', '4@131'), ('image_2.png', '5@131')]),
+        (
+            ATTACHMENTS_2, FILES_TEST2, """<!DOCTYPE html>
+<html>
+<head>
+    <title>Inline Images</title>
+</head>
+<body>
+    <h1>Hello, World!</h1>
+    <p>This is a test email with inline images.</p>
+    <img src="cid:123" alt="Inline Image 1">
+    <img src="cid:456" alt="Inline Image 2">
+</body>
+</html>""",
+            [('123-attachmentName-image_1.png', '4@131'), ('456-attachmentName-image_2.png', '5@131')]
+        )
     ]
 )
-def test_find_attachments_to_download(attachments, email_related_incident, files, expected_result, mocker):
+def test_get_entry_id_list_only_attachments(attachments, files, html, expected_result):
     """
-    Test case to find attachments to download based on different scenarios.
-
-    Given:
-        - Attachments of the incident.
-        - Email which is related to the incident.
-
-    When:
-        - Scenario 1: no new images.
-        - Scenario 2: one new image.
-        - Scenario 3: all images are new.
-
-    Then:
-        - Return the corresponding amount of entry IDs.
+    Given
+    - case 1: all attachments are attached or in the original (plain) format.
+    - case 2: 2 attachments in the new format (<ID>-attachmentName-<Name>) 1 attachment attached.
+    When
+    - running get_entry_id_list.
+    Then
+    - case 1: returns the two original entry IDs.
+    - case 2: return only the new formatted attachments - as they should be replaced in the html.
     """
-    import PreprocessEmail
-    mocker.patch.object(PreprocessEmail, 'get_incident_related_files', return_value=files)
-    result = PreprocessEmail.find_attachments_to_download(attachments, email_related_incident)
-    assert result[0] == expected_result[0]
-    assert result[1] == expected_result[1]
+    from PreprocessEmail import get_entry_id_list
+    assert get_entry_id_list(attachments, files, html) == expected_result
+
+
+@pytest.mark.parametrize(
+    "html, entry_id_list, expected_result",
+    [
+        (
+            """<!DOCTYPE html>
+<html>
+<head>
+    <title>Inline Images</title>
+</head>
+<body>
+    <h1>Hello, World!</h1>
+    <p>This is a test email with inline images.</p>
+    <img src="cid:123" alt="image_1.png">
+</body>
+</html>""",
+            [('123-attachmentName-image_1.png', '4@131'), ('image_2.png', '5@131')],
+            """<!DOCTYPE html>
+<html>
+<head>
+    <title>Inline Images</title>
+</head>
+<body>
+    <h1>Hello, World!</h1>
+    <p>This is a test email with inline images.</p>
+    <img src=entry/download/4@131 alt="image_1.png">
+</body>
+</html>"""
+        ),
+        (
+            """<!DOCTYPE html>
+<html>
+<head>
+    <title>Inline Images</title>
+</head>
+<body>
+    <h1>Hello, World!</h1>
+    <p>This is a test email with inline images.</p>
+    <img src="cid:123" alt="image_1.png">
+</body>
+</html>""",
+            [('image_1.png', '4@131'), ('image_2.png', '5@131')],
+            """<!DOCTYPE html>
+<html>
+<head>
+    <title>Inline Images</title>
+</head>
+<body>
+    <h1>Hello, World!</h1>
+    <p>This is a test email with inline images.</p>
+    <img src=entry/download/4@131 alt="image_1.png">
+</body>
+</html>"""
+        ),
+        (
+            """<!DOCTYPE html>
+<html>
+<head>
+    <title>Inline Images</title>
+</head>
+<body>
+    <h1>Hello, World!</h1>
+    <p>This is a test email with inline images.</p>
+</body>
+</html>""",
+            [('image_1.png', '4@131'), ('image_2.png', '5@131')],
+            """<!DOCTYPE html>
+<html>
+<head>
+    <title>Inline Images</title>
+</head>
+<body>
+    <h1>Hello, World!</h1>
+    <p>This is a test email with inline images.</p>
+</body>
+</html>"""
+        )
+    ]
+)
+def test_create_email_html_no_image_to_insert(html, entry_id_list, expected_result):
+    """
+    Given
+    - case 1: one image to replace in html with new name format.
+    - case 2: one image to replace in html with old name format.
+    - case 3: no images to replace.
+    When
+    - running create_email_html.
+    Then
+    returns the expected html.
+    """
+    from PreprocessEmail import create_email_html
+    assert create_email_html(html, entry_id_list) == expected_result

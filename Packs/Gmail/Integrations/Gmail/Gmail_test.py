@@ -1,5 +1,3 @@
-import base64
-from unittest.mock import MagicMock, patch
 import uuid
 from freezegun import freeze_time
 import demistomock as demisto
