@@ -64,7 +64,7 @@ configuration:
   name: feedBypassExclusionList
   type: 8
   required: false
-- display: Discovery Service URL (e.g. https://example.net/taxii)
+- display: Discovery Service URL (e.g. https://example.net/taxii2)
   name: url
   required: true
   type: 0

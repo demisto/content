@@ -18,7 +18,6 @@ from taxii2client.exceptions import InvalidJSONError
 import tempfile
 import uuid
 from dateutil.parser import parse
-from urllib.parse import urlparse
 
 # disable insecure warnings
 urllib3.disable_warnings()
@@ -2165,12 +2164,7 @@ class Taxii2FeedClient(STIX2XSOARParser):
         for api_root in self.server.api_roots:  # type: ignore[attr-defined]
             # ApiRoots are initialized with wrong _conn because we are not providing auth or cert to Server
             # closing wrong unused connections
-            # if the address is https://example.com/x/ we want the x
-            demisto.debug(f"The API Root URL is: {api_root.url}")
-            prase_result = urlparse(str(api_root.url))
-            api_root_name = prase_result.path.replace("/", "") if prase_result.path else api_root.url
-            demisto.debug(f"The API Root Name is: {api_root_name}")
-            demisto.debug(f'closing api_root._conn for {api_root.url}')
+            api_root_name = str(api_root.url).split('/')[-2]
             demisto.debug(f'closing api_root._conn for {api_root_name}')
             api_root._conn.close()
             roots_to_api[api_root_name] = api_root
