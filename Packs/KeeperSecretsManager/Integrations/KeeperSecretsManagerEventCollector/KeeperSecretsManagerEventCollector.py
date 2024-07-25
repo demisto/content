@@ -408,6 +408,7 @@ def get_audit_logs(
             dedupped_events_count = len(dedupped_audit_events)
             demisto.debug(f"{LOG_LINE} Events count after dedup {dedupped_events_count}")
             if dedupped_audit_events:
+                add_time_to_events(dedupped_audit_events)
                 res_count += dedupped_events_count
                 events_to_return.extend(dedupped_audit_events)
                 # Getting last events's creation date, assuming asc order
@@ -426,6 +427,9 @@ def get_audit_logs(
     demisto.setLastRun({"last_fetch_epoch_time": str(start_time_to_fetch), "last_fetch_ids": list(fetched_ids)})
     return events_to_return
 
+def add_time_to_events(audit_events: list[dict[str, Any]]):
+    for audit_event in audit_events:
+        audit_event['_time'] = audit_event['created']
 
 def dedup_events(audit_events: list[dict[str, Any]], last_fetched_ids: set[str]) -> list[dict[str, Any]]:
     dedupped_audit_events = list(
