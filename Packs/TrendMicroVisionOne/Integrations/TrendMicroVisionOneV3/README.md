@@ -798,7 +798,7 @@ Submits a file to the sandbox for analysis (Note. For more information about the
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | file_url | URL pointing to the location of the file to be submitted. e.g. file_url="<https://someurl.com/test.txt>". | Required | 
-| filename | Name of the file (including extension) to be analyzed. e.g. filename="some-file.txt". | Required | 
+| file_name | Name of the file (including extension) to be analyzed. e.g. filename="some-file.txt". | Required | 
 | document_password | The Base64 encoded password for decrypting the submitted document sample. e.g. document_password="dGVzdA==". | Optional | 
 | archive_password | The Base64 encoded password for decrypting the submitted archive. e.g. archive_password="dGVzdA==". | Optional | 
 | arguments | Parameter that allows you to specify Base64-encoded command line arguments to run the submitted file. e.g. arguments="LS10ZXN0IA==". | Optional | 

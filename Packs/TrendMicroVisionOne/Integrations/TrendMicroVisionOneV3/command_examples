@@ -17,7 +17,7 @@
 !trendmicro-visionone-remove-from-block-list block_objects=`[{"object_type":"domain","object_value":"1.alisiosanguera.com.cn","description":"Remove from block list"}]`
 !trendmicro-visionone-delete-objects-from-suspicious-list block_objects=`[{"object_type":"domain","object_value":"1.alisiosanguera.com.cn","description":"Remove from suspicious list"}]`
 !trendmicro-visionone-force-signout account_identifiers=`[{"account_name":"ghost@trendmicro.com","description":"Force sign out user"}]`
-!trendmicro-visionone-submit-file-to-sandbox file_path="http://someurl.com/test.json" filename="dummy_file.pdf"
+!trendmicro-visionone-submit-file-to-sandbox file_path="http://someurl.com/test.json" file_name="dummy_file.pdf"
 !trendmicro-visionone-download-suspicious-object-list submission_id="8559a7ce-2b85-451b-8742-4b943ad76a22" poll="true" poll_time_sec=30
 !trendmicro-visionone-enable-user-account account_identifiers=`[{"account_name":"ghost@trendmicro.com","description":"Enable user account"}]`
 !trendmicro-visionone-disable-user-account account_identifiers=`[{"account_name":"ghost@trendmicro.com","description":"Disable user account"}]`
