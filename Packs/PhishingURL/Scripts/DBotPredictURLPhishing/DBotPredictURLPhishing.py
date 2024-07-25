@@ -703,7 +703,6 @@ def update_and_load_model(debug, exist, reset_model, msg_list, demisto_major_ver
 
 
 def main():
-    demisto.debug("Hello")
     try:
         args = demisto.args()
         reset_model = args.get('resetModel') == 'True'
