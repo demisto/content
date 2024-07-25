@@ -57,7 +57,7 @@ def main():
 
     # get the service API url
     if not local_execution:
-        base_url = urljoin(demisto.params()['url'])
+        base_url = urljoin(demisto.params()['url'], '/cyberchef')
         verify_certificate = not demisto.params().get('insecure', False)
         proxy = demisto.params().get('proxy', False)
         headers = {'Content-Type': 'application/json', 'x-api-key': apikey}
