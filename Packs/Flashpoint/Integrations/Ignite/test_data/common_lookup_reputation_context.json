@@ -1,0 +1,9 @@
+{
+    "DBotScore": {
+        "Indicator": "dummy@dummy.com",
+        "Type": "ip-dst",
+        "Vendor": "Ignite",
+        "Score": 3,
+        "Reliability": "B - Usually reliable"
+    }
+}
