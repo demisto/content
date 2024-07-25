@@ -1157,3 +1157,39 @@ Updates the contents of a custom script based on script ID.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | VisionOne.Update_Custom_Script.status | string | The Success or Error status. | 
+
+### trendmicro-visionone-get-observed-attack-techniques
+
+***
+Displays a list of Observed Attack Techniques events that match the specified criteria.
+
+#### Base Command
+
+`trendmicro-visionone-get-observed-attack-techniques`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| fields | Filter (A dictionary object with key/value used to create a query string) for retrieving a subset of the collected Observed Attack Techniques events e.g. {"endpointName":"sample-host","riskLevel":"low"}. Complete list of supported fields (<https://automation.trendmicro.com/xdr/api-v3#tag/Observed-Attack-Techniques/paths/~1v3.0~1oat~1detections/get>). | Required | 
+| query_op | Conditional operator used to build request that allows user to retrieve a subset of the collected Observed Attack Techniques events. Possible values: and/or. Ex. `or`: the results retrieved will contain OAT events for endpoint(s) matching endpointName OR riskLevel. `and`: will contain OAT events data for endpoint matching endpointName AND riskLevel. Defaults to `and`. Possible values are: and, or. | Optional | 
+| detected_start | The start of the event detection data retrieval time range in ISO 8601 format. Default: 1 hour before the time you make the request. e.g. detected_start="2023-10-01T08:00:00Z". | Optional | 
+| detected_end | The end of the event detection data retrieval time range in ISO 8601 format. Default: The time you make the request. e.g. detected_end="2023-12-01T08:00:00Z". | Optional | 
+| ingested_start | The beginning of the data ingestion time range in ISO 8601 format. e.g. ingested_start="2023-12-01T08:00:00Z". | Optional | 
+| ingested_end | The end of the data ingestion time range in ISO 8601 format. e.g. ingested_end="2023-12-01T08:00:00Z". | Optional | 
+| top | Number of records displayed on a page. e.g. top=5. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| VisionOne.Get_Observed_Attack_Techniques.id | string | Unique alphanumeric string that identifies an Observed Attack Techniques event. | 
+| VisionOne.Get_Observed_Attack_Techniques.source | string | The data sources associated with log types. | 
+| VisionOne.Get_Observed_Attack_Techniques.detail | string | Object that contains detailed information about an Observed Attack Technique event. Object may vary depending on the products purchased by the customer and the products supported in their respective regions. | 
+| VisionOne.Get_Observed_Attack_Techniques.filters | string | List of filters and associated information. | 
+| VisionOne.Get_Observed_Attack_Techniques.endpoint | string | Object that contains information about an endpoint. This field is displayed only when the detection event is related to endpoints. | 
+| VisionOne.Get_Observed_Attack_Techniques.entity_name | string | Name associated with an entity. | 
+| VisionOne.Get_Observed_Attack_Techniques.entity_type | string | Entity type associated with an event is determined by the products purchased by the customer and the products supported in their regions. | 
+| VisionOne.Get_Observed_Attack_Techniques.detected_date_time | string | Timestamp in ISO 8601 format that indicates when an Observed Attack Techniques event was detected. | 
+| VisionOne.Get_Observed_Attack_Techniques.ingested_date_time | string | Timestamp in ISO 8601 format that indicates when the pipeline ingested data related to an Observed Attack Techniques event. This field is displayed only when ingestedStartDateTime and ingestedEndDateTime are used to define the data retrieval time range. | 
+
