@@ -6,29 +6,90 @@ commonfields:
   id: ThreatFox Feed
   version: -1
 configuration:
+- additionalinfo: Reliability of the source providing the intelligence data
+  defaultvalue: C - Fairly reliable
+  display: Source Reliability
+  name: feedReliability
+  type: 15
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Fetch indicators
+  name: feed
+  defaultvalue: false
+  type: 8
+  required: false
+- display: Indicator Reputation
+  name: feedReputation
+  defaultvalue: Malicious
+  type: 18
+  required: false
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  additionalinfo: Indicators from this integration instance will be marked with this
+    reputation.
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+  display: Traffic Light Protocol Color
+  name: tlp_color
+  options:
+  - CLEAR
+  - WHITE
+  type: 15
+  required: false
+  section: Collect
+- display: ""
+  name: feedExpirationPolicy
+  defaultvalue: indicatorType
+  type: 17
+  required: false
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+- display: ""
+  name: feedExpirationInterval
+  defaultvalue: "20160"
+  type: 1
+  required: false
+- display: Bypass exclusion list
+  name: feedBypassExclusionList
+  defaultvalue: false
+  type: 8
+  required: false
+  additionalinfo: When selected, the exclusion list is ignored for indicators from
+    this feed. This means that if an indicator from this feed is on the exclusion
+    list, the indicator might still be added to the system.
 - defaultvalue: https://threatfox-api.abuse.ch/
   display: Server URL
   name: url
   required: true
   type: 0
   section: Connect
-- display: Trust any certificate (not secure)
-  name: insecure
-  type: 8
-  required: false
-- display: Use system proxy settings
-  name: proxy
-  type: 8
-  required: false
 - display: Feed Fetch Interval
-  name: interval
+  name: fetch_interval
   required: false
-  defaultValue: 1
+  defaultvalue: 1
   section: Collect
   advanced: true
-  type: 1
-  auto: PREDEFINED
-  predefined:
+  type: 15
+  options:
   - 1
   - 2
   - 3
@@ -39,19 +100,20 @@ configuration:
 - display: Return IOCs with Ports
   name: with_ports
   required: false
-  defaultValue: false
+  defaultvalue: false
   section: Collect
   advanced: true
   type: 8
 - display: Confidence Threshold
   name: confidence_threshold
   required: false
-  defaultValue: 75
+  defaultvalue: '75'
   section: Collect
-  advanced: true
+  type: 0
 - display: Create relationship
   name: create_relationship
   required: false
+  defaultvalue: false
   section: Collect
   advanced: true
   type: 8
@@ -82,11 +144,12 @@ script:
       defaultValue: '50'
     description: Retrieves indicators from the ThreatFox API.
     name: threatfox-get-indicators
+  feed: true
   runonce: false
-  script: '-'
+  script: ''
   type: python
   subtype: python3
   dockerimage: demisto/python3:3.10.14.100715
-fromversion: 5.5.0
+fromversion: 6.10.0
 tests:
 - No tests (auto formatted)

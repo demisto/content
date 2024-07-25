@@ -77,6 +77,8 @@ def create_query(query_arg, id: str | None = None, search_term: str | None = Non
     
     q_id = arg_to_number(id)
     q_limit = arg_to_number(limit) or 50
+    if q_limit>1000:
+        q_limit = 1000
         
     query = assign_params(
         query = query_dict[query_arg],
@@ -96,18 +98,11 @@ def create_query(query_arg, id: str | None = None, search_term: str | None = Non
     return query
 
 
-def parse_indicators(indicators):
+def parse_indicator_for_get_command(indicator):
     
-    res = []
-    
-    indicators = [indicators] if type(indicators) != list else indicators
-    
-    for indicator in indicators:
-                
-        res_indicator = assign_params(
+    res_indicator = assign_params(
             ID=indicator.get('id'),
-            value=indicator.get('ioc'),
-            Tags1=indicator.get('threat_type'),
+            value=value(indicator),
             Description = indicator.get('threat_type_desc'),
             malware_family_tags=
                 indicator.get('malware_printable') if indicator.get('malware_printable') != 'Unknown malware' else None,
@@ -115,12 +110,78 @@ def parse_indicators(indicators):
             first_seen_by_source = indicator.get('first_seen'),
             last_seen_by_source = indicator.get('last_seen'),
             reported_by = indicator.get('reporter'),
-            Tags2 = indicator.get('tags'),
+            Tags = indicator.get('tags'),
             Confidence = indicator.get('confidence_level'),
             Publications = indicator.get('reference')
         )
-        res.append(res_indicator)
+    return res_indicator
+
+
+def parse_indicators(indicators):
+    res = []
+    indicators = [indicators] if type(indicators) != list else indicators
+    for indicator in indicators:
+        res.append(parse_indicator_for_get_command(indicator))
     return res
+
+
+def indicator_type(indicator):
+    """Returns the ioc type according to 'ioc_type' field in the indicator
+    """
+    type = indicator.get('ioc_type')
+    if type == 'domain':
+        return FeedIndicatorType.FQDN
+    elif type == 'url':
+        return FeedIndicatorType.URL
+    elif "ip:port" in type:
+        return FeedIndicatorType.ip_to_indicator_type(indicator.get('ioc'))
+    elif type == 'envelope_from' or type == 'body_from':
+        return FeedIndicatorType.Email
+    else:  # 'sha1_hash' 'sha256_hash' 'md5_hash'
+        return FeedIndicatorType.File
+    
+def parse_indicator_for_fetch(indicator):
+    res_indicator = assign_params(
+        indicatoridentification = indicator.get('id'),
+        description = indicator.get('threat_type_desc'),
+        malwarefamily = indicator.get('malware_printable') if indicator.get('malware_printable') != 'Unknown malware' else None,
+        aliases = indicator.get('malware_alias'),
+        firstseenbysource = indicator.get('first_seen'),
+        lastseenbysource = indicator.get('last_seen'),
+        reportedby = indicator.get('reporter'),
+        Tags = tags(indicator)
+    )
+    return res_indicator
+
+
+def tags(indicator):
+    res = [indicator.get('malware_printable'), indicator.get('malware_alias'), indicator.get('threat_type')]
+    if indicator.get('tags'):
+        res.extend(indicator.get('tags'))
+
+
+def value(indicator):
+    if indicator.get('ioc_type') == "ip:port":
+        return indicator.get('ioc').split(':')[0]
+    return indicator.get('ioc')
+
+
+def create_relationships(value, ioc_type, related_malware, demisto_ioc_type):
+    relationships = []
+    return []
+    if related_malware:
+        if type == 'domain' or type == "ip:port" or type == 'url':
+            relationships.append(EntityRelationship(entity_a=value, entity_a_type=demisto_ioc_type,
+                                                    name=EntityRelationship.Relationships.COMMUNICATED_BY,
+                                                    entity_b=related_malware, entity_b_type=FeedIndicatorType.Malware,
+                                                    brand='ThreatFox Feed'))
+        else: # case File (sha..)
+            relationships.append(EntityRelationship(entity_a=value, entity_a_type=demisto_ioc_type,
+                                                    name=EntityRelationship.Relationships.RELATED_TO,
+                                                    entity_b=related_malware, entity_b_type=FeedIndicatorType.Malware,
+                                                    brand='ThreatFox Feed'))
+    return relationships
+
 
 
 def threatfox_get_indicators_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -152,15 +213,51 @@ def threatfox_get_indicators_command(client: Client, args: dict[str, Any]) -> Co
     parsed_indicators = parse_indicators(result.get('data') or result)
     
     human_readable = tableToMarkdown(name='Indicators', t=parsed_indicators,
-                                     headers=['ID', 'value', 'Tags1', 'Description', 'malware_family_tags',
+                                     headers=['ID', 'value', 'Description', 'malware_family_tags',
                                               'aliases_tags', 'first_seen_by_source', 'last_seen_by_source', 'reported_by',
-                                              'Tags2', 'Confidence', 'Publications'], removeNull=True)
+                                              'Tags', 'Confidence', 'Publications'], removeNull=True)
     
     return CommandResults(readable_output=human_readable)
 
 
-def fetch_indicators_command(client: Client):
-    return None
+def fetch_indicators_command(client: Client, with_ports, confidence_threshold, create_relationship, interval, tlp_color):
+    
+    response = client.get_indicators_request({ "query": "get_iocs", "days": interval })
+    
+    if response.get('query_status') != 'ok':
+        raise DemistoException("couldn't fetch")  # write something better
+    
+    demisto.debug(f'{LOG} got {response=}')  # erase
+    
+    results = []
+       
+    for indicator in response.get('data'):
+        ioc_type = indicator.get('ioc_type')
+        if ioc_type == 'sha3_384_hash':
+            demisto.debug(f'{LOG} got indicator of indicator type "sha3" skipping it')
+            continue
+        if arg_to_number(indicator.get('confidence_level')) < confidence_threshold:
+            demisto.debug(f'{LOG} got indicator with low confidence level, skipping it')
+            continue
+        
+        demisto_ioc_type = indicator_type(indicator)
+        ioc_value = value(indicator)
+        relationships = create_relationships(ioc_value, demisto_ioc_type, indicator.get("malware_printable"), demisto_ioc_type)
+      
+        fields = {'trafficlightprotocol': tlp_color} | parse_indicator_for_fetch(indicator)
+        #if with_ports and ioc_type == "ip:port":
+        #    fields['tags'].append(ioc_value.split(':')[1])
+        
+        results.append({
+            'value': ioc_value,
+            'type': demisto_ioc_type,
+            'fields': fields,
+            'rawJSON': indicator,
+            'relationships': relationships
+        })
+
+    demisto.debug(f'{LOG} {results=}')  # erase
+    return results
 
 
 ''' MAIN FUNCTION '''
@@ -172,9 +269,11 @@ def main() -> None:
     
     params = demisto.params()
     base_url = urljoin(params['url'], '/api/v1')
-    with_ports = params.get('with_ports', False)
-    confidence_threshold = params.get('confidence_threshold', 75)
-    create_relationship = params.get('create_relationship', True)
+    with_ports = argToBoolean(params.get('with_ports', False))
+    confidence_threshold = arg_to_number(params.get('confidence_threshold', 75))   # Need to check that it is a number
+    create_relationship = argToBoolean(params.get('create_relationship', False))
+    interval = arg_to_number(params.get('fetch_interval'))  # Need to check that it is a number
+    tlp_color = params.get('tlp_color')
     
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
@@ -189,7 +288,8 @@ def main() -> None:
             return_results(threatfox_get_indicators_command(client, demisto.args()))
             
         elif command == 'fetch-indicators':
-            res = fetch_indicators_command(client=client, tags=tags, tlp_color=tlp_color)
+            res = fetch_indicators_command(client=client, with_ports=with_ports, confidence_threshold=confidence_threshold,
+                                          create_relationship=create_relationship, interval=interval, tlp_color=tlp_color)
             for iter_ in batch(res, batch_size=2000):
                 demisto.createIndicators(iter_)
 
