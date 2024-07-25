@@ -210,14 +210,14 @@ def get_certificate_openssl(endpoint, port):
         process = subprocess.Popen(['openssl', 's_client', *debug_args, '-connect', f'{endpoint}:{port}', '-showcerts'],
                                    text=True, stderr=subprocess.STDOUT, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
         demisto.debug('opened process')
-        openssl_res, _ = process.communicate('Q\n', timeout=10)
+        openssl_res, _ = process.communicate('Q\n', timeout=60)
         demisto.debug(f'openssl process return code {process.returncode}')
         demisto.debug(f'openssl output: {openssl_res}')
         return '\n'.join(re.findall(r'^-----BEGIN CERT.*?^-----END CERTIFICATE-----', openssl_res, re.DOTALL | re.MULTILINE))
     except subprocess.TimeoutExpired as e:
         process.kill()  # Terminate the process
         openssl_res, _ = process.communicate()  # Capture any remaining output
-        demisto.error(f"openssl command timed out after 10 seconds {e}")
+        demisto.error(f"openssl command timed out after 60 seconds {e}")
         demisto.error(f'Partial openssl output: {openssl_res}')
         return_error('openssl command timed out, see logs for more details.')
 
