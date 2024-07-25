@@ -4,7 +4,7 @@
 		"cacheVersn": 0,
 		"sequenceNumber": 9438185,
 		"primaryTerm": 2,
-		"modified": "2024-07-18T10:31:23.851300423Z",
+		"modified": "2024-07-01T13:50:09.207152744Z",
 		"sizeInBytes": 790,
 		"packID": "",
 		"packName": "",
@@ -33,7 +33,7 @@
 		"disabled": false,
 		"reputationCalc": 0,
 		"onChangeRepAlg": 0,
-		"layout": "",
+		"layout": "82afb870-b972-49b1-8434-34a2a5f55ab3",
 		"detached": false,
 		"extractSettings": {
 			"mode": "Specific",

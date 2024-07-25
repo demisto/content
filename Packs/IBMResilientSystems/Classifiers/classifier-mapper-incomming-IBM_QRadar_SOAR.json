@@ -164,8 +164,31 @@
 					"simple": "zip"
 				},
 				"severity": {
-					"simple": "severity_code"
-				},
+                    "complex":{
+                        "root": "labels.severity_code",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "4,5,6"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "Low,Medium,High"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    }
+                },
                 "dbotMirrorDirection": {
                     "complex": null,
                     "simple": "mirror_direction"

@@ -1602,6 +1602,8 @@ def main():
             return_results(list_task_instructions_command(client, args))
         elif command == 'get-remote-data':
             return_results(get_remote_data_command(client, args))
+        elif command == 'get-modified-remote-data':
+            return_results(get_modified_remote_data_command(client, args))
     except Exception as e:
         LOG(str(e))
         LOG.print_log()
