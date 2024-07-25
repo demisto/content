@@ -1,4 +1,7 @@
 category: Network Security
+sectionorder:
+- Connect
+- Collect
 commonfields:
   id: Panorama
   version: -1
@@ -14,7 +17,6 @@ configuration:
   hiddenusername: true
   section: Connect
   required: false
-  display: ''
 - defaultvalue: '443'
   display: Port (e.g 443)
   name: port
@@ -223,6 +225,7 @@ configuration:
   display: Incidents Fetch Interval
   name: incidentFetchInterval
   required: false
+  section: Collect
   type: 19
 description: Manage Palo Alto Networks Firewall and Panorama. Use this pack to manage Prisma Access through Panorama. For more information, see the Panorama documentation.
 display: Palo Alto Networks PAN-OS
