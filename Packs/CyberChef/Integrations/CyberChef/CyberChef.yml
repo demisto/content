@@ -3,7 +3,8 @@ commonfields:
   id: CyberChef
   version: -1
 configuration:
-- display: Use the local npm package to execute the bake function
+- display: Local execution
+  additionalinfo: Uses the [cyberchef node package](https://github.com/polarityio/cyberchef-node) for local execution of your commands
   name: local_execution
   required: false
   type: 8
