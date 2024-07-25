@@ -1,0 +1,7 @@
+{
+    "error": {
+      "code": 404,
+      "status": "Not Found",
+      "message": "Couldn't find CveAnnouncement with [WHERE `cve_announcements`.`cve_code` = ?]"
+    }
+  }

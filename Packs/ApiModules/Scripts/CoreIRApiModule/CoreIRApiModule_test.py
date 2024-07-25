@@ -2999,7 +2999,7 @@ class TestPollingCommands:
 
         assert command_result.readable_output == "Waiting for the script to " \
                                                  "finish running on the following endpoints: ['1']..."
-        assert not command_result.outputs
+        assert command_result.outputs == {'action_id': 1, 'endpoints_count': 1, 'status': 1}
 
         polling_args = {
             'endpoint_ids': '1', 'script_uid': '1', 'action_id': '1', 'hide_polling_output': True

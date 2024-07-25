@@ -1,0 +1,32 @@
+{
+    "id": "incident_flashpointsourcesortdate",
+    "version": -1,
+    "modified": "2024-06-19T18:35:22.64008749+05:30",
+    "name": "Flashpoint Source Sort Date",
+    "ownerOnly": false,
+    "description": "Sort Date of Flashpoint alert's resource.",
+    "cliName": "flashpointsourcesortdate",
+    "type": "date",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Ignite Alert"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}

@@ -1,0 +1,22 @@
+[
+    {
+        "Group Policy ID": "101",
+        "Bonjour Forwarding Rules VLAN ID": [
+            "1"
+        ],
+        "Group Splash Auth Settings": "bypass",
+        "Bonjour Forwarding Rules Services": [
+            [
+                "All Services"
+            ]
+        ],
+        "Blocked URL Categories": [
+            "meraki:contentFiltering/category/1",
+            "meraki:contentFiltering/category/7"
+        ],
+        "Blocked URL Patterns": [
+            "http://www.example.com",
+            "http://www.example.com"
+        ]
+    }
+]

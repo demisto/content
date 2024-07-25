@@ -1,0 +1,23 @@
+[
+    {
+        "iname": "Profile1",
+        "name": "My VLAN profile name",
+        "isDefault": false,
+        "vlanNames": [
+            {
+                "name": "named-1",
+                "vlanId": "1",
+                "adaptivePolicyGroup": {
+                    "id": "791",
+                    "name": "Infrastructure"
+                }
+            }
+        ],
+        "vlanGroups": [
+            {
+                "name": "named-group-1",
+                "vlanIds": "2,5-7"
+            }
+        ]
+    }
+]

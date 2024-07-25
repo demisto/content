@@ -1,0 +1,17 @@
+{
+    "Domain(val.Name && val.Name == obj.Name)": [
+        {
+            "Name": "dummy.com",
+            "Description": "Reputation of this Indicator is Unknown"
+        }
+    ],
+    "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [
+        {
+            "Indicator": "dummy.com",
+            "Type": "domain",
+            "Vendor": "Ignite",
+            "Score": 0,
+            "Reliability": "B - Usually reliable"
+        }
+    ]
+}

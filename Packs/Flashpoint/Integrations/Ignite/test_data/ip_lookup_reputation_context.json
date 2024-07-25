@@ -1,0 +1,60 @@
+{
+    "IP(val.Address && val.Address == obj.Address)": [
+        {
+            "Address": "0.0.0.1",
+            "Malicious": {
+                "Vendor": "Ignite",
+                "Description": "Found in malicious indicators dataset"
+            },
+            "Relationships": [
+                {
+                    "Relationship": "indicator-of",
+                    "EntityA": "0.0.0.1",
+                    "EntityAType": "IP",
+                    "EntityB": "T1001",
+                    "EntityBType": "Attack Pattern"
+                }
+            ]
+        }
+    ],
+    "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [
+        {
+            "Indicator": "0.0.0.1",
+            "Type": "ip",
+            "Vendor": "Ignite",
+            "Score": 3,
+            "Reliability": "B - Usually reliable"
+        }
+    ],
+    "Ignite.IP.Event(val.Fpid && val.Fpid == obj.Fpid)": [
+        {
+            "Address": "0.0.0.1",
+            "EventDetails": {
+                "RelatedEvent": [],
+                "Tags": [
+                    "asn:as10000",
+                    "infrastructure:c2",
+                    "mitre:T1071",
+                    "source:scan",
+                    "tool:strike"
+                ],
+                "attack_ids": [
+                    "T1001"
+                ],
+                "event_uuid": "00000000-0000-0000-0000-000000000001",
+                "fpid": "0000000000000000000001",
+                "href": "https://api.flashpoint.io/technical-intelligence/v1/event/0000000000000000000001",
+                "info": "Observation: StrikeVariant [2024-05-26 14:04:56]",
+                "reports": [],
+                "timestamp": "1716758167"
+            },
+            "Category": "Network activity",
+            "Fpid": "0000000000000000000001",
+            "Href": "https://api.flashpoint.io/technical-intelligence/v1/attribute/0000000000000000000001",
+            "Timestamp": "1716737486",
+            "Type": "ip-dst",
+            "Uuid": "00000000-0000-0000-0000-000000000001",
+            "Comment": ""
+        }
+    ]
+}

@@ -1,0 +1,6 @@
+fromversion: 8.5.0
+id: Microsoft_Entra_ID_ModelingRule
+name: Microsoft Entra ID Modeling Rule
+rules: ''
+schema: ''
+tags: Microsoft Entra ID

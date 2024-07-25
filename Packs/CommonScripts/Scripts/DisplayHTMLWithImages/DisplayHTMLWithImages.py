@@ -3,25 +3,30 @@ from CommonServerPython import *  # noqa: F401
 import re
 
 
+IMG_FORMATS = ['jpeg', 'gif', 'bmp', 'png', 'jfif', 'tiff', 'eps', 'indd', 'jpg']
+
+
+def is_image(file_name: str):
+    return file_name and file_name.split('.')[-1] in IMG_FORMATS
+
+
 def create_html_with_images(email_html='', entry_id_list=None):
     if not entry_id_list:
         return email_html
 
     account_name = get_tenant_account_name()
-
-    for entry_id in entry_id_list:
+    for file_name, attach_content_id, file_entry_id in entry_id_list:
         # Handling inline attachments from Gmail mailboxes
-        if re.search(f'src="[^>]+"(?=[^>]+alt="{entry_id[0]}")', email_html):
-            email_html = re.sub(f'src="[^>]+"(?=[^>]+alt="{entry_id[0]}")',
-                                f'src={account_name}/entry/download/{entry_id[1]}',
+        if re.search(f'src="[^>]+{attach_content_id}"(?=[^>]+alt="{file_name}")', email_html):
+            email_html = re.sub(f'src="[^>]+{attach_content_id}"(?=[^>]+alt="{file_name}")',
+                                f'src={account_name}/entry/download/{file_entry_id}',
                                 email_html
                                 )
         # Handling inline attachments from Outlook mailboxes
-        # Note: when tested, entry id list and inline attachments were in the same order, so there was no need in
-        # special validation that the right src was being replaced.
+        # Note: the format of an image src are like this src="cid:THE CONTENT ID"
         else:
-            email_html = re.sub('(src="cid(.*?"))',
-                                f'src={account_name}/entry/download/{entry_id[1]}',
+            email_html = re.sub(f'(src="cid(.*?{attach_content_id}.*?"))',
+                                f'src={account_name}/entry/download/{file_entry_id}',
                                 email_html, count=1,
                                 )
     return email_html
@@ -34,20 +39,24 @@ def get_entry_id_list_by_incident_attachments(attachments, files):
         attachments (list): The incident attachments.
         files (list): The uploaded files in the context.
     Returns:
-        list. Attachments entries ids list.
+        list. List ou tuples, in the format (file name, attachment id, file EntryID).
     """
     if not (attachments and files):
         return []
 
-    entry_id_list = []
+    img_data_list = []
+    entry_ids = set()
     for attachment in attachments:
         attachment_name = attachment.get('name', '')
-        if attachment_name and not attachment_name.endswith('eml'):
+        if is_image(attachment_name):
             for file in files:
-                if attachment_name == file.get('Name'):
-                    entry_id_list.append((attachment_name, file.get('EntryID')))
-    demisto.info(f'\n\n idlist by incident attachments \n\n{entry_id_list}')
-    return entry_id_list
+                if attachment_name == file.get('Name') and file.get('EntryID') not in entry_ids:
+                    entry_ids.add(file.get('EntryID'))
+                    img_data_list.append((attachment_name, '', file.get('EntryID')))
+                    break
+
+    demisto.info(f'\n\n idlist by incident attachments \n\n{img_data_list}')
+    return img_data_list
 
 
 def get_entry_id_list_by_parsed_email_attachments(attachments, files):
@@ -56,35 +65,44 @@ def get_entry_id_list_by_parsed_email_attachments(attachments, files):
         attachments (list): The parsed email attachments.
         files (list): The uploaded files in the context.
     Returns:
-        list. Attachments entries ids list.
+        list. List ou tuples, in the format (file name, attachment id, file EntryID).
     """
     if not (attachments and files):
         return []
 
-    entry_id_list = []
+    img_data_list = []
+    entry_ids = set()
     for attachment in attachments:
-        attachment_name = attachment.get('Name', '')
-        for file in files:
-            if attachment_name == file.get('Name'):
-                entry_id_list.append((attachment_name, file.get('EntryID')))
-    demisto.info(f'\n\n idlist by parsed email attachments\n\n{entry_id_list}')
-    return entry_id_list
+        attach_name = attachment.get('Name', '')
+        attach_id = (attachment.get('Content-ID') or '').replace('<', '').replace('>', '')
+        if is_image(attach_name) and attach_id:
+            for file in files:
+                # we use the entry_ids set to avoid taking the wrong file in case there is two different images with same name
+                if attach_name == file.get('Name') and file.get('EntryID') not in entry_ids:
+                    entry_ids.add(file.get('EntryID'))
+                    img_data_list.append((attach_name, attach_id, file.get('EntryID')))
+                    break
+    demisto.info(f'\n\n idlist by parsed email attachments\n\n{img_data_list}')
+    return img_data_list
 
 
-def main(args):
+def main():
     incident = demisto.incident()
-    custom_fields = incident.get('CustomFields', {})
-    html_body = custom_fields.get('emailhtml', '') or \
-        custom_fields.get('emailbody', '')
-    files = demisto.context().get('File', [])
-    files = [files] if not isinstance(files, list) else files
+    html_body = demisto.get(incident, 'CustomFields.emailhtml') or \
+        demisto.get(incident, 'CustomFields.emailbody')
     html_body = f'<div style="background-color: white; color:black;"> {html_body} </div>\n'
+
     if 'src="cid' in html_body:
         attachments = incident.get('attachment', {})
+        context = demisto.context()
+        files = argToList(context.get('File', []))
+        # for backwards compatible
         entry_id_list = get_entry_id_list_by_incident_attachments(attachments, files)
+
         if not entry_id_list:
-            attachments = demisto.get(demisto.context(), 'Email.AttachmentsData', [])
+            attachments = demisto.get(context, 'Email.AttachmentsData', [])
             entry_id_list = get_entry_id_list_by_parsed_email_attachments(attachments, files)
+
         html_body = create_html_with_images(html_body, entry_id_list)
 
     return_results({
@@ -95,4 +113,4 @@ def main(args):
 
 
 if __name__ in ('__builtin__', 'builtins', '__main__'):
-    main(demisto.args())
+    main()

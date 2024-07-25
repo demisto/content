@@ -3,6 +3,7 @@
     "name": "dummy",
     "description": "dummy_description",
     "createTime": "2022-06-09T12:07:30.863807Z",
+    "contentType": "CIDR",
     "lines": [
       "L1",
       "L2",

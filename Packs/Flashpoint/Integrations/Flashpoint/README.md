@@ -1,4 +1,4 @@
-Use the Flashpoint integration to reduce business risk. Flashpoint allows users to ingest alerts and compromised credentials as incident alerts and executes commands such as search intelligence report, ip, url, get events, and more.
+Deprecated. Use Flashpoint Ignite instead.
 This integration was integrated and tested with API version 1.0.0 and 4.0.0 of Flashpoint.
 
 ### Auto Extract Indicator

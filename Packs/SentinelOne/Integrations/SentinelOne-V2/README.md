@@ -81,6 +81,7 @@ Returns all agents that match the specified criteria.
 | SentinelOne.Agents.Domain | string | Domain name of the agent. | 
 | SentinelOne.Agents.CreatedAt | date | Creation time of the agent. | 
 | SentinelOne.Agents.SiteName | string | Site name associated with the agent. | 
+| SentinelOne.Agents.Tags | unknown | Tags associated with the agent. | 
 
 ### sentinelone-create-white-list-item
 

@@ -759,7 +759,7 @@ def prepare_security_rule_params(api_action: str = None, rulename: str = None, s
         else:
             params['xpath'] = f"{XPATH_RULEBASE}{PRE_POST}/security/rules/entry[@name='{rulename}']"
     else:
-        params['xpath'] = f"{XPATH_RULEBASE}[@name='{rulename}']"
+        params['xpath'] = f"{XPATH_RULEBASE}rulebase/security/rules/entry[@name='{rulename}']"
 
     return params
 

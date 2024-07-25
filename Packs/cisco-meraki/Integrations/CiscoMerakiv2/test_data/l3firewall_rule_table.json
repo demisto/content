@@ -1,0 +1,12 @@
+[
+    {
+        "Comment": "Allow TCP traffic to subnet with HTTP servers.",
+        "Policy": "allow",
+        "Protocol": "tcp",
+        "Destination Port": "443",
+        "Destination CIDR": "0.0.0.0/24",
+        "Source Port": "Any",
+        "Source CIDR": "Any",
+        "Syslog Enabled": false
+    }
+]

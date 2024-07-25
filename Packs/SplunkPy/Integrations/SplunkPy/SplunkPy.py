@@ -1111,8 +1111,8 @@ def drilldown_enrichment(service: client.Service, notable_data, num_enrichment_e
             if isinstance(search, dict):
                 query_name = search.get("name", "")
                 query_search = search.get("search", "")
-                earliest_offset = search.get("earliest", "")  # The earliest time to query from.
-                latest_offset = search.get("latest", "")  # The latest time to query to.
+                earliest_offset = search.get("earliest") or search.get("earliest_offset", "")  # The earliest time to query from.
+                latest_offset = search.get("latest") or search.get("latest_offset", "")  # The latest time to query to.
 
             else:
                 # Got a single drilldown search under the 'drilldown_search' key (BC)

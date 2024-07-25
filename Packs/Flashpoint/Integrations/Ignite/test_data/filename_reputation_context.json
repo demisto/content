@@ -1,0 +1,38 @@
+{
+  "DBotScore": {
+    "Indicator": "dummy.log",
+    "Reliability": "B - Usually reliable",
+    "Type": "filename",
+    "Vendor": "Ignite",
+    "Score": 3
+  },
+  "Filename(val.Name == obj.Name)": {
+    "Name": "dummy.log",
+    "Malicious": {
+      "Vendor": "Ignite",
+      "Description": "Found in malicious indicators dataset"
+    }
+  },
+  "Ignite.Filename.Event(val.Fpid && val.Fpid == obj.Fpid)": [
+    {
+      "Filename": "dummy.log",
+      "Category": "test category",
+      "Fpid": "dummy_fpid",
+      "Href": "https://mock_dummy.com/technical-intelligence/v1/attribute/00001",
+      "Timestamp": "0000000001",
+      "Type": "filename",
+      "Uuid": "dummy_uuid",
+      "EventDetails": {
+        "Tags": [
+          "sample_tags"
+        ],
+        "event_uuid": "dummy_uuid",
+        "fpid": "dummy_fpid",
+        "href": "https://mock_dummy.com/technical-intelligence/v1/event/0001",
+        "info": "test info",
+        "timestamp": "0000000001"
+      },
+      "Comment": ""
+    }
+  ]
+}

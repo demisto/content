@@ -1,0 +1,17 @@
+{
+    "URL(val.Data && val.Data == obj.Data)": [
+        {
+            "Data": "http://dummy2.com",
+            "Description": "Reputation of this Indicator is Unknown"
+        }
+    ],
+    "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [
+        {
+            "Indicator": "http://dummy2.com",
+            "Type": "url",
+            "Vendor": "Ignite",
+            "Score": 0,
+            "Reliability": "B - Usually reliable"
+        }
+    ]
+}

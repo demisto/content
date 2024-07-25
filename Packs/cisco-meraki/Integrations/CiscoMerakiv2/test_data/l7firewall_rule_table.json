@@ -1,0 +1,22 @@
+[
+    {
+        "Policy": "deny",
+        "Type": "host",
+        "Value": "http://www.example.com"
+    },
+    {
+        "Policy": "deny",
+        "Type": "port",
+        "Value": "23"
+    },
+    {
+        "Policy": "deny",
+        "Type": "ipRange",
+        "Value": "0.0.0.0/24"
+    },
+    {
+        "Policy": "deny",
+        "Type": "ipRange",
+        "Value": "0.0.0.0/24:5555"
+    }
+]

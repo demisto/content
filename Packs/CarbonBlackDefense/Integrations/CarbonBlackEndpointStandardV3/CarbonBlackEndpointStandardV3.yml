@@ -15,13 +15,13 @@ configuration:
   required: true
   section: connect
 - name: custom_credentials
-  display: Custom Api Key (for API version 7)
+  display: Custom Api Key
   type: 9
   required: false
   additionalinfo: Also required for fetch
   section: connect
 - name: live_response_credentials
-  display: Api Key (Api/Live Response key for API version 1)
+  display: Api Key (Api/Live Response key)
   type: 9
   required: false
   section: connect
@@ -2330,7 +2330,7 @@ script:
     description: Fetches Carbon Black events details based on specified parameters. Supports polling to wait for the search job completion.
     polling: true
     outputs:
-    - contextPath: CarbonBlackDefense.Process.job_id
+    - contextPath: CarbonBlackDefense.EventDetails.job_id
       description: The process job id when polling set to false.
       type: String
     - contextPath: CarbonBlackDefense.EventDetails.Results.alert_category
@@ -2657,223 +2657,223 @@ script:
     description: Fetches Carbon Black events details based on specified parameters. Supports polling to wait for the search job completion.
     polling: true
     outputs:
-    - contextPath: CarbonBlackDefense.Process.job_id
+    - contextPath: CarbonBlackDefense.Events.job_id
       description: The process job id when polling set to false.
       type: String
-    - contextPath: CarbonBlackDefense.Events.alert_category
+    - contextPath: CarbonBlackDefense.Events.Results.alert_category
       description: 'Category of the alert associated with the event.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.alert_id
+    - contextPath: CarbonBlackDefense.Events.Results.alert_id
       description: The unique alert ID.
       type: String
-    - contextPath: CarbonBlackDefense.Events.backend_timestamp
+    - contextPath: CarbonBlackDefense.Events.Results.backend_timestamp
       description: 'Timestamp when the event was processed on the backend.'
       type: Date
-    - contextPath: CarbonBlackDefense.Events.childproc_count
+    - contextPath: CarbonBlackDefense.Events.Results.childproc_count
       description: 'Number of child processes spawned by the process.'
       type: Number
-    - contextPath: CarbonBlackDefense.Events.crossproc_count
+    - contextPath: CarbonBlackDefense.Events.Results.crossproc_count
       description: 'Number of cross-process operations performed by the process.'
       type: Number
-    - contextPath: CarbonBlackDefense.Events.device_external_ip
+    - contextPath: CarbonBlackDefense.Events.Results.device_external_ip
       description: 'External IP address of the device.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.device_group_id
+    - contextPath: CarbonBlackDefense.Events.Results.device_group_id
       description: The device group ID.
       type: Number
-    - contextPath: CarbonBlackDefense.Events.device_id
+    - contextPath: CarbonBlackDefense.Events.Results.device_id
       description: The unique device ID.
       type: Number
-    - contextPath: CarbonBlackDefense.Events.device_installed_by
+    - contextPath: CarbonBlackDefense.Events.Results.device_installed_by
       description: 'User or entity that installed the device.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.device_internal_ip
+    - contextPath: CarbonBlackDefense.Events.Results.device_internal_ip
       description: 'Internal IP address of the device.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.device_location
+    - contextPath: CarbonBlackDefense.Events.Results.device_location
       description: 'Physical or network location of the device.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.device_name
+    - contextPath: CarbonBlackDefense.Events.Results.device_name
       description: 'Name of the device.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.device_os
+    - contextPath: CarbonBlackDefense.Events.Results.device_os
       description: 'Operating system running on the device.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.device_os_version
+    - contextPath: CarbonBlackDefense.Events.Results.device_os_version
       description: 'Version of the operating system running on the device.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.device_policy
+    - contextPath: CarbonBlackDefense.Events.Results.device_policy
       description: 'Security policy applied to the device.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.device_policy_id
+    - contextPath: CarbonBlackDefense.Events.Results.device_policy_id
       description: The the security policy ID applied to the device.
       type: Number
-    - contextPath: CarbonBlackDefense.Events.device_sensor_version
+    - contextPath: CarbonBlackDefense.Events.Results.device_sensor_version
       description: 'Version of the sensor installed on the device.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.device_target_priority
+    - contextPath: CarbonBlackDefense.Events.Results.device_target_priority
       description: 'Priority of the device as a target.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.device_timestamp
+    - contextPath: CarbonBlackDefense.Events.Results.device_timestamp
       description: 'Timestamp of the event as recorded by the device.'
       type: Date
-    - contextPath: CarbonBlackDefense.Events.document_guid
+    - contextPath: CarbonBlackDefense.Events.Results.document_guid
       description: The global unique ID for the document associated with the event.
       type: String
-    - contextPath: CarbonBlackDefense.Events.enriched
+    - contextPath: CarbonBlackDefense.Events.Results.enriched
       description: 'Indicates whether the event data has been enriched.'
       type: Boolean
-    - contextPath: CarbonBlackDefense.Events.enriched_event_type
+    - contextPath: CarbonBlackDefense.Events.Results.enriched_event_type
       description: 'Type of the enriched event.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.event_threat_score
+    - contextPath: CarbonBlackDefense.Events.Results.event_threat_score
       description: 'Threat score assigned to the event.'
       type: Number
-    - contextPath: CarbonBlackDefense.Events.filemod_count
+    - contextPath: CarbonBlackDefense.Events.Results.filemod_count
       description: 'Number of file modifications performed by the process.'
       type: Number
-    - contextPath: CarbonBlackDefense.Events.ingress_time
+    - contextPath: CarbonBlackDefense.Events.Results.ingress_time
       description: 'Time when the event was ingested by the system.'
       type: Date
-    - contextPath: CarbonBlackDefense.Events.legacy
+    - contextPath: CarbonBlackDefense.Events.Results.legacy
       description: 'Indicates whether the event is considered a legacy event.'
       type: Boolean
-    - contextPath: CarbonBlackDefense.Events.modload_count
+    - contextPath: CarbonBlackDefense.Events.Results.modload_count
       description: 'Number of modules loaded by the process.'
       type: Number
-    - contextPath: CarbonBlackDefense.Events.netconn_count
+    - contextPath: CarbonBlackDefense.Events.Results.netconn_count
       description: 'Number of network connections established by the process.'
       type: Number
-    - contextPath: CarbonBlackDefense.Events.observation_description
+    - contextPath: CarbonBlackDefense.Events.Results.observation_description
       description: 'Description of the observation associated with the event.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.observation_id
+    - contextPath: CarbonBlackDefense.Events.Results.observation_id
       description: The unique observation ID.
       type: String
-    - contextPath: CarbonBlackDefense.Events.observation_type
+    - contextPath: CarbonBlackDefense.Events.Results.observation_type
       description: 'Type of the observation associated with the event.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.org_id
+    - contextPath: CarbonBlackDefense.Events.Results.org_id
       description: The organization ID associated with the event.
       type: String
-    - contextPath: CarbonBlackDefense.Events.parent_cmdline
+    - contextPath: CarbonBlackDefense.Events.Results.parent_cmdline
       description: 'Command line used to execute the parent process.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.parent_cmdline_length
+    - contextPath: CarbonBlackDefense.Events.Results.parent_cmdline_length
       description: 'Length of the command line used to execute the parent process.'
       type: Number
-    - contextPath: CarbonBlackDefense.Events.parent_effective_reputation
+    - contextPath: CarbonBlackDefense.Events.Results.parent_effective_reputation
       description: 'Effective reputation of the parent process.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.parent_effective_reputation_source
+    - contextPath: CarbonBlackDefense.Events.Results.parent_effective_reputation_source
       description: 'Source of the effective reputation of the parent process.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.parent_guid
+    - contextPath: CarbonBlackDefense.Events.Results.parent_guid
       description: The global unique ID for the parent process.
       type: String
-    - contextPath: CarbonBlackDefense.Events.parent_hash
+    - contextPath: CarbonBlackDefense.Events.Results.parent_hash
       description: 'Hash of the parent process.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.parent_name
+    - contextPath: CarbonBlackDefense.Events.Results.parent_name
       description: 'Name of the parent process.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.parent_pid
+    - contextPath: CarbonBlackDefense.Events.Results.parent_pid
       description: The parent process ID.
       type: Number
-    - contextPath: CarbonBlackDefense.Events.parent_publisher
+    - contextPath: CarbonBlackDefense.Events.Results.parent_publisher
       description: 'Publisher of the parent process.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.parent_publisher_state
+    - contextPath: CarbonBlackDefense.Events.Results.parent_publisher_state
       description: 'Publisher state of the parent process.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.parent_reputation
+    - contextPath: CarbonBlackDefense.Events.Results.parent_reputation
       description: 'Reputation of the parent process.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.process_cmdline
+    - contextPath: CarbonBlackDefense.Events.Results.process_cmdline
       description: 'Command line used to execute the process.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.process_cmdline_length
+    - contextPath: CarbonBlackDefense.Events.Results.process_cmdline_length
       description: 'Length of the command line used to execute the process.'
       type: Number
-    - contextPath: CarbonBlackDefense.Events.process_company_name
+    - contextPath: CarbonBlackDefense.Events.Results.process_company_name
       description: 'Company name associated with the process.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.process_effective_reputation
+    - contextPath: CarbonBlackDefense.Events.Results.process_effective_reputation
       description: 'Effective reputation of the process.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.process_effective_reputation_source
+    - contextPath: CarbonBlackDefense.Events.Results.process_effective_reputation_source
       description: 'Source of the effective reputation of the process.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.process_elevated
+    - contextPath: CarbonBlackDefense.Events.Results.process_elevated
       description: 'Indicates whether the process is running with elevated privileges.'
       type: Boolean
-    - contextPath: CarbonBlackDefense.Events.process_file_description
+    - contextPath: CarbonBlackDefense.Events.Results.process_file_description
       description: 'File description of the process.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.process_guid
+    - contextPath: CarbonBlackDefense.Events.Results.process_guid
       description: The global unique process ID.
       type: String
-    - contextPath: CarbonBlackDefense.Events.process_hash
+    - contextPath: CarbonBlackDefense.Events.Results.process_hash
       description: 'Hash of the process.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.process_integrity_level
+    - contextPath: CarbonBlackDefense.Events.Results.process_integrity_level
       description: 'Integrity level of the process.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.process_internal_name
+    - contextPath: CarbonBlackDefense.Events.Results.process_internal_name
       description: 'Internal name of the process.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.process_name
+    - contextPath: CarbonBlackDefense.Events.Results.process_name
       description: 'Name of the process.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.process_original_filename
+    - contextPath: CarbonBlackDefense.Events.Results.process_original_filename
       description: 'Original filename of the process.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.process_pid
+    - contextPath: CarbonBlackDefense.Events.Results.process_pid
       description: The process ID of the process.
       type: Number
-    - contextPath: CarbonBlackDefense.Events.process_privileges
+    - contextPath: CarbonBlackDefense.Events.Results.process_privileges
       description: 'Privileges associated with the process.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.process_product_name
+    - contextPath: CarbonBlackDefense.Events.Results.process_product_name
       description: 'Product name associated with the process.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.process_product_version
+    - contextPath: CarbonBlackDefense.Events.Results.process_product_version
       description: 'Product version associated with the process.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.process_publisher
+    - contextPath: CarbonBlackDefense.Events.Results.process_publisher
       description: 'Publisher of the process.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.process_publisher_state
+    - contextPath: CarbonBlackDefense.Events.Results.process_publisher_state
       description: 'Publisher state of the process.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.process_reputation
+    - contextPath: CarbonBlackDefense.Events.Results.process_reputation
       description: 'Reputation of the process.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.process_service_name
+    - contextPath: CarbonBlackDefense.Events.Results.process_service_name
       description: 'Service name associated with the process.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.process_sha256
+    - contextPath: CarbonBlackDefense.Events.Results.process_sha256
       description: 'SHA-256 hash of the process.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.process_start_time
+    - contextPath: CarbonBlackDefense.Events.Results.process_start_time
       description: 'Start time of the process.'
       type: Date
-    - contextPath: CarbonBlackDefense.Events.process_username
+    - contextPath: CarbonBlackDefense.Events.Results.process_username
       description: 'Username under which the process is running.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.regmod_count
+    - contextPath: CarbonBlackDefense.Events.Results.regmod_count
       description: 'Number of registry modifications performed by the process.'
       type: Number
-    - contextPath: CarbonBlackDefense.Events.scriptload_count
+    - contextPath: CarbonBlackDefense.Events.Results.scriptload_count
       description: 'Number of scripts loaded by the process.'
       type: Number
-    - contextPath: CarbonBlackDefense.Events.sensor_action
+    - contextPath: CarbonBlackDefense.Events.Results.sensor_action
       description: 'Action taken by the sensor for the event.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.ttp
+    - contextPath: CarbonBlackDefense.Events.Results.ttp
       description: 'Tactics, techniques, and procedures associated with the event.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.watchlist_hit
+    - contextPath: CarbonBlackDefense.Events.Results.watchlist_hit
       description: 'Indicates if the event matches a watchlist entry.'
       type: String
   - name: cbd-device-search
@@ -3523,220 +3523,220 @@ script:
     description: 'Retrieves the search results using the specified job ID.'
     polling: true
     outputs:
-    - contextPath: CarbonBlackDefense.Events.alert_category
+    - contextPath: CarbonBlackDefense.Events.Results.alert_category
       description: 'Category of the alert associated with the event.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.alert_id
+    - contextPath: CarbonBlackDefense.Events.Results.alert_id
       description: The unique alert ID.
       type: String
-    - contextPath: CarbonBlackDefense.Events.backend_timestamp
+    - contextPath: CarbonBlackDefense.Events.Results.backend_timestamp
       description: 'Timestamp when the event was processed on the backend.'
       type: Date
-    - contextPath: CarbonBlackDefense.Events.childproc_count
+    - contextPath: CarbonBlackDefense.Events.Results.childproc_count
       description: 'Number of child processes spawned by the process.'
       type: Number
-    - contextPath: CarbonBlackDefense.Events.crossproc_count
+    - contextPath: CarbonBlackDefense.Events.Results.crossproc_count
       description: 'Number of cross-process operations performed by the process.'
       type: Number
-    - contextPath: CarbonBlackDefense.Events.device_external_ip
+    - contextPath: CarbonBlackDefense.Events.Results.device_external_ip
       description: 'External IP address of the device.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.device_group_id
+    - contextPath: CarbonBlackDefense.Events.Results.device_group_id
       description: The device group ID.
       type: Number
-    - contextPath: CarbonBlackDefense.Events.device_id
+    - contextPath: CarbonBlackDefense.Events.Results.device_id
       description: The unique device ID.
       type: Number
-    - contextPath: CarbonBlackDefense.Events.device_installed_by
+    - contextPath: CarbonBlackDefense.Events.Results.device_installed_by
       description: 'User or entity that installed the device.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.device_internal_ip
+    - contextPath: CarbonBlackDefense.Events.Results.device_internal_ip
       description: 'Internal IP address of the device.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.device_location
+    - contextPath: CarbonBlackDefense.Events.Results.device_location
       description: 'Physical or network location of the device.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.device_name
+    - contextPath: CarbonBlackDefense.Events.Results.device_name
       description: 'Name of the device.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.device_os
+    - contextPath: CarbonBlackDefense.Events.Results.device_os
       description: 'Operating system running on the device.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.device_os_version
+    - contextPath: CarbonBlackDefense.Events.Results.device_os_version
       description: 'Version of the operating system running on the device.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.device_policy
+    - contextPath: CarbonBlackDefense.Events.Results.device_policy
       description: 'Security policy applied to the device.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.device_policy_id
+    - contextPath: CarbonBlackDefense.Events.Results.device_policy_id
       description: The ID of the security policy applied to the device.
       type: Number
-    - contextPath: CarbonBlackDefense.Events.device_sensor_version
+    - contextPath: CarbonBlackDefense.Events.Results.device_sensor_version
       description: 'Version of the sensor installed on the device.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.device_target_priority
+    - contextPath: CarbonBlackDefense.Events.Results.device_target_priority
       description: 'Priority of the device as a target.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.device_timestamp
+    - contextPath: CarbonBlackDefense.Events.Results.device_timestamp
       description: 'Timestamp of the event as recorded by the device.'
       type: Date
-    - contextPath: CarbonBlackDefense.Events.document_guid
+    - contextPath: CarbonBlackDefense.Events.Results.document_guid
       description: The global unique ID for the document associated with the event.
       type: String
-    - contextPath: CarbonBlackDefense.Events.enriched
+    - contextPath: CarbonBlackDefense.Events.Results.enriched
       description: 'Indicates whether the event data has been enriched.'
       type: Boolean
-    - contextPath: CarbonBlackDefense.Events.enriched_event_type
+    - contextPath: CarbonBlackDefense.Events.Results.enriched_event_type
       description: 'Type of the enriched event.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.event_threat_score
+    - contextPath: CarbonBlackDefense.Events.Results.event_threat_score
       description: 'Threat score assigned to the event.'
       type: Number
-    - contextPath: CarbonBlackDefense.Events.filemod_count
+    - contextPath: CarbonBlackDefense.Events.Results.filemod_count
       description: 'Number of file modifications performed by the process.'
       type: Number
-    - contextPath: CarbonBlackDefense.Events.ingress_time
+    - contextPath: CarbonBlackDefense.Events.Results.ingress_time
       description: 'Time when the event was ingested by the system.'
       type: Date
-    - contextPath: CarbonBlackDefense.Events.legacy
+    - contextPath: CarbonBlackDefense.Events.Results.legacy
       description: 'Indicates whether the event is considered a legacy event.'
       type: Boolean
-    - contextPath: CarbonBlackDefense.Events.modload_count
+    - contextPath: CarbonBlackDefense.Events.Results.modload_count
       description: 'Number of modules loaded by the process.'
       type: Number
-    - contextPath: CarbonBlackDefense.Events.netconn_count
+    - contextPath: CarbonBlackDefense.Events.Results.netconn_count
       description: 'Number of network connections established by the process.'
       type: Number
-    - contextPath: CarbonBlackDefense.Events.observation_description
+    - contextPath: CarbonBlackDefense.Events.Results.observation_description
       description: 'Description of the observation associated with the event.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.observation_id
+    - contextPath: CarbonBlackDefense.Events.Results.observation_id
       description: The unique observation ID.
       type: String
-    - contextPath: CarbonBlackDefense.Events.observation_type
+    - contextPath: CarbonBlackDefense.Events.Results.observation_type
       description: 'Type of the observation associated with the event.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.org_id
+    - contextPath: CarbonBlackDefense.Events.Results.org_id
       description: The ID of the organization associated with the event.
       type: String
-    - contextPath: CarbonBlackDefense.Events.parent_cmdline
+    - contextPath: CarbonBlackDefense.Events.Results.parent_cmdline
       description: 'Command line used to execute the parent process.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.parent_cmdline_length
+    - contextPath: CarbonBlackDefense.Events.Results.parent_cmdline_length
       description: 'Length of the command line used to execute the parent process.'
       type: Number
-    - contextPath: CarbonBlackDefense.Events.parent_effective_reputation
+    - contextPath: CarbonBlackDefense.Events.Results.parent_effective_reputation
       description: 'Effective reputation of the parent process.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.parent_effective_reputation_source
+    - contextPath: CarbonBlackDefense.Events.Results.parent_effective_reputation_source
       description: 'Source of the effective reputation of the parent process.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.parent_guid
+    - contextPath: CarbonBlackDefense.Events.Results.parent_guid
       description: The global unique ID for the parent process.
       type: String
-    - contextPath: CarbonBlackDefense.Events.parent_hash
+    - contextPath: CarbonBlackDefense.Events.Results.parent_hash
       description: 'Hash of the parent process.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.parent_name
+    - contextPath: CarbonBlackDefense.Events.Results.parent_name
       description: 'Name of the parent process.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.parent_pid
+    - contextPath: CarbonBlackDefense.Events.Results.parent_pid
       description: The process ID of the parent process.
       type: Number
-    - contextPath: CarbonBlackDefense.Events.parent_publisher
+    - contextPath: CarbonBlackDefense.Events.Results.parent_publisher
       description: 'Publisher of the parent process.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.parent_publisher_state
+    - contextPath: CarbonBlackDefense.Events.Results.parent_publisher_state
       description: 'Publisher state of the parent process.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.parent_reputation
+    - contextPath: CarbonBlackDefense.Events.Results.parent_reputation
       description: 'Reputation of the parent process.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.process_cmdline
+    - contextPath: CarbonBlackDefense.Events.Results.process_cmdline
       description: 'Command line used to execute the process.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.process_cmdline_length
+    - contextPath: CarbonBlackDefense.Events.Results.process_cmdline_length
       description: 'Length of the command line used to execute the process.'
       type: Number
-    - contextPath: CarbonBlackDefense.Events.process_company_name
+    - contextPath: CarbonBlackDefense.Events.Results.process_company_name
       description: 'Company name associated with the process.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.process_effective_reputation
+    - contextPath: CarbonBlackDefense.Events.Results.process_effective_reputation
       description: 'Effective reputation of the process.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.process_effective_reputation_source
+    - contextPath: CarbonBlackDefense.Events.Results.process_effective_reputation_source
       description: 'Source of the effective reputation of the process.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.process_elevated
+    - contextPath: CarbonBlackDefense.Events.Results.process_elevated
       description: 'Indicates whether the process is running with elevated privileges.'
       type: Boolean
-    - contextPath: CarbonBlackDefense.Events.process_file_description
+    - contextPath: CarbonBlackDefense.Events.Results.process_file_description
       description: 'File description of the process.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.process_guid
+    - contextPath: CarbonBlackDefense.Events.Results.process_guid
       description: The global unique process ID.
       type: String
-    - contextPath: CarbonBlackDefense.Events.process_hash
+    - contextPath: CarbonBlackDefense.Events.Results.process_hash
       description: 'Hash of the process.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.process_integrity_level
+    - contextPath: CarbonBlackDefense.Events.Results.process_integrity_level
       description: 'Integrity level of the process.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.process_internal_name
+    - contextPath: CarbonBlackDefense.Events.Results.process_internal_name
       description: 'Internal name of the process.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.process_name
+    - contextPath: CarbonBlackDefense.Events.Results.process_name
       description: 'Name of the process.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.process_original_filename
+    - contextPath: CarbonBlackDefense.Events.Results.process_original_filename
       description: 'Original filename of the process.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.process_pid
+    - contextPath: CarbonBlackDefense.Events.Results.process_pid
       description: The process ID of the process.
       type: Number
-    - contextPath: CarbonBlackDefense.Events.process_privileges
+    - contextPath: CarbonBlackDefense.Events.Results.process_privileges
       description: 'Privileges associated with the process.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.process_product_name
+    - contextPath: CarbonBlackDefense.Events.Results.process_product_name
       description: 'Product name associated with the process.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.process_product_version
+    - contextPath: CarbonBlackDefense.Events.Results.process_product_version
       description: 'Product version associated with the process.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.process_publisher
+    - contextPath: CarbonBlackDefense.Events.Results.process_publisher
       description: 'Publisher of the process.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.process_publisher_state
+    - contextPath: CarbonBlackDefense.Events.Results.process_publisher_state
       description: 'Publisher state of the process.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.process_reputation
+    - contextPath: CarbonBlackDefense.Events.Results.process_reputation
       description: 'Reputation of the process.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.process_service_name
+    - contextPath: CarbonBlackDefense.Events.Results.process_service_name
       description: 'Service name associated with the process.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.process_sha256
+    - contextPath: CarbonBlackDefense.Events.Results.process_sha256
       description: 'SHA-256 hash of the process.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.process_start_time
+    - contextPath: CarbonBlackDefense.Events.Results.process_start_time
       description: 'Start time of the process.'
       type: Date
-    - contextPath: CarbonBlackDefense.Events.process_username
+    - contextPath: CarbonBlackDefense.Events.Results.process_username
       description: 'Username under which the process is running.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.regmod_count
+    - contextPath: CarbonBlackDefense.Events.Results.regmod_count
       description: 'Number of registry modifications performed by the process.'
       type: Number
-    - contextPath: CarbonBlackDefense.Events.scriptload_count
+    - contextPath: CarbonBlackDefense.Events.Results.scriptload_count
       description: 'Number of scripts loaded by the process.'
       type: Number
-    - contextPath: CarbonBlackDefense.Events.sensor_action
+    - contextPath: CarbonBlackDefense.Events.Results.sensor_action
       description: 'Action taken by the sensor for the event.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.ttp
+    - contextPath: CarbonBlackDefense.Events.Results.ttp
       description: 'Tactics, techniques, and procedures associated with the event.'
       type: String
-    - contextPath: CarbonBlackDefense.Events.watchlist_hit
+    - contextPath: CarbonBlackDefense.Events.Results.watchlist_hit
       description: 'Indicates if the event matches a watchlist entry.'
       type: String
   dockerimage: demisto/python3:3.11.9.103066
@@ -3746,6 +3746,6 @@ script:
   subtype: python3
   type: python
 tests:
-- No tests
+- carbonBlackEndpointStandardV3TestPlaybook
 fromversion: 6.10.0
 defaultmapperin: "Carbon Black Endpoint Standard-mapper"
