@@ -11,10 +11,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 6b7533f0-e2ea-4f88-806b-0a0184c5c3e2
+    taskid: deac40b7-ef54-450a-8f81-cff18ca50a54
     type: start
     task:
-      id: 6b7533f0-e2ea-4f88-806b-0a0184c5c3e2
+      id: deac40b7-ef54-450a-8f81-cff18ca50a54
       version: -1
       name: ""
       iscommand: false
@@ -41,10 +41,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: a5e98031-f357-4927-8acb-cfdc46b18fa8
+    taskid: 7ce74e80-813c-44ae-82ce-6fe85dbabf55
     type: regular
     task:
-      id: a5e98031-f357-4927-8acb-cfdc46b18fa8
+      id: 7ce74e80-813c-44ae-82ce-6fe85dbabf55
       version: -1
       name: Delete Context
       description: The task deletes all of the context data. Having a clean beginning to a test playbook ensures that a test can be sterile and that unrelated issues can be eliminated.
@@ -76,10 +76,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "75":
     id: "75"
-    taskid: 7c137c6f-4ddf-47da-8ac3-c72d17d1d180
+    taskid: 98abdbc7-28ca-4367-893e-188bf72cd81d
     type: condition
     task:
-      id: 7c137c6f-4ddf-47da-8ac3-c72d17d1d180
+      id: 98abdbc7-28ca-4367-893e-188bf72cd81d
       version: -1
       name: Verify Alert ID
       description: |
@@ -129,10 +129,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "84":
     id: "84"
-    taskid: 6088463e-fd83-405d-860d-7aba429b1d35
+    taskid: 712553ed-55a0-4052-85ba-b79b305d9b16
     type: title
     task:
-      id: 6088463e-fd83-405d-860d-7aba429b1d35
+      id: 712553ed-55a0-4052-85ba-b79b305d9b16
       version: -1
       name: Start Tests
       type: title
@@ -161,10 +161,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "112":
     id: "112"
-    taskid: 38129647-bc8e-4114-8c20-05d3148b0244
+    taskid: e242cb4e-a659-450b-88ef-89401764ba55
     type: title
     task:
-      id: 38129647-bc8e-4114-8c20-05d3148b0244
+      id: e242cb4e-a659-450b-88ef-89401764ba55
       version: -1
       name: '''MicrosoftATP.Alert'' Context Data'
       type: title
@@ -176,7 +176,6 @@ tasks:
       - "75"
       - "294"
       - "296"
-      - "300"
       - "310"
       - "316"
       - "320"
@@ -206,10 +205,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "113":
     id: "113"
-    taskid: e02112e7-63b5-4a25-86c6-46371297ecfa
+    taskid: 5166b2f6-8446-44b2-8965-1482065bc065
     type: title
     task:
-      id: e02112e7-63b5-4a25-86c6-46371297ecfa
+      id: 5166b2f6-8446-44b2-8965-1482065bc065
       version: -1
       name: Done verifying 'MicrosoftATP.Alert'
       type: title
@@ -224,7 +223,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 6775,
+          "x": 6385,
           "y": 640
         }
       }
@@ -237,10 +236,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "114":
     id: "114"
-    taskid: e36ff4d1-54ea-4451-80e7-38234d90e42c
+    taskid: ca5fe462-929e-445b-85a1-125522e02171
     type: regular
     task:
-      id: e36ff4d1-54ea-4451-80e7-38234d90e42c
+      id: ca5fe462-929e-445b-85a1-125522e02171
       version: -1
       name: Verify Context Error - Alert ID
       description: Prints an error entry with a given message
@@ -269,10 +268,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "132":
     id: "132"
-    taskid: 225d8b2f-fc55-4780-88ea-9c3b7418658b
+    taskid: bf8cabf8-1fcc-4753-8a94-78f60bebd3e8
     type: title
     task:
-      id: 225d8b2f-fc55-4780-88ea-9c3b7418658b
+      id: bf8cabf8-1fcc-4753-8a94-78f60bebd3e8
       version: -1
       name: Check Incident Fields
       type: title
@@ -328,10 +327,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "136":
     id: "136"
-    taskid: 2b44fb8e-86c5-4281-8cb3-b8e8a657b266
+    taskid: 28f4c33f-f30d-42c3-841f-29797a0e9b6d
     type: title
     task:
-      id: 2b44fb8e-86c5-4281-8cb3-b8e8a657b266
+      id: 28f4c33f-f30d-42c3-841f-29797a0e9b6d
       version: -1
       name: Done verifying Incident Fields
       type: title
@@ -359,10 +358,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "149":
     id: "149"
-    taskid: b215082e-3b6d-44f6-8475-6fa202468f45
+    taskid: bf413d76-4ee8-4777-8eb1-f381ccc1e19c
     type: regular
     task:
-      id: b215082e-3b6d-44f6-8475-6fa202468f45
+      id: bf413d76-4ee8-4777-8eb1-f381ccc1e19c
       version: -1
       name: Set Incident Fields To Context
       description: Add incident fields required for testing to the mock incident.
@@ -408,10 +407,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "151":
     id: "151"
-    taskid: 98c257e4-8a65-4c63-85ca-cf887b031b07
+    taskid: a55bba43-e13d-48f6-89fc-77d0e76b5927
     type: title
     task:
-      id: 98c257e4-8a65-4c63-85ca-cf887b031b07
+      id: a55bba43-e13d-48f6-89fc-77d0e76b5927
       version: -1
       name: Check Context Data
       type: title
@@ -439,10 +438,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "277":
     id: "277"
-    taskid: 866d77b4-cf88-4055-8994-57beffa618c5
+    taskid: 67c29e5f-f02d-4bbd-8fc8-a30521f15b9f
     type: title
     task:
-      id: 866d77b4-cf88-4055-8994-57beffa618c5
+      id: 67c29e5f-f02d-4bbd-8fc8-a30521f15b9f
       version: -1
       name: Done
       type: title
@@ -455,7 +454,7 @@ tasks:
       {
         "position": {
           "x": 12740,
-          "y": 790
+          "y": 780
         }
       }
     note: false
@@ -467,10 +466,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "293":
     id: "293"
-    taskid: 730b718b-e347-4ce0-8f3f-29dbb2820b22
+    taskid: 07083ad7-3739-4854-8fb9-fdbe57d8f67d
     type: regular
     task:
-      id: 730b718b-e347-4ce0-8f3f-29dbb2820b22
+      id: 07083ad7-3739-4854-8fb9-fdbe57d8f67d
       version: -1
       name: Get MDE Available Alerts
       description: Gets a list of alerts present on the system. Filtering can be done only on a single argument.
@@ -506,10 +505,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "294":
     id: "294"
-    taskid: 9f56e977-8533-4b09-8373-0d3b021c0f34
+    taskid: f4d7e4a7-e173-4a15-8d17-55a2755d1d06
     type: condition
     task:
-      id: 9f56e977-8533-4b09-8373-0d3b021c0f34
+      id: f4d7e4a7-e173-4a15-8d17-55a2755d1d06
       version: -1
       name: Verify Incident ID
       description: |
@@ -551,10 +550,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "295":
     id: "295"
-    taskid: f52e8d0c-1c18-43fb-8c4d-3dad3c2392c5
+    taskid: 75e0b0e3-d778-43ac-8c10-4a5ee4a5fd56
     type: regular
     task:
-      id: f52e8d0c-1c18-43fb-8c4d-3dad3c2392c5
+      id: 75e0b0e3-d778-43ac-8c10-4a5ee4a5fd56
       version: -1
       name: Verify Context Error - Incident ID
       description: Prints an error entry with a given message
@@ -583,10 +582,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "296":
     id: "296"
-    taskid: 952f3943-daef-4734-82dc-35b5367c189d
+    taskid: a18235b2-2b73-4773-8618-51d354d62a51
     type: condition
     task:
-      id: 952f3943-daef-4734-82dc-35b5367c189d
+      id: a18235b2-2b73-4773-8618-51d354d62a51
       version: -1
       name: Verify Investigation ID
       description: |
@@ -628,10 +627,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "297":
     id: "297"
-    taskid: 32887fe7-25b2-4906-85ed-bc32a26e5b8a
+    taskid: 7a173579-722f-4e54-8ebf-8fac370c0715
     type: regular
     task:
-      id: 32887fe7-25b2-4906-85ed-bc32a26e5b8a
+      id: 7a173579-722f-4e54-8ebf-8fac370c0715
       version: -1
       name: Verify Context Error - Investigation ID
       description: Prints an error entry with a given message
@@ -658,89 +657,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "300":
-    id: "300"
-    taskid: 6e44aee6-810f-47b5-8098-5e2ace83a248
-    type: condition
-    task:
-      id: 6e44aee6-810f-47b5-8098-5e2ace83a248
-      version: -1
-      name: Verify Assigned To
-      description: |
-        Verify that the ‘MicrosoftATP.Alert.AssignedTo’ context key was extracted correctly.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      ' Verified':
-      - "113"
-      '#default#':
-      - "301"
-    separatecontext: false
-    conditions:
-    - label: ' Verified'
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: MicrosoftATP.Alert
-                accessor: AssignedTo
-            iscontext: true
-          ignorecase: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 2100,
-          "y": 440
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "301":
-    id: "301"
-    taskid: 91532b92-a6cd-41e4-8a6a-c95f00c9ecff
-    type: regular
-    task:
-      id: 91532b92-a6cd-41e4-8a6a-c95f00c9ecff
-      version: -1
-      name: Verify Context Error - Assigned To
-      description: Prints an error entry with a given message
-      scriptName: PrintErrorEntry
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      message:
-        simple: "The 'MicrosoftATP.Alert.AssignedTo' context key not extracted properly. This may indicate that one or more of the following changes have been made to the 'Test Playbook - MDE Malware - Incident Enrichment' playbook:\n1- The 'microsoft-atp-get-alert-by-id' automation outputs have been modified and no longer contain the 'MicrosoftATP.Alert.AssignedTo' context key. \n2- The 'alert_ids' input configuration was changed for the 'microsoft-atp-get-alert-by-id' automation used in the 'Get full alert details' task."
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 2100,
-          "y": 685
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "310":
     id: "310"
-    taskid: ab1c771e-5ada-4d8d-856f-63e852447aa9
+    taskid: 8edc25ac-0815-48c5-8b23-70c388be8a2e
     type: condition
     task:
-      id: ab1c771e-5ada-4d8d-856f-63e852447aa9
+      id: 8edc25ac-0815-48c5-8b23-70c388be8a2e
       version: -1
       name: Verify Detection Source
       description: |
@@ -771,7 +693,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3265,
+          "x": 2875,
           "y": 440
         }
       }
@@ -784,10 +706,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "311":
     id: "311"
-    taskid: 0ff6e8e9-aac9-4eed-8ccd-b2b6950cd0af
+    taskid: 903cfc1d-9961-4678-8d5d-8aaf54b8089b
     type: regular
     task:
-      id: 0ff6e8e9-aac9-4eed-8ccd-b2b6950cd0af
+      id: 903cfc1d-9961-4678-8d5d-8aaf54b8089b
       version: -1
       name: Verify Context Error - Detection Source
       description: Prints an error entry with a given message
@@ -803,7 +725,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3265,
+          "x": 2875,
           "y": 685
         }
       }
@@ -816,10 +738,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "316":
     id: "316"
-    taskid: 4df3cb70-9e2e-42a4-8ab7-8313fdbd6d37
+    taskid: cf8caf6f-02d6-48eb-8156-455909a2cb2d
     type: condition
     task:
-      id: 4df3cb70-9e2e-42a4-8ab7-8313fdbd6d37
+      id: cf8caf6f-02d6-48eb-8156-455909a2cb2d
       version: -1
       name: Verify Title
       description: |
@@ -848,7 +770,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3655,
+          "x": 3265,
           "y": 440
         }
       }
@@ -861,10 +783,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "317":
     id: "317"
-    taskid: f805f1ae-d992-4c2b-839f-ba372aa5375b
+    taskid: 74212738-cdd8-4caa-8039-08a7c26225ae
     type: regular
     task:
-      id: f805f1ae-d992-4c2b-839f-ba372aa5375b
+      id: 74212738-cdd8-4caa-8039-08a7c26225ae
       version: -1
       name: Verify Context Error - Title
       description: Prints an error entry with a given message
@@ -880,7 +802,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3655,
+          "x": 3265,
           "y": 685
         }
       }
@@ -893,10 +815,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "320":
     id: "320"
-    taskid: 5be72504-1893-4fe5-815e-fd7140c664ee
+    taskid: aaf921fe-865a-4edb-89c7-60e831415edd
     type: condition
     task:
-      id: 5be72504-1893-4fe5-815e-fd7140c664ee
+      id: aaf921fe-865a-4edb-89c7-60e831415edd
       version: -1
       name: Verify Alert Creation Time
       description: |
@@ -927,7 +849,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 4045,
+          "x": 3655,
           "y": 440
         }
       }
@@ -940,10 +862,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "321":
     id: "321"
-    taskid: 7aaf7f32-8546-4164-8f39-227d8789cdd9
+    taskid: 5f9c301a-6b85-4ca8-87fc-7f61e307a8c2
     type: regular
     task:
-      id: 7aaf7f32-8546-4164-8f39-227d8789cdd9
+      id: 5f9c301a-6b85-4ca8-87fc-7f61e307a8c2
       version: -1
       name: Verify Context Error - Alert Creation Time
       description: Prints an error entry with a given message
@@ -959,7 +881,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 4045,
+          "x": 3655,
           "y": 685
         }
       }
@@ -972,10 +894,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "324":
     id: "324"
-    taskid: 5d6dbf9d-487f-4be5-8ebb-a7366991b483
+    taskid: 38b39462-fbe4-48ac-8978-41e73f2c8cc4
     type: condition
     task:
-      id: 5d6dbf9d-487f-4be5-8ebb-a7366991b483
+      id: 38b39462-fbe4-48ac-8978-41e73f2c8cc4
       version: -1
       name: Verify Last Event Time
       description: |
@@ -1004,7 +926,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 4435,
+          "x": 4045,
           "y": 440
         }
       }
@@ -1017,10 +939,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "325":
     id: "325"
-    taskid: 796578e7-82d8-474b-8617-10a93a05ac9f
+    taskid: 1bfa6abf-eb03-4293-8a7f-5aadb0df4a6b
     type: regular
     task:
-      id: 796578e7-82d8-474b-8617-10a93a05ac9f
+      id: 1bfa6abf-eb03-4293-8a7f-5aadb0df4a6b
       version: -1
       name: Verify Context Error - Last Event Time
       description: Prints an error entry with a given message
@@ -1036,7 +958,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 4435,
+          "x": 4045,
           "y": 685
         }
       }
@@ -1049,10 +971,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "328":
     id: "328"
-    taskid: 7d57b4fc-7729-4230-862c-c0a89567b4bb
+    taskid: d36824e1-cb1b-448c-88e9-819226d1b51f
     type: condition
     task:
-      id: 7d57b4fc-7729-4230-862c-c0a89567b4bb
+      id: d36824e1-cb1b-448c-88e9-819226d1b51f
       version: -1
       name: Verify Resolved Time
       description: |
@@ -1081,7 +1003,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 4825,
+          "x": 4435,
           "y": 440
         }
       }
@@ -1094,10 +1016,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "329":
     id: "329"
-    taskid: f33003db-8cf9-48c1-8f1e-87235bfbce6a
+    taskid: 1a224d24-27c9-4d21-8219-5b2770b7b678
     type: regular
     task:
-      id: f33003db-8cf9-48c1-8f1e-87235bfbce6a
+      id: 1a224d24-27c9-4d21-8219-5b2770b7b678
       version: -1
       name: Verify Context Error - Resolved Time
       description: Prints an error entry with a given message
@@ -1113,7 +1035,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 4825,
+          "x": 4435,
           "y": 685
         }
       }
@@ -1126,10 +1048,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "334":
     id: "334"
-    taskid: a0d97748-f71d-47ae-8876-e8480ef7d84d
+    taskid: 86ff3a24-e88e-4d1a-8e89-aad062679bcf
     type: condition
     task:
-      id: a0d97748-f71d-47ae-8876-e8480ef7d84d
+      id: 86ff3a24-e88e-4d1a-8e89-aad062679bcf
       version: -1
       name: Verify AAD Tenant ID
       description: |
@@ -1158,7 +1080,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 5215,
+          "x": 4825,
           "y": 440
         }
       }
@@ -1171,10 +1093,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "335":
     id: "335"
-    taskid: 87d72a84-2366-4d8b-8d21-543397da2602
+    taskid: 5bec2e70-c692-4fb2-870d-608080ffa174
     type: regular
     task:
-      id: 87d72a84-2366-4d8b-8d21-543397da2602
+      id: 5bec2e70-c692-4fb2-870d-608080ffa174
       version: -1
       name: Verify Context Error - AAD Tenant ID
       description: Prints an error entry with a given message
@@ -1190,7 +1112,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 5215,
+          "x": 4825,
           "y": 685
         }
       }
@@ -1203,10 +1125,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "338":
     id: "338"
-    taskid: 6cb9cc39-8852-44e6-827c-9e6430ba0d86
+    taskid: b36723ef-ffa7-49ed-8cfc-d3eb9ccda4ec
     type: condition
     task:
-      id: 6cb9cc39-8852-44e6-827c-9e6430ba0d86
+      id: b36723ef-ffa7-49ed-8cfc-d3eb9ccda4ec
       version: -1
       name: Verify Detector ID
       description: |
@@ -1235,7 +1157,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 5605,
+          "x": 5215,
           "y": 440
         }
       }
@@ -1248,10 +1170,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "339":
     id: "339"
-    taskid: 7e82a204-d8e2-4ec4-8f7b-c7ffdb77ddae
+    taskid: 0734aab3-a8c5-4af1-8189-70aebd674e08
     type: regular
     task:
-      id: 7e82a204-d8e2-4ec4-8f7b-c7ffdb77ddae
+      id: 0734aab3-a8c5-4af1-8189-70aebd674e08
       version: -1
       name: Verify Context Error - Detector ID
       description: Prints an error entry with a given message
@@ -1267,7 +1189,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 5605,
+          "x": 5215,
           "y": 685
         }
       }
@@ -1280,10 +1202,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "346":
     id: "346"
-    taskid: 8e4f4fc3-b68c-4454-87cc-0835bc0c9265
+    taskid: 0b77baa5-2e4e-457a-8634-df6757e04d88
     type: condition
     task:
-      id: 8e4f4fc3-b68c-4454-87cc-0835bc0c9265
+      id: 0b77baa5-2e4e-457a-8634-df6757e04d88
       version: -1
       name: Verify RBAC Group Name
       description: |
@@ -1312,7 +1234,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 6005,
+          "x": 5615,
           "y": 440
         }
       }
@@ -1325,10 +1247,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "347":
     id: "347"
-    taskid: 0f403ab1-22df-4333-84e3-40f87b7ae37c
+    taskid: 385fdfec-316d-4a57-8a42-360af38eb5e7
     type: regular
     task:
-      id: 0f403ab1-22df-4333-84e3-40f87b7ae37c
+      id: 385fdfec-316d-4a57-8a42-360af38eb5e7
       version: -1
       name: Verify Context Error - RBAC Group Name
       description: Prints an error entry with a given message
@@ -1344,7 +1266,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 6005,
+          "x": 5615,
           "y": 685
         }
       }
@@ -1357,10 +1279,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "348":
     id: "348"
-    taskid: 575672b7-afc0-44be-806a-e0cb2ad4e4a0
+    taskid: c329db27-ea04-486a-87fc-050cd5e66801
     type: condition
     task:
-      id: 575672b7-afc0-44be-806a-e0cb2ad4e4a0
+      id: c329db27-ea04-486a-87fc-050cd5e66801
       version: -1
       name: Verify Comments
       description: |
@@ -1389,7 +1311,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 6395,
+          "x": 6005,
           "y": 440
         }
       }
@@ -1402,10 +1324,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "349":
     id: "349"
-    taskid: 19978041-971d-4091-873b-4d3fe6dcdef7
+    taskid: f10f3a11-379a-405e-8fba-deb7097417fd
     type: regular
     task:
-      id: 19978041-971d-4091-873b-4d3fe6dcdef7
+      id: f10f3a11-379a-405e-8fba-deb7097417fd
       version: -1
       name: Verify Context Error - Comments
       description: Prints an error entry with a given message
@@ -1421,7 +1343,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 6395,
+          "x": 6005,
           "y": 685
         }
       }
@@ -1434,10 +1356,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "368":
     id: "368"
-    taskid: c772e70c-a937-4ff9-8993-0a813e375a81
+    taskid: a3eb4224-112f-4d38-83f9-75fff60906f2
     type: condition
     task:
-      id: c772e70c-a937-4ff9-8993-0a813e375a81
+      id: a3eb4224-112f-4d38-83f9-75fff60906f2
       version: -1
       name: Verify URLs
       description: Verify that the ‘ URLs’ incident field was filled out correctly.
@@ -1484,10 +1406,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "369":
     id: "369"
-    taskid: a287b8a8-699d-4c31-8702-d041d0e56153
+    taskid: 87592e49-d80e-4565-853b-25296172c337
     type: regular
     task:
-      id: a287b8a8-699d-4c31-8702-d041d0e56153
+      id: 87592e49-d80e-4565-853b-25296172c337
       version: -1
       name: Verify Incident Field Error - URLs
       description: Prints an error entry with a given message
@@ -1516,10 +1438,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "370":
     id: "370"
-    taskid: 8df14ae6-73fe-406c-8508-3cba9202f654
+    taskid: e943ec83-9d2c-4df2-854f-2cab284e0728
     type: condition
     task:
-      id: 8df14ae6-73fe-406c-8508-3cba9202f654
+      id: e943ec83-9d2c-4df2-854f-2cab284e0728
       version: -1
       name: Check Microsoft Defender ATP Available Alerts
       description: Checks if there are available alerts for testing processes.
@@ -1561,10 +1483,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "371":
     id: "371"
-    taskid: ce32a2b6-d539-4a54-8377-b7cca78684ae
+    taskid: ab7c5cc7-36ce-448a-8948-1db585f10555
     type: title
     task:
-      id: ce32a2b6-d539-4a54-8377-b7cca78684ae
+      id: ab7c5cc7-36ce-448a-8948-1db585f10555
       version: -1
       name: Tests cannot be performed
       type: title
@@ -1592,10 +1514,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "372":
     id: "372"
-    taskid: a085627e-f1d8-4fb2-8a37-42fa05e97a08
+    taskid: d484ffd5-1a9e-4855-8371-4e403a1d2fa8
     type: condition
     task:
-      id: a085627e-f1d8-4fb2-8a37-42fa05e97a08
+      id: d484ffd5-1a9e-4855-8371-4e403a1d2fa8
       version: -1
       name: Determine If There Is a URL Within The Alert
       description: 'Checks for ''url'' within the alert before testing the related incident field.  '
@@ -1635,10 +1557,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "373":
     id: "373"
-    taskid: 3caff6c4-fb1a-4358-85f2-2c92181d77c0
+    taskid: 54c6c9f6-8eee-4d12-8f78-d54105c12348
     type: condition
     task:
-      id: 3caff6c4-fb1a-4358-85f2-2c92181d77c0
+      id: 54c6c9f6-8eee-4d12-8f78-d54105c12348
       version: -1
       name: Verify Users
       description: Verify that the ‘users’ incident field was filled out correctly.
@@ -1685,10 +1607,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "374":
     id: "374"
-    taskid: 29a22e6e-7439-41a3-84b8-9aad09d2795d
+    taskid: 36e9e9a1-fc1b-426b-8e2e-40ecda7fdcd7
     type: regular
     task:
-      id: 29a22e6e-7439-41a3-84b8-9aad09d2795d
+      id: 36e9e9a1-fc1b-426b-8e2e-40ecda7fdcd7
       version: -1
       name: Verify Incident Field Error - Users
       description: Prints an error entry with a given message
@@ -1717,10 +1639,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "375":
     id: "375"
-    taskid: 957d737c-0f02-4d45-8435-b96f205e0ed7
+    taskid: ab3fe6b7-a7da-4d87-8e8d-e205b8953265
     type: condition
     task:
-      id: 957d737c-0f02-4d45-8435-b96f205e0ed7
+      id: ab3fe6b7-a7da-4d87-8e8d-e205b8953265
       version: -1
       name: Determine If There Is An Account Name Within The Alert
       description: 'Checks for ''accountname'' within the alert before testing the related incident field.  '
@@ -1760,10 +1682,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "376":
     id: "376"
-    taskid: 261995f7-3321-4e34-81dd-c4029b9d13fe
+    taskid: 6b309c79-24de-4103-8eee-2e137f8663b7
     type: condition
     task:
-      id: 261995f7-3321-4e34-81dd-c4029b9d13fe
+      id: 6b309c79-24de-4103-8eee-2e137f8663b7
       version: -1
       name: Verify User SID
       description: Verify that the ‘usersid’ incident field was filled out correctly.
@@ -1810,10 +1732,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "377":
     id: "377"
-    taskid: 44b8dc71-4e30-4fdc-8b87-7de167b88fa2
+    taskid: 4296ea50-5ca8-469c-8691-4f83d7dd0dcb
     type: regular
     task:
-      id: 44b8dc71-4e30-4fdc-8b87-7de167b88fa2
+      id: 4296ea50-5ca8-469c-8691-4f83d7dd0dcb
       version: -1
       name: Verify Incident Field Error - User SID
       description: Prints an error entry with a given message
@@ -1842,10 +1764,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "378":
     id: "378"
-    taskid: 33609505-6070-4d59-825d-5f472fa09f46
+    taskid: 2d11215b-012e-4015-8bcb-e8b897fdf098
     type: condition
     task:
-      id: 33609505-6070-4d59-825d-5f472fa09f46
+      id: 2d11215b-012e-4015-8bcb-e8b897fdf098
       version: -1
       name: Determine If There Is A User SID Within The Alert
       description: 'Checks for ''userSid'' within the alert before testing the related incident field.  '
@@ -1885,10 +1807,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "379":
     id: "379"
-    taskid: 68e0085b-48fd-473a-8691-551eb2bd6439
+    taskid: 1c3a25d2-1e66-42e9-89bf-5dacc37ac136
     type: condition
     task:
-      id: 68e0085b-48fd-473a-8691-551eb2bd6439
+      id: 1c3a25d2-1e66-42e9-89bf-5dacc37ac136
       version: -1
       name: Verify CMD line
       description: Verify that the ‘cmdline’ incident field was filled out correctly.
@@ -1935,10 +1857,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "380":
     id: "380"
-    taskid: 9c940916-b3f9-459b-8427-cbb34d27d060
+    taskid: 1ad47c60-e949-4bf2-8e77-4dde2f07ccd6
     type: regular
     task:
-      id: 9c940916-b3f9-459b-8427-cbb34d27d060
+      id: 1ad47c60-e949-4bf2-8e77-4dde2f07ccd6
       version: -1
       name: Verify Incident Field Error - CMD line
       description: Prints an error entry with a given message
@@ -1967,10 +1889,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "381":
     id: "381"
-    taskid: 90864a5f-b0b6-40b0-8263-af38c7657e65
+    taskid: cde67bbc-4972-4c79-8e59-a6bcbd442b99
     type: condition
     task:
-      id: 90864a5f-b0b6-40b0-8263-af38c7657e65
+      id: cde67bbc-4972-4c79-8e59-a6bcbd442b99
       version: -1
       name: Determine If There Is A Process Command Line Within The Alert
       description: 'Checks for ''processCommandLine'' within the alert before testing the related incident field.  '
@@ -2010,10 +1932,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "382":
     id: "382"
-    taskid: 0289cac3-25cb-4ab7-880f-79431736dece
+    taskid: 8ea197ad-9633-40ef-8935-87f42b47fddc
     type: condition
     task:
-      id: 0289cac3-25cb-4ab7-880f-79431736dece
+      id: 8ea197ad-9633-40ef-8935-87f42b47fddc
       version: -1
       name: Verify Detected IPs
       description: Verify that the ‘detectedips’ incident field was filled out correctly.
@@ -2060,10 +1982,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "383":
     id: "383"
-    taskid: 4371f8f6-f5b6-4a38-8ec3-6d66c28d92fa
+    taskid: bdf89ce2-282b-4e1d-8a31-c302f79972ea
     type: regular
     task:
-      id: 4371f8f6-f5b6-4a38-8ec3-6d66c28d92fa
+      id: bdf89ce2-282b-4e1d-8a31-c302f79972ea
       version: -1
       name: Verify Incident Field Error - Detected IPs
       description: Prints an error entry with a given message
@@ -2092,10 +2014,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "384":
     id: "384"
-    taskid: 458693ce-c213-4660-8493-30be47476519
+    taskid: c2f22a7f-4c9d-4ab7-8350-f8508b268cf8
     type: condition
     task:
-      id: 458693ce-c213-4660-8493-30be47476519
+      id: c2f22a7f-4c9d-4ab7-8350-f8508b268cf8
       version: -1
       name: Determine If There Is An IP Address Within The Alert
       description: 'Checks for ''ipAddress'' within the alert before testing the related incident field.  '
@@ -2135,10 +2057,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "385":
     id: "385"
-    taskid: c901d747-adfa-4091-8fab-85dbb9f6c3d4
+    taskid: ca8123d0-52ba-4c2b-8d5e-c5d80d1dfbbe
     type: condition
     task:
-      id: c901d747-adfa-4091-8fab-85dbb9f6c3d4
+      id: ca8123d0-52ba-4c2b-8d5e-c5d80d1dfbbe
       version: -1
       name: Verify Domain Name
       description: Verify that the ‘domainname’ incident field was filled out correctly.
@@ -2185,10 +2107,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "386":
     id: "386"
-    taskid: 61094423-fde7-43fa-8b63-ffdcc5d2bf69
+    taskid: 20e991ef-49b1-4e3b-8216-6f7a1319c758
     type: regular
     task:
-      id: 61094423-fde7-43fa-8b63-ffdcc5d2bf69
+      id: 20e991ef-49b1-4e3b-8216-6f7a1319c758
       version: -1
       name: Verify Incident Field Error - Domain Name
       description: Prints an error entry with a given message
@@ -2217,10 +2139,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "387":
     id: "387"
-    taskid: afe5ebe1-8deb-4d29-82a1-a4fe2dd941e8
+    taskid: cf8c9396-73e7-466e-8642-251a24a64dfe
     type: condition
     task:
-      id: afe5ebe1-8deb-4d29-82a1-a4fe2dd941e8
+      id: cf8c9396-73e7-466e-8642-251a24a64dfe
       version: -1
       name: Determine If There Is A Domain Name Within The Alert
       description: 'Checks for ''domainName'' within the alert before testing the related incident field.  '
@@ -2260,10 +2182,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "388":
     id: "388"
-    taskid: af79a65e-f3a9-499a-83ee-552d68106760
+    taskid: 223036ce-382c-41fc-8f84-9b4b98cafb7b
     type: condition
     task:
-      id: af79a65e-f3a9-499a-83ee-552d68106760
+      id: 223036ce-382c-41fc-8f84-9b4b98cafb7b
       version: -1
       name: Verify File Names
       description: Verify that the ‘filenames’ incident field was filled out correctly.
@@ -2310,10 +2232,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "389":
     id: "389"
-    taskid: 044b3485-5d6c-4d69-8a99-539040be0323
+    taskid: 89954762-7dd7-4146-8a1e-a8ead378b004
     type: regular
     task:
-      id: 044b3485-5d6c-4d69-8a99-539040be0323
+      id: 89954762-7dd7-4146-8a1e-a8ead378b004
       version: -1
       name: Verify Incident Field Error - File Names
       description: Prints an error entry with a given message
@@ -2342,10 +2264,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "390":
     id: "390"
-    taskid: eba79678-aa1f-4856-8fea-2c3dbe4caa0c
+    taskid: a94966df-b17e-4dbc-80e2-7c8dd10468a2
     type: condition
     task:
-      id: eba79678-aa1f-4856-8fea-2c3dbe4caa0c
+      id: a94966df-b17e-4dbc-80e2-7c8dd10468a2
       version: -1
       name: Determine If There Is A File Name Within The Alert
       description: 'Checks for ''fileName'' within the alert before testing the related incident field.  '
@@ -2385,10 +2307,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "391":
     id: "391"
-    taskid: 9a2e4da2-19da-493d-8c6f-23a75dd26ac5
+    taskid: 3d46d2fa-bbfd-41cf-8bab-55680c193950
     type: condition
     task:
-      id: 9a2e4da2-19da-493d-8c6f-23a75dd26ac5
+      id: 3d46d2fa-bbfd-41cf-8bab-55680c193950
       version: -1
       name: Verify File Paths
       description: Verify that the ‘filepaths’ incident field was filled out correctly.
@@ -2435,10 +2357,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "392":
     id: "392"
-    taskid: ef0c32db-33a1-4403-879c-1cfeb60ff352
+    taskid: 70ca9fae-b407-4d06-8f2e-c6deea1ed43a
     type: regular
     task:
-      id: ef0c32db-33a1-4403-879c-1cfeb60ff352
+      id: 70ca9fae-b407-4d06-8f2e-c6deea1ed43a
       version: -1
       name: Verify Incident Field Error - File Paths
       description: Prints an error entry with a given message
@@ -2467,10 +2389,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "393":
     id: "393"
-    taskid: 81a29fe5-c56c-49d1-8add-ba22efa781aa
+    taskid: 0d5561b1-add8-45a1-837d-e272eb239b02
     type: condition
     task:
-      id: 81a29fe5-c56c-49d1-8add-ba22efa781aa
+      id: 0d5561b1-add8-45a1-837d-e272eb239b02
       version: -1
       name: Determine If There Is A File Path Within The Alert
       description: 'Checks for ''filePath'' within the alert before testing the related incident field.  '
@@ -2510,10 +2432,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "394":
     id: "394"
-    taskid: ba868fa0-264d-4757-8911-eef0d47748b4
+    taskid: 680ffb79-7947-44f0-877d-31998f6d46e9
     type: condition
     task:
-      id: ba868fa0-264d-4757-8911-eef0d47748b4
+      id: 680ffb79-7947-44f0-877d-31998f6d46e9
       version: -1
       name: Verify File SHA1
       description: Verify that the ‘filesha1’ incident field was filled out correctly.
@@ -2560,10 +2482,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "395":
     id: "395"
-    taskid: e835a4dc-a94a-4a4b-85c0-f6062b9ee674
+    taskid: 3f1e89e2-108a-4386-8ffe-9aa63b9bf6ce
     type: regular
     task:
-      id: e835a4dc-a94a-4a4b-85c0-f6062b9ee674
+      id: 3f1e89e2-108a-4386-8ffe-9aa63b9bf6ce
       version: -1
       name: Verify Incident Field Error - File SHA1
       description: Prints an error entry with a given message
@@ -2592,10 +2514,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "396":
     id: "396"
-    taskid: 38545752-093f-4ee9-8845-a95089a58a1d
+    taskid: 08f98d76-e1b7-4de6-815b-e626bdb8f6f8
     type: condition
     task:
-      id: 38545752-093f-4ee9-8845-a95089a58a1d
+      id: 08f98d76-e1b7-4de6-815b-e626bdb8f6f8
       version: -1
       name: Determine If There Is A File SHA1 Within The Alert
       description: 'Checks for ''sha1'' within the alert before testing the related incident field.  '
@@ -2635,10 +2557,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "397":
     id: "397"
-    taskid: 7f578144-3c06-4979-82f5-93eaadb7455e
+    taskid: 7f85eccf-6035-4aad-85c3-c63485fd6aa0
     type: condition
     task:
-      id: 7f578144-3c06-4979-82f5-93eaadb7455e
+      id: 7f85eccf-6035-4aad-85c3-c63485fd6aa0
       version: -1
       name: Verify File SHA256
       description: Verify that the ‘filesha256’ incident field was filled out correctly.
@@ -2685,10 +2607,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "398":
     id: "398"
-    taskid: 575bab66-7839-46b2-8ade-b9d44438a22f
+    taskid: 8745d2a8-0352-4f0a-8dc9-a85553f79936
     type: regular
     task:
-      id: 575bab66-7839-46b2-8ade-b9d44438a22f
+      id: 8745d2a8-0352-4f0a-8dc9-a85553f79936
       version: -1
       name: Verify Incident Field Error - File SHA256
       description: Prints an error entry with a given message
@@ -2717,10 +2639,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "399":
     id: "399"
-    taskid: 20757aa3-abfa-4423-861f-010e5132bd59
+    taskid: e666f9ee-5591-4300-8d02-91aa871b9ef1
     type: condition
     task:
-      id: 20757aa3-abfa-4423-861f-010e5132bd59
+      id: e666f9ee-5591-4300-8d02-91aa871b9ef1
       version: -1
       name: Determine If There Is A File SHA256 Within The Alert
       description: 'Checks for ''sha256'' within the alert before testing the related incident field.  '
@@ -2760,10 +2682,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "400":
     id: "400"
-    taskid: cf7690ed-0e84-4485-8efd-a654ba63ac4b
+    taskid: f23da97e-633e-4b20-83d7-0977ed085ae8
     type: condition
     task:
-      id: cf7690ed-0e84-4485-8efd-a654ba63ac4b
+      id: f23da97e-633e-4b20-83d7-0977ed085ae8
       version: -1
       name: Verify Microsoft Defender for Endpoint Evidence Type
       description: Verify that the ‘microsoftdefenderforendpointevidencetype’ incident field was filled out correctly.
@@ -2810,10 +2732,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "401":
     id: "401"
-    taskid: 90f887ec-5844-4d27-8ca7-ea0d7cb48c45
+    taskid: 01c0aa29-c135-4c6a-88ce-585f79e1c4d3
     type: regular
     task:
-      id: 90f887ec-5844-4d27-8ca7-ea0d7cb48c45
+      id: 01c0aa29-c135-4c6a-88ce-585f79e1c4d3
       version: -1
       name: Verify Incident Field Error - Microsoft Defender for Endpoint Evidence Type
       description: Prints an error entry with a given message
@@ -2842,10 +2764,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "402":
     id: "402"
-    taskid: 677b3ff1-3bdc-4852-8928-c78cc735cd8c
+    taskid: 1fcc483e-9b53-4deb-8c6c-e956383b09f2
     type: condition
     task:
-      id: 677b3ff1-3bdc-4852-8928-c78cc735cd8c
+      id: 1fcc483e-9b53-4deb-8c6c-e956383b09f2
       version: -1
       name: Determine If There Is An Entity Type Within The Alert
       description: 'Checks for ''entityType'' within the alert before testing the related incident field.  '
@@ -2885,10 +2807,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "403":
     id: "403"
-    taskid: 545bfc78-68a0-40b2-8116-df63f094abb3
+    taskid: b379a894-ec7b-47ac-8d5c-b6c1786e74f3
     type: condition
     task:
-      id: 545bfc78-68a0-40b2-8116-df63f094abb3
+      id: b379a894-ec7b-47ac-8d5c-b6c1786e74f3
       version: -1
       name: Verify Parent Process File Path
       description: Verify that the ‘parentprocessfilepath’ incident field was filled out correctly.
@@ -2935,10 +2857,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "404":
     id: "404"
-    taskid: bc2c94f4-0270-4e96-86df-19a2a1600914
+    taskid: b6d4ea12-6e52-4af9-88eb-af92c878ff91
     type: regular
     task:
-      id: bc2c94f4-0270-4e96-86df-19a2a1600914
+      id: b6d4ea12-6e52-4af9-88eb-af92c878ff91
       version: -1
       name: Verify Incident Field Error - Parent Process File Path
       description: Prints an error entry with a given message
@@ -2967,10 +2889,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "405":
     id: "405"
-    taskid: 88187e69-e9dc-49c3-8805-57b6271dd0fe
+    taskid: e8933d9a-59db-41e0-830b-cd0ae2db0a77
     type: condition
     task:
-      id: 88187e69-e9dc-49c3-8805-57b6271dd0fe
+      id: e8933d9a-59db-41e0-830b-cd0ae2db0a77
       version: -1
       name: Determine If There Is A Parent Process File Name Within The Alert
       description: 'Checks for ''parentProcessFileName'' within the alert before testing the related incident field.  '
@@ -3011,10 +2933,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "406":
     id: "406"
-    taskid: 7293ec1e-d6f8-4969-88e7-e2adafa90b39
+    taskid: 952c8367-4766-457d-897b-9ab1f832ebe8
     type: condition
     task:
-      id: 7293ec1e-d6f8-4969-88e7-e2adafa90b39
+      id: 952c8367-4766-457d-897b-9ab1f832ebe8
       version: -1
       name: Verify Parent Process ID
       description: Verify that the ‘parentprocessid’ incident field was filled out correctly.
@@ -3061,10 +2983,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "407":
     id: "407"
-    taskid: 5cd67c6a-277e-4e94-89a0-bb498ab1fe7b
+    taskid: 424b4cad-bed5-48b7-8d2c-c2cebd365270
     type: regular
     task:
-      id: 5cd67c6a-277e-4e94-89a0-bb498ab1fe7b
+      id: 424b4cad-bed5-48b7-8d2c-c2cebd365270
       version: -1
       name: Verify Incident Field Error - Parent Process ID
       description: Prints an error entry with a given message
@@ -3093,10 +3015,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "408":
     id: "408"
-    taskid: 41ae1115-c482-49c3-85bd-d85305712b5e
+    taskid: d3b8164d-cd03-4c4c-8beb-ca8a8593e1b2
     type: condition
     task:
-      id: 41ae1115-c482-49c3-85bd-d85305712b5e
+      id: d3b8164d-cd03-4c4c-8beb-ca8a8593e1b2
       version: -1
       name: Determine If There Is A Parent Process ID Within The Alert
       description: 'Checks for ''parentProcessId'' within the alert before testing the related incident field.  '
@@ -3136,10 +3058,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "409":
     id: "409"
-    taskid: d82affc1-80d2-4f8b-8871-af6b8f5ca174
+    taskid: 6ebf0111-5886-4f57-8bc4-23ccde0db648
     type: condition
     task:
-      id: d82affc1-80d2-4f8b-8871-af6b8f5ca174
+      id: 6ebf0111-5886-4f57-8bc4-23ccde0db648
       version: -1
       name: Verify Process ID
       description: Verify that the ‘processid’ incident field was filled out correctly.
@@ -3186,10 +3108,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "410":
     id: "410"
-    taskid: 26cab0c3-43b1-4a8d-8bb3-63a9bb1eba96
+    taskid: 95251bf6-cb43-4bfb-8537-27765dd80bf0
     type: regular
     task:
-      id: 26cab0c3-43b1-4a8d-8bb3-63a9bb1eba96
+      id: 95251bf6-cb43-4bfb-8537-27765dd80bf0
       version: -1
       name: Verify Incident Field Error - Process ID
       description: Prints an error entry with a given message
@@ -3218,10 +3140,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "411":
     id: "411"
-    taskid: 183d42dc-3e4a-44ca-847c-7b30527c5134
+    taskid: bf128393-6f21-45dd-8512-33908b1babbb
     type: condition
     task:
-      id: 183d42dc-3e4a-44ca-847c-7b30527c5134
+      id: bf128393-6f21-45dd-8512-33908b1babbb
       version: -1
       name: Determine If There Is A Process ID Within The Alert
       description: 'Checks for ''processId'' within the alert before testing the related incident field.  '
@@ -3261,10 +3183,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "412":
     id: "412"
-    taskid: e7bc310e-58e5-4be5-8c10-2ff68b9f3098
+    taskid: 4e842496-097d-4a9d-8371-a1f7e7a34fa3
     type: condition
     task:
-      id: e7bc310e-58e5-4be5-8c10-2ff68b9f3098
+      id: 4e842496-097d-4a9d-8371-a1f7e7a34fa3
       version: -1
       name: Verify Registry Key
       description: Verify that the ‘registrykey’ incident field was filled out correctly.
@@ -3311,10 +3233,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "413":
     id: "413"
-    taskid: 5365b6bb-2c09-49fc-89ab-baf076269e5e
+    taskid: 41d78949-c252-4165-8f89-8392ac00f18b
     type: regular
     task:
-      id: 5365b6bb-2c09-49fc-89ab-baf076269e5e
+      id: 41d78949-c252-4165-8f89-8392ac00f18b
       version: -1
       name: Verify Incident Field Error - Registry Key
       description: Prints an error entry with a given message
@@ -3343,10 +3265,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "414":
     id: "414"
-    taskid: 6b223e7c-7d4b-4b3a-8c99-ba1f3fc6d43a
+    taskid: 3ea7ffb3-11d0-4bc2-8f84-27e225904433
     type: condition
     task:
-      id: 6b223e7c-7d4b-4b3a-8c99-ba1f3fc6d43a
+      id: 3ea7ffb3-11d0-4bc2-8f84-27e225904433
       version: -1
       name: Determine If There Is A Registry Key Within The Alert
       description: 'Checks for ''registryKey'' within the alert before testing the related incident field.  '
@@ -3386,10 +3308,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "415":
     id: "415"
-    taskid: 7b4f0226-6498-4f8b-88eb-29b9da91d9f1
+    taskid: 6874fba6-8f1b-46f0-8d09-10e6a40adb57
     type: condition
     task:
-      id: 7b4f0226-6498-4f8b-88eb-29b9da91d9f1
+      id: 6874fba6-8f1b-46f0-8d09-10e6a40adb57
       version: -1
       name: Verify Registry Value
       description: Verify that the ‘registryvalue’ incident field was filled out correctly.
@@ -3436,10 +3358,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "416":
     id: "416"
-    taskid: e3400624-4f55-49aa-87d7-df71c02b0a13
+    taskid: e6ef0f56-5c33-4e85-8b15-4fbab8fef99e
     type: regular
     task:
-      id: e3400624-4f55-49aa-87d7-df71c02b0a13
+      id: e6ef0f56-5c33-4e85-8b15-4fbab8fef99e
       version: -1
       name: Verify Incident Field Error - Registry Value
       description: Prints an error entry with a given message
@@ -3468,10 +3390,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "417":
     id: "417"
-    taskid: 3693e17b-311d-4f60-8323-c67194f5aa3d
+    taskid: 99fac325-eaba-4453-8062-72328a3c6cb9
     type: condition
     task:
-      id: 3693e17b-311d-4f60-8323-c67194f5aa3d
+      id: 99fac325-eaba-4453-8062-72328a3c6cb9
       version: -1
       name: Determine If There Is A Registry Value Within The Alert
       description: 'Checks for ''registryValue'' within the alert before testing the related incident field.  '
@@ -3511,10 +3433,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "418":
     id: "418"
-    taskid: 686ebd69-56a3-424d-877e-13041a333bea
+    taskid: ea3e4882-2348-4d23-87e2-e1e9d152c5c5
     type: condition
     task:
-      id: 686ebd69-56a3-424d-877e-13041a333bea
+      id: ea3e4882-2348-4d23-87e2-e1e9d152c5c5
       version: -1
       name: Verify Registry Value Type
       description: Verify that the ‘registryvaluetype’ incident field was filled out correctly.
@@ -3561,10 +3483,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "419":
     id: "419"
-    taskid: 19e04b5a-1e11-475c-8342-397d07f791b5
+    taskid: 04f16a46-587b-4c14-8799-f05db37a1545
     type: regular
     task:
-      id: 19e04b5a-1e11-475c-8342-397d07f791b5
+      id: 04f16a46-587b-4c14-8799-f05db37a1545
       version: -1
       name: Verify Incident Field Error - Registry Value Type
       description: Prints an error entry with a given message
@@ -3593,10 +3515,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "420":
     id: "420"
-    taskid: 33c502d1-837f-47af-8718-fd87a3f4ce90
+    taskid: f53343f4-1f84-47f7-85dc-678f9b5b267e
     type: condition
     task:
-      id: 33c502d1-837f-47af-8718-fd87a3f4ce90
+      id: f53343f4-1f84-47f7-85dc-678f9b5b267e
       version: -1
       name: Determine If There Is A Registry Value Type Within The Alert
       description: 'Checks for ''registryValueType'' within the alert before testing the related incident field.  '
@@ -3636,10 +3558,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "421":
     id: "421"
-    taskid: 676867a1-3f0d-4f95-8300-4c273350d233
+    taskid: d141c931-05fc-4882-8e98-5629fe3aa8e6
     type: condition
     task:
-      id: 676867a1-3f0d-4f95-8300-4c273350d233
+      id: d141c931-05fc-4882-8e98-5629fe3aa8e6
       version: -1
       name: Verify Investigation Stage
       description: Verify that the ‘investigationstage’ incident field was filled out correctly.
@@ -3686,10 +3608,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "422":
     id: "422"
-    taskid: 1437fff8-c464-44fb-8e5e-0abe83367b63
+    taskid: 1593fb6a-0443-4649-81f1-655fb40c9919
     type: regular
     task:
-      id: 1437fff8-c464-44fb-8e5e-0abe83367b63
+      id: 1593fb6a-0443-4649-81f1-655fb40c9919
       version: -1
       name: Verify Incident Field Error - Investigation Stage
       description: Prints an error entry with a given message
@@ -3718,10 +3640,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "423":
     id: "423"
-    taskid: dcedf440-92ba-40ec-8c3a-c294bea3394a
+    taskid: 4ba71e86-000f-472a-8303-5487ac0c4a37
     type: condition
     task:
-      id: dcedf440-92ba-40ec-8c3a-c294bea3394a
+      id: 4ba71e86-000f-472a-8303-5487ac0c4a37
       version: -1
       name: Determine If There Is An Investigation State Within The Alert
       description: 'Checks for ''InvestigationState'' within the alert before testing the related incident field.  '
@@ -3761,10 +3683,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "424":
     id: "424"
-    taskid: 79f39454-0327-4ac3-8226-94f259de05c8
+    taskid: 5532b72a-3c1a-4f0e-8431-a8cfffdbad7b
     type: condition
     task:
-      id: 79f39454-0327-4ac3-8226-94f259de05c8
+      id: 5532b72a-3c1a-4f0e-8431-a8cfffdbad7b
       version: -1
       name: Verify Agents ID
       description: Verify that the ‘agentsid’ incident field was filled out correctly.
@@ -3811,10 +3733,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "425":
     id: "425"
-    taskid: 00b8aac5-f4dc-40b6-8bf8-2ef57a3b5cb8
+    taskid: ca7c656e-487c-4ccd-8a30-ed95b0e915c1
     type: regular
     task:
-      id: 00b8aac5-f4dc-40b6-8bf8-2ef57a3b5cb8
+      id: ca7c656e-487c-4ccd-8a30-ed95b0e915c1
       version: -1
       name: Verify Incident Field Error - Agents ID
       description: Prints an error entry with a given message
@@ -3843,10 +3765,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "426":
     id: "426"
-    taskid: 95db9553-1295-4a8d-899b-784422593bb0
+    taskid: 081118f1-c211-4833-8839-b6ee11e1c9c6
     type: condition
     task:
-      id: 95db9553-1295-4a8d-899b-784422593bb0
+      id: 081118f1-c211-4833-8839-b6ee11e1c9c6
       version: -1
       name: Determine If There Is A Machine ID Within The Alert
       description: 'Checks for ''MachineID'' within the alert before testing the related incident field.  '
@@ -3886,10 +3808,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "427":
     id: "427"
-    taskid: 986135e3-0e8a-45fa-8260-d5c4be362f2d
+    taskid: 12e54ffe-9db4-4ee8-8976-73269a76c226
     type: condition
     task:
-      id: 986135e3-0e8a-45fa-8260-d5c4be362f2d
+      id: 12e54ffe-9db4-4ee8-8976-73269a76c226
       version: -1
       name: Verify MITRE Technique ID
       description: Verify that the ‘mitretechniqueid’ incident field was filled out correctly.
@@ -3936,10 +3858,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "428":
     id: "428"
-    taskid: ed9c9ebd-c5b5-443f-8db3-28fa3f7d2293
+    taskid: 91e81a4b-f6b2-4f2a-889c-996fe650975d
     type: regular
     task:
-      id: ed9c9ebd-c5b5-443f-8db3-28fa3f7d2293
+      id: 91e81a4b-f6b2-4f2a-889c-996fe650975d
       version: -1
       name: Verify Incident Field Error - MITRE Technique ID
       description: Prints an error entry with a given message
@@ -3968,10 +3890,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "429":
     id: "429"
-    taskid: 19aa3405-80b6-4177-8429-911c0015619b
+    taskid: e419525f-2eb6-47e9-8148-09767439601c
     type: condition
     task:
-      id: 19aa3405-80b6-4177-8429-911c0015619b
+      id: e419525f-2eb6-47e9-8148-09767439601c
       version: -1
       name: Determine If There Is A Mitre Techniques Within The Alert
       description: 'Checks for ''MitreTechniques'' within the alert before testing the related incident field.  '
@@ -4011,10 +3933,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "430":
     id: "430"
-    taskid: 0525af35-2a0c-4c71-8afd-5ef37af32b0a
+    taskid: 3bbb463e-affd-4674-89e2-981c1358f275
     type: condition
     task:
-      id: 0525af35-2a0c-4c71-8afd-5ef37af32b0a
+      id: 3bbb463e-affd-4674-89e2-981c1358f275
       version: -1
       name: Verify Process CMD
       description: Verify that the ‘processcmd’ incident field was filled out correctly.
@@ -4061,10 +3983,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "431":
     id: "431"
-    taskid: e09d983a-2b22-4041-88bb-524adaebcaaa
+    taskid: 17adc973-9ccf-4649-8d7c-bd3db10fce49
     type: regular
     task:
-      id: e09d983a-2b22-4041-88bb-524adaebcaaa
+      id: 17adc973-9ccf-4649-8d7c-bd3db10fce49
       version: -1
       name: Verify Incident Field Error - Process CMD
       description: Prints an error entry with a given message
@@ -4093,10 +4015,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "432":
     id: "432"
-    taskid: 795d61c9-8c3e-49ec-843a-b845f9e851ce
+    taskid: 836345e6-0278-488b-811c-13a9ce80cb91
     type: condition
     task:
-      id: 795d61c9-8c3e-49ec-843a-b845f9e851ce
+      id: 836345e6-0278-488b-811c-13a9ce80cb91
       version: -1
       name: Determine If There Is A Process Command Line Within The Alert
       description: 'Checks for ''processCommandLine'' within the alert before testing the related incident field.  '
@@ -4136,10 +4058,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "433":
     id: "433"
-    taskid: bcefed54-65e7-4aad-8fa0-ae47ea08b30c
+    taskid: 124a8747-b81a-479c-8372-fbf1f54334a0
     type: condition
     task:
-      id: bcefed54-65e7-4aad-8fa0-ae47ea08b30c
+      id: 124a8747-b81a-479c-8372-fbf1f54334a0
       version: -1
       name: Verify Process SHA256
       description: Verify that the ‘processsha256’ incident field was filled out correctly.
@@ -4186,10 +4108,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "434":
     id: "434"
-    taskid: c6a35c40-2676-43c5-8fc5-a146d54c2bc0
+    taskid: a519b476-e7cd-4df6-8305-4ee5545bcafa
     type: regular
     task:
-      id: c6a35c40-2676-43c5-8fc5-a146d54c2bc0
+      id: a519b476-e7cd-4df6-8305-4ee5545bcafa
       version: -1
       name: Verify Incident Field Error - Process SHA256
       description: Prints an error entry with a given message
@@ -4218,10 +4140,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "435":
     id: "435"
-    taskid: 46f3b794-5369-46c3-8db2-85297502449e
+    taskid: c5f89b4f-f316-4a8c-8e25-81d55445f5f7
     type: condition
     task:
-      id: 46f3b794-5369-46c3-8db2-85297502449e
+      id: c5f89b4f-f316-4a8c-8e25-81d55445f5f7
       version: -1
       name: Determine If There Is A File SHA256 Within The Alert
       description: 'Checks for ''sha256'' within the alert before testing the related incident field.  '
@@ -4261,10 +4183,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "436":
     id: "436"
-    taskid: 92c043f0-ff49-454f-823e-cf2619c24688
+    taskid: 8a60b8e8-2e9b-44d3-875b-58abd76a9dd0
     type: condition
     task:
-      id: 92c043f0-ff49-454f-823e-cf2619c24688
+      id: 8a60b8e8-2e9b-44d3-875b-58abd76a9dd0
       version: -1
       name: Verify External Severity
       description: Verify that the ‘externalseverity’ incident field was filled out correctly.
@@ -4311,10 +4233,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "437":
     id: "437"
-    taskid: 2977c187-a7c1-440c-84d6-f3987ed706e8
+    taskid: eda05ff7-5fdd-4e5b-8bb7-3ea01ca297e6
     type: regular
     task:
-      id: 2977c187-a7c1-440c-84d6-f3987ed706e8
+      id: eda05ff7-5fdd-4e5b-8bb7-3ea01ca297e6
       version: -1
       name: Verify Incident Field Error - External Severity
       description: Prints an error entry with a given message
@@ -4343,10 +4265,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "438":
     id: "438"
-    taskid: 0d3b68e9-c496-4f02-822e-78b89eec8b60
+    taskid: a775f962-d864-41b0-8879-a1cf8354592c
     type: condition
     task:
-      id: 0d3b68e9-c496-4f02-822e-78b89eec8b60
+      id: a775f962-d864-41b0-8879-a1cf8354592c
       version: -1
       name: Determine If There Is A Severity Within The Alert
       description: 'Checks for ''Severity'' within the alert before testing the related incident field.  '
@@ -4386,10 +4308,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "439":
     id: "439"
-    taskid: a7e5a4c5-1754-4c8b-88c0-e4061642b7e8
+    taskid: e1579fe6-7315-4eea-8e54-a09097d09f2c
     type: condition
     task:
-      id: a7e5a4c5-1754-4c8b-88c0-e4061642b7e8
+      id: e1579fe6-7315-4eea-8e54-a09097d09f2c
       version: -1
       name: Verify External End Time
       description: Verify that the ‘externalendtime’ incident field was filled out correctly.
@@ -4430,10 +4352,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "440":
     id: "440"
-    taskid: 05e33a8f-6d89-47a0-8f64-d9e674316f65
+    taskid: 8fe9790a-1a95-42f5-8749-c3a049c6fe34
     type: regular
     task:
-      id: 05e33a8f-6d89-47a0-8f64-d9e674316f65
+      id: 8fe9790a-1a95-42f5-8749-c3a049c6fe34
       version: -1
       name: Verify Incident Field Error - External End Time
       description: Prints an error entry with a given message
@@ -4462,10 +4384,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "442":
     id: "442"
-    taskid: a11735a0-9b06-4b1e-85ac-618d1ad2a711
+    taskid: c21569b9-e302-44ab-81af-578ab5405691
     type: condition
     task:
-      id: a11735a0-9b06-4b1e-85ac-618d1ad2a711
+      id: c21569b9-e302-44ab-81af-578ab5405691
       version: -1
       name: Verify External Start Time
       description: Verify that the ‘externalstarttime’ incident field was filled out correctly.
@@ -4506,10 +4428,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "443":
     id: "443"
-    taskid: 9b7e2a9e-14cc-4120-83fb-419ae7de341a
+    taskid: 49753d05-bb39-45ef-81c5-2d9de7df79c8
     type: regular
     task:
-      id: 9b7e2a9e-14cc-4120-83fb-419ae7de341a
+      id: 49753d05-bb39-45ef-81c5-2d9de7df79c8
       version: -1
       name: Verify Incident Field Error - External Start Time
       description: Prints an error entry with a given message
@@ -4538,10 +4460,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "445":
     id: "445"
-    taskid: d698bc20-399a-4d7d-87a6-dbb322c51405
+    taskid: f631de7a-93be-4db1-8eaf-a09f269f5083
     type: condition
     task:
-      id: d698bc20-399a-4d7d-87a6-dbb322c51405
+      id: f631de7a-93be-4db1-8eaf-a09f269f5083
       version: -1
       name: Verify External Status
       description: Verify that the ‘externalstatus’ incident field was filled out correctly.
@@ -4588,10 +4510,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "446":
     id: "446"
-    taskid: 72c575e5-000f-4877-82ee-f15771771c40
+    taskid: 7b2927d6-6bce-438b-8acb-69b0be540595
     type: regular
     task:
-      id: 72c575e5-000f-4877-82ee-f15771771c40
+      id: 7b2927d6-6bce-438b-8acb-69b0be540595
       version: -1
       name: Verify Incident Field Error - External Status
       description: Prints an error entry with a given message
@@ -4620,10 +4542,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "447":
     id: "447"
-    taskid: 5fc52044-d1d5-4840-870a-13a3eb66f041
+    taskid: 37bd2cce-36b0-45c7-801c-e6e770d65792
     type: condition
     task:
-      id: 5fc52044-d1d5-4840-870a-13a3eb66f041
+      id: 37bd2cce-36b0-45c7-801c-e6e770d65792
       version: -1
       name: Determine If There Is An Alert Status Within The Alert
       description: 'Checks for ''Status'' within the alert before testing the related incident field.  '
@@ -4663,10 +4585,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "448":
     id: "448"
-    taskid: 03a4fda4-6893-4397-8bbe-c18e6f1e2cf5
+    taskid: 097214d8-cf7c-4f90-84f5-a0fde24920d9
     type: condition
     task:
-      id: 03a4fda4-6893-4397-8bbe-c18e6f1e2cf5
+      id: 097214d8-cf7c-4f90-84f5-a0fde24920d9
       version: -1
       name: Verify Hostnames
       description: Verify that the ‘hostnames’ incident field was filled out correctly.
@@ -4713,10 +4635,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "449":
     id: "449"
-    taskid: 19f13b9d-9e8f-419b-8a01-ff973f1929c8
+    taskid: 27417713-37d0-442d-86b7-d00e6e0da39b
     type: regular
     task:
-      id: 19f13b9d-9e8f-419b-8a01-ff973f1929c8
+      id: 27417713-37d0-442d-86b7-d00e6e0da39b
       version: -1
       name: Verify Incident Field Error - Hostnames
       description: Prints an error entry with a given message
@@ -4745,10 +4667,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "450":
     id: "450"
-    taskid: accfbb21-6726-4fd1-8fe6-d3f7b18d1f0c
+    taskid: 8bfe0ad4-6511-466b-8a8b-e7a9a42a60bf
     type: condition
     task:
-      id: accfbb21-6726-4fd1-8fe6-d3f7b18d1f0c
+      id: 8bfe0ad4-6511-466b-8a8b-e7a9a42a60bf
       version: -1
       name: Determine If There Is A Computer DNS Name Within The Alert
       description: 'Checks for ''ComputerDNSName'' within the alert before testing the related incident field.  '
@@ -4788,10 +4710,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "451":
     id: "451"
-    taskid: 71b9d6e0-dd2d-4217-8d96-f6cc26f2dcb1
+    taskid: 5a5a1abe-cf73-407a-8274-b6222c778b18
     type: condition
     task:
-      id: 71b9d6e0-dd2d-4217-8d96-f6cc26f2dcb1
+      id: 5a5a1abe-cf73-407a-8274-b6222c778b18
       version: -1
       name: Verify External Category Name
       description: Verify that the ‘categoryname’ incident field was filled out correctly.
@@ -4838,10 +4760,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "452":
     id: "452"
-    taskid: 4aa85958-acb3-47f1-8444-f3bf314bd3ac
+    taskid: 19e9385b-6b88-4d59-84cf-749141a5fe58
     type: regular
     task:
-      id: 4aa85958-acb3-47f1-8444-f3bf314bd3ac
+      id: 19e9385b-6b88-4d59-84cf-749141a5fe58
       version: -1
       name: Verify Incident Field Error - External Category Name
       description: Prints an error entry with a given message
@@ -4870,10 +4792,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "453":
     id: "453"
-    taskid: cb3b13f6-1adb-4ccf-8838-68a98e441e95
+    taskid: 7232b7be-a7a1-4a1e-8f9a-362613b42093
     type: condition
     task:
-      id: cb3b13f6-1adb-4ccf-8838-68a98e441e95
+      id: 7232b7be-a7a1-4a1e-8f9a-362613b42093
       version: -1
       name: Determine If There Is An Alert Category Within The Alert
       description: 'Checks for ''Category'' within the alert before testing the related incident field.  '
@@ -4913,10 +4835,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "454":
     id: "454"
-    taskid: ff9b754b-b482-40d6-8cce-df9f81dd50c3
+    taskid: da162412-5bb2-4e63-8a56-2959b29056b3
     type: condition
     task:
-      id: ff9b754b-b482-40d6-8cce-df9f81dd50c3
+      id: da162412-5bb2-4e63-8a56-2959b29056b3
       version: -1
       name: Verify Description
       description: Verify that the ‘description’ incident field was filled out correctly.
@@ -4963,10 +4885,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "455":
     id: "455"
-    taskid: ab7eb1b3-3656-448e-8c4c-57af530f8723
+    taskid: 407c4747-1080-42d9-86ca-d973eee0ddd4
     type: regular
     task:
-      id: ab7eb1b3-3656-448e-8c4c-57af530f8723
+      id: 407c4747-1080-42d9-86ca-d973eee0ddd4
       version: -1
       name: Verify Incident Field Error - Description
       description: Prints an error entry with a given message
@@ -4995,10 +4917,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "456":
     id: "456"
-    taskid: a08a86ad-45cf-4d32-8789-3a6ae1ead154
+    taskid: f270ccb6-487a-471f-8090-84569633f4b2
     type: condition
     task:
-      id: a08a86ad-45cf-4d32-8789-3a6ae1ead154
+      id: f270ccb6-487a-471f-8090-84569633f4b2
       version: -1
       name: Determine If There Is An Alert Description Within The Alert
       description: 'Checks for ''Description'' within the alert before testing the related incident field.  '
@@ -5038,10 +4960,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "473":
     id: "473"
-    taskid: 7e7cb07a-6f8f-4c05-8e15-0986d6d04c3a
+    taskid: 50a085d3-1959-4137-8f48-36d3bee3e3b1
     type: condition
     task:
-      id: 7e7cb07a-6f8f-4c05-8e15-0986d6d04c3a
+      id: 50a085d3-1959-4137-8f48-36d3bee3e3b1
       version: -1
       name: Verify Last Update Time
       description: Verify that the ‘MicrosoftATP.Alert.LastUpdateTime’ context key was extracted correctly.
@@ -5069,7 +4991,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2490,
+          "x": 2100,
           "y": 440
         }
       }
@@ -5082,10 +5004,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "474":
     id: "474"
-    taskid: 8c76ec05-2df7-4c93-8f97-56f47683bf79
+    taskid: 36f8477c-d084-4930-82e6-dd3727d66ca9
     type: regular
     task:
-      id: 8c76ec05-2df7-4c93-8f97-56f47683bf79
+      id: 36f8477c-d084-4930-82e6-dd3727d66ca9
       version: -1
       name: Verify Context Error - Last Update Time
       description: Prints an error entry with a given message
@@ -5101,7 +5023,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2495,
+          "x": 2105,
           "y": 685
         }
       }
@@ -5114,10 +5036,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "475":
     id: "475"
-    taskid: aa56b098-146e-4e26-869f-34467a24fb66
+    taskid: 934da5a0-e248-43b6-8805-cc5218dd9726
     type: condition
     task:
-      id: aa56b098-146e-4e26-869f-34467a24fb66
+      id: 934da5a0-e248-43b6-8805-cc5218dd9726
       version: -1
       name: Verify First Event Time
       description: |
@@ -5146,7 +5068,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2880,
+          "x": 2490,
           "y": 440
         }
       }
@@ -5159,10 +5081,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "476":
     id: "476"
-    taskid: bc297ce9-afd5-4c4c-8bc0-d20947839c3f
+    taskid: c022c8be-268d-4225-8c16-044d4cacb3a6
     type: regular
     task:
-      id: bc297ce9-afd5-4c4c-8bc0-d20947839c3f
+      id: c022c8be-268d-4225-8c16-044d4cacb3a6
       version: -1
       name: Verify Context Error - First Event Time
       description: Prints an error entry with a given message
@@ -5178,7 +5100,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2880,
+          "x": 2490,
           "y": 685
         }
       }
@@ -5191,10 +5113,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "477":
     id: "477"
-    taskid: 09c86199-1a4f-493e-8fe3-dd2d39bd434b
+    taskid: 48431462-a8c1-4160-86e2-1900b8a45bf1
     type: playbook
     task:
-      id: 09c86199-1a4f-493e-8fe3-dd2d39bd434b
+      id: 48431462-a8c1-4160-86e2-1900b8a45bf1
       version: -1
       name: MDE SIEM ingestion - Get Incident Data
       playbookName: MDE SIEM ingestion - Get Incident Data
@@ -5237,10 +5159,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "478":
     id: "478"
-    taskid: d2f9ad68-a5b0-4f5d-884d-0b56e8331f2f
+    taskid: b96ae50b-a957-436a-88fd-d46fa7b1984b
     type: condition
     task:
-      id: d2f9ad68-a5b0-4f5d-884d-0b56e8331f2f
+      id: b96ae50b-a957-436a-88fd-d46fa7b1984b
       version: -1
       name: Verify Parent Process
       description: Verify that the ‘parentprocess’ incident field was filled out correctly.
@@ -5287,10 +5209,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "479":
     id: "479"
-    taskid: eb41f4ad-99b7-43d7-8aab-04073045a236
+    taskid: d69573f8-059b-41aa-8e7a-90713c705a97
     type: regular
     task:
-      id: eb41f4ad-99b7-43d7-8aab-04073045a236
+      id: d69573f8-059b-41aa-8e7a-90713c705a97
       version: -1
       name: Verify Incident Field Error - Parent Process
       description: Prints an error entry with a given message
@@ -5327,7 +5249,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2510,
+        "height": 2500,
         "width": 12530,
         "x": 590,
         "y": -1655
