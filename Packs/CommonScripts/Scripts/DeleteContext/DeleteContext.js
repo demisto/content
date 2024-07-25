@@ -74,10 +74,6 @@ if (shouldDeleteAll) {
             // in case the original path has a reference to a list indexing of the form "root.[0].path" or "root.[1]" remove it.
             new_context_path = keysToKeep[i].replace(/\.\[\d+\]/g, '');
 
-            if (Array.isArray(value) && hasDuplicates(value)) {
-                setContext(new_context_path, value);
-                continue;
-            }
             // in case user asks to keep the same key in different array elements, for example: Key.[0].Name,Key.[1].Name
             if (new_context_path in keysToKeepObj) {
                 if (!Array.isArray(keysToKeepObj[new_context_path])) {
