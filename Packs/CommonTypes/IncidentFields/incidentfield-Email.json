@@ -14,7 +14,8 @@
         "IAM - AD User Activation",
         "IAM - AD User Deactivation",
         "Vectra Account",
-        "CrowdStrike Falcon Mobile Detection"
+        "CrowdStrike Falcon Mobile Detection",
+        "IBM QRadar SOAR Incident"
     ],
     "caseInsensitive": true,
     "cliName": "email",

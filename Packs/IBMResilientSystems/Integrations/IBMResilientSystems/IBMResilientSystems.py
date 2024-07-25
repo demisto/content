@@ -1,3 +1,5 @@
+from typing import Dict, List, Any
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import json
@@ -47,7 +49,7 @@ TIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 if FETCH_TIME:
     if FETCH_TIME[-1] != 'Z':
         FETCH_TIME = FETCH_TIME + 'Z'
-
+MAX_FETCH = DEMISTO_PARAMS.get('max_fetch')
 INCIDENT_TYPE_DICT = {
     'CommunicationError': 17,
     'DenialOfService': 21,
@@ -120,10 +122,14 @@ EXP_TYPE_ID_DICT = {
 
 ''' CONSTANTS '''
 SCRIPT_ENTITIES = 'entities'
+DEFAULT_RETURN_LEVEL = 'full'
 DEFAULT_RETRIES = 1
+
+''' ENDPOINTS '''
+SEARCH_INCIDENTS_ENDPOINT = '/incidents/query_paged'
+
+
 ''' HELPER FUNCTIONS '''
-
-
 def normalize_timestamp(timestamp):
     """
     Converts epoch timestamp to human readable timestamp.
@@ -190,41 +196,16 @@ def prettify_incident_notes(notes: list[dict]) -> list[dict]:
         new_note_obj = {
             'id': note.get('id', ''),
             # Removing HTML tags.
-            'text':  re.sub(r'<[^>]+>', '', note.get('text', '')),
+            'text': re.sub(r'<[^>]+>', '', note.get('text', '')),
             'create_date': normalize_timestamp(note.get('create_date', ''))}
         formatted_notes.append(new_note_obj)
     return formatted_notes
 
 
-''' FUNCTIONS '''
-
-
-def search_incidents_command(client, args):
-    incidents = search_incidents(client, args)
-    entry = None
-    if incidents:
-        pretty_incidents = prettify_incidents(client, incidents)
-        result_incidents = createContext(pretty_incidents, id=None, keyTransform=underscoreToCamelCase, removeNull=True)
-        ec = {
-            'Resilient.Incidents(val.Id && val.Id === obj.Id)': result_incidents
-        }
-        title = 'Resilient Systems Incidents'
-        entry = {
-            'Type': entryTypes['note'],
-            'Contents': incidents,
-            'ContentsFormat': formats['json'],
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown(title, result_incidents,
-                                             headers=['Id', 'Name', 'CreatedDate', 'DiscoveredDate', 'Owner', 'Phase'],
-                                             removeNull=True),
-            'EntryContext': ec
-        }
-        return entry
-    else:
-        return 'No results found.'
-
-
-def search_incidents(rs_client: SimpleClient, args: dict):
+def prepare_search_query_data(args: dict) -> dict:
+    """
+    Preparing the search query filters and pagination parameters for the `search_incidents` request.
+    """
     conditions = []  # type: Any
     if 'severity' in args:
         value = []
@@ -360,16 +341,24 @@ def search_incidents(rs_client: SimpleClient, args: dict):
                 'method': 'gte',
                 'value': now * 1000
             }))
+    if 'last-modified-after' in args:
+        value = date_to_timestamp(args['last-modified-after'])
+        conditions.append({
+            'field_name': 'inc_last_modified_date',
+            'method': 'gte',
+            'value': value
+        })
 
     data = {
         'filters': [{
             'conditions': conditions
         }]
     }
+
     # Pagination mechanism.
-    page = int(args.get('page', '0'))
-    page_size = int(args.get('page_size', '0'))
-    limit = int(args.get('limit', '1000'))
+    page = int(args.get('page', 0))
+    page_size = int(args.get('page_size', 0))
+    limit = int(args.get('limit', MAX_FETCH))
     data['length'] = limit
     # 'limit' parameter is redundant in case proper 'page' and 'page_size' were provided.
     if page_size > 0 and page > 0:
@@ -377,12 +366,63 @@ def search_incidents(rs_client: SimpleClient, args: dict):
         data['length'] = page_size
     elif page < 0 or page_size < 0:
         raise DemistoException('Invalid page number or page size. Page number and page sizes must be positive integers.')
+    return data
 
-    search_incidents_endpoint = '/incidents/query_paged'
-    if return_level := args.get("return_level"):
-        search_incidents_endpoint += f'?return_level={return_level}'
-    response = rs_client.post(search_incidents_endpoint, data)
-    return_outputs(f"\n{response}\n")
+
+def get_mirroring_data() -> dict:
+    """
+    Get the integration instance's mirroring configuration parameters.
+
+    Returns:
+        dict: A dictionary containing the mirroring configuration parameters.
+    """
+    params = demisto.params()
+    mirror_direction = params.get('mirror_direction')
+    mirror_tags = ''  # TODO - Utilize this
+    return {
+        'mirror_direction': mirror_direction,
+        'mirror_instance': demisto.integrationInstance()
+    }
+
+
+''' COMMAND FUNCTIONS '''
+
+
+def search_incidents_command(client, args):
+    incidents = search_incidents(client, args)
+    if incidents:
+        pretty_incidents = prettify_incidents(client, incidents)
+        result_incidents = createContext(pretty_incidents, id=None, keyTransform=underscoreToCamelCase, removeNull=True)
+        ec = {
+            'Resilient.Incidents(val.Id && val.Id === obj.Id)': result_incidents
+        }
+        title = 'QRadar SOAR Incidents'
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': incidents,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(title, result_incidents,
+                                             headers=['Id', 'Name', 'CreatedDate', 'DiscoveredDate', 'Owner', 'Phase'],
+                                             removeNull=True),
+            'EntryContext': ec
+        }
+        return entry
+    else:
+        return 'No results found.'
+
+
+def search_incidents(rs_client: SimpleClient, args: dict) -> list | dict:
+    """
+    Search and get IBM QRadar incidents according to filters and pagination parameters.
+    :return: List of IBM QRadar incidents matching the search query.
+    """
+    search_query_data = prepare_search_query_data(args)
+
+    return_level = args.get('return_level', DEFAULT_RETURN_LEVEL)
+    endpoint = f'{SEARCH_INCIDENTS_ENDPOINT}?return_level={return_level}'
+
+    response = rs_client.post(endpoint, search_query_data)
     return response['data']
 
 
@@ -584,7 +624,7 @@ def get_incident_command(client, incident_id):
         for vector in hr_incident[0].get('NistAttackVectors', []):
             nist_vectors_str += vector + '\n'
         hr_incident[0]['NistAttackVectors'] = nist_vectors_str
-    title = 'IBM Resilient Systems incident ID ' + str(incident_id)
+    title = 'IBM QRadar SOAR incident ID ' + str(incident_id)
     entry = {
         'Type': entryTypes['note'],
         'Contents': incident,
@@ -663,7 +703,7 @@ def get_users_command(client):
             'Email': user['email']
         })
 
-    title = 'IBM Resilient Systems Users'
+    title = 'IBM QRadar SOAR Users'
     entry = {
         'Type': entryTypes['note'],
         'Contents': users,
@@ -1096,12 +1136,12 @@ def date_to_timestamp(date_str_or_dt, date_format='%Y-%m-%dT%H:%M:%SZ'):
 
 
 def fetch_incidents(client):
-    last_run = demisto.getLastRun() and demisto.getLastRun().get('time')
-    if not last_run:
-        last_run = date_to_timestamp(FETCH_TIME)
+    last_run_time = demisto.getLastRun() and demisto.getLastRun().get('time')
+    if not last_run_time:
+        last_run_time = date_to_timestamp(FETCH_TIME)
         args = {'date-created-after': FETCH_TIME}
     else:
-        args = {'date-created-after': normalize_timestamp(last_run)}
+        args = {'date-created-after': normalize_timestamp(last_run_time)}
 
     resilient_incidents = search_incidents(client, args)
     incidents = []
@@ -1111,7 +1151,7 @@ def fetch_incidents(client):
 
         for incident in resilient_incidents:
             incident_creation_time = incident.get('create_date')
-            if incident_creation_time > last_run:  # timestamp in milliseconds
+            if incident_creation_time > last_run_time:  # timestamp in milliseconds
                 artifacts = incident_artifacts(client, str(incident.get('id', '')))
                 if artifacts:
                     incident['artifacts'] = artifacts
@@ -1126,8 +1166,9 @@ def fetch_incidents(client):
 
                 demisto_incident = dict()  # type: dict
 
-                demisto_incident['name'] = 'IBM Resilient Systems incident ID ' + str(incident['id'])
+                demisto_incident['name'] = 'IBM QRadar SOAR incident ID ' + str(incident['id'])
                 demisto_incident['occurred'] = incident['create_date']
+                demisto_incident.update(get_mirroring_data())
                 demisto_incident['rawJSON'] = json.dumps(incident)
 
                 incidents.append(demisto_incident)
@@ -1135,8 +1176,7 @@ def fetch_incidents(client):
                 # updating last creation time if needed
                 if incident_creation_time > last_incident_creation_time:
                     last_incident_creation_time = incident_creation_time
-
-        demisto.setLastRun({'time': last_incident_creation_time})
+    demisto.setLastRun({'time': last_incident_creation_time})
     demisto.incidents(incidents)
 
 
@@ -1405,6 +1445,49 @@ def list_task_instructions_command(rs_client: SimpleClient, args: dict) -> Comma
     )
 
 
+def get_modified_remote_data_command(rs_client: SimpleClient, args: dict) -> GetModifiedRemoteDataResponse:
+    remote_args = GetModifiedRemoteDataArgs(args)
+    last_update = remote_args.last_update  # In the first run, this value will be set to 1 minute earlier
+    demisto.debug(f'get-modified-remote-data command {last_update=}')
+
+    incidents = search_incidents(rs_client, args={'last-modified-after': last_update})
+    modified_incident_ids = [incident.get('id') for incident in incidents]
+    demisto.debug(f'get-modified-remote-data command {modified_incident_ids=}')
+    return GetModifiedRemoteDataResponse(modified_incident_ids)
+
+def get_remote_data_command(rs_client: SimpleClient, args: dict) -> GetRemoteDataResponse:
+    """ Mirror-in data to incident from IBM QRadar SOAR into an XSOAR incident.
+
+
+    Args:
+        rs_client (SimpleClient): The IBM Resillient client.
+        # TODO - Complete
+        attachment_tag (str): The attachment tag, to tag the mirrored attachments.
+        comment_tag (str): The comment tag, to tag the mirrored comments.
+        fetch_attachments (bool): Whether to fetch the attachments or not.
+        fetch_comments (bool): Whether to fetch the comments or not.
+        mirror_resolved_issue (bool): Whether to mirror Jira issues that have been resolved, or have the status `Done`.
+        args:
+            id: Remote incident id.
+            lastUpdate: Server last sync time with remote server.
+
+    Returns:
+        GetRemoteDataResponse: Structured incident response.
+    """
+    remote_args = GetRemoteDataArgs(args)
+    incident_id = remote_args.remote_incident_id
+    demisto.debug(f'get-remote-data {incident_id=}')
+
+    incident = get_incident(rs_client, incident_id)
+    # TODO - Handle incoming closing incident
+    # TODO - Handle tags for attachments, tasks, notes
+    return GetRemoteDataResponse(mirrored_object=incident, entries=[])
+
+
+def update_remote_system(rs_client: SimpleClient, args: dict) -> str:
+    ...
+
+
 def test_module():
     """Verify that the first_fetch parameter is according to the standards, if exists.
 
@@ -1517,6 +1600,8 @@ def main():
             return_results(delete_task_members_command(client, args))
         elif command == 'rs-list-task-instructions':
             return_results(list_task_instructions_command(client, args))
+        elif command == 'get-remote-data':
+            return_results(get_remote_data_command())
     except Exception as e:
         LOG(str(e))
         LOG.print_log()

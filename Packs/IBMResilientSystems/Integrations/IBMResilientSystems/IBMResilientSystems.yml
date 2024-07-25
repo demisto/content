@@ -77,7 +77,14 @@ configuration:
 
 - name: fetch_time
   display: 'First fetch timestamp (YYYY-MM-DDTHH:MM:SSZ). For example: 2020-02-02T19:00:00Z'
-  defaultValue: '7 days'
+  type: 0
+  required: false
+  section: Collect
+
+- name: max_fetch
+  display: Maximum incidents to fetch.
+  additionalinfo: Maximum number of incidents per fetch. The maximum is 1000.
+  defaultvalue: 1000
   type: 0
   required: false
   section: Collect
@@ -108,10 +115,34 @@ configuration:
   section: Collect
   advanced: true
   required: false
-  additionalinfo: When selected, closing the Cortex XSOAR incident  will close the incident in IBM Resilient
+  additionalinfo: When selected, closing the Cortex XSOAR incident will close the incident in IBM Resilient
 
 script:
   commands:
+  - name: update-remote-system
+    description: Updates the remote incident with local incident changes. This method
+      is only used for debugging purposes and will not update the current incident.
+
+  - name: get-mapping-fields
+    description: Returns the list of fields to map in outgoing mirroring. This command is only used for debugging purposes.
+
+  - name: get-remote-data
+    description: Get remote data from a remote incident. This method does not update the current incident, and should be used for debugging purposes only.
+    arguments:
+    - name: id
+      description: The remote incident ID.
+      required: true
+    - name: lastUpdate
+      description: The UTC timestamp in seconds of the last update. The incident is only updated if it was modified after the last update time.
+      defaultValue: '0'
+      required: false
+
+  - name: get-modified-remote-data
+    description: Returns the list of incidents IDs that were modified since the last update time. Note that this method is for debugging purposes. The get-modified-remote-data command is used as part of the mirroring feature, which is available from version 6.1.
+    arguments:
+      - description: Date string in local time representing the last time the incident was updated. The incident is only returned if it was modified after the last update time.
+        name: lastUpdate
+
   - name: rs-search-incidents
     description: Query for incidents
     arguments:
@@ -931,11 +962,15 @@ script:
       type: Dictionary
   dockerimage: demisto/resilient:2.0.0.86430
   isfetch: true
+  ismappable: true
+  isremotesyncin: true
+  isremotesyncout: true
   runonce: false
   script: '-'
   subtype: python3
   type: python
 
 fromversion: 5.0.0
+defaultmapperin: IBM QRadar SOAR Incoming Mapper
 tests:
 - No tests (auto formatted)

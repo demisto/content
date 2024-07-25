@@ -9,7 +9,8 @@
   "IAM - Rehire User",
   "Vectra Account",
   "CrowdStrike Falcon IDP Detection",
-  "CrowdStrike Falcon Mobile Detection"
+  "CrowdStrike Falcon Mobile Detection",
+  "IBM QRadar SOAR Incident"
  ],
  "caseInsensitive": true,
  "cliName": "displayname",

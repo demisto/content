@@ -12,7 +12,7 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": ["IBM Resilient Systems"],
+    "keywords": ["IBM Resilient Systems", "IBM Security SOAR"],
     "marketplaces": [
         "xsoar",
         "marketplacev2"

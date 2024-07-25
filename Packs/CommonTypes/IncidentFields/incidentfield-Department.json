@@ -29,7 +29,8 @@
   "IAM - Update User",
   "User Profile",
   "IAM - Sync User",
-  "Vectra Account"
+  "Vectra Account",
+  "IBM QRadar SOAR Incident"
  ],
  "associatedToAll": false,
  "unmapped": false,
