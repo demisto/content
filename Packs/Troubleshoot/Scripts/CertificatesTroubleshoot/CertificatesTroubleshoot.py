@@ -30,7 +30,7 @@ def parse_certificate_object_identifier_name(certificate: x509.Name, oid: x509.O
 
 
 def parse_certificate_object_identifier_extentions(certificate: x509.Extensions, oid: x509.ObjectIdentifier) -> \
-        Optional[List[str]]:
+    Optional[List[str]]:
     """ Get attribute from decoded certificate extension.
 
     Args:
@@ -42,7 +42,7 @@ def parse_certificate_object_identifier_extentions(certificate: x509.Extensions,
     """
     try:
         values = certificate.get_extension_for_oid(oid).value
-        attributes = [item.value for item in values]    # type: ignore[attr-defined]
+        attributes = [item.value for item in values]  # type: ignore[attr-defined]
     except ExtensionNotFound:
         attributes = []
 
@@ -188,11 +188,7 @@ def get_certificates(endpoint: str, port: str) -> str:
     """
     mode = demisto.getArg('mode') or 'python'
     if mode == "openssl":
-        openssl_res = subprocess.check_output(['openssl', 's_client', '-servername', endpoint,
-                                               '-host', endpoint, '-port', port, '-showcerts'], text=True,
-                                              stderr=subprocess.STDOUT)
-        demisto.debug(f'openssl output: {openssl_res}')
-        return '\n'.join(re.findall(r'^-----BEGIN CERT.*?^-----END CERTIFICATE-----', openssl_res, re.DOTALL | re.MULTILINE))
+        return get_certificate_openssl(endpoint, port)
     else:
         hostname = endpoint
         conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -206,6 +202,24 @@ def get_certificates(endpoint: str, port: str) -> str:
         else:
             return ""
 
+
+def get_certificate_openssl(endpoint, port):
+    try:
+        debug_args = ['-msg', '-debug'] if is_debug_mode() else []
+        demisto.debug('before opening openssl process')
+        process = subprocess.Popen(['openssl', 's_client', *debug_args, '-connect', f'{endpoint}:{port}', '-showcerts'], text=True,
+                                   stderr=subprocess.STDOUT, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
+        demisto.debug('opened process')
+        openssl_res, _ = process.communicate('Q\n', timeout=10)
+        demisto.debug(f'openssl process return code {process.returncode}')
+        demisto.debug(f'openssl output: {openssl_res}')
+        return '\n'.join(re.findall(r'^-----BEGIN CERT.*?^-----END CERTIFICATE-----', openssl_res, re.DOTALL | re.MULTILINE))
+    except subprocess.TimeoutExpired as e:
+        process.kill()  # Terminate the process
+        openssl_res, _ = process.communicate()  # Capture any remaining output
+        demisto.error(f"openssl command timed out after 10 seconds {e}")
+        demisto.error(f'Partial openssl output: {openssl_res}')
+        return_error('openssl command timed out, see logs for more details.')
 
 def endpoint_certificate(endpoint: str, port: str) -> dict:
     """ Get certificate issuer from endpoint.
