@@ -9,7 +9,7 @@ from typing import Any
 CONTEXT_PREFIX = "TAXII2"
 COMPLEX_OBSERVATION_MODE_SKIP = "Skip indicators with more than a single observation"
 COMPLEX_OBSERVATION_MODE_CREATE_ALL = "Create indicator for each observation"
-urlRegexTAXII2 = urlRegex
+
 """ HELPER FUNCTIONS """
 
 
@@ -258,24 +258,32 @@ def reset_fetch_command(client):
         "Fetch was reset successfully. Your next indicator fetch will collect indicators from "
         'the configured "First Fetch Time"'
     )
-    
 
-def is_url_valid(url: Optional[str]):
+
+def is_valid_url(url: Optional[str]):
     """
     Checks the correctness of the url.
     :param url: str
     :return: boolean whether the url valid or not.
     """
-    if url and re.match(urlRegexTAXII2, url):
-        return True
+    if url:
+        demisto.debug("here")
+        if match := re.search(urlRegex, url):
+            demisto.debug("here")
+            group_dict = match.groupdict()
+            demisto.debug(f"{group_dict}")
+            path = group_dict.get("path")
+            if path and ('taxii' in path or 'taxii2' in path):
+                return True
     return False
+
 
 def main():  # pragma: no cover
     params = demisto.params()
     args = demisto.args()
     url = params.get("url")
-    if not is_url_valid(url):
-        return_error("Discovery Service URL is not valid, The URL suffix should be taxii2")
+    if not is_valid_url(url):
+        return_error("Discovery Service URL is not valid, The URL suffix should be taxii or taxii2")
     collection_to_fetch = params.get("collection_to_fetch")
     credentials = params.get("credentials") or {}
     username = credentials.get("identifier")
