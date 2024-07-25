@@ -362,6 +362,26 @@ COMMANDS_PARSE_AND_OUTPUT_DATA: dict[str, dict[Any, Any]] = {
     "qualys-vcenter-esxi-mapped-record-purge": {
         "json_path": ["SIMPLE_RETURN", "RESPONSE"],
     },
+    "qualys-asset-host-delete": {
+        "human_readable_massage": "Asset Host Delete",
+        "json_path": ["ServiceResponse", "data", "Tag"],
+    },
+    "qualys-asset-host-list": {
+        "table_name": "HostId list from AssetId",
+        "json_path": ["ServiceResponse", "data", "Tag"],
+        "table_headers": [
+            "ServiceResponse",
+            "id",
+            "name",
+            "created",
+            "modified",
+            "qwebHostId",
+            "lastVulnScan",
+            "networkGuid",
+            "address",
+            "trackingMethod",
+            "isDockerHost",],
+    },
 }
 
 # Context prefix and key for each command
@@ -583,6 +603,14 @@ COMMANDS_CONTEXT_DATA = {
     "qualys-vcenter-esxi-mapped-record-purge": {
         "context_prefix": "",
         "context_key": "",
+    },
+    "qualys-asset-host-delete": {
+        "context_prefix": "Qualys.AssetHost",
+        "context_key": "qwebHostId"
+    },
+    "qualys-asset-host-list": {
+        "context_prefix": "Qualys.AssetHost",
+        "context_key": "qwebHostId"
     },
 }
 
@@ -888,6 +916,23 @@ TAG_ASSET_COMMANDS_API_DATA: dict[str, dict[str, Any]] = {
         "request_body": {"ServiceRequest": {}},
         "Content-Type": "text/xml",
     },
+HOST_ASSET_COMMANDS_API_DATA: Dict[str, Dict[str, Any]] = {
+    "qualys-asset-host-delete": {
+        "api_route": urljoin(TAG_API_SUFFIX, "delete/am/hostasset"),
+        "call_method": "POST",
+        "request_body": {"ServiceRequest": {}},
+        "resp_type": "text",
+        "Content-Type": "text/xml",
+
+    },
+    "qualys-asset-host-list": {
+        "api_route": urljoin(TAG_API_SUFFIX, "search/am/hostasset"),
+        "call_method": "POST",
+        "request_body": {"ServiceRequest": {}},
+        "resp_type": "text",
+        "Content-Type": "text/xml",
+
+    },    
 }
 
 # Arguments' names of each command
@@ -1571,6 +1616,8 @@ COMMANDS_ARGS_DATA: dict[str, Any] = {
     "qualys-asset-tag-create": {"args": ["name", "child_name", "rule_type", "rule_text", "criticality_score"]},
     "qualys-asset-tag-update": {"args": ["id", "name", "rule_type", "rule_text", "child_to_remove", "criticality_score"]},
     "qualys-asset-tag-delete": {"args": ["id"]},
+    "qualys-asset-host-delete": {"args": ["host_id"]},
+    "qualys-asset-host-list": {"args": ["asset_id"]},
     "qualys-asset-tag-list": {"args": ["criteria", "operator", "search_data", "limit"]},
 }
 
@@ -2138,6 +2185,29 @@ def handle_asset_tag_request_parameters(args: dict[str, str], command_name: str)
     if TAG_ASSET_COMMANDS_API_DATA[command_name].get("request_body"):
         TAG_ASSET_COMMANDS_API_DATA[command_name]["request_body"] = generate_asset_tag_xml_request_body(args, command_name)
 
+def handle_asset_host_request_parameters(args: Dict[str, str], command_name: str) -> None:
+    if demisto.args().get('host_id'):
+        host_id = demisto.args().get('host_id')
+        xml_data = f"""
+        <ServiceRequest>
+                        <filters>
+                            <Criteria field="qwebHostId" operator="IN">{host_id}</Criteria>
+                        </filters>
+        </ServiceRequest>
+            """
+    elif demisto.args().get('asset_id'):
+        asset_id = demisto.args().get('asset_id')
+        xml_data = f"""
+        <ServiceRequest>
+                        <filters>
+                            <Criteria field="id" operator="IN">{asset_id}</Criteria>
+                        </filters>
+        </ServiceRequest>
+            """
+    root = ET.fromstring(xml_data)
+    xml_string = ET.tostring(root, encoding='utf-8', method='xml').decode()
+    HOST_ASSET_COMMANDS_API_DATA[command_name]["request_body"] = xml_string
+    return
 
 """ PARSERS """
 
@@ -2304,6 +2374,27 @@ def handle_asset_tag_result(raw_response: requests.Response, command_name: str):
         return response_requested_value
     return None
 
+@logger
+def handle_asset_host_result(raw_response: requests.Response, command_name: str):
+    formatted_response = format_and_validate_response(raw_response)
+
+    if response_error_details := formatted_response.get("ServiceResponse", {}).get("responseErrorDetails"):
+        raise DemistoException(response_error_details.get("errorMessage"))
+
+    elif formatted_response.get("ServiceResponse", {}).get("count") == "0":
+        return
+
+    elif formatted_response.get("ServiceResponse", {}).get("count") != "0":
+        return formatted_response
+
+    elif path_list := COMMANDS_PARSE_AND_OUTPUT_DATA[command_name]["json_path"]:
+        if len(path_list) == 0:
+            return formatted_response
+        response_requested_value = dict_safe_get(formatted_response, path_list)
+
+        if not response_requested_value:
+            raise ValueError()
+        return response_requested_value
 
 @logger
 def handle_general_result(raw_response: requests.Response, command_name: str) -> object:
@@ -2674,6 +2765,60 @@ def build_tag_asset_output(**kwargs) -> tuple[List[Any], str]:
     )
     return handled_result, readable_output
 
+@logger
+def build_host_asset_output(**kwargs) -> tuple[List[Any], str]:
+    command_parse_and_output_data = kwargs["command_parse_and_output_data"]
+    handled_result = kwargs["handled_result"]
+
+    if human_readable_massage := command_parse_and_output_data.get("human_readable_massage"):
+        readable_output = human_readable_massage
+        return handled_result, readable_output
+
+    table_data = []
+    count = handled_result.get("ServiceResponse", {}).get("count", {})
+
+    if int(count) > 1:
+        for asset in handled_result.get("ServiceResponse", {}).get("data", {}).get("HostAsset", []):
+            table_data.append({
+                "id": asset.get("id"),
+                "name": asset.get("name"),
+                "created": asset.get("created"),
+                "modified": asset.get("modified"),
+                "type": asset.get("type"),
+                "qwebHostId": asset.get("qwebHostId"),
+                "lastVulnScan": asset.get("lastVulnScan"),
+                "networkGuid": asset.get("networkGuid"),
+                "address": asset.get("address"),
+                "trackingMethod": asset.get("trackingMethod"),
+                "isDockerHost": asset.get("isDockerHost"),
+            })
+    else:
+        asset = handled_result.get("ServiceResponse", {}).get("data", {}).get("HostAsset", {})
+        table_data.append({
+                "id": asset.get("id"),
+                "name": asset.get("name"),
+                "created": asset.get("created"),
+                "modified": asset.get("modified"),
+                "type": asset.get("type"),
+                "qwebHostId": asset.get("qwebHostId"),
+                "lastVulnScan": asset.get("lastVulnScan"),
+                "networkGuid": asset.get("networkGuid"),
+                "address": asset.get("address"),
+                "trackingMethod": asset.get("trackingMethod"),
+                "isDockerHost": asset.get("isDockerHost"),
+            })
+
+    if type(handled_result) == dict:
+        readable_output = tableToMarkdown(
+            name=command_parse_and_output_data.get("table_name"),
+            t=table_data,
+            headers=command_parse_and_output_data.get("table_headers"),
+            is_auto_json_transform=True,
+            removeNull=True,
+            headerTransform=pascalToSpace,
+        )
+
+    return handled_result, readable_output
 
 def get_partial_response(response: str, start: str, end: str):
     """ Cut response string from start to end tokens.
@@ -3099,6 +3244,9 @@ def qualys_command_flow_manager(
         # because asset tag requests pass their arguments through request body rather than parameters in the URL suffix,
         # args_values is Nulled in this case.
         result = client.command_http_request(TAG_ASSET_COMMANDS_API_DATA[command_name])
+    elif command_name in HOST_ASSET_COMMANDS_API_DATA:
+        handle_asset_host_request_parameters(args, command_name)
+        result = client.command_http_request(HOST_ASSET_COMMANDS_API_DATA[command_name])
     else:
         # Build the API and internal arguments of the command
         build_args_dict(args, COMMANDS_ARGS_DATA[command_name], False)
@@ -3387,6 +3535,14 @@ def main():  # pragma: no cover
         "qualys-vcenter-esxi-mapped-record-purge": {
             "result_handler": handle_asset_tag_result,
             "output_builder": build_single_text_output,
+        },
+        "qualys-asset-host-delete": {
+            "result_handler": handle_asset_host_result,
+            "output_builder": build_tag_asset_output,
+        },
+        "qualys-asset-host-list": {
+            "result_handler": handle_asset_host_result,
+            "output_builder": build_host_asset_output,
         },
     }
 
