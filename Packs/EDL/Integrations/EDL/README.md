@@ -170,15 +170,8 @@ In order to get the list of all available fields to search by, you can configure
 
 ### Access the Export Indicators Service by Instance Name (HTTPS) - For Cortex XSOAR 6.x only
 
-**Note**: 
-- By default, the route is open without security hardening and might expose you to network risks. Cortex XSOAR recommends that you use credentials to connect to the integration.
-- For Cortex XSOAR 8 and Cortex XSIAM, you can only access the Export Indicators Service using a third-party tool such as cURL.
-   - On a tenant, use https://ext-<cortex-xsoar-address\>/xsoar/instance/execute/\<instance-name\>
-   
-     For example: curl -v -u user:pass https://ext-mytenant.paloaltonetworks.com/xsoar/instance/execute/edl_instance_01\?q\=type:ip
-   - On an engine, use http://\<engine-address\>:\<integration listen port\>/
-     
-     For example: curl -v -u user:pass http://\<engine_address\>:\<listen_port\>/?n=50
+**Note:** By default, the route is open without security hardening and might expose you to network risks. Cortex XSOAR recommends that you use credentials to connect to the integration.
+
 
 To access the Export Indicators service by instance name, make sure ***Instance execute external*** is enabled.
 
@@ -187,6 +180,18 @@ To access the Export Indicators service by instance name, make sure ***Instance 
 3. In a web browser, go to:
     `https://*<xsoar_address>*/instance/execute/*<instance_name>*`
  
+
+### Access EDLs on Cortex XSOAR 8 and Cortex XSIAM
+
+For Cortex XSOAR 8 and Cortex XSIAM, you can only access the Export Indicators Service using a third-party tool such as cURL.
+- On a tenant, use https://ext-<cortex-xsoar-address\>/xsoar/instance/execute/\<instance-name\>
+   
+  For example: curl -v -u user:pass https://ext-mytenant.paloaltonetworks.com/xsoar/instance/execute/edl_instance_01\?q\=type:ip
+- On an engine, use http://\<engine-address\>:\<integration listen port\>/
+     
+  For example: curl -v -u user:pass http://\<engine_address\>:\<listen_port\>/?n=50
+
+For EDLs running on the server in Cortex XSOAR 8, basic authentication is mandatory. For EDLs running on engines, basic authentication is optional but recommended
 
 
 ### URL Inline Arguments
