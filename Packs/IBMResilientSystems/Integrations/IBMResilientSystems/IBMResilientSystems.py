@@ -1601,7 +1601,7 @@ def main():
         elif command == 'rs-list-task-instructions':
             return_results(list_task_instructions_command(client, args))
         elif command == 'get-remote-data':
-            return_results(get_remote_data_command())
+            return_results(get_remote_data_command(client, args))
     except Exception as e:
         LOG(str(e))
         LOG.print_log()
