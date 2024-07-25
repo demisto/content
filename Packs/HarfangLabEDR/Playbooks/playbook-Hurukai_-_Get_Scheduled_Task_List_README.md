@@ -30,4 +30,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Hurukai - Get Scheduled Task List](./doc_files/Hurukai_-_Get_Scheduled_Task_List.png)
+![Hurukai - Get Scheduled Task List](../doc_files/Hurukai_-_Get_Scheduled_Task_List.png)
