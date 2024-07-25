@@ -1529,9 +1529,20 @@ def test_drilldown_enrichment_get_timeframe(mocker, notable_data, expected_call_
        '| from datamodel:"Authentication"."Authentication" | search src="\'test_src\'"'),
       ('View all test involving user="\'test_user\'"',
        'search index="test"\n| where user = "\'test_user\'"')]),
+    ({'event_id': 'test_id3', 'drilldown_searches':
+        ["{\"name\":\"View all login attempts by system $src$\",\"search\":\"| from datamodel:\\\"Authentication\\\".\\\"Authe"
+            "ntication\\\" | search src=$src|s$\",\"earliest_offset\":1715040000,\"latest_offset\":1715126400}",
+            "{\"name\":\"View all test involving user=\\\"$user$\\\"\",\"search\":\"index=\\\"test\\\"\\n| where "
+         "user = $user|s$\",\"earliest_offset\":1716955500,\"latest_offset\":1716959400}"],
+      '_raw': "src=\'test_src\', user='test_user'"},
+     [("View all login attempts by system 'test_src'",
+       '| from datamodel:"Authentication"."Authentication" | search src="\'test_src\'"'),
+      ('View all test involving user="\'test_user\'"',
+       'search index="test"\n| where user = "\'test_user\'"')]),
 ], ids=[
     "A notable data with one drilldown search enrichment",
-    "A notable data with multiple (two) drilldown searches to enrich"
+    "A notable data with two drilldown searches which contained the earlies in 'earliest' key ",
+    "A notable data with two drilldown searches which contained the earlies in 'earliest_offset' key "
 ])
 def test_drilldown_enrichment(notable_data, expected_result):
     """
@@ -2631,6 +2642,37 @@ def test_basic_authentication_param(mocker, username, expected_username, basic_a
 
     assert client.connect.call_args[1]['username'] == expected_username
     assert ('basic' in client.connect.call_args[1]) == basic_auth
+
+
+@pytest.mark.parametrize(argnames='host, expected_base_url', argvalues=[
+    ('8.8.8.8', 'https://8.8.8.8:8089/'),
+    ('https://www.test.com', 'https://www.test.com:8089/'),
+    ('http://www.test.com', 'https://http://www.test.com:8089/'),  # we don't want to silently replace http with https
+])
+def test_base_url(mocker, host, expected_base_url):
+    """
+    Given: - Different host values
+    When:  - Running the splunk-notable-event-edit command
+    Then:  - Ensure the base URL is built as expected
+
+    """
+    mocked_params = {
+        'host': host,
+        'port': '8089',
+        'proxy': 'false',
+        'authentication': {
+            'identifier': 'username',
+            'password': 'test_password'
+        }
+    }
+    mocker.patch.object(demisto, 'command', return_value='splunk-notable-event-edit')
+    mocker.patch.object(demisto, 'params', return_value=mocked_params)
+    mocker.patch.object(client, 'connect')
+
+    cmd = mocker.patch.object(splunk, 'splunk_edit_notable_event_command')
+    splunk.main()
+
+    assert cmd.call_args[0][0] == expected_base_url
 
 
 @pytest.mark.parametrize(
