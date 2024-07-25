@@ -7,7 +7,7 @@ import demistomock as demisto
 
 
 def load_json_file(path):
-    with open(path, 'r') as json_file:
+    with open(path) as json_file:
         return json.load(json_file)
 
 
@@ -17,7 +17,11 @@ def test_parse_all_certificates(datadir):
 
 
 def test_openssl(mocker: MockerFixture, datadir):
-    mocker.patch('subprocess.check_output', return_value=Path(datadir['openssl-github-output.txt']).read_text())
+    process_mock = mocker.MagicMock()
+    certificate = Path(datadir['openssl-github-output.txt']).read_text()
+    process_mock.communicate.return_value = (certificate, None)
+
+    mocker.patch('subprocess.Popen', return_value=process_mock)
     mocker.patch.object(demisto, 'args', return_value={
         'endpoint': 'api.github.com',
         'port': '443',
