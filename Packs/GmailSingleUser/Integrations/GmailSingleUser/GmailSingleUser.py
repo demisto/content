@@ -310,6 +310,7 @@ class Client:
             else:
                 if part['body'].get('attachmentId') is not None:
                     content_id = ""
+                    is_inline = ""
                     attachmentName = part['filename']
                     for header in part.get('headers', []):
                         if header.get('name') == 'Content-ID':
