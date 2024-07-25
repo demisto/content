@@ -3319,6 +3319,10 @@ def script_run_polling_command(args: dict, client: CoreClient) -> PollResult:
             response=None,  # since polling defaults to true, no need to deliver response here
             continue_to_poll=True,  # if an error is raised from the api, an exception will be raised
             partial_result=CommandResults(
+                outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.ScriptRun',
+                outputs_key_field='action_id',
+                outputs=reply,
+                raw_response=response,
                 readable_output=f'Waiting for the script to finish running '
                                 f'on the following endpoints: {endpoint_ids}...'
             ),
