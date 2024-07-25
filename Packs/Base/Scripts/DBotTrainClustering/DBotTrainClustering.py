@@ -151,7 +151,7 @@ class Clustering:
         """
         if not self.TSNE_:
             samples = pd.DataFrame(self.centers).T
-            perplexity = min(30, samples.shape[0] - 1)
+            perplexity = float(min(30, samples.shape[0] - 1))
             tsne = TSNE(perplexity=perplexity, n_jobs=-1, n_components=dimension, learning_rate=1000)
             self.data_2d = tsne.fit_transform(samples)
             for coordinates, center in zip(self.data_2d, pd.DataFrame(self.centers).T.index):
@@ -479,7 +479,7 @@ def json_extract(obj):
     def extract(obj, arr):
         """Recursively search for values of key in JSON tree."""
         if isinstance(obj, dict):
-            for k, v in obj.items():
+            for v in obj.values():
                 if isinstance(v, (dict, list)):
                     extract(v, arr)
                 else:
@@ -923,13 +923,12 @@ def main():
 
     # preprocessor
     transformers_list = [('tfidf' + field, tfidf_pipe, [field]) for field in fields_for_clustering]
-    preprocessor = ColumnTransformer(
-        transformers=transformers_list)
 
     # Model pipeline
-    model = Pipeline(steps=[(PREPROCESSOR_STEP_PIPELINE, preprocessor),
-                            (CLUSTERING_STEP_PIPELINE, Clustering(HDBSCAN_PARAMS))
-                            ])
+    model = Pipeline(steps=[
+        (PREPROCESSOR_STEP_PIPELINE, ColumnTransformer(transformers=transformers_list)),
+        (CLUSTERING_STEP_PIPELINE, Clustering(HDBSCAN_PARAMS))
+    ])
     # Fit of the model on incidents_df and labels
     model.fit(incidents_df, labels)
 

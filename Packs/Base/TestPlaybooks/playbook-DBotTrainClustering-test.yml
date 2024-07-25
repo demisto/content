@@ -77,10 +77,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 78fa7bbb-9db5-4fec-843a-e0fb9f9dc1c2
+    taskid: 6ca89c26-e2d5-4bab-86ff-304cf114a3ba
     type: regular
     task:
-      id: 78fa7bbb-9db5-4fec-843a-e0fb9f9dc1c2
+      id: 6ca89c26-e2d5-4bab-86ff-304cf114a3ba
       version: -1
       name: DBotTrainClustering
       description: Train clustering model on any incident type.
@@ -98,8 +98,6 @@ tasks:
         simple: additionaldata,sourceip
       forceRetrain:
         simple: "True"
-      minNumberofIncidentPerCluster:
-        simple: "3"
       modelName:
         simple: test_model
       overrideExistingModel:
@@ -144,7 +142,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 2470
+          "y": 2295
         }
       }
     note: false
@@ -199,10 +197,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 7526d5b0-a231-415b-8fe8-1da6375a155e
+    taskid: 9506a849-b09a-4661-8271-3be5e3ed3006
     type: regular
     task:
-      id: 7526d5b0-a231-415b-8fe8-1da6375a155e
+      id: 9506a849-b09a-4661-8271-3be5e3ed3006
       version: -1
       name: Create incident 2
       description: commands.local.cmd.create.inc
@@ -217,7 +215,7 @@ tasks:
       accountid:
         simple: "12345"
       additionaldata:
-        simple: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
+        simple: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim
       name:
         simple: Incident 2
       sourceip:
@@ -242,10 +240,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: da2fa93c-0f45-43c2-841d-669dd98f4d19
+    taskid: 0b79b530-3848-420a-8918-32c8fe1f365b
     type: regular
     task:
-      id: da2fa93c-0f45-43c2-841d-669dd98f4d19
+      id: 0b79b530-3848-420a-8918-32c8fe1f365b
       version: -1
       name: Create incident 3
       description: commands.local.cmd.create.inc
@@ -260,7 +258,7 @@ tasks:
       accountid:
         simple: "12345"
       additionaldata:
-        simple: 'labore et dolore magna aliqua. '
+        simple: ' consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum'
       name:
         simple: Incident 3
       sourceip:
@@ -411,10 +409,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: a6a1999a-e64f-4d6e-842f-82643d5f8516
+    taskid: f7b5e81f-69c7-47b6-8953-a1d4f6535352
     type: regular
     task:
-      id: a6a1999a-e64f-4d6e-842f-82643d5f8516
+      id: f7b5e81f-69c7-47b6-8953-a1d4f6535352
       version: -1
       name: Create incident 5
       description: commands.local.cmd.create.inc
@@ -429,7 +427,7 @@ tasks:
       accountid:
         simple: "67890"
       additionaldata:
-        simple: m fugiat quo voluptas nulla pariatur? jhfjksdgf lkjfe hf,ds jlwd rolijrflmrwnfpj lisjfkd
+        simple: ' omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?'
       name:
         simple: Incident 5
       sourceip:
@@ -454,10 +452,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 66267b62-4c83-46a8-829c-37fffcdbbccc
+    taskid: c8175ae6-70c8-4c9d-8f26-29079f08fafd
     type: regular
     task:
-      id: 66267b62-4c83-46a8-829c-37fffcdbbccc
+      id: c8175ae6-70c8-4c9d-8f26-29079f08fafd
       version: -1
       name: Create incident 6
       description: commands.local.cmd.create.inc
@@ -472,7 +470,7 @@ tasks:
       accountid:
         simple: "67890"
       additionaldata:
-        simple: ' nisi ut aliquid ex ea commodi consequatur? lorem ipsum'
+        simple: 'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat '
       name:
         simple: Incident 6
       sourceip:
@@ -536,10 +534,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 8a68bd5c-269b-42cf-8493-67b7a32a7c23
+    taskid: 876bd45b-fdee-46d8-8b63-3f6122a06b2e
     type: regular
     task:
-      id: 8a68bd5c-269b-42cf-8493-67b7a32a7c23
+      id: 876bd45b-fdee-46d8-8b63-3f6122a06b2e
       version: -1
       name: Delete context
       description: |-
@@ -559,7 +557,7 @@ tasks:
       all:
         simple: "no"
       key:
-        simple: ${CreatedIncidentID}
+        simple: CreatedIncidentID
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -589,8 +587,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "17"
-      - "16"
+      - "23"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -680,127 +677,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "16":
-    id: "16"
-    taskid: 09c3cf74-9d87-45bd-85da-593d97fbaec2
-    type: regular
-    task:
-      id: 09c3cf74-9d87-45bd-85da-593d97fbaec2
-      version: -1
-      name: Close incidents group 1
-      description: commands.local.cmd.close.inv
-      script: Builtin|||closeInvestigation
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "23"
-    scriptarguments:
-      id:
-        simple: ${group1}
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 1770
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "17":
-    id: "17"
-    taskid: e310cca2-93fc-4e8e-8197-6f91c722a37e
-    type: regular
-    task:
-      id: e310cca2-93fc-4e8e-8197-6f91c722a37e
-      version: -1
-      name: Close incidents group 2
-      description: commands.local.cmd.close.inv
-      script: Builtin|||closeInvestigation
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "23"
-    scriptarguments:
-      id:
-        simple: ${group2}
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 1770
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "22":
-    id: "22"
-    taskid: 19cb5d6c-4c85-4f16-814a-838c21248410
-    type: regular
-    task:
-      id: 19cb5d6c-4c85-4f16-814a-838c21248410
-      version: -1
-      name: DBotTrainClustering
-      description: Train clustering model on any incident type.
-      scriptName: DBotTrainClustering
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "24"
-    scriptarguments:
-      fieldsForClustering:
-        simple: additionaldata,sourceip
-      forceRetrain:
-        simple: "False"
-      minNumberofIncidentPerCluster:
-        simple: "1"
-      modelName:
-        simple: test_model
-      query:
-        simple: (-status:closed and sourceip:*)
-      type:
-        simple: Simulation
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 2120
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 96bf26bb-8bad-4915-8dc9-e73b449a5306
+    taskid: f7e5aac3-e0a9-479c-85d6-0b57eff215c5
     type: regular
     task:
-      id: 96bf26bb-8bad-4915-8dc9-e73b449a5306
+      id: f7e5aac3-e0a9-479c-85d6-0b57eff215c5
       version: -1
       name: Delete context
       description: |-
@@ -815,10 +697,61 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "22"
+      - "25"
     scriptarguments:
       all:
         simple: "yes"
+      keysToKeep:
+        simple: group1,group2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 5a318006-2407-44eb-8b65-519cc26e49a5
+    type: regular
+    task:
+      id: 5a318006-2407-44eb-8b65-519cc26e49a5
+      version: -1
+      name: DBotTrainClustering
+      description: Train clustering model on any incident type.
+      scriptName: DBotTrainClustering
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      fieldForClusterName:
+        simple: accountid
+      fieldsForClustering:
+        simple: additionaldata,sourceip
+      forceRetrain:
+        simple: "True"
+      modelName:
+        simple: test_model
+      overrideExistingModel:
+        simple: "True"
+      query:
+        simple: (-status:closed  and sourceip:*)
+      storeModel:
+        simple: "True"
+      type:
+        simple: Simulation
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -835,12 +768,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "24":
-    id: "24"
-    taskid: d5e16968-a648-4b8a-8974-9ae455ef8564
+  "26":
+    id: "26"
+    taskid: df78874c-7495-4fdb-81a6-d5cc5be2cb91
     type: condition
     task:
-      id: d5e16968-a648-4b8a-8974-9ae455ef8564
+      id: df78874c-7495-4fdb-81a6-d5cc5be2cb91
       version: -1
       name: Check outputs
       type: condition
@@ -858,33 +791,77 @@ tasks:
             value:
               complex:
                 root: DBotTrainClustering
-                accessor: name
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotTrainClustering.name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "12345"
+                accessor: incidents_ids
                 transformers:
                 - operator: sort
                   args:
                     descending:
                       value:
                         simple: "true"
-                - operator: join
-                  args:
-                    separator:
-                      value:
-                        simple: ','
+                - operator: StringifyArray
             iscontext: true
           right:
             value:
-              simple: 67890,12345
-      - - operator: isNotEmpty
+              complex:
+                root: group1
+                transformers:
+                - operator: sort
+                  args:
+                    descending:
+                      value:
+                        simple: "true"
+                - operator: StringifyArray
+            iscontext: true
+      - - operator: in
           left:
             value:
-              simple: DBotTrainClustering.incidents_ids
+              complex:
+                root: DBotTrainClustering
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotTrainClustering.name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "67890"
+                accessor: incidents_ids
+                transformers:
+                - operator: sort
+                  args:
+                    descending:
+                      value:
+                        simple: "true"
+                - operator: StringifyArray
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: group2
+                transformers:
+                - operator: sort
+                  args:
+                    descending:
+                      value:
+                        simple: "true"
+                - operator: StringifyArray
             iscontext: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 2295
+          "y": 2120
         }
       }
     note: false
@@ -899,7 +876,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2485,
+        "height": 2310,
         "width": 1240,
         "x": 50,
         "y": 50
@@ -908,5 +885,5 @@ view: |-
   }
 inputs: []
 outputs: []
-quiet: true
+fromversion: 6.10.0
 description: ''

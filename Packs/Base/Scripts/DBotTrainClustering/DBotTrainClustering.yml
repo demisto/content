@@ -100,7 +100,7 @@ tags:
 - ml
 timeout: 3.6µs
 type: python
-dockerimage: devdemisto/mlclustering:1.0.0.103528
+dockerimage: devdemisto/mlclustering:1.0.0.105355
 tests:
 - DBotTrainClustering-test
 fromversion: 6.2.0
