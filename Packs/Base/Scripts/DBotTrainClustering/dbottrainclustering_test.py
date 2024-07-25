@@ -119,7 +119,7 @@ FETCHED_INCIDENT_NOT_EMPTY_MULTIPLE_NAME = [
         "entityname": ["powershell", "nmap", "nmap"],
     },
     {
-        "id": "3",
+        "id": "5",
         "created": "2021-01-30",
         "name": "name_3",
         "field_1": "powershell IP=1.1.1.3",
@@ -127,7 +127,7 @@ FETCHED_INCIDENT_NOT_EMPTY_MULTIPLE_NAME = [
         "entityname": ["powershell", "powershell", "nmap"],
     },
     {
-        "id": "4",
+        "id": "6",
         "created": "2021-01-30",
         "name": "name_4",
         "field_1": "nmap port 3",
@@ -166,14 +166,14 @@ FETCHED_INCIDENT_NOT_EMPTY_WITH_NOT_ENOUGH_VALUES = [
         "entityname": "nmap",
     },
     {
-        "id": "3",
+        "id": "5",
         "created": "2021-01-30",
         "field_1": "powershell IP=1.1.1.3",
         "field_2": "",
         "entityname": "powershell",
     },
     {
-        "id": "4",
+        "id": "6",
         "created": "2021-01-30",
         "field_1": "nmap port 3",
         "field_2": "nmap",
@@ -203,7 +203,7 @@ FETCHED_INCIDENT_NOT_EMPTY_SAME_CLUSTER_NAME = [
         "created": "2021-01-30",
         "name": "name_3",
         "field_1": "powershell IP=1.1.1.2",
-        "field_2": "powershell",
+        "field_2": "powershell.exe",
         "entityname": "powershell",
     },
     {
@@ -211,23 +211,23 @@ FETCHED_INCIDENT_NOT_EMPTY_SAME_CLUSTER_NAME = [
         "created": "2021-01-30",
         "name": "name_4",
         "field_1": "nmap port 2",
-        "field_2": "nmap",
+        "field_2": "nmap.exe",
         "entityname": "nmap",
     },
     {
         "id": "5",
         "created": "2021-01-30",
         "name": "name_3",
-        "field_1": "explorer",
-        "field_2": "explorer",
-        "entityname": "nmap",
+        "field_1": "powershell IP=1.1.1.3",
+        "field_2": "powershell.exe",
+        "entityname": "powershell",
     },
     {
         "id": "6",
-        "created": "2021-01-30",
+        "created": "2021-01-20",
         "name": "name_4",
-        "field_1": "explorer",
-        "field_2": "explorer",
+        "field_1": "nmap port 3",
+        "field_2": "nmap.exe",
         "entityname": "nmap",
     },
 ]
@@ -235,17 +235,17 @@ FETCHED_INCIDENT_NOT_EMPTY_SAME_CLUSTER_NAME = [
 FETCHED_INCIDENT_EMPTY = []
 
 sub_dict_0 = {
-    "data": [2],
+    "data": [3],
     "dataType": "incident",
-    "incidents_ids": ["1", "3"],
+    "incidents_ids": ["1", "3", "5"],
     "name": "powershell",
     "query": "type:Phishing",
 }
 
 sub_dict_1 = {
-    "data": [2],
+    "data": [3],
     "dataType": "incident",
-    "incidents_ids": ["2", "4"],
+    "incidents_ids": ["2", "4", "6"],
     "name": "nmap",
     "query": "type:Phishing",
 }
@@ -254,23 +254,25 @@ sub_dict_1 = {
 class PostProcessing:
     def __init__(self, date_training):
         self.date_training = date_training
-        self.json = {"data": "data"}
+        self.json = '{"data": [{"name": "name", "incidents_ids": []}]}'
 
 
 def executeCommand(command, args):
 
-    if command == "GetIncidentsByQuery":
-        return [{"Contents": json.dumps(FETCHED_INCIDENT), "Type": "note"}]
-    elif command == "getMLModel":
-        model = PostProcessing(datetime.now().strftime("%m/%d/%Y %H:%M:%S"))
-        model_data = base64.b64encode(pickle.dumps(model)).decode("utf-8")  # guardrails-disable-line
-        return [
-            {
-                "Contents": {"modelData": model_data},
-                "Type": "note",
-            }
-        ]
-    return None
+    match command:
+        case "GetIncidentsByQuery":
+            return [{"Contents": json.dumps(FETCHED_INCIDENT), "Type": "note"}]
+        case "getMLModel":
+            model = PostProcessing(datetime.now().strftime("%m/%d/%Y %H:%M:%S"))
+            model_data = base64.b64encode(pickle.dumps(model)).decode("utf-8")  # guardrails-disable-line
+            return [
+                {
+                    "Contents": {"modelData": model_data},
+                    "Type": "note",
+                }
+            ]
+        case _:
+            return None
 
 
 def test_preprocess_incidents_field():
@@ -300,9 +302,9 @@ def test_main_regular(mocker):
     cluster_0 = output_json["data"][0]
     cluster_1 = output_json["data"][1]
     assert MESSAGE_INCORRECT_FIELD % "wrong_field" in msg
-    assert cluster_0['incidents_ids'] == ['1', '3']
-    assert cluster_1['incidents_ids'] == ['2', '4']
-    assert all(item in cluster_0.items() for item in sub_dict_0.items())
+    assert cluster_0['incidents_ids'] == ['1', '3', '5']
+    assert cluster_1['incidents_ids'] == ['2', '4', '6']
+    assert all(item in cluster_0.items() for item in sub_dict_0.items()), str([item in cluster_0.items() for item in sub_dict_0.items()])
     assert all(item in cluster_1.items() for item in sub_dict_1.items())
     assert not all(item in cluster_0.items() for item in sub_dict_1.items())
     assert not all(item in cluster_1.items() for item in sub_dict_0.items())
@@ -333,33 +335,32 @@ def test_empty_cluster_name(mocker):
     args = PARAMETERS_DICT | {"fieldsForClustering": "field_1, field_2", "fieldForClusterName": ""}
     mocker.patch.object(demisto, "args", return_value=args)
     sub_dict_0 = {
-        "data": [2],
+        "data": [3],
         "dataType": "incident",
-        "incidents_ids": ["1", "3"],
+        "incidents_ids": ["1", "3", "5"],
         "name": "Cluster 0",
         "query": "type:Phishing",
     }
     sub_dict_1 = {
-        "data": [2],
+        "data": [3],
         "dataType": "incident",
-        "incidents_ids": ["2", "4"],
+        "incidents_ids": ["2", "4", "6"],
         "name": "Cluster 1",
         "query": "type:Phishing",
     }
     mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
 
     model, output_clustering_json, msg = main()
-    
+
     output_json = json.loads(output_clustering_json)
     cluster_0 = output_json["data"][0]
     cluster_1 = output_json["data"][1]
-    cond_1 = all(item in cluster_0.items() for item in sub_dict_0.items()) and all(
-        item in cluster_1.items() for item in sub_dict_1.items()
-    )
-    cond_2 = all(item in cluster_0.items() for item in sub_dict_1.items()) and all(
-        item in cluster_1.items() for item in sub_dict_0.items()
-    )
-    assert cond_1 or cond_2
+    assert cluster_0['incidents_ids'] == ['1', '3', '5']
+    assert cluster_1['incidents_ids'] == ['2', '4', '6']
+    assert all(item in cluster_0.items() for item in sub_dict_0.items())
+    assert all(item in cluster_1.items() for item in sub_dict_1.items())
+    assert not all(item in cluster_0.items() for item in sub_dict_1.items())
+    assert not all(item in cluster_1.items() for item in sub_dict_0.items())
 
 
 # Test if incorrect all incorrrect field name
@@ -391,7 +392,9 @@ def test_missing_too_many_values(mocker):
     }
     mocker.patch.object(demisto, "args", return_value=args)
     mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
+    
     model, output_clustering_json, msg = main()
+    
     assert MESSAGE_INVALID_FIELD % "field_2" in msg
     assert output_clustering_json
     assert model
@@ -411,7 +414,9 @@ def test_main_incident_nested(mocker):
     mocker.patch.object(demisto, "args", return_value=args)
     mocker.patch.object(demisto, "dt", return_value=["nested_val_1", "nested_val_2"])
     mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
+
     model, output_clustering_json, msg = main()
+
     assert model is None
     assert output_clustering_json == {}
     assert MESSAGE_CLUSTERING_NOT_VALID in msg
@@ -428,16 +433,14 @@ def test_model_exist_and_valid(mocker):
     }
     mocker.patch.object(demisto, "args", return_value=args)
     mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
-    model, output_clustering_json, msg = main()
+    _, output_clustering_json, msg = main()
     assert not msg
-    assert output_clustering_json == {"data": "data"}
+    assert output_clustering_json == PostProcessing(None).json
 
 
 # Test to validate that if the model has expired then it will train again
 def test_model_exist_and_expired(mocker):
     global FETCHED_INCIDENT
-    global sub_dict_1
-    global sub_dict_0
     FETCHED_INCIDENT = FETCHED_INCIDENT_NOT_EMPTY
     time = "1e-20"
     args = PARAMETERS_DICT | {
@@ -448,7 +451,7 @@ def test_model_exist_and_expired(mocker):
     }
     mocker.patch.object(demisto, "args", return_value=args)
     mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
-    model, output_clustering_json, msg = main()
+    _, output_clustering_json, _ = main()
     output_json = json.loads(output_clustering_json)
     cluster_0 = output_json["data"][0]
     cluster_1 = output_json["data"][1]
@@ -461,8 +464,6 @@ def test_model_exist_and_expired(mocker):
 # Test if cluster name field has value of type list
 def test_main_name_cluster_is_list(mocker):
     global FETCHED_INCIDENT
-    global sub_dict_1
-    global sub_dict_0
     FETCHED_INCIDENT = FETCHED_INCIDENT_NOT_EMPTY_MULTIPLE_NAME
     args = PARAMETERS_DICT | {
         "fieldsForClustering": "field_1, field_2, wrong_field",
@@ -491,7 +492,6 @@ def test_same_cluster_name(mocker):
     }
     mocker.patch.object(demisto, "args", return_value=args)
     mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
-    model, output_clustering_json, msg = main()
-    clusters_name = [x["clusterName"] for x in model.selected_clusters.values()]
-    assert "nmap" in clusters_name
-    assert "nmap_0" in clusters_name
+    model, *_ = main()
+    cluster_names = [x["clusterName"] for x in model.selected_clusters.values()]
+    assert cluster_names == ['', 'powershell', 'nmap']

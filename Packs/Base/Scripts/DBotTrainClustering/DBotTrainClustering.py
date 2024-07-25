@@ -239,7 +239,7 @@ class PostProcessing:
                 dist_total[cluster_number]['distribution'] = dist
                 cluster_name = ' , '.join(chosen)[:15]
                 if cluster_name in duplicate_family:
-                    new_cluster_name = '%s_%s' % (cluster_name, str(duplicate_family[cluster_name]))
+                    new_cluster_name = f'{cluster_name}_{duplicate_family[cluster_name]}'
                     duplicate_family[cluster_name] += 1
                 else:
                     new_cluster_name = cluster_name
@@ -577,8 +577,7 @@ def create_clusters_json(model_processed: PostProcessing, incidents_df: pd.DataF
     data['range'] = ranges[0]
     data['rangeX'] = ranges[1]
     data['rangeY'] = ranges[2]
-    pretty_json = json.dumps(data, indent=4, sort_keys=True)
-    return pretty_json
+    return json.dumps(data, indent=4, sort_keys=True)
 
 
 def find_incorrect_field(populate_fields: list[str], incidents_df: pd.DataFrame, global_msg: str):
@@ -649,7 +648,7 @@ def create_summary(model_processed: PostProcessing, fields_for_clustering: list[
     return summary
 
 
-def return_entry_clustering(output_clustering: str, tag: str = None) -> None:
+def return_entry_clustering(output_clustering: dict, tag: str = None) -> None:
     """
     Create and return entry with the JSON containing the clusters
     :param output_clustering: json with the cluster
@@ -731,7 +730,7 @@ def remove_not_valid_field(fields_for_clustering: list[str], incidents_df: pd.Da
     :param max_ratio_of_missing_value: max ratio of missing values we accept
     :return: List of valid fields, message
     """
-    missing_values_percentage = incidents_df[fields_for_clustering].applymap(lambda x: x == '').sum(axis=0) / len(
+    missing_values_percentage = incidents_df[fields_for_clustering].map(lambda x: x == '').sum(axis=0) / len(
         incidents_df)
     mask = missing_values_percentage < max_ratio_of_missing_value
     valid_field = mask[mask].index.tolist()
@@ -741,7 +740,7 @@ def remove_not_valid_field(fields_for_clustering: list[str], incidents_df: pd.Da
     return valid_field, global_msg
 
 
-def get_model(model_name):
+def get_model(model_name: str) -> Optional[PostProcessing]:
     """
     Return model
     :param model_name: model_name
@@ -753,13 +752,15 @@ def get_model(model_name):
         return None
     model_base64 = res_model['Contents']['modelData']
     try:
-        return pickle.loads(base64.b64decode(model_base64))  # guardrails-disable-line
+        return cast(PostProcessing, pickle.loads(base64.b64decode(model_base64)) ) # guardrails-disable-line
     except Exception as e:
         demisto.debug(f'Unable to load data: {model_base64}, {e=}')
     return None
 
 
-def is_model_needs_retrain(force_retrain: bool, model_expiration: float, model_name: str):
+def is_model_needs_retrain(
+    force_retrain: bool, model_expiration: float, model_name: str
+) -> tuple[Optional[PostProcessing], bool]:
     """
     Return boolean if the model needs to be retrain based on the expiration of the model and force_retrain argument
     :param force_retrain: boolean if the user chooses to retrain the model in any case
