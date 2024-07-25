@@ -492,7 +492,9 @@ class McAfeeESMClient(BaseClient):
         path = 'notifyGetTriggeredNotificationDetail'
         raw_response = self.__request(path, data={'id': self.args.get('alarmId')})
         result = raw_response
+        demisto.debug(f'McAfee raw response length: {len(raw_response)}')
         result = dict_times_set(result, self.difference)
+        demisto.debug(f'McAfee result after times set len: {len(result)}')
         human_readable: str = ''
         context_entry: List = []
         if 'events' in result:
