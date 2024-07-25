@@ -900,8 +900,8 @@ def get_endpoint_activity_data(
     top = args.get(TOP, EMPTY_STRING)
     select = args.get(SELECT, EMPTY_STRING).split(",")
     query_op = args.get(QUERY_OP, EMPTY_STRING)
-    fetch_all = args.get(FETCH_ALL, EMPTY_STRING)
-    fetch_max_count = int(args.get(FETCH_MAX_COUNT, EMPTY_STRING))
+    fetch_all = args.get(FETCH_ALL, FALSE)
+    fetch_max_count = int(args.get(FETCH_MAX_COUNT, 5000))
     # Choose QueryOp Enum based on user choice
     if query_op.lower() == "or":
         query_op = pytmv1.QueryOp.OR
@@ -914,7 +914,7 @@ def get_endpoint_activity_data(
     # Get the activity count
     count_obj = get_endpoint_activity_data_count(v1_client, args)
     activity_count = int(count_obj.outputs.get("endpoint_activity_count", EMPTY_STRING))  # type: ignore
-    if fetch_all == "true":
+    if fetch_all == TRUE:
         if activity_count > fetch_max_count and fetch_max_count != 0:
             return_error(
                 f"Please refine search, this query returns more than {fetch_max_count} results."
@@ -1032,8 +1032,8 @@ def get_email_activity_data(
     top = args.get(TOP, EMPTY_STRING)
     select = args.get(SELECT, EMPTY_STRING).split(",")
     query_op = args.get(QUERY_OP, EMPTY_STRING)
-    fetch_all = args.get(FETCH_ALL, EMPTY_STRING)
-    fetch_max_count = int(args.get(FETCH_MAX_COUNT, EMPTY_STRING))
+    fetch_all = args.get(FETCH_ALL, FALSE)
+    fetch_max_count = int(args.get(FETCH_MAX_COUNT, 5000))
     # Choose QueryOp Enum based on user choice
     if query_op.lower() == "or":
         query_op = pytmv1.QueryOp.OR
@@ -1047,7 +1047,7 @@ def get_email_activity_data(
     count_obj = get_email_activity_data_count(v1_client, args)
     activity_count = int(count_obj.outputs.get("email_activity_count", EMPTY_STRING))  # type: ignore
     # Check if user would like to fetch all activity
-    if fetch_all == "true":
+    if fetch_all == TRUE:
         if activity_count > fetch_max_count and fetch_max_count != 0:
             return_error(
                 f"Please refine search, this query returns more than {fetch_max_count} results."
