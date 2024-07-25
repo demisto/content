@@ -550,7 +550,7 @@ tasks:
       version: -1
       name: Detonate File - OPSWAT Filescan
       description: Detonates a file using the OPSWAT-Filescan Integration. Returns relevant reports to the War Room and file reputations to the context data.
-      script: OPSWAT Filescan|||opswat-filescan-scan-file
+      script: metadefender-sandbox-scan-file
       type: regular
       iscommand: true
       brand: OPSWAT Filescan
