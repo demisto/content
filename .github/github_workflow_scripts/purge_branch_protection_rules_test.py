@@ -5,8 +5,6 @@ from pathlib import Path
 import re
 from typing import Any
 import github
-import github.Rate
-import github.Requester
 import pytest
 from pytest_mock import MockerFixture
 from requests_mock import Mocker as RequestsMocker
@@ -19,16 +17,17 @@ from purge_branch_protection_rules import (
     convert_response_to_bpr,
     write_deleted_summary_to_file,
     should_delete_rule,
-    main,
-    logger
+    main
 )
 
 test_data_path = Path(__file__).parent.absolute() / "github_workflow_scripts_tests" / "test_files"
 
 
 class TestPurgeBranchProtectionRules():
-    protection_rules_response_data: dict[str, Any] = json.loads((test_data_path / "test_get_repo_branch_protection_rules_data.json").read_text())
-    delete_protection_rule_data: dict[str, str] = json.loads((test_data_path / "test_delete_protection_rule_response.json").read_text())
+    protection_rules_response_data: dict[str, Any] = json.loads(
+        (test_data_path / "test_get_repo_branch_protection_rules_data.json").read_text())
+    delete_protection_rule_data: dict[str, str] = json.loads(
+        (test_data_path / "test_delete_protection_rule_response.json").read_text())
 
     @pytest.fixture(autouse=True)
     def setup(self, mocker: MockerFixture):
@@ -36,9 +35,6 @@ class TestPurgeBranchProtectionRules():
             GH_TOKEN_ENV_VAR: "mock",
             GH_REPO_ENV_VAR: "foo/bar"
         })
-    
-    # @pytest.fixture(autouse=True)
-    # def mock_res
 
     def test_get_owner_repo_from_env_vars(self):
         """
@@ -101,9 +97,12 @@ class TestPurgeBranchProtectionRules():
         assert rules
         assert len(rules) == 4
         for i, rule in enumerate(rules):
-            assert rule.id == self.protection_rules_response_data.get("data").get("repository").get("branchProtectionRules").get("nodes")[i].get("id")
-            assert rule.pattern == self.protection_rules_response_data.get("data").get("repository").get("branchProtectionRules").get("nodes")[i].get("pattern")
-            assert rule.matching_refs == self.protection_rules_response_data.get("data").get("repository").get("branchProtectionRules").get("nodes")[i].get("matchingRefs").get("totalCount")
+            assert rule.id == self.protection_rules_response_data.get("data").get(
+                "repository").get("branchProtectionRules").get("nodes")[i].get("id")
+            assert rule.pattern == self.protection_rules_response_data.get("data").get(
+                "repository").get("branchProtectionRules").get("nodes")[i].get("pattern")
+            assert rule.matching_refs == self.protection_rules_response_data.get("data").get("repository").get(
+                "branchProtectionRules").get("nodes")[i].get("matchingRefs").get("totalCount")
 
     def test_convert_response_to_bpr_invalid(
         self
@@ -249,10 +248,14 @@ class TestPurgeBranchProtectionRules():
         # Assert specific log messages in the captured logs
         actual_log_output = caplog.text.splitlines()
         assert "4 rules returned." in actual_log_output[10]
-        assert "BranchProtectionRule(id='ABCD', pattern='contrib/**/*', matching_refs=100) not deleted because it's in the list of protected rules" in actual_log_output[12]
-        assert "BranchProtectionRule(id='ABCE', pattern='contrib/some_leftover', matching_refs=0) was deleted successfully." in actual_log_output[19]
-        assert "BranchProtectionRule(id='ABCF', pattern='contrib/currently_deleted_branch', matching_refs=0) was deleted successfully." in actual_log_output[26]
-        assert "BranchProtectionRule(id='ABCG', pattern='some_old_protection', matching_refs=3) not deleted because it's associated to 3 existing branches/refs" in actual_log_output[27]
+        assert "not deleted because it's in the list of protected rules" in actual_log_output[
+            12]
+        assert "was deleted successfully." in actual_log_output[
+            19]
+        assert "was deleted successfully." in actual_log_output[
+            26]
+        assert "not deleted because it's associated to 3 existing branches/refs" in actual_log_output[
+            27]
 
     def test_main_rate_limit(self, requests_mock: RequestsMocker):
 

@@ -12,10 +12,7 @@ from pathlib import Path
 import sys
 from typing import Any
 
-from github import Github
 import github
-import github.Rate
-import github.Requester
 
 
 DEFAULT_REPO = "demisto/content"
@@ -103,7 +100,6 @@ def get_repo_owner_and_name() -> tuple[str, str]:
 
 
 def convert_response_to_bpr(response: dict[str, Any]) -> list[BranchProtectionRule]:
-
     """
     Helper method to convert the response to an instance of
     `BranchProtectionRule`.
@@ -122,10 +118,10 @@ def convert_response_to_bpr(response: dict[str, Any]) -> list[BranchProtectionRu
     rules: list[BranchProtectionRule] = []
 
     try:
-        for node in response.get('data').get('repository').get('branchProtectionRules').get('nodes'):
+        for node in response.get('data', {}).get('repository').get('branchProtectionRules').get('nodes'):
             rule = BranchProtectionRule(
                 id=node.get("id"),
-                pattern=node.get("pattern"),
+                pattern=node.get("pattern"),  # ignore: type
                 matching_refs=node.get("matchingRefs").get("totalCount")
             )
 
@@ -166,7 +162,11 @@ def write_deleted_summary_to_file(deleted: list[BranchProtectionRule]) -> None:
     """
 
     if os.getenv(GH_JOB_SUMMARY_ENV_VAR):
-        fp = Path(os.getenv(GH_JOB_SUMMARY_ENV_VAR))
+        fp = Path(str(os.getenv(GH_JOB_SUMMARY_ENV_VAR)))
+
+        if not fp.is_file():
+            logger.warning(f"The env var {GH_JOB_SUMMARY_ENV_VAR} is not set to a file. Not writing summary...")
+            return
 
         header = "## Deleted Branch Protection Rules"
         table_header = "| ID | Pattern | Matching Refs |\n| --- | ------- | ------------- |"
@@ -181,7 +181,8 @@ def write_deleted_summary_to_file(deleted: list[BranchProtectionRule]) -> None:
         fp.write_text(markdown_content)
         logger.debug("Finished writing jobs summary to Markdown to file")
     else:
-        logger.info(f"Environmental variable '{GH_JOB_SUMMARY_ENV_VAR}' not set. Skipping writing job summary for deleted rules...")
+        logger.info(
+            f"Environmental variable '{GH_JOB_SUMMARY_ENV_VAR}' not set. Skipping writing job summary for deleted rules...")
 
 
 def get_token():
@@ -322,7 +323,7 @@ def main():
         logger.info("Authenticating with GitHub...")
         auth = github.Auth.Token(token)
 
-        gh_client = Github(auth=auth)
+        gh_client = github.Github(auth=auth)
         logger.info("Finished authenticating with GitHub")
 
         requester: github.Requester.Requester = gh_client._Github__requester
