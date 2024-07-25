@@ -290,17 +290,17 @@ def test_get_entry_id_list():
 def test_get_entry_id_list_with_attached_file():
     """
         Given
-        - List of the email's attachments
+        - List of the email's attachments - but one attachment is marked as ATTACHED (not inline image)
         - List of files of the email's related incident
         When
         - building an entry id list in order to replace the email's attachments source path.
         Then
-        - Ensures that only the email attachments entry id's were returned and not all files entries
+        - Ensures that the attached file (attachment_1.pdf) is excluded since it is marked as ATTACHED
     """
     from PreprocessEmail import get_entry_id_list
     attachments = [
         {
-            "description": "",
+            "description": "attached_file",
             "name": "attachment_1.pdf",
             "path": "131_dd98957a-d5c3-42e0-8a81-f3ce7fa68215",
             "showMediaFile": False,
@@ -308,14 +308,14 @@ def test_get_entry_id_list_with_attached_file():
         },
         {
             "description": "",
-            "name": "123-attachmentName-image_1.png",
+            "name": "image_1.png",
             "path": "131_dd98957a-d5c3-42e0-8a81-f3ce7fa68215",
             "showMediaFile": False,
             "type": ""
         },
         {
             "description": "",
-            "name": "456-attachmentName-image_2.png",
+            "name": "image_2.png",
             "path": "131_17545998-4b16-4e58-8e6c-2221ada856d4",
             "showMediaFile": False,
             "type": ""
@@ -353,7 +353,7 @@ def test_get_entry_id_list_with_attached_file():
             "Extension": "png",
             "Info": "image/png",
             "MD5": "md5",
-            "Name": "123-attachmentName-image_1.png",
+            "Name": "image_1.png",
             "SHA1": "4sha1",
             "SHA256": "sha256",
             "SHA512": "sha512",
@@ -366,7 +366,7 @@ def test_get_entry_id_list_with_attached_file():
             "Extension": "png",
             "Info": "image/png",
             "MD5": "md5",
-            "Name": "456-attachmentName-image_2.png",
+            "Name": "image_2.png",
             "SHA1": "4sha1",
             "SHA256": "sha256",
             "SHA512": "sha512",
@@ -374,7 +374,7 @@ def test_get_entry_id_list_with_attached_file():
             "Size": 9580,
             "Type": "PNG image data, 264 x 60, 8-bit/color RGBA, non-interlaced"
         }]
-    expected = [('123-attachmentName-image_1.png', '35@119'), ('456-attachmentName-image_2.png', '36@119')]
+    expected = [('image_1.png', '35@119'), ('image_2.png', '36@119')]
     email_html = '<src="cid:456"><src="cid:123">'
     assert expected == get_entry_id_list(attachments, files, email_html)
 
