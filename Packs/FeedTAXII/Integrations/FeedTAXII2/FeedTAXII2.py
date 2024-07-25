@@ -266,15 +266,11 @@ def is_valid_url(url: Optional[str]):
     :param url: str
     :return: boolean whether the url valid or not.
     """
-    if url:
-        demisto.debug("here")
-        if match := re.search(urlRegex, url):
-            demisto.debug("here")
-            group_dict = match.groupdict()
-            demisto.debug(f"{group_dict}")
-            path = group_dict.get("path")
-            if path and ('taxii' in path or 'taxii2' in path):
-                return True
+    if url and (match := re.search(urlRegex, url)):
+        group_dict = match.groupdict()
+        path = group_dict.get("path")
+        if path and ('taxii' in path or 'taxii2' in path):
+            return True
     return False
 
 
