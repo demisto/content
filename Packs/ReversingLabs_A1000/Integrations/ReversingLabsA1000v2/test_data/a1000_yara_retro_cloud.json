@@ -1,0 +1,1 @@
+{"success": true, "message": "Ruleset is saved on the cloud.", "ruleset_name": "test_yara_rule", "status": {"cloud_status": "ACTIVE", "scale_status": "ACTIVE", "retrohunt_status": "CANCELLED", "retrohunt_start_time": null, "retrohunt_finish_time": null, "retrohunt_estimated_finish_time": null, "retrohunt_progress": null, "reason": null}}

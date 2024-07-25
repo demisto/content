@@ -1986,6 +1986,287 @@ script:
     - contextPath: EWS.MailboxAuditBypassAssociation.WhenCreatedUTC
       description: The date in UTC format of when the mailbox audit bypass association was created.
       type: Date
+  - name: ews-export-quarantinemessage
+    arguments:
+    - name: identities
+      description: A comma-separated list of identities of the messages to export.
+      isArray: true
+    - name: identity
+      description: The identity of a single message to export.
+    - name: compress_output
+      auto: PREDEFINED
+      predefined:
+      - 'false'
+      - 'true'
+      description: Specify whether the output should be compressed.
+    - name: entity_type
+      description: The type of entity being exported.
+    - name: force_conversion_to_mime
+      auto: PREDEFINED
+      predefined:
+      - 'false'
+      - 'true'
+      description: Specify whether to force conversion to MIME format.
+    - name: password
+      description: Password to encrypt the exported file.
+    - name: reason_for_export
+      description: Reason for exporting the message.
+    - name: recipient_address
+      description: Email address to send the exported message to.
+    outputs:
+    - contextPath: EWS.ExportQuarantineMessage.BodyEncoding
+      description: Encoding used for the body of the message.
+      type: string
+    - contextPath: EWS.ExportQuarantineMessage.Eml
+      description: The email message in Base64 encoding.
+      type: string
+    - contextPath: EWS.ExportQuarantineMessage.Identity
+      description: Unique identifier for the retrieved message.
+      type: string
+    - contextPath: EWS.ExportQuarantineMessage.Organization
+      description: Identifier for the organization associated with the message.
+      type: string
+    description: Export quarantine messages. Uses PowerShell Export-QuarantineMessage
+      cmdlet.
+    execution: true
+  - name: ews-get-quarantinemessage
+    arguments:
+    - name: identity
+      description: The identity of a single message to retrieve.
+    - name: entity_type
+      description: The type of entity being retrieved.
+    - name: recipient_address
+      description: Email address of the recipient.
+    - name: sender_address
+      description: Email address of the sender.
+    - name: teams_conversation_types
+      description: Types of Teams conversations to retrieve.
+    - name: direction
+      description: Direction of the message (Inbound/Outbound).
+    - name: domain
+      description: Domain associated with the message.
+    - name: end_expires_date
+      description: End date for the message expiration.
+    - name: end_received_date
+      description: End date for when the message was received.
+    - name: include_messages_from_blocked_sender_address
+      auto: PREDEFINED
+      predefined:
+      - 'false'
+      - 'true'
+      description: Include messages from blocked sender addresses.
+    - name: message_id
+      description: ID of the message.
+    - name: my_items
+      auto: PREDEFINED
+      predefined:
+      - 'false'
+      - 'true'
+      description: Include only items belonging to the user.
+    - name: page
+      description: Page number for pagination.
+    - name: page_size
+      description: Number of items per page.
+    - name: policy_name
+      description: Name of the policy associated with the message.
+    - name: policy_types
+      description: Types of policies associated with the message.
+    - name: quarantine_types
+      description: Types of quarantine associated with the message.
+    - name: recipient_tag
+      description: Tag associated with the recipient.
+    - name: release_status
+      description: Release status of the message.
+    - name: reported
+      auto: PREDEFINED
+      predefined:
+      - 'false'
+      - 'true'
+      description: Include only reported messages.
+    - name: start_expires_date
+      description: Start date for the message expiration.
+    - name: start_received_date
+      description: Start date for when the message was received.
+    - name: subject
+      description: Subject of the message.
+    - name: type
+      description: Type of the message.
+    outputs:
+    - contextPath: EWS.GetQuarantineMessage.ApprovalId
+      description: Approval ID of the message.
+      type: string
+    - contextPath: EWS.GetQuarantineMessage.ApprovalUPN
+      description: User Principal Name (UPN) of the approver.
+      type: string
+    - contextPath: EWS.GetQuarantineMessage.CustomData
+      description: Custom data associated with the message.
+      type: unknown
+    - contextPath: EWS.GetQuarantineMessage.DeletedForRecipients
+      description: List of recipients for whom the message was deleted.
+      type: string
+    - contextPath: EWS.GetQuarantineMessage.Direction
+      description: Direction of the message (Inbound/Outbound).
+      type: string
+    - contextPath: EWS.GetQuarantineMessage.EntityType
+      description: Entity type of the message.
+      type: string
+    - contextPath: EWS.GetQuarantineMessage.Expires
+      description: Expiry date of the message.
+      type: date
+    - contextPath: EWS.GetQuarantineMessage.Identity
+      description: Unique identifier for the message.
+      type: string
+    - contextPath: EWS.GetQuarantineMessage.MessageId
+      description: Message ID of the email.
+      type: string
+    - contextPath: EWS.GetQuarantineMessage.MoveToQuarantineAdminActionTakenBy
+      description: Admin action taken by.
+      type: string
+    - contextPath: EWS.GetQuarantineMessage.MoveToQuarantineApprovalId
+      description: Approval ID for moving to quarantine.
+      type: string
+    - contextPath: EWS.GetQuarantineMessage.Organization
+      description: Identifier for the organization associated with the message.
+      type: string
+    - contextPath: EWS.GetQuarantineMessage.OverrideReason
+      description: Reason for overriding the message.
+      type: string
+    - contextPath: EWS.GetQuarantineMessage.OverrideReasonIntValue
+      description: Integer value of the override reason.
+      type: number
+    - contextPath: EWS.GetQuarantineMessage.PermissionToAllowSender
+      description: Permission to allow the sender.
+      type: boolean
+    - contextPath: EWS.GetQuarantineMessage.PermissionToBlockSender
+      description: Permission to block the sender.
+      type: boolean
+    - contextPath: EWS.GetQuarantineMessage.PermissionToDelete
+      description: Permission to delete the message.
+      type: boolean
+    - contextPath: EWS.GetQuarantineMessage.PermissionToDownload
+      description: Permission to download the message.
+      type: boolean
+    - contextPath: EWS.GetQuarantineMessage.PermissionToPreview
+      description: Permission to preview the message.
+      type: boolean
+    - contextPath: EWS.GetQuarantineMessage.PermissionToRelease
+      description: Permission to release the message.
+      type: boolean
+    - contextPath: EWS.GetQuarantineMessage.PermissionToRequestRelease
+      description: Permission to request release of the message.
+      type: boolean
+    - contextPath: EWS.GetQuarantineMessage.PermissionToViewHeader
+      description: Permission to view the header of the message.
+      type: boolean
+    - contextPath: EWS.GetQuarantineMessage.PolicyName
+      description: Name of the policy applied to the message.
+      type: string
+    - contextPath: EWS.GetQuarantineMessage.PolicyType
+      description: Type of the policy applied to the message.
+      type: string
+    - contextPath: EWS.GetQuarantineMessage.QuarantineTypes
+      description: Types of quarantine applied to the message.
+      type: string
+    - contextPath: EWS.GetQuarantineMessage.QuarantinedUser
+      description: List of users quarantined.
+      type: string
+    - contextPath: EWS.GetQuarantineMessage.ReceivedTime
+      description: Time the message was received.
+      type: date
+    - contextPath: EWS.GetQuarantineMessage.RecipientAddress
+      description: List of recipient email addresses.
+      type: string
+    - contextPath: EWS.GetQuarantineMessage.RecipientCount
+      description: Number of recipients.
+      type: number
+    - contextPath: EWS.GetQuarantineMessage.RecipientTag
+      description: Tags associated with the recipient.
+      type: string
+    - contextPath: EWS.GetQuarantineMessage.ReleaseStatus
+      description: Release status of the message.
+      type: string
+    - contextPath: EWS.GetQuarantineMessage.Released
+      description: Whether the message was released.
+      type: boolean
+    - contextPath: EWS.GetQuarantineMessage.ReleasedBy
+      description: List of users who released the message.
+      type: string
+    - contextPath: EWS.GetQuarantineMessage.ReleasedCount
+      description: Number of times the message was released.
+      type: number
+    - contextPath: EWS.GetQuarantineMessage.ReleasedUser
+      description: List of users who released the message.
+      type: string
+    - contextPath: EWS.GetQuarantineMessage.Reported
+      description: Whether the message was reported.
+      type: boolean
+    - contextPath: EWS.GetQuarantineMessage.SenderAddress
+      description: Email address of the sender.
+      type: string
+    - contextPath: EWS.GetQuarantineMessage.Size
+      description: Size of the message in bytes.
+      type: number
+    - contextPath: EWS.GetQuarantineMessage.SourceId
+      description: Source ID of the message.
+      type: string
+    - contextPath: EWS.GetQuarantineMessage.Subject
+      description: Subject of the message.
+      type: string
+    - contextPath: EWS.GetQuarantineMessage.SystemReleased
+      description: Whether the system released the message.
+      type: boolean
+    - contextPath: EWS.GetQuarantineMessage.TagName
+      description: Tag name associated with the message.
+      type: string
+    - contextPath: EWS.GetQuarantineMessage.TeamsConversationType
+      description: Teams conversation type associated with the message.
+      type: string
+    - contextPath: EWS.GetQuarantineMessage.Type
+      description: Type of the message.
+      type: string
+    description: Retrieve quarantine messages. Uses PowerShell Get-QuarantineMessage
+      cmdlet.
+    execution: true
+  - name: ews-release-quarantinemessage
+    arguments:
+    - name: user
+      description: The user associated with the quarantine message.
+    - name: identities
+      description: A comma-separated list of identities of the messages to release.
+      isArray: true
+    - name: identity
+      description: The identity of a single message to release.
+    - name: release_to_all
+      auto: PREDEFINED
+      predefined:
+      - 'false'
+      - 'true'
+      description: Specify whether to release the message to all recipients.
+    - name: allow_sender
+      auto: PREDEFINED
+      predefined:
+      - 'false'
+      - 'true'
+      description: Specify whether to allow the sender.
+    - name: entity_type
+      description: The type of entity being released.
+    - name: force
+      auto: PREDEFINED
+      predefined:
+      - 'false'
+      - 'true'
+      description: Specify whether to force the release.
+    - name: report_false_positive
+      auto: PREDEFINED
+      predefined:
+      - 'false'
+      - 'true'
+      description: Specify whether to report the message as a false positive.
+    - name: action_type
+      description: The type of action to take when releasing the message.
+    description: Release quarantine messages. Uses PowerShell Release-QuarantineMessage
+      cmdlet.
+    execution: true
   - name: ews-remove-tenant-allow-block-list-items
     arguments:
     - name: entries

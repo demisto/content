@@ -1036,20 +1036,51 @@ def parse_drilldown_searches(drilldown_searches: list) -> list[dict]:
         drilldown_searches (list): The list of the drilldown searches.
 
     Returns:
-        list[str]: A list of the drilldown searches dictionaries.
+        list[dict]: A list of the drilldown searches dictionaries.
     """
     demisto.debug("There are multiple drilldown searches to enrich, parsing each drilldown search object")
     searches = []
 
     for drilldown_search in drilldown_searches:
         try:
+            # drilldown_search may be a json list/dict represented as string
             search = json.loads(drilldown_search)
-            searches.append(search)
+            if isinstance(search, list):
+                searches.extend(search)
+            else:
+                searches.append(search)
         except json.JSONDecodeError as e:
             demisto.error(f"Caught an exception while parsing a drilldown search object."
                           f"Drilldown search is: {drilldown_search}, Original Error is: {str(e)}")
 
     return searches
+
+
+def get_drilldown_searches(notable_data):
+    """ Extract the drilldown_searches from the notable_data.
+    It can be a list of objects, a single object or a simple string that contains the query.
+
+    Args:
+        notable_data (dict): The notable data
+
+    Returns: A list that contains dict/s of the drilldown data like: name, search etc or the simple search query.
+    """
+    # Multiple drilldown searches is a feature added to Enterprise Security v7.2.0.
+    # from this version, if a user set a drilldown search, we get a list of drilldown search objects (under
+    # the 'drilldown_searches' key) and submit a splunk enrichment for each one of them.
+    # To maintain backwards compatibility we keep using the 'drilldown_search' key as well.
+
+    if drilldown_search := notable_data.get("drilldown_search"):
+        # The drilldown_searches are in 'old' format a simple string query.
+        return [drilldown_search]
+    if drilldown_search := notable_data.get("drilldown_searches", []):
+        if isinstance(drilldown_search, list):
+            # The drilldown_searches are a list of searches data stored as json strings:
+            return parse_drilldown_searches(drilldown_search)
+        else:
+            # The drilldown_searches are a dict/list of the search data in a JSON string representation.
+            return parse_drilldown_searches([drilldown_search])
+    return []
 
 
 def drilldown_enrichment(service: client.Service, notable_data, num_enrichment_events) -> list[tuple[str, str, client.Job]]:
@@ -1066,20 +1097,8 @@ def drilldown_enrichment(service: client.Service, notable_data, num_enrichment_e
     """
     jobs_and_queries = []
     demisto.debug(f"notable data is: {notable_data}")
-    if drilldown_search := ((notable_data.get("drilldown_search")) or argToList(notable_data.get("drilldown_searches", []))):
-        # Multiple drilldown searches is a feature added to Enterprise Security v7.2.0.
-        # If a user set more than one drilldown search, we get a list of drilldown search objects (under
-        # the 'drilldown_searches' key) and submit a splunk enrichment for each one of them.
-        # To maintain backwards compatibility we keep using the 'drilldown_search' key as well.
+    if searches := get_drilldown_searches(notable_data):
         raw_dict = rawToDict(notable_data.get("_raw", ""))
-
-        if isinstance(drilldown_search, list):
-            # There are multiple drilldown searches to enrich
-            searches = parse_drilldown_searches(drilldown_search)
-
-        else:
-            # Got a single drilldown search (BC)
-            searches = [drilldown_search]
 
         total_searches = len(searches)
         demisto.debug(f'Notable {notable_data[EVENT_ID]} has {total_searches} drilldown searches to enrich')
@@ -1092,8 +1111,8 @@ def drilldown_enrichment(service: client.Service, notable_data, num_enrichment_e
             if isinstance(search, dict):
                 query_name = search.get("name", "")
                 query_search = search.get("search", "")
-                earliest_offset = search.get("earliest", "")  # The earliest time to query from.
-                latest_offset = search.get("latest", "")  # The latest time to query to.
+                earliest_offset = search.get("earliest") or search.get("earliest_offset", "")  # The earliest time to query from.
+                latest_offset = search.get("latest") or search.get("latest_offset", "")  # The latest time to query to.
 
             else:
                 # Got a single drilldown search under the 'drilldown_search' key (BC)
@@ -1142,7 +1161,7 @@ def drilldown_enrichment(service: client.Service, notable_data, num_enrichment_e
                 )
                 jobs_and_queries.append((None, None, None))
     else:
-        demisto.debug(f"drill-down was not configured for notable {notable_data[EVENT_ID]}")
+        demisto.debug(f"drill-down was not properly configured for notable {notable_data[EVENT_ID]}")
         jobs_and_queries.append((None, None, None))
 
     return jobs_and_queries
@@ -1642,7 +1661,7 @@ def update_remote_system_command(args, params, service: client.Service, auth_tok
     delta = parsed_args.delta
     notable_id = parsed_args.remote_incident_id
     entries = parsed_args.entries
-    base_url = 'https://' + params['host'] + ':' + params['port'] + '/'
+    base_url = f"https://{params['host'].replace('https://', '')}:{params['port']}/"
     demisto.debug(f"mirroring args: entries:{parsed_args.entries} delta:{parsed_args.delta}")
     if parsed_args.incident_changed and delta:
         demisto.debug(
@@ -3028,7 +3047,7 @@ def main():  # pragma: no cover
 
     connection_args = get_connection_args(params)
 
-    base_url = 'https://' + params['host'] + ':' + params['port'] + '/'
+    base_url = f"https://{params['host'].replace('https://', '')}:{params['port']}/"
     auth_token = None
     username = params['authentication']['identifier']
     password = params['authentication']['password']
