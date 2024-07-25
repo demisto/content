@@ -1,0 +1,1646 @@
+id: CiscoMerakiv2
+version: 11
+vcShouldKeepItemLegacyProdMachine: false
+name: CiscoMerakiv2
+starttaskid: "0"
+fromversion: 5.0.0
+tasks:
+  "0":
+    id: "0"
+    taskid: 2bd19577-a919-4cdf-8453-1beecc323d46
+    type: start
+    task:
+      id: 2bd19577-a919-4cdf-8453-1beecc323d46
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: d7361b80-8c5a-4901-8aa0-7e8691791433
+    type: regular
+    task:
+      id: d7361b80-8c5a-4901-8aa0-7e8691791433
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: c5843d3a-4cec-4279-88de-da0854389824
+    type: regular
+    task:
+      id: c5843d3a-4cec-4279-88de-da0854389824
+      version: -1
+      name: meraki-organization-list
+      script: Cisco Meraki v2|||meraki-organization-list
+      type: regular
+      iscommand: true
+      brand: Cisco Meraki v2
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      limit:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: e28abad5-be03-4ccc-893b-7381a7d2d51b
+    type: condition
+    task:
+      id: e28abad5-be03-4ccc-893b-7381a7d2d51b
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoMeraki.Organization.id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 76513068-da9f-49a1-8c0b-b23ebac15274
+    type: regular
+    task:
+      id: 76513068-da9f-49a1-8c0b-b23ebac15274
+      version: -1
+      name: meraki-network-list
+      script: Cisco Meraki v2|||meraki-network-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 6f06a969-f9aa-4dfd-831d-0eedd4388bde
+    type: condition
+    task:
+      id: 6f06a969-f9aa-4dfd-831d-0eedd4388bde
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoMeraki.Network.id
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: eb198874-e5fe-47df-8608-8d30e1fcfb3d
+    type: regular
+    task:
+      id: eb198874-e5fe-47df-8608-8d30e1fcfb3d
+      version: -1
+      name: meraki-organization-license-state-list
+      script: Cisco Meraki v2|||meraki-organization-license-state-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 2c6e5de4-a844-4c4b-8260-4890d552a905
+    type: condition
+    task:
+      id: 2c6e5de4-a844-4c4b-8260-4890d552a905
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoMeraki.LicenseState.organizationId
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 0fe06100-aef1-419d-8214-69d9ee6a4f7b
+    type: regular
+    task:
+      id: 0fe06100-aef1-419d-8214-69d9ee6a4f7b
+      version: -1
+      name: meraki-organization-inventory-list
+      script: Cisco Meraki v2|||meraki-organization-inventory-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 971cafe8-256c-4dbf-8714-908359729b6e
+    type: condition
+    task:
+      id: 971cafe8-256c-4dbf-8714-908359729b6e
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoMeraki.Inventory.mac
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoMeraki.Inventory.serial
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: fc84cbf2-462e-4b12-8433-6b9481bfb9c6
+    type: regular
+    task:
+      id: fc84cbf2-462e-4b12-8433-6b9481bfb9c6
+      version: -1
+      name: meraki-organization-device-search
+      script: Cisco Meraki v2|||meraki-organization-device-search
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: d171bbbe-ff1b-4c37-80eb-fb8a07ce3aff
+    type: condition
+    task:
+      id: d171bbbe-ff1b-4c37-80eb-fb8a07ce3aff
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoMeraki.Device.address
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoMeraki.Device.mac
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: ba167255-a1b9-4411-829d-6cde790ee49b
+    type: regular
+    task:
+      id: ba167255-a1b9-4411-829d-6cde790ee49b
+      version: -1
+      name: meraki-device-list
+      script: Cisco Meraki v2|||meraki-device-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 897996e6-6ed9-4dfc-8cb9-fd10a914941d
+    type: condition
+    task:
+      id: 897996e6-6ed9-4dfc-8cb9-fd10a914941d
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoMeraki.Device.address
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoMeraki.Device.mac
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoMeraki.Device.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoMeraki.Device.networkId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoMeraki.Device.serial
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 86b6a588-9cdb-4e87-81e2-8298bf174742
+    type: regular
+    task:
+      id: 86b6a588-9cdb-4e87-81e2-8298bf174742
+      version: -1
+      name: meraki-device-status-list
+      script: Cisco Meraki v2|||meraki-device-status-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 199f35cd-a915-4451-873f-c9acf08e736b
+    type: condition
+    task:
+      id: 199f35cd-a915-4451-873f-c9acf08e736b
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoMeraki.DeviceStatus.mac
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoMeraki.DeviceStatus.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoMeraki.DeviceStatus.networkId
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: cb6576e1-e6c9-4a5c-8a6d-1e8440e4a4ca
+    type: regular
+    task:
+      id: cb6576e1-e6c9-4a5c-8a6d-1e8440e4a4ca
+      version: -1
+      name: meraki-organization-uplink-status-list
+      script: Cisco Meraki v2|||meraki-organization-uplink-status-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 20386bbd-6882-44a7-8926-8b4aeedc7cf7
+    type: regular
+    task:
+      id: 20386bbd-6882-44a7-8926-8b4aeedc7cf7
+      version: -1
+      name: meraki-network-client-list
+      script: Cisco Meraki v2|||meraki-network-client-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 8cbf10b0-f038-4305-8094-a517a0cf9f46
+    type: condition
+    task:
+      id: 8cbf10b0-f038-4305-8094-a517a0cf9f46
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "27"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoMeraki.NetworkClient.mac
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 641612cf-7e37-47fb-8b42-df32852826f0
+    type: regular
+    task:
+      id: 641612cf-7e37-47fb-8b42-df32852826f0
+      version: -1
+      name: meraki-device-client-list
+      script: Cisco Meraki v2|||meraki-device-client-list
+      type: regular
+      iscommand: true
+      brand: Cisco Meraki v2
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      serial:
+        simple: ${CiscoMeraki.Device.serial}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 52dc2b97-aa39-4237-89c5-7891ce1ed2b2
+    type: condition
+    task:
+      id: 52dc2b97-aa39-4237-89c5-7891ce1ed2b2
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "29"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoMeraki.DeviceClient.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoMeraki.DeviceClient.mac
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 44a57fc7-4f27-4061-8cac-05db5e819323
+    type: regular
+    task:
+      id: 44a57fc7-4f27-4061-8cac-05db5e819323
+      version: -1
+      name: meraki-ssid-appliance-list
+      script: Cisco Meraki v2|||meraki-ssid-appliance-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 55910059-a9e8-4022-86b3-3c3975a68a71
+    type: condition
+    task:
+      id: 55910059-a9e8-4022-86b3-3c3975a68a71
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "31"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoMeraki.SSID.Appliance.number
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: a8639149-cf33-4963-8dde-8de95b6ca69e
+    type: regular
+    task:
+      id: a8639149-cf33-4963-8dde-8de95b6ca69e
+      version: -1
+      name: meraki-ssid-wireless-list
+      script: Cisco Meraki v2|||meraki-ssid-wireless-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 71993d29-e591-4490-8cd9-1e5c2b247c5e
+    type: condition
+    task:
+      id: 71993d29-e591-4490-8cd9-1e5c2b247c5e
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "33"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoMeraki.SSID.Wireless.number
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 1f0ba634-66ae-49ba-89a9-1f6b01eabf79
+    type: regular
+    task:
+      id: 1f0ba634-66ae-49ba-89a9-1f6b01eabf79
+      version: -1
+      name: meraki-network-l3firewall-rule-list
+      script: Cisco Meraki v2|||meraki-network-l3firewall-rule-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 555e32f0-ec9a-4bc2-8f23-59cfe47b0f2a
+    type: condition
+    task:
+      id: 555e32f0-ec9a-4bc2-8f23-59cfe47b0f2a
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "38"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoMeraki.L3FirewallRule.networkId
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 0dfdb7ea-086f-4b40-82cd-52e66a16ba7d
+    type: regular
+    task:
+      id: 0dfdb7ea-086f-4b40-82cd-52e66a16ba7d
+      version: -1
+      name: meraki-network-l7firewall-rule-list
+      script: Cisco Meraki v2|||meraki-network-l7firewall-rule-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: adf7e913-0d8d-47f9-810d-b7662e42f455
+    type: condition
+    task:
+      id: adf7e913-0d8d-47f9-810d-b7662e42f455
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "45"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoMeraki.L7FirewallRule.networkId
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: 6c9f7c18-cf5e-4260-83f8-a85d99576630
+    type: regular
+    task:
+      id: 6c9f7c18-cf5e-4260-83f8-a85d99576630
+      version: -1
+      name: meraki-organization-adaptive-policy-list
+      script: Cisco Meraki v2|||meraki-organization-adaptive-policy-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "46"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: 5fabdb91-5ae8-4430-89e1-a3b65d3b18f7
+    type: condition
+    task:
+      id: 5fabdb91-5ae8-4430-89e1-a3b65d3b18f7
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "47"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoMeraki.AdaptivePolicy.adaptivePolicyId
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: a18621f1-d563-440e-8650-dea60de2b961
+    type: regular
+    task:
+      id: a18621f1-d563-440e-8650-dea60de2b961
+      version: -1
+      name: meraki-organization-adaptive-policy-group-list
+      script: Cisco Meraki v2|||meraki-organization-adaptive-policy-group-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "48"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: 014a550b-a615-455e-8fc9-15d300cb36b8
+    type: condition
+    task:
+      id: 014a550b-a615-455e-8fc9-15d300cb36b8
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "49"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoMeraki.AdaptivePolicyGroup.groupId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoMeraki.AdaptivePolicyGroup.name
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: bb412869-195c-4ea2-8bbb-e21d18bf56d8
+    type: regular
+    task:
+      id: bb412869-195c-4ea2-8bbb-e21d18bf56d8
+      version: -1
+      name: meraki-organization-adaptive-policy-settings-list
+      script: Cisco Meraki v2|||meraki-organization-adaptive-policy-settings-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "50"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: 3cdeb672-15a6-4755-83f2-8ac03dc8bc11
+    type: condition
+    task:
+      id: 3cdeb672-15a6-4755-83f2-8ac03dc8bc11
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "51"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoMeraki.AdaptivePolicySettings.organizationId
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: 6d9c2164-72c3-4030-8c04-7d5457f31cb9
+    type: regular
+    task:
+      id: 6d9c2164-72c3-4030-8c04-7d5457f31cb9
+      version: -1
+      name: meraki-organization-branding-policy-list
+      script: Cisco Meraki v2|||meraki-organization-branding-policy-list
+      type: regular
+      iscommand: true
+      brand: Cisco Meraki v2
+    nexttasks:
+      '#none#':
+      - "53"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "53":
+    id: "53"
+    taskid: 889b452a-6efb-4969-8706-6ad02bae085f
+    type: regular
+    task:
+      id: 889b452a-6efb-4969-8706-6ad02bae085f
+      version: -1
+      name: meraki-network-group-policy-list
+      script: Cisco Meraki v2|||meraki-network-group-policy-list
+      type: regular
+      iscommand: true
+      brand: Cisco Meraki v2
+    nexttasks:
+      '#none#':
+      - "54"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: aa25682e-ec38-47c8-87c1-1942f7467a84
+    type: condition
+    task:
+      id: aa25682e-ec38-47c8-87c1-1942f7467a84
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "55"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoMeraki.GroupPolicy.groupPolicyId
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoMeraki.GroupPolicy.name
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: 909c0db5-2be3-49a1-8237-e7ab6f10df18
+    type: regular
+    task:
+      id: 909c0db5-2be3-49a1-8237-e7ab6f10df18
+      version: -1
+      name: meraki-network-client-policy-list
+      script: Cisco Meraki v2|||meraki-network-client-policy-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "56"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: bb55f069-5ba3-4789-83dc-bfe50ff5ecc1
+    type: condition
+    task:
+      id: bb55f069-5ba3-4789-83dc-bfe50ff5ecc1
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "57"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoMeraki.ClientPolicy.clientId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoMeraki.ClientPolicy.name
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: 9b7be39b-f47a-4169-88aa-2e75433b4ff1
+    type: regular
+    task:
+      id: 9b7be39b-f47a-4169-88aa-2e75433b4ff1
+      version: -1
+      name: meraki-network-vlan-profile-list
+      script: Cisco Meraki v2|||meraki-network-vlan-profile-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "58"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: dee1e42e-ec51-449c-8d98-c54da80a02d9
+    type: condition
+    task:
+      id: dee1e42e-ec51-449c-8d98-c54da80a02d9
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "59"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoMeraki.VlanProfile.iname
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoMeraki.VlanProfile.name
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "59":
+    id: "59"
+    taskid: e01820e4-b35c-4d06-83d7-8ff2d10408e8
+    type: regular
+    task:
+      id: e01820e4-b35c-4d06-83d7-8ff2d10408e8
+      version: -1
+      name: meraki-network-appliance-vlan-list
+      script: Cisco Meraki v2|||meraki-network-appliance-vlan-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "60"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: 1ec4c738-a21e-46ac-8b79-a15267cbbc93
+    type: condition
+    task:
+      id: 1ec4c738-a21e-46ac-8b79-a15267cbbc93
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "61"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoMeraki.ApplianceVlan.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoMeraki.ApplianceVlan.name
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "61":
+    id: "61"
+    taskid: b7c98af3-5a96-4f0c-8e96-c8067ee0018e
+    type: title
+    task:
+      id: b7c98af3-5a96-4f0c-8e96-c8067ee0018e
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 10665,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
