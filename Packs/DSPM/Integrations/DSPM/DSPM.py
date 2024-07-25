@@ -272,6 +272,14 @@ def get_risk_findings_command(client: Client, args: dict[str, Any], page: int) -
     statusEqual = args.get('statusEqual', '')
     validate_parameter_list_and_equal("status", statusIn, statusEqual, SUPPORTED_STATUS)
 
+    # Check supported sorting order
+    sort_order = args.get('sort')
+    if sort_order:
+        pattern = r'^.*,(ASC|DESC)$'
+        matches = re.findall(pattern, sort_order, re.IGNORECASE)  # type: ignore
+        if not matches:
+            raise ValueError(f'This "{sort_order}" sorting order is not supported')
+
     params = {
         "ruleName.in": args.get('ruleNameIn'),
         "ruleName.equals": args.get('ruleNameEqual'),
@@ -372,8 +380,11 @@ def get_list_of_assets(client: Client, args: dict[str, Any], page: int) -> List[
 
     # Check supported sorting order
     sort_order = args.get('sort')
-    if sort_order and sort_order.upper() not in SORTING_ORDER:
-        raise ValueError(f'This "{sort_order}" sorting order is not supported')
+    if sort_order:
+        pattern = r'^.*,(ASC|DESC)$'
+        matches = re.findall(pattern, sort_order, re.IGNORECASE)  # type: ignore
+        if not matches:
+            raise ValueError(f'This "{sort_order}" sorting order is not supported')
 
     params = {
         "region.in": args.get('regionIn'),
@@ -463,14 +474,14 @@ def get_asset_files_by_id(client: Client, args: dict[str, Any]) -> CommandResult
         files = response.get('files', [])
         files_count = response.get('filesCount', 0)
 
-        return_results(CommandResults(
+        return CommandResults(
             outputs_prefix='DSPM.AssetFiles',
             outputs_key_field='filename',
             outputs={
                 'files': files,
                 'filesCount': files_count
             }
-        ))
+        )
 
 
 def get_data_types_command(client: Client) -> CommandResults:
@@ -519,10 +530,13 @@ def get_data_type_findings(client: Client, args: dict[str, Any], page: int) -> L
     lifecycleEqual = args.get('lifecycleEqual', '')
     validate_parameter_list_and_equal("lifecycle", lifecycleIn, lifecycleEqual, SUPPORTED_LIFECYCLE)
 
-    # check supported sorting order
+    # Check supported sorting order
     sort_order = args.get('sort')
-    if sort_order and sort_order.upper() not in SORTING_ORDER:
-        raise ValueError(f'This "{sort_order}" sorting order is not supported')
+    if sort_order:
+        pattern = r'^.*,(ASC|DESC)$'
+        matches = re.findall(pattern, sort_order, re.IGNORECASE)  # type: ignore
+        if not matches:
+            raise ValueError(f'This "{sort_order}" sorting order is not supported')
 
     params = {
         "region.in": args.get('regionIn'),
@@ -967,7 +981,18 @@ def main() -> None:
             while True:
                 assets = get_list_of_assets(client, demisto.args(), page)
                 if not assets:
-                    break  # No more assets to fetch
+                    if page == 0:
+                        readable_output = (
+                            "### List of assets\n"
+                            "**No entries.**\n"
+                        )
+                        return_results(CommandResults(
+                            outputs_prefix='DSPM.Assets',
+                            outputs_key_field='id',
+                            outputs=[],
+                            readable_output=readable_output
+                        ))
+                    break
 
                 return_results(CommandResults(
                     outputs_prefix='DSPM.Assets',
