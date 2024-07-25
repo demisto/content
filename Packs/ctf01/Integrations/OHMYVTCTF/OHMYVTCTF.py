@@ -4,7 +4,7 @@ from CommonServerPython import *
 """
 An integration module for the Virus Total v3 API.
 API Documentation:
-    https://docs.virustotal.com/reference/overview
+    https://developers.virustotal.com/v3.0/reference
 """
 
 
