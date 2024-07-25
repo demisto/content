@@ -8,7 +8,8 @@ import json
 import pytest
 
 from CommonServerPython import DemistoException
-from MicrosoftDefenderAdvancedThreatProtection import MsClient, get_future_time, build_std_output, parse_ip_addresses, \
+from MicrosoftDefenderAdvancedThreatProtection import MsClient, get_future_time, build_std_output, get_machine_by_ip_command, \
+    parse_ip_addresses, \
     print_ip_addresses, get_machine_details_command, run_polling_command, run_live_response_script_action, \
     get_live_response_file_action, put_live_response_file_action, HuntingQueryBuilder, assign_params, \
     get_machine_users_command, get_machine_alerts_command, get_advanced_hunting_command, create_filters_conjunction, \
@@ -85,6 +86,34 @@ def test_third_fetch_incidents(mocker):
                                                    'existing_ids': ['da637029413772554314_295039533']}, False)
     assert incidents[0].get('name') == \
         'Microsoft Defender ATP Alert da637029414680409372_735564929'
+
+
+test_get_machine_by_ip_data = [
+    ({'ip': '8.8.8.8', 'timestamp': '2024-05-19T01:00:05Z', 'all_results': 'True'},  # case no limit and all_results is True
+     '8.8.8.8', '2024-05-19T01:00:05Z', [{'a': 'b'}, {'c': 'd'}, {'e': 'f'}]),  # expected two machines
+    ({'ip': '8.8.8.8', 'timestamp': '2024-05-19T01:00:05Z', 'limit': '1'},  # case with limit
+     '8.8.8.8', '2024-05-19T01:00:05Z', [{'a': 'b'}])  # expected only 1 machine
+]
+
+
+@pytest.mark.parametrize('params, ip, timestamp, expected', test_get_machine_by_ip_data)
+def test_get_machine_by_ip_with_limit(mocker, params, ip, timestamp, expected):
+    """
+    Given:
+        -A limit argument.
+    When:
+        -running get-machine-by-ip command.
+    Then:
+        -The number of machines returned is not grater than the limit and http request is called with the right args.
+    """
+    from MicrosoftDefenderAdvancedThreatProtection import MsClient
+    raw_response = {'value': [{'a': 'b'}, {'c': 'd'}, {'e': 'f'}]}
+    mock_get_machines = mocker.patch.object(
+        MsClient, 'get_machines_for_get_machine_by_ip_command', return_value=raw_response)
+    mock_handle_machines = mocker.patch("MicrosoftDefenderAdvancedThreatProtection.handle_machines")
+    get_machine_by_ip_command(client_mocker, params)
+    assert mock_get_machines.call_args.args[0] == f"(ip='{ip}',timestamp={timestamp})"
+    assert mock_handle_machines.call_args.args[0] == expected
 
 
 def test_get_alert_related_ips_command(mocker):
