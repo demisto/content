@@ -21,6 +21,7 @@ urllib3.disable_warnings()
 INTEGRATION_NAME = 'CrowdStrike Falcon'
 IDP_DETECTION = "IDP detection"
 MOBILE_DETECTION = "MOBILE detection"
+ENDPOINT_DETECTION = 'detection'
 IDP_DETECTION_FETCH_TYPE = "IDP Detection"
 MOBILE_DETECTION_FETCH_TYPE = "Mobile Detection"
 ON_DEMAND_SCANS_DETECTION_TYPE = "On-Demand Scans Detection"
@@ -318,8 +319,8 @@ SCHEDULE_INTERVAL_STR_TO_INT = {
 
 class IncidentType(Enum):
     INCIDENT = 'inc'
-    DETECTION = 'ldt'
-    IDP_OR_MOBILE_DETECTION = ':ind:'
+    LEGACY_ENDPOINT_DETECTION = 'ldt'
+    ENDPOINT_OR_IDP_OR_MOBILE_DETECTION = ':ind:'
     IOM_CONFIGURATIONS = 'iom_configurations'
     IOA_EVENTS = 'ioa_events'
     ON_DEMAND = 'ods'
@@ -2413,15 +2414,15 @@ def get_remote_data_command(args: dict[str, Any]):
             if updated_object:
                 demisto.debug(f'Update incident {remote_incident_id} with fields: {updated_object}')
                 set_xsoar_incident_entries(updated_object, entries, remote_incident_id, reopen_statuses_list)  # sets in place
-
-        elif incident_type == IncidentType.DETECTION:
+        # for legacy endpoint detections
+        elif incident_type == IncidentType.LEGACY_ENDPOINT_DETECTION:
             mirrored_data, updated_object = get_remote_detection_data(remote_incident_id)
             if updated_object:
                 demisto.debug(f'Update detection {remote_incident_id} with fields: {updated_object}')
                 set_xsoar_detection_entries(updated_object, entries, remote_incident_id, reopen_statuses_list)  # sets in place
-
-        elif incident_type == IncidentType.IDP_OR_MOBILE_DETECTION:
-            mirrored_data, updated_object, detection_type = get_remote_idp_or_mobile_detection_data(remote_incident_id)
+        # for endpoint (in the new version) ,idp and mobile detections
+        elif incident_type == IncidentType.ENDPOINT_OR_IDP_OR_MOBILE_DETECTION:
+            mirrored_data, updated_object, detection_type = get_remote_epp_or_idp_or_mobile_detection_data(remote_incident_id)
             if updated_object:
                 demisto.debug(f'Update {detection_type} detection {remote_incident_id} with fields: {updated_object}')
                 set_xsoar_idp_or_mobile_detection_entries(
@@ -2454,10 +2455,10 @@ def get_remote_data_command(args: dict[str, Any]):
 def find_incident_type(remote_incident_id: str):
     if IncidentType.INCIDENT.value in remote_incident_id:
         return IncidentType.INCIDENT
-    if IncidentType.DETECTION.value in remote_incident_id:
-        return IncidentType.DETECTION
-    if IncidentType.IDP_OR_MOBILE_DETECTION.value in remote_incident_id:
-        return IncidentType.IDP_OR_MOBILE_DETECTION
+    if IncidentType.LEGACY_ENDPOINT_DETECTION.value in remote_incident_id:
+        return IncidentType.LEGACY_ENDPOINT_DETECTION
+    if IncidentType.ENDPOINT_OR_IDP_OR_MOBILE_DETECTION.value in remote_incident_id:
+        return IncidentType.ENDPOINT_OR_IDP_OR_MOBILE_DETECTION
     if IncidentType.ON_DEMAND.value in remote_incident_id:
         return IncidentType.ON_DEMAND
     demisto.debug(f"Unable to determine incident type for remote incident id: {remote_incident_id}")
@@ -2501,23 +2502,23 @@ def get_remote_detection_data(remote_incident_id: str):
     return mirrored_data, updated_object
 
 
-def get_remote_idp_or_mobile_detection_data(remote_incident_id):
+def get_remote_epp_or_idp_or_mobile_detection_data(remote_incident_id):
     """
-        Gets the relevant IDP or Mobile detection entity from the remote system (CrowdStrike Falcon).
+        Gets the relevant Endpoint or IDP or Mobile detection entity from the remote system (CrowdStrike Falcon).
 
         :type remote_incident_id: ``str``
         :param remote_incident_id: The incident id to return its information.
 
-        :return: The IDP or Mobile detection entity.
+        :return: The Endpoint or IDP or Mobile detection entity.
         :rtype ``dict``
         :return: The object with the updated fields.
         :rtype ``dict``
-        :return: The detection type (idp or mobile).
+        :return: The detection type (endpoint or idp or mobile).
         :rtype ``str``
     """
     mirrored_data_list = get_detection_entities([remote_incident_id]).get('resources', [])  # a list with one dict in it
     mirrored_data = mirrored_data_list[0]
-    demisto.debug(f'in get_remote_idp_or_mobile_detection_data {mirrored_data=}')
+    demisto.debug(f'in get_remote_epp_or_idp_or_mobile_detection_data {mirrored_data=}')
     detection_type = ''
     mirroring_fields = ['status']
     updated_object: dict[str, Any] = {}
@@ -2529,8 +2530,12 @@ def get_remote_idp_or_mobile_detection_data(remote_incident_id):
         updated_object = {'incident_type': MOBILE_DETECTION}
         detection_type = 'Mobile'
         mirroring_fields.append('mobile_detection_id')
+    if 'epp' in mirrored_data['product']:
+        updated_object = {'incident_type': ENDPOINT_DETECTION}
+        detection_type = 'Detection'
+        mirroring_fields = CS_FALCON_DETECTION_INCOMING_ARGS
     set_updated_object(updated_object, mirrored_data, mirroring_fields)
-    demisto.debug(f'in get_remote_idp_or_mobile_detection_data {mirroring_fields=} {updated_object=}')
+    demisto.debug(f'in get_remote_epp_or_idp_or_mobile_detection_data {mirroring_fields=} {updated_object=}')
     return mirrored_data, updated_object, detection_type
 
 
@@ -2683,7 +2688,7 @@ def get_modified_remote_data_command(args: dict[str, Any]):
         ).get('resources', [])
     if ON_DEMAND_SCANS_DETECTION_TYPE in fetch_types:
         raw_ids += get_detections_ids(
-            filter_arg=f"updated_timestamp:>'{last_update_utc.strftime(DETECTION_DATE_FORMAT)}'+product:'ods'"
+            filter_arg=f"updated_timestamp:>'{last_update_utc.strftime(DETECTION_DATE_FORMAT)}'+type:'ods'"
 
         ).get('resources', [])
 
@@ -2718,12 +2723,12 @@ def update_remote_system_command(args: dict[str, Any]) -> str:
                 if result:
                     demisto.debug(f'Incident updated successfully. Result: {result}')
 
-            elif incident_type in (IncidentType.DETECTION, IncidentType.ON_DEMAND):
+            elif incident_type in (IncidentType.LEGACY_ENDPOINT_DETECTION, IncidentType.ON_DEMAND):
                 result = update_remote_detection(delta, parsed_args.inc_status, remote_incident_id)
                 if result:
                     demisto.debug(f'Detection updated successfully. Result: {result}')
 
-            elif incident_type == IncidentType.IDP_OR_MOBILE_DETECTION:
+            elif incident_type == IncidentType.ENDPOINT_OR_IDP_OR_MOBILE_DETECTION:
                 result = update_remote_idp_or_mobile_detection(delta, parsed_args.inc_status, remote_incident_id)
                 if result:
                     demisto.debug(f'IDP/Mobile Detection updated successfully. Result: {result}')
