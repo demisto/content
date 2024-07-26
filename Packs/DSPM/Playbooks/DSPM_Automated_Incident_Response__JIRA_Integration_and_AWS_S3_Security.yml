@@ -1,0 +1,846 @@
+id: da7fa1c4-11b7-4c6c-8afa-15d0e3e5f417
+version: 11
+vcShouldKeepItemLegacyProdMachine: false
+name: 'DSPM Automated Incident Response: JIRA Integration and AWS S3 Security'
+description: Automates incident response by integrating JIRA for issue tracking and
+  AWS S3 for security. Streamlines incident handling by creating JIRA tickets, updating
+  AWS S3 bucket access settings, and communicating via Slack for efficient resolution
+  and compliance with security policies.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 0625cd56-de5d-4de5-8665-05de1eb57f6b
+    type: start
+    task:
+      id: 0625cd56-de5d-4de5-8665-05de1eb57f6b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": -970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 7be6d04c-7742-448e-8599-98fee26e39b3
+    type: condition
+    task:
+      id: 7be6d04c-7742-448e-8599-98fee26e39b3
+      version: -1
+      name: Check if the Action is value
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Jira action:
+      - "16"
+      No Response from user:
+      - "29"
+      Remedition action (Sensitive asset open to world):
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: Jira action
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: User.Action
+            iscontext: true
+          right:
+            value:
+              simple: jira
+    - label: Remedition action (Sensitive asset open to world)
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: User.Action
+            iscontext: true
+          right:
+            value:
+              simple: remediate
+    - label: No Response from user
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: User.Action
+            iscontext: true
+          right:
+            value:
+              simple: no_response
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 9b0895c5-3dd3-4b7c-80cd-8f446bcf13ac
+    type: regular
+    task:
+      id: 9b0895c5-3dd3-4b7c-80cd-8f446bcf13ac
+      version: -1
+      name: Update Slack Incident with JIRA details
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      details:
+        simple: 'JIRA Ticket created successfully with ID: ${Ticket.Id} and Key: ${Ticket.Key}.
+          Associated Remediation ID: ${riskFindingId}.'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -220,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: a67589a3-8894-4543-8584-872340823773
+    type: regular
+    task:
+      id: a67589a3-8894-4543-8584-872340823773
+      version: -1
+      name: Set parent incident ID  to slack incident
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      parentincident:
+        simple: ${incident.parentIncidentId}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 1160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 1115ae5f-e016-4c2b-8738-a372d861fe2d
+    type: regular
+    task:
+      id: 1115ae5f-e016-4c2b-8738-a372d861fe2d
+      version: -1
+      name: Closed current  Incident
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      closeNotes:
+        simple: ${incident.details}
+      closeReason:
+        simple: Resolved
+      id:
+        simple: ${incident.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 370,
+          "y": 1350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 640e2e88-cb24-4d7e-8f7b-d6df22a8bebb
+    type: regular
+    task:
+      id: 640e2e88-cb24-4d7e-8f7b-d6df22a8bebb
+      version: -1
+      name: Create Jira Issue
+      description: Creates a new issue in Jira.
+      script: Jira V3|||jira-create-issue
+      type: regular
+      iscommand: true
+      brand: Jira V3
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      assignee:
+        simple: ${AccountInfo.AccountID}
+      description:
+        simple: 'The issue created from incident Id: ${incident.id} and Incident Name:
+          ${incident.name}'
+      issue_type_id:
+        simple: ${User.JiraTicketTypeID}
+      project_name:
+        simple: ${User.JiraProjectName}
+      summary:
+        simple: 'The issue created from Incident Id: ${incident.id} for ${User.JiraProjectName}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -220,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: b1322400-5786-416c-8007-192e594adee2
+    type: regular
+    task:
+      id: b1322400-5786-416c-8007-192e594adee2
+      version: -1
+      name: 'Closing Parent Incident : ${incident.parentincident}'
+      description: Close the current incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      closeNotes:
+        simple: ${incident.details}
+      closeReason:
+        simple: ${incident.details}
+      id:
+        simple: ${incident.parentincident}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 810,
+          "y": 1610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: b145f572-52d3-4f4e-8331-cc91f8587d05
+    type: regular
+    task:
+      id: b145f572-52d3-4f4e-8331-cc91f8587d05
+      version: -1
+      name: Linking slack incident to parent incident
+      description: Link incidents together or mark them as duplicate and close them
+      script: Builtin|||linkIncidents
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      action:
+        simple: link
+      linkedIncidentIDs:
+        simple: ${incident.parentIncidentId}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 1370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: cb619685-9c8b-460a-8754-ab914b9fab7f
+    type: regular
+    task:
+      id: cb619685-9c8b-460a-8754-ab914b9fab7f
+      version: -1
+      name: Get Assignee ID from email
+      scriptName: DSPM-Get-Jira-accountId
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      email:
+        simple: ${User.Email}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -220,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: ec5208a9-8f64-487b-868e-71e025a0b122
+    type: regular
+    task:
+      id: ec5208a9-8f64-487b-868e-71e025a0b122
+      version: -1
+      name: aws-s3-get-public-access-block
+      description: Retrieves the PublicAccessBlock configuration for an Amazon S3
+        bucket.
+      script: AWS - S3|||aws-s3-get-public-access-block
+      type: regular
+      iscommand: true
+      brand: AWS - S3
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      bucket:
+        simple: dig-security-integration
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 370,
+          "y": 455
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 5ef8acf2-a2c5-4177-81e0-db8713db8dde
+    type: regular
+    task:
+      id: 5ef8acf2-a2c5-4177-81e0-db8713db8dde
+      version: -1
+      name: Update Slack Incident with AWS details
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      details:
+        simple: Change the S3 PublicAccessBlock settings to block public access control
+          lists (ACLs) for ${incident.assetId} bucket Bucket.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 370,
+          "y": 620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 22ca7810-d7ca-4a4b-8cf7-cfcf06f1e60c
+    type: regular
+    task:
+      id: 22ca7810-d7ca-4a4b-8cf7-cfcf06f1e60c
+      version: -1
+      name: ParseSlackBlockBuilderResponse
+      scriptName: ParseSlackBlockBuilderResponse
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 4a565fe7-a47b-4b9d-814c-e2101e81fb0b
+    type: regular
+    task:
+      id: 4a565fe7-a47b-4b9d-814c-e2101e81fb0b
+      version: -1
+      name: SlackBlockBuilder
+      description: SlackBlockBuilder will format a given Slack block into a format
+        readable by the SlackV3 integration. The script will also send the block to
+        the given destination. Make sure to mark **Trust any certificate** and fill
+        the **XSOAR API Key integration** parameters if you want to get a response
+        to the incident context.
+      scriptName: SlackBlockBuilder
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      list_name:
+        simple: ${block_list_name}
+      user:
+        simple: manas
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": -310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: f8528eb4-f4bc-446e-8403-f56ac3fbdd8e
+    type: regular
+    task:
+      id: f8528eb4-f4bc-446e-8403-f56ac3fbdd8e
+      version: -1
+      name: GetSlackBlockBuilderResponse
+      description: GetSlackBlockBuilderResponse will format a SlackBlockBuilder response
+        and insert it into an incident's context.
+      scriptName: GetSlackBlockBuilderResponse
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      retry-count:
+        simple: "2"
+      retry-interval:
+        simple: "30"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 290,
+          "y": -130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: affba195-aa04-4c2c-8a1d-952e279d795c
+    type: regular
+    task:
+      id: affba195-aa04-4c2c-8a1d-952e279d795c
+      version: -1
+      name: DSPM_risk_status_update
+      scriptName: DSPM_risk_status_update
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      riskFindingId:
+        simple: 247f5b8e-7db4-497e-86f2-0ef7d8ac479e
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 370,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 8001b9b0-f350-45ff-8f55-6b89a3a6eb88
+    type: regular
+    task:
+      id: 8001b9b0-f350-45ff-8f55-6b89a3a6eb88
+      version: -1
+      name: DSPM_fetch_incident_details
+      scriptName: DSPM_fetch_incident_details
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      get_incident_details:
+        simple: ${incident}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": -790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 90c4dccc-2343-4af0-8737-40828feaa159
+    type: regular
+    task:
+      id: 90c4dccc-2343-4af0-8737-40828feaa159
+      version: -1
+      name: DSPM_fetch_list_of_jira_project
+      scriptName: DSPM_fetch_list_of_jira_project
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 250,
+          "y": -640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: b27a7d4e-83ec-42ad-81d2-bf0c06d6c69b
+    type: regular
+    task:
+      id: b27a7d4e-83ec-42ad-81d2-bf0c06d6c69b
+      version: -1
+      name: CreateDSPMRiskSlackBlocks
+      scriptName: CreateDSPMRiskSlackBlocks
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      dspm_incident:
+        simple: ${incident_object}
+      list_of_project:
+        simple: ${projects_list}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": -455
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: d5e08e58-d02d-4c64-8a55-ff1f729b662c
+    type: regular
+    task:
+      id: d5e08e58-d02d-4c64-8a55-ff1f729b662c
+      version: -1
+      name: RemoveSlackBlockList
+      scriptName: RemoveSlackBlockList
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      list_name:
+        simple: ${block_list_name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 370,
+          "y": 1130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: a51db6ec-09a0-4b0f-8299-60ac569da72c
+    type: regular
+    task:
+      id: a51db6ec-09a0-4b0f-8299-60ac569da72c
+      version: -1
+      name: OverwriteListAndNotify
+      description: This automation script overwrites the value of a specified list
+        and sends a Slack notification to inform the user that they failed to respond
+        to an incident notification in a timely manner. The notification includes
+        a message indicating the end of the incident playbook and an invitation to
+        reopen the incident if necessary.
+      scriptName: OverwriteListAndNotify
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      incident_id:
+        simple: ${incident.id}
+      list_name:
+        simple: ${block_list_name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 970,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: f3a51604-7866-4872-87b7-1d0d39a023cd
+    type: regular
+    task:
+      id: f3a51604-7866-4872-87b7-1d0d39a023cd
+      version: -1
+      name: SlackBlockBuilder
+      description: SlackBlockBuilder will format a given Slack block into a format
+        readable by the SlackV3 integration. The script will also send the block to
+        the given destination. Make sure to mark **Trust any certificate** and fill
+        the **XSOAR API Key integration** parameters if you want to get a response
+        to the incident context.
+      scriptName: SlackBlockBuilder
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      list_name:
+        simple: ${block_list_name}
+      user:
+        simple: manas
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 970,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2675,
+        "width": 1570,
+        "x": -220,
+        "y": -970
+      }
+    }
+  }
+inputs:
+- key: Incident Name
+  value:
+    simple: ${incident.name}
+  required: true
+  description: ""
+  playbookInputQuery: null
+- key: Project Key
+  value:
+    simple: ${incident.jiraproject}
+  required: false
+  description: ""
+  playbookInputQuery: null
+- key: Summary
+  value:
+    simple: ${incident.jirasummary}
+  required: false
+  description: ""
+  playbookInputQuery: null
+- key: Issue Type
+  value:
+    simple: ${incident.jiraissuetype}
+  required: false
+  description: ""
+  playbookInputQuery: null
+- key: Issue Description
+  value:
+    simple: ${incident.jiradescription}
+  required: false
+  description: ""
+  playbookInputQuery: null
+- key: Action
+  value:
+    simple: ${incident.action}
+  required: true
+  description: ""
+  playbookInputQuery: null
+outputs: []
