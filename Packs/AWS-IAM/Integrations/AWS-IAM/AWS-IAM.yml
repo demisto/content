@@ -1547,6 +1547,9 @@ script:
     - contextPath: AWS.IAM.MFADevices.Devices.EnableDate
       description: The date when the MFA device was enabled for the user.
       type: date
+    - contextPath: MFADevices.Devices.Marker
+      description: First element of next page of items.
+      type: string
     - arguments:
       - description: The name of the user whose MFA devices you want to list.	
         name: userName
