@@ -635,6 +635,33 @@ def search_assets_by_external_id_command(client: Client, args: dict[str, str]) -
         raw_response=response
     )
 
+def get_status_asset(client: Client, args: dict) -> tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
+
+    asset_id = args['asset_id']
+    url_suffix = f'/assets/{asset_id}'
+    limit: int = int(args.get('limit', 500))
+    to_context = args.get('to_context')
+    human_readable = []
+    context: Dict[str, Any] = {}
+
+    response = client.http_request(message='GET', suffix=url_suffix)
+    wanted_keys = ['Status']
+    actual_keys = ['status']
+
+    assets = list(response.values())[:limit]
+    context: list[dict[str, Any]] = parse_response(assets, wanted_keys, actual_keys)
+    
+    human_readable.append({
+           'status': parse_response(assets, wanted_keys, actual_keys)
+        })
+
+    return CommandResults(
+        outputs_prefix="Kenna.Status",
+        outputs_key_field="Status",
+        readable_output=tableToMarkdown('Kenna Status', human_readable, removeNull=True),
+        outputs=context, 
+        raw_response=response
+    )
 
 def main():
     command = demisto.command()
@@ -677,6 +704,8 @@ def main():
             return_results(search_assets_command(client, args))
         elif command == "kenna-search-assets-by-external-id":
             return_results(search_assets_by_external_id_command(client, args))
+        elif command == "kenna-get-status-asset":
+            return_results(get_status_asset(client, args()))
         else:
             raise NotImplementedError(f"Command {command} is not implemented.")
 
