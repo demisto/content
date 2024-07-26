@@ -1560,6 +1560,9 @@ script:
       - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
         name: roleSessionDuration
         required: false
+      - description: Use this parameter only when paginating results and only after you receive a response indicating that the results are truncated. Set it to the value of the Marker element in the response that you received to indicate where the next call should start.
+        name: marker
+        required: false
       description: Deactivates the specified MFA device and removes it from association with the user name for which it was originally enabled.
       name: aws-iam-deactivate-mfa-devices
     - arguments:
