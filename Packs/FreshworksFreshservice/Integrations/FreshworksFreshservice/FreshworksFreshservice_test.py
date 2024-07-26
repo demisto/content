@@ -1668,7 +1668,20 @@ def test_get_arg_template():
     assert response == [{'display_id': 5}]
 
 
-def test_update_custom_fields():
+@pytest.mark.parametrize(
+    'custom_fields_arg, expected_output',
+    [
+        (
+            "key=value",
+            {'key': 'value'},
+        ),
+        (
+            "building_location=Student Center, suiteroom_location=140",
+            {"building_location": "Student Center", "suiteroom_location": "140"},
+        ),
+    ],
+)
+def test_update_custom_fields(custom_fields_arg: str, expected_output: dict):
     """
     Scenario: Update custom_fields arguments according to template.
     Given:
@@ -1688,9 +1701,9 @@ def test_update_custom_fields():
 
     from FreshworksFreshservice import update_custom_fields
 
-    response = update_custom_fields({'custom_fields': 'key=value'})
+    response = update_custom_fields({'custom_fields': custom_fields_arg})
 
-    assert response == {'key': 'value'}
+    assert response == expected_output
 
 
 def test_validate_mandatory_ticket_requester_fields():
