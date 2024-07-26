@@ -1,5 +1,7 @@
 [RULE: o365_common_fields]
 alter
+	RecordType = to_integer(RecordType)
+| alter
 	xdm.event.id = Id,
 	xdm.event.type = if(RecordType = 1, "ExchangeAdmin", RecordType = 2, "ExchangeItem", RecordType = 3, "ExchangeItemGroup", RecordType = 4, "SharePoint", RecordType = 6, "SharePointFileOperation", RecordType = 7, "OneDrive", RecordType = 8, "AzureActiveDirectory", RecordType = 9, "AzureActiveDirectoryAccountLogon", RecordType = 10, "DataCenterSecurityCmdlet", RecordType = 11, "ComplianceDLPSharePoint", RecordType = 13, "ComplianceDLPExchange", RecordType = 14, "SharePointSharingOperation", RecordType = 15, "AzureActiveDirectoryStsLogon", RecordType = 16, "SkypeForBusinessPSTNUsage", RecordType = 17, "SkypeForBusinessUsersBlocked", RecordType = 18, "SecurityComplianceCenterEOPCmdlet", RecordType = 19, "ExchangeAggregatedOperation", RecordType = 20, "PowerBIAudit", RecordType = 21, "CRM", RecordType = 22, "Yammer", RecordType = 23, "SkypeForBusinessCmdlets", RecordType = 24, "Discovery", RecordType = 25, "MicrosoftTeams", RecordType = 28, "ThreatIntelligence", RecordType = 29, "MailSubmission", RecordType = 30, "MicrosoftFlow", RecordType = 31, "AeD", RecordType = 32, "MicrosoftStream", RecordType = 33, "ComplianceDLPSharePointClassification", RecordType = 34, "ThreatFinder", RecordType = 35, "Project", RecordType = 36, "SharePointListOperation", RecordType = 37, "SharePointCommentOperation", RecordType = 38, "DataGovernance", RecordType = 39, "Kaizala", RecordType = 40, "SecurityComplianceAlerts", RecordType = 41, "ThreatIntelligenceUrl", RecordType = 42, "SecurityComplianceInsights", RecordType = 43, "MIPLabel", RecordType = 44, "WorkplaceAnalytics", RecordType = 45, "PowerAppsApp", RecordType = 46, "PowerAppsPlan", RecordType = 47, "ThreatIntelligenceAtpContent", RecordType = 48, "LabelContentExplorer", RecordType = 49, "TeamsHealthcare", RecordType = 50, "ExchangeItemAggregated", RecordType = 51, "HygieneEvent", RecordType = 52, "DataInsightsRestApiAudit", RecordType = 53, "InformationBarrierPolicyApplication", RecordType = 54, "SharePointListItemOperation", RecordType = 55, "SharePointContentTypeOperation", RecordType = 56, "SharePointFieldOperation", RecordType = 57, "MicrosoftTeamsAdmin", RecordType = 58, "HRSignal", RecordType = 59, "MicrosoftTeamsDevice", RecordType = 60, "MicrosoftTeamsAnalytics", RecordType = 61, "InformationWorkerProtection", RecordType = 62, "Campaign", RecordType = 63, "DLPEndpoint", RecordType = 64, "AirInvestigation", RecordType = 65, "Quarantine", RecordType = 66, "MicrosoftForms", RecordType = 67, "ApplicationAudit", RecordType = 68, "ComplianceSupervisionExchange", RecordType = 69, "CustomerKeyServiceEncryption", RecordType = 70, "OfficeNative", RecordType = 71, "MipAutoLabelSharePointItem", RecordType = 72, "MipAutoLabelSharePointPolicyLocation", RecordType = 73, "MicrosoftTeamsShifts", RecordType = 75, "MipAutoLabelExchangeItem", RecordType = 76, "CortanaBriefing", RecordType = 78, "WDATPAlerts", RecordType = 82, "SensitivityLabelPolicyMatch", RecordType = 83, "SensitivityLabelAction", RecordType = 84, "SensitivityLabeledFileAction", RecordType = 85, "AttackSim", RecordType = 86, "AirManualInvestigation", RecordType = 87, "SecurityComplianceRBAC", RecordType = 88, "UserTraining", RecordType = 89, "AirAdminActionInvestigation", RecordType = 90, "MSTIC", RecordType = 91, "PhysicalBadgingSignal", RecordType = 93, "AipDiscover", RecordType = 94, "AipSensitivityLabelAction", RecordType = 95, "AipProtectionAction", RecordType = 96, "AipFileDeleted", RecordType = 97, "AipHeartBeat", RecordType = 98, "MCASAlerts", RecordType = 99, "OnPremisesFileShareScannerDlp", RecordType = 100, "OnPremisesSharePointScannerDlp", RecordType = 101, "ExchangeSearch", RecordType = 102, "SharePointSearch", RecordType = 103, "PrivacyInsights", RecordType = 105, "MyAnalyticsSettings", RecordType = 106, "SecurityComplianceUserChange", RecordType = 107, "ComplianceDLPExchangeClassification", RecordType = 109, "MipExactDataMatch", RecordType = 113, "MS365DCustomDetection", RecordType = 147, "CoreReportingSettings", RecordType = 148, "ComplianceConnector", RecordType = 154, "OMEPortal", RecordType = 174, "DataShareOperation", RecordType = 181, "EduDataLakeDownloadOperation", RecordType = 183, "MicrosoftGraphDataConnectOperation", RecordType = 186, "PowerPagesSite", RecordType = 188, "PlannerPlan", RecordType = 189, "PlannerCopyPlan", RecordType = 190, "PlannerTask", RecordType = 191, "PlannerRoster", RecordType = 192, "PlannerPlanList", RecordType = 193, "PlannerTaskList", RecordType = 194, "PlannerTenantSettings", RecordType = 195, "ProjectForThewebProject", RecordType = 196, "ProjectForThewebTask", RecordType = 197, "ProjectForThewebRoadmap", RecordType = 198, "ProjectForThewebRoadmapItem", RecordType = 199, "ProjectForThewebProjectSettings", RecordType = 200, "ProjectForThewebRoadmapSettings", RecordType = 216, "Viva", RecordType = 217, "MicrosoftGraphDataConnectConsent", RecordType = 218, "AttackSimAdmin", RecordType = 230, "TeamsUpdates", RecordType = 231, "PlannerRosterSensitivityLabel", RecordType = 237, "DefenderExpertsforXDRAdmin", RecordType = 251, "VfamCreatePolicy", RecordType = 252, "VfamUpdatePolicy", RecordType = 253, "VfamDeletePolicy", RecordType = 261, "CopilotInteraction", RecordType = 287, "ProjectForThewebAssignedToMeSettings"),
 	xdm.source.cloud.project_id = OrganizationId,
@@ -9,6 +11,11 @@ alter
 
 [MODEL: dataset="msft_o365_general_raw"]
 call o365_common_fields
+| alter
+	EnforcementMode = to_integer(EnforcementMode), 
+	sourceworkload = to_integer(sourceworkload), 
+	Scope = to_integer(Scope), 
+	FileSize = to_integer(FileSize)	
 | alter
 	platform_lowercase = lowercase(to_string(Platform)),
 	user_type_string = to_string(UserType),
@@ -81,6 +88,11 @@ call o365_common_fields
 [MODEL: dataset="msft_o365_exchange_online_raw"]
 call o365_common_fields
 | alter
+	LogonType = to_integer(LogonType),
+	InternalLogonType = to_integer(InternalLogonType),
+	Scope = to_integer(Scope),
+	AttachmentSizeInBytes = to_integer(AttachmentSizeInBytes)
+| alter
 	user_logon_type = to_string(coalesce(LogonType, InternalLogonType)),
 	user_type_string = to_string(UserType),
 	get_src_ip = coalesce(ClientIPAddress, ClientIP),
@@ -132,6 +144,8 @@ call o365_common_fields
 	
 [MODEL: dataset="msft_o365_sharepoint_online_raw"]
 call o365_common_fields
+| alter
+	Scope = to_integer(Scope)
 | alter
 	check_objectid_filepath = if(arraystring(regextract(ObjectId, "^.+[\/\\]([^\/\\]+)$"), "") ~= "\.", arraystring(regextract(ObjectId, "^.+[\/\\]([^\/\\]+)$"), ""), null),
 	sourcefilename_filename = arraystring(regextract(SourceFileName, "^(\S+)\.\S+"), ""),
@@ -190,6 +204,8 @@ call o365_common_fields
 
 [MODEL: dataset="msft_o365_dlp_raw"]
 call o365_common_fields
+| alter
+	Scope = to_integer(Scope)
 | alter
 	SharePointMetaData_FileName = SharePointMetaData -> FileName,
 	SharePointMetaData_FilePathUrl = SharePointMetaData -> FilePathUrl,
