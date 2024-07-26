@@ -145,11 +145,12 @@ class TestPurgeBranchProtectionRules():
         """
 
         summary_file_path = tmp_path / "summary.md"
+        summary_file_path.touch()
         mocker.patch.dict(os.environ, {GH_JOB_SUMMARY_ENV_VAR: str(summary_file_path)})
 
         deleted: list[BranchProtectionRule] = []
         for i in range(10):
-            deleted.append(BranchProtectionRule(i, f"{i}/*", 0))
+            deleted.append(BranchProtectionRule(str(i), f"{i}/*", 0))
 
         write_deleted_summary_to_file(deleted)
 
@@ -247,21 +248,25 @@ class TestPurgeBranchProtectionRules():
 
         # Assert specific log messages in the captured logs
         actual_log_output = caplog.text.splitlines()
-        assert "4 rules returned." in actual_log_output[10]
+        assert "4 rules returned." in actual_log_output[12]
         assert "not deleted because it's in the list of protected rules" in actual_log_output[
-            12]
+            14]
         assert "was deleted successfully." in actual_log_output[
-            19]
+            22]
         assert "was deleted successfully." in actual_log_output[
-            26]
+            30]
         assert "not deleted because it's associated to 3 existing branches/refs" in actual_log_output[
-            27]
+            31]
 
     def test_main_rate_limit(self, requests_mock: RequestsMocker):
 
         requests_mock.post(
             url="https://api.github.com:443/graphql",
-            exc=github.RateLimitExceededException(status=403)
+            exc=github.RateLimitExceededException(
+                status=403,
+                data={"msg": "rate limit exceeded, resets in 1h"},
+                headers={"x-rate-limit": "5000"}
+            )
         )
 
         with pytest.raises(SystemExit):
@@ -271,7 +276,11 @@ class TestPurgeBranchProtectionRules():
 
         requests_mock.post(
             url="https://api.github.com:443/graphql",
-            exc=github.BadCredentialsException(status=401)
+            exc=github.BadCredentialsException(
+                status=401,
+                data={"msg": "Credentials supplied do not have permissions"},
+                headers={"x-rate-limit": "0"}
+            )
         )
 
         with pytest.raises(SystemExit):
