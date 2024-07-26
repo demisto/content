@@ -1535,11 +1535,9 @@ script:
     - contextPath: AWS.IAM.Roles.AttachedPolicies.Query.Marker
       description: When IsTruncated is true, this element is present and contains the value to use for the Marker parameter in a subsequent pagination request.
       type: string
-  - name: aws-iam-list-mfa-devices
-    arguments:
-    - name: userName
-    description: Lists the MFA devices for an IAM user.
-    outputs:
+  description: Lists the MFA devices for an IAM user.  
+  name: aws-iam-list-mfa-devices
+  outputs:
     - contextPath: AWS.IAM.MFADevices.Devices.UserName
       description: The user with whom the MFA device is associated.
       type: string
@@ -1549,21 +1547,52 @@ script:
     - contextPath: AWS.IAM.MFADevices.Devices.EnableDate
       description: The date when the MFA device was enabled for the user.
       type: date
-  - arguments:
-    - description: The name of the user whose MFA device you want to deactivate.
-      name: userName
-      required: true
-    - description: The serial number that uniquely identifies the MFA device. For virtual MFA devices, the serial number is the device ARN.
-      name: serialNumber
-      required: true
-    description: Deactivates the specified MFA device and removes it from association with the user name for which it was originally enabled.
-    name: aws-iam-deactivate-mfa-devices
-  - arguments:
-    - description: The serial number that uniquely identifies the MFA device. For virtual MFA devices, the serial number is the same as the ARN.
-      name: serialNumber
-      required: true
-    description: Deletes a virtual MFA device.
-    name: aws-iam-delete-mfa-devices
+    - arguments:
+      - description: The name of the user whose MFA devices you want to list.	
+        name: userName
+        required: true
+      - description: The Amazon Resource Name (ARN) of the role to assume.
+        name: roleArn
+        required: false
+      - description: An identifier for the assumed role session.
+        name: roleSessionName
+        required: false
+      - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+        name: roleSessionDuration
+        required: false
+      description: Deactivates the specified MFA device and removes it from association with the user name for which it was originally enabled.
+      name: aws-iam-deactivate-mfa-devices
+    - arguments:
+      - description: The name of the user whose MFA devices you want to list.	
+        name: userName
+        required: true
+      - description: The serial number that uniquely identifies the MFA device. For virtual MFA devices, the serial number is the same as the ARN.
+        name: serialNumber
+        required: true
+      - description: The Amazon Resource Name (ARN) of the role to assume.
+        name: roleArn
+        required: false
+      - description: An identifier for the assumed role session.
+        name: roleSessionName
+        required: false
+      - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+        name: roleSessionDuration
+        required: false
+      description: Deletes a virtual MFA device.
+      name: aws-iam-delete-mfa-devices
+    - arguments:
+      - description: The serial number that uniquely identifies the MFA device. For virtual MFA devices, the serial number is the same as the ARN.
+        name: serialNumber
+        required: true
+      - description: The Amazon Resource Name (ARN) of the role to assume.
+        name: roleArn
+        required: false
+      - description: An identifier for the assumed role session.
+        name: roleSessionName
+        required: false
+      - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+        name: roleSessionDuration
+        required: false
   dockerimage: demisto/boto3py3:1.0.0.101103
   runonce: false
   script: ''
@@ -1572,3 +1601,5 @@ script:
 tests:
 - AWS - IAM Test Playbook
 fromversion: 5.0.0
+
+
