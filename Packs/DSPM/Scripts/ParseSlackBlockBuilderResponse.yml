@@ -1,0 +1,129 @@
+commonfields:
+  id: d93ce82d-4704-4d9a-887e-c8b59d472d74
+  version: 9
+vcShouldKeepItemLegacyProdMachine: false
+name: ParseSlackBlockBuilderResponse
+script: |
+  register_module_line('ParseSlackBlockBuilderResponse', 'start', __line__())
+  ### pack version: 3.4.14
+
+
+
+
+  from typing import Any
+  import traceback
+  import urllib.parse
+  import requests
+  from requests.auth import HTTPBasicAuth
+
+  CREATE_JIRA_TICKET = "Create a Jira ticket"
+  REMEDIATE_RISK = "Remediate a Risk"
+
+
+  def get_jira_issue_type_id(issue_type_name) -> str:
+      try:
+          result = demisto.executeCommand("dspm-get-integration-cofig", {})
+          integration_conf = result[0].get("Contents",{}).get("integration_config",{})
+          # Extract Jira credentials and URL
+          jira_url = integration_conf.get('jiraServerUrl')
+          api_key = integration_conf.get('jiraApiToken')
+          jiraEmail = integration_conf.get('jiraEmail')
+
+          url = f"https://{jira_url}/rest/api/2/project/DIG"
+          auth = HTTPBasicAuth(jiraEmail, api_key)
+          headers = {
+              "Accept": "application/json",
+          }
+
+          response = requests.request("GET", url, headers=headers, auth=auth)
+          if response.status_code == 200:
+              issue_types = response.json()['issueTypes']
+              for issue_type in issue_types:
+                  if issue_type['name'] == issue_type_name:
+                      issue_type_id = issue_type['id']
+                      return str(issue_type_id)
+
+      except Exception as e:
+          return_error(f"Error while fetching Jira Issue Type: {str(e)}")
+
+
+  def parse_slack_block_builder_res():
+      try:
+          context_data = demisto.get(demisto.context(), 'SlackBlockState')
+          if context_data is None:
+              raise TypeError("SlackBlockState is None")
+
+          user_input_data = context_data.get("values")
+          if user_input_data is None:
+              raise TypeError("values in SlackBlockState is None")
+
+          action_name = user_input_data.get("radio_buttons_0", {}).get("actionId-0", {}).get("selected_option", {}).get("value")
+          if action_name is None:
+              raise TypeError("selected_option value is None")
+
+          user_email = None
+          project_name = None
+          ticket_type = None
+          if action_name == CREATE_JIRA_TICKET:
+              user_email = user_input_data.get("plain_text_input_3", {}).get("plain_text_input-action", {}).get("value")
+              project_name = user_input_data.get("static_select_1", {}).get("static_select-action", {}).get("selected_option", {}).get("value")
+              ticket_type = user_input_data.get("static_select_2", {}).get("static_select-action", {}).get("selected_option", {}).get("value")
+
+          if action_name == CREATE_JIRA_TICKET:
+              ticket_type_id = get_jira_issue_type_id(ticket_type)
+
+              demisto.setContext("User.Action", "jira")
+              demisto.setContext("User.Email", user_email)
+              demisto.setContext("User.JiraProjectName", project_name)
+              demisto.setContext("User.JiraTicketTypeID", ticket_type_id)
+          elif action_name == REMEDIATE_RISK:
+              demisto.setContext("User.Action", 'remediate')
+          else:
+              raise Exception(f"Sorry!!, this '{action_name}' action type is not supported")
+
+      except TypeError as ex:
+          demisto.error(traceback.format_exc())  # log the traceback
+          print(traceback.format_exc())
+          print("User response is not found in slackBlockState.")
+          demisto.setContext("User.Action", 'no_response')
+      except Exception as ex:
+          demisto.error(traceback.format_exc())  # log the traceback
+          return_error(f'Failed to parse Slack block builder response: {str(ex)}')
+
+
+
+
+
+  ''' MAIN FUNCTION '''
+
+
+  def main():  # pragma: no cover
+      try:
+          parse_slack_block_builder_res()
+      except Exception as excep:
+          demisto.error(traceback.format_exc())  # print the traceback
+          return_error(f'Failed to execute ParseSlackBlockBuilderResponse. Error: {str(excep)}')
+
+
+  ''' ENTRY POINT '''
+
+  if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
+      main()
+
+  register_module_line('ParseSlackBlockBuilderResponse', 'end', __line__())
+type: python
+tags: []
+enabled: true
+outputs:
+- contextPath: User.Email
+- contextPath: User.Action
+- contextPath: User.JiraProjectName
+- contextPath: User.JiraTicketTypeID
+scripttarget: 0
+subtype: python3
+pswd: ""
+runonce: false
+dockerimage: demisto/python3:3.11.9.104657
+runas: DBotWeakRole
+engineinfo: {}
+mainengineinfo: {}
