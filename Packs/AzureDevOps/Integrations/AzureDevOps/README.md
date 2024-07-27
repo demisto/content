@@ -11,21 +11,26 @@ Manage Git repositories in Azure DevOps Services. Integration capabilities inclu
     | --- | --- | --- |
     | Client ID | App Registration Client ID | True |
     | Organization | Organization name | True |
-    | Maximum incidents for one fetch. | Default is 50. Maximum is 200. | False |
-    | Pull-request project name | The name of the project which the pull requests belongs to. A project name can be obtained by running the 'azure-devops-project-list' command. This argument is mandatory for Fetch functionality. | False |
-    | Pull-request repository name | The name of the repository pull request's target branch. A repository name can be obtained by running the 'azure-devops-repository-list' command. This argument is mandatory for Fetch functionality. | False |
+    | Maximum incidents for one fetch. | Maximum is 200. | False |
+    | Default Project Name | The name of the project which the pull requests belongs to. A project name can be obtained by running the 'azure-devops-project-list' command. This argument is mandatory for Fetch functionality and will be the default value in all the commands. You can override the default using the command argument. | False |
+    | Default Repository Name | The name of the repository pull request's target branch. A repository name can be obtained by running the 'azure-devops-repository-list' command. This argument is mandatory for Fetch functionality and will be the default value in all the commands. You can override the default using the command argument. | False |
     | Incident type |  | False |
     | Fetch incidents |  | False |
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
     | Outgoing mirroring |  | False |
     | Use system proxy settings |  | False |
     | Trust any certificate (not secure) |  | False |
-    | Authentication Type | Type of authentication - could be Authorization Code Flow \(recommended\), Device Code Flow or Client Credentials Flow. | False |
-    | Tenant ID | For user-auth mode or client credentials.| False |
-    | Client Secret | For user-auth mode or client credentials. | False |
-    | Application redirect URI | For user-auth mode or client credentials. | False |
-    | Authorization code | for user-auth mode - received from the authorization step. see Detailed Instructions \(?\) section | False |
+    | Authentication Type | Type of authentication - could be Authorization Code flow \(recommended\), Device Code flow or Client Credentials flow. | True |
+    | Tenant ID |  | False |
+    | Client Secret |  | False |
+    | Client Secret |  | False |
+    | Application redirect URI |  | False |
+    | Authorization code | For user-auth mode - received from the authorization step. See Detailed Instructions \(?\) section. | False |
+    | Authorization code |  | False |
+    | Incidents Fetch Interval |  | False |
+
 4. Click **Test** to validate the URLs, token, and connection.
+
 
 
 In order to connect to the Azure DevOps using the Self-Deployed Azure App, use one of the following methods:
@@ -106,28 +111,22 @@ If you are using Client Credentials Flow, click **Test** when you are configurin
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### azure-devops-auth-test
+
 ***
 Tests the connectivity to Azure.
-
 
 #### Base Command
 
 `azure-devops-auth-test`
+
 #### Input
 
-There are no input arguments for this command.
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
 
 #### Context Output
 
 There is no context output for this command.
-
-#### Command Example
-```!azure-devops-auth-test```
-
-#### Human Readable Output
-
->Success!
-
 ### azure-devops-generate-login-url
 ***
 Generate the login url used for Authorization code flow.
@@ -163,32 +162,23 @@ Run this command to start the authorization process and follow the instructions 
 
 
 #### Base Command
+### azure-devops-auth-start
+
+***
+Run this command to start the authorization process and follow the instructions in the command results.
+
+#### Base Command
 
 `azure-devops-auth-start`
+
 #### Input
 
-There are no input arguments for this command.
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
 
 #### Context Output
 
 There is no context output for this command.
-
-#### Command Example
-```!azure-devops-auth-start```
-
-#### Human Readable Output
-
->### Authorization instructions
->1. To sign in, use a web browser to open the page [https://microsoft.com/devicelogin](https://microsoft.com/devicelogin)
->and enter the code *XXXX** to authenticate.
->2. Run the **!azure-devops-auth-complete** command in the War Room.
-
-### azure-devops-auth-complete
-***
-Run this command to complete the authorization process. Should be used after running the azure-devops-auth-start command.
-
-
-#### Base Command
 
 `azure-devops-auth-complete`
 #### Input
@@ -198,85 +188,68 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+### azure-devops-auth-complete
 
-#### Command Example
-```!azure-devops-auth-complete```
-
-#### Human Readable Output
-
->Authorization completed successfully.
-
-### azure-devops-auth-reset
 ***
-Run this command if for some reason you need to rerun the authentication process.
+Run this command to complete the authorization process. Should be used after running the azure-devops-auth-start command.
 
 #### Base Command
 
-`azure-devops-auth-reset`
+`azure-devops-auth-complete`
+
 #### Input
 
-There are no input arguments for this command.
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
 
 #### Context Output
 
 There is no context output for this command.
-
 #### Command Example
 ```!azure-devops-auth-reset```
 
 #### Human Readable Output
 
 >Authorization was reset successfully. Run **!azure-devops-auth-start** to start the authentication process.
+### azure-devops-auth-reset
 
-### get-mapping-fields
 ***
-Get mapping fields from remote incident. Please note that this method will not update the current incident. It's here for debugging purposes.
-
+Run this command if for some reason you need to rerun the authentication process.
 
 #### Base Command
 
-`get-mapping-fields`
+`azure-devops-auth-reset`
+
 #### Input
 
-There are no input arguments for this command.
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
 
 #### Context Output
 
 There is no context output for this command.
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### azure-devops-pipeline-run
 ***
 Run a pipeline. A DevOps pipeline is a set of automated processes and tools that allows both developers and operations professionals to work cohesively to build and deploy code to a production environment.
+### get-mapping-fields
 
+***
+Get mapping fields from remote incident. Please note that this method will not update the current incident. It's here for debugging purposes.
 
 #### Base Command
 
-`azure-devops-pipeline-run`
+`get-mapping-fields`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project | The name of the project. | Required | 
-| pipeline_id | The ID of the pipeline. | Required | 
-| branch_name | The name of the repository branch which runs the pipeline. | Required | 
-| polling | Use Cortex XSOAR built-in polling to retrieve the result when it's ready. Possible values are: True, False. Default is False. | Optional | 
-| interval | Indicates how long to wait between command execution (in seconds) when 'polling' argument is true. Minimum value is 10 seconds. Default is 30. | Optional | 
-| timeout | Indicates the time in seconds until the polling sequence timeouts. Default is 60. | Optional | 
-| run_id | The ID of the pipeline run to retrieve when polling argument is 'True'. Intended for use by the Polling process and does not need to be provided by the user. | Optional | 
-
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| AzureDevOps.PipelineRun.project | String | The name of the project. | 
+There is no context output for this command.
 | AzureDevOps.PipelineRun.pipeline.id | Number | The ID of the pipeline. | 
 | AzureDevOps.PipelineRun.pipeline.name | String | The pipeline repository name. | 
 | AzureDevOps.PipelineRun.state | String | The run state. | 
@@ -470,20 +443,52 @@ Create a new pull request.
 
 
 #### Base Command
+### azure-devops-user-remove
 
-`azure-devops-pull-request-create`
+***
+Remove the user from all project memberships.
+
+#### Base Command
+
+`azure-devops-user-remove`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project | The name or ID of the project. | Required | 
-| repository_id | The repository ID of the pull request's target branch. A repository ID can be obtained by running the 'azure-devops-repository-list' command. | Required | 
+| user_id | The ID of the user to be removed from the organization. A user ID can be obtained by running the 'azure-devops-user-list' command. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+| AzureDevOps.PullRequest.createdBy.displayName | String | The display name of the pull request creator. | 
+| AzureDevOps.PullRequest.createdBy.id | String | The ID of the pull request creator. | 
+| AzureDevOps.PullRequest.createdBy.uniqueName | String | The unique name of the pull request creator. | 
+| AzureDevOps.PullRequest.creationDate | Date | The creation date of the pull request, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z". | 
+| AzureDevOps.PullRequest.title | String | The title of the pull request | 
+| AzureDevOps.PullRequest.description | String | The description of the pull request. | 
+| AzureDevOps.PullRequest.sourceRefName | String | The source branch of the pull request. | 
+| AzureDevOps.PullRequest.targetRefName | String | The target branch of the pull request. | 
+### azure-devops-pull-request-create
+
+***
+Create a new pull request.
+
+#### Base Command
+
+`azure-devops-pull-request-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project | The name or ID of the project. A default value is taken from the configuration parameters, but you can override it. | Optional | 
+| repository_id | The repository ID. A repository ID can be obtained by running the 'azure-devops-repository-list' command. A default value is taken from the configuration parameters, but you can override it. | Optional | 
 | source_branch | The name of the source branch of the pull request. | Required | 
 | target_branch | The name of the target branch of the pull request. | Required | 
 | title | The title of the pull request. | Required | 
 | description | The description of the pull request. | Required | 
-| reviewers_ids | Comma-separated list of the pull request reviewers IDs. A reviewer ID can be obtained by running the 'azure-devops-user-list' command. | Required | 
-
+| reviewers_ids | Comma-separated list of the pull request reviewers IDs. A reviewer ID can be obtained by running the 'azure-devops-user-list' command. | Optional | 
 
 #### Context Output
 
@@ -500,7 +505,7 @@ Create a new pull request.
 | AzureDevOps.PullRequest.createdBy.id | String | The ID of the pull request creator. | 
 | AzureDevOps.PullRequest.createdBy.uniqueName | String | The unique name of the pull request creator. | 
 | AzureDevOps.PullRequest.creationDate | Date | The creation date of the pull request, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z". | 
-| AzureDevOps.PullRequest.title | String | The title of the pull request | 
+| AzureDevOps.PullRequest.title | String | The title of the pull request. | 
 | AzureDevOps.PullRequest.description | String | The description of the pull request. | 
 | AzureDevOps.PullRequest.sourceRefName | String | The source branch of the pull request. | 
 | AzureDevOps.PullRequest.targetRefName | String | The target branch of the pull request. | 
@@ -511,173 +516,6 @@ Create a new pull request.
 | AzureDevOps.PullRequest.lastMergeTargetCommit.commitId | String | The ID of the commit at the head of the target branch at the time of the last pull request merge. | 
 | AzureDevOps.PullRequest.lastMergeTargetCommit.url | String | The REST URL for this resource. | 
 
-
-#### Command Example
-```!azure-devops-pull-request-create project="xsoar" repository_id="XXXX" source_branch="test-test" target_branch="main" title="Test xsoar" description="Demo pr" reviewers_ids="XXXX"```
-
-#### Context Example
-```json
-{
-    "AzureDevOps": {
-        "PullRequest": {
-            "_links": {
-                "createdBy": {
-                    "href": "https://vssps.visualstudio.com/XXXX/_apis/Identities/XXXX"
-                },
-                "iterations": {
-                    "href": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/pullRequests/70/iterations"
-                },
-                "repository": {
-                    "href": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX"
-                },
-                "self": {
-                    "href": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/pullRequests/70"
-                },
-                "sourceBranch": {
-                    "href": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/refs/heads/test-test"
-                },
-                "sourceCommit": {
-                    "href": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/commits/b21e2330a6ae2f920b8f5ae9b74e069230b27087"
-                },
-                "statuses": {
-                    "href": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/pullRequests/70/statuses"
-                },
-                "targetBranch": {
-                    "href": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/refs/heads/main"
-                },
-                "targetCommit": {
-                    "href": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/commits/2eca089fab76f1f32051d188653ea7d279b90a4b"
-                },
-                "workItems": {
-                    "href": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/pullRequests/70/workitems"
-                }
-            },
-            "artifactId": "vstfs:///Git/PullRequestId/xsoar-project%2fXXXX%2f70",
-            "codeReviewId": 70,
-            "createdBy": {
-                "_links": {
-                    "avatar": {
-                        "href": "https://dev.azure.com/xsoar-organization/_apis/GraphProfile/MemberAvatars/aad.ZWFlMjk2ZGYtMzYwOS03YWY3LWFkNzMtYzNlYmRhZDM3ZmQ5"
-                    }
-                },
-                "descriptor": "aad.ZWFlMjk2ZGYtMzYwOS03YWY3LWFkNzMtYzNlYmRhZDM3ZmQ5",
-                "displayName": "XSOAR User 1",
-                "id": "XXXX",
-                "imageUrl": "https://dev.azure.com/xsoar-organization/_api/_common/identityImage?id=XXXX",
-                "uniqueName": "user2@xsoar.com",
-                "url": "https://vssps.visualstudio.com/XXXX/_apis/Identities/XXXX"
-            },
-            "creationDate": "2021-11-30T08:56:55.531709+00:00",
-            "description": "Demo pr",
-            "isDraft": false,
-            "labels": [],
-            "lastMergeSourceCommit": {
-                "commitId": "b21e2330a6ae2f920b8f5ae9b74e069230b27087",
-                "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/commits/b21e2330a6ae2f920b8f5ae9b74e069230b27087"
-            },
-            "lastMergeTargetCommit": {
-                "commitId": "2eca089fab76f1f32051d188653ea7d279b90a4b",
-                "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/commits/2eca089fab76f1f32051d188653ea7d279b90a4b"
-            },
-            "mergeId": "a950a614-1a14-4412-90ad-e6f7417e26c6",
-            "mergeStatus": "queued",
-            "pullRequestId": 70,
-            "repository": {
-                "id": "XXXX",
-                "isDisabled": false,
-                "name": "xsoar",
-                "project": {
-                    "id": "xsoar-project",
-                    "lastUpdateTime": "2021-10-13T15:46:18.017Z",
-                    "name": "xsoar",
-                    "revision": 11,
-                    "state": "wellFormed",
-                    "url": "https://dev.azure.com/xsoar-organization/_apis/projects/xsoar-project",
-                    "visibility": "private"
-                },
-                "remoteUrl": "https://xsoar-organization@dev.azure.com/xsoar-organization/xsoar/_git/xsoar",
-                "size": 12366,
-                "sshUrl": "git@ssh.dev.azure.com:v3/xsoar-organization/xsoar/xsoar",
-                "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX",
-                "webUrl": "https://dev.azure.com/xsoar-organization/xsoar/_git/xsoar"
-            },
-            "reviewers": [
-                {
-                    "_links": {
-                        "avatar": {
-                            "href": "https://dev.azure.com/xsoar-organization/_apis/GraphProfile/MemberAvatars/aad.ZWFlMjk2ZGYtMzYwOS03YWY3LWFkNzMtYzNlYmRhZDM3ZmQ5"
-                        }
-                    },
-                    "displayName": "XSOAR User 1",
-                    "hasDeclined": false,
-                    "id": "XXXX",
-                    "imageUrl": "https://dev.azure.com/xsoar-organization/_api/_common/identityImage?id=XXXX",
-                    "isFlagged": false,
-                    "reviewerUrl": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/pullRequests/70/reviewers/XXXX",
-                    "uniqueName": "user2@xsoar.com",
-                    "url": "https://vssps.visualstudio.com/XXXX/_apis/Identities/XXXX",
-                    "vote": 0
-                }
-            ],
-            "sourceRefName": "refs/heads/test-test",
-            "status": "active",
-            "supportsIterations": true,
-            "targetRefName": "refs/heads/main",
-            "title": "Test xsoar",
-            "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/pullRequests/70"
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Pull Request Information:
->|Title|Description|Created By|Pull Request Id|Repository Name|Repository Id|Project Name|Project Id|Creation Date|
->|---|---|---|---|---|---|---|---|---|
->| Test xsoar | Demo pr | XSOAR User 1 | 70 | xsoar | XXXX | xsoar | xsoar-project | 2021-11-30T08:56:55 |
-
-
-### azure-devops-pull-request-update
-***
-Update a pull request. At least one of the following arguments must be provided: title, description, or status.
-
-
-#### Base Command
-
-`azure-devops-pull-request-update`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| project | The name or ID of the project. | Required | 
-| repository_id | The repository ID of the pull request's target branch. A repository ID can be obtained by running the 'azure-devops-repository-list' command. | Required | 
-| pull_request_id | The ID of the pull request to update. | Required | 
-| title | The updated pull-request title. | Optional | 
-| description | The updated pull-request description. | Optional | 
-| status | The updated pull-request status. Possible values are: abandoned, completed, active. | Optional | 
-
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| AzureDevOps.PullRequest.repository.project.name | String | The name of the project. | 
-| AzureDevOps.PullRequest.repository.id | String | The ID of the repository. | 
-| AzureDevOps.PullRequest.repository.name | String | The name of the repository. | 
-| AzureDevOps.PullRequest.repository.url | String | The URL of the repository. | 
-| AzureDevOps.PullRequest.repository.size | Number | The size of the repository. | 
-| AzureDevOps.PullRequest.pullRequestId | Number | The ID of the pull request. | 
-| AzureDevOps.PullRequest.status | String | The status of the pull request. | 
-| AzureDevOps.PullRequest.createdBy.displayName | String | The display name of the pull request creator. | 
-| AzureDevOps.PullRequest.createdBy.id | String | The ID of the pull request creator. | 
-| AzureDevOps.PullRequest.createdBy.uniqueName | String | The unique name of the pull request creator. | 
-| AzureDevOps.PullRequest.creationDate | Date | The creation date of the pull request, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z". | 
-| AzureDevOps.PullRequest.title | String | The title of the pull request | 
-| AzureDevOps.PullRequest.description | String | The description of the pull request. | 
-| AzureDevOps.PullRequest.sourceRefName | String | The source branch of the pull request. | 
-| AzureDevOps.PullRequest.targetRefName | String | The target branch of the pull request. | 
-| AzureDevOps.PullRequest.mergeStatus | String | The current status of the pull request merge. | 
 | AzureDevOps.PullRequest.isDraft | Boolean | Whether the pull request is a draft / WIP. | 
 | AzureDevOps.PullRequest.lastMergeSourceCommit.commitId | String | The ID of the commit at the head of the source branch at the time of the last pull request merge. | 
 | AzureDevOps.PullRequest.lastMergeSourceCommit.url | String | The REST URL for this resource. | 
@@ -805,43 +643,25 @@ Update a pull request. At least one of the following arguments must be provided:
                     "url": "https://vssps.visualstudio.com/XXXX/_apis/Identities/XXXX",
                     "vote": 0
                 }
-            ],
-            "sourceRefName": "refs/heads/test-test",
-            "status": "active",
-            "supportsIterations": true,
-            "targetRefName": "refs/heads/main",
-            "title": "New title",
-            "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/pullRequests/70"
-        }
-    }
-}
-```
+### azure-devops-pull-request-update
 
-#### Human Readable Output
-
->### Pull Request Information:
->|Title|Description|Created By|Pull Request Id|Repository Name|Repository Id|Project Name|Project Id|Creation Date|
->|---|---|---|---|---|---|---|---|---|
->| New title | Demo pr | XSOAR User 1 | 70 | xsoar | XXXX | xsoar | xsoar-project | 2021-11-30T08:56:55 |
-
-
-### azure-devops-pull-request-list
 ***
-Retrieve pull requests in repository.
-
+Update a pull request. At least one of the following arguments must be provided: title, description, or status.
 
 #### Base Command
 
-`azure-devops-pull-request-list`
+`azure-devops-pull-request-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project | The name or ID of the project which the pull requests belongs to. | Required | 
-| repository | The name of the repository pull request's target branch. | Required | 
-| page | The page number of the results to retrieve. Minimum value is 1. Default is 1. | Optional | 
-| limit | The number of results to retrieve. Minimum  value is 1. Default is 50. | Optional | 
-
+| project | The name or ID of the project. A default value is taken from the configuration parameters, but you can override it. | Optional | 
+| repository_id | The repository ID. A repository ID can be obtained by running the 'azure-devops-repository-list' command. A default value is taken from the configuration parameters, but you can override it. | Optional | 
+| pull_request_id | The ID of the pull request to update. | Required | 
+| title | The updated pull-request title. | Optional | 
+| description | The updated pull-request description. | Optional | 
+| status | The updated pull-request status. Possible values: "abandoned", "completed", and "active". Possible values are: abandoned, completed, active. | Optional | 
 
 #### Context Output
 
@@ -851,13 +671,14 @@ Retrieve pull requests in repository.
 | AzureDevOps.PullRequest.repository.id | String | The ID of the repository. | 
 | AzureDevOps.PullRequest.repository.name | String | The name of the repository. | 
 | AzureDevOps.PullRequest.repository.url | String | The URL of the repository. | 
+| AzureDevOps.PullRequest.repository.size | Number | The size of the repository. | 
 | AzureDevOps.PullRequest.pullRequestId | Number | The ID of the pull request. | 
 | AzureDevOps.PullRequest.status | String | The status of the pull request. | 
 | AzureDevOps.PullRequest.createdBy.displayName | String | The display name of the pull request creator. | 
 | AzureDevOps.PullRequest.createdBy.id | String | The ID of the pull request creator. | 
 | AzureDevOps.PullRequest.createdBy.uniqueName | String | The unique name of the pull request creator. | 
 | AzureDevOps.PullRequest.creationDate | Date | The creation date of the pull request, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z". | 
-| AzureDevOps.PullRequest.title | String | The title of the pull request | 
+| AzureDevOps.PullRequest.title | String | The title of the pull request. | 
 | AzureDevOps.PullRequest.description | String | The description of the pull request. | 
 | AzureDevOps.PullRequest.sourceRefName | String | The source branch of the pull request. | 
 | AzureDevOps.PullRequest.targetRefName | String | The target branch of the pull request. | 
@@ -868,130 +689,6 @@ Retrieve pull requests in repository.
 | AzureDevOps.PullRequest.lastMergeTargetCommit.commitId | String | The ID of the commit at the head of the target branch at the time of the last pull request merge. | 
 | AzureDevOps.PullRequest.lastMergeTargetCommit.url | String | The REST URL for this resource. | 
 
-
-#### Command Example
-```!azure-devops-pull-request-list project="xsoar" repository="xsoar" page="1" limit="2"```
-
-#### Context Example
-```json
-{
-    "AzureDevOps": {
-        "PullRequest": [
-            {
-                "codeReviewId": 70,
-                "createdBy": {
-                    "_links": {
-                        "avatar": {
-                            "href": "https://dev.azure.com/xsoar-organization/_apis/GraphProfile/MemberAvatars/aad.ZWFlMjk2ZGYtMzYwOS03YWY3LWFkNzMtYzNlYmRhZDM3ZmQ5"
-                        }
-                    },
-                    "descriptor": "aad.ZWFlMjk2ZGYtMzYwOS03YWY3LWFkNzMtYzNlYmRhZDM3ZmQ5",
-                    "displayName": "XSOAR User 1",
-                    "id": "XXXX",
-                    "imageUrl": "https://dev.azure.com/xsoar-organization/_api/_common/identityImage?id=XXXX",
-                    "uniqueName": "user2@xsoar.com",
-                    "url": "https://vssps.visualstudio.com/XXXX/_apis/Identities/XXXX"
-                },
-                "creationDate": "2021-11-30T08:56:55.531709+00:00",
-                "description": "Demo pr",
-                "isDraft": false,
-                "lastMergeCommit": {
-                    "commitId": "333b2ec34ca6b330901af84a2483c87effb49c23",
-                    "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/commits/333b2ec34ca6b330901af84a2483c87effb49c23"
-                },
-                "lastMergeSourceCommit": {
-                    "commitId": "b21e2330a6ae2f920b8f5ae9b74e069230b27087",
-                    "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/commits/b21e2330a6ae2f920b8f5ae9b74e069230b27087"
-                },
-                "lastMergeTargetCommit": {
-                    "commitId": "2eca089fab76f1f32051d188653ea7d279b90a4b",
-                    "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/commits/2eca089fab76f1f32051d188653ea7d279b90a4b"
-                },
-                "mergeId": "a950a614-1a14-4412-90ad-e6f7417e26c6",
-                "mergeStatus": "succeeded",
-                "pullRequestId": 70,
-                "repository": {
-                    "id": "XXXX",
-                    "name": "xsoar",
-                    "project": {
-                        "id": "xsoar-project",
-                        "lastUpdateTime": "0001-01-01T00:00:00",
-                        "name": "xsoar",
-                        "state": "unchanged",
-                        "visibility": "unchanged"
-                    },
-                    "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX"
-                },
-                "reviewers": [
-                    {
-                        "_links": {
-                            "avatar": {
-                                "href": "https://dev.azure.com/xsoar-organization/_apis/GraphProfile/MemberAvatars/aad.ZWFlMjk2ZGYtMzYwOS03YWY3LWFkNzMtYzNlYmRhZDM3ZmQ5"
-                            }
-                        },
-                        "displayName": "XSOAR User 1",
-                        "hasDeclined": false,
-                        "id": "XXXX",
-                        "imageUrl": "https://dev.azure.com/xsoar-organization/_api/_common/identityImage?id=XXXX",
-                        "isFlagged": false,
-                        "reviewerUrl": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/pullRequests/70/reviewers/XXXX",
-                        "uniqueName": "user2@xsoar.com",
-                        "url": "https://vssps.visualstudio.com/XXXX/_apis/Identities/XXXX",
-                        "vote": 0
-                    }
-                ],
-                "sourceRefName": "refs/heads/test-test",
-                "status": "active",
-                "supportsIterations": true,
-                "targetRefName": "refs/heads/main",
-                "title": "Test xsoar",
-                "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/pullRequests/70"
-            },
-            {
-                "codeReviewId": 65,
-                "createdBy": {
-                    "_links": {
-                        "avatar": {
-                            "href": "https://dev.azure.com/xsoar-organization/_apis/GraphProfile/MemberAvatars/aad.ZWFlMjk2ZGYtMzYwOS03YWY3LWFkNzMtYzNlYmRhZDM3ZmQ5"
-                        }
-                    },
-                    "descriptor": "aad.ZWFlMjk2ZGYtMzYwOS03YWY3LWFkNzMtYzNlYmRhZDM3ZmQ5",
-                    "displayName": "XSOAR User 1",
-                    "id": "XXXX",
-                    "imageUrl": "https://dev.azure.com/xsoar-organization/_api/_common/identityImage?id=XXXX",
-                    "uniqueName": "user2@xsoar.com",
-                    "url": "https://vssps.visualstudio.com/XXXX/_apis/Identities/XXXX"
-                },
-                "creationDate": "2021-11-28T16:08:09.172985+00:00",
-                "description": "Demo pr",
-                "isDraft": false,
-                "lastMergeCommit": {
-                    "commitId": "62d2b76a5479406cdfba377f041fed7bb621ccf7",
-                    "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/commits/62d2b76a5479406cdfba377f041fed7bb621ccf7"
-                },
-                "lastMergeSourceCommit": {
-                    "commitId": "738ab51bc619423969314de9bb93373bfb6ae101",
-                    "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/commits/738ab51bc619423969314de9bb93373bfb6ae101"
-                },
-                "lastMergeTargetCommit": {
-                    "commitId": "2eca089fab76f1f32051d188653ea7d279b90a4b",
-                    "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/commits/2eca089fab76f1f32051d188653ea7d279b90a4b"
-                },
-                "mergeId": "46bd552a-8a93-45bb-82ae-4c108020ca15",
-                "mergeStatus": "succeeded",
-                "pullRequestId": 65,
-                "repository": {
-                    "id": "XXXX",
-                    "name": "xsoar",
-                    "project": {
-                        "id": "xsoar-project",
-                        "lastUpdateTime": "0001-01-01T00:00:00",
-                        "name": "xsoar",
-                        "state": "unchanged",
-                        "visibility": "unchanged"
-                    },
-                    "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX"
-                },
                 "reviewers": [
                     {
                         "_links": {
@@ -1133,124 +830,23 @@ Retrieve git repositories in the organization project.
             "isDisabled": false,
             "name": "test2803",
             "project": {
-                "id": "xsoar-project",
-                "lastUpdateTime": "2021-10-13T15:46:18.017Z",
-                "name": "xsoar",
-                "revision": 11,
-                "state": "wellFormed",
-                "url": "https://dev.azure.com/xsoar-organization/_apis/projects/xsoar-project",
-                "visibility": "private"
-            },
-            "remoteUrl": "https://xsoar-organization@dev.azure.com/xsoar-organization/xsoar/_git/test2803",
-            "size": 0,
-            "sshUrl": "git@ssh.dev.azure.com:v3/xsoar-organization/xsoar/test2803",
-            "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/xsoar-repository",
-            "webUrl": "https://dev.azure.com/xsoar-organization/xsoar/_git/test2803"
-        }
-    }
-}
-```
+### azure-devops-pull-request-list
 
-#### Human Readable Output
-
->### Repositories List:
-> Current page size: 1
-> Showing page 1 out others that may exist.
->|Id|Name|Web Url|Size ( Bytes )|
->|---|---|---|---|
->| xsoar-repository | test2803 | https:<span>//</span>dev.azure.com/xsoar-organization/xsoar/_git/test2803 | 0 |
-
-
-### azure-devops-user-list
 ***
-Query users that were added to organization projects.
-
+Retrieve pull requests in repository.
 
 #### Base Command
 
-`azure-devops-user-list`
+`azure-devops-pull-request-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | Users or organization query prefix. For example, if you want to retrieve information about the user 'Tom', you can enter the value of this argument as 'Tom'. | Required | 
+| project | The name or ID of the project which the pull requests belongs to. A default value is taken from the configuration parameters, but you can override it. | Optional | 
+| repository | The name of the repository pull request's target branch. A default value is taken from the configuration parameters, but you can override it. | Optional | 
 | page | The page number of the results to retrieve. Minimum value is 1. Default is 1. | Optional | 
-| limit | The number of results to retrieve. Minimum value is 1. Default is 50. | Optional | 
-
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| AzureDevOps.User.entityType | String | The type of the entity. | 
-| AzureDevOps.User.localId | String | The ID of the identity. | 
-| AzureDevOps.User.signInAddress | String | The email address of the user. | 
-
-
-#### Command Example
-```!azure-devops-user-list query="ofek"```
-
-#### Context Example
-```json
-{
-    "AzureDevOps": {
-        "User": [
-            {
-                "active": true,
-                "department": null,
-                "description": null,
-                "displayName": "XSOAR User 2",
-                "entityId": "vss.ds.v1.aad.user.2c7514ff41d04eb0ac8235b8671de094",
-                "entityType": "User",
-                "guest": false,
-                "isMru": false,
-                "jobTitle": null,
-                "localDirectory": "vsd",
-                "localId": "XXXX",
-                "mail": "user1@xsoar.com",
-                "mailNickname": "User 1",
-                "originDirectory": "aad",
-                "originId": "2c7514ff-41d0-4eb0-ac82-35b8671de094",
-                "physicalDeliveryOfficeName": null,
-                "samAccountName": "user1@xsoar.com",
-                "scopeName": "Palo Alto Networks",
-                "signInAddress": "user1@xsoar.com",
-                "subjectDescriptor": "aad.NWYyZWMzNTctMjgzMS03M2I4LTk1NWYtMmRkZGM2OWVmMzg3",
-                "surname": "User 1",
-                "telephoneNumber": null
-            }
-        ]
-    }
-}
-```
-
-#### Human Readable Output
-
->### Users List:
-> Current page size: 50
-> Showing page 1 out others that may exist.
->|Email|Entity Type|Id|
->|---|---|---|
->| user1@xsoar.com | User | XXXX |
->| user2@xsoar.com | User | XXXX |
-
-
-### azure-devops-pull-request-get
-***
-Retrieve pull-request.
-
-
-#### Base Command
-
-`azure-devops-pull-request-get`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| project | The name or ID of the project. | Required | 
-| repository_id | The repository ID of the pull request's target branch. A repository ID can be obtained by running the 'azure-devops-repository-list' command. | Required | 
-| pull_request_id | The ID of the pull request to retrieve. | Required | 
-
+| limit | The number of results to retrieve. Minimum  value is 1. Default is 50. | Optional | 
 
 #### Context Output
 
@@ -1260,87 +856,23 @@ Retrieve pull-request.
 | AzureDevOps.PullRequest.repository.id | String | The ID of the repository. | 
 | AzureDevOps.PullRequest.repository.name | String | The name of the repository. | 
 | AzureDevOps.PullRequest.repository.url | String | The URL of the repository. | 
-| AzureDevOps.PullRequest.repository.size | Number | The size of the repository. | 
 | AzureDevOps.PullRequest.pullRequestId | Number | The ID of the pull request. | 
 | AzureDevOps.PullRequest.status | String | The status of the pull request. | 
 | AzureDevOps.PullRequest.createdBy.displayName | String | The display name of the pull request creator. | 
 | AzureDevOps.PullRequest.createdBy.id | String | The ID of the pull request creator. | 
 | AzureDevOps.PullRequest.createdBy.uniqueName | String | The unique name of the pull request creator. | 
 | AzureDevOps.PullRequest.creationDate | Date | The creation date of the pull request, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z". | 
-| AzureDevOps.PullRequest.title | String | The title of the pull request | 
+| AzureDevOps.PullRequest.title | String | The title of the pull request. | 
 | AzureDevOps.PullRequest.description | String | The description of the pull request. | 
 | AzureDevOps.PullRequest.sourceRefName | String | The source branch of the pull request. | 
 | AzureDevOps.PullRequest.targetRefName | String | The target branch of the pull request. | 
 | AzureDevOps.PullRequest.mergeStatus | String | The current status of the pull request merge. | 
 | AzureDevOps.PullRequest.isDraft | Boolean | Whether the pull request is a draft / WIP. | 
 | AzureDevOps.PullRequest.lastMergeSourceCommit.commitId | String | The ID of the commit at the head of the source branch at the time of the last pull request merge. | 
-| AzureDevOps.PullRequest.lastMergeSourceCommit.url | String | The REST URL for the merge source commit. | 
+| AzureDevOps.PullRequest.lastMergeSourceCommit.url | String | The REST URL for this resource. | 
 | AzureDevOps.PullRequest.lastMergeTargetCommit.commitId | String | The ID of the commit at the head of the target branch at the time of the last pull request merge. | 
-| AzureDevOps.PullRequest.lastMergeTargetCommit.url | String | The REST URL for the merge target commit. | 
+| AzureDevOps.PullRequest.lastMergeTargetCommit.url | String | The REST URL for this resource. | 
 
-
-#### Command Example
-```!azure-devops-pull-request-get project="xsoar" repository_id="XXXX" pull_request_id="70"```
-
-#### Context Example
-```json
-{
-    "AzureDevOps": {
-        "PullRequest": {
-            "_links": {
-                "createdBy": {
-                    "href": "https://vssps.visualstudio.com/XXXX/_apis/Identities/XXXX"
-                },
-                "iterations": {
-                    "href": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/pullRequests/70/iterations"
-                },
-                "repository": {
-                    "href": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX"
-                },
-                "self": {
-                    "href": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/pullRequests/70"
-                },
-                "sourceBranch": {
-                    "href": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/refs/heads/test-test"
-                },
-                "sourceCommit": {
-                    "href": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/commits/b21e2330a6ae2f920b8f5ae9b74e069230b27087"
-                },
-                "statuses": {
-                    "href": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/pullRequests/70/statuses"
-                },
-                "targetBranch": {
-                    "href": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/refs/heads/main"
-                },
-                "targetCommit": {
-                    "href": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/commits/2eca089fab76f1f32051d188653ea7d279b90a4b"
-                },
-                "workItems": {
-                    "href": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/git/repositories/XXXX/pullRequests/70/workitems"
-                }
-            },
-            "artifactId": "vstfs:///Git/PullRequestId/xsoar-project%2fXXXX%2f70",
-            "codeReviewId": 70,
-            "createdBy": {
-                "_links": {
-                    "avatar": {
-                        "href": "https://dev.azure.com/xsoar-organization/_apis/GraphProfile/MemberAvatars/aad.ZWFlMjk2ZGYtMzYwOS03YWY3LWFkNzMtYzNlYmRhZDM3ZmQ5"
-                    }
-                },
-                "descriptor": "aad.ZWFlMjk2ZGYtMzYwOS03YWY3LWFkNzMtYzNlYmRhZDM3ZmQ5",
-                "displayName": "XSOAR User 1",
-                "id": "XXXX",
-                "imageUrl": "https://dev.azure.com/xsoar-organization/_api/_common/identityImage?id=XXXX",
-                "uniqueName": "user2@xsoar.com",
-                "url": "https://vssps.visualstudio.com/XXXX/_apis/Identities/XXXX"
-            },
-            "creationDate": "2021-11-30T08:56:55.531709+00:00",
-            "description": "Demo pr",
-            "isDraft": false,
-            "lastMergeCommit": {
-                "author": {
-                    "date": "2021-11-30T08:56:55Z",
-                    "email": "user2@xsoar.com",
                     "name": "XSOAR User 1"
                 },
                 "comment": "Merge pull request 70 from test-test into main",
@@ -2136,74 +1668,32 @@ Updates a single work item.
 | AzureDevOps.WorkItem._links.workItemUpdates.href | String | Link to the work item updates. | 
 | AzureDevOps.WorkItem._links.workItemRevisions.href | String | Link to the work item revisions. | 
 | AzureDevOps.WorkItem._links.workItemComments.href | String | Link to the work item comments. | 
-| AzureDevOps.WorkItem._links.html.href | String | Link to the work item html. | 
-| AzureDevOps.WorkItem._links.workItemType.href | String | Link to the work item type. | 
-| AzureDevOps.WorkItem._links.fields.href | String | Link to the work item fields. | 
-| AzureDevOps.WorkItem.url | String | Link to the work item. | 
-
-### azure-devops-file-create
+### azure-devops-branch-list
 
 ***
-Add a file to the repository.
+Retrieve repository branches list.
 
 #### Base Command
 
-`azure-devops-file-create`
+`azure-devops-branch-list`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| organization_name | The name of the Azure DevOps organization. Default value will be config param, user can supply a different value. | Optional | 
-| project_name | Project ID or project name. Default value will be config param, user can supply a different value. | Optional | 
-| repository_id | The repository ID. Default value will be config param, user can supply a different value. | Optional | 
-| branch_name | The branch name. This argument can be obtained by running the 'azure-devops-branch-list' command. | Required | 
-| branch_id | The branch ID. This argument can be obtained by running the 'azure-devops-branch-list' command. | Required | 
-| commit_comment | Comment or message of the commit. | Required | 
-| file_path | The file path. | Optional | 
-| file_content | The file content. | Optional | 
-| entry_id | There is an option to the user to provide an entry_id. In that case we will take the file_content and the file_path from the given id. | Optional | 
+| project | The name of the organization project. A default value is taken from the configuration parameters, but you can override it. | Optional | 
+| repository | The name of the project repository. A default value is taken from the configuration parameters, but the user can override it. | Optional | 
+| page | The page number of the results to retrieve. Minimum value is 1. Default is 1. | Optional | 
+| limit | The number of results to retrieve. Minimum value is 1. Default is 50. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AzureDevOps.File.commits.treeId | String | Tree ID of the commit. | 
-| AzureDevOps.File.commits.commitId | String | ID \(SHA-1\) of the commit. | 
-| AzureDevOps.File.commits.author.name | String | Name of the commit author. | 
-| AzureDevOps.File.commits.author.email | String | Email address of the commit author. | 
-| AzureDevOps.File.commits.author.date | Date | Date of the commit operation. | 
-| AzureDevOps.File.commits.committer.name | String | Name of the commit committer. | 
-| AzureDevOps.File.commits.committer.email | String | Email address of the commit committer. | 
-| AzureDevOps.File.commits.committer.date | Date | Date of the commit operation. | 
-| AzureDevOps.File.commits.comment | String | Comment or message of the commit. | 
-| AzureDevOps.File.commits.parents | String | An enumeration of the parent commit IDs for this commit. | 
-| AzureDevOps.File.commits.url | String | REST URL for this resource. | 
-| AzureDevOps.File.refUpdates.repositoryId | String | The ID of the repository. | 
-| AzureDevOps.File.refUpdates.name | String | The branch name. | 
-| AzureDevOps.File.refUpdates.oldObjectId | String | The last commit ID. | 
-| AzureDevOps.File.refUpdates.newObjectId | String | The new commit ID. | 
-| AzureDevOps.File.repository.id | String | The ID of the repository. | 
-| AzureDevOps.File.repository.name | String | The name of the repository. | 
-| AzureDevOps.File.repository.url | String | The URL of the repository. | 
-| AzureDevOps.File.repository.project.id | String | The ID of the Project. | 
-| AzureDevOps.File.repository.project.name | String | The name of the project. | 
-| AzureDevOps.File.repository.project.description | String | The description of the project. | 
-| AzureDevOps.File.repository.project.url | String | The URL of the project. | 
-| AzureDevOps.File.repository.project.state | String | The state of the project. | 
-| AzureDevOps.File.repository.project.revision | Number | The revision number of the project. | 
-| AzureDevOps.File.repository.project.visibility | String | Indicates whom the project is visible to. | 
-| AzureDevOps.File.repository.project.lastUpdateTime | Date | The project last update time, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z". | 
-| AzureDevOps.File.repository.size | Number | The size of the repository \(in bytes\). | 
-| AzureDevOps.File.repository.remoteUrl | String | Remote URL path to the repository. | 
-| AzureDevOps.File.repository.sshUrl | String | The ssh URL of the repository. | 
-| AzureDevOps.File.repository.webUrl | String | The web URL of the repository. | 
-| AzureDevOps.File.repository.isDisabled | Boolean | If the repository is disabled or not. | 
-| AzureDevOps.File.repository.isInMaintenance | Boolean | If the repository is in maintenance or not. | 
-| AzureDevOps.File.pushedBy.displayName | String | Display name of the user who pushed the commit / file. | 
-| AzureDevOps.File.pushedBy.url | String | Identity Reference. | 
-| AzureDevOps.File.pushedBy._links.avatar.href | String | Url for the user's avatar. | 
-| AzureDevOps.File.pushedBy.id | String | ID of the user who pushed the commit / file. | 
+| AzureDevOps.Branch.project | String | The name of the project. | 
+| AzureDevOps.Branch.repository | String | The name of the repository. | 
+| AzureDevOps.Branch.name | String | The name of the branch. | 
+
 | AzureDevOps.File.pushedBy.uniqueName | String | Domain and principal name. | 
 | AzureDevOps.File.pushedBy.imageUrl | String | Identity Image. | 
 | AzureDevOps.File.pushedBy.descriptor | String | The descriptor is the primary way to reference the graph subject while the system is running. This field will uniquely identify the same graph subject across both Accounts and Organizations. | 
@@ -2246,6 +1736,445 @@ Update a file in the repository.
 | AzureDevOps.File.commits.treeId | String | Tree ID of the commit. | 
 | AzureDevOps.File.commits.commitId | String | ID \(SHA-1\) of the commit. | 
 | AzureDevOps.File.commits.author.name | String | Name of the commit author. | 
+### azure-devops-pull-request-reviewer-list
+
+***
+Retrieve the reviewers for a pull request.
+
+#### Base Command
+
+`azure-devops-pull-request-reviewer-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| organization_name | The name of the Azure DevOps organization. A default value is taken from the configuration parameters, but you can override it. | Optional | 
+| project_name | Project ID or project name. A default value is taken from the configuration parameters, but you can override it. | Optional | 
+| repository_id | The repository ID. A default value is taken from the configuration parameters, but you can override it. | Optional | 
+| pull_request_id | ID of the pull request. By using the azure-devops-pull-request-list command, you can obtain the ID. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureDevOps.PullRequestReviewer.reviewerUrl | String | URL to retrieve information about the reviewer. | 
+| AzureDevOps.PullRequestReviewer.vote | Number | Vote on a pull request, 10 - approved, 5 - approved with suggestions, 0 - no vote, -5 - waiting for author, -10 - rejected. | 
+| AzureDevOps.PullRequestReviewer.hasDeclined | Boolean | Whether the pull request has been declined. | 
+| AzureDevOps.PullRequestReviewer.isRequired | Boolean | Indicates if this is a required reviewer for this pull request. Branches can have policies that require particular reviewers are required for pull requests. | 
+| AzureDevOps.PullRequestReviewer.isFlagged | Boolean | A way to mark some special pull requests we are dealing with to distinguish them from other pull requests. | 
+| AzureDevOps.PullRequestReviewer.displayName | String | This is the non-unique display name of the graph subject. You can only change this field in the source provider. | 
+| AzureDevOps.PullRequestReviewer.url | String | REST URL for this resource. | 
+| AzureDevOps.PullRequestReviewer._links.avatar.href | String | This field contains zero or more interesting links about the graph subject. These links may be invoked to obtain additional relationships or more detailed information about this graph subject. | 
+| AzureDevOps.PullRequestReviewer.id | String | The ID of the pull request reviewer. | 
+| AzureDevOps.PullRequestReviewer.uniqueName | String | The user name of the reviewer. | 
+| AzureDevOps.PullRequestReviewer.imageUrl | String | Link to the reviewer's user image. | 
+
+### azure-devops-pull-request-reviewer-add
+
+***
+Add a reviewer to a pull request.
+
+#### Base Command
+
+`azure-devops-pull-request-reviewer-add`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| organization_name | The name of the Azure DevOps organization. A default value is taken from the configuration parameters, but you can override it. | Optional | 
+| repository_id | The repository ID. A default value is taken from the configuration parameters, but you can override it. | Optional | 
+| project_name | Project ID or project name. A default value is taken from the configuration parameters, but you can override it. | Optional | 
+| reviewer_user_id | ID of the reviewer. By using the azure-devops-user-list command, you can obtain the user ID. | Required | 
+| is_required | Indicates if this is a required reviewer for this pull request. Branches can have policies that require particular reviewers are required for pull requests. Possible values are: True, False. Default is false. | Optional | 
+| pull_request_id | ID of the pull request. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureDevOps.PullRequestReviewer.reviewerUrl | String | URL to retrieve information about this identity. | 
+| AzureDevOps.PullRequestReviewer.vote | Number | Vote on a pull request, 10 - approved, 5 - approved with suggestions, 0 - no vote, -5 - waiting for author, -10 - rejected. | 
+| AzureDevOps.PullRequestReviewer.hasDeclined | Boolean | Whether the pull request has been declined. | 
+| AzureDevOps.PullRequestReviewer.isFlagged | Boolean | A way to mark some special Pull Requests we are dealing with to distinguish them from other Pull Requests. | 
+| AzureDevOps.PullRequestReviewer._links.avatar.href | String | This field contains zero or more interesting links about the graph subject. These links may be invoked to obtain additional relationships or more detailed information about this graph subject. | 
+| AzureDevOps.PullRequestReviewer.id | String | ID of the pull request reviewer. | 
+| AzureDevOps.PullRequestReviewer.displayName | String | This is the non-unique display name of the graph subject. To change this field, you must alter its value in the source provider. | 
+| AzureDevOps.PullRequestReviewer.uniqueName | String | The user name of the pull request reviewer. | 
+| AzureDevOps.PullRequestReviewer.url | String | REST URL for this resource. | 
+| AzureDevOps.PullRequestReviewer.imageUrl | String | Link to the reviewer's user image. | 
+
+### azure-devops-pull-request-commit-list
+
+***
+Get the commits for the specified pull request.
+
+#### Base Command
+
+`azure-devops-pull-request-commit-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| organization_name | The name of the Azure DevOps organization. A default value is taken from the configuration parameters, but you can override it. | Optional | 
+| project_name | Project ID or project name. A default value is taken from the configuration parameters, but you can override it. | Optional | 
+| repository_id | The repository ID. A default value is taken from the configuration parameters, but you can override it. | Optional | 
+| pull_request_id | ID of the pull request. By using the azure-devops-pull-request-list command, you can obtain the ID. | Required | 
+| limit | The maximum number of results to retrieve. Minimum value is 1. Default is 50. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureDevOps.Commit.commitId | String | ID \(SHA-1\) of the commit. | 
+| AzureDevOps.Commit.author.name | String | Name of the commit author. | 
+| AzureDevOps.Commit.author.email | String | Email address of the commit author. | 
+| AzureDevOps.Commit.author.date | Date | Date of the commit operation. | 
+| AzureDevOps.Commit.committer.name | String | Name of the commit committer. | 
+| AzureDevOps.Commit.committer.email | String | Email address of the commit committer. | 
+| AzureDevOps.Commit.committer.date | Date | Date of the commit operation. | 
+| AzureDevOps.Commit.comment | String | Comment or message of the commit. | 
+| AzureDevOps.Commit.url | String | REST URL for this resource. | 
+
+### azure-devops-commit-list
+
+***
+Retrieve Git commits for a project.
+
+#### Base Command
+
+`azure-devops-commit-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| organization_name | The name of the Azure DevOps organization. A default value is taken from the configuration parameters, but you can override it. | Optional | 
+| project_name | Project ID or project name. A default value is taken from the configuration parameters, but you can override it. | Optional | 
+| repository_id | The repository ID. A default value is taken from the configuration parameters, but you can override it. | Optional | 
+| limit | The maximum number of results to retrieve. Minimum value is 1. Default is 50. | Optional | 
+| page | The page number of the results to retrieve. Minimum value is 1. Default is 1. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureDevOps.Commit.commitId | String | ID \(SHA-1\) of the commit. | 
+| AzureDevOps.Commit.author.name | String | Name of the commit author. | 
+| AzureDevOps.Commit.author.email | String | Email address of the commit author. | 
+| AzureDevOps.Commit.author.date | Date | Date of the commit operation. | 
+| AzureDevOps.Commit.committer.name | String | Name of the commit committer. | 
+| AzureDevOps.Commit.committer.email | String | Email address of the commit committer. | 
+| AzureDevOps.Commit.committer.date | Date | Date of the commit operation. | 
+| AzureDevOps.Commit.comment | String | Comment or message of the commit. | 
+| AzureDevOps.Commit.changeCounts | Number | Counts of the types of changes \(edits, deletes, etc.\) included with the commit. | 
+| AzureDevOps.Commit.url | String | REST URL for this resource. | 
+| AzureDevOps.Commit.remoteUrl | String | Remote URL path to the commit. | 
+
+### azure-devops-commit-get
+
+***
+Retrieve a particular commit.
+
+#### Base Command
+
+`azure-devops-commit-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| organization_name | The name of the Azure DevOps organization. A default value is taken from the configuration parameters, but you can override it. | Optional | 
+| project_name | Project ID or project name. A default value is taken from the configuration parameters, but you can override it. | Optional | 
+| repository_id | The repository ID. A default value is taken from the configuration parameters, but you can override it. | Optional | 
+| commit_id | The ID of the commit. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureDevOps.Commit.treeId | String | Tree ID of the commit. | 
+| AzureDevOps.Commit.commitId | String | ID \(SHA-1\) of the commit. | 
+| AzureDevOps.Commit.author.name | String | Name of the commit author. | 
+| AzureDevOps.Commit.author.email | String | Email address of the commit author. | 
+| AzureDevOps.Commit.author.date | Date | Date of the commit operation. | 
+| AzureDevOps.Commit.author.imageUrl | String | Link to the author user image. | 
+| AzureDevOps.Commit.committer.name | String | Name of the commit committer. | 
+| AzureDevOps.Commit.committer.email | String | Email address of the commit committer. | 
+| AzureDevOps.Commit.committer.date | Date | Date of the commit operation. | 
+| AzureDevOps.Commit.committer.imageUrl | String | Link to the committer user image. | 
+| AzureDevOps.Commit.comment | String | Comment or message of the commit. | 
+| AzureDevOps.Commit.parents | String | An enumeration of the parent commit IDs for this commit. | 
+| AzureDevOps.Commit.url | String | REST URL for this resource. | 
+| AzureDevOps.Commit.remoteUrl | String | Remote URL path to the commit. | 
+| AzureDevOps.Commit._links.self.href | String | A collection of related REST reference links. | 
+| AzureDevOps.Commit._links.repository.href | String | Link to the repository where the commit is. | 
+| AzureDevOps.Commit._links.web.href | String | Link to the commit. | 
+| AzureDevOps.Commit._links.changes.href | String | Link to the commit changes. | 
+| AzureDevOps.Commit.push.pushedBy.displayName | String | Display name of the user who pushed the commit. | 
+| AzureDevOps.Commit.push.pushedBy.url | String | Identity reference. | 
+| AzureDevOps.Commit.push.pushedBy._links.avatar.href | String | URL for the user's avatar. | 
+| AzureDevOps.Commit.push.pushedBy.id | String | ID of the user who pushed the commit. | 
+| AzureDevOps.Commit.push.pushedBy.uniqueName | String | The unique name of the user who pushed the commit. | 
+| AzureDevOps.Commit.push.pushedBy.imageUrl | String | The user's image who pushed the commit. | 
+| AzureDevOps.Commit.push.pushedBy.descriptor | String | The descriptor is the primary way to reference the graph subject while the system is running. This field will uniquely identify the same graph subject across both Accounts and Organizations. | 
+| AzureDevOps.Commit.push.pushId | Number | Unique ID of the push operation. | 
+| AzureDevOps.Commit.push.date | Date | Date of the push operation. | 
+
+### azure-devops-work-item-get
+
+***
+Returns a single work item.
+
+#### Base Command
+
+`azure-devops-work-item-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| organization_name | The name of the Azure DevOps organization. A default value is taken from the configuration parameters, but you can override it. | Optional | 
+| project_name | Project ID or project name. A default value is taken from the configuration parameters, but you can override it. | Optional | 
+| item_id | The work item ID. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureDevOps.WorkItem.id | Number | The work item ID. | 
+| AzureDevOps.WorkItem.rev | Number | Revision number of the work item. | 
+| AzureDevOps.WorkItem.fields.System.AreaPath | String | The work item AreaPath. Area paths allow you to group work items by team, product, or feature area. | 
+| AzureDevOps.WorkItem.fields.System.TeamProject | String | The work item TeamProject. A group of project members focused on specific products, services, or feature areas. | 
+| AzureDevOps.WorkItem.fields.System.IterationPath | String | The work item IterationPath. Iteration paths allow you to group work into sprints, milestones, or other event-specific or time-related period. | 
+| AzureDevOps.WorkItem.fields.System.WorkItemType | String | The work item type. Epic, Feature, User Story and Task/Bug. | 
+| AzureDevOps.WorkItem.fields.System.State | String | Workflow states define how a work item progresses from its creation to closure. The four main states that are defined for the User Story describe a user story's progression. The workflow states are New, Active, Resolved, and Closed. | 
+| AzureDevOps.WorkItem.fields.System.Reason | String | This reason for the work item. | 
+| AzureDevOps.WorkItem.fields.System.AssignedTo.displayName | String | Display name of the user assigned to the work item. | 
+| AzureDevOps.WorkItem.fields.System.AssignedTo.url | String | The work item URL. | 
+| AzureDevOps.WorkItem.fields.System.AssignedTo._links.avatar.href | String | This field contains zero or more interesting links about the graph subject. These links may be invoked to obtain additional relationships or more detailed information about this graph subject. | 
+| AzureDevOps.WorkItem.fields.System.AssignedTo.id | String | ID of the user assigned to the work item. | 
+| AzureDevOps.WorkItem.fields.System.AssignedTo.uniqueName | String | The unique name of the user assigned to the work item. | 
+| AzureDevOps.WorkItem.fields.System.AssignedTo.imageUrl | String | Link to the user \(assigned to the work item\) image. | 
+| AzureDevOps.WorkItem.fields.System.AssignedTo.descriptor | String | The descriptor is the primary way to reference the graph subject while the system is running. This field will uniquely identify the same graph subject across both Accounts and Organizations. | 
+| AzureDevOps.WorkItem.fields.System.CreatedDate | Date | The run creation date, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z". | 
+| AzureDevOps.WorkItem.fields.System.CreatedBy.displayName | String | Display name of the user who created the work item. | 
+| AzureDevOps.WorkItem.fields.System.CreatedBy.url | String | The work item URL. | 
+| AzureDevOps.WorkItem.fields.System.CreatedBy._links.avatar.href | String | This field contains zero or more interesting links about the graph subject. These links may be invoked to obtain additional relationships or more detailed information about this graph subject. | 
+| AzureDevOps.WorkItem.fields.System.CreatedBy.id | String | ID of the user who created the work item. | 
+| AzureDevOps.WorkItem.fields.System.CreatedBy.uniqueName | String | The unique name of the user who created the work item. | 
+| AzureDevOps.WorkItem.fields.System.CreatedBy.imageUrl | String | Link to the user \(created the work item\) image. | 
+| AzureDevOps.WorkItem.fields.System.CreatedBy.descriptor | String | The descriptor is the primary way to reference the graph subject while the system is running. This field will uniquely identify the same graph subject across both Accounts and Organizations. | 
+| AzureDevOps.WorkItem.fields.System.ChangedDate | Date | The datetime the run was changed, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z". | 
+| AzureDevOps.WorkItem.fields.System.ChangedBy.displayName | String | Display name of the user who changed the work item. | 
+| AzureDevOps.WorkItem.fields.System.ChangedBy.url | String | The work item URL. | 
+| AzureDevOps.WorkItem.fields.System.ChangedBy._links.avatar.href | String | This field contains zero or more interesting links about the graph subject. These links may be invoked to obtain additional relationships or more detailed information about this graph subject. | 
+| AzureDevOps.WorkItem.fields.System.ChangedBy.id | String | ID of the user who changed the work item. | 
+| AzureDevOps.WorkItem.fields.System.ChangedBy.uniqueName | String | The unique name of the user who changed the work item. | 
+| AzureDevOps.WorkItem.fields.System.ChangedBy.imageUrl | String | Link to the user \(changed the work item\) image. | 
+| AzureDevOps.WorkItem.fields.System.ChangedBy.descriptor | String | The descriptor is the primary way to reference the graph subject while the system is running. This field will uniquely identify the same graph subject across both Accounts and Organizations. | 
+| AzureDevOps.WorkItem.fields.System.CommentCount | Number | Count of the work item comments. | 
+| AzureDevOps.WorkItem.fields.System.Title | String | The work item title. | 
+| AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.StateChangeDate | Date | The datetime the state was changed, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z". | 
+| AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.ActivatedDate | Date | The activated date, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z". | 
+| AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.ActivatedBy.displayName | String | Display name of the user who activated the work item. | 
+| AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.ActivatedBy.url | String | The work item URL. | 
+| AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.ActivatedBy._links.avatar.href | String | This field contains zero or more interesting links about the graph subject. These links may be invoked to obtain additional relationships or more detailed information about this graph subject. | 
+| AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.ActivatedBy.id | String | ID of the user who activated the work item. | 
+| AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.ActivatedBy.uniqueName | String | The unique name of the user who activated the work item. | 
+| AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.ActivatedBy.imageUrl | String | Link to the user \(activated the work item\) image. | 
+| AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.ActivatedBy.descriptor | String | The descriptor is the primary way to reference the graph subject while the system is running. This field will uniquely identify the same graph subject across both Accounts and Organizations. | 
+| AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.Priority | Number | This field specifies which work the team should do first. | 
+| AzureDevOps.WorkItem.fields.System.Description | String | The work item description. | 
+| AzureDevOps.WorkItem.fields.System.Tags | String | Tags related to the work item. | 
+| AzureDevOps.WorkItem._links.self.href | String | A collection of related REST reference links. | 
+| AzureDevOps.WorkItem._links.workItemUpdates.href | String | Link to the work item updates. | 
+| AzureDevOps.WorkItem._links.workItemRevisions.href | String | Link to the work item revisions. | 
+| AzureDevOps.WorkItem._links.workItemComments.href | String | Link to the work item comments. | 
+| AzureDevOps.WorkItem._links.html.href | String | Link to the work item HTML. | 
+| AzureDevOps.WorkItem._links.workItemType.href | String | Link to the work item type. | 
+| AzureDevOps.WorkItem._links.fields.href | String | Link to the work item fields. | 
+| AzureDevOps.WorkItem.url | String | Link to the work item. | 
+
+### azure-devops-work-item-create
+
+***
+Creates a single work item.
+
+#### Base Command
+
+`azure-devops-work-item-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| organization_name | The name of the Azure DevOps organization. A default value is taken from the configuration parameters, but you can override it. | Optional | 
+| project_name | Project ID or project name. A default value is taken from the configuration parameters, but you can override it. | Optional | 
+| type | The work item type of the work item to create. Possible values are: Task, Epic, Issue. | Required | 
+| title | The work item title of the work item to create. | Required | 
+| iteration_path | The path for the operation. | Optional | 
+| description | Describes the work item. | Optional | 
+| priority | Which work the team should do first. Possible values are: 1, 2, 3, 4. | Optional | 
+| tag | Tag related to the work item. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureDevOps.WorkItem.id | Number | The work item ID. | 
+| AzureDevOps.WorkItem.rev | Number | Revision number of the work item. | 
+| AzureDevOps.WorkItem.fields.System.AreaPath | String | The work item AreaPath. Area paths allow you to group work items by team, product, or feature area. | 
+| AzureDevOps.WorkItem.fields.System.TeamProject | String | The work item TeamProject. A group of project members focused on specific products, services, or feature areas. | 
+| AzureDevOps.WorkItem.fields.System.IterationPath | String | The work item IterationPath. Iteration paths allow you to group work into sprints, milestones, or other event-specific or time-related period. | 
+| AzureDevOps.WorkItem.fields.System.WorkItemType | String | The work item type. Epic, Feature, User Story and Task/Bug. | 
+| AzureDevOps.WorkItem.fields.System.State | String | Workflow states define how a work item progresses from its creation to closure. The four main states that are defined for the User Story describe a user story's progression. The workflow states are New, Active, Resolved, and Closed. | 
+| AzureDevOps.WorkItem.fields.System.Reason | String | This reason for the work item. | 
+| AzureDevOps.WorkItem.fields.System.CreatedDate | Date | The run creation date, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z". | 
+| AzureDevOps.WorkItem.fields.System.CreatedBy.displayName | String | Display name of user created the work item. | 
+| AzureDevOps.WorkItem.fields.System.CreatedBy.url | String | The work item URL. | 
+| AzureDevOps.WorkItem.fields.System.CreatedBy._links.avatar.href | String | This field contains zero or more interesting links about the graph subject. These links may be invoked to obtain additional relationships or more detailed information about this graph subject. | 
+| AzureDevOps.WorkItem.fields.System.CreatedBy.id | String | ID of the user who created the work item. | 
+| AzureDevOps.WorkItem.fields.System.CreatedBy.uniqueName | String | The unique name of the user who created the work item. | 
+| AzureDevOps.WorkItem.fields.System.CreatedBy.imageUrl | String | Link to the user \(created the work item\) image. | 
+| AzureDevOps.WorkItem.fields.System.CreatedBy.descriptor | String | The descriptor is the primary way to reference the graph subject while the system is running. This field will uniquely identify the same graph subject across both Accounts and Organizations. | 
+| AzureDevOps.WorkItem.fields.System.ChangedDate | Date | The datetime the run was changed, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z". | 
+| AzureDevOps.WorkItem.fields.System.ChangedBy.displayName | String | Display name of the user who changed the work item. | 
+| AzureDevOps.WorkItem.fields.System.ChangedBy.url | String | The work item URL. | 
+| AzureDevOps.WorkItem.fields.System.ChangedBy._links.avatar.href | String | This field contains zero or more interesting links about the graph subject. These links may be invoked to obtain additional relationships or more detailed information about this graph subject. | 
+| AzureDevOps.WorkItem.fields.System.ChangedBy.id | String | ID of the user who changed the work item. | 
+| AzureDevOps.WorkItem.fields.System.ChangedBy.uniqueName | String | The unique name of the user who changed the work item. | 
+| AzureDevOps.WorkItem.fields.System.ChangedBy.imageUrl | String | Link to the user \(changed the work item\) image. | 
+| AzureDevOps.WorkItem.fields.System.ChangedBy.descriptor | String | The descriptor is the primary way to reference the graph subject while the system is running. This field will uniquely identify the same graph subject across both Accounts and Organizations. | 
+| AzureDevOps.WorkItem.fields.System.CommentCount | Number | Count of the work item comments. | 
+| AzureDevOps.WorkItem.fields.System.Title | String | The work item title. | 
+| AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.StateChangeDate | Date | The datetime the state was changed, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z". | 
+| AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.Priority | Number | This field specifies which work the team should do first. | 
+| AzureDevOps.WorkItem.fields.System.Description | String | The work item description. | 
+| AzureDevOps.WorkItem.fields.System.Tags | String | Tags related to the work item. | 
+| AzureDevOps.WorkItem._links.self.href | String | A collection of related REST reference links. | 
+| AzureDevOps.WorkItem._links.workItemUpdates.href | String | Link to the work item updates. | 
+| AzureDevOps.WorkItem._links.workItemRevisions.href | String | Link to the work item revisions. | 
+| AzureDevOps.WorkItem._links.workItemComments.href | String | Link to the work item comments. | 
+| AzureDevOps.WorkItem._links.html.href | String | Link to the work item HTML. | 
+| AzureDevOps.WorkItem._links.workItemType.href | String | Link to the work item type. | 
+| AzureDevOps.WorkItem._links.fields.href | String | Link to the work item fields. | 
+| AzureDevOps.WorkItem.url | String | Link to the work item. | 
+
+### azure-devops-work-item-update
+
+***
+Updates a single work item.
+
+#### Base Command
+
+`azure-devops-work-item-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| organization_name | The name of the Azure DevOps organization. A default value is taken from the configuration parameters, but you can override it. | Optional | 
+| project_name | Project ID or project name. A default value is taken from the configuration parameters, but you can override it. | Optional | 
+| repository_id | The repository ID. A default value is taken from the configuration parameters, but you can override it. | Optional | 
+| item_id | The work item ID to update. | Required | 
+| title | A new title for the work item. | Optional | 
+| assignee_display_name | Display name of user assigned to the work item. This argument can be obtained by running the 'azure-devops-user-list' command. | Optional | 
+| state | A new state for the work item. Possible values are: To Do, Doing, Done. | Optional | 
+| iteration_path | A new path for the operation. | Optional | 
+| description | A new description for the work item. | Optional | 
+| priority | A new priority for the work item. Possible values are: 1, 2, 3, 4. | Optional | 
+| tag | A new tag for the work item. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureDevOps.WorkItem.id | Number | The work item ID. | 
+| AzureDevOps.WorkItem.rev | Number | Revision number of the work item. | 
+| AzureDevOps.WorkItem.fields.System.AreaPath | String | The work item AreaPath. Area paths allow you to group work items by team, product, or feature area. | 
+| AzureDevOps.WorkItem.fields.System.TeamProject | String | The work item TeamProject. A group of project members focused on specific products, services, or feature areas. | 
+| AzureDevOps.WorkItem.fields.System.IterationPath | String | The work item IterationPath. Iteration paths allow you to group work into sprints, milestones, or other event-specific or time-related period. | 
+| AzureDevOps.WorkItem.fields.System.WorkItemType | String | The work item type. Epic, Feature, User Story and Task/Bug. | 
+| AzureDevOps.WorkItem.fields.System.State | String | Workflow states define how a work item progresses from its creation to closure. The four main states that are defined for the User Story describe a user story's progression. The workflow states are New, Active, Resolved, and Closed. | 
+| AzureDevOps.WorkItem.fields.System.Reason | String | This reason for the work item. | 
+| AzureDevOps.WorkItem.fields.System.AssignedTo.displayName | String | Display name of user assigned to the work item. | 
+| AzureDevOps.WorkItem.fields.System.AssignedTo.url | String | The work item URL. | 
+| AzureDevOps.WorkItem.fields.System.AssignedTo._links.avatar.href | String | This field contains zero or more interesting links about the graph subject. These links may be invoked to obtain additional relationships or more detailed information about this graph subject. | 
+| AzureDevOps.WorkItem.fields.System.AssignedTo.id | String | ID of the user assigned to the work item. | 
+| AzureDevOps.WorkItem.fields.System.AssignedTo.uniqueName | String | The unique name of the user assigned to the work item. | 
+| AzureDevOps.WorkItem.fields.System.AssignedTo.imageUrl | String | Link to the user \(assigned to the work item\) image. | 
+| AzureDevOps.WorkItem.fields.System.AssignedTo.descriptor | String | The descriptor is the primary way to reference the graph subject while the system is running. This field will uniquely identify the same graph subject across both Accounts and Organizations. | 
+| AzureDevOps.WorkItem.fields.System.CreatedDate | Date | The run creation date, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z". | 
+| AzureDevOps.WorkItem.fields.System.CreatedBy.displayName | String | Display name of the user who created the work item. | 
+| AzureDevOps.WorkItem.fields.System.CreatedBy.url | String | The work item URL. | 
+| AzureDevOps.WorkItem.fields.System.CreatedBy._links.avatar.href | String | This field contains zero or more interesting links about the graph subject. These links may be invoked to obtain additional relationships or more detailed information about this graph subject. | 
+| AzureDevOps.WorkItem.fields.System.CreatedBy.id | String | ID of the user who created the work item. | 
+| AzureDevOps.WorkItem.fields.System.CreatedBy.uniqueName | String | The unique name of the user who created the work item. | 
+| AzureDevOps.WorkItem.fields.System.CreatedBy.imageUrl | String | Link to the user \(created the work item\) image. | 
+| AzureDevOps.WorkItem.fields.System.CreatedBy.descriptor | String | The descriptor is the primary way to reference the graph subject while the system is running. This field will uniquely identify the same graph subject across both Accounts and Organizations. | 
+| AzureDevOps.WorkItem.fields.System.ChangedDate | Date | The datetime the run was changed, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z". | 
+| AzureDevOps.WorkItem.fields.System.ChangedBy.displayName | String | Display name of the user who changed the work item. | 
+| AzureDevOps.WorkItem.fields.System.ChangedBy.url | String | The work item URL. | 
+| AzureDevOps.WorkItem.fields.System.ChangedBy._links.avatar.href | String | This field contains zero or more interesting links about the graph subject. These links may be invoked to obtain additional relationships or more detailed information about this graph subject. | 
+| AzureDevOps.WorkItem.fields.System.ChangedBy.id | String | ID of the user who changed the work item. | 
+| AzureDevOps.WorkItem.fields.System.ChangedBy.uniqueName | String | The unique name of the user who changed the work item. | 
+| AzureDevOps.WorkItem.fields.System.ChangedBy.imageUrl | String | Link to the user \(changed the work item\) image. | 
+| AzureDevOps.WorkItem.fields.System.ChangedBy.descriptor | String | The descriptor is the primary way to reference the graph subject while the system is running. This field will uniquely identify the same graph subject across both Accounts and Organizations. | 
+| AzureDevOps.WorkItem.fields.System.CommentCount | Number | Count of the work item comments. | 
+| AzureDevOps.WorkItem.fields.System.Title | String | The work item title. | 
+| AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.StateChangeDate | Date | The datetime the state was changed, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z". | 
+| AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.ActivatedDate | Date | The activated date, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z". | 
+| AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.ActivatedBy.displayName | String | Display name of the user who activated the work item. | 
+| AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.ActivatedBy.url | String | The work item URL. | 
+| AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.ActivatedBy._links.avatar.href | String | This field contains zero or more interesting links about the graph subject. These links may be invoked to obtain additional relationships or more detailed information about this graph subject. | 
+| AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.ActivatedBy.id | String | ID of the user who activated the work item. | 
+| AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.ActivatedBy.uniqueName | String | The unique name of the user who activated the work item. | 
+| AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.ActivatedBy.imageUrl | String | Link to the user \(activated the work item\) image. | 
+| AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.ActivatedBy.descriptor | String | The descriptor is the primary way to reference the graph subject while the system is running. This field will uniquely identify the same graph subject across both Accounts and Organizations. | 
+| AzureDevOps.WorkItem.fields.Microsoft.VSTS.Common.Priority | Number | This field specifies which work the team should do first. | 
+| AzureDevOps.WorkItem.fields.System.Description | String | The work item description. | 
+| AzureDevOps.WorkItem.fields.System.Tags | String | Tags related to the work item. | 
+| AzureDevOps.WorkItem._links.self.href | String | A collection of related REST reference links. | 
+| AzureDevOps.WorkItem._links.workItemUpdates.href | String | Link to the work item updates. | 
+| AzureDevOps.WorkItem._links.workItemRevisions.href | String | Link to the work item revisions. | 
+| AzureDevOps.WorkItem._links.workItemComments.href | String | Link to the work item comments. | 
+| AzureDevOps.WorkItem._links.html.href | String | Link to the work item HTML. | 
+| AzureDevOps.WorkItem._links.workItemType.href | String | Link to the work item type. | 
+| AzureDevOps.WorkItem._links.fields.href | String | Link to the work item fields. | 
+| AzureDevOps.WorkItem.url | String | Link to the work item. | 
+
+### azure-devops-file-create
+
+***
+Add a file to the repository.
+
+#### Base Command
+
+`azure-devops-file-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| organization_name | The name of the Azure DevOps organization. A default value is taken from the configuration parameters, but you can override it. | Optional | 
+| project_name | Project ID or project name. A default value is taken from the configuration parameters, but you can override it. | Optional | 
+| repository_id | The repository ID. A default value is taken from the configuration parameters, but you can override it. | Optional | 
+| branch_name | The branch name. This argument can be obtained by running the 'azure-devops-branch-list' command. | Required | 
+| commit_comment | Comment or message of the commit. | Required | 
+| file_path | The file path. | Optional | 
+| file_content | The file content. | Optional | 
+| entry_id | There is an option to the user to provide an entry_id. In that case we will take the file_content and the file_path from the given id. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureDevOps.File.commits.treeId | String | Tree ID of the commit. | 
+| AzureDevOps.File.commits.commitId | String | ID \(SHA-1\) of the commit. | 
+| AzureDevOps.File.commits.author.name | String | Name of the commit author. | 
 | AzureDevOps.File.commits.author.email | String | Email address of the commit author. | 
 | AzureDevOps.File.commits.author.date | Date | Date of the commit operation. | 
 | AzureDevOps.File.commits.committer.name | String | Name of the commit committer. | 
@@ -2261,26 +2190,26 @@ Update a file in the repository.
 | AzureDevOps.File.repository.id | String | The ID of the repository. | 
 | AzureDevOps.File.repository.name | String | The name of the repository. | 
 | AzureDevOps.File.repository.url | String | The URL of the repository. | 
-| AzureDevOps.File.repository.project.id | String | The ID of the Project. | 
+| AzureDevOps.File.repository.project.id | String | The ID of the project. | 
 | AzureDevOps.File.repository.project.name | String | The name of the project. | 
 | AzureDevOps.File.repository.project.description | String | The description of the project. | 
 | AzureDevOps.File.repository.project.url | String | The URL of the project. | 
 | AzureDevOps.File.repository.project.state | String | The state of the project. | 
 | AzureDevOps.File.repository.project.revision | Number | The revision number of the project. | 
-| AzureDevOps.File.repository.project.visibility | String | Indicates whom the project is visible to. | 
+| AzureDevOps.File.repository.project.visibility | String | Indicates to whom the project is visible. | 
 | AzureDevOps.File.repository.project.lastUpdateTime | Date | The project last update time, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z". | 
 | AzureDevOps.File.repository.size | Number | The size of the repository \(in bytes\). | 
 | AzureDevOps.File.repository.remoteUrl | String | Remote URL path to the repository. | 
-| AzureDevOps.File.repository.sshUrl | String | The ssh URL of the repository. | 
+| AzureDevOps.File.repository.sshUrl | String | The SSH URL of the repository. | 
 | AzureDevOps.File.repository.webUrl | String | The web URL of the repository. | 
 | AzureDevOps.File.repository.isDisabled | Boolean | If the repository is disabled or not. | 
 | AzureDevOps.File.repository.isInMaintenance | Boolean | If the repository is in maintenance or not. | 
 | AzureDevOps.File.pushedBy.displayName | String | Display name of the user who pushed the commit / file. | 
-| AzureDevOps.File.pushedBy.url | String | Identity Reference. | 
-| AzureDevOps.File.pushedBy._links.avatar.href | String | Url for the user's avatar. | 
+| AzureDevOps.File.pushedBy.url | String | Identity reference. | 
+| AzureDevOps.File.pushedBy._links.avatar.href | String | URL for the user's avatar. | 
 | AzureDevOps.File.pushedBy.id | String | ID of the user who pushed the commit / file. | 
-| AzureDevOps.File.pushedBy.uniqueName | String | Domain and principal name. | 
-| AzureDevOps.File.pushedBy.imageUrl | String | Identity Image. | 
+| AzureDevOps.File.pushedBy.uniqueName | String | The unique name of the user who pushed the commit. | 
+| AzureDevOps.File.pushedBy.imageUrl | String | Identity image. | 
 | AzureDevOps.File.pushedBy.descriptor | String | The descriptor is the primary way to reference the graph subject while the system is running. This field will uniquely identify the same graph subject across both Accounts and Organizations. | 
 | AzureDevOps.File.pushId | Number | Unique ID of the push operation. | 
 | AzureDevOps.File.date | Date | Date of the operation. | 
@@ -2291,6 +2220,80 @@ Update a file in the repository.
 | AzureDevOps.File._links.pusher.href | String | Link to the commit pusher. | 
 | AzureDevOps.File._links.refs.href | String | Link to the branch. | 
 
+| organization_name | The name of the Azure DevOps organization. Default value will be config param, user can supply a different value. | Optional | 
+### azure-devops-file-update
+
+***
+Update a file in the repository.
+
+#### Base Command
+
+`azure-devops-file-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| organization_name | The name of the Azure DevOps organization. A default value is taken from the configuration parameters, but you can override it. | Optional | 
+| project_name | Project ID or project name. A default value is taken from the configuration parameters, but you can override it. | Optional | 
+| repository_id | The repository ID. A default value is taken from the configuration parameters, but you can override it. | Optional | 
+| branch_name | The branch name. This argument can be obtained by running the 'azure-devops-branch-list' command. | Required | 
+| commit_comment | Comment or message of the commit. | Required | 
+| file_path | The file path. | Optional | 
+| file_content | The file content. | Optional | 
+| entry_id | There is an option to the user to provide an entry_id. In that case we will take the file_content and the file_path from the given id. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureDevOps.File.commits.treeId | String | Tree ID of the commit. | 
+| AzureDevOps.File.commits.commitId | String | ID \(SHA-1\) of the commit. | 
+| AzureDevOps.File.commits.author.name | String | Name of the commit author. | 
+| AzureDevOps.File.commits.author.email | String | Email address of the commit author. | 
+| AzureDevOps.File.commits.author.date | Date | Date of the commit operation. | 
+| AzureDevOps.File.commits.committer.name | String | Name of the commit committer. | 
+| AzureDevOps.File.commits.committer.email | String | Email address of the commit committer. | 
+| AzureDevOps.File.commits.committer.date | Date | Date of the commit operation. | 
+| AzureDevOps.File.commits.comment | String | Comment or message of the commit. | 
+| AzureDevOps.File.commits.parents | String | An enumeration of the parent commit IDs for this commit. | 
+| AzureDevOps.File.commits.url | String | REST URL for this resource. | 
+| AzureDevOps.File.refUpdates.repositoryId | String | The ID of the repository. | 
+| AzureDevOps.File.refUpdates.name | String | The branch name. | 
+| AzureDevOps.File.refUpdates.oldObjectId | String | The last commit ID. | 
+| AzureDevOps.File.refUpdates.newObjectId | String | The new commit ID. | 
+| AzureDevOps.File.repository.id | String | The ID of the repository. | 
+| AzureDevOps.File.repository.name | String | The name of the repository. | 
+| AzureDevOps.File.repository.url | String | The URL of the repository. | 
+| AzureDevOps.File.repository.project.id | String | The ID of the project. | 
+| AzureDevOps.File.repository.project.name | String | The name of the project. | 
+| AzureDevOps.File.repository.project.description | String | The description of the project. | 
+| AzureDevOps.File.repository.project.url | String | The URL of the project. | 
+| AzureDevOps.File.repository.project.state | String | The state of the project. | 
+| AzureDevOps.File.repository.project.revision | Number | The revision number of the project. | 
+| AzureDevOps.File.repository.project.visibility | String | Indicates whom the project is visible to. | 
+| AzureDevOps.File.repository.project.lastUpdateTime | Date | The project last update time, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z". | 
+| AzureDevOps.File.repository.size | Number | The size of the repository \(in bytes\). | 
+| AzureDevOps.File.repository.remoteUrl | String | Remote URL path to the repository. | 
+| AzureDevOps.File.repository.sshUrl | String | The SSH URL of the repository. | 
+| AzureDevOps.File.repository.webUrl | String | The web URL of the repository. | 
+| AzureDevOps.File.repository.isDisabled | Boolean | If the repository is disabled or not. | 
+| AzureDevOps.File.repository.isInMaintenance | Boolean | If the repository is in maintenance or not. | 
+| AzureDevOps.File.pushedBy.displayName | String | Display name of the user who pushed the commit / file. | 
+| AzureDevOps.File.pushedBy.url | String | Identity reference. | 
+| AzureDevOps.File.pushedBy._links.avatar.href | String | URL for the user's avatar. | 
+| AzureDevOps.File.pushedBy.id | String | ID of the user who pushed the commit / file. | 
+| AzureDevOps.File.pushedBy.uniqueName | String | The unique name of the user who pushed the commit. | 
+| AzureDevOps.File.pushedBy.imageUrl | String | Identity image. | 
+| AzureDevOps.File.pushedBy.descriptor | String | The descriptor is the primary way to reference the graph subject while the system is running. This field will uniquely identify the same graph subject across both Accounts and Organizations. | 
+| AzureDevOps.File.pushId | Number | Unique ID of the push operation. | 
+| AzureDevOps.File.date | Date | Date of the operation. | 
+| AzureDevOps.File.url | String | Link to the commit. | 
+| AzureDevOps.File._links.self.href | String | A collection of related REST reference links. | 
+| AzureDevOps.File._links.repository.href | String | Link to the repository where the commit is. | 
+| AzureDevOps.File._links.commits.href | String | Link to the commits. | 
+| AzureDevOps.File._links.pusher.href | String | Link to the commit pusher. | 
+| AzureDevOps.File._links.refs.href | String | Link to the branch. | 
 ### azure-devops-file-delete
 
 ***
@@ -2304,11 +2307,10 @@ Update a file in the repository.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| organization_name | The name of the Azure DevOps organization. Default value will be config param, user can supply a different value. | Optional | 
-| project_name | Project ID or project name. Default value will be config param, user can supply a different value. | Optional | 
-| repository_id | The repository ID. Default value will be config param, user can supply a different value. | Optional | 
+| organization_name | The name of the Azure DevOps organization. A default value is taken from the configuration parameters, but you can override it. | Optional | 
+| project_name | Project ID or project name. A default value is taken from the configuration parameters, but you can override it. | Optional | 
+| repository_id | The repository ID. A default value is taken from the configuration parameters, but you can override it. | Optional | 
 | branch_name | The branch name. This argument can be obtained by running the 'azure-devops-branch-list' command. | Required | 
-| branch_id | The branch ID. This argument can be obtained by running the 'azure-devops-branch-list' command. | Required | 
 | commit_comment | Comment or message of the commit. | Required | 
 | file_path | The file path. | Optional | 
 | entry_id | There is an option to the user to provide an entry_id. In that case we will take the file_content and the file_path from the given id. | Optional | 
@@ -2335,26 +2337,26 @@ Update a file in the repository.
 | AzureDevOps.File.repository.id | String | The ID of the repository. | 
 | AzureDevOps.File.repository.name | String | The name of the repository. | 
 | AzureDevOps.File.repository.url | String | The URL of the repository. | 
-| AzureDevOps.File.repository.project.id | String | The ID of the Project. | 
+| AzureDevOps.File.repository.project.id | String | The ID of the project. | 
 | AzureDevOps.File.repository.project.name | String | The name of the project. | 
 | AzureDevOps.File.repository.project.description | String | The description of the project. | 
 | AzureDevOps.File.repository.project.url | String | The URL of the project. | 
 | AzureDevOps.File.repository.project.state | String | The state of the project. | 
 | AzureDevOps.File.repository.project.revision | Number | The revision number of the project. | 
-| AzureDevOps.File.repository.project.visibility | String | Indicates whom the project is visible to. | 
+| AzureDevOps.File.repository.project.visibility | String | Indicates to whom the project is visible. | 
 | AzureDevOps.File.repository.project.lastUpdateTime | Date | The project last update time, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z". | 
 | AzureDevOps.File.repository.size | Number | The size of the repository \(in bytes\). | 
 | AzureDevOps.File.repository.remoteUrl | String | Remote URL path to the repository. | 
-| AzureDevOps.File.repository.sshUrl | String | The ssh URL of the repository. | 
+| AzureDevOps.File.repository.sshUrl | String | The SSH URL of the repository. | 
 | AzureDevOps.File.repository.webUrl | String | The web URL of the repository. | 
 | AzureDevOps.File.repository.isDisabled | Boolean | If the repository is disabled or not. | 
 | AzureDevOps.File.repository.isInMaintenance | Boolean | If the repository is in maintenance or not. | 
 | AzureDevOps.File.pushedBy.displayName | String | Display name of the user who pushed the commit / file. | 
-| AzureDevOps.File.pushedBy.url | String | Identity Reference. | 
-| AzureDevOps.File.pushedBy._links.avatar.href | String | Url for the user's avatar. | 
+| AzureDevOps.File.pushedBy.url | String | Identity reference. | 
+| AzureDevOps.File.pushedBy._links.avatar.href | String | URL for the user's avatar. | 
 | AzureDevOps.File.pushedBy.id | String | ID of the user who pushed the commit / file. | 
-| AzureDevOps.File.pushedBy.uniqueName | String | Domain and principal name. | 
-| AzureDevOps.File.pushedBy.imageUrl | String | Identity Image. | 
+| AzureDevOps.File.pushedBy.uniqueName | String | The unique name of the user who pushed the commit. | 
+| AzureDevOps.File.pushedBy.imageUrl | String | Identity image. | 
 | AzureDevOps.File.pushedBy.descriptor | String | The descriptor is the primary way to reference the graph subject while the system is running. This field will uniquely identify the same graph subject across both Accounts and Organizations. | 
 | AzureDevOps.File.pushId | Number | Unique ID of the push operation. | 
 | AzureDevOps.File.date | Date | Date of the operation. | 
@@ -2364,7 +2366,6 @@ Update a file in the repository.
 | AzureDevOps.File._links.commits.href | String | Link to the commits. | 
 | AzureDevOps.File._links.pusher.href | String | Link to the commit pusher. | 
 | AzureDevOps.File._links.refs.href | String | Link to the branch. | 
-
 ### azure-devops-file-list
 
 ***
@@ -2378,9 +2379,9 @@ Retrieve repository files (items) list.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| organization_name | The name of the Azure DevOps organization. Default value will be config param, user can supply a different value. | Optional | 
-| project_name | Project ID or project name. Default value will be config param, user can supply a different value. | Optional | 
-| repository_id | The repository ID. Default value will be config param, user can supply a different value. | Optional | 
+| organization_name | The name of the Azure DevOps organization. A default value is taken from the configuration parameters, but you can override it. | Optional | 
+| project_name | Project ID or project name. A default value is taken from the configuration parameters, but you can override it. | Optional | 
+| repository_id | The repository ID. A default value is taken from the configuration parameters, but you can override it. | Optional | 
 | branch_name | The branch name. This argument can be obtained by running the 'azure-devops-branch-list' command. | Required | 
 | recursion_level | The recursion level of this request. The default is None, no recursion. Possible values are: None, OneLevel, Full. Default is None. | Optional | 
 
@@ -2389,13 +2390,12 @@ Retrieve repository files (items) list.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | AzureDevOps.File.objectId | String | The file object ID. | 
-| AzureDevOps.File.gitObjectType | String | The file git object type. | 
+| AzureDevOps.File.gitObjectType | String | The file Git object type. | 
 | AzureDevOps.File.commitId | String | ID \(SHA-1\) of the file commit. | 
 | AzureDevOps.File.path | String | The file's path. | 
-| AzureDevOps.File.isFolder | Boolean | If the item is folder or not. | 
+| AzureDevOps.File.isFolder | Boolean | If the item is a folder or not. | 
 | AzureDevOps.File.contentMetadata.fileName | String | The file name. | 
 | AzureDevOps.File.url | String | URL link to the item. | 
-
 ### azure-devops-file-get
 
 ***
@@ -2409,24 +2409,23 @@ Getting the content file.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| organization_name | The name of the Azure DevOps organization. Default value will be config param, user can supply a different value. | Optional | 
-| project_name | Project ID or project name. Default value will be config param, user can supply a different value. | Optional | 
-| repository_id | The repository ID. Default value will be config param, user can supply a different value. | Optional | 
+| organization_name | The name of the Azure DevOps organization. A default value is taken from the configuration parameters, but you can override it. | Optional | 
+| project_name | Project ID or project name. A default value is taken from the configuration parameters, but the user can override it. | Optional | 
+| repository_id | The repository ID. A default value is taken from the configuration parameters, but you can override it. | Optional | 
 | branch_name | The branch name. This argument can be obtained by running the 'azure-devops-branch-list' command. | Required | 
-| file_name | The file name. | Required |
-| format | The file format (json or zip). Default is json. Possible values are: json, zip. Default is json. | Optional | 
-| include_content | Include item content. Default is True. Possible values are: True, False. Default is True. | Optional | 
+| file_name | The file name. | Required | 
+| format | The file format (json or zip). Possible values are: json, zip. Default is json. | Optional | 
+| include_content | Include item content. Possible values are: True, False. Default is True. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | AzureDevOps.File.objectId | String | The file object ID. | 
-| AzureDevOps.File.gitObjectType | String | The file git object type. | 
+| AzureDevOps.File.gitObjectType | String | The file Git object type. | 
 | AzureDevOps.File.commitId | String | ID \(SHA-1\) of the file commit. | 
 | AzureDevOps.File.path | String | The file's path. | 
 | AzureDevOps.File.content | String | The file content. | 
-
 ### azure-devops-branch-create
 
 ***
@@ -2440,10 +2439,11 @@ Create a branch.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| organization_name | The name of the Azure DevOps organization. Default value will be config param, user can supply a different value. | Optional | 
-| project_name | Project ID or project name. Default value will be config param, user can supply a different value. | Optional | 
-| repository_id | The repository ID. Default value will be config param, user can supply a different value. | Optional | 
-| branch_name | The branch name. This argument can be obtained by running the 'azure-devops-branch-list' command. | Required | 
+| organization_name | The name of the Azure DevOps organization. A default value is taken from the configuration parameters, but you can override it. | Optional | 
+| project_name | Project ID or project name. A default value is taken from the configuration parameters, but you can override it. | Optional | 
+| repository_id | The repository ID. A default value is taken from the configuration parameters, but you can override it. | Optional | 
+| branch_name | The branch name. | Required | 
+| target_ref | The name of the target reference. | Required | 
 | commit_comment | Comment or message of the commit. | Required | 
 | file_path | The file path. | Optional | 
 | file_content | The file content. | Optional | 
@@ -2471,26 +2471,26 @@ Create a branch.
 | AzureDevOps.Branch.repository.id | String | The ID of the repository. | 
 | AzureDevOps.Branch.repository.name | String | The name of the repository. | 
 | AzureDevOps.Branch.repository.url | String | The URL of the repository. | 
-| AzureDevOps.Branch.repository.project.id | String | The ID of the Project. | 
+| AzureDevOps.Branch.repository.project.id | String | The ID of the project. | 
 | AzureDevOps.Branch.repository.project.name | String | The name of the project. | 
 | AzureDevOps.Branch.repository.project.description | String | The description of the project. | 
 | AzureDevOps.Branch.repository.project.url | String | The URL of the project. | 
 | AzureDevOps.Branch.repository.project.state | String | The state of the project. | 
 | AzureDevOps.Branch.repository.project.revision | Number | The revision number of the project. | 
-| AzureDevOps.Branch.repository.project.visibility | String | Indicates whom the project is visible to. | 
+| AzureDevOps.Branch.repository.project.visibility | String | Indicates to whom the project is visible. | 
 | AzureDevOps.Branch.repository.project.lastUpdateTime | Date | The project last update time, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2022 would be: "2022-01-01T00:00:00Z". | 
 | AzureDevOps.Branch.repository.size | Number | The size of the repository \(in bytes\). | 
 | AzureDevOps.Branch.repository.remoteUrl | String | Remote URL path to the repository. | 
-| AzureDevOps.Branch.repository.sshUrl | String | The ssh URL of the repository. | 
+| AzureDevOps.Branch.repository.sshUrl | String | The SSH URL of the repository. | 
 | AzureDevOps.Branch.repository.webUrl | String | The web URL of the repository. | 
 | AzureDevOps.Branch.repository.isDisabled | Boolean | If the repository is disabled or not. | 
 | AzureDevOps.Branch.repository.isInMaintenance | Boolean | If the repository is in maintenance or not. | 
 | AzureDevOps.Branch.pushedBy.displayName | String | Display name of the user who pushed the commit / file. | 
-| AzureDevOps.Branch.pushedBy.url | String | Identity Reference. | 
-| AzureDevOps.Branch.pushedBy._links.avatar.href | String | Url for the user's avatar. | 
+| AzureDevOps.Branch.pushedBy.url | String | Identity reference. | 
+| AzureDevOps.Branch.pushedBy._links.avatar.href | String | URL for the user's avatar. | 
 | AzureDevOps.Branch.pushedBy.id | String | ID of the user who pushed the commit / file. | 
-| AzureDevOps.Branch.pushedBy.uniqueName | String | Domain and principal name. | 
-| AzureDevOps.Branch.pushedBy.imageUrl | String | Identity Image. | 
+| AzureDevOps.Branch.pushedBy.uniqueName | String | The unique name of the user who pushed the commit. | 
+| AzureDevOps.Branch.pushedBy.imageUrl | String | Identity image. | 
 | AzureDevOps.Branch.pushedBy.descriptor | String | The descriptor is the primary way to reference the graph subject while the system is running. This field will uniquely identify the same graph subject across both Accounts and Organizations. | 
 | AzureDevOps.Branch.pushId | Number | Unique ID of the push operation. | 
 | AzureDevOps.Branch.date | Date | Date of the operation. | 
@@ -2500,7 +2500,6 @@ Create a branch.
 | AzureDevOps.Branch._links.commits.href | String | Link to the commits. | 
 | AzureDevOps.Branch._links.pusher.href | String | Link to the commit pusher. | 
 | AzureDevOps.Branch._links.refs.href | String | Link to the branch. | 
-
 ### azure-devops-pull-request-thread-create
 
 ***
@@ -2514,9 +2513,9 @@ Create a thread in a pull request.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| organization_name | The name of the Azure DevOps organization. Default value will be config param, user can supply a different value. | Optional | 
-| project_name | Project ID or project name. Default value will be config param, user can supply a different value. | Optional | 
-| repository_id | The repository ID. Default value will be config param, user can supply a different value. | Optional | 
+| organization_name | The name of the Azure DevOps organization. A default value is taken from the configuration parameters, but you can override it. | Optional | 
+| project_name | Project ID or project name. A default value is taken from the configuration parameters, but you can override it. | Optional | 
+| repository_id | The repository ID. A default value is taken from the configuration parameters, but you can override it. | Optional | 
 | pull_request_id | The ID of the pull request to update. | Required | 
 | comment_text | The comment content. | Required | 
 
@@ -2524,7 +2523,7 @@ Create a thread in a pull request.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AzureDevOps.PullRequestThread.pullRequestThreadContext | Unknown | Extended context information unique to pull requests. |
+| AzureDevOps.PullRequestThread.pullRequestThreadContext | Unknown | Extended context information unique to pull requests. | 
 | AzureDevOps.PullRequestThread.id | Number | The ID of the pull request. | 
 | AzureDevOps.PullRequestThread.publishedDate | Date | The date the thread was published. | 
 | AzureDevOps.PullRequestThread.lastUpdatedDate | Date | Last update date. | 
@@ -2553,7 +2552,6 @@ Create a thread in a pull request.
 | AzureDevOps.PullRequestThread.isDeleted | Boolean | Specify if the thread is deleted which happens when all comments are deleted. | 
 | AzureDevOps.PullRequestThread._links.self.href | String | Link to the thread. | 
 | AzureDevOps.PullRequestThread._links.repository.href | String | Link to the repository. | 
-
 ### azure-devops-pull-request-thread-update
 
 ***
@@ -2567,9 +2565,9 @@ Update a thread in a pull request.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| organization_name | The name of the Azure DevOps organization. Default value will be config param, user can supply a different value. | Optional | 
-| project_name | Project ID or project name. Default value will be config param, user can supply a different value. | Optional | 
-| repository_id | The repository ID. Default value will be config param, user can supply a different value. | Optional | 
+| organization_name | The name of the Azure DevOps organization. A default value is taken from the configuration parameters, but you can override it. | Optional | 
+| project_name | Project ID or project name. A default value is taken from the configuration parameters, but you can override it. | Optional | 
+| repository_id | The repository ID. A default value is taken from the configuration parameters, but you can override it. | Optional | 
 | pull_request_id | The ID of the pull request to update. | Required | 
 | thread_id | The ID of the thread to update. | Required | 
 | comment_text | The comment content. | Required | 
@@ -2578,7 +2576,7 @@ Update a thread in a pull request.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AzureDevOps.PullRequestThread.pullRequestThreadContext | Unknown | Extended context information unique to pull requests. |
+| AzureDevOps.PullRequestThread.pullRequestThreadContext | Unknown | Extended context information unique to pull requests. | 
 | AzureDevOps.PullRequestThread.id | Number | The ID of the pull request. | 
 | AzureDevOps.PullRequestThread.publishedDate | Date | The date the thread was published. | 
 | AzureDevOps.PullRequestThread.lastUpdatedDate | Date | Last update date. | 
@@ -2607,7 +2605,6 @@ Update a thread in a pull request.
 | AzureDevOps.PullRequestThread.isDeleted | Boolean | Specify if the thread is deleted which happens when all comments are deleted. | 
 | AzureDevOps.PullRequestThread._links.self.href | String | Link to the thread. | 
 | AzureDevOps.PullRequestThread._links.repository.href | String | Link to the repository. | 
-
 ### azure-devops-pull-request-thread-list
 
 ***
@@ -2621,9 +2618,9 @@ Retrieve all threads in a pull request.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| organization_name | The name of the Azure DevOps organization. Default value will be config param, user can supply a different value. | Optional | 
-| project_name | Project ID or project name. Default value will be config param, user can supply a different value. | Optional | 
-| repository_id | The repository ID. Default value will be config param, user can supply a different value. | Optional | 
+| organization_name | The name of the Azure DevOps organization. A default value is taken from the configuration parameters, but you can override it. | Optional | 
+| project_name | Project ID or project name. A default value is taken from the configuration parameters, but you can override it. | Optional | 
+| repository_id | The repository ID. A default value is taken from the configuration parameters, but you can override it. | Optional | 
 | pull_request_id | The ID of the pull request to update. | Required | 
 
 #### Context Output
@@ -2656,17 +2653,17 @@ Retrieve all threads in a pull request.
 | AzureDevOps.PullRequestThread.threadContext | Unknown | Extended context information unique to pull requests. | 
 | AzureDevOps.PullRequestThread.properties.CodeReviewThreadType.$type | String | The type of the code review thread. | 
 | AzureDevOps.PullRequestThread.properties.CodeReviewThreadType.$value | String | The content in the code review thread. | 
-| AzureDevOps.PullRequestThread.properties.CodeReviewReviewersUpdatedNumAdded.$type | String | A number \(Int32\). | 
+| AzureDevOps.PullRequestThread.properties.CodeReviewReviewersUpdatedNumAdded.$type | String | The type of the code review reviewers updated number added. | 
 | AzureDevOps.PullRequestThread.properties.CodeReviewReviewersUpdatedNumAdded.$value | Number | Number of code reviewers updated the pull request. | 
-| AzureDevOps.PullRequestThread.properties.CodeReviewReviewersUpdatedNumChanged.$type | String | A number \(Int32\). | 
+| AzureDevOps.PullRequestThread.properties.CodeReviewReviewersUpdatedNumChanged.$type | String | The type of the code review reviewers updated number changed. | 
 | AzureDevOps.PullRequestThread.properties.CodeReviewReviewersUpdatedNumChanged.$value | Number | Number of code reviewers changed the pull request. | 
-| AzureDevOps.PullRequestThread.properties.CodeReviewReviewersUpdatedNumDeclined.$type | String | A number \(Int32\). | 
+| AzureDevOps.PullRequestThread.properties.CodeReviewReviewersUpdatedNumDeclined.$type | String | The type of the code review reviewers updated number declined. | 
 | AzureDevOps.PullRequestThread.properties.CodeReviewReviewersUpdatedNumDeclined.$value | Number | Number of code reviewers declined the pull request. | 
-| AzureDevOps.PullRequestThread.properties.CodeReviewReviewersUpdatedNumRemoved.$type | String | A number \(Int32\). | 
+| AzureDevOps.PullRequestThread.properties.CodeReviewReviewersUpdatedNumRemoved.$type | String | The type of the code review reviewers updated number removed. | 
 | AzureDevOps.PullRequestThread.properties.CodeReviewReviewersUpdatedNumRemoved.$value | Number | Number of code reviewers are removed. | 
-| AzureDevOps.PullRequestThread.properties.CodeReviewReviewersUpdatedAddedIdentity.$type | String | A number \(Int32\). | 
+| AzureDevOps.PullRequestThread.properties.CodeReviewReviewersUpdatedAddedIdentity.$type | String | The type of the code review reviewers updated added identity. | 
 | AzureDevOps.PullRequestThread.properties.CodeReviewReviewersUpdatedAddedIdentity.$value | String | Number of code reviewers added identity. | 
-| AzureDevOps.PullRequestThread.properties.CodeReviewReviewersUpdatedByIdentity.$type | String | A number \(Int32\). | 
+| AzureDevOps.PullRequestThread.properties.CodeReviewReviewersUpdatedByIdentity.$type | String | The type of the code review reviewers updated by identity. | 
 | AzureDevOps.PullRequestThread.properties.CodeReviewReviewersUpdatedByIdentity.$value | String | Number of code reviewers updated by identity. | 
 | AzureDevOps.PullRequestThread.identities.1.displayName | String | The display name of the pull request thread creator. | 
 | AzureDevOps.PullRequestThread.identities.1.url | String | Link to the the pull request thread creator. | 
@@ -2678,18 +2675,17 @@ Retrieve all threads in a pull request.
 | AzureDevOps.PullRequestThread.isDeleted | Boolean | Specify if the thread is deleted which happens when all comments are deleted. | 
 | AzureDevOps.PullRequestThread._links.self.href | String | Link to the thread. | 
 | AzureDevOps.PullRequestThread._links.repository.href | String | Link to the repository. | 
-| AzureDevOps.PullRequestThread.properties.CodeReviewReviewersUpdatedChangedToRequired.$type | String | A number \(Int32\). | 
+| AzureDevOps.PullRequestThread.properties.CodeReviewReviewersUpdatedChangedToRequired.$type | String | The type of the code review reviewers updated changed to required. | 
 | AzureDevOps.PullRequestThread.properties.CodeReviewReviewersUpdatedChangedToRequired.$value | String | Number of code reviewers were changed to required. | 
-| AzureDevOps.PullRequestThread.properties.CodeReviewReviewersUpdatedChangedIdentity.$type | String | A number \(Int32\). | 
+| AzureDevOps.PullRequestThread.properties.CodeReviewReviewersUpdatedChangedIdentity.$type | String | The type of the code review reviewers updated changed identity. | 
 | AzureDevOps.PullRequestThread.properties.CodeReviewReviewersUpdatedChangedIdentity.$value | String | Number of code reviewers changed the identity. | 
 | AzureDevOps.PullRequestThread.status | String | The status of the comment thread. | 
 | AzureDevOps.PullRequestThread.properties | Unknown | Properties associated with the thread as a collection of key-value pairs. | 
 | AzureDevOps.PullRequestThread.identities | Unknown | Set of identities related to this thread. | 
-| AzureDevOps.PullRequestThread.properties.Microsoft.TeamFoundation.Discussion.SupportsMarkdown.$type | String | A number \(Int32\). | 
+| AzureDevOps.PullRequestThread.properties.Microsoft.TeamFoundation.Discussion.SupportsMarkdown.$type | String | The type of the supports markdown. | 
 | AzureDevOps.PullRequestThread.properties.Microsoft.TeamFoundation.Discussion.SupportsMarkdown.$value | Number | Supports markdown number. | 
-| AzureDevOps.PullRequestThread.properties.Microsoft.TeamFoundation.Discussion.UniqueID.$type | String | A number \(Int32\). | 
+| AzureDevOps.PullRequestThread.properties.Microsoft.TeamFoundation.Discussion.UniqueID.$type | String | The type of the unique ID. | 
 | AzureDevOps.PullRequestThread.properties.Microsoft.TeamFoundation.Discussion.UniqueID.$value | String | The unique ID of the Team Foundation. | 
-
 ### azure-devops-project-team-list
 
 ***
@@ -2703,21 +2699,20 @@ Get a list of teams.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| organization_name | The name of the Azure DevOps organization. Default value will be config param, user can supply a different value. | Optional | 
-| project_name | Project ID or project name. Default value will be config param, user can supply a different value. | Optional | 
+| organization_name | The name of the Azure DevOps organization. A default value is taken from the configuration parameters, but you can override it. | Optional | 
+| project_name | Project ID or project name. A default value is taken from the configuration parameters, but you can override it. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AzureDevOps.Team.id | String | Team \(Identity\) Guid. A Team Foundation ID. | 
+| AzureDevOps.Team.id | String | Team \(Identity\) GUID. A Team Foundation ID. | 
 | AzureDevOps.Team.name | String | Team name. | 
-| AzureDevOps.Team.url | String | Team REST API Url. | 
+| AzureDevOps.Team.url | String | Team REST API URL. | 
 | AzureDevOps.Team.description | String | Team description. | 
-| AzureDevOps.Team.identityUrl | String | Identity REST API Url to this team. | 
+| AzureDevOps.Team.identityUrl | String | Identity REST API URL to this team. | 
 | AzureDevOps.Team.projectName | String | The project name. | 
 | AzureDevOps.Team.projectId | String | The project ID. | 
-
 ### azure-devops-team-member-list
 
 ***
@@ -2731,17 +2726,17 @@ Get a list of members for a specific team.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| organization_name | The name of the Azure DevOps organization. Default value will be config param, user can supply a different value. | Optional | 
-| project_name | Project ID or project name. Default value will be config param, user can supply a different value. | Optional | 
+| organization_name | The name of the Azure DevOps organization. A default value is taken from the configuration parameters, but you can override it. | Optional | 
+| project_name | Project ID or project name. A default value is taken from the configuration parameters, but you can override it. | Optional | 
 | team_id | The name or ID (GUID) of the team . | Required | 
 | page | The page number of the results to retrieve. Minimum value is 1. Default is 1. | Optional | 
-| limit | The number of results to retrieve. Minimum  value is 1. Default is 50. | Optional | 
+| limit | The maximum number of results to retrieve. Minimum value is 1. Default is 50. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AzureDevOps.TeamMember.isTeamAdmin | Boolean | if the member is the team admin. | 
+| AzureDevOps.TeamMember.isTeamAdmin | Boolean | Whether the member is the team admin. | 
 | AzureDevOps.TeamMember.identity.displayName | String | The display name of the team member. | 
 | AzureDevOps.TeamMember.identity.url | String | URL to retrieve information about this member. | 
 | AzureDevOps.TeamMember.identity._links.avatar.href | String | This field contains zero or more interesting links about the graph subject. These links may be invoked to obtain additional relationships or more detailed information about this graph subject. | 
@@ -2749,7 +2744,6 @@ Get a list of members for a specific team.
 | AzureDevOps.TeamMember.identity.uniqueName | String | The unique name of team member. | 
 | AzureDevOps.TeamMember.identity.imageUrl | String | Link to the team member image. | 
 | AzureDevOps.TeamMember.identity.descriptor | String | The descriptor is the primary way to reference the graph subject while the system is running. This field will uniquely identify the same graph subject across both Accounts and Organizations. | 
-
 ### azure-devops-blob-zip-get
 
 ***
@@ -2763,21 +2757,11 @@ Get a single blob.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| organization_name | The name of the Azure DevOps organization. Default value will be config param, user can supply a different value. | Optional | 
-| project_name | Project ID or project name. Default value will be config param, user can supply a different value. | Optional | 
-| repository_id | The repository ID. Default value will be config param, user can supply a different value. | Optional | 
+| organization_name | The name of the Azure DevOps organization. A default value is taken from the configuration parameters, but you can override it. | Optional | 
+| project_name | Project ID or project name. A default value is taken from the configuration parameters, but you can override it. | Optional | 
+| repository_id | The repository ID. A default value is taken from the configuration parameters, but you can override it. | Optional | 
 | file_object_id | The ID of the blob object. This ID can be obtained by running the 'azure-devops-file-list' command. | Required | 
 
 #### Context Output
 
 There is no context output for this command.
-
-
-## Incident Mirroring
-
-You can enable incident mirroring between Cortex XSOAR incidents and AzureDevOps corresponding events (available from Cortex XSOAR version 6.0.0).
-To set up the mirroring:
-1. Enable *Fetching incidents* in your instance configuration.
-
-Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
-**Important Note:** To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and AzureDevOps.

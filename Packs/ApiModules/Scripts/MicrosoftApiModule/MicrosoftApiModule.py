@@ -1,9 +1,10 @@
-import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+import demistomock as demisto  # noqa: F401
+
 # pylint: disable=E9010, E9011
 import traceback
 
-from CommonServerUserPython import *
+
 import requests
 import re
 import base64
@@ -1041,7 +1042,7 @@ class MicrosoftClient(BaseClient):
 
             return '', expires_in, refresh_token
         elif self.grant_type == DEVICE_CODE:
-            return self._get_token_device_code(refresh_token, scope, integration_context)
+            return self._get_token_device_code(refresh_token, integration_context)
         else:
             # by default, grant_type is CLIENT_CREDENTIALS
             if self.multi_resource:
@@ -1177,7 +1178,7 @@ class MicrosoftClient(BaseClient):
         return None
 
     def _get_token_device_code(
-        self, refresh_token: str = '', scope: str | None = None, integration_context: dict | None = None
+        self, refresh_token: str = '', integration_context: dict | None = None
     ) -> tuple[str, int, str]:
         """
         Gets a token by authorizing a self deployed Azure application.
@@ -1187,7 +1188,7 @@ class MicrosoftClient(BaseClient):
         """
         data = {
             'client_id': self.client_id,
-            'scope': scope
+            'tenant': self.tenant_id
         }
 
         if refresh_token:
@@ -1196,7 +1197,7 @@ class MicrosoftClient(BaseClient):
         else:
             data['grant_type'] = DEVICE_CODE
             if integration_context:
-                data['code'] = integration_context.get('device_code')
+                data['device_code'] = integration_context.get('device_code')
 
         response_json: dict = {}
         try:
@@ -1378,7 +1379,7 @@ class MicrosoftClient(BaseClient):
         response_json = {}
         try:
             response = requests.post(
-                url=f'{self.azure_ad_endpoint}/organizations/oauth2/v2.0/devicecode',
+                url=f'{self.azure_ad_endpoint}/{self.tenant_id}/oauth2/v2.0/devicecode',
                 data={
                     'client_id': self.client_id,
                     'scope': self.scope

@@ -14,7 +14,6 @@ configuration:
   name: organization
   required: true
   type: 0
-  defaultvalue:
 - additionalinfo: Maximum is 200.
   defaultvalue: '50'
   display: Maximum incidents for one fetch.
@@ -25,13 +24,11 @@ configuration:
   display: Default Project Name
   name: project
   type: 0
-  defaultvalue:
   required: false
 - additionalinfo: The name of the repository pull request's target branch. A repository name can be obtained by running the 'azure-devops-repository-list' command. This argument is mandatory for Fetch functionality and will be the default value in all the commands. You can override the default using the command argument.
   display: Default Repository Name
   name: repository
   type: 0
-  defaultvalue:
   required: false
 - display: Incident type
   name: incidentType
@@ -45,7 +42,6 @@ configuration:
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
   type: 0
-  additionalinfo:
   required: false
 - display: Outgoing mirroring
   name: is_mirroring
@@ -56,13 +52,11 @@ configuration:
   name: proxy
   type: 8
   defaultvalue: "false"
-  additionalinfo:
   required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   defaultvalue: "false"
-  additionalinfo:
   required: false
 - name: auth_type
   display: Authentication Type
@@ -76,62 +70,53 @@ configuration:
   - Client Credentials
 - name: tenant_id
   display: Tenant ID
-  defaultvalue:
   type: 0
-  additionalinfo: ""
   required: false
 - name: credentials
   display: Client Secret
-  defaultvalue:
   type: 9
-  additionalinfo: ""
   displaypassword: Client Secret
   hiddenusername: true
   required: false
 - name: redirect_uri
   display: Application redirect URI
-  defaultvalue:
   type: 0
-  additionalinfo: ""
   required: false
 - name: auth_code
   display: Authorization code
-  defaultvalue:
   type: 9
   additionalinfo: For user-auth mode - received from the authorization step. See Detailed Instructions (?) section.
   displaypassword: Authorization code
   hiddenusername: true
   required: false
+- defaultvalue: '1'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
 description: >-
   Manage Git repositories in Azure DevOps Services. Integration capabilities
   include retrieving, creating, and updating pull requests. Run pipelines and
   retrieve Git information.
 display: AzureDevOps
 name: AzureDevOps
-defaultmapperin: Azure DevOps Incoming Mapper
-defaultmapperout: Azure DevOps Outgoing Mapper
 script:
   commands:
   - description: Tests the connectivity to Azure.
     name: azure-devops-auth-test
     arguments: []
-    outputs: []
   - description: Run this command to start the authorization process and follow the instructions in the command results.
     name: azure-devops-auth-start
     arguments: []
-    outputs: []
   - description: Run this command to complete the authorization process. Should be used after running the azure-devops-auth-start command.
     name: azure-devops-auth-complete
     arguments: []
-    outputs: []
   - description: Run this command if for some reason you need to rerun the authentication process.
     name: azure-devops-auth-reset
     arguments: []
-    outputs: []
   - description: Get mapping fields from remote incident. Please note that this method will not update the current incident. It's here for debugging purposes.
     name: get-mapping-fields
     arguments: []
-    outputs: []
   - arguments:
     - description: The name of the project.
       name: project
@@ -223,14 +208,11 @@ script:
       required: true
     description: Remove the user from all project memberships.
     name: azure-devops-user-remove
-    outputs: []
   - arguments:
     - description: The name or ID of the project. A default value is taken from the configuration parameters, but you can override it.
       name: project
-      required: false
     - description: The repository ID. A repository ID can be obtained by running the 'azure-devops-repository-list' command. A default value is taken from the configuration parameters, but you can override it.
       name: repository_id
-      required: false
     - description: The name of the source branch of the pull request.
       name: source_branch
       required: true
@@ -246,7 +228,6 @@ script:
     - description: Comma-separated list of the pull request reviewers IDs. A reviewer ID can be obtained by running the 'azure-devops-user-list' command.
       isArray: true
       name: reviewers_ids
-      required: false
     description: Create a new pull request.
     name: azure-devops-pull-request-create
     outputs:
@@ -316,10 +297,8 @@ script:
   - arguments:
     - description: The name or ID of the project. A default value is taken from the configuration parameters, but you can override it.
       name: project
-      required: false
     - description: The repository ID. A repository ID can be obtained by running the 'azure-devops-repository-list' command. A default value is taken from the configuration parameters, but you can override it.
       name: repository_id
-      required: false
     - description: The ID of the pull request to update.
       name: pull_request_id
       required: true
@@ -403,10 +382,8 @@ script:
   - arguments:
     - description: The name or ID of the project which the pull requests belongs to. A default value is taken from the configuration parameters, but you can override it.
       name: project
-      required: false
     - description: The name of the repository pull request's target branch. A default value is taken from the configuration parameters, but you can override it.
       name: repository
-      required: false
     - defaultValue: '1'
       description: The page number of the results to retrieve. Minimum value is 1.
       name: page
@@ -752,10 +729,8 @@ script:
   - arguments:
     - description: The name of the organization project. A default value is taken from the configuration parameters, but you can override it.
       name: project
-      required: false
     - description: The name of the project repository. A default value is taken from the configuration parameters, but the user can override it.
       name: repository
-      required: false
     - defaultValue: '1'
       description: The page number of the results to retrieve. Minimum value is 1.
       name: page
@@ -779,20 +754,13 @@ script:
     arguments:
     - name: organization_name
       description: The name of the Azure DevOps organization. A default value is taken from the configuration parameters, but you can override it.
-      required: false
-      isArray: false
     - name: project_name
       description: Project ID or project name. A default value is taken from the configuration parameters, but you can override it.
-      required: false
-      isArray: false
     - name: repository_id
       description: The repository ID. A default value is taken from the configuration parameters, but you can override it.
-      required: false
-      isArray: false
     - name: pull_request_id
       description: ID of the pull request. By using the azure-devops-pull-request-list command, you can obtain the ID.
       required: true
-      isArray: false
     outputs:
     - type: String
       contextPath: AzureDevOps.PullRequestReviewer.reviewerUrl
@@ -832,25 +800,16 @@ script:
     arguments:
     - name: organization_name
       description: The name of the Azure DevOps organization. A default value is taken from the configuration parameters, but you can override it.
-      required: false
-      isArray: false
     - name: repository_id
       description: The repository ID. A default value is taken from the configuration parameters, but you can override it.
-      required: false
-      isArray: false
     - name: project_name
       description: Project ID or project name. A default value is taken from the configuration parameters, but you can override it.
-      required: false
-      isArray: false
     - name: reviewer_user_id
       description: ID of the reviewer. By using the azure-devops-user-list command, you can obtain the user ID.
       required: true
-      isArray: false
     - name: is_required
       description: Indicates if this is a required reviewer for this pull request. Branches can have policies that require particular reviewers are required for pull requests.
-      required: false
-      isArray: false
-      defaultValue: false
+      defaultValue: 'false'
       auto: PREDEFINED
       predefined:
       - 'True'
@@ -858,7 +817,6 @@ script:
     - name: pull_request_id
       description: ID of the pull request.
       required: true
-      isArray: false
     outputs:
     - type: String
       contextPath: AzureDevOps.PullRequestReviewer.reviewerUrl
@@ -895,20 +853,13 @@ script:
     arguments:
     - name: organization_name
       description: The name of the Azure DevOps organization. A default value is taken from the configuration parameters, but you can override it.
-      required: false
-      isArray: false
     - name: project_name
       description: Project ID or project name. A default value is taken from the configuration parameters, but you can override it.
-      required: false
-      isArray: false
     - name: repository_id
       description: The repository ID. A default value is taken from the configuration parameters, but you can override it.
-      required: false
-      isArray: false
     - name: pull_request_id
       description: ID of the pull request. By using the azure-devops-pull-request-list command, you can obtain the ID.
       required: true
-      isArray: false
     - defaultValue: '50'
       description: The maximum number of results to retrieve. Minimum value is 1.
       name: limit
@@ -945,16 +896,10 @@ script:
     arguments:
     - name: organization_name
       description: The name of the Azure DevOps organization. A default value is taken from the configuration parameters, but you can override it.
-      required: false
-      isArray: false
     - name: project_name
       description: Project ID or project name. A default value is taken from the configuration parameters, but you can override it.
-      required: false
-      isArray: false
     - name: repository_id
       description: The repository ID. A default value is taken from the configuration parameters, but you can override it.
-      required: false
-      isArray: false
     - defaultValue: '50'
       description: The maximum number of results to retrieve. Minimum value is 1.
       name: limit
@@ -1000,20 +945,13 @@ script:
     arguments:
     - name: organization_name
       description: The name of the Azure DevOps organization. A default value is taken from the configuration parameters, but you can override it.
-      required: false
-      isArray: false
     - name: project_name
       description: Project ID or project name. A default value is taken from the configuration parameters, but you can override it.
-      required: false
-      isArray: false
     - name: repository_id
       description: The repository ID. A default value is taken from the configuration parameters, but you can override it.
-      required: false
-      isArray: false
     - name: commit_id
       description: The ID of the commit.
       required: true
-      isArray: false
     outputs:
     - type: String
       contextPath: AzureDevOps.Commit.treeId
@@ -1101,16 +1039,11 @@ script:
     arguments:
     - name: organization_name
       description: The name of the Azure DevOps organization. A default value is taken from the configuration parameters, but you can override it.
-      required: false
-      isArray: false
     - name: project_name
       description: Project ID or project name. A default value is taken from the configuration parameters, but you can override it.
-      required: false
-      isArray: false
     - name: item_id
       description: The work item ID.
       required: true
-      isArray: false
     outputs:
     - type: Number
       contextPath: AzureDevOps.WorkItem.id
@@ -1276,12 +1209,8 @@ script:
     arguments:
     - name: organization_name
       description: The name of the Azure DevOps organization. A default value is taken from the configuration parameters, but you can override it.
-      required: false
-      isArray: false
     - name: project_name
       description: Project ID or project name. A default value is taken from the configuration parameters, but you can override it.
-      required: false
-      isArray: false
     - auto: PREDEFINED
       predefined:
       - Task
@@ -1290,19 +1219,13 @@ script:
       name: type
       description: The work item type of the work item to create.
       required: true
-      isArray: false
     - name: title
       description: The work item title of the work item to create.
       required: true
-      isArray: false
     - name: iteration_path
       description: The path for the operation.
-      required: false
-      isArray: false
     - name: description
       description: Describes the work item.
-      required: false
-      isArray: false
     - auto: PREDEFINED
       predefined:
       - '1'
@@ -1311,12 +1234,8 @@ script:
       - '4'
       name: priority
       description: Which work the team should do first.
-      required: false
-      isArray: false
     - name: tag
       description: Tag related to the work item.
-      required: false
-      isArray: false
     outputs:
     - type: Number
       contextPath: AzureDevOps.WorkItem.id
@@ -1437,28 +1356,17 @@ script:
     arguments:
     - name: organization_name
       description: The name of the Azure DevOps organization. A default value is taken from the configuration parameters, but you can override it.
-      required: false
-      isArray: false
     - name: project_name
       description: Project ID or project name. A default value is taken from the configuration parameters, but you can override it.
-      required: false
-      isArray: false
     - name: repository_id
       description: The repository ID. A default value is taken from the configuration parameters, but you can override it.
-      required: false
-      isArray: false
     - name: item_id
       description: The work item ID to update.
       required: true
-      isArray: false
     - name: title
       description: A new title for the work item.
-      required: false
-      isArray: false
     - name: assignee_display_name
       description: Display name of user assigned to the work item. This argument can be obtained by running the 'azure-devops-user-list' command.
-      required: false
-      isArray: false
     - auto: PREDEFINED
       predefined:
       - To Do
@@ -1466,16 +1374,10 @@ script:
       - Done
       name: state
       description: A new state for the work item.
-      required: false
-      isArray: false
     - name: iteration_path
       description: A new path for the operation.
-      required: false
-      isArray: false
     - name: description
       description: A new description for the work item.
-      required: false
-      isArray: false
     - auto: PREDEFINED
       predefined:
       - '1'
@@ -1484,12 +1386,8 @@ script:
       - '4'
       name: priority
       description: A new priority for the work item.
-      required: false
-      isArray: false
     - name: tag
       description: A new tag for the work item.
-      required: false
-      isArray: false
     outputs:
     - type: Number
       contextPath: AzureDevOps.WorkItem.id
@@ -1655,36 +1553,22 @@ script:
     arguments:
     - name: organization_name
       description: The name of the Azure DevOps organization. A default value is taken from the configuration parameters, but you can override it.
-      required: false
-      isArray: false
     - name: project_name
       description: Project ID or project name. A default value is taken from the configuration parameters, but you can override it.
-      required: false
-      isArray: false
     - name: repository_id
       description: The repository ID. A default value is taken from the configuration parameters, but you can override it.
-      required: false
-      isArray: false
     - name: branch_name
       description: The branch name. This argument can be obtained by running the 'azure-devops-branch-list' command.
       required: true
-      isArray: false
     - name: commit_comment
       description: Comment or message of the commit.
       required: true
-      isArray: false
     - name: file_path
       description: The file path.
-      required: false
-      isArray: false
     - name: file_content
       description: The file content.
-      required: false
-      isArray: false
     - name: entry_id
       description: There is an option to the user to provide an entry_id. In that case we will take the file_content and the file_path from the given id.
-      required: false
-      isArray: false
     outputs:
     - type: String
       contextPath: AzureDevOps.File.commits.treeId
@@ -1832,36 +1716,22 @@ script:
     arguments:
     - name: organization_name
       description: The name of the Azure DevOps organization. A default value is taken from the configuration parameters, but you can override it.
-      required: false
-      isArray: false
     - name: project_name
       description: Project ID or project name. A default value is taken from the configuration parameters, but you can override it.
-      required: false
-      isArray: false
     - name: repository_id
       description: The repository ID. A default value is taken from the configuration parameters, but you can override it.
-      required: false
-      isArray: false
     - name: branch_name
       description: The branch name. This argument can be obtained by running the 'azure-devops-branch-list' command.
       required: true
-      isArray: false
     - name: commit_comment
       description: Comment or message of the commit.
       required: true
-      isArray: false
     - name: file_path
       description: The file path.
-      required: false
-      isArray: false
     - name: file_content
       description: The file content.
-      required: false
-      isArray: false
     - name: entry_id
       description: There is an option to the user to provide an entry_id. In that case we will take the file_content and the file_path from the given id.
-      required: false
-      isArray: false
     outputs:
     - type: String
       contextPath: AzureDevOps.File.commits.treeId
@@ -2009,32 +1879,20 @@ script:
     arguments:
     - name: organization_name
       description: The name of the Azure DevOps organization. A default value is taken from the configuration parameters, but you can override it.
-      required: false
-      isArray: false
     - name: project_name
       description: Project ID or project name. A default value is taken from the configuration parameters, but you can override it.
-      required: false
-      isArray: false
     - name: repository_id
       description: The repository ID. A default value is taken from the configuration parameters, but you can override it.
-      required: false
-      isArray: false
     - name: branch_name
       description: The branch name. This argument can be obtained by running the 'azure-devops-branch-list' command.
       required: true
-      isArray: false
     - name: commit_comment
       description: Comment or message of the commit.
       required: true
-      isArray: false
     - name: file_path
       description: The file path.
-      required: false
-      isArray: false
     - name: entry_id
       description: There is an option to the user to provide an entry_id. In that case we will take the file_content and the file_path from the given id.
-      required: false
-      isArray: false
     outputs:
     - type: String
       contextPath: AzureDevOps.File.commits.treeId
@@ -2182,26 +2040,17 @@ script:
     arguments:
     - name: organization_name
       description: The name of the Azure DevOps organization. A default value is taken from the configuration parameters, but you can override it.
-      required: false
-      isArray: false
     - name: project_name
       description: Project ID or project name. A default value is taken from the configuration parameters, but you can override it.
-      required: false
-      isArray: false
     - name: repository_id
       description: The repository ID. A default value is taken from the configuration parameters, but you can override it.
-      required: false
-      isArray: false
     - name: branch_name
       description: The branch name. This argument can be obtained by running the 'azure-devops-branch-list' command.
       required: true
-      isArray: false
     - auto: PREDEFINED
       defaultValue: 'None'
       name: recursion_level
       description: The recursion level of this request. The default is None, no recursion.
-      required: false
-      isArray: false
       predefined:
       - 'None'
       - 'OneLevel'
@@ -2233,24 +2082,16 @@ script:
     arguments:
     - name: organization_name
       description: The name of the Azure DevOps organization. A default value is taken from the configuration parameters, but you can override it.
-      required: false
-      isArray: false
     - name: project_name
       description: Project ID or project name. A default value is taken from the configuration parameters, but the user can override it.
-      required: false
-      isArray: false
     - name: repository_id
       description: The repository ID. A default value is taken from the configuration parameters, but you can override it.
-      required: false
-      isArray: false
     - name: branch_name
       description: The branch name. This argument can be obtained by running the 'azure-devops-branch-list' command.
       required: true
-      isArray: false
     - name: file_name
       description: The file name.
       required: true
-      isArray: false
     - auto: PREDEFINED
       predefined:
       - 'json'
@@ -2258,12 +2099,8 @@ script:
       defaultValue: 'json'
       name: format
       description: The file format (json or zip).
-      required: false
-      isArray: false
     - name: include_content
       description: Include item content.
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - 'True'
@@ -2290,40 +2127,25 @@ script:
     arguments:
     - name: organization_name
       description: The name of the Azure DevOps organization. A default value is taken from the configuration parameters, but you can override it.
-      required: false
-      isArray: false
     - name: project_name
       description: Project ID or project name. A default value is taken from the configuration parameters, but you can override it.
-      required: false
-      isArray: false
     - name: repository_id
       description: The repository ID. A default value is taken from the configuration parameters, but you can override it.
-      required: false
-      isArray: false
     - name: branch_name
       description: The branch name.
       required: true
-      isArray: false
     - name: target_ref
       description: The name of the target reference.
       required: true
-      isArray: false
     - name: commit_comment
       description: Comment or message of the commit.
       required: true
-      isArray: false
     - name: file_path
       description: The file path.
-      required: false
-      isArray: false
     - name: file_content
       description: The file content.
-      required: false
-      isArray: false
     - name: entry_id
       description: There is an option to the user to provide an entry_id. In that case we will take the file_content and the file_path from the given id.
-      required: false
-      isArray: false
     outputs:
     - type: String
       contextPath: AzureDevOps.Branch.commits.treeId
@@ -2471,23 +2293,16 @@ script:
     arguments:
     - name: organization_name
       description: The name of the Azure DevOps organization. A default value is taken from the configuration parameters, but you can override it.
-      required: false
-      isArray: false
     - name: project_name
       description: Project ID or project name. A default value is taken from the configuration parameters, but you can override it.
-      required: false
-      isArray: false
     - name: repository_id
       description: The repository ID. A default value is taken from the configuration parameters, but you can override it.
-      required: false
-      isArray: false
     - name: pull_request_id
       description: The ID of the pull request to update.
       required: true
     - name: comment_text
       description: The comment content.
       required: true
-      isArray: false
     outputs:
     - type: Unknown
       contextPath: AzureDevOps.PullRequestThread.pullRequestThreadContext
@@ -2581,16 +2396,10 @@ script:
     arguments:
     - name: organization_name
       description: The name of the Azure DevOps organization. A default value is taken from the configuration parameters, but you can override it.
-      required: false
-      isArray: false
     - name: project_name
       description: Project ID or project name. A default value is taken from the configuration parameters, but you can override it.
-      required: false
-      isArray: false
     - name: repository_id
       description: The repository ID. A default value is taken from the configuration parameters, but you can override it.
-      required: false
-      isArray: false
     - name: pull_request_id
       description: The ID of the pull request to update.
       required: true
@@ -2600,7 +2409,6 @@ script:
     - name: comment_text
       description: The comment content.
       required: true
-      isArray: false
     outputs:
     - type: Unknown
       contextPath: AzureDevOps.PullRequestThread.pullRequestThreadContext
@@ -2694,16 +2502,10 @@ script:
     arguments:
     - name: organization_name
       description: The name of the Azure DevOps organization. A default value is taken from the configuration parameters, but you can override it.
-      required: false
-      isArray: false
     - name: project_name
       description: Project ID or project name. A default value is taken from the configuration parameters, but you can override it.
-      required: false
-      isArray: false
     - name: repository_id
       description: The repository ID. A default value is taken from the configuration parameters, but you can override it.
-      required: false
-      isArray: false
     - name: pull_request_id
       description: The ID of the pull request to update.
       required: true
@@ -2890,12 +2692,8 @@ script:
     arguments:
     - name: organization_name
       description: The name of the Azure DevOps organization. A default value is taken from the configuration parameters, but you can override it.
-      required: false
-      isArray: false
     - name: project_name
       description: Project ID or project name. A default value is taken from the configuration parameters, but you can override it.
-      required: false
-      isArray: false
     outputs:
     - type: String
       contextPath: AzureDevOps.Team.id
@@ -2923,16 +2721,11 @@ script:
     arguments:
     - name: organization_name
       description: The name of the Azure DevOps organization. A default value is taken from the configuration parameters, but you can override it.
-      required: false
-      isArray: false
     - name: project_name
       description: Project ID or project name. A default value is taken from the configuration parameters, but you can override it.
-      required: false
-      isArray: false
     - name: team_id
       description: The name or ID (GUID) of the team .
       required: true
-      isArray: false
     - defaultValue: '1'
       description: The page number of the results to retrieve. Minimum value is 1.
       name: page
@@ -2969,30 +2762,22 @@ script:
     arguments:
     - name: organization_name
       description: The name of the Azure DevOps organization. A default value is taken from the configuration parameters, but you can override it.
-      required: false
-      isArray: false
     - name: project_name
       description: Project ID or project name. A default value is taken from the configuration parameters, but you can override it.
-      required: false
-      isArray: false
     - name: repository_id
       description: The repository ID. A default value is taken from the configuration parameters, but you can override it.
-      required: false
-      isArray: false
     - name: file_object_id
       description: The ID of the blob object. This ID can be obtained by running the 'azure-devops-file-list' command.
       required: true
-      isArray: false
-
   - description: Generate the login url used for Authorization code flow.
     name: azure-devops-generate-login-url
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.100803
+  dockerimage: demisto/crypto:1.0.0.105591
   isremotesyncout: true
   ismappable: true
   isfetch: true
   runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
 fromversion: 6.0.0
