@@ -6,7 +6,7 @@ description: |-
   This playbook performs CVE Enrichment using the following integrations:
   - VulnDB
   - CVE Search
-  - IBM X-Force Exchange
+  - IBM X-Force Exchange.
 starttaskid: '0'
 tasks:
   '0':
@@ -36,6 +36,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
   "1":
     id: "1"
     taskid: 4cfa2898-da16-4d61-839a-cc66e5492541
@@ -44,8 +47,7 @@ tasks:
       id: 4cfa2898-da16-4d61-839a-cc66e5492541
       version: -1
       name: Is there a CVE to enrich?
-      description: Verify that the playbook input includes at least one CVE ID to
-        enrich.
+      description: Verify that the playbook input includes at least one CVE ID to enrich.
       type: condition
       iscommand: false
       brand: ''
@@ -74,6 +76,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    quietmode: 0
+    skipunavailable: false
   '2':
     id: '2'
     taskid: 1c1df4a5-6a12-4724-8cf5-586f7743fc57
@@ -97,6 +104,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    quietmode: 0
+    skipunavailable: false
   '4':
     id: '4'
     taskid: 842e273c-40ee-46c1-837d-f7e09bcefef0
@@ -229,24 +241,30 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
   "6":
     id: "6"
-    taskid: c08adb3a-b8c3-4a9b-8290-2f6dcda45d88
+    taskid: e6e1e786-f2d7-4c40-8e62-d15207ecd4fd
     type: regular
     task:
-      id: c08adb3a-b8c3-4a9b-8290-2f6dcda45d88
+      id: e6e1e786-f2d7-4c40-8e62-d15207ecd4fd
       version: -1
       name: Get CVE info from "CVE Search"
       description: Returns CVE information by CVE ID.
       script: '|||cve'
       type: regular
       iscommand: true
-      brand: CVE Search
+      brand: ""
     nexttasks:
       '#none#':
       - '2'
     scriptarguments:
       cve_id:
+        complex:
+          root: inputs.cve_id
+      cve:
         complex:
           root: inputs.cve_id
     continueonerror: true
@@ -261,6 +279,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    quietmode: 0
+    skipunavailable: false
   '7':
     id: '7'
     taskid: d2ff276a-dd81-4805-80c3-ee44976b4020
@@ -328,6 +351,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
   "12":
     id: "12"
     taskid: bee9dcb2-a07f-4362-8e17-df1458d42051
@@ -348,7 +374,6 @@ tasks:
       cve_id:
         complex:
           root: inputs.cve_id
-      max_size: {}
     separatecontext: false
     view: |-
       {
@@ -360,6 +385,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    quietmode: 0
+    skipunavailable: false
   '13':
     id: '13'
     taskid: 2c6008cc-e42b-4976-86c8-92123558d6b6
@@ -386,6 +416,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    quietmode: 0
+    skipunavailable: false
   '14':
     id: '14'
     taskid: da54676a-2737-437d-8f74-cf90095e20b0
@@ -412,6 +447,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    quietmode: 0
+    skipunavailable: false
   '26':
     id: '26'
     taskid: 85a2fa30-ef67-4272-8867-18116129def3
@@ -438,6 +478,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    quietmode: 0
+    skipunavailable: false
   '27':
     id: '27'
     taskid: 3b7877c8-6321-4a1c-8444-d2bd91aae191
@@ -495,6 +540,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    quietmode: 0
+    skipunavailable: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -522,24 +572,25 @@ inputs:
       accessor: ID
   required: false
   description: The CVE ID to enrich.
+  playbookInputQuery:
 outputs:
 - contextPath: CVE
-  description: The CVE object
+  description: The CVE object.
   type: unknown
 - contextPath: CVE.ID
-  description: The ID of the CVE
+  description: The ID of the CVE.
   type: string
 - contextPath: CVE.CVSS
-  description: The CVSS score of the CVE
+  description: The CVSS score of the CVE.
   type: number
 - contextPath: CVE.Published
-  description: The date this was published
+  description: The date this was published.
   type: date
 - contextPath: CVE.Modified
-  description: When CVE was last modified
+  description: When CVE was last modified.
   type: date
 - contextPath: CVE.Description
-  description: The CVE description
+  description: The CVE description.
   type: string
 - contextPath: VulnDB.Vulnerability.ID
   description: Vulnerability ID.
@@ -563,9 +614,9 @@ outputs:
   description: Vendor ID.
 - contextPath: VulnDB.Products.Id
   description: Product IDs.
-sourceplaybookid: cve_enrichment_-_generic
 tests:
-- No test
-marketplaces:
-  - xsoar
-  - marketplacev2
+- No tests (auto formatted)
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels: []
+system: true
