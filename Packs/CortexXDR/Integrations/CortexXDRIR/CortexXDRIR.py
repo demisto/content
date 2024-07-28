@@ -891,11 +891,11 @@ def get_modified_remote_data_command(client, args, xdr_delay, last_mirroring: Op
     demisto.debug(f'Performing get-modified-remote-data command. {last_update=} | {xdr_delay=}')
     last_update_utc = dateparser.parse(last_update,
                                        settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': False})   # convert to utc format
-    # Examples: ('2018-11-06T08:56:41', '2018-11-06T08:56:41', etc.)
 
     if last_update_utc:
         gte_modification_time_with_ms = last_update_utc - timedelta(minutes=xdr_delay)
         lte_modification_time_with_ms = gte_modification_time_with_ms + timedelta(minutes=1)
+    demisto.debug(f'get_modified_remote_data_command: {gte_modification_time_with_ms=} | {lte_modification_time_with_ms=}')
     raw_incidents = client.get_incidents(
         sort_by_modification_time=True,
         gte_modification_time=gte_modification_time_with_ms.isoformat() if gte_modification_time_with_ms else gte_modification_time_with_ms,
