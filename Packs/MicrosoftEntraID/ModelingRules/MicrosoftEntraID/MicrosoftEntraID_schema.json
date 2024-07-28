@@ -1,0 +1,48 @@
+{
+  "msft_azure_raw": {
+      "callerIpAddress": {
+          "type": "string",
+          "is_array": false
+      },
+      "category": {
+          "type": "string",
+          "is_array": false
+      },
+      "correlationId": {
+          "type": "string",
+          "is_array": false
+      },
+      "durationMs": {
+          "type": "string",
+          "is_array": false
+      },
+      "location": {
+          "type": "string",
+          "is_array": false
+      },
+      "operationName": {
+          "type": "string",
+          "is_array": false
+      },
+      "properties": {
+          "type": "string",
+          "is_array": false
+      },
+      "resultDescription": {
+          "type": "string",
+          "is_array": false
+      },
+      "resultSignature": {
+          "type": "string",
+          "is_array": false
+      },
+      "ResultType": {
+          "type": "string",
+          "is_array": false
+      },
+      "tenantId": {
+          "type": "string",
+          "is_array": false
+      }
+  }
+}
