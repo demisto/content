@@ -5,7 +5,7 @@ from CommonServerPython import *  # noqa: F401
 import os
 import re
 import json
-from pancloud import Credentials, exceptions, PanCloudError, HTTPError, QueryService
+from pan_cortex_data_lake import Credentials, exceptions, CortexError, HTTPError, QueryService
 import time
 import base64
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
@@ -65,8 +65,7 @@ def iter_job_results(
 
     """
     params = {
-        "maxWait": 2000,  # How long to wait in ms for a job to complete. Max 2000.
-        "resultFormat": 'valuesDictionary',
+
         "pageNumber": page_number,
         "pageSize": page_size,
     }
@@ -94,7 +93,7 @@ def iter_job_results(
             yield r
             break
         else:
-            raise PanCloudError("Bad state: %s" % r.json()["state"])
+            raise CortexError("Bad state: %s" % r.json()["state"])
 
 
 class Client(BaseClient):
@@ -268,7 +267,7 @@ class Client(BaseClient):
 
         demisto.setIntegrationContext(integration_context)
 
-    def query_loggings(self, query: str, page_number: Optional[str] = None, page_size: Optional[str] = None)\
+    def query_loggings(self, query: str, page_number: Optional[str] = None, page_size: Optional[str] = None) \
             -> tuple[list[dict], list]:
         """
         This function handles all the querying of Cortex Logging service
@@ -301,8 +300,9 @@ class Client(BaseClient):
             raise DemistoException(f'Error in query to Cortex Data Lake XSOAR Connector [{status_code}] - {error_message}')
 
         try:
-            raw_results = [r.json() for r in iter_job_results(query_service, job_id=query_result.get(
-                'jobId'), page_number=arg_to_number(page_number), page_size=arg_to_number(page_size) or 50)]
+            raw_results = [r.json() for r in query_service.iter_job_results(job_id=query_result.get(
+                'jobId'), page_number=arg_to_number(page_number), page_size=arg_to_number(page_size) or 50, max_wait=2000,
+                result_format='valuesDictionary')]
         except exceptions.HTTPError as e:
             raise DemistoException(f'Received error {str(e)} when querying logs.')
 
