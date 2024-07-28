@@ -1998,7 +1998,7 @@ def search_device(filter_operator='AND'):
     if not device_ids:
         return None
     demisto.debug(f"number of devices returned from the api call is: {len(device_ids)}")
-    return http_request('POST', '/devices/entities/devices/v2', params={'ids': device_ids})
+    return http_request('POST', '/devices/entities/devices/v2', json={'ids': device_ids})
 
 
 def behavior_to_entry_context(behavior):
