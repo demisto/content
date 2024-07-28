@@ -273,7 +273,8 @@ def test_cancel_cps_change_command(mocker, akamai_waf_client):
     expected_raw_response = {
         "change": "/cps/v2/enrollments/193622/changes/3914270"
     }
-    expected_human_readable = "### Akamai WAF - cps cancel change\n|change|\n|---|\n| /cps/v2/enrollments/193622/changes/3914270 |\n"
+    expected_human_readable = "### Akamai WAF - cps cancel change\n|change|\n|---|\n|\
+ /cps/v2/enrollments/193622/changes/3914270 |\n"
     expected_context_entry = {
         'Akamai.Cps.Change.Canceled': {
             'change': '/cps/v2/enrollments/193622/changes/3914270'
