@@ -73,7 +73,7 @@ class Client(BaseClient):
 
         if create_time:
             body['time_range'] = create_time
-        
+
         return self._http_request('POST', suffix_url, json_data=body)
 
     def alert_workflow_update_get_request(self, request_id: str) -> dict:
