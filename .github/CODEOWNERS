@@ -1,12 +1,12 @@
 # Marketplace Related - Marketplace PMs only
-/Tests/Marketplace/approved_tags.json @yaakovpraisler @bakatzir @GuyLibermanPA @demisto/content-leaders
-/Tests/Marketplace/approved_usecases.json @yaakovpraisler @bakatzir @GuyLibermanPA @demisto/content-leaders
+/Config/approved_tags.json @yaakovpraisler @bakatzir @GuyLibermanPA @demisto/content-leaders
+/Config/approved_usecases.json @yaakovpraisler @bakatzir @GuyLibermanPA @demisto/content-leaders
 /Tests/Marketplace/landingPage_sections.json @yaakovpraisler @bakatzir @GuyLibermanPA @demisto/content-leaders
-/Tests/Marketplace/approved_categories.json @yaakovpraisler @bakatzir @GuyLibermanPA @demisto/content-leaders
-/Tests/Marketplace/core_packs_list.json @yaakovpraisler @bakatzir @GuyLibermanPA @demisto/content-leaders
-/Tests/Marketplace/core_packs_mpv2_list.json @yaakovpraisler @bakatzir @GuyLibermanPA @demisto/content-leaders
+/Config/approved_categories.json @yaakovpraisler @bakatzir @GuyLibermanPA @demisto/content-leaders
+/Config/core_packs_list.json @yaakovpraisler @bakatzir @GuyLibermanPA @demisto/content-leaders
+/Config/core_packs_mpv2_list.json @yaakovpraisler @bakatzir @GuyLibermanPA @demisto/content-leaders
 /Tests/Marketplace/versions-metadata.json @yaakovpraisler
-/Tests/Marketplace/corepacks_override.json @yaakovpraisler
+/Config/corepacks_override.json @yaakovpraisler
 
 # Docker native image
 /Tests/docker_native_image_config.json @JudahSchwartz @shmuel44

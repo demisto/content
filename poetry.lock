@@ -806,13 +806,13 @@ reference = "pypi-public"
 
 [[package]]
 name = "demisto-sdk"
-version = "1.31.4"
+version = "1.31.5"
 description = "\"A Python library for the Demisto SDK\""
 optional = false
 python-versions = ">=3.8,<3.12"
 files = [
-    {file = "demisto_sdk-1.31.4-py3-none-any.whl", hash = "sha256:14de23c28f21c8045bb4db1688d5bcf14db32d4c04cb3d410c9211c65857fed9"},
-    {file = "demisto_sdk-1.31.4.tar.gz", hash = "sha256:6b4917afdb8663674515bb88c1d4aca3e3a4ac132a44bb3c6a8238d5df285d0b"},
+    {file = "demisto_sdk-1.31.5-py3-none-any.whl", hash = "sha256:f7a849a573e44a742d6626b32c8d092e8858a84e4514a19cd570341f095a8412"},
+    {file = "demisto_sdk-1.31.5.tar.gz", hash = "sha256:517165c204b89371e47a2aa64eb4d52f14ad43f710ce1733e63dabec3a183cde"},
 ]
 
 [package.dependencies]
@@ -844,7 +844,7 @@ jsonschema = ">=4.4.0,<5.0.0"
 junitparser = ">=3.1.0,<4.0.0"
 lxml = ">=5.0.0,<6.0.0"
 mergedeep = ">=1.3.4,<2.0.0"
-more-itertools = ">=9.0.0,<10.0.0"
+more-itertools = ">=10.0.0,<11.0.0"
 mypy = ">=0.982,<0.983"
 neo4j = ">=5.14.0,<6.0.0"
 networkx = ">=2.7.1,<3.0.0"
@@ -2357,13 +2357,13 @@ reference = "pypi-public"
 
 [[package]]
 name = "more-itertools"
-version = "9.1.0"
+version = "10.3.0"
 description = "More routines for operating on iterables, beyond itertools"
 optional = false
-python-versions = ">=3.7"
+python-versions = ">=3.8"
 files = [
-    {file = "more-itertools-9.1.0.tar.gz", hash = "sha256:cabaa341ad0389ea83c17a94566a53ae4c9d07349861ecb14dc6d0345cf9ac5d"},
-    {file = "more_itertools-9.1.0-py3-none-any.whl", hash = "sha256:d2bc7f02446e86a68911e58ded76d6561eea00cddfb2a91e7019bbb586c799f3"},
+    {file = "more-itertools-10.3.0.tar.gz", hash = "sha256:e5d93ef411224fbcef366a6e8ddc4c5781bc6359d43412a65dd5964e46111463"},
+    {file = "more_itertools-10.3.0-py3-none-any.whl", hash = "sha256:ea6a02e24a9161e51faad17a8782b92a0df82c12c1c8886fec7f0c3fa1a1b320"},
 ]
 
 [package.source]
@@ -5440,4 +5440,4 @@ reference = "pypi-public"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8,<3.11"
-content-hash = "8c0cf675a6cc6c49eb6c7e5efb0babbeebf7f21bb6669b7a47d2c15dfb231160"
+content-hash = "86c1534606db5d26d507de5dd208c32ebcb01b8e410d18640fb49d9940159145"
