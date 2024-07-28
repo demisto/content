@@ -24,26 +24,26 @@ name: Impartner
 script:
   commands:
   - arguments:
-    - description: 'query for searching accounts'
+    - description: 'query for searching accounts.'
       name: query
       required: false
-    - description: 'Comma separated list of fields to retrieve'
+    - description: 'Comma separated list of fields to retrieve.'
       name: fields
       required: false
       defaultValue: "name, id, recordLink, tech_BD_Assigned_for_XSOAR__cf"
-    - description: 'Optional where clause (eg, Field1 = Val1 and Field2 > Val2)'
+    - description: 'Optional where clause (eg, Field1 = Val1 and Field2 > Val2).'
       name: filter
       required: false
-    - description: 'Comma separated list of fields to sort by'
+    - description: 'Comma separated list of fields to sort by.'
       name: orderby
       required: false
-    - description: 'Number of results to skip for pagination'
+    - description: 'Number of results to skip for pagination.'
       name: skip
       required: false
-    - description: 'Number of results to take for pagination'
+    - description: 'Number of results to take for pagination.'
       name: take
       required: false
-    description: 'Get account IDs from Impartner'
+    description: 'Get account IDs from Impartner.'
     name: impartner-get-account-list
     outputs:
     - contextPath: Impartner.Account.count
@@ -107,10 +107,10 @@ script:
       description: Street of account.
       type: String
     - contextPath: Impartner.Account.name
-      description: Account Name
+      description: Account Name.
       type: String
     - contextPath: Impartner.Account.recordLink
-      description: Link to account in Impartner
+      description: Link to account in Impartner.
       type: String
     - contextPath: Impartner.Account.website
       description: Account website.
