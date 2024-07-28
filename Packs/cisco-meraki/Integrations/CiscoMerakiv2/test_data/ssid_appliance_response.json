@@ -1,0 +1,18 @@
+[
+    {
+        "number": 1,
+        "name": "My SSID",
+        "enabled": true,
+        "defaultVlanId": 1,
+        "authMode": "8021x-radius",
+        "radiusServers": [
+            {
+                "host": "0.0.0.0",
+                "port": 1000
+            }
+        ],
+        "encryptionMode": "wpa",
+        "wpaEncryptionMode": "WPA2 only",
+        "visible": true
+    }
+]
