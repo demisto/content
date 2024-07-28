@@ -477,6 +477,8 @@ def main():  # pragma: no cover
                                                polling_field="status",
                                                polling_value=["PENDING",
                                                               "IN_PROGRESS",
+                                                              "FAILED",
+                                                              "SUCCESS",
                                                               "PENDING_ABORT"]))
 
         elif command == 'core-terminate-causality':
@@ -489,6 +491,8 @@ def main():  # pragma: no cover
                                                polling_field="status",
                                                polling_value=["PENDING",
                                                               "IN_PROGRESS",
+                                                              "FAILED",
+                                                              "SUCCESS",
                                                               "PENDING_ABORT"]))
 
         elif command in PREVALENCE_COMMANDS:

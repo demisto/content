@@ -1907,7 +1907,7 @@ def action_status_get_command(client: CoreClient, args) -> CommandResults:
             result.append({
                 'action_id': action_id,
                 'endpoint_id': endpoint_id,
-                'status': status
+                'status': status,
             })
 
     return CommandResults(
