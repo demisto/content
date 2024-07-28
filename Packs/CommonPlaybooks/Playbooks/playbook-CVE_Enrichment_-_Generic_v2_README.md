@@ -1,4 +1,4 @@
-This playbook performs CVE enrichment using the following integrations:
+This playbook performs CVE Enrichment using the following integrations:
 - VulnDB
 - CVE Search
 - IBM X-Force Exchange
@@ -14,7 +14,6 @@ This playbook does not use any sub-playbooks.
 ### Integrations
 
 * VulnDB
-* CVE Search
 
 ### Scripts
 
@@ -23,8 +22,8 @@ This playbook does not use any scripts.
 ### Commands
 
 * cve-search
-* vulndb-get-vuln-by-cve-id
 * cve
+* vulndb-get-vuln-by-cve-id
 
 ## Playbook Inputs
 
@@ -40,11 +39,11 @@ This playbook does not use any scripts.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| CVE | The CVE object. | unknown |
-| CVE.ID | The ID of the CVE. | string |
-| CVE.CVSS | The CVSS score of the CVE. | number |
-| CVE.Published | The date this was published. | date |
-| CVE.Modified | When the CVE was last modified. | date |
+| CVE | The CVE object | unknown |
+| CVE.ID | The ID of the CVE | string |
+| CVE.CVSS | The CVSS score of the CVE | number |
+| CVE.Published | The date this was published | date |
+| CVE.Modified | When CVE was last modified | date |
 | CVE.Description | The CVE description | string |
 | VulnDB.Vulnerability.ID | Vulnerability ID. | unknown |
 | VulnDB.Vulnerability.Title | Vulnerability title \(human readable\). | unknown |
