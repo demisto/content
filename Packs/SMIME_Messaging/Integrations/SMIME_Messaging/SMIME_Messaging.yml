@@ -59,14 +59,37 @@ script:
     - description: Sender's public key to verify
       name: public_key
       defaultValue: instancePublicKey
-    description: Verifies the signature.
+    - auto: PREDEFINED
+      description: Get the full raw output of the email.
+      name: raw_output
+      predefined:
+      - 'false'
+      - 'true'
+    - description: Tags (comma separated) to be included in the war room output.
+      name:  tag
+    description: |-
+      Verifies the signature.
+
+      Warning: This function does not check the CA chain. Ensure the certificate chain is validated separately to avoid security risks.
     name: smime-verify-sign
+    outputs:
+    - contextPath: SMIME.Verified.Message
+      description: The decoded signed message.
+      type: String
   - arguments:
-    - description: The encrypted message with .p7 extension.
+    - description: entity_id of the file with .p7 extension containing the encrypted email.
       name: encrypt_message
       required: true
     - description: The encoding code to use when decode the message body, e.g 'ISO-8859-2''.
       name: encoding
+    - auto: PREDEFINED
+      description: Get the full raw output of the email.
+      name: raw_output
+      predefined:
+      - 'false'
+      - 'true'
+    - description: Tags (comma separated) to be included in the war room output.
+      name:  tag
     description: Decrypts the message body.
     name: smime-decrypt-email-body
     outputs:
@@ -79,23 +102,22 @@ script:
       required: true
     - description: list of recipients and their public keys
       name: recipients
-      type: keyValue
     - description: list of cc recipients and their public keys
       name: cc
-      type: keyValue
     - description: list of bcc recipients and their public keys
       name: bcc
-      type: keyValue
     - description: list of war room entry id's of files to attach to the mail
       name: attachment_entry_id
-      isList: true
-    - description: Define whether the mail should be signed.
+      isArray: true
+    - auto: PREDEFINED
+      description: Define whether the mail should be signed.
       name: signed
       defaultValue: 'true'
       predefined:
       - 'true'
       - 'false'
-    - description: Define whether the mail should be encrypted.
+    - auto: PREDEFINED
+      description: Define whether the mail should be encrypted.
       name: encrypted
       defaultValue: 'true'
       predefined:
@@ -106,8 +128,8 @@ script:
     - description: Email Subject
       name: subject
     - auto: PREDEFINED
-      description: Set 'true' to use content transfer encoding.
-      name: use_transport_encoding
+      description: Whether to create a file with the encrypted/signed content.
+      name: 'create_file_p7'
       predefined:
       - 'false'
       - 'true'
@@ -117,10 +139,10 @@ script:
     - contextPath: SMIME.SignedAndEncrypted.Message
       description: The raw message to send.
       type: String
-    - contextPath: SMIME.SignedAndEncrypted.RecipientIdentifier
+    - contextPath: SMIME.SignedAndEncrypted.RecipientIds
       description: Address of recipient
       type: String
-    - contextPath: SMIME.SignedAndEncrypted.File
+    - contextPath: SMIME.SignedAndEncrypted.FileName
       type: String
   dockerimage: demisto/m2crypto:1.0.0.79505
   runonce: false

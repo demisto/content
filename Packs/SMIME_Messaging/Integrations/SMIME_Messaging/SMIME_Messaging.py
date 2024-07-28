@@ -12,7 +12,7 @@ import quopri
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
-from email import encoders
+from email import encoders, message_from_string
 import pytz
 
 
@@ -39,6 +39,76 @@ def create_pem_string(base64_cert) -> str:
     )
     pemstring += "\n-----END CERTIFICATE-----\n"
     return pemstring
+
+
+def parse_multipart_message(msg: str):
+    # Store attachments
+    email_message = message_from_string(msg)
+    if email_message.get_content_type() == 'multipart/signed':
+        # The message is signed
+        return ['', '']
+    email_body = ""  # Initialize email_body to an empty string
+    email_html = ""  # Initialize email_html to an empty string
+    images = {}      # Initialize a list to store image data
+    cid = ""
+
+    for part in email_message.walk():
+        content_type = part.get_content_type()
+        if (content_type == 'application/pkcs7-signature'
+                or content_type == 'application/pkcs7-mime'):
+            # The message is signed
+            return ['', '']
+        if part.is_multipart():
+            continue
+
+        # Extract attachments, ignore p7 files
+        if part.get_content_disposition() == 'attachment':
+            fileName = part.get_filename()
+
+            if not fileName or fileName.lower().endswith('.p7s'):
+                continue
+            # create the attachment
+            file_result = fileResult(fileName, part.get_payload(decode=True))
+
+            # check for error
+            if file_result['Type'] == entryTypes['error']:
+                demisto.error(file_result['Contents'])
+                raise Exception(file_result['Contents'])
+            # return the attachment to war room
+            return_results(file_result)
+            continue
+
+        payload = part.get_payload(decode=True)
+        if not isinstance(payload, bytes):
+            raise TypeError(f'Error in message.get_payload(decode=True), expected bytes, got: {type(payload)}')
+
+        # Extract the CID images of the email in html
+        if part.get_content_maintype() == 'image':
+            content_type = part.get_content_type()
+            image_data_base64 = base64.b64encode(payload).decode('utf-8')
+            cid = part.get('Content-Id')
+            if cid:
+                # Remove angle brackets if present around CID
+                cid = re.sub(r'<(.*?)>', r'\1', cid)
+                images[cid] = (content_type, image_data_base64)
+
+        # Extract the body of the email in html
+        elif part.get_content_type() == 'text/html':
+            email_html = payload.decode(part.get_content_charset('utf-8'), errors='ignore')
+            # Clean up whitespaces
+            email_html = re.sub(r'</head>\s*<body>', '</head><body>', email_html)
+
+        # Extract the body of the email in plain text if there is no html
+        elif part.get_content_maintype() == 'text' and not email_body and not email_html:
+            email_body = payload.decode(part.get_content_charset('utf-8'), errors='ignore')
+
+    # Replace CID references with data URLs
+    for cid, (content_type, image_data_base64) in images.items():
+        cid_reference = 'cid:' + cid
+        data_url = f'data:{content_type};base64,{image_data_base64}'
+        email_html = email_html.replace(cid_reference, data_url)
+
+    return [email_body, email_html]
 
 
 class Client:
@@ -92,14 +162,14 @@ def sign_email(client: Client, args: dict):
     signed = out.read().decode('utf-8')
     signed_message = signed.split('\n\n')
     headers = signed_message[0].replace(': ', '=').replace('\n', ',')
-    context = {
-        'SMIME.Signed': {
-            'Message': signed,
-            'Headers': headers
-        }
-    }
 
-    return signed, context
+    return CommandResults(
+        readable_output=signed,
+        outputs_prefix='SMIME.Signed',
+        outputs={'Message': signed,
+                 'Headers': headers,
+                 }
+    )
 
 
 def encrypt_email_body(client: Client, args: dict):
@@ -127,13 +197,13 @@ def encrypt_email_body(client: Client, args: dict):
     headers = message[0]
     new_headers = headers.replace(': ', '=').replace('\n', ',')
 
-    entry_context = {
-        'SMIME.Encrypted': {
-            'Message': encrypted_message,
-            'Headers': new_headers
-        }
-    }
-    return encrypted_message, entry_context
+    return CommandResults(
+        readable_output=encrypted_message,
+        outputs_prefix='SMIME.Encrypted',
+        outputs={'Message': encrypted_message,
+                 'Headers': new_headers,
+                 }
+    )
 
 
 def verify(client: Client, args: dict):
@@ -146,6 +216,8 @@ def verify(client: Client, args: dict):
     """
     signed_message = demisto.getFilePath(args.get('signed_message'))
     cert = args.get('public_key', 'instancePublicKey')
+    raw_output = argToBoolean(args.get('raw_output', 'false'))
+    tags = argToList(args.get('tag', ''))
 
     sk = X509.X509_Stack()
     st = X509.X509_Store()
@@ -180,9 +252,36 @@ def verify(client: Client, args: dict):
         else:
             raise e
 
-    return CommandResults(
+    if not v:
+        raise ValueError('Unknown error: failed to verify message')
+    msg = v.decode('utf-8')
+    msg_out = msg
+    html_readable = ''
+    if not raw_output:  # Return message after parsing html/images/attachments
+        [email_body, email_html] = parse_multipart_message(msg)
+        if email_html:
+            msg_out = email_html
+            human_readable = 'The signature verified'
+            html_readable = email_html
+        elif email_body:
+            msg_out = email_body
+            human_readable = f'### The signature verified, message is: \n ___ \n {email_body}'
+
+    results = [CommandResults(
         readable_output=human_readable,
-    )
+        outputs_prefix='SMIME.Verified',
+        outputs={'Message': msg_out},
+        tags=tags,
+    )]
+
+    if html_readable:
+        results.append(CommandResults(
+            raw_response=html_readable,
+            content_format=EntryFormat.HTML,
+            entry_type=EntryType.NOTE,
+        ))
+
+    return results
 
 
 def decode_str(decrypted_text: bytes, encoding: str) -> tuple[str, str]:
@@ -207,26 +306,30 @@ def decode_str(decrypted_text: bytes, encoding: str) -> tuple[str, str]:
     return out, msg
 
 
-def decrypt_email_body(client: Client, args: dict, file_path=None):
+def decrypt_email_body(client: Client, args: dict):
     """ Decrypt the message
 
     Args:
         client: Client
         args: Dict
-        file_path: relevant for the test module
     """
-    if file_path:
-        encrypt_message = file_path
+    if 'test_file_path' in args:  # test module
+        encrypt_message = args.get('test_file_path', '')
     else:
-        encrypt_message = demisto.getFilePath(args.get('encrypt_message'))
+        encrypt_message = demisto.getFilePath(args.get('encrypt_message', ''))
         demisto.debug(f'\n\nFile Name:{encrypt_message["name"]}; Type:{type(encrypt_message["name"])}\n\n')
 
     encoding = args.get('encoding', '')
+    raw_output = argToBoolean(args.get('raw_output', 'false'))
+    tags = argToList(args.get('tag', ''))
+
     msg = ''
     client.smime.load_key(client.private_key_file, client.public_key_file)
     try:
         p7, data = SMIME.smime_load_pkcs7(encrypt_message['path'])
         decrypted_text = client.smime.decrypt(p7)
+        if not decrypted_text:
+            raise ValueError('Unknown error: failed to decrypt message')
         out, msg = decode_str(decrypted_text, encoding)
 
     except SMIME.SMIME_Error as e:
@@ -237,47 +340,66 @@ def decrypt_email_body(client: Client, args: dict, file_path=None):
             p7bio = BIO.MemoryBuffer(p7data)
             p7 = SMIME.load_pkcs7_bio_der(p7bio)
             decrypted_text = client.smime.decrypt(p7, flags=SMIME.PKCS7_NOVERIFY)
+            if not decrypted_text:
+                raise ValueError('Unknown error: failed to decrypt message')
             out, msg = decode_str(decrypted_text, encoding)
 
         else:
             raise
 
-    return CommandResults(
-        readable_output=f'{msg}The decrypted message is: \n{out}',
+    msg_out = out
+    human_readable = f'{msg}The decrypted message is: \n{out}'
+    html_readable = ''
+    if not raw_output:  # Return message after parsing html/images/attachments
+        [email_body, email_html] = parse_multipart_message(out)
+        if email_html:
+            msg_out = email_html
+            human_readable = f'{msg}Message decrypted successfully'
+            html_readable = email_html
+        elif email_body:
+            msg_out = email_body
+            human_readable = f'### {msg}The decrypted message is: \n ___ \n {email_body}'
+        else:
+            human_readable = f'{msg}The decrypted message is signed: \n{out}'
+
+    results = [CommandResults(
+        readable_output=human_readable,
         outputs_prefix='SMIME.Decrypted',
-        outputs_key_field='Message',
-        outputs=out,
-    )
+        outputs={'Message': msg_out},
+        tags=tags,
+    )]
+
+    if html_readable:
+        results.append(CommandResults(
+            raw_response=html_readable,
+            content_format=EntryFormat.HTML,
+            entry_type=EntryType.NOTE,
+        ))
+
+    return results
 
 
 def sign_and_encrypt(client: Client, args: dict):
-
     message = args.get('message', '')
     sign = argToBoolean(args.get('signed', 'true'))
     encrypt = argToBoolean(args.get('encrypted', 'true'))
     sender = args.get('sender', '')
     subject = args.get('subject', '')
-    # use_transport_encoding = argToBoolean(args.get('use_transport_encoding', 'false'))
-    recipients = args.get('recipients', {})  # type: dict[str,str]
-    cc = args.get('cc', {})  # type: dict[str,str]
-    bcc = args.get('bcc', {})  # type: dict[str,str]
+    create_file = argToBoolean(args.get('create_file_p7', 'false'))
+    recipients = safe_load_json(args.get('recipients', {}))
+    cc = safe_load_json(args.get('cc', {}))
+    bcc = safe_load_json(args.get('bcc', {}))
     attachment_ids = argToList(args.get('attachment_entry_id', ''))  # type: list[str]
 
     if type(recipients) != dict:
-        raise DemistoException("Failed to parse recipients. (format `{'some@email':'pub_key', 'other@email':'other_key'}`)")
+        raise DemistoException("Failed to parse recipients. (format `{'recipient@email':'pub_cert', 'other@email':'pub_cert'}`)")
     if type(cc) != dict:
-        raise DemistoException("Failed to parse cc , (format `{'some@email':'pub_key', 'other@email':'other_key'}`)")
+        raise DemistoException("Failed to parse cc. (format `{'recipient@email':'pub_cert', 'other@email':'pub_cert'}`)")
     if type(bcc) != dict:
-        raise DemistoException("Failed to parse bcc, (format `{'some@email':'pub_key', 'other@email':'other_key'}`)")
+        raise DemistoException("Failed to parse bcc. (format `{'recipient@email':'pub_cert', 'other@email':'pub_cert'}`)")
 
     # Prepare message
     msg = MIMEMultipart()
-    # TODO: what to do for transport encoding?
-    # cs = charset.Charset('utf-8')
-    # if use_transport_encoding:
-    #    cs.header_encoding = charset.QP
-    #    cs.body_encoding = charset.QP
-    #    msg.set_charset(cs)
 
     is_html = bool(re.search(r'<.*?>', message))
     if is_html:
@@ -344,11 +466,16 @@ def sign_and_encrypt(client: Client, args: dict):
     # Add email plain-text header
     current_time = datetime.now(pytz.timezone('UTC')).strftime("%a, %d %b %Y %H:%M:%S %z")
     out.write(f'Date: {current_time}\r\n')
-    out.write(f'From: {sender}\r\n')
-    out.write(f'To: {", ".join(recipients.keys())}\r\n')
-    out.write(f'CC: {", ".join(cc.keys())}\r\n')
-    out.write(f'BCC: {", ".join(bcc.keys())}\r\n')
-    out.write(f'Subject: {subject}\r\n')
+    if sender:
+        out.write(f'From: {sender}\r\n')
+    if recipients:
+        out.write(f'To: {", ".join(recipients.keys())}\r\n')
+    if cc:
+        out.write(f'CC: {", ".join(cc.keys())}\r\n')
+    if bcc:
+        out.write(f'BCC: {", ".join(bcc.keys())}\r\n')
+    if subject:
+        out.write(f'Subject: {subject}\r\n')
 
     if encrypt or sign:
         client.smime.write(out, p7)
@@ -357,17 +484,25 @@ def sign_and_encrypt(client: Client, args: dict):
 
     msg = out.read().decode('utf-8')
 
-    file_results = fileResult(filename=f'SMIME-{demisto.uniqueFile()[:8]}.p7', data=msg, file_type=EntryType.FILE)
-    command_results = CommandResults(
+    if create_file:
+        file_results = fileResult(filename=f'SMIME-{demisto.uniqueFile()[:8]}.p7', data=msg, file_type=EntryType.FILE)
+        command_results = CommandResults(
+            readable_output=msg,
+            outputs_prefix='SMIME.SignedAndEncrypted',
+            outputs={'Message': msg,
+                     'RecipientIds': [id for dest in [recipients, cc, bcc] for id in dest],
+                     'FileName': file_results.get('File', ''),
+                     }
+        )
+        return [command_results, file_results]
+
+    return CommandResults(
         readable_output=msg,
         outputs_prefix='SMIME.SignedAndEncrypted',
         outputs={'Message': msg,
-                 'Recipient Ids': [id for dest in [recipients, cc, bcc] for id in dest],
-                 'File Name': file_results.get('File'),
+                 'RecipientIds': [id for dest in [recipients, cc, bcc] for id in dest],
                  }
     )
-    # TODO: Get final output design from TPM
-    return [command_results, file_results]
 
 
 def test_module(client, *_):
@@ -376,9 +511,9 @@ def test_module(client, *_):
         encrypt_message = encrypt_email_body(client, {'message': message_body})
         if encrypt_message:
             test_file = NamedTemporaryFile(delete=False)
-            test_file.write(bytes(encrypt_message[0], 'utf-8'))
+            test_file.write(bytes(encrypt_message.readable_output, 'utf-8'))
             test_file.close()
-            decrypt_message = decrypt_email_body(client, {}, file_path={'path': test_file.name})
+            decrypt_message = decrypt_email_body(client, {'test_file_path': test_file.name})
             if decrypt_message:
                 demisto.results('ok')
     except Exception:
