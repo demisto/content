@@ -138,8 +138,17 @@ class ContentPackInstaller:
         Returns:
             str. The latest version of the pack.
         """
-        res = self.get_pack_data_from_marketplace(pack_id)
-        return res.get('response', {}).get('currentVersion')  # type: ignore[call-overload, union-attr]
+        try:
+            res = self.get_pack_data_from_marketplace(pack_id)
+            demisto.debug(f'raw pack_data_from_marketplace: {res}')
+            if type(res) is list:
+                res = res[0]  # type: ignore
+            return res.get('response', {}).get('currentVersion')  # type: ignore[call-overload, union-attr]
+        except AttributeError as e:
+            demisto.debug(f'error trying to get {pack_id=}. {e}')
+            raise ValueError(f'Error while fetching {pack_id} from the marketplace. '
+                             f'Make sure the Core REST API integration is properly configured and {pack_id} exists.'
+                             f'Try running `!core-api-get uri=/contentpacks/marketplace/{pack_id}` in the playground.')
 
     def get_packs_data_for_installation(self, packs_to_install: List[Dict[str, str]]) -> List[Dict[str, str]]:
         """Creates a list of packs' data for the installation request.
@@ -358,6 +367,7 @@ def main():
         )
 
     except Exception as e:
+        demisto.debug(f'{e}')
         return_error(f'{SCRIPT_NAME} - Error occurred while setting up machine.\n{e}')
 
 
