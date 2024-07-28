@@ -12,6 +12,11 @@ urllib3.disable_warnings()
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 TOKEN_EXPIRY_BUFFER = timedelta(seconds=10)
+DEFAULT_LIMIT = 50
+MAX_LIMIT = 3000
+# print(f"{demisto.args()=}")
+# print(f"{demisto.params()=}")
+
 
 ''' CLIENT CLASS '''
 
@@ -80,7 +85,7 @@ class Client(BaseClient):
         demisto.setIntegrationContext({"access_token": new_token, "expiry_time_utc": expiry_time_utc.isoformat()})
         self.access_token = new_token
 
-    def search_request(self, data_dict: dict) -> dict:
+    def event_search_request(self, data_dict: dict) -> dict:
         """
         Performs basic get request to check if the server is reachable.
         """
@@ -90,15 +95,38 @@ class Client(BaseClient):
             method="POST",
             full_url=full_url,
             data=data,
-            headers={"Authorization": f"Bearer {self.access_token}", "Content-Type": "application/json"},
         )
         return response
 
-    def request(self, method, full_url, data, headers, **kwargs):
+    def case_search_request(self, data_dict: dict) -> dict:
+        """
+        """
+        data = json.dumps(data_dict)
+        full_url = f"{self._base_url}/threat-center/v1/search/cases"
+        response = self.request(
+            method="POST",
+            full_url=full_url,
+            data=data,
+        )
+        return response
+
+    def get_case_request(self, case_id: int) -> dict:
+        """
+        """
+        full_url = f"{self._base_url}/threat-center/v1/cases/{case_id}"
+        response = self.request(
+            method="GET",
+            full_url=full_url,
+            data={},
+        )
+        return response
+
+    def request(self, method, full_url, data):
+        headers = {"Authorization": f"Bearer {self.access_token}", "Content-Type": "application/json"}
         try:
-            return self._http_request(method=method, full_url=full_url, data=data, headers=headers, **kwargs)
-        except Exception as e:
-            if not hasattr(e, "res") or not hasattr(e.res, "status_code"):  # type: ignore
+            return self._http_request(method=method, full_url=full_url, data=data, headers=headers)
+        except DemistoException as e:
+            if not hasattr(e, "res") or not hasattr(e.res, "status_code"):
                 raise
 
             if e.res.status_code == 401 and "Jwt is expired" in e.res.text:  # type: ignore
@@ -109,7 +137,6 @@ class Client(BaseClient):
                     full_url=full_url,
                     data=data,
                     headers=headers,
-                    **kwargs,
                 )
             else:
                 raise
@@ -131,7 +158,7 @@ def get_date(time: str, arg_name: str):
     """
     date_time = arg_to_datetime(arg=time, arg_name=arg_name, required=True)
     if not date_time:
-        raise DemistoException(f"There was an issue parsing the {arg_name}  0 .")
+        raise DemistoException(f"There was an issue parsing the {arg_name} provided.")
     date = date_time.strftime(DATE_FORMAT)
     return date
 
@@ -203,7 +230,29 @@ def _parse_entry(entry: dict):
         "Tier": entry.get("tier"),
         "Is Parsed": entry.get("parsed"),
         "Raw Logs": entry.get("rawLogs"),
-        "Time": entry.get("time")
+        "Time": entry.get("time"),
+        "Products": entry.get("products"),
+        "Src Hosts": entry.get("srcHosts"),
+        "Subscription Code": entry.get("subscriptionCode"),
+        "Dest Hosts": entry.get("destHosts"),
+        "Alert Name": entry.get("alertName"),
+        "Case ID": entry.get("caseId"),
+        "Src IPs": entry.get("srcIps"),
+        "Alert ID": entry.get("alertId"),
+        "Risk Score": entry.get("riskScore"),
+        "Has Attachments": entry.get("hasAttachments"),
+        "Vendors": entry.get("vendors"),
+        "Grouped by Key": entry.get("groupedbyKey"),
+        "Case Creation Timestamp": entry.get("caseCreationTimestamp"),
+        "Priority": entry.get("priority"),
+        "Last Modified Timestamp": entry.get("lastModifiedTimestamp"),
+        "Users": entry.get("users"),
+        "Tags": entry.get("tags"),
+        "Use Cases": entry.get("useCases"),
+        "Stage": entry.get("stage"),
+        "Mitres": entry.get("mitres"),
+        "Dest IPs": entry.get("destIps"),
+        "Queue": entry.get("queue")
     }
     final = remove_empty_elements(parsed)
     return final if final else None
@@ -239,9 +288,9 @@ def get_limit(args: dict) -> int:
         If the 'limit' argument is not present in the dictionary or is None, returns 50 as the default limit.
     """
     if limit := args.get('limit'):
-        return min(int(limit), 3000)
+        return min(int(limit), MAX_LIMIT)
 
-    return 50
+    return DEFAULT_LIMIT
 
 
 def error_fixes(error: str):
@@ -256,7 +305,7 @@ def error_fixes(error: str):
 ''' COMMAND FUNCTIONS '''
 
 
-def search_command(client: Client, args: dict) -> CommandResults:
+def event_search_command(client: Client, args: dict) -> CommandResults:
     """
     Search for logs using the Exabeam client with the provided arguments.
 
@@ -284,7 +333,7 @@ def search_command(client: Client, args: dict) -> CommandResults:
         group_list = argToList(group_by)
         kwargs.update({'groupBy': group_list, 'fields': group_list})
 
-    response = client.search_request(kwargs)
+    response = client.event_search_request(kwargs)
 
     if error := response.get("errors", {}):
         raise DemistoException(error.get("message"))
@@ -303,6 +352,49 @@ def search_command(client: Client, args: dict) -> CommandResults:
         outputs_prefix="ExabeamPlatform.Event",
         outputs=data_response,
         readable_output=tableToMarkdown(name="Logs", t=human_readable),
+    )
+
+
+def case_search_command(client: Client, args: dict) -> CommandResults:
+    if (case_id := args.get("case_id")):
+        data_response = client.get_case_request(case_id)
+        human_readable = _parse_entry(data_response)
+    else:
+        start_time = get_date(args.get('start_time', '7 days ago'), "start_time")
+        end_time = get_date(args.get('end_time', 'today'), "end_time")
+        if start_time > end_time:
+            raise DemistoException("Start time must be before end time.")
+
+        kwargs = {
+            'filter': process_string(args.get('query', '')),
+            'fields': argToList(args.get('fields', '*')),
+            'startTime': start_time,
+            'endTime': end_time,
+        }
+
+        all_results = argToBoolean(args.get("all_results"))
+        if not all_results:
+            kwargs['limit'] = get_limit(args)
+
+        response = client.case_search_request(kwargs)
+
+        include_related_rules = argToBoolean(args.get("include_related_rules"))
+        if not include_related_rules:
+            rows = response.get("rows", [])
+            for row in rows:
+                row.pop("rules", None)
+
+        data_response = response.get("rows", {})
+
+        human_readable = []
+        for entry in data_response:
+            if parsed_entry := _parse_entry(entry):
+                human_readable.append(parsed_entry)
+
+    return CommandResults(
+        outputs_prefix="ExabeamPlatform.Case",
+        outputs=data_response,
+        readable_output=tableToMarkdown(name="Cases", t=human_readable)
     )
 
 
@@ -351,7 +443,9 @@ def main() -> None:
         if command == 'test-module':
             return_results(test_module(client))
         elif command == 'exabeam-platform-event-search':
-            return_results(search_command(client, args))
+            return_results(event_search_command(client, args))
+        elif command == 'exabeam-platform-case-search':
+            return_results(case_search_command(client, args))
         else:
             raise NotImplementedError(f"Command {command} is not supported")
 

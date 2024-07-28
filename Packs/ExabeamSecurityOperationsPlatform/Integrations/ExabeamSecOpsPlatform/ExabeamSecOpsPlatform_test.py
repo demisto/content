@@ -3,24 +3,33 @@ from freezegun import freeze_time
 import pytest
 from datetime import datetime, timezone
 from CommonServerPython import DemistoException, CommandResults
-from ExabeamSecOpsPlatform import Client, search_command, get_limit, get_date, transform_string, process_string, _parse_group_by
+from ExabeamSecOpsPlatform import (
+    Client,
+    event_search_command,
+    get_limit,
+    get_date,
+    transform_string,
+    process_string,
+    _parse_group_by,
+    case_search_command,
+)
 
 
 class MockClient(Client):
     def __init__(self, base_url: str, username: str, password: str, verify: bool, proxy: bool):
         pass
 
-    def search_command(self) -> None:
+    def event_search_command(self) -> None:
         return
 
 
-def test_search_command_success(mocker):
+def test_event_search_command_success(mocker):
     """
     GIVEN:
         A mocked Exabeam client and valid search query arguments.
 
     WHEN:
-        'search_command' function is called with the provided arguments.
+        'event_search_command' function is called with the provided arguments.
 
     THEN:
         It should search for logs using the Exabeam client and return a CommandResults object containing
@@ -54,7 +63,7 @@ def test_search_command_success(mocker):
 
     client = MockClient("", "", "", False, False)
 
-    mocker.patch.object(client, "search_request", return_value=mock_response)
+    mocker.patch.object(client, "event_search_request", return_value=mock_response)
 
     # Define test arguments
     args = {
@@ -65,8 +74,8 @@ def test_search_command_success(mocker):
         'end_time': '2024-05-08T00:00:00'
     }
 
-    # Call the search_command function
-    response = search_command(client, args)
+    # Call the event_search_command function
+    response = event_search_command(client, args)
 
     assert isinstance(response, CommandResults)
     assert response.outputs_prefix == "ExabeamPlatform.Event"
@@ -81,20 +90,20 @@ def test_search_command_success(mocker):
     assert expected_readable_output in response.readable_output
 
 
-def test_search_command_failure(mocker):
+def test_event_search_command_failure(mocker):
     """
     GIVEN:
         A mocked Exabeam client and invalid search query arguments.
 
     WHEN:
-        'search_command' function is called with invalid arguments.
+        'event_search_command' function is called with invalid arguments.
 
     THEN:
         It should raise a DemistoException.
     """
     # Mocking the client to simulate a response with errors
     client = MockClient("", "", "", False, False)
-    mocker.patch.object(client, "search_request", return_value={"errors": {"message": "Error occurred"}})
+    mocker.patch.object(client, "event_search_request", return_value={"errors": {"message": "Error occurred"}})
 
     args = {
         'query': '',
@@ -105,7 +114,7 @@ def test_search_command_failure(mocker):
     }
 
     with pytest.raises(DemistoException, match="Error occurred"):
-        search_command(client, args)
+        event_search_command(client, args)
 
 
 def test_get_date(mocker):
@@ -185,7 +194,7 @@ def test_process_string(input_str, expected_output):
     assert process_string(input_str) == expected_output
 
 
-def test_search_request(mocker):
+def test_event_search_request(mocker):
     """
     GIVEN:
         A dictionary containing data to be sent in the request.
@@ -213,7 +222,7 @@ def test_search_request(mocker):
     }
     mocked_response = {"response_key": "response_value"}
     mock_http_request.return_value = mocked_response
-    result = instance.search_request(data_dict)
+    result = instance.event_search_request(data_dict)
 
     mock_http_request.assert_called_once_with(
         method="POST",
@@ -319,4 +328,109 @@ def test_get_new_token(mocker, expected_response, expected_token):
             "client_secret": "ABC123",
             "grant_type": "client_credentials",
         },
+    )
+
+
+@pytest.mark.parametrize(
+    "args, mock_response, expected_outputs, expected_readable_output",
+    [
+        (
+            {
+                "case_id": "123",
+                "all_results": "No",
+                "start_time": "7 days ago",
+                "end_time": "today",
+                "include_related_rules": "No",
+            },
+            {
+                "caseId": "123",
+                "alertId": "456",
+                "riskScore": 75,
+                "groupedbyKey": "Src Ip",
+                "srcIps": ["1.1.1.1"],
+                "priority": "LOW",
+                "stage": "NEW",
+                "queue": "Tier 1 Analyst",
+                "rules": [{"ruleSource": "CR"}],
+            },
+            {
+                "caseId": "123",
+                "alertId": "456",
+                "riskScore": 75,
+                "groupedbyKey": "Src Ip",
+                "srcIps": ["1.1.1.1"],
+                "priority": "LOW",
+                "stage": "NEW",
+                "queue": "Tier 1 Analyst",
+                "rules": [{"ruleSource": "CR"}],
+            },
+            "### Cases\n|Alert ID|Case ID|Grouped by Key|Priority|Queue|Risk Score|Src IPs|Stage|\n"
+            "|---|---|---|---|---|---|---|---|\n"
+            "| 456 | 123 | Src Ip | LOW | Tier 1 Analyst | 75 | 1.1.1.1 | NEW |\n",
+        ),
+        (
+            {"all_results": "No", "start_time": "7 days ago", "end_time": "today", "include_related_rules": "No", "limit": "1"},
+            {
+                "rows": [
+                    {
+                        "caseId": "123",
+                        "alertId": "456",
+                        "riskScore": 75,
+                        "groupedbyKey": "Src Ip",
+                        "srcIps": ["1.1.1.1"],
+                        "priority": "LOW",
+                        "stage": "NEW",
+                        "queue": "Tier 1 Analyst",
+                        "rules": [{"ruleSource": "CR"}],
+                    }
+                ],
+                "totalRows": 1,
+            },
+            [
+                {
+                    "caseId": "123",
+                    "alertId": "456",
+                    "riskScore": 75,
+                    "groupedbyKey": "Src Ip",
+                    "srcIps": ["1.1.1.1"],
+                    "priority": "LOW",
+                    "stage": "NEW",
+                    "queue": "Tier 1 Analyst",
+                }
+            ],
+            "### Cases\n|Alert ID|Case ID|Grouped by Key|Priority|Queue|Risk Score|Src IPs|Stage|\n"
+            "|---|---|---|---|---|---|---|---|\n"
+            "| 456 | 123 | Src Ip | LOW | Tier 1 Analyst | 75 | 1.1.1.1 | NEW |\n",
+        ),
+    ],
+)
+def test_case_search_command(mocker, args, mock_response, expected_outputs, expected_readable_output):
+    client = MockClient("", "", "", False, False)
+    mocker.patch.object(client, "case_search_request", return_value=mock_response)
+    mocker.patch.object(client, "get_case_request", return_value=mock_response)
+
+    result = case_search_command(client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "ExabeamPlatform.Case"
+    assert result.outputs == expected_outputs
+    assert result.readable_output == expected_readable_output
+
+
+def test_case_search_request(mocker):
+    data_dict = {
+        "startTime": "2024-05-01T13:05:07.774Z",
+        "endTime": "2024-06-21T13:05:07.774Z",
+    }
+
+    base_url = "https://example.com"
+    client = Client(base_url, "", "", False, False)
+    request = mocker.patch.object(client, 'request', return_value={})
+
+    client.case_search_request(data_dict)
+
+    request.assert_called_with(
+        method="POST",
+        full_url=f"{base_url}/threat-center/v1/search/cases",
+        data=json.dumps(data_dict),
     )

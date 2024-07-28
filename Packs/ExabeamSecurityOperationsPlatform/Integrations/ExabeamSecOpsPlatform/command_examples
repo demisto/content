@@ -1,1 +1,3 @@
 !exabeam-platform-event-search end_time="today" start_time="7 days ago" limit=2
+!exabeam-platform-case-search limit=2 end_time="2 day ago" start_time="5 day ago" fields="alertName" order_by="alertName ASC" include_related_rules=Yes all_results=No
+!exabeam-platform-case-search case_id=123-123
