@@ -117,7 +117,7 @@ INCIDENT_FIELD_INPUT = [
 
 
 def get_fetch_data():
-    with open('./test_data/raw_response.json', 'r') as f:
+    with open('./test_data/raw_response.json') as f:
         file = json.loads(f.read())
         return file.get('result')
 
@@ -382,7 +382,7 @@ def test_get_incident_command_expand_events_false(mocker, requests_mock):
     - Ensure event_ids field is populated as expected
     """
     base_url = 'https://server_url/'
-    with open('./test_data/incident_expand_events_false.json', 'r') as f:
+    with open('./test_data/incident_expand_events_false.json') as f:
         incident = json.loads(f.read())
     requests_mock.get(f'{base_url}api/incidents/3064.json?expand_events=false', json=incident)
     mocker.patch.object(demisto, 'results')
@@ -435,7 +435,7 @@ def test_search_quarantine_command(mocker, requests_mock):
     - Ensure output is success message (at least one success).
     """
     base_url = 'https://server_url/'
-    with open('./test_data/incidents.json', 'r') as f:
+    with open('./test_data/incidents.json') as f:
         incident = json.loads(f.read())
     requests_mock.get(f'{base_url}api/incidents', json=incident)
     mocker.patch('ProofpointThreatResponse.BASE_URL', base_url)
@@ -447,6 +447,35 @@ def test_search_quarantine_command(mocker, requests_mock):
     res = search_quarantine()
     quarantines_res = [x.get('quarantine').get('status') for x in res.outputs]
     assert 'successful' in quarantines_res
+
+
+def test_search_quarantine_command_with_str_messageDeliveryTime(mocker, requests_mock):
+    """
+    Given:
+    - Message ID, Recipient and Delivery Time (Email recived time)
+
+    When:
+    - Running search-quarantine command
+
+    Then:
+    - Ensure output is success message (at least one success).
+    """
+    base_url = 'https://server_url/'
+    with open('./test_data/incident_str_messageDeliveryTime.json') as f:
+        incident = json.loads(f.read())
+    requests_mock.get(f'{base_url}api/incidents', json=incident)
+    mocker.patch('ProofpointThreatResponse.BASE_URL', base_url)
+    mocker.patch('ProofpointThreatResponse.get_incidents_batch_by_time_request', return_value=incident)
+
+    mocker.patch.object(demisto, 'args', return_value={
+        'message_id': "<ABCD1234@cpus>",
+        "recipient": "sabrina.test@test.com",
+        "time": "2021-03-30T11:17:39Z"
+    })
+    res = search_quarantine()
+
+    assert res.outputs_prefix == '<ABCD1234@cpus> Message ID found in TRAP alerts, ' \
+        'but not in the quarantine list meaning that email has not be quarantined.'
 
 
 def test_list_incidents_command(mocker, requests_mock):

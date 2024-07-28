@@ -822,7 +822,13 @@ def search_quarantine():
                 if message_delivery_time and isinstance(message_delivery_time, dict):
                     message_delivery_time = message_delivery_time.get('millis')
                 elif message_delivery_time and isinstance(message_delivery_time, str):
-                    message_delivery_time = date_to_timestamp(message_delivery_time)
+                    message_delivery_time = dateparser.parse(message_delivery_time)
+                    if message_delivery_time:
+                        message_delivery_time = int(message_delivery_time.timestamp() * 1000)
+                    else:
+                        demisto.info(f'PTR: Could not parse time of incident {incident.get("id")}, got '
+                                     f'{email.get("messageDeliveryTime", "")=}')
+                        continue
 
                 if email.get('messageId') == mid and email.get('recipient').get('email') == recipient and message_delivery_time:
                     found['mid'] = True
