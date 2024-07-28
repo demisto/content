@@ -168,6 +168,8 @@ tasks:
     scriptarguments:
       seconds:
         simple: "60"
+      execution-timeout:
+        simple: "120"
     separatecontext: false
     continueonerrortype: ""
     view: |-
