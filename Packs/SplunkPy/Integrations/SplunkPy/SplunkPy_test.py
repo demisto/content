@@ -1516,7 +1516,8 @@ def test_drilldown_enrichment_get_timeframe(mocker, notable_data, expected_call_
     ({'event_id': 'test_id', 'drilldown_name': 'View all login attempts by system $src$',
       'drilldown_search': "| from datamodel:\"Authentication\".\"Authentication\" | search src=$src|s$",
       'drilldown_searches': "{\"name\":\"View all login attempts by system $src$\",\"search\":\"| from datamodel:\\\"Authent"
-                            "ication\\\".\\\"Authentication\\\" | search src=$src|s$\",\"earliest\":1715040000,\"latest\":1715126400}",
+                            "ication\\\".\\\"Authentication\\\" | search src=$src|s$\",\"earliest\":1715040000,"
+                            "\"latest\":1715126400}",
       '_raw': "src=\'test_src\'", "drilldown_latest": "1715126400.000000000", "drilldown_earliest": "1715040000.000000000"},
      [
          ("View all login attempts by system 'test_src'",
