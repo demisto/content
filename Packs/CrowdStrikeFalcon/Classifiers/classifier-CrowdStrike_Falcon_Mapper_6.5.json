@@ -1105,10 +1105,10 @@
                     "simple": "parent_details.cmdline"
                 },
                 "Parent Process SHA256": {
-                    "simple": "parent_details.parent_sha256"
+                    "simple": "parent_details.sha256"
                 },
                 "Parent Process MD5": {
-                    "simple": "parent_details.parent_md5"
+                    "simple": "parent_details.md5"
                 },
                 "Process CMD": {
                     "simple": "parent_details.cmdline"
