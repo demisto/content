@@ -1529,9 +1529,20 @@ def test_drilldown_enrichment_get_timeframe(mocker, notable_data, expected_call_
        '| from datamodel:"Authentication"."Authentication" | search src="\'test_src\'"'),
       ('View all test involving user="\'test_user\'"',
        'search index="test"\n| where user = "\'test_user\'"')]),
+    ({'event_id': 'test_id3', 'drilldown_searches':
+        ["{\"name\":\"View all login attempts by system $src$\",\"search\":\"| from datamodel:\\\"Authentication\\\".\\\"Authe"
+            "ntication\\\" | search src=$src|s$\",\"earliest_offset\":1715040000,\"latest_offset\":1715126400}",
+            "{\"name\":\"View all test involving user=\\\"$user$\\\"\",\"search\":\"index=\\\"test\\\"\\n| where "
+         "user = $user|s$\",\"earliest_offset\":1716955500,\"latest_offset\":1716959400}"],
+      '_raw': "src=\'test_src\', user='test_user'"},
+     [("View all login attempts by system 'test_src'",
+       '| from datamodel:"Authentication"."Authentication" | search src="\'test_src\'"'),
+      ('View all test involving user="\'test_user\'"',
+       'search index="test"\n| where user = "\'test_user\'"')]),
 ], ids=[
     "A notable data with one drilldown search enrichment",
-    "A notable data with multiple (two) drilldown searches to enrich"
+    "A notable data with two drilldown searches which contained the earlies in 'earliest' key ",
+    "A notable data with two drilldown searches which contained the earlies in 'earliest_offset' key "
 ])
 def test_drilldown_enrichment(notable_data, expected_result):
     """
