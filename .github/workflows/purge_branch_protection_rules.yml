@@ -26,6 +26,10 @@ jobs:
         run: |
           poetry install --with ci
 
+          # Override PyGithub version to include GraphQL support and bug fix
+          # TODO remove when https://github.com/PyGithub/PyGithub/issues/3001 is fixed
+          poetry run pip install "git+https://github.com/kgal-pan/PyGithub.git@fix-graphql-variables"
+
       - name: Purge Protection Rules
         env:
           GITHUB_TOKEN: ${{ secrets.BRANCH_PROTECTION_TOKEN }}

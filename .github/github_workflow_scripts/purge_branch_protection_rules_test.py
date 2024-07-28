@@ -248,15 +248,15 @@ class TestPurgeBranchProtectionRules():
 
         # Assert specific log messages in the captured logs
         actual_log_output = caplog.text.splitlines()
-        assert "4 rules returned." in actual_log_output[12]
+        assert "4 rules returned." in actual_log_output[11]
         assert "not deleted because it's in the list of protected rules" in actual_log_output[
-            14]
+            13]
         assert "was deleted successfully." in actual_log_output[
-            22]
+            21]
         assert "was deleted successfully." in actual_log_output[
-            30]
+            29]
         assert "not deleted because it's associated to 3 existing branches/refs" in actual_log_output[
-            31]
+            30]
 
     def test_main_rate_limit(self, requests_mock: RequestsMocker):
 

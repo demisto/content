@@ -12,95 +12,9 @@ from pathlib import Path
 import sys
 from typing import Any
 
-from github.Auth import Auth, Token
-from github import AppAuthentication, Github
-from github import GithubException
-from github.Consts import (
-    DEFAULT_BASE_URL,
-    DEFAULT_TIMEOUT,
-    DEFAULT_USER_AGENT,
-    DEFAULT_PER_PAGE
-)
-
-
-from github.Requester import Requester
-from urllib3.util import Retry
-
-
-# Workaround until https://github.com/PyGithub/PyGithub/issues/3001
-# is fixed
-class CustomRequester(Requester):
-
-    def __init__(
-        self,
-        auth: Auth | None,
-        base_url: str,
-        timeout: int,
-        user_agent: str,
-        per_page: int,
-        verify: bool | str,
-        retry: int | Retry | None,
-        pool_size: int | None
-    ):
-        super().__init__(auth, base_url, timeout, user_agent, per_page, verify, retry, pool_size)
-        self.graphql_url = "https://api.github.com/graphql"
-
-    def graphql_query(self, query: str, variables: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any]]:
-        """
-        :calls: `POST /graphql <https://docs.github.com/en/graphql>`_
-        """
-        input_ = {"query": query, "variables": variables}
-
-        response_headers, data = self.requestJsonAndCheck("POST", self.graphql_url, input=input_)
-        if "errors" in data:
-            raise GithubException(
-                status=400,
-                data=data,
-                headers=response_headers
-            )
-        return response_headers, data
-
-
-class CustomGithub(Github):
-    def __init__(
-            self,
-            login_or_token: str | None = None,
-            password: str | None = None,
-            jwt: str | None = None,
-            app_auth: AppAuthentication | None = None,
-            base_url: str = DEFAULT_BASE_URL,
-            timeout: int = DEFAULT_TIMEOUT,
-            user_agent: str = DEFAULT_USER_AGENT,
-            per_page: int = DEFAULT_PER_PAGE,
-            verify: bool | str = True,
-            retry: int | Retry | None = 5,
-            pool_size: int | None = None,
-            auth: Auth | None = None
-    ) -> None:
-        super().__init__(
-            login_or_token,
-            password,
-            jwt,
-            app_auth,
-            base_url,
-            timeout,
-            user_agent,
-            per_page,
-            verify,
-            retry,
-            pool_size,
-            auth
-        )
-        self._Github__requester = CustomRequester(
-            auth=auth,
-            base_url=base_url,
-            timeout=timeout,
-            user_agent=user_agent,
-            per_page=per_page,
-            verify=verify,
-            retry=retry,
-            pool_size=pool_size
-        )
+from github import Github
+import github
+import github.Requester
 
 
 DEFAULT_REPO = "demisto/content"
@@ -290,7 +204,7 @@ def get_token():
     return token
 
 
-def send_request(gh_requester: CustomRequester, query: str, variables: dict[str, str]) -> dict[str, str]:
+def send_request(gh_requester: github.Requester.Requester, query: str, variables: dict[str, str]) -> dict[str, str]:
     """
     Wrapper function to send a request to the GraphQL endpoint.
 
@@ -322,7 +236,7 @@ def send_request(gh_requester: CustomRequester, query: str, variables: dict[str,
 
 # API Functions
 def purge_branch_protection_rules(
-    gh_requester: CustomRequester,
+    gh_requester: github.Requester.Requester,
     rules: list[BranchProtectionRule]
 ) -> list[BranchProtectionRule]:
     """
@@ -357,7 +271,7 @@ def purge_branch_protection_rules(
 
 
 def get_branch_protection_rules(
-    gh_requester: CustomRequester,
+    gh_requester: github.Requester.Requester,
     owner: str,
     repo_name: str
 ) -> list[BranchProtectionRule]:
@@ -409,13 +323,12 @@ def main():
         owner, repo_name = get_repo_owner_and_name()
 
         logger.info("Authenticating with GitHub...")
-        auth = Token(token)
+        auth = github.Auth.Token(token)
 
-        # gh_client = Github(auth=auth)
-        gh_client = CustomGithub(auth=auth, verify=False)
+        gh_client = Github(auth=auth)
         logger.info("Finished authenticating with GitHub")
 
-        requester: CustomRequester = gh_client._Github__requester
+        requester: github.Requester.Requester = gh_client._Github__requester  # type:ignore[attr-defined]
 
         logger.info("Sending request to get protection rules...")
         existing_rules = get_branch_protection_rules(
