@@ -76,8 +76,8 @@ script:
       description: "Whether to return all fields."
       name: all_fields
       predefined:
-        - TRUE
-        - FALSE
+        - 'TRUE'
+        - 'FALSE'
       defaultValue: 'FALSE'
     description: 'Get account details from Impartner'
     name: impartner-get-account-id
@@ -123,9 +123,6 @@ script:
       type: String
     - contextPath: Impartner.Account.tpA_Product_s__cf
       description: Cortex products TPA is signed for.
-      type: String
-    - contextPath: Impartner.Account.integration_Status__cf
-      description: XSOAR Integration Status.
       type: String
     - contextPath: Impartner.Account.target_customers__cf
       description: Target customers for partner.

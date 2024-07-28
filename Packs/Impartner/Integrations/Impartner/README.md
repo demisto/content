@@ -170,6 +170,7 @@ Get account details from Impartner
 | --- | --- | --- |
 | Impartner.Account.id | Number | Account ID. | 
 | Impartner.Account.isActive | Boolean | Is account active. | 
+| Impartner.Account.tech_BD_Assigned_for_XSOAR__cf | String | Tech partner BD assigned to account. | 
 | Impartner.Account.mailingCity | String | City of account. | 
 | Impartner.Account.mailingCountry | String | Country of account. | 
 | Impartner.Account.mailingPostalCode | String | Account postal code. | 
