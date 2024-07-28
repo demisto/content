@@ -230,7 +230,7 @@ def send_request(gh_requester: github.Requester.Requester, query: str, variables
     logger.debug(f"{query=}")
     logger.debug(f"{variables=}")
 
-    response_headers, response_data = gh_requester.graphql_query(
+    response_headers, response_data = gh_requester.graphql_query(  # type:ignore[attr-defined]
         query=query,
         variables=variables
     )
