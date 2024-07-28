@@ -28,8 +28,7 @@ HOST_DETECTIONS_NEXT_PAGE = 'host_detections_next_page'
 HOST_DETECTIONS_SINCE_DATETIME_PREV_RUN = 'host_detections_since_datetime_prev_run'
 HOST_LAST_FETCH = 'host_last_fetch'
 ASSETS_FETCH_FROM = '90 days'
-MIN_ASSETS_INTERVAL = 59
-HOST_LIMIT = 5000
+HOST_LIMIT = 2000
 TEST_FROM_DATE = 'one day'
 
 ASSETS_DATE_FORMAT = '%Y-%m-%d'
@@ -2693,24 +2692,6 @@ def get_partial_response(response: str, start: str, end: str):
     return result
 
 
-def skip_fetch_assets(last_run):
-    """ Checks if enough time has passed since the previous run.
-    Args:
-        last_run: Last run time.
-    Returns:
-        Returns true or false if enough time has passed since the previous run.
-    """
-    time_to_check = last_run.get("assets_last_fetch")
-    if not time_to_check:
-        return False
-    passed_minutes = (time.time() - time_to_check) / 60
-    if passed_minutes < MIN_ASSETS_INTERVAL:
-        demisto.info(f"Skipping fetch-assets command. Only {passed_minutes} minutes have passed since the last fetch. "
-                     f"It should be a minimum of 1 hour.")
-        return True
-    return False
-
-
 def csv2json(csv_data: str):
     """ Converts data from csv to json
     Args:
@@ -2942,18 +2923,16 @@ def get_vulnerabilities(client, since_datetime) -> list:
     return vulnerabilities
 
 
-def fetch_assets(client):
+def fetch_assets(client, assets_last_run):
     """ Fetches host list detections
     Args:
-        client: command client
-        since_datetime: The start fetch date.
+        client: command clietnt
+        assets_last_run: The last run.
     Return:
         assets: assets to push to xsiam
         vulnerabilities: vulnerabilities to push to xsiam
     """
     demisto.debug('Starting fetch for assets')
-    assets_last_run = demisto.getAssetsLastRun()
-    demisto.debug(f'saved lastrun assets: {assets_last_run}')
     since_datetime = assets_last_run.get('since_datetime', '')
     fetch_stage = assets_last_run.get('stage', 'assets')
     next_page = assets_last_run.get('next_page', '')
@@ -2967,20 +2946,20 @@ def fetch_assets(client):
         assets, next_run_page = get_host_list_detections_events(client, since_datetime, next_page)
         total_assets += len(assets)
         if next_run_page:
-            demisto.setAssetsLastRun({'stage': 'assets', 'next_page': next_run_page, 'total_assets': total_assets,
-                                      'since_datetime': since_datetime, 'snapshot_id': snapshot_id,
-                                      'nextTrigger': '30', "type": FETCH_COMMAND.get('assets')})
-            return assets, [], 0, snapshot_id
+            new_last_run = {'stage': 'assets', 'next_page': next_run_page, 'total_assets': total_assets,
+                            'since_datetime': since_datetime, 'snapshot_id': snapshot_id,
+                            'nextTrigger': '0', "type": FETCH_COMMAND.get('assets')}
+            return assets, [], new_last_run, 0, snapshot_id
         else:
-            demisto.setAssetsLastRun({'stage': 'vulnerabilities', 'next_page': '', 'total_assets': 0,
-                                      'nextTrigger': '30', "type": FETCH_COMMAND.get('assets')})
-            return assets, [], str(total_assets), snapshot_id
+            new_last_run = {'stage': 'vulnerabilities', 'next_page': '', 'total_assets': 0,
+                            'nextTrigger': '0', "type": FETCH_COMMAND.get('assets')}
+            return assets, [], new_last_run, str(total_assets), snapshot_id
 
     else:
         vulnerabilities = get_vulnerabilities(client, since_datetime)
-        demisto.setAssetsLastRun({'stage': '', 'next_page': '', 'total_assets': 0,
-                                  'nextTrigger': None, "type": FETCH_COMMAND.get('assets')})
-        return [], vulnerabilities, 0, 0
+        new_last_run = {'stage': '', 'next_page': '', 'total_assets': 0,
+                        'nextTrigger': None, "type": FETCH_COMMAND.get('assets')}
+        return [], vulnerabilities, new_last_run, 0, 0
 
 
 def fetch_events(client, last_run, first_fetch_time, fetch_function, newest_event_field, next_page_field,
@@ -3464,7 +3443,10 @@ def main():  # pragma: no cover
             demisto.setLastRun(logs_next_run)
 
         elif command == 'fetch-assets':
-            assets, vulnerabilities, total_assets, snapshot_id = fetch_assets(client=client)
+            last_run = demisto.getAssetsLastRun()
+            demisto.debug(f'saved lastrun assets: {last_run}')
+            assets, vulnerabilities, last_run, total_assets, snapshot_id = fetch_assets(client=client, assets_last_run=last_run)
+            demisto.setAssetsLastRun(last_run)
             if assets:
                 demisto.debug('sending assets to XSIAM.')
                 send_data_to_xsiam(data=assets, vendor=VENDOR, product='assets', data_type='assets', snapshot_id=str(snapshot_id),
