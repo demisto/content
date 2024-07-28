@@ -103,15 +103,14 @@ def get_repo_owner_and_name() -> tuple[str, str]:
 
 def convert_response_to_bpr(response: dict[str, Any]) -> list[BranchProtectionRule]:
     """
-    Helper method to convert the response to an instance of
-    `BranchProtectionRule`.
+    Helper method to convert the response to a list
+    of `BranchProtectionRule`.
 
     Arguments:
     - `response` (``dict[str, Any]``): The response data.
 
     Returns:
-    - a `list[BranchProtectionRule]`. In case we have an issue
-    parsing the response, we return an empty list.
+    - a `list[BranchProtectionRule]`.
 
     Raises:
     - `KeyError | AttributeError` in case the conversion fails.
@@ -160,7 +159,12 @@ def should_delete_rule(rule: BranchProtectionRule) -> bool:
 
 def write_deleted_summary_to_file(deleted: list[BranchProtectionRule]) -> None:
     """
-    Helper function to create a Markdown summary file for deleted branches.
+    Helper function to create a Markdown summary file for deleted branches
+    if the `GITHUB_STEP_SUMMARY` is set. See
+    https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#adding-a-job-summary
+
+    Arguments:
+    - `deleted` (``list[BranchProtectionRule]``): A list of deleted `BranchProtectionRule`s.
     """
 
     if os.getenv(GH_JOB_SUMMARY_ENV_VAR):
@@ -171,12 +175,15 @@ def write_deleted_summary_to_file(deleted: list[BranchProtectionRule]) -> None:
             return
 
         header = "## Deleted Branch Protection Rules"
-        table_header = "| ID | Pattern | Matching Refs |\n| --- | ------- | ------------- |"
-        table_rows = [f"| {rule.id} | {rule.pattern} | {rule.matching_refs} |" for rule in deleted]
 
-        table_body = "\n".join(table_rows)
-
-        markdown_content = f"{header}\n\n{table_header}\n{table_body}\n"
+        if not deleted:
+            body = "### No branch protection rules were deleted"
+            markdown_content = f"{header}\n\n{body}\n"
+        else:
+            table_header = "| ID | Pattern | Matching Refs |\n| --- | ------- | ------------- |"
+            table_rows = [f"| {rule.id} | {rule.pattern} | {rule.matching_refs} |" for rule in deleted]
+            table_body = "\n".join(table_rows)
+            markdown_content = f"{header}\n\n{table_header}\n{table_body}\n"
 
         logger.debug(f"Writing deleted jobs summary to Markdown to file '{fp}'...")
         logger.debug(markdown_content)

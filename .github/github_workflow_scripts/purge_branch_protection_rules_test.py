@@ -159,6 +159,41 @@ class TestPurgeBranchProtectionRules():
         assert len(actual_summary_lines) == 14
         assert "1/*" in actual_summary_lines[5]
 
+    def test_md_summary_output_no_deleted_rules(
+            self,
+            mocker: MockerFixture,
+            tmp_path: Path
+    ):
+        """
+        Test the output of the summary file generated
+        when there were no deleted rules.
+
+        Given:
+        - A temporary directory.
+
+        When:
+        - The `GITHUB_STEP_SUMMARY` env var is set to the temporary directory.
+        - No rules have been deleted.
+
+        Then:
+        - The summary file exists in the temporary directory.
+        - The summary includes a message indicating rules have
+        not been deleted.
+        """
+
+        summary_file_path = tmp_path / "summary.md"
+        summary_file_path.touch()
+        mocker.patch.dict(os.environ, {GH_JOB_SUMMARY_ENV_VAR: str(summary_file_path)})
+
+        deleted: list[BranchProtectionRule] = []
+
+        write_deleted_summary_to_file(deleted)
+
+        assert summary_file_path.exists()
+        actual_summary_lines = summary_file_path.read_text().splitlines()
+        assert len(actual_summary_lines) == 3
+        assert "No branch protection rules were deleted" in actual_summary_lines[2]
+
     def test_should_delete_rule(self):
         """
         Given:
