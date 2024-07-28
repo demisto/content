@@ -1,6 +1,6 @@
 import json
-from pytest_mock import MockerFixture
 from freezegun import freeze_time
+import pytest
 
 from DBotTrainClustering import (
     demisto,
@@ -13,6 +13,7 @@ from DBotTrainClustering import (
     base64,
     datetime,
     MESSAGE_NO_FIELD_NAME_OR_CLUSTERING,
+    get_model_if_not_expired
 )
 import dill as pickle
 
@@ -276,7 +277,7 @@ def executeCommand(command, args):
 
 
 def test_preprocess_incidents_field():
-    assert preprocess_incidents_field("incident.commandline")  == "commandline"
+    assert preprocess_incidents_field("incident.commandline") == "commandline"
     assert preprocess_incidents_field("commandline") == "commandline"
 
 
@@ -304,7 +305,7 @@ def test_main_regular(mocker):
     assert MESSAGE_INCORRECT_FIELD % "wrong_field" in msg
     assert cluster_0['incidents_ids'] == ['1', '3', '5']
     assert cluster_1['incidents_ids'] == ['2', '4', '6']
-    assert all(item in cluster_0.items() for item in sub_dict_0.items()), str([item in cluster_0.items() for item in sub_dict_0.items()])
+    assert all(item in cluster_0.items() for item in sub_dict_0.items())
     assert all(item in cluster_1.items() for item in sub_dict_1.items())
     assert not all(item in cluster_0.items() for item in sub_dict_1.items())
     assert not all(item in cluster_1.items() for item in sub_dict_0.items())
@@ -392,9 +393,9 @@ def test_missing_too_many_values(mocker):
     }
     mocker.patch.object(demisto, "args", return_value=args)
     mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
-    
+
     model, output_clustering_json, msg = main()
-    
+
     assert MESSAGE_INVALID_FIELD % "field_2" in msg
     assert output_clustering_json
     assert model
@@ -495,3 +496,19 @@ def test_same_cluster_name(mocker):
     model, *_ = main()
     cluster_names = [x["clusterName"] for x in model.selected_clusters.values()]
     assert cluster_names == ['', 'powershell', 'nmap']
+
+
+@pytest.mark.parametrize("force_retrain, model_expiration, model, expected_result_obj", [
+    (True, 48, PostProcessing(datetime(2023, 1, 1)), type(None)),
+    (False, 48, None, type(None)),
+    (False, 48, PostProcessing(datetime(2023, 1, 1)), type(None)),
+    (False, 48, PostProcessing(datetime(2023, 2, 1)), PostProcessing),
+])
+@freeze_time("2023-02-02")
+def test_get_model_if_not_expired(mocker, force_retrain, model_expiration, model, expected_result_obj):
+    # Mock get_model function
+    mocker.patch("DBotTrainClustering.get_model", return_value=model)
+
+    result = get_model_if_not_expired(force_retrain, model_expiration, 'name')
+
+    assert isinstance(result, expected_result_obj)
