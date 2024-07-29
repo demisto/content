@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa: F401
 """
 An integration module for the Virus Total v3 API.
 API Documentation:
-    https://developers.virustotal.com/v3.0/reference
+    https://docs.virustotal.com/reference/overview
 """
 from collections import defaultdict
 from typing import cast
@@ -293,7 +293,7 @@ class Client(BaseClient):
     def ip(self, ip: str, relationships: str = '') -> dict:
         """
         See Also:
-            https://developers.virustotal.com/v3.0/reference#ip-info
+            https://docs.virustotal.com/reference/ip-info
         """
         return self._http_request(
             'GET',
@@ -303,7 +303,7 @@ class Client(BaseClient):
     def file(self, file: str, relationships: str = '') -> dict:
         """
         See Also:
-            https://developers.virustotal.com/v3.0/reference#file
+            https://docs.virustotal.com/reference/file
         """
         return self._http_request(
             'GET',
@@ -314,7 +314,7 @@ class Client(BaseClient):
     def private_file(self, file: str) -> dict:
         """
         See Also:
-            https://developers.virustotal.com/reference/private-files-info
+            https://docs.virustotal.com/reference/private-files-info
         """
         return self._http_request(
             'GET',
@@ -324,7 +324,7 @@ class Client(BaseClient):
     def url(self, url: str, relationships: str = ''):
         """
         See Also:
-            https://developers.virustotal.com/v3.0/reference#url
+            https://docs.virustotal.com/reference/url
         """
         return self._http_request(
             'GET',
@@ -334,7 +334,7 @@ class Client(BaseClient):
     def domain(self, domain: str, relationships: str = '') -> dict:
         """
         See Also:
-            https://developers.virustotal.com/v3.0/reference#domain-info
+            https://docs.virustotal.com/reference/domain-info
         """
         return self._http_request(
             'GET',
@@ -347,7 +347,7 @@ class Client(BaseClient):
     def delete_comment(self, id_: str):
         """
         See Also:
-            https://developers.virustotal.com/v3.0/reference#comment-id-delete
+            https://docs.virustotal.com/reference/comment-id-delete
         """
         self._http_request(
             'DELETE',
@@ -358,7 +358,7 @@ class Client(BaseClient):
     def get_ip_comments(self, ip: str, limit: int) -> dict:
         """
         See Also:
-            https://developers.virustotal.com/v3.0/reference#ip-comments-get
+            https://docs.virustotal.com/reference/ip-comments-get
         """
 
         return self._http_request(
@@ -370,7 +370,7 @@ class Client(BaseClient):
     def get_url_comments(self, url: str, limit: int) -> dict:
         """
         See Also:
-            https://developers.virustotal.com/v3.0/reference#urls-comments-get
+            https://docs.virustotal.com/reference/urls-comments-get
 
         """
         return self._http_request(
@@ -382,7 +382,7 @@ class Client(BaseClient):
     def get_hash_comments(self, file_hash: str, limit: int) -> dict:
         """
         See Also:
-            https://developers.virustotal.com/v3.0/reference#files-comments-get
+            https://docs.virustotal.com/reference/files-comments-get
         """
         return self._http_request(
             'GET',
@@ -393,7 +393,7 @@ class Client(BaseClient):
     def get_domain_comments(self, domain: str, limit: int) -> dict:
         """
         See Also:
-            https://developers.virustotal.com/v3.0/reference#domains-comments-get
+            https://docs.virustotal.com/reference/domains-comments-get
         """
         return self._http_request(
             'GET',
@@ -404,7 +404,7 @@ class Client(BaseClient):
     def get_comment_by_id(self, comment_id: str) -> dict:
         """
         See Also:
-            https://developers.virustotal.com/v3.0/reference#get-comment
+            https://docs.virustotal.com/reference/get-comment
         """
         return self._http_request(
             'GET',
@@ -430,28 +430,28 @@ class Client(BaseClient):
     def add_comment_to_ip(self, ip: str, comment: str) -> dict:
         """
         See Also:
-            https://developers.virustotal.com/v3.0/reference#ip-comments-post
+            https://docs.virustotal.com/reference/ip-comments-post
         """
         return self.add_comment(f'ip_addresses/{ip}/comments', comment)
 
     def add_comment_to_url(self, url: str, comment: str) -> dict:
         """
         See Also:
-            https://developers.virustotal.com/v3.0/reference#urls-comments-post
+            https://docs.virustotal.com/reference/urls-comments-post
         """
         return self.add_comment(f'urls/{encode_url_to_base64(url)}/comments', comment)
 
     def add_comment_to_domain(self, domain: str, comment: str) -> dict:
         """
         See Also:
-            https://developers.virustotal.com/v3.0/reference#domains-comments-post
+            https://docs.virustotal.com/reference/domains-comments-post
         """
         return self.add_comment(f'domains/{domain}/comments', comment)
 
     def add_comment_to_file(self, resource: str, comment: str) -> dict:
         """
         See Also:
-            https://developers.virustotal.com/v3.0/reference#files-comments-post
+            https://docs.virustotal.com/reference/files-comments-post
         """
         return self.add_comment(f'files/{resource}/comments', comment)
 
@@ -461,7 +461,7 @@ class Client(BaseClient):
     def file_rescan(self, file_hash: str) -> dict:
         """
         See Also:
-            https://developers.virustotal.com/v3.0/reference#files-analyse
+            https://docs.virustotal.com/reference/files-analyse
         """
         return self._http_request(
             'POST',
@@ -471,7 +471,7 @@ class Client(BaseClient):
     def file_scan(self, file_path: str, /, upload_url: Optional[str]) -> dict:
         """
         See Also:
-            https://developers.virustotal.com/reference/files-scan
+            https://docs.virustotal.com/reference/files-scan
         """
         response: requests.Response
         with open(file_path, 'rb') as file:
@@ -501,7 +501,7 @@ class Client(BaseClient):
     def private_file_scan(self, file_path: str) -> dict:
         """
         See Also:
-            https://developers.virustotal.com/reference/post_files
+            https://docs.virustotal.com/reference/upload-file-private-scanning
         """
         response: requests.Response
         with open(file_path, 'rb') as file:
@@ -530,7 +530,7 @@ class Client(BaseClient):
     def get_upload_url(self) -> dict:
         """
         See Also:
-            https://developers.virustotal.com/v3.0/reference#files-upload-url
+            https://docs.virustotal.com/reference/files-upload-url
         """
         return self._http_request(
             'GET',
@@ -540,7 +540,7 @@ class Client(BaseClient):
     def get_private_upload_url(self) -> dict:
         """
         See Also:
-            https://developers.virustotal.com/reference/private-files-upload-url
+            https://docs.virustotal.com/reference/private-files-upload-url
         """
         return self._http_request(
             'GET',
@@ -550,7 +550,7 @@ class Client(BaseClient):
     def url_scan(self, url: str) -> dict:
         """
         See Also:
-            https://developers.virustotal.com/v3.0/reference#urls
+            https://docs.virustotal.com/reference/scan-url
         """
         return self._http_request(
             'POST',
@@ -563,7 +563,7 @@ class Client(BaseClient):
     def file_sandbox_report(self, file_hash: dict, limit: int) -> dict:
         """
         See Also:
-            https://developers.virustotal.com/v3.0/reference#files-relationships
+            https://docs.virustotal.com/reference/files-relationships
         """
         return self._http_request(
             'GET',
@@ -575,7 +575,7 @@ class Client(BaseClient):
     def passive_dns_data(self, id: dict, limit: int) -> dict:
         """
         See Also:
-            https://developers.virustotal.com/v3.0/reference#ip-relationships
+            https://docs.virustotal.com/reference/ip-relationships
         """
         return self._http_request(
             'GET',
@@ -586,7 +586,7 @@ class Client(BaseClient):
     def search(self, query: str, limit: int) -> dict:
         """
         See Also:
-            https://developers.virustotal.com/v3.0/reference#search-1
+            https://docs.virustotal.com/reference/api-search
         """
         return self._http_request(
             'GET',
@@ -597,7 +597,7 @@ class Client(BaseClient):
     def get_analysis(self, analysis_id: str) -> dict:
         """
         See Also:
-            https://developers.virustotal.com/v3.0/reference#analysis
+            https://docs.virustotal.com/reference/analysis
         """
         return self._http_request(
             'GET',
@@ -607,7 +607,7 @@ class Client(BaseClient):
     def get_private_analysis(self, analysis_id: str) -> dict:
         """
         See Also:
-            https://developers.virustotal.com/reference/private-analysis
+            https://docs.virustotal.com/reference/private-analysis
         """
         return self._http_request(
             'GET',
@@ -617,7 +617,7 @@ class Client(BaseClient):
     def get_private_file_from_analysis(self, analysis_id: str) -> dict:
         """
         See Also:
-            https://developers.virustotal.com/reference/item-1
+            https://docs.virustotal.com/reference/private-analyses-object-item
         """
         return self._http_request(
             'GET',
@@ -627,7 +627,7 @@ class Client(BaseClient):
     def get_file_sigma_analysis(self, file_hash: str) -> dict:
         """
         See Also:
-            https://developers.virustotal.com/reference/files#relationships
+            https://docs.virustotal.com/reference/files#relationships
         """
         return self._http_request(
             'GET',
@@ -642,9 +642,9 @@ class Client(BaseClient):
             indicator_type: urls or domains
             relationship: a relationship to search for
         See Also:
-            https://developers.virustotal.com/v3.0/reference#urls-relationships
-            https://developers.virustotal.com/v3.0/reference#domains-relationships
-            https://developers.virustotal.com/v3.0/reference#ip-relationships
+            https://docs.virustotal.com/reference/urls-relationships
+            https://docs.virustotal.com/reference/domains-relationships
+            https://docs.virustotal.com/reference/ip-relationships
         """
         return self._http_request(
             'GET',
@@ -656,7 +656,7 @@ class Client(BaseClient):
         Wrapper of get_relationship
 
         See Also:
-                https://developers.virustotal.com/v3.0/reference#domains-relationships
+                https://docs.virustotal.com/reference/domains-relationships
         """
         return self.get_relationship(domain, 'domains', relationship)
 
@@ -665,7 +665,7 @@ class Client(BaseClient):
         Wrapper of get_domain_relationships
 
         See Also:
-            https://developers.virustotal.com/v3.0/reference#domains-relationships
+            https://docs.virustotal.com/reference/domains-relationships
         """
         return self.get_domain_relationships(
             domain,
@@ -677,7 +677,7 @@ class Client(BaseClient):
         Wrapper of get_domain_relationships
 
         See Also:
-            https://developers.virustotal.com/v3.0/reference#domains-relationships
+            https://docs.virustotal.com/reference/domains-relationships
         """
         return self.get_domain_relationships(
             domain,
@@ -689,7 +689,7 @@ class Client(BaseClient):
         Wrapper of get_domain_relationships
 
         See Also:
-                https://developers.virustotal.com/v3.0/reference#domains-relationships
+                https://docs.virustotal.com/reference/domains-relationships
         """
         return self.get_domain_relationships(
             domain,
@@ -701,7 +701,7 @@ class Client(BaseClient):
         Wrapper of get_relationship
 
         See Also:
-                https://developers.virustotal.com/v3.0/reference#urls-relationships
+                https://docs.virustotal.com/reference/urls-relationships
         """
         return self.get_relationship(encode_url_to_base64(url), 'urls', relationship)
 
@@ -710,7 +710,7 @@ class Client(BaseClient):
         Wrapper of url_relationships
 
         See Also:
-                https://developers.virustotal.com/v3.0/reference#urls-relationships
+                https://docs.virustotal.com/reference/urls-relationships
         """
         return self.get_url_relationships(
             url,
@@ -722,7 +722,7 @@ class Client(BaseClient):
         Wrapper of url_relationships
 
         See Also:
-                https://developers.virustotal.com/v3.0/reference#urls-relationships
+                https://docs.virustotal.com/reference/urls-relationships
         """
         return self.get_url_relationships(
             url,
@@ -734,7 +734,7 @@ class Client(BaseClient):
         Wrapper of url_relationships
 
         See Also:
-                https://developers.virustotal.com/v3.0/reference#urls-relationships
+                https://docs.virustotal.com/reference/urls-relationships
         """
         return self.get_url_relationships(
             url,
@@ -746,7 +746,7 @@ class Client(BaseClient):
         Wrapper of get_relationship
 
         See Also:
-                https://developers.virustotal.com/v3.0/reference#urls-relationships
+                https://docs.virustotal.com/reference/urls-relationships
         """
         return self.get_relationship(ip, 'ip_addresses', relationship)
 
@@ -755,7 +755,7 @@ class Client(BaseClient):
         Wrapper of get_ip_relationships
 
         See Also:
-            https://developers.virustotal.com/v3.0/reference#urls-relationships
+            https://docs.virustotal.com/reference/urls-relationships
         """
         return self.get_ip_relationships(
             ip,
@@ -767,7 +767,7 @@ class Client(BaseClient):
         Wrapper of get_ip_relationships
 
         See Also:
-            https://developers.virustotal.com/v3.0/reference#urls-relationships
+            https://docs.virustotal.com/reference/urls-relationships
         """
         return self.get_ip_relationships(
             ip,
@@ -779,7 +779,7 @@ class Client(BaseClient):
         Wrapper of get_ip_relationships
 
         See Also:
-                https://developers.virustotal.com/v3.0/reference#urls-relationships
+                https://docs.virustotal.com/reference/urls-relationships
         """
         return self.get_ip_relationships(
             ip,

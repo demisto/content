@@ -35,8 +35,8 @@ Security team challenges | Solving with Google Threat Intelligence + XSOAR
 - Is a vulnerability (CVE) that appeared in my environment being currently leveraged by malware? How popular is it?
 
 **Technical capabilities**
-- Threat reputation for {files, hashes, domains, IPs, URLs} coming from [over 90 security vendors](https://support.virustotal.com/hc/en-us/articles/115002146809-Contributors) (antivirus solutions, nextgen EDRs, domain blocklists, network perimeter solutions, etc.).
-- Multi-angular detection for files via crowdsourced {[YARA](https://virustotal.github.io/yara/), [SIGMA](https://blog.virustotal.com/2021/05/context-is-king-part-i-crowdsourced.html), [IDS](https://support.virustotal.com/hc/en-us/articles/360018436078-Crowdsourced-IDS-Rules)} rules.
+- Threat reputation for {files, hashes, domains, IPs, URLs} coming from [over 90 security vendors](https://docs.virustotal.com/docs/contributors) (antivirus solutions, nextgen EDRs, domain blocklists, network perimeter solutions, etc.).
+- Multi-angular detection for files via crowdsourced {[YARA](https://virustotal.github.io/yara/), [SIGMA](https://blog.virustotal.com/2021/05/context-is-king-part-i-crowdsourced.html), [IDS](https://docs.virustotal.com/docs/crowdsourced-ids-rules)} rules.
 - Allowlist (benign) information through the [aggregation of goodware indicators and provenance details](https://blog.virustotal.com/2021/08/introducing-known-distributors.html).
 - Dynamic analysis for files through detonation in [multiple home-grown and 3rd-party partner](https://blog.virustotal.com/search/label/multisandbox) sandbox solutions.
 - Extended file context and metadata through static analysis tools such as sigcheck’s authenticode signature extractor, MS Office macro VBA dissectors, Didier Stevens’ PDF tools, etc.

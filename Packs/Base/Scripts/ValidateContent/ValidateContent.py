@@ -346,20 +346,20 @@ def get_content_modules(content_tmp_dir: str, verify_ssl: bool = True) -> None:
         {
             'file': 'approved_usecases.json',
             'github_url': 'https://raw.githubusercontent.com/demisto/content/master/'
-                          'Tests/Marketplace/approved_usecases.json',
-            'content_path': 'Tests/Marketplace',
+                          'Config/approved_usecases.json',
+            'content_path': 'Config',
         },
         {
             'file': 'approved_tags.json',
             'github_url': 'https://raw.githubusercontent.com/demisto/content/master/'
-                          'Tests/Marketplace/approved_tags.json',
-            'content_path': 'Tests/Marketplace',
+                          'Config/approved_tags.json',
+            'content_path': 'Config',
         },
         {
             'file': 'approved_categories.json',
             'github_url': 'https://raw.githubusercontent.com/demisto/content/master/'
-                          'Tests/Marketplace/approved_categories.json',
-            'content_path': 'Tests/Marketplace',
+                          'Config/approved_categories.json',
+            'content_path': 'Config',
         },
 
     ]

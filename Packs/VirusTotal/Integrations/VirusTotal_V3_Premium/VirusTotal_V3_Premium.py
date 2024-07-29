@@ -1,6 +1,6 @@
 """
 VirusTotal V3 - Premium API
-Difference: https://developers.virustotal.com/v3.0/reference#public-vs-premium-api
+Difference: https://docs.virustotal.com/reference/public-vs-premium-api
 """
 import copy
 from collections.abc import Iterable
@@ -224,7 +224,7 @@ class Client(BaseClient):
         """Download a file.
 
         See Also:
-            https://developers.virustotal.com/v3.0/reference#files-download
+            https://docs.virustotal.com/reference/files-download
         """
         return self._http_request(
             'GET',
@@ -237,7 +237,7 @@ class Client(BaseClient):
         """Creates a password-protected ZIP file containing files from VirusTotal.
 
         See Also:
-            https://developers.virustotal.com/v3.0/reference#zip_files
+            https://docs.virustotal.com/reference/zip_files
         """
         body: dict = {
             'hashes': hashes
@@ -254,7 +254,7 @@ class Client(BaseClient):
         """Retrieve information about a ZIP file
 
         See Also:
-            https://developers.virustotal.com/v3.0/reference#get-zip-file
+            https://docs.virustotal.com/reference/get-zip-file
         """
         return self._http_request(
             'GET',
@@ -265,7 +265,7 @@ class Client(BaseClient):
         """Download a ZIP file.
 
         See Also:
-            https://developers.virustotal.com/v3.0/reference#zip-files-download
+            https://docs.virustotal.com/reference/zip-files-download
         """
         return self._http_request(
             'GET',
@@ -278,7 +278,7 @@ class Client(BaseClient):
         """Extracted PCAP from a sandbox analysis.
 
         See Also:
-            https://developers.virustotal.com/v3.0/reference#file_behaviours_pcap
+            https://docs.virustotal.com/reference/file_behaviours_pcap
         """
         return self._http_request(
             'GET',
@@ -297,7 +297,7 @@ class Client(BaseClient):
         """Search for files.
 
         See Also:
-            https://developers.virustotal.com/v3.0/reference#intelligence-search
+            https://docs.virustotal.com/reference/intelligence-search
         """
         return self._http_request(
             'GET',
@@ -315,7 +315,7 @@ class Client(BaseClient):
         """Retrieve a VT Hunting Livehunt ruleset.
 
         See Also:
-            https://developers.virustotal.com/v3.0/reference#get-hunting-ruleset.
+            https://docs.virustotal.com/reference/get-hunting-ruleset
         """
         return self._http_request(
             'GET',
@@ -334,7 +334,7 @@ class Client(BaseClient):
         """Retrieve a VT Hunting Livehunt rulesets.
 
         See Also:
-            https://developers.virustotal.com/v3.0/reference#list-hunting-rulesets
+            https://docs.virustotal.com/reference/list-hunting-rulesets
         """
         filter_ = ''
         if name:
@@ -363,7 +363,7 @@ class Client(BaseClient):
     ) -> dict:
         """Create a new VT Hunting Livehunt ruleset.
         See Also:
-            https://developers.virustotal.com/v3.0/reference#create-hunting-ruleset
+            https://docs.virustotal.com/reference/create-hunting-ruleset
         """
         return self._http_request(
             'POST',
@@ -393,7 +393,7 @@ class Client(BaseClient):
         """Update a VT Hunting Livehunt ruleset.
 
         See Also:
-            https://developers.virustotal.com/v3.0/reference#create-hunting-ruleset
+            https://docs.virustotal.com/reference/create-hunting-ruleset
         """
         params = assign_params(
             enabled=enabled,
@@ -418,7 +418,7 @@ class Client(BaseClient):
         """Delete a VT Hunting Livehunt ruleset.
 
         See Also:
-            https://developers.virustotal.com/v3.0/reference#delete-hunting-ruleset
+            https://docs.virustotal.com/reference/delete-hunting-ruleset
         """
         self._http_request(
             'DELETE',
@@ -437,7 +437,7 @@ class Client(BaseClient):
         """Retrieve VT Hunting Livehunt notifications.
 
         See Also:
-            https://developers.virustotal.com/v3.0/reference#list-hunting-notifications
+            https://docs.virustotal.com/reference/list-hunting-notifications
         """
         time_format = "%Y-%m-%dT%H:%M:%S"
         filter_ = ''
@@ -462,7 +462,7 @@ class Client(BaseClient):
         """Retrieve file objects for VT Hunting Livehunt notifications.
 
         See Also:
-            https://developers.virustotal.com/v3.0/reference#hunting_notification_files
+            https://docs.virustotal.com/reference/hunting_notification_files
         """
         return self._http_request(
             'GET',
@@ -478,7 +478,7 @@ class Client(BaseClient):
         """Get a VT Hunting Livehunt ruleset by hunting notification files relationship.
 
         See Also:
-            https://developers.virustotal.com/v3.0/reference#get-hunting-ruleset-relationship
+            https://docs.virustotal.com/reference/get-hunting-ruleset-relationship
         """
         return self._http_request(
             'GET',
@@ -498,7 +498,7 @@ class Client(BaseClient):
         """Retrieve retrohunt jobs.
 
         See Also:
-            https://developers.virustotal.com/v3.0/reference#get-retrohunt-jobs
+            https://docs.virustotal.com/reference/get-retrohunt-jobs
         """
         return self._http_request(
             'GET',
@@ -520,7 +520,7 @@ class Client(BaseClient):
         """Create a new retrohunt job.
 
         See Also:
-            https://developers.virustotal.com/v3.0/reference#create-retrohunt-job
+            https://docs.virustotal.com/reference/create-retrohunt-job
         """
         return self._http_request(
             'POST',
@@ -542,7 +542,7 @@ class Client(BaseClient):
         """Retrieve a retrohunt job.
 
         See Also:
-            https://developers.virustotal.com/v3.0/reference#get-retrohunt-job
+            https://docs.virustotal.com/reference/get-retrohunt-job
         """
         return self._http_request(
             'GET',
@@ -553,7 +553,7 @@ class Client(BaseClient):
         """Retrieve matches for a retrohunt job matching file relationship..
 
         See Also:
-            https://developers.virustotal.com/v3.0/reference#get-retrohunt-jobs-relationships
+            https://docs.virustotal.com/reference/get-retrohunt-job-relationships
         """
         return self._http_request(
             'GET',
@@ -564,7 +564,7 @@ class Client(BaseClient):
         """Retrieve user's API usage.
 
         See Also:
-            https://developers.virustotal.com/v3.0/reference#user-api-usage
+            https://docs.virustotal.com/reference/user-api-usage
         """
         return self._http_request(
             'GET',
