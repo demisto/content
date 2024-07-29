@@ -83,7 +83,7 @@ tasks:
       version: -1
       name: Upload Downloaded File to War Room
       description: Upload file from incident war room to another incident's war room
-      scriptName: DemistoUploadFileV2
+      scriptName: UploadFile
       type: regular
       iscommand: false
       brand: ""
