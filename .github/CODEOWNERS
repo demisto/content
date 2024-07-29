@@ -1,3 +1,37 @@
+# Marketplace Related - Marketplace PMs only
+/Config/approved_tags.json @yaakovpraisler @bakatzir @GuyLibermanPA @demisto/content-leaders
+/Config/approved_usecases.json @yaakovpraisler @bakatzir @GuyLibermanPA @demisto/content-leaders
+/Config/approved_categories.json @yaakovpraisler @bakatzir @GuyLibermanPA @demisto/content-leaders
+/Tests/Marketplace/landingPage_sections.json @yaakovpraisler @bakatzir @GuyLibermanPA @demisto/content-leaders
+/Config/core_packs_list.json @yaakovpraisler @bakatzir @GuyLibermanPA @demisto/content-leaders
+/Config/core_packs_mpv2_list.json @yaakovpraisler @bakatzir @GuyLibermanPA @demisto/content-leaders
+/Config/corepacks_override.json @yaakovpraisler
+
+# Docker native image
+/Tests/docker_native_image_config.json @JudahSchwartz @shmuel44
+
+# Marketplace & Upload-Flow
+/Tests/scripts/create_artifacts_graph/create_artifacts.py @RosenbergYehuda
+/Tests/Marketplace/upload_git_snapshot.py @yaakovpraisler
+/Tests/Marketplace/install_packs.sh @yaakovpraisler
+/Tests/Marketplace/configure_and_install_packs.py @yaakovpraisler
+/Tests/Marketplace/copy_and_upload_packs.py @yaakovpraisler
+/Tests/Marketplace/marketplace_services.py @yaakovpraisler @RosenbergYehuda
+/Tests/Marketplace/marketplace_statistics.py @yaakovpraisler
+/Tests/Marketplace/marketplace_constants.py @yaakovpraisler
+/Tests/Marketplace/zip_packs.py @yaakovpraisler
+/Tests/Marketplace/upload_packs.py @yaakovpraisler @RosenbergYehuda
+/Tests/Marketplace/packs_dependencies.py @yaakovpraisler
+/Tests/Marketplace/search_and_install_packs.py @yaakovpraisler
+/Tests/scripts/prepare_content_packs_for_testing.sh @yaakovpraisler
+/Utils/trigger_test_upload_flow.sh @yaakovpraisler
+/Utils/trigger_upload_packs_to_production.sh @yaakovpraisler
+/Utils/should_trigger_test_upload.sh @yaakovpraisler
+/Utils/test_upload_flow/* @yaakovpraisler
+
+# Test Collection
+/Tests/scripts/collect_tests @dorschw @michal-dagan
+/Tests/conf.json @sapirshuker
 
 # PANW Products
 /Packs/Palo_Alto_Networks_Enterprise_DLP/ @DeanArbel

@@ -1,0 +1,18 @@
+{
+    "name": "Microsoft Entra ID (formerly Azure Active Directory)",
+    "description": "Microsoft Entra ID (formerly Azure Active Directory) is a cloud-based identity and access management service, that can be used to access both internal and external resources.",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Analytics & SIEM"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": ["EntraID", "AAD", "Azure", "Active Directory"],
+    "marketplaces": [
+        "marketplacev2"
+    ]
+}
