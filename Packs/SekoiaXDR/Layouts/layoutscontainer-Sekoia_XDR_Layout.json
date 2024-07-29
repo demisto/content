@@ -527,7 +527,7 @@
                 "name": "Sekoia Alert",
                 "sections": [
                     {
-                        "h": 5,
+                        "h": 4,
                         "hideName": false,
                         "i": "xwqxiqdriy-caseinfoid-xwqxiqdriy-field-changed-xwqxiqdriy-caseinfoid-xwqxiqdriy-caseinfoid-7bde8760-a95c-11ed-9145-25ddf42500b6",
                         "items": [],
@@ -539,13 +539,13 @@
                         "queryType": "script",
                         "static": false,
                         "type": "dynamic",
-                        "w": 3,
-                        "x": 0,
-                        "y": 6
+                        "w": 1,
+                        "x": 1,
+                        "y": 2
                     },
                     {
                         "displayType": "ROW",
-                        "h": 3,
+                        "h": 2,
                         "hideName": false,
                         "i": "xwqxiqdriy-caseinfoid-xwqxiqdriy-field-changed-xwqxiqdriy-caseinfoid-xwqxiqdriy-caseinfoid-7ece0630-a95c-11ed-9145-25ddf42500b6",
                         "items": [
@@ -679,7 +679,7 @@
                         "name": "Details",
                         "static": false,
                         "w": 1,
-                        "x": 1,
+                        "x": 2,
                         "y": 0
                     },
                     {
@@ -696,12 +696,12 @@
                         "static": false,
                         "type": "dynamic",
                         "w": 1,
-                        "x": 2,
-                        "y": 0
+                        "x": 0,
+                        "y": 4
                     },
                     {
                         "displayType": "ROW",
-                        "h": 3,
+                        "h": 2,
                         "hideItemTitleOnlyOne": true,
                         "hideName": false,
                         "i": "xwqxiqdriy-caseinfoid-xwqxiqdriy-field-changed-xwqxiqdriy-caseinfoid-xwqxiqdriy-caseinfoid-ccc1c7d0-d848-11ed-a2c5-afbbb72993fe",
@@ -723,10 +723,10 @@
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 3
+                        "y": 2
                     },
                     {
-                        "h": 4,
+                        "h": 2,
                         "hideName": true,
                         "i": "xwqxiqdriy-308b91c0-3d3c-11ef-bbb1-2b336ca0953c",
                         "items": [],
@@ -739,8 +739,8 @@
                         "static": false,
                         "type": "dynamic",
                         "w": 1,
-                        "x": 2,
-                        "y": 2
+                        "x": 1,
+                        "y": 0
                     }
                 ],
                 "type": "custom"
