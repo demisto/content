@@ -20,7 +20,7 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 GET_RISK_FINDINGS_ENDPINT = '/v1/risk-findings'
 GET_ASSET_LISTS = "/v1/assets"
 GET_ASSET_DETAILS = "/v1/assets/id?id="
-GET_ASSET_FILES = "/v1/classification/asset-files/"
+GET_ASSET_FILES = "/v1/classification/asset-files/id"
 GET_DATA_TYPES_ENDPOINT: str = "/v1/classification/data-types"
 GET_DATA_TYPE_FINDINGS_ENDPOINT: str = "/v1/data-type-findings"
 GET_CURRENT_JIRA_USER_ENDPOINT: str = "/rest/api/2/myself"
@@ -454,19 +454,19 @@ def get_asset_files_by_id(client: Client, args: dict[str, Any]) -> CommandResult
     if not asset_id:
         raise ValueError("Asset ID not specified")
 
-    pageNumber = 0
+    # pageNumber = 0
     # if pageNumber < 0:
     #     raise ValueError('Page parameter value should be greature than 0.')
 
-    pageSize = MAX_PAGE_SIZE
+    # pageSize = MAX_PAGE_SIZE
     # if pageSize < 0:
     #     raise ValueError('Size parameter value should be greature than 0.')
 
     while True:
         params = {
             "id": asset_id,
-            "page": pageNumber,
-            "size": pageSize
+            # "page": pageNumber,
+            # "size": pageSize
         }
 
         response = client.get_asset_files(params)
@@ -966,6 +966,16 @@ def main() -> None:
             while True:
                 findings = get_risk_findings_command(client, demisto.args(), page)
                 if not findings:
+                    if page == 0:
+                        readable_output = (
+                            "### Risk Findings\n"
+                            "**No entries.**\n"
+                        )
+                        return_results(CommandResults(
+                            outputs_prefix='DSPM.RiskFindings',
+                            outputs_key_field='id',
+                            readable_output=readable_output
+                        ))
                     break  # No more findings to fetch
 
                 return_results(CommandResults(
