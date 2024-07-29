@@ -2022,6 +2022,7 @@ def get_entity(eiq_api):
 
     elif query_result is False:
         return "No entities found in EclecticIQ Intelligence Center."
+    return None
 
 
 def get_entity_by_id(eiq_api):
@@ -2043,6 +2044,7 @@ def get_entity_by_id(eiq_api):
             outputs_prefix="EclecticIQ.EntityById",
             outputs=query_result,
             outputs_key_field="entity_title")
+    return None
 
 
 def create_sighting(eiq_api):
@@ -2434,8 +2436,10 @@ def fetch_indicators(eiq_api):
             demisto.info("Feed id={} was fully ingested/updated.".format(str(item["id"])))
 
             return indicators_to_add
+        return None
     else:
         demisto.error("Fetching enabled but Feed IDs not configured.")
+        return None
 
 
 def export_csv_to_indicators(feed_id, text, flag=False):
@@ -2585,6 +2589,9 @@ def main():
         "eclecticiq-request-post": request_post,
         "eclecticiq-request-delete": request_delete,
     }
+
+    if not demisto.params().get('proxy', False):
+        skip_proxy()
 
     try:
         eiq = EclecticIQ_api(  # noqa: F841
