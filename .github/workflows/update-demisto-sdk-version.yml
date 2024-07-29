@@ -51,7 +51,7 @@ jobs:
 
     - name: Create pull request
       run: |
-        BODY="'${{ inputs.release_changes }}'"
+        echo "BODY='${{ inputs.release_changes }}'" >> $GITHUB_ENV
         if ${{ inputs.is_draft == true }}; then
           echo "creating draft release pull request"
           gh pr create -B master -H ${{ inputs.release_version }} --title "demisto-sdk-release ${{ inputs.release_version }}" --body "$BODY" --reviewer ${{ inputs.reviewer }} -l "docs-approved" --draft
