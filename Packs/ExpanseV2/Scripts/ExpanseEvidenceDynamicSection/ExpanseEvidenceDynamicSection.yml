@@ -4,7 +4,8 @@ commonfields:
 dockerimage: demisto/python3:3.10.13.83255
 enabled: true
 name: ExpanseEvidenceDynamicSection
-comment: Deprecated. No available replacement.
+comment: Deprecated. No available replacement. >
+  Dynamic Section script used in Expanse Issue layout to display the Latest Evidence structure.
 deprecated: true
 runas: DBotWeakRole
 script: ''

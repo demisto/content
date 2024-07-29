@@ -1,5 +1,6 @@
 name: ExpanseAggregateAttributionCI
-comment: Deprecated. No available replacement.
+comment: Deprecated. No available replacement. >
+  Aggregate entries from ServiceNow CMDB into AttributionCI.
 deprecated: true
 commonfields:
   id: ExpanseAggregateAttributionCI

@@ -5,7 +5,8 @@ args:
 - description: Tags to search (comma separated string).
   isArray: true
   name: tags
-comment: Deprecated. No available replacement.
+comment: Deprecated. No available replacement. >
+  Match provided IP address in all the Indicators of type CIDR with the provided tags (longest match).
 deprecated: true
 commonfields:
   id: MatchIPinCIDRIndicators

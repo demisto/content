@@ -1,5 +1,6 @@
 name: ExpanseAggregateAttributionIP
-comment: Deprecated. No available replacement.
+comment: Deprecated. No available replacement. >
+  Aggregate entries from multiple sources into AttributionIP.
 deprecated: true
 commonfields:
   id: ExpanseAggregateAttributionIP

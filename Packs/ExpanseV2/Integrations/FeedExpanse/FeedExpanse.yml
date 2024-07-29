@@ -5,7 +5,8 @@ display: Expanse Expander Feed (Deprecated)
 deprecated: true
 name: FeedExpanse
 category: Data Enrichment & Threat Intelligence
-description: Deprecated. Use CortexXpanse integration instead.
+description: Deprecated. Use Xpanse Feed integration instead. >
+  Use this feed to retrieve the discovered IPs/Domains/Certificates from Expanse Expander asset database.
 configuration:
 - defaultvalue: https://expander.expanse.co
   display: Your server URL

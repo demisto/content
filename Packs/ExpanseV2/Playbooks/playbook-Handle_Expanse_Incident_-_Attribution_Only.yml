@@ -4,7 +4,19 @@ contentitemexportablefields:
   contentitemfields: {}
 name: Handle Expanse Incident - Attribution Only
 deprecated: true
-description: Deprecated. No available replacement.
+description: |2-
+   Deprecated. No available replacement.
+   Shorter version of Handle Expanse Incident playbook with only the Attribution part.
+
+  There are several phases:
+  1. Enrichment: all the related information from the incident is extracted and related Indicators (of types IP, CIDR, Domain, DomainGlob, Certificate) are created and enriched.
+  2. Validation: the found IP and FQDN are correlated with the information available in other products:
+    - Firewall logs from Strata Logging Service, Panorama and Splunk
+    - User information from Active Directory
+    - Public IP address from AWS/GCP/Azure public IP feeds to identify the Public Cloud region and Service (i.e. us-west-1 on AWS EC2)
+    - IP and FQDN from Prisma Cloud inventory
+  3. Shadow IT check: based on the information found, the playbook can suggest whether the discovered issue corresponds to an asset that is known to the InfoSec team (i.e. there are firewall logs present, or the asset is protected by Prisma Cloud, or is part of an IP range associated to the Company).
+  4. Attribution: based on the information collected above, the Analyst is prompted to assign this issue to an Organization Unit, that is a group within the Company with a specific owner. The Analyst can choose from existing Organization Units (stored in an XSOAR list) or define a new one.
 starttaskid: "0"
 tasks:
   "0":
