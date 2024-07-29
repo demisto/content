@@ -8,12 +8,6 @@ function errorEntry(text) {
     };
 }
 
-function hasDuplicates(arr) {
-    return arr.some( function(item) {
-        return arr.indexOf(item) !== arr.lastIndexOf(item);
-    });
-}
-
 /**
  * Deletes keys from the context and handles errors.
  * @param {Array<string>} keysToDelete - An array of keys to delete.
