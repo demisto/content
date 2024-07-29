@@ -808,28 +808,6 @@
         "dbot_classification_incident_type_all": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "External Start Time": {
-                    "complex": {
-                        "filters": [],
-                        "root": "first_behavior",
-                        "transformers": [
-                            {
-                                "args": {
-                                    "item": {
-                                        "isContext": true,
-                                        "value": {
-                                            "simple": "start"
-                                        }
-                                    }
-                                },
-                                "operator": "append"
-                            }
-                        ]
-                    }
-                },
-                "Additional Data": {
-                    "simple": "behaviors"
-                },
                 "Agent Version": {
                     "simple": "device.agent_version"
                 },
@@ -854,10 +832,10 @@
                     }
                 },
                 "CMD line": {
-                    "simple": "behaviors.cmdline"
+                    "simple": "cmdline"
                 },
                 "Description": {
-                    "simple": "behaviors.description"
+                    "simple": "description"
                 },
                 "Device External IPs": {
                     "complex": {
@@ -966,26 +944,7 @@
                     "simple": "incident_type"
                 },
                 "External Confidence": {
-                    "simple": "max_confidence"
-                },
-                "External End Time": {
-                    "complex": {
-                        "filters": [],
-                        "root": "last_behavior",
-                        "transformers": [
-                            {
-                                "args": {
-                                    "item": {
-                                        "isContext": true,
-                                        "value": {
-                                            "simple": "end"
-                                        }
-                                    }
-                                },
-                                "operator": "append"
-                            }
-                        ]
-                    }
+                    "simple": "confidence"
                 },
                 "External ID": {
                     "complex": {
@@ -1096,16 +1055,16 @@
                     }
                 },
                 "File MD5": {
-                    "simple": "behaviors.md5"
+                    "simple": "md5"
                 },
                 "File Names": {
-                    "simple": "behaviors.filename"
+                    "simple": "filename"
                 },
                 "File Paths": {
-                    "simple": "behaviors.filepath"
+                    "simple": "filepath"
                 },
                 "File SHA256": {
-                    "simple": "behaviors.sha256"
+                    "simple": "sha256"
                 },
                 "Hostnames": {
                     "complex": {
@@ -1146,22 +1105,22 @@
                     "simple": "parent_details.cmdline"
                 },
                 "Parent Process SHA256": {
-                    "simple": "behaviors.parent_details.parent_sha256"
+                    "simple": "parent_details.sha256"
                 },
                 "Parent Process MD5": {
-                    "simple": "behaviors.parent_details.parent_md5"
+                    "simple": "parent_details.md5"
                 },
                 "Process CMD": {
                     "simple": "parent_details.cmdline"
                 },
                 "Process MD5": {
-                    "simple": "behaviors.md5"
+                    "simple": "md5"
                 },
                 "Process SHA256": {
-                    "simple": "behaviors.sha256"
+                    "simple": "sha256"
                 },
                 "Scenario": {
-                    "simple": "behaviors.scenario"
+                    "simple": "scenario"
                 },
                 "Source MAC Address": {
                     "simple": "device.mac_address"
@@ -1182,7 +1141,7 @@
 								"args": {
 									"conditions": {
 										"value": {
-											"simple": "[\n  {\n    \"condition\": \"#{incident_type} == 'detection'\",\n    \"return\": \"Falcon Detection - \" + #{behaviors\\.display_name}  + \" - Detection ID: \" + #{composite_id}\n  },\n  {\n    \"condition\": \"#{incident_type} == 'incident'\",\n    \"return\": \"Falcon Incident - ID: \" + #{incident_id}\n  },\n  {\n    \"condition\": \"#{incident_type} == 'IDP detection'\",\n    \"return\": #{id}\n  },\n  {\n    \"condition\": \"#{incident_type} == 'iom_configurations'\",\n    \"return\": #{id}\n  },\n  {\n    \"condition\": \"#{incident_type} == 'ioa_events'\",\n    \"return\": #{event_id}\n  },\n  {\n    \"condition\": \"#{incident_type} == 'MOBILE detection'\",\n    \"return\": #{mobile_detection_id}\n  },\n  {\n    \"condition\": \"#{device\\.hostname} != None\",\n    \"return\": #{incident_type} + \" - \" + #{composite_id} + \" - \" + #{device\\.hostname}\n  },\n  {\n    \"condition\": \"#{hosts\\.hostname} != None\",\n    \"return\": #{incident_type} + \" - \" + #{incident_id} + \" - \" + #{hosts\\.hostname}\n  },\n  {\n    \"condition\": \"#{incident_id} != None\",\n    \"return\": #{incident_type} + \" - \" + #{incident_id}\n  },\n  {\n    \"condition\": \"#{composite_id} != None\",\n    \"return\": #{incident_type} + \" - \" + #{composite_id}\n  },\n  {\n    \"default\": #{incident_type}\n  }\n]"
+											"simple": "[\n  {\n    \"condition\": \"#{incident_type} == 'detection'\",\n    \"return\": \"Falcon Detection - \" + #{display_name}  + \" - Detection ID: \" + #{composite_id}\n  },\n  {\n    \"condition\": \"#{incident_type} == 'incident'\",\n    \"return\": \"Falcon Incident - ID: \" + #{incident_id}\n  },\n  {\n    \"condition\": \"#{incident_type} == 'IDP detection'\",\n    \"return\": #{id}\n  },\n  {\n    \"condition\": \"#{incident_type} == 'iom_configurations'\",\n    \"return\": #{id}\n  },\n  {\n    \"condition\": \"#{incident_type} == 'ioa_events'\",\n    \"return\": #{event_id}\n  },\n  {\n    \"condition\": \"#{incident_type} == 'MOBILE detection'\",\n    \"return\": #{mobile_detection_id}\n  },\n  {\n    \"condition\": \"#{device\\.hostname} != None\",\n    \"return\": #{incident_type} + \" - \" + #{composite_id} + \" - \" + #{device\\.hostname}\n  },\n  {\n    \"condition\": \"#{hosts\\.hostname} != None\",\n    \"return\": #{incident_type} + \" - \" + #{incident_id} + \" - \" + #{hosts\\.hostname}\n  },\n  {\n    \"condition\": \"#{incident_id} != None\",\n    \"return\": #{incident_type} + \" - \" + #{incident_id}\n  },\n  {\n    \"condition\": \"#{composite_id} != None\",\n    \"return\": #{incident_type} + \" - \" + #{composite_id}\n  },\n  {\n    \"default\": #{incident_type}\n  }\n]"
 										}
 									},
 									"flags": {}
