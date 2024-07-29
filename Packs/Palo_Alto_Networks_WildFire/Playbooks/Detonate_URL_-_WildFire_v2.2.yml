@@ -185,6 +185,9 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
+      format:
+        complex:
+          root: inputs.ReportFileType
       url:
         complex:
           root: WildFire

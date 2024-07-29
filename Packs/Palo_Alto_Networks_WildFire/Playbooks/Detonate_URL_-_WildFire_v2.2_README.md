@@ -12,8 +12,8 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-* WildFire-v2
 * Palo_Alto_Networks_WildFire_v2
+* WildFire-v2
 
 ### Scripts
 
@@ -21,8 +21,8 @@ This playbook does not use any scripts.
 
 ### Commands
 
-* wildfire-upload-url
 * wildfire-report
+* wildfire-upload-url
 
 ## Playbook Inputs
 
