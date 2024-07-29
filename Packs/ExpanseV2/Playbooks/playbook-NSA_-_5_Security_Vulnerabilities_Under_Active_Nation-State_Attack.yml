@@ -1,17 +1,8 @@
 id: NSA - 5 Security Vulnerabilities Under Active Nation-State Attack
 version: -1
 name: NSA - 5 Security Vulnerabilities Under Active Nation-State Attack
-description: "Russian Foreign Intelligence Service (SVR) actors (also known as APT29,\
-  \ Cozy Bear, and The Dukes) frequently use publicly known vulnerabilities to conduct\
-  \ widespread scanning and exploitation.\nThis playbook should be trigger manually\
-  \ and includes the following tasks:\n- Enrich related known CVEs reported in the US agencies alert.\n\
-  - Search for unpatched endpoints vulnerable to the exploits.\n- Search for vulnerable assets facing\
-  \ the internet using Expanse.\n\nNote: This is a beta playbook,\
-  \ which lets you implement and test pre-release software. Since the playbook is\
-  \ beta, it might contain bugs. Updates to the pack during the beta phase might include\
-  \ non-backward compatible features. We appreciate your feedback on the quality and\
-  \ usability of the pack to help us identify issues, fix them, and continually improve.\
-  \ \n\nMore information:\n[Cyber Security Advisory] (https://media.defense.gov/2021/Apr/15/2002621240/-1/-1/0/CSA_SVR_TARGETS_US_ALLIES_UOO13234021.PDF/CSA_SVR_TARGETS_US_ALLIES_UOO13234021.PDF)"
+deprecated: true
+description: Deprecated. No available replacement.
 starttaskid: "0"
 tasks:
   "0":

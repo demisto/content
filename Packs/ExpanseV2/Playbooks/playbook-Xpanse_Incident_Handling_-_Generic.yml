@@ -3,15 +3,8 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Xpanse Incident Handling - Generic
-description: |-
-  A generic playbook for handling Xpanse issues.
-  The logic behind this playbook is to work with an internal exclusions list which will help the analyst to get to a decision or, if configured, close incidents automatically.
-  The phases of this playbook are:
-    1) Check if assets (IP, Domain or Certificate) associated with the issue are excluded in the exclusions list and optionally, close the incident automatically.
-    2) Optionally, enrich indicators and calculate the severity of the issue, using sub-playbooks.
-    3) Optionally, allow the analyst to add associated assets (IP, Domain or Certificate) to the exclusions list.
-    4) Tag associated assets.
-    5) Update the status of the issue.
+deprecated: true
+description: Deprecated. No available replacement.
 starttaskid: "0"
 tasks:
   "0":

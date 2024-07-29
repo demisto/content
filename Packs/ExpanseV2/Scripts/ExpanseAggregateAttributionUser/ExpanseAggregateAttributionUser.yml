@@ -1,5 +1,6 @@
 name: ExpanseAggregateAttributionUser
-comment: Aggregate entries from multiple sources into AttributionUser.
+comment: Deprecated. No available replacement.
+deprecated: true
 commonfields:
   id: ExpanseAggregateAttributionUser
   version: -1

@@ -1,6 +1,5 @@
-comment: >
-  Script to refresh tags and attribution reasons of assets inside Expanse Issue.
-  The script should be used inside the Expanse Issue incident context.
+comment: Deprecated. No available replacement.
+deprecated: true
 commonfields:
   id: ExpanseRefreshIssueAssets
   version: -1

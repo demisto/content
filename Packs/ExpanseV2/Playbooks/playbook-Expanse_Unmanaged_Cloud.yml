@@ -1,8 +1,8 @@
 id: Expanse Unmanaged Cloud
 version: -1
 name: Expanse Unmanaged Cloud
-description: |
-  Subplaybook for bringing rogue cloud accounts under management.
+deprecated: true
+description: Deprecated. No available replacement.
 starttaskid: "0"
 tasks:
   "0":
