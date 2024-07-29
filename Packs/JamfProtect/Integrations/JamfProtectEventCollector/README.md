@@ -8,7 +8,7 @@ Use this integration to fetch audit logs, alerts and computer events from Jamf P
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Server URL (e.g., https://example.protect.jamfcloud.com) | REST API Endpoint of Jamf Protect server. | True |
+    | Server URL (e.g., <https://example.protect.jamfcloud.com>) | REST API Endpoint of Jamf Protect server. | True |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
     | Client ID | The unique identifier for the client application, provided by Jamf when the application is registered. This is used to authenticate the client with the Jamf Protect server. | True |
