@@ -65,10 +65,10 @@ jobs:
         git push origin ${{ inputs.release_version }}
         if ${{ inputs.is_draft == true }}; then
           echo "creating draft release pull request"
-          gh pr create -B master -H ${{ inputs.release_version }} --title "demisto-sdk-release ${{ inputs.release_version }}" --body ${{ format('\'{0}\'', inputs.release_changes) }} --reviewer ${{ inputs.reviewer }} -l "docs-approved" --draft
+          gh pr create -B master -H ${{ inputs.release_version }} --title "demisto-sdk-release ${{ inputs.release_version }}" --body ${{ format("'{0}'", inputs.release_changes) }} --reviewer ${{ inputs.reviewer }} -l "docs-approved" --draft
         else
           echo "creating release pull request"
-          gh pr create -B master -H ${{ inputs.release_version }} --title "demisto-sdk-release ${{ inputs.release_version }}" --body ${{ format('\'{0}\'', inputs.release_changes) }} --reviewer ${{ inputs.reviewer }} -l "docs-approved"
+          gh pr create -B master -H ${{ inputs.release_version }} --title "demisto-sdk-release ${{ inputs.release_version }}" --body ${{ format("'{0}'", inputs.release_changes) }} --reviewer ${{ inputs.reviewer }} -l "docs-approved"
         fi
       env:
         GH_TOKEN: ${{ secrets.CONTENTBOT_GH_ADMIN_TOKEN }}
