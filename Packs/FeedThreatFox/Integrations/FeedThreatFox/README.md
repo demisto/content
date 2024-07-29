@@ -1,5 +1,56 @@
-This README contains the full documentation for your integration.
+Use the ThreatFox Feed integration to fetch indicators from the feed.
+This integration was integrated and tested with version xx of ThreatFox Feed.
 
-You auto-generate this README file from your integration YML file using the `demisto-sdk generate-docs` command.
+## Configure ThreatFox Feed on Cortex XSOAR
 
-For more information see the [integration documentation](https://xsoar.pan.dev/docs/integrations/integration-docs).
+1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+2. Search for ThreatFox Feed.
+3. Click **Add instance** to create and configure a new integration instance.
+
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | Server URL |  | True |
+    | Use system proxy settings |  | False |
+    | Trust any certificate (not secure) |  | False |
+    | Fetch indicators |  | False |
+    | Source Reliability | Reliability of the source providing the intelligence data | False |
+    | Indicator Reputation | Indicators from this integration instance will be marked with this reputation. | False |
+    | Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed | False |
+    |  |  | False |
+    |  |  | False |
+    | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
+    | Feed Fetch Interval |  | False |
+    | Return IOCs with Ports |  | False |
+    | Confidence Threshold |  | False |
+    | Create relationship |  | False |
+
+4. Click **Test** to validate the URLs, token, and connection.
+
+## Commands
+
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
+### threatfox-get-indicators
+
+***
+Retrieves indicators from the ThreatFox API.
+
+#### Base Command
+
+`threatfox-get-indicators`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| search_term | Indicator value to search for. | Optional | 
+| id | Indicator id to search for. | Optional | 
+| hash | Hash to search for. | Optional | 
+| tag | need to check this. | Optional | 
+| malware | Malware to search for. | Optional | 
+| limit | Maximum indicators to search for. Available only when searching by 'malware' or 'tag'. Default is 50. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
