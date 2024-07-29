@@ -8522,10 +8522,6 @@ class DebugLogger(object):
         brand = calling_context.get('IntegrationBrand')
         if brand:
             msg += "\n#### Integration: brand: [{}] instance: [{}]".format(brand, calling_context.get('IntegrationInstance'))
-        pack_version = os.environ.get("PACK_VERSION")
-        pack_name = os.environ.get("PACK_NAME")
-        if pack_version:
-            msg += "\n####Pack version: {}".format(pack_version)
         sm = get_schedule_metadata(context=calling_context)
         if sm.get('is_polling'):
             msg += "\n#### Schedule Metadata: scheduled command: [{}] args: [{}] times ran: [{}] scheduled: [{}] end " \
