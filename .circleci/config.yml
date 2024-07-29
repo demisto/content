@@ -175,6 +175,7 @@ references:
 
         chmod +x ./Tests/scripts/*
         chmod +x ./Tests/Marketplace/*
+        chmod +x ./Config/*
 
         source ./.venv/bin/activate
 
