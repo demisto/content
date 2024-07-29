@@ -760,7 +760,7 @@ Retrieves a list of alerts based on the filter values provided in the command ar
 >### Alerts
 >|ID|Created at (UTC)|Query|Source|Resource URL|Site Title|Shodan Host|Repository|Owner|Origin|Ports|Services|Highlight Text|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 00000000-0000-0000-0000-000000000001 | Jun 17, 2024  05:54 | facebook | data_exposure__github | [https://dummyurl.com/naive-gabrie-white](https://dummyurl.com/naive-gabrie-white) |  |  | naive-gabrie-white.github.io | naive-gabrie-white | searches |  |  | data\-image="https://i.dummyurl.net/2021/02/24/000000000000001.png" data\-sites="<x\-fp\-highlight>facebook</x\-fp\-highlight>,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https:... |
+>| 00000000-0000-0000-0000-000000000001 | Jun 17, 2024  05:54 | facebook | data_exposure__github | [https://dummyurl.com/naive-gabrie-white](https://dummyurl.com/naive-gabrie-white) |  |  | naive-gabrie-white.github.io | naive-gabrie-white | searches |  |  | data\-image="https://i.dummyurl.net/2021/02/24/000000000000001.png" data\-sites="<x\-fp\-highlight>facebook</x\-fp\-highlight>,twitter,wechat,weibo,qq"><link rel="stylesheet" href="https:...> |
 >| 00000000-0000-0000-0000-000000000005 | Jul 02, 2024  16:43 | 0.0.0.1 |  |  |  | ***asn***: AS0001<br>***country***: United States<br>***org***: Company LLC<br>***shodan_url***: [https://www.shodan.io/host/0.0.0.1](https://www.shodan.io/host/0.0.0.1) |  |  | assets | 53, 443 | Unknown Service (Port 01), Unknown Service (Port 02) | <x\-fp\-highlight>53</x\-fp\-highlight> |
 >
 >#### To retrieve the next set of result use,
