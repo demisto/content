@@ -116,17 +116,34 @@ def test_alerts_search_command(mocker, mock_client, args):
     )
 
 
-@pytest.mark.parametrize("args", [({'rows': '3', 'type': 'all', 'policy_id': '1234'})])
-@freeze_time("2024-07-14 16:35:39")
-def test_fetch_incidents(mocker, mock_client, args):
-    http_request = mocker.patch.object(Client, "_http_request", return_value={})
+@pytest.mark.parametrize("args, last_run, mock_results", [
+    (
+        {'rows': '3', 'type': 'all', 'policy_id': '1234'},
+        {'last_fetched_alert_id': ['44', '22'], 'last_fetched_alert_create_time': "2024-07-13T19:16:47.495Z"},
+        [
+            {'id': '44', 'backend_timestamp': "2024-07-13T19:16:47.495Z"},
+            {'id': '22', 'backend_timestamp': "2024-07-13T19:16:47.495Z"},
+            {'id': '11', 'backend_timestamp': "2024-07-14T19:00:00.000Z"},
+            {'id': '12', 'backend_timestamp': "2024-07-14T19:00:00.000Z"},
+        ],
+    )
+])
+@freeze_time("2024-07-15 16:35:39")
+def test_fetch_incidents(mocker, mock_client, args, last_run, mock_results):
+    mocker.patch.object(demisto, 'getLastRun', return_value=last_run)
+    http_request = mocker.patch.object(Client, "_http_request", return_value={'results': mock_results})
 
     now = datetime.utcnow()
-    start_time = (now - timedelta(days=7)).strftime('%Y-%m-%dT%H:%M:%S.000Z')
+    start_time = last_run['last_fetched_alert_create_time']
     end_time = now.strftime('%Y-%m-%dT%H:%M:%S.000Z')
 
-    fetch_incidents(client=mock_client, params=args)
+    next_run, incidents = fetch_incidents(client=mock_client, params=args)
 
+    assert next_run['last_fetched_alert_create_time'] == "2024-07-14T19:00:00.000Z"
+    assert next_run['last_fetched_alert_id'] == ['11', '12']
+    assert len(incidents) == 2
+    assert '11' in incidents[0]['rawJSON']
+    assert '12' in incidents[1]['rawJSON']
     http_request.assert_called_with(
         "POST",
         f"api/alerts/v7/orgs/{ORGANIZATION_KEY}/alerts/_search",
@@ -137,7 +154,7 @@ def test_fetch_incidents(mocker, mock_client, args):
             },
             'sort': [{'field': 'backend_timestamp', 'order': 'ASC'}],
             'time_range': {'start': start_time, 'end': end_time},
-            'rows': 50
+            'rows': 51
         },
     )
 

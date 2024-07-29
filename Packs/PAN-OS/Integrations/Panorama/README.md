@@ -7540,29 +7540,32 @@ Searches and returns a reference for the given object type and name. If no name 
 
 
 ### pan-os-platform-get-device-state
-***
-Get the device state from the provided device. Note: This will attempt to connect directly to the provided target to get the device state. If the IP address as reported in 'show system info' is unreachable, this command will fail.
 
+***
+Get the device state from the provided device. Note; This will attempt to connect directly to the provided target to get the device state. If the IP address as reported in "show system info" is unreachable, this command will fail.
 
 #### Base Command
 
 `pan-os-platform-get-device-state`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| target | String by which to filter to only show specific hostnames or serial numbers. | Required | 
-
+| target | Serial number of the device from which to fetch the device state. | Required | 
+| filename | Name of the file for the state file to be saved. Default will use the hostname as the filename. | Optional | 
+| ip_address | The IP Address of a Panorama managed firewall. Default will use Panorama-supplied IP Address. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| InfoFile.Name | String | Filename | 
-| InfoFile.EntryID | String | Entry ID | 
-| InfoFile.Size | String | Size of file | 
-| InfoFile.Type | String | Type of file | 
-| InfoFile.Info | String | Basic information of file | 
+| InfoFile.Name | String | Filename. | 
+| InfoFile.EntryID | String | Entry ID. | 
+| InfoFile.Size | String | Size of the file. | 
+| InfoFile.Type | String | Type of the file. | 
+| InfoFile.Info | String | Basic information of the file. | 
+
 ### pan-os-push-to-template
 ***
 Pushes the given PAN-OS template to the given devices or all devices that belong to the template.
