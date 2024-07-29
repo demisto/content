@@ -223,7 +223,18 @@ class PychromeEventHandler:
         if self.start_frame == frameId:
             demisto.debug('PychromeEventHandler.page_frame_stopped_loading, setting tab_ready_event')
             self.tab_ready_event.set()
-
+    
+    # def network_response_received(self, response, **kwargs):
+    #     return_results('In PychromeEventHandler.network_response_received')
+    #     demisto.debug(f'PychromeEventHandler.network_response_received, {response.url=}')
+    #     if response.url.startswith('mailto:'):
+    #         raise DemistoException(f'URLs that start with "mailto:" cannot be screenshot. URL: {response.url}')
+    
+    def network_request_will_be_sent(self, documentURL, **kwargs):
+        return_results('In PychromeEventHandler.network_request_will_be_sent')
+        demisto.debug(f'PychromeEventHandler.network_request_will_be_sent, {documentURL=}')
+        if documentURL.startswith('mailto:'):
+            raise DemistoException(f'URLs that start with "mailto:" cannot be screenshot. URL: {documentURL}')
 # endregion
 
 
@@ -561,6 +572,7 @@ def setup_tab_event(browser, tab):
     tab.Network.enable()
     tab.Network.dataReceived = tab_event_handler.network_data_received
     # tab.Network.responseReceived = tab_event_handler.network_response_received
+    tab.Network.requestWillBeSent = tab_event_handler.network_request_will_be_sent
 
     tab.Page.frameStartedLoading = tab_event_handler.page_frame_started_loading
     tab.Page.frameStoppedLoading = tab_event_handler.page_frame_stopped_loading
