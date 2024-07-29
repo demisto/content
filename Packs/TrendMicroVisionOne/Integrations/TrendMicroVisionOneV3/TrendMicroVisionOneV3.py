@@ -100,6 +100,7 @@ FILE_NAME = "filename"
 FILE_TYPE = "filetype"
 FETCH_ALL = "fetch_all"
 FETCH_MAX_COUNT = "fetch_max_count"
+DEFAULT_MAX_FETCH = 5000
 SCRIPT_ID = "script_id"
 DOCUMENT_PASSWORD = "document_password"
 ARCHIVE_PASSWORD = "archive_password"
@@ -901,7 +902,7 @@ def get_endpoint_activity_data(
     select = args.get(SELECT, EMPTY_STRING).split(",")
     query_op = args.get(QUERY_OP, EMPTY_STRING)
     fetch_all = args.get(FETCH_ALL, FALSE)
-    fetch_max_count = int(args.get(FETCH_MAX_COUNT, EMPTY_STRING))
+    fetch_max_count = int(args.get(FETCH_MAX_COUNT, DEFAULT_MAX_FETCH))
     # Choose QueryOp Enum based on user choice
     if query_op.lower() == "or":
         query_op = pytmv1.QueryOp.OR
@@ -1033,7 +1034,7 @@ def get_email_activity_data(
     select = args.get(SELECT, EMPTY_STRING).split(",")
     query_op = args.get(QUERY_OP, EMPTY_STRING)
     fetch_all = args.get(FETCH_ALL, FALSE)
-    fetch_max_count = int(args.get(FETCH_MAX_COUNT, EMPTY_STRING))
+    fetch_max_count = int(args.get(FETCH_MAX_COUNT, DEFAULT_MAX_FETCH))
     # Choose QueryOp Enum based on user choice
     if query_op.lower() == "or":
         query_op = pytmv1.QueryOp.OR
