@@ -136,15 +136,6 @@ configuration:
   type: 0
   additionalinfo: Supports CSV values.
   required: false
-- name: feedReputation
-  display: Indicator Reputation
-  type: 18
-  options:
-  - None
-  - Good
-  - Suspicious
-  - Bad
-  additionalinfo: Indicators from this integration instance will be marked with this reputation
 display: Github Feed
 name: Github Feed
 script:
