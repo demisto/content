@@ -79,8 +79,9 @@ ujson = "^5.1.0"
 yamlordereddictloader = "^0.4.0"
 
 [tool.poetry.group.dev.dependencies]
+demisto-sdk = "1.31.5"
 dateparser = "^1.1.8"
-demisto-sdk = "1.31.4"
+requests = "^2.22.0"
 pre-commit = "^3.5.0"
 requests = "^2.22.0"
 
