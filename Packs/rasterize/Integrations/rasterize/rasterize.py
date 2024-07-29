@@ -49,7 +49,7 @@ CHROME_OPTIONS = ["--headless",
                   ]
 
 WITH_ERRORS = demisto.params().get('with_error', True)
-IS_HTTP = argToBoolean(demisto.params().get('is_https', False))
+IS_HTTPS = argToBoolean(demisto.params().get('is_https', False))
 
 # The default wait time before taking a screenshot
 DEFAULT_WAIT_TIME = max(int(demisto.params().get('wait_time', 0)), 0)
@@ -637,15 +637,18 @@ def screenshot_image(browser, tab, path, wait_time, navigation_timeout, full_scr
     demisto.debug(f"{page_layout_metrics=}")
     css_content_size = page_layout_metrics['cssContentSize']
     try:
+        timeout = 5
         if full_screen:
             viewport = css_content_size
             viewport['scale'] = 1
-            screenshot_data = tab.Page.captureScreenshot(clip=viewport, captureBeyondViewport=True)['data']
+            screenshot_data = tab.Page.captureScreenshot(clip=viewport, captureBeyondViewport=True, _timeout=timeout)['data']
         else:
-            screenshot_data = tab.Page.captureScreenshot()['data']
-    except Exception as ex:
-        demisto.info(f'Failed to capture screenshot due to {ex}')
-        raise ex
+            screenshot_data = tab.Page.captureScreenshot(_timeout=timeout)['data']
+    except pychrome.exceptions.TimeoutException as e:
+        raise DemistoException(f'Timeout while capturing screenshot of URL: {path}')
+    except Exception as e:
+        demisto.info(f'Failed to capture screenshot due to {e}')
+        raise e
     # Make sure that the (asynchronous) screenshot data is available before continuing with execution
     screenshot_data, operation_time = backoff(screenshot_data)
     if screenshot_data:
@@ -795,7 +798,7 @@ def perform_rasterize(path: str | list[str],
             rasterization_results = []
             for current_path in paths:
                 if not current_path.startswith('http') and not current_path.startswith('file:///'):
-                    protocol = 'http' + 's' * IS_HTTP
+                    protocol = 'http' + 's' * IS_HTTPS
                     current_path = f'{protocol}://{current_path}'
 
                 # Start a new thread in group of max_tabs
