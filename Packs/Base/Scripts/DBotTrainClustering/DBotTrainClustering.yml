@@ -79,13 +79,13 @@ args:
   - char
   - word
 outputs:
-- contextPath: DBotTrainClustering.name
-  description: The name of the cluster.
+- contextPath: DBotTrainClustering
+  description: The clustering data in JSON format.
   type: String
-- contextPath: DBotTrainClustering.incidents_ids
-  description: The IDs of the incidents in the cluster.
-  type: Number
-comment: Train clustering model on any incident type.
+comment: |
+  This script helps organizes and groups incidents based on their similarities using clustering algorithms.
+  Clustering is a technique used to group data points (in this case, incidents) that are similar to each other into clusters.
+  Used to automatically categorize a large number of incidents into meaningful groups.
 commonfields:
   id: DBotTrainClustering
   version: -1

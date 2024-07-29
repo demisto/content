@@ -1,4 +1,6 @@
-Train clustering model on any incident type.
+This script helps organizes and groups incidents based on their similarities using clustering algorithms.
+Clustering is a technique used to group data points (in this case, incidents) that are similar to each other into clusters.
+Used to automatically categorize a large number of incidents into meaningful groups.
 
 ## Script Data
 
@@ -44,5 +46,4 @@ Train clustering model on any incident type.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| DBotTrainClustering.name | The name of the cluster. | String |
-| DBotTrainClustering.incidents_ids | The IDs of the incidents in the cluster. | Number |
+| DBotTrainClustering | The clustering data in JSON format. | String |

@@ -151,8 +151,9 @@ class Clustering:
         """
         if not self.TSNE_:
             samples = pd.DataFrame(self.centers).T
-            perplexity = float(min(30, samples.shape[0] - 1))
+            perplexity = 30  # float(min(30, samples.shape[0] - 1))
             tsne = TSNE(perplexity=perplexity, n_jobs=-1, n_components=dimension, learning_rate=1000)
+            tsne._check_params_vs_input = lambda *_: None
             self.data_2d = tsne.fit_transform(samples)
             for coordinates, center in zip(self.data_2d, pd.DataFrame(self.centers).T.index):
                 self.centers_2d[center] = coordinates
@@ -631,13 +632,10 @@ def create_summary(model_processed: PostProcessing, fields_for_clustering: list[
     percentage_clusterized_samples = round(100 * (number_of_clusterized / number_of_sample), 0)
     summary = {
         'Total number of samples ': str(number_of_sample),
-        'Percentage of clusterized samples after selection (after Phase 1 and Phase 2)': "{}  ({}/{})".format(
-            str(percentage_selected_samples),
-            str(nb_clusterized_after_selection),
-            str(number_of_sample)),
-        'Percentage of clusterized samples (after Phase 1)': "{}  ({}/{})".format(str(percentage_clusterized_samples),
-                                                                                  str(number_of_clusterized),
-                                                                                  str(number_of_sample)),
+        'Percentage of clusterized samples after selection (after Phase 1 and Phase 2)':
+            f"{percentage_selected_samples}  ({nb_clusterized_after_selection}/{number_of_sample})",
+        'Percentage of clusterized samples (after Phase 1)':
+            f"{percentage_clusterized_samples}  ({number_of_clusterized}/{number_of_sample})",
         'Percentage of cluster selected (Number of high quality groups/Total number of groups)':
             f"{percentage_clusters_selected}  ({number_clusters_selected}/{nb_clusters})",
         'Fields used for training': ' , '.join(fields_for_clustering),
@@ -654,18 +652,11 @@ def return_entry_clustering(output_clustering: str, tag: str = None) -> None:
     :param tag: tag
     :return: Return entry to demisto
     """
-    outputs = [
-        {
-            'name': clst['name'],
-            'incidents_ids': clst['incidents_ids']
-        }
-        for clst in json.loads(output_clustering)['data']
-    ]
     return_entry = {
         "Type": entryTypes["note"],
         "ContentsFormat": formats['json'],
         "Contents": output_clustering,
-        "EntryContext": {'DBotTrainClustering': outputs},
+        "EntryContext": {'DBotTrainClustering': output_clustering},
     }
     if tag is not None:
         return_entry["Tags"] = [f'Clustering_{tag}']
@@ -699,13 +690,12 @@ def fill_nested_fields(
                 if isinstance(incidents, list):
                     value_list: list[Any] = [wrapped_list(demisto.dt(incident, field)) for incident in incidents]
                     if not keep_unique_value:
-                        value_list = [' '.join(set(filter(lambda x: x not in ['None', None, 'N/A'], x))) for x in value_list]
+                        value_list = [' '.join({x for x in value if x not in ('None', None, 'N/A')}) for value in value_list]
                     else:
-                        value_list = [most_frequent(list(filter(lambda x: x not in ['None', None, 'N/A'], x)))
-                                      for x in value_list]
+                        value_list = [most_frequent([x for x in value if x not in ('None', None, 'N/A')]) for value in value_list]
                 else:
                     value_list = wrapped_list(demisto.dt(incidents, field))
-                    value_list = ' '.join(set(filter(lambda x: x not in ['None', None, 'N/A'], value_list)))  # type: ignore
+                    value_list = ' '.join({x for x in value_list if x not in ('None', None, 'N/A')})  # type: ignore
                 incidents_df[field] = value_list
     return incidents_df
 

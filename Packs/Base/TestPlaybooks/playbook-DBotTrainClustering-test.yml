@@ -1,5 +1,6 @@
-id: DBotTrainClustering-test
-version: -1
+id: 9531c2c9-bcd6-4c5e-8108-6e48a42ca097
+version: 46
+vcShouldKeepItemLegacyProdMachine: false
 name: DBotTrainClustering-test
 starttaskid: "0"
 tasks:
@@ -13,7 +14,6 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -90,7 +90,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "15"
+      - "27"
     scriptarguments:
       fieldForClusterName:
         simple: accountid
@@ -135,14 +135,13 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 2295
+          "y": 2645
         }
       }
     note: false
@@ -172,7 +171,12 @@ tasks:
       accountid:
         simple: "12345"
       additionaldata:
-        simple: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum
+        simple: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+          tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+          quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+          consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+          cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat
+          non proident, sunt in culpa qui officia deserunt mollit anim id est laborum
       name:
         simple: Incident 1
       sourceip:
@@ -215,7 +219,12 @@ tasks:
       accountid:
         simple: "12345"
       additionaldata:
-        simple: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim
+        simple: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+          tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+          quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+          consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+          cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat
+          non proident, sunt in culpa qui officia deserunt mollit anim
       name:
         simple: Incident 2
       sourceip:
@@ -258,7 +267,12 @@ tasks:
       accountid:
         simple: "12345"
       additionaldata:
-        simple: ' consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum'
+        simple: ' consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
+          labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+          ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure
+          dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
+          pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa
+          qui officia deserunt mollit anim id est laborum'
       name:
         simple: Incident 3
       sourceip:
@@ -301,7 +315,18 @@ tasks:
       accountid:
         simple: "67890"
       additionaldata:
-        simple: Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?
+        simple: Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium
+          doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore
+          veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim
+          ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia
+          consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque
+          porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur,
+          adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore
+          et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis
+          nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid
+          ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in
+          ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui
+          dolorem eum fugiat quo voluptas nulla pariatur?
       name:
         simple: Incident 4
       sourceip:
@@ -427,7 +452,18 @@ tasks:
       accountid:
         simple: "67890"
       additionaldata:
-        simple: ' omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?'
+        simple: ' omnis iste natus error sit voluptatem accusantium doloremque laudantium,
+          totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi
+          architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem
+          quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni
+          dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam
+          est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit,
+          sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam
+          aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem
+          ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur?
+          Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam
+          nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas
+          nulla pariatur?'
       name:
         simple: Incident 5
       sourceip:
@@ -470,7 +506,18 @@ tasks:
       accountid:
         simple: "67890"
       additionaldata:
-        simple: 'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat '
+        simple: 'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium
+          doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore
+          veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim
+          ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia
+          consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque
+          porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur,
+          adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore
+          et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis
+          nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid
+          ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in
+          ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui
+          dolorem eum fugiat '
       name:
         simple: Incident 6
       sourceip:
@@ -596,12 +643,12 @@ tasks:
           left:
             value:
               complex:
-                root: DBotTrainClustering
+                root: JsonObject.data
                 filters:
                 - - operator: isEqualString
                     left:
                       value:
-                        simple: DBotTrainClustering.name
+                        simple: JsonObject.data.name
                       iscontext: true
                     right:
                       value:
@@ -631,12 +678,12 @@ tasks:
           left:
             value:
               complex:
-                root: DBotTrainClustering
+                root: JsonObject.data
                 filters:
                 - - operator: isEqualString
                     left:
                       value:
-                        simple: DBotTrainClustering.name
+                        simple: JsonObject.data.name
                       iscontext: true
                     right:
                       value:
@@ -667,7 +714,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 1595
+          "y": 1770
         }
       }
     note: false
@@ -709,7 +756,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 1770
+          "y": 1945
         }
       }
     note: false
@@ -734,7 +781,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "26"
+      - "28"
     scriptarguments:
       fieldForClusterName:
         simple: accountid
@@ -758,7 +805,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 1945
+          "y": 2120
         }
       }
     note: false
@@ -790,12 +837,12 @@ tasks:
           left:
             value:
               complex:
-                root: DBotTrainClustering
+                root: JsonObject.data
                 filters:
                 - - operator: isEqualString
                     left:
                       value:
-                        simple: DBotTrainClustering.name
+                        simple: JsonObject.data.name
                       iscontext: true
                     right:
                       value:
@@ -825,12 +872,12 @@ tasks:
           left:
             value:
               complex:
-                root: DBotTrainClustering
+                root: JsonObject.data
                 filters:
                 - - operator: isEqualString
                     left:
                       value:
-                        simple: DBotTrainClustering.name
+                        simple: JsonObject.data.name
                       iscontext: true
                     right:
                       value:
@@ -861,7 +908,77 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 2120
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 32ca3902-c998-480e-8f13-56067bf2438a
+    type: regular
+    task:
+      id: 32ca3902-c998-480e-8f13-56067bf2438a
+      version: -1
+      name: Load clusters
+      description: Loads a json from string input, and returns a json object result.
+      scriptName: LoadJSON
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      input:
+        simple: ${DBotTrainClustering}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: a9bed7eb-416b-4810-8db7-c6936dae9d70
+    type: regular
+    task:
+      id: a9bed7eb-416b-4810-8db7-c6936dae9d70
+      version: -1
+      name: Load clusters
+      description: Loads a json from string input, and returns a json object result.
+      scriptName: LoadJSON
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      input:
+        simple: ${DBotTrainClustering}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2295
         }
       }
     note: false
@@ -876,7 +993,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2310,
+        "height": 2660,
         "width": 1240,
         "x": 50,
         "y": 50
@@ -885,5 +1002,3 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 6.10.0
-description: ''
