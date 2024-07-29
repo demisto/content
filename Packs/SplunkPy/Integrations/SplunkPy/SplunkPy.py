@@ -1111,8 +1111,8 @@ def drilldown_enrichment(service: client.Service, notable_data, num_enrichment_e
             if isinstance(search, dict):
                 query_name = search.get("name", "")
                 query_search = search.get("search", "")
-                earliest_offset = search.get("earliest", "")  # The earliest time to query from.
-                latest_offset = search.get("latest", "")  # The latest time to query to.
+                earliest_offset = search.get("earliest") or search.get("earliest_offset", "")  # The earliest time to query from.
+                latest_offset = search.get("latest") or search.get("latest_offset", "")  # The latest time to query to.
 
             else:
                 # Got a single drilldown search under the 'drilldown_search' key (BC)
@@ -1661,7 +1661,7 @@ def update_remote_system_command(args, params, service: client.Service, auth_tok
     delta = parsed_args.delta
     notable_id = parsed_args.remote_incident_id
     entries = parsed_args.entries
-    base_url = 'https://' + params['host'] + ':' + params['port'] + '/'
+    base_url = f"https://{params['host'].replace('https://', '')}:{params['port']}/"
     demisto.debug(f"mirroring args: entries:{parsed_args.entries} delta:{parsed_args.delta}")
     if parsed_args.incident_changed and delta:
         demisto.debug(
@@ -3047,7 +3047,7 @@ def main():  # pragma: no cover
 
     connection_args = get_connection_args(params)
 
-    base_url = 'https://' + params['host'] + ':' + params['port'] + '/'
+    base_url = f"https://{params['host'].replace('https://', '')}:{params['port']}/"
     auth_token = None
     username = params['authentication']['identifier']
     password = params['authentication']['password']

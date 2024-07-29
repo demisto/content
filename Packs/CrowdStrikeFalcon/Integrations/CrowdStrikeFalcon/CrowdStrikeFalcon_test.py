@@ -11,6 +11,7 @@ from test_data import input_data
 from freezegun import freeze_time
 from typing import Any
 from pytest_mock import MockerFixture
+from unittest.mock import ANY
 
 RETURN_ERROR_TARGET = 'CrowdStrikeFalcon.return_error'
 SERVER_URL = 'https://4.4.4.4'
@@ -1585,6 +1586,7 @@ def test_get_extracted_file(requests_mock, mocker):
         content=response_content,
         status_code=201
     )
+    mocker.patch.object(demisto, 'debug', return_value=None)
     results = get_extracted_file_command(demisto.args())
 
     fpath = demisto.investigation()['id'] + '_' + results['FileID']
@@ -3492,8 +3494,8 @@ def test_search_device_command(requests_mock):
         json=response,
         status_code=200,
     )
-    requests_mock.get(
-        f'{SERVER_URL}/devices/entities/devices/v2?ids=meta&ids=resources&ids=errors',
+    requests_mock.post(
+        f'{SERVER_URL}/devices/entities/devices/v2',
         json=test_data2,
         status_code=200,
     )
@@ -3561,8 +3563,8 @@ def test_get_endpoint_command(requests_mock, mocker):
         json=response,
         status_code=200,
     )
-    requests_mock.get(
-        f'{SERVER_URL}/devices/entities/devices/v2?ids=meta&ids=resources&ids=errors',
+    requests_mock.post(
+        f'{SERVER_URL}/devices/entities/devices/v2',
         json=test_data2,
         status_code=200,
     )
@@ -4135,7 +4137,7 @@ def test_find_incident_type():
     """
     from CrowdStrikeFalcon import find_incident_type, IncidentType
     assert find_incident_type(input_data.remote_incident_id) == IncidentType.INCIDENT
-    assert find_incident_type(input_data.remote_detection_id) == IncidentType.DETECTION
+    assert find_incident_type(input_data.remote_detection_id) == IncidentType.LEGACY_ENDPOINT_DETECTION
     assert find_incident_type('') is None
 
 
@@ -4184,7 +4186,7 @@ def test_get_remote_detection_data(mocker):
                               'behaviors.display_name': 'SampleTemplateDetection'}
 
 
-def test_get_remote_idp_or_mobile_detection_data_idp(mocker):
+def test_get_remote_edpoint_or_idp_or_mobile_detection_data__idp(mocker):
     """
     Given
         - an idp detection ID on the remote system
@@ -4193,11 +4195,12 @@ def test_get_remote_idp_or_mobile_detection_data_idp(mocker):
     Then
         - returns the relevant detection entity from the remote system with the relevant incoming mirroring fields
     """
-    from CrowdStrikeFalcon import get_remote_idp_or_mobile_detection_data
+    from CrowdStrikeFalcon import get_remote_epp_or_idp_or_mobile_detection_data
     detection_entity = input_data.response_idp_detection.copy()
     mocker.patch('CrowdStrikeFalcon.get_detection_entities', return_value={'resources': [detection_entity.copy()]})
     mocker.patch.object(demisto, 'debug', return_value=None)
-    mirrored_data, updated_object, detection_type = get_remote_idp_or_mobile_detection_data(input_data.remote_idp_detection_id)
+    mirrored_data, updated_object, detection_type = get_remote_epp_or_idp_or_mobile_detection_data(
+        input_data.remote_idp_detection_id)
     detection_entity['severity'] = 2
     assert mirrored_data == detection_entity
     assert detection_type == 'IDP'
@@ -4206,7 +4209,7 @@ def test_get_remote_idp_or_mobile_detection_data_idp(mocker):
                               'id': 'ind:20879a8064904ecfbb62c118a6a19411:C0BB6ACD-8FDC-4CBA-9CF9-EBF3E28B3E56'}
 
 
-def test_get_remote_idp_or_mobile_detection_data_mobile_detection(mocker):
+def test_get_remote_epp_or_idp_or_mobile_detection_data__mobile_detection(mocker):
     """
     Given
         - an idp detection ID on the remote system
@@ -4215,17 +4218,41 @@ def test_get_remote_idp_or_mobile_detection_data_mobile_detection(mocker):
     Then
         - returns the relevant detection entity from the remote system with the relevant incoming mirroring fields
     """
-    from CrowdStrikeFalcon import get_remote_idp_or_mobile_detection_data
+    from CrowdStrikeFalcon import get_remote_epp_or_idp_or_mobile_detection_data
     detection_entity = input_data.response_mobile_detection.copy()
     mocker.patch('CrowdStrikeFalcon.get_detection_entities', return_value={'resources': [detection_entity.copy()]})
     mocker.patch.object(demisto, 'debug', return_value=None)
-    mirrored_data, updated_object, detection_type = get_remote_idp_or_mobile_detection_data(input_data.remote_mobile_detection_id)
+    mirrored_data, updated_object, detection_type = get_remote_epp_or_idp_or_mobile_detection_data(
+        input_data.remote_mobile_detection_id)
     detection_entity['severity'] = 90
     assert mirrored_data == detection_entity
     assert detection_type == 'Mobile'
     assert updated_object == {'incident_type': 'MOBILE detection',
                               'status': 'new',
                               'mobile_detection_id': '1111111111111111111'}
+
+
+def test_get_remote_epp_or_idp_or_mobile_detection_data__endpoint_detection(mocker):
+    """
+    Given
+        - an endpoint detection ID on the remote system
+    When
+        - running get_remote_data_command with changes to make on a detection
+    Then
+        - returns the relevant detection entity from the remote system with the relevant incoming mirroring fields
+    """
+    from CrowdStrikeFalcon import get_remote_epp_or_idp_or_mobile_detection_data
+    detection_entity = input_data.response_detection_new_version.copy()
+    mocker.patch('CrowdStrikeFalcon.get_detection_entities', return_value={'resources': [detection_entity.copy()]})
+    mocker.patch.object(demisto, 'debug', return_value=None)
+    mirrored_data, updated_object, detection_type = get_remote_epp_or_idp_or_mobile_detection_data(
+        input_data.remote_detection_id_new_version)
+    detection_entity['severity'] = 90
+    assert mirrored_data == detection_entity
+    assert detection_type == 'Detection'
+    assert updated_object == {'incident_type': 'detection',
+                              'status': 'new',
+                              'severity': 90}
 
 
 @pytest.mark.parametrize('updated_object, entry_content, close_incident', input_data.set_xsoar_incident_entries_args)
@@ -6987,6 +7014,122 @@ def test_http_request(mocker):
     # validate that in a case of 429, we will try again
     assert mock_request_generic_http_request.call_count == 2
     assert mock_request_get_token.call_count == 2
+
+
+def test_http_request_get_token_request(mocker):
+    """
+    Given:
+        - arguments of a http_request send by get_token_request()
+    When:
+        - requesting a new token
+    Then:
+        - validate that the correct arguments were sent
+    """
+    from requests import Response
+    from CrowdStrikeFalcon import http_request
+    res_200 = Response()
+    res_200.status_code = 200
+    mock_request_generic_http_request = mocker.patch('CrowdStrikeFalcon.generic_http_request', side_effect=[res_200])
+    mocker.patch.object(
+        demisto,
+        'params',
+        return_value={
+            'url': SERVER_URL,
+            'proxy': True
+        }
+    )
+    body = {
+        'client_id': 'client_id',
+        'client_secret': 'client_secret'
+    }
+    retries = 5
+    status_list_to_retry = [429]
+    valid_status_codes = [200, 201, 202, 204]
+    int_timeout = 10
+    headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+    method = 'POST'
+    url_suffix = '/oauth2/token'
+    http_request(url_suffix=url_suffix,
+                 method=method,
+                 data=body,
+                 get_token_flag=False,
+                 headers=headers,
+                 no_json=True)
+    headers['User-Agent'] = 'PANW-XSOAR'
+    assert mock_request_generic_http_request.call_count == 1
+    mock_request_generic_http_request.assert_called_with(
+        method=method,
+        server_url=SERVER_URL,
+        headers=headers,
+        url_suffix=url_suffix,
+        data=body,
+        files=ANY,
+        params=ANY,
+        proxy=ANY,
+        resp_type='response',
+        verify=True,
+        error_handler=ANY,
+        json_data=ANY,
+        timeout=int_timeout,
+        ok_codes=valid_status_codes,
+        retries=retries,
+        status_list_to_retry=status_list_to_retry)
+
+
+def test_http_request_get_token_request_429(mocker, requests_mock):
+    """
+    Given:
+        - arguments of a http_request send by get_token_request()
+    When:
+        - requesting a new token
+    Then:
+        - Validate that in case of 429 error code when trying to create a new token won't return None at the end of http_request,
+            but raise an exception with the relevant error.
+    """
+    from CrowdStrikeFalcon import http_request
+
+    requests_mock.post(
+        f'{SERVER_URL}/oauth2/token',
+        json={
+            "meta": {
+                "query_time": 0.000875986,
+                "powered_by": "crowdstrike-api-gateway",
+                "trace_id": "trace_id"
+            },
+            "errors": [
+                {
+                    "code": 429,
+                    "message": "API rate limit exceeded."
+                }
+            ]
+        },
+        status_code=429
+    )
+    mocker.patch.object(
+        demisto,
+        'params',
+        return_value={
+            'url': SERVER_URL,
+            'proxy': True
+        }
+    )
+    mock_request_generic_http_request = mocker.patch('CrowdStrikeFalcon.generic_http_request')
+    mock_request_error_handler = mocker.patch('CrowdStrikeFalcon.error_handler')
+    body = {
+        'client_id': 'client_id',
+        'client_secret': 'client_secret'
+    }
+    headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+    method = 'POST'
+    url_suffix = '/oauth2/token'
+    http_request(url_suffix=url_suffix,
+                 method=method,
+                 data=body,
+                 get_token_flag=False,
+                 headers=headers,
+                 no_json=True)
+    assert mock_request_generic_http_request.call_count == 1
+    assert mock_request_error_handler.call_count == 1
 
 
 class ResMocker:
