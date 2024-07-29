@@ -48,24 +48,13 @@ jobs:
         git config --global user.email "bot@demisto.com"
         git config --global user.name "Content Bot"
         git checkout -b ${{ inputs.release_version }}
-    
-    - name: Update dependencies
-      continue-on-error: true
-      run: |
-        poetry add --group dev demisto-sdk@${{inputs.release_version}}
-        poetry lock --no-update
-        git add .
-        source .venv/bin/activate
-        demisto-sdk pre-commit --mode=ci
-        git add .
 
     - name: Create pull request
       run: |
-        git commit -m "poetry files" -a
-        git push origin ${{ inputs.release_version }}
+        BODY="'${{ inputs.release_changes }}'"
         if ${{ inputs.is_draft == true }}; then
           echo "creating draft release pull request"
-          gh pr create -B master -H ${{ inputs.release_version }} --title "demisto-sdk-release ${{ inputs.release_version }}" --body '${{ inputs.release_changes }}' --reviewer ${{ inputs.reviewer }} -l "docs-approved" --draft
+          gh pr create -B master -H ${{ inputs.release_version }} --title "demisto-sdk-release ${{ inputs.release_version }}" --body "$BODY" --reviewer ${{ inputs.reviewer }} -l "docs-approved" --draft
         else
           echo "creating release pull request"
           gh pr create -B master -H ${{ inputs.release_version }} --title "demisto-sdk-release ${{ inputs.release_version }}" --body "${{ inputs.release_changes }}" --reviewer ${{ inputs.reviewer }} -l "docs-approved"
