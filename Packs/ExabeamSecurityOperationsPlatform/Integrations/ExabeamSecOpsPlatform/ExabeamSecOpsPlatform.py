@@ -121,6 +121,29 @@ class Client(BaseClient):
         )
         return response
 
+    def alert_search_request(self, data_dict: dict) -> dict:
+        """
+        """
+        data = json.dumps(data_dict)
+        full_url = f"{self._base_url}/threat-center/v1/search/alerts"
+        response = self.request(
+            method="POST",
+            full_url=full_url,
+            data=data,
+        )
+        return response
+
+    def get_alert_request(self, case_id: int) -> dict:
+        """
+        """
+        full_url = f"{self._base_url}/threat-center/v1/alerts/{case_id}"
+        response = self.request(
+            method="GET",
+            full_url=full_url,
+            data={},
+        )
+        return response
+
     def request(self, method, full_url, data):
         headers = {"Authorization": f"Bearer {self.access_token}", "Content-Type": "application/json"}
         try:
@@ -398,6 +421,49 @@ def case_search_command(client: Client, args: dict) -> CommandResults:
     )
 
 
+def alert_search_command(client: Client, args: dict) -> CommandResults:
+    if (alert_id := args.get("alert_id")):
+        data_response = client.get_alert_request(alert_id)
+        human_readable = _parse_entry(data_response)
+    else:
+        start_time = get_date(args.get('start_time', '7 days ago'), "start_time")
+        end_time = get_date(args.get('end_time', 'today'), "end_time")
+        if start_time > end_time:
+            raise DemistoException("Start time must be before end time.")
+
+        kwargs = {
+            'filter': process_string(args.get('query', '')),
+            'fields': argToList(args.get('fields', '*')),
+            'startTime': start_time,
+            'endTime': end_time,
+        }
+
+        all_results = argToBoolean(args.get("all_results"))
+        if not all_results:
+            kwargs['limit'] = get_limit(args)
+
+        response = client.alert_search_request(kwargs)
+
+        include_related_rules = argToBoolean(args.get("include_related_rules"))
+        if not include_related_rules:
+            rows = response.get("rows", [])
+            for row in rows:
+                row.pop("rules", None)
+
+        data_response = response.get("rows", {})
+
+        human_readable = []
+        for entry in data_response:
+            if parsed_entry := _parse_entry(entry):
+                human_readable.append(parsed_entry)
+
+    return CommandResults(
+        outputs_prefix="ExabeamPlatform.Alert",
+        outputs=data_response,
+        readable_output=tableToMarkdown(name="Alert", t=human_readable)
+    )
+
+
 def test_module(client: Client) -> str:    # pragma: no cover
     """test function
 
@@ -446,6 +512,8 @@ def main() -> None:
             return_results(event_search_command(client, args))
         elif command == 'exabeam-platform-case-search':
             return_results(case_search_command(client, args))
+        elif command == 'exabeam-platform-alert-search':
+            return_results(alert_search_command(client, args))
         else:
             raise NotImplementedError(f"Command {command} is not supported")
 

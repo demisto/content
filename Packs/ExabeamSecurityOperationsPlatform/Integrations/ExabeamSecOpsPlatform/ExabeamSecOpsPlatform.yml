@@ -90,7 +90,9 @@ script:
     - contextPath: ExabeamPlatform.Event.rawLogs
       description: The raw logs associated with the event.
       type: String
-  - arguments:
+  - name: exabeam-platform-case-search
+    description: Search for cases that match one or more search criteria. For example, you can search for cases that are associated with a specific caseId and that reference specific rules.
+    arguments:
     - name: case_id
       description: An optional case id parameter to get a specific case. 
     - name: start_time
@@ -126,8 +128,6 @@ script:
       - Yes
       - No
       description: If set to 'Yes', filters the context to include the "rules" array related to the cases in the results.
-    description: Search for cases that match one or more search criteria. For example, you can search for cases that are associated with a specific caseId and that reference specific rules.
-    name: exabeam-platform-case-search
     outputs:
     - contextPath: ExabeamPlatform.Case.alertId
       description: Unique identifier for the alert associated with the case.
@@ -252,6 +252,45 @@ script:
     - contextPath: ExabeamPlatform.Case.mitres.techniqueKey
       description: Key of the MITRE technique associated with the case.
       type: String
+  - name: exabeam-platform-alert-search
+    description: Search for alerts that match one or more search criteria.
+    arguments:
+    - name: alert_id
+      description: Unique ID that identifies an alert. 
+    - name: start_time
+      description: Timestamp to start the search.
+      defaultValue: "7 days ago"
+    - name: end_time
+      description: Timestamp to end the search.
+      defaultValue: today
+    - name: query
+      description: Query, using Lucene syntax, filters log data for precise analysis.
+      defaultValue: ""
+    - name: fields
+      description: List of fields to be returned from the search.
+      isArray: true
+      defaultValue: ""
+    - name: order_by
+      description: Order results by a specified field in ASC or DESC order, such as "riskScore ASC" or "riskScore DESC".
+      isArray: true
+    - name: limit
+      defaultValue: 50
+      description: Limit the number of results returned from the search request.
+    - name: all_results
+      defaultValue: No
+      auto: PREDEFINED
+      predefined:
+      - Yes
+      - No
+      description: If set to 'Yes', retrieves all available results, ignoring the limit parameter.
+    - name: include_related_rules
+      defaultValue: No
+      auto: PREDEFINED
+      predefined:
+      - Yes
+      - No
+      description: If set to 'Yes', filters the context to include the "rules" array related to the cases in the results.
+    outputs:  
   runonce: false
   script: '-'
   type: python
