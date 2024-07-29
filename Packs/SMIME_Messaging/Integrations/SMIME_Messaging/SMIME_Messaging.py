@@ -314,7 +314,7 @@ def decrypt_email_body(client: Client, args: dict):
         args: Dict
     """
     if 'test_file_path' in args:  # test module
-        encrypt_message = args.get('test_file_path', '')
+        encrypt_message = {'path': args.get('test_file_path', '')}
     else:
         encrypt_message = demisto.getFilePath(args.get('encrypt_message', ''))
         demisto.debug(f'\n\nFile Name:{encrypt_message["name"]}; Type:{type(encrypt_message["name"])}\n\n')
@@ -483,25 +483,18 @@ def sign_and_encrypt(client: Client, args: dict):
         out.write(msg_str)
 
     msg = out.read().decode('utf-8')
-
+    outputs = {'Message': msg}  # type: dict[str, Any]
+    if recipients or cc or bcc:
+        outputs['RecipientIds'] = [id for dest in [recipients, cc, bcc] for id in dest]
     if create_file:
         file_results = fileResult(filename=f'SMIME-{demisto.uniqueFile()[:8]}.p7', data=msg, file_type=EntryType.FILE)
-        command_results = CommandResults(
-            readable_output=msg,
-            outputs_prefix='SMIME.SignedAndEncrypted',
-            outputs={'Message': msg,
-                     'RecipientIds': [id for dest in [recipients, cc, bcc] for id in dest],
-                     'FileName': file_results.get('File', ''),
-                     }
-        )
-        return [command_results, file_results]
+        return_results(file_results)
+        outputs['FileName'] = file_results.get('File')
 
     return CommandResults(
         readable_output=msg,
         outputs_prefix='SMIME.SignedAndEncrypted',
-        outputs={'Message': msg,
-                 'RecipientIds': [id for dest in [recipients, cc, bcc] for id in dest],
-                 }
+        outputs=outputs,
     )
 
 
@@ -517,7 +510,7 @@ def test_module(client, *_):
             if decrypt_message:
                 demisto.results('ok')
     except Exception:
-        return_error('Verify that you provided valid keys.')
+        return_error('Verify that you provided valid and matching keys.')
     finally:
         os.unlink(test_file.name)
 
