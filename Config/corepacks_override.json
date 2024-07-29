@@ -151,7 +151,7 @@
                 "CommonTypes/3.5.4/CommonTypes.zip",
                 "AzureCompute/1.2.26/AzureCompute.zip",
                 "CortexAttackSurfaceManagement/1.7.39/CortexAttackSurfaceManagement.zip",
-                "Base/1.34.29/Base.zip",
+                "Base/1.34.30/Base.zip",
                 "GCP-Enrichment-Remediation/1.1.18/GCP-Enrichment-Remediation.zip"
             ],
             "upgradeCorePacks": [
