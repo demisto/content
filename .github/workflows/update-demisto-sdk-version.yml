@@ -49,8 +49,20 @@ jobs:
         git config --global user.name "Content Bot"
         git checkout -b ${{ inputs.release_version }}
 
+    - name: Update dependencies
+      continue-on-error: true
+      run: |
+        poetry add --group dev demisto-sdk@${{inputs.release_version}}
+        poetry lock --no-update
+        git add .
+        source .venv/bin/activate
+        demisto-sdk pre-commit --mode=ci
+        git add .
+
     - name: Create pull request
       run: |
+        git commit -m "poetry files" -a
+        git push origin ${{ inputs.release_version }}
         release_changes=$(printf '%q' "${{ inputs.release_changes }}")
         if ${{ inputs.is_draft == true }}; then
           echo "creating draft release pull request"
