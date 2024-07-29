@@ -213,17 +213,14 @@ def send_request(gh_requester: github.Requester.Requester, query: str, variables
     If the request fails, we raise
     """
 
-    logger.debug("Sending GraphQL request...")
-    logger.debug(f"{query=}")
-    logger.debug(f"{variables=}")
+    logger.debug(f"Sending GraphQL request...\n{query=}\n{variables=}\n")
 
     response_headers, response_data = gh_requester.graphql_query(  # type:ignore[attr-defined]
         query=query,
         variables=variables
     )
 
-    logger.debug(f"{response_data=}")
-    logger.debug(f"{response_headers=}")
+    logger.debug(f"Response received:\n{response_data}\n{response_headers}")
 
     return response_data
 
