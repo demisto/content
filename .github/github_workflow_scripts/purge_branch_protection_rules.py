@@ -6,11 +6,11 @@ branch protection rules.
 """
 
 from dataclasses import dataclass
-import logging
 import os
 from pathlib import Path
 import sys
 from typing import Any
+from utils import get_logger
 
 from github import Github
 import github
@@ -25,27 +25,9 @@ GH_TOKEN_ENV_VAR = "GITHUB_TOKEN"
 # e.g. 'demisto/content'
 GH_REPO_ENV_VAR = "GITHUB_REPOSITORY"
 GH_JOB_SUMMARY_ENV_VAR = "GITHUB_STEP_SUMMARY"
-PROTECTED_RULES = ["contrib/**/*"]
+PROTECTED_RULES = ["contrib/**/*", "master"]
 
-# Logging setup
-LOG_FORMAT = "%(asctime)s %(levelname)s %(message)s"
-# Create logger
-logger = logging.getLogger()
-logger.setLevel(logging.DEBUG)  # Set the lowest level to capture all messages
-
-# Create FileHandler and set level to DEBUG
-file_handler = logging.FileHandler(f"{Path(__file__).stem}.log")
-file_handler.setLevel(logging.DEBUG)
-file_handler.setFormatter(logging.Formatter(LOG_FORMAT))
-
-# Create StreamHandler and set level to INFO
-stream_handler = logging.StreamHandler()
-stream_handler.setLevel(logging.INFO)
-stream_handler.setFormatter(logging.Formatter(LOG_FORMAT))
-
-# Add handlers to the logger
-logger.addHandler(file_handler)
-logger.addHandler(stream_handler)
+logger = get_logger(f"{Path(__file__).stem}")
 
 
 @dataclass
@@ -101,7 +83,7 @@ def get_repo_owner_and_name() -> tuple[str, str]:
     return owner, name
 
 
-def convert_response_to_bpr(response: dict[str, Any]) -> list[BranchProtectionRule]:
+def convert_response_to_rules(response: dict[str, Any]) -> list[BranchProtectionRule]:
     """
     Helper method to convert the response to a list
     of `BranchProtectionRule`.
@@ -145,16 +127,14 @@ def should_delete_rule(rule: BranchProtectionRule) -> bool:
     - `True` if we can delete the rule, `False` otherwise.
     """
 
-    should = False
-
     if rule.pattern in PROTECTED_RULES:
         logger.info(f"{rule} not deleted because it's in the list of protected rules '{','.join(PROTECTED_RULES)}'")
+        return False
     elif rule.matching_refs > 0:
         logger.info(f"{rule} not deleted because it's associated to {rule.matching_refs} existing branches/refs")
+        return False
     else:
-        should = True
-
-    return should
+        return True
 
 
 def write_deleted_summary_to_file(deleted: list[BranchProtectionRule]) -> None:
@@ -304,7 +284,7 @@ def get_branch_protection_rules(
     )
 
     logger.debug("Converting response to BranchProtectionRules...")
-    existing_rules = convert_response_to_bpr(data)
+    existing_rules = convert_response_to_rules(data)
     logger.debug("Finished converting response to BranchProtectionRules")
     return existing_rules
 
