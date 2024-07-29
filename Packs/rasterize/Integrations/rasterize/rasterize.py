@@ -651,11 +651,9 @@ def screenshot_image(browser, tab, path, wait_time, navigation_timeout, full_scr
             screenshot_data = tab.Page.captureScreenshot(clip=viewport, captureBeyondViewport=True)['data']
         else:
             screenshot_data = tab.Page.captureScreenshot()['data']
-    except pychrome.exceptions.TimeoutException as e:
-        raise DemistoException(f'Timeout while capturing screenshot of URL: {path}')
-    except Exception as e:
-        demisto.info(f'Failed to capture screenshot due to {e}')
-        raise e
+    except Exception as ex:
+        demisto.info(f'Failed to capture screenshot due to {ex}')
+        raise ex
     # Make sure that the (asynchronous) screenshot data is available before continuing with execution
     screenshot_data, operation_time = backoff(screenshot_data)
     if screenshot_data:
