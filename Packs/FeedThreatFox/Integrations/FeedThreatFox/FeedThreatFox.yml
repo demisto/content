@@ -6,11 +6,34 @@ commonfields:
   id: ThreatFox Feed
   version: -1
 configuration:
+- defaultvalue: https://threatfox-api.abuse.ch/
+  display: Server URL
+  name: url
+  required: true
+  type: 0
+  section: Connect
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+  section: Connect
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+  section: Connect
+- display: Fetch indicators
+  name: feed
+  defaultvalue: false
+  type: 8
+  required: false
+  section: Collect
 - additionalinfo: Reliability of the source providing the intelligence data
   defaultvalue: C - Fairly reliable
   display: Source Reliability
   name: feedReliability
   type: 15
+  section: Collect
   options:
   - A - Completely reliable
   - B - Usually reliable
@@ -19,24 +42,12 @@ configuration:
   - E - Unreliable
   - F - Reliability cannot be judged
   required: false
-- display: Use system proxy settings
-  name: proxy
-  type: 8
-  required: false
-- display: Trust any certificate (not secure)
-  name: insecure
-  type: 8
-  required: false
-- display: Fetch indicators
-  name: feed
-  defaultvalue: false
-  type: 8
-  required: false
 - display: Indicator Reputation
   name: feedReputation
   defaultvalue: Malicious
   type: 18
   required: false
+  section: Collect
   options:
   - None
   - Good
@@ -53,11 +64,13 @@ configuration:
   type: 15
   required: false
   section: Collect
+  advanced: true
 - display: ""
   name: feedExpirationPolicy
   defaultvalue: indicatorType
   type: 17
   required: false
+  section: Collect
   options:
   - never
   - interval
@@ -68,21 +81,17 @@ configuration:
   defaultvalue: "20160"
   type: 1
   required: false
+  section: Collect
 - display: Bypass exclusion list
   name: feedBypassExclusionList
   defaultvalue: false
   type: 8
   required: false
+  section: Collect
   additionalinfo: When selected, the exclusion list is ignored for indicators from
     this feed. This means that if an indicator from this feed is on the exclusion
     list, the indicator might still be added to the system.
-- defaultvalue: https://threatfox-api.abuse.ch/
-  display: Server URL
-  name: url
-  required: true
-  type: 0
-  section: Connect
-- display: Feed Fetch Interval
+- display: Feed Fetch Interval (in days)
   name: fetch_interval
   required: false
   defaultvalue: 1
@@ -104,12 +113,14 @@ configuration:
   section: Collect
   advanced: true
   type: 8
+  additionalinfo: If selected, IP indicators will include a tag with the port value.
 - display: Confidence Threshold
   name: confidence_threshold
   required: false
   defaultvalue: '75'
   section: Collect
   type: 0
+  advanced: true
 - display: Create relationship
   name: create_relationship
   required: false
@@ -117,32 +128,33 @@ configuration:
   section: Collect
   advanced: true
   type: 8
-description: '[Enter a comprehensive, yet concise, description of what the integration does, what use cases it is designed for, etc.]'
+  additionalinfo: If selected, indicators will be created with relationships.
+description: Use the ThreatFox Feed integration to fetch indicators from the feed.
 display: ThreatFox Feed
 name: ThreatFox Feed
 script:
   commands:
   - arguments:
-    - description: need to check this
+    - description: Indicator value to search for.
       name: search_term
       required: false
-    - description: need to check this
+    - description: Indicator id to search for.
       name: id
       required: false
-    - description: need to check this
+    - description: Hash to search for.
       name: hash
       required: false
-    - description: need to check this
+    - description: tag to search for.
       name: tag
       required: false
-    - description: need to check this
+    - description: Malware to search for.
       name: malware
       required: false
-    - description: need to check this
+    - description: Maximum indicators to search for. Available only when searching by 'malware' or 'tag'.
       name: limit
       required: false
       defaultValue: '50'
-    description: Retrieves indicators from the ThreatFox API.
+    description: Retrieves indicators from the ThreatFox API. Choose one field to search by.
     name: threatfox-get-indicators
   feed: true
   runonce: false

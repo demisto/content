@@ -42,6 +42,7 @@ class Client(BaseClient):
         except DemistoException as e:
                 raise e
         return message
+   
         
 def check_params_for_query(args: dict):
     """Checks that there are no extra params and no missing ones for the query.
@@ -52,6 +53,7 @@ def check_params_for_query(args: dict):
         Str: The query type (one of these: 'search_term', 'id', 'hash', 'tag', 'malware', 'days').
             If args are not good than it will be None.
     """
+    #TODO להוסיף בדיקה, מה קורה כשלא שולחים שום פרמטר???
     args_lst = list({ele for ele in args if args[ele]})
     if 'limit' in args_lst:
         args_lst.remove('limit')
@@ -102,14 +104,14 @@ def parse_indicator_for_get_command(indicator):
     
     res_indicator = assign_params(
             ID=indicator.get('id'),
-            value=value(indicator),
+            Value=value(indicator),
             Description = indicator.get('threat_type_desc'),
-            malware_family_tags=
+            MalwareFamilyTags=
                 indicator.get('malware_printable') if indicator.get('malware_printable') != 'Unknown malware' else None,
-            aliases_tags = indicator.get('malware_alias'),
-            first_seen_by_source = indicator.get('first_seen'),
-            last_seen_by_source = indicator.get('last_seen'),
-            reported_by = indicator.get('reporter'),
+            AliasesTags = indicator.get('malware_alias'),
+            FirstSeenBySource = indicator.get('first_seen'),
+            LastSeenBySource = indicator.get('last_seen'),
+            ReportedBy = indicator.get('reporter'),
             Tags = indicator.get('tags'),
             Confidence = indicator.get('confidence_level'),
             Publications = indicator.get('reference')
@@ -125,7 +127,7 @@ def parse_indicators(indicators):
     return res
 
 
-def indicator_type(indicator):
+def indicator_type(indicator) -> str:
     """Returns the ioc type according to 'ioc_type' field in the indicator
     """
     type = indicator.get('ioc_type')
@@ -133,12 +135,14 @@ def indicator_type(indicator):
         return FeedIndicatorType.FQDN
     elif type == 'url':
         return FeedIndicatorType.URL
-    elif "ip:port" in type:
-        return FeedIndicatorType.ip_to_indicator_type(indicator.get('ioc'))
+    elif 'ip:port' in type:
+        indicator_type = FeedIndicatorType.ip_to_indicator_type(indicator.get('ioc'))
+        return indicator_type if indicator_type else FeedIndicatorType.IP  #TODO
     elif type == 'envelope_from' or type == 'body_from':
         return FeedIndicatorType.Email
     else:  # 'sha1_hash' 'sha256_hash' 'md5_hash'
         return FeedIndicatorType.File
+    
     
 def parse_indicator_for_fetch(indicator):
     res_indicator = assign_params(
@@ -146,42 +150,49 @@ def parse_indicator_for_fetch(indicator):
         description = indicator.get('threat_type_desc'),
         malwarefamily = indicator.get('malware_printable') if indicator.get('malware_printable') != 'Unknown malware' else None,
         aliases = indicator.get('malware_alias'),
-        firstseenbysource = indicator.get('first_seen'),
-        lastseenbysource = indicator.get('last_seen'),
-        reportedby = indicator.get('reporter'),
-        Tags = tags(indicator)
+        firstseenbysource = date(indicator.get('first_seen')),
+        lastseenbysource = date(indicator.get('last_seen')),
+        reportedby = indicator.get('reporter'), 
+        Tags = tags(indicator),
+        publications = [assign_params(link= indicator.get('reference'))],
+        confidence = indicator.get('confidence_level')
     )
     return res_indicator
+
+
+def date(date):
+    if date:
+        parsed_date = arg_to_datetime(date, required=False)
+        return parsed_date.strftime('%Y-%m-%dT%H:%M:%SZ')
+    return None
 
 
 def tags(indicator):
     res = [indicator.get('malware_printable'), indicator.get('malware_alias'), indicator.get('threat_type')]
     if indicator.get('tags'):
         res.extend(indicator.get('tags'))
+    res = [tag for tag in res if tag]
+    return res
 
 
 def value(indicator):
-    if indicator.get('ioc_type') == "ip:port":
+    if indicator.get('ioc_type') == 'ip:port':
         return indicator.get('ioc').split(':')[0]
     return indicator.get('ioc')
 
 
-def create_relationships(value, ioc_type, related_malware, demisto_ioc_type):
-    relationships = []
-    return []
+def create_relationships(value: str, type: str, related_malware: Optional[str], demisto_ioc_type: str):
+    
     if related_malware:
-        if type == 'domain' or type == "ip:port" or type == 'url':
-            relationships.append(EntityRelationship(entity_a=value, entity_a_type=demisto_ioc_type,
-                                                    name=EntityRelationship.Relationships.COMMUNICATED_BY,
+        name = EntityRelationship.Relationships.COMMUNICATED_BY \
+            if type == 'domain' or type == "ip:port" or type == 'url' else EntityRelationship.Relationships.RELATED_TO
+        reverse_name = EntityRelationship.Relationships.COMMUNICATED_WITH \
+            if type == 'domain' or type == "ip:port" or type == 'url' else EntityRelationship.Relationships.RELATED_TO
+        return [EntityRelationship(entity_a=value, entity_a_type=demisto_ioc_type,
+                                                    name=name,
                                                     entity_b=related_malware, entity_b_type=FeedIndicatorType.Malware,
-                                                    brand='ThreatFox Feed'))
-        else: # case File (sha..)
-            relationships.append(EntityRelationship(entity_a=value, entity_a_type=demisto_ioc_type,
-                                                    name=EntityRelationship.Relationships.RELATED_TO,
-                                                    entity_b=related_malware, entity_b_type=FeedIndicatorType.Malware,
-                                                    brand='ThreatFox Feed'))
-    return relationships
-
+                                                    brand='ThreatFox Feed', reverse_name=reverse_name).to_indicator()]
+    return []
 
 
 def threatfox_get_indicators_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -207,14 +218,14 @@ def threatfox_get_indicators_command(client: Client, args: dict[str, Any]) -> Co
     query_status = result.get('query_status')
     query_data = result.get('data')
     
-    if query_status != 'ok':
+    if query_status != 'ok' and query_status:
         raise DemistoException(f'failed to run command {query_status} {query_data}')
     
     parsed_indicators = parse_indicators(result.get('data') or result)
     
     human_readable = tableToMarkdown(name='Indicators', t=parsed_indicators,
-                                     headers=['ID', 'value', 'Description', 'malware_family_tags',
-                                              'aliases_tags', 'first_seen_by_source', 'last_seen_by_source', 'reported_by',
+                                     headers=['ID', 'Value', 'Description', 'MalwareFamilyTags',
+                                              'AliasesTags', 'FirstSeenBySource', 'LastSeenBySource', 'ReportedBy',
                                               'Tags', 'Confidence', 'Publications'], removeNull=True)
     
     return CommandResults(readable_output=human_readable)
@@ -242,21 +253,23 @@ def fetch_indicators_command(client: Client, with_ports, confidence_threshold, c
         
         demisto_ioc_type = indicator_type(indicator)
         ioc_value = value(indicator)
-        relationships = create_relationships(ioc_value, demisto_ioc_type, indicator.get("malware_printable"), demisto_ioc_type)
+        relationships = create_relationships(ioc_value, ioc_type, indicator.get("malware_printable"),
+                                             demisto_ioc_type) if create_relationship else None
       
         fields = {'trafficlightprotocol': tlp_color} | parse_indicator_for_fetch(indicator)
-        #if with_ports and ioc_type == "ip:port":
-        #    fields['tags'].append(ioc_value.split(':')[1])
+        if with_ports and ioc_type == "ip:port":
+            fields['Tags'].append('port: ' + indicator.get('ioc').split(':')[1])
         
-        results.append({
-            'value': ioc_value,
-            'type': demisto_ioc_type,
-            'fields': fields,
-            'rawJSON': indicator,
-            'relationships': relationships
-        })
+        results.append(assign_params(
+            value= ioc_value,
+            type= demisto_ioc_type,
+            fields= fields,
+            relationships= relationships,
+            rawJSON= indicator
+            
+        ))
+        demisto.debug(f"######### {LOG} {relationships=} ##########")
 
-    demisto.debug(f'{LOG} {results=}')  # erase
     return results
 
 
@@ -271,7 +284,7 @@ def main() -> None:
     base_url = urljoin(params['url'], '/api/v1')
     with_ports = argToBoolean(params.get('with_ports', False))
     confidence_threshold = arg_to_number(params.get('confidence_threshold', 75))   # Need to check that it is a number
-    create_relationship = argToBoolean(params.get('create_relationship', False))
+    create_relationship = argToBoolean(params.get('create_relationship'))
     interval = arg_to_number(params.get('fetch_interval'))  # Need to check that it is a number
     tlp_color = params.get('tlp_color')
     
@@ -291,11 +304,17 @@ def main() -> None:
             res = fetch_indicators_command(client=client, with_ports=with_ports, confidence_threshold=confidence_threshold,
                                           create_relationship=create_relationship, interval=interval, tlp_color=tlp_color)
             for iter_ in batch(res, batch_size=2000):
+                demisto.debug(f"{LOG} {iter_=}")
                 demisto.createIndicators(iter_)
-
+    
     except Exception as e:
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        raise Exception(e)
+   # except Exception as e:
+    #    return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
+    
+    
+    

@@ -16,15 +16,14 @@ This integration was integrated and tested with version xx of ThreatFox Feed.
     | Source Reliability | Reliability of the source providing the intelligence data | False |
     | Indicator Reputation | Indicators from this integration instance will be marked with this reputation. | False |
     | Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed | False |
-    |  |  | False |
-    |  |  | False |
+    | Indicator Expiration Method |  | False |
     | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
-    | Feed Fetch Interval |  | False |
-    | Return IOCs with Ports |  | False |
+    | Feed Fetch Interval (in days) |  | False |
+    | Return IOCs with Ports | If selected, IP indicators will include a tag with the port value | False |
     | Confidence Threshold |  | False |
-    | Create relationship |  | False |
+    | Create relationship | If selected, indicators will be created with relationships | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
+4. Click **Test** to validate the URL and connection.
 
 ## Commands
 
@@ -44,11 +43,11 @@ Retrieves indicators from the ThreatFox API.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| search_term | Indicator value to search for. | Optional | 
-| id | Indicator id to search for. | Optional | 
-| hash | Hash to search for. | Optional | 
-| tag | need to check this. | Optional | 
-| malware | Malware to search for. | Optional | 
+| search_term | Indicator value to search for | Optional | 
+| id | Indicator id to search for | Optional | 
+| hash | Hash to search for | Optional | 
+| tag | Tag to search for | Optional | 
+| malware | Malware to search for | Optional | 
 | limit | Maximum indicators to search for. Available only when searching by 'malware' or 'tag'. Default is 50. | Optional | 
 
 #### Context Output

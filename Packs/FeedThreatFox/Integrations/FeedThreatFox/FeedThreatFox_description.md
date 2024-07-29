@@ -1,8 +1,10 @@
-## BaseIntegration Help
+## ThreatFox Feed Integration Help
 
-Markdown file for integration configuration  help snippet. In this file add:
+The ThreatFox Feed allows users to fetch indicators from ThreatFox, providing essential threat intelligence.
 
-- Brief information about how to retrieve the API key of your product
-- Other useful information on how to configure your integration in XSOAR
+A manual command is also available to retrieve indicators from ThreatFox as needed.
+For more details, refer to the ThreatFox documentation: <https://threatfox.abuse.ch/api/>
 
-Since this is a Markdown file, we encourage you to use MD formatting for sections, sub-sections, lists, etc.
+
+
+
