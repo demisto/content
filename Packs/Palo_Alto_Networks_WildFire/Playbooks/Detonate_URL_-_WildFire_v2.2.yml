@@ -234,6 +234,12 @@ tasks:
         complex:
           root: inputs.URL
           transformers:
+          - operator: URLEncode
+            args:
+              ignore_safe_character: {}
+              safe_character:
+                value:
+                  simple: :/
           - operator: uniq
     separatecontext: false
     continueonerrortype: ""

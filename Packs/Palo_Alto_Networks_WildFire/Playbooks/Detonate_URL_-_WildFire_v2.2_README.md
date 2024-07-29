@@ -12,8 +12,8 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-* Palo_Alto_Networks_WildFire_v2
 * WildFire-v2
+* Palo_Alto_Networks_WildFire_v2
 
 ### Scripts
 
@@ -21,8 +21,8 @@ This playbook does not use any scripts.
 
 ### Commands
 
-* wildfire-report
 * wildfire-upload-url
+* wildfire-report
 
 ## Playbook Inputs
 
@@ -31,8 +31,8 @@ This playbook does not use any scripts.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | URL | URL of the webpage or file url to detonate. The URL is taken from the context. | URL.Data | Optional |
-| Interval | Duration for executing the polling \(in seconds\). | 1 | Optional |
-| Timeout | The duration after which to stop polling and to resume the playbook \(in seconds\). | 8 | Optional |
+| Interval | Duration for executing the polling \(in seconds\). | 60 | Optional |
+| Timeout | The duration after which to stop polling and to resume the playbook \(in seconds\). | 600 | Optional |
 | ReportFileType | The resource type to download. Default is PDF. XML is also possible. |  | Optional |
 
 ## Playbook Outputs
@@ -86,4 +86,4 @@ This playbook does not use any scripts.
 
 ---
 
-![Detonate URL - WildFire v2.2](../doc_files/Detonate_URL_-_WildFire_v2_2.png)
+![Detonate URL - WildFire v2.2](../doc_files/Detonate_URL_-_WildFire_v2.2.png)
