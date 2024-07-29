@@ -37,7 +37,7 @@ class ContentPackInstaller:
             demisto.debug(error_message)
         if type(res) is list:
             res = res[0]
-        return res, status
+        return status, res
 
     def get_installed_packs(self) -> None:
         """Gets the current installed packs on the machine.
@@ -46,8 +46,9 @@ class ContentPackInstaller:
 
         args = {'uri': '/contentpacks/metadata/installed'}
 
-        res, _ = _call_execute_command(args, 'core-api-get')
-
+        status, res = self._call_execute_command(args, 'core-api-get')
+        if not status:
+            return
 
         packs_data: List[Dict[str, str]] = res.get('response', [])
         for pack in packs_data:
@@ -71,7 +72,7 @@ class ContentPackInstaller:
 
         args = {'uri': f'/contentpacks/marketplace/{pack_id}'}
 
-        res, _ = _call_execute_command(args, 'core-api-get')
+        _, res = self._call_execute_command(args, 'core-api-get')
 
         self.packs_data[pack_id] = res
 
@@ -100,7 +101,7 @@ class ContentPackInstaller:
                 'body': [pack_data]
                 }
 
-        res, _ = _call_execute_command(args, 'core-api-post')
+        _, res = self._call_execute_command(args, 'core-api-post')
 
         try:
             self.packs_dependencies[pack_key] = res.get('response', {}).get('packs', [])[0] \
@@ -127,9 +128,9 @@ class ContentPackInstaller:
         except AttributeError as e:
             demisto.debug(f'error trying to get {pack_id=}. {e}')
             raise ValueError(f'Error while fetching {pack_id} from the marketplace. '
-                             f'Make sure the Core REST API integration is properly configured and {pack_id} exists.'
-                             f'Try running `!core-api-get uri=/contentpacks/marketplace/{pack_id}` in the playground.'
-                             f'Raw Response: {res}')
+                             f'Make sure the Core REST API integration is properly configured and {pack_id} exists. '
+                             f'Try running `!core-api-get uri=/contentpacks/marketplace/{pack_id}` in the playground. '
+                             f'Raw Response:\n{res}')
 
     def get_packs_data_for_installation(self, packs_to_install: List[Dict[str, str]]) -> List[Dict[str, str]]:
         """Creates a list of packs' data for the installation request.
@@ -172,7 +173,7 @@ class ContentPackInstaller:
 
             args = {'packs_to_install': str(pack_payload)}
 
-            res, status = _call_execute_command(args, 'core-api-install-packs')
+            status, res = self._call_execute_command(args, 'core-api-install-packs')
 
             if not status:
                 demisto.error(f'{SCRIPT_NAME} - Failed to install the pack {pack_id} - {str(res)}')
