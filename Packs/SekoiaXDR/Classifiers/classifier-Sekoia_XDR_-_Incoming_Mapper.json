@@ -21,6 +21,12 @@
                 "Description": {
                     "simple": "details"
                 },
+                "External Link": {
+                    "simple": "target"
+                },
+                "Last Seen": {
+                    "simple": "last_seen_at"
+                },
                 "Sekoia Alert Details": {
                     "simple": "details"
                 },
@@ -36,9 +42,6 @@
                         "root": "kill_chain",
                         "transformers": []
                     }
-                },
-                "Sekoia Last Seen": {
-                    "simple": "last_seen_at"
                 },
                 "Source Create time": {
                     "complex": {
@@ -76,6 +79,9 @@
                 },
                 "Description": {
                     "simple": "details"
+                },
+                "Last Seen": {
+                    "simple": "last_seen_at"
                 },
                 "Sekoia Alert Details": {
                     "simple": "details"
