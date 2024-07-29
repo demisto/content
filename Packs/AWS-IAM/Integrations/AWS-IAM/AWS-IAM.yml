@@ -1,4 +1,7 @@
 category: IT Services
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: AWS - IAM
   version: -1
@@ -6,10 +9,12 @@ configuration:
 - display: Role Arn
   name: roleArn
   type: 0
+  section: Connect
   required: false
 - display: Role Session Name
   name: roleSessionName
   type: 0
+  section: Connect
   required: false
 - display: AWS Default Region
   name: defaultRegion
@@ -33,31 +38,40 @@ configuration:
   - us-gov-east-1
   - us-gov-west-1
   type: 15
+  section: Collect
+  advanced: true
   required: true
 - display: Role Session Duration
   name: sessionDuration
   type: 0
+  section: Connect
+  advanced: true
   required: false
 - display: Access Key
   name: credentials
   type: 9
   displaypassword: Secret Key
+  section: Connect
   required: false
 - display: Access Key
   name: access_key
   type: 0
   hidden: true
+  section: Connect
   required: false
 - display: Secret Key
   name: secret_key
   type: 4
   hidden: true
+  section: Connect
   required: false
 - additionalinfo: The time in seconds till a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified, a default of 10 second will be used.
   defaultvalue: 60,10
   display: Timeout
   name: timeout
   type: 0
+  section: Connect
+  advanced: true
   required: false
 - additionalinfo: 'The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time.'
   defaultvalue: '5'
@@ -1214,13 +1228,11 @@ script:
     - contextPath: AWS.IAM.PasswordPolicy
       description: Account's password policy.
       type: Unknown
-    arguments: []
   - arguments:
     - description: The minimum number of characters allowed in an IAM user password.
       name: minimumPasswordLength
       predefined:
       - ''
-      auto: PREDEFINED
     - auto: PREDEFINED
       description: Specifies whether IAM user passwords must contain at least one of the non-alphanumeric characters. Can be "True" or "False".
       name: requireSymbols
@@ -1255,12 +1267,10 @@ script:
       name: maxPasswordAge
       predefined:
       - ''
-      auto: PREDEFINED
     - description: Specifies the number of previous passwords that IAM users are prevented from reusing.
       name: passwordReusePrevention
       predefined:
       - ''
-      auto: PREDEFINED
     - auto: PREDEFINED
       description: Prevents IAM users from setting a new password after their password has expired. Can be "True" or "False".
       name: hardExpiry
@@ -1535,77 +1545,75 @@ script:
     - contextPath: AWS.IAM.Roles.AttachedPolicies.Query.Marker
       description: When IsTruncated is true, this element is present and contains the value to use for the Marker parameter in a subsequent pagination request.
       type: string
-  description: Lists the MFA devices for an IAM user.  
-  name: aws-iam-list-mfa-devices
-  outputs:
-    - contextPath: AWS.IAM.MFADevices.Devices.UserName
-      description: The user with whom the MFA device is associated.
-      type: string
-    - contextPath: AWS.IAM.MFADevices.Devices.SerialNumber
-      description: The serial number that uniquely identifies the MFA device. For virtual MFA devices, the serial number is the device ARN.
-      type: string
-    - contextPath: AWS.IAM.MFADevices.Devices.EnableDate
-      description: The date when the MFA device was enabled for the user.
-      type: date
-    - contextPath: MFADevices.Devices.Marker
-      description: First element of next page of items.
-      type: string
-    - arguments:
-      - description: The name of the user whose MFA devices you want to list.	
-        name: userName
-        required: true
-      - description: The Amazon Resource Name (ARN) of the role to assume.
-        name: roleArn
-        required: false
-      - description: An identifier for the assumed role session.
-        name: roleSessionName
-        required: false
-      - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
-        name: roleSessionDuration
-        required: false
-      - description: Use this parameter only when paginating results and only after you receive a response indicating that the results are truncated. Set it to the value of the Marker element in the response that you received to indicate where the next call should start.
-        name: marker
-        required: false
-      description: Deactivates the specified MFA device and removes it from association with the user name for which it was originally enabled.
-      name: aws-iam-deactivate-mfa-devices
-    - arguments:
-      - description: The name of the user whose MFA devices you want to list.	
-        name: userName
-        required: true
-      - description: The serial number that uniquely identifies the MFA device. For virtual MFA devices, the serial number is the same as the ARN.
-        name: serialNumber
-        required: true
-      - description: The Amazon Resource Name (ARN) of the role to assume.
-        name: roleArn
-        required: false
-      - description: An identifier for the assumed role session.
-        name: roleSessionName
-        required: false
-      - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
-        name: roleSessionDuration
-        required: false
-      description: Deletes a virtual MFA device.
-      name: aws-iam-delete-mfa-devices
-    - arguments:
-      - description: The serial number that uniquely identifies the MFA device. For virtual MFA devices, the serial number is the same as the ARN.
-        name: serialNumber
-        required: true
-      - description: The Amazon Resource Name (ARN) of the role to assume.
-        name: roleArn
-        required: false
-      - description: An identifier for the assumed role session.
-        name: roleSessionName
-        required: false
-      - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
-        name: roleSessionDuration
-        required: false
+  - arguments:
+    - description: The name of the user whose MFA devices you want to list.	
+      name: userName
+      required: true
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+      required: false
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+      required: false
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      name: roleSessionDuration
+      required: false
+    - description: Use this parameter only when paginating results and only after you receive a response indicating that the results are truncated. Set it to the value of the Marker element in the response that you received to indicate where the next call should start.
+      name: marker
+      required: false
+    name: aws-iam-list-mfa-devices
+    description: Lists the MFA devices for an IAM user.  
+    outputs:
+      - contextPath: AWS.IAM.MFADevices.Devices.UserName
+        description: The user with whom the MFA device is associated.
+        type: string
+      - contextPath: AWS.IAM.MFADevices.Devices.SerialNumber
+        description: The serial number that uniquely identifies the MFA device. For virtual MFA devices, the serial number is the device ARN.
+        type: string
+      - contextPath: AWS.IAM.MFADevices.Devices.EnableDate
+        description: The date when the MFA device was enabled for the user.
+        type: date
+      - contextPath: MFADevices.Devices.Marker
+        description: First element of next page of items.
+        type: string
+  - arguments:
+    - description: The name of the user whose MFA devices you want to list.	
+      name: userName
+      required: true
+    - description: The serial number that uniquely identifies the MFA device. For virtual MFA devices, the serial number is the same as the ARN.
+      name: serialNumber
+      required: true
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+      required: false
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+      required: false
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      name: roleSessionDuration
+      required: false
+    description: Deactivates the specified MFA device and removes it from association with the user name for which it was originally enabled.
+    name: aws-iam-deactivate-mfa-devices
+  - arguments:
+    - description: The serial number that uniquely identifies the MFA device. For virtual MFA devices, the serial number is the same as the ARN.
+      name: serialNumber
+      required: true
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+      required: false
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+      required: false
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      name: roleSessionDuration
+      required: false
+    description: Deletes a virtual MFA device.
+    name: aws-iam-delete-mfa-devices
   dockerimage: demisto/boto3py3:1.0.0.101103
   runonce: false
-  script: ''
+  script: '-'
   subtype: python3
   type: python
 tests:
 - AWS - IAM Test Playbook
 fromversion: 5.0.0
-
-
