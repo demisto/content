@@ -901,7 +901,7 @@ def get_endpoint_activity_data(
     select = args.get(SELECT, EMPTY_STRING).split(",")
     query_op = args.get(QUERY_OP, EMPTY_STRING)
     fetch_all = args.get(FETCH_ALL, FALSE)
-    fetch_max_count = int(args.get(FETCH_MAX_COUNT, 5000))
+    fetch_max_count = int(args.get(FETCH_MAX_COUNT, EMPTY_STRING))
     # Choose QueryOp Enum based on user choice
     if query_op.lower() == "or":
         query_op = pytmv1.QueryOp.OR
@@ -1033,7 +1033,7 @@ def get_email_activity_data(
     select = args.get(SELECT, EMPTY_STRING).split(",")
     query_op = args.get(QUERY_OP, EMPTY_STRING)
     fetch_all = args.get(FETCH_ALL, FALSE)
-    fetch_max_count = int(args.get(FETCH_MAX_COUNT, 5000))
+    fetch_max_count = int(args.get(FETCH_MAX_COUNT, EMPTY_STRING))
     # Choose QueryOp Enum based on user choice
     if query_op.lower() == "or":
         query_op = pytmv1.QueryOp.OR
