@@ -1036,15 +1036,19 @@ def parse_drilldown_searches(drilldown_searches: list) -> list[dict]:
         drilldown_searches (list): The list of the drilldown searches.
 
     Returns:
-        list[str]: A list of the drilldown searches dictionaries.
+        list[dict]: A list of the drilldown searches dictionaries.
     """
     demisto.debug("There are multiple drilldown searches to enrich, parsing each drilldown search object")
     searches = []
 
     for drilldown_search in drilldown_searches:
         try:
+            # drilldown_search may be a json list/dict represented as string
             search = json.loads(drilldown_search)
-            searches.append(search)
+            if isinstance(search, list):
+                searches.extend(search)
+            else:
+                searches.append(search)
         except json.JSONDecodeError as e:
             demisto.error(f"Caught an exception while parsing a drilldown search object."
                           f"Drilldown search is: {drilldown_search}, Original Error is: {str(e)}")
@@ -1074,7 +1078,7 @@ def get_drilldown_searches(notable_data):
             # The drilldown_searches are a list of searches data stored as json strings:
             return parse_drilldown_searches(drilldown_search)
         else:
-            # The drilldown_searches are a dict of search data stored as json string.
+            # The drilldown_searches are a dict/list of the search data in a JSON string representation.
             return parse_drilldown_searches([drilldown_search])
     return []
 
