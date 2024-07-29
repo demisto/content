@@ -395,7 +395,7 @@ def list_mfa_devices(args, client):
     kwargs = {
 	        'UserName': user_name,
 	        'MaxItems': limit
-	    }
+        }
     if marker:
         kwargs.update({'Marker': marker})
     response = client.list_mfa_devices(**kwargs)
@@ -422,7 +422,7 @@ def list_mfa_devices(args, client):
 def deactivate_mfa_device(args, client):
     response = client.deactivate_mfa_device(
         UserName=args['userName'],
-	    SerialNumber=args['serialNumber']
+        SerialNumber=args['serialNumber']
     )
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
         demisto.results('The User {0} mfa device has been deactivated'.format(args.get('userName')))
