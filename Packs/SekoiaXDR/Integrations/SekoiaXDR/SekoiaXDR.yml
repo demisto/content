@@ -1192,3 +1192,6 @@ script:
 fromversion: 6.10.0
 tests:
 - No tests (auto formatted)
+defaultmapperin: Sekoia XDR - Incoming Mapper
+defaultmapperout: Sekoia XDR - Outgoing Mapper
+defaultclassifier: Sekoia XDR - Classifier
