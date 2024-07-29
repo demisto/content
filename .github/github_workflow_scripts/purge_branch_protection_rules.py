@@ -10,6 +10,8 @@ import os
 from pathlib import Path
 import sys
 from typing import Any
+
+import tabulate
 from utils import get_logger
 
 from github import Github
@@ -160,10 +162,15 @@ def write_deleted_summary_to_file(deleted: list[BranchProtectionRule]) -> None:
             body = "### No branch protection rules were deleted"
             markdown_content = f"{header}\n\n{body}\n"
         else:
-            table_header = "| ID | Pattern | Matching Refs |\n| --- | ------- | ------------- |"
-            table_rows = [f"| {rule.id} | {rule.pattern} | {rule.matching_refs} |" for rule in deleted]
-            table_body = "\n".join(table_rows)
-            markdown_content = f"{header}\n\n{table_header}\n{table_body}\n"
+            headers = ["ID", "Pattern", "Matching Refs"]
+            table_rows = [[rule.id, rule.pattern, rule.matching_refs] for rule in deleted]
+
+            table_body = tabulate.tabulate(
+                tabular_data=table_rows,
+                headers=headers,
+                tablefmt='github'
+            )
+            markdown_content = f"{header}\n\n{table_body}\n"
 
         logger.debug(f"Writing deleted jobs summary to Markdown to file '{fp}'...")
         logger.debug(markdown_content)

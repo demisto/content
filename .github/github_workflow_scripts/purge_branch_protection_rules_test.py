@@ -14,7 +14,7 @@ from purge_branch_protection_rules import (
     GH_JOB_SUMMARY_ENV_VAR,
     BranchProtectionRule,
     get_repo_owner_and_name,
-    convert_response_to_bpr,
+    convert_response_to_rules,
     write_deleted_summary_to_file,
     should_delete_rule,
     main
@@ -75,11 +75,11 @@ class TestPurgeBranchProtectionRules():
         with pytest.raises(ValueError, match=re.escape("Input string must be in the format 'owner/repository'.")):
             get_repo_owner_and_name()
 
-    def test_convert_response_to_bpr_valid(
+    def test_convert_response_to_rules_valid(
         self
     ):
         """
-        Test the behavior of the method `convert_response_to_bpr`
+        Test the behavior of the method `convert_response_to_rules`
         when an valid response is given.
 
         Given:
@@ -92,7 +92,7 @@ class TestPurgeBranchProtectionRules():
         - 4 rules are returned with expected attrs.
         """
 
-        rules = convert_response_to_bpr(self.protection_rules_response_data)
+        rules = convert_response_to_rules(self.protection_rules_response_data)
 
         assert rules
         assert len(rules) == 4
@@ -104,11 +104,11 @@ class TestPurgeBranchProtectionRules():
             assert rule.matching_refs == self.protection_rules_response_data.get("data").get("repository").get(
                 "branchProtectionRules").get("nodes")[i].get("matchingRefs").get("totalCount")
 
-    def test_convert_response_to_bpr_invalid(
+    def test_convert_response_to_rules_invalid(
         self
     ):
         """
-        Test the behavior of the method `convert_response_to_bpr`
+        Test the behavior of the method `convert_response_to_rules`
         when an invalid response is given.
 
         Given:
@@ -122,7 +122,7 @@ class TestPurgeBranchProtectionRules():
         """
 
         with pytest.raises(AttributeError):
-            convert_response_to_bpr({"data": "unexpected"})
+            convert_response_to_rules({"data": "unexpected"})
 
     def test_md_summary_output(
             self,
