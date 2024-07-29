@@ -6,6 +6,7 @@ import re
 from operator import itemgetter
 import json
 from typing import Tuple, Callable
+import base64
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -143,8 +144,6 @@ ALERT_EVENT_AZURE_FIELDS = {
     "tenantId",
 }
 
-COMMANDS_SHOULD_NOT_RUN_RBAC = {'core-retrieve-file-details'}
-
 RBAC_VALIDATIONS_VERSION = '8.6.0'
 RBAC_VALIDATIONS_BUILD_NUMBER = '992980'
 FORWARD_USER_RUN_RBAC = is_xsiam() and is_demisto_version_ge(version=RBAC_VALIDATIONS_VERSION,
@@ -204,7 +203,7 @@ class CoreClient(BaseClient):
                 establish a connection to a remote machine before a timeout occurs.
                 can be only float (Connection Timeout) or a tuple (Connection Timeout, Read Timeout).
         '''
-        if (not FORWARD_USER_RUN_RBAC or demisto.command() in COMMANDS_SHOULD_NOT_RUN_RBAC):
+        if not FORWARD_USER_RUN_RBAC:
             return BaseClient._http_request(self,  # we use the standard base_client http_request without overriding it
                                             method=method,
                                             url_suffix=url_suffix,
@@ -220,17 +219,21 @@ class CoreClient(BaseClient):
         headers = headers if headers else self._headers
         data = json.dumps(json_data) if json_data else data
         address = full_url if full_url else urljoin(self._base_url, url_suffix)
+        response_data_type = "bin" if resp_type == 'content' else None
         response = demisto._apiCall(
             method=method,
             path=address,
             data=data,
             headers=headers,
-            timeout=timeout
+            timeout=timeout,
+            response_data_type=response_data_type
         )
         if ok_codes and response.get('status') not in ok_codes:
             self._handle_error(error_handler, response, with_metrics)
         try:
-            return json.loads(response['data'])
+            decoder = base64.b64decode if response_data_type == "bin" else json.loads
+            demisto.debug(f'{response_data_type=}, {decoder.__name__=}')
+            return decoder(response['data'])
         except json.JSONDecodeError:
             demisto.debug(f"Converting data to json was failed. Return it as is. The data's type is {type(response['data'])}")
             return response['data']
