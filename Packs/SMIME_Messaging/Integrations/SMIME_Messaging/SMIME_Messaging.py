@@ -14,6 +14,8 @@ from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
 from email import encoders, message_from_string
 import pytz
+import mimetypes
+import uuid
 
 
 ''' HELPER FUNCTIONS '''
@@ -25,7 +27,7 @@ def makebuf(text):
 
 def create_pem_string(base64_cert) -> str:
     """This function takes the base64 encoded certificate received via
-    ad-search in the "UserCertificate" attribute and converts it to a PEM
+    ad-search in the 'UserCertificate' attribute and converts it to a PEM
 
     Args:
         base64_cert (_type_): _description_
@@ -33,11 +35,11 @@ def create_pem_string(base64_cert) -> str:
     Returns:
         str: PEM string for the certificate
     """
-    pemstring = "-----BEGIN CERTIFICATE-----\n"
-    pemstring += "\n".join(
+    pemstring = '-----BEGIN CERTIFICATE-----\n'
+    pemstring += '\n'.join(
         [base64_cert[i: i + 64] for i in range(0, len(base64_cert), 64)]
     )
-    pemstring += "\n-----END CERTIFICATE-----\n"
+    pemstring += '\n-----END CERTIFICATE-----\n'
     return pemstring
 
 
@@ -47,10 +49,10 @@ def parse_multipart_message(msg: str):
     if email_message.get_content_type() == 'multipart/signed':
         # The message is signed
         return ['', '']
-    email_body = ""  # Initialize email_body to an empty string
-    email_html = ""  # Initialize email_html to an empty string
+    email_body = ''  # Initialize email_body to an empty string
+    email_html = ''  # Initialize email_html to an empty string
     images = {}      # Initialize a list to store image data
-    cid = ""
+    cid = ''
 
     for part in email_message.walk():
         content_type = part.get_content_type()
@@ -64,8 +66,14 @@ def parse_multipart_message(msg: str):
         # Extract attachments, ignore p7 files
         if part.get_content_disposition() == 'attachment':
             fileName = part.get_filename()
+            if not fileName:
+                demisto.debug('Got nameless attachment, generating file name')
+                mime_type = part.get_content_type()
+                extension = mimetypes.guess_extension(mime_type) or '.bin'
+                fileName = f'attachment_{uuid.uuid4()}{extension}'
 
-            if not fileName or fileName.lower().endswith('.p7s'):
+            if fileName.lower().endswith('.p7s'):
+                demisto.debug(f'Skipping p7 file: {fileName}')
                 continue
             # create the attachment
             file_result = fileResult(fileName, part.get_payload(decode=True))
@@ -226,7 +234,7 @@ def verify(client: Client, args: dict):
         st.load_info(client.public_key_file)
     elif cert:
         public_key_file = NamedTemporaryFile(delete=False)
-        public_key_file.write(bytes(cert, "utf-8"))
+        public_key_file.write(bytes(cert, 'utf-8'))
         public_key_file.close()
         sk.push(X509.load_cert(public_key_file.name))
         st.load_info(public_key_file.name)
@@ -242,7 +250,8 @@ def verify(client: Client, args: dict):
     except SMIME.SMIME_Error as e:
 
         if str(e) == 'no content type':  # If no content type; see if we can process as DER format
-            with open(signed_message['path'], "rb") as message_file:
+            demisto.debug('No content type found in message, testing if it is in DER format (binary)')
+            with open(signed_message['path'], 'rb') as message_file:
                 p7data = message_file.read()
             p7bio = BIO.MemoryBuffer(p7data)
             p7 = SMIME.load_pkcs7_bio_der(p7bio)
@@ -258,6 +267,7 @@ def verify(client: Client, args: dict):
     msg_out = msg
     html_readable = ''
     if not raw_output:  # Return message after parsing html/images/attachments
+        demisto.debug(f'parsing message:\n\n{msg}')
         [email_body, email_html] = parse_multipart_message(msg)
         if email_html:
             msg_out = email_html
@@ -335,7 +345,8 @@ def decrypt_email_body(client: Client, args: dict):
     except SMIME.SMIME_Error as e:
 
         if str(e) == 'no content type':  # If no content type; see if we can process as DER format
-            with open(encrypt_message['path'], "rb") as message_file:
+            demisto.debug('No content type found in message, testing if it is in DER format (binary)')
+            with open(encrypt_message['path'], 'rb') as message_file:
                 p7data = message_file.read()
             p7bio = BIO.MemoryBuffer(p7data)
             p7 = SMIME.load_pkcs7_bio_der(p7bio)
@@ -351,6 +362,7 @@ def decrypt_email_body(client: Client, args: dict):
     human_readable = f'{msg}The decrypted message is: \n{out}'
     html_readable = ''
     if not raw_output:  # Return message after parsing html/images/attachments
+        demisto.debug(f'parsing message:\n\n{out}')
         [email_body, email_html] = parse_multipart_message(out)
         if email_html:
             msg_out = email_html
@@ -392,11 +404,11 @@ def sign_and_encrypt(client: Client, args: dict):
     attachment_ids = argToList(args.get('attachment_entry_id', ''))  # type: list[str]
 
     if type(recipients) != dict:
-        raise DemistoException("Failed to parse recipients. (format `{'recipient@email':'pub_cert', 'other@email':'pub_cert'}`)")
+        raise DemistoException('Failed to parse recipients. (format `{"recipient@email":"pub_cert", "other@email":"pub_cert"}`)')
     if type(cc) != dict:
-        raise DemistoException("Failed to parse cc. (format `{'recipient@email':'pub_cert', 'other@email':'pub_cert'}`)")
+        raise DemistoException('Failed to parse cc. (format `{"recipient@email":"pub_cert", "other@email":"pub_cert"}`)')
     if type(bcc) != dict:
-        raise DemistoException("Failed to parse bcc. (format `{'recipient@email':'pub_cert', 'other@email':'pub_cert'}`)")
+        raise DemistoException('Failed to parse bcc. (format `{"recipient@email":"pub_cert", "other@email":"pub_cert"}`)')
 
     # Prepare message
     msg = MIMEMultipart()
@@ -438,17 +450,18 @@ def sign_and_encrypt(client: Client, args: dict):
         pub_certs = [cert for dest in [recipients, cc, bcc] for cert in dest.values()]  # all keys are used the same
         sk = X509.X509_Stack()
         if not pub_certs:
-            demisto.debug("No certs given, using instance cert")
+            demisto.debug('No certs given, using instance cert')
             sk.push(X509.load_cert(client.public_key_file))
         for cert in pub_certs:
             if cert == 'instancePublicKey':
                 sk.push(X509.load_cert(client.public_key_file))
                 continue
-            if ("-----BEGIN CERTIFICATE-----") not in cert:
+            if ('-----BEGIN CERTIFICATE-----') not in cert:
+                demisto.debug('No ---BEGIN CERTIFICATE--- tag, creating pem from cert')
                 cert = create_pem_string(cert)
 
             with NamedTemporaryFile(delete=False) as public_key_file:
-                public_key_file.write(bytes(cert, "utf-8"))
+                public_key_file.write(bytes(cert, 'utf-8'))
                 public_key_file.close()
                 sk.push(X509.load_cert(public_key_file.name))
                 os.unlink(public_key_file.name)
@@ -464,7 +477,7 @@ def sign_and_encrypt(client: Client, args: dict):
 
     out = BIO.MemoryBuffer()
     # Add email plain-text header
-    current_time = datetime.now(pytz.timezone('UTC')).strftime("%a, %d %b %Y %H:%M:%S %z")
+    current_time = datetime.now(pytz.timezone('UTC')).strftime('%a, %d %b %Y %H:%M:%S %z')
     out.write(f'Date: {current_time}\r\n')
     if sender:
         out.write(f'From: {sender}\r\n')
@@ -483,9 +496,16 @@ def sign_and_encrypt(client: Client, args: dict):
         out.write(msg_str)
 
     msg = out.read().decode('utf-8')
-    outputs = {'Message': msg}  # type: dict[str, Any]
-    if recipients or cc or bcc:
-        outputs['RecipientIds'] = [id for dest in [recipients, cc, bcc] for id in dest]
+    outputs = {
+        'Message': msg,
+        'RecipientIds': {
+            'to': list(recipients.keys()),
+            'cc': list(cc.keys()),
+            'bcc': list(bcc.keys()),
+        },
+        'FileName': '',
+    }
+
     if create_file:
         file_results = fileResult(filename=f'SMIME-{demisto.uniqueFile()[:8]}.p7', data=msg, file_type=EntryType.FILE)
         return_results(file_results)
