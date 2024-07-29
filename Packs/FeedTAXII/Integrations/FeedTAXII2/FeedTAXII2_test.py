@@ -416,5 +416,5 @@ def test_is_valid_url(url, expected_result):
     Then:
     - Ensure the function evaluates correctly the correctness of the URL.
     """
-    from FeedTAXII2 import is_valid_url
-    assert is_valid_url(url) == expected_result
+    from FeedTAXII2 import is_valid_taxii_url
+    assert is_valid_taxii_url(url) == expected_result
