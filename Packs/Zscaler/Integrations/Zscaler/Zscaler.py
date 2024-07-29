@@ -255,7 +255,7 @@ def unblacklist_ip(ip):
     data = {"blacklistUrls": ips_to_unblacklist}
     json_data = json.dumps(data)
     res = http_request("POST", cmd_url, json_data, DEFAULT_HEADERS, resp_type='response')
-    demisto.debug(f'Blacklist IP response = {res}')
+    demisto.debug(f'UnBlacklist IP response = {res}')
     list_of_ips = ""
     for ip in ips_to_unblacklist:
         list_of_ips += "- " + ip + "\n"
