@@ -70,7 +70,7 @@ INCOMING_MIRRORED_FIELDS = ['ID', 'Etag', 'Title', 'Description', 'Severity', 'S
                                   'AlertProductNames', 'Tactics', 'relatedAnalyticRuleIds', 'IncidentUrl', 'classification',
                                   'classificationComment', 'alerts', 'entities', 'comments', 'relations']
 OUTGOING_MIRRORED_FIELDS = {'etag', 'title', 'description', 'severity', 'status', 'tags', 'firstActivityTimeUtc',
-                            'lastActivityTimeUtc', 'classification', 'classificationComment', 'classificationReason', 'owner', 'comments'}
+                            'lastActivityTimeUtc', 'classification', 'classificationComment', 'classificationReason', 'owner', 'comments'}  # noqa: E501
 OUTGOING_MIRRORED_FIELDS = {filed: pascalToSpace(filed) for filed in OUTGOING_MIRRORED_FIELDS}
 
 LEVEL_TO_SEVERITY = {0: 'Informational', 0.5: 'Informational', 1: 'Low', 2: 'Medium', 3: 'High', 4: 'High'}
@@ -700,6 +700,23 @@ def find_owner_diff(server_owner: Dict[str, str], remote_owner: Dict[str, str]) 
     }
 
 
+def mirror_out_new_comment(client, incident_id, delta, remote_incident_data):
+    demisto.debug("mirror out a new comment")
+    remote_comment_count = (
+        remote_incident_data.get("properties")
+        .get("additionalData")
+        .get("commentsCount")
+    )
+    server_comments_list = delta.get("comments")
+    demisto.debug(f"{server_comments_list=}")
+    new_comments = [
+        {"incident_id": incident_id, "message": comment.get("message")}
+        for comment in server_comments_list if not comment.get("name")
+    ]
+    demisto.debug(f"update remote incident with new XSOAR comments: {new_comments}")
+    return [incident_add_comment_command(client, comment).raw_response for comment in new_comments]
+
+
 def update_incident_request(client: AzureSentinelClient, incident_id: str, data: Dict[str, Any], delta: Dict[str, Any],
                             close_ticket: bool = False) -> Dict[str, Any]:
     """
@@ -729,10 +746,9 @@ def update_incident_request(client: AzureSentinelClient, incident_id: str, data:
         'firstActivityTimeUtc': delta.get('firstActivityTimeUtc'),
         'lastActivityTimeUtc': delta.get('lastActivityTimeUtc'),
         "owner": find_owner_diff(
-            delta.get("microsoftsentinelowner", [{}])[0],
-            demisto.get(fetched_incident_data, "properties.owner", {}),
+            delta.get("owner", {}),
+            demisto.get(fetched_incident_data, "properties.owner", {}), # type: ignore
         ),
-
         'labels': demisto.get(fetched_incident_data, 'properties.labels', [])
     }
 
@@ -757,6 +773,9 @@ def update_incident_request(client: AzureSentinelClient, incident_id: str, data:
 
 def update_remote_incident(client: AzureSentinelClient, data: Dict[str, Any], delta: Dict[str, Any],
                            incident_status: IncidentStatus, incident_id: str) -> str:
+    if delta.get('comments'):
+        fetched_incident_data = get_incident_by_id_command(client, {'incident_id': incident_id}).raw_response
+        mirror_out_new_comment(client, incident_id, delta, fetched_incident_data)
     if incident_status == IncidentStatus.DONE:
         if close_incident_in_remote(delta, data):
             demisto.debug(f'Closing incident with remote ID {incident_id} in remote system.')

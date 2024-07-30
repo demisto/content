@@ -571,6 +571,10 @@ MOCKED_RAW_INCIDENT_OUTPUT = {
 }
 
 
+def util_load_json(path):
+    with open(path, encoding="utf-8") as f:
+        return json.loads(f.read())
+
 class TestHappyPath:
     """
     Group the Happy path tests
@@ -1628,7 +1632,7 @@ def test_get_mapping_fields_command():
     assert result.scheme_types_mappings[0].fields.keys() == {'description', 'status', 'lastActivityTimeUtc',
                                                              'classificationReason', 'tags', 'classificationComment',
                                                              'severity', 'firstActivityTimeUtc', 'classification',
-                                                             'title', 'etag'}
+                                                             'title', 'etag', 'owner', 'comments'}
 
 
 def test_update_remote_system_command(mocker):
@@ -2109,3 +2113,87 @@ def test_update_incident_with_client_changed_etag(mocker):
 
     assert http_request_mock.call_count == 2
     assert http_request_mock.call_args[1].get('data', {}).get('etag') == newer_incident_from_azure.get('etag')
+    
+@pytest.mark.parametrize(
+    "server_owner, remote_owner, expected",
+    [
+        (
+            {"assignedto": "user1", "email": "user1@example.com"},
+            {"assignedTo": "user2", "email": "user2@example.com"},
+            {"assignedTo": "user1", "email": "user1@example.com"}
+        ),
+        (
+            {"assignedto": "user1", "email": "user1@example.com"},
+            {"assignedTo": "user1", "email": "user1@example.com"},
+            {}
+        ),
+        (
+            {"assignedto": "user1", "email": "user1@example.com"},
+            {"assignedTo": "user1", "email": "user2@example.com"},
+            {"email": "user1@example.com"}
+        ),
+        (
+            {},
+            {"assignedTo": "user1", "email": "user1@example.com"},
+            None
+        ),
+        (
+            {"assignedto": "user1", "email": "user1@example.com"},
+            {},
+            None
+        ),
+        (
+            {},
+            {},
+            None
+        )
+    ]
+)
+def test_find_owner_diff(server_owner, remote_owner, expected):
+    from AzureSentinel import find_owner_diff
+    result = find_owner_diff(server_owner, remote_owner)
+    assert result == expected
+
+    
+
+def test_mirror_out_new_comment(mocker):
+    """
+    Given:
+        - A delta with new comments to be mirrored out.
+        - The count of comments already mirrored out.
+
+    When:
+        - Mirroring out new comments.
+
+    Then:
+        - Ensure that only new comments are sent to the remote incident.
+    """
+    import AzureSentinel
+    from AzureSentinel import mirror_out_new_comment
+    client = mock_client()
+    incident_id = "incident_123"
+    delta = {
+        "microsoftsentinelcommentsdev": [
+            {"message": "Test comment 1"},
+            {"message": "Test comment 2"}
+        ]
+    }
+    remote_incident_data = {
+        "properties": {
+            "additionalData": {
+                "commentsCount": 1
+            }
+        }
+    }
+    expected_new_comments = [
+        {"incident_id": incident_id, "message": "Test comment 2"}
+    ]
+
+    debugger = mocker.patch.object(demisto, 'debug')
+    mocker.patch.object(AzureSentinel , 'incident_add_comment_command', return_value=CommandResults(raw_response=util_load_json("test_data/mirror_out_new_comment.json")))
+
+    responses = mirror_out_new_comment(client, incident_id, delta, remote_incident_data)
+    debugger.assert_any_call(f"update remote incident with new XSOAR comments: {expected_new_comments}")
+
+    assert len(responses) == 1
+    assert responses[0][0].get("properties").get("message") == "Test comment 2" # type: ignore
