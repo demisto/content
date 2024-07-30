@@ -634,7 +634,7 @@ def screenshot_image(browser, tab, path, wait_time, navigation_timeout, full_scr
     tab_event_handler = navigate_to_path(browser, tab, path, wait_time, navigation_timeout)
     
     if tab_event_handler.is_mailto:
-        raise DemistoException(f'URLs that start with "mailto:" cannot be screenshot. URL: {path}')
+        return None, f'URLs that start with "mailto:" cannot be screenshot.\nURL: {path}'
     
     try:
         page_layout_metrics = tab.Page.getLayoutMetrics()
@@ -838,8 +838,14 @@ def perform_rasterize(path: str | list[str],
 
             # Get the results
             for current_thread in rasterization_threads:
-                rasterization_results.append(current_thread.result())
-
+                ret_value, response_body = current_thread.result()
+                if ret_value:
+                    rasterization_results.append((ret_value, response_body))
+                else:
+                    return_results(CommandResults(
+                        readable_output=str(response_body),
+                        entry_type=(EntryType.ERROR if WITH_ERRORS else EntryType.WARNING)
+                    ))
             return rasterization_results
 
     else:
