@@ -20,7 +20,7 @@ The permissions required to use this integration depends on which operations you
     | Username for server login | Provide Username \+ Passoword instead of API key \+ API ID | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
-    | Client type | In some hosted ElasticSearch environments, the standard ElasticSearch client is not supported. If you encounter any related client issues, please consider using the OpenSearch client type. | False |
+    | Client type | For Elasticsearch version 7 and below select 'Elasticsearch', for server version 8 select 'Elasticsearch_v8'. In some hosted ElasticSearch environments, the standard ElasticSearch client is not supported. If you encounter any related client issues, please consider using the OpenSearch client type. | False |
     | Index from which to fetch incidents (CSV) |  | False |
     | Query String | The query will be used when fetching incidents. Index time field will be used as a filter in the query | False |
     | Index time field (for sorting sort and limiting data) | The time field on which sorting and limiting are performed. If using a nested field, separate field names using dot notation. | False |
@@ -246,3 +246,26 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+### es-list-indices
+
+***
+Returns a list of Elasticsearch indices. This command is not supported for client type OpenSearch.
+
+#### Base Command
+
+`es-list-indices`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Elasticsearch.Indices.Name | String | The Name of the index. | 
+| Elasticsearch.Indices.Status | String | The Status of the index. | 
+| Elasticsearch.Indices.Health | String | The Health status of the index. | 
+| Elasticsearch.Indices.UUID | String | The UUID of the index. | 
+| Elasticsearch.Indices.Documents Count | Number | The amount of documents that are indexed in the index. | 
+| Elasticsearch.Indices.Documents Deleted | Number | The amount of documents that were deleted from the index. | 

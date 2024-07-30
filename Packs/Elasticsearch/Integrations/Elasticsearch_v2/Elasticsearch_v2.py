@@ -21,20 +21,25 @@ if ELASTIC_SEARCH_CLIENT == 'OpenSearch':
     from opensearchpy import OpenSearch as Elasticsearch, RequestsHttpConnection, NotFoundError
     from opensearch_dsl import Search
     from opensearch_dsl.query import QueryString
-else:
-    from elasticsearch import Elasticsearch, RequestsHttpConnection, NotFoundError
+elif ELASTIC_SEARCH_CLIENT == 'Elasticsearch_v8':
+    from elasticsearch import Elasticsearch, NotFoundError, TransportError, ApiError
     from elasticsearch_dsl import Search
     from elasticsearch_dsl.query import QueryString
+else: # Elasticsearch (<= v7)
+    from elasticsearch7 import Elasticsearch, RequestsHttpConnection, NotFoundError
+    from elasticsearch_dsl import Search
+    from elasticsearch_dsl.query import QueryString
+    
 
 ES_DEFAULT_DATETIME_FORMAT = 'yyyy-MM-dd HH:mm:ss.SSSSSS'
 PYTHON_DEFAULT_DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S.%f'
 API_KEY_PREFIX = '_api_key_id:'
 SERVER = demisto.params().get('url', '').rstrip('/')
-USERNAME = demisto.params().get('credentials', {}).get('identifier')
-PASSWORD = demisto.params().get('credentials', {}).get('password')
+USERNAME: str = demisto.params().get('credentials', {}).get('identifier')
+PASSWORD: str = demisto.params().get('credentials', {}).get('password')
 API_KEY_ID = USERNAME[len(API_KEY_PREFIX):] if USERNAME and USERNAME.startswith(API_KEY_PREFIX) else None
 if API_KEY_ID:
-    USERNAME = None
+    USERNAME = ""
     API_KEY = (API_KEY_ID, PASSWORD)
 PROXY = demisto.params().get('proxy')
 HTTP_ERRORS = {
@@ -145,23 +150,48 @@ def get_api_key_header_val(api_key):
 
 def elasticsearch_builder(proxies):
     """Builds an Elasticsearch obj with the necessary credentials, proxy settings and secure connection."""
-    connection_args = {
-        "hosts": [SERVER],
-        "connection_class": RequestsHttpConnection,
-        "proxies": proxies,
-        "verify_certs": INSECURE,
-        "timeout": TIMEOUT,
-    }
-    if API_KEY_ID:
-        connection_args["api_key"] = API_KEY
-    elif USERNAME:
-        connection_args["http_auth"] = (USERNAME, PASSWORD)
+    # if ELASTIC_SEARCH_CLIENT == 'Elasticsearch':
+    #     # Set the environment variable for REST API compatibility
+    #     os.environ['ELASTIC_CLIENT_APIVERSIONING'] = 'true'
+        
+    #     # Create the Elasticsearch client instance
+    #     es = Elasticsearch(
+    #     SERVER,
+    #     verify_certs=INSECURE,
+    #     basic_auth=(USERNAME, PASSWORD),
+    #     headers={'Accept': "application/vnd.elasticsearch+json;compatible-with=7",
+    #              'Content-Type': "application/vnd.elasticsearch+json;compatible-with=7"}
+    #     )
+    
+    #     print(f"headers are {es._headers}")
+    #     print(f"env var is: {os.environ.get('ELASTIC_CLIENT_APIVERSIONING')}")
+    
+    if ELASTIC_SEARCH_CLIENT == 'Elasticsearch_v8':
+        # Create the Elasticsearch v8 client instance
+        es = Elasticsearch(
+        SERVER,
+        verify_certs=INSECURE,
+        basic_auth=(USERNAME, PASSWORD)
+        )
+    else: # Elasticsearch version v7 or below, OpenSearch
+        
+        connection_args = {
+            "hosts": [SERVER],
+            "connection_class": RequestsHttpConnection,
+            "proxies": proxies,
+            "verify_certs": INSECURE,
+            "timeout": TIMEOUT,
+        }
+        if API_KEY_ID:
+            connection_args["api_key"] = API_KEY
+        elif USERNAME:
+            connection_args["http_auth"] = (USERNAME, PASSWORD)
 
-    es = Elasticsearch(**connection_args)
-    # this should be passed as api_key via Elasticsearch init, but this code ensures it'll be set correctly
-    if API_KEY_ID and hasattr(es, 'transport'):
-        es.transport.get_connection().session.headers['authorization'] = get_api_key_header_val(API_KEY)
-
+        es = Elasticsearch(**connection_args)
+        # this should be passed as api_key via Elasticsearch init, but this code ensures it'll be set correctly
+        if API_KEY_ID and hasattr(es, 'transport'):
+            es.transport.get_connection().session.headers['authorization'] = get_api_key_header_val(API_KEY)
+    
     return es
 
 
@@ -310,7 +340,11 @@ def search_command(proxies):
         if sort_field is not None:
             search = search.sort({sort_field: {'order': sort_order}})
 
-        response = search.execute().to_dict()
+        if ELASTIC_SEARCH_CLIENT == 'Elasticsearch_v8':
+            response = search.execute().to_dict()
+            
+        else: # Elasticsearch v7 and below, OpenSearch
+            response = es.search(index=search._index, body=search.to_dict(), **search._params)
 
     total_dict, total_results = get_total_results(response)
     search_context, meta_headers, hit_tables, hit_headers = results_to_context(index, query_dsl or query, base_page,
@@ -346,7 +380,7 @@ def test_query_to_fetch_incident_index(es):
     """Test executing query in fetch index.
 
     Notes:
-        if is_fetch it ticked, this function runs a generay query to Elasticsearch just to make sure we get a response
+        if is_fetch it ticked, this function runs a general query to Elasticsearch just to make sure we get a response
         from the FETCH_INDEX.
 
     Args:
@@ -355,7 +389,13 @@ def test_query_to_fetch_incident_index(es):
     try:
         query = QueryString(query='*')
         search = Search(using=es, index=FETCH_INDEX).query(query)[0:1]
-        response = search.execute().to_dict()
+        
+        if ELASTIC_SEARCH_CLIENT == 'Elasticsearch_v8':
+            response = search.execute().to_dict()
+            
+        else: # Elasticsearch v7 and below, OpenSearch
+            response = es.search(index=search._index, body=search.to_dict(), **search._params)
+
         _, total_results = get_total_results(response)
 
     except NotFoundError as e:
@@ -371,12 +411,18 @@ def test_general_query(es):
     try:
         query = QueryString(query='*')
         search = Search(using=es, index='*').query(query)[0:1]
-        response = search.execute().to_dict()
+        
+        if ELASTIC_SEARCH_CLIENT == 'Elasticsearch_v8':
+            response = search.execute().to_dict()
+            
+        else: # Elasticsearch v7 and below, OpenSearch
+            response = es.search(index=search._index, body=search.to_dict(), **search._params)
+
         get_total_results(response)
 
     except NotFoundError as e:
-        return_error("Failed executing general search command - please check the Server URL and port number "
-                     "and the supplied credentials.\nError message: {}.".format(str(e)))
+        return_error(f"Failed executing general search command - please check the Server URL and port number " \
+                     f"and the supplied credentials.\nError message: {str(e)}.")
 
 
 def test_time_field_query(es):
@@ -393,7 +439,13 @@ def test_time_field_query(es):
     """
     query = QueryString(query=TIME_FIELD + ':*')
     search = Search(using=es, index=FETCH_INDEX).query(query)[0:1]
-    response = search.execute().to_dict()
+    
+    if ELASTIC_SEARCH_CLIENT == 'Elasticsearch_v8':
+            response = search.execute().to_dict()
+            
+    else: # Elasticsearch v7 and below, OpenSearch
+            response = es.search(index=search._index, body=search.to_dict(), **search._params)
+
     _, total_results = get_total_results(response)
 
     if total_results == 0:
@@ -418,7 +470,13 @@ def test_fetch_query(es):
     """
     query = QueryString(query=str(TIME_FIELD) + ":* AND " + FETCH_QUERY)
     search = Search(using=es, index=FETCH_INDEX).query(query)[0:1]
-    response = search.execute().to_dict()
+     
+    if ELASTIC_SEARCH_CLIENT == 'Elasticsearch_v8':
+        response = search.execute().to_dict()
+            
+    else: # Elasticsearch v7 and below, OpenSearch
+        response = es.search(index=search._index, body=search.to_dict(), **search._params)
+
     _, total_results = get_total_results(response)
 
     if total_results > 0:
@@ -476,8 +534,8 @@ def test_connectivity_auth(proxies):
             except requests.exceptions.HTTPError as e:
                 if HTTP_ERRORS.get(res.status_code) is not None:
                     # if it is a known http error - get the message form the preset messages
-                    return_error("Failed to connect. "
-                                 "The following error occurred: {}".format(HTTP_ERRORS.get(res.status_code)))
+                    return_error(f"Failed to connect. " \
+                                 f"The following error occurred: {HTTP_ERRORS.get(res.status_code)}")
 
                 else:
                     # if it is unknown error - get the message from the error itself
@@ -750,7 +808,13 @@ def fetch_incidents(proxies):
         # Elastic search can use epoch timestamps (in milliseconds) as date representation regardless of date format.
         search = Search(using=es, index=FETCH_INDEX).filter(time_range_dict)
         search = search.sort({TIME_FIELD: {'order': 'asc'}})[0:FETCH_SIZE].query(query)
-        response = search.execute().to_dict()
+            
+        if ELASTIC_SEARCH_CLIENT == 'Elasticsearch_v8':
+            response = search.execute().to_dict()
+            
+        else: # Elasticsearch v7 and below, OpenSearch
+            response = es.search(index=search._index, body=search.to_dict(), **search._params)
+
     _, total_results = get_total_results(response)
 
     incidents = []  # type: List
@@ -884,13 +948,21 @@ def index_document(args, proxies):
     doc = args.get('document')
     doc_id = args.get('id', '')
     es = elasticsearch_builder(proxies)
-    # Because of using elasticsearch lib <8 'document' param is called 'body'
-    if doc_id:
-        response = es.index(index=index, id=doc_id, body=doc)
-    else:
-        response = es.index(index=index, body=doc)
+    
+    if ELASTIC_SEARCH_CLIENT == 'Elasticsearch_v8':
+        if doc_id:
+            response = es.index(index=index, id=doc_id, document=doc)
+        else:
+            response = es.index(index=index, document=doc)
+            
+    else: # Elasticsearch version v7 or below, OpenSearch
+    # In elasticsearch lib <8 'document' param is called 'body'
+        if doc_id:
+            response = es.index(index=index, id=doc_id, body=doc)
+        else:
+            response = es.index(index=index, body=doc)
+            
     return response
-
 
 def index_document_command(args, proxies):
     resp = index_document(args, proxies)
@@ -913,13 +985,54 @@ def index_document_command(args, proxies):
         removeNull=True,
         headers=headers
     )
-    return CommandResults(
+    
+    if ELASTIC_SEARCH_CLIENT == 'Elasticsearch_v8':
+        resp = resp.body
+    
+    result = CommandResults(
         readable_output=readable_output,
         outputs_prefix='Elasticsearch.Index',
         outputs=index_context,
         raw_response=resp,
         outputs_key_field='id'
     )
+    return result
+
+def list_indices_command(proxies):
+    """
+    Lists Elasticsearch indices.
+    return: A List with Elasticsearch indices names.
+    """
+    indices = []
+    es = elasticsearch_builder(proxies)
+    
+    # Retrieve the list of all indices
+    raw_indices = es.cat.indices(format='json')
+    
+    for raw_index in raw_indices:
+        index_data = {'Name': raw_index.get('index', ''),
+                      'Status': raw_index.get('status', ''),
+                      'Health': raw_index.get('health', ''),
+                      'UUID': raw_index.get('uuid', ''),
+                      'Documents Count': raw_index.get('docs.count', ''),
+                      'Documents Deleted': raw_index.get('docs.deleted', ''),
+                      }
+        indices.append(index_data)
+    
+    readable_output = tableToMarkdown(
+        name="Indices:",
+        t=indices,
+        removeNull=True
+    )
+    
+    result = CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Elasticsearch.Indices',
+        outputs=indices,
+        outputs_key_field='UUID',
+        raw_response=list(raw_indices)
+    )
+    return result
 
 
 def main():
@@ -941,15 +1054,18 @@ def main():
             return_results(index_document_command(demisto.args(), proxies))
         elif demisto.command() == 'es-integration-health-check':
             return_results(integration_health_check(proxies))
+        elif demisto.command() == 'es-list-indices':
+            return_results(list_indices_command(proxies))
+            
     except Exception as e:
         if 'The client noticed that the server is not a supported distribution of Elasticsearch' in str(e):
             return_error('Failed executing {}. Seems that the client does not support the server\'s distribution, '
                          'Please try using the Open Search client in the instance configuration.'
-                         '\nError message: {}'.format(demisto.command(), str(e)), error=e)
+                         '\nError message: {}'.format(demisto.command(), str(e)), error=str(e))
         if 'failed to parse date field' in str(e):
             return_error(f'Failed to execute the {demisto.command()} command. Make sure the `Time field type` is correctly set.',
-                         error=e)
-        return_error(f"Failed executing {demisto.command()}.\nError message: {e}", error=e)
+                         error=str(e))
+        return_error(f"Failed executing {demisto.command()}.\nError message: {e}", error=str(e))
 
 
 if __name__ in ('__main__', 'builtin', 'builtins'):
