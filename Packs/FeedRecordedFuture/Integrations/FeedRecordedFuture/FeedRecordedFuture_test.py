@@ -5,7 +5,7 @@ import pytest
 from collections import OrderedDict
 from FeedRecordedFuture import get_indicator_type, get_indicators_command, Client, fetch_indicators_command, requests
 from csv import DictReader
-from CommonServerPython import argToList
+from CommonServerPython import argToList, argToBoolean
 
 
 class TestStreamCompressedData:
@@ -529,3 +529,5 @@ def test_client_init_with_null_values():
     """
     Client(indicator_type='ip', api_token='123', services=[
         'fusion'], malicious_threshold=None, suspicious_threshold=None)
+
+
