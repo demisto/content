@@ -220,7 +220,7 @@ def send_request(gh_requester: github.Requester.Requester, query: str, variables
         variables=variables
     )
 
-    logger.debug(f"Response received:\n{response_data}\n{response_headers}")
+    logger.debug(f"Response received:\n{response_data=}\n{response_headers=}")
 
     return response_data
 
@@ -246,9 +246,9 @@ def purge_branch_protection_rules(
 
     deleted: list[BranchProtectionRule] = []
 
-    for rule in rules:
+    for i, rule in enumerate(rules):
         if should_delete_rule(rule):
-            logger.info(f"Deleting {rule}...")
+            logger.info(f"Deleting {i}/{len(rules)}: {rule}...")
 
             query = DELETE_BRANCH_PROTECTION_RULE_QUERY_TEMPLATE
             variables = {
