@@ -1973,6 +1973,9 @@
             "timeout": 500
         },
         {
+            "playbookID": "Test CommonServerPython on Python2"
+        },
+        {
             "playbookID": "TestFileCreateAndUpload"
         },
         {
