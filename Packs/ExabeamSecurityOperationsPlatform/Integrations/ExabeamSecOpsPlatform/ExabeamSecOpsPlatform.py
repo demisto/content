@@ -161,10 +161,10 @@ class Client(BaseClient):
         )
         return response
 
-    def table_request(self, method, table_id: int = 0, params: Optional[Dict[str, str]] = None) -> dict:
+    def table_request(self, method: str, url_suffix=None, params: Optional[Dict] = None) -> dict:
         """ """
         base_url = f"{self._base_url}/context-management/v1/tables"
-        full_url = f"{base_url}/{table_id}" if table_id else base_url
+        full_url = f"{base_url}/{url_suffix}" if url_suffix else base_url
         response = self.request(method=method, full_url=full_url, params=params)
         return response
 
@@ -520,6 +520,21 @@ def context_table_delete_command(client: Client, args: dict) -> CommandResults:
     )
 
 
+def table_record_list_command(client: Client, args: dict) -> CommandResults:
+    table_id = args.get("table_id")
+    url_suffix = f"{table_id}/records"
+    params = {'limit': get_limit(args)}
+
+    response = client.table_request("GET", url_suffix, params)
+    records = response.get("records", [])
+
+    return CommandResults(
+        outputs_prefix="ExabeamPlatform.Record",
+        outputs=records,
+        readable_output=tableToMarkdown(name=f"Records of table id: {table_id}", t=records)
+    )
+
+
 def test_module(client: Client) -> str:    # pragma: no cover
     """test function
 
@@ -574,6 +589,8 @@ def main() -> None:
             return_results(context_table_list_command(client, args))
         elif command == 'exabeam-platform-context-table-delete':
             return_results(context_table_delete_command(client, args))
+        elif command == 'exabeam-platform-table-record-list':
+            return_results(table_record_list_command(client, args))
         else:
             raise NotImplementedError(f"Command {command} is not supported")
 

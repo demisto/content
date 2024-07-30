@@ -320,6 +320,15 @@ script:
       predefined:
       - Yes
       - No 
+  - name: exabeam-platform-table-record-list
+    description: Retrieve the records for a specific context table.
+    arguments:
+    - name: table_id
+      description: ID of the table. Obtain this value by running `exabeam-platform-context-table-list`.
+      required: true
+    - name: limit
+      description: The number of records to return.
+      defaultValue: 50
   runonce: false
   script: '-'
   type: python

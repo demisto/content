@@ -5,3 +5,7 @@
 !exabeam-platform-alert-search alert_id=123
 !exabeam-platform-context-table-list limit=2 include_attributes=Yes
 !exabeam-platform-context-table-list table_id=123
+
+
+
+!exabeam-platform-table-record-list table_id=RMOfaAaKZq limit=3
