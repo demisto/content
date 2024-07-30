@@ -580,3 +580,17 @@ def test_search_alerts_request__empty_arguments(mocker):
     http_request = mocker.patch.object(CLIENT, '_http_request', return_value=[])
     CLIENT.search_alerts_request()
     assert 'time_range' not in http_request.call_args.kwargs['json_data']
+    
+    
+def test_create_search_process_request__event_id_arg(mocker):
+    """
+        Given:
+            - An event_id arg
+        When:
+            - Running create_search_process_request func.
+        Then:
+            - The http request is called with the event_id in Square bars.
+    """
+    http_request = mocker.patch.object(CLIENT, '_http_request', return_value=[])
+    CLIENT.create_search_process_request(event_id=123, process_hash='', process_name='', query='', start_time='1 day')
+    assert http_request.call_args.kwargs['json_data']['criteria']['event_id'] == [123]

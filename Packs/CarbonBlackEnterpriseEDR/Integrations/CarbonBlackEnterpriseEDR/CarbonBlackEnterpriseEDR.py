@@ -375,7 +375,7 @@ class Client(BaseClient):
         body = assign_params(criteria=assign_params(
             process_hash=process_hash_list,
             process_name=process_name_list,
-            event_id=event_id,
+            event_id=[event_id],
         ),
             query=query,
             rows=limit,
