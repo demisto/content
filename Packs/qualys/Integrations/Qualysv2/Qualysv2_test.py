@@ -160,7 +160,7 @@ def test_fetch_assets_command(requests_mock, mocker):
     requests_mock.post(f'{base_url}api/2.0/fo/knowledge_base/vuln/'
                        f'?action=list&last_modified_after={arg_to_datetime(ASSETS_FETCH_FROM).strftime(ASSETS_DATE_FORMAT)}',
                        text=vulnerabilities)
-    mocker.patch.object(demisto, 'getAssetsLastRun', return_value={'stage': 'assets'})
+    last_run = {'stage': 'assets'}
 
     client = Client(base_url=base_url,
                     verify=True,
@@ -169,13 +169,13 @@ def test_fetch_assets_command(requests_mock, mocker):
                     username='demisto',
                     password='demisto',
                     )
-    assets, vulnerabilities, total_assets, snapshot_id = fetch_assets(client=client)
+    assets, vulnerabilities, last_run, total_assets, snapshot_id = fetch_assets(client=client, assets_last_run=last_run)
     assert len(assets) == 8
     assert len(vulnerabilities) == 0
 
-    mocker.patch.object(demisto, 'getAssetsLastRun', return_value={'stage': 'vulnerabilities'})
+    last_run = {'stage': 'vulnerabilities'}
 
-    assets, vulnerabilities, total_assets, snapshot_id = fetch_assets(client=client)
+    assets, vulnerabilities, last_run, total_assets, snapshot_id = fetch_assets(client=client, assets_last_run=last_run)
     assert len(assets) == 0
     assert len(vulnerabilities) == 2
 
