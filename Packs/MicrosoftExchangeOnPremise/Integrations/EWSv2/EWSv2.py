@@ -130,6 +130,7 @@ SERVER_BUILD = ""
 MARK_AS_READ = demisto.params().get('markAsRead', False)
 MAX_FETCH = min(50, int(demisto.params().get('maxFetch', 50)))
 FETCH_TIME = demisto.params().get('fetch_time') or '10 minutes'
+LEGACY_NAME = argToBoolean(demisto.params().get('legacy_name', False))
 
 LAST_RUN_IDS_QUEUE_SIZE = 500
 
@@ -401,13 +402,14 @@ def get_time_zone() -> EWSTimeZone | None:
     return time_zone
 
 
-def get_attachment_name(attachment_name, content_id="", attachment_id=""):  # pragma: no cover
-    identifier_id = content_id
-    if not identifier_id or identifier_id == "None":
-        identifier_id = attachment_id
+def get_attachment_name(attachment_name, content_id="", is_inline=False):  # pragma: no cover
+    if is_inline and content_id and content_id != "None" and not LEGACY_NAME:
+        if attachment_name is None or attachment_name == "":
+            return f'{content_id}-attachmentName-demisto_untitled_attachment'
+        return f'{content_id}-attachmentName-{attachment_name}'
     if attachment_name is None or attachment_name == "":
-        return f'{identifier_id}-imageName:demisto_untitled_attachment'
-    return f'{identifier_id}-imageName:{attachment_name}'
+        return 'demisto_untitled_attachment'
+    return attachment_name
 
 
 def switch_hr_headers(obj, hr_header_changes):
@@ -1094,7 +1096,7 @@ def parse_incident_from_item(item, is_fetch):  # pragma: no cover
                                 # save the attachment
                                 file_name = get_attachment_name(attachment_name=attachment.name,
                                                                 content_id=attachment.content_id,
-                                                                attachment_id=attachment.attachment_id.id)
+                                                                is_inline=attachment.is_inline)
                                 file_result = fileResult(file_name, attachment.content)
 
                                 # check for error
@@ -1107,7 +1109,8 @@ def parse_incident_from_item(item, is_fetch):  # pragma: no cover
                                     'path': file_result['FileID'],
                                     'name': get_attachment_name(attachment_name=attachment.name,
                                                                 content_id=attachment.content_id,
-                                                                attachment_id=attachment.attachment_id.id),
+                                                                is_inline=attachment.is_inline),
+                                    "description": FileAttachmentType.ATTACHED if not attachment.is_inline else ""
                                 })
                         except TypeError as e:
                             if str(e) != "must be string or buffer, not None":
@@ -1145,7 +1148,7 @@ def parse_incident_from_item(item, is_fetch):  # pragma: no cover
 
                             file_result = fileResult(get_attachment_name(attachment_name=attachment.name,
                                                                          content_id=attachment.content_id,
-                                                                         attachment_id=attachment.attachment_id.id) + ".eml",
+                                                                         is_inline=attachment.is_inline) + ".eml",
                                                      attached_email.as_string())
 
                         if file_result:
@@ -1159,19 +1162,19 @@ def parse_incident_from_item(item, is_fetch):  # pragma: no cover
                                 'path': file_result['FileID'],
                                 'name': get_attachment_name(attachment_name=attachment.name,
                                                             content_id=attachment.content_id,
-                                                            attachment_id=attachment.attachment_id.id) + ".eml",
+                                                            is_inline=attachment.is_inline) + ".eml",
                             })
 
                         else:
                             incident['attachment'].append({
                                 'name': get_attachment_name(attachment_name=attachment.name,
                                                             content_id=attachment.content_id,
-                                                            attachment_id=attachment.attachment_id.id) + ".eml",
+                                                            is_inline=attachment.is_inline) + ".eml",
                             })
 
                     labels.append({'type': label_attachment_type, 'value': get_attachment_name(attachment_name=attachment.name,
                                                                                                content_id=attachment.content_id,
-                                                                                               attachment_id=attachment.attachment_id.id)})
+                                                                                               is_inline=attachment.is_inline)})
                     labels.append({'type': label_attachment_id_type, 'value': attachment.attachment_id.id})
 
         # handle headers
@@ -1299,7 +1302,7 @@ def fetch_emails_as_incidents(account_email, folder_name):
 def get_entry_for_file_attachment(item_id, attachment):  # pragma: no cover
     entry = fileResult(get_attachment_name(attachment_name=attachment.name,
                                            content_id=attachment.content_id,
-                                           attachment_id=attachment.attachment_id.id), attachment.content)
+                                           is_inline=attachment.is_inline), attachment.content)
     ec = {
         CONTEXT_UPDATE_EWS_ITEM_FOR_ATTACHMENT + CONTEXT_UPDATE_FILE_ATTACHMENT: parse_attachment_as_dict(item_id,
                                                                                                           attachment)
@@ -1320,7 +1323,7 @@ def parse_attachment_as_dict(item_id, attachment):  # pragma: no cover
                 ATTACHMENT_ID: attachment.attachment_id.id,
                 'attachmentName': get_attachment_name(attachment_name=attachment.name,
                                                       content_id=attachment.content_id,
-                                                      attachment_id=attachment.attachment_id.id),
+                                                      is_inline=attachment.is_inline),
                 'attachmentSHA256': hashlib.sha256(attachment_content).hexdigest() if attachment_content else None,
                 'attachmentContentType': attachment.content_type,
                 'attachmentContentId': attachment.content_id,
@@ -1339,7 +1342,7 @@ def parse_attachment_as_dict(item_id, attachment):  # pragma: no cover
                 ATTACHMENT_ID: attachment.attachment_id.id,
                 'attachmentName': get_attachment_name(attachment_name=attachment.name,
                                                       content_id=attachment.content_id,
-                                                      attachment_id=attachment.attachment_id.id),
+                                                      is_inline=attachment.is_inline),
                 'attachmentSize': attachment.size,
                 'attachmentLastModifiedTime': attachment.last_modified_time.ewsformat(),
                 'attachmentIsInline': attachment.is_inline,
@@ -1355,7 +1358,7 @@ def parse_attachment_as_dict(item_id, attachment):  # pragma: no cover
             ATTACHMENT_ID: attachment.attachment_id.id,
             'attachmentName': get_attachment_name(attachment_name=attachment.name,
                                                   content_id=attachment.content_id,
-                                                  attachment_id=attachment.attachment_id.id),
+                                                  is_inline=attachment.is_inline),
             'attachmentSHA256': None,
             'attachmentContentType': attachment.content_type,
             'attachmentContentId': attachment.content_id,
@@ -1372,7 +1375,7 @@ def get_entry_for_item_attachment(item_id, attachment, target_email):  # pragma:
     dict_result = parse_attachment_as_dict(item_id, attachment)
     dict_result.update(parse_item_as_dict(item, target_email, camel_case=True, compact_fields=True))
     title = (f'EWS get attachment got item for "{target_email}", '
-             f'"{get_attachment_name(attachment_name=attachment.name,content_id=attachment.content_id, attachment_id=attachment.attachment_id.id)}"')  # noqa: E501
+             f'"{get_attachment_name(attachment_name=attachment.name,content_id=attachment.content_id, is_inline=attachment.is_inline)}"')  # noqa: E501
 
     return get_entry_for_object(title, CONTEXT_UPDATE_EWS_ITEM_FOR_ATTACHMENT + CONTEXT_UPDATE_ITEM_ATTACHMENT,
                                 dict_result)
@@ -1438,23 +1441,20 @@ def fetch_attachments_for_message(item_id, target_mailbox=None, attachment_ids=N
     attachments = get_attachments_for_item(item_id, account, attachment_ids)
     entries = []
     for attachment in attachments:
-        if (not identifiers_filter
-            or attachment.content_id in identifiers_filter
-                or attachment.attachment_id.id in identifiers_filter):
-            if isinstance(attachment, FileAttachment):
-                try:
-                    if attachment.content:
-                        entries.append(get_entry_for_file_attachment(item_id, attachment))
-                except TypeError as e:
-                    if str(e) != "must be string or buffer, not None":
-                        raise
-            else:
-                entries.append(get_entry_for_item_attachment(item_id, attachment, account.primary_smtp_address))
-                if attachment.item.mime_content:
-                    entries.append(fileResult(get_attachment_name(attachment_name=attachment.name,
-                                                                  content_id=attachment.content_id,
-                                                                  attachment_id=attachment.attachment_id.id) + ".eml",
-                                              attachment.item.mime_content))
+        if isinstance(attachment, FileAttachment):
+            try:
+                if attachment.content:
+                    entries.append(get_entry_for_file_attachment(item_id, attachment))
+            except TypeError as e:
+                if str(e) != "must be string or buffer, not None":
+                    raise
+        else:
+            entries.append(get_entry_for_item_attachment(item_id, attachment, account.primary_smtp_address))
+            if attachment.item.mime_content:
+                entries.append(fileResult(get_attachment_name(attachment.name,
+                                                              content_id=attachment.content_id,
+                                                              is_inline=attachment.is_inline) + ".eml",
+                                          attachment.item.mime_content))
 
     return entries
 

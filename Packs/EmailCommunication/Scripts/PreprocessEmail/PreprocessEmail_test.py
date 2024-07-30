@@ -216,14 +216,14 @@ def test_get_entry_id_list():
     attachments = [
         {
             "description": "",
-            "name": "123-imageName:image_1.png",
+            "name": "123-attachmentName-image_1.png",
             "path": "131_dd98957a-d5c3-42e0-8a81-f3ce7fa68215",
             "showMediaFile": False,
             "type": ""
         },
         {
             "description": "",
-            "name": "456-imageName:image_2.png",
+            "name": "456-attachmentName-image_2.png",
             "path": "131_17545998-4b16-4e58-8e6c-2221ada856d4",
             "showMediaFile": False,
             "type": ""
@@ -261,7 +261,7 @@ def test_get_entry_id_list():
             "Extension": "png",
             "Info": "image/png",
             "MD5": "md5",
-            "Name": "123-imageName:image_1.png",
+            "Name": "123-attachmentName-image_1.png",
             "SHA1": "4sha1",
             "SHA256": "sha256",
             "SHA512": "sha512",
@@ -274,7 +274,7 @@ def test_get_entry_id_list():
             "Extension": "png",
             "Info": "image/png",
             "MD5": "md5",
-            "Name": "456-imageName:image_2.png",
+            "Name": "456-attachmentName-image_2.png",
             "SHA1": "4sha1",
             "SHA256": "sha256",
             "SHA512": "sha512",
@@ -283,7 +283,7 @@ def test_get_entry_id_list():
             "Type": "PNG image data, 264 x 60, 8-bit/color RGBA, non-interlaced"
         }]
     email_html = '<src="cid:456"'
-    expected = [('456-imageName:image_2.png', '36@119')]
+    expected = [('456-attachmentName-image_2.png', '36@119')]
     assert expected == get_entry_id_list(attachments, files, email_html)
 
 
@@ -295,13 +295,12 @@ def test_get_entry_id_list_with_attached_file():
         When
         - building an entry id list in order to replace the email's attachments source path.
         Then
-        - Ensures that only the email attachments entry id's were returned and not all files entries
         - Ensures that the attached file (attachment_1.pdf) is excluded since it is marked as ATTACHED
     """
     from PreprocessEmail import get_entry_id_list
     attachments = [
         {
-            "description": "",
+            "description": "attached_file",
             "name": "attachment_1.pdf",
             "path": "131_dd98957a-d5c3-42e0-8a81-f3ce7fa68215",
             "showMediaFile": False,
@@ -309,14 +308,14 @@ def test_get_entry_id_list_with_attached_file():
         },
         {
             "description": "",
-            "name": "123-imageName:image_1.png",
+            "name": "image_1.png",
             "path": "131_dd98957a-d5c3-42e0-8a81-f3ce7fa68215",
             "showMediaFile": False,
             "type": ""
         },
         {
             "description": "",
-            "name": "456-imageName:image_2.png",
+            "name": "image_2.png",
             "path": "131_17545998-4b16-4e58-8e6c-2221ada856d4",
             "showMediaFile": False,
             "type": ""
@@ -354,7 +353,7 @@ def test_get_entry_id_list_with_attached_file():
             "Extension": "png",
             "Info": "image/png",
             "MD5": "md5",
-            "Name": "123-imageName:image_1.png",
+            "Name": "image_1.png",
             "SHA1": "4sha1",
             "SHA256": "sha256",
             "SHA512": "sha512",
@@ -367,7 +366,7 @@ def test_get_entry_id_list_with_attached_file():
             "Extension": "png",
             "Info": "image/png",
             "MD5": "md5",
-            "Name": "456-imageName:image_2.png",
+            "Name": "image_2.png",
             "SHA1": "4sha1",
             "SHA256": "sha256",
             "SHA512": "sha512",
@@ -375,7 +374,100 @@ def test_get_entry_id_list_with_attached_file():
             "Size": 9580,
             "Type": "PNG image data, 264 x 60, 8-bit/color RGBA, non-interlaced"
         }]
-    expected = [('123-imageName:image_1.png', '35@119'), ('456-imageName:image_2.png', '36@119')]
+    expected = [('image_1.png', '35@119'), ('image_2.png', '36@119')]
+    email_html = '<src="cid:456"><src="cid:123">'
+    assert expected == get_entry_id_list(attachments, files, email_html)
+
+
+def test_get_entry_id_list_no_attachmentName():
+    """
+        Given
+        - List of the email's attachments - but one attachment is marked as ATTACHED (not inline image)
+        - List of files of the email's related incident
+        When
+        - building an entry id list in order to replace the email's attachments source path.
+        Then
+        - Ensures that only the email attachments entry id's were returned and not all files entries
+        - Ensures that the attached file (attachment_1.pdf) is excluded since it is marked as ATTACHED
+    """
+    from PreprocessEmail import get_entry_id_list
+    attachments = [
+        {
+            "description": "",
+            "name": "attachment_1.pdf",
+            "path": "131_dd98957a-d5c3-42e0-8a81-f3ce7fa68215",
+            "showMediaFile": False,
+            "type": ""
+        },
+        {
+            "description": "",
+            "name": "image_1.png",
+            "path": "131_dd98957a-d5c3-42e0-8a81-f3ce7fa68215",
+            "showMediaFile": False,
+            "type": ""
+        },
+        {
+            "description": "attached_file",
+            "name": "image_2.png",
+            "path": "131_17545998-4b16-4e58-8e6c-2221ada856d4",
+            "showMediaFile": False,
+            "type": ""
+        }
+    ]
+    files = [
+        {
+            "EntryID": "30@119",
+            "Extension": "pdf",
+            "Info": "application/pdf",
+            "MD5": "md5",
+            "Name": "attachment_1.pdf",
+            "SHA1": "sha1",
+            "SHA256": "sha256",
+            "SHA512": "sha512",
+            "SSDeep": "ssdeep",
+            "Size": 63111,
+            "Type": "PDF document, version 1.4"
+        },
+        {
+            "EntryID": "34@119",
+            "Extension": "png",
+            "Info": "image/png",
+            "MD5": "md5",
+            "Name": "attachment_2.png",
+            "SHA1": "4sha1",
+            "SHA256": "sha256",
+            "SHA512": "sha512",
+            "SSDeep": "ssdeep",
+            "Size": 9580,
+            "Type": "PNG image data, 264 x 60, 8-bit/color RGBA, non-interlaced"
+        },
+        {
+            "EntryID": "35@119",
+            "Extension": "png",
+            "Info": "image/png",
+            "MD5": "md5",
+            "Name": "image_1.png",
+            "SHA1": "4sha1",
+            "SHA256": "sha256",
+            "SHA512": "sha512",
+            "SSDeep": "ssdeep",
+            "Size": 9580,
+            "Type": "PNG image data, 264 x 60, 8-bit/color RGBA, non-interlaced"
+        },
+        {
+            "EntryID": "36@119",
+            "Extension": "png",
+            "Info": "image/png",
+            "MD5": "md5",
+            "Name": "image_2.png",
+            "SHA1": "4sha1",
+            "SHA256": "sha256",
+            "SHA512": "sha512",
+            "SSDeep": "ssdeep",
+            "Size": 9580,
+            "Type": "PNG image data, 264 x 60, 8-bit/color RGBA, non-interlaced"
+        }]
+    expected = [('attachment_1.pdf', '30@119'), ('image_1.png', '35@119')]
     email_html = '<src="cid:456"><src="cid:123">'
     assert expected == get_entry_id_list(attachments, files, email_html)
 
@@ -652,7 +744,6 @@ def test_main_untagged_email(mocker):
     Then
     - Validate that no relevant incident was created
     """
-
     from PreprocessEmail import main
     mocker.patch.object(demisto, 'incident', return_value={'CustomFields': {}})
     mocker.patch.object(demisto, 'args', return_value={"CreateIncidentUntaggedEmail": False})
@@ -669,18 +760,18 @@ def test_main_untagged_email(mocker):
     [
         ([{'type': 'Email/ID', 'value': 'foo@test.com'}, {'type': 'Instance', 'value': 'ews'},
           {'type': 'Brand', 'value': 'EWSO365'}], 'test@test.com',
-         {'arguments': {'item-id': 'foo@test.com', 'identifiers-filter': '', 'using': 'ews'},
+         {'arguments': {'item-id': 'foo@test.com', 'using': 'ews'},
           'command': 'ews-get-attachment', 'incidents': None}
          ),
         ([{'type': 'Email/ID', 'value': 'foo@test.com'}, {'type': 'Instance', 'value': 'gmail'},
           {'type': 'Brand', 'value': 'Gmail'}], 'test@gmail.com',
-         {'arguments': {'message-id': 'foo@test.com', 'user-id': 'me', 'identifiers-filter': '', 'using': 'gmail'},
+         {'arguments': {'message-id': 'foo@test.com', 'user-id': 'me', 'using': 'gmail'},
           'command': 'gmail-get-attachments', 'incidents': None}
          ),
         ([{'type': 'Email/ID', 'value': 'foo@outlook.com'}, {'type': 'Instance', 'value': 'MicrosoftGraphMail'},
           {'type': 'Brand', 'value': 'MicrosoftGraphMail'}], 'test@outlook.com',
          {'command': 'msgraph-mail-get-attachment', 'incidents': None,
-         'arguments': {'user_id': 'test@outlook.com', 'message_id': 'foo@outlook.com', 'identifiers_filter': '',
+         'arguments': {'user_id': 'test@outlook.com', 'message_id': 'foo@outlook.com',
                        'using': 'MicrosoftGraphMail'}}
          ),
     ]
@@ -694,13 +785,33 @@ def test_get_attachments_using_instance(labels, email_to, result, mocker):
 
 ATTACHMENTS = [{
     "description": "",
-    "name": "123-imageName:image_1.png",
+    "name": "image_1.png",
             "path": "131_dd98957a-d5c3-42e0-8a81-f3ce7fa68215",
             "showMediaFile": False,
             "type": ""
 }, {
     "description": "",
-    "name": "456-imageName:image_2.png",
+    "name": "image_2.png",
+            "path": "131_dd98957a-d5c3-42e0-8a81-f3ce7fa68215",
+            "showMediaFile": False,
+            "type": ""
+}]
+
+ATTACHMENTS_2 = [{
+    "description": "",
+    "name": "123-attachmentName-image_1.png",
+            "path": "131_dd98957a-d5c3-42e0-8a81-f3ce7fa68215",
+            "showMediaFile": False,
+            "type": ""
+}, {
+    "description": "",
+    "name": "456-attachmentName-image_2.png",
+            "path": "131_dd98957a-d5c3-42e0-8a81-f3ce7fa68215",
+            "showMediaFile": False,
+            "type": ""
+}, {
+    "description": "",
+    "name": "image_3.png",
             "path": "131_dd98957a-d5c3-42e0-8a81-f3ce7fa68215",
             "showMediaFile": False,
             "type": ""
@@ -711,7 +822,7 @@ FILES_TEST1 = [{
     "Extension": "png",
     "Info": "image/png",
     "MD5": "605ebf7bc83a00840a3ea90c8ed56515",
-    "Name": "123-imageName:image_1.png",
+    "Name": "image_1.png",
     "SHA1": "SHA1",
     "SHA256": "SHA256",
     "SHA512": "SHA512",
@@ -723,7 +834,7 @@ FILES_TEST1 = [{
     "Extension": "png",
     "Info": "image/png",
     "MD5": "605ebf7bc83a00840a3ea90c8ed56515",
-    "Name": "456-imageName:image_2.png",
+    "Name": "image_2.png",
     "SHA1": "SHA1",
     "SHA256": "SHA256",
     "SHA512": "SHA512",
@@ -732,58 +843,169 @@ FILES_TEST1 = [{
     "Type": "PNG image data, 275 x 184, 8-bit/color RGBA, non-interlaced"
 }]
 
-FILES_TEST2 = {
+FILES_TEST2 = [{
     "EntryID": "4@131",
     "Extension": "png",
     "Info": "image/png",
     "MD5": "605ebf7bc83a00840a3ea90c8ed56515",
-    "Name": "123-imageName:image_1.png",
+    "Name": "123-attachmentName-image_1.png",
     "SHA1": "SHA1",
     "SHA256": "SHA256",
     "SHA512": "SHA512",
     "SSDeep": "SSDeep",
     "Size": 127884,
     "Type": "PNG image data, 275 x 184, 8-bit/color RGBA, non-interlaced"
-}
-
-FILES_TEST3 = {}
+}, {
+    "EntryID": "5@131",
+    "Extension": "png",
+    "Info": "image/png",
+    "MD5": "605ebf7bc83a00840a3ea90c8ed56515",
+    "Name": "456-attachmentName-image_2.png",
+    "SHA1": "SHA1",
+    "SHA256": "SHA256",
+    "SHA512": "SHA512",
+    "SSDeep": "SSDeep",
+    "Size": 127884,
+    "Type": "PNG image data, 275 x 184, 8-bit/color RGBA, non-interlaced"
+}, {
+    "EntryID": "5@131",
+    "Extension": "png",
+    "Info": "image/png",
+    "MD5": "605ebf7bc83a00840a3ea90c8ed56515",
+    "Name": "image_3.png",
+    "SHA1": "SHA1",
+    "SHA256": "SHA256",
+    "SHA512": "SHA512",
+    "SSDeep": "SSDeep",
+    "Size": 127884,
+    "Type": "PNG image data, 275 x 184, 8-bit/color RGBA, non-interlaced"
+}]
 
 
 @pytest.mark.parametrize(
-    "attachments, email_related_incident, files, expected_result",
+    "attachments, files, html, expected_result",
     [
-        (ATTACHMENTS, 'test@gmail.com', FILES_TEST1, ('dummyFileIdentifier', [])),
-        (ATTACHMENTS, 'test@gmail.com', FILES_TEST2, ('456', [{'description': '', 'name': '456-imageName:image_2.png',
-                                                               'path': '131_dd98957a-d5c3-42e0-8a81-f3ce7fa68215',
-                                                               'showMediaFile': False, 'type': ''}])),
-        (ATTACHMENTS, 'test@gmail.com', FILES_TEST3, ('123,456', [{'description': '',
-                                                                   'name': '123-imageName:image_1.png',
-                                                                   'path': '131_dd98957a-d5c3-42e0-8a81-f3ce7fa68215',
-                                                                   'showMediaFile': False, 'type': ''},
-                                                                  {'description': '',
-                                                                   'name': '456-imageName:image_2.png',
-                                                                   'path': '131_dd98957a-d5c3-42e0-8a81-f3ce7fa68215',
-                                                                   'showMediaFile': False, 'type': ''}])),
+        (ATTACHMENTS, FILES_TEST1, "", [('image_1.png', '4@131'), ('image_2.png', '5@131')]),
+        (
+            ATTACHMENTS_2, FILES_TEST2, """<!DOCTYPE html>
+<html>
+<head>
+    <title>Inline Images</title>
+</head>
+<body>
+    <h1>Hello, World!</h1>
+    <p>This is a test email with inline images.</p>
+    <img src="cid:123" alt="Inline Image 1">
+    <img src="cid:456" alt="Inline Image 2">
+</body>
+</html>""",
+            [('123-attachmentName-image_1.png', '4@131'), ('456-attachmentName-image_2.png', '5@131')]
+        )
     ]
 )
-def test_find_attachments_to_download(attachments, email_related_incident, files, expected_result, mocker):
+def test_get_entry_id_list_only_attachments(attachments, files, html, expected_result):
     """
-    Test case to find attachments to download based on different scenarios.
-
-    Given:
-        - Attachments of the incident.
-        - Email which is related to the incident.
-
-    When:
-        - Scenario 1: no new images.
-        - Scenario 2: one new image.
-        - Scenario 3: all images are new.
-
-    Then:
-        - Return the corresponding amount of entry IDs.
+    Given
+    - case 1: all attachments are attached or in the original (plain) format.
+    - case 2: 2 attachments in the new format (<ID>-attachmentName-<Name>) 1 attachment attached.
+    When
+    - running get_entry_id_list.
+    Then
+    - case 1: returns the two original entry IDs.
+    - case 2: return only the new formatted attachments - as they should be replaced in the html.
     """
-    import PreprocessEmail
-    mocker.patch.object(PreprocessEmail, 'get_incident_related_files', return_value=files)
-    result = PreprocessEmail.find_attachments_to_download(attachments, email_related_incident)
-    assert result[0] == expected_result[0]
-    assert result[1] == expected_result[1]
+    from PreprocessEmail import get_entry_id_list
+    assert get_entry_id_list(attachments, files, html) == expected_result
+
+
+@pytest.mark.parametrize(
+    "html, entry_id_list, expected_result",
+    [
+        (
+            """<!DOCTYPE html>
+<html>
+<head>
+    <title>Inline Images</title>
+</head>
+<body>
+    <h1>Hello, World!</h1>
+    <p>This is a test email with inline images.</p>
+    <img src="cid:123" alt="image_1.png">
+</body>
+</html>""",
+            [('123-attachmentName-image_1.png', '4@131'), ('image_2.png', '5@131')],
+            """<!DOCTYPE html>
+<html>
+<head>
+    <title>Inline Images</title>
+</head>
+<body>
+    <h1>Hello, World!</h1>
+    <p>This is a test email with inline images.</p>
+    <img src=entry/download/4@131 alt="image_1.png">
+</body>
+</html>"""
+        ),
+        (
+            """<!DOCTYPE html>
+<html>
+<head>
+    <title>Inline Images</title>
+</head>
+<body>
+    <h1>Hello, World!</h1>
+    <p>This is a test email with inline images.</p>
+    <img src="cid:123" alt="image_1.png">
+</body>
+</html>""",
+            [('image_1.png', '4@131'), ('image_2.png', '5@131')],
+            """<!DOCTYPE html>
+<html>
+<head>
+    <title>Inline Images</title>
+</head>
+<body>
+    <h1>Hello, World!</h1>
+    <p>This is a test email with inline images.</p>
+    <img src=entry/download/4@131 alt="image_1.png">
+</body>
+</html>"""
+        ),
+        (
+            """<!DOCTYPE html>
+<html>
+<head>
+    <title>Inline Images</title>
+</head>
+<body>
+    <h1>Hello, World!</h1>
+    <p>This is a test email with inline images.</p>
+</body>
+</html>""",
+            [('image_1.png', '4@131'), ('image_2.png', '5@131')],
+            """<!DOCTYPE html>
+<html>
+<head>
+    <title>Inline Images</title>
+</head>
+<body>
+    <h1>Hello, World!</h1>
+    <p>This is a test email with inline images.</p>
+</body>
+</html>"""
+        )
+    ]
+)
+def test_create_email_html_no_image_to_insert(html, entry_id_list, expected_result):
+    """
+    Given
+    - case 1: one image to replace in html with new name format.
+    - case 2: one image to replace in html with old name format.
+    - case 3: no images to replace.
+    When
+    - running create_email_html.
+    Then
+    returns the expected html.
+    """
+    from PreprocessEmail import create_email_html
+    assert create_email_html(html, entry_id_list) == expected_result
