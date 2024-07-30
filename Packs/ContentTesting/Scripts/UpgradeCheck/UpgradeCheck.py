@@ -93,7 +93,7 @@ def FilterPacks(packs, upgradePacks, changesPacks):
 
     upgrade = upgradePacks.copy()
     for packid, _pack in upgrade.items():
-        if packid.lower().replace(" ", "") in packlist:
+        if _pack['name'].lower().replace(" ", "") in packlist:
             continue
         else:
             del upgradePacks[packid]
@@ -120,7 +120,7 @@ def GetUpgradedIntegrations(packs):
 
     for c in configs:
         instid = c['id']
-        if c['packName'] == "Palo Alto Networks Cortex XDR - Investigation and Response":
+        if c['name'] == "Palo Alto Networks Cortex XDR - Investigation and Response":
             instid = "Palo Alto Networks Cortex XDR - Investigation and Response"
         if instid in integmap:
             packid = integmap[instid]
@@ -151,7 +151,6 @@ def GetCustomPlaybooks():
     playbooks = []
 
     for r in response:
-        # if r['packID'] == "":
         playbooks.append(r)
     return playbooks
 
@@ -164,8 +163,6 @@ def GetFieldKey(inoutfield):
                 output.append(item['key'])
             elif 'contextPath' in item:
                 output.append(item['contextPath'])
-            else:
-                output.append(item)
         output = ','.join(output)
     else:
         output = re.sub('["$","{","}"]', '', inoutfield)
@@ -173,8 +170,7 @@ def GetFieldKey(inoutfield):
 
 
 def GetFieldsUsed(playbooks):
-    usedfields: dict[str, list[str]]
-    usedfields = {}
+    usedfields: dict = {}
     regex = re.compile("\$\{incident\.[^}]+\}")
 
     for p in playbooks:
@@ -364,6 +360,8 @@ def main():
     try:
         packs = demisto.args().get("packs", "")
         upgradePacks, changesPacks = GetUpgradedPacks()
+        if len(upgradePacks) == 0 and len(changesPacks) == 0:
+            return
         upgradePacks, changesPacks = FilterPacks(packs, upgradePacks, changesPacks)
         upgradeIntegs = GetUpgradedIntegrations(upgradePacks)
         upgradeTypes, customTypes = GetUpgradedIncidentTypes(upgradePacks)

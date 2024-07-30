@@ -1,7 +1,10 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
+
 import io
 import uuid
+import time
 
 
 def GetAutomationId(name):
@@ -81,9 +84,10 @@ def RunUTResults(args):
             raise DemistoException("unable to add DisplayUnitTestResults task to playbook")
 
         # Execute the task inside a demisto lock to prevent concurrent updates to the unit test status grid field
-        attempts = 0
-        contents = demisto.executeCommand("demisto-lock-get", {'name': gridfld, 'timeout': 60})[0]['Contents']
+        contents = demisto.executeCommand(
+            "demisto-lock-get", {'name': gridfld, 'polling_interval': 1, 'timeout': 60})[0]['Contents']
         if "Lock acquired successfully" in contents:
+            attempts = 0
             while attempts < 5:
                 start_response = demisto.executeCommand("core-api-post", {
                     'uri': "/inv-playbook/task/execute",
@@ -100,7 +104,7 @@ def RunUTResults(args):
                     }
                 })
                 if "response" not in start_response[0]['Contents']:
-                    attempts = attempts + 1
+                    attempts += 1
                 else:
                     break
             demisto.executeCommand("demisto-lock-release", {'name': gridfld})
