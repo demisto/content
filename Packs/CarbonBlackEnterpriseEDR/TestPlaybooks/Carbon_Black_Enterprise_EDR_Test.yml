@@ -1,15 +1,11 @@
 id: Carbon Black Enterprise EDR Test
-version: 7
+version: -1
+fromversion: 5.0.0
+contentitemfields:
+  propagationLabels:
+  - all
 contentitemexportablefields:
-  contentitemfields:
-    packID: ""
-    packName: ""
-    itemVersion: 1.1.0
-    fromServerVersion: ""
-    toServerVersion: ""
-    definitionid: ""
-    prevname: ""
-vcShouldKeepItemLegacyProdMachine: false
+  contentitemfields: {}
 name: Carbon Black Enterprise EDR Test
 starttaskid: "0"
 tasks:
@@ -23,11 +19,11 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -40,6 +36,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "1":
@@ -61,8 +58,11 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -75,6 +75,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "2":
@@ -94,7 +95,6 @@ tasks:
       '#none#':
       - "18"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -107,6 +107,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "3":
@@ -128,6 +129,8 @@ tasks:
     scriptarguments:
       alerts_enabled:
         simple: "false"
+      classifier_key: {}
+      classifier_value: {}
       description:
         simple: This is a test
       report_ids:
@@ -158,7 +161,6 @@ tasks:
                   simple: test_watchlist_
               suffix: {}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -171,6 +173,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "4":
@@ -190,12 +193,11 @@ tasks:
       watchlist_id:
         simple: ${CarbonBlackEEDR.Watchlist.ID}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 80,
-          "y": 1940
+          "x": 450,
+          "y": 1910
         }
       }
     note: false
@@ -203,6 +205,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "5":
@@ -213,8 +216,7 @@ tasks:
       id: e01b7d5c-66e5-42b7-88c0-b7afff02e304
       version: -1
       name: Update the watchlist
-      description: Updates the specified watchlist. This will update the tags and
-        alert status as well as any reports or classifiers attached to the watchlist.
+      description: Updates the specified watchlist. This will update the tags and alert status as well as any reports or classifiers attached to the watchlist.
       script: '|||cb-eedr-watchlist-update'
       type: regular
       iscommand: true
@@ -230,7 +232,6 @@ tasks:
       watchlist_name:
         simple: ${CarbonBlackEEDR.Watchlist.Name}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -243,6 +244,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "6":
@@ -265,7 +267,6 @@ tasks:
       watchlist_id:
         simple: ${watchListId}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -278,6 +279,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "7":
@@ -303,7 +305,6 @@ tasks:
             value:
               simple: ${CarbonBlackEEDR.Watchlist.alerts_enabled}
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -316,6 +317,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "9":
@@ -348,7 +350,6 @@ tasks:
       title:
         simple: Report test
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -361,6 +362,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "10":
@@ -383,7 +385,6 @@ tasks:
       report_id:
         simple: ${CarbonBlackEEDR.Report.ID}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -396,6 +397,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "11":
@@ -430,7 +432,6 @@ tasks:
       title:
         simple: ${CarbonBlackEEDR.Report.Title}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -443,6 +444,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "12":
@@ -465,7 +467,6 @@ tasks:
       report_id:
         simple: ${CarbonBlackEEDR.Report.ID}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -478,6 +479,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "13":
@@ -516,7 +518,6 @@ tasks:
           right:
             value:
               simple: Different description.
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -529,6 +530,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "14":
@@ -551,7 +553,6 @@ tasks:
       report_id:
         simple: ${CarbonBlackEEDR.Report.ID}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -564,6 +565,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "15":
@@ -586,7 +588,6 @@ tasks:
       watchlist_id:
         simple: ${CarbonBlackEEDR.Watchlist.id}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -599,6 +600,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "16":
@@ -610,20 +612,38 @@ tasks:
       version: -1
       name: List alerts
       description: Returns a list of alerts.
-      script: Carbon Black Enterprise EDR|||cb-eedr-list-alerts
+      script: 'Carbon Black Enterprise EDR|||cb-eedr-list-alerts'
       type: regular
       iscommand: true
-      brand: Carbon Black Enterprise EDR
+      brand: "Carbon Black Enterprise EDR"
     nexttasks:
       '#none#':
       - "20"
     scriptarguments:
+      alert_id: {}
+      alert_tag: {}
+      alert_type: {}
+      device_id:
+        simple: "3366007"
+      device_name: {}
+      device_os:
+        simple: LINUX
+      device_os_version: {}
+      device_username: {}
+      end_time: {}
       limit:
         simple: "5"
+      minimum_severity: {}
+      policy_id: {}
+      policy_name: {}
+      process_name: {}
+      process_sha256: {}
+      reputation: {}
       sort_field:
         simple: first_event_timestamp
+      sort_order: {}
+      start_time: {}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -636,6 +656,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "17":
@@ -660,7 +681,6 @@ tasks:
       start_time:
         simple: "2019-01-01T11:00:00.157Z"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -673,6 +693,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "18":
@@ -694,8 +715,11 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -708,6 +732,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "19":
@@ -738,7 +763,6 @@ tasks:
             value:
               simple: CarbonBlackEEDR.Watchlist.ID
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -751,6 +775,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "20":
@@ -786,7 +811,6 @@ tasks:
             value:
               simple: CarbonBlackEEDR.Alert.id
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -799,6 +823,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "21":
@@ -837,7 +862,6 @@ tasks:
             value:
               simple: CarbonBlackEEDR.Device.id
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -850,6 +874,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "22":
@@ -863,8 +888,8 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -877,6 +902,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "23":
@@ -972,3 +998,4 @@ view: |-
   }
 inputs: []
 outputs: []
+description: ''
