@@ -1,0 +1,26 @@
+[
+    {
+        "Serial": "0000-0000-0000",
+        "Network ID": "N_24329156",
+        "Model": "MX68C",
+        "Last Reported At": "2018-02-11T00:00:00Z",
+        "Uplink ICCID": [
+            "123456789"
+        ],
+        "Uplink Interface": [
+            "wan1"
+        ],
+        "Uplink IP": [
+            "0.0.0.0"
+        ],
+        "Uplink Public IP": [
+            "0.0.0.0"
+        ],
+        "Uplink Signal Type": [
+            "4G"
+        ],
+        "Uplink Status": [
+            "active"
+        ]
+    }
+]

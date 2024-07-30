@@ -116,6 +116,12 @@ configuration:
   section: Connect
   advanced: true
   required: false
+- display: Use legacy attachment name
+  name: legacy_name
+  section: Collect
+  type: 8
+  advanced: true
+  defaultvalue: 'false'
 description: Exchange Web Services and Office 365 (mail).
 display: EWS v2
 name: EWS v2
@@ -1024,7 +1030,7 @@ script:
       name: from
     description: Replies to an email using EWS.
     name: reply-mail
-  dockerimage: demisto/py-ews:5.4.1.98082
+  dockerimage: demisto/py-ews:5.4.1.98221
   isfetch: true
   runonce: false
   script: '-'

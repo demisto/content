@@ -102,6 +102,7 @@ def get_agents_outputs(agents, column_to_display: list | None = None):
             'Domain': agent.get('domain'),
             'CreatedAt': agent.get('createdAt'),
             'SiteName': agent.get('siteName'),
+            'Tags': agent.get('tags'),
         }
 
         for c in set(column_to_display or []).intersection(agent.keys()):
@@ -284,7 +285,7 @@ class Client(BaseClient):
             displayName__like=display_name,
             displayName=display_name,
             query=query,
-            ids=argToList(threat_ids),
+            ids=threat_ids,
             limit=int(limit),
             classifications=argToList(classifications),
             siteIds=site_ids,

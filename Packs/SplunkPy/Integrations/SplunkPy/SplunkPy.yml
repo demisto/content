@@ -6,7 +6,7 @@ sectionOrder:
 - Connect
 - Collect
 configuration:
-- display: Host - IP (x.x.x.x)
+- display: Server URL
   name: host
   required: true
   type: 0
@@ -673,7 +673,7 @@ script:
     - contextPath: Splunk.UserMapping.SplunkUser
       description: Splunk user mapping.
       type: String
-  dockerimage: demisto/splunksdk-py3:1.0.0.98420
+  dockerimage: demisto/splunksdk-py3:1.0.0.104156
   isfetch: true
   ismappable: true
   isremotesyncin: true

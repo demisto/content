@@ -7,7 +7,7 @@
   "IAM - Terminate User",
   "IAM - Sync User",
   "IAM - Rehire User",
-  "IBM QRadar SOAR Incident"
+  "Exabeam Notable User"
  ],
  "caseInsensitive": true,
  "cliName": "mobilephone",

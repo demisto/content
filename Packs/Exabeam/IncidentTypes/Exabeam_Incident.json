@@ -24,5 +24,6 @@
         "mode": "Specific",
         "fieldCliNameToExtractSettings": {}
     },
-    "fromVersion": "6.5.0"
+    "fromVersion": "6.5.0",
+    "layout": "Exabeam Incident"
 }

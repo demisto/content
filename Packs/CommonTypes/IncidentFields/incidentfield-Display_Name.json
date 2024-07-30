@@ -10,7 +10,7 @@
   "Vectra Account",
   "CrowdStrike Falcon IDP Detection",
   "CrowdStrike Falcon Mobile Detection",
-  "IBM QRadar SOAR Incident"
+  "CrowdStrike Falcon On-Demand Scans Detection"
  ],
  "caseInsensitive": true,
  "cliName": "displayname",
