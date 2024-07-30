@@ -588,7 +588,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "sekoiaalertstatus",
+                                "fieldId": "sekoiaxdralertstatus",
                                 "height": 22,
                                 "id": "a3e43c80-d3a2-11ed-a53e-9fbb99147542",
                                 "index": 5,
@@ -665,7 +665,7 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "sekoiaalertdetails",
+                                "fieldId": "sekoiaxdralertdetails",
                                 "height": 106,
                                 "id": "45a64580-d381-11ed-a53d-9fbb99147542",
                                 "index": 0,
@@ -708,7 +708,7 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "sekoiakillchain",
+                                "fieldId": "sekoiaxdrkillchain",
                                 "height": 22,
                                 "id": "d4996120-d848-11ed-a2c5-afbbb72993fe",
                                 "index": 0,

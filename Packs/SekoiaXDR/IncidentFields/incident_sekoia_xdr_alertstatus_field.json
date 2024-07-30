@@ -2,7 +2,7 @@
     "id": "incident_sekoiaxdralertstatus",
     "version": -1,
     "modified": "2024-07-02T13:34:47.866877854Z",
-    "name": "Sekoia XDR Alert Status",
+    "name": "SekoiaXDR Alert Status",
     "ownerOnly": false,
     "cliName": "sekoiaxdralertstatus",
     "type": "shortText",

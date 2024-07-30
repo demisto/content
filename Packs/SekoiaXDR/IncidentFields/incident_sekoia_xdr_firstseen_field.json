@@ -2,7 +2,7 @@
     "id": "incident_sekoiaxdrfirstseen",
     "version": -1,
     "modified": "2024-07-02T13:34:47.978554181Z",
-    "name": "Sekoia XDR First Seen",
+    "name": "SekoiaXDR First Seen",
     "ownerOnly": false,
     "cliName": "sekoiaxdrfirstseen",
     "type": "shortText",

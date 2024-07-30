@@ -2,7 +2,7 @@
     "id": "incident_sekoiaxdrkillchain",
     "version": -1,
     "modified": "2024-07-02T13:34:48.058774798Z",
-    "name": "Sekoia XDR Kill Chain",
+    "name": "SekoiaXDR Kill Chain",
     "ownerOnly": false,
     "cliName": "sekoiaxdrkillchain",
     "type": "grid",

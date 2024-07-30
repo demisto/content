@@ -27,16 +27,16 @@
                 "Last Seen": {
                     "simple": "last_seen_at"
                 },
-                "Sekoia Alert Details": {
+                "SekoiaXDR Alert Details": {
                     "simple": "details"
                 },
-                "Sekoia Alert Status": {
+                "SekoiaXDR Alert Status": {
                     "simple": "status.name"
                 },
-                "Sekoia First Seen": {
+                "SekoiaXDR First Seen": {
                     "simple": "first_seen_at"
                 },
-                "Sekoia Kill Chain": {
+                "SekoiaXDR Kill Chain": {
                     "complex": {
                         "filters": [],
                         "root": "kill_chain",
@@ -83,16 +83,16 @@
                 "Last Seen": {
                     "simple": "last_seen_at"
                 },
-                "Sekoia Alert Details": {
+                "SekoiaXDR Alert Details": {
                     "simple": "details"
                 },
-                "Sekoia Alert Status": {
+                "SekoiaXDR Alert Status": {
                     "simple": "status.name"
                 },
-                "Sekoia First Seen": {
+                "SekoiaXDR First Seen": {
                     "simple": "first_seen_at"
                 },
-                "Sekoia Kill Chain": {
+                "SekoiaXDR Kill Chain": {
                     "complex": {
                         "filters": [],
                         "root": "kill_chain",
