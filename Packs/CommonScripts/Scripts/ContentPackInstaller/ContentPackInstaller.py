@@ -78,8 +78,6 @@ class ContentPackInstaller:
 
         return res
 
-
-
     def get_pack_dependencies_from_marketplace(self, pack_data: Dict[str, str]) -> Dict[str, Dict[str, str]]:
         """Returns the dependencies of the pack from marketplace's data.
 
@@ -281,7 +279,7 @@ def format_packs_data_for_installation(args: Dict) -> List[Dict[str, str]]:
 
 
 def create_context(packs_to_install: List[Dict[str, str]], content_packs_installer: ContentPackInstaller) \
-    -> List[Dict[str, str]]:
+        -> List[Dict[str, str]]:
     """Creates context entry including all relevant data.
 
     Args:
