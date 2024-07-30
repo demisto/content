@@ -387,6 +387,7 @@ script:
       default: false
     - description: 'Max results to be fetched by call.'
       name: fetch_max_count
+      defaultvalue: 5000
     description: Displays search results from the Endpoint Activity Data source that match the parameters provided.
     name: trendmicro-visionone-get-endpoint-activity-data
     outputs:
@@ -570,6 +571,7 @@ script:
       default: false
     - description: 'Max results to be fetched by call.'
       name: fetch_max_count
+      defaultValue: 5000
     description: Displays search results from the Email Activity Data source that match the parameters provided.
     name: trendmicro-visionone-get-email-activity-data
     outputs:
