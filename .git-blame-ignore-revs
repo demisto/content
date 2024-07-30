@@ -1,0 +1,7 @@
+# .git-blame-ignore-revs
+# https://docs.github.com/en/repositories/working-with-files/using-files/viewing-a-file#ignore-commits-in-the-blame-view
+
+# IMPORTANT: Add a comment before each commit hash, explaining why it's listed here
+
+# apply the `sort-toml` hook
+cac73dd0315e4aab8b9c42d8a7e4b793a74fb133
