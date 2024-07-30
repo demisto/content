@@ -7209,13 +7209,13 @@ Test Scenarios:
     assert len(http_request_mocker.call_args_list[0][0]) == expected_len
 
 
-@pytest.mark.parametrize('Legacy_version, url_suffix, data', [
-    (False, "/alerts/entities/alerts/v3",
-     '{"action_parameters": [{"name": "show_in_ui", "value": "True"}, {"name": "assign_to_user_id", "value": "123"}, {"name": "update_status", "value": "resolved"}, {"name": "append_comment", "value": "comment"}], "composite_ids": ["123"]}'),  # noqa: E501
-    (True, '/detects/entities/detects/v2',
+@pytest.mark.parametrize('Legacy_version, tag, url_suffix, data', [
+    (False, "test_tag", "/alerts/entities/alerts/v3",
+     '{"action_parameters": [{"name": "show_in_ui", "value": "True"}, {"name": "assign_to_user_id", "value": "123"}, {"name": "update_status", "value": "resolved"}, {"name": "append_comment", "value": "comment"}, {"name": "add_tag", "value": "test_tag"}], "composite_ids": ["123"]}'),  # noqa: E501
+    (True, None, '/detects/entities/detects/v2',
      '{"ids": ["123"], "status": "resolved", "assigned_to_uuid": "123", "show_in_ui": "True", "comment": "comment"}')
                                                              ])
-def test_resolve_detection(mocker, Legacy_version, url_suffix, data):
+def test_resolve_detection(mocker, Legacy_version, tag, url_suffix, data):
     """
     Given:
         - The Legacy_version flag
@@ -7230,7 +7230,7 @@ def test_resolve_detection(mocker, Legacy_version, url_suffix, data):
     mocker.patch('CrowdStrikeFalcon.LEGACY_VERSION', Legacy_version)
     http_request_mocker = mocker.patch('CrowdStrikeFalcon.http_request')
 
-    resolve_detection(ids=["123"], status="resolved", assigned_to_uuid="123", show_in_ui="True", comment="comment")
+    resolve_detection(ids=["123"], status="resolved", assigned_to_uuid="123", show_in_ui="True", comment="comment", tag=tag)
     assert http_request_mocker.call_args_list[0][0][1] == url_suffix
     assert http_request_mocker.call_args_list[0][1]["data"] == data
 
