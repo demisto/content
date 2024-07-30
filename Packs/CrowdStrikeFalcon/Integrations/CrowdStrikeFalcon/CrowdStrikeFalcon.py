@@ -2048,6 +2048,8 @@ def resolve_detection(ids, status, assigned_to_uuid, show_in_ui, comment, tag):
         payload['show_in_ui'] = show_in_ui
     if comment:
         payload['comment'] = comment
+    if tag:
+        payload["add_tag"] = tag
     if not LEGACY_VERSION:
         demisto.debug(f"in resolve_detection: {LEGACY_VERSION =} and {payload=}")
         # modify the payload to match the Raptor API
@@ -2059,8 +2061,6 @@ def resolve_detection(ids, status, assigned_to_uuid, show_in_ui, comment, tag):
         data = json.dumps(resolve_detections_prepare_body_request(ids, payload))
     else:
         # We do this so show_in_ui value won't contain ""
-        if tag:
-            payload['tag'] = tag
         data = json.dumps(payload).replace('"show_in_ui": "false"', '"show_in_ui": false').replace('"show_in_ui": "true"',
                                                                                                    '"show_in_ui": true')
     url = "/alerts/entities/alerts/v3" if not LEGACY_VERSION else "/detects/entities/detects/v2"
@@ -4218,8 +4218,10 @@ def resolve_detection_command():
     status = args.get('status')
     tag = args.get('tag')
     show_in_ui = args.get('show_in_ui')
-    if not (username or assigned_to_uuid or comment or status or show_in_ui):
+    if not (username or assigned_to_uuid or comment or status or show_in_ui or tag):
         raise DemistoException("Please provide at least one argument to resolve the detection with.")
+    if LEGACY_VERSION and tag:
+        raise DemistoException("tag argument is only relevant when running with API V3.")
     raw_res = resolve_detection(ids, status, assigned_to_uuid, show_in_ui, comment, tag)
     args.pop('ids')
     hr = f"Detection {str(ids)[1:-1]} updated\n"
