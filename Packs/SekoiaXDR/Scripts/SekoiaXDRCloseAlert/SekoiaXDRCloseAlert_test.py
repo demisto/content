@@ -1,6 +1,6 @@
 import demistomock as demisto
 import SekoiaXDRCloseAlert  # type: ignore
-from SekoiaXDRCloseAlert import get_status_name, get_username, post_closure_comment, close_alert  # type: ignore
+from SekoiaXDRCloseAlert import get_status_name, get_username, post_closure_comment, close_alert, main  # type: ignore
 
 
 def test_get_status_name(mocker):
@@ -45,3 +45,21 @@ def test_close_alert(mocker):
         close_alert("1", "false", "Out", "reason", "notes", "admin")
     except Exception as e:
         assert str(e) == "**** The alert is already closed or rejected. ****"
+
+
+def test_main(mocker):
+    mocker.patch.object(
+        demisto,
+        "incidents",
+        return_value=[
+            {
+                "dbotMirrorDirection": "Out",
+                "CustomFields": {"alertid": "1"},
+                "owner": "admin",
+            }
+        ],
+    )
+    mocker.patch.object(demisto, "getArg", return_value="admin")
+    mocker.patch.object(SekoiaXDRCloseAlert, "close_alert", return_value=None)
+
+    assert main() is None

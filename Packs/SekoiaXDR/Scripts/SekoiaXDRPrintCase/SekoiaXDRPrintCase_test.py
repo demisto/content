@@ -1,5 +1,5 @@
 import demistomock as demisto
-from SekoiaXDRPrintCase import get_case_info, create_case_object  # type: ignore
+from SekoiaXDRPrintCase import get_case_info, create_case_object, main  # type: ignore
 
 
 def test_create_case_object():
@@ -65,3 +65,26 @@ def test_get_case_info(mocker):
     assert "title1" in get_case_info("1")
     assert "title2" in get_case_info("1")
     assert "1, 2, 3" in get_case_info("1")
+
+
+def test_main(mocker):
+    mocker.patch.object(
+        demisto, "incident", return_value={"CustomFields": {"caseid": "1"}}
+    )
+    mocker.patch(
+        "SekoiaXDRPrintCase.get_case_info",
+        return_value="### Case Info:\n\
+        |title|description|status|priority|related alerts|\n\
+        |---|---|---|---|---|\n\
+        | title1 | description1 | Status1 | Priority1 | 1, 2, 3 |\n",
+    )
+    mocker.patch.object(demisto, "results")
+
+    main()
+    assert (
+        demisto.results.call_args[0][0]["HumanReadable"]
+        == "### Case Info:\n\
+        |title|description|status|priority|related alerts|\n\
+        |---|---|---|---|---|\n\
+        | title1 | description1 | Status1 | Priority1 | 1, 2, 3 |\n"
+    )

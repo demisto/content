@@ -78,3 +78,16 @@ def test_get_comments_no_comments(mocker):
         return_value=[{"Type": 3, "Contents": comments_output}],
     )
     assert "There is no comments in this alert" in get_comments("alert_id")
+
+
+def test_main(mocker):
+    mocker.patch.object(
+        demisto, "incident", return_value={"CustomFields": {"alertid": "alert_id"}}
+    )
+    mocker.patch(
+        "SekoiaXDRPrintComments.get_comments", return_value="Comments: testcomment"
+    )
+    mocker.patch.object(demisto, "results")
+
+    main()
+    assert demisto.results.call_args[0][0]["HumanReadable"] == "Comments: testcomment"
