@@ -140,7 +140,7 @@ Palo Alto recommends that you configure Splunk to produce basic alerts that the 
 
 1. Create a summary index in Splunk. For more information, click [here](https://docs.splunk.com/Documentation/Splunk/7.3.0/Indexer/Setupmultipleindexes#Create_events_indexes_2).
 2. Build a query to return relevant alerts.
-![image](https://github.com/demisto/content/raw/master/Packs/SplunkPy/doc_files/build-query.png)
+![image](../../doc_files/build-query.png)
 1. Identify the fields list from the Splunk query and save it to a local file.
 ![image](https://github.com/demisto/content/raw/master/Packs/SplunkPy/doc_files/identify-fields-list.png)
 1. Define a search macro to capture the fields list that you saved locally. For more information, click [here](https://docs.splunk.com/Documentation/Splunk/7.3.0/Knowledge/Definesearchmacros).
