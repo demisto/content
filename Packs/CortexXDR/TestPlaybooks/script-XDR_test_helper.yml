@@ -21,8 +21,4 @@ dockerimage: demisto/python3:3.8.3.9324
 runas: DBotWeakRole
 comment: ''
 fromversion: '5.5.0'
-<<<<<<< HEAD
 
-
-=======
->>>>>>> 03230071294632f68edb2c2b64ce3ed289501f77
