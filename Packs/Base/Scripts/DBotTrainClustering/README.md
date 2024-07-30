@@ -19,7 +19,7 @@ Used to automatically categorize a large number of incidents into meaningful gro
 | **Argument Name** | **Description** |
 | --- | --- |
 | fieldsForClustering | Comma-separated list of incident fields to take into account when training the clustering. |
-| fieldForClusterName | Incident field that represents the family name for each cluster created. The model determines how many incidents in the cluster have the same value in the fieldForClusterName field. The largest numbers of incidents with the same value, determine the cluster name. |
+| fieldForClusterName | Incident field that represents the family name for each cluster created. The model determines how many incidents in the cluster have the same value in the fieldForClusterName field. The largest numbers of incidents with the same value determine the cluster name. |
 | fromDate | The start date by which to filter incidents. Date format will be the same as in the incidents query page, for example, "3 days ago", ""2019-01-01T00:00:00 \+0200"\). |
 | toDate | The end date by which to filter incidents. Date format will be the same as in the incidents query page, for example, "3 days ago", ""2019-01-01T00:00:00 \+0200"\). |
 | limit | The maximum number of incidents to query. |
