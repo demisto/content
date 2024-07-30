@@ -3446,14 +3446,17 @@ def main():  # pragma: no cover
             last_run = demisto.getAssetsLastRun()
             demisto.debug(f'saved lastrun assets: {last_run}')
             assets, vulnerabilities, last_run, total_assets, snapshot_id = fetch_assets(client=client, assets_last_run=last_run)
-            demisto.setAssetsLastRun(last_run)
             if assets:
                 demisto.debug('sending assets to XSIAM.')
                 send_data_to_xsiam(data=assets, vendor=VENDOR, product='assets', data_type='assets', snapshot_id=str(snapshot_id),
-                                   items_count=total_assets)
-            if vulnerabilities:
+                                   items_count=total_assets, should_update_health_module=False)
+                demisto.setAssetsLastRun(last_run)
+                demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type='assets'): total_assets})
+
+            elif vulnerabilities:
                 demisto.debug('sending vulnerabilities to XSIAM.')
                 send_data_to_xsiam(data=vulnerabilities, vendor=VENDOR, product='vulnerabilities', data_type='assets')
+                demisto.setAssetsLastRun(last_run)
             demisto.debug('finished fetch assets run')
         else:
             return_results(
