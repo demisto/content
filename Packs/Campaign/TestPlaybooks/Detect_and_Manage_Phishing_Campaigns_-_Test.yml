@@ -133,6 +133,8 @@ tasks:
                   simple: 'Verify your PayPal account '
       type:
         simple: Phishing
+      owner:
+        simple: admin
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -239,6 +241,8 @@ tasks:
                   simple: 'Verify your PayPal account '
       type:
         simple: Phishing
+      owner:
+        simple: admin
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -303,6 +307,8 @@ tasks:
                   simple: 'Verify your PayPal account '
       type:
         simple: Phishing
+      owner:
+        simple: admin
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -367,6 +373,8 @@ tasks:
                   simple: 'Verify your PayPal account '
       type:
         simple: Phishing
+      owner:
+        simple: admin
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -431,6 +439,8 @@ tasks:
                   simple: 'Verify your PayPal account '
       type:
         simple: Phishing
+      owner:
+        simple: admin
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -495,6 +505,8 @@ tasks:
                   simple: 'Verify your PayPal account '
       type:
         simple: Phishing
+      owner:
+        simple: admin
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -559,6 +571,8 @@ tasks:
                   simple: 'Verify your PayPal account '
       type:
         simple: Phishing
+      owner:
+        simple: admin
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -622,6 +636,8 @@ tasks:
                   simple: 'Verify your PayPal account '
       type:
         simple: Phishing
+      owner:
+        simple: admin
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -685,6 +701,8 @@ tasks:
                   simple: 'Verify your PayPal account '
       type:
         simple: Phishing
+      owner:
+        simple: admin
     separatecontext: false
     continueonerrortype: ""
     view: |-
