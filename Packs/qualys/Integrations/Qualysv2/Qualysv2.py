@@ -29,7 +29,7 @@ HOST_DETECTIONS_SINCE_DATETIME_PREV_RUN = 'host_detections_since_datetime_prev_r
 HOST_LAST_FETCH = 'host_last_fetch'
 ASSETS_FETCH_FROM = '90 days'
 MIN_ASSETS_INTERVAL = 59
-HOST_LIMIT = 1000
+HOST_LIMIT = 10000
 TEST_FROM_DATE = 'one day'
 
 ASSETS_DATE_FORMAT = '%Y-%m-%d'
@@ -2910,12 +2910,18 @@ def get_host_list_detections_events(client, since_datetime) -> list:
     next_page = ''
 
     while True:
+        demisto.debug(f'get_host_list_detection: the next_page = {next_page}')
         host_list_detections = client.get_host_list_detection(since_datetime, next_page=next_page)
         host_list_assets, next_url = handle_host_list_detection_result(host_list_detections) or []
-        assets += host_list_assets
-        next_page = get_next_page_from_url(next_url, 'id_min')
-        if not next_page:
+        if not host_list_assets:
+            demisto.debug('no host_list_assets')
             break
+        assets += host_list_assets
+        new_next_page = get_next_page_from_url(next_url, 'id_min')
+        if not new_next_page or new_next_page == next_page:
+            demisto.debug('no new_next_page')
+            break
+        next_page = new_next_page
 
     edited_host_detections = get_detections_from_hosts(assets)
     demisto.debug(f'Parsed detections from hosts, got {len(edited_host_detections)=} assets.')
@@ -2953,7 +2959,7 @@ def fetch_assets(client, since_datetime=None):
     demisto.debug('Starting fetch for assets')
     if not since_datetime:
         since_datetime = arg_to_datetime(ASSETS_FETCH_FROM).strftime(ASSETS_DATE_FORMAT)  # type: ignore[union-attr]
-
+    demisto.debug(f'{since_datetime}')
     assets = get_host_list_detections_events(client, since_datetime)
     vulnerabilities = get_vulnerabilities(client, since_datetime)
 
@@ -3065,7 +3071,7 @@ def test_module(client: Client, params: dict[str, Any], first_fetch_time: str) -
                 previous_run_time_field=ACTIVITY_LOGS_SINCE_DATETIME_PREV_RUN,
             )
         if is_fetch_assets:
-            since_datetime = arg_to_datetime('3 days').strftime(ASSETS_DATE_FORMAT)  # type: ignore[union-attr]
+            since_datetime = arg_to_datetime('1 hour').strftime(ASSETS_DATE_FORMAT)  # type: ignore[union-attr]
             fetch_assets(client=client, since_datetime=since_datetime)
     else:
         build_args_dict({'launched_after_datetime': TEST_FROM_DATE}, COMMANDS_ARGS_DATA["test-module"], False)
