@@ -200,7 +200,7 @@ def fetch_events(client: Client,
             limit=current_batch_to_fetch
             )
         demisto.debug(f'Successfully fetched {len(events)} events in this cycle.')
-        events = dedup(events =events, last_event_creation_date=last_fetched_creation_date, last_fetched_ids=last_fetched_ids)
+        events = dedup(events =events, last_fetched_ids=last_fetched_ids)
         if events:
             last_fetched_event = events[-1]
             last_fetched_id = last_fetched_event['id']
@@ -222,22 +222,20 @@ def fetch_events(client: Client,
 ''' HELPER FUNCTIONS '''
 
 
-def dedup(events: List[Dict],last_event_creation_date, last_fetched_ids) -> List[Dict]:
-    demisto.debug(f"Starting deduping. {len(events)=} {last_event_creation_date=} {last_fetched_ids=}")
-    if not last_event_creation_date or not last_fetched_ids:
+def dedup(events: List[Dict], last_fetched_ids) -> List[Dict]:
+    demisto.debug(f"Starting deduping. {len(events)=}, {last_fetched_ids=}")
+    if not last_fetched_ids:
         demisto.debug("Last run is missing data, skipping deduping.")
         return events
 
+    unique_events = []
     for event in events:
-        #since the events are sorted by creation date, if we find an event with a different creation date, we can stop
-        if event['created'] != last_event_creation_date:
-            demisto.debug(f"Done deduping. Number of events after deduping: {len(events)}")
-            return events
-        if event['id'] in last_fetched_ids:
-            events.remove(event)
+        if event['id'] not in last_fetched_ids:
+            unique_events.append(event)
+        else:
             demisto.debug(f"Removed event with id: {event['id']}")
     demisto.debug(f"Done deduping. Number of events after deduping: {len(events)}")
-    return events
+    return unique_events
 
 
 def get_last_fetched_ids(events: List[Dict]) -> List[str]:
