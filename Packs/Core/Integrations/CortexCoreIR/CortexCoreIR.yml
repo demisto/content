@@ -2960,8 +2960,8 @@ script:
     description: Terminate a process by it's instance id.
     polling: true
     outputs:
-    - contextPath: Core.TerminateProcess.group_action_id
-      description: test.
+    - contextPath: Core.TerminateProcess.action_id
+      description: The action id.
       type: String
   - arguments:
     - description: The agent id.
@@ -2984,8 +2984,8 @@ script:
     description: Stops a process by it's causality id.
     polling: true
     outputs:
-    - contextPath: Core.TerminateCausality.group_action_id
-      description: The group action id.
+    - contextPath: Core.TerminateCausality.action_id
+      description: The action id.
       type: String
   runonce: false
   script: '-'

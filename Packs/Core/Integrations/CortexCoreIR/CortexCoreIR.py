@@ -477,23 +477,37 @@ def main():  # pragma: no cover
                                                polling_field="status",
                                                polling_value=["PENDING",
                                                               "IN_PROGRESS",
+                                                              "CANCELED",
                                                               "FAILED",
                                                               "SUCCESS",
-                                                              "PENDING_ABORT"]))
+                                                              "ABORTED",
+                                                              "EXPIRED",
+                                                              "PENDING_ABORT",
+                                                              "COMPLETED_PARTIAL",
+                                                              "COMPLETED_SUCCESSFULLY",
+                                                              "FAILED",
+                                                              "TIMEOUT"]))
 
         elif command == 'core-terminate-causality':
             return_results(run_polling_command(client=client,
                                                args=args,
                                                cmd="core-terminate-causality",
                                                command_function=terminate_causality_command,
-                                               command_decision_field="group_action_id",
+                                               command_decision_field="action_id",
                                                results_function=action_status_get_command,
                                                polling_field="status",
                                                polling_value=["PENDING",
                                                               "IN_PROGRESS",
+                                                              "CANCELED",
                                                               "FAILED",
                                                               "SUCCESS",
-                                                              "PENDING_ABORT"]))
+                                                              "ABORTED",
+                                                              "EXPIRED",
+                                                              "PENDING_ABORT",
+                                                              "COMPLETED_PARTIAL",
+                                                              "COMPLETED_SUCCESSFULLY",
+                                                              "FAILED",
+                                                              "TIMEOUT"]))
 
         elif command in PREVALENCE_COMMANDS:
             return_results(handle_prevalence_command(client, command, args))
