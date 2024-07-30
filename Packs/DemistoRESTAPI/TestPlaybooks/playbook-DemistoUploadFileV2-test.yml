@@ -104,7 +104,7 @@ tasks:
                 value:
                   simple: image.png
           accessor: EntryID
-      incidentID:
+      incID:
         complex:
           root: CreatedIncidentID
     separatecontext: false
