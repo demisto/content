@@ -38,6 +38,13 @@ from typing import Any, Dict, List, Optional, Tuple, Union, Callable, ValuesView
 from urllib.parse import urlparse
 
 
+''' HELPER FUNCTIONS '''
+
+
+def foo():
+    ...
+
+
 ''' GLOBALS '''
 URL = ''
 API_KEY = None

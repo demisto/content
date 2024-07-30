@@ -250,6 +250,10 @@ class RequestArguments:
 ''' HELPER FUNCTIONS '''
 
 
+def foo():
+    ...
+
+
 def iterable_to_str(iterable: Iterable, delimiter: str = '\n') -> str:
     """
     Transforms an iterable object to an str, with a custom delimiter between each item
