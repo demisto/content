@@ -1,5 +1,5 @@
 id: Sentinel One - Remote Script
-version: 11
+version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: Sentinel One - Remote Script
 starttaskid: "0"
