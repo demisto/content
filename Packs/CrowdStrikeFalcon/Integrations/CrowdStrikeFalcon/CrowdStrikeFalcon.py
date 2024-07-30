@@ -2048,8 +2048,6 @@ def resolve_detection(ids, status, assigned_to_uuid, show_in_ui, comment, tag):
         payload['show_in_ui'] = show_in_ui
     if comment:
         payload['comment'] = comment
-    if tag:
-        payload["add_tag"] = tag
     if not LEGACY_VERSION:
         demisto.debug(f"in resolve_detection: {LEGACY_VERSION =} and {payload=}")
         # modify the payload to match the Raptor API
@@ -2057,6 +2055,8 @@ def resolve_detection(ids, status, assigned_to_uuid, show_in_ui, comment, tag):
         payload["assign_to_user_id"] = payload.pop("assigned_to_uuid") if "assigned_to_uuid" in payload else None
         payload["update_status"] = payload.pop("status") if "status" in payload else None
         payload["append_comment"] = payload.pop("comment") if "comment" in payload else None
+        if tag:
+            payload["add_tag"] = tag
 
         data = json.dumps(resolve_detections_prepare_body_request(ids, payload))
     else:
