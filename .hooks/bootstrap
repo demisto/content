@@ -51,9 +51,6 @@ else
 fi
 
 echo "======================="
-echo "pyproject.toml head:"
-cat pyproject.toml | head
-echo "======================="
 if [ -z "${INSTALL_POETRY}" ]; then
     if ! command -v poetry >/dev/null 2>&1; then
         echo "ERROR: poetry is missing. Please run the following command to install poetry:
@@ -101,7 +98,7 @@ if [ -n "${CI}" ]; then
     exit_on_error "${exit_code}" "Failed to install dependencies"
 else
     echo "Detected local environment"
-    echo "Check if poetry files are valid"
+    echo "Check if poetry files are valid" # TODO do we need that, when we have pre-commit?
     poetry check
     exit_on_error $? "Failed to check poetry files"
     echo "Installing dependencies..."
