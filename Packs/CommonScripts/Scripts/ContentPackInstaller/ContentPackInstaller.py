@@ -340,7 +340,7 @@ def main():
         )
 
     except Exception as e:
-        demisto.debug(f'{e}')
+        demisto.debug(f'error occured during script execution {e}')
         return_error(f'{SCRIPT_NAME} - Error occurred while setting up machine.\n{e}')
 
 
