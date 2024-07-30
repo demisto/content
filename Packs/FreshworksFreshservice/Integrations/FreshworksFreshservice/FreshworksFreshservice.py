@@ -2629,11 +2629,13 @@ def update_custom_fields(args: dict[str, Any]) -> dict[Any, Any] | None:
     Returns:
         Optional[Dict[Any, Any]]: Updated field.
     """
-    updated_custom_fields = None
-    if custom_fields := args.get('custom_fields'):
-        custom_fields = custom_fields.split('=')
-        updated_custom_fields = {custom_fields[0]: custom_fields[1]}
-    return updated_custom_fields
+    try:
+        return {
+            item.split("=")[0].strip(): item.split("=")[1].strip()
+            for item in argToList(args.get('custom_fields'))
+        } or None
+    except IndexError:
+        raise DemistoException("The custom_fields argument must be a comma-separated list of `key=value` items")
 
 
 def validate_mandatory_ticket_requester_fields(
