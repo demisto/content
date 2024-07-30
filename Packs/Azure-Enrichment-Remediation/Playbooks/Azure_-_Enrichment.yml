@@ -1,7 +1,7 @@
 id: Azure - Enrichment
 version: -1
 name: Azure - Enrichment
-description: Given an IP address, this playbook enriches Azure Compute, Microsoft Graph User, and IAM information and outputs Azure Compute, Microsoft Graph User, and IAM information.
+description: Given an IP address , this playbook enriches Azure Compute, Microsoft Graph User, and IAM information and outputs Azure Compute, Microsoft Graph User, and IAM information.
 inputs:
 - description: Azure IP address in the alert.
   key: AzureIP

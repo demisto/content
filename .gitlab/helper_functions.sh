@@ -1,5 +1,5 @@
 #!/bin/bash
-
+ 
 CYAN="\e[0;36m"
 CLEAR="\e[0m"
 SECTION_START="\e[0Ksection_start:the_time:section_id\r\e[0K${CYAN}section_header${CLEAR}"
