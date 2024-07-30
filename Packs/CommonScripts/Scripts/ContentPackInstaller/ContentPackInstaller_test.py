@@ -6,8 +6,8 @@ from ContentPackInstaller import *
 
 def get_content_pack_installer(mocker):
     mocker.patch("ContentPackInstaller.execute_command", return_value=(True, [{'response':
-                                                                                   [{'id': 'SomePack',
-                                                                                     'currentVersion': '1.2.3'}]}]))
+                                                                               [{'id': 'SomePack',
+                                                                                 'currentVersion': '1.2.3'}]}]))
 
     installer = ContentPackInstaller('instance_name')
     assert installer.installed_packs == {'SomePack': Version('1.2.3')}
@@ -18,8 +18,8 @@ def test_get_pack_data_from_marketplace_strip_array(mocker):
     installer = get_content_pack_installer(mocker)
     mocker.patch("ContentPackInstaller.execute_command",
                  return_value=(True, [{'response':
-                                           [{'id': 'InstalledPack',
-                                             'currentVersion': '1.2.3'}]},
+                                       [{'id': 'InstalledPack',
+                                         'currentVersion': '1.2.3'}]},
                                       {'something': 'else'}]))
     assert installer.get_pack_data_from_marketplace('InstalledPack') == {
         'response': [{'currentVersion': '1.2.3', 'id': 'InstalledPack'}]}
@@ -27,8 +27,8 @@ def test_get_pack_data_from_marketplace_strip_array(mocker):
 
 def test_get_pack_dependencies_from_marketplace_cached(mocker):
     installer = get_content_pack_installer(mocker)
-    installer.packs_dependencies = {'SomePack1234::1.2.3': 'somecachedoutput'}
-    assert installer.get_pack_dependencies_from_marketplace({'id': 'SomePack1234', 'version': '1.2.3'}) == 'somecachedoutput'
+    installer.packs_dependencies = {'SomePack::1.2.3': 'somecachedoutput'}
+    assert installer.get_pack_dependencies_from_marketplace({'id': 'SomePack', 'version': '1.2.3'}) == 'somecachedoutput'
 
 
 def test_get_pack_dependencies_from_marketplace_not_cached_invalid(mocker):
@@ -52,8 +52,8 @@ def test_get_pack_dependencies_from_marketplace_not_cached_valid(mocker):
 def test_get_latest_version_for_pack_good_value(mocker):
     installer = get_content_pack_installer(mocker)
     mocker.patch("ContentPackInstaller.execute_command", return_value=(True, [{'response':
-                                                                                   {'id': 'SomePack',
-                                                                                    'currentVersion': '1.2.3'}}]))
+                                                                               {'id': 'SomePack',
+                                                                                'currentVersion': '1.2.3'}}]))
     assert installer.get_latest_version_for_pack('somepack') == '1.2.3'
 
 
@@ -91,6 +91,5 @@ def test_create_context(mocker):
 def test_is_pack_already_installed(mocker):
     installer = get_content_pack_installer(mocker)
     assert not installer.is_pack_already_installed({'id': 'ShouldntBeInstalled', 'version': '1.2.3'})
-    assert not installer.is_pack_already_installed({'id': 'SomePack', 'version':  '1.2.4'})
-    assert installer.is_pack_already_installed({'id': 'SomePack', 'version':  '1.2.3'})
-
+    assert not installer.is_pack_already_installed({'id': 'SomePack', 'version': '1.2.4'})
+    assert installer.is_pack_already_installed({'id': 'SomePack', 'version': '1.2.3'})
