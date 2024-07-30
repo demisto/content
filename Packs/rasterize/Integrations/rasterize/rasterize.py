@@ -226,6 +226,7 @@ class PychromeEventHandler:
             self.tab_ready_event.set()
 
     def network_request_will_be_sent(self, documentURL, **kwargs):
+        '''Triggered when a request is sent by the browser, catches mailto URLs.'''
         demisto.debug(f'PychromeEventHandler.network_request_will_be_sent, {documentURL=}')
         self.is_mailto = documentURL.startswith('mailto:')
 # endregion
