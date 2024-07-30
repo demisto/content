@@ -3,7 +3,7 @@ import datetime
 import pytest
 import importlib
 import demistomock as demisto
-
+from pytest_mock import MockerFixture
 AWS_IAM = importlib.import_module("AWS-IAM")
 
 ATTACHED_POLICIES = [
@@ -79,6 +79,12 @@ class Boto3Client:
         pass
 
     def list_attached_role_policies(self):
+        pass
+
+    def deactivate_mfa_device(self):
+        pass
+
+    def delete_virtual_mfa_device(self):
         pass
 
     @property
@@ -516,3 +522,58 @@ def test_list_attached_role_policies(mocker, is_truncated: bool, expeted_second_
     assert result[1].outputs.get('Marker') == expected_marker
     assert result[1].raw_response == response
     assert result[1].readable_output == expeted_second_output
+
+
+def test_deactivate_mfa_device(mocker: MockerFixture):
+    """
+    Given:
+        args - userName, serialNumber.
+    When:
+        calling deactivate_mfa_device function.
+    Then:
+        Ensure that the response returns as expected and contains the userName.
+    """
+    mock_res = {
+        "ResponseMetadata": {
+            "HTTPStatusCode": 200
+        }
+    }
+
+    args = {
+        "userName": "test",
+        "serialNumber": "test1"
+    }
+    mocker.patch.object(Boto3Client, "deactivate_mfa_device", return_value=mock_res)
+    results = mocker.patch.object(demisto, 'results')
+
+    client = Boto3Client()
+    AWS_IAM.deactivate_mfa_device(args, client)
+
+    assert results.call_args[0][0] == "The User test mfa device has been deactivated"
+
+
+def test_delete_virtual_mfa_device(mocker: MockerFixture):
+    """
+    Given:
+        args - serialNumber.
+    When:
+        calling delete_virtual_mfa_device function.
+    Then:
+        Ensure that the response returns as expected and contains the userName.
+    """
+    mock_res = {
+        "ResponseMetadata": {
+            "HTTPStatusCode": 200
+        }
+    }
+
+    args = {
+        "serialNumber": "test1"
+    }
+    mocker.patch.object(Boto3Client, "delete_virtual_mfa_device", return_value=mock_res)
+    results = mocker.patch.object(demisto, 'results')
+
+    client = Boto3Client()
+    AWS_IAM.delete_virtual_mfa_device(args, client)
+
+    assert results.call_args[0][0] == "The User test1 mfa device has been deleted"
