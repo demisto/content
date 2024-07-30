@@ -247,6 +247,7 @@ def prepend_protocol(url: str, protocol: str, www: bool = True) -> str:
     :param protocol: protocol we want to add (usually http or https)
     :return: str
     """
+    protocol = demisto.args().get('request_protocol', 'HTTP').lower()
     p = urllib.parse.urlparse(url, protocol)  # type: ignore
     netloc = p.netloc or p.path
     path = p.path if p.netloc else ''
