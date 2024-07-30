@@ -3,7 +3,7 @@ This integration was integrated and tested with version 2024.6.2 of Bitwarden Pa
 
 ## Configure Bitwarden Password Manager on Cortex XSIAM
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+1. Navigate to **Settings** > **Configurations** > **Data Collection** > **Automation & Feed Integrations**.
 2. Search for Bitwarden Password Manager.
 3. Click **Add instance** to create and configure a new integration instance.
 
