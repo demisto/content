@@ -883,17 +883,19 @@ def get_mapping_fields_command():
     return mapping_response
 
 
-def get_modified_remote_data_command(client, args, xdr_delay, last_mirroring: Optional[dict] = None):
+def get_modified_remote_data_command(client, args, xdr_delay: datetime | None, last_mirroring: Optional[dict] = None):
     ##########
     remote_args = GetModifiedRemoteDataArgs(args)
     last_update = gte_modification_time_with_ms = lte_modification_time_with_ms = last_mirroring.get(
         'time') if isinstance(last_mirroring, dict) else remote_args.last_update
     demisto.debug(f'Performing get-modified-remote-data command. {last_update=} | {xdr_delay=}')
+    xdr_delay_utc = xdr_delay.timestamp() if xdr_delay else 1
+    demisto.debug(f'####### get_modified_remote_data_command {xdr_delay_utc=} timestamp delta {timedelta(minutes=xdr_delay_utc)=}')
     last_update_utc = dateparser.parse(last_update,
                                        settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': False})   # convert to utc format
 
     if last_update_utc:
-        gte_modification_time_with_ms = last_update_utc - timedelta(minutes=xdr_delay)
+        gte_modification_time_with_ms = last_update_utc - timedelta(minutes=xdr_delay_utc)
         lte_modification_time_with_ms = gte_modification_time_with_ms + timedelta(minutes=1)
     demisto.debug(f'get_modified_remote_data_command: {gte_modification_time_with_ms=} | {lte_modification_time_with_ms=}')
     raw_incidents = client.get_incidents(
@@ -1305,7 +1307,7 @@ def main():  # pragma: no cover
     starred = True if params.get('starred') else None
     starred_incidents_fetch_window = params.get('starred_incidents_fetch_window', '3 days')
     exclude_artifacts = argToBoolean(params.get('exclude_fields', True))
-    xdr_delay = params.get('xdr_delay', '1 minute')
+    xdr_delay = dateparser.parse(params.get('xdr_delay', '1 '), settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': False})
     try:
         timeout = int(params.get('timeout', 120))
     except ValueError as e:

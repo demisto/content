@@ -36,8 +36,8 @@ configuration:
   - Incoming
   - Outgoing
   - Both
-- defaultvalue: '1 minute'
-  display: For lookBack time period in minutes.
+- defaultvalue: '1'
+  display: xdr_delay
   name: xdr_delay
   type: 0
   section: Collect
