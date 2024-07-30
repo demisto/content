@@ -12,9 +12,6 @@ def test_get_username(mocker):
 
 def test_main(mocker):
     mocker.patch.object(
-        demisto, "incidents", return_value=[{"dbotMirrorDirection": "In"}]
-    )
-    mocker.patch.object(
         demisto,
         "args",
         return_value={"short_id": "1", "status": "Ongoing", "comment": "test"},
