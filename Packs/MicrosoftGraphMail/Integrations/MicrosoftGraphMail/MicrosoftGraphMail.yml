@@ -185,6 +185,12 @@ configuration:
   section: Connect
   advanced: true
   required: false
+- display: Use legacy attachment name
+  name: legacy_name
+  section: Collect
+  type: 8
+  advanced: true
+  defaultvalue: 'false'
 description: Microsoft Graph lets your app get authorized access to a user's Outlook mail data in a personal or organization account.
 display: O365 Outlook Mail (Using Graph API)
 fromversion: 5.0.0
@@ -452,10 +458,6 @@ script:
     - deprecated: true
       description: flag for rate limit retry.
       name: ran_once_flag
-    - description: Identifier ids to download to XSOAR (to avoid downloading all files to XSOAR during the preprocessing script).
-      name: identifiers_filter
-      required: false
-      hidden: true
     description: Gets an attachment from the email.
     name: msgraph-mail-get-attachment
     outputs:

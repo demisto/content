@@ -1057,6 +1057,10 @@ view: |-
 inputs: []
 outputs: []
 quiet: false
+<<<<<<< HEAD
 fromversion: 5.0.0
 
 
+=======
+fromversion: 5.0.0
+>>>>>>> 03230071294632f68edb2c2b64ce3ed289501f77

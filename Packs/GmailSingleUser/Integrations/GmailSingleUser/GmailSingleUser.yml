@@ -114,6 +114,12 @@ configuration:
   section: Connect
   advanced: true
   required: false
+- display: Use legacy attachment name
+  name: legacy_name
+  section: Collect
+  type: 8
+  advanced: true
+  defaultvalue: 'false'
 description: Gmail API using OAuth 2.0.
 display: Gmail Single User
 name: Gmail Single User
@@ -346,10 +352,6 @@ script:
     - description: The ID of the message to retrieve.
       name: message-id
       required: true
-    - description: Identifier ids to download to XSOAR (to avoid downloading all files to XSOAR during the preprocessing script).
-      name: identifiers-filter
-      required: false
-      hidden: true
     description: Retrieves attachments from a sent Gmail message.
     name: gmail-get-attachments
   dockerimage: demisto/google-api-py3:1.0.0.98645

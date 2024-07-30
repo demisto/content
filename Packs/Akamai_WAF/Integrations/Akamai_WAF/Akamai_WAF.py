@@ -2102,6 +2102,47 @@ class Client(BaseClient):
                                   headers=headers,
                                   )
 
+    def cancel_cps_change(self, change_path: str, account_switch_key: str = "") -> dict:
+        """
+            Cancels a pending change.
+
+        Args:
+            change_path: Change path on which to perform the desired operation.
+            account_switch_key: For customers who manage more than one account,
+                this runs the operation from another account. The Identity and
+                Access Management API provides a list of available account switch keys.
+
+        Returns:
+            The response provides a dict of change_path.
+
+        """
+        method = 'delete'
+        headers = {"accept": "application/vnd.akamai.cps.change-id.v1+json"}
+        params = {"accountSwitchKey": account_switch_key}
+        return self._http_request(method=method,
+                                  url_suffix=change_path,
+                                  headers=headers,
+                                  params=params,
+                                  )
+
+    def get_cps_enrollment_by_id(self,
+                                 enrollment_id: int) -> dict:
+        """
+            Returns the Enarollment by enrollment id
+        Args:
+            enrollment_id: Unique Identifier of the Enrollment on which to perform the desired operation.
+
+        Returns:
+            The response provides a deployment associcated to the enrollment id
+
+        """
+        headers = {"accept": "application/vnd.akamai.cps.enrollment.v12+json"}
+        method = "GET"
+        return self._http_request(method=method,
+                                  url_suffix=f'cps/v2/enrollments/{enrollment_id}',
+                                  headers=headers,
+                                  )
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -5912,6 +5953,91 @@ def get_cps_change_status_command(client: Client,
     return human_readable, context_entry, raw_response
 
 
+@logger
+def cancel_cps_change_command(client: Client,
+                              change_id: str = '0',
+                              enrollment_id: str = '0',
+                              change_path: str = "",
+                              account_switch_key: str = "",
+                              ) -> tuple[str, dict, Union[list, dict]]:
+    """
+        Cancels a pending change.
+        Reference: https://techdocs.akamai.com/cps/reference/delete-enrollment-change
+    Args:
+        client:
+        change_id: The change for this enrollment on which to perform the desired operation. Default is 0.
+        enrollment_id: Enrollment on which to perform the desired operation. Default is 0.
+        change_path: Change path on which to perform the desired operation.
+         - Sample: /cps/v2/enrollments/100000/changes/88888888
+         - Note: change_path is not listed in the reference as a parameter.
+                 However it can be extracted directly from "list_enrollments_command".
+                 This should be the most common useage when generate RestAPI's URL.
+        account_switch_key: For customers who manage more than one account, this runs
+            the operation from another account. The Identity and Access Management API
+            provides a list of available account switch keys.
+         - Sample: "1-5C0YLB:1-8BYUX"
+
+        NOTE: There is no need to provice "change_id"/"enrollment_id" and "change_path"
+              at the same time. "change_id"/"enrollment_id" can be used to generate
+              "change_path" as well.
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+
+    if not (change_id == '0' and enrollment_id == '0'):
+        change_path = f'/cps/v2/enrollments/{enrollment_id}/changes/{change_id}'
+
+    raw_response: dict = client.cancel_cps_change(change_path=change_path, account_switch_key=account_switch_key)
+
+    title = f'{INTEGRATION_NAME} - cps cancel change'
+    entry_context = raw_response
+    human_readable_ec = raw_response
+    context_entry: dict = {
+        f"{INTEGRATION_CONTEXT_NAME}.Cps.Change.Canceled": entry_context
+    }
+
+    human_readable = tableToMarkdown(
+        name=title,
+        t=human_readable_ec,
+        removeNull=True,
+    )
+    return human_readable, context_entry, raw_response
+
+
+# Created by D.S. 2024-06-18
+@logger
+def get_cps_enrollment_by_id_command(client: Client,
+                                     enrollment_id: int) -> tuple[str, dict, Union[list, dict]]:
+    """
+        Returns the certification/Enarollment.
+
+    Args:
+        client:
+        enrollment_id: Unique Identifier of the Enrollment on which to perform the desired operation.
+            And it can be retrived via list_enrollments_command
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+
+    raw_response: dict = client.get_cps_enrollment_by_id(enrollment_id=enrollment_id)
+
+    title = f'{INTEGRATION_NAME} - get cps enrollment by id command'
+    entry_context = raw_response
+    human_readable_ec = raw_response
+    context_entry: dict = {
+        f"{INTEGRATION_CONTEXT_NAME}.Cps.Enrollments": entry_context
+    }
+
+    human_readable = tableToMarkdown(
+        name=title,
+        t=human_readable_ec,
+        removeNull=True,
+    )
+    return human_readable, context_entry, raw_response
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
@@ -6006,6 +6132,8 @@ def main():
         f'{INTEGRATION_COMMAND_NAME}-update-cps-enrollment': update_cps_enrollment_command,
         f'{INTEGRATION_COMMAND_NAME}-update-cps-enrollment-schedule': update_cps_enrollment_schedule_command,
         f'{INTEGRATION_COMMAND_NAME}-get-cps-change-status': get_cps_change_status_command,
+        f'{INTEGRATION_COMMAND_NAME}-cancel-cps-change': cancel_cps_change_command,
+        f'{INTEGRATION_COMMAND_NAME}-get-cps-enrollment-by-id': get_cps_enrollment_by_id_command,
     }
     try:
         readable_output, outputs, raw_response = commands[command](client=client, **demisto.args())
