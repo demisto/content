@@ -558,7 +558,7 @@ def delete_row_with_old_chrome_configurations_from_chrome_instances_file(chrome_
         write_file(CHROME_INSTANCES_FILE_PATH, chrome_instances_contents, overwrite=True)
 
 
-def setup_tab_event(browser: pychrome.Browser, tab: pychrome.Tab) -> tuple[Event, PychromeEventHandler]:
+def setup_tab_event(browser: pychrome.Browser, tab: pychrome.Tab) -> tuple[PychromeEventHandler, Event]:
     tab_ready_event = Event()
     tab_event_handler = PychromeEventHandler(browser, tab, tab_ready_event)
 
@@ -610,12 +610,12 @@ def navigate_to_path(browser, tab, path, wait_time, navigation_timeout) -> Pychr
         heapUsage = tab.Runtime.getHeapUsage()
         demisto.debug(f'heapUsage after navigation {heapUsage=} on {tab.id=}')
 
-        return tab_event_handler
-
     except pychrome.exceptions.TimeoutException as ex:
         return_error(f'Navigation timeout: {ex} thrown while trying to navigate to {path}')
     except pychrome.exceptions.PyChromeException as ex:
         return_error(f'Exception: {ex} thrown while trying to navigate to {path}')
+
+    return tab_event_handler
 
 
 def backoff(polled_item, wait_time=DEFAULT_WAIT_TIME, polling_interval=DEFAULT_POLLING_INTERVAL):
@@ -632,10 +632,10 @@ def screenshot_image(browser, tab, path, wait_time, navigation_timeout, full_scr
     :param include_source: Whether to include the page source in the response
     """
     tab_event_handler = navigate_to_path(browser, tab, path, wait_time, navigation_timeout)
-    
+
     if tab_event_handler.is_mailto:
         return None, f'URLs that start with "mailto:" cannot be screenshot.\nURL: {path}'
-    
+
     try:
         page_layout_metrics = tab.Page.getLayoutMetrics()
     except Exception as ex:
