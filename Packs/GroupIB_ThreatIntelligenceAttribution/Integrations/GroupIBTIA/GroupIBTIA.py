@@ -1041,7 +1041,7 @@ def fetch_incidents_command(client: Client, last_run: dict, first_fetch_time: st
 
         portions = client.create_poll_generator(collection_name=collection_name, max_requests=requests_count,
                                                 last_fetch=last_fetch, first_fetch_time=first_fetch_time)
-        for portion, last_fetch in portions:
+        for portion, last_fetch in portions: # noqa: B007
             for feed in portion:
                 mapping = MAPPING.get(collection_name, {})
                 if collection_name == "compromised/breached":
