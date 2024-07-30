@@ -594,7 +594,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: ${inputs.AzureVMPrivateIP}
+                        simple: inputs.AzureVMPrivateIP
                       iscontext: true
                   - operator: containsGeneral
                     left:
@@ -603,7 +603,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: ${inputs.AzureVMPrivateIP}
+                        simple: inputs.AzureVMPrivateIP
                       iscontext: true
                 transformers:
                 - operator: getField
@@ -663,7 +663,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: ${inputs.AzureVMPrivateIP}
+                        simple: inputs.AzureVMPrivateIP
                       iscontext: true
                   - operator: notContainsGeneral
                     left:
@@ -672,7 +672,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: ${inputs.AzureVMPrivateIP}
+                        simple: inputs.AzureVMPrivateIP
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -971,7 +971,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: ${inputs.AzureVMPrivateIP}
+                        simple: inputs.AzureVMPrivateIP
                       iscontext: true
                   - operator: containsGeneral
                     left:
@@ -980,7 +980,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: ${inputs.AzureVMPrivateIP}
+                        simple: inputs.AzureVMPrivateIP
                       iscontext: true
                 transformers:
                 - operator: getField
@@ -1040,7 +1040,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: ${inputs.AzureVMPrivateIP}
+                        simple: inputs.AzureVMPrivateIP
                       iscontext: true
                   - operator: notContainsGeneral
                     left:
@@ -1049,7 +1049,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: ${inputs.AzureVMPrivateIP}
+                        simple: inputs.AzureVMPrivateIP
                       iscontext: true
             iscontext: true
     continueonerrortype: ""
