@@ -242,7 +242,7 @@ def send_request(method, url, headers=AUTH_HEADERS, params=None, data=None):
 
 def send_request_no_error_handling(headers, method, params, url, data):
     """
-        Send request with no error handling, so the error handling can be done via wrapper function
+        Send request with no error handling, so the error handling can be done via wrapper function 
     """
     log_hdr = deepcopy(headers)
     log_hdr.pop('SEC', None)
