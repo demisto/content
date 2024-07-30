@@ -27,11 +27,6 @@ configuration:
   required: false
   type: 8
   section: Connect
-- display: Don't rely on SailPoint's filtering
-  name: filter_by_time
-  required: false
-  type: 8
-  section: Connect
 - display: Use system proxy settings
   name: proxy
   required: false

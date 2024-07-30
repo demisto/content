@@ -88,27 +88,24 @@ class Client(BaseClient):
 
         return token
 
-    def search_events(self, prev_id: str| None, from_date: str, limit: int, filter_by_time: bool) -> List[Dict]:
+    def search_events(self, from_date: str, limit: int, prev_id: str| None = None) -> List[Dict]:
         """
         Searches for events in SailPoint IdentityNow
         Args:
-            prev_id: The id of the last event fetched
             from_date: The date from which to fetch events
             limit: Maximum number of events to fetch
+            prev_id: The id of the last event fetched
         Returns:
             List of events
         """
         if not prev_id:
-            demisto.debug("No ID provided, using timestamp" )
-            field_to_sort_by = "created" if filter_by_time else "id"
-            demisto.debug(f"{field_to_sort_by =}")
             query = {"indices": ["events"],
                     "queryType": "SAILPOINT",
                     "queryVersion": "5.2",
                     "query":
                     {"query": f"type:* AND created: [{from_date} TO now]"},
                     "timeZone": "GMT",
-                    "sort": ["+" + field_to_sort_by],
+                    "sort": ["+created"],
                     }
         else:
              query = {"indices": ["events"],
@@ -150,8 +147,7 @@ def test_module(client: Client) -> str:
     return 'ok'
 
 
-def get_events(client: Client, from_date: str, from_id: str| None, limit: int = 50,
-               filter_by_time: bool =False) -> tuple[List[Dict], CommandResults]:
+def get_events(client: Client, from_date: str, from_id: str| None, limit: int = 50) -> tuple[List[Dict], CommandResults]:
     """
     Gets events from the SailPoint IdentityNow API
     Args:
@@ -165,18 +161,15 @@ def get_events(client: Client, from_date: str, from_id: str| None, limit: int = 
     events = client.search_events(
         prev_id=from_id,
         from_date=from_date,
-        limit=limit,
-        filter_by_time= filter_by_time
+        limit=limit
     )
-    demisto.debug(f'Fetched {len(events)} events.')
+    demisto.debug(f'Got {len(events)} events.')
     hr = tableToMarkdown(name='Test Events', t=events)
     return events, CommandResults(readable_output=hr)
 
 
 def fetch_events(client: Client,
-                 limit: int, last_run: dict[str, str],
-                 filter_by_time: bool = False
-                 ) -> tuple[Dict, List[Dict]]:
+                 limit: int, last_run: dict[str, str]) -> tuple[Dict, List[Dict]]:
     """
     Fetches events from the SailPoint IdentityNow API
     Args:
@@ -186,7 +179,7 @@ def fetch_events(client: Client,
     Returns:
         Tuple with the next run data and the list of events fetched
     """
-    demisto.debug(f'last_run: {last_run}.')
+    demisto.debug(f'Starting fetch_events with last_run: {last_run}.')
     last_fetched_id = last_run.get('prev_id')
     last_fetched_creation_date = last_run.get('prev_date', DEFAULT_NOW)
     last_fetched_ids = last_run.get('last_fetched_ids', [])
@@ -200,18 +193,18 @@ def fetch_events(client: Client,
         demisto.debug(f'trying to fetch {current_batch_to_fetch} events.')
 
         events = client.search_events(
-            prev_id=last_fetched_id if not filter_by_time else None,
+            #currently we have issues with fetching events by id, so we are fetching by date only.
+            # if the issue is resolved, all we need to do is to uncomment the line below
+            #prev_id=last_fetched_id
             from_date= last_fetched_creation_date,
-            limit=current_batch_to_fetch,
-            filter_by_time = filter_by_time
-        )
+            limit=current_batch_to_fetch
+            )
         demisto.debug(f'Successfully fetched {len(events)} events in this cycle.')
         events = dedup(events =events, last_event_creation_date=last_fetched_creation_date, last_fetched_ids=last_fetched_ids)
         if events:
             last_fetched_event = events[-1]
             last_fetched_id = last_fetched_event['id']
             last_fetched_creation_date = last_fetched_event['created']
-            demisto.debug(f"last event = {last_fetched_event}")
             demisto.debug(f'information of the last event in this cycle: id: {last_fetched_id}, created: {last_fetched_creation_date}.')
             remaining_events_to_fetch -= len(events)
             demisto.debug(f'{remaining_events_to_fetch} events are left to fetch in the next calls.')
@@ -220,7 +213,6 @@ def fetch_events(client: Client,
         else:
             #to avoid infinite loop, if no events are fetched, or all events are duplicates, exit the loop
             break
-
 
     next_run = {'prev_id': last_fetched_id, 'prev_date': last_fetched_creation_date, 'last_fetched_ids': last_fetched_ids}
     demisto.debug(f'Done fetching. Sum of all events: {len(all_events)}, the next run is {next_run}.')
@@ -237,6 +229,7 @@ def dedup(events: List[Dict],last_event_creation_date, last_fetched_ids) -> List
         return events
 
     for event in events:
+        #since the events are sorted by creation date, if we find an event with a different creation date, we can stop
         if event['created'] != last_event_creation_date:
             demisto.debug(f"Done deduping. Number of events after deduping: {len(events)}")
             return events
@@ -250,7 +243,7 @@ def dedup(events: List[Dict],last_event_creation_date, last_fetched_ids) -> List
 def get_last_fetched_ids(events: List[Dict]) -> List[str]:
     last_creation_date = events[-1]['created']
     list_of_ids = [events[-1]['id']]
-    for event in reversed(events):
+    for event in reversed(events[:-1]):
         if event['created'] != last_creation_date:
             return list_of_ids
         else:
@@ -300,7 +293,7 @@ def main() -> None:
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     limit = arg_to_number(params.get('limit')) or 50000
-    filter_by_time = argToBoolean(params.get('filter_by_time', False))
+
 
     demisto.debug(f'Command being called is {command}')
     try:
@@ -310,7 +303,6 @@ def main() -> None:
             base_url=base_url,
             verify=verify_certificate,
             proxy=proxy)
-        demisto.debug("finished initializing client, starting execution")
 
         if command == 'test-module':
             result = test_module(client)
@@ -344,7 +336,6 @@ def main() -> None:
                 client=client,
                 limit=limit,
                 last_run=last_run,
-                filter_by_time = filter_by_time
             )
 
             add_time_and_status_to_events(events)
