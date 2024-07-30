@@ -952,6 +952,57 @@ class Client(BaseClient):
         payload["data"] = self.remove_empty_fields(payload.get("data", {}))
         response = self._http_request(method='POST', url_suffix=endpoint_url, json_data=payload)
         return response.get('data', {})
+    
+    def get_remote_script_status_request(self, accountIds: str = None, computerName__contains:str=None, countOnly:str=None,
+                                         createdAt__gt:str=None, createdAt__gte:str=None, createdAt__lt:str=None, createdAt__lte:str=None,
+                                         cursor:str=None, description__contains:str=None, detailedStatus__contains:str=None, groupIds:str=None,
+                                         ids:str=None, initiatedBy__contains:str=None, limit:str='50', parentTaskId:str=None,
+                                         parentTaskId__in:str=None, query:str=None, siteIds:str=None,
+                                         status:str= None, tenant:str=None,  updatedAt__gt:str=None, updatedAt__gte:str=None,
+                                         updatedAt__lt:str=None, updatedAt__lte:str=None, uuid__contains:str=None):
+        params = assign_params(
+            accountIds=argToList(accountIds),
+            computerName__contains=computerName__contains,
+            countOnly=countOnly,
+            createdAt__gt=createdAt__gt,
+            createdAt__gte=createdAt__gte,
+            createdAt__lt=createdAt__lt,
+            createdAt__lte=createdAt__lte,
+            cursor=cursor,
+            description__contains=description__contains,
+            detailedStatus__contains=argToList(detailedStatus__contains),
+            groupIds=argToList(groupIds),
+            ids= argToList(ids),
+            initiatedBy__contains=argToList(initiatedBy__contains),
+            limit=int(limit),
+            parentTaskId=parentTaskId,
+            parentTaskId__in=argToList(parentTaskId__in),
+            query=query,
+            siteIds=argToList(siteIds),
+            status=status,
+            tenant=tenant,
+            updatedAt__gt=updatedAt__gt,
+            updatedAt__gte=updatedAt__gte,
+            updatedAt__lt=updatedAt__lt,
+            updatedAt__lte=updatedAt__lte,
+            uuid__contains=uuid__contains,
+        )
+        response = self._http_request(method='GET', url_suffix='remote-scripts/status', params=params)
+        return response.get('data', {})
+
+
+    def get_remote_script_results_request(self, computer_names:list, task_ids:list):
+        endpoint_url = "remote-scripts/fetch-files"
+        payload={
+            "data":{
+                "taskIds":task_ids,
+                "computerNames":computer_names,
+            }
+        }
+        payload["data"] = self.remove_empty_fields(payload.get("data", {}))
+        response = self._http_request(method='POST', url_suffix=endpoint_url, json_data=payload)
+        return response.get("data", {}).get("download_links", [])
+
 
     def remove_empty_fields(self, json_payload):
         """
@@ -3170,6 +3221,35 @@ def run_remote_script_command(client: Client, args: dict) -> CommandResults:
         raw_response=run_remote_script)
 
 
+def get_remote_script_status(client: Client, args: dict) -> CommandResults:
+    """
+    Get the Satus of the Remote Script Tasks
+    """
+    headers = ["id","createdAt","description", "statusDescription","parentTaskId", "accountId", "accountName", "agentId", "agentIsActive", "agentOsType", "initiatedBy", "initiateById"]
+    remote_script_statuses = client.get_remote_script_status_request(**args)
+
+    return CommandResults(
+        readable_output=tableToMarkdown("SentinelOne - Get Remote Scripts Tasks Status", remote_script_statuses, headers=headers, removeNull=True),
+        outputs_prefix="SentinelOne.GetRemoteScript",
+        outputs=remote_script_statuses,
+        raw_response=remote_script_statuses)
+
+
+def get_remote_script_results(client: Client, args: dict) -> CommandResults:
+    """
+    Get the remote script results
+    """
+    headers=["taskId", "fileName", "downloadUrl"]
+    # Get arguments
+    computer_names = argToList(args.get("computerNames"))
+    task_ids = argToList(args.get("taskIds"))
+    results = client.get_remote_script_results_request(computer_names, task_ids)
+    return CommandResults(
+        readable_output=tableToMarkdown("SentinelOne - Get Remote Scripts Results", results, headers=headers, removeNull=True),
+        outputs_prefix="SentinelOne.RemoteScriptResults",
+        outputs=results,
+        raw_response=results)
+
 def get_mapping_fields_command():
     """
     Returns the list of fields to map in outgoing mirroring, for incidents.
@@ -3604,6 +3684,8 @@ def main():
             'sentinelone-remove-item-from-whitelist': remove_item_from_whitelist,
             'sentinelone-run-remote-script': run_remote_script_command,
             'sentinelone-get-accounts': get_accounts,
+            'sentinelone-get-remote-script-status': get_remote_script_status,
+            'sentinelone-get-remote-script-results': get_remote_script_results,
         },
         'commands_with_params': {
             'get-remote-data': get_remote_data_command,
