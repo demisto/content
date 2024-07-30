@@ -446,9 +446,17 @@ script:
     - name: ip_addresses
       isArray: true
       description: 'List of IP addresses to find endpoints for.'
+    - name: hostname_contains
+      description: Find endpoints where the hostname contains the given string. Only the first 10 characters of the given string are matched.
     - auto: PREDEFINED
       name: full_match_ip
       description: 'Whether the IP addresses should match full or not (partial/default).'
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      name: full_match_hostname
+      description: 'Whether the hostname should match full or not (partial/default).'
       predefined:
       - 'true'
       - 'false'
