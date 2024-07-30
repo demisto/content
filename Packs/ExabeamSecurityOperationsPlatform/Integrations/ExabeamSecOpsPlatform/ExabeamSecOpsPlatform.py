@@ -86,26 +86,31 @@ class Client(BaseClient):
         demisto.setIntegrationContext({"access_token": new_token, "expiry_time_utc": expiry_time_utc.isoformat()})
         self.access_token = new_token
 
-    def request(self, method: str, full_url: str, data: str = ""):
+    def request(self, method: str, full_url: str, data: str = "", params: Optional[Dict[str, str]] = None):
         # TODO: remove print
         # print(f"{data=}")
-        headers = {"Authorization": f"Bearer {self.access_token}", "Content-Type": "application/json"}
-        try:
-            return self._http_request(method=method, full_url=full_url, data=data, headers=headers)
-        except DemistoException as e:
-            if not hasattr(e, "res") or not hasattr(e.res, "status_code"):
-                raise
+        # print(f"{full_url=}")
 
-            if e.res.status_code == 401 and "Jwt is expired" in e.res.text:  # type: ignore
+        headers = {"Authorization": f"Bearer {self.access_token}", "Content-Type": "application/json"}
+
+        def _make_request() -> Any:
+            response = self._http_request(method=method, full_url=full_url, data=data, headers=headers, params=params)
+            if isinstance(response, dict) and (error := response.get("errors", {})):
+                raise DemistoException(error.get("message"))
+            return response
+
+        try:
+            return _make_request()
+        except DemistoException as e:
+            if (
+                hasattr(e, "res")
+                and hasattr(e.res, "status_code")
+                and e.res.status_code == 401  # type: ignore
+                and "Jwt is expired" in e.res.text  # type: ignore
+            ):
                 self._get_new_token()
                 headers["Authorization"] = f"Bearer {self.access_token}"
-
-                return self._http_request(
-                    method=method,
-                    full_url=full_url,
-                    data=data,
-                    headers=headers,
-                )
+                return _make_request()
             else:
                 raise
 
@@ -156,21 +161,11 @@ class Client(BaseClient):
         )
         return response
 
-    def get_table_request(self, table_id: int) -> dict:
-        """
-        """
-        full_url = f"{self._base_url}/context-management/v1/tables/{table_id}"
-        response = self.request(method="GET", full_url=full_url)
-        return response
-
-    def list_table_request(self) -> dict:
-        """
-        """
-        full_url = f"{self._base_url}/context-management/v1/tables"
-        response = self.request(
-            method="GET",
-            full_url=full_url,
-        )
+    def table_request(self, method, table_id: int = 0, params: Optional[Dict[str, str]] = None) -> dict:
+        """ """
+        base_url = f"{self._base_url}/context-management/v1/tables"
+        full_url = f"{base_url}/{table_id}" if table_id else base_url
+        response = self.request(method=method, full_url=full_url, params=params)
         return response
 
     def get_alert_request(self, case_id: int) -> dict:
@@ -488,12 +483,12 @@ def alert_search_command(client: Client, args: dict) -> CommandResults:
 
 def context_table_list_command(client: Client, args: dict) -> CommandResults:
     if (table_id := args.get("table_id")):
-        response = client.get_table_request(table_id)
+        response = client.table_request("GET", table_id)
         human_readable = _parse_entry(response)
     else:
         limit = get_limit(args)
 
-        response = client.list_table_request()[:limit]
+        response = client.table_request("GET")[:limit]
 
         include_attributes = argToBoolean(args.get("include_attributes"))
 
@@ -509,6 +504,19 @@ def context_table_list_command(client: Client, args: dict) -> CommandResults:
         outputs_prefix="ExabeamPlatform.ContextTable",
         outputs=response,
         readable_output=tableToMarkdown(name="Table", t=human_readable)
+    )
+
+
+def context_table_delete_command(client: Client, args: dict) -> CommandResults:
+    table_id = args.get("table_id", 0)
+    include_attributes = argToBoolean(args.get("delete_unused_custom_attributes"))
+    params = {"deleteUnusedCustomAttributes": str(include_attributes)}
+
+    response = client.table_request("DELETE", table_id, params)
+    table_id_response = response.get("id", None)
+
+    return CommandResults(
+        readable_output=f"The context table with ID {table_id_response} has been successfully deleted."
     )
 
 
@@ -564,6 +572,8 @@ def main() -> None:
             return_results(alert_search_command(client, args))
         elif command == 'exabeam-platform-context-table-list':
             return_results(context_table_list_command(client, args))
+        elif command == 'exabeam-platform-context-table-delete':
+            return_results(context_table_delete_command(client, args))
         else:
             raise NotImplementedError(f"Command {command} is not supported")
 

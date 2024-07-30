@@ -300,15 +300,26 @@ script:
       defaultValue: 50
       description: Limit the number of results returned from the request.
     - name: include_attributes
+      description: If set to 'Yes', filters the context to include the "attributes" array related to the cases in the results.
       defaultValue: No
       auto: PREDEFINED
       predefined:
       - Yes
       - No
-      description: If set to 'Yes', filters the context to include the "attributes" array related to the cases in the results.
-
     outputs:  
-
+  - name: exabeam-platform-context-table-delete
+    description: Delete a specific context table, including records and attributes.
+    arguments:
+    - name: table_id
+      description: Specify the ID of an existing context table.
+      required: true
+    - name: delete_unused_custom_attributes
+      description: Delete any custom attributes in this table that are not used in another context table.
+      defaultValue: No
+      auto: PREDEFINED
+      predefined:
+      - Yes
+      - No 
   runonce: false
   script: '-'
   type: python

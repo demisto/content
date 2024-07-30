@@ -228,7 +228,8 @@ def test_event_search_request(mocker):
         method="POST",
         full_url=expected_url,
         data=json.dumps(data_dict),
-        headers=expected_headers
+        headers=expected_headers,
+        params=None
     )
     assert result == mocked_response
 
