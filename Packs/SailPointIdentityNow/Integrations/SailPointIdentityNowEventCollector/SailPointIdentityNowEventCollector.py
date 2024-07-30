@@ -223,6 +223,14 @@ def fetch_events(client: Client,
 
 
 def dedup(events: List[Dict], last_fetched_ids) -> List[Dict]:
+    """
+    Deduplicates events based on the last fetched ids
+    Args:
+        events: List of events
+        last_fetched_ids: List of the last fetched ids
+    Returns:
+        List of unique events
+    """
     demisto.debug(f"Starting deduping. {len(events)=}, {last_fetched_ids=}")
     if not last_fetched_ids:
         demisto.debug("Last run is missing data, skipping deduping.")
@@ -233,19 +241,21 @@ def dedup(events: List[Dict], last_fetched_ids) -> List[Dict]:
         if event['id'] not in last_fetched_ids:
             unique_events.append(event)
         else:
-            demisto.debug(f"Removed event with id: {event['id']}")
-    demisto.debug(f"Done deduping. Number of events after deduping: {len(events)}")
+            demisto.debug(f"Removed event: {event}")
+    demisto.debug(f"Done deduping. Number of events after deduping: {len(unique_events)}")
     return unique_events
 
 
 def get_last_fetched_ids(events: List[Dict]) -> List[str]:
+    """
+    Gets the ids of the last fetched events
+    Args:
+        events: List of events, sorted by creation date
+    Returns:
+        List of the last fetched ids
+    """
     last_creation_date = events[-1]['created']
-    list_of_ids = [events[-1]['id']]
-    for event in reversed(events[:-1]):
-        if event['created'] != last_creation_date:
-            return list_of_ids
-        else:
-            list_of_ids.append(event['id'])
+    list_of_ids = [event['id'] for event in reversed(events) if event['created'] == last_creation_date]
     return list_of_ids
 
 
