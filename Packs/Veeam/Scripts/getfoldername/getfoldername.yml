@@ -1,0 +1,24 @@
+args:
+- name: data
+  required: true
+  type: unknown
+commonfields:
+  id: 'GetFolderName'
+  version: -1
+dockerimage: demisto/python3:3.10.14.98471
+fromversion: 6.10.0
+enabled: true
+engineinfo: {}
+name: GetFolderName
+outputs:
+- contextPath: Veeam.FOLDER.parsed_value
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- Utilities
+type: python
+tests:
+- No tests (auto formatted)
