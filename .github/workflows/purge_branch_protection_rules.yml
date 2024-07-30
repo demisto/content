@@ -32,7 +32,7 @@ jobs:
 
       - name: Purge Protection Rules
         env:
-          GITHUB_TOKEN: ${{ secrets.BRANCH_PROTECTION_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.CONTENTBOT_GH_ADMIN_TOKEN }}
         run: |
           echo Purging branch protection rules
           poetry run python .github/github_workflow_scripts/purge_branch_protection_rules.py
