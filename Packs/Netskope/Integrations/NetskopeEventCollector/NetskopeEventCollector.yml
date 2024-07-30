@@ -38,13 +38,14 @@ configuration:
   type: 16
   required: false
   additionalinfo: 'Event types to fetch. Default is all available types: Application, Alert, Page, Audit, Network.'
-  defaultvalue: Application,Alert,Page,Audit,Network
+  defaultvalue: Application,Alert,Page,Audit,Network,Incident
   options:
   - Application
   - Alert
   - Page
   - Audit
   - Network
+  - Incident
 - display: Trust any certificate (not secure)
   section: Connect
   name: insecure
