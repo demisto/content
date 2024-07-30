@@ -583,11 +583,13 @@ def set_xsoar_incident_entries(updated_object: Dict[str, Any], entries: List, re
             close_reason = updated_object.get('classification', '')
             close_notes = updated_object.get('classificationComment', '')
             close_in_xsoar(entries, remote_incident_id, close_reason, close_notes)
+
         elif updated_object.get('Status') in ('New', 'Active'):
             reopen_in_xsoar(entries, remote_incident_id)
 
 
 def close_in_xsoar(entries: List, remote_incident_id: str, close_reason: str, close_notes: str) -> None:
+
     demisto.debug(f'Incident is closed: {remote_incident_id}')
     entries.append({
         'Type': EntryType.NOTE,
@@ -601,6 +603,7 @@ def close_in_xsoar(entries: List, remote_incident_id: str, close_reason: str, cl
 
 
 def reopen_in_xsoar(entries: List, remote_incident_id: str):
+
     demisto.debug(f'Incident is opened (or reopened): {remote_incident_id}')
     entries.append({
         'Type': EntryType.NOTE,
