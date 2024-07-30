@@ -73,7 +73,7 @@ references:
   install_build_dependencies: &install_build_dependencies
     python/install-packages:
         pkg-manager: "poetry"
-        args: "--with ci"
+        args: "--with github-actions"
         cache-version: << pipeline.parameters.cache-version >>
         pre-install-steps:
           - run:
@@ -175,6 +175,7 @@ references:
 
         chmod +x ./Tests/scripts/*
         chmod +x ./Tests/Marketplace/*
+        chmod +x ./Config/*
 
         source ./.venv/bin/activate
 
