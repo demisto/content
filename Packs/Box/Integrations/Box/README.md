@@ -1,7 +1,8 @@
 Deprecated. Use the Box v2 integration instead.
 
 ## Configure Box on Cortex XSOAR
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+1. * For XSOAR 6.x users: Navigate to **Settings** > **Integrations** > **Instances**.
+   * For XSOAR 8.x users: Navigate to **Settings & Info** > **Settings** > **Integrations** > **Instances**.
 2. Search for Box.
 3. Click **Add instance** to create and configure a new integration instance.
 
