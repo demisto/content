@@ -5,7 +5,7 @@ import pytest
 from collections import OrderedDict
 from FeedRecordedFuture import get_indicator_type, get_indicators_command, Client, fetch_indicators_command, requests
 from csv import DictReader
-from CommonServerPython import argToList, argToBoolean
+from CommonServerPython import argToList
 
 
 class TestStreamCompressedData:
