@@ -14,6 +14,7 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 TOKEN_EXPIRY_BUFFER = timedelta(seconds=10)
 DEFAULT_LIMIT = 50
 MAX_LIMIT = 3000
+# TODO: remove print
 # print(f"{demisto.args()=}")
 # print(f"{demisto.params()=}")
 
@@ -85,6 +86,29 @@ class Client(BaseClient):
         demisto.setIntegrationContext({"access_token": new_token, "expiry_time_utc": expiry_time_utc.isoformat()})
         self.access_token = new_token
 
+    def request(self, method: str, full_url: str, data: str = ""):
+        # TODO: remove print
+        # print(f"{data=}")
+        headers = {"Authorization": f"Bearer {self.access_token}", "Content-Type": "application/json"}
+        try:
+            return self._http_request(method=method, full_url=full_url, data=data, headers=headers)
+        except DemistoException as e:
+            if not hasattr(e, "res") or not hasattr(e.res, "status_code"):
+                raise
+
+            if e.res.status_code == 401 and "Jwt is expired" in e.res.text:  # type: ignore
+                self._get_new_token()
+                headers["Authorization"] = f"Bearer {self.access_token}"
+
+                return self._http_request(
+                    method=method,
+                    full_url=full_url,
+                    data=data,
+                    headers=headers,
+                )
+            else:
+                raise
+
     def event_search_request(self, data_dict: dict) -> dict:
         """
         Performs basic get request to check if the server is reachable.
@@ -116,8 +140,7 @@ class Client(BaseClient):
         full_url = f"{self._base_url}/threat-center/v1/cases/{case_id}"
         response = self.request(
             method="GET",
-            full_url=full_url,
-            data={},
+            full_url=full_url
         )
         return response
 
@@ -133,36 +156,32 @@ class Client(BaseClient):
         )
         return response
 
+    def get_table_request(self, table_id: int) -> dict:
+        """
+        """
+        full_url = f"{self._base_url}/context-management/v1/tables/{table_id}"
+        response = self.request(method="GET", full_url=full_url)
+        return response
+
+    def list_table_request(self) -> dict:
+        """
+        """
+        full_url = f"{self._base_url}/context-management/v1/tables"
+        response = self.request(
+            method="GET",
+            full_url=full_url,
+        )
+        return response
+
     def get_alert_request(self, case_id: int) -> dict:
         """
         """
         full_url = f"{self._base_url}/threat-center/v1/alerts/{case_id}"
         response = self.request(
             method="GET",
-            full_url=full_url,
-            data={},
+            full_url=full_url
         )
         return response
-
-    def request(self, method, full_url, data):
-        headers = {"Authorization": f"Bearer {self.access_token}", "Content-Type": "application/json"}
-        try:
-            return self._http_request(method=method, full_url=full_url, data=data, headers=headers)
-        except DemistoException as e:
-            if not hasattr(e, "res") or not hasattr(e.res, "status_code"):
-                raise
-
-            if e.res.status_code == 401 and "Jwt is expired" in e.res.text:  # type: ignore
-                self._get_new_token()
-                headers["Authorization"] = f"Bearer {self.access_token}"
-                return self._http_request(
-                    method=method,
-                    full_url=full_url,
-                    data=data,
-                    headers=headers,
-                )
-            else:
-                raise
 
 
 """ HELPER FUNCTIONS """
@@ -275,7 +294,12 @@ def _parse_entry(entry: dict):
         "Stage": entry.get("stage"),
         "Mitres": entry.get("mitres"),
         "Dest IPs": entry.get("destIps"),
-        "Queue": entry.get("queue")
+        "Queue": entry.get("queue"),
+        "Name": entry.get("name"),
+        "Source": entry.get("source"),
+        "Context Type": entry.get("contextType"),
+        "# Items": entry.get("totalItems"),
+        "Status": entry.get("status"),
     }
     final = remove_empty_elements(parsed)
     return final if final else None
@@ -399,20 +423,19 @@ def case_search_command(client: Client, args: dict) -> CommandResults:
         if not all_results:
             kwargs['limit'] = get_limit(args)
 
+        if (order_by := args.get("order_by", "")):
+            kwargs["orderBy"] = argToList(order_by)
+
         response = client.case_search_request(kwargs)
+        data_response = response.get("rows", [])
 
         include_related_rules = argToBoolean(args.get("include_related_rules"))
-        if not include_related_rules:
-            rows = response.get("rows", [])
-            for row in rows:
-                row.pop("rules", None)
-
-        data_response = response.get("rows", {})
-
         human_readable = []
-        for entry in data_response:
-            if parsed_entry := _parse_entry(entry):
-                human_readable.append(parsed_entry)
+        for row in data_response:
+            if parsed_row := _parse_entry(row):
+                human_readable.append(parsed_row)
+            if not include_related_rules:
+                row.pop("rules", None)
 
     return CommandResults(
         outputs_prefix="ExabeamPlatform.Case",
@@ -438,29 +461,54 @@ def alert_search_command(client: Client, args: dict) -> CommandResults:
             'endTime': end_time,
         }
 
+        if (order_by := args.get("order_by", "")):
+            kwargs["orderBy"] = argToList(order_by)
+
         all_results = argToBoolean(args.get("all_results"))
         if not all_results:
             kwargs['limit'] = get_limit(args)
 
         response = client.alert_search_request(kwargs)
+        rows = response.get("rows", [])
 
         include_related_rules = argToBoolean(args.get("include_related_rules"))
-        if not include_related_rules:
-            rows = response.get("rows", [])
-            for row in rows:
-                row.pop("rules", None)
-
-        data_response = response.get("rows", {})
-
         human_readable = []
-        for entry in data_response:
-            if parsed_entry := _parse_entry(entry):
-                human_readable.append(parsed_entry)
+        for row in rows:
+            if parsed_row := _parse_entry(row):
+                human_readable.append(parsed_row)
+            if not include_related_rules:
+                row.pop("rules", None)
 
     return CommandResults(
         outputs_prefix="ExabeamPlatform.Alert",
-        outputs=data_response,
+        outputs=rows,
         readable_output=tableToMarkdown(name="Alert", t=human_readable)
+    )
+
+
+def context_table_list_command(client: Client, args: dict) -> CommandResults:
+    if (table_id := args.get("table_id")):
+        response = client.get_table_request(table_id)
+        human_readable = _parse_entry(response)
+    else:
+        limit = get_limit(args)
+
+        response = client.list_table_request()[:limit]
+
+        include_attributes = argToBoolean(args.get("include_attributes"))
+
+        human_readable = []
+        for entry in response:
+            if parsed_entry := _parse_entry(entry):
+                parsed_entry["Last Updated"] = timestamp_to_datestring(entry.get("lastUpdated", 0) * 1000)  # type: ignore
+                human_readable.append(parsed_entry)
+            if not include_attributes:
+                entry.pop("attributes", None)
+
+    return CommandResults(
+        outputs_prefix="ExabeamPlatform.ContextTable",
+        outputs=response,
+        readable_output=tableToMarkdown(name="Table", t=human_readable)
     )
 
 
@@ -514,6 +562,8 @@ def main() -> None:
             return_results(case_search_command(client, args))
         elif command == 'exabeam-platform-alert-search':
             return_results(alert_search_command(client, args))
+        elif command == 'exabeam-platform-context-table-list':
+            return_results(context_table_list_command(client, args))
         else:
             raise NotImplementedError(f"Command {command} is not supported")
 

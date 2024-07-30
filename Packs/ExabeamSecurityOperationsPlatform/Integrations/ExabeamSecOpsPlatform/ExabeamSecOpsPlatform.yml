@@ -291,6 +291,24 @@ script:
       - No
       description: If set to 'Yes', filters the context to include the "rules" array related to the cases in the results.
     outputs:  
+  - name: exabeam-platform-context-table-list
+    description: Retrieve metadata for all existing context tables, including source, operational status, and attribute mapping.
+    arguments:
+    - name: table_id
+      description: Specify the ID of an existing context table
+    - name: limit
+      defaultValue: 50
+      description: Limit the number of results returned from the request.
+    - name: include_attributes
+      defaultValue: No
+      auto: PREDEFINED
+      predefined:
+      - Yes
+      - No
+      description: If set to 'Yes', filters the context to include the "attributes" array related to the cases in the results.
+
+    outputs:  
+
   runonce: false
   script: '-'
   type: python
