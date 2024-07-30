@@ -2,7 +2,7 @@
     "name": "Tufin",
     "description": "Gather network intelligence from SecureTrack and SecureApp, perform topology queries in SecureTrack, and submit change tickets from SecureChange.",
     "support": "partner",
-    "currentVersion": "1.2.5",
+    "currentVersion": "1.2.6",
     "author": "Tufin",
     "url": "https://www.tufin.com",
     "email": "support@tufin.com",
