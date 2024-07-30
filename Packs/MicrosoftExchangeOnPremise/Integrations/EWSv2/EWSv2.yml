@@ -116,6 +116,12 @@ configuration:
   section: Connect
   advanced: true
   required: false
+- display: Use legacy attachment name
+  name: legacy_name
+  section: Collect
+  type: 8
+  advanced: true
+  defaultvalue: 'false'
 description: Exchange Web Services and Office 365 (mail).
 display: EWS v2
 name: EWS v2
@@ -130,10 +136,6 @@ script:
     - description: The attachments ids to get. If none - all attachments will be retrieve from the message. Support multiple attachments with comma-separated value or array.
       isArray: true
       name: attachment-ids
-    - description: Identifier ids to download to XSOAR (to avoid downloading all files to XSOAR during the preprocessing script).
-      hidden: true
-      name: identifiers-filter
-      required: false
     description: Retrieves the actual attachments from an item (email message). To get all attachments for a message, only specify the item-id argument.
     name: ews-get-attachment
     outputs:
