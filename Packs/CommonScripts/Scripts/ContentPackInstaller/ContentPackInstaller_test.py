@@ -93,3 +93,13 @@ def test_is_pack_already_installed(mocker):
     assert not installer.is_pack_already_installed({'id': 'ShouldntBeInstalled', 'version': '1.2.3'})
     assert not installer.is_pack_already_installed({'id': 'SomePack', 'version': '1.2.4'})
     assert installer.is_pack_already_installed({'id': 'SomePack', 'version': '1.2.3'})
+
+
+def test_get_packs_data_for_installation(mocker):
+
+    installer = get_content_pack_installer(mocker)
+    mocker.patch("ContentPackInstaller.execute_command", return_value=(True, [{'response':
+                                                                               {'id': 'SomePack',
+                                                                                 'currentVersion': '1.2.4'}}]))
+    packs = installer.get_packs_data_for_installation([{'id': 'SomePack', 'version': '1.2.3'}])
+    assert packs == [{'id': 'SomePack', 'version': '1.2.4'}]
