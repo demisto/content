@@ -1,10 +1,10 @@
 {
-    "id": "incident_sekoiaalertdetails",
+    "id": "incident_sekoiaxdralertdetails",
     "version": -1,
     "modified": "2024-07-02T13:34:47.794510655Z",
-    "name": "Sekoia Alert Details",
+    "name": "Sekoia XDR Alert Details",
     "ownerOnly": false,
-    "cliName": "sekoiaalertdetails",
+    "cliName": "sekoiaxdralertdetails",
     "type": "markdown",
     "closeForm": false,
     "editForm": true,

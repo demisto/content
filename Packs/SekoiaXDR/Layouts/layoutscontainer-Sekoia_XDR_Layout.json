@@ -1461,15 +1461,15 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_sekoiaalertdetails",
+                        "fieldId": "incident_sekoiaxdralertdetails",
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_sekoiaalertstatus",
+                        "fieldId": "incident_sekoiaxdralertstatus",
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_sekoiakillchain",
+                        "fieldId": "incident_sekoiaxdrkillchain",
                         "isVisible": true
                     },
                     {

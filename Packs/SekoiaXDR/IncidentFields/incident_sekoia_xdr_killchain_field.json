@@ -1,10 +1,10 @@
 {
-    "id": "incident_sekoiakillchain",
+    "id": "incident_sekoiaxdrkillchain",
     "version": -1,
     "modified": "2024-07-02T13:34:48.058774798Z",
-    "name": "Sekoia Kill Chain",
+    "name": "Sekoia XDR Kill Chain",
     "ownerOnly": false,
-    "cliName": "sekoiakillchain",
+    "cliName": "sekoiaxdrkillchain",
     "type": "grid",
     "closeForm": false,
     "editForm": true,
@@ -23,7 +23,7 @@
     ],
     "associatedToAll": false,
     "unmapped": false,
-    "unsearchable": false,
+    "unsearchable": true,
     "caseInsensitive": true,
     "columns": [
         {

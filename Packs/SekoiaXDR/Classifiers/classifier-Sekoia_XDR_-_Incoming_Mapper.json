@@ -89,9 +89,6 @@
                 "Sekoia Alert Status": {
                     "simple": "status.name"
                 },
-                "Sekoia CTI URL": {
-                    "simple": "target"
-                },
                 "Sekoia First Seen": {
                     "simple": "first_seen_at"
                 },
@@ -101,9 +98,6 @@
                         "root": "kill_chain",
                         "transformers": []
                     }
-                },
-                "Sekoia Last Seen": {
-                    "simple": "last_seen_at"
                 },
                 "Source Create time": {
                     "complex": {
