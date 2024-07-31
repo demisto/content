@@ -1,5 +1,6 @@
 import pytest
-from Packs.SailPointIdentityNow.Integrations.SailPointIdentityNowEventCollector.SailPointIdentityNowEventCollector import dedup, get_last_fetched_ids, fetch_events, add_time_and_status_to_events, Client
+import demistomock as demisto
+from SailPointIdentityNowEventCollector import fetch_events, add_time_and_status_to_events, Client, dedup, get_last_fetched_ids
 
 
 @pytest.mark.parametrize('expiration_time, expected', [
@@ -22,7 +23,6 @@ def test_get_token(mocker, expiration_time, expected):
     mocker.patch.object(Client, '_http_request').return_value = {"access_token": "dummy token",
                                                                  "expires_in": 1}
     client = Client(base_url="https://example.com", client_id="test_id", client_secret="test_secret", verify=False, proxy=False)
-
     mocker.patch('SailPointIdentityNowEventCollector.get_integration_context',
                  return_value={'token': 'valid_token', 'expires': expiration_time})
     mocker.patch.object(Client, 'generate_token', return_value='new_token')
@@ -30,7 +30,7 @@ def test_get_token(mocker, expiration_time, expected):
     assert token == expected
 
 
-def test_fetch_events(mocker):
+def test_fetch_events__affective_dedup(mocker):
     """
     Given:
         - A SailPointIdentityNow client with max of 3 events per call
@@ -39,7 +39,9 @@ def test_fetch_events(mocker):
     Then:
         - Ensure the pagination is working correctly, and 2 sets of events are fetched to reach the max_events_per_fetch
         - Ensure the next_run object is returned correctly
+        - ensure the events are deduped correctly (id no. 3 is dropped as it was fetched in the first call)
     """
+    mocker.patch.object(demisto, 'debug')
     client = mocker.patch('SailPointIdentityNowEventCollector.Client')
     last_run = {'prev_id': '0', 'prev_date': '2022-01-01T00:00:00'}
     max_events_per_fetch = 5
@@ -49,11 +51,56 @@ def test_fetch_events(mocker):
     ])
     next_run, events = fetch_events(client, max_events_per_fetch, last_run)
 
-    assert next_run == {'prev_id': '3', 'prev_date': '2022-01-01T00:03:00', 'last_fetched_ids': ['3']}
-    assert len(events) == max_events_per_fetch + 1
+    assert next_run == {'prev_id': '2', 'prev_date': '2022-01-01T00:02:00', 'last_fetched_ids': ['2']}
+    assert len(events) == max_events_per_fetch
 
 
-def test_add_time_and_status_to_events():
+def test_fetch_events__no_events(mocker):
+    """
+    Given:
+        - A SailPointIdentityNow client with max of 3 events per call
+    When:
+        - calling fetch_events with a max_events_per_fetch of 5 and no events to fetch
+    Then:
+        - Ensure the next_run object is returned correctly and we did not enter an infinite loop
+
+    """
+    mocker.patch.object(demisto, 'debug')
+    client = mocker.patch('SailPointIdentityNowEventCollector.Client')
+    last_run = {'prev_id': '0', 'prev_date': '2022-01-01T00:00:00', 'last_fetched_ids': ['0']}
+    max_events_per_fetch = 5
+
+    mocker.patch.object(client, 'search_events', return_value=[])
+    next_run, _ = fetch_events(client, max_events_per_fetch, last_run)
+
+    assert next_run == last_run
+    
+
+def test_fetch_events__all_events_are_dedup(mocker):
+    """
+    Given:
+        - A SailPointIdentityNow client with max of 3 events per call
+    When:
+        - calling fetch_events with a max_events_per_fetch of 5 and all events are duplicates
+    Then:
+        - Ensure the next_run object is returned correctly
+        - Ensure the we are not stuck in an infinite loop
+
+    """
+    mocker.patch.object(demisto, 'debug')
+    client = mocker.patch('SailPointIdentityNowEventCollector.Client')
+    last_run = {'prev_id': '0', 'prev_date': '2022-01-01T00:00:00'}
+    max_events_per_fetch = 5
+    mocker.patch('SailPointIdentityNowEventCollector.dedup', return_value=[])
+
+    mocker.patch.object(client, 'search_events', return_value=[
+        {'id': str(i), 'created': f'2022-01-01T00:0{i}:00'} for i in range(1, 4)
+    ])
+    next_run, _ = fetch_events(client, max_events_per_fetch, last_run)
+    assert next_run == last_run
+
+
+def test_add_time_and_status_to_events(mocker):
     """
     Given:
         - A list of events
@@ -69,6 +116,7 @@ def test_add_time_and_status_to_events():
             case 2: _ENTRY_STATUS = new, _time = created time
             case 3: _ENTRY_STATUS = new, _time = created time
     """
+    mocker.patch.object(demisto, 'debug')
 
     events = [
         {'created': '2022-01-01T00:00:00', 'modified': '2022-01-01T00:01:00'},
@@ -87,11 +135,11 @@ def test_add_time_and_status_to_events():
 
 @pytest.mark.parametrize('prev_id, expected', [
     ("123",
-     '{"indices": ["events"], "queryType": "SAILPOINT", "queryVersion": "5.2", "query": {"query": "type:* "}, "sort": ["+id"], "searchAfter": ["123"]}'
-    ),
+     '{"indices": ["events"], "queryType": "SAILPOINT", "queryVersion": "5.2", "query": {"query": "type:* "}, "sort": ["+id"], "searchAfter": ["123"]}' # noqa: E501
+     ),
     (None,
-    '{"indices": ["events"], "queryType": "SAILPOINT", "queryVersion": "5.2", "query": {"query": "type:* AND created: [2022-01-01T00:00:00 TO now]"}, "timeZone": "GMT", "sort": ["+created"]}'
-    )
+     '{"indices": ["events"], "queryType": "SAILPOINT", "queryVersion": "5.2", "query": {"query": "type:* AND created: [2022-01-01T00:00:00 TO now]"}, "timeZone": "GMT", "sort": ["+created"]}'        # noqa: E501
+     )
 ])
 def test_search_events(mocker, prev_id, expected):
     """
@@ -107,12 +155,12 @@ def test_search_events(mocker, prev_id, expected):
     mocker_request = mocker.patch.object(Client, '_http_request')
     mocker.patch.object(Client, 'get_token').return_value = {}
     client = Client(base_url="https://example.com", client_id="test_id", client_secret="test_secret",
-                    verify=False, proxy=False, token = 'dummy_token')
-    client.search_events(from_date = '2022-01-01T00:00:00',limit = 1, prev_id = prev_id)
+                    verify=False, proxy=False, token='dummy_token')
+    client.search_events(from_date='2022-01-01T00:00:00', limit=1, prev_id=prev_id)
     assert mocker_request.call_args.kwargs["data"] == expected
 
 
-def test_dedup__some_duplicates():
+def test_dedup__some_duplicates(mocker):
     """
     Given:
         - A list of events with duplicate and unique entries
@@ -122,6 +170,7 @@ def test_dedup__some_duplicates():
     Then:
         - Ensure the duplicate events are removed
     """
+    mocker.patch.object(demisto, 'debug')
     events = [
         {'created': '2022-01-01T00:00:00Z', 'id': '1'},
         {'created': '2022-01-01T00:00:00Z', 'id': '2'},
@@ -134,9 +183,9 @@ def test_dedup__some_duplicates():
         {'created': '2022-01-01T00:00:00Z', 'id': '3'},
         {'created': '2022-01-02T00:00:00Z', 'id': '4'},
     ]
-    
-    
-def test_dedup__all_duplicates():
+
+
+def test_dedup__all_duplicates(mocker):
     """
     Given:
         - A list of events  all duplicate
@@ -146,6 +195,7 @@ def test_dedup__all_duplicates():
     Then:
         - Ensure the duplicate events are removed and an empty list is returned
     """
+    mocker.patch.object(demisto, 'debug')
     events = [
         {'created': '2022-01-01T00:00:00Z', 'id': '1'},
         {'created': '2022-01-01T00:00:00Z', 'id': '2'},
@@ -155,9 +205,9 @@ def test_dedup__all_duplicates():
     deduped_events = dedup(events, ['1', '2', '3', '4'])
 
     assert deduped_events == []
-    
-    
-def test_dedup__no_duplicates():
+
+
+def test_dedup__no_duplicates(mocker):
     """
         Given:
             - A list of events with no duplicates
@@ -167,6 +217,7 @@ def test_dedup__no_duplicates():
         Then:
             - Ensure the events are returned as is
     """
+    mocker.patch.object(demisto, 'debug')
     events = [
         {'created': '2022-01-01T00:00:00Z', 'id': '1'},
         {'created': '2022-01-01T00:00:00Z', 'id': '2'},
@@ -178,7 +229,7 @@ def test_dedup__no_duplicates():
     assert deduped_events == events
 
 
-def test_get_last_fetched_ids():
+def test_get_last_fetched_ids(mocker):
     """
     Given:
         - A list of events with different creation dates
@@ -187,6 +238,7 @@ def test_get_last_fetched_ids():
     Then:
         - Ensure the function returns the ids of the events that have the same creation date as the last event
     """
+    mocker.patch.object(demisto, 'debug')
     # Define the input events
     events = [
         {'created': '2022-01-01T00:00:00Z', 'id': '1'},
