@@ -48,7 +48,7 @@ TIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 if FETCH_TIME:
     if FETCH_TIME[-1] != 'Z':
         FETCH_TIME = FETCH_TIME + 'Z'
-MAX_FETCH = DEMISTO_PARAMS.get('max_fetch')
+MAX_FETCH = DEMISTO_PARAMS.get('max_fetch', '1000')
 INCIDENT_TYPE_DICT = {
     'CommunicationError': 17,
     'DenialOfService': 21,
@@ -201,13 +201,14 @@ def prettify_incident_notes(notes: list[dict]) -> list[dict]:
     Reformatting retrieved incident notes to be more readable.
     """
     formatted_notes = []
-    while notes:
-        note = notes.pop()
+    notes_copy = notes.copy()
+    while notes_copy:
+        note = notes_copy.pop()
         new_note_obj = {
             'id': note.get('id', ''),
             # Removing HTML tags.
             'text': re.sub(r'<[^>]+>', '', note.get('text', '')),
-            'create_date': normalize_timestamp(note.get('create_date', ''))}
+            'create_date': normalize_timestamp(note.get('create_date'))}
         formatted_notes.append(new_note_obj)
     return formatted_notes
 
@@ -216,6 +217,8 @@ def prepare_search_query_data(args: dict) -> dict:
     """
     Preparing the search query filters and pagination parameters for the `search_incidents` request.
     """
+    demisto.debug(f'prepare_search_query_data {args=}')
+
     conditions = []  # type: Any
     if 'severity' in args:
         value = []
@@ -376,6 +379,7 @@ def prepare_search_query_data(args: dict) -> dict:
         data['length'] = page_size
     elif page < 0 or page_size < 0:
         raise DemistoException('Invalid page number or page size. Page number and page sizes must be positive integers.')
+    demisto.debug(f'prepare_search_query_data {data=}')
     return data
 
 
