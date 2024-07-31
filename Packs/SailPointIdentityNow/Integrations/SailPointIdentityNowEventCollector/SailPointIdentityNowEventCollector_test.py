@@ -49,11 +49,11 @@ def test_fetch_events__end_to_end_with_affective_dedup(mocker):
 
     mocker.patch.object(client, 'search_events', side_effect=[[
         {'id': str(i), 'created': f'2022-01-01T00:0{i}:00'} for i in range(1, 4)
-    ],                                                  [
+    ], [
         {'id': str(i), 'created': f'2022-01-01T00:0{i}:00'} for i in range(3, 5)
     ],
-    []])
-        
+        []])
+
     next_run, events = fetch_events(client, max_events_per_fetch, last_run)
 
     assert next_run == {'prev_id': '4', 'prev_date': '2022-01-01T00:04:00', 'last_fetched_ids': ['4']}
@@ -79,7 +79,7 @@ def test_fetch_events__no_events(mocker):
     next_run, _ = fetch_events(client, max_events_per_fetch, last_run)
 
     assert next_run == last_run
-    
+
 
 def test_fetch_events__all_events_are_dedup(mocker):
     """
@@ -94,7 +94,7 @@ def test_fetch_events__all_events_are_dedup(mocker):
     """
     mocker.patch.object(demisto, 'debug')
     client = mocker.patch('SailPointIdentityNowEventCollector.Client')
-    last_run = {'prev_id': '0', 'prev_date': '2022-01-01T00:00:00'}
+    last_run = {'prev_id': '0', 'prev_date': '2022-01-01T00:00:00', 'last_fetched_ids': [0]}
     max_events_per_fetch = 5
     mocker.patch('SailPointIdentityNowEventCollector.dedup', return_value=[])
 
@@ -140,7 +140,7 @@ def test_add_time_and_status_to_events(mocker):
 
 @pytest.mark.parametrize('prev_id, expected', [
     ("123",
-     '{"indices": ["events"], "queryType": "SAILPOINT", "queryVersion": "5.2", "query": {"query": "type:* "}, "sort": ["+id"], "searchAfter": ["123"]}' # noqa: E501
+     '{"indices": ["events"], "queryType": "SAILPOINT", "queryVersion": "5.2", "query": {"query": "type:* "}, "sort": ["+id"], "searchAfter": ["123"]}'  # noqa: E501
      ),
     (None,
      '{"indices": ["events"], "queryType": "SAILPOINT", "queryVersion": "5.2", "query": {"query": "type:* AND created: [2022-01-01T00:00:00 TO now]"}, "timeZone": "GMT", "sort": ["+created"]}'        # noqa: E501
@@ -174,20 +174,25 @@ def test_dedup__some_duplicates(mocker):
         - calling dedup
     Then:
         - Ensure the duplicate events are removed
+        - Ensure the log message contains the info of the dropped events.
     """
-    mocker.patch.object(demisto, 'debug')
+    debug_msg = mocker.patch.object(demisto, 'debug')
+    last_fetched_creation_date = '2022-01-01T00:00:00Z'
     events = [
         {'created': '2022-01-01T00:00:00Z', 'id': '1'},
         {'created': '2022-01-01T00:00:00Z', 'id': '2'},
         {'created': '2022-01-01T00:00:00Z', 'id': '3'},
         {'created': '2022-01-02T00:00:00Z', 'id': '4'},
     ]
-    deduped_events = dedup(events, ['1', '2'])
+    deduped_events = dedup(events, last_fetched_creation_date=last_fetched_creation_date, last_fetched_ids=['1', '2'])
 
     assert deduped_events == [
         {'created': '2022-01-01T00:00:00Z', 'id': '3'},
         {'created': '2022-01-02T00:00:00Z', 'id': '4'},
     ]
+    assert "Starting deduping. Number of events before deduping: 4" in debug_msg.call_args_list[0][0][0]
+    assert debug_msg.call_args_list[1][0][0] == "Dropping duplicate event: {'created': '2022-01-01T00:00:00Z', 'id': '1'}"
+    assert debug_msg.call_args_list[2][0][0] == "Dropping duplicate event: {'created': '2022-01-01T00:00:00Z', 'id': '2'}"
 
 
 def test_dedup__all_duplicates(mocker):
@@ -200,14 +205,15 @@ def test_dedup__all_duplicates(mocker):
     Then:
         - Ensure the duplicate events are removed and an empty list is returned
     """
+    last_fetched_creation_date = '2022-01-01T00:00:00Z'
     mocker.patch.object(demisto, 'debug')
     events = [
         {'created': '2022-01-01T00:00:00Z', 'id': '1'},
         {'created': '2022-01-01T00:00:00Z', 'id': '2'},
         {'created': '2022-01-01T00:00:00Z', 'id': '3'},
-        {'created': '2022-01-02T00:00:00Z', 'id': '4'},
+        {'created': '2022-01-01T00:00:00Z', 'id': '4'},
     ]
-    deduped_events = dedup(events, ['1', '2', '3', '4'])
+    deduped_events = dedup(events, last_fetched_creation_date=last_fetched_creation_date, last_fetched_ids=['1', '2', '3', '4'])
 
     assert deduped_events == []
 
@@ -223,13 +229,15 @@ def test_dedup__no_duplicates(mocker):
             - Ensure the events are returned as is
     """
     mocker.patch.object(demisto, 'debug')
+    last_fetched_creation_date = '2022-01-01T00:00:00Z'
+
     events = [
         {'created': '2022-01-01T00:00:00Z', 'id': '1'},
         {'created': '2022-01-01T00:00:00Z', 'id': '2'},
         {'created': '2022-01-01T00:00:00Z', 'id': '3'},
-        {'created': '2022-01-02T00:00:00Z', 'id': '4'},
+        {'created': '2022-01-01T00:00:00Z', 'id': '4'},
     ]
-    deduped_events = dedup(events, ['6', '5'])
+    deduped_events = dedup(events, last_fetched_creation_date=last_fetched_creation_date, last_fetched_ids=['6', '5'])
 
     assert deduped_events == events
 

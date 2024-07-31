@@ -88,7 +88,7 @@ class Client(BaseClient):
 
         return token
 
-    def search_events(self, from_date: str, limit: int, prev_id: str| None = None) -> List[Dict]:
+    def search_events(self, from_date: str, limit: int, prev_id: str | None = None) -> List[Dict]:
         """
         Searches for events in SailPoint IdentityNow
         Args:
@@ -100,22 +100,22 @@ class Client(BaseClient):
         """
         if not prev_id:
             query = {"indices": ["events"],
-                    "queryType": "SAILPOINT",
-                    "queryVersion": "5.2",
-                    "query":
-                    {"query": f"type:* AND created: [{from_date} TO now]"},
-                    "timeZone": "GMT",
-                    "sort": ["+created"],
-                    }
+                     "queryType": "SAILPOINT",
+                     "queryVersion": "5.2",
+                     "query":
+                     {"query": f"type:* AND created: [{from_date} TO now]"},
+                     "timeZone": "GMT",
+                     "sort": ["+created"],
+                     }
         else:
-             query = {"indices": ["events"],
-                    "queryType": "SAILPOINT",
-                    "queryVersion": "5.2",
-                    "query":
-                    {"query": "type:* "},
-                    "sort": ["+id"],
-                    "searchAfter": [prev_id]
-                    }
+            query = {"indices": ["events"],
+                     "queryType": "SAILPOINT",
+                     "queryVersion": "5.2",
+                     "query":
+                     {"query": "type:* "},
+                     "sort": ["+id"],
+                     "searchAfter": [prev_id]
+                     }
 
         url_suffix = f'/v3/search?limit={limit}'
         demisto.debug(f'Searching for events with query: {query}.')
@@ -147,7 +147,7 @@ def test_module(client: Client) -> str:
     return 'ok'
 
 
-def get_events(client: Client, from_date: str, from_id: str| None, limit: int = 50) -> tuple[List[Dict], CommandResults]:
+def get_events(client: Client, from_date: str, from_id: str | None, limit: int = 50) -> tuple[List[Dict], CommandResults]:
     """
     Gets events from the SailPoint IdentityNow API
     Args:
@@ -182,7 +182,7 @@ def fetch_events(client: Client,
     demisto.debug(f'Starting fetch_events with last_run: {last_run}.')
     last_fetched_id = last_run.get('prev_id')
     last_fetched_creation_date = last_run.get('prev_date', DEFAULT_NOW)
-    last_fetched_ids = last_run.get('last_fetched_ids', [])
+    last_fetched_ids: list = last_run.get('last_fetched_ids', [])
 
     all_events = []
     remaining_events_to_fetch = limit
@@ -193,25 +193,26 @@ def fetch_events(client: Client,
         demisto.debug(f'trying to fetch {current_batch_to_fetch} events.')
 
         events = client.search_events(
-            #currently we have issues with fetching events by id, so we are fetching by date only.
+            # currently we have issues with fetching events by id, so we are fetching by date only.
             # if the issue is resolved, all we need to do is to uncomment the line below
-            #prev_id=last_fetched_id
-            from_date= last_fetched_creation_date,
+            # prev_id=last_fetched_id
+            from_date=last_fetched_creation_date,
             limit=current_batch_to_fetch
-            )
+        )
         demisto.debug(f'Successfully fetched {len(events)} events in this cycle.')
-        events = dedup(events =events, last_fetched_ids=last_fetched_ids)
+        events = dedup(events, last_fetched_ids, last_fetched_creation_date)
         if events:
             last_fetched_event = events[-1]
             last_fetched_id = last_fetched_event['id']
             last_fetched_creation_date = last_fetched_event['created']
-            demisto.debug(f'information of the last event in this cycle: id: {last_fetched_id}, created: {last_fetched_creation_date}.')
+            demisto.debug(
+                f'information of the last event in this cycle: id: {last_fetched_id}, created: {last_fetched_creation_date}.')
             remaining_events_to_fetch -= len(events)
             demisto.debug(f'{remaining_events_to_fetch} events are left to fetch in the next calls.')
             last_fetched_ids = get_last_fetched_ids(events)
             all_events.extend(events)
         else:
-            #to avoid infinite loop, if no events are fetched, or all events are duplicates, exit the loop
+            # to avoid infinite loop, if no events are fetched, or all events are duplicates, exit the loop
             break
 
     next_run = {'prev_id': last_fetched_id, 'prev_date': last_fetched_creation_date, 'last_fetched_ids': last_fetched_ids}
@@ -222,28 +223,36 @@ def fetch_events(client: Client,
 ''' HELPER FUNCTIONS '''
 
 
-def dedup(events: List[Dict], last_fetched_ids) -> List[Dict]:
+def dedup(events: List[Dict], last_fetched_ids: list, last_fetched_creation_date: str) -> List[Dict]:
     """
-    Deduplicates events based on the last fetched ids
+    Dedupes the events fetched based on the last fetched ids and creation date
+    This process is based on the assumption that the events are sorted by creation date
     Args:
         events: List of events
         last_fetched_ids: List of the last fetched ids
+        last_fetched_creation_date: The creation date of the last fetched event
     Returns:
-        List of unique events
+        List of deduped events
     """
-    demisto.debug(f"Starting deduping. {len(events)=}, {last_fetched_ids=}")
-    if not last_fetched_ids:
-        demisto.debug("Last run is missing data, skipping deduping.")
+    if not last_fetched_ids or not last_fetched_creation_date:
+        demisto.debug("No last fetched ids or creation date. Skipping deduping.")
         return events
 
-    unique_events = []
+    demisto.debug(f"Starting deduping. Number of events before deduping: {len(events)},\
+        last creation date: {last_fetched_creation_date} , last fetched ids: {last_fetched_ids}")
+
+    deduped_events = []
     for event in events:
-        if event['id'] not in last_fetched_ids:
-            unique_events.append(event)
+        if event['created'] != last_fetched_creation_date:
+            deduped_events.extend(events[events.index(event):])
+            break
+        if event['id'] in last_fetched_ids:
+            demisto.debug(f"Dropping duplicate event: {event}")
         else:
-            demisto.debug(f"Removed event: {event}")
-    demisto.debug(f"Done deduping. Number of events after deduping: {len(unique_events)}")
-    return unique_events
+            deduped_events.append(event)
+
+    demisto.debug(f"Done deduping. Number of events after deduping: {len(deduped_events)}")
+    return deduped_events
 
 
 def get_last_fetched_ids(events: List[Dict]) -> List[str]:
@@ -302,7 +311,6 @@ def main() -> None:
     proxy = params.get('proxy', False)
     limit = arg_to_number(params.get('limit')) or 50000
 
-
     demisto.debug(f'Command being called is {command}')
     try:
         client = Client(
@@ -326,7 +334,7 @@ def main() -> None:
                 raise DemistoException("Either from_id or from_date must be provided.")
             if id_to_start and time_to_start:
                 raise DemistoException("Both from_id and from_date cannot be provided.")
-            events, results = get_events(client,from_date=formatted_time_to_start,
+            events, results = get_events(client, from_date=formatted_time_to_start,
                                          from_id=id_to_start, limit=limit)   # type:ignore
             return_results(results)
             if should_push_events:
