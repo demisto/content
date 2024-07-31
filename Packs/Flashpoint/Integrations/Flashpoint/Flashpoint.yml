@@ -2,9 +2,10 @@ commonfields:
   id: Flashpoint
   version: -1
 name: Flashpoint
-display: Flashpoint
+display: Flashpoint (Deprecated)
 category: Data Enrichment & Threat Intelligence
-description: Use the Flashpoint integration to reduce business risk. Flashpoint allows users to ingest alerts and compromised credentials as incident alerts and executes commands such as search intelligence report, ip, url, get events, and more.
+deprecated: true
+description: Deprecated. Use Flashpoint Ignite instead.
 configuration:
 - display: Fetch incidents
   name: isFetch
