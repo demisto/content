@@ -1,5 +1,5 @@
 Improve the effectiveness of your service provision and resources, and the quality of your IT department.
-This integration was integrated and tested with version 11.0.44 of PATHelpdeskAdvanced.
+This integration was integrated and tested with version 11.2.3 of PATHelpdeskAdvanced.
 
 ## Configure PAT HelpdeskAdvanced on Cortex XSOAR
 
@@ -508,7 +508,7 @@ List ticket statuses.
             {
                 "Description": "Other",
                 "ID": "S10"
-            },
+            }
         ]
     }
 }
@@ -617,32 +617,28 @@ Get ticket history.
 {
     "HelpdeskAdvanced": {
         "TicketHistory": {
-            [
-                {
-                "AccountID": "",
-                "Attachments": null,
-                "TicketID": "1111111C",
-                "AutEmailCounter": 0,
-                "ContactID": "",
-                "Data": {
-                    "Comment": "testing",
-                    "From": "Solved",
-                    "FromID": "S6",
-                    "To": "In Progress",
-                    "ToID": "S2"
-                },
-                "ExternalAction": false,
-                "FullName": "John Doe",
-                "HistoryID": 5667526,
-                "OperationDescription": "Status change",
-                "OperationTypeID": 20,
-                "UpdateDate": "2023-10-04T07:45:35Z",
-                "UserID": "S00000C",
-                "Username": "username"
+            "AccountID": "",
+            "Attachments": null,
+            "TicketID": "1111111C",
+            "AutEmailCounter": 0,
+            "ContactID": "",
+            "Data": {
+                "Comment": "testing",
+                "From": "Solved",
+                "FromID": "S6",
+                "To": "In Progress",
+                "ToID": "S2"
             },
-        ]
+            "ExternalAction": false,
+            "FullName": "John Doe",
+            "HistoryID": 5667526,
+            "OperationDescription": "Status change",
+            "OperationTypeID": 20,
+            "UpdateDate": "2023-10-04T07:45:35Z",
+            "UserID": "S00000C",
+            "Username": "username"
+        }
     }
-}
 }
 ```
 
@@ -695,7 +691,7 @@ List users.
                 "ID": "#GUEST#",
                 "LastName": "Guest",
                 "Phone": null
-            },
+            }
         ]
     }
 }
