@@ -1,0 +1,19 @@
+{
+    "name": "Veeam App for Palo Alto Networks XSOAR",
+    "description": "Veeam content pack for Cortex XSOAR.",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "Veeam Software",
+    "url": "",
+    "email": "",
+    "categories": [
+        "Vulnerability Management"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar"
+    ],
+    "githubUser": []
+}
