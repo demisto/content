@@ -1,0 +1,54 @@
+commonfields:
+  id: 32528dad-d4c2-4fee-88a1-601642b109e8
+  version: 3
+vcShouldKeepItemLegacyProdMachine: false
+name: RemoveSlackBlockList
+script: |
+  register_module_line('RemoveSlackBlockList', 'start', __line__())
+  ### pack version: 3.4.14
+
+
+
+
+  from typing import Any
+  import traceback
+  import urllib.parse
+
+
+  def remove_block_list_from_xsoar():
+      listName = demisto.args().get("list_name")
+      body = {"id": listName}
+      demisto.executeCommand("demisto-api-post", {"uri":"/lists/delete", "body":body})
+
+
+
+  ''' MAIN FUNCTION '''
+
+
+  def main():  # pragma: no cover
+      try:
+          remove_block_list_from_xsoar()
+      except Exception as excep:
+          demisto.error(traceback.format_exc())  # print the traceback
+          return_error(f'Failed to execute RemoveSlackBlockList. Error: {str(excep)}')
+
+
+  ''' ENTRY POINT '''
+
+  if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
+      main()
+
+  register_module_line('RemoveSlackBlockList', 'end', __line__())
+type: python
+tags: []
+enabled: true
+args:
+- name: list_name
+scripttarget: 0
+subtype: python3
+pswd: ""
+runonce: false
+dockerimage: demisto/python3:3.11.9.104957
+runas: DBotWeakRole
+engineinfo: {}
+mainengineinfo: {}
