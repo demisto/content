@@ -2436,10 +2436,10 @@ def fetch_indicators(eiq_api):
             demisto.info("Feed id={} was fully ingested/updated.".format(str(item["id"])))
 
             return indicators_to_add
-        return None
+        return []
     else:
         demisto.error("Fetching enabled but Feed IDs not configured.")
-        return None
+        return []
 
 
 def export_csv_to_indicators(feed_id, text, flag=False):
