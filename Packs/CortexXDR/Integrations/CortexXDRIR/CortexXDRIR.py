@@ -1069,6 +1069,7 @@ def fetch_incidents(client, first_fetch_time, integration_instance, exclude_arti
 
     new_incidents_at_last_timestamp = next_run.get('incidents_at_last_timestamp', [])
     incidents_at_last_timestamp = set(new_incidents_at_last_timestamp)
+
     # Handle first time fetch, fetch incidents retroactively
     if last_fetch is None:
         last_fetch, _ = parse_date_range(first_fetch_time, to_timestamp=True)
@@ -1136,8 +1137,8 @@ def fetch_incidents(client, first_fetch_time, integration_instance, exclude_arti
             # Update last run and add incident if the incident is newer than last fetch
             if incident_data.get('creation_time', 0) > last_fetch:
                 last_fetch = incident_data['creation_time']
-                new_incidents_at_last_timestamp = []
-            if incident_data.get('creation_time', 0) == last_fetch:
+                new_incidents_at_last_timestamp = [incident_id]
+            if incident_data.get('creation_time') == last_fetch:
                 new_incidents_at_last_timestamp.append(incident_id)
             incidents.append(incident)
             non_created_incidents.remove(raw_incident)
