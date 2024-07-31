@@ -29,11 +29,11 @@ script: |+
           demisto.error(traceback.format_exc())  # print the traceback
           return_error(f'Failed to overwrite list {list_name}. Error: {str(excep)}')
 
-  def create_slack_notification_block(incident_id):
+  def create_slack_notification_block(message):
       # Message to be sent
-      message = (f"You have not responded to the {incident_id} incident notification in a timely manner. "
-                 f"We are coming to an end of the {incident_id} incident playbook from XSOAR. "
-                 "You are welcome to reopen it. Regards.")
+      # message = (f"You have not responded to the {incident_id} incident notification in a timely manner. "
+      #           f"We are coming to an end of the {incident_id} incident playbook from XSOAR. "
+      #           "You are welcome to reopen it. Regards.")
 
       # Slack block structure
       block = {
@@ -53,10 +53,10 @@ script: |+
   def main():  # pragma: no cover
       try:
           list_name = demisto.args().get("list_name")
-          incident_id = demisto.args().get("incident_id")
+          message = demisto.args().get("message")
 
           # Create a Slack notification block
-          block = create_slack_notification_block(incident_id)
+          block = create_slack_notification_block(message)
 
           # Overwrite the list value
           overwrite_list_value(list_name, block)
@@ -84,7 +84,7 @@ enabled: true
 args:
 - name: list_name
   required: true
-- name: incident_id
+- name: message
   required: true
 scripttarget: 0
 subtype: python3
