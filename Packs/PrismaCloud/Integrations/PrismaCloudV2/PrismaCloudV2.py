@@ -328,6 +328,36 @@ class Client(BaseClient):
 
         return self._http_request('POST', 'code/api/v1/errors/files', json_data=data, headers=headers)
 
+    def get_access_keys_list(self, args: Dict[str, Any]):
+        url_suffix = f"/access_keys/{args.get('access-key')}" if args.get('access-key') else '/access_keys'
+
+        # params = {'limit': args.get('limit')} if args.get('limit') else {}
+
+        params = {'limit': '3'}
+        return self._http_request(
+            method='GET',
+            url_suffix=url_suffix,
+            params=params
+        )
+
+    def patch_access_key_disable(self, access_key: str):
+        params = {'access-key': access_key}
+
+        return self._http_request(
+            method='PATCH',
+            url_suffix=f'/access_keys/{access_key}/status/false',
+            params=params
+        )
+
+    def patch_access_key_enable(self, access_key: str):
+        params = {'access-key': access_key}
+
+        return self._http_request(
+            method='PATCH',
+            url_suffix=f'/access_keys/{access_key}/status/true',
+            params=params
+        )
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -583,7 +613,7 @@ def expire_stored_ids(fetched_ids: Dict[str, int], updated_last_run_time: int, l
 
 
 def calculate_fetch_time_range(now: int, first_fetch: str, look_back: int = 0, last_run_time: Optional[int] = None) -> \
-        Dict[str, Any]:
+    Dict[str, Any]:
     if last_run_time:
         last_run_time = add_look_back(int(last_run_time), look_back)
     else:  # first fetch
@@ -979,7 +1009,7 @@ def format_v1_response(response: Any) -> Any:
 
 
 def alert_search_v1_command(client: Client, args: Dict[str, Any], return_v1_output: bool) -> \
-        Union[CommandResults, List[Union[CommandResults, str]], Dict]:
+    Union[CommandResults, List[Union[CommandResults, str]], Dict]:
     """
     This command is for supporting backwards compatibility, to make transition to V2 easier for users with custom playbooks.
     """
@@ -1030,7 +1060,7 @@ def alert_get_details_v1_command(client: Client, args: Dict[str, Any], return_v1
 
 
 def alert_dismiss_v1_command(client: Client, args: Dict[str, Any], return_v1_output: bool) -> \
-        Union[CommandResults, List[Union[CommandResults, str]], Dict]:
+    Union[CommandResults, List[Union[CommandResults, str]], Dict]:
     """
     This command is for supporting backwards compatibility, to make transition to V2 easier for users with custom playbooks.
     """
@@ -1059,7 +1089,7 @@ def alert_dismiss_v1_command(client: Client, args: Dict[str, Any], return_v1_out
 
 
 def alert_reopen_v1_command(client: Client, args: Dict[str, Any], return_v1_output: bool) -> \
-        Union[CommandResults, List[Union[CommandResults, str]], Dict]:
+    Union[CommandResults, List[Union[CommandResults, str]], Dict]:
     """
     This command is for supporting backwards compatibility, to make transition to V2 easier for users with custom playbooks.
     """
@@ -1085,7 +1115,7 @@ def alert_reopen_v1_command(client: Client, args: Dict[str, Any], return_v1_outp
 
 
 def remediation_command_list_v1_command(client: Client, args: Dict[str, Any], return_v1_output: bool) -> \
-        Union[CommandResults, Dict]:
+    Union[CommandResults, Dict]:
     """
     This command is for supporting backwards compatibility, to make transition to V2 easier for users with custom playbooks.
     """
@@ -1274,7 +1304,7 @@ def alert_search_command(client: Client, args: Dict[str, Any]) -> CommandResults
         extract_nested_values(readable_response, nested_headers)
 
     headers = ['Alert ID', 'reason', 'status', 'alertTime', 'firstSeen', 'lastSeen', 'lastUpdated'] \
-        + list(nested_headers.values())[1:]
+              + list(nested_headers.values())[1:]
     output = {
         'PrismaCloud.AlertPageToken(val.nextPageToken)': {'nextPageToken': next_page_token},  # values are overridden
         'PrismaCloud.Alert(val.id && val.id == obj.id)': response_items  # values are appended to list based on id
@@ -1324,7 +1354,7 @@ def alert_get_details_command(client: Client, args: Dict[str, Any]) -> CommandRe
                       'resource.url': 'Resource Url',
                       }
     headers = ['Alert ID', 'reason', 'status', 'alertTime', 'firstSeen', 'lastSeen', 'lastUpdated', 'eventOccurred'] \
-        + list(nested_headers.values())[1:]
+              + list(nested_headers.values())[1:]
     extract_nested_values(readable_response, nested_headers)
 
     command_results = CommandResults(
@@ -1503,7 +1533,7 @@ def config_search_command(client: Client, args: Dict[str, Any]) -> CommandResult
     demisto.debug(f'Searching for config with the following params: {query=}, {limit=}, {time_filter=}, {include_resource_json=},'
                   f' {include_additional_resource_fields=}')
     response = client.config_search_request(time_filter, str(query), limit, search_id, sort_direction, sort_field,
-                                            include_resource_json,)
+                                            include_resource_json, )
     if not include_additional_resource_fields:
         remove_additional_resource_fields(response)
 
@@ -1977,7 +2007,7 @@ def permission_list_command(client: Client, args: Dict[str, Any]) -> CommandResu
 
 
 def fetch_incidents(client: Client, last_run: Dict[str, Any], params: Dict[str, Any]) -> \
-        tuple[List[Dict[str, Any]], Dict[str, int], int]:
+    tuple[List[Dict[str, Any]], Dict[str, int], int]:
     """
     Retrieve new incidents periodically based on pre-defined instance parameters
     """
@@ -2136,6 +2166,54 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
     return remote_incident_id
 
 
+def access_keys_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    access_keys_list = client.get_access_keys_list(args)
+    print(len(access_keys_list))
+    transform_access_keys_list = [
+        {
+            'ID': access_key.get('id'),
+            'Name': access_key.get('name'),
+            'Created By': access_key.get('createdBy'),
+            'Created Timestamp': access_key.get('createdTs'),
+            'Last Used Time': access_key.get('lastUsedTime'),
+            'Status': access_key.get('status'),
+            'Expires On': access_key.get('expiresOn'),
+            'Role id': access_key.get('role', {}).get('id'),
+            'Role Name': access_key.get('role', {}).get('name'),
+            'Role Type': access_key.get('roleType'),
+            'Username': access_key.get('username'),
+        }
+        for access_key in access_keys_list
+    ]
+
+    markdown_table = tableToMarkdown('PrismaCloud Access Keys', transform_access_keys_list,
+                                     headers=['ID', 'Name', 'Created By', 'Created Timestamp', 'Last Used Time', 'Status',
+                                              'Expires On', 'Role id', 'Role Name', 'Role Type', 'Username'])
+    return CommandResults(
+        outputs_prefix="PrismaCloud.AccessKeys",
+        outputs_key_field='id',
+        outputs=access_keys_list,
+        raw_response=access_keys_list,
+        readable_output=markdown_table,
+    )
+
+
+def access_key_disable_command(client: Client, args: Dict[str, Any]) -> CommandResults | None:
+    access_key = args.get('access-key')
+    client.patch_access_key_disable(access_key)
+    return CommandResults(
+        readable_output=f'Access key {access_key} was disabled successfully',
+    )
+
+
+def access_key_enable_command(client: Client, args: Dict[str, Any]) -> CommandResults | None:
+    access_key = args.get('access-key')
+    client.patch_access_key_enable(access_key)
+    return CommandResults(
+        readable_output=f'Access key f{access_key} was enabled successfully',
+    )
+
+
 ''' TEST MODULE '''
 
 
@@ -2232,6 +2310,9 @@ def main() -> None:
 
             'get-remote-data': get_remote_data_command,
             'update-remote-system': update_remote_system_command,
+
+            'prisma-cloud-access-keys-list': access_keys_list_command,
+            'prisma-cloud-access-key-disable': access_key_disable_command,
         }
         commands_v1 = {
             'redlock-search-alerts': alert_search_v1_command,

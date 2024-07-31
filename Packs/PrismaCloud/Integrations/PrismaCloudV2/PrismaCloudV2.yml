@@ -2131,6 +2131,29 @@ script:
     description: Updates the remote incident with local incident changes. This method is only used for debugging purposes and will not update the current incident.
     execution: false
     name: update-remote-system
+
+  - arguments: [ ]
+    deprecated: false
+    description: Should add description here
+    execution: false
+    name: prisma-cloud-access-keys-list
+  - arguments:
+      - description: Should add description here
+        name: access-key
+        required: true
+    deprecated: false
+    description: Should add description here
+    execution: false
+    name: prisma-cloud-access-key-disable
+  - arguments:
+      - description: Should add description here
+        name: access-key
+        required: true
+    deprecated: false
+    description: Should add description here
+    execution: false
+    name: prisma-cloud-access-key-enable
+
 tests:
 - Prisma Cloud V2 Test
 defaultmapperin: RedLock-mapper
