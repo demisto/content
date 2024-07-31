@@ -1132,7 +1132,7 @@ def fetch_incidents(client, first_fetch_time, integration_instance, exclude_arti
                 'rawJSON': json.dumps(incident_data),
             }
             if demisto.params().get('sync_owners') and incident_data.get('assigned_user_mail'):
-                incident['owner'] = demisto.findUser(email=incident_data.get('assigned_user_mail')).get('username')
+                incident['owner'] = demisto.findUser(email=incident_data['assigned_user_mail']).get('username')
             # Update last run and add incident if the incident is newer than last fetch
             if incident_data.get('creation_time', 0) > last_fetch:
                 last_fetch = incident_data['creation_time']

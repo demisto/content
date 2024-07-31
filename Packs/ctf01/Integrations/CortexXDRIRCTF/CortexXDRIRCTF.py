@@ -1221,8 +1221,7 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
             incident_data = raw_incident
             sort_all_list_incident_fields(incident_data)
 
-            incident_data['mirror_direction'] = MIRROR_DIRECTION.get(demisto.params().get('mirror_direction', 'None'),
-                                                                     None)
+            incident_data['mirror_direction'] = MIRROR_DIRECTION.get(demisto.params().get('mirror_direction', 'None'))
             incident_data['mirror_instance'] = integration_instance
             incident_data['last_mirrored_in'] = int(datetime.now().timestamp() * 1000)
 
@@ -1235,7 +1234,7 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
             }
 
             if demisto.params().get('sync_owners') and incident_data.get('assigned_user_mail'):
-                incident['owner'] = demisto.findUser(email=incident_data.get('assigned_user_mail')).get('username')
+                incident['owner'] = demisto.findUser(email=incident_data['assigned_user_mail']).get('username')
 
             # Update last run and add incident if the incident is newer than last fetch
             if raw_incident['creation_time'] > last_fetch:
