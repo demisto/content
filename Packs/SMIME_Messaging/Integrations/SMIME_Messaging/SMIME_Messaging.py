@@ -72,7 +72,8 @@ def parse_multipart_message(msg: str):
                 extension = mimetypes.guess_extension(mime_type) or '.bin'
                 fileName = f'attachment_{uuid.uuid4()}{extension}'
 
-            if fileName.lower().endswith('.p7s'):
+            if (fileName.lower().endswith('.p7')
+                    or fileName.lower().endswith('.p7', 0, -1)):
                 demisto.debug(f'Skipping p7 file: {fileName}')
                 continue
             # create the attachment
