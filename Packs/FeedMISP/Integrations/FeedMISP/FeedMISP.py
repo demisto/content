@@ -113,7 +113,7 @@ GALAXY_MAP = {
     'misp-galaxy:mitre-course-of-action': ThreatIntel.ObjectsNames.COURSE_OF_ACTION,
 }
 
-LIMIT: int = 2000
+LIMIT: int = 10000
 
 
 class Client(BaseClient):
@@ -338,7 +338,7 @@ def build_indicators(response: Dict[str, Any],
         update_indicator_fields(indicator_obj, tlp_color, raw_type, feed_tags)
         galaxy_indicators = build_indicators_from_galaxies(indicator_obj, reputation)
         create_and_add_relationships(indicator_obj, galaxy_indicators)
-
+        indicator_obj.pop("rawJSON")
         indicators.append(indicator_obj)
     return indicators
 
