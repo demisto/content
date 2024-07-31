@@ -354,14 +354,14 @@ class CoreClient(BaseClient):
             filters.append({
                 'field': 'creation_time',
                 'operator': 'gte',
-                'value': gte_creation_time_milliseconds
+                'value': date_to_timestamp(gte_creation_time_milliseconds)
             })
         
         if gte_modification_time_milliseconds > 0:
             filters.append({
                 'field': 'modification_time',
                 'operator': 'gte',
-                'value': gte_modification_time_milliseconds
+                'value': date_to_timestamp(gte_modification_time_milliseconds)
             })
         
         if lte_modification_time_milliseconds > 0:

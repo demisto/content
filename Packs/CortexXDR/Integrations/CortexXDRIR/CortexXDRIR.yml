@@ -37,7 +37,7 @@ configuration:
   - Outgoing
   - Both
 - defaultvalue: '1'
-  display: xdr_delay
+  display: xdr delay in minutes
   name: xdr_delay
   type: 0
   section: Collect

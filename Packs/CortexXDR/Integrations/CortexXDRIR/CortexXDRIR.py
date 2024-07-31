@@ -885,22 +885,22 @@ def get_mapping_fields_command():
 
 def get_modified_remote_data_command(client, args, xdr_delay: int, last_mirroring: Optional[dict] = None):
     ##########
-    args['lastUpdate'] = '2024-07-30T09:19:40.001604274Z'
+    # args['lastUpdate'] = '2024-07-30T09:19:40.001604274Z'
     remote_args = GetModifiedRemoteDataArgs(args)
-    last_update = gte_modification_time_with_ms = lte_modification_time_with_ms = last_mirroring.get(
+    last_update = last_mirroring.get(
         'time') if isinstance(last_mirroring, dict) else remote_args.last_update
     demisto.debug(f'Performing get-modified-remote-data command. {last_update=} | {xdr_delay=}')
     last_update_utc = dateparser.parse(last_update,
                                        settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': False})   # convert to utc format
-
+    
     if last_update_utc:
-        gte_modification_time_with_ms = last_update_utc - timedelta(minutes=xdr_delay)
-        lte_modification_time_with_ms = gte_modification_time_with_ms + timedelta(minutes=1)
-    demisto.debug(f'get_modified_remote_data_command: {gte_modification_time_with_ms=} | {lte_modification_time_with_ms=}')
+        gte_modification_time_milliseconds = last_update_utc - timedelta(minutes=xdr_delay)
+        lte_modification_time_with_ms = gte_modification_time_milliseconds + timedelta(minutes=1)
+    demisto.debug(f'get_modified_remote_data_command: {gte_modification_time_milliseconds=} | {lte_modification_time_with_ms=}')
     raw_incidents = client.get_incidents(
         sort_by_modification_time=True,
-        gte_modification_time_milliseconds=gte_modification_time_with_ms.timestamp() if gte_modification_time_with_ms else gte_modification_time_with_ms,
-        lte_modification_time_milliseconds=lte_modification_time_with_ms.timestamp()if lte_modification_time_with_ms else lte_modification_time_with_ms,
+        gte_modification_time_milliseconds=gte_modification_time_milliseconds,
+        lte_modification_time_milliseconds=lte_modification_time_with_ms,
         limit=100)
     last_run_obj = demisto.getLastRun()
     last_run_obj['mirroring'] = {'time': (lte_modification_time_with_ms + timedelta(milliseconds=1))}  # type: ignore
