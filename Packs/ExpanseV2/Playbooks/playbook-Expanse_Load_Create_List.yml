@@ -3,7 +3,9 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Expanse Load-Create List
+deprecated: true
 description: |
+  Deprecated. No available replacement.
   Sub-playbook to support Expanse Handle Incident playbook.
   Loads a list to be used in the Expanse playbook.
   Creates the list if it does not exist.
