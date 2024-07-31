@@ -213,10 +213,10 @@ def test_handle_authentication_logs(ret_fresh_client):
 
 
 @freeze_time("2024-01-24 17:00:00 UTC")
-def test_handle_v2_logs_no_events(ret_fresh_client):
+def test_handle_v2_logs_no_events():
     """
     Given:
-        A call is being send to get authentication logs from duo.
+        A call is being send to get authentication and telephony logs from duo.
     When:
         getting the events.
     Then:
@@ -233,9 +233,16 @@ def test_handle_v2_logs_no_events(ret_fresh_client):
         "end_window": datetime.strptime("2024-01-24 15:11:33", DATE_FORMAT),
         "fetch_delay": "5"
     }
+    error_message = "Received 400 Invalid request parameters ('maxtime' must be strictly greater than 'mintime')"
     client = Client(Params(**params, mintime={}))
     client.params.mintime[LogType.AUTHENTICATION] = {"min_time": '1706115540000'}
     client.params.mintime[LogType.TELEPHONY] = {"min_time": '1706115540000'}
+
+    with patch.object(client.admin_api, 'get_authentication_log', side_effect=Exception(error_message)):
+        events_auth, metadata_auth = client.handle_authentication_logs()
+
+    with patch.object(client.admin_api, 'get_telephony_log', side_effect=Exception(error_message)):
+        events_tel, metadata_tel = client.handle_telephony_logs_v2()
 
     events_auth, metadata_auth = client.handle_authentication_logs()
     events_tel, metadata_tel = client.handle_telephony_logs_v2()
@@ -243,6 +250,57 @@ def test_handle_v2_logs_no_events(ret_fresh_client):
     assert not metadata_auth
     assert not events_tel
     assert not metadata_tel
+
+
+@freeze_time("2024-01-24 17:00:00 UTC")
+def test_handle_v2_test_args(mocker):
+    """
+    Given:
+        A call is being send to get authentication and telephony logs from duo.
+    When:
+        getting the events.
+    Then:
+        Validate that the correct arguments are being sent.
+    """
+    end_window: datetime = datetime.strptime("2024-01-24 15:11:33", DATE_FORMAT)
+    params = {
+        "after": "1 minute",
+        "host": "api-host.duosecurity.com",
+        "integration_key": "XXXXXXXXXXXXXXXX",
+        "limit": "10",
+        "proxy": False,
+        "retries": "5",
+        "secret_key": {"password": "password", "passwordChanged": False},
+        "end_window": end_window,
+        "fetch_delay": "5"
+    }
+    error_message = "Received 400 Invalid request parameters ('maxtime' must be strictly greater than 'mintime')"
+    client = Client(Params(**params, mintime={}))
+    client.params.mintime[LogType.AUTHENTICATION] = {"min_time": '1706115540000'}
+    client.params.mintime[LogType.TELEPHONY] = {"min_time": '1706115540000'}
+    maxtime = '1706109093000'
+    mintime = '1706115540000'
+
+    # authentication , no next_offset
+    request_1 = mocker.patch.object(client.admin_api, 'get_authentication_log', side_effect=Exception(error_message))
+    client.handle_authentication_logs()
+    request_1.assert_called_with(mintime=mintime, api_version=2, limit='10', sort='ts:asc', maxtime=maxtime)
+    # telephony no next_offset
+    request_2 = mocker.patch.object(client.admin_api, 'get_telephony_log', side_effect=Exception(error_message))
+    client.handle_telephony_logs_v2()
+    request_2.assert_called_with(mintime=mintime, api_version=2, limit='10', sort='ts:asc', maxtime=maxtime)
+    
+    next_offset = ["1706115540000", "af0ba235-0b33-23c8-bc23-a31aa0231de8"]
+    client.params.mintime[LogType.AUTHENTICATION] = {"min_time": '1706115540000', "next_offset": next_offset}
+    client.params.mintime[LogType.TELEPHONY] = {"min_time": '1706115540000', "next_offset": next_offset}
+    # authentication with next_offset
+    request_3 = mocker.patch.object(client.admin_api, 'get_authentication_log', side_effect=Exception(error_message))
+    client.handle_authentication_logs()
+    request_3.assert_called_with(next_offset=next_offset, mintime=mintime, api_version=2, limit='10', sort='ts:asc', maxtime=maxtime)
+    # telephony with next_offset
+    request_4 = mocker.patch.object(client.admin_api, 'get_telephony_log', side_effect=Exception(error_message))
+    client.handle_telephony_logs_v2()
+    request_4.assert_called_with(next_offset=next_offset,mintime=mintime, api_version=2, limit='10', sort='ts:asc', maxtime=maxtime)
 
 
 def test_handle_telephony_logs_v2(ret_fresh_client):
@@ -377,10 +435,9 @@ def test_events_in_window_all_in():
     request_order = ['ADMINISTRATION']
 
     get_events_obj = GetEvents(client, request_order)
-    output_events, reached_end_window, mintime = get_events_obj.events_in_window(input_events)
+    output_events, reached_end_window = get_events_obj.events_in_window(input_events)
     assert len(output_events) == 9
     assert not reached_end_window
-    assert mintime == 0
 
 
 @freeze_time("2020-01-24 15:16:33 UTC")
@@ -411,10 +468,9 @@ def test_events_in_window_some_in():
     request_order = ['ADMINISTRATION']
 
     get_events_obj = GetEvents(client, request_order)
-    output_events, reached_end_window, mintime = get_events_obj.events_in_window(input_events)
+    output_events, reached_end_window = get_events_obj.events_in_window(input_events)
     assert len(output_events) == 6
     assert reached_end_window
-    assert mintime == 1579878692
 
 
 @freeze_time("2020-01-24 15:16:33 UTC")
@@ -445,10 +501,9 @@ def test_events_in_window_none_in():
     request_order = ['ADMINISTRATION']
 
     get_events_obj = GetEvents(client, request_order)
-    output_events, reached_end_window, mintime = get_events_obj.events_in_window(input_events)
+    output_events, reached_end_window = get_events_obj.events_in_window(input_events)
     assert len(output_events) == 0
     assert reached_end_window
-    assert mintime == 0
 
 
 @freeze_time("2020-01-24 15:16:33 UTC")
@@ -479,10 +534,9 @@ def test_events_in_window_all_no_delay():
     request_order = ['ADMINISTRATION']
 
     get_events_obj = GetEvents(client, request_order)
-    output_events, reached_end_window, mintime = get_events_obj.events_in_window(input_events)
+    output_events, reached_end_window = get_events_obj.events_in_window(input_events)
     assert len(output_events) == 9
     assert not reached_end_window
-    assert mintime == 0
 
 
 @freeze_time("2020-01-24 15:16:33 UTC")

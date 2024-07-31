@@ -112,22 +112,29 @@ class Client:
         In case there is a fetch_delay, we want to perform the API call only in case that min_time is before the end of the
         fetch window.
         """
-        mintime = int(self.params.mintime[LogType.AUTHENTICATION].get("min_time")) / 1000
-        if not self.check_window_before_call(mintime):
-            return [], {}
+        maxtime = str(int(self.params.end_window.timestamp() * 1000))
 
         if not self.params.mintime[LogType.AUTHENTICATION].get('next_offset'):
-            demisto.debug('handle_authentication_logs, no next_offset')
-            response = self.admin_api.get_authentication_log(
-                mintime=self.params.mintime[LogType.AUTHENTICATION].get('min_time'),
-                api_version=2, limit=str(min(int(self.params.limit), int('1000'))), sort='ts:asc')
+            demisto.debug(f'handle_authentication_logs, no next_offset {maxtime=}')
+            try:
+                response = self.admin_api.get_authentication_log(
+                    mintime=self.params.mintime[LogType.AUTHENTICATION].get('min_time'),
+                    api_version=2, limit=str(min(int(self.params.limit), int('1000'))), sort='ts:asc', maxtime=maxtime)
+            except Exception as e:
+                demisto.debug(str(e))
+                return [], {}
+
         else:
             next_offset = self.params.mintime[LogType.AUTHENTICATION].get('next_offset')
             mintime = next_offset[0]
-            demisto.debug(f'handle_authentication_logs {next_offset=}')
-            response = self.admin_api.get_authentication_log(
-                next_offset=self.params.mintime[LogType.AUTHENTICATION].get('next_offset'), mintime=mintime,
-                api_version=2, limit=str(min(int(self.params.limit), int('1000'))), sort='ts:asc')
+            demisto.debug(f'handle_authentication_logs {next_offset=} {maxtime=}')
+            try:
+                response = self.admin_api.get_authentication_log(
+                    next_offset=self.params.mintime[LogType.AUTHENTICATION].get('next_offset'), mintime=mintime,
+                    api_version=2, limit=str(min(int(self.params.limit), int('1000'))), sort='ts:asc', maxtime=maxtime)
+            except Exception as e:
+                demisto.debug(str(e))
+                return [], {}
 
         # The v2 API works with a metadata dictionary - (next token mechanism).
         response_metadata = response.get('metadata')
@@ -149,20 +156,26 @@ class Client:
         In case there is a fetch_delay, we want to perform the API call only in case that min_time is before the end of the
         fetch window.
         """
-        mintime = int(self.params.mintime[LogType.TELEPHONY].get('min_time')) / 1000
-        if not self.check_window_before_call(mintime):
-            return [], {}
+        maxtime = str(int(self.params.end_window.timestamp() * 1000))
 
         if not self.params.mintime[LogType.TELEPHONY].get('next_offset'):
-            response = self.admin_api.get_telephony_log(
-                mintime=self.params.mintime[LogType.TELEPHONY].get('min_time'),
-                api_version=2, limit=str(min(int(self.params.limit), 1000)), sort='ts:asc')
+            try:
+                response = self.admin_api.get_telephony_log(
+                    mintime=self.params.mintime[LogType.TELEPHONY].get('min_time'),
+                    api_version=2, limit=str(min(int(self.params.limit), 1000)), sort='ts:asc', maxtime=maxtime)
+            except Exception as e:
+                demisto.debug(str(e))
+                return [], {}
         else:
             next_offset = self.params.mintime[LogType.TELEPHONY].get('next_offset')
             mintime = next_offset[0]
-            response = self.admin_api.get_telephony_log(
-                next_offset=next_offset, mintime=mintime,
-                api_version=2, limit=str(min(int(self.params.limit), 1000)), sort='ts:asc')
+            try:
+                response = self.admin_api.get_telephony_log(
+                    next_offset=next_offset, mintime=mintime,
+                    api_version=2, limit=str(min(int(self.params.limit), 1000)), sort='ts:asc', maxtime=maxtime)
+            except Exception as e:
+                demisto.debug(str(e))
+                return [], {}
 
         response_metadata = response.get('metadata', {})
         events = response.get('items')
@@ -199,11 +212,7 @@ class Client:
 
     def set_next_run_filter_v2(self, log_type: LogType, metadata: dict, mintime: int = 0):
         """Set the next_run for the v2 api, works with the next_offset parameter"""
-        if not mintime:
-            self.params.set_next_offset_value({'next_offset': metadata.get('next_offset')}, log_type)
-        else:
-            self.params.mintime[log_type] = {'min_time': mintime + 1, 'next_offset': []}
-            demisto.debug(f'set_next_run_filter_v2 {self.params.mintime[log_type]=}')
+        self.params.set_next_offset_value({'next_offset': metadata.get('next_offset')}, log_type)
 
 
 class GetEvents:
@@ -227,7 +236,7 @@ class GetEvents:
         demisto.debug(f'make_sdk_call after update {len(events)=}')
         return events, metadata
 
-    def events_in_window(self, events: list) -> tuple[list, bool, int]:
+    def events_in_window(self, events: list) -> tuple[list, bool]:
         """ Binary search on the list of events to find the event closest to the end of the fetch window.
             cases:
             a. There is no need to run this function fetch_delay = 0 (if 1).
@@ -247,20 +256,19 @@ class GetEvents:
                 events (list[dict]): List of events from the current fetch response.
 
             Returns:
-                tuple[list[dict], bool, int]: The list of events, bool represents whether we reached the end of the fetch
-                window, int representing the last event timestamp.
+                tuple[list[dict], bool]: The list of events, bool represents whether we reached the end of the fetch window.
             """
         # if 1
         if (self.client.params.fetch_delay == '0'
                 or datetime.fromtimestamp(events[-1]['timestamp']) < self.client.params.end_window):
             demisto.debug(f"events_in_window, all events in the fetch window {events[-1]['timestamp']=} < "
                           f"{self.client.params.end_window.timestamp()=}")
-            return events, False, 0
+            return events, False
         # if 2
         if datetime.fromtimestamp(events[0]['timestamp']) >= self.client.params.end_window:
             demisto.debug(f"events_in_window, no events are in the fetch window {events[0]['timestamp']=} >= "
                           f"{self.client.params.end_window.timestamp()=}")
-            return [], True, 0
+            return [], True
         low = 0
         high = len(events) - 1
         mid = 0
@@ -273,12 +281,12 @@ class GetEvents:
                 # this is the last event in the window, return the events up to this event including the event.
                 demisto.debug(f"events_in_window, {events[mid]['timestamp']=} < {self.client.params.end_window.timestamp()=} "
                               f"<= {events[mid + 1]['timestamp']=}, {mid=}")
-                return events[:mid + 1], True, events[mid]['timestamp']
+                return events[:mid + 1], True
             # if 4
             elif events[mid - 1]['timestamp'] < self.client.params.end_window.timestamp() <= events[mid]['timestamp']:
                 demisto.debug(f"events_in_window, {events[mid - 1]['timestamp']=} < "
                               f"{self.client.params.end_window.timestamp()=} <= {events[mid]['timestamp']=}, {mid=}")
-                return events[:mid], True, events[mid - 1]['timestamp']
+                return events[:mid], True
             # if 5
             elif events[mid]['timestamp'] < self.client.params.end_window.timestamp():
                 demisto.debug(f"events_in_window, {events[mid]['timestamp']} < {self.client.params.end_window.timestamp()}, "
@@ -291,8 +299,7 @@ class GetEvents:
                 high = mid - 1
         demisto.debug(f'events_in_window end, return events {mid=}')
         events = events[:mid + 1]
-        min_time = events[-1]['timestamp'] if events else 0
-        return events[:mid], True, min_time
+        return events[:mid], True
 
     def _iter_events(self) -> Generator:
         """
@@ -302,19 +309,18 @@ class GetEvents:
         reached_end_window = False
         while True:
             if events:
-                events, reached_end_window, mintime = self.events_in_window(events)
-                # if there aren't events in the fetch window events will return empty
-                if events:
-                    # The diffrent filters set are driven from duo-api admin documentation.
-                    # V1 is filtered with the timespamp parameter and V2 is filtered by the metadata dictionary.
-                    if self.request_order[0] in [
-                        LogType.ADMINISTRATION,
-                        LogType.TELEPHONY,
-                    ]:
+                # The diffrent filters set are driven from duo-api admin documentation.
+                # V1 is filtered with the timespamp parameter and V2 is filtered by the metadata dictionary.
+                if self.request_order[0] in [
+                    LogType.ADMINISTRATION,
+                    LogType.TELEPHONY,
+                ]:
+                    events, reached_end_window = self.events_in_window(events)
+                    if events:  # if there aren't events in the fetch window events will return empty
                         self.client.set_next_run_filter_v1(self.request_order[0], events[-1]['timestamp'])
-                    else:
-                        self.client.set_next_run_filter_v2(self.request_order[0], metadata, mintime)
-                    events = parse_events(events)  # If there are events left in events, add _time
+                else:
+                    self.client.set_next_run_filter_v2(self.request_order[0], metadata)
+                events = parse_events(events)  # If there are events left in events, add _time
             yield events
             if reached_end_window:
                 demisto.debug('reached the end_window, breaking')
