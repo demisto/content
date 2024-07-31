@@ -12,6 +12,7 @@ import json
 from datetime import datetime, timezone
 import pytest
 from Serenety import Client
+import demistomock as demisto
 
 BASE_URL = "https://test.leportail.xmco.fr/api"
 HEADERS = {'Authentication': 'Bearer some_api_key'}
@@ -120,3 +121,17 @@ def test_fetch_incidents(requests_mock):
 
     assert next_run.get('last_fetch') > last_run.get('last_fetch')
     assert incidents == []
+
+
+def test_main(mocker):
+    """
+    Test the main function
+    """
+    from Serenety import main
+
+    mocker.patch.object(demisto, 'params', return_value={'url': 'url'})
+    return_error_mock = mocker.patch('Serenety.return_error')
+
+    main()
+
+    return_error_mock.assert_called_with('Failed to execute  command.\nError:\ncommand  is not implemented.')

@@ -451,5 +451,8 @@
             }
         ]
     },
-    "description": ""
+    "description": "",
+    "marketplaces": [
+        "xsoar"
+    ]
 }

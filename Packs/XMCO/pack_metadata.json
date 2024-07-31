@@ -13,7 +13,8 @@
     "useCases": [],
     "keywords": [],
     "marketplaces": [
-        "xsoar"
+        "xsoar",
+        "marketplacev2"
     ],
     "devEmail": [
         "factory@xmco.fr",
