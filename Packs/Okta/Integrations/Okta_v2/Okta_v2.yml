@@ -1,7 +1,4 @@
 category: Authentication & Identity Management
-sectionOrder:
-- Connect
-- Collect
 commonfields:
   id: Okta v2
   version: -1
@@ -1485,7 +1482,8 @@ script:
       type: String
   - description: Reset OAuth authentication data (authentication process will start from the beginning, and a new token will be generated).
     name: okta-auth-reset
-  dockerimage: demisto/crypto:1.0.0.95384
+    arguments: []
+  dockerimage: demisto/crypto:1.0.0.105591
   runonce: false
   script: ""
   subtype: python3
