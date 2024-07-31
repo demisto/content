@@ -33,7 +33,8 @@ script: |
           # print(json.dumps(json.loads(response.text), sort_keys=True, indent=4, separators=(",", ": ")))
 
           if response.status_code != 200:
-              return_error(f"Error in API call [{response.status_code}]: {response.text}")
+              print(f"Error in API call [{response.status_code}]: {response.text}")
+              return email
 
           users = response.json()
           print(users)
