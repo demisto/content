@@ -2153,6 +2153,14 @@ script:
     description: Should add description here
     execution: false
     name: prisma-cloud-access-key-enable
+  - arguments:
+      - description: Should add description here
+        name: access-key
+        required: true
+    deprecated: false
+    description: Should add description here
+    execution: false
+    name: prisma-cloud-access-key-delete
 
 tests:
 - Prisma Cloud V2 Test

@@ -341,21 +341,21 @@ class Client(BaseClient):
         )
 
     def patch_access_key_disable(self, access_key: str):
-        params = {'access-key': access_key}
-
         return self._http_request(
             method='PATCH',
             url_suffix=f'/access_keys/{access_key}/status/false',
-            params=params
         )
 
     def patch_access_key_enable(self, access_key: str):
-        params = {'access-key': access_key}
-
         return self._http_request(
             method='PATCH',
             url_suffix=f'/access_keys/{access_key}/status/true',
-            params=params
+        )
+
+    def access_key_deletion(self, access_key: str):
+        return self._http_request(
+            method='DELETE',
+            url_suffix=f'/access_keys/{access_key}',
         )
 
 
@@ -2214,6 +2214,14 @@ def access_key_enable_command(client: Client, args: Dict[str, Any]) -> CommandRe
     )
 
 
+def access_key_delete_command(client: Client, args: Dict[str, Any]) -> CommandResults | None:
+    access_key = args.get('access-key')
+    client.access_key_deletion(access_key)
+    return CommandResults(
+        readable_output=f'Access key {access_key} was successfully deleted successfully',
+    )
+
+
 ''' TEST MODULE '''
 
 
@@ -2313,6 +2321,7 @@ def main() -> None:
 
             'prisma-cloud-access-keys-list': access_keys_list_command,
             'prisma-cloud-access-key-disable': access_key_disable_command,
+            'prisma-cloud-access-key-delete': access_key_delete_command,
         }
         commands_v1 = {
             'redlock-search-alerts': alert_search_v1_command,
