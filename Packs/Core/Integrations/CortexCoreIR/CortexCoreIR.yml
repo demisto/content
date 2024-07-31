@@ -2961,6 +2961,14 @@ script:
       isArray: false
       required: false
       defaultValue: 'true'
+    - description: For polling use.
+      isArray: true
+      name: action_id
+      deprecated: true
+    - description: Interval in seconds between each poll.
+      name: interval_in_seconds
+    - description: Polling timeout in seconds.
+      name: timeout_in_seconds
     name: core-terminate-process
     description: Terminate a process by it's instance id.
     polling: true
@@ -2990,6 +2998,14 @@ script:
       isArray: false
       required: false
       defaultValue: 'true'
+    - description: For polling use.
+      isArray: true
+      name: action_id
+      deprecated: true
+    - description: Interval in seconds between each poll.
+      name: interval_in_seconds
+    - description: Polling timeout in seconds.
+      name: timeout_in_seconds
     name: core-terminate-causality
     description: Stops a process by it's causality id.
     polling: true

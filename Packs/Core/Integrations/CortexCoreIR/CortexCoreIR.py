@@ -477,16 +477,8 @@ def main():  # pragma: no cover
                                                polling_field="status",
                                                polling_value=["PENDING",
                                                               "IN_PROGRESS",
-                                                              "CANCELED",
-                                                              "FAILED",
-                                                              "SUCCESS",
-                                                              "ABORTED",
-                                                              "EXPIRED",
-                                                              "PENDING_ABORT",
-                                                              "COMPLETED_PARTIAL",
-                                                              "COMPLETED_SUCCESSFULLY",
-                                                              "FAILED",
-                                                              "TIMEOUT"]))
+                                                              "PENDING_ABORT"
+                                                              ]))
 
         elif command == 'core-terminate-causality':
             return_results(run_polling_command(client=client,
@@ -498,17 +490,7 @@ def main():  # pragma: no cover
                                                polling_field="status",
                                                polling_value=["PENDING",
                                                               "IN_PROGRESS",
-                                                              "CANCELED",
-                                                              "FAILED",
-                                                              "SUCCESS",
-                                                              "ABORTED",
-                                                              "EXPIRED",
-                                                              "PENDING_ABORT",
-                                                              "COMPLETED_PARTIAL",
-                                                              "COMPLETED_SUCCESSFULLY",
-                                                              "FAILED",
-                                                              "TIMEOUT"],
-                                               stop_polling=True
+                                                              "PENDING_ABORT"],
                                                ))
         elif command in PREVALENCE_COMMANDS:
             return_results(handle_prevalence_command(client, command, args))
