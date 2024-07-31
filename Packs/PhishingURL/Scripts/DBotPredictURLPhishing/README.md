@@ -54,10 +54,18 @@ Phishing - Machine Learning Analysis
 
 ## Script Examples
 ### Example command
-```!DBotPredictURLPhishing urls=google.com```
+```!DBotPredictURLPhishing urls="http://google.com"```
 ### Context Example
 ```json
-{}
+{
+  "DBotPredictURLPhishing": [
+    {
+      "FinalVerdict": "Benign",
+      "TopMajesticDomain": "True",
+      "URL": "http://google.com"
+    }
+  ]
+}
 ```
 
 ### Human Readable Output
