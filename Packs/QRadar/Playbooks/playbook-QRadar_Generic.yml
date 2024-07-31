@@ -1001,6 +1001,17 @@ tasks:
           right:
             value:
               simple: "true"
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: incident.starttime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: incident.idoffense
+            iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {

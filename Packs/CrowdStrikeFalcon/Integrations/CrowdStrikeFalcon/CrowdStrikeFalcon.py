@@ -2026,14 +2026,15 @@ def get_username_uuid(username: str):
     return resources[0]
 
 
-def resolve_detection(ids, status, assigned_to_uuid, show_in_ui, comment):
+def resolve_detection(ids, status, assigned_to_uuid, show_in_ui, comment, tag):
     """
         Sends a resolve detection request
-        :param ids: Single or multiple ids in an array string format
-        :param status: New status of the detection
-        :param assigned_to_uuid: uuid to assign the detection to
-        :param show_in_ui: Boolean flag in string format (true/false)
-        :param comment: Optional comment to add to the detection
+        :param ids: Single or multiple ids in an array string format.
+        :param status: New status of the detection.
+        :param assigned_to_uuid: uuid to assign the detection to.
+        :param show_in_ui: Boolean flag in string format (true/false).
+        :param comment: Optional comment to add to the detection.
+        :param The tag to add.
         :return: Resolve detection response json
     """
     payload = {
@@ -2054,6 +2055,8 @@ def resolve_detection(ids, status, assigned_to_uuid, show_in_ui, comment):
         payload["assign_to_user_id"] = payload.pop("assigned_to_uuid") if "assigned_to_uuid" in payload else None
         payload["update_status"] = payload.pop("status") if "status" in payload else None
         payload["append_comment"] = payload.pop("comment") if "comment" in payload else None
+        if tag:
+            payload["add_tag"] = tag
 
         data = json.dumps(resolve_detections_prepare_body_request(ids, payload))
     else:
@@ -2213,7 +2216,7 @@ def update_detection_request(ids: list[str], status: str) -> dict:
     if status not in DETECTION_STATUS:
         raise DemistoException(f'CrowdStrike Falcon Error: '
                                f'Status given is {status} and it is not in {DETECTION_STATUS}')
-    return resolve_detection(ids=ids, status=status, assigned_to_uuid=None, show_in_ui=None, comment=None)
+    return resolve_detection(ids=ids, status=status, assigned_to_uuid=None, show_in_ui=None, comment=None, tag=None)
 
 
 def update_idp_or_mobile_detection_request(ids: list[str], status: str) -> dict:
@@ -4213,10 +4216,13 @@ def resolve_detection_command():
         assigned_to_uuid = get_username_uuid(username)
 
     status = args.get('status')
+    tag = args.get('tag')
     show_in_ui = args.get('show_in_ui')
-    if not (username or assigned_to_uuid or comment or status or show_in_ui):
+    if not (username or assigned_to_uuid or comment or status or show_in_ui or tag):
         raise DemistoException("Please provide at least one argument to resolve the detection with.")
-    raw_res = resolve_detection(ids, status, assigned_to_uuid, show_in_ui, comment)
+    if LEGACY_VERSION and tag:
+        raise DemistoException("tag argument is only relevant when running with API V3.")
+    raw_res = resolve_detection(ids, status, assigned_to_uuid, show_in_ui, comment, tag)
     args.pop('ids')
     hr = f"Detection {str(ids)[1:-1]} updated\n"
     hr += 'With the following values:\n'
