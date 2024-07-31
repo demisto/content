@@ -553,7 +553,7 @@ tasks:
     conditions:
     - label: "no"
       condition:
-      - - operator: isEmpty
+      - - operator: isExists
           left:
             value:
               complex:
