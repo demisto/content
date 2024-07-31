@@ -110,7 +110,6 @@ class Client(BaseClient):
                 'id': device_id,
                 'status': status,
                 'os': device_os,
-                'last_contact_time': last_contact_time,
                 'ad_group_id': ad_group_id,
                 'policy_id': policy_id,
                 'target_priority': target_priority
@@ -124,6 +123,8 @@ class Client(BaseClient):
                 }
             ]
         }
+        if last_contact_time.get('start'):
+            body.update({'criteria': {'last_contact_time': last_contact_time}})
 
         return self._http_request('POST', suffix_url, json_data=body)
 
@@ -680,7 +681,7 @@ def list_devices_command(client: Client, args: dict) -> CommandResults | str:
     policy_id = argToList(args.get('policy_id'))
     target_priority = argToList(args.get('target_priority'))
     limit = args.get('limit')
-    sort_field = args.get('sort_field', '')
+    sort_field = args.get('sort_field', 'last_contact_time')
     sort_order = args.get('sort_order')
     contents = []
     headers = ['ID', 'Name', 'OS', 'PolicyName', 'Quarantined', 'status', 'TargetPriority', 'LastInternalIpAddress',
