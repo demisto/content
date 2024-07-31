@@ -1,7 +1,7 @@
 {
     "id": "indicator_sigmadetection",
     "version": -1,
-    "modified": "2024-07-15T10:09:29.954957281Z",
+    "modified": "2024-07-30T07:38:05.101533379Z",
     "name": "Sigma Detection",
     "ownerOnly": false,
     "cliName": "sigmadetection",
@@ -40,8 +40,21 @@
             "selectValues": null
         },
         {
-            "key": "keyandmodifiers",
-            "displayName": "Key and Modifiers",
+            "key": "key",
+            "displayName": "Key",
+            "type": "shortText",
+            "orgType": "",
+            "required": false,
+            "script": "",
+            "width": 150,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "modifiers",
+            "displayName": "Modifiers",
             "type": "shortText",
             "orgType": "",
             "required": false,

@@ -1,0 +1,365 @@
+{
+    "group": "indicator",
+    "id": "Sigma Rule Layout",
+    "indicatorsDetails": {
+        "tabs": [
+            {
+                "id": "default-main",
+                "name": "Info",
+                "sections": [
+                    {
+                        "h": 3,
+                        "i": "default-main-relationshipsTable",
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Relationships",
+                        "static": false,
+                        "type": "relationshipsTable",
+                        "w": 2,
+                        "x": 0,
+                        "y": 5
+                    },
+                    {
+                        "h": 2,
+                        "i": "default-main-relatedIncidents",
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Related Incidents",
+                        "static": false,
+                        "type": "relatedIncidents",
+                        "w": 3,
+                        "x": 0,
+                        "y": 8
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 4,
+                        "i": "default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "timestamp",
+                                "height": 26,
+                                "id": "indicator-timestamp",
+                                "index": 0,
+                                "listId": "default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "modified",
+                                "height": 26,
+                                "id": "indicator-modified",
+                                "index": 1,
+                                "listId": "default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "expiration",
+                                "height": 26,
+                                "id": "indicator-expiration",
+                                "index": 2,
+                                "listId": "default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sigmaruleid",
+                                "height": 26,
+                                "id": "e8734970-4293-11ef-8f1a-b9be5629a211",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "author",
+                                "height": 26,
+                                "id": "04020910-4294-11ef-8f1a-b9be5629a211",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sigmarulelevel",
+                                "height": 26,
+                                "id": "f7a11710-4293-11ef-8f1a-b9be5629a211",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sigmarulestatus",
+                                "height": 26,
+                                "id": "f1d50530-4293-11ef-8f1a-b9be5629a211",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "trafficlightprotocol",
+                                "height": 26,
+                                "id": "8b79dd61-4293-11ef-8f1a-b9be5629a211",
+                                "index": 7,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "sigmarulelicense",
+                                "height": 26,
+                                "id": "f5fa44e0-4293-11ef-8f1a-b9be5629a211",
+                                "index": 8,
+                                "listId": "default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "tags",
+                                "height": 26,
+                                "id": "7f92af40-4293-11ef-8f1a-b9be5629a211",
+                                "index": 9,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "field": {
+                                        "simple": "tags"
+                                    }
+                                },
+                                "dropEffect": "move",
+                                "endCol": 1,
+                                "height": 44,
+                                "id": "8913b2d1-4293-11ef-8f1a-b9be5629a211",
+                                "index": 10,
+                                "name": "Add tags",
+                                "scriptId": "Builtin|||appendIndicatorField",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "field": {
+                                        "simple": "tags"
+                                    }
+                                },
+                                "endCol": 2,
+                                "filters": [
+                                    [
+                                        {
+                                            "id": 0,
+                                            "ignoreCase": false,
+                                            "left": {
+                                                "isContext": true,
+                                                "value": {
+                                                    "simple": "tags"
+                                                }
+                                            },
+                                            "operator": "isNotEmpty",
+                                            "right": null,
+                                            "type": "tagsSelect"
+                                        }
+                                    ]
+                                ],
+                                "height": 44,
+                                "id": "8b79dd62-4293-11ef-8f1a-b9be5629a211",
+                                "index": 10,
+                                "name": "Remove tags",
+                                "scriptId": "Builtin|||removeIndicatorField",
+                                "sectionItemType": "button",
+                                "startCol": 1
+                            }
+                        ],
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Basic Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 1
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "i": "default-main-indicatorTimeline",
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Timeline",
+                        "static": false,
+                        "type": "indicatorTimeline",
+                        "w": 1,
+                        "x": 2,
+                        "y": 2
+                    },
+                    {
+                        "h": 3,
+                        "i": "default-main-comments",
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Comments",
+                        "static": false,
+                        "type": "comments",
+                        "w": 1,
+                        "x": 2,
+                        "y": 5
+                    },
+                    {
+                        "h": 1,
+                        "hideName": true,
+                        "i": "default-main-expirationStatus",
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Expiration Status",
+                        "static": false,
+                        "type": "expirationStatus",
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "default-main-93c3e790-4293-11ef-8f1a-b9be5629a211",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "product",
+                                "height": 26,
+                                "id": "ab62f670-4293-11ef-8f1a-b9be5629a211",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "service",
+                                "height": 26,
+                                "id": "ae5beb20-4293-11ef-8f1a-b9be5629a211",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "category",
+                                "height": 26,
+                                "id": "b1310420-4293-11ef-8f1a-b9be5629a211",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "definition",
+                                "height": 26,
+                                "id": "b76e4e60-4293-11ef-8f1a-b9be5629a211",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Log Sources",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 5,
+                        "hideItemTitleOnlyOne": false,
+                        "hideName": false,
+                        "i": "default-main-1654e470-4294-11ef-8f1a-b9be5629a211",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "sigmadetection",
+                                "height": 106,
+                                "id": "1b696620-4294-11ef-8f1a-b9be5629a211",
+                                "index": 0,
+                                "listId": "default-main-1654e470-4294-11ef-8f1a-b9be5629a211",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sigmacondition",
+                                "height": 106,
+                                "id": "4fb7e6e0-4294-11ef-8f1a-b9be5629a211",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Detections",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "dqt4oikq8d",
+                "name": "References",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 7,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "dqt4oikq8d-gyphi1jkwg-b1654590-fa3c-11ee-8a37-5b8ad357ade4",
+                        "items": [
+                            {
+                                "endCol": 6,
+                                "fieldId": "publications",
+                                "height": 106,
+                                "id": "b7b30a90-fa3c-11ee-8a37-5b8ad357ade4",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "References",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
+            }
+        ]
+    },
+    "name": "Sigma Rule Layout",
+    "system": false,
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "description": ""
+}

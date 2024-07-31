@@ -17,5 +17,6 @@ runonce: false
 runas: DBotWeakRole
 engineinfo: {}
 fromversion: 6.10.0
+dockerimage: devdemisto/pysigma:1.0.0.99269
 tests:
 - No tests (auto formatted)
