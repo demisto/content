@@ -1,6 +1,7 @@
 import pytest
 from SMIME_Messaging import Client, sign_email, encrypt_email_body, verify, decrypt_email_body, sign_and_encrypt, \
     decode_str
+from CommonServerPython import entryTypes
 import demistomock as demisto
 import json
 import os
@@ -49,7 +50,7 @@ with open('./test_data/recipient2_key.pem') as file_:
 recipient = {'to@email.com': recipient_cert, 'to2@email.com': recipient2_cert}
 cc = {'cc@email.com': recipient_cert}
 bcc = {'bcc@email.com': recipient2_cert}
-attachments = 'attachment1.txt,attachment2.txt'
+test_attachments = 'attachment1.txt,attachment2.txt'
 
 sign_and_encrypt_tests = [
     # (sign, encrypt, recipients, cc, bcc, create_file, attachments)
@@ -57,12 +58,22 @@ sign_and_encrypt_tests = [
     ('True', 'False', recipient, cc, bcc, 'False', ''),
     ('False', 'True', recipient, cc, bcc, 'False', ''),
     ('False', 'False', recipient, cc, bcc, 'False', ''),
-    ('False', 'False', recipient, cc, bcc, 'False', attachments),
+    ('False', 'False', recipient, cc, bcc, 'False', test_attachments),
     ('False', 'False', recipient, cc, bcc, 'True', ''),
     ('True', 'False', recipient, cc, bcc, 'True', ''),
     ('True', 'True', recipient, cc, bcc, 'True', ''),
-    ('True', 'True', recipient, cc, bcc, 'True', attachments),
+    ('True', 'True', recipient, cc, bcc, 'True', test_attachments),
 ]
+
+
+def mockFileResult(filename, data, file_type=None):
+    if isinstance(data, str):
+        data = data.encode('utf-8')
+    if file_type is None:
+        file_type = entryTypes['file']
+    with open(filename, 'wb') as f:
+        f.write(data)
+    return {'Contents': '', 'ContentsFormat': 'text', 'Type': file_type, 'File': filename, 'FileID': 0}
 
 
 def test_sign():
@@ -77,26 +88,23 @@ def test_verify(mocker):
 
     mocker.patch.object(demisto, 'getFilePath', return_value={'path': './test_data/signed.p7'})
 
-    v = verify(client, {})[0].readable_output
-    assert 'a sign of our times' in v
+    verify_out = verify(client, {'tag': 'test_tag'})[0].to_context()
+    assert 'a sign of our times' in verify_out['HumanReadable']
+    assert 'test_tag' in verify_out['Tags']
 
 
 def test_verify_der(mocker):
     # Test verification when file is in binary format
+    mocker.patch('SMIME_Messaging.fileResult', return_value={
+        'Contents': '', 'ContentsFormat': 'text', 'Type': '', 'File': '', 'FileID': ''
+    })
     mocker.patch.object(demisto, 'getFilePath', return_value={
         'name': 'signed-binary-format.p7m',
         'path': './test_data/signed-binary-format.p7m'
     })
 
-    # patch file result to known name to use for clean up
-    mocker.patch.object(demisto, 'uniqueFile', return_value='outfile.txt')
-    out_file_name = f'{demisto.investigation()["id"]}_outfile.txt'
-
-    try:
-        v = verify(client, {})[0].to_context()['HumanReadable']
-        assert 'This is a test email 1, only signed' in v
-    finally:
-        os.unlink(out_file_name)
+    v = verify(client, {})[0].to_context()['HumanReadable']
+    assert 'This is a test email 1, only signed' in v
 
 
 def test_encrypt(mocker):
@@ -111,8 +119,9 @@ def test_encrypt(mocker):
 def test_decrypt(mocker):
     mocker.patch.object(demisto, 'getFilePath', return_value={'name': 'encrypt.p7', 'path': './test_data/encrypt.p7'})
 
-    decrypted = decrypt_email_body(client, {})[0].readable_output
-    assert 'Hello world' in decrypted
+    decrypted_out = decrypt_email_body(client, {'tag': 'test_tag'})[0].to_context()
+    assert 'Hello world' in decrypted_out['HumanReadable']
+    assert 'test_tag' in decrypted_out['Tags']
 
 
 def test_decrypt_der(mocker):
@@ -122,8 +131,8 @@ def test_decrypt_der(mocker):
         'path': './test_data/encrypted-binary-format.p7m'
     })
 
-    decrypted = decrypt_email_body(client, {})[0].to_context()['HumanReadable']
-    assert 'This is a test email 2, only encrypted' in decrypted
+    decrypted_out = decrypt_email_body(client, {})[0].to_context()
+    assert 'This is a test email 2, only encrypted' in decrypted_out['HumanReadable']
 
 
 @pytest.mark.parametrize('sign, encrypt, recipients, cc, bcc, create_file, attachments', sign_and_encrypt_tests)
@@ -176,6 +185,124 @@ def test_sign_and_encrypt(mocker, sign, encrypt, recipients, cc, bcc, create_fil
                 assert file.read().replace('\r\n', '\n') == context['SMIME.SignedAndEncrypted']['Message'].replace('\r\n', '\n')
         finally:
             os.unlink(out_file_name)
+
+
+def test_encrypt_decrypt(mocker):
+    mocker.patch.object(demisto, 'getFilePath',
+                        side_effect=lambda file_name: {'name': file_name, 'path': f'./test_data/{file_name}'})
+    mocker.patch('SMIME_Messaging.fileResult', side_effect=mockFileResult)
+    args = {
+        'message': 'Encrypt-Decrypt test message',
+        'subject': 'Encrypt-Decrypt test subject',
+        'sender': 'sender@email.com',
+        'encrypted': 'True',
+        'signed': 'False',
+        'attachment_entry_id': test_attachments,
+    }
+
+    sign_encrypt_out = sign_and_encrypt(client, args).to_context()
+    encrypted_msg = sign_encrypt_out['EntryContext']['SMIME.SignedAndEncrypted']['Message']
+
+    with open('temp_encrypted.p7', 'wb') as f:
+        f.write(encrypted_msg.encode('utf-8'))
+
+    try:
+        mocker.patch.object(demisto, 'getFilePath', return_value={'name': 'temp_encrypted.p7', 'path': './temp_encrypted.p7'})
+        decrypted_out = decrypt_email_body(client, {})[0].to_context()
+        assert 'Encrypt-Decrypt test message' in decrypted_out['HumanReadable']
+        for attach in test_attachments.split(','):
+            with open(f'./{attach}') as f, open(f'./test_data/{attach}') as orig:
+                assert f.read() == orig.read()
+
+    finally:
+        os.unlink('./temp_encrypted.p7')
+        for attach in test_attachments.split(','):
+            os.unlink(f'./{attach}')
+
+
+def test_sign_verify(mocker):
+    mocker.patch.object(demisto, 'getFilePath',
+                        side_effect=lambda file_name: {'name': file_name, 'path': f'./test_data/{file_name}'})
+    mocker.patch('SMIME_Messaging.fileResult', side_effect=mockFileResult)
+    args = {
+        'message': 'Sign-Verify test message',
+        'subject': 'Sign-Verify test subject',
+        'sender': 'sender@email.com',
+        'encrypted': 'False',
+        'signed': 'True',
+        'attachment_entry_id': test_attachments,
+    }
+
+    sign_encrypt_out = sign_and_encrypt(client, args).to_context()
+    signed_msg = sign_encrypt_out['EntryContext']['SMIME.SignedAndEncrypted']['Message']
+
+    with open('temp_signed.p7', 'wb') as f:
+        f.write(signed_msg.encode('utf-8'))
+
+    try:
+        mocker.patch.object(demisto, 'getFilePath', return_value={'name': 'temp_signed.p7', 'path': './temp_signed.p7'})
+        verified_out = verify(client, {})[0].to_context()
+        assert 'Sign-Verify test message' in verified_out['HumanReadable']
+        assert 'The signature verified' in verified_out['HumanReadable']
+        for attach in test_attachments.split(','):
+            with open(f'./{attach}') as f, open(f'./test_data/{attach}') as orig:
+                assert f.read() == orig.read()
+
+    finally:
+        os.unlink('./temp_signed.p7')
+        for attach in test_attachments.split(','):
+            os.unlink(f'./{attach}')
+
+
+def test_sign_encrypt_decrypt_verify(mocker):
+    mocker.patch.object(demisto, 'getFilePath',
+                        side_effect=lambda file_name: {'name': file_name, 'path': f'./test_data/{file_name}'})
+    mocker.patch('SMIME_Messaging.fileResult', side_effect=mockFileResult)
+    args = {
+        'message': 'Sign-Encrypt-Decrypt-Verify test message',
+        'subject': 'Sign-Encrypt-Decrypt-Verify test subject',
+        'sender': 'sender@email.com',
+        'encrypted': 'True',
+        'signed': 'True',
+        'attachment_entry_id': test_attachments,
+    }
+
+    sign_encrypt_out = sign_and_encrypt(client, args).to_context()
+    encrypted_signed_msg = sign_encrypt_out['EntryContext']['SMIME.SignedAndEncrypted']['Message']
+
+    with open('temp_encrypted_signed.p7', 'wb') as f:
+        f.write(encrypted_signed_msg.encode('utf-8'))
+
+    try:
+        mocker.patch.object(demisto, 'getFilePath', return_value={
+            'name': 'temp_encrypted_signed.p7', 'path': './temp_encrypted_signed.p7'
+        })
+        decrypted_out = decrypt_email_body(client, {})[0].to_context()
+        assert 'The decrypted message is signed' in decrypted_out['HumanReadable']
+        assert 'smime-type=signed-data' in decrypted_out['HumanReadable']
+
+    finally:
+        os.unlink('./temp_encrypted_signed.p7')
+
+    decrypted_out_msg = decrypted_out['EntryContext']['SMIME.Decrypted']['Message']
+    with open('temp_decrypted_signed.p7', 'wb') as f:
+        f.write(decrypted_out_msg.encode('utf-8'))
+
+    try:
+        mocker.patch.object(demisto, 'getFilePath', return_value={
+            'name': 'temp_decrypted_signed.p7', 'path': './temp_decrypted_signed.p7'
+        })
+        verified_out = verify(client, {})[0].to_context()
+        assert 'Sign-Encrypt-Decrypt-Verify test message' in verified_out['HumanReadable']
+        assert 'The signature verified' in verified_out['HumanReadable']
+        for attach in test_attachments.split(','):
+            with open(f'./{attach}') as f, open(f'./test_data/{attach}') as orig:
+                assert f.read() == orig.read()
+
+    finally:
+        os.unlink('temp_decrypted_signed.p7')
+        for attach in test_attachments.split(','):
+            os.unlink(f'./{attach}')
 
 
 @pytest.mark.parametrize('decrypted_text_bytes, expected_output, error_msg, encoding', test_data)
