@@ -30,29 +30,34 @@ def test_get_token(mocker, expiration_time, expected):
     assert token == expected
 
 
-def test_fetch_events__affective_dedup(mocker):
+def test_fetch_events__end_to_end_with_affective_dedup(mocker):
     """
     Given:
-        - A SailPointIdentityNow client with max of 3 events per call
+        - A SailPointIdentityNow client with max of 3 events ro return per call
     When:
         - calling fetch_events with a max_events_per_fetch of 5
     Then:
-        - Ensure the pagination is working correctly, and 2 sets of events are fetched to reach the max_events_per_fetch
+        - Ensure the pagination is working correctly, and 3 sets of events are fetched to reach
+            the max_events_per_fetch or the end of the events
         - Ensure the next_run object is returned correctly
-        - ensure the events are deduped correctly (id no. 3 is dropped as it was fetched in the first call)
+        - ensure the events are deduped correctly.
     """
     mocker.patch.object(demisto, 'debug')
     client = mocker.patch('SailPointIdentityNowEventCollector.Client')
     last_run = {'prev_id': '0', 'prev_date': '2022-01-01T00:00:00'}
     max_events_per_fetch = 5
 
-    mocker.patch.object(client, 'search_events', return_value=[
+    mocker.patch.object(client, 'search_events', side_effect=[[
         {'id': str(i), 'created': f'2022-01-01T00:0{i}:00'} for i in range(1, 4)
-    ])
+    ],                                                  [
+        {'id': str(i), 'created': f'2022-01-01T00:0{i}:00'} for i in range(3, 5)
+    ],
+    []])
+        
     next_run, events = fetch_events(client, max_events_per_fetch, last_run)
 
-    assert next_run == {'prev_id': '2', 'prev_date': '2022-01-01T00:02:00', 'last_fetched_ids': ['2']}
-    assert len(events) == max_events_per_fetch
+    assert next_run == {'prev_id': '4', 'prev_date': '2022-01-01T00:04:00', 'last_fetched_ids': ['4']}
+    assert len(events) == 4
 
 
 def test_fetch_events__no_events(mocker):
