@@ -6,7 +6,6 @@ import base64
 import os
 import pychrome
 import random
-import requests
 import subprocess
 import tempfile
 import threading
