@@ -53,7 +53,7 @@ attachments = 'attachment1.txt,attachment2.txt'
 
 sign_and_encrypt_tests = [
     # (sign, encrypt, recipients, cc, bcc, create_file, attachments)
-    ('', '', {}, {}, {}, '', ''),
+    ('', '', '', '', '', '', ''),
     ('True', 'False', recipient, cc, bcc, 'False', ''),
     ('False', 'True', recipient, cc, bcc, 'False', ''),
     ('False', 'False', recipient, cc, bcc, 'False', ''),
@@ -81,6 +81,24 @@ def test_verify(mocker):
     assert 'a sign of our times' in v
 
 
+def test_verify_der(mocker):
+    # Test verification when file is in binary format
+    mocker.patch.object(demisto, 'getFilePath', return_value={
+        'name': 'signed-binary-format.p7m',
+        'path': './test_data/signed-binary-format.p7m'
+    })
+
+    # patch file result to known name to use for clean up
+    mocker.patch.object(demisto, 'uniqueFile', return_value='outfile.txt')
+    out_file_name = f'{demisto.investigation()["id"]}_outfile.txt'
+
+    try:
+        v = verify(client, {})[0].to_context()['HumanReadable']
+        assert 'This is a test email 1, only signed' in v
+    finally:
+        os.unlink(out_file_name)
+
+
 def test_encrypt(mocker):
 
     mocker.patch.object(demisto, 'args', return_value={'message': 'testing message'})
@@ -97,10 +115,22 @@ def test_decrypt(mocker):
     assert 'Hello world' in decrypted
 
 
+def test_decrypt_der(mocker):
+    # Test decryption when file is in binary format
+    mocker.patch.object(demisto, 'getFilePath', return_value={
+        'name': 'encrypted-binary-format.p7m',
+        'path': './test_data/encrypted-binary-format.p7m'
+    })
+
+    decrypted = decrypt_email_body(client, {})[0].to_context()['HumanReadable']
+    assert 'This is a test email 2, only encrypted' in decrypted
+
+
 @pytest.mark.parametrize('sign, encrypt, recipients, cc, bcc, create_file, attachments', sign_and_encrypt_tests)
 def test_sign_and_encrypt(mocker, sign, encrypt, recipients, cc, bcc, create_file, attachments):
     mocker.patch.object(demisto, 'getFilePath',
                         side_effect=lambda file_name: {'name': file_name, 'path': f'./test_data/{file_name}'})
+    # patch file result to known name to use for clean up
     mocker.patch.object(demisto, 'uniqueFile', return_value='outfile.txt')
     out_file_name = f'{demisto.investigation()["id"]}_outfile.txt'
     args = {
@@ -109,13 +139,16 @@ def test_sign_and_encrypt(mocker, sign, encrypt, recipients, cc, bcc, create_fil
         'sender': 'sender@email.com',
         'encrypted': encrypt,
         'signed': sign,
-        'recipients': json.dumps(recipients),
-        'cc': json.dumps(cc),
-        'bcc': json.dumps(bcc),
         'attachment_entry_id': attachments,
         'create_file_p7': create_file,
     }
-    args = {k: v for k, v in args.items() if v != '' and v != '{}'}  # clean up empty args
+    if recipients:
+        args['recipients'] = json.dumps(recipients)
+    if cc:
+        args['cc'] = json.dumps(cc)
+    if bcc:
+        args['bcc'] = json.dumps(bcc)
+    args = {k: v for k, v in args.items() if v != ''}  # clean up empty args
 
     sign_encrypt_out = sign_and_encrypt(client, args).to_context()
 
