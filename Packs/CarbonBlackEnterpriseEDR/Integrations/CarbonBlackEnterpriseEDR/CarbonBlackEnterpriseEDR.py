@@ -1,8 +1,8 @@
+from typing import Any
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-from typing import Any
 import urllib3
 from more_itertools import map_reduce
 
@@ -98,12 +98,12 @@ class Client(BaseClient):
         return response
 
     def devices_list_request(self, device_id: None | list = None, status: None | list = None, device_os: None | list = None,
-                             last_contact_time: None | dict[str, Any | None] = None, ad_group_id: None | list = None,
+                             last_contact_time: dict[str, str | None] | None = None, ad_group_id: None | list = None,
                              policy_id: None | list = None, target_priority: None | list = None, limit: None | int = None,
                              sort_field: None | str = None, sort_order: None | str = None) -> dict:
         suffix_url = f'/appservices/v6/orgs/{self.cb_org_key}/devices/_search'
 
-        body = {
+        body: dict[str, Any] = {
             'criteria': {
                 'id': device_id,
                 'status': status,
@@ -121,8 +121,9 @@ class Client(BaseClient):
                 }
             ]
         }
-        if last_contact_time.get('start'):  # type: ignore[union-attr]
-            body['criteria']['last_contact_time'] = last_contact_time
+        # Ensure that last_contact_time is a dictionary with the expected structure
+        if isinstance(last_contact_time, dict) and last_contact_time.get('start'):
+            body['criteria'].update({'last_contact_time': last_contact_time})
 
         return self._http_request('POST', suffix_url, json_data=body)
 
