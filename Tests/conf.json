@@ -24,7 +24,7 @@
 
         {
             "integrations": "Carbon Black Enterprise EDR",
-            "playbookID": "Carbon Black Enterprise EDR process search with polling Test"
+            "playbookID": "Carbon Black Enterprise EDR process search with polling test"
         },
         {
             "integrations": "Carbon Black Enterprise EDR",

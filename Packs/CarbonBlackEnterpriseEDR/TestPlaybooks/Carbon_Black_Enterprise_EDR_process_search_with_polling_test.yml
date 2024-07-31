@@ -1,6 +1,6 @@
-id: Carbon Black Enterprise EDR process search with polling Test
+id: Carbon Black Enterprise EDR process search with polling test
 version: -1
-name: Carbon Black Enterprise EDR process search with polling Test
+name: Carbon Black Enterprise EDR process search with polling test
 starttaskid: "0"
 tasks:
   "0":
