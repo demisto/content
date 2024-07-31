@@ -529,5 +529,3 @@ def test_client_init_with_null_values():
     """
     Client(indicator_type='ip', api_token='123', services=[
         'fusion'], malicious_threshold=None, suspicious_threshold=None)
-
-
