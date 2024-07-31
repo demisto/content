@@ -1170,9 +1170,11 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
     :return: Incident in the system.
     '''
     # Get the last fetch time, if exists
-    last_fetch = last_run.get('time') if isinstance(last_run, dict) else None
-    incidents_from_previous_run = last_run.get('incidents_from_previous_run', []) if isinstance(last_run,
-                                                                                                dict) else []
+    last_fetch = last_run.get('time')
+    incidents_from_previous_run = last_run.get('incidents_from_previous_run', [])
+    
+    new_incidents_at_last_timestamp = next_run.get('incidents_at_last_timestamp', [])
+    incidents_at_last_timestamp = set(new_incidents_at_last_timestamp)
 
     # Handle first time fetch, fetch incidents retroactively
     if last_fetch is None:
@@ -1211,7 +1213,9 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
 
         for raw_incident in raw_incidents:
             incident_id = raw_incident.get('incident_id')
-
+            if incident_id in incidents_at_last_timestamp:  # remove duplicates
+                demisto.debug(f'incident {incident_id!r} is a duplicate, skipping. {incident_data=}')
+                continue
             # incident_data = get_incident_extra_data_command(client, {"incident_id": incident_id,
             #                                                          "alerts_limit": 1000})[2].get('incident')
             incident_data = raw_incident
@@ -1236,7 +1240,9 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
             # Update last run and add incident if the incident is newer than last fetch
             if raw_incident['creation_time'] > last_fetch:
                 last_fetch = raw_incident['creation_time']
-
+                new_incidents_at_last_timestamp = []
+            if incident_data.get('creation_time', 0) == last_fetch:
+                new_incidents_at_last_timestamp.append(incident_id)
             incidents.append(incident)
             non_created_incidents.remove(raw_incident)
 
@@ -1251,12 +1257,9 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
         else:
             raise
 
-    if non_created_incidents:
-        next_run['incidents_from_previous_run'] = non_created_incidents
-    else:
-        next_run['incidents_from_previous_run'] = []
-
-    next_run['time'] = last_fetch + 1
+    next_run['incidents_from_previous_run'] = non_created_incidents or []
+    next_run['time'] = last_fetch
+    next_run['incidents_at_last_timestamp'] = new_incidents_at_last_timestamp
 
     return next_run, incidents
 
@@ -2384,7 +2387,7 @@ def main():  # pragma: no cover
         elif command == 'fetch-incidents':
             integration_instance = demisto.integrationInstance()
             next_run, incidents = fetch_incidents(client, first_fetch_time, integration_instance,
-                                                  demisto.getLastRun().get('next_run'), max_fetch, statuses, starred,
+                                                  demisto.getLastRun().get('next_run') or {}, max_fetch, statuses, starred,
                                                   starred_incidents_fetch_window)
             last_run_obj = demisto.getLastRun()
             last_run_obj['next_run'] = next_run

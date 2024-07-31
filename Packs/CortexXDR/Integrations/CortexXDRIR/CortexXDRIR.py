@@ -1064,9 +1064,11 @@ def fetch_incidents(client, first_fetch_time, integration_instance, exclude_arti
                     starred_incidents_fetch_window: str = None):
     global ALERTS_LIMIT_PER_INCIDENTS
     # Get the last fetch time, if exists
-    last_fetch = last_run.get('time') if isinstance(last_run, dict) else None
-    incidents_from_previous_run = last_run.get('incidents_from_previous_run', []) if isinstance(last_run,
-                                                                                                dict) else []
+    last_fetch = last_run.get('time')
+    incidents_from_previous_run = last_run.get('incidents_from_previous_run', [])
+
+    new_incidents_at_last_timestamp = next_run.get('incidents_at_last_timestamp', [])
+    incidents_at_last_timestamp = set(new_incidents_at_last_timestamp)
     # Handle first time fetch, fetch incidents retroactively
     if last_fetch is None:
         last_fetch, _ = parse_date_range(first_fetch_time, to_timestamp=True)
@@ -1077,7 +1079,7 @@ def fetch_incidents(client, first_fetch_time, integration_instance, exclude_arti
     incidents = []
     if incidents_from_previous_run:
         raw_incidents = incidents_from_previous_run
-        ALERTS_LIMIT_PER_INCIDENTS = last_run.get('alerts_limit_per_incident', -1) if isinstance(last_run, dict) else -1
+        ALERTS_LIMIT_PER_INCIDENTS = last_run.get('alerts_limit_per_incident', -1)
     else:
         if statuses:
             raw_incidents = []
@@ -1109,6 +1111,9 @@ def fetch_incidents(client, first_fetch_time, integration_instance, exclude_arti
         for raw_incident in raw_incidents:
             incident_data: dict[str, Any] = sort_incident_data(raw_incident) if raw_incident.get('incident') else raw_incident
             incident_id = incident_data.get('incident_id')
+            if incident_id in incidents_at_last_timestamp:  # remove duplicates
+                demisto.debug(f'incident {incident_id!r} is a duplicate, skipping. {incident_data=}')
+                continue
             alert_count = arg_to_number(incident_data.get('alert_count')) or 0
             if alert_count > ALERTS_LIMIT_PER_INCIDENTS:
                 demisto.debug(f'for incident:{incident_id} using the old call since alert_count:{alert_count} >" \
@@ -1116,13 +1121,12 @@ def fetch_incidents(client, first_fetch_time, integration_instance, exclude_arti
                 raw_incident_ = client.get_incident_extra_data(incident_id=incident_id)
                 incident_data = sort_incident_data(raw_incident_)
             sort_all_list_incident_fields(incident_data)
-            incident_data['mirror_direction'] = MIRROR_DIRECTION.get(demisto.params().get('mirror_direction', 'None'),
-                                                                     None)
+            incident_data['mirror_direction'] = MIRROR_DIRECTION.get(demisto.params().get('mirror_direction', 'None'))
             incident_data['mirror_instance'] = integration_instance
             incident_data['last_mirrored_in'] = int(datetime.now().timestamp() * 1000)
             description = incident_data.get('description')
             occurred = timestamp_to_datestring(incident_data['creation_time'], TIME_FORMAT + 'Z')
-            incident: Dict[str, Any] = {
+            incident: dict[str, Any] = {
                 'name': f'XDR Incident {incident_id} - {description}',
                 'occurred': occurred,
                 'rawJSON': json.dumps(incident_data),
@@ -1132,6 +1136,9 @@ def fetch_incidents(client, first_fetch_time, integration_instance, exclude_arti
             # Update last run and add incident if the incident is newer than last fetch
             if incident_data.get('creation_time', 0) > last_fetch:
                 last_fetch = incident_data['creation_time']
+                new_incidents_at_last_timestamp = []
+            if incident_data.get('creation_time', 0) == last_fetch:
+                new_incidents_at_last_timestamp.append(incident_id)
             incidents.append(incident)
             non_created_incidents.remove(raw_incident)
 
@@ -1152,7 +1159,8 @@ def fetch_incidents(client, first_fetch_time, integration_instance, exclude_arti
     else:
         next_run['incidents_from_previous_run'] = []
 
-    next_run['time'] = last_fetch + 1
+    next_run['time'] = last_fetch
+    next_run['incidents_at_last_timestamp'] = new_incidents_at_last_timestamp
 
     return next_run, incidents
 
@@ -1331,7 +1339,7 @@ def main():  # pragma: no cover
                                                   first_fetch_time=first_fetch_time,
                                                   integration_instance=integration_instance,
                                                   exclude_artifacts=exclude_artifacts,
-                                                  last_run=demisto.getLastRun().get('next_run'),
+                                                  last_run=demisto.getLastRun().get('next_run') or {},
                                                   max_fetch=max_fetch,
                                                   statuses=statuses,
                                                   starred=starred,
