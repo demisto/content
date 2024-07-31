@@ -1,4 +1,4 @@
-## Sekoia XDR Integration
+## Sekoia Defend (XDR) Integration
 #### Author: Sekoia.io
 
 Support and maintenance for this integration are provided by the author. Please use the following contact details:
