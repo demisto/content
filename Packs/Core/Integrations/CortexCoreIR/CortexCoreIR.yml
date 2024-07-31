@@ -2956,11 +2956,6 @@ script:
       name: incident_id
       isArray: false
       required: false
-    - description: "This argument controls the action-center created task and will abort it in case of timeout. Default: True."
-      name: abort_on_timeout
-      isArray: false
-      required: false
-      defaultValue: 'true'
     - description: For polling use.
       isArray: true
       name: action_id
@@ -2993,11 +2988,6 @@ script:
       name: incident_id
       isArray: false
       required: false
-    - description: "This argument controls the action-center created task and will abort it in case of timeout. Default: True."
-      name: abort_on_timeout
-      isArray: false
-      required: false
-      defaultValue: 'true'
     - description: For polling use.
       isArray: true
       name: action_id
