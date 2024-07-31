@@ -1,0 +1,85 @@
+commonfields:
+  id: SentinelOneCheckRemoteScriptStatus
+  version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: SentinelOneCheckRemoteScriptStatus
+script: |2+
+
+  from typing import Dict, Any
+  import traceback
+  import time
+
+  def retry_untill_rso_script_completed(args: Dict[str, Any]):
+      parent_task_id = args.get("parentTaskId")
+      try:
+        sleep_interval = int(args.get("sleep_interval_sec"))
+        retries = int(args.get("retries"))
+      except:
+        raise ValueError('Invalid value for sleep_interval_sec / retries, it should be an integer')
+
+      if not parent_task_id:
+        raise ValueError('parent_task_id not specified')
+      is_completed = False
+      script_status = []
+      for attempt in range(retries):
+        script_status = demisto.executeCommand("sentinelone-get-remote-script-status", {"parentTaskId": parent_task_id})
+        if script_status:
+          contents = script_status[0].get("Contents",[])
+          if contents:
+            status = contents[0].get("status")
+            if status == "completed":
+              demisto.log("The RSO Script execution was completed")
+              is_completed = True
+              break
+        time.sleep(sleep_interval)
+      if not is_completed:
+        demisto.error("The RSO Script execution is not completed, please increase the sleep interval or retries")
+        raise ValueError("The RSO Script execution is not completed, please increase the sleep interval or retries")
+      return script_status
+
+
+
+  ''' MAIN FUNCTION '''
+
+
+  def main():
+      try:
+          return_results(retry_untill_rso_script_completed(demisto.args()))
+      except Exception as ex:
+          demisto.error(traceback.format_exc())  # print the traceback
+          return_error(f'Failed to execute BaseScript. Error: {str(ex)}')
+
+
+  ''' ENTRY POINT '''
+
+
+  if __name__ in ('__main__', '__builtin__', 'builtins'):
+      main()
+
+type: python
+tags: []
+enabled: true
+args:
+- name: parentTaskId
+  required: true
+  description: The Parent Task Id of the executed remote script
+  type: textArea
+- name: sleep_interval_sec
+  default: true
+  description: The sleep interval in seconds
+  defaultValue: "60"
+  type: unknown
+- name: retries
+  defaultValue: "5"
+outputs:
+- contextPath: SentinelOne.GetRemoteScript.id
+  description: Task Id
+scripttarget: 0
+subtype: python3
+timeout: 3.6µs
+pswd: ""
+runonce: false
+dockerimage: demisto/python3:3.11.9.105369
+runas: DBotWeakRole
+engineinfo: {}
+mainengineinfo: {}

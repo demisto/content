@@ -2,6 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import io
 import json
+import requests
 import traceback
 from datetime import datetime
 import zipfile
@@ -3239,16 +3240,33 @@ def get_remote_script_results(client: Client, args: dict) -> CommandResults:
     """
     Get the remote script results
     """
-    headers=["taskId", "fileName", "downloadUrl"]
+    context_entries = []
+    headers=["taskId", "fileName"]
     # Get arguments
     computer_names = argToList(args.get("computerNames"))
     task_ids = argToList(args.get("taskIds"))
     results = client.get_remote_script_results_request(computer_names, task_ids)
-    return CommandResults(
+    files = []
+    for result in results:
+        if result.get("downloadUrl", ""):
+            response = requests.get(url=result.get("downloadUrl"))
+            zip_file_data = response.content
+            files.append(fileResult(filename=result.get('fileName',''), data=zip_file_data, file_type=EntryType.ENTRY_INFO_FILE))
+            zipped_file = fileResult(filename=result.get('fileName',''), data=zip_file_data, file_type=EntryType.ENTRY_INFO_FILE)
+            context_entries.append({
+                'taskId': result.get("taskId"),
+                'fileName': result.get("fileName"),
+                'downloadUrl': result.get("downloadUrl"),
+                'ZippedFile': zipped_file
+            })
+    return [CommandResults(
         readable_output=tableToMarkdown("SentinelOne - Get Remote Scripts Results", results, headers=headers, removeNull=True),
         outputs_prefix="SentinelOne.RemoteScriptResults",
-        outputs=results,
-        raw_response=results)
+        outputs_key_field='taskId',
+        outputs=context_entries,
+        raw_response=results),
+        *files
+    ]
 
 def get_mapping_fields_command():
     """

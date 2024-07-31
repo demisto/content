@@ -1,7 +1,7 @@
-id: Sentinel One - Remote Script
+id: Sentinel One - Remote Script Results
 version: -1
 vcShouldKeepItemLegacyProdMachine: false
-name: Sentinel One - Remote Script
+name: Sentinel One - Remote Script Results
 starttaskid: "0"
 tasks:
   "0":
@@ -49,7 +49,7 @@ tasks:
       brand: SentinelOne V2
     nexttasks:
       '#none#':
-      - "4"
+      - "8"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -63,42 +63,6 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: true
-    quietmode: 2
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "2":
-    id: "2"
-    taskid: 022b91ce-931c-43cc-817f-0813d27762ac
-    type: regular
-    task:
-      id: 022b91ce-931c-43cc-817f-0813d27762ac
-      version: -1
-      name: sentinelone-get-remote-script-status
-      description: Get remote scripts tasks using a variety of filters. Accessible
-        via API only parent_task_id or parent_task_id__in query parameter is mandatory
-      script: '|||sentinelone-get-remote-script-status'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "5"
-    scriptarguments:
-      parentTaskId:
-        simple: ${SentinelOne.RunRemoteScript.parentTaskId}
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 630
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -127,7 +91,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1030
+          "y": 850
         }
       }
     note: false
@@ -137,82 +101,12 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
-  "4":
-    id: "4"
-    taskid: 9b76b626-39a0-4769-8e8c-5550881e7499
-    type: regular
-    task:
-      id: 9b76b626-39a0-4769-8e8c-5550881e7499
-      version: -1
-      name: Sleep
-      description: Sleep for X seconds
-      scriptName: Sleep
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
-    scriptarguments:
-      seconds:
-        simple: "180"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 430
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "5":
-    id: "5"
-    taskid: f13fcdd5-cf31-4e19-8336-e85e9b7e284d
-    type: regular
-    task:
-      id: f13fcdd5-cf31-4e19-8336-e85e9b7e284d
-      version: -1
-      name: Sleep
-      description: Sleep for X seconds
-      scriptName: Sleep
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      seconds:
-        simple: "300"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 830
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: dbd91849-72a5-41be-807f-4484d7eb2964
+    taskid: 6770d332-f75f-4f0f-8224-04933179ba85
     type: title
     task:
-      id: dbd91849-72a5-41be-807f-4484d7eb2964
+      id: 6770d332-f75f-4f0f-8224-04933179ba85
       version: -1
       name: Done
       type: title
@@ -224,7 +118,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1260
+          "y": 1100
         }
       }
     note: false
@@ -234,12 +128,81 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: da594600-b28e-4843-8136-c3df2fd52cfa
+    type: regular
+    task:
+      id: da594600-b28e-4843-8136-c3df2fd52cfa
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      seconds:
+        simple: "30"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 5bf06cc1-1ab8-4e89-8ebc-fc732df05fa4
+    type: regular
+    task:
+      id: 5bf06cc1-1ab8-4e89-8ebc-fc732df05fa4
+      version: -1
+      name: SentinelOneCheckRemoteScriptStatus
+      scriptName: SentinelOneCheckRemoteScriptStatus
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      parentTaskId:
+        simple: ${SentinelOne.RunRemoteScript.parentTaskId}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1275,
+        "height": 1115,
         "width": 380,
         "x": 450,
         "y": 50
