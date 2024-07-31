@@ -44,6 +44,14 @@ configuration:
   name: proxy
   type: 8
   required: false
+- section: Collect
+  advanced: true
+  display: Minutes to delay
+  additionalinfo: Number of minutes to delay when fetching events (to handle events creation delay in the DUO database). The default value is 0 minutes.
+  name: fetch_delay
+  defaultvalue: 0
+  type: 0
+  required: false
 script:
   script: ""
   type: python
