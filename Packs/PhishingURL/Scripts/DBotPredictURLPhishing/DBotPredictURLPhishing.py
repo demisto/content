@@ -115,9 +115,23 @@ TIMEOUT_RASTERIZE = 120
 
 class Model:
     '''Abstract class that represents the class of the built-in phishing model.'''
-    top_domains: list
+
+    clf: 'sklearn.pipeline.Pipeline'
+    custom_logo_associated_domain: dict
+    debug: bool
+    df_voc: dict
+    features: list
+    fields_prediction: list
+    heuristic_html: bool
+    heuristic_image: bool
+    heuristic_url: bool
     logos_dict: dict
+    major: int
     minor: int
+    path_logos: str
+    path_voc: str
+    top_domains: dict
+    top_domains_path: str
     
     def predict(self, x_pred: pd.DataFrame) -> dict:
         pass
