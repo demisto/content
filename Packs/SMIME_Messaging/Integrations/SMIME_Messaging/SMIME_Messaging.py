@@ -398,17 +398,19 @@ def sign_and_encrypt(client: Client, args: dict):
     sender = args.get('sender', '')
     subject = args.get('subject', '')
     create_file = argToBoolean(args.get('create_file_p7', 'false'))
-    recipients = safe_load_json(args.get('recipients', {}))
-    cc = safe_load_json(args.get('cc', {}))
-    bcc = safe_load_json(args.get('bcc', {}))
     attachment_ids = argToList(args.get('attachment_entry_id', ''))  # type: list[str]
 
+    recipients = safe_load_json(args.get('recipients', {}) or '{}')
     if type(recipients) != dict:
-        raise DemistoException('Failed to parse recipients. (format `{"recipient@email":"pub_cert", "other@email":"pub_cert"}`)')
+        raise DemistoException('Failed to parse recipients. (format `{"recipient@email":"cert", "other@email":"cert"}`)')
+
+    cc = safe_load_json(args.get('cc', {}) or '{}')
     if type(cc) != dict:
-        raise DemistoException('Failed to parse cc. (format `{"recipient@email":"pub_cert", "other@email":"pub_cert"}`)')
+        raise DemistoException('Failed to parse cc. (format `{"recipient@email":"cert", "other@email":"cert"}`)')
+
+    bcc = safe_load_json(args.get('bcc', {}) or '{}')
     if type(bcc) != dict:
-        raise DemistoException('Failed to parse bcc. (format `{"recipient@email":"pub_cert", "other@email":"pub_cert"}`)')
+        raise DemistoException('Failed to parse bcc. (format `{"recipient@email":"cert", "other@email":"cert"}`)')
 
     # Prepare message
     msg = MIMEMultipart()
@@ -521,14 +523,14 @@ def sign_and_encrypt(client: Client, args: dict):
 def test_module(client, *_):
     message_body = 'testing'
     try:
-        encrypt_message = encrypt_email_body(client, {'message': message_body})
-        if encrypt_message:
-            test_file = NamedTemporaryFile(delete=False)
-            test_file.write(bytes(encrypt_message.readable_output, 'utf-8'))
-            test_file.close()
-            decrypt_message = decrypt_email_body(client, {'test_file_path': test_file.name})
-            if decrypt_message:
-                demisto.results('ok')
+        encrypted_out = sign_and_encrypt(client, {'message': message_body, 'signed': 'false'}).to_context()
+        encrypted_msg = encrypted_out['EntryContext']['SMIME.SignedAndEncrypted']['Message']
+        test_file = NamedTemporaryFile(delete=False)
+        test_file.write(bytes(encrypted_msg, 'utf-8'))
+        test_file.close()
+        decrypt_out = decrypt_email_body(client, {'test_file_path': test_file.name})[0].to_context()
+        if message_body in decrypt_out['HumanReadable']:
+            demisto.results('ok')
     except Exception:
         return_error('Verify that you provided valid and matching keys.')
     finally:

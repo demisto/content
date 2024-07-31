@@ -100,11 +100,11 @@ script:
     - description: The message body to encrypt and sign.
       name: message
       required: true
-    - description: list of recipients and their public keys
+    - description: JSON dict of recipients and their public keys
       name: recipients
-    - description: list of cc recipients and their public keys
+    - description: JSON dict of cc recipients and their public keys
       name: cc
-    - description: list of bcc recipients and their public keys
+    - description: JSON dict of bcc recipients and their public keys
       name: bcc
     - description: list of war room entry id's of files to attach to the mail
       name: attachment_entry_id
@@ -144,7 +144,7 @@ script:
       type: String
     - contextPath: SMIME.SignedAndEncrypted.FileName
       type: String
-  dockerimage: demisto/m2crypto:1.0.0.79505
+  dockerimage: demisto/m2crypto:1.0.0.105629
   runonce: false
   script: '-'
   type: python
