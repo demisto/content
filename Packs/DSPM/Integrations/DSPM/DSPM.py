@@ -75,9 +75,9 @@ SUPPORTED_STATUS = ['OPEN', 'CLOSED', 'UNIMPORTANT', 'WRONG', 'HANDLED', 'INVEST
 
 # Define remediation steps for specific findings
 ASSET_REMEDIATION_DESCRIPTION = {
-    "Sensitive asset open to world":("To remediate, we will execute the 'aws-s3-put-public-access-block' "
-                                    "command to stop public access to the specified S3 bucket containing sensitive data. "
-                                    "This will prevent unauthorized access and ensure data security.\n\n")
+    "Sensitive asset open to world": ("To remediate, we will execute the 'aws-s3-put-public-access-block' "
+                                      "command to stop public access to the specified S3 bucket containing sensitive data. "
+                                      "This will prevent unauthorized access and ensure data security.\n\n")
 }
 ASSET_REMEDIATION_STEPS = {
     "Sensitive asset open to world": ("If you prefer to remediate manually, follow these steps:\n"
