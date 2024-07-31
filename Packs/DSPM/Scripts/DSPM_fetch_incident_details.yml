@@ -33,7 +33,8 @@ script: |+
           "riskFindingId":labels.get('id', 'N/A'),
           "dataTypeGroups":asset_details.get("dataTypeGroups","N/A"),
           "tags":asset_details.get("assetDigTags","N/A"),
-          "remediateDescription": incident_data.get('remediatestep','N/A')
+          "remediateDescription": incident_data.get('remediateDescription','N/A'),
+          "remediateSteps": incident_data.get('remediateSteps','N/A')
       }
       return incident_object
 
