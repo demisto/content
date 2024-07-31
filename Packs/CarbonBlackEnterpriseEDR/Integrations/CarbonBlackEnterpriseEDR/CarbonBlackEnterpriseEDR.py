@@ -3,8 +3,6 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 from typing import Any
-import dateparser
-import requests
 import urllib3
 from more_itertools import map_reduce
 
@@ -124,7 +122,7 @@ class Client(BaseClient):
             ]
         }
         if last_contact_time.get('start'):  # type: ignore[union-attr]
-            body.update({'criteria': {'last_contact_time': last_contact_time}})
+            body['criteria']['last_contact_time'] = last_contact_time
 
         return self._http_request('POST', suffix_url, json_data=body)
 
