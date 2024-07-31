@@ -14,7 +14,7 @@ deprecated: true
 commonfields:
   id: ExpanseGenerateIssueMapWidgetScript
   version: -1
-dockerimage: demisto/chromium:127.0.6533.105883
+dockerimage: demisto/chromium:126.0.6478.103218
 enabled: true
 name: ExpanseGenerateIssueMapWidgetScript
 script: '-'
