@@ -116,7 +116,7 @@ TIMEOUT_RASTERIZE = 120
 class Model:
     '''Abstract class that represents the class of the built-in phishing model.'''
 
-    clf: 'sklearn.pipeline.Pipeline'
+    clf: Any  # sklearn.pipeline.Pipeline
     custom_logo_associated_domain: dict
     debug: bool
     df_voc: dict
@@ -132,7 +132,7 @@ class Model:
     path_voc: str
     top_domains: dict
     top_domains_path: str
-    
+
     def predict(self, x_pred: pd.DataFrame) -> dict:
         pass
 
@@ -283,7 +283,7 @@ def prepend_protocol(url: str, protocol: str, www: bool = True) -> str:
 def return_entry_summary(
     pred_json: dict, url: str, is_white_listed: bool, output_rasterize: dict,
     verdict: str, reliability: str = DBotScoreReliability.A_PLUS, **_
-) -> dict[str, str]:
+) -> Optional[dict[str, Any]]:
     """
     Return entry to demisto
     :param pred_json: json with output of the model
@@ -508,7 +508,7 @@ def rasterize_urls(urls: list[str], rasterize_timeout: int) -> list[dict]:
     return cast(list[dict], res_rasterize)
 
 
-def get_whois_verdict(domains: list[dict]) -> list:
+def get_whois_verdict(domains: list[str]) -> list:
     '''Check domain age from WHOIS command'''
     default = [None] * len(domains)
     if isCommandAvailable('whois'):
@@ -525,7 +525,7 @@ def get_whois_verdict(domains: list[dict]) -> list:
 
 def get_predictions_for_urls(
     model: Model, urls: list[str], force_model: bool, debug: bool, rasterize_timeout: int, protocol: str
-) -> list[dict]:
+) -> Optional[list[dict]]:
 
     domains = list(map(extract_domainv2, urls))
 
@@ -573,9 +573,7 @@ def get_predictions_for_urls(
 def return_general_summary(results: list[dict], tag: str = "Summary") -> list[dict]:
     df_summary = pd.DataFrame()
     df_summary['URL'] = [x.get('url_redirect') for x in results]
-    df_summary[KEY_FINAL_VERDICT] = [MAPPING_VERDICT_COLOR[x.get('verdict')].format(x.get('verdict'))
-                                     if x.get('verdict') in MAPPING_VERDICT_COLOR
-                                     else VERDICT_ERROR_COLOR.format(x.get('verdict')) for x in results]
+    df_summary[KEY_FINAL_VERDICT] = [MAPPING_VERDICT_COLOR.get(x.get('verdict'), VERDICT_ERROR_COLOR).format(x.get('verdict')) for x in results]
     summary_context = [
         {KEY_CONTENT_SUMMARY_URL: x.get('url_redirect'), KEY_CONTENT_SUMMARY_FINAL_VERDICT: BENIGN_VERDICT,
          KEY_CONTENT_IS_WHITELISTED: 'True'} for x in results if x.get('is_white_listed')]
