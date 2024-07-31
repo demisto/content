@@ -28,7 +28,7 @@ args:
   - 'True'
 - description: The protocol to use when calling the URLs. This argument effects the calls sent by the model only and has no effect on the rasterize or whois commands.
   defaultValue: 'HTTP'
-  name: request_protocol
+  name: requestProtocol
   auto: PREDEFINED
   predefined:
   - 'HTTP'
