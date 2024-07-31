@@ -885,7 +885,7 @@ def get_mapping_fields_command():
 
 def get_modified_remote_data_command(client, args, xdr_delay: int, last_mirroring: Optional[dict] = None):
     ##########
-    # args['lastUpdate'] = '2024-07-30T09:19:40.001604274Z'
+    args['lastUpdate'] = '2024-07-30T09:19:40.001604274Z'
     remote_args = GetModifiedRemoteDataArgs(args)
     last_update = last_mirroring.get(
         'time') if isinstance(last_mirroring, dict) else remote_args.last_update
@@ -898,7 +898,6 @@ def get_modified_remote_data_command(client, args, xdr_delay: int, last_mirrorin
         lte_modification_time_with_ms = gte_modification_time_milliseconds + timedelta(minutes=1)
     demisto.debug(f'get_modified_remote_data_command: {gte_modification_time_milliseconds=} | {lte_modification_time_with_ms=}')
     raw_incidents = client.get_incidents(
-        sort_by_modification_time=True,
         gte_modification_time_milliseconds=gte_modification_time_milliseconds,
         lte_modification_time_milliseconds=lte_modification_time_with_ms,
         limit=100)

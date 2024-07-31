@@ -235,7 +235,8 @@ class CoreClient(BaseClient):
     def get_incidents(self, incident_id_list=None, lte_modification_time=None, gte_modification_time=None,
                       lte_creation_time=None, gte_creation_time=None, status=None, starred=None,
                       starred_incidents_fetch_window=None, sort_by_modification_time=None, sort_by_creation_time=None,
-                      page_number=0, limit=100, gte_creation_time_milliseconds=0, gte_modification_time_milliseconds=0,lte_modification_time_milliseconds=0 ):
+                      page_number=0, limit=100, gte_creation_time_milliseconds=0,
+                      gte_modification_time_milliseconds=None,lte_modification_time_milliseconds=None):
         """
         Filters and returns incidents
 
@@ -350,30 +351,33 @@ class CoreClient(BaseClient):
                 'value': date_to_timestamp(gte_modification_time, TIME_FORMAT)
             })
 
-        if gte_creation_time_milliseconds > 0:
+        if gte_creation_time_milliseconds:
             filters.append({
                 'field': 'creation_time',
                 'operator': 'gte',
                 'value': date_to_timestamp(gte_creation_time_milliseconds)
             })
         
-        if gte_modification_time_milliseconds > 0:
+        if gte_modification_time_milliseconds:
             filters.append({
                 'field': 'modification_time',
                 'operator': 'gte',
                 'value': date_to_timestamp(gte_modification_time_milliseconds)
             })
+            demisto.debug(f'get incidents gte_modification_time_milliseconds {date_to_timestamp(gte_modification_time_milliseconds)}')
+            
         
-        if lte_modification_time_milliseconds > 0:
+        if lte_modification_time_milliseconds:
             filters.append({
                 'field': 'modification_time',
                 'operator': 'lte',
-                'value': lte_modification_time_milliseconds
+                'value': date_to_timestamp(lte_modification_time_milliseconds)
             })
+            demisto.debug(f'gte_modification_time_milliseconds : {date_to_timestamp(lte_modification_time_milliseconds)}')
 
         if len(filters) > 0:
             request_data['filters'] = filters
-
+        demisto.debug('before http_req')
         res = self._http_request(
             method='POST',
             url_suffix='/incidents/get_incidents/',
@@ -381,6 +385,7 @@ class CoreClient(BaseClient):
             headers=self._headers,
             timeout=self.timeout
         )
+        demisto.debug('after http_req')
         incidents = res.get('reply', {}).get('incidents', [])
 
         return incidents
