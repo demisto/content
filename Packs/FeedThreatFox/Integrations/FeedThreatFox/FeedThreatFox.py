@@ -167,6 +167,13 @@ def date(date):
     return None
 
 
+def validate_interval(interval):
+    if interval < 60:
+        raise DemistoException("The fetch interval must be at least 1 hour. We recommend setting it to at least 1 day.")
+    elif interval > 10080:
+        raise DemistoException("The fetch interval must not be more than 7 days.")
+
+
 def tags(indicator):
     res = [indicator.get('malware_printable'), indicator.get('malware_alias'), indicator.get('threat_type')]
     if indicator.get('tags'):
@@ -283,10 +290,10 @@ def main() -> None:
     params = demisto.params()
     base_url = urljoin(params['url'], '/api/v1')
     with_ports = argToBoolean(params.get('with_ports', False))
-    confidence_threshold = arg_to_number(params.get('confidence_threshold', 75))   # Need to check that it is a number
+    confidence_threshold = arg_to_number(params.get('confidence_threshold'))   # Need to check that it is a number
     create_relationship = argToBoolean(params.get('create_relationship'))
-    interval = arg_to_number(params.get('fetch_interval'))  # Need to check that it is a number
     tlp_color = params.get('tlp_color')
+    interval = validate_interval(arg_to_number(params.get('feedFetchInterval', 1440)))  # Need to check that it is a number
     
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
