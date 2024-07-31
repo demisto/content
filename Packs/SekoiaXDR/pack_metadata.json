@@ -1,6 +1,6 @@
 {
     "name": "SekoiaXDR",
-    "description": "Request SEKOIA.IO Operation Center from Cortex XSOAR",
+    "description": "Request Sekoia Defend (XDR) from Cortex XSOAR",
     "support": "partner",
     "currentVersion": "1.0.0",
     "author": "SEKOIA.IO",
