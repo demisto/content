@@ -1687,7 +1687,7 @@ class Client(BaseClient):
             url_suffix=urljoin(API_SUFFIX, 'asset/host/vm/detection/?action=list'),
             resp_type='text',
             params=params,
-            timeout=240,
+            timeout=200,
             error_handler=self.error_handler,
         )
         return response
