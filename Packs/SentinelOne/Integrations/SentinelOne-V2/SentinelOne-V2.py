@@ -3225,7 +3225,7 @@ def get_remote_script_status(client: Client, args: dict) -> CommandResults:
     """
     Get the Satus of the Remote Script Tasks
     """
-    headers = ["id","createdAt","description", "statusDescription","parentTaskId", "accountId", "accountName", "agentId", "agentIsActive", "agentOsType", "initiatedBy", "initiateById"]
+    headers = ["id","createdAt","description", "statusDescription","parentTaskId", "accountId", "accountName", "agentId", "agentIsActive", "agentOsType", "initiatedBy", "initiatedById"]
     remote_script_statuses = client.get_remote_script_status_request(**args)
 
     return CommandResults(

@@ -2386,7 +2386,7 @@ script:
     - contextPath: SentinelOne.GetRemoteScript.initiatedBy
       description: Remote script initiate by.
       type: string
-    - contextPath: SentinelOne.GetRemoteScript.initiateById
+    - contextPath: SentinelOne.GetRemoteScript.initiatedById
       description: ID of the remote script initiator.
       type: string
     - contextPath: SentinelOne.GetRemoteScript.parentTaskId
