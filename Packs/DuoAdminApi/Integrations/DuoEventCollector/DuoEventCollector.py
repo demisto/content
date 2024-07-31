@@ -2,7 +2,6 @@ from datetime import datetime, timedelta
 from collections import deque
 from enum import Enum
 
-import dateparser
 import duo_client
 from pydantic import BaseModel, Field  # pylint: disable=E0611
 
