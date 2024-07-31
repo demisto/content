@@ -3495,7 +3495,7 @@ def test_search_device_command(requests_mock):
         status_code=200,
     )
     requests_mock.post(
-        f'{SERVER_URL}/devices/entities/devices/v2?ids=meta&ids=resources&ids=errors',
+        f'{SERVER_URL}/devices/entities/devices/v2',
         json=test_data2,
         status_code=200,
     )
@@ -3564,7 +3564,7 @@ def test_get_endpoint_command(requests_mock, mocker):
         status_code=200,
     )
     requests_mock.post(
-        f'{SERVER_URL}/devices/entities/devices/v2?ids=meta&ids=resources&ids=errors',
+        f'{SERVER_URL}/devices/entities/devices/v2',
         json=test_data2,
         status_code=200,
     )
@@ -4137,7 +4137,7 @@ def test_find_incident_type():
     """
     from CrowdStrikeFalcon import find_incident_type, IncidentType
     assert find_incident_type(input_data.remote_incident_id) == IncidentType.INCIDENT
-    assert find_incident_type(input_data.remote_detection_id) == IncidentType.DETECTION
+    assert find_incident_type(input_data.remote_detection_id) == IncidentType.LEGACY_ENDPOINT_DETECTION
     assert find_incident_type('') is None
 
 
@@ -4186,7 +4186,7 @@ def test_get_remote_detection_data(mocker):
                               'behaviors.display_name': 'SampleTemplateDetection'}
 
 
-def test_get_remote_idp_or_mobile_detection_data_idp(mocker):
+def test_get_remote_edpoint_or_idp_or_mobile_detection_data__idp(mocker):
     """
     Given
         - an idp detection ID on the remote system
@@ -4195,11 +4195,12 @@ def test_get_remote_idp_or_mobile_detection_data_idp(mocker):
     Then
         - returns the relevant detection entity from the remote system with the relevant incoming mirroring fields
     """
-    from CrowdStrikeFalcon import get_remote_idp_or_mobile_detection_data
+    from CrowdStrikeFalcon import get_remote_epp_or_idp_or_mobile_detection_data
     detection_entity = input_data.response_idp_detection.copy()
     mocker.patch('CrowdStrikeFalcon.get_detection_entities', return_value={'resources': [detection_entity.copy()]})
     mocker.patch.object(demisto, 'debug', return_value=None)
-    mirrored_data, updated_object, detection_type = get_remote_idp_or_mobile_detection_data(input_data.remote_idp_detection_id)
+    mirrored_data, updated_object, detection_type = get_remote_epp_or_idp_or_mobile_detection_data(
+        input_data.remote_idp_detection_id)
     detection_entity['severity'] = 2
     assert mirrored_data == detection_entity
     assert detection_type == 'IDP'
@@ -4208,7 +4209,7 @@ def test_get_remote_idp_or_mobile_detection_data_idp(mocker):
                               'id': 'ind:20879a8064904ecfbb62c118a6a19411:C0BB6ACD-8FDC-4CBA-9CF9-EBF3E28B3E56'}
 
 
-def test_get_remote_idp_or_mobile_detection_data_mobile_detection(mocker):
+def test_get_remote_epp_or_idp_or_mobile_detection_data__mobile_detection(mocker):
     """
     Given
         - an idp detection ID on the remote system
@@ -4217,17 +4218,41 @@ def test_get_remote_idp_or_mobile_detection_data_mobile_detection(mocker):
     Then
         - returns the relevant detection entity from the remote system with the relevant incoming mirroring fields
     """
-    from CrowdStrikeFalcon import get_remote_idp_or_mobile_detection_data
+    from CrowdStrikeFalcon import get_remote_epp_or_idp_or_mobile_detection_data
     detection_entity = input_data.response_mobile_detection.copy()
     mocker.patch('CrowdStrikeFalcon.get_detection_entities', return_value={'resources': [detection_entity.copy()]})
     mocker.patch.object(demisto, 'debug', return_value=None)
-    mirrored_data, updated_object, detection_type = get_remote_idp_or_mobile_detection_data(input_data.remote_mobile_detection_id)
+    mirrored_data, updated_object, detection_type = get_remote_epp_or_idp_or_mobile_detection_data(
+        input_data.remote_mobile_detection_id)
     detection_entity['severity'] = 90
     assert mirrored_data == detection_entity
     assert detection_type == 'Mobile'
     assert updated_object == {'incident_type': 'MOBILE detection',
                               'status': 'new',
                               'mobile_detection_id': '1111111111111111111'}
+
+
+def test_get_remote_epp_or_idp_or_mobile_detection_data__endpoint_detection(mocker):
+    """
+    Given
+        - an endpoint detection ID on the remote system
+    When
+        - running get_remote_data_command with changes to make on a detection
+    Then
+        - returns the relevant detection entity from the remote system with the relevant incoming mirroring fields
+    """
+    from CrowdStrikeFalcon import get_remote_epp_or_idp_or_mobile_detection_data
+    detection_entity = input_data.response_detection_new_version.copy()
+    mocker.patch('CrowdStrikeFalcon.get_detection_entities', return_value={'resources': [detection_entity.copy()]})
+    mocker.patch.object(demisto, 'debug', return_value=None)
+    mirrored_data, updated_object, detection_type = get_remote_epp_or_idp_or_mobile_detection_data(
+        input_data.remote_detection_id_new_version)
+    detection_entity['severity'] = 90
+    assert mirrored_data == detection_entity
+    assert detection_type == 'Detection'
+    assert updated_object == {'incident_type': 'detection',
+                              'status': 'new',
+                              'severity': 90}
 
 
 @pytest.mark.parametrize('updated_object, entry_content, close_incident', input_data.set_xsoar_incident_entries_args)
@@ -7184,13 +7209,13 @@ Test Scenarios:
     assert len(http_request_mocker.call_args_list[0][0]) == expected_len
 
 
-@pytest.mark.parametrize('Legacy_version, url_suffix, data', [
-    (False, "/alerts/entities/alerts/v3",
-     '{"action_parameters": [{"name": "show_in_ui", "value": "True"}, {"name": "assign_to_user_id", "value": "123"}, {"name": "update_status", "value": "resolved"}, {"name": "append_comment", "value": "comment"}], "composite_ids": ["123"]}'),  # noqa: E501
-    (True, '/detects/entities/detects/v2',
+@pytest.mark.parametrize('Legacy_version, tag, url_suffix, data', [
+    (False, "test_tag", "/alerts/entities/alerts/v3",
+     '{"action_parameters": [{"name": "show_in_ui", "value": "True"}, {"name": "assign_to_user_id", "value": "123"}, {"name": "update_status", "value": "resolved"}, {"name": "append_comment", "value": "comment"}, {"name": "add_tag", "value": "test_tag"}], "composite_ids": ["123"]}'),  # noqa: E501
+    (True, None, '/detects/entities/detects/v2',
      '{"ids": ["123"], "status": "resolved", "assigned_to_uuid": "123", "show_in_ui": "True", "comment": "comment"}')
                                                              ])
-def test_resolve_detection(mocker, Legacy_version, url_suffix, data):
+def test_resolve_detection(mocker, Legacy_version, tag, url_suffix, data):
     """
     Given:
         - The Legacy_version flag
@@ -7205,7 +7230,7 @@ def test_resolve_detection(mocker, Legacy_version, url_suffix, data):
     mocker.patch('CrowdStrikeFalcon.LEGACY_VERSION', Legacy_version)
     http_request_mocker = mocker.patch('CrowdStrikeFalcon.http_request')
 
-    resolve_detection(ids=["123"], status="resolved", assigned_to_uuid="123", show_in_ui="True", comment="comment")
+    resolve_detection(ids=["123"], status="resolved", assigned_to_uuid="123", show_in_ui="True", comment="comment", tag=tag)
     assert http_request_mocker.call_args_list[0][0][1] == url_suffix
     assert http_request_mocker.call_args_list[0][1]["data"] == data
 
