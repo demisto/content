@@ -1,4 +1,3 @@
-import datetime
 
 import pytest
 import json
@@ -289,18 +288,20 @@ def test_handle_v2_test_args(mocker):
     request_2 = mocker.patch.object(client.admin_api, 'get_telephony_log', side_effect=Exception(error_message))
     client.handle_telephony_logs_v2()
     request_2.assert_called_with(mintime=mintime, api_version=2, limit='10', sort='ts:asc', maxtime=maxtime)
-    
+
     next_offset = ["1706115540000", "af0ba235-0b33-23c8-bc23-a31aa0231de8"]
     client.params.mintime[LogType.AUTHENTICATION] = {"min_time": '1706115540000', "next_offset": next_offset}
     client.params.mintime[LogType.TELEPHONY] = {"min_time": '1706115540000', "next_offset": next_offset}
     # authentication with next_offset
     request_3 = mocker.patch.object(client.admin_api, 'get_authentication_log', side_effect=Exception(error_message))
     client.handle_authentication_logs()
-    request_3.assert_called_with(next_offset=next_offset, mintime=mintime, api_version=2, limit='10', sort='ts:asc', maxtime=maxtime)
+    request_3.assert_called_with(next_offset=next_offset, mintime=mintime, api_version=2,
+                                 limit='10', sort='ts:asc', maxtime=maxtime)
     # telephony with next_offset
     request_4 = mocker.patch.object(client.admin_api, 'get_telephony_log', side_effect=Exception(error_message))
     client.handle_telephony_logs_v2()
-    request_4.assert_called_with(next_offset=next_offset,mintime=mintime, api_version=2, limit='10', sort='ts:asc', maxtime=maxtime)
+    request_4.assert_called_with(next_offset=next_offset, mintime=mintime, api_version=2,
+                                 limit='10', sort='ts:asc', maxtime=maxtime)
 
 
 def test_handle_telephony_logs_v2(ret_fresh_client):
