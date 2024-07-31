@@ -235,7 +235,7 @@ class CoreClient(BaseClient):
     def get_incidents(self, incident_id_list=None, lte_modification_time=None, gte_modification_time=None,
                       lte_creation_time=None, gte_creation_time=None, status=None, starred=None,
                       starred_incidents_fetch_window=None, sort_by_modification_time=None, sort_by_creation_time=None,
-                      page_number=0, limit=100, gte_creation_time_milliseconds=0):
+                      page_number=0, limit=100, gte_creation_time_milliseconds=0, gte_modification_time_milliseconds=0,lte_modification_time_milliseconds=0 ):
         """
         Filters and returns incidents
 
@@ -355,6 +355,20 @@ class CoreClient(BaseClient):
                 'field': 'creation_time',
                 'operator': 'gte',
                 'value': gte_creation_time_milliseconds
+            })
+        
+        if gte_modification_time_milliseconds > 0:
+            filters.append({
+                'field': 'modification_time',
+                'operator': 'gte',
+                'value': gte_modification_time_milliseconds
+            })
+        
+        if lte_modification_time_milliseconds > 0:
+            filters.append({
+                'field': 'modification_time',
+                'operator': 'lte',
+                'value': lte_modification_time_milliseconds
             })
 
         if len(filters) > 0:
