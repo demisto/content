@@ -4373,65 +4373,84 @@ def get_incidents_command(client, args):
 
 def terminate_process_command(client, args) -> CommandResults:
     agent_id = args.get('agent_id')
-    instance_id = args.get('instance_id')
+    instance_ids = argToList(args.get('instance_id'))
     process_name = args.get('process_name')
     incident_id = args.get('incident_id')
-    response = client.terminate_process(agent_id=agent_id,
-                                        instance_id=instance_id,
-                                        process_name=process_name,
-                                        incident_id=incident_id)
+    replys = []
+    action_ids = []
+    for instance_id in instance_ids:
+        reply_per_instance_id = client.terminate_process(agent_id=agent_id,
+                                            instance_id=instance_id,
+                                            process_name=process_name,
+                                            incident_id=incident_id)
+        action_id = reply_per_instance_id.get("group_action_id")
+        demisto.debug(f'Action terminate process succeeded with action_id={action_id}')
+        action_ids.append(reply_per_instance_id.get("group_action_id"))
+        replys.append(reply_per_instance_id)
+        
     
-    if not response:
+    if not replys:
         raise DemistoException('Terminate process failed')
-    action_id = response.get("group_action_id")
-    demisto.debug(f'Action terminate process succeeded with action_id={action_id}')
+    
     context = {
-        "action_id": action_id,
+        "action_id": action_ids,
     }
     return CommandResults(
-        readable_output=tableToMarkdown(f'Action process causality created with group_action_id={action_id}', response),
+        readable_output=tableToMarkdown(f'Action process causality created with group_action_id={action_id}', replys),
         outputs={f'{args.get("integration_context_brand", "CoreApiModule")}.TerminateProcess(val.actionId == obj.actionId)': context},
         raw_response=context
     )
-    # return CommandResults(
-    #     readable_output=tableToMarkdown(
-    #         f'Action terminate process created with group_action_id={response.get("group_action_id")}', response),
-    #     outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.TerminateProcess',
-    #     outputs_key_field='group_action_id',
-    #     outputs=response,
-    #     raw_response=response,
-    # )
+    
+def action_status_get_command___(client: CoreClient, args) -> CommandResults:
+    action_id_list = argToList(args.get('action_id', ''))
+    action_id_list = [arg_to_int(arg=item, arg_name=str(item)) for item in action_id_list]
+    demisto.debug(f'action_status_get_command {action_id_list=}')
+    result = []
+    for action_id in action_id_list:
+        data = client.action_status_get(action_id)
+
+        for endpoint_id, status in data.items():
+            result.append({
+                'action_id': action_id,
+                'endpoint_id': endpoint_id,
+                'status': status,
+            })
+
+    return CommandResults(
+        readable_output=tableToMarkdown(name='Get Action Status', t=result, removeNull=True),
+        outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.'
+                       f'GetActionStatus(val.action_id == obj.action_id)',
+        outputs=result,
+        raw_response=result
+    )
 
 
 def terminate_causality_command(client, args) -> CommandResults:
     agent_id = args.get('agent_id')
-    causality_id = args.get('causality_id')
+    causality_ids = argToList(args.get('causality_id'))
     process_name = args.get('process_name')
     incident_id = args.get('incident_id')
-    response = client.terminate_causality(
-        agent_id=agent_id,
-        causality_id=causality_id,
-        process_name=process_name,
-        incident_id=incident_id
-    )
-    action_id = response.get("group_action_id")
-    if not response:
+    replies = []
+    action_ids = []
+    for instance_id in causality_ids:
+        reply_per_instance_id = client.terminate_causality(agent_id=agent_id,
+                                            instance_id=instance_id,
+                                            process_name=process_name,
+                                            incident_id=incident_id)
+        action_id = reply_per_instance_id.get("group_action_id")
+        demisto.debug(f'Action terminate process succeeded with action_id={action_id}')
+        action_ids.append(reply_per_instance_id.get("group_action_id"))
+        replies.append(reply_per_instance_id)
+
+    if not replies:
         raise DemistoException('Terminate causality failed')
-    demisto.debug(f'Action terminate causality succeeded with {action_id=}')
+    demisto.debug(f'Action terminate causality succeeded with {action_ids=}')
     context = {
-        "action_id": action_id,
+        "action_id": action_ids,
     }
 
     return CommandResults(
-        readable_output=tableToMarkdown(f'Action terminate causality created with group_action_id={action_id}', response),
+        readable_output=tableToMarkdown(f'Action terminate causality created with group_action_id={action_id}', replies),
         outputs={f'{args.get("integration_context_brand", "CoreApiModule")}.TerminateCausality(val.actionId == obj.actionId)': context},
         raw_response=context
     )
-    # return CommandResults(
-    #     readable_output=tableToMarkdown(
-    #         f'Action terminate causality created with group_action_id={response.get("group_action_id")}', response),
-    #     outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.TerminateProcess',
-    #     outputs_key_field='group_action_id',
-    #     outputs=response,
-    #     raw_response=response,
-    # )

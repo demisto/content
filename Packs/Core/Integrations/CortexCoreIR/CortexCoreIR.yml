@@ -2946,7 +2946,7 @@ script:
       required: true
     - description: The instance id.
       name: instance_id
-      isArray: false
+      isArray: true
       required: true
     - description: The process name.
       name: process_name
@@ -2956,6 +2956,11 @@ script:
       name: incident_id
       isArray: false
       required: false
+    - description: "This argument controls the action-center created task and will abort it in case of timeout. Default: True."
+      name: abort_on_timeout
+      isArray: false
+      required: false
+      defaultValue: 'true'
     name: core-terminate-process
     description: Terminate a process by it's instance id.
     polling: true
@@ -2970,7 +2975,7 @@ script:
       required: true
     - description: The causality id.
       name: causality_id
-      isArray: false
+      isArray: true
       required: true
     - description: The process name.
       name: process_name
@@ -2980,6 +2985,11 @@ script:
       name: incident_id
       isArray: false
       required: false
+    - description: "This argument controls the action-center created task and will abort it in case of timeout. Default: True."
+      name: abort_on_timeout
+      isArray: false
+      required: false
+      defaultValue: 'true'
     name: core-terminate-causality
     description: Stops a process by it's causality id.
     polling: true

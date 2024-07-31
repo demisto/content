@@ -466,13 +466,13 @@ def main():  # pragma: no cover
 
         elif command == 'core-get-incidents':
             return_outputs(*get_incidents_command(client, args))
-
+        
         elif command == 'core-terminate-process':
             return_results(run_polling_command(client=client,
                                                args=args,
                                                cmd="core-terminate-process",
                                                command_function=terminate_process_command,
-                                               command_decision_field="group_action_id",
+                                               command_decision_field="action_id",
                                                results_function=action_status_get_command,
                                                polling_field="status",
                                                polling_value=["PENDING",
@@ -507,8 +507,9 @@ def main():  # pragma: no cover
                                                               "COMPLETED_PARTIAL",
                                                               "COMPLETED_SUCCESSFULLY",
                                                               "FAILED",
-                                                              "TIMEOUT"]))
-
+                                                              "TIMEOUT"],
+                                               stop_polling=True
+                                               ))
         elif command in PREVALENCE_COMMANDS:
             return_results(handle_prevalence_command(client, command, args))
 
