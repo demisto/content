@@ -61,7 +61,6 @@ class Client(BaseClient):
                 device_name=device_name,
                 process_name=process_name
             ),
-            'time_range': create_time,
             'sort': [
                 {
                     'field': sort_field,
@@ -71,6 +70,9 @@ class Client(BaseClient):
             'rows': limit,
             'start': 1
         }
+
+        if create_time:
+            body['time_range'] = create_time
 
         return self._http_request('POST', suffix_url, json_data=body)
 
@@ -373,7 +375,7 @@ class Client(BaseClient):
         body = assign_params(criteria=assign_params(
             process_hash=process_hash_list,
             process_name=process_name_list,
-            event_id=event_id,
+            event_id=[event_id],
         ),
             query=query,
             rows=limit,

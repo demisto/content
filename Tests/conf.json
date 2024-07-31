@@ -21,6 +21,15 @@
     "testTimeout": 160,
     "testInterval": 20,
     "tests": [
+
+        {
+            "integrations": "Carbon Black Enterprise EDR",
+            "playbookID": "Carbon Black Enterprise EDR process search with polling Test"
+        },
+        {
+            "integrations": "Carbon Black Enterprise EDR",
+            "playbookID": "Carbon Black Enterprise EDR alert-workflow-update Test"
+        },
         {
             "integrations": "CipherTrust",
             "playbookID": "Thales CipherTrust Test Playbook - Access Management",
@@ -175,6 +184,10 @@
             "integrations": "Twitter v2",
             "playbookID": "playbook-Test_Twitter_v2",
             "instance_names": "Twitter v2"
+        },
+        {
+            "playbookID": "IndicatorFormatterFilterTest",
+            "timeout": 1200
         },
         {
             "integrations": "FeedURLhaus",
@@ -874,7 +887,6 @@
         {
             "integrations": "Whois",
             "playbookID": "Sanity Test - Playbook with Unmockable Whois Integration",
-            "instance_names": "legacy_context_output",
             "fromversion": "6.5.0"
         },
         {
@@ -1900,7 +1912,6 @@
             "integrations": "EWS v2",
             "playbookID": "EWS Public Folders Test",
             "instance_names": "ewv2_regular",
-            "memory_threshold": 100,
             "is_mockable": false
         },
         {
@@ -2518,7 +2529,6 @@
         {
             "integrations": "Whois",
             "playbookID": "whois_test",
-            "instance_names": "legacy_context_output",
             "fromversion": "5.0.0",
             "timeout": 2000
         },
@@ -2925,7 +2935,7 @@
                 "Image OCR",
                 "Rasterize"
             ],
-            "timeout": 900,
+            "timeout": 700,
             "memory_threshold": 300,
             "pid_threshold": 200,
             "fromversion": "4.5.0"
@@ -3680,9 +3690,6 @@
             "playbookID": "GetIndicatorsByQuery - Test"
         },
         {
-            "playbookID": "DBotFindSimilarIncidents-test"
-        },
-        {
             "playbookID": "DBotCreatePhishingClassifierV2FromFile-Test",
             "timeout": 60000,
             "fromversion": "6.1.0",
@@ -3829,12 +3836,6 @@
             "playbookID": "FailedInstances - Test",
             "integrations": "Whois",
             "fromversion": "4.5.0"
-        },
-        {
-            "playbookID": "Whois A new layout implemented with python-whois service",
-            "integrations": "Whois",
-            "instance_names": "New_context_output",
-            "fromversion": "6.9.0"
         },
         {
             "integrations": "F5 ASM",
@@ -5504,7 +5505,6 @@
                 "Whois",
                 "Rasterize"
             ],
-            "instance_names": ["legacy_context_output"],
             "memory_threshold": 300,
             "pid_threshold": 200,
             "marketplaces": "xsoar_on_prem"
@@ -5780,7 +5780,6 @@
         }
     ],
     "skipped_tests": {
-        "ThreatCrowd - Test": "The pack is deprecated",
         "Retrieve File from Endpoint - Generic V2 Test": "The playbook is deprecated",
         "test-threatConnectv3": "No instance - Instance issues",
         "generic-sql-mssql-encrypted-connection": "Instance issues",
@@ -5853,8 +5852,6 @@
         "PAN-OS EDL Setup v3 Test": "Issue 35386",
         "GmailTest": "Issue 27057",
         "get_file_sample_by_hash_-_cylance_protect_-_test": "Issue 28823",
-        "Carbon Black Enterprise EDR Test": "Issue 29775",
-        "Carbon Black Enterprise EDR Process Search Test": "Issue 29775",
         "VirusTotal (API v3) Detonate Test": "Issue 36004",
         "FailedInstances - Test": "Issue 33218",
         "PAN-OS DAG Configuration Test": "Issue 19205",
@@ -5951,6 +5948,7 @@
         "ThreatGrid_v2_Test": "No instance, developed by Qmasters",
         "Test-Detonate URL - ThreatGrid": "No instance, developed by Qmasters",
         "awake_security_test_pb": "No instance, CRTX-77572",
+        "Create Phishing Classifier V2 ML Test": "Updated docker image lacks data for the ml model. Once data issue is solved for ml module can un skip. ",
         "SumoLogic-Test": "401 unauthorized, CIAC-6334",
         "EWS_O365_test": "Issue CIAC-6753",
         "Microsoft Defender Advanced Threat Protection - Test dev": "Issue CIAC-7514",
@@ -5961,6 +5959,7 @@
         "MSG-Threat-Assessment-test": "API limitation",
         "BambenekConsultingFeed_Test": "Issue CRTX-99480",
         "VMWare Test": "CIAC-10276",
+        "AWS_DynamoDB-Test": "CIAC-10426",
         "AWS - EC2 Test Playbook": "CIAC-10426",
         "AWS SNS Listener - Test": "CIAC-10426",
         "MattermostV2 - testplaybook": "Cannot run integration in build machines, must be an open tenant",
