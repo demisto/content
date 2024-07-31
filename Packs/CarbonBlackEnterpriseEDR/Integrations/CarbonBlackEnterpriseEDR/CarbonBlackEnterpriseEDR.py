@@ -123,7 +123,7 @@ class Client(BaseClient):
                 }
             ]
         }
-        if last_contact_time.get('start'):
+        if last_contact_time.get('start'):  # type: ignore[union-attr]
             body.update({'criteria': {'last_contact_time': last_contact_time}})
 
         return self._http_request('POST', suffix_url, json_data=body)
