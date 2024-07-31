@@ -623,11 +623,9 @@ tasks:
       alert_id: {}
       alert_tag: {}
       alert_type: {}
-      device_id:
-        simple: "3366007"
+      device_id: {}
       device_name: {}
-      device_os:
-        simple: LINUX
+      device_os: {}
       device_os_version: {}
       device_username: {}
       end_time: {}
