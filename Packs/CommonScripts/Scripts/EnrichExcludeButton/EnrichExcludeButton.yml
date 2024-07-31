@@ -1,0 +1,18 @@
+commonfields:
+  id: 11903dc0-36be-40bd-801d-09fede4bbffc
+  version: 4
+vcShouldKeepItemLegacyProdMachine: false
+name: enrich_exclude_button
+script: ''
+type: python
+tags:
+- indicator-action-button
+enabled: true
+scripttarget: 0
+subtype: python3
+pswd: ''
+runonce: false
+dockerimage: demisto/python3:3.11.9.105369
+runas: DBotWeakRole
+engineinfo: {}
+mainengineinfo: {}
