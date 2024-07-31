@@ -1,5 +1,5 @@
+import uuid
 from freezegun import freeze_time
-import base64
 import demistomock as demisto
 import pytest
 from test_data import input_data
@@ -921,7 +921,7 @@ def test_filter_by_fields(
     assert filter_by_fields(full_mail, filter_fields) == expected_result
 
 
-def test_handle_html_image_with_new_line():
+def test_handle_html_image_with_new_line(mocker):
     """
     Given:
         - html body of a message with an attached base64 image.
@@ -930,8 +930,10 @@ def test_handle_html_image_with_new_line():
     Then:
         - Ensure attachments list contains correct data, name and cid fields.
     """
-    from Gmail import handle_html
-    # mocker.patch.object(demisto, "getFilePath", return_value={"path": "", "name": ""})
+    import Gmail
+    mocker.patch.object(demisto, "uniqueFile", return_value="1234567")
+    mocker.patch.object(demisto, "getFilePath", return_value={"path": "", "name": ""})
+    mocker.patch.object(uuid, "uuid4", return_value="111111111")
     htmlBody = """
 <html>
     <body>
@@ -939,24 +941,91 @@ def test_handle_html_image_with_new_line():
     </body>
 </html>"""
 
-    expected_attachments = [
-        {
-            "maintype": "image",
-            "subtype": "png",
-            "data": base64.b64decode("Aa=="),
-            "name": "image0.png",
-            "cid": "image0.png",
-        }
-    ]
-    expected_cleanBody = """
-<html>
-    <body>
-        <img
-\t\t\t\t\t  src="cid:image0.png"/>
-    </body>
-</html>"""
+    expected_attachments = [{'maintype': 'image',
+                             'subtype': 'png',
+                             'data': b'\x01',
+                             'name': 'image0.png',
+                             'cid': 'image0.png@11111111_11111111',
+                             'ID': 'image0.png@11111111_11111111'}]
+    expected_cleanBody = """\n<html>\n    <body>\n        <img\n\t\t\t\t\t  src="cid:image0.png@11111111_11111111"/>\n    </body>\n</html>"""  # noqa: E501
 
-    cleanBody, attachments = handle_html(htmlBody)
+    cleanBody, attachments = Gmail.handle_html(htmlBody)
 
     assert expected_cleanBody == cleanBody
     assert expected_attachments == attachments
+
+
+part_test1 = [{
+    'filename': 'image-1.png',
+    'headers': [{
+                'name': 'Content-ID', 'value': '<5678>'},
+                {'name': 'Content-Disposition', 'value': 'inline'}],
+    'body': {
+        'attachmentId': '1234'},
+    'mimeType': ''
+}]
+
+part_test2 = [{
+    'filename': 'image-1.png',
+    'headers': [{
+                'name': 'Content-ID', 'value': '5678'},
+                {'name': 'Content-Disposition', 'value': 'inline'}],
+    'body': {
+        'attachmentId': '1234'},
+    'mimeType': ''
+}]
+
+part_test3 = [{
+    'filename': 'image-1.png',
+    'headers': [{
+                'name': 'Content-ID', 'value': 'None'},
+                {'name': 'Content-Disposition', 'value': 'attachment'}],
+    'body': {
+        'attachmentId': '1234'},
+    'mimeType': ''
+}]
+
+
+@pytest.mark.parametrize(
+    "part, expected_result",
+    [
+        (part_test1, ('', '', [{'ID': '1234', 'Name': '5678-attachmentName-image-1.png'}])),
+        (part_test2, ('', '', [{'ID': '1234', 'Name': '5678-attachmentName-image-1.png'}])),
+        (part_test3, ('', '', [{'ID': '1234', 'Name': 'image-1.png'}])),
+    ],
+)
+def test_parse_mail_parts(part, expected_result):
+    """
+        Given:
+            - Part of message from gmail API response.
+        When:
+            - run parse_mail_parts function.
+        Then:
+            - Ensure attachment's name was correctly constructed and parsing was correctly done.
+    """
+    from Gmail import parse_mail_parts
+    result = parse_mail_parts(part)
+    assert result == expected_result
+
+
+@pytest.mark.parametrize(
+    "part, expected_result",
+    [
+        (part_test1, ('', '', [{'ID': '1234', 'Name': 'image-1.png'}])),
+        (part_test2, ('', '', [{'ID': '1234', 'Name': 'image-1.png'}])),
+        (part_test3, ('', '', [{'ID': '1234', 'Name': 'image-1.png'}])),
+    ],
+)
+def test_parse_mail_parts_use_legacy_name(monkeypatch, part, expected_result):
+    """
+    Given:
+        - Part of message from Gmail API response.
+    When:
+        - Run parse_mail_parts function LEGACY_NAME is true.
+    Then:
+        - Ensure attachment's name was correctly constructed and parsing was correctly done.
+    """
+    from Gmail import parse_mail_parts
+    monkeypatch.setattr('Gmail.LEGACY_NAME', True)
+    result = parse_mail_parts(part)
+    assert result == expected_result

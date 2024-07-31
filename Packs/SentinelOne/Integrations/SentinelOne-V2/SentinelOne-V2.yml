@@ -209,6 +209,9 @@ script:
     - contextPath: SentinelOne.Agents.SiteName
       description: Site name associated with the agent.
       type: string
+    - contextPath: SentinelOne.Agents.Tags
+      description: Tags associated with the agent.
+      type: unknown
   - arguments:
     - auto: PREDEFINED
       description: Exclusion item type.
@@ -2391,7 +2394,7 @@ script:
     - contextPath: SentinelOne.Notes.UpdatedAt
       description: The note updated time.
       type: string
-  dockerimage: demisto/python3:3.10.14.96411
+  dockerimage: demisto/python3:3.10.14.99144
   isfetch: true
   ismappable: true
   isremotesyncin: true

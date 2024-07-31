@@ -21,6 +21,7 @@ This is the default integration for this content pack when configured by the Dat
     | Fetch events                                                                     |                                                                                                                                                  | False        |
     | Verify SSL Certificate                                                           |                                                                                                                                                  | False        |
     | Use system proxy settings                                                        |                                                                                                                                                  | False        |
+    | Event types to fetch |  | True |
 
     Endpoint Type options
 
