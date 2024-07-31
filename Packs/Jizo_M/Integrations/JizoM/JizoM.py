@@ -17,7 +17,9 @@ DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 JIZO_DATE_FORMAT = "%Y-%m-%d %H:%M:%S.%f"
 MAX_ALERTS_TO_FETCH = 10
 ITEM_TEMP = '"id":{id},"name":"Jizo Alert #{id}",'\
-    '"alert_type":"{alert_type}","category":"{category}","severity":"{severity}","date":"{date}"'
+    '"alert_type":"{alert_type}","severity":"{severity}",'\
+    '"category":"{category}","signature":"{signature}",'\
+    '"IP_source":"{IP_source}","IP_destination":"{IP_destination}","date":"{date}"'
 
 
 """ CLIENT CLASS """
@@ -176,8 +178,11 @@ class Client(BaseClient):
                 item = ITEM_TEMP.format(
                     id=alert_data[next_index_to_fetch + i]["idx"],
                     alert_type="alert flow",
-                    category=category,
                     severity=severity,
+                    category=category,
+                    signature= alert_data[next_index_to_fetch + i].get("signature", ""),
+                    IP_source=alert_data[next_index_to_fetch + i].get("ip_src", ""),
+                    IP_destination=alert_data[next_index_to_fetch + i].get("ip_dest", ""),
                     date=formatting_date(alert_data[next_index_to_fetch]["date"]["date"]),
                 )
                 dict_item = json.loads("{" + item + "}")
@@ -372,8 +377,8 @@ def get_query_records_command(client: Client, args: dict[str, Any]) -> List[Comm
     command_results = []
 
     headers = {'alerts_flows': ['Probe name', 'IP source', 'IP destination', 'Alert category', 'Severity'],
-               'alerts_files': ['Probe name', 'Rule name', 'Rule type', 'Message'],
-               'alerts_usecase': ['Probe id', 'IP source', 'IP destination']}
+               'alerts_files': ['Probe name', 'Rule name', 'Rule type', 'File name','Message'],
+               'alerts_usecase': ['Probe name', 'IP source', 'IP destination']}
     for alert_type in result:
         alert_data = result[alert_type]["data"]
         human_readable = []
@@ -459,6 +464,8 @@ def fetch_incidents(
             "occurred": alert["date"],
             "type": "Jizo Alert",  # Map to Jizo ALert which is specific XSOAR alert Type
             "severity": convert_to_demisto_severity(alert.get("severity", "low")),
+            "Category": alert["category"],
+            "Signature": alert["signature"],
             "rawJSON": json.dumps(alert),
         }
 

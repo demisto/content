@@ -22,7 +22,19 @@
                 "Name": {
                     "complex": null,
                     "simple": "name"
-                }
+                },
+                "Destination IP": {
+                    "complex": null,
+					"simple": "IP_destination"
+				},
+				"Source IP": {
+                    "complex": null,
+					"simple": "IP_source"
+				},
+                "Signature": {
+                    "complex": null,
+					"simple": "signature"
+				}
             }
         }
     },
