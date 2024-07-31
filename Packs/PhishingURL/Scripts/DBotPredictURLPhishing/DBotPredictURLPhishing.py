@@ -750,7 +750,7 @@ def main():
         reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(
             args.get("reliability", DBotScoreReliability.A_PLUS)
         )
-        protocol = demisto.args().get('requestProtocol', 'HTTP').lower()
+        protocol = demisto.args().get('defaultRequestProtocol', 'HTTP').lower()
 
         msg_list: list = []
 
