@@ -1,7 +1,7 @@
 {
     "hello_world_raw": {
         "id": {
-            "type": "int",
+            "type": "string",
             "is_array": false
         },
         "t_port": {

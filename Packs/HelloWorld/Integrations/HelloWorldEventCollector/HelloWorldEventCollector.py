@@ -42,7 +42,7 @@ class Client(BaseClient):
         """
         # use limit & from date arguments to query the API
         return [{
-            'id': prev_id + 1,
+            'id': str(prev_id + 1),
             'created_time': datetime.now().isoformat(),
             'description': f'This is test description {prev_id + 1}',
             'alert_status': alert_status,
