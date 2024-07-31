@@ -21,7 +21,11 @@
     "testTimeout": 160,
     "testInterval": 20,
     "tests": [
-        
+
+        {
+            "integrations": "Carbon Black Enterprise EDR",
+            "playbookID": "Carbon Black Enterprise EDR process search with polling Test"
+        },
         {
             "integrations": "Carbon Black Enterprise EDR",
             "playbookID": "Carbon Black Enterprise EDR process search with polling test"
