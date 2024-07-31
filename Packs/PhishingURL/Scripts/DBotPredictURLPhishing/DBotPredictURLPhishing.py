@@ -430,7 +430,7 @@ def create_dict_context(url, verdict, pred_json, score, is_white_listed, output_
     }
 
 
-def extract_created_date(entry: dict) -> bool | None:
+def extract_created_date(entry: dict) -> Union[bool, None]:
     """
     Check if domain age is younger than THRESHOLD_NEW_DOMAIN_YEAR year
     :param entry_list: output of the whois command
@@ -642,7 +642,7 @@ def extract_embedded_urls_from_html(html: str) -> list[str]:
 
 
 def get_urls_to_run(
-    email_body: str, email_html: str, urls_argument: list | str,
+    email_body: str, email_html: str, urls_argument: Union[list, str],
     max_urls: int, model: Model, msg_list: list[str], debug: bool
 ) -> tuple[list[str], list[str]]:
     if email_body:
