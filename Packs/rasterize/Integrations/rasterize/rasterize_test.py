@@ -676,9 +676,9 @@ def test_delete_row_with_old_chrome_configurations_from_info_file():
 
 def test_get_chrome_browser_error(mocker: MockerFixture):
     """
-    Given   A mailto URL is called.
-    When    Attempting to make a screenshot.
-    Then    make sure the correct output is returned.
+    Given   A connection error.
+    When    Launching a pychrome browser.
+    Then    Make sure the error is caught and debugged properly.
     """
     from rasterize import get_chrome_browser
 
@@ -701,7 +701,7 @@ def test_is_mailto_urls(mocker: MockerFixture):
     """
     Given   A mailto URL is called.
     When    Attempting to make a screenshot.
-    Then    make sure the correct output is returned.
+    Then    Make sure the correct output is returned.
     """
     from rasterize import screenshot_image
 
