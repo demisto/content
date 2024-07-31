@@ -673,6 +673,7 @@ tasks:
                     right:
                       value:
                         simple: inputs.AzureVMPrivateIP
+                      iscontext: true
             iscontext: true
     continueonerrortype: ""
     view: |-
