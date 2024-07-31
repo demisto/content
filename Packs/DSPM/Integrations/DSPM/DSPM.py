@@ -74,11 +74,20 @@ SORTING_ORDER = ['ASC', 'DESC']
 SUPPORTED_STATUS = ['OPEN', 'CLOSED', 'UNIMPORTANT', 'WRONG', 'HANDLED', 'INVESTIGATING']
 
 # Define remediation steps for specific findings
-REMEDIATE_STEPS = {
-    'Sensitive asset open to world': (
-        "Change the S3 PublicAccessBlock settings to block public "
-        "access control lists (ACLs) for the bucket"
-    ),
+ASSET_REMEDIATION_DESCRIPTION = {
+    "Sensitive asset open to world":("To remediate, we will execute the 'aws-s3-put-public-access-block' "
+                                    "command to stop public access to the specified S3 bucket containing sensitive data. "
+                                    "This will prevent unauthorized access and ensure data security.\n\n")
+}
+ASSET_REMEDIATION_STEPS = {
+    "Sensitive asset open to world": ("If you prefer to remediate manually, follow these steps:\n"
+                                      "1. Log in to the AWS Management Console.\n"
+                                      "2. Navigate to the S3 service.\n"
+                                      "3. Select the bucket with sensitive data.\n"
+                                      "4. Go to the 'Permissions' tab.\n"
+                                      "5. Under 'Public access settings for this bucket', click 'Edit'.\n"
+                                      "6. Turn on 'Block all public access' and save the changes.\n"
+                                      "7. Review and confirm the changes to ensure the bucket is no longer publicly accessible."),
     "Empty storage asset": "To remediate, consider deleting the asset to reduce the attack surface.",
     "Sensitive asset without storage versioning": (
         "To remediate, ensure all sensitive storage assets have versioning policies in place for "
@@ -646,7 +655,8 @@ def fetch_incidents(client: Client, mirror_direction):
                 # Define custom fields for the incident
                 custom_fields = {
                     "assetdetails": asset_details,
-                    "remediatestep": REMEDIATE_STEPS.get(finding.get('ruleName'), 'N/A'),
+                    "remediationDescription": ASSET_REMEDIATION_DESCRIPTION.get(finding.get('ruleName'), 'N/A'),
+                    "remediateSteps": ASSET_REMEDIATION_STEPS.get(finding.get('ruleName'), 'N/A'),
                     "riskFindingId": finding.get('id')
                 }
                 incident = {
