@@ -547,35 +547,18 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      "no":
+      "yes":
       - "19"
     separatecontext: false
     conditions:
-    - label: "no"
+    - label: "yes"
       condition:
-      - - operator: isExists
+      - - operator: isNotExists
           left:
             value:
               complex:
-                root: DuoAdmin
-                accessor: UserDetails
-                transformers:
-                - operator: WhereFieldEquals
-                  args:
-                    equalTo:
-                      value:
-                        simple: winitzky
-                    field:
-                      value:
-                        simple: username
-                    getField:
-                      value:
-                        simple: phones
-                - operator: atIndex
-                  args:
-                    index:
-                      value:
-                        simple: "0"
+                root: DuoAdmin.UserDetails.[3]
+                accessor: phones
             iscontext: true
     view: |-
       {
