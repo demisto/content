@@ -64,7 +64,7 @@ repos:
     exclude: test_data|tests_data|.venv|.*_test.py$|infrastructure_tests|.vulture_whitelist.py|demistomock.py|Templates|conftest.py|Utils/download_packs_and_docker_images.py
     language: python
     entry: mypy
-    additional_dependencies: [types-requests==2.32.0.20240712]
+    additional_dependencies: [types-requests,types-dateparser,types-pytz]
 
 - repo: local
   hooks:
