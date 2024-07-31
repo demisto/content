@@ -1,0 +1,17 @@
+{
+    "IP(val.Address && val.Address == obj.Address)": [
+        {
+            "Address": "0.0.0.1",
+            "Description": "Reputation of this Indicator is Unknown"
+        }
+    ],
+    "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [
+        {
+            "Indicator": "0.0.0.1",
+            "Type": "ip",
+            "Vendor": "Ignite",
+            "Score": 0,
+            "Reliability": "B - Usually reliable"
+        }
+    ]
+}
