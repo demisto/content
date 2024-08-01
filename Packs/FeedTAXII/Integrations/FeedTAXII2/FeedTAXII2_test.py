@@ -402,7 +402,8 @@ class TestHelperFunctions:
 @pytest.mark.parametrize("url, expected_result",
                          [("https://test.com/taxii/", True),
                           ("https://test.com/taxii2/", True),
-                          ("https://test.com/test/", False)])
+                          ("https://test.com/test/", False),
+                          ("domain.com/taxii2/bad_path/", False)])
 def test_is_valid_url(url, expected_result):
     """
     Scenario: Test validation of the is_valid_url method.

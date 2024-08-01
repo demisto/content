@@ -269,7 +269,7 @@ def is_valid_taxii_url(url: Optional[str]):
     """
     if url and (parse_result := urlparse(url)):
         path = parse_result.path
-        if path and ('taxii' in path or 'taxii2' in path):
+        if path.endswith(("taxii", "taxii2", "taxii2/", "taxii2/")):
             return True
     return False
 
@@ -279,7 +279,7 @@ def main():  # pragma: no cover
     args = demisto.args()
     url = params.get("url")
     if not is_valid_taxii_url(url):
-        return_error("Discovery Service URL is not valid, The URL suffix should be taxii or taxii2")
+        demisto.debug("ERROR: Discovery Service URL is NOT VALID, The URL suffix should be taxii or taxii2.")
     collection_to_fetch = params.get("collection_to_fetch")
     credentials = params.get("credentials") or {}
     username = credentials.get("identifier")
