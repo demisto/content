@@ -2020,9 +2020,7 @@ def get_entity(eiq_api):
             outputs=output_result,
             outputs_key_field="entity_title")
 
-    elif query_result is False:
-        return "No entities found in EclecticIQ Intelligence Center."
-    return None
+    return "No entities found in EclecticIQ Intelligence Center."
 
 
 def get_entity_by_id(eiq_api):
@@ -2044,7 +2042,8 @@ def get_entity_by_id(eiq_api):
             outputs_prefix="EclecticIQ.EntityById",
             outputs=query_result,
             outputs_key_field="entity_title")
-    return None
+
+    return "No entities found in EclecticIQ Platform."
 
 
 def create_sighting(eiq_api):
