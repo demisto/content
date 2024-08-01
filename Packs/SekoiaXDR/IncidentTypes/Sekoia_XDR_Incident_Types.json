@@ -25,12 +25,15 @@
     "extractSettings": {
         "mode": "Specific",
         "fieldCliNameToExtractSettings": {
-            "sekoiaalerturl": {
-                "extractAsIsIndicatorTypeId": "",
+            "externallink": {
+                "extractAsIsIndicatorTypeId": "urlRep",
                 "isExtractingAllIndicatorTypes": false,
-                "extractIndicatorTypesIDs": [
-                    "urlRep"
-                ]
+                "extractIndicatorTypesIDs": []
+            },
+            "sourceip": {
+                "extractAsIsIndicatorTypeId": "ipRep",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
             }
         }
     },
