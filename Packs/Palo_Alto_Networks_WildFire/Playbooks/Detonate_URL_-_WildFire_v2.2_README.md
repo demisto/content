@@ -86,4 +86,4 @@ This playbook does not use any scripts.
 
 ---
 
-![Detonate URL - WildFire v2.2](../doc_files/Detonate_URL_-_WildFire_v2.2.png)
+![Detonate URL - WildFire v2.2](../doc_files/Detonate_URL_-_WildFire_v2_2.png)
