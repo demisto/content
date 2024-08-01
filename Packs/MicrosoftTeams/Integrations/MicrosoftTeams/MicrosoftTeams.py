@@ -165,7 +165,7 @@ def error_parser(resp_err: requests.Response, api: str = 'graph') -> str:
     """
     try:
         response: dict = resp_err.json()
-
+        demisto.debug(f"Error response from {api=}: {response=}")
         if api == 'graph':
             error_codes = response.get("error_codes", [""])
             if set(error_codes).issubset(TOKEN_EXPIRED_ERROR_CODES):
