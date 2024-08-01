@@ -634,7 +634,7 @@ def screenshot_image(browser, tab, path, wait_time, navigation_timeout, full_scr
     tab_event_handler = navigate_to_path(browser, tab, path, wait_time, navigation_timeout)
 
     if tab_event_handler.is_mailto:
-        return None, f'URLs that start with "mailto:" cannot be screenshot.\nURL: {path}'
+        return None, f'URLs that start with "mailto:" cannot be rasterized.\nURL: {path}'
 
     try:
         page_layout_metrics = tab.Page.getLayoutMetrics()
