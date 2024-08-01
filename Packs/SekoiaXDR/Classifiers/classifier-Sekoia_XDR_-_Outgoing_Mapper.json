@@ -10,7 +10,7 @@
                     "simple": "alertid"
                 },
                 "xsoar_id": {
-                    "simple": "id"
+                    "simple": "investigationId"
                 }
             }
         },
@@ -21,7 +21,7 @@
                     "simple": "dbotMirrorId"
                 },
                 "xsoar_id": {
-                    "simple": "id"
+                    "simple": "investigationId"
                 }
             }
         }
