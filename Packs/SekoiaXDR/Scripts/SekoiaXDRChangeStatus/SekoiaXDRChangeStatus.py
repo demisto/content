@@ -25,12 +25,14 @@ def update_status(new_status: str):
 
 
 def main():
+    incident = demisto.incidents()[0]  # type: ignore
+    isMirrorEnable = incident.get("dbotMirrorDirection")
     alert_short_id = demisto.args()["short_id"]
     new_status = demisto.args()["status"]
     comment = demisto.args().get("comment")
 
     if new_status in ["Ongoing", "Acknowledged"]:
-        if comment:
+        if comment and isMirrorEnable in ["Both", "Outgoing"]:
             post_comment(alert_short_id, comment, get_username())
         update_status(alert_short_id)
         readable_output = f"### Status of the alert changed to:\n {new_status}"
