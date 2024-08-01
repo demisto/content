@@ -3,7 +3,9 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Xpanse Incident Handling - Generic
+deprecated: true
 description: |-
+  Deprecated. Use Xpanse - Alert Handler playbook instead.
   A generic playbook for handling Xpanse issues.
   The logic behind this playbook is to work with an internal exclusions list which will help the analyst to get to a decision or, if configured, close incidents automatically.
   The phases of this playbook are:
