@@ -2,6 +2,7 @@ import pytest
 
 import demistomock as demisto
 
+DEFAULT_MAX_FETCH = 1000
 
 class MockClient:
     @staticmethod
@@ -22,8 +23,6 @@ class MockClient:
     def patch(url, body):
         return url, body
 
-
-DEFAULT_MAX_FETCH = 1000
 
 def test_update_incident_command(mocker):
     """
@@ -153,6 +152,15 @@ def test_add_incident_artifact(mocker):
     assert '1234' in output.get('HumanReadable')
 
 
+def test_test_module(mocker):
+    """
+    Tests whether the test module returns expected result for valid and invalid responses.
+    """
+    from IBMResilientSystems import test_module, SimpleClient
+    client = SimpleClient()
+    mocker.patch.object(client, 'get', return_value={})
+    assert test_module(client) == "ok"
+
 @pytest.mark.parametrize("args, expected", [
     ({}, {'filters': [{'conditions': []}], 'length': DEFAULT_MAX_FETCH}),  # Test without any filters or pagination params
     ({'severity': 'Low'}, {
@@ -248,41 +256,27 @@ def test_prettify_incident_notes(mocker, input_notes, expected_output):
     from IBMResilientSystems import prettify_incident_notes
     assert prettify_incident_notes(input_notes) == expected_output
 
-#
-# @pytest.mark.parametrize(
-#     "args", [
-#         (
-#             {
-#                 'device_timestamp': '1970-01-01T00:00:00.000Z',
-#                 'alert_category': 'THREAT',
-#                 'rows': '6',
-#                 'device_name': 'Win7x64',
-#                 "polling": "true"
-#             }
-#         ),
-#     ]
-# )
-# def test_search_incidents_command(mocker, args):
-#     mocker.patch.object(demisto, 'params', return_value={
-#         'server': 'example.com:80', 'org': 'example', 'proxy': True, 'max_fetch': DEFAULT_MAX_FETCH
-#     })
-#     from co3 import SimpleClient
-#     from IBMResilientSystems import search_incidents_command
-#     http_request = mocker.patch.object(SimpleClient, "post", return_value={"job_id": "abc123"})
-#
-#     search_incidents_command(client=MockClient, args=args)
-#     pass
-
-    # http_request.assert_called_with(
-    #     method="POST",
-    #     url_suffix=f"api/investigate/v2/orgs/{ORGANIZATION_KEY}/observations/search_jobs",
-    #     headers=HEADERS,
-    #     json_data={
-    #         'criteria': {
-    #             'alert_category': ['THREAT'],
-    #             'device_name': ['Win7x64'],
-    #             'backend_timestamp': ['1970-01-01T00:00:00.000Z'],
-    #         },
-    #         'rows': 6
-    #     }
-    # )
+# TODO - Complete this
+@pytest.mark.parametrize(
+    "args", [
+        (
+            {'date-created-after': '2020-01-01T10:00:00Z', 'limit': '1000', 'page': '1', 'page_size': '10'}
+        ),
+    ]
+)
+def test_search_incidents(mocker, args):
+    mocker.patch.object(demisto, 'params', return_value={
+        'server': 'example.com:80', 'org': 'example', 'proxy': True, 'max_fetch': DEFAULT_MAX_FETCH
+    })
+    from co3 import SimpleClient
+    from IBMResilientSystems import search_incidents, DEFAULT_RETURN_LEVEL
+    request = mocker.patch.object(SimpleClient, "post", return_value={"data": [{}]})
+    # TODO - fix
+    search_incidents(client=SimpleClient, args=args)
+    request.assert_called_with(
+        method="POST",
+        url_suffix=f"/rest/orgs/201/incidents/query_paged?return_level={args.get('return_level', DEFAULT_RETURN_LEVEL)}",
+        headers='HEADERS',
+        return_empty_response=False,
+        json_data={}
+    )

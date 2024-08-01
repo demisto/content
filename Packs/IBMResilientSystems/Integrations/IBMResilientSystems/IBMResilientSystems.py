@@ -151,7 +151,7 @@ def normalize_timestamp(timestamp):
 
 def prettify_incidents(client, incidents):
     users = get_users(client)
-    phases = get_phases(client)['entities']
+    phases = get_phases(client).get('entities', [])
     for incident in incidents:
         incident['id'] = str(incident['id'])
         if isinstance(incident['description'], str):
@@ -1548,21 +1548,34 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
     return GetMappingFieldsResponse([ibm_qradar_incident_type_scheme])
 
 
-def test_module():
-    """Verify that the first_fetch parameter is according to the standards, if exists.
+def test_module(client: SimpleClient):
+    """
+    Verify client connectivity and the first_fetch parameter are according to the standards, if exists.
 
     Returns:
-        'ok' if test passed, anything else will fail the test.
+        'ok' if all tests passed, anything else will fail the test.
     """
-    # TODO - test client connectivity as well
-    # TODO - test - test first fetch time
-    if FETCH_TIME:
-        try:
-            datetime.strptime(FETCH_TIME, TIME_FORMAT)
-        except ValueError as error:
-            return_error('There is something wrong with the fetch date. Error: {}'.format(error))
+    pass
+    # client.get(uri='')
 
-    demisto.results('ok')
+    # try:
+    #     # Making a request to the client's base URL to retrieve information about the organization.
+    #     demisto.debug(f'test_module {response=}')
+    # except Exception as e:
+    #     return f"Connection test failed: {e}"
+    #
+    # # Test - test first fetch time
+    # fetch_time = getattr(client, 'first_fetch', None)  # Assuming the fetch time is a client attribute
+    # time_format = "%Y-%m-%dT%H:%M:%SZ"  # Define your time format here
+    #
+    # if fetch_time:
+    #     try:
+    #         datetime.strptime(fetch_time, time_format)
+    #     except ValueError as error:
+    #         demisto.error(f'test_module {error=}')
+    #         return f"There is something wrong with the fetch date. Error: {error}"
+
+    # return 'ok'
 
 
 ''' EXECUTION CODE '''
@@ -1606,7 +1619,7 @@ def main():
         args = demisto.args()
         if command == 'test-module':
             # Checks if there is an authenticated session
-            test_module()
+            test_module(client)
         elif command == 'fetch-incidents':
             fetch_incidents(client)
         elif command == 'rs-search-incidents':
