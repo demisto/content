@@ -22,7 +22,7 @@ class ContentPackInstaller:
 
         self.get_installed_packs()
 
-    def _call_execute_command(self, args, command):
+    def _call_execute_command(self, command, args):
         if self.instance_name:
             args['using'] = self.instance_name
 
@@ -46,7 +46,7 @@ class ContentPackInstaller:
 
         args = {'uri': '/contentpacks/metadata/installed'}
 
-        status, res = self._call_execute_command(args, 'core-api-get')
+        status, res = self._call_execute_command('core-api-get', args)
         if not status:
             return
 
@@ -72,7 +72,7 @@ class ContentPackInstaller:
 
         args = {'uri': f'/contentpacks/marketplace/{pack_id}'}
 
-        _, res = self._call_execute_command(args, 'core-api-get')
+        _, res = self._call_execute_command('core-api-get', args)
 
         self.packs_data[pack_id] = res
 
@@ -99,7 +99,7 @@ class ContentPackInstaller:
                 'body': [pack_data]
                 }
 
-        _, res = self._call_execute_command(args, 'core-api-post')
+        _, res = self._call_execute_command('core-api-post', args)
 
         try:
             self.packs_dependencies[pack_key] = res.get('response', {}).get('packs', [])[0] \
@@ -171,7 +171,7 @@ class ContentPackInstaller:
 
             args = {'packs_to_install': str(pack_payload)}
 
-            status, res = self._call_execute_command(args, 'core-api-install-packs')
+            status, res = self._call_execute_command('core-api-install-packs', args)
 
             if not status:
                 demisto.error(f'{SCRIPT_NAME} - Failed to install the pack {pack_id} - {str(res)}')
