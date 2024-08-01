@@ -9538,10 +9538,10 @@ script:
       - Disable
       - Single Packet
       - Extended Capture
-    - description: 
+    - description: TODO
       name: exempt_ip
       required: false
-    - description: 
+    - description: TODO
       name: device_group
       required: false
     - description: "Can be: Source or Source And Destination. If action = Block IP , this argument is mandatory."
@@ -9587,10 +9587,10 @@ script:
       - Disable
       - Single Packet
       - Extended Capture
-    - description: 
+    - description: TODO
       name: exempt_ip
       required: false
-    - description: 
+    - description: TODO
       name: device_group
       required: false
     - description: "Can be: Source or Source And Destination. If action = Block IP , this argument is mandatory."
@@ -9636,10 +9636,10 @@ script:
       - Disable
       - Single Packet
       - Extended Capture
-    - description: 
+    - description: TODO
       name: exempt_ip
       required: false
-    - description: 
+    - description: TODO
       name: device_group
       required: false
     - description: "Can be: Source or Source And Destination. If action = Block IP , this argument is mandatory."
@@ -9685,10 +9685,10 @@ script:
       - Disable
       - Single Packet
       - Extended Capture
-    - description: 
+    - description: TODO
       name: exempt_ip
       required: false
-    - description: 
+    - description: TODO
       name: device_group
       required: false
     - description: "Can be: Source or Source And Destination. If action = Block IP , this argument is mandatory."

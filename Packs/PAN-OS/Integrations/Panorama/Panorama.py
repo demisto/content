@@ -49,6 +49,7 @@ PRE_POST = ''
 OUTPUT_PREFIX = "PANOS."
 UNICODE_FAIL = u'\U0000274c'
 UNICODE_PASS = u'\U00002714\U0000FE0F'
+BLOCK_IP = 'Block IP'
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 QUERY_DATE_FORMAT = '%Y/%m/%d %H:%M:%S'
@@ -14055,7 +14056,47 @@ def pan_os_get_audit_comment_command(args: dict) -> CommandResults:
 
 
 def pan_os_add_profile_exception_command(args: dict) -> CommandResults:
-    pass
+    profile_name = args.get('profile_name')
+    profile_type = args.get('profile_type')
+    threat_name = args.get('threat_name')
+    action = args.get('action', 'set')
+    packet_capture = args.get('packet_capture', "")
+    exempt_ip = args.get('exempt_ip', "")
+    device_group = args.get('device_group', DEVICE_GROUP)
+    ip_track_by = args.get('ip_track_by', "")
+    ip_duration_sec = args.get('ip_duration_sec', "")
+    
+    if action == BLOCK_IP and (not ip_track_by or not ip_duration_sec):
+        raise DemistoException("ip_track_by and ip_duration_sec are required when action is 'Block IP'.")
+    
+    #search for the threat_name in the command panorama_get_predefined_threats_list
+    
+    if profile_type == 'Vulnerability Protection':
+        if device_group:
+            xpath='exmaple1'
+        elif VSYS:
+            xpath='example2'
+    elif profile_type == 'Anti Spyware':
+        if device_group:
+            xpath='exmaple1'
+        elif VSYS:
+            xpath='example2'
+    else:
+        raise DemistoException("Invalid profile_type provided. Can be Vulnerability Protection or Anti Spyware.")
+    
+    #create the element for the api request
+    #create the api request
+    params = {
+        'type': 'config',
+        'action': action,
+        'xpath': xpath,
+        'key': API_KEY,
+        'elemnt': ""
+    }
+    raw_response = http_request(URL, 'GET', params=params)
+    
+    #create the results to return
+    return CommandResults()
 
 def pan_os_edit_profile_exception_command(args: dict) -> CommandResults:
     pass
