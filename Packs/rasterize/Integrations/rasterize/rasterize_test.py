@@ -697,6 +697,22 @@ def test_get_chrome_browser_error(mocker: MockerFixture):
         " exp_str='connection error', exp=ConnectionError('connection error')")
 
 
+def test_backoff(mocker):
+    """
+    Given   Waiting for a process to complete.
+    When    Launching a pychrome browser.
+    Then    Make sure to wait the required amount.
+    """
+    from rasterize import backoff
+
+    sleep_mock = mocker.patch('time.sleep')
+
+    res = backoff(None, 2, 1)
+
+    assert res == (None, 2)
+    sleep_mock.assert_called_with(1)
+
+
 def test_is_mailto_urls(mocker: MockerFixture):
     """
     Given   A mailto URL is called.
