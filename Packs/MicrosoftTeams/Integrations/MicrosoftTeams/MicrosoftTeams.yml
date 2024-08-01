@@ -1,4 +1,7 @@
 category: Messaging and Conferencing
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: Microsoft Teams
   version: -1
