@@ -106,7 +106,7 @@ def test_fetch_indicators_command(mocker):
     mocker.patch.object(client, 'fetch_stix_objects_from_api', side_effect=mock_get_stix_objects)
 
     indicators = fetch_indicators(client, create_relationships=True)
-    assert len(indicators) == 18
+    assert len(indicators) == 19
     assert DUMMY_INDICATOR_WITH_RELATIONSHIP_LIST in indicators
     assert indicators == FETCH_RESULTS
 
@@ -255,6 +255,7 @@ def test_parse_reports():
     """
     client = Client(api_key='1234', verify=False)
     result = parse_reports_and_report_relationships(client, REPORTS_DATA, [], '')
+    assert len(result) == 2
     assert result == REPORTS_INDICATORS
 
 
@@ -384,7 +385,7 @@ def test_fetch_indicators_command_with_relationship(mocker):
     mocker.patch.object(client, 'fetch_stix_objects_from_api', side_effect=mock_get_stix_objects)
 
     indicators = fetch_indicators(client, create_relationships=True)
-    assert len(indicators) == 18
+    assert len(indicators) == 19
     assert DUMMY_INDICATOR_WITH_RELATIONSHIP_LIST in indicators
     assert REPORTS_INDICATORS_WITH_RELATIONSHIPS in indicators
 
