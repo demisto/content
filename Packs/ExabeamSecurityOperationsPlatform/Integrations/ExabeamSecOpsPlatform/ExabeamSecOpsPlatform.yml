@@ -320,6 +320,7 @@ script:
       predefined:
       - Yes
       - No 
+    outputs: 
   - name: exabeam-platform-table-record-list
     description: Retrieve the records for a specific context table.
     arguments:
@@ -329,6 +330,37 @@ script:
     - name: limit
       description: The number of records to return.
       defaultValue: 50
+    outputs: 
+  - name: exabeam-platform-table-record-create
+    description: Add one or more context records directly to an existing table.
+    arguments:
+    - name: table_id
+      description: ID of the table. Obtain this value by running `exabeam-platform-context-table-list`.
+      required: true
+    - name: attributes
+      description: A key-value map of record attributes.
+      required: true
+    - name: operation
+      description: Options for how data should be uploaded to an existing table.
+      defaultValue: append
+      auto: PREDEFINED
+      predefined:
+      - append
+      - replace
+    - name: interval_in_seconds
+      description: The interval in seconds between each poll.
+      defaultValue: 30
+    - name: timeout
+      description: The timeout in seconds until polling ends.
+      defaultValue: 600
+    - name: tracker_id
+      description: Specify the tracker ID from an upload request whose progress you want to track.
+      hidden: true
+    - name: hide_polling_output
+      hidden: true
+      description: ''
+    polling: true
+    outputs: 
   runonce: false
   script: '-'
   type: python

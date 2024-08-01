@@ -218,7 +218,8 @@ def test_event_search_request(mocker):
     expected_url = "https://example-api.com/search/v2/events"
     expected_headers = {
         "Authorization": "Bearer dummy_token",
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        "accept": "application/json",
     }
     mocked_response = {"response_key": "response_value"}
     mock_http_request.return_value = mocked_response
@@ -229,7 +230,6 @@ def test_event_search_request(mocker):
         full_url=expected_url,
         data=json.dumps(data_dict),
         headers=expected_headers,
-        params=None
     )
     assert result == mocked_response
 

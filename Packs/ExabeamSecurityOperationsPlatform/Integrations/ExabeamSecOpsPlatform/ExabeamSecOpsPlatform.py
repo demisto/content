@@ -86,15 +86,17 @@ class Client(BaseClient):
         demisto.setIntegrationContext({"access_token": new_token, "expiry_time_utc": expiry_time_utc.isoformat()})
         self.access_token = new_token
 
-    def request(self, method: str, full_url: str, data: str = "", params: Optional[Dict[str, str]] = None):
-        # TODO: remove print
-        # print(f"{data=}")
-        # print(f"{full_url=}")
-
-        headers = {"Authorization": f"Bearer {self.access_token}", "Content-Type": "application/json"}
+    def request(self, **kargs):
+        kargs["headers"] = {
+            "accept": "application/json",
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {self.access_token}",
+        }
 
         def _make_request() -> Any:
-            response = self._http_request(method=method, full_url=full_url, data=data, headers=headers, params=params)
+            # TODO: remove print
+            print(f"{kargs}")
+            response = self._http_request(**kargs)
             if isinstance(response, dict) and (error := response.get("errors", {})):
                 raise DemistoException(error.get("message"))
             return response
@@ -109,7 +111,7 @@ class Client(BaseClient):
                 and "Jwt is expired" in e.res.text  # type: ignore
             ):
                 self._get_new_token()
-                headers["Authorization"] = f"Bearer {self.access_token}"
+                kargs["headers"]["Authorization"] = f"Bearer {self.access_token}"
                 return _make_request()
             else:
                 raise
@@ -161,11 +163,13 @@ class Client(BaseClient):
         )
         return response
 
-    def table_request(self, method: str, url_suffix=None, params: Optional[Dict] = None) -> dict:
+    def table_request(self, **kargs) -> dict:
         """ """
         base_url = f"{self._base_url}/context-management/v1/tables"
+        url_suffix = kargs.pop("url_suffix", "")
         full_url = f"{base_url}/{url_suffix}" if url_suffix else base_url
-        response = self.request(method=method, full_url=full_url, params=params)
+        kargs["full_url"] = full_url
+        response = self.request(**kargs)
         return response
 
     def get_alert_request(self, case_id: int) -> dict:
@@ -483,12 +487,12 @@ def alert_search_command(client: Client, args: dict) -> CommandResults:
 
 def context_table_list_command(client: Client, args: dict) -> CommandResults:
     if (table_id := args.get("table_id")):
-        response = client.table_request("GET", table_id)
+        response = client.table_request(method="GET", url_suffix=table_id)
         human_readable = _parse_entry(response)
     else:
         limit = get_limit(args)
 
-        response = client.table_request("GET")[:limit]
+        response = client.table_request(method="GET")[:limit]
 
         include_attributes = argToBoolean(args.get("include_attributes"))
 
@@ -512,7 +516,7 @@ def context_table_delete_command(client: Client, args: dict) -> CommandResults:
     include_attributes = argToBoolean(args.get("delete_unused_custom_attributes"))
     params = {"deleteUnusedCustomAttributes": str(include_attributes)}
 
-    response = client.table_request("DELETE", table_id, params)
+    response = client.table_request(method="DELETE", url_suffix=table_id, params=params)
     table_id_response = response.get("id", None)
 
     return CommandResults(
@@ -525,13 +529,52 @@ def table_record_list_command(client: Client, args: dict) -> CommandResults:
     url_suffix = f"{table_id}/records"
     params = {'limit': get_limit(args)}
 
-    response = client.table_request("GET", url_suffix, params)
+    response = client.table_request(method="GET", url_suffix=url_suffix, params=params)
     records = response.get("records", [])
 
     return CommandResults(
         outputs_prefix="ExabeamPlatform.Record",
         outputs=records,
         readable_output=tableToMarkdown(name=f"Records of table id: {table_id}", t=records)
+    )
+
+
+@polling_function(
+    name="exabeam-platform-table-record-create",
+    interval=arg_to_number(demisto.args().get("interval_in_seconds")),  # type: ignore
+    timeout=arg_to_number(demisto.args().get("timeout")),  # type: ignore
+    poll_message="Create records in process:",
+    requires_polling_arg=False,
+)
+def table_record_create_command(args: dict, client: Client) -> PollResult:
+    if not (tracker_id := args.get("tracker_id")):
+        table_id = args.get("table_id")
+        url_suffix = f"{table_id}/addRecords"
+
+        operation = args.get("operation")
+        attributes = args.get("attributes")
+        attributes_dict = safe_load_json(attributes)
+        payload = {
+            "operation": operation,
+            "data": [attributes_dict],
+        }
+
+        response = client.table_request(method="POST", url_suffix=url_suffix, json_data=payload)
+        tracker_id = response.get("trackerId", "")
+
+    url_suffix = f"/uploadStatus/{tracker_id}"
+
+    response = client.table_request(method="GET", url_suffix=url_suffix)
+    upload_status = response.get("uploadStatus")
+    human_readable = {
+        "Total Errors": response.get("totalErrors"),
+        "Total Uploaded": response.get("totalUploaded")
+    }
+
+    return PollResult(
+        response=CommandResults(readable_output=tableToMarkdown("Record successfully added to table", human_readable)),
+        continue_to_poll=(upload_status != "completed"),
+        args_for_next_run=args.update({"tracker_id": tracker_id}),
     )
 
 
@@ -591,6 +634,8 @@ def main() -> None:
             return_results(context_table_delete_command(client, args))
         elif command == 'exabeam-platform-table-record-list':
             return_results(table_record_list_command(client, args))
+        elif command == 'exabeam-platform-table-record-create':
+            return_results(table_record_create_command(args, client))
         else:
             raise NotImplementedError(f"Command {command} is not supported")
 
