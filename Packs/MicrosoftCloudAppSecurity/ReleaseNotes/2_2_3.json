@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Updated the default value limit to 100 instead of 10000, due to API limitations and handle it in the integration."
+}
