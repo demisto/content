@@ -8962,9 +8962,9 @@ class TestSendEventsToXSIAMTest:
             assert arguments_called['headers']['total-items-count'] == '2'
 
     @pytest.mark.parametrize('data_type, snapshot_id, items_count, expected', [
-                                 ('assets', None, None, {'snapshot_id': '123000', 'items_count': '2'}),
-                                 ('assets', '12345', 25, {'snapshot_id': '12345', 'items_count': '25'})
-                             ])
+        ('assets', None, None, {'snapshot_id': '123000', 'items_count': '2'}),
+        ('assets', '12345', 25, {'snapshot_id': '12345', 'items_count': '25'})
+    ])
     def test_send_data_to_xsiam_custom_snapshot_id_and_items_count(self, mocker, data_type, snapshot_id, items_count, expected):
         """
         Test the send_data_to_xsiam with and without custom snapshot_id and items_count
