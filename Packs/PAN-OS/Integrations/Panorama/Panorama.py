@@ -14054,6 +14054,19 @@ def pan_os_get_audit_comment_command(args: dict) -> CommandResults:
     )
 
 
+def pan_os_add_profile_exception_command(args: dict) -> CommandResults:
+    pass
+
+def pan_os_edit_profile_exception_command(args: dict) -> CommandResults:
+    pass
+
+def pan_os_delete_profile_exception_command(args: dict) -> CommandResults:
+    pass
+
+def pan_os_list_profile_exception_command(args: dict) -> CommandResults:
+    pass
+
+
 """ Fetch Incidents """
 
 
@@ -15215,6 +15228,16 @@ def main():  # pragma: no cover
             return_results(pan_os_delete_security_profile_group_command(args))
         elif command == 'pan-os-get-audit-comment':
             return_results(pan_os_get_audit_comment_command(args))
+            
+        elif command == 'pan-os-add-profile-exception':
+            return_results(pan_os_add_profile_exception_command(args))
+        elif command == 'pan-os-edit-profile-exception':
+            return_results(pan_os_edit_profile_exception_command(args))
+        elif command == 'pan-os-delete-profile-exception':
+            return_results(pan_os_delete_profile_exception_command(args))
+        elif command == 'pan-os-list-profile-exception':
+            return_results(pan_os_list_profile_exception_command(args))
+            
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
     except Exception as err:
