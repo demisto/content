@@ -1,5 +1,7 @@
-import demistomock as demisto
-from CommonServerPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
+
 import json
 import requests
 import dateparser
@@ -14,12 +16,25 @@ urllib3.disable_warnings()
 
 
 MAX_INCIDENTS_TO_FETCH = 100
+
+
+#Change 1 - DEFAULT SETTINGS to Copy
+"""
 FIELDS_TO_COPY_FROM_REMOTE_INCIDENT = [
     'name', 'rawName', 'severity', 'occurred', 'modified', 'roles', 'type', 'rawType', 'status', 'reason', 'created',
     'closed', 'sla', 'labels', 'attachment', 'details', 'openDuration', 'lastOpen', 'owner', 'closeReason',
     'rawCloseReason', 'closeNotes', 'playbookId', 'dueDate', 'reminder', 'runStatus', 'notifyTime', 'phase',
     'rawPhase', 'CustomFields', 'category', 'rawCategory'
 ]
+"""
+
+FIELDS_TO_COPY_FROM_REMOTE_INCIDENT = [
+    'name', 'modified', 'rawType', 'status', 'reason', 'closed', 'sla', 'labels','attachment',
+    'openDuration', 'lastOpen', 'owner', 'closeReason', 'notifyTime', 'dueDate','category',
+    'rawCloseReason', 'closeNotes', 'reminder', 'phase', 'rawPhase', 'CustomFields',
+    'rawCategory'
+]
+
 
 MIRROR_DIRECTION = {
     'None': None,
@@ -331,12 +346,26 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict[str, Union[
 
     latest_created_time = dateparser.parse(last_fetch)  # type: ignore[arg-type]
     incidents_result: list[dict[str, Any]] = []
+
+
+    #Change 2 - First SOC Affectation
+    # The field "First SOC Affectation" is now used in the query
+    # This allow the fetch of visible tickets in any order of creation
+    # We don't miss any ticket with this parameter, because 1 old ticket can be visible after 1 recent ticket (old/recent according to the "creation" date).
     if query:
-        query += f' and created:>="{last_fetch}"'
+        #query += f' and created:>="{last_fetch}"'
+        query += f' and firstsocaffectation:>"{last_fetch}"'
+
     else:
-        query = f'created:>="{last_fetch}"'
+        #query = f'created:>="{last_fetch}"'
+        query = f'firstsocaffectation:>"{last_fetch}"'
 
     demisto.debug(f'XSOAR Mirroring: Fetching incidents since last fetch: {last_fetch}')
+
+    #Change 3 - Start Time of Fetch
+    #We bypass the start_time based on the creation date
+    start_time="2024-04-18T08:46:33.712Z"
+    last_fetch = start_time
 
     incidents, last_fetched_incidents, last_fetched_incident_time = get_and_dedup_incidents(client, last_fetched_incidents, query,
                                                                                             max_results, last_fetch)
@@ -401,7 +430,11 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict[str, Union[
 
         incident_result['attachment'] = file_attachments
         incidents_result.append(incident_result)
-        incident_created_time = dateparser.parse(incident.get('created'), settings={'TIMEZONE': 'Z'})  # type: ignore[arg-type]
+
+        #Change 4 - First SOC Affectation
+        incident_created_time = dateparser.parse(incident["CustomFields"].get('firstsocaffectation'), settings={'TIMEZONE': 'Z'})  # type: ignore[arg-type]
+        #incident_created_time = dateparser.parse(incident.get('created'), settings={'TIMEZONE': 'Z'})  # type: ignore[arg-type]
+
         # Update last run and add incident if the incident is newer than last fetch
         if incident_created_time > latest_created_time:  # type: ignore[operator]
             latest_created_time = incident_created_time
@@ -768,10 +801,20 @@ def update_remote_system_command(client: Client, args: dict[str, Any], mirror_ta
         if parsed_args.remote_incident_id:
             # First, get the incident as we need the version
             old_incident = client.get_incident(incident_id=parsed_args.remote_incident_id)
-            for changed_key in parsed_args.delta:
-                old_incident[changed_key] = parsed_args.delta[changed_key]  # type: ignore
-                if changed_key in old_incident.get('CustomFields', {}):
+
+            # Change 5 - Outgoing Sync forced on specific fields
+            for changed_key in parsed_args.delta.keys():
+                #if changed_key in old_incident.get('CustomFields', {}):
+                if changed_key in ["resolutionnotes","resolvecode","socdetails","socdiagnosis","ticketstatus","threatqctienrichment","severity","hiddenacknowledgment"]:
+                    old_incident[changed_key] = parsed_args.delta[changed_key]  # type: ignore
                     old_incident['CustomFields'][changed_key] = parsed_args.delta[changed_key]
+
+                    demisto.debug(f'Field {changed_key} is synced as a custom field.')  # todo remove before merge
+                else:
+                    demisto.debug(f'Field {changed_key} is not synced as a custom field, because it is not in the remote XSOAR '
+                                  f'CustomFields nor in the integration custom_fields parameter.')  # todo remove before merge
+
+
 
             parsed_args.data = old_incident
 
@@ -977,3 +1020,4 @@ def main() -> None:  # pragma: no cover
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
+
