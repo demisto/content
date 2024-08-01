@@ -95,7 +95,7 @@ class Client(BaseClient):
 
         def _make_request() -> Any:
             # TODO: remove print
-            print(f"{kargs}")
+            # print(f"{kargs}")
             response = self._http_request(**kargs)
             if isinstance(response, dict) and (error := response.get("errors", {})):
                 raise DemistoException(error.get("message"))
@@ -156,30 +156,50 @@ class Client(BaseClient):
         """
         data = json.dumps(data_dict)
         full_url = f"{self._base_url}/threat-center/v1/search/alerts"
-        response = self.request(
-            method="POST",
-            full_url=full_url,
-            data=data,
-        )
+        response = self.request(method="POST",full_url=full_url,data=data,)
         return response
 
-    def table_request(self, **kargs) -> dict:
+    def create_table_record(self, table_id, json_data):
         """ """
-        base_url = f"{self._base_url}/context-management/v1/tables"
-        url_suffix = kargs.pop("url_suffix", "")
-        full_url = f"{base_url}/{url_suffix}" if url_suffix else base_url
-        kargs["full_url"] = full_url
-        response = self.request(**kargs)
+        full_url = f"/context-management/v1/tables/{table_id}/addRecords"
+        response = self.request(method="POST", full_url=full_url, json_data=json_data)
+        return response
+
+    def check_tracker_id(self, tracker_id):
+        """ """
+        full_url = f"/context-management/v1/tables/uploadStatus/{tracker_id}"
+        response = self.request(method="GET", url_suffix=full_url)
+        return response
+
+    def list_context_table(self) -> dict:
+        """ """
+        full_url = f"{self._base_url}/context-management/v1/tables"
+        response = self.request(method="GET", full_url=full_url)
+        return response
+
+    def get_context_table(self, table_id) -> dict:
+        """ """
+        full_url = f"{self._base_url}/context-management/v1/tables/{table_id}"
+        response = self.request(method="GET", full_url=full_url)
+        return response
+
+    def delete_context_table(self, table_id, params) -> dict:
+        """ """
+        full_url = f"{self._base_url}/context-management/v1/tables/{table_id}"
+        response = self.request(method="DELETE", full_url=full_url, params=params)
+        return response
+
+    def get_table_record_list(self, table_id, params) -> dict:
+        """ """
+        full_url = f"{self._base_url}/context-management/v1/tables/{table_id}/records"
+        response = self.request(method="GET", full_url=full_url, params=params)
         return response
 
     def get_alert_request(self, case_id: int) -> dict:
         """
         """
         full_url = f"{self._base_url}/threat-center/v1/alerts/{case_id}"
-        response = self.request(
-            method="GET",
-            full_url=full_url
-        )
+        response = self.request(method="GET", full_url=full_url)
         return response
 
 
@@ -487,12 +507,12 @@ def alert_search_command(client: Client, args: dict) -> CommandResults:
 
 def context_table_list_command(client: Client, args: dict) -> CommandResults:
     if (table_id := args.get("table_id")):
-        response = client.table_request(method="GET", url_suffix=table_id)
+        response = client.get_context_table(table_id)
         human_readable = _parse_entry(response)
     else:
         limit = get_limit(args)
 
-        response = client.table_request(method="GET")[:limit]
+        response = client.list_context_table()[:limit]
 
         include_attributes = argToBoolean(args.get("include_attributes"))
 
@@ -516,7 +536,7 @@ def context_table_delete_command(client: Client, args: dict) -> CommandResults:
     include_attributes = argToBoolean(args.get("delete_unused_custom_attributes"))
     params = {"deleteUnusedCustomAttributes": str(include_attributes)}
 
-    response = client.table_request(method="DELETE", url_suffix=table_id, params=params)
+    response = client.delete_context_table(table_id, params)
     table_id_response = response.get("id", None)
 
     return CommandResults(
@@ -526,10 +546,9 @@ def context_table_delete_command(client: Client, args: dict) -> CommandResults:
 
 def table_record_list_command(client: Client, args: dict) -> CommandResults:
     table_id = args.get("table_id")
-    url_suffix = f"{table_id}/records"
     params = {'limit': get_limit(args)}
 
-    response = client.table_request(method="GET", url_suffix=url_suffix, params=params)
+    response = client.get_table_record_list(table_id, params)
     records = response.get("records", [])
 
     return CommandResults(
@@ -549,30 +568,24 @@ def table_record_list_command(client: Client, args: dict) -> CommandResults:
 def table_record_create_command(args: dict, client: Client) -> PollResult:
     if not (tracker_id := args.get("tracker_id")):
         table_id = args.get("table_id")
-        url_suffix = f"{table_id}/addRecords"
-
-        operation = args.get("operation")
         attributes = args.get("attributes")
         attributes_dict = safe_load_json(attributes)
+        operation = args.get("operation")
         payload = {
             "operation": operation,
             "data": [attributes_dict],
         }
 
-        response = client.table_request(method="POST", url_suffix=url_suffix, json_data=payload)
+        response = client.create_table_record(table_id, payload)
         tracker_id = response.get("trackerId", "")
 
-    url_suffix = f"/uploadStatus/{tracker_id}"
-
-    response = client.table_request(method="GET", url_suffix=url_suffix)
-    upload_status = response.get("uploadStatus")
-    human_readable = {
-        "Total Errors": response.get("totalErrors"),
-        "Total Uploaded": response.get("totalUploaded")
-    }
+    tracker_response = client.check_tracker_id(tracker_id)
+    upload_status = tracker_response.get("uploadStatus")
+    human_readable = {"Total Uploaded": tracker_response.get(
+        "totalUploaded"), "Total Errors": tracker_response.get("totalErrors")}
 
     return PollResult(
-        response=CommandResults(readable_output=tableToMarkdown("Record successfully added to table", human_readable)),
+        response=CommandResults(readable_output=tableToMarkdown("Completed", human_readable)),
         continue_to_poll=(upload_status != "completed"),
         args_for_next_run=args.update({"tracker_id": tracker_id}),
     )
