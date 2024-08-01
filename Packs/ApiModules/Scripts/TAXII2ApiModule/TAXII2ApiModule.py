@@ -920,10 +920,31 @@ class STIX2XSOARParser(BaseClient):
         return indicator
 
     @staticmethod
+    def get_attack_id_and_value_from_name(attack_indicator):
+        """
+        Split indicator name into MITRE ID and indicator value: 'T1108: Redundant Access' -> MITRE ID = T1108,
+        indicator value = 'Redundant Access'.
+        """
+        ind_name = attack_indicator.get('name')
+        separator = ':'
+        try:
+            idx = ind_name.index(separator)
+        except ValueError:
+            raise DemistoException(f"Failed parsing attack indicator {ind_name}")
+        ind_id = ind_name[:idx]
+        value = ind_name[idx + 2:]
+
+        if attack_indicator.get('x_mitre_is_subtechnique'):
+            value = attack_indicator.get('x_panw_parent_technique_subtechnique')
+
+        return ind_id, value
+
+    @staticmethod
     def parse_report_relationships(report_obj: dict[str, Any],
                                    id_to_object: dict[str, dict[str, Any]],
                                    relationships_prefix: str = '',
-                                   ignore_reports_relationships: bool = False) \
+                                   ignore_reports_relationships: bool = False,
+                                   is_unit42_report: bool = False) \
             -> Tuple[list[dict[str, Any]], list[dict[str, Any]]]:
         obj_refs = report_obj.get('object_refs', [])
         relationships: list[dict[str, Any]] = []
@@ -936,14 +957,20 @@ class STIX2XSOARParser(BaseClient):
                     continue
                 obj_refs_excluding_relationships_prefix.append(related_obj)
                 if (entity_b_obj := id_to_object.get(related_obj, {})):
-                    entity_b_type = STIX_2_TYPES_TO_CORTEX_TYPES.get(entity_b_obj.get('type', ''), '')
+                    if (entity_b_obj_type := STIX_2_TYPES_TO_CORTEX_TYPES.get(entity_b_obj.get('type', ''), '')) == '':
+                        entity_b_obj_type = STIX2XSOARParser.get_ioc_type(related_obj, id_to_object)
+                    entity_b_value = (STIX2XSOARParser.get_ioc_value(related_obj, id_to_object)
+                                      if (entity_b_obj.get('type') == "indicator" and is_unit42_report)
+                                      else entity_b_obj.get('name'))
+                    if is_unit42_report and entity_b_obj.get('type') == "attack-pattern":
+                        ind_id, entity_b_value = STIX2XSOARParser.get_attack_id_and_value_from_name(entity_b_obj)
                     relationships.append(
                         EntityRelationship(
                             name='related-to',
                             entity_a=f"{relationships_prefix}{report_obj.get('name')}",
                             entity_a_type=ThreatIntel.ObjectsNames.REPORT,
-                            entity_b=entity_b_obj.get('name'),
-                            entity_b_type=entity_b_type
+                            entity_b=entity_b_value,
+                            entity_b_type=entity_b_obj_type
                         ).to_indicator()
                     )
         return relationships, obj_refs_excluding_relationships_prefix
@@ -1096,7 +1123,8 @@ class STIX2XSOARParser(BaseClient):
 
     def parse_report(self, report_obj: dict[str, Any],
                      relationships_prefix: str = '',
-                     ignore_reports_relationships: bool = False) -> list[dict[str, Any]]:
+                     ignore_reports_relationships: bool = False,
+                     is_unit42_report: bool = False) -> list[dict[str, Any]]:
         """
         Parses a single report object
         :param report_obj: report object
@@ -1126,7 +1154,8 @@ class STIX2XSOARParser(BaseClient):
 
         relationships, obj_refs_excluding_relationships_prefix = self.parse_report_relationships(report_obj, self.id_to_object,
                                                                                                  relationships_prefix,
-                                                                                                 ignore_reports_relationships)
+                                                                                                 ignore_reports_relationships,
+                                                                                                 is_unit42_report)
         report['relationships'] = relationships
         if obj_refs_excluding_relationships_prefix:
             fields['Report Object References'] = [{'objectstixid': object} for object in obj_refs_excluding_relationships_prefix]
@@ -1853,23 +1882,23 @@ class STIX2XSOARParser(BaseClient):
     @staticmethod
     def get_ioc_value(ioc, id_to_obj):
         """
-        Get IOC value from the indicator name field.
+        Get IOC value from the indicator name/value/pattern field.
 
         Args:
             ioc: the indicator to get information on.
             id_to_obj: a dict in the form of - id: stix_object.
 
         Returns:
-            str. the IOC value. if its reports we add to it [Unit42 ATOM] prefix,
+            str. the IOC value.
             if its attack pattern remove the id from the name.
         """
         ioc_obj = id_to_obj.get(ioc)
         if ioc_obj:
-            name = ioc_obj.get('name', '') or ioc_obj.get('value', '')
-            if "file:hashes.'SHA-256' = '" in name:
-                return Taxii2FeedClient.get_ioc_value_from_ioc_name(ioc_obj)
-            else:
-                return name
+            for key in ('name', 'value', 'pattern'):
+                if ("file:hashes.'SHA-256' = '" in ioc_obj.get(key, '')) and \
+                        (ioc_value := Taxii2FeedClient.get_ioc_value_from_ioc_name(ioc_obj.get(key, ''))):
+                    return ioc_value
+            return ioc_obj.get('name') or ioc_obj.get('value')
         return None
 
     @staticmethod
