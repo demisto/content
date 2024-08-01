@@ -460,6 +460,19 @@
 												}
 											},
 											"type": "boolean"
+										},
+										{
+											"id": 1,
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "enrichmentExcluded"
+												}
+											},
+											"operator": "isNotExists",
+											"right": null,
+											"type": "boolean"
 										}
 									]
 								],
@@ -494,7 +507,7 @@
 									]
 								],
 								"height": 44,
-								"hexColor": "#979797",
+								"hexColor": "#6e6e6e",
 								"id": "8c846b91-4771-4f7d-896a-cf860a594268",
 								"index": 1,
 								"name": "Enrich indicator",

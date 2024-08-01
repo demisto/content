@@ -415,6 +415,19 @@
 												}
 											},
 											"type": "boolean"
+										},
+										{
+											"id": 1,
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "enrichmentExcluded"
+												}
+											},
+											"operator": "isNotExists",
+											"right": null,
+											"type": "boolean"
 										}
 									]
 								],
