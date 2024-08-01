@@ -104,6 +104,8 @@ tasks:
                 value:
                   simple: image.png
           accessor: EntryID
+      execution-timeout:
+        simple: "600"
       incID:
         complex:
           root: CreatedIncidentID
@@ -310,7 +312,7 @@ tasks:
       version: -1
       name: Upload Downloaded File to War Room with a Comment
       description: Upload file from incident war room to another incident's war room
-      scriptName: DemistoUploadFileV2
+      scriptName: UploadFile
       type: regular
       iscommand: false
       brand: ""
@@ -333,7 +335,9 @@ tasks:
                 value:
                   simple: image.png
           accessor: EntryID
-      incidentID:
+      execution-timeout:
+        simple: "600"
+      incID:
         complex:
           root: CreatedIncidentID
     separatecontext: false
