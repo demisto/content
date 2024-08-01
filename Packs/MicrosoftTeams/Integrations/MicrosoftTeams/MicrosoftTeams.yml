@@ -143,7 +143,7 @@ configuration:
 - additionalinfo: 'Optional - Welcome message when creating new incidents using the bot. (Default: Successfully created incident <incident_name>. View it on: <incident_link>).'
   defaultvalue: 'Successfully created incident <incident_name>. View it on: <incident_link>'
   display: New Incident Welcome Message
-  name: newIncidentWelcomeMessage
+  name: new_incident_welcome_message
   required: false
   type: 0
 description: Send messages and notifications to your team members.
