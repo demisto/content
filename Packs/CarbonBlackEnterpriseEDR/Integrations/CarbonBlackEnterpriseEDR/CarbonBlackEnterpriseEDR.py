@@ -382,10 +382,10 @@ class Client(BaseClient):
             start=start,
 
         )
-            
+
         if not event_id:
             del body['criteria']['event_id']
-        
+
         timestamp_format = '%Y-%m-%dT%H:%M:%S.%fZ'
         start_iso = parse_date_range(start_time, date_format=timestamp_format)[0]
         if end_time:
