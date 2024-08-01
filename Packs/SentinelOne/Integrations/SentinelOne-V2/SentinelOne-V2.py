@@ -954,12 +954,14 @@ class Client(BaseClient):
         response = self._http_request(method='POST', url_suffix=endpoint_url, json_data=payload)
         return response.get('data', {})
 
-    def get_remote_script_status_request(self, accountIds: str = None, computerName__contains: str = None, countOnly: str = None,
-                                         createdAt__gt: str = None, createdAt__gte: str = None, createdAt__lt: str = None, createdAt__lte: str = None,
-                                         cursor: str = None, description__contains: str = None, detailedStatus__contains: str = None, groupIds: str = None,
-                                         ids: str = None, initiatedBy__contains: str = None, limit: str = '50', parentTaskId: str = None,
-                                         parentTaskId__in: str = None, query: str = None, siteIds: str = None,
-                                         status: str = None, tenant: str = None, updatedAt__gt: str = None, updatedAt__gte: str = None,
+    def get_remote_script_status_request(self, accountIds: str = None, computerName__contains: str = None,
+                                         countOnly: str = None, createdAt__gt: str = None, createdAt__gte: str = None,
+                                         createdAt__lt: str = None, createdAt__lte: str = None, cursor: str = None,
+                                         description__contains: str = None, detailedStatus__contains: str = None,
+                                         groupIds: str = None, ids: str = None, initiatedBy__contains: str = None,
+                                         limit: str = '50', parentTaskId: str = None, parentTaskId__in: str = None,
+                                         query: str = None, siteIds: str = None, status: str = None,
+                                         tenant: str = None, updatedAt__gt: str = None, updatedAt__gte: str = None,
                                          updatedAt__lt: str = None, updatedAt__lte: str = None, uuid__contains: str = None):
         params = assign_params(
             accountIds=argToList(accountIds),
@@ -3236,7 +3238,7 @@ def get_remote_script_status(client: Client, args: dict) -> CommandResults:
         raw_response=remote_script_statuses)
 
 
-def get_remote_script_results(client: Client, args: dict) -> CommandResults:
+def get_remote_script_results(client: Client, args: dict) -> list[CommandResults]:
     """
     Get the remote script results
     """

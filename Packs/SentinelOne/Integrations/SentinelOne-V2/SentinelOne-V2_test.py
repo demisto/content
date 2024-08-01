@@ -603,6 +603,111 @@ def test_get_installed_applications(mocker, requests_mock):
     assert command_results.outputs == [{'InstalledOn': '2023-02-10', 'Name': 'test', 'Publisher': 'abc', 'Size': 50, 'Version': '2.1'}]  # noqa
 
 
+def test_get_remote_script_status(mocker, requests_mock):
+    """
+    Given
+        - required parentTaskId argument
+    When
+        - running sentinelone-get-remote-script-status command
+    Then
+        - returns a table of result had the list of taskIds which are available on ParentTaskIds
+    """
+    json_output = {
+        "data": [
+            {
+                "accountId": "1234567890",
+                "accountName": "Metron Team",
+                "agentComputerName": "MSEDGEWIN10",
+                "agentId": "0987654321",
+                "agentIsActive": True,
+                "agentIsDecommissioned": False,
+                "agentMachineType": "desktop",
+                "agentOsType": "windows",
+                "agentUuid": "25682583752987932878722323",
+                "createdAt": "2024-07-30T06:43:22.938877Z",
+                "description": "A test get cloud services",
+                "detailedStatus": "Execution completed successfully",
+                "groupId": "12334654321",
+                "groupName": "Default Group",
+                "id": "123456",
+                "initiatedBy": "user@sentinelone.com",
+                "initiatedById": "099999",
+                "parentTaskId": "123456789",
+                "scriptResultsSignature": "34324324324324235r24fe2r2333432",
+                "siteId": "99999999",
+                "siteName": "Default site",
+                "status": "completed",
+                "statusCode": None,
+                "statusDescription": "Completed",
+                "type": "script_execution",
+                "updatedAt": "2024-07-30T06:44:50.881432Z"
+            }
+        ]
+    }
+    requests_mock.get("https://usea1.sentinelone.net/web/api/v2.1/remote-scripts/status",
+                      json=json_output)
+    mocker.patch.object(demisto, 'params', return_value={'token': 'token',
+                                                         'url': 'https://usea1.sentinelone.net',
+                                                         'api_version': '2.1'})
+    mocker.patch.object(demisto, 'command', return_value='sentinelone-get-remote-script-status')
+    mocker.patch.object(demisto, 'args', return_value={
+        'parentTaskId': '123456789'
+    })
+    mocker.patch.object(sentinelone_v2, "return_results")
+    main()
+
+    call = sentinelone_v2.return_results.call_args_list
+    command_results = call[0].args[0]
+    assert command_results.outputs == [{'accountId': '1234567890', 'accountName': 'Metron Team', 'agentComputerName': 'MSEDGEWIN10', 'agentId': '0987654321', 'agentIsActive': True, # noqa
+        'agentIsDecommissioned': False, 'agentMachineType': 'desktop', 'agentOsType': 'windows', 'agentUuid': '25682583752987932878722323', 'createdAt': # noqa
+        '2024-07-30T06:43:22.938877Z', 'description': 'A test get cloud services', 'detailedStatus': 'Execution completed successfully', 'groupId': # noqa
+        '12334654321', 'groupName': 'Default Group', 'id': '123456', 'initiatedBy': 'user@sentinelone.com', 'initiatedById': '099999', 'parentTaskId':  # noqa
+        '123456789', 'scriptResultsSignature': '34324324324324235r24fe2r2333432', 'siteId': '99999999', 'siteName': 'Default site', 'status': 'completed', # noqa
+        'statusCode': None, 'statusDescription': 'Completed', 'type': 'script_execution', 'updatedAt': '2024-07-30T06:44:50.881432Z'}]  # noqa
+
+
+def test_remote_script_results(mocker, requests_mock):
+    """
+    Given
+        - required taskIds argument
+    When
+        - running sentinelone-get-remote-script-results command
+    Then
+        - returns file details
+    """
+    task_ids = "1234566"
+    output_json = {
+        "data": {
+            "download_links": [
+                {
+                    "downloadUrl": "https://url/1",
+                    "fileName": "file1.zip",
+                    "taskId": task_ids
+                }
+            ],
+            "errors": []
+        }
+    }
+    requests_mock.post('https://usea1.sentinelone.net/web/api/v2.1/remote-scripts/fetch-files', json=output_json)
+    requests_mock.get('https://url/1', json={})
+    mocker.patch.object(demisto, 'params', return_value={'token': 'token',
+                                                         'url': 'https://usea1.sentinelone.net',
+                                                         'api_version': '2.1',
+                                                         'fetch_threat_rank': '4'})
+    mocker.patch.object(demisto, 'command', return_value='sentinelone-get-remote-script-results')
+    mocker.patch.object(demisto, 'args', return_value={
+        'taskIds': task_ids,
+    })
+    mocker.patch.object(sentinelone_v2, "return_results")
+    main()
+    call = sentinelone_v2.return_results.call_args_list
+    command_results = call[0].args[0]
+    outputs = command_results[0].outputs
+    assert outputs[0].get("taskId") == task_ids
+    assert outputs[0].get("fileName") == "file1.zip"
+    assert outputs[0].get("downloadUrl") == "https://url/1"
+
+
 def test_get_remote_data_command(mocker, requests_mock):
     """
     Given
