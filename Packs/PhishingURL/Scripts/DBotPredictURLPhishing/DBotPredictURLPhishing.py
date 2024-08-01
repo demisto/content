@@ -113,7 +113,31 @@ WAIT_TIME_RASTERIZE = 5
 TIMEOUT_RASTERIZE = 120
 
 
-def load_demisto_model():
+class Model:
+    '''Abstract class that represents the class of the built-in phishing model.'''
+
+    clf: Any  # sklearn.pipeline.Pipeline
+    custom_logo_associated_domain: dict
+    debug: bool
+    df_voc: dict
+    features: list
+    fields_prediction: list
+    heuristic_html: bool
+    heuristic_image: bool
+    heuristic_url: bool
+    logos_dict: dict
+    major: int
+    minor: int
+    path_logos: str
+    path_voc: str
+    top_domains: dict
+    top_domains_path: str
+
+    def predict(self, x_pred: pd.DataFrame) -> dict:
+        pass
+
+
+def load_demisto_model() -> Model:
     """
     Return model data saved in demisto (string of encoded base 64)
     :param model_name: name of the model to load from demisto
@@ -126,16 +150,16 @@ def load_demisto_model():
     return decode_model_data(res_model['Contents']['modelData'])
 
 
-def decode_model_data(model_data: str):
+def decode_model_data(model_data: str) -> Model:
     """
     Decode the base 64 version of the model
     :param model_data: string of the encoded based 64 model
     :return: Model
     """
-    return dill.loads(base64.b64decode(model_data.encode('utf-8')))  # guardrails-disable-line
+    return cast(Model, dill.loads(base64.b64decode(model_data.encode('utf-8'))))  # guardrails-disable-line
 
 
-def load_oob(path=OUT_OF_THE_BOX_MODEL_PATH):
+def load_oob(path: str = OUT_OF_THE_BOX_MODEL_PATH) -> bytes:
     """
     Load pickle model from the docker
     :param path: path of the model saved in the docker
@@ -145,12 +169,12 @@ def load_oob(path=OUT_OF_THE_BOX_MODEL_PATH):
         return base64.b64encode(f.read())
 
 
-def load_model_from_docker(path=OUT_OF_THE_BOX_MODEL_PATH):
+def load_model_from_docker(path: str = OUT_OF_THE_BOX_MODEL_PATH) -> Model:
     with open(path, 'rb') as f:
-        return dill.load(f)  # guardrails-disable-line
+        return cast(Model, dill.load(f))  # guardrails-disable-line
 
 
-def load_oob_model(path: str):
+def load_oob_model(path: str) -> str:
     """
     Load and save model from the model in the docker
     :return: None
@@ -188,7 +212,7 @@ def oob_model_exists_and_updated() -> tuple[bool, int, int, str]:
     return True, existing_model_version_major, existing_model_version_minor, model_data
 
 
-def image_from_base64_to_bytes(base64_message: str):
+def image_from_base64_to_bytes(base64_message: str) -> bytes:
     """
     Transform image from base64 string into bytes
     :param base64_message:
@@ -197,12 +221,12 @@ def image_from_base64_to_bytes(base64_message: str):
     return base64.b64decode(base64_message.encode('utf-8'))
 
 
-def extract_domainv2(url):
+def extract_domainv2(url: str) -> str:
     ext = no_fetch_extract(url)
     return ext.domain + "." + ext.suffix
 
 
-def in_white_list(model, url: str) -> bool:
+def in_white_list(model: Model, url: str) -> bool:
     """
     Check if url belongs to the Model whitelist
     :param model: model which contains top_domains attribute
@@ -259,7 +283,7 @@ def prepend_protocol(url: str, protocol: str, www: bool = True) -> str:
 def return_entry_summary(
     pred_json: dict, url: str, is_white_listed: bool, output_rasterize: dict,
     verdict: str, reliability: str = DBotScoreReliability.A_PLUS, **_
-):
+) -> Optional[dict[str, Any]]:
     """
     Return entry to demisto
     :param pred_json: json with output of the model
@@ -339,7 +363,7 @@ def return_entry_summary(
     return explain
 
 
-def return_entry_white_list(url):
+def return_entry_white_list(url: str):
     """
     Create syntethci entry when url belongs to whitelist
     :param url: url
@@ -376,7 +400,7 @@ def return_entry_white_list(url):
     return_results(return_entry)
 
 
-def get_score(pred_json):
+def get_score(pred_json: dict) -> int:
     use_age = False
     use_logo = False
     if pred_json[DOMAIN_AGE_KEY]:
@@ -413,14 +437,14 @@ def get_verdict(pred_json: dict, is_white_listed: bool) -> tuple[float, str]:
     return score, MALICIOUS_VERDICT
 
 
-def create_dict_context(url, verdict, pred_json, score, is_white_listed, output_rasterize):
+def create_dict_context(url, verdict, pred_json, score, is_white_listed, output_rasterize) -> dict:
     return {
         'url_redirect': url, 'url': url, 'verdict': verdict, 'pred_json': pred_json,
         'score': score, 'is_white_listed': is_white_listed, 'output_rasterize': output_rasterize
     }
 
 
-def extract_created_date(entry: dict):
+def extract_created_date(entry: dict) -> Union[bool, None]:
     """
     Check if domain age is younger than THRESHOLD_NEW_DOMAIN_YEAR year
     :param entry_list: output of the whois command
@@ -435,7 +459,7 @@ def extract_created_date(entry: dict):
     return None
 
 
-def return_and_remove_additional_results(results: list, from_index):
+def return_and_remove_additional_results(results: list, from_index: int):
     '''Return and remove the extra unneeded results returned from a command call.
     In XSOAR 8 log results are usually returned with sub-commands if debug-mode=true'''
     if results[from_index:]:
@@ -484,7 +508,7 @@ def rasterize_urls(urls: list[str], rasterize_timeout: int) -> list[dict]:
     return cast(list[dict], res_rasterize)
 
 
-def get_whois_verdict(domains: list[dict]) -> list:
+def get_whois_verdict(domains: list[str]) -> list:
     '''Check domain age from WHOIS command'''
     default = [None] * len(domains)
     if isCommandAvailable('whois'):
@@ -499,7 +523,9 @@ def get_whois_verdict(domains: list[dict]) -> list:
     return default
 
 
-def get_predictions_for_urls(model, urls, force_model, debug, rasterize_timeout):
+def get_predictions_for_urls(
+    model: Model, urls: list[str], force_model: bool, debug: bool, rasterize_timeout: int, protocol: str
+) -> Optional[list[dict]]:
 
     domains = list(map(extract_domainv2, urls))
 
@@ -525,7 +551,10 @@ def get_predictions_for_urls(model, urls, force_model, debug, rasterize_timeout)
         else:
             is_white_listed = False
 
-        x_pred = create_x_pred(output_rasterize, url)
+        x_pred = create_x_pred(
+            output_rasterize,
+            prepend_protocol(url, protocol)
+        )
 
         pred_json = model.predict(x_pred)
         if debug:
@@ -541,12 +570,11 @@ def get_predictions_for_urls(model, urls, force_model, debug, rasterize_timeout)
     return results
 
 
-def return_general_summary(results, tag="Summary"):
+def return_general_summary(results: list[dict], tag: str = "Summary") -> list[dict]:
     df_summary = pd.DataFrame()
     df_summary['URL'] = [x.get('url_redirect') for x in results]
-    df_summary[KEY_FINAL_VERDICT] = [MAPPING_VERDICT_COLOR[x.get('verdict')].format(x.get('verdict'))
-                                     if x.get('verdict') in MAPPING_VERDICT_COLOR
-                                     else VERDICT_ERROR_COLOR.format(x.get('verdict')) for x in results]
+    df_summary[KEY_FINAL_VERDICT] = [MAPPING_VERDICT_COLOR.get(
+        x.get('verdict'), VERDICT_ERROR_COLOR).format(x.get('verdict')) for x in results]  # type: ignore
     summary_context = [
         {KEY_CONTENT_SUMMARY_URL: x.get('url_redirect'), KEY_CONTENT_SUMMARY_FINAL_VERDICT: BENIGN_VERDICT,
          KEY_CONTENT_IS_WHITELISTED: 'True'} for x in results if x.get('is_white_listed')]
@@ -565,7 +593,7 @@ def return_general_summary(results, tag="Summary"):
     return df_summary_json
 
 
-def return_detailed_summary(results: list, reliability: str):
+def return_detailed_summary(results: list, reliability: str) -> list[dict[str, str]]:
     outputs = []
     results.sort(key=lambda x: x['score'])
     for result in results:
@@ -577,7 +605,7 @@ def return_detailed_summary(results: list, reliability: str):
     return outputs
 
 
-def save_model_in_demisto(model):
+def save_model_in_demisto(model: Model):
     encoded_model = base64.b64encode(dill.dumps(model))  # guardrails-disable-line
     res = demisto.executeCommand('createMLModel', {'modelData': encoded_model.decode('utf-8'),
                                                    'modelName': URL_PHISHING_MODEL_NAME,
@@ -592,14 +620,14 @@ def save_model_in_demisto(model):
         raise DemistoException(get_error(res))
 
 
-def extract_urls(text):
+def extract_urls(text: str) -> list[str]:
     res = demisto.executeCommand("extractIndicators", {"text": text})
     if is_error(res):
         raise DemistoException(get_error(res))
     return list(set(json.loads(res[0]["Contents"]).get("URL", [])))
 
 
-def get_final_urls(urls, max_urls, model):
+def get_final_urls(urls: list[str], max_urls: int, model: Model) -> list[str]:
     final_url = []
     seen = []
     low_priority_urls = []
@@ -613,11 +641,11 @@ def get_final_urls(urls, max_urls, model):
                 seen.append(extract_domainv2(url))
                 i += 1
     if len(final_url) < max_urls:
-        final_url = final_url + low_priority_urls[:min(len(low_priority_urls), max_urls - len(final_url))]
+        final_url += low_priority_urls[:min(len(low_priority_urls), max_urls - len(final_url))]
     return final_url
 
 
-def extract_embedded_urls_from_html(html):
+def extract_embedded_urls_from_html(html: str) -> list[str]:
     embedded_urls = []
     soup = BeautifulSoup(html)
     for a in soup.findAll('a'):
@@ -626,7 +654,10 @@ def extract_embedded_urls_from_html(html):
     return embedded_urls
 
 
-def get_urls_to_run(email_body, email_html, urls_argument, max_urls, model, msg_list, debug):
+def get_urls_to_run(
+    email_body: str, email_html: str, urls_argument: Union[list, str],
+    max_urls: int, model: Model, msg_list: list[str], debug: bool
+) -> tuple[list[str], list[str]]:
     if email_body:
         urls_email_body = extract_urls(email_body)
     else:
@@ -654,7 +685,7 @@ def get_urls_to_run(email_body, email_html, urls_argument, max_urls, model, msg_
     return urls, msg_list
 
 
-def update_model_docker_from_model(model_docker, model):
+def update_model_docker_from_model(model_docker: Model, model: Model) -> Model:
     model_docker.logos_dict = model.logos_dict
     model_docker.top_domains = model.top_domains
 
@@ -670,8 +701,10 @@ def update_model_docker_from_model(model_docker, model):
     return model_docker
 
 
-def update_and_load_model(debug, exist, reset_model, msg_list, demisto_major_version, demisto_minor_version,
-                          model_data):
+def update_and_load_model(
+    debug: bool, exist: bool, reset_model: bool, msg_list: list[str],
+    demisto_major_version: int, demisto_minor_version: int, model_data: str
+) -> tuple[Model, list[str]]:
     if debug:
         msg_list.append(
             MSG_MODEL_VERSION_IN_DEMISTO.format(demisto_major_version, demisto_minor_version)
@@ -716,6 +749,7 @@ def main():
         reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(
             args.get("reliability", DBotScoreReliability.A_PLUS)
         )
+        protocol = demisto.args().get('defaultRequestProtocol', 'HTTP').lower()
 
         msg_list: list = []
 
@@ -731,7 +765,7 @@ def main():
 
         if urls:
             # Run the model and get predictions
-            results = get_predictions_for_urls(model, urls, force_model, debug, rasterize_timeout)
+            results = get_predictions_for_urls(model, urls, force_model, debug, rasterize_timeout, protocol)
             if results:
                 general_summary = return_general_summary(results)
                 detailed_summary = return_detailed_summary(results, reliability)
