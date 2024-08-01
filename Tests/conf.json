@@ -5777,7 +5777,7 @@
             "scripts": [
                 "MattermostAskUser"
             ]
-        }
+        },
         {
             "playbookID": "DBotTrainClustering-test"
         }
