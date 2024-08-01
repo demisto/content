@@ -3,7 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: ThreatFox Feed
+  id: ThreatFox Feed Dev
   version: -1
 configuration:
 - display: Fetch indicators
@@ -48,9 +48,12 @@ configuration:
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
+  - RED
+  - AMBER
+  - GREEN
   - CLEAR
-  - WHITE
   type: 15
+  defaultvalue: CLEAR
   required: false
   section: Collect
   advanced: true
@@ -121,8 +124,8 @@ configuration:
   required: false
   section: Connect
 description: Use the ThreatFox Feed integration to fetch indicators from the feed.
-display: ThreatFox Feed
-name: ThreatFox Feed
+display: ThreatFox Feed Dev
+name: ThreatFox Feed Dev
 script:
   commands:
   - arguments:

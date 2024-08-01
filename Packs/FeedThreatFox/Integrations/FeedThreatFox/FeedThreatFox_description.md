@@ -1,4 +1,4 @@
-## ThreatFox Feed Integration Help
+## ThreatFox Feed Help
 
 The ThreatFox Feed allows users to fetch indicators from ThreatFox, providing essential threat intelligence.
 

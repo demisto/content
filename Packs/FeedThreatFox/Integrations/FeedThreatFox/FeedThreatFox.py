@@ -63,12 +63,14 @@ def check_params_for_query(args: dict):
         return True, args_lst[0]
 
 
-def create_query(query_arg, id: str | None = None, search_term: str | None = None, hash: str | None = None, tag: str | None = None,
-                 malware: str | None = None, days: str | None = None, limit: str | None = None):
+def create_query(query_arg, id: str | None = None, search_term: str | None = None,
+                 hash: str | None = None, tag: str | None = None, malware: str | None = None,
+                 days: str | None = None, limit: str | None = None)-> dict:
     """Creates a valid query to send to the API.
 
     Args:
-        query_arg (str): the query type (should be one of those: 'search_term', 'id', 'hash', 'tag', 'malware', 'days').
+        query_arg (str): the query type (should be one of those:
+        'search_term', 'id', 'hash', 'tag', 'malware', 'days').
 
     Returns:
         Str: The query to send to the API.
@@ -77,11 +79,9 @@ def create_query(query_arg, id: str | None = None, search_term: str | None = Non
     query_dict = {'search_term': 'search_ioc', 'id': 'ioc', 'hash': 'search_hash',
             'tag': 'taginfo', 'malware': 'malwareinfo', 'days': 'get_iocs'}
     
+    q_days = str((arg_to_number(days) or 1)/1440)
     q_id = arg_to_number(id)
-    q_limit = arg_to_number(limit) or 50
-    if q_limit>1000:
-        q_limit = 1000
-        
+    
     query = assign_params(
         query = query_dict[query_arg],
         id = q_id,
@@ -89,13 +89,15 @@ def create_query(query_arg, id: str | None = None, search_term: str | None = Non
         hash = hash,
         tag = tag,
         malware = malware,
-        days = days,
-        limit = q_limit
+        days = q_days
     )
     
     # Only queries searching by tag or malware can specify a limit.
-    if query_arg != 'tag' and query_arg != 'malware':
-       del query['limit']
+    if query_arg == 'tag' or query_arg == 'malware':
+        q_limit = arg_to_number(limit) or 50
+        if q_limit>1000:
+            q_limit = 1000
+        query['limit'] = q_limit
     
     return query
 
@@ -144,20 +146,40 @@ def indicator_type(indicator) -> str:
         return FeedIndicatorType.File
     
     
-def parse_indicator_for_fetch(indicator):
-    res_indicator = assign_params(
+def parse_indicator_for_fetch(indicator, with_ports, create_relationship, tlp_color):
+    
+    demisto_ioc_type = indicator_type(indicator)
+    ioc_value = value(indicator)
+    relationships = create_relationships(ioc_value, indicator.get('ioc_type'), indicator.get("malware_printable"),
+                                             demisto_ioc_type) if create_relationship else None
+    
+    fields = assign_params(
         indicatoridentification = indicator.get('id'),
         description = indicator.get('threat_type_desc'),
         malwarefamily = indicator.get('malware_printable') if indicator.get('malware_printable') != 'Unknown malware' else None,
         aliases = indicator.get('malware_alias'),
         firstseenbysource = date(indicator.get('first_seen')),
         lastseenbysource = date(indicator.get('last_seen')),
-        reportedby = indicator.get('reporter'), 
-        Tags = tags(indicator),
-        publications = [assign_params(link= indicator.get('reference'))],
-        confidence = indicator.get('confidence_level')
+        reportedby = indicator.get('reporter'),
+        Tags = tags(indicator, with_ports),
+        publications = publications(indicator),
+        confidence = indicator.get('confidence_level'),
+        trafficlightprotocol= tlp_color
     )
-    return res_indicator
+    
+    return assign_params(
+            value= ioc_value,
+            type= demisto_ioc_type,
+            fields= fields,
+            relationships= relationships,
+            rawJSON= indicator
+        )
+    
+
+def publications(indicator):
+    if not indicator.get('reference'):
+        return None
+    return [{'link': indicator.get('reference'),'title': indicator.get('malware_printable') if indicator.get('malware_printable')!= 'Unknown malware' else 'Malware', 'source': 'ThreatFox'}]
 
 
 def date(date):
@@ -168,17 +190,25 @@ def date(date):
 
 
 def validate_interval(interval):
-    if interval < 60:
-        raise DemistoException("The fetch interval must be at least 1 hour. We recommend setting it to at least 1 day.")
+    if interval%1440 != 0:
+        raise DemistoException("The fetch interval must be in whole days, between 1-7.")
     elif interval > 10080:
         raise DemistoException("The fetch interval must not be more than 7 days.")
+    return interval
 
 
-def tags(indicator):
+def tags(indicator, with_ports):
+    
     res = [indicator.get('malware_printable'), indicator.get('malware_alias'), indicator.get('threat_type')]
     if indicator.get('tags'):
         res.extend(indicator.get('tags'))
+    if with_ports and indicator.get('ioc_type') == "ip:port":
+            res.append('port: ' + indicator.get('ioc').split(':')[1])
+            
     res = [tag for tag in res if tag]
+    
+    #TODO dedup
+    
     return res
 
 
@@ -238,9 +268,11 @@ def threatfox_get_indicators_command(client: Client, args: dict[str, Any]) -> Co
     return CommandResults(readable_output=human_readable)
 
 
-def fetch_indicators_command(client: Client, with_ports, confidence_threshold, create_relationship, interval, tlp_color):
+def fetch_indicators_command(client: Client, with_ports, confidence_threshold,
+                             create_relationship, interval, tlp_color):
     
-    response = client.get_indicators_request({ "query": "get_iocs", "days": interval })
+    response = client.get_indicators_request({ "query": "get_iocs",
+                                              "days": int((arg_to_number(interval) or 1)/1440)})
     
     if response.get('query_status') != 'ok':
         raise DemistoException("couldn't fetch")  # write something better
@@ -250,33 +282,16 @@ def fetch_indicators_command(client: Client, with_ports, confidence_threshold, c
     results = []
        
     for indicator in response.get('data'):
-        ioc_type = indicator.get('ioc_type')
-        if ioc_type == 'sha3_384_hash':
+        
+        if indicator.get('ioc_type') == 'sha3_384_hash':
             demisto.debug(f'{LOG} got indicator of indicator type "sha3" skipping it')
             continue
         if arg_to_number(indicator.get('confidence_level')) < confidence_threshold:
             demisto.debug(f'{LOG} got indicator with low confidence level, skipping it')
             continue
         
-        demisto_ioc_type = indicator_type(indicator)
-        ioc_value = value(indicator)
-        relationships = create_relationships(ioc_value, ioc_type, indicator.get("malware_printable"),
-                                             demisto_ioc_type) if create_relationship else None
-      
-        fields = {'trafficlightprotocol': tlp_color} | parse_indicator_for_fetch(indicator)
-        if with_ports and ioc_type == "ip:port":
-            fields['Tags'].append('port: ' + indicator.get('ioc').split(':')[1])
+        results.append(parse_indicator_for_fetch(indicator, with_ports, create_relationship, tlp_color))
         
-        results.append(assign_params(
-            value= ioc_value,
-            type= demisto_ioc_type,
-            fields= fields,
-            relationships= relationships,
-            rawJSON= indicator
-            
-        ))
-        demisto.debug(f"######### {LOG} {relationships=} ##########")
-
     return results
 
 
