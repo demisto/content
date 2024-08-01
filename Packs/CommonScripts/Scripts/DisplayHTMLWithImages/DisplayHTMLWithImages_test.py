@@ -393,12 +393,10 @@ def test_xsoar_saas(mocker, is_xsoar_saas, expected_prefix):
 
     mocked_context = {
         'Email': {
-            'AttachmentsData': [
-                {
-                    'Content-ID': '<ii_wweegebl1>',
-                    'Name': 'image_1.png'
-                }
-            ]
+            'AttachmentsData': {
+                'Content-ID': '<ii_wweegebl1>',
+                'Name': 'image_1.png'
+            }
         },
         'File': mocked_file
     }
