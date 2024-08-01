@@ -119,7 +119,7 @@ def impartner_get_account_id_command(client: Client, args: Dict[str, Any]) -> Co
     else:
         context_result = {'name': parsed_result.get('name'), 'id': parsed_result.get('id'),
                           'link': parsed_result.get('recordLink'),
-                          'PST Engineer': parsed_result.get('tech_BD_Assigned_for_XSOAR__cf')}
+                          'tech_BD_Assigned_for_XSOAR__cf': parsed_result.get('tech_BD_Assigned_for_XSOAR__cf')}
     readable_list = {'name': parsed_result.get('name'), 'ID': parsed_result.get('id'), 'link': parsed_result.get('recordLink'),
                      'PST Engineer': parsed_result.get('tech_BD_Assigned_for_XSOAR__cf')}
     readable_output = tableToMarkdown('Account Details', readable_list,
