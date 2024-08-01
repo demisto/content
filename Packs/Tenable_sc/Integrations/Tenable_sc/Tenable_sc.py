@@ -2328,18 +2328,25 @@ def get_organization_command(client: Client, args: Dict[str, Any]):
     if not res or 'response' not in res:
         raise DemistoException('Error: Could not retrieve organization information')
 
-    # status = res['response']
-
-    mapped_restrictedIPs = {
-        'RestrictedIPs': res['response']
-    }
-
+    restrictedIPs_headers = ['ID', 'Name', 'Restricted IPs']
+    restrictedIPs =  res.get('response', {})
+    restrictedIPs_output = []
+    if restrictedIPs:
+        for restrictedIP in restrictedIPs:
+            restrictedIPMap = {
+                'ID': restrictedIP.get('id', ''),
+                'Name': restrictedIP.get('name', ''),
+                'Restricted IPs': restrictedIP.get('restrictedIPs', ''),
+            }
+            restrictedIPs_output.append(restrictedIPMap)
+        
     return CommandResults(
-        outputs=createContext(mapped_restrictedIPs, removeNull=True),
+        outputs=createContext(restrictedIPs, removeNull=True),
         outputs_prefix='TenableSC.RestrictedIPs',
         raw_response=res,
         outputs_key_field='ID',
-        readable_output=tableToMarkdown('Tenable.sc Restricted IPs', mapped_restrictedIPs, removeNull=True)
+        readable_output=tableToMarkdown('Tenable.sc Restricted IPs',restrictedIPs_output,headers=restrictedIPs_headers,
+                                        removeNull=True)
     )
 
 
