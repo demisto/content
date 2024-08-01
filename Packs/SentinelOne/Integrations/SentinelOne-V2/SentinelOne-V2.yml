@@ -2297,7 +2297,7 @@ script:
     - name: createdAt__lte
       description: "Created at lesser or equal than. Example: '2018-02-27T04:49:26.257525Z'."
     - name: cursor
-      description: "Cursor position returned by the last request. Use to iterate over more than 1000 items. Example: 'YWdlbnRfaWQ6NTgwMjkzODE=''."
+      description: "Cursor position returned by the last request. Use to iterate over more than 1000 items. Example: 'YWdlbnRfaWQ6NTgwMjkzODE='."
     - name: description__contains
       description: Only include tasks with specific description
     - name: detailedStatus__contains
@@ -2402,13 +2402,13 @@ script:
       description: Status of remote script.
       type: string
     - contextPath: SentinelOne.GetRemoteScript.statusCode
-      description: status code of remote script.
+      description: Status code of remote script.
       type: string
     - contextPath: SentinelOne.GetRemoteScript.statusDescription
       description: Status description of remote script.
       type: string
     - contextPath: SentinelOne.GetRemoteScript.type
-      description: type of remote script.
+      description: Type of remote script.
       type: string
     - contextPath: SentinelOne.GetRemoteScript.updateAt
       description: Remote script upated at.

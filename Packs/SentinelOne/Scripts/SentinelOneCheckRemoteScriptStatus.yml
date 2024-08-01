@@ -46,7 +46,7 @@ script: |2+
       try:
           return_results(retry_untill_rso_script_completed(demisto.args()))
       except Exception as ex:
-          demisto.error(traceback.format_exc())  # print the traceback
+          demisto.error(traceback.format_exc())
           return_error(f'Failed to execute BaseScript. Error: {str(ex)}')
 
 
@@ -58,6 +58,9 @@ script: |2+
 
 type: python
 tags: []
+comment: This script helps fetch the task IDs of executed remote scripts once they
+  are completed. In this script, we periodically check the status of the script according
+  to the sleep interval and retries provided in the script inputs.
 enabled: true
 args:
 - name: parentTaskId
@@ -70,6 +73,7 @@ args:
   defaultValue: "60"
   type: unknown
 - name: retries
+  description: The number of retries
   defaultValue: "5"
 outputs:
 - contextPath: SentinelOne.GetRemoteScript.id

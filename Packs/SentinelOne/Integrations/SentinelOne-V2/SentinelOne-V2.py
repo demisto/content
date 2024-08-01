@@ -953,14 +953,14 @@ class Client(BaseClient):
         payload["data"] = self.remove_empty_fields(payload.get("data", {}))
         response = self._http_request(method='POST', url_suffix=endpoint_url, json_data=payload)
         return response.get('data', {})
-    
-    def get_remote_script_status_request(self, accountIds: str = None, computerName__contains:str=None, countOnly:str=None,
-                                         createdAt__gt:str=None, createdAt__gte:str=None, createdAt__lt:str=None, createdAt__lte:str=None,
-                                         cursor:str=None, description__contains:str=None, detailedStatus__contains:str=None, groupIds:str=None,
-                                         ids:str=None, initiatedBy__contains:str=None, limit:str='50', parentTaskId:str=None,
-                                         parentTaskId__in:str=None, query:str=None, siteIds:str=None,
-                                         status:str= None, tenant:str=None,  updatedAt__gt:str=None, updatedAt__gte:str=None,
-                                         updatedAt__lt:str=None, updatedAt__lte:str=None, uuid__contains:str=None):
+
+    def get_remote_script_status_request(self, accountIds: str = None, computerName__contains: str = None, countOnly: str = None,
+                                         createdAt__gt: str = None, createdAt__gte: str = None, createdAt__lt: str = None, createdAt__lte: str = None,
+                                         cursor: str = None, description__contains: str = None, detailedStatus__contains: str = None, groupIds: str = None,
+                                         ids: str = None, initiatedBy__contains: str = None, limit: str = '50', parentTaskId: str = None,
+                                         parentTaskId__in: str = None, query: str = None, siteIds: str = None,
+                                         status: str = None, tenant: str = None, updatedAt__gt: str = None, updatedAt__gte: str = None,
+                                         updatedAt__lt: str = None, updatedAt__lte: str = None, uuid__contains: str = None):
         params = assign_params(
             accountIds=argToList(accountIds),
             computerName__contains=computerName__contains,
@@ -973,7 +973,7 @@ class Client(BaseClient):
             description__contains=description__contains,
             detailedStatus__contains=argToList(detailedStatus__contains),
             groupIds=argToList(groupIds),
-            ids= argToList(ids),
+            ids=argToList(ids),
             initiatedBy__contains=argToList(initiatedBy__contains),
             limit=int(limit),
             parentTaskId=parentTaskId,
@@ -991,19 +991,17 @@ class Client(BaseClient):
         response = self._http_request(method='GET', url_suffix='remote-scripts/status', params=params)
         return response.get('data', {})
 
-
-    def get_remote_script_results_request(self, computer_names:list, task_ids:list):
+    def get_remote_script_results_request(self, computer_names: list, task_ids: list):
         endpoint_url = "remote-scripts/fetch-files"
-        payload={
-            "data":{
-                "taskIds":task_ids,
-                "computerNames":computer_names,
+        payload = {
+            "data": {
+                "taskIds": task_ids,
+                "computerNames": computer_names,
             }
         }
         payload["data"] = self.remove_empty_fields(payload.get("data", {}))
         response = self._http_request(method='POST', url_suffix=endpoint_url, json_data=payload)
         return response.get("data", {}).get("download_links", [])
-
 
     def remove_empty_fields(self, json_payload):
         """
@@ -3226,11 +3224,13 @@ def get_remote_script_status(client: Client, args: dict) -> CommandResults:
     """
     Get the Satus of the Remote Script Tasks
     """
-    headers = ["id","createdAt","description", "statusDescription","parentTaskId", "accountId", "accountName", "agentId", "agentIsActive", "agentOsType", "initiatedBy", "initiatedById"]
+    headers = ["id", "createdAt", "description", "statusDescription", "parentTaskId", "accountId",
+               "accountName", "agentId", "agentIsActive", "agentOsType", "initiatedBy", "initiatedById"]
     remote_script_statuses = client.get_remote_script_status_request(**args)
 
     return CommandResults(
-        readable_output=tableToMarkdown("SentinelOne - Get Remote Scripts Tasks Status", remote_script_statuses, headers=headers, removeNull=True),
+        readable_output=tableToMarkdown("SentinelOne - Get Remote Scripts Tasks Status",
+                                        remote_script_statuses, headers=headers, removeNull=True),
         outputs_prefix="SentinelOne.GetRemoteScript",
         outputs=remote_script_statuses,
         raw_response=remote_script_statuses)
@@ -3241,7 +3241,7 @@ def get_remote_script_results(client: Client, args: dict) -> CommandResults:
     Get the remote script results
     """
     context_entries = []
-    headers=["taskId", "fileName"]
+    headers = ["taskId", "fileName"]
     # Get arguments
     computer_names = argToList(args.get("computerNames"))
     task_ids = argToList(args.get("taskIds"))
@@ -3251,8 +3251,8 @@ def get_remote_script_results(client: Client, args: dict) -> CommandResults:
         if result.get("downloadUrl", ""):
             response = requests.get(url=result.get("downloadUrl"))
             zip_file_data = response.content
-            files.append(fileResult(filename=result.get('fileName',''), data=zip_file_data, file_type=EntryType.ENTRY_INFO_FILE))
-            zipped_file = fileResult(filename=result.get('fileName',''), data=zip_file_data, file_type=EntryType.ENTRY_INFO_FILE)
+            files.append(fileResult(filename=result.get('fileName', ''), data=zip_file_data, file_type=EntryType.ENTRY_INFO_FILE))
+            zipped_file = fileResult(filename=result.get('fileName', ''), data=zip_file_data, file_type=EntryType.ENTRY_INFO_FILE)
             context_entries.append({
                 'taskId': result.get("taskId"),
                 'fileName': result.get("fileName"),
@@ -3267,6 +3267,7 @@ def get_remote_script_results(client: Client, args: dict) -> CommandResults:
         raw_response=results),
         *files
     ]
+
 
 def get_mapping_fields_command():
     """

@@ -1607,7 +1607,7 @@ Run a remote script that was uploaded to the SentinelOne Script Library.
 | output_destination | Output destination. Possible values: DataSetCloud/Local/None/SentinelCloud. Possible values are: DataSetCloud, Local, None, SentinelCloud. | Required | 
 | task_description | Task description. | Required | 
 | script_id | Script ID. | Required | 
-| output_directory | Output directory. | Required | 
+| output_directory | Output directory. | Optional | 
 | agent_ids | A comma-separated list of agent IDs on which the script should run. | Required | 
 | singularity_xdr_Keyword | Singularityxdr keyword. | Optional |
 | singularity_xdr_Url | Singularityxdr keyword. | Optional |
@@ -1625,6 +1625,100 @@ Run a remote script that was uploaded to the SentinelOne Script Library.
 | SentinelOne.RunRemoteScript.pending | boolean | Flag indicating if the requested script execution requires approval and is created as a pending execution. | 
 | SentinelOne.RunRemoteScript.affected | number | Number of entities affected by the requested operation. | 
 | SentinelOne.RunRemoteScript.parentTaskId | string | The parent task ID of the script execution task. Null in case of pending execution. | 
+
+### sentinelone-get-remote-script-status
+
+***
+Get remote scripts tasks using a variety of filters. Accessible via API only parent_task_id query parameter is mandatory
+
+#### Base Command
+
+`sentinelone-get-remote-script-status`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| accountIds | A comma-separated list of account IDs. Example: '225494730938493804,225494730938493915'. | Optional | 
+| computerName__contains | Free-text filter by agent computer name (supports multiple values) | Optional | 
+| countOnly | If true, only total number of items will be returned, without any of the actual objects. | Optional | 
+| createdAt__gt | Created at greater than. Example: '2018-02-27T04:49:26.257525Z'. | Optional | 
+| createdAt__gte | Created at greater or equal than. Example: '2018-02-27T04:49:26.257525Z'. | Optional | 
+| createdAt__lt | Created at lesser than. Example: '2018-02-27T04:49:26.257525Z'. | Optional | 
+| createdAt__lte | Created at lesser or equal than. Example: '2018-02-27T04:49:26.257525Z'. | Optional |
+| cursor | Cursor position returned by the last request. Use to iterate over more than 1000 items. Example: 'YWdlbnRfaWQ6NTgwMjkzODE='. | Optional |
+| description__contains | Only include tasks with specific description | Optional |
+| detailedStatus__contains | Only include tasks with specific detailed status | Optional |
+| groupIds | List of Group IDs to filter by. Example: '225494730938493804,225494730938493915'. | Optional |
+| ids | List of IDs to filter by. Example: '225494730938493804,225494730938493915'. | Optional |
+| initiatedBy__contains | Only include tasks from specific initiating user | Optional |
+| limit | Limit number of returned items (1-1000). Example: '10'. | Optional |
+| parentTaskId | parent task id to fetch the status by. Example: '225494730938493804'. | Required |
+| parentTaskId__in | List of IDs to filter by | Optional |
+| query | Query | Optional |
+| siteIds | List of Site IDs to filter by. Example: '225494730938493804,225494730938493915'. | Optional |
+| status | Status in. Example: 'created'. | Optional |
+| tenant | Indicates a tenant scope request | Optional |
+| updatedAt__gt | Updated at greater than. Example: '2018-02-27T04:49:26.257525Z'. | Optional |
+|  updatedAt__gte | Updated at greater or equal than. Example: '2018-02-27T04:49:26.257525Z'. | Optional |
+| updatedAt__lt | Updated at lesser than. Example: '2018-02-27T04:49:26.257525Z'.  | Optional |
+| updatedAt__lte | Updated at lesser or equal than. Example: '2018-02-27T04:49:26.257525Z'. | Optional |
+| uuid__contains | Free-text filter by agent UUID (supports multiple values) | Optional |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.GetRemoteScript.id | string | ID of the Task. | 
+| SentinelOne.GetRemoteScript.accountId | string | Account ID where this Script is executed. | 
+| SentinelOne.GetRemoteScript.accountName | string | Account Name where this Script is executed. | 
+| SentinelOne.GetRemoteScript.agentId | string | Agent ID where this Script is executed. |
+| SentinelOne.GetRemoteScript.agentIsActive | boolean | The status of the Agent. |
+| SentinelOne.GetRemoteScript.agentMachineType | string | Agent Machine Type. |
+| SentinelOne.GetRemoteScript.agentOsType | string | Agent OS type. |
+| SentinelOne.GetRemoteScript.agentUuid | string | Agent Uuid. |
+| SentinelOne.GetRemoteScript.createdAt | string | The script created At datetime. |
+| SentinelOne.GetRemoteScript.description | string | The description of the Remote script. | 
+| SentinelOne.GetRemoteScript.detailedStatus | string | The detailed status of the remote script. |
+| SentinelOne.GetRemoteScript.groupId | string | Group ID where this Script is executed. |
+| SentinelOne.GetRemoteScript.groupName | string | Group Name where this Script is executed. |
+| SentinelOne.GetRemoteScript.initiatedBy | string | Remote script initiate by. |
+| SentinelOne.GetRemoteScript.initiatedById | string | ID of the remote script initiator. |
+| SentinelOne.GetRemoteScript.parentTaskId | string | Parent task Id of remote script. |
+| SentinelOne.GetRemoteScript.siteId | string | Site ID where this Script is executed. |
+| SentinelOne.GetRemoteScript.siteName | string | Site name where this Script is executed. |
+| SentinelOne.GetRemoteScript.status | string  | Status of remote script. |
+| SentinelOne.GetRemoteScript.statusCode | string | Status code of remote script. |
+| SentinelOne.GetRemoteScript.statusDescription | string | Status description of remote script. |
+| SentinelOne.GetRemoteScript.type | string | Type of remote script. |
+| SentinelOne.GetRemoteScript.updateAt | string | Remote script upated at. |
+
+
+### sentinelone-get-remote-script-results
+
+***
+Get scripts results URLs. Accessible via API only
+
+#### Base Command
+
+`sentinelone-get-remote-script-results`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| computerNames | A list of partial or whole computer names, which ran scripts, | Optional | 
+| taskIds | A list of task ids to get a download link for | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.RemoteScriptResults.taskId | string | ID of the Task. | 
+| SentinelOne.RemoteScriptResults.fileName | string | File name. | 
+| SentinelOne.RemoteScriptResults.downloadUrl | string | Download Url. | 
 
 ### get-mapping-fields
 
