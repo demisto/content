@@ -7,6 +7,8 @@ def update_status(new_status: str):
 
 
 def main():
+    incident = demisto.incidents()[0]  # type: ignore
+    isMirrorEnable = incident.get("dbotMirrorDirection")
     alert_short_id = demisto.args()["short_id"]
     new_status = demisto.args()["status"]
 
