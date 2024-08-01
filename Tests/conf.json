@@ -4862,6 +4862,7 @@
             "timeout": 7000,
             "integrations": [
                 "EWSO365",
+                "EWS v2",
                 "Core REST API",
                 "CreateIncidents",
                 "Rasterize"
