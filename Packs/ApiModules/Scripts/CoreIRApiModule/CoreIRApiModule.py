@@ -236,7 +236,7 @@ class CoreClient(BaseClient):
                       lte_creation_time=None, gte_creation_time=None, status=None, starred=None,
                       starred_incidents_fetch_window=None, sort_by_modification_time=None, sort_by_creation_time=None,
                       page_number=0, limit=100, gte_creation_time_milliseconds=0,
-                      gte_modification_time_milliseconds=None,lte_modification_time_milliseconds=None):
+                      gte_modification_time_milliseconds=None, lte_modification_time_milliseconds=None):
         """
         Filters and returns incidents
 
@@ -357,16 +357,16 @@ class CoreClient(BaseClient):
                 'operator': 'gte',
                 'value': date_to_timestamp(gte_creation_time_milliseconds)
             })
-        
+
         if gte_modification_time_milliseconds:
             filters.append({
                 'field': 'modification_time',
                 'operator': 'gte',
                 'value': date_to_timestamp(gte_modification_time_milliseconds)
             })
-            demisto.debug(f'get incidents gte_modification_time_milliseconds {date_to_timestamp(gte_modification_time_milliseconds)}')
-            
-        
+            demisto.debug(
+                f'get incidents gte_modification_time_milliseconds {date_to_timestamp(gte_modification_time_milliseconds)}')
+
         if lte_modification_time_milliseconds:
             filters.append({
                 'field': 'modification_time',

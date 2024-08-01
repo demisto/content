@@ -889,11 +889,12 @@ def get_modified_remote_data_command(client, args, xdr_delay: int, last_mirrorin
         'time') if isinstance(last_mirroring, dict) else remote_args.last_update
     last_update_utc = dateparser.parse(last_update,
                                        settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': False})   # convert to utc format
-    
+
     if last_update_utc:
         gte_modification_time_milliseconds = last_update_utc - timedelta(minutes=xdr_delay)
         lte_modification_time_with_ms = gte_modification_time_milliseconds + timedelta(minutes=1)
-    demisto.debug(f'Performing get-modified-remote-data command. {last_update=} | {gte_modification_time_milliseconds=} | {lte_modification_time_with_ms=}')
+    demisto.debug(
+        f'Performing get-modified-remote-data command. {last_update=} | {gte_modification_time_milliseconds=} | {lte_modification_time_with_ms=}')
     raw_incidents = client.get_incidents(
         gte_modification_time_milliseconds=gte_modification_time_milliseconds,
         lte_modification_time_milliseconds=lte_modification_time_with_ms,
