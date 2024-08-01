@@ -64,7 +64,7 @@ call o365_common_fields
 	xdm.source.ipv6 = src_ip_v6,
 	xdm.target.file.size = FileSize,
 	xdm.email.return_path = p1sender,
-	xdm.email.message_id = coalesce(NetworkMessageId, messageid, internetmessageid),
+	xdm.email.message_id = coalesce(NetworkMessageId, to_string(messageid), internetmessageid),
 	xdm.target.file.file_type = FileType,
 	xdm.target.file.sha256 = `sha256`,
 	xdm.event.outcome = if(EnforcementMode = 1, XDM_CONST.OUTCOME_UNKNOWN, to_string(EnforcementMode) ~= "2|3", XDM_CONST.OUTCOME_PARTIAL, EnforcementMode = 4, XDM_CONST.OUTCOME_FAILED, EnforcementMode = 5, XDM_CONST.OUTCOME_SUCCESS, ResultStatus = "Succeeded", XDM_CONST.OUTCOME_SUCCESS, ResultStatus = "PartiallySucceeded", XDM_CONST.OUTCOME_PARTIAL, ResultStatus = "Failed", XDM_CONST.OUTCOME_FAILED, ResultStatus ~= "[Tt]rue", XDM_CONST.OUTCOME_SUCCESS, ResultStatus ~= "[Ff]alse", XDM_CONST.OUTCOME_FAILED),
@@ -79,7 +79,7 @@ call o365_common_fields
 	xdm.target.user.identifier = targetyammeruserid,
 	xdm.alert.original_threat_name = replex(ThreatsAndDetectionTech, "[\"\[\]]", ""),
 	xdm.target.url = url, 
-	xdm.network.http.url = coalesce(requestsource, eventdeeplink, deeplinkurl),
+	xdm.network.http.url = coalesce(eventdeeplink, deeplinkurl),
 	xdm.source.process.name = if(Application ~= "\.[Ee][Xx][Ee]", Application),
 	xdm.observer.type = coalesce(sourceworkload_name, Source, Workload);
 
