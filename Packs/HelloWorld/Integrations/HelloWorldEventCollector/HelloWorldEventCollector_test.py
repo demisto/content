@@ -30,7 +30,7 @@ def test_fetch_detection_events_command():
 
     assert len(events) == 1
     assert next_run.get('prev_id') == 2
-    assert events[0].get('id') == '2'
+    assert events[0].get('id') == 2
 
 
 def test_test_module_command():
@@ -84,5 +84,5 @@ def test_get_events_command():
         args={},
     )
 
-    assert events[0].get('id') == '1'
+    assert events[0].get('id') == 1
     assert 'Test Event' in hr.readable_output
