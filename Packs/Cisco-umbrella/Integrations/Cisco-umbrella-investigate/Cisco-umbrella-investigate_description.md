@@ -1,9 +1,20 @@
-Cisco Investigate is part of the Cisco Umbrella package. When you log into the CIsco Umbrella portal you will need to 
-obtain the API Token for the Cisco Investigate Feature.
+When using Cortex XSOAR credentials, insert your API key as the credential username and your API secret as the password.
 
-Notice: Submitting indicators using the following commands of this integration might make the indicator data publicly available.
-- ***domain***
-- ***umbrella-domain-search***
-- ***umbrella-domain-co-occurrences***
-- ***umbrella-domain-categorization***
-See the vendor’s documentation for more details.
+### Step 1: Obtain Cisco Umbrella Investigate API Key & Secret
+
+1. **Connect to Cisco Umbrella:**
+   - Access your Cisco Umbrella account dashboard.
+
+2. **Navigate to API Keys:**
+   - Click on **Investigate** in the menu.
+
+3. **Create New Token:**
+   - Locate and click on **API Keys**.
+   - Click **CREATE NEW TOKEN**.
+   - Provide a **Title** for your token (e.g., "Cortex XSOAR Integration").
+   - Click **Create** to generate the API key and secret.
+
+### Step 2: Configure Cortex XSOAR Credentials
+
+- Use the generated API key as the **credential username**.
+- Use the generated API secret as the **password**.
