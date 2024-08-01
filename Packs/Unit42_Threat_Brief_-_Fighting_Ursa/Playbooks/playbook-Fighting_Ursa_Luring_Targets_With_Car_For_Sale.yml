@@ -1094,12 +1094,6 @@ inputs:
   required: false
   description: Whether to block the indicators automatically.
   playbookInputQuery:
-- key: XQLTimeRange
-  value:
-    simple: 7 days ago
-  required: false
-  description: The time range for the Cortex XDR XQL query.
-  playbookInputQuery:
 outputs: []
 tests:
 - No tests (auto formatted)
