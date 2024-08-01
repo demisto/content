@@ -80,6 +80,7 @@ Packs/ApiModules/Scripts/DemistoClassApiModule/DemistoClassApiModule.py @dantavo
 
 # ML scripts
 /Packs/ML/ @jlevypaloalto
+/Packs/PhishingURL/ @jlevypaloalto
 /Packs/Phishing/Scripts/PhishingDedupPreprocessingRule @jlevypaloalto
 /Packs/Phishing/Scripts/FindDuplicateEmailIncidents @jlevypaloalto
 /Packs/Base/Scripts/DrawRelatedIncidentsCanvas@jlevypaloalto
