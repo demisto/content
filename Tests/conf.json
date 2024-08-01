@@ -5978,7 +5978,8 @@
         "Test Playbook - Cortex XDR Malware - Incident Enrichment" : "CIAC-11274",
         "Test XDR Playbook execute script commands": "CIAC-11274",
         "Test XDR Playbook general commands": "CIAC-11274",
-        "Test XDR Playbook": "CIAC-11274"
+        "Test XDR Playbook": "CIAC-11274",
+        "Test_XFE_v2": "CRTX-112127"
     },
     "skipped_integrations": {
         "AWS - Lambda": "No instance - wrong creds, issue CRTX-110456",
