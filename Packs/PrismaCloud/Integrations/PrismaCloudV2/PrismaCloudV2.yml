@@ -2132,7 +2132,23 @@ script:
     execution: false
     name: update-remote-system
 
-  - arguments: [ ]
+  - arguments:
+      - description: Should add description here
+        name: name
+        required: true
+      - description: Timestamp in milliseconds when access key expires. Default:0
+        name: expires-on
+      - description: Should add description here
+        name: service-account-name
+    deprecated: false
+    description: Should add description here
+    execution: false
+    name: prisma-cloud-access-key-create
+  - arguments:
+      - description: Should add description here
+        name: access-key
+      - description: Maximum number of entries to return.
+        name: limit
     deprecated: false
     description: Should add description here
     execution: false

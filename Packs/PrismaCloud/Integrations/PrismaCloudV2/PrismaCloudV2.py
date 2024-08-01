@@ -328,16 +328,23 @@ class Client(BaseClient):
 
         return self._http_request('POST', 'code/api/v1/errors/files', json_data=data, headers=headers)
 
+    def access_key_creation(self, args: Dict[str, Any]):
+        payload = json.dumps({
+            # "expiresOn": args.get('expires-on'),
+            "name": args.get('name'),
+            # "serviceAccountName": args.get('service-account-name')
+        })
+        return self._http_request(
+            method='POST',
+            url_suffix='/access_keys',
+            data=payload
+        )
+
     def get_access_keys_list(self, args: Dict[str, Any]):
         url_suffix = f"/access_keys/{args.get('access-key')}" if args.get('access-key') else '/access_keys'
-
-        # params = {'limit': args.get('limit')} if args.get('limit') else {}
-
-        params = {'limit': '3'}
         return self._http_request(
             method='GET',
-            url_suffix=url_suffix,
-            params=params
+            url_suffix=url_suffix
         )
 
     def patch_access_key_disable(self, access_key: str):
@@ -2166,9 +2173,28 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
     return remote_incident_id
 
 
+def access_key_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    access_key = client.access_key_creation(args)
+    print(f"{access_key=}")
+    transform_access_keys = {
+        'Id': access_key.get('id'),
+        'Secret Key': access_key.get('secretKey'),
+    }
+
+    markdown_table = tableToMarkdown('PrismaCloud Access Key Creation', transform_access_keys, headers=['Id', 'Secret Key'])
+    return CommandResults(
+        outputs_prefix="PrismaCloud.AccessKeys",
+        outputs_key_field='id',
+        outputs=access_key,
+        raw_response=access_key,
+        readable_output=markdown_table,
+    )
+
+
 def access_keys_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     access_keys_list = client.get_access_keys_list(args)
-    print(len(access_keys_list))
+    limit = int(args.get('limit', '50'))
+    limited_access_keys_list = access_keys_list[:limit]
     transform_access_keys_list = [
         {
             'ID': access_key.get('id'),
@@ -2183,7 +2209,7 @@ def access_keys_list_command(client: Client, args: Dict[str, Any]) -> CommandRes
             'Role Type': access_key.get('roleType'),
             'Username': access_key.get('username'),
         }
-        for access_key in access_keys_list
+        for access_key in limited_access_keys_list
     ]
 
     markdown_table = tableToMarkdown('PrismaCloud Access Keys', transform_access_keys_list,
@@ -2319,8 +2345,10 @@ def main() -> None:
             'get-remote-data': get_remote_data_command,
             'update-remote-system': update_remote_system_command,
 
+            'prisma-cloud-access-key-create': access_key_create_command,
             'prisma-cloud-access-keys-list': access_keys_list_command,
             'prisma-cloud-access-key-disable': access_key_disable_command,
+            'prisma-cloud-access-key-enable': access_key_enable_command,
             'prisma-cloud-access-key-delete': access_key_delete_command,
         }
         commands_v1 = {
