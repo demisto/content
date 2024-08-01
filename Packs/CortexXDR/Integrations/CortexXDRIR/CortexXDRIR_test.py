@@ -1582,5 +1582,29 @@ def test_get_xsoar_close_reasons(mocker):
     assert get_xsoar_close_reasons() == list(XSOAR_RESOLVED_STATUS_TO_XDR.keys()) + ['CustomReason1', 'CustomReason 2', 'Foo']
 
 
-def test_fetch_incidents_dedup(mocker):
-    assert True
+def test_fetch_incidents_dedup(mocker, mock_last_run):
+    from CortexXDRIR import fetch_incidents
+    
+    last_run = None
+
+    class MockClient:
+    
+        incidents: None
+        
+        def save_modified_incidents_to_integration_context(self): ...
+        
+        def get_multiple_incidents_extra_data(
+            self, exclude_artifacts, incident_id_list=[], gte_creation_time_milliseconds=0,
+            status=None, starred=None, starred_incidents_fetch_window=None, page_number=0, limit=100
+        ):
+            return self.incidents
+    
+    mock_client = MockClient()
+    
+    # first call
+    result_1 = fetch_incidents()
+    
+
+
+
+
