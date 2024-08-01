@@ -1765,19 +1765,14 @@ function SetJunkRulesCommand([ExchangeOnlinePowershellV3Client]$client, [hashtab
 }
 
 function  CreateAddAndRemoveSections([string[]]$items_to_add, [string[]]$items_to_remove ){
-    if ((-not [string]::IsNullOrEmpty($items_to_add)) -and (-not [string]::IsNullOrEmpty($items_to_remove))){
-        return  @{Add = $items_to_add
-            Remove                         = $items_to_remove
-        }
+    $params = @{}
+    if (-not [string]::IsNullOrEmpty($items_to_add)){
+        $params["Add"] = $items_to_add
     }
-    elseif (-not [string]::IsNullOrEmpty($items_to_add)){
-        return  @{Add = $items_to_add
-        }
+    if (-not [string]::IsNullOrEmpty($items_to_remove)){
+        $params["Remove"] =  $items_to_remove
     }
-    elseif (-not [string]::IsNullOrEmpty($items_to_remove)){
-        return  @{Remove = $items_to_remove
-        }
-    }
+    return $params
 }
 
 function SetGlobalJunkRulesCommand([ExchangeOnlinePowershellV3Client]$client, [hashtable]$kwargs) {
