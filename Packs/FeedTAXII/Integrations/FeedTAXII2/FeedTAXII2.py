@@ -269,7 +269,7 @@ def is_valid_taxii_url(url: Optional[str]):
     """
     if url and (parse_result := urlparse(url)):
         path = parse_result.path
-        if path.endswith(("taxii", "taxii2", "taxii2/", "taxii2/")):
+        if path.endswith(("taxii", "taxii2", "taxii2/", "taxii/")):
             return True
     return False
 
