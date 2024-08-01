@@ -2934,32 +2934,41 @@ def fetch_assets(client, assets_last_run):
     """
     demisto.debug('Starting fetch for assets')
     since_datetime = assets_last_run.get('since_datetime', '')
-    fetch_stage = assets_last_run.get('stage', 'assets')
     next_page = assets_last_run.get('next_page', '')
     total_assets = assets_last_run.get('total_assets', 0)
     snapshot_id = assets_last_run.get('snapshot_id', round(time.time() * 1000))
 
     if not since_datetime:
         since_datetime = arg_to_datetime(ASSETS_FETCH_FROM).strftime(ASSETS_DATE_FORMAT)  # type: ignore[union-attr]
-    demisto.debug(f'{since_datetime}')
-    if fetch_stage != 'vulnerabilities':
-        assets, next_run_page = get_host_list_detections_events(client, since_datetime, next_page)
-        total_assets += len(assets)
-        if next_run_page:
-            new_last_run = {'stage': 'assets', 'next_page': next_run_page, 'total_assets': total_assets,
-                            'since_datetime': since_datetime, 'snapshot_id': snapshot_id,
-                            'nextTrigger': '0', "type": FETCH_COMMAND.get('assets')}
-            return assets, [], new_last_run, 0, snapshot_id
-        else:
-            new_last_run = {'stage': 'vulnerabilities', 'next_page': '', 'total_assets': 0,
-                            'nextTrigger': '0', "type": FETCH_COMMAND.get('assets')}
-            return assets, [], new_last_run, str(total_assets), snapshot_id
 
-    else:
-        vulnerabilities = get_vulnerabilities(client, since_datetime)
-        new_last_run = {'stage': '', 'next_page': '', 'total_assets': 0,
-                        'nextTrigger': None, "type": FETCH_COMMAND.get('assets')}
-        return [], vulnerabilities, new_last_run, 0, 0
+    assets, next_run_page = get_host_list_detections_events(client, since_datetime, next_page)
+    total_assets += len(assets)
+    stage = 'assets' if next_run_page else 'vulnerabilities'
+    amount_to_send = 0 if next_run_page else str(total_assets)
+
+    new_last_run = {'stage': stage, 'next_page': next_run_page, 'total_assets': total_assets,
+                    'since_datetime': since_datetime, 'snapshot_id': snapshot_id,
+                    'nextTrigger': '0', "type": FETCH_COMMAND.get('assets')}
+
+    return assets, new_last_run, amount_to_send, snapshot_id
+
+
+def fetch_vulnerabilities(client, last_run):
+    """ Fetches vulnerabilities
+    Args:
+        client: command clietnt
+        last_run: The last run.
+    Return:
+        vulnerabilities: vulnerabilities to push to xsiam
+        last_run: The  new last run to save.
+    """
+    demisto.debug('Starting fetch for vulnerabilities')
+    since_datetime = last_run.get('since_datetime', '')
+
+    vulnerabilities = get_vulnerabilities(client, since_datetime)
+    new_last_run = {'stage': 'assets', 'next_page': '', 'total_assets': 0,
+                    'nextTrigger': None, "type": FETCH_COMMAND.get('assets')}
+    return vulnerabilities, new_last_run
 
 
 def fetch_events(client, last_run, first_fetch_time, fetch_function, newest_event_field, next_page_field,
@@ -3445,18 +3454,23 @@ def main():  # pragma: no cover
         elif command == 'fetch-assets':
             last_run = demisto.getAssetsLastRun()
             demisto.debug(f'saved lastrun assets: {last_run}')
-            assets, vulnerabilities, last_run, total_assets, snapshot_id = fetch_assets(client=client, assets_last_run=last_run)
-            if assets:
+            fetch_stage = last_run.get('stage', 'assets')
+
+            if fetch_stage == 'assets':
+                assets, last_run, total_assets, snapshot_id = fetch_assets(client=client, assets_last_run=last_run)
+
                 demisto.debug('sending assets to XSIAM.')
                 send_data_to_xsiam(data=assets, vendor=VENDOR, product='assets', data_type='assets', snapshot_id=str(snapshot_id),
                                    items_count=total_assets, should_update_health_module=False)
                 demisto.setAssetsLastRun(last_run)
                 demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type='assets'): total_assets})
 
-            elif vulnerabilities:
+            elif fetch_stage == 'vulnerabilities':
+                vulnerabilities, last_run = fetch_vulnerabilities(client=client, last_run=last_run)
                 demisto.debug('sending vulnerabilities to XSIAM.')
                 send_data_to_xsiam(data=vulnerabilities, vendor=VENDOR, product='vulnerabilities', data_type='assets')
                 demisto.setAssetsLastRun(last_run)
+
             demisto.debug('finished fetch assets run')
         else:
             return_results(
