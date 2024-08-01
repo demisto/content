@@ -227,6 +227,7 @@ script:
       description: Maximum number of rows to return.
       name: limit
     - auto: PREDEFINED
+      defaultValue: last_contact_time
       description: Sort Fields.
       name: sort_field
       predefined:
