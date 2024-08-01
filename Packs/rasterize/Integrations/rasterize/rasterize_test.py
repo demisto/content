@@ -712,4 +712,4 @@ def test_is_mailto_urls(mocker: MockerFixture):
 
     res = screenshot_image(None, None, 'url', None, None)
 
-    assert res == (None, 'URLs that start with "mailto:" cannot be screenshot.\nURL: url')
+    assert res == (None, 'URLs that start with "mailto:" cannot be rasterized.\nURL: url')
