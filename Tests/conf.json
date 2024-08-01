@@ -5778,6 +5778,9 @@
                 "MattermostAskUser"
             ]
         }
+        {
+            "playbookID": "DBotTrainClustering-test"
+        }
     ],
     "skipped_tests": {
         "ThreatCrowd - Test": "The pack is deprecated",
