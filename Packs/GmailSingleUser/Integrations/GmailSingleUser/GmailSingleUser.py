@@ -1127,7 +1127,7 @@ def reply_mail_command(client: Client):
     args = demisto.args()
     email_from = args.get('from')
     send_as = args.get('send_as')
-    in_reply_to = args.get('in_reply_to')
+    in_reply_to = args.get('inReplyTo')
     references = argToList(args.get('references'))
 
     return mail_command(client, args, email_from, send_as, 'Re: ', in_reply_to, references)
