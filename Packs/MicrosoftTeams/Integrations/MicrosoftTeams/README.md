@@ -258,7 +258,7 @@ Note: The [microsoft-teams-ring-user](https://learn.microsoft.com/en-us/graph/ap
     | Bot Password |  | False |
     | Authentication Type |  | False |
     | Application redirect URI (for Authorization Code mode) |  | False |
-    | Authorization code |  | False |
+    | Authorization code | For Authorization Code flow mode. Received from the authorization step. See the Detailed Instructions \(?\) section | False |
     | Default team |  | True |
     | Notifications channel |  | True |
     | Certificate (Required for HTTPS) |  | False |
