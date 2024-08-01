@@ -205,7 +205,11 @@ def tags(indicator, with_ports):
     if with_ports and indicator.get('ioc_type') == "ip:port":
             res.append('port: ' + indicator.get('ioc').split(':')[1])
             
-    res = [tag for tag in res if tag]
+    res = [tag.lower() for tag in res if tag]
+    
+    # remove duplicate tags
+    seen = set()
+    res =  [tag for tag in res if tag not in seen and not seen.add(tag)]
     
     #TODO dedup
     
