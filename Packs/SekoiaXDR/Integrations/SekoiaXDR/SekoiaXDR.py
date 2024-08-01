@@ -4,11 +4,11 @@ from CommonServerUserPython import *  # noqa: F401
 
 import json
 import urllib3
-import dateparser
+import dateparser  # type: ignore
 from typing import Any, Dict, Tuple, List, Optional, cast
 from datetime import datetime
 import re
-import pytz
+import pytz  # type: ignore
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -1209,7 +1209,9 @@ def get_asset_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     header = ["name", "uuid", "description"]
     command_output = filter_dict_by_keys(asset, header)
     readable_output = tableToMarkdown(
-        f"Asset {asset_uuid} have the following information:", command_output, headers=header
+        f"Asset {asset_uuid} have the following information:",
+        command_output,
+        headers=header,
     )
 
     return CommandResults(
