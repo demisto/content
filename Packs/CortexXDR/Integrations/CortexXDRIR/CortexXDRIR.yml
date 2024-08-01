@@ -42,7 +42,7 @@ configuration:
   type: 0
   section: Collect
   required: false
-  additionalinfo: XDR delay 
+  additionalinfo: In case of delay in mirroring XDR <->, This will increase the lookBack time. 
 - display: Custom close-reason mapping (XSOAR -> XDR mirrored incident. Overwrites default close-reason mapping defined by Cortex XSOAR)
   section: Collect
   additionalinfo: 'Define how to close the mirrored incidents from Cortex XSOAR into Cortex XDR with a custom close reason mapping. Enter a comma-separated list of close reasons (acceptable format {Cortex XSOAR close reason}={Cortex XDR close reason}) to override the default close reason mapping defined by Cortex XSOAR. Note that the mapping must be configured accordingly with the existing close reasons in Cortex XSOAR and Cortex XDR. Not following this format will result in closing the incident with a default close reason. Example: "Resolved=Other,Duplicate=Other". Refer to ../README.md for possible close-reasons - `XDR Incident Mirroring`.'

@@ -1580,3 +1580,39 @@ def test_get_xsoar_close_reasons(mocker):
     }
     mocker.patch.object(demisto, 'internalHttpRequest', return_value=mock_response)
     assert get_xsoar_close_reasons() == list(XSOAR_RESOLVED_STATUS_TO_XDR.keys()) + ['CustomReason1', 'CustomReason 2', 'Foo']
+
+
+def test_get_modified_remote_data_xdr_delay(mocker,requests_mock):
+    """
+    Given:
+        - an XDR client
+        - arguments - lastUpdate time
+        - raw incidents (result of client.get_incidents)
+    When
+        - running get_modified_remote_data_command
+    Then
+        - the method is returning a list of incidents IDs that were modified
+    """
+    from CortexXDRIR import get_modified_remote_data_command, Client
+    from CommonServerPython import BaseClient
+    empty_res = {
+        "reply": {
+            "total_count": 0,
+            "result_count": 0,
+            "incidents": [],
+            "restricted_incident_ids": []
+        }
+    }
+    args = {
+        'lastUpdate': '2020-11-18T13:16:52.005381+02:00',
+    }
+    get_incidents_list_response = load_test_data('./test_data/get_incidents_list.json')
+    mocker.patch.object(BaseClient, "_http_request", return_value=empty_res)
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False)
+    
+    response = get_modified_remote_data_command(client, args, xdr_delay=1)
+    assert not response.modified_incident_ids
+    mocker.patch.object(BaseClient, "_http_request", return_value=get_incidents_list_response)
+    response = get_modified_remote_data_command(client, args, xdr_delay=5)
+    assert response.modified_incident_ids == ['1', '2']
