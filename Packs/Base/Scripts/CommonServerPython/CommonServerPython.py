@@ -7,6 +7,8 @@ Note that adding code to CommonServerUserPython can override functions in Common
 from __future__ import print_function
 
 import base64
+import inspect
+import resource
 import gc
 import json
 import logging
@@ -41,7 +43,7 @@ def __line__():
 
 # 43 - The line offset from the beginning of the file.
 _MODULES_LINE_MAPPING = {
-    'CommonServerPython': {'start': __line__() - 44, 'end': float('inf')},
+    'CommonServerPython': {'start': __line__() - 45, 'end': float('inf')},
 }
 
 XSIAM_EVENT_CHUNK_SIZE = 2 ** 20  # 1 Mib
@@ -201,7 +203,7 @@ try:
     import requests
     from requests.adapters import HTTPAdapter
     from urllib3.util import Retry
-    from typing import Optional, Dict, List, Any, Union, Set, cast
+    from typing import Optional, Dict, List, Any, Union, Set, cast, TypeVar, Callable
 
     from urllib3 import disable_warnings
     disable_warnings()
@@ -12050,6 +12052,104 @@ def get_server_config():
     body = parse_json_string(response.get('body'))
     server_config = body.get('sysConf', {})
     return server_config
+
+
+def mask_secrets(args: tuple, kwargs: dict, func: Callable, secret_keys: Optional[List[str]] = None) -> tuple:
+    """
+    Mask secrets in args and kwargs based on secret_keys.
+
+    Args:
+        args (tuple): Positional arguments.
+        kwargs (dict): Keyword arguments.
+        func (Callable): The original function to inspect.
+        secret_keys (Optional[List[str]]): List of keys whose values should be masked.
+
+    Returns:
+        tuple: Masked args and kwargs.
+    """
+    if secret_keys is None:
+        return args, kwargs
+
+    # Get function signature
+    sig = inspect.signature(func)
+    bound_args = sig.bind_partial(*args, **kwargs)
+    bound_args.apply_defaults()
+
+    # Mask arguments based on their names
+    masked_args = []
+    for name, value in bound_args.arguments.items():
+        if name in secret_keys:
+            masked_args.append((name, "***"))
+        else:
+            masked_args.append((name, value))
+
+    # Reconstruct args and kwargs
+    new_args = tuple(value for name, value in masked_args if name in sig.parameters and sig.parameters[name].kind in (
+    inspect.Parameter.POSITIONAL_OR_KEYWORD, inspect.Parameter.POSITIONAL_ONLY))
+    new_kwargs = {name: value for name, value in masked_args if
+                  name in sig.parameters and sig.parameters[name].kind == inspect.Parameter.KEYWORD_ONLY}
+
+    return new_args, new_kwargs
+
+# Type variable to indicate that the decorated function can be any callable
+FuncType = TypeVar('FuncType', bound=Callable[..., Any])
+
+
+def debugger(secret_keys: Optional[List[str]] = None) -> Callable[[FuncType], FuncType]:
+    """
+    Decorator to log the function name, arguments, keyword arguments, timestamp, runtime, memory usage,
+    and execution context to server logs. Optionally masks secrets in the logs.
+    Also handles and logs any exceptions raised during execution.
+
+    Args:
+        secret_keys (Optional[List[str]]): List of keys whose values should be masked.
+
+    Returns:
+        Callable[..., Any]: The decorated function with logging functionality.
+    """
+    def decorator(func: FuncType) -> FuncType:
+        @wraps(func)
+        def wrapper(*args: Any, **kwargs: Any) -> Any:
+            # Log the timestamp and function details
+            function_name = func.__name__
+            masked_args, masked_kwargs = mask_secrets(args, kwargs, func, secret_keys)
+
+            demisto.debug(f"Calling function: {function_name}")
+            demisto.debug(f"Arguments: {masked_args}")
+            demisto.debug(f"Keyword arguments: {masked_kwargs}")
+
+            # Capture the start time and memory usage
+            start_time = time.time()
+            start_memory = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+
+            try:
+                # Execute the function and capture the result
+                result = func(*args, **kwargs)
+            except Exception as e:
+                # Log any exceptions raised
+                demisto.error(f"Exception in {function_name}: {e}")
+                raise
+
+            # Capture the end time and calculate runtime
+            end_time = time.time()
+            runtime = end_time - start_time
+
+            # Capture end memory usage
+            end_memory = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+            memory_used = end_memory - start_memory
+
+            # Log runtime and memory usage
+            demisto.debug(f"Function {function_name} completed in {runtime:.4f} seconds")
+            demisto.debug(f"Memory used by {function_name}: {memory_used / 1024:.2f} KB")
+
+            # Log the result
+            demisto.debug(f"Function {function_name} result: {result}")
+
+            return result
+
+        return wrapper  # type: ignore
+
+    return decorator
 
 from DemistoClassApiModule import *     # type:ignore [no-redef]  # noqa:E402
 
