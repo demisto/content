@@ -1,5 +1,3 @@
-import codecs
-import io
 import secrets
 import string
 import demistomock as demisto  # noqa: F401

@@ -1,8 +1,7 @@
 import gzip
 import json
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 from freezegun import freeze_time
-import CoreXQLApiModule
 import CortexCoreXQLQueryEngine
 import pytest
 from CommonServerPython import *
@@ -992,18 +991,18 @@ def test_get_xql_quota_forward_user_run_rbac_true(mock_api_call):
 
     """
     mock_api_call.return_value = {'name': '/api/webapp/public_api/v1/xql/get_quota', 'status': 200, 'data':
-        '{"reply": {"license_quota": 1, "additional_purchased_quota": 0.0, "used_quota": 0.0, "eval_quota": 0.0}}'}
+                                  '{"reply": {"license_quota": 1, "additional_purchased_quota": 0.0, "used_quota": 0.0, "eval_quota": 0.0}}'}
     response = CLIENT.get_xql_quota({})
     mock_api_call.assert_called_once_with(method='POST',
-                                            path='some_mock_url/xql/get_quota',
-                                            data=None,
-                                            headers={},
-                                            timeout=None)
+                                          path='some_mock_url/xql/get_quota',
+                                          data=None,
+                                          headers={},
+                                          timeout=None)
     assert response == {'reply': {'additional_purchased_quota': 0.0,
                                   'eval_quota': 0.0,
                                   'license_quota': 1,
                                   'used_quota': 0.0}}
-    
+
 
 @patch('CoreXQLApiModule.FORWARD_USER_RUN_RBAC', True)
 @patch('CoreXQLApiModule.demisto._apiCall')
@@ -1029,6 +1028,7 @@ def test_start_xql_query_forward_user_run_rbac_true(mock_api_call):
                                           headers={},
                                           timeout=None)
     assert response == 'aaa'
+
 
 @patch('CoreXQLApiModule.FORWARD_USER_RUN_RBAC', True)
 @patch('CoreXQLApiModule.demisto._apiCall')
@@ -1071,14 +1071,13 @@ def test_get_xql_quota_forward_user_run_rbac_false(mock_http_request):
 
     """
     mock_http_request.return_value = {'name': '/api/webapp/public_api/v1/xql/get_quota', 'status': 200, 'data':
-        '{"reply": {"license_quota": 1, "additional_purchased_quota": 0.0, "used_quota": 0.0, "eval_quota": 0.0}}'}
+                                      '{"reply": {"license_quota": 1, "additional_purchased_quota": 0.0, "used_quota": 0.0, "eval_quota": 0.0}}'}
     CLIENT.get_xql_quota({})
     mock_http_request.assert_called_once_with(CLIENT, method='POST', url_suffix='/xql/get_quota',
                                               full_url=None, headers=None, json_data={}, params=None, data=None, timeout=None,
                                               raise_on_status=False, ok_codes=None, error_handler=None, with_metrics=False,
                                               resp_type='json')
 
-    
 
 @patch('CoreXQLApiModule.FORWARD_USER_RUN_RBAC', False)
 @patch('CoreXQLApiModule.BaseClient._http_request')
@@ -1101,6 +1100,7 @@ def test_start_xql_query_forward_user_run_rbac_false(mock_api_call):
     mock_api_call.assert_called_once_with(CLIENT, method='POST', url_suffix='/xql/start_xql_query', full_url=None, headers=None,
                                           json_data={}, params=None, data=None, timeout=None, raise_on_status=False,
                                           ok_codes=None, error_handler=None, with_metrics=False, resp_type='json')
+
 
 @patch('CoreXQLApiModule.FORWARD_USER_RUN_RBAC', False)
 @patch('CoreXQLApiModule.BaseClient._http_request')
