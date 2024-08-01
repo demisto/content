@@ -276,10 +276,6 @@
             "type": "string",
             "is_array": false
         },
-        "requestsource": {
-            "type": "string",
-            "is_array": false
-        },
         "eventdeeplink": {
             "type": "string",
             "is_array": false
