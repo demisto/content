@@ -17,10 +17,11 @@ LOG = "THREAT FOX-"
 
 
 class Client(BaseClient):
-    def get_indicators_request(self, query: dict):
+    def get_indicators_request(self, query: dict)->dict:
         url_suffix = '/api/v1'
         body = query
         return self._http_request('POST', url_suffix=url_suffix, json_data=body)
+ 
     
     def test_module(self) -> str:
         """Tests API connectivity and authentication'
@@ -44,7 +45,7 @@ class Client(BaseClient):
         return message
    
         
-def check_params_for_query(args: dict):
+def check_params_for_query(args: dict)->tuple[bool, str|None]:
     """Checks that there are no extra params and no missing ones for the query.
     Args:
         args: dict
@@ -53,7 +54,6 @@ def check_params_for_query(args: dict):
         Str: The query type (one of these: 'search_term', 'id', 'hash', 'tag', 'malware', 'days').
             If args are not good than it will be None.
     """
-    #TODO להוסיף בדיקה, מה קורה כשלא שולחים שום פרמטר???
     args_lst = list({ele for ele in args if args[ele]})
     if 'limit' in args_lst:
         args_lst.remove('limit')
@@ -102,7 +102,7 @@ def create_query(query_arg, id: str | None = None, search_term: str | None = Non
     return query
 
 
-def parse_indicator_for_get_command(indicator):
+def parse_indicator_for_get_command(indicator: dict)->dict:
     
     res_indicator = assign_params(
             ID=indicator.get('id'),
@@ -121,7 +121,7 @@ def parse_indicator_for_get_command(indicator):
     return res_indicator
 
 
-def parse_indicators(indicators):
+def parse_indicators(indicators: list)->List[dict[str, Any]]:
     res = []
     indicators = [indicators] if type(indicators) != list else indicators
     for indicator in indicators:
@@ -129,7 +129,7 @@ def parse_indicators(indicators):
     return res
 
 
-def indicator_type(indicator) -> str:
+def indicator_type(indicator: dict) -> str:
     """Returns the ioc type according to 'ioc_type' field in the indicator
     """
     type = indicator.get('ioc_type')
@@ -137,20 +137,20 @@ def indicator_type(indicator) -> str:
         return FeedIndicatorType.FQDN
     elif type == 'url':
         return FeedIndicatorType.URL
-    elif 'ip:port' in type:
+    elif type=='ip:port':
         indicator_type = FeedIndicatorType.ip_to_indicator_type(indicator.get('ioc'))
-        return indicator_type if indicator_type else FeedIndicatorType.IP  #TODO
+        return indicator_type if indicator_type else FeedIndicatorType.IP
     elif type == 'envelope_from' or type == 'body_from':
         return FeedIndicatorType.Email
     else:  # 'sha1_hash' 'sha256_hash' 'md5_hash'
         return FeedIndicatorType.File
     
     
-def parse_indicator_for_fetch(indicator, with_ports, create_relationship, tlp_color):
+def parse_indicator_for_fetch(indicator:dict, with_ports:bool, create_relationship:bool, tlp_color:str)->dict[str, Any]:
     
     demisto_ioc_type = indicator_type(indicator)
     ioc_value = value(indicator)
-    relationships = create_relationships(ioc_value, indicator.get('ioc_type'), indicator.get("malware_printable"),
+    relationships = create_relationships(ioc_value, indicator['ioc_type'], indicator.get("malware_printable"),
                                              demisto_ioc_type) if create_relationship else None
     
     fields = assign_params(
@@ -176,10 +176,10 @@ def parse_indicator_for_fetch(indicator, with_ports, create_relationship, tlp_co
         )
     
 
-def publications(indicator):
+def publications(indicator: dict)->Optional[List[dict[str, Any]]]:
     if not indicator.get('reference'):
         return None
-    return [{'link': indicator.get('reference'),'title': indicator.get('malware_printable') if indicator.get('malware_printable')!= 'Unknown malware' else 'Malware', 'source': 'ThreatFox'}]
+    return [{'link': indicator.get('reference'),'title': indicator.get('malware_printable') if indicator.get('malware_printable')!= 'Unknown malware' else 'Malware' , 'source': 'ThreatFox'}]
 
 
 def date(date):
@@ -216,13 +216,13 @@ def tags(indicator, with_ports):
     return res
 
 
-def value(indicator):
+def value(indicator)->str:
     if indicator.get('ioc_type') == 'ip:port':
         return indicator.get('ioc').split(':')[0]
     return indicator.get('ioc')
 
 
-def create_relationships(value: str, type: str, related_malware: Optional[str], demisto_ioc_type: str):
+def create_relationships(value: str, type: str, related_malware: Optional[str], demisto_ioc_type: str)->list:
     
     if related_malware:
         name = EntityRelationship.Relationships.COMMUNICATED_BY \
@@ -285,7 +285,7 @@ def fetch_indicators_command(client: Client, with_ports, confidence_threshold,
     
     results = []
        
-    for indicator in response.get('data'):
+    for indicator in response['data']:
         
         if indicator.get('ioc_type') == 'sha3_384_hash':
             demisto.debug(f'{LOG} got indicator of indicator type "sha3" skipping it')
