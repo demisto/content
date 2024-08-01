@@ -1,15 +1,18 @@
-## Sekoia Defend (XDR) Integration
-#### Author: Sekoia.io
-
-Support and maintenance for this integration are provided by the author. Please use the following contact details:
-- Email: team-integration@sekoia.io
-- URL: [https://www.sekoia.io/en/contact/](https://www.sekoia.io/en/contact/)
-***
-
-## Sekoia XDR
+## Sekoia Defend (XDR)
 - The mandatory fields are the API Key and the base URL of the API (i.e. https://api.sekoia.io/v1/sic/)
 ---
 [View documentation for the API calls](https://docs.sekoia.io/xdr/)
+
+### Default Parmeters
+
+- **Classifier**: Sekoia XDR - Classifier
+- **Incoming Mapper**: Sekoia XDR - Incoming Mapper
+- **Outgoing Mapper**: Sekoia XDR - Outgoing Mapper
+- **Incident Type**: Sekoia XDR
+- **First fetch timestamp**: -7d
+- **Maximum incidents to fetch per interval**: 10
+- **Alerts status**: Pending, Acknowledge, Ongoing
+- **Close notes**: Closed by Sekoia
 
 ### API Key Creation
 
