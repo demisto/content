@@ -2,6 +2,7 @@ from EnrichExcludeButton import main
 
 from unittest.mock import patch
 
+
 @patch('EnrichExcludeButton.return_error')  # Mock the return_error function in the script module
 def test_main(mock_return_error):
     # Call the main function
