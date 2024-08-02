@@ -105,7 +105,7 @@ tasks:
                   simple: image.png
           accessor: EntryID
       execution-timeout:
-        simple: "3600"
+        simple: "2000"
       incID:
         complex:
           root: CreatedIncidentID
@@ -336,7 +336,7 @@ tasks:
                   simple: image.png
           accessor: EntryID
       execution-timeout:
-        simple: "3600"
+        simple: "2000"
       incID:
         complex:
           root: CreatedIncidentID
@@ -476,7 +476,7 @@ tasks:
     task:
       id: c312cb9f-c373-4629-82db-c6841850b869
       version: -1
-      name: Sleep
+      name: Sleep for 60 seconds
       description: Sleep for X seconds.
       scriptName: Sleep
       type: regular
