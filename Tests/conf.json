@@ -5856,7 +5856,6 @@
         "PAN-OS EDL Setup v3 Test": "Issue 35386",
         "GmailTest": "Issue 27057",
         "get_file_sample_by_hash_-_cylance_protect_-_test": "Issue 28823",
-        "Carbon Black Enterprise EDR Test": "Issue 29775",
         "Carbon Black Enterprise EDR Process Search Test": "Issue 29775",
         "VirusTotal (API v3) Detonate Test": "Issue 36004",
         "FailedInstances - Test": "Issue 33218",
@@ -5982,7 +5981,8 @@
         "Test Playbook - Cortex XDR Malware - Incident Enrichment" : "CIAC-11274",
         "Test XDR Playbook execute script commands": "CIAC-11274",
         "Test XDR Playbook general commands": "CIAC-11274",
-        "Test XDR Playbook": "CIAC-11274"
+        "Test XDR Playbook": "CIAC-11274",
+        "Test_XFE_v2": "CRTX-112127"
     },
     "skipped_integrations": {
         "AWS - Lambda": "No instance - wrong creds, issue CRTX-110456",
