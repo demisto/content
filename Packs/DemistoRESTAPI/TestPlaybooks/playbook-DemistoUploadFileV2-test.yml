@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: e2e243c0-7dba-4880-8ed9-542d59f39771
+    taskid: 3df181e7-d658-4c63-8e42-841502adce32
     type: start
     task:
-      id: e2e243c0-7dba-4880-8ed9-542d59f39771
+      id: 3df181e7-d658-4c63-8e42-841502adce32
       version: -1
       name: ""
       iscommand: false
@@ -35,10 +35,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 167b2a15-2ef5-497f-8f5c-3fc89fe16f2f
+    taskid: 16438ac4-b962-4c44-8c39-6806dd4f23bf
     type: regular
     task:
-      id: 167b2a15-2ef5-497f-8f5c-3fc89fe16f2f
+      id: 16438ac4-b962-4c44-8c39-6806dd4f23bf
       version: -1
       name: Download Image and Add to Context
       scriptName: http
@@ -76,10 +76,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: af426c32-7d80-4ecf-8dcb-e968dcf708f0
+    taskid: 36e8ff4a-8776-4575-8d3b-b30d67fb0953
     type: regular
     task:
-      id: af426c32-7d80-4ecf-8dcb-e968dcf708f0
+      id: 36e8ff4a-8776-4575-8d3b-b30d67fb0953
       version: -1
       name: Upload Downloaded File to War Room
       description: Upload file from incident war room to another incident's war room
@@ -114,7 +114,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 720
+          "y": 850
         }
       }
     note: false
@@ -126,10 +126,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 5d6925f4-2be8-42f6-88d0-79781f6257de
+    taskid: 0a2915ab-6e4d-47b3-88de-ba6e75e8cd30
     type: regular
     task:
-      id: 5d6925f4-2be8-42f6-88d0-79781f6257de
+      id: 0a2915ab-6e4d-47b3-88de-ba6e75e8cd30
       version: -1
       name: createNewIncident
       description: Create a new incident
@@ -139,7 +139,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "2"
+      - "12"
     scriptarguments:
       name:
         simple: DemistoUploadFile - test incident
@@ -160,10 +160,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: f2955d34-c3c5-4f33-85cc-681497269e3a
+    taskid: 33835af5-5d26-4b87-8027-6702f65cdfdd
     type: regular
     task:
-      id: f2955d34-c3c5-4f33-85cc-681497269e3a
+      id: 33835af5-5d26-4b87-8027-6702f65cdfdd
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -194,10 +194,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 22cf566d-6872-4423-8c90-89d2daad3414
+    taskid: b91ddc50-3fd9-48f6-8811-8a0871ae33fc
     type: regular
     task:
-      id: 22cf566d-6872-4423-8c90-89d2daad3414
+      id: b91ddc50-3fd9-48f6-8811-8a0871ae33fc
       version: -1
       name: getContext
       description: Retrieve context of another incident to be used in this script
@@ -220,7 +220,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1070
+          "y": 1200
         }
       }
     note: false
@@ -232,10 +232,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 300fe368-549c-448b-8c8c-a08a1a424642
+    taskid: bd82b60c-5262-47d2-87bd-cb1a36f54aa5
     type: condition
     task:
-      id: 300fe368-549c-448b-8c8c-a08a1a424642
+      id: bd82b60c-5262-47d2-87bd-cb1a36f54aa5
       version: -1
       name: Verify upload was successful
       type: condition
@@ -266,7 +266,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1420
+          "y": 1590
         }
       }
     note: false
@@ -278,10 +278,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: f61691e3-3a54-4da3-8ea2-0a641f43d045
+    taskid: 39c4f57b-edb1-4205-8e0f-72903f051603
     type: title
     task:
-      id: f61691e3-3a54-4da3-8ea2-0a641f43d045
+      id: 39c4f57b-edb1-4205-8e0f-72903f051603
       version: -1
       name: Done
       type: title
@@ -293,7 +293,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1595
+          "y": 1795
         }
       }
     note: false
@@ -305,10 +305,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: d9164595-fd56-4046-8a5e-6f31de527050
+    taskid: 4db2b341-5fd4-456d-8c48-945d58649791
     type: regular
     task:
-      id: d9164595-fd56-4046-8a5e-6f31de527050
+      id: 4db2b341-5fd4-456d-8c48-945d58649791
       version: -1
       name: Upload Downloaded File to War Room with a Comment
       description: Upload file from incident war room to another incident's war room
@@ -345,7 +345,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 895
+          "y": 1045
         }
       }
     note: false
@@ -357,10 +357,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: e75bc7e0-d549-4632-81f2-a03312c6d601
+    taskid: 541c2523-ae9b-4de8-8aff-0675d1727b00
     type: regular
     task:
-      id: e75bc7e0-d549-4632-81f2-a03312c6d601
+      id: 541c2523-ae9b-4de8-8aff-0675d1727b00
       version: -1
       name: Get File Comment (File With Comment)
       description: send HTTP GET requests
@@ -401,8 +401,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1245
+          "x": 490,
+          "y": 1410
         }
       }
     note: false
@@ -414,10 +414,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 1e7a050f-e396-40a3-842f-dd7aeef10c9c
+    taskid: 15f07518-f9d0-40f9-8e3c-d9d11635375c
     type: regular
     task:
-      id: 1e7a050f-e396-40a3-842f-dd7aeef10c9c
+      id: 15f07518-f9d0-40f9-8e3c-d9d11635375c
       version: -1
       name: Get File Comment (File Without Comment)
       description: send HTTP GET requests
@@ -458,8 +458,42 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1245
+          "x": 60,
+          "y": 1410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: c312cb9f-c373-4629-82db-c6841850b869
+    type: regular
+    task:
+      id: c312cb9f-c373-4629-82db-c6841850b869
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds.
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      seconds:
+        simple: "60"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 690
         }
       }
     note: false
@@ -474,9 +508,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1610,
+        "height": 1810,
         "width": 810,
-        "x": 50,
+        "x": 60,
         "y": 50
       }
     }
