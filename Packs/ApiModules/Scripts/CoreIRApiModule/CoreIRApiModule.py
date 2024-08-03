@@ -365,7 +365,6 @@ class CoreClient(BaseClient):
                 'value': date_to_timestamp(gte_modification_time_milliseconds)
             })
 
-
         if lte_modification_time_milliseconds:
             filters.append({
                 'field': 'modification_time',
