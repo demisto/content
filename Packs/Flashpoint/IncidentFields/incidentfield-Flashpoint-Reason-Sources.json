@@ -1,0 +1,31 @@
+{
+    "id": "incident_flashpointreasonsources",
+    "version": -1,
+    "modified": "2024-06-18T18:13:08.733945199+05:30",
+    "name": "Flashpoint Reason Sources",
+    "ownerOnly": false,
+    "cliName": "flashpointreasonsources",
+    "type": "multiSelect",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": true,
+    "associatedTypes": [
+        "Ignite Alert"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}

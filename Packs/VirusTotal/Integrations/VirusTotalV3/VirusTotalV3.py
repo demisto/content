@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa: F401
 """
 An integration module for the Virus Total v3 API.
 API Documentation:
-    https://developers.virustotal.com/v3.0/reference
+    https://docs.virustotal.com/reference/overview
 """
 from collections import defaultdict
 from typing import cast
@@ -96,6 +96,176 @@ RELATIONSHIP_TYPE = {
 }
 
 
+class VTFile(Common.File):
+    """VT File Indicator."""
+
+    def __init__(
+            self,
+            dbot_score,
+            count_vt_vendors_which_flagged_malicious=None,
+            vt_vendors_which_flagged_malicious=None,
+            vt_detection_names=None,
+            **kwargs
+    ):
+        super().__init__(
+            dbot_score,
+            **kwargs
+        )
+
+        self.count_vt_vendors_which_flagged_malicious = count_vt_vendors_which_flagged_malicious
+        self.vt_vendors_which_flagged_malicious = vt_vendors_which_flagged_malicious
+        self.vt_detection_names = vt_detection_names
+
+    def to_context(self):
+        context = super().to_context()
+        file_context = context[super().CONTEXT_PATH]
+
+        file_context['VTVendors'] = {}
+
+        if self.count_vt_vendors_which_flagged_malicious is not None:
+            file_context['VTVendors']['EngineDetections'] = self.count_vt_vendors_which_flagged_malicious
+
+        if self.vt_vendors_which_flagged_malicious is not None:
+            file_context['VTVendors']['EngineVendors'] = self.vt_vendors_which_flagged_malicious
+
+        if self.vt_detection_names is not None:
+            file_context['VTVendors']['EngineDetectionNames'] = self.vt_detection_names
+
+        if not file_context['VTVendors']:
+            file_context.pop('VTVendors', None)
+
+        return context
+
+
+class VTIP(Common.IP):
+    """VT IP Indicator."""
+
+    def __init__(
+            self,
+            ip,
+            dbot_score,
+            count_vt_vendors_which_flagged_malicious=None,
+            vt_vendors_which_flagged_malicious=None,
+            vt_detection_names=None,
+            **kwargs
+    ):
+        super().__init__(
+            ip,
+            dbot_score,
+            **kwargs
+        )
+
+        self.count_vt_vendors_which_flagged_malicious = count_vt_vendors_which_flagged_malicious
+        self.vt_vendors_which_flagged_malicious = vt_vendors_which_flagged_malicious
+        self.vt_detection_names = vt_detection_names
+
+    def to_context(self):
+        context = super().to_context()
+        file_context = context[super().CONTEXT_PATH]
+
+        file_context['VTVendors'] = {}
+
+        if self.count_vt_vendors_which_flagged_malicious is not None:
+            file_context['VTVendors']['EngineDetections'] = self.count_vt_vendors_which_flagged_malicious
+
+        if self.vt_vendors_which_flagged_malicious is not None:
+            file_context['VTVendors']['EngineVendors'] = self.vt_vendors_which_flagged_malicious
+
+        if self.vt_detection_names is not None:
+            file_context['VTVendors']['EngineDetectionNames'] = self.vt_detection_names
+
+        if not file_context['VTVendors']:
+            file_context.pop('VTVendors', None)
+
+        return context
+
+
+class VTURL(Common.URL):
+    """VT URL Indicator."""
+
+    def __init__(
+            self,
+            url,
+            dbot_score,
+            count_vt_vendors_which_flagged_malicious=None,
+            vt_vendors_which_flagged_malicious=None,
+            vt_detection_names=None,
+            **kwargs
+    ):
+        super().__init__(
+            url,
+            dbot_score,
+            **kwargs
+        )
+
+        self.count_vt_vendors_which_flagged_malicious = count_vt_vendors_which_flagged_malicious
+        self.vt_vendors_which_flagged_malicious = vt_vendors_which_flagged_malicious
+        self.vt_detection_names = vt_detection_names
+
+    def to_context(self):
+        context = super().to_context()
+        file_context = context[super().CONTEXT_PATH]
+
+        file_context['VTVendors'] = {}
+
+        if self.count_vt_vendors_which_flagged_malicious is not None:
+            file_context['VTVendors']['EngineDetections'] = self.count_vt_vendors_which_flagged_malicious
+
+        if self.vt_vendors_which_flagged_malicious is not None:
+            file_context['VTVendors']['EngineVendors'] = self.vt_vendors_which_flagged_malicious
+
+        if self.vt_detection_names is not None:
+            file_context['VTVendors']['EngineDetectionNames'] = self.vt_detection_names
+
+        if not file_context['VTVendors']:
+            file_context.pop('VTVendors', None)
+
+        return context
+
+
+class VTDomain(Common.Domain):
+    """VT Domain Indicator."""
+
+    def __init__(
+            self,
+            domain,
+            dbot_score,
+            count_vt_vendors_which_flagged_malicious=None,
+            vt_vendors_which_flagged_malicious=None,
+            vt_detection_names=None,
+            **kwargs
+    ):
+        super().__init__(
+            domain,
+            dbot_score,
+            **kwargs
+        )
+
+        self.count_vt_vendors_which_flagged_malicious = count_vt_vendors_which_flagged_malicious
+        self.vt_vendors_which_flagged_malicious = vt_vendors_which_flagged_malicious
+        self.vt_detection_names = vt_detection_names
+
+    def to_context(self):
+        context = super().to_context()
+        file_context = context[super().CONTEXT_PATH]
+
+        file_context['VTVendors'] = {}
+
+        if self.count_vt_vendors_which_flagged_malicious is not None:
+            file_context['VTVendors']['EngineDetections'] = self.count_vt_vendors_which_flagged_malicious
+
+        if self.vt_vendors_which_flagged_malicious is not None:
+            file_context['VTVendors']['EngineVendors'] = self.vt_vendors_which_flagged_malicious
+
+        if self.vt_detection_names is not None:
+            file_context['VTVendors']['EngineDetectionNames'] = self.vt_detection_names
+
+        if not file_context['VTVendors']:
+            file_context.pop('VTVendors', None)
+
+        return context
+
+
 class Client(BaseClient):
     """
     Attributes:
@@ -123,7 +293,7 @@ class Client(BaseClient):
     def ip(self, ip: str, relationships: str = '') -> dict:
         """
         See Also:
-            https://developers.virustotal.com/v3.0/reference#ip-info
+            https://docs.virustotal.com/reference/ip-info
         """
         return self._http_request(
             'GET',
@@ -133,7 +303,7 @@ class Client(BaseClient):
     def file(self, file: str, relationships: str = '') -> dict:
         """
         See Also:
-            https://developers.virustotal.com/v3.0/reference#file
+            https://docs.virustotal.com/reference/file
         """
         return self._http_request(
             'GET',
@@ -144,7 +314,7 @@ class Client(BaseClient):
     def private_file(self, file: str) -> dict:
         """
         See Also:
-            https://developers.virustotal.com/reference/private-files-info
+            https://docs.virustotal.com/reference/private-files-info
         """
         return self._http_request(
             'GET',
@@ -154,7 +324,7 @@ class Client(BaseClient):
     def url(self, url: str, relationships: str = ''):
         """
         See Also:
-            https://developers.virustotal.com/v3.0/reference#url
+            https://docs.virustotal.com/reference/url
         """
         return self._http_request(
             'GET',
@@ -164,7 +334,7 @@ class Client(BaseClient):
     def domain(self, domain: str, relationships: str = '') -> dict:
         """
         See Also:
-            https://developers.virustotal.com/v3.0/reference#domain-info
+            https://docs.virustotal.com/reference/domain-info
         """
         return self._http_request(
             'GET',
@@ -177,7 +347,7 @@ class Client(BaseClient):
     def delete_comment(self, id_: str):
         """
         See Also:
-            https://developers.virustotal.com/v3.0/reference#comment-id-delete
+            https://docs.virustotal.com/reference/comment-id-delete
         """
         self._http_request(
             'DELETE',
@@ -188,7 +358,7 @@ class Client(BaseClient):
     def get_ip_comments(self, ip: str, limit: int) -> dict:
         """
         See Also:
-            https://developers.virustotal.com/v3.0/reference#ip-comments-get
+            https://docs.virustotal.com/reference/ip-comments-get
         """
 
         return self._http_request(
@@ -200,7 +370,7 @@ class Client(BaseClient):
     def get_url_comments(self, url: str, limit: int) -> dict:
         """
         See Also:
-            https://developers.virustotal.com/v3.0/reference#urls-comments-get
+            https://docs.virustotal.com/reference/urls-comments-get
 
         """
         return self._http_request(
@@ -212,7 +382,7 @@ class Client(BaseClient):
     def get_hash_comments(self, file_hash: str, limit: int) -> dict:
         """
         See Also:
-            https://developers.virustotal.com/v3.0/reference#files-comments-get
+            https://docs.virustotal.com/reference/files-comments-get
         """
         return self._http_request(
             'GET',
@@ -223,7 +393,7 @@ class Client(BaseClient):
     def get_domain_comments(self, domain: str, limit: int) -> dict:
         """
         See Also:
-            https://developers.virustotal.com/v3.0/reference#domains-comments-get
+            https://docs.virustotal.com/reference/domains-comments-get
         """
         return self._http_request(
             'GET',
@@ -234,7 +404,7 @@ class Client(BaseClient):
     def get_comment_by_id(self, comment_id: str) -> dict:
         """
         See Also:
-            https://developers.virustotal.com/v3.0/reference#get-comment
+            https://docs.virustotal.com/reference/get-comment
         """
         return self._http_request(
             'GET',
@@ -260,28 +430,28 @@ class Client(BaseClient):
     def add_comment_to_ip(self, ip: str, comment: str) -> dict:
         """
         See Also:
-            https://developers.virustotal.com/v3.0/reference#ip-comments-post
+            https://docs.virustotal.com/reference/ip-comments-post
         """
         return self.add_comment(f'ip_addresses/{ip}/comments', comment)
 
     def add_comment_to_url(self, url: str, comment: str) -> dict:
         """
         See Also:
-            https://developers.virustotal.com/v3.0/reference#urls-comments-post
+            https://docs.virustotal.com/reference/urls-comments-post
         """
         return self.add_comment(f'urls/{encode_url_to_base64(url)}/comments', comment)
 
     def add_comment_to_domain(self, domain: str, comment: str) -> dict:
         """
         See Also:
-            https://developers.virustotal.com/v3.0/reference#domains-comments-post
+            https://docs.virustotal.com/reference/domains-comments-post
         """
         return self.add_comment(f'domains/{domain}/comments', comment)
 
     def add_comment_to_file(self, resource: str, comment: str) -> dict:
         """
         See Also:
-            https://developers.virustotal.com/v3.0/reference#files-comments-post
+            https://docs.virustotal.com/reference/files-comments-post
         """
         return self.add_comment(f'files/{resource}/comments', comment)
 
@@ -291,7 +461,7 @@ class Client(BaseClient):
     def file_rescan(self, file_hash: str) -> dict:
         """
         See Also:
-            https://developers.virustotal.com/v3.0/reference#files-analyse
+            https://docs.virustotal.com/reference/files-analyse
         """
         return self._http_request(
             'POST',
@@ -301,7 +471,7 @@ class Client(BaseClient):
     def file_scan(self, file_path: str, /, upload_url: Optional[str]) -> dict:
         """
         See Also:
-            https://developers.virustotal.com/reference/files-scan
+            https://docs.virustotal.com/reference/files-scan
         """
         response: requests.Response
         with open(file_path, 'rb') as file:
@@ -331,7 +501,7 @@ class Client(BaseClient):
     def private_file_scan(self, file_path: str) -> dict:
         """
         See Also:
-            https://developers.virustotal.com/reference/post_files
+            https://docs.virustotal.com/reference/upload-file-private-scanning
         """
         response: requests.Response
         with open(file_path, 'rb') as file:
@@ -360,7 +530,7 @@ class Client(BaseClient):
     def get_upload_url(self) -> dict:
         """
         See Also:
-            https://developers.virustotal.com/v3.0/reference#files-upload-url
+            https://docs.virustotal.com/reference/files-upload-url
         """
         return self._http_request(
             'GET',
@@ -370,7 +540,7 @@ class Client(BaseClient):
     def get_private_upload_url(self) -> dict:
         """
         See Also:
-            https://developers.virustotal.com/reference/private-files-upload-url
+            https://docs.virustotal.com/reference/private-files-upload-url
         """
         return self._http_request(
             'GET',
@@ -380,7 +550,7 @@ class Client(BaseClient):
     def url_scan(self, url: str) -> dict:
         """
         See Also:
-            https://developers.virustotal.com/v3.0/reference#urls
+            https://docs.virustotal.com/reference/scan-url
         """
         return self._http_request(
             'POST',
@@ -393,7 +563,7 @@ class Client(BaseClient):
     def file_sandbox_report(self, file_hash: dict, limit: int) -> dict:
         """
         See Also:
-            https://developers.virustotal.com/v3.0/reference#files-relationships
+            https://docs.virustotal.com/reference/files-relationships
         """
         return self._http_request(
             'GET',
@@ -405,7 +575,7 @@ class Client(BaseClient):
     def passive_dns_data(self, id: dict, limit: int) -> dict:
         """
         See Also:
-            https://developers.virustotal.com/v3.0/reference#ip-relationships
+            https://docs.virustotal.com/reference/ip-relationships
         """
         return self._http_request(
             'GET',
@@ -416,7 +586,7 @@ class Client(BaseClient):
     def search(self, query: str, limit: int) -> dict:
         """
         See Also:
-            https://developers.virustotal.com/v3.0/reference#search-1
+            https://docs.virustotal.com/reference/api-search
         """
         return self._http_request(
             'GET',
@@ -427,7 +597,7 @@ class Client(BaseClient):
     def get_analysis(self, analysis_id: str) -> dict:
         """
         See Also:
-            https://developers.virustotal.com/v3.0/reference#analysis
+            https://docs.virustotal.com/reference/analysis
         """
         return self._http_request(
             'GET',
@@ -437,7 +607,7 @@ class Client(BaseClient):
     def get_private_analysis(self, analysis_id: str) -> dict:
         """
         See Also:
-            https://developers.virustotal.com/reference/private-analysis
+            https://docs.virustotal.com/reference/private-analysis
         """
         return self._http_request(
             'GET',
@@ -447,7 +617,7 @@ class Client(BaseClient):
     def get_private_file_from_analysis(self, analysis_id: str) -> dict:
         """
         See Also:
-            https://developers.virustotal.com/reference/item-1
+            https://docs.virustotal.com/reference/private-analyses-object-item
         """
         return self._http_request(
             'GET',
@@ -457,7 +627,7 @@ class Client(BaseClient):
     def get_file_sigma_analysis(self, file_hash: str) -> dict:
         """
         See Also:
-            https://developers.virustotal.com/reference/files#relationships
+            https://docs.virustotal.com/reference/files#relationships
         """
         return self._http_request(
             'GET',
@@ -472,9 +642,9 @@ class Client(BaseClient):
             indicator_type: urls or domains
             relationship: a relationship to search for
         See Also:
-            https://developers.virustotal.com/v3.0/reference#urls-relationships
-            https://developers.virustotal.com/v3.0/reference#domains-relationships
-            https://developers.virustotal.com/v3.0/reference#ip-relationships
+            https://docs.virustotal.com/reference/urls-relationships
+            https://docs.virustotal.com/reference/domains-relationships
+            https://docs.virustotal.com/reference/ip-relationships
         """
         return self._http_request(
             'GET',
@@ -486,7 +656,7 @@ class Client(BaseClient):
         Wrapper of get_relationship
 
         See Also:
-                https://developers.virustotal.com/v3.0/reference#domains-relationships
+                https://docs.virustotal.com/reference/domains-relationships
         """
         return self.get_relationship(domain, 'domains', relationship)
 
@@ -495,7 +665,7 @@ class Client(BaseClient):
         Wrapper of get_domain_relationships
 
         See Also:
-            https://developers.virustotal.com/v3.0/reference#domains-relationships
+            https://docs.virustotal.com/reference/domains-relationships
         """
         return self.get_domain_relationships(
             domain,
@@ -507,7 +677,7 @@ class Client(BaseClient):
         Wrapper of get_domain_relationships
 
         See Also:
-            https://developers.virustotal.com/v3.0/reference#domains-relationships
+            https://docs.virustotal.com/reference/domains-relationships
         """
         return self.get_domain_relationships(
             domain,
@@ -519,7 +689,7 @@ class Client(BaseClient):
         Wrapper of get_domain_relationships
 
         See Also:
-                https://developers.virustotal.com/v3.0/reference#domains-relationships
+                https://docs.virustotal.com/reference/domains-relationships
         """
         return self.get_domain_relationships(
             domain,
@@ -531,7 +701,7 @@ class Client(BaseClient):
         Wrapper of get_relationship
 
         See Also:
-                https://developers.virustotal.com/v3.0/reference#urls-relationships
+                https://docs.virustotal.com/reference/urls-relationships
         """
         return self.get_relationship(encode_url_to_base64(url), 'urls', relationship)
 
@@ -540,7 +710,7 @@ class Client(BaseClient):
         Wrapper of url_relationships
 
         See Also:
-                https://developers.virustotal.com/v3.0/reference#urls-relationships
+                https://docs.virustotal.com/reference/urls-relationships
         """
         return self.get_url_relationships(
             url,
@@ -552,7 +722,7 @@ class Client(BaseClient):
         Wrapper of url_relationships
 
         See Also:
-                https://developers.virustotal.com/v3.0/reference#urls-relationships
+                https://docs.virustotal.com/reference/urls-relationships
         """
         return self.get_url_relationships(
             url,
@@ -564,7 +734,7 @@ class Client(BaseClient):
         Wrapper of url_relationships
 
         See Also:
-                https://developers.virustotal.com/v3.0/reference#urls-relationships
+                https://docs.virustotal.com/reference/urls-relationships
         """
         return self.get_url_relationships(
             url,
@@ -576,7 +746,7 @@ class Client(BaseClient):
         Wrapper of get_relationship
 
         See Also:
-                https://developers.virustotal.com/v3.0/reference#urls-relationships
+                https://docs.virustotal.com/reference/urls-relationships
         """
         return self.get_relationship(ip, 'ip_addresses', relationship)
 
@@ -585,7 +755,7 @@ class Client(BaseClient):
         Wrapper of get_ip_relationships
 
         See Also:
-            https://developers.virustotal.com/v3.0/reference#urls-relationships
+            https://docs.virustotal.com/reference/urls-relationships
         """
         return self.get_ip_relationships(
             ip,
@@ -597,7 +767,7 @@ class Client(BaseClient):
         Wrapper of get_ip_relationships
 
         See Also:
-            https://developers.virustotal.com/v3.0/reference#urls-relationships
+            https://docs.virustotal.com/reference/urls-relationships
         """
         return self.get_ip_relationships(
             ip,
@@ -609,7 +779,7 @@ class Client(BaseClient):
         Wrapper of get_ip_relationships
 
         See Also:
-                https://developers.virustotal.com/v3.0/reference#urls-relationships
+                https://docs.virustotal.com/reference/urls-relationships
         """
         return self.get_ip_relationships(
             ip,
@@ -1320,29 +1490,45 @@ def build_skipped_enrichment_ip_output(client: Client, ip: str) -> CommandResult
                              'was not enriched. Reputation lookups have been disabled for private IP addresses.')
 
 
-def build_domain_output(
-        client: Client,
-        score_calculator: ScoreCalculator,
-        domain: str,
-        raw_response: dict,
-        extended_data: bool):
+def _get_domain_indicator(client: Client, score_calculator: ScoreCalculator, domain: str, raw_response: dict):
     data = raw_response.get('data', {})
     attributes = data.get('attributes', {})
     last_analysis_stats = attributes.get('last_analysis_stats', {})
-    positive_engines = last_analysis_stats.get('malicious', 0)
     detection_engines = sum(last_analysis_stats.values())
-    relationships_response = data.get('relationships', {})
-    whois: defaultdict = get_whois(attributes.get('whois', ''))
+    positive_detections = last_analysis_stats.get('malicious', 0)
+    whois = get_whois(attributes.get('whois', ''))
+
     score = score_calculator.domain_score(domain, raw_response)
-    if score != Common.DBotScore.BAD and client.is_premium:
-        score = score_calculator.analyze_premium_domain_score(client, domain, score)
+
     logs = score_calculator.get_logs()
     demisto.debug(logs)
-    relationships_list = create_relationships(entity_a=domain, entity_a_type=FeedIndicatorType.Domain,
-                                              relationships_response=relationships_response,
-                                              reliability=client.reliability)
-    domain_indicator = Common.Domain(
+
+    relationships_response = data.get('relationships', {})
+    relationships_list = create_relationships(
+        entity_a=domain,
+        entity_a_type=FeedIndicatorType.Domain,
+        relationships_response=relationships_response,
+        reliability=client.reliability
+    )
+
+    vt_vendors_which_flagged_malicious = {
+        x['engine_name']: x['result'] for x in attributes.get('last_analysis_results', {}).values()
+        if x.get('category') == 'malicious'
+    }
+
+    return VTDomain(
         domain=domain,
+        dbot_score=Common.DBotScore(
+            domain,
+            DBotScoreType.DOMAIN,
+            INTEGRATION_NAME,
+            score=score,
+            malicious_description=logs,
+            reliability=client.reliability,
+        ),
+        count_vt_vendors_which_flagged_malicious=len(vt_vendors_which_flagged_malicious),
+        vt_vendors_which_flagged_malicious=list(vt_vendors_which_flagged_malicious.keys()),
+        vt_detection_names=list(vt_vendors_which_flagged_malicious.values()),
         name_servers=whois['Name Server'],
         creation_date=whois['Creation Date'],
         updated_date=whois['Updated Date'],
@@ -1355,20 +1541,192 @@ def build_domain_output(
         registrar_name=whois['Registrar'],
         registrar_abuse_email=whois['Registrar Abuse Contact Email'],
         registrar_abuse_phone=whois['Registrar Abuse Contact Phone'],
+        detection_engines=detection_engines,
+        positive_detections=positive_detections,
+        relationships=relationships_list,
+    )
+
+
+def _get_url_indicator(client: Client, score_calculator: ScoreCalculator, url: str, raw_response: dict):
+    data = raw_response.get('data', {})
+    attributes = data.get('attributes', {})
+    last_analysis_stats = attributes.get('last_analysis_stats', {})
+    detection_engines = sum(last_analysis_stats.values())
+    positive_detections = last_analysis_stats.get('malicious', 0)
+
+    score = score_calculator.url_score(url, raw_response)
+
+    logs = score_calculator.get_logs()
+    demisto.debug(logs)
+
+    relationships_response = data.get('relationships', {})
+    relationships_list = create_relationships(
+        entity_a=url,
+        entity_a_type=FeedIndicatorType.URL,
+        relationships_response=relationships_response,
+        reliability=client.reliability
+    )
+
+    vt_vendors_which_flagged_malicious = {
+        x['engine_name']: x['result'] for x in attributes.get('last_analysis_results', {}).values()
+        if x.get('category') == 'malicious'
+    }
+
+    return VTURL(
+        url,
         dbot_score=Common.DBotScore(
-            domain,
-            DBotScoreType.DOMAIN,
+            url,
+            DBotScoreType.URL,
+            INTEGRATION_NAME,
+            score=score,
+            reliability=client.reliability,
+            malicious_description=logs,
+        ),
+        count_vt_vendors_which_flagged_malicious=len(vt_vendors_which_flagged_malicious),
+        vt_vendors_which_flagged_malicious=list(vt_vendors_which_flagged_malicious.keys()),
+        vt_detection_names=list(vt_vendors_which_flagged_malicious.values()),
+        category=attributes.get('categories'),
+        detection_engines=detection_engines,
+        positive_detections=positive_detections,
+        relationships=relationships_list,
+    )
+
+
+def _get_ip_indicator(client: Client, score_calculator: ScoreCalculator, ip: str, raw_response: dict):
+    data = raw_response.get('data', {})
+    attributes = data.get('attributes', {})
+    last_analysis_stats = attributes.get('last_analysis_stats', {})
+    detection_engines = sum(last_analysis_stats.values())
+    positive_engines = last_analysis_stats.get('malicious', 0)
+
+    score = score_calculator.ip_score(ip, raw_response)
+
+    logs = score_calculator.get_logs()
+    demisto.debug(logs)
+
+    relationships_response = data.get('relationships', {})
+    relationships_list = create_relationships(
+        entity_a=ip,
+        entity_a_type=FeedIndicatorType.IP,
+        relationships_response=relationships_response,
+        reliability=client.reliability
+    )
+
+    vt_vendors_which_flagged_malicious = {
+        x['engine_name']: x['result'] for x in attributes.get('last_analysis_results', {}).values()
+        if x.get('category') == 'malicious'
+    }
+
+    return VTIP(
+        ip,
+        dbot_score=Common.DBotScore(
+            ip,
+            DBotScoreType.IP,
             INTEGRATION_NAME,
             score=score,
             malicious_description=logs,
-            reliability=client.reliability
+            reliability=client.reliability,
         ),
-        relationships=relationships_list
+        count_vt_vendors_which_flagged_malicious=len(vt_vendors_which_flagged_malicious),
+        vt_vendors_which_flagged_malicious=list(vt_vendors_which_flagged_malicious.keys()),
+        vt_detection_names=list(vt_vendors_which_flagged_malicious.values()),
+        asn=attributes.get('asn'),
+        geo_country=attributes.get('country'),
+        detection_engines=detection_engines,
+        positive_engines=positive_engines,
+        as_owner=attributes.get('as_owner'),
+        relationships=relationships_list,
     )
+
+
+def _get_file_indicator(client: Client, score_calculator: ScoreCalculator, file_hash: str, raw_response: dict):
+    data = raw_response.get('data', {})
+    attributes = data.get('attributes', {})
+    exiftool = attributes.get('exiftool', {})
+    signature_info = attributes.get('signature_info', {})
+
+    score = score_calculator.file_score(file_hash, raw_response)
+
+    logs = score_calculator.get_logs()
+    demisto.debug(logs)
+
+    relationships_response = data.get('relationships', {})
+    relationships_list = create_relationships(
+        entity_a=file_hash,
+        entity_a_type=FeedIndicatorType.File,
+        relationships_response=relationships_response,
+        reliability=client.reliability
+    )
+
+    vt_vendors_which_flagged_malicious = {
+        x['engine_name']: x['result'] for x in attributes.get('last_analysis_results', {}).values()
+        if x.get('category') == 'malicious'
+    }
+
+    return VTFile(
+        dbot_score=Common.DBotScore(
+            file_hash,
+            DBotScoreType.FILE,
+            integration_name=INTEGRATION_NAME,
+            score=score,
+            malicious_description=logs,
+            reliability=client.reliability,
+        ),
+        count_vt_vendors_which_flagged_malicious=len(vt_vendors_which_flagged_malicious),
+        vt_vendors_which_flagged_malicious=list(vt_vendors_which_flagged_malicious.keys()),
+        vt_detection_names=list(vt_vendors_which_flagged_malicious.values()),
+        name=exiftool.get('OriginalFileName'),
+        size=attributes.get('size'),
+        sha1=attributes.get('sha1'),
+        sha256=attributes.get('sha256'),
+        file_type=exiftool.get('MIMEType'),
+        md5=attributes.get('md5'),
+        ssdeep=attributes.get('ssdeep'),
+        extension=exiftool.get('FileTypeExtension'),
+        company=exiftool.get('CompanyName'),
+        product_name=exiftool.get('ProductName'),
+        tags=attributes.get('tags'),
+        signature=Common.FileSignature(
+            authentihash=attributes.get('authentihash'),
+            copyright=signature_info.get('copyright'),
+            file_version=signature_info.get('file version'),
+            description=signature_info.get('description'),
+            internal_name=signature_info.get('internal name'),
+            original_name=signature_info.get('original name'),
+        ),
+        relationships=relationships_list,
+    )
+
+
+def build_domain_output(
+        client: Client,
+        score_calculator: ScoreCalculator,
+        domain: str,
+        raw_response: dict,
+        extended_data: bool
+) -> CommandResults:
+    data = raw_response.get('data', {})
+    attributes = data.get('attributes', {})
+
+    last_analysis_stats = attributes.get('last_analysis_stats', {})
+    positive_engines = last_analysis_stats.get('malicious', 0)
+    detection_engines = sum(last_analysis_stats.values())
+
+    whois = get_whois(attributes.get('whois', ''))
+
+    relationships_response = data.get('relationships', {})
+    relationships_list = create_relationships(
+        entity_a=domain,
+        entity_a_type=FeedIndicatorType.Domain,
+        relationships_response=relationships_response,
+        reliability=client.reliability
+    )
+
+    domain_indicator = _get_domain_indicator(client, score_calculator, domain, raw_response)
+
     if not extended_data:
         data = decrease_data_size(data)
 
-    attributes = data.get('attributes', {})
     return CommandResults(
         outputs_prefix=f'{INTEGRATION_ENTRY_CONTEXT}.Domain',
         outputs_key_field='id',
@@ -1407,37 +1765,25 @@ def build_url_output(
         extended_data: bool
 ) -> CommandResults:
     data = raw_response.get('data', {})
-    score = score_calculator.url_score(url, raw_response)
-    if score != Common.DBotScore.BAD and client.is_premium:
-        score = score_calculator.analyze_premium_url_score(client, url, score)
-    logs = score_calculator.get_logs()
-    demisto.debug(logs)
-    # creating readable output
     attributes = data.get('attributes', {})
+
     last_analysis_stats = attributes.get('last_analysis_stats', {})
-    relationships_response = data.get('relationships', {})
     positive_detections = last_analysis_stats.get('malicious', 0)
     detection_engines = sum(last_analysis_stats.values())
-    relationships_list = create_relationships(entity_a=url, entity_a_type=FeedIndicatorType.URL,
-                                              relationships_response=relationships_response,
-                                              reliability=client.reliability)
-    url_indicator = Common.URL(
-        url,
-        category=attributes.get('categories'),
-        detection_engines=detection_engines,
-        positive_detections=positive_detections,
-        relationships=relationships_list,
-        dbot_score=Common.DBotScore(
-            url,
-            DBotScoreType.URL,
-            INTEGRATION_NAME,
-            score=score,
-            reliability=client.reliability,
-            malicious_description=logs
-        )
+
+    relationships_response = data.get('relationships', {})
+    relationships_list = create_relationships(
+        entity_a=url,
+        entity_a_type=FeedIndicatorType.URL,
+        relationships_response=relationships_response,
+        reliability=client.reliability
     )
+
+    url_indicator = _get_url_indicator(client, score_calculator, url, raw_response)
+
     if not extended_data:
         data = decrease_data_size(data)
+
     return CommandResults(
         outputs_prefix=f'{INTEGRATION_ENTRY_CONTEXT}.URL',
         outputs_key_field='id',
@@ -1469,41 +1815,33 @@ def build_url_output(
     )
 
 
-def build_ip_output(client: Client, score_calculator: ScoreCalculator, ip: str, raw_response: dict,
-                    extended_data: bool) -> CommandResults:
-    score = score_calculator.ip_score(ip, raw_response)
-    if score != Common.DBotScore.BAD and client.is_premium:
-        score = score_calculator.analyze_premium_ip_score(client, ip, score)
-    logs = score_calculator.get_logs()
-    demisto.debug(logs)
+def build_ip_output(
+        client: Client,
+        score_calculator: ScoreCalculator,
+        ip: str,
+        raw_response: dict,
+        extended_data: bool
+) -> CommandResults:
     data = raw_response.get('data', {})
     attributes = data.get('attributes', {})
-    relationships_response = data.get('relationships', {})
-    last_analysis_stats = attributes.get('last_analysis_stats')
+
+    last_analysis_stats = attributes.get('last_analysis_stats', {})
     positive_engines = last_analysis_stats.get('malicious', 0)
     detection_engines = sum(last_analysis_stats.values())
-    relationships_list = create_relationships(entity_a=ip, entity_a_type=FeedIndicatorType.IP,
-                                              relationships_response=relationships_response,
-                                              reliability=client.reliability)
-    ip_indicator = Common.IP(
-        ip,
-        asn=attributes.get('asn'),
-        geo_country=attributes.get('country'),
-        detection_engines=detection_engines,
-        positive_engines=positive_engines,
-        as_owner=attributes.get('as_owner'),
-        relationships=relationships_list,
-        dbot_score=Common.DBotScore(
-            ip,
-            DBotScoreType.IP,
-            INTEGRATION_NAME,
-            score=score,
-            malicious_description=logs,
-            reliability=client.reliability
-        )
+
+    relationships_response = data.get('relationships', {})
+    relationships_list = create_relationships(
+        entity_a=ip,
+        entity_a_type=FeedIndicatorType.IP,
+        relationships_response=relationships_response,
+        reliability=client.reliability
     )
+
+    ip_indicator = _get_ip_indicator(client, score_calculator, ip, raw_response)
+
     if not extended_data:
         data = decrease_data_size(data)
+
     return CommandResults(
         outputs_prefix=f'{INTEGRATION_ENTRY_CONTEXT}.IP',
         outputs_key_field='id',
@@ -1533,48 +1871,25 @@ def build_file_output(
         extended_data: bool
 ) -> CommandResults:
     data = raw_response.get('data', {})
-    attributes = data.get('attributes')
+    attributes = data.get('attributes', {})
+
+    last_analysis_stats = attributes.get('last_analysis_stats', {})
+    malicious = last_analysis_stats.get('malicious', 0)
+    total = sum(last_analysis_stats.values())
+
     relationships_response = data.get('relationships', {})
-    score = score_calculator.file_score(file_hash, raw_response)
-    logs = score_calculator.get_logs()
-    demisto.debug(logs)
-    signature_info = attributes.get('signature_info', {})
-    exiftool = attributes.get('exiftool', {})
-    relationships_list = create_relationships(entity_a=file_hash, entity_a_type=FeedIndicatorType.File,
-                                              relationships_response=relationships_response,
-                                              reliability=client.reliability)
-    file_indicator = Common.File(
-        dbot_score=Common.DBotScore(
-            file_hash,
-            DBotScoreType.FILE,
-            integration_name=INTEGRATION_NAME,
-            score=score,
-            malicious_description=logs,
-            reliability=client.reliability
-        ),
-        name=exiftool.get('OriginalFileName'),
-        size=attributes.get('size'),
-        sha1=attributes.get('sha1'),
-        sha256=attributes.get('sha256'),
-        file_type=exiftool.get('MIMEType'),
-        md5=attributes.get('md5'),
-        ssdeep=attributes.get('ssdeep'),
-        extension=exiftool.get('FileTypeExtension'),
-        company=exiftool.get('CompanyName'),
-        product_name=exiftool.get('ProductName'),
-        tags=attributes.get('tags'),
-        signature=Common.FileSignature(
-            authentihash=attributes.get('authentihash'),
-            copyright=signature_info.get('copyright'),
-            file_version=signature_info.get('file version'),
-            description=signature_info.get('description'),
-            internal_name=signature_info.get('internal name'),
-            original_name=signature_info.get('original name')
-        ),
-        relationships=relationships_list
+    relationships_list = create_relationships(
+        entity_a=file_hash,
+        entity_a_type=FeedIndicatorType.File,
+        relationships_response=relationships_response,
+        reliability=client.reliability
     )
+
+    file_indicator = _get_file_indicator(client, score_calculator, file_hash, raw_response)
+
     if not extended_data:
         data = decrease_data_size(data)
+
     last_analysis_stats = attributes.get("last_analysis_stats", {})
     malicious = last_analysis_stats.get('malicious', 0)
     total = sum(last_analysis_stats.values())

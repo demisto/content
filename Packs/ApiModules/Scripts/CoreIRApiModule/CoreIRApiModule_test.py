@@ -2999,7 +2999,7 @@ class TestPollingCommands:
 
         assert command_result.readable_output == "Waiting for the script to " \
                                                  "finish running on the following endpoints: ['1']..."
-        assert not command_result.outputs
+        assert command_result.outputs == {'action_id': 1, 'endpoints_count': 1, 'status': 1}
 
         polling_args = {
             'endpoint_ids': '1', 'script_uid': '1', 'action_id': '1', 'hide_polling_output': True
@@ -4071,7 +4071,7 @@ def test_http_request_demisto_call(mocker, data, expected_result):
     """
     from CoreIRApiModule import CoreClient
     client = CoreClient(
-        base_url=f'{Core_URL}/public_api/v1', headers={}
+        base_url=f'{Core_URL}/public_api/v1', headers={},
     )
     mocker.patch("CoreIRApiModule.FORWARD_USER_RUN_RBAC", new=True)
     mocker.patch.object(demisto, "_apiCall", return_value={'name': '/api/webapp/public_api/v1/distributions/get_versions/',
