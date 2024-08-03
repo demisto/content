@@ -364,8 +364,7 @@ class CoreClient(BaseClient):
                 'operator': 'gte',
                 'value': date_to_timestamp(gte_modification_time_milliseconds)
             })
-            demisto.debug(
-                f'get incidents gte_modification_time_milliseconds {date_to_timestamp(gte_modification_time_milliseconds)}')
+
 
         if lte_modification_time_milliseconds:
             filters.append({
@@ -373,7 +372,6 @@ class CoreClient(BaseClient):
                 'operator': 'lte',
                 'value': date_to_timestamp(lte_modification_time_milliseconds)
             })
-            demisto.debug(f'gte_modification_time_milliseconds : {date_to_timestamp(lte_modification_time_milliseconds)}')
 
         if len(filters) > 0:
             request_data['filters'] = filters
