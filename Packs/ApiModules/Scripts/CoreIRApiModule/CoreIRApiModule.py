@@ -377,7 +377,6 @@ class CoreClient(BaseClient):
 
         if len(filters) > 0:
             request_data['filters'] = filters
-        demisto.debug('before http_req')
         res = self._http_request(
             method='POST',
             url_suffix='/incidents/get_incidents/',
@@ -385,7 +384,6 @@ class CoreClient(BaseClient):
             headers=self._headers,
             timeout=self.timeout
         )
-        demisto.debug('after http_req')
         incidents = res.get('reply', {}).get('incidents', [])
 
         return incidents

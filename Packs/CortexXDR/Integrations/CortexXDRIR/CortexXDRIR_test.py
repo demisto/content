@@ -1582,16 +1582,17 @@ def test_get_xsoar_close_reasons(mocker):
     assert get_xsoar_close_reasons() == list(XSOAR_RESOLVED_STATUS_TO_XDR.keys()) + ['CustomReason1', 'CustomReason 2', 'Foo']
 
 
-def test_get_modified_remote_data_xdr_delay(mocker, requests_mock):
+def test_get_modified_remote_data_xdr_delay(mocker):
     """
     Given:
         - an XDR client
         - arguments - lastUpdate time
         - raw incidents (result of client.get_incidents)
+        - xdr_delay
     When
         - running get_modified_remote_data_command
     Then
-        - the method is returning a list of incidents IDs that were modified
+        - the method is returning a list of incidents IDs that were modified after adding xdr_delay
     """
     from CortexXDRIR import get_modified_remote_data_command, Client
     from CommonServerPython import BaseClient
@@ -1611,7 +1612,7 @@ def test_get_modified_remote_data_xdr_delay(mocker, requests_mock):
     client = Client(
         base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False)
 
-    response = get_modified_remote_data_command(client, args, xdr_delay=1)
+    response = get_modified_remote_data_command(client, args)
     assert not response.modified_incident_ids
     mocker.patch.object(BaseClient, "_http_request", return_value=get_incidents_list_response)
     response = get_modified_remote_data_command(client, args, xdr_delay=5)

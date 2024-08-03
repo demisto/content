@@ -1326,7 +1326,6 @@ def main():  # pragma: no cover
     args = demisto.args()
     args["integration_context_brand"] = INTEGRATION_CONTEXT_BRAND
     args["integration_name"] = INTEGRATION_NAME
-    args['lastUpdate'] = '2024-07-30T09:19:40.001604274Z'
     try:
         if command == 'test-module':
             client.test_module(first_fetch_time)
