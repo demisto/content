@@ -120,10 +120,10 @@ def test_get_iocs(requests_mock, offset):
     assert isinstance(response, list)
     assert isinstance(response[0], dict)
     assert response[0]['ioc'] == 'Indicator'
-    assert response[0]['last_seen'] == '2023-02-20 21:00:55'
-    assert response[0]['first_seen'] == '2023-02-20 21:00:55'
-    assert response[0]['ioc_type'] == 'some indicator type'
-    assert response[0]['risk_rating'] == 'Some Risk Rating'
+    assert response[0]['ioc_type'] == 'Some IOC Type'
+    assert response[0]['first_seen'] == '1722227702'
+    assert response[0]['last_seen'] == '1722472568'
+    assert response[0]['risk_score'] == '70'
 
 
 def test_get_alert_group(requests_mock):
@@ -260,7 +260,7 @@ def test_limit_validate_ioc_input(capfd):
     }
     with capfd.disabled(), pytest.raises(ValueError,
                                          match="The limit argument should contain a positive number,"
-                                               f" up to 1000, limit: {args.get('limit', '50')}"):
+                                               f" up to 100, limit: {args.get('limit', '50')}"):
         validate_input(args=args, is_iocs=True)
 
 
