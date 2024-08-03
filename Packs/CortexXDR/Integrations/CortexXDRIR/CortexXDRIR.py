@@ -894,7 +894,9 @@ def get_modified_remote_data_command(client, args, xdr_delay: int = 0, last_mirr
         gte_modification_time_milliseconds = last_update_utc - timedelta(minutes=xdr_delay)
         lte_modification_time_with_ms = gte_modification_time_milliseconds + timedelta(minutes=1)
     demisto.debug(
-        f'Performing get-modified-remote-data command. {last_update=} | {gte_modification_time_milliseconds=} | {lte_modification_time_with_ms=}')
+        f'Performing get-modified-remote-data command. {last_update=} | {gte_modification_time_milliseconds=} |'
+        f'{lte_modification_time_with_ms=}'
+    )
     raw_incidents = client.get_incidents(
         gte_modification_time_milliseconds=gte_modification_time_milliseconds,
         lte_modification_time_milliseconds=lte_modification_time_with_ms,
