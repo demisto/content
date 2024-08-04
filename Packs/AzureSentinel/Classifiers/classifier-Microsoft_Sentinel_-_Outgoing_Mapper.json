@@ -103,7 +103,14 @@
                 },
                 "title": {
                     "simple": "name"
-                }
+                },
+				"owner": {
+					"complex": {
+						"filters": [],
+						"root": "microsoftsentinelowner",
+						"transformers": []
+					}
+				}
             }
         }
     },
