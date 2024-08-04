@@ -599,7 +599,7 @@ class ExchangeOnlinePowershellV3Client
                 $cmd_params.User = $user
             }
             if ($release_to_all) {
-                $cmd_params.ReleaseToAll = $null
+                $cmd_params.ReleaseToAll = $release_to_all
             }
             if ($identities) {
                 $cmd_params.Identities = $identities
