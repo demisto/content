@@ -5,7 +5,7 @@ ignore=IN122,BA108,BA109
 ignore=PA129
 
 [file:DHSFeedV2.yml]
-ignore=IN122,IN163
+ignore=IN122
 
 [known_words]
 dhs

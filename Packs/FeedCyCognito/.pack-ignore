@@ -5,4 +5,4 @@ ignore=RM104
 ignore=BA124
 
 [file:FeedCyCognito.yml]
-ignore=IN163,IN122
+ignore=IN122
