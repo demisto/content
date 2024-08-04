@@ -3465,11 +3465,11 @@ def test_search_device_command(requests_mock):
     response = {'resources': {'meta': {'query_time': 0.010188508, 'pagination': {'offset': 1, 'limit': 100, 'total': 1},
                                        'powered_by': 'device-api', 'trace_id': 'c876614b-da71-4942-88db-37b939a78eb3'},
                               'resources': ['15dbb9d8f06b45fe9f61eb46e829d986'], 'errors': []}}
-    device_context = {'ID': 'identifier_number', 'ExternalIP': '1.1.1.1', 'MacAddress': '42-01-0a-80-00-07',
+    device_context = {'ID': '15dbb9d8f06b45fe9f61eb46e829d986', 'ExternalIP': '1.1.1.1', 'MacAddress': '42-01-0a-80-00-07',
                       'Hostname': 'FALCON-CROWDSTR', 'FirstSeen': '2020-02-10T12:40:18Z',
                       'LastSeen': '2021-04-05T13:48:12Z', 'LocalIP': '1.1.1.1', 'OS': 'Windows Server 2019',
                       'Status': 'normal'}
-    endpoint_context = {'Hostname': 'FALCON-CROWDSTR', 'ID': 'identifier_number', 'IPAddress': '1.1.1.1',
+    endpoint_context = {'Hostname': 'FALCON-CROWDSTR', 'ID': '15dbb9d8f06b45fe9f61eb46e829d986', 'IPAddress': '1.1.1.1',
                         'MACAddress': '42-01-0a-80-00-07', 'OS': 'Windows', 'OSVersion': 'Windows Server 2019',
                         'Status': 'Offline', 'Vendor': 'CrowdStrike Falcon'}
     status_res = {
@@ -3531,7 +3531,7 @@ def test_get_endpoint_command(requests_mock, mocker):
     response = {'resources': {'meta': {'query_time': 0.010188508, 'pagination': {'offset': 1, 'limit': 100, 'total': 1},
                                        'powered_by': 'device-api', 'trace_id': 'c876614b-da71-4942-88db-37b939a78eb3'},
                               'resources': ['15dbb9d8f06b45fe9f61eb46e829d986'], 'errors': []}}
-    endpoint_context = {'Hostname': 'FALCON-CROWDSTR', 'ID': 'identifier_number', 'IPAddress': '1.1.1.1',
+    endpoint_context = {'Hostname': 'FALCON-CROWDSTR', 'ID': '15dbb9d8f06b45fe9f61eb46e829d986', 'IPAddress': '1.1.1.1',
                         'MACAddress': '42-01-0a-80-00-07', 'OS': 'Windows', 'OSVersion': 'Windows Server 2019',
                         'Status': 'Online', 'Vendor': 'CrowdStrike Falcon'}
 
