@@ -25,43 +25,43 @@ class Client(CoreClient):
 # COMMAND CONSTANTS
 
 BUILT_IN_QUERY_COMMANDS = {
-    'core-xql-file-event-query': {
+    'xdr-xql-file-event-query': {
         'func': get_file_event_query,
         'name': 'FileEvent',
     },
-    'core-xql-process-event-query': {
+    'xdr-xql-process-event-query': {
         'func': get_process_event_query,
         'name': 'ProcessEvent',
     },
-    'core-xql-dll-module-query': {
+    'xdr-xql-dll-module-query': {
         'func': get_dll_module_query,
         'name': 'DllModule',
     },
-    'core-xql-network-connection-query': {
+    'xdr-xql-network-connection-query': {
         'func': get_network_connection_query,
         'name': 'NetworkConnection',
     },
-    'core-xql-registry-query': {
+    'xdr-xql-registry-query': {
         'func': get_registry_query,
         'name': 'Registry',
     },
-    'core-xql-event-log-query': {
+    'xdr-xql-event-log-query': {
         'func': get_event_log_query,
         'name': 'EventLog',
     },
-    'core-xql-dns-query': {
+    'xdr-xql-dns-query': {
         'func': get_dns_query,
         'name': 'DNS',
     },
-    'core-xql-file-dropper-query': {
+    'xdr-xql-file-dropper-query': {
         'func': get_file_dropper_query,
         'name': 'FileDropper',
     },
-    'core-xql-process-instance-network-activity-query': {
+    'xdr-xql-process-instance-network-activity-query': {
         'func': get_process_instance_network_activity_query,
         'name': 'ProcessInstanceNetworkActivity',
     },
-    'core-xql-process-causality-network-activity-query': {
+    'xdr-xql-process-causality-network-activity-query': {
         'func': get_process_causality_network_activity_query,
         'name': 'ProcessCausalityNetworkActivity',
     },
@@ -69,9 +69,9 @@ BUILT_IN_QUERY_COMMANDS = {
 
 GENERIC_QUERY_COMMANDS = {
     'test-module': test_module,
-    'core-xql-generic-query': start_xql_query_polling_command,
-    'core-xql-get-query-results': get_xql_query_results_polling_command,
-    'core-xql-get-quota': get_xql_quota_command,
+    'xdr-xql-generic-query': start_xql_query_polling_command,
+    'xdr-xql-get-query-results': get_xql_query_results_polling_command,
+    'xdr-xql-get-quota': get_xql_quota_command,
 }
 
 
@@ -84,6 +84,7 @@ def main() -> None:
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
     args = demisto.args()
+    args['is_core'] = True
     headers = {}
     url_suffix = "/public_api/v1"
     try:

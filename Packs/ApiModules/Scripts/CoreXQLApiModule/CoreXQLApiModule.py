@@ -111,12 +111,12 @@ class CoreClient(BaseClient):
         query_results = res.get('reply', "")
         return query_results
 
-    def get_query_result_stream(self, data: dict, command_name: str) -> bytes:
+    def get_query_result_stream(self, data: dict, is_core: bool) -> bytes:
         res = self._http_request(method='POST', url_suffix='/xql/get_query_results_stream', json_data=data,
                                  resp_type='response', response_data_type='bin')
-        if 'xdr' in command_name:
-            return res.content
-        return base64.b64decode(res)
+        if is_core:
+            return base64.b64decode(res)
+        return res.content
 
     def get_xql_quota(self, data: dict) -> dict:
         res = self._http_request(method='POST', url_suffix='/xql/get_quota', json_data=data)
@@ -454,7 +454,7 @@ def get_xql_query_results(client: CoreClient, args: dict) -> Tuple[dict, Optiona
             'format': 'json',
         }
     }
-    command_name = args.get('command_name')
+    is_core = args.get('is_core', False)
 
     # Call the Client function and get the raw response
     response = client.get_xql_query_results(data)
@@ -462,13 +462,13 @@ def get_xql_query_results(client: CoreClient, args: dict) -> Tuple[dict, Optiona
     results = response.get('results', {})
     stream_id = results.get('stream_id')
     if stream_id:
-        file_data = get_query_result_stream(client, stream_id, command_name)
+        file_data = get_query_result_stream(client, stream_id, is_core)
         return response, file_data
     response['results'] = results.get('data')
     return response, None
 
 
-def get_query_result_stream(client: CoreClient, stream_id: str, command_name: str) -> bytes:
+def get_query_result_stream(client: CoreClient, stream_id: str, is_core: bool) -> bytes:
     """Retrieve XQL query results with more than 1000 results.
 
     Args:
@@ -487,7 +487,7 @@ def get_query_result_stream(client: CoreClient, stream_id: str, command_name: st
         }
     }
     # Call the Client function and get the raw response
-    return client.get_query_result_stream(data, command_name)
+    return client.get_query_result_stream(data, is_core)
 
 
 def format_item(item_to_format: Any) -> Any:
@@ -667,7 +667,6 @@ def get_xql_query_results_polling_command(client: CoreClient, args: dict) -> Uni
     # get the query data either from the integration context (if its not the first run) or from the given args.
     parse_result_file_to_context = argToBoolean(args.get('parse_result_file_to_context', 'false'))
     command_name = args.get('command_name', demisto.command())
-    command_for_scheduled_Command = 'core-xql-get-query-results' if 'core' in command_name else 'xdr-xql-get-query-results'
     interval_in_secs = int(args.get('interval_in_seconds', 10))
     max_fields = arg_to_number(args.get('max_fields', 20))
     if max_fields is None:
@@ -691,7 +690,7 @@ def get_xql_query_results_polling_command(client: CoreClient, args: dict) -> Uni
 
     # if status is pending, the command will be called again in the next run until success.
     if outputs.get('status') == 'PENDING':
-        scheduled_command = ScheduledCommand(command=command_for_scheduled_Command, next_run_in_seconds=interval_in_secs,
+        scheduled_command = ScheduledCommand(command='xdr-xql-get-query-results', next_run_in_seconds=interval_in_secs,
                                              args=args, timeout_in_seconds=600)
         command_results.scheduled_command = scheduled_command
         command_results.readable_output = 'Query is still running, it may take a little while...'
@@ -794,15 +793,7 @@ BUILT_IN_QUERY_COMMANDS = {
         'func': get_file_event_query,
         'name': 'FileEvent',
     },
-    'core-xql-file-event-query': {
-        'func': get_file_event_query,
-        'name': 'FileEvent',
-    },
     'xdr-xql-process-event-query': {
-        'func': get_process_event_query,
-        'name': 'ProcessEvent',
-    },
-    'core-xql-process-event-query': {
         'func': get_process_event_query,
         'name': 'ProcessEvent',
     },
@@ -810,15 +801,7 @@ BUILT_IN_QUERY_COMMANDS = {
         'func': get_dll_module_query,
         'name': 'DllModule',
     },
-    'core-xql-dll-module-query': {
-        'func': get_dll_module_query,
-        'name': 'DllModule',
-    },
     'xdr-xql-network-connection-query': {
-        'func': get_network_connection_query,
-        'name': 'NetworkConnection',
-    },
-    'core-xql-network-connection-query': {
         'func': get_network_connection_query,
         'name': 'NetworkConnection',
     },
@@ -826,15 +809,7 @@ BUILT_IN_QUERY_COMMANDS = {
         'func': get_registry_query,
         'name': 'Registry',
     },
-    'core-xql-registry-query': {
-        'func': get_registry_query,
-        'name': 'Registry',
-    },
     'xdr-xql-event-log-query': {
-        'func': get_event_log_query,
-        'name': 'EventLog',
-    },
-    'core-xql-event-log-query': {
         'func': get_event_log_query,
         'name': 'EventLog',
     },
@@ -842,15 +817,7 @@ BUILT_IN_QUERY_COMMANDS = {
         'func': get_dns_query,
         'name': 'DNS',
     },
-    'core-xql-dns-query': {
-        'func': get_dns_query,
-        'name': 'DNS',
-    },
     'xdr-xql-file-dropper-query': {
-        'func': get_file_dropper_query,
-        'name': 'FileDropper',
-    },
-    'core-xql-file-dropper-query': {
         'func': get_file_dropper_query,
         'name': 'FileDropper',
     },
@@ -858,15 +825,7 @@ BUILT_IN_QUERY_COMMANDS = {
         'func': get_process_instance_network_activity_query,
         'name': 'ProcessInstanceNetworkActivity',
     },
-    'core-xql-process-instance-network-activity-query': {
-        'func': get_process_instance_network_activity_query,
-        'name': 'ProcessInstanceNetworkActivity',
-    },
     'xdr-xql-process-causality-network-activity-query': {
-        'func': get_process_causality_network_activity_query,
-        'name': 'ProcessCausalityNetworkActivity',
-    },
-    'core-xql-process-causality-network-activity-query': {
         'func': get_process_causality_network_activity_query,
         'name': 'ProcessCausalityNetworkActivity',
     },
@@ -875,9 +834,6 @@ BUILT_IN_QUERY_COMMANDS = {
 GENERIC_QUERY_COMMANDS = {
     'test-module': test_module,
     'xdr-xql-generic-query': start_xql_query_polling_command,
-    'core-xql-generic-query': start_xql_query_polling_command,
     'xdr-xql-get-query-results': get_xql_query_results_polling_command,
-    'core-xql-get-query-results': get_xql_query_results_polling_command,
     'xdr-xql-get-quota': get_xql_quota_command,
-    'core-xql-get-quota': get_xql_quota_command,
 }
