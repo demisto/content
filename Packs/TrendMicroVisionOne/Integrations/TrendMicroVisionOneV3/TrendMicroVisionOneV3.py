@@ -16,9 +16,11 @@ from pytmv1 import (
     ObjectType,
     ResultCode,
     ObjectRequest,
+    EmailActivity,
     AccountRequest,
     EndpointRequest,
     ExceptionObject,
+    EndpointActivity,
     SuspiciousObject,
     CollectFileRequest,
     CollectFileTaskResp,
@@ -96,6 +98,9 @@ FILE_PATH = "file_path"
 FILE_URL = "file_url"
 FILE_NAME = "filename"
 FILE_TYPE = "filetype"
+FETCH_ALL = "fetch_all"
+FETCH_MAX_COUNT = "fetch_max_count"
+DEFAULT_MAX_FETCH = 5000
 SCRIPT_ID = "script_id"
 DOCUMENT_PASSWORD = "document_password"
 ARCHIVE_PASSWORD = "archive_password"
@@ -896,32 +901,52 @@ def get_endpoint_activity_data(
     top = args.get(TOP, EMPTY_STRING)
     select = args.get(SELECT, EMPTY_STRING).split(",")
     query_op = args.get(QUERY_OP, EMPTY_STRING)
+    fetch_all = args.get(FETCH_ALL, FALSE)
+    fetch_max_count = int(args.get(FETCH_MAX_COUNT, DEFAULT_MAX_FETCH))
     # Choose QueryOp Enum based on user choice
     if query_op.lower() == "or":
         query_op = pytmv1.QueryOp.OR
     elif query_op.lower() == "and":
         query_op = pytmv1.QueryOp.AND
     # list to contain endpoint activity data
+    new_endpoint_activity: list[EndpointActivity] = []
+    # Output to be sent to war room
     message: list[Any] = []
     # Get the activity count
     count_obj = get_endpoint_activity_data_count(v1_client, args)
     activity_count = int(count_obj.outputs.get("endpoint_activity_count", EMPTY_STRING))  # type: ignore
-    # If activity count is greater than 5k, throw error else return response
-    if activity_count > 5000:
-        return_error("Please refine search, this query returns more than 5K results.")
-    # Make rest call
-    resp = v1_client.endpoint.list_activity(
-        start_time=start,
-        end_time=end,
-        top=top,
-        select=select,
-        op=query_op,
-        **fields,
-    )
-    resp_obj: pytmv1.ListEndpointActivityResp = unwrap(resp.response)
-    # Parse endpoint activity data to message list and send to war room
-    for activity in resp_obj.items:
-        message.append(activity.model_dump())
+    if fetch_all == TRUE:
+        if activity_count > fetch_max_count and fetch_max_count != 0:
+            return_error(
+                f"Please refine search, this query returns more than {fetch_max_count} results."
+            )
+        # Make rest call
+        resp = v1_client.endpoint.consume_activity(
+            lambda activity: new_endpoint_activity.append(activity),
+            start_time=start,
+            end_time=end,
+            top=top,
+            select=select,
+            op=query_op,
+            **fields,
+        )
+        # Parse endpoint activity data to message list and send to war room
+        for activity in new_endpoint_activity:
+            message.append(activity.model_dump())
+    else:
+        # Make rest call
+        resp = v1_client.endpoint.list_activity(
+            start_time=start,
+            end_time=end,
+            top=top,
+            select=select,
+            op=query_op,
+            **fields,
+        )
+        resp_obj: pytmv1.ListEndpointActivityResp = unwrap(resp.response)
+        # Parse endpoint activity data to message list and send to war room
+        for activity in resp_obj.items:
+            message.append(activity.model_dump())
 
     return CommandResults(
         readable_output=tableToMarkdown(
@@ -1008,31 +1033,52 @@ def get_email_activity_data(
     top = args.get(TOP, EMPTY_STRING)
     select = args.get(SELECT, EMPTY_STRING).split(",")
     query_op = args.get(QUERY_OP, EMPTY_STRING)
+    fetch_all = args.get(FETCH_ALL, FALSE)
+    fetch_max_count = int(args.get(FETCH_MAX_COUNT, DEFAULT_MAX_FETCH))
     # Choose QueryOp Enum based on user choice
     if query_op.lower() == "or":
         query_op = pytmv1.QueryOp.OR
     elif query_op.lower() == "and":
         query_op = pytmv1.QueryOp.AND
     # list to populate email activity data
+    new_email_activity: list[EmailActivity] = []
+    # Output to be sent to war room
     message: list[Any] = []
     # Get the activity count
     count_obj = get_email_activity_data_count(v1_client, args)
     activity_count = int(count_obj.outputs.get("email_activity_count", EMPTY_STRING))  # type: ignore
-    # If activity count is greater than 5k, throw error else return response
-    if activity_count > 5000:
-        return_error("Please refine search, this query returns more than 5K results.")
-    # Make rest call
-    resp = v1_client.email.list_activity(
-        start_time=start,
-        end_time=end,
-        top=top,
-        select=select,
-        op=query_op,
-        **fields,
-    )
-    resp_obj: pytmv1.ListEmailActivityResp = unwrap(resp.response)
-    for activity in resp_obj.items:
-        message.append(activity.model_dump())
+    # Check if user would like to fetch all activity
+    if fetch_all == TRUE:
+        if activity_count > fetch_max_count and fetch_max_count != 0:
+            return_error(
+                f"Please refine search, this query returns more than {fetch_max_count} results."
+            )
+        # Make rest call
+        resp = v1_client.email.consume_activity(
+            lambda activity: new_email_activity.append(activity),
+            start_time=start,
+            end_time=end,
+            top=top,
+            select=select,
+            op=query_op,
+            **fields,
+        )
+        # Parse endpoint activity data to message list and send to war room
+        for activity in new_email_activity:
+            message.append(activity.model_dump())
+    else:
+        # Make rest call
+        resp = v1_client.email.list_activity(
+            start_time=start,
+            end_time=end,
+            top=top,
+            select=select,
+            op=query_op,
+            **fields,
+        )
+        resp_obj: pytmv1.ListEmailActivityResp = unwrap(resp.response)
+        for activity in resp_obj.items:
+            message.append(activity.model_dump())
 
     return CommandResults(
         readable_output=tableToMarkdown(
