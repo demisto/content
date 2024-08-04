@@ -13,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -53,7 +54,7 @@ tasks:
         simple: "2d8edf70-45dc-729a-a5f9-e1303667ac8d\t"
       comment:
         simple: alert's status has changed
-      status:
+      state:
         simple: OPEN
     separatecontext: false
     continueonerrortype: ""
