@@ -8,4 +8,4 @@ filter _raw_log ~= "\[\d+\/\w+\/\d+:\d+:\d+:\d+\s+[+-]\d+\]" or _raw_log ~= "\d{
     tmp_timestamp2 = if(tmp_get_timestamp ~= "[+-]", parse_timestamp("%d/%b/%Y:%H:%M:%S %z", tmp_get_timestamp), null)
 | alter
     _time = coalesce(tmp_timestamp1, tmp_timestamp2)
-| fields tmp_*;
+| fields -tmp_*;
