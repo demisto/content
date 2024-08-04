@@ -567,7 +567,7 @@ def test_get_query_result_stream(mocker):
     """
     stream_id = 'mock_stream_id'
     mocker.patch.object(CLIENT, 'get_query_result_stream', return_value='Raw Data')
-    response = CoreXQLApiModule.get_query_result_stream(CLIENT, stream_id=stream_id, command_name='core-generic-query')
+    response = CoreXQLApiModule.get_query_result_stream(CLIENT, stream_id=stream_id, is_core=True)
     assert response == 'Raw Data'
 
 
@@ -694,7 +694,7 @@ def test_start_xql_query_polling_not_supported(mocker):
     mocker.patch.object(CLIENT, 'start_xql_query', return_value='1234')
     mocker.patch('CoreXQLApiModule.get_xql_query_results', return_value=(mock_response, None))
     mocker.patch('CoreXQLApiModule.is_demisto_version_ge', return_value=False)
-    mocker.patch.object(demisto, 'command', return_value='core-xql-generic-query')
+    mocker.patch.object(demisto, 'command', return_value='xdr-xql-generic-query')
     command_results = CoreXQLApiModule.start_xql_query_polling_command(
         CLIENT, {'query': query, 'query_name': 'mock_name'})
     assert command_results.outputs == {'status': 'PENDING',
@@ -735,7 +735,7 @@ def test_start_xql_query_polling_command(mocker):
                      'execution_id': 'query_id_mock'}
     mocker.patch.object(CLIENT, 'start_xql_query', return_value='1234')
     mocker.patch('CoreXQLApiModule.get_xql_query_results', return_value=(mock_response, None))
-    mocker.patch.object(demisto, 'command', return_value='core-xql-generic-query')
+    mocker.patch.object(demisto, 'command', return_value='xdr-xql-generic-query')
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     command_results = CoreXQLApiModule.start_xql_query_polling_command(
@@ -769,7 +769,7 @@ def test_get_xql_query_results_polling_command_success_under_1000(mocker):
                      'results': [{'x': 'test1', 'y': None}],
                      'execution_id': 'query_id_mock'}
     mocker.patch('CoreXQLApiModule.get_xql_query_results', return_value=(mock_response, None))
-    mocker.patch.object(demisto, 'command', return_value='core-xql-generic-query')
+    mocker.patch.object(demisto, 'command', return_value='xdr-xql-generic-query')
     command_results = CoreXQLApiModule.get_xql_query_results_polling_command(CLIENT, {'query': query, })
     assert command_results.outputs == {'status': 'SUCCESS', 'number_of_results': 1, 'query_name': '',
                                        'query_cost': {'376699223': 0.0031591666666666665}, 'remaining_quota': 1000.0,
@@ -799,7 +799,7 @@ def test_get_xql_query_results_clear_integration_context_on_success(mocker):
                      'results': [{'x': 'test1', 'y': None}],
                      'execution_id': 'query_id_mock'}
     mocker.patch('CoreXQLApiModule.get_xql_query_results', return_value=(mock_response, None))
-    mocker.patch.object(demisto, 'command', return_value='core-xql-generic-query')
+    mocker.patch.object(demisto, 'command', return_value='xdr-xql-generic-query')
     command_results = CoreXQLApiModule.get_xql_query_results_polling_command(CLIENT, {'query': query})
     assert command_results.outputs == {'status': 'SUCCESS', 'number_of_results': 1, 'query_name': '',
                                        'query_cost': {'376699223': 0.0031591666666666665}, 'remaining_quota': 1000.0,
@@ -829,7 +829,7 @@ def test_get_xql_query_results_polling_command_success_more_than_1000(mocker):
                      'results': {'stream_id': 'test_stream_id'},
                      'execution_id': 'query_id_mock'}
     mocker.patch('CoreXQLApiModule.get_xql_query_results', return_value=(mock_response, 'File Data'))
-    mocker.patch.object(demisto, 'command', return_value='core-xql-generic-query')
+    mocker.patch.object(demisto, 'command', return_value='xdr-xql-generic-query')
     mocker.patch('CoreXQLApiModule.fileResult',
                  return_value={'Contents': '', 'ContentsFormat': 'text', 'Type': 3, 'File': 'results.gz',
                                'FileID': '12345'})
@@ -880,7 +880,7 @@ def test_get_xql_query_results_polling_command_success_more_than_1000_results_pa
     compressed_mock_file_data = gzip.compress(mock_file_data)
 
     mocker.patch('CoreXQLApiModule.get_xql_query_results', return_value=(mock_response, compressed_mock_file_data))
-    mocker.patch.object(demisto, 'command', return_value='core-xql-generic-query')
+    mocker.patch.object(demisto, 'command', return_value='xdr-xql-generic-query')
     results = CortexCoreXQLQueryEngine.get_xql_query_results_polling_command(CLIENT, {'query': query,
                                                                                       'parse_result_file_to_context': True})
 
@@ -909,7 +909,7 @@ def test_get_xql_query_results_polling_command_pending(mocker):
                      'results': None}
     mocker.patch('CoreXQLApiModule.get_xql_query_results', return_value=(mock_response, None))
     mocker.patch('CoreXQLApiModule.is_demisto_version_ge', return_value=True)
-    mocker.patch.object(demisto, 'command', return_value='core-xql-generic-query')
+    mocker.patch.object(demisto, 'command', return_value='xdr-xql-generic-query')
     mocker.patch('CortexCoreXQLQueryEngine.ScheduledCommand', return_value=None)
     command_results = CoreXQLApiModule.get_xql_query_results_polling_command(CLIENT, {'query': query})
     assert command_results.readable_output == 'Query is still running, it may take a little while...'
@@ -965,7 +965,7 @@ def test_get_built_in_query_results_polling_command(mocker):
         'time_frame': '7 days'
     }
     res = mocker.patch('CoreXQLApiModule.start_xql_query_polling_command')
-    mocker.patch.object(demisto, 'command', return_value='core-xql-file-event-query')
+    mocker.patch.object(demisto, 'command', return_value='xdr-xql-file-event-query')
     CoreXQLApiModule.get_built_in_query_results_polling_command(CLIENT, args)
     assert (
         res.call_args.args[1]["query"]
@@ -1027,8 +1027,7 @@ def test_start_xql_query_forward_user_run_rbac_true(mock_api_call):
                                           path='some_mock_url/xql/start_xql_query',
                                           data=None,
                                           headers={},
-                                          timeout=None,
-                                          response_data_type=None)
+                                          timeout=None)
     assert response == 'aaa'
 
 
@@ -1054,8 +1053,7 @@ def test_get_xql_query_results_forward_user_run_rbac_true(mock_api_call):
                                           path='some_mock_url/xql/get_query_results',
                                           data=None,
                                           headers={},
-                                          timeout=None,
-                                          response_data_type=None)
+                                          timeout=None)
     assert response == 'aaa'
 
 
