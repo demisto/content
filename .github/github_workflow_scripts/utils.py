@@ -202,8 +202,8 @@ def get_content_reviewers(content_roles: dict[str, Any]) -> tuple[list[str], str
             print(f"'{CONTRIBUTION_REVIEWERS_KEY}' is not an array. Terminating...")  # noqa: T201
             sys.exit(1)
 
-        if not isinstance(security_reviewer, str) or not security_reviewer:
-            print(f"'{CONTRIBUTION_SECURITY_REVIEWER_KEY}' is not a string. Terminating...")  # noqa: T201
+        if not isinstance(security_reviewer, list) or not security_reviewer:
+            print(f"'{CONTRIBUTION_SECURITY_REVIEWER_KEY}' is not a list. Terminating...")  # noqa: T201
             sys.exit(1)
 
         if not isinstance(tim_reviewer, str) or not tim_reviewer:
