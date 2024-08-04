@@ -9,7 +9,7 @@ you are implementing with your integration
 """
 
 import json
-from datetime import datetime, timezone, UTC
+from datetime import datetime, timezone
 import pytest
 from Serenety import Client
 import demistomock as demisto
@@ -104,9 +104,6 @@ def test_fetch_incidents(requests_mock):
 
     # Assertions
     assert incidents[0]['severity'] == 2
-
-    current_datetime = datetime.now(UTC).astimezone(timezone.utc)
-    current_datetime.strftime("%Y-%m-%dT%H:%M:%S")
 
     next_run, incidents = fetch_incidents(client, last_run, first_fetch, scope="65e83a81cba69ffd2d9384c1")
 
