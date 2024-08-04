@@ -4862,12 +4862,14 @@
             "timeout": 7000,
             "integrations": [
                 "EWSO365",
+                "EWS v2",
                 "Core REST API",
                 "CreateIncidents",
                 "Rasterize"
             ],
             "instance_names": [
                 "ewso365_dev_team",
+                "ewv2_regular",
                 "Create Test Incidents - Phishing Mock"
             ],
             "external_playbook_config": {
