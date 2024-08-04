@@ -147,7 +147,6 @@
     "group": "indicator",
     "id": "unifiedFileRep1",
 	"indicatorsDetails": {
-		"TypeName": "",
 		"tabs": [
 			{
 				"id": "main",
@@ -745,7 +744,6 @@
 		]
 	},
 	"indicatorsQuickView": {
-		"TypeName": "",
 		"tabs": [
 			{
 				"id": "indicator-quick-view-info",

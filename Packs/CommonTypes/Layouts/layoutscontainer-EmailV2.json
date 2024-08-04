@@ -85,7 +85,6 @@
     "group": "indicator",
     "id": "emailRep",
 	"indicatorsDetails": {
-		"TypeName": "",
 		"tabs": [
 			{
 				"id": "pniqfz7ye4",
@@ -568,7 +567,6 @@
 		]
 	},
 	"indicatorsQuickView": {
-		"TypeName": "",
 		"tabs": [
 			{
 				"id": "indicator-quick-view-info",
