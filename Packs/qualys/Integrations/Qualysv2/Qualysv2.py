@@ -2899,7 +2899,7 @@ def get_host_list_detections_events(client, since_datetime, next_page='', limit=
 
     next_page = get_next_page_from_url(next_url, 'id_min')
 
-    assets = get_detections_from_hosts(host_list_assets)
+    assets = get_detections_from_hosts(host_list_assets) if host_list_assets else []
     demisto.debug(f'Parsed detections from hosts, got {len(assets)=} assets.')
 
     add_fields_to_events(assets, ['DETECTION', 'FIRST_FOUND_DATETIME'], 'host_list_detection')
