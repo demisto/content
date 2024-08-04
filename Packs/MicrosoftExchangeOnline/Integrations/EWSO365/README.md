@@ -118,8 +118,6 @@ If Exchange is configured with an international flavor, `Inbox` will be named ac
 
 ### ews-get-attachment
 
-#### Description
-
 Retrieves the actual attachments from an email message. To get all attachments for a message, only specify the item-id argument.
 
 #### Permissions
@@ -220,8 +218,6 @@ No known limitations.
 
 ### ews-delete-attachment
 
-#### Description
-
 Deletes the attachments of an item (email message).
 
 #### Permissions
@@ -283,8 +279,6 @@ No known limitations.
 <summary><h3 style={{display: 'inline'}}>ews-get-searchable-mailboxes</h3></summary>
 
 ### ews-get-searchable-mailboxes
-
-#### Description
 
 Get a list of searchable mailboxes.
 
@@ -348,8 +342,6 @@ There are no input arguments for this command.
 <summary><h3 style={{display: 'inline'}}>ews-move-item</h3></summary>
 
 ### ews-move-item
-
-#### Description
 
 Move an item to a different folder in the mailbox.
 
@@ -415,8 +407,6 @@ No known limitations.
 
 ### ews-delete-items
 
-#### Description
-
 Delete an item from a mailbox
 
 #### Permissions
@@ -476,8 +466,6 @@ No known limitations.
 <summary><h3 style={{display: 'inline'}}>ews-search-mailbox</h3></summary>
 
 ### ews-search-mailbox
-
-#### Description
 
 Searches for items in the specified mailbox. Specific permissions are needed for this operation to search in a target mailbox other than the default.
 
@@ -598,8 +586,6 @@ No known limitations.
 
 ### ews-get-contacts
 
-#### Description
-
 Retrieves contacts for a specified mailbox.
 
 #### Permissions
@@ -681,8 +667,6 @@ No known limitations.
 
 ### ews-get-out-of-office
 
-#### Description
-
 Retrieves the out-of-office status for a specified mailbox.
 
 #### Permissions
@@ -753,8 +737,6 @@ No known limitations.
 
 ### ews-recover-messages
 
-#### Description
-
 Recovers messages that were soft-deleted.
 
 #### Permissions
@@ -818,8 +800,6 @@ No known limitations.
 
 ### ews-create-folder
 
-#### Description
-
 Creates a new folder in a specified mailbox.
 
 #### Permissions
@@ -860,8 +840,6 @@ There is no context output for this command.
 <summary><h3 style={{display: 'inline'}}>ews-mark-item-as-junk</h3></summary>
 
 ### ews-mark-item-as-junk
-
-#### Description
 
 Marks an item as junk. This is commonly used to block an email address. For more information, see the [Microsoft documentation](https://msdn.microsoft.com/en-us/library/office/dn481311(v=exchg.150).aspx).
 
@@ -918,8 +896,6 @@ There is no context output for this command.
 <summary><h3 style={{display: 'inline'}}>ews-find-folders</h3></summary>
 
 ### ews-find-folders
-
-#### Description
 
 Retrieves information for the folders of the specified mailbox. Only folders with read permissions will be returned. Your visual folders on the mailbox, such as "Inbox", are under the folder "Top of Information Store".
 
@@ -1027,8 +1003,6 @@ root
 <summary><h3 style={{display: 'inline'}}>ews-get-items-from-folder</h3></summary>
 
 ### ews-get-items-from-folder
-
-#### Description
 
 Retrieves items from a specified folder in a mailbox. The items are ordered by the item created time. Most recent is first.
 
@@ -1149,8 +1123,6 @@ No known limitations.
 
 ### ews-get-items
 
-#### Description
-
 Retrieves items by item ID.
 
 #### Permissions
@@ -1221,8 +1193,6 @@ Identical outputs to `ews-get-items-from-folder` command.
 
 ### ews-move-item-between-mailboxes
 
-#### Description
-
 Moves an item from one mailbox to a different mailbox.
 
 #### Permissions
@@ -1282,8 +1252,6 @@ No known limitations.
 <summary><h3 style={{display: 'inline'}}>ews-get-folder</h3></summary>
 
 ### ews-get-folder
-
-#### Description
 
 Retrieves a single folder.
 
@@ -1352,8 +1320,6 @@ If Exchange is configured with an international flavor, `Inbox` will be named ac
 
 ### ews-expand-group
 
-#### Description
-
 Expands a distribution list to display all members. By default, expands only the first layer of the distribution list. If recursive-expansion is "True", the command expands nested distribution lists and returns all members.
 
 #### Permissions
@@ -1411,8 +1377,6 @@ There is no context output for this command.
 <summary><h3 style={{display: 'inline'}}>ews-mark-items-as-read</h3></summary>
 
 ### ews-mark-items-as-read
-
-#### Description
 
 Marks items as read or unread.
 
@@ -1475,8 +1439,6 @@ No known limitations.
 
 ### send-mail
 
-#### Description
-
 Sends an email.
 
 #### Permissions
@@ -1534,8 +1496,6 @@ There is no context output for this command.
 
 ### ews-get-items-as-eml
 
-#### Description
-
 Retrieves items by item ID and uploads its content as an EML file.
 
 #### Permissions
@@ -1579,8 +1539,6 @@ No known limitations.
 <summary><h3 style={{display: 'inline'}}>reply-mail</h3></summary>
 
 ### reply-mail
-
-#### Description
 
 Reply to an email
 
@@ -1633,8 +1591,6 @@ There is no context output for this command.
 <summary><h3 style={{display: 'inline'}}>ews-auth-reset</h3></summary>
 
 ### ews-auth-reset
-
-#### Description
 
 Run this command if for some reason you need to rerun the authentication process.
 
