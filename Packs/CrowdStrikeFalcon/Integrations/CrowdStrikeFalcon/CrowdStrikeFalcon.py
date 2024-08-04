@@ -2052,7 +2052,7 @@ def resolve_detection(ids, status, assigned_to_uuid, show_in_ui, comment, tag):
         demisto.debug(f"in resolve_detection: {LEGACY_VERSION =} and {payload=}")
         # modify the payload to match the Raptor API
         ids = payload.pop('ids')
-        payload["assign_to_user_id"] = payload.pop("assigned_to_uuid") if "assigned_to_uuid" in payload else None
+        payload["assign_to_uuid"] = payload.pop("assigned_to_uuid") if "assigned_to_uuid" in payload else None
         payload["update_status"] = payload.pop("status") if "status" in payload else None
         payload["append_comment"] = payload.pop("comment") if "comment" in payload else None
         if tag:
