@@ -588,7 +588,7 @@ def main():  # pragma: no cover
                     params.get('risk_rule'), params.get('fusion_file_path'), params.get('insecure'),
                     params.get('polling_timeout'), params.get('proxy'), params.get('threshold'),
                     params.get('suspicious_threshold'), params.get('risk_score_threshold'),
-                    argToList(params.get('feedTags')), params.get('tlp_color'), argToBoolean(params.get('performance')))
+                    argToList(params.get('feedTags')), params.get('tlp_color'), argToBoolean(params.get('performance') or False))
     demisto.debug('RF: Finished initializing client')
     command = demisto.command()
     demisto.info(f'Command being called is {command}')

@@ -1,0 +1,32 @@
+{
+    "name": "Unit42 Threat Brief - Fighting Ursa",
+    "description": "This pack handles Unit42 Threat Brief - Fighting Ursa",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Case Management"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [
+        "Fighting",
+        "Ursa",
+        "Fighting Ursa",
+        "APT28",
+        "Unit42",
+        "Phishing"
+    ],
+    "dependencies": {
+        "MajorBreachesInvestigationandResponse": {
+            "mandatory": true,
+            "display_name": "Rapid Breach Response"
+        }
+    },
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

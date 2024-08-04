@@ -158,6 +158,7 @@ configuration:
 - additionalinfo: 'Improve the feed performance by removing the rawJSON from the indicators. Note: A loss of data may occur if selecting this checkbox.'
   display: Remove rawJSON from indicators
   name: performance
+  defaultvalue: "false"
   type: 8
   required: false
 description: Ingests indicators from Recorded Future feeds into Demisto.

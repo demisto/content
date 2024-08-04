@@ -794,16 +794,18 @@ class ExchangeOnlinePowershellV3Client
             # Import and Execute command
             $cmd_params = @{
                 "Identity"                 = $mailbox
-                "BlockedSendersAndDomains" = @{Add = $add_blocked_senders_and_domains
-                    Remove                         = $remove_blocked_senders_and_domains
-                }
-                "TrustedSendersAndDomains" = @{Add = $add_trusted_senders_and_domains
-                    Remove                         = $remove_trusted_senders_and_domains
-                }
                 "TrustedListsOnly"         = $trusted_lists_only
                 "ContactsTrusted"          = $contacts_trusted
                 "Enabled"                  = $enabled
                 "Confirm"                  = $false
+            }
+            $blocked_senders_and_domains = CreateAddAndRemoveSections $add_blocked_senders_and_domains $remove_blocked_senders_and_domains
+            if ($blocked_senders_and_domains -ne $null){
+                $cmd_params["BlockedSendersAndDomains"] = $blocked_senders_and_domains
+            }
+            $trusted_senderns_and_domains = CreateAddAndRemoveSections $add_trusted_senders_and_domains $remove_trusted_senders_and_domains
+            if ($trusted_senderns_and_domains -ne $null){
+                $cmd_params["TrustedSendersAndDomains"] = $trusted_senderns_and_domains
             }
             Set-MailboxJunkEmailConfiguration @cmd_params
         }
@@ -855,16 +857,18 @@ class ExchangeOnlinePowershellV3Client
             $this.CreateSession()
             # Import and Execute command
             $cmd_params = @{
-                "BlockedSendersAndDomains" = @{Add = $add_blocked_senders_and_domains
-                    Remove                         = $remove_blocked_senders_and_domains
-                }
-                "TrustedSendersAndDomains" = @{Add = $add_trusted_senders_and_domains
-                    Remove                         = $remove_trusted_senders_and_domains
-                }
                 "TrustedListsOnly"         = $trusted_lists_only
                 "ContactsTrusted"          = $contacts_trusted
                 "Enabled"                  = $enabled
                 "Confirm"                  = $false
+            }
+            $blocked_senders_and_domains = CreateAddAndRemoveSections $add_blocked_senders_and_domains $remove_blocked_senders_and_domains
+            if ($blocked_senders_and_domains -ne $null){
+                $cmd_params["BlockedSendersAndDomains"] = $blocked_senders_and_domains
+            }
+            $trusted_senderns_and_domains = CreateAddAndRemoveSections $add_trusted_senders_and_domains $remove_trusted_senders_and_domains
+            if ($trusted_senderns_and_domains -ne $null){
+                $cmd_params["TrustedSendersAndDomains"] = $trusted_senderns_and_domains
             }
             Get-Mailbox -RecipientTypeDetails UserMailbox -ResultSize Unlimited | ForEach-Object {
                 Set-MailboxJunkEmailConfiguration -Identity $_.Name @cmd_params
@@ -1758,6 +1762,17 @@ function SetJunkRulesCommand([ExchangeOnlinePowershellV3Client]$client, [hashtab
     $entry_context = @{}
 
     return $human_readable, $entry_context, $raw_response
+}
+
+function  CreateAddAndRemoveSections([string[]]$items_to_add, [string[]]$items_to_remove ){
+    $params = @{}
+    if (-not [string]::IsNullOrEmpty($items_to_add)){
+        $params["Add"] = $items_to_add
+    }
+    if (-not [string]::IsNullOrEmpty($items_to_remove)){
+        $params["Remove"] =  $items_to_remove
+    }
+    return $params
 }
 
 function SetGlobalJunkRulesCommand([ExchangeOnlinePowershellV3Client]$client, [hashtable]$kwargs) {
