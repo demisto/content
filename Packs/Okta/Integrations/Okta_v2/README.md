@@ -2560,8 +2560,7 @@ Reset OAuth authentication data (authentication process will start from the begi
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
+There are no input arguments for this command.
 
 #### Context Output
 

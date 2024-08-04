@@ -1,4 +1,7 @@
 category: Authentication & Identity Management
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: Okta v2
   version: -1
