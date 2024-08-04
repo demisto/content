@@ -33,9 +33,9 @@ else:
         'forceRetrain': demisto.args().get('forceRetrain'),
         'numberOfFeaturesPerField': 500
     })
-    if '0 incidents fetched' in res[-1].get('Contents', ''):
-        demisto.debug("0 incidents fetched")
+    if isinstance(res[-1].get('Contents', ''), str):
+        demisto.debug(f"DBotGroupXDRIncidents: {res[-1].get('Contents', '')=}")
+        res[-1]['HumanReadable'] = res[-1].get('Contents', '')
         res[-1]['Contents'] = {'data': []}
-        demisto.debug(f'DBotGroupXDRIncidents: after update {res=}')
     # we need only the last entry because it's a widget script, and only the widget info should be return
     demisto.results(res[-1])
