@@ -13,7 +13,7 @@ This integration was integrated and tested with version 3.0 of Cortex Core - XQL
 You can execute these commands from the Cortex XSIAM CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-### core-xql-generic-query
+### xdr-xql-generic-query
 
 ***
 Execute an XQL query and retrieve results of an executed XQL query API. The command will be executed every 10 seconds until results are retrieved or until a timeout error is raised. When more than 1000 results are retrieved, the command will return a compressed gzipped JSON format file, unless the argument 'parse_result_file_to_context' is set to true and then the results will be extracted to the context.
@@ -22,7 +22,7 @@ Execute an XQL query and retrieve results of an executed XQL query API. The comm
 
 #### Base Command
 
-`core-xql-generic-query`
+`xdr-xql-generic-query`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -40,7 +40,7 @@ Execute an XQL query and retrieve results of an executed XQL query API. The comm
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksXQL.GenericQuery.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the  core-xql-get-query-results command. | 
+| PaloAltoNetworksXQL.GenericQuery.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the  xdr-xql-get-query-results command. | 
 | PaloAltoNetworksXQL.GenericQuery.query_name | String | The given name of the query. | 
 | PaloAltoNetworksXQL.GenericQuery.status | String | String representing the status of the API call; SUCCESS, FAIL, or PENDING.
 For multi-tenant queries, PARTIAL_SUCCESS means that at least one tenant failed to execute the query. Only partial results are available. | 
@@ -79,7 +79,7 @@ For multi-tenant queries, the field displays a value per child tenant. For examp
 
 
 #### Command Example
-```!core-xql-generic-query query=`dataset = xdr_data | fields action_evtlog_message, event_id | limit 10```
+```!xdr-xql-generic-query query=`dataset = xdr_data | fields action_evtlog_message, event_id | limit 10```
 
 #### Human Readable Output
 
@@ -103,14 +103,14 @@ For multi-tenant queries, the field displays a value per child tenant. For examp
 >| P1 | 2021-08-28T09:12:57.000Z | PANW |  | test10 | 2021-08-28T09:22:23.000Z |
 
 
-### core-xql-get-quota
+### xdr-xql-get-quota
 ***
 Retrieve the amount of query quota available and used.
 
 
 #### Base Command
 
-`core-xql-get-quota`
+`xdr-xql-get-quota`
 #### Input
 
 There are no input arguments for this command.
@@ -126,7 +126,7 @@ There are no input arguments for this command.
 
 
 #### Command Example
-```!core-xql-get-quota```
+```!xdr-xql-get-quota```
 
 #### Context Example
 ```json
@@ -150,7 +150,7 @@ There are no input arguments for this command.
 >| 0.0 | 0.0 | 1000 | 0.00299 |
 
 
-### core-xql-get-query-results
+### xdr-xql-get-query-results
 ***
 Retrieve results of an executed XQL query API. When more than 1000 results are retrieved, the command will return a compressed gzipped JSON format file, unless the argument 'parse_result_file_to_context' is set to true and then the results will be extracted to the context.
 
@@ -158,7 +158,7 @@ Retrieve results of an executed XQL query API. When more than 1000 results are r
 
 #### Base Command
 
-`core-xql-get-query-results`
+`xdr-xql-get-query-results`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -172,7 +172,7 @@ Retrieve results of an executed XQL query API. When more than 1000 results are r
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksXQL.GenericQuery.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the core-xql-get-query-results command. | 
+| PaloAltoNetworksXQL.GenericQuery.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the xdr-xql-get-query-results command. | 
 | PaloAltoNetworksXQL.GenericQuery.query_name | String | The given name of the query. | 
 | PaloAltoNetworksXQL.GenericQuery.status | String | String representing the status of the API call; SUCCESS, FAIL, or PENDING.
 For multi-tenant queries, PARTIAL_SUCCESS means that at least one tenant failed to execute the query. Only partial results are available. | 
@@ -211,7 +211,7 @@ For multi-tenant queries, the field displays a value per child tenant. For examp
 
 
 #### Command Example
-``` !core-xql-get-query-results query_id=12345678_inv ```
+``` !xdr-xql-get-query-results query_id=12345678_inv ```
 
 #### Human Readable Output
 >### General Results
@@ -225,14 +225,14 @@ For multi-tenant queries, the field displays a value per child tenant. For examp
 >| XDR agent | 2021-08-29T07:40:06.000Z | PANW | test2 | 2021-08-29T07:45:08.000Z |
 
 
-### core-xql-file-event-query
+### xdr-xql-file-event-query
 ***
 Query file events by the SHA256 file.
 
 
 #### Base Command
 
-`core-xql-file-event-query`
+`xdr-xql-file-event-query`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -252,7 +252,7 @@ Query file events by the SHA256 file.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | PaloAltoNetworksXQL.FileEvent.query_name | String | The given name of the query. | 
-| PaloAltoNetworksXQL.FileEvent.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the core-xql-get-query-results command. | 
+| PaloAltoNetworksXQL.FileEvent.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the xdr-xql-get-query-results command. | 
 | PaloAltoNetworksXQL.FileEvent.status | String | String representing the status of the API call; SUCCESS, FAIL, or PENDING.
 For multi-tenant queries, PARTIAL_SUCCESS means that at least one tenant failed to execute the query. Only partial results are available. | 
 | PaloAltoNetworksXQL.FileEvent.number_of_results | Number | Integer representing the number of results returned. | 
@@ -272,7 +272,7 @@ For multi-tenant queries, the field displays a value per child tenant. For examp
 
 
 #### Command Example
-```!core-xql-file-event-query file_sha256=12345,6789 endpoint_id=test1,test2 time_frame="1 month" ```
+```!xdr-xql-file-event-query file_sha256=12345,6789 endpoint_id=test1,test2 time_frame="1 month" ```
 
 #### Human Readable Output
 >### General Results
@@ -285,14 +285,14 @@ For multi-tenant queries, the field displays a value per child tenant. For examp
 >| XDR agent | 2021-08-04T10:57:09.000Z | PANW | C:\Users\test1\test2 | Action File SHA | 2021-05-21T11:20:52.000Z | WIN10X64 | AgentID | IP | 2021-08-04T11:01:08.000Z |
 
 
-### core-xql-process-event-query
+### xdr-xql-process-event-query
 ***
 Query process events by the SHA256 process.
 
 
 #### Base Command
 
-`core-xql-process-event-query`
+`xdr-xql-process-event-query`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -312,7 +312,7 @@ Query process events by the SHA256 process.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | PaloAltoNetworksXQL.ProcessEvent.query_name | String | The given name of the query. | 
-| PaloAltoNetworksXQL.ProcessEvent.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the  core-xql-get-query-results command. | 
+| PaloAltoNetworksXQL.ProcessEvent.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the  xdr-xql-get-query-results command. | 
 | PaloAltoNetworksXQL.ProcessEvent.status | String | String representing the status of the API call; SUCCESS, FAIL, or PENDING.
 For multi-tenant queries, PARTIAL_SUCCESS means that at least one tenant failed to execute the query. Only partial results are available. | 
 | PaloAltoNetworksXQL.ProcessEvent.number_of_results | Number | Integer representing the number of results returned. | 
@@ -341,7 +341,7 @@ For multi-tenant queries, the field displays a value per child tenant. For examp
 
 
 #### Command Example
-```!core-xql-process-event-query process_sha256=12345,6789 endpoint_id=test1,test2 time_frame="1 month" ```
+```!xdr-xql-process-event-query process_sha256=12345,6789 endpoint_id=test1,test2 time_frame="1 month" ```
 
 #### Human Readable Output
 >### General Results
@@ -357,14 +357,14 @@ For multi-tenant queries, the field displays a value per child tenant. For examp
 
 
 
-### core-xql-dll-module-query
+### xdr-xql-dll-module-query
 ***
 Query DLL module events by the SHA256 DLL.
 
 
 #### Base Command
 
-`core-xql-dll-module-query`
+`xdr-xql-dll-module-query`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -384,7 +384,7 @@ Query DLL module events by the SHA256 DLL.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | PaloAltoNetworksXQL.DllModule.query_name | String | The given name of the query. | 
-| PaloAltoNetworksXQL.DllModule.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the  core-xql-get-query-results command. | 
+| PaloAltoNetworksXQL.DllModule.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the  xdr-xql-get-query-results command. | 
 | PaloAltoNetworksXQL.DllModule.status | String | String representing the status of the API call; SUCCESS, FAIL, or PENDING.
 For multi-tenant queries, PARTIAL_SUCCESS means that at least one tenant failed to execute the query. Only partial results are available. | 
 | PaloAltoNetworksXQL.DllModule.number_of_results | Number | Integer representing the number of results returned. | 
@@ -412,7 +412,7 @@ For multi-tenant queries, the field displays a value per child tenant. For examp
 
 
 #### Command Example
-```!core-xql-dll-module-query loaded_module_sha256=1234,2345 endpoint_id=test1,test2```
+```!xdr-xql-dll-module-query loaded_module_sha256=1234,2345 endpoint_id=test1,test2```
 
 #### Human Readable Output
 ### General Results
@@ -428,14 +428,14 @@ For multi-tenant queries, the field displays a value per child tenant. For examp
 
 
 
-### core-xql-network-connection-query
+### xdr-xql-network-connection-query
 ***
 Query network connections between a source IP, destination IP and port.
 
 
 #### Base Command
 
-`core-xql-network-connection-query`
+`xdr-xql-network-connection-query`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -457,7 +457,7 @@ Query network connections between a source IP, destination IP and port.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | PaloAltoNetworksXQL.NetworkConnection.query_name | String | The given name of the query. | 
-| PaloAltoNetworksXQL.NetworkConnection.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the  core-xql-get-query-results command. | 
+| PaloAltoNetworksXQL.NetworkConnection.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the  xdr-xql-get-query-results command. | 
 | PaloAltoNetworksXQL.NetworkConnection.status | String | String representing the status of the API call; SUCCESS, FAIL, or PENDING.
 For multi-tenant queries, PARTIAL_SUCCESS means that at least one tenant failed to execute the query. Only partial results are available. | 
 | PaloAltoNetworksXQL.NetworkConnection.number_of_results | Number | Integer representing the number of results returned. | 
@@ -486,7 +486,7 @@ For multi-tenant queries, the field displays a value per child tenant. For examp
 
 
 #### Command Example
-```!core-xql-network-connection-query endpoint_id=1234,2345 local_ip=test_ip_1,test_ip_2 remote_ip=test_remote_ip_1,test_remote_ip_2 port=test_port1,test_port2 limit=2```
+```!xdr-xql-network-connection-query endpoint_id=1234,2345 local_ip=test_ip_1,test_ip_2 remote_ip=test_remote_ip_1,test_remote_ip_2 port=test_port1,test_port2 limit=2```
 
 #### Human Readable Output
 >### General Results
@@ -501,14 +501,14 @@ For multi-tenant queries, the field displays a value per child tenant. For examp
 
 
 
-### core-xql-registry-query
+### xdr-xql-registry-query
 ***
 Query windows registry by registry key name.
 
 
 #### Base Command
 
-`core-xql-registry-query`
+`xdr-xql-registry-query`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -528,7 +528,7 @@ Query windows registry by registry key name.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | PaloAltoNetworksXQL.Registry.query_name | String | The given name of the query. | 
-| PaloAltoNetworksXQL.Registry.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the  core-xql-get-query-results command. | 
+| PaloAltoNetworksXQL.Registry.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the  xdr-xql-get-query-results command. | 
 | PaloAltoNetworksXQL.Registry.status | String | String representing the status of the API call; SUCCESS, FAIL, or PENDING.
 For multi-tenant queries, PARTIAL_SUCCESS means that at least one tenant failed to execute the query. Only partial results are available. | 
 | PaloAltoNetworksXQL.Registry.number_of_results | Number | Integer representing the number of results returned. | 
@@ -552,7 +552,7 @@ For multi-tenant queries, the field displays a value per child tenant. For examp
 
 
 #### Command Example
-```!core-xql-registry-query endpoint_id=1234,2345 reg_key_name=<reg_key_name> limit=2  time_frame="1 month"```
+```!xdr-xql-registry-query endpoint_id=1234,2345 reg_key_name=<reg_key_name> limit=2  time_frame="1 month"```
 
 #### Human Readable Output
 
@@ -567,14 +567,14 @@ For multi-tenant queries, the field displays a value per child tenant. For examp
 >| XDR agent | 2021-08-04T06:27:44.000Z | PANW | Action Registry Data | Action Registry Data |  | WIN10X64 | ID | IP | Windows 10 | AGENT_OS_WINDOWS | REGISTRY_SET_VALUE | REGISTRY | 2021-08-04T06:30:22.000Z |
 
 
-### core-xql-event-log-query
+### xdr-xql-event-log-query
 ***
 Query event logs by event ID.
 
 
 #### Base Command
 
-`core-xql-event-log-query`
+`xdr-xql-event-log-query`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -594,7 +594,7 @@ Query event logs by event ID.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | PaloAltoNetworksXQL.EventLog.query_name | String | The given name of the query. | 
-| PaloAltoNetworksXQL.EventLog.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the  core-xql-get-query-results command. | 
+| PaloAltoNetworksXQL.EventLog.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the  xdr-xql-get-query-results command. | 
 | PaloAltoNetworksXQL.EventLog.status | String | String representing the status of the API call; SUCCESS, FAIL, or PENDING.
 For multi-tenant queries, PARTIAL_SUCCESS means that at least one tenant failed to execute the query. Only partial results are available. | 
 | PaloAltoNetworksXQL.EventLog.number_of_results | Number | Integer representing the number of results returned. | 
@@ -618,7 +618,7 @@ For multi-tenant queries, the field displays a value per child tenant. For examp
 
 
 #### Command Example
-```!core-xql-event-log-query endpoint_id=1234,2345 event_id=4444,5555 limit=2```
+```!xdr-xql-event-log-query endpoint_id=1234,2345 event_id=4444,5555 limit=2```
 
 #### Human Readable Output
 >### General Results
@@ -632,14 +632,14 @@ For multi-tenant queries, the field displays a value per child tenant. For examp
 >| XDR agent | 2021-08-28T12:31:24.000Z | PANW | 5555 | Message  | Microsoft-Windows-Security-Auditing | DESKTOP-22 | ID | IP | Windows 10 | AGENT_OS_WINDOWS | EVENT_LOG_AGENT_EVENT_LOG | EVENT_LOG | 2021-08-28T12:36:21.000Z |
 
 
-### core-xql-dns-query
+### xdr-xql-dns-query
 ***
 Query by DNS query or domain name.
 
 
 #### Base Command
 
-`core-xql-dns-query`
+`xdr-xql-dns-query`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -660,7 +660,7 @@ Query by DNS query or domain name.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | PaloAltoNetworksXQL.DNS.query_name | String | The given name of the query. | 
-| PaloAltoNetworksXQL.DNS.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the  core-xql-get-query-results command. | 
+| PaloAltoNetworksXQL.DNS.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the  xdr-xql-get-query-results command. | 
 | PaloAltoNetworksXQL.DNS.status | String | String representing the status of the API call; SUCCESS, FAIL, or PENDING.
 For multi-tenant queries, PARTIAL_SUCCESS means that at least one tenant failed to execute the query. Only partial results are available. | 
 | PaloAltoNetworksXQL.DNS.number_of_results | Number | Integer representing the number of results returned. | 
@@ -693,7 +693,7 @@ For multi-tenant queries, the field displays a value per child tenant. For examp
 
 
 #### Command Example
-```!core-xql-dns-query endpoint_id=1234,2345 external_domain=<external_domain> limit=2```
+```!xdr-xql-dns-query endpoint_id=1234,2345 external_domain=<external_domain> limit=2```
 
 #### Human Readable Output
 >### General Results
@@ -708,14 +708,14 @@ For multi-tenant queries, the field displays a value per child tenant. For examp
 
 
 
-### core-xql-file-dropper-query
+### xdr-xql-file-dropper-query
 ***
 Search for the process that wrote the given file, by its SHA256 or file path.
 
 
 #### Base Command
 
-`core-xql-file-dropper-query`
+`xdr-xql-file-dropper-query`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -736,7 +736,7 @@ Search for the process that wrote the given file, by its SHA256 or file path.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | PaloAltoNetworksXQL.FileDropper.query_name | String | The given name of the query. | 
-| PaloAltoNetworksXQL.FileDropper.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the  core-xql-get-query-results command. | 
+| PaloAltoNetworksXQL.FileDropper.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the  xdr-xql-get-query-results command. | 
 | PaloAltoNetworksXQL.FileDropper.status | String | String representing the status of the API call; SUCCESS, FAIL, or PENDING.
 For multi-tenant queries, PARTIAL_SUCCESS means that at least one tenant failed to execute the query. Only partial results are available. | 
 | PaloAltoNetworksXQL.FileDropper.number_of_results | Number | Integer representing the number of results returned. | 
@@ -770,7 +770,7 @@ For multi-tenant queries, the field displays a value per child tenant. For examp
 
 
 #### Command Example
-```!core-xql-file-dropper-query endpoint_id=1234,2345 file_path=<file_path> file_sha256=<file_SHA> limit=2 time_frame="1 month"```
+```!xdr-xql-file-dropper-query endpoint_id=1234,2345 file_path=<file_path> file_sha256=<file_SHA> limit=2 time_frame="1 month"```
 
 #### Human Readable Output
 
@@ -785,14 +785,14 @@ For multi-tenant queries, the field displays a value per child tenant. For examp
 
 
 
-### core-xql-process-instance-network-activity-query
+### xdr-xql-process-instance-network-activity-query
 ***
 Search for network connection created by a given process instance ID.
 
 
 #### Base Command
 
-`core-xql-process-instance-network-activity-query`
+`xdr-xql-process-instance-network-activity-query`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -812,7 +812,7 @@ Search for network connection created by a given process instance ID.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.query_name | String | The given name of the query. | 
-| PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the  core-xql-get-query-results command. | 
+| PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the  xdr-xql-get-query-results command. | 
 | PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.status | String | String representing the status of the API call; SUCCESS, FAIL, or PENDING.
 For multi-tenant queries, PARTIAL_SUCCESS means that at least one tenant failed to execute the query. Only partial results are available. | 
 | PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.number_of_results | Number | Integer representing the number of results returned. | 
@@ -847,7 +847,7 @@ For multi-tenant queries, the field displays a value per child tenant. For examp
 
 
 #### Command Example
-```!core-xql-process-instance-network-activity-query endpoint_id=1234,2345 process_instance_id=<process_instance_id> limit=2 time_frame="1 month"```
+```!xdr-xql-process-instance-network-activity-query endpoint_id=1234,2345 process_instance_id=<process_instance_id> limit=2 time_frame="1 month"```
 
 #### Human Readable Output
 >### General Results
@@ -860,14 +860,14 @@ For multi-tenant queries, the field displays a value per child tenant. For examp
 >| XDR agent | 2021-08-11T06:08:47.000Z | PANW |  |  | UNITED_KINGDOM | LOCAL_IP | REMOTE_IP | 443 |  |  | ID |  | x.exe |  |  |  |  Windows Publisher | X Corporation | WIN10X64 |  |  |  |  | 2021-08-11T06:09:34.000Z |
 
 
-### core-xql-process-causality-network-activity-query
+### xdr-xql-process-causality-network-activity-query
 ***
 Search for network connection created by a given process causality ID.
 
 
 #### Base Command
 
-`core-xql-process-causality-network-activity-query`
+`xdr-xql-process-causality-network-activity-query`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -887,7 +887,7 @@ Search for network connection created by a given process causality ID.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.query_name | String | The given name of the query. | 
-| PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the  core-xql-get-query-results command. | 
+| PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the  xdr-xql-get-query-results command. | 
 | PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.status | String | String representing the status of the API call; SUCCESS, FAIL, or PENDING.
 For multi-tenant queries, PARTIAL_SUCCESS means that at least one tenant failed to execute the query. Only partial results are available. | 
 | PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.number_of_results | Number | Integer representing the number of results returned. | 
@@ -922,7 +922,7 @@ For multi-tenant queries, the field displays a value per child tenant. For examp
 
 
 #### Command Example
-```!core-xql-process-causality-network-activity-query endpoint_id=1234,2345  process_causality_id=<process_causality_id> limit=1 time_frame="1 month"```
+```!xdr-xql-process-causality-network-activity-query endpoint_id=1234,2345  process_causality_id=<process_causality_id> limit=1 time_frame="1 month"```
 
 #### Human Readable Output
 >### General Results
