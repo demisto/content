@@ -69,7 +69,7 @@ call o365_common_fields
 	xdm.target.file.sha256 = `sha256`,
 	xdm.event.outcome = if(EnforcementMode = 1, XDM_CONST.OUTCOME_UNKNOWN, to_string(EnforcementMode) ~= "2|3", XDM_CONST.OUTCOME_PARTIAL, EnforcementMode = 4, XDM_CONST.OUTCOME_FAILED, EnforcementMode = 5, XDM_CONST.OUTCOME_SUCCESS, ResultStatus = "Succeeded", XDM_CONST.OUTCOME_SUCCESS, ResultStatus = "PartiallySucceeded", XDM_CONST.OUTCOME_PARTIAL, ResultStatus = "Failed", XDM_CONST.OUTCOME_FAILED, ResultStatus ~= "[Tt]rue", XDM_CONST.OUTCOME_SUCCESS, ResultStatus ~= "[Ff]alse", XDM_CONST.OUTCOME_FAILED),
 	xdm.event.outcome_reason = coalesce(Reason, translate_EnforcementMode, ResultStatus),
-	xdm.observer.action = coalesce(actions, Status, translate_EnforcementMode, ResultStatus),
+	xdm.observer.action = coalesce(to_string(actions), Status, translate_EnforcementMode, ResultStatus),
 	xdm.network.rule = Name,
 	xdm.source.host.hostname = coalesce(entityname, DeviceName),
 	xdm.alert.severity = Severity,
