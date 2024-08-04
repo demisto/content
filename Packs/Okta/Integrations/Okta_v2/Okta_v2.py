@@ -182,11 +182,12 @@ class Client(OktaClient):
             url_suffix=uri,
         )
 
-    def expire_password(self, user_id):
+    def expire_password(self, user_id, params):
         uri = f'/api/v1/users/{user_id}/lifecycle/expire_password'
         return self.http_request(
             method="POST",
-            url_suffix=uri
+            url_suffix=uri,
+            params=params
         )
 
     def add_user_to_group(self, user_id, group_id):
@@ -829,11 +830,14 @@ def expire_password_command(client, args):
     if not (args.get('username') or user_id):
         raise Exception("You must supply either 'Username' or 'userId")
 
-    raw_response = client.expire_password(user_id)
+    temporary_password = args.get("temporary_password")
+    params = {"tempPassword": temporary_password}
+
+    raw_response = client.expire_password(user_id, params)
     user_context = client.get_users_context(raw_response)
 
-    if argToBoolean(args.get('temporary_password', True)):
-        client.set_temp_password(user_id)
+    # if argToBoolean(args.get('temporary_password', True)):
+    #     client.set_temp_password(user_id)
 
     readable_output = tableToMarkdown('Okta Expired Password', raw_response, removeNull=True)
     outputs = {
