@@ -102,9 +102,19 @@ def create_query(query_arg, id: str | None = None, search_term: str | None = Non
     return query
 
 
-def parse_indicator_for_get_command(indicator: dict)->dict:
-    
-    res_indicator = assign_params(
+def parse_indicators_for_get_command(indicators)->List[dict[str, Any]]:
+    """Parses the list of indicators returned from the api to indicators that can be returned to the war room.
+
+    Args:
+        indicators (list): list of indicators from api raw response.
+
+    Returns:
+        List[dict[str, Any]]: List of indicators that can be returned to the war room.
+    """
+    res = []
+    indicators = [indicators] if type(indicators) != list else indicators
+    for indicator in indicators:
+        res.append(assign_params(
             ID=indicator.get('id'),
             Value=value(indicator),
             Description = indicator.get('threat_type_desc'),
@@ -117,20 +127,12 @@ def parse_indicator_for_get_command(indicator: dict)->dict:
             Tags = indicator.get('tags'),
             Confidence = indicator.get('confidence_level'),
             Publications = indicator.get('reference')
-        )
-    return res_indicator
-
-
-def parse_indicators(indicators: list)->List[dict[str, Any]]:
-    res = []
-    indicators = [indicators] if type(indicators) != list else indicators
-    for indicator in indicators:
-        res.append(parse_indicator_for_get_command(indicator))
+        ))
     return res
 
 
 def indicator_type(indicator: dict) -> str:
-    """Returns the ioc type according to 'ioc_type' field in the indicator
+    """Returns the Demisto ioc type according to 'ioc_type' field in the indicator
     """
     type = indicator.get('ioc_type')
     if type == 'domain':
@@ -147,6 +149,17 @@ def indicator_type(indicator: dict) -> str:
     
     
 def parse_indicator_for_fetch(indicator:dict, with_ports:bool, create_relationship:bool, tlp_color:str)->dict[str, Any]:
+    """Parses the indicator given from the api to an indicator that can be sent to Threat Intel min XSOAR.
+
+    Args:
+        indicator (dict): The raw data of the indicator.
+        with_ports (bool): whether to return the indicator with a tag representing it's port (relevant for ip indicators only).
+        create_relationship (bool): Whether to create the indicator with relationships.
+        tlp_color (str): The tlp color of the indicator
+
+    Returns:
+        dict[str, Any]: An indicator that can be sent to Threat Intel in XSOAR.
+    """
     
     demisto_ioc_type = indicator_type(indicator)
     ioc_value = value(indicator)
@@ -177,19 +190,38 @@ def parse_indicator_for_fetch(indicator:dict, with_ports:bool, create_relationsh
     
 
 def publications(indicator: dict)->Optional[List[dict[str, Any]]]:
+    """creates the publications field for the indicator.
+
+    Args:
+        indicator (dict): The indicator.
+
+    Returns:
+        Optional[List[dict[str, Any]]]: The list of relevant publications for this indicator
+        or None if the indicator has no publications.
+    """
     if not indicator.get('reference'):
         return None
     return [{'link': indicator.get('reference'),'title': indicator.get('malware_printable') if indicator.get('malware_printable')!= 'Unknown malware' else 'Malware' , 'source': 'ThreatFox'}]
 
 
-def date(date):
+def date(date: str)->Optional[str]:
+    """parses the date returned from raw response to a date in the right format for indicator fields in XSOAR.
+    """
     if date:
         parsed_date = arg_to_datetime(date, required=False)
         return parsed_date.strftime('%Y-%m-%dT%H:%M:%SZ')
     return None
 
 
-def validate_interval(interval):
+def validate_interval(interval: int)->int:
+    """Validates that the given interval is in days between 1 to 7.
+
+    Raises:
+        DemistoException: If the interval is invalid.
+
+    Returns:
+        int: The interval, if it is valid.
+    """
     if interval%1440 != 0:
         raise DemistoException("The fetch interval must be in whole days, between 1-7.")
     elif interval > 10080:
@@ -197,13 +229,21 @@ def validate_interval(interval):
     return interval
 
 
-def tags(indicator, with_ports):
-    
+def tags(indicator: dict, with_ports: bool)->List[str]:
+    """Returns a list of tags to add to the indicator given
+
+    Args:
+        indicator (dict): The raw response of the indicator.
+        with_ports (bool): whether to return the indicator with a tag representing it's port (relevant for ip indicators only).
+
+    Returns:
+        List[str]: List of tags to add to the indicator.
+    """
     res = [indicator.get('malware_printable'), indicator.get('malware_alias'), indicator.get('threat_type')]
     if indicator.get('tags'):
-        res.extend(indicator.get('tags'))
+        res.extend(indicator['tags'])
     if with_ports and indicator.get('ioc_type') == "ip:port":
-            res.append('port: ' + indicator.get('ioc').split(':')[1])
+            res.append('port: ' + indicator['ioc'].split(':')[1])
             
     res = [tag.lower() for tag in res if tag]
     
@@ -217,12 +257,25 @@ def tags(indicator, with_ports):
 
 
 def value(indicator)->str:
+    """Returns the value of the indicator.
+    """
     if indicator.get('ioc_type') == 'ip:port':
         return indicator.get('ioc').split(':')[0]
     return indicator.get('ioc')
 
 
 def create_relationships(value: str, type: str, related_malware: Optional[str], demisto_ioc_type: str)->list:
+    """Returns a list of relationships of the indicator.
+
+    Args:
+        value (str): The indicator value.
+        type (str): The indicator type as given in the raw response.
+        related_malware (Optional[str]): The malware related to the indicator to create a relationship to.
+        demisto_ioc_type (str): The indicator type as a Demisto type.
+
+    Returns:
+        list: List of relationships.
+    """
     
     if related_malware:
         name = EntityRelationship.Relationships.COMMUNICATED_BY \
@@ -262,7 +315,7 @@ def threatfox_get_indicators_command(client: Client, args: dict[str, Any]) -> Co
     if query_status != 'ok' and query_status:
         raise DemistoException(f'failed to run command {query_status} {query_data}')
     
-    parsed_indicators = parse_indicators(result.get('data') or result)
+    parsed_indicators = parse_indicators_for_get_command(result.get('data') or result)
     
     human_readable = tableToMarkdown(name='Indicators', t=parsed_indicators,
                                      headers=['ID', 'Value', 'Description', 'MalwareFamilyTags',
@@ -272,8 +325,8 @@ def threatfox_get_indicators_command(client: Client, args: dict[str, Any]) -> Co
     return CommandResults(readable_output=human_readable)
 
 
-def fetch_indicators_command(client: Client, with_ports, confidence_threshold,
-                             create_relationship, interval, tlp_color):
+def fetch_indicators_command(client: Client, with_ports: bool, confidence_threshold: int,
+                             create_relationship: bool, interval: int, tlp_color: str):
     
     response = client.get_indicators_request({ "query": "get_iocs",
                                               "days": int((arg_to_number(interval) or 1)/1440)})
@@ -290,7 +343,7 @@ def fetch_indicators_command(client: Client, with_ports, confidence_threshold,
         if indicator.get('ioc_type') == 'sha3_384_hash':
             demisto.debug(f'{LOG} got indicator of indicator type "sha3" skipping it')
             continue
-        if arg_to_number(indicator.get('confidence_level')) < confidence_threshold:
+        if (arg_to_number(indicator.get('confidence_level')) or 75) < confidence_threshold:
             demisto.debug(f'{LOG} got indicator with low confidence level, skipping it')
             continue
         
@@ -309,10 +362,10 @@ def main() -> None:
     params = demisto.params()
     base_url = urljoin(params['url'], '/api/v1')
     with_ports = argToBoolean(params.get('with_ports', False))
-    confidence_threshold = arg_to_number(params.get('confidence_threshold'))   # Need to check that it is a number
+    confidence_threshold = arg_to_number(params.get('confidence_threshold')) or 75
     create_relationship = argToBoolean(params.get('create_relationship'))
-    tlp_color = params.get('tlp_color')
-    interval = validate_interval(arg_to_number(params.get('feedFetchInterval', 1440)))  # Need to check that it is a number
+    tlp_color = params.get('tlp_color') or 'CLEAR'
+    interval = validate_interval(arg_to_number(params.get('feedFetchInterval')) or 1440)
     
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
