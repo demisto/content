@@ -15,8 +15,8 @@ TOKEN_EXPIRY_BUFFER = timedelta(seconds=10)
 DEFAULT_LIMIT = 50
 MAX_LIMIT = 3000
 # TODO: remove print
-# print(f"{demisto.args()=}")
-# print(f"{demisto.params()=}")
+print(f"{demisto.args()=}")
+print(f"{demisto.params()=}")
 
 
 ''' CLIENT CLASS '''
@@ -95,7 +95,7 @@ class Client(BaseClient):
 
         def _make_request() -> Any:
             # TODO: remove print
-            # print(f"{kargs}")
+            print(f"{kargs}")
             response = self._http_request(**kargs)
             if isinstance(response, dict) and (error := response.get("errors", {})):
                 raise DemistoException(error.get("message"))
@@ -156,19 +156,19 @@ class Client(BaseClient):
         """
         data = json.dumps(data_dict)
         full_url = f"{self._base_url}/threat-center/v1/search/alerts"
-        response = self.request(method="POST",full_url=full_url,data=data,)
+        response = self.request(method="POST", full_url=full_url, data=data,)
         return response
 
     def create_table_record(self, table_id, json_data):
         """ """
-        full_url = f"/context-management/v1/tables/{table_id}/addRecords"
+        full_url = f"{self._base_url}/context-management/v1/tables/{table_id}/addRecords"
         response = self.request(method="POST", full_url=full_url, json_data=json_data)
         return response
 
     def check_tracker_id(self, tracker_id):
         """ """
-        full_url = f"/context-management/v1/tables/uploadStatus/{tracker_id}"
-        response = self.request(method="GET", url_suffix=full_url)
+        full_url = f"{self._base_url}/context-management/v1/tables/uploadStatus/{tracker_id}"
+        response = self.request(method="GET", full_url=full_url)
         return response
 
     def list_context_table(self) -> dict:
@@ -366,6 +366,22 @@ def error_fixes(error: str):
                      "against the syntax documentation in the integration description.")
 
     return new_error
+
+
+def transform_dicts(input_dict: Dict[str, List[str]]) -> List[Dict[str, str]]:
+    lengths = {len(v) for v in input_dict.values()}
+    if len(lengths) > 1:
+        raise DemistoException("All lists in the attributes must have the same length")
+
+    length = next(iter(lengths))
+    keys = list(input_dict.keys())
+
+    result = []
+    for i in range(length):
+        entry = {key: input_dict[key][i] for key in keys}
+        result.append(entry)
+
+    return result
 
 
 ''' COMMAND FUNCTIONS '''
@@ -568,12 +584,13 @@ def table_record_list_command(client: Client, args: dict) -> CommandResults:
 def table_record_create_command(args: dict, client: Client) -> PollResult:
     if not (tracker_id := args.get("tracker_id")):
         table_id = args.get("table_id")
-        attributes = args.get("attributes")
-        attributes_dict = safe_load_json(attributes)
+        attributes = args.get("attributes", "")
+        attributes_dict = json.loads(attributes)
+        list_of_dict_attributes = transform_dicts(attributes_dict)
         operation = args.get("operation")
         payload = {
             "operation": operation,
-            "data": [attributes_dict],
+            "data": list_of_dict_attributes,
         }
 
         response = client.create_table_record(table_id, payload)
@@ -581,6 +598,8 @@ def table_record_create_command(args: dict, client: Client) -> PollResult:
 
     tracker_response = client.check_tracker_id(tracker_id)
     upload_status = tracker_response.get("uploadStatus")
+    # TODO: print
+    print(f"{upload_status=}")
     human_readable = {"Total Uploaded": tracker_response.get(
         "totalUploaded"), "Total Errors": tracker_response.get("totalErrors")}
 
@@ -635,6 +654,7 @@ def main() -> None:
 
         if command == 'test-module':
             return_results(test_module(client))
+
         elif command == 'exabeam-platform-event-search':
             return_results(event_search_command(client, args))
         elif command == 'exabeam-platform-case-search':
