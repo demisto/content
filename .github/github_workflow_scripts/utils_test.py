@@ -141,7 +141,7 @@ class TestGetEnvVar:
             TIM_REVIEWER_KEY: "tr1",
             "CONTRIBUTION_TL": "tl1",
             "ON_CALL_DEVS": ["ocd1", "ocd2"]
-        }, ["cr1", "cr2", "cr3", "cr4"], "sr1", "tr1")
+        }, ["cr1", "cr2", "cr3", "cr4"], ["sr1"], "tr1")
     ]
 )
 def test_get_content_reviewers(
@@ -174,11 +174,11 @@ def test_get_content_reviewers(
     [
         ({
             CONTRIBUTION_REVIEWERS_KEY: ["cr1", "cr2", "cr3", "cr4"],
-            CONTRIBUTION_SECURITY_REVIEWER_KEY: ["sr1", "str2"],
+            CONTRIBUTION_SECURITY_REVIEWER_KEY: ["sr1", "sr2"],
             TIM_REVIEWER_KEY: "tr1",
             "CONTRIBUTION_TL": "tl1",
             "ON_CALL_DEVS": ["ocd1", "ocd2"]
-        }, ["cr1", "cr2", "cr3", "cr4"], ["sr1", "str2"], "tr1")
+        }, ["cr1", "cr2", "cr3", "cr4"], ["sr1", "sr2"], "tr1")
     ]
 )
 def test_get_content_reviewers_multiple_security(
