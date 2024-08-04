@@ -466,7 +466,7 @@
 								"id": "115e4924-fd47-43ac-8d43-60790267fc94",
 								"index": 1,
 								"name": "Enrich indicator",
-								"scriptId": "enrich_exclude_button",
+								"scriptId": "none_existent_button_script",
 								"sectionItemType": "button",
 								"startCol": 0
 							},
