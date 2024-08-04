@@ -81,6 +81,17 @@ def mockFileResult(filename, data, file_type=None):
 
 
 def test_sign():
+    """
+    Given:
+        - Client configured with valid key and certificate
+
+    When:
+        - Using sign_email
+
+    Then:
+        - A signed message is output
+
+    """
     message_body = 'text to check'
 
     sign = sign_email(client, {'message_body': message_body}).readable_output
@@ -89,6 +100,19 @@ def test_sign():
 
 
 def test_verify(mocker):
+    """
+    Given:
+        - File to verify in PEM format
+
+    When:
+        - Using verify
+        - Some tag is provided
+
+    Then:
+        - The message will be verified successfully
+        - Tag will be added to the war room output
+
+    """
 
     mocker.patch.object(demisto, 'getFilePath', return_value={'path': './test_data/signed.p7'})
 
@@ -98,7 +122,17 @@ def test_verify(mocker):
 
 
 def test_verify_der(mocker):
-    # Test verification when file is in binary format
+    """
+    Given:
+        - File to verify in binary format (DER)
+
+    When:
+        - Using verify
+
+    Then:
+        - The message will be verified successfully
+
+    """
     mocker.patch('SMIME_Messaging.fileResult', return_value={
         'Contents': '', 'ContentsFormat': 'text', 'Type': '', 'File': '', 'FileID': ''
     })
@@ -112,6 +146,17 @@ def test_verify_der(mocker):
 
 
 def test_encrypt(mocker):
+    """
+    Given:
+        - Client configured with valid key and certificate
+
+    When:
+        - Using encrypt_email_body
+
+    Then:
+        - An encrypted message is output
+
+    """
 
     mocker.patch.object(demisto, 'args', return_value={'message': 'testing message'})
     encrypt = encrypt_email_body(client, {}).readable_output
@@ -121,6 +166,20 @@ def test_encrypt(mocker):
 
 
 def test_decrypt(mocker):
+    """
+    Given:
+        - File to decrypt in PEM format
+        - Client configured with key and certificate matching the cert used for encryption
+
+    When:
+        - Using decrypt_email_body
+        - Some tag is provided
+
+    Then:
+        - The message will be decrypted correctly
+        - Tag will be added to the war room output
+
+    """
     mocker.patch.object(demisto, 'getFilePath', return_value={'name': 'encrypt.p7', 'path': './test_data/encrypt.p7'})
 
     decrypted_out = decrypt_email_body(client, {'tag': 'test_tag'})[0].to_context()
@@ -129,6 +188,18 @@ def test_decrypt(mocker):
 
 
 def test_decrypt_der(mocker):
+    """
+    Given:
+        - File to decrypt in binary format (DER)
+        - Client configured with key and certificate matching the cert used for encryption
+
+    When:
+        - Using decrypt_email_body
+
+    Then:
+        - The message will be decrypted correctly
+
+    """
     # Test decryption when file is in binary format
     mocker.patch.object(demisto, 'getFilePath', return_value={
         'name': 'encrypted-binary-format.p7m',
@@ -141,6 +212,21 @@ def test_decrypt_der(mocker):
 
 @pytest.mark.parametrize('sign, encrypt, recipients, cc, bcc, create_file, attachments', sign_and_encrypt_tests)
 def test_sign_and_encrypt(mocker, sign, encrypt, recipients, cc, bcc, create_file, attachments):
+    """
+    Given:
+        - Client configured with valid key and certificate
+        - Various command arguments for sign_and_encrypt
+
+    When:
+        - Using sign_and_encrypt with the given arguments
+
+    Then:
+        - The message will be signed/encrypted as requested
+        - Recipient addresses will be included in the mail header
+        - Attachments will be added to the email if included
+        - Output will be saved to file if requested
+
+    """
     mocker.patch.object(demisto, 'getFilePath',
                         side_effect=lambda file_name: {'name': file_name, 'path': f'./test_data/{file_name}'})
     # patch file result to known name to use for clean up
@@ -193,6 +279,21 @@ def test_sign_and_encrypt(mocker, sign, encrypt, recipients, cc, bcc, create_fil
 
 @pytest.mark.parametrize('msg, msg_type', test_messages)
 def test_encrypt_decrypt(mocker, msg, msg_type):
+    """
+    Given:
+        - Client configured with valid key and certificate
+        - Message to sign, in plain-text or html format
+
+    When:
+        - Using sign_and_encrypt to encrypt the message
+        - Then using decrypt_message_body to decrypt the message
+
+    Then:
+        - The message will be decrypted successfully
+        - For html, an html output entry will be included
+        - attachments will be extracted
+
+    """
     mocker.patch.object(demisto, 'getFilePath',
                         side_effect=lambda file_name: {'name': file_name, 'path': f'./test_data/{file_name}'})
     mocker.patch('SMIME_Messaging.fileResult', side_effect=mockFileResult)
@@ -238,6 +339,21 @@ def test_encrypt_decrypt(mocker, msg, msg_type):
 
 @pytest.mark.parametrize('msg, msg_type', test_messages)
 def test_sign_verify(mocker, msg, msg_type):
+    """
+    Given:
+        - Client configured with valid key and certificate
+        - Message to sign, in plain-text or html format
+
+    When:
+        - Using sign_and_encrypt to sign the message
+        - Then using verify to check the signature and extract the message
+
+    Then:
+        - The message will be verified successfully
+        - For html, an html output entry will be included
+        - attachments will be extracted
+
+    """
     mocker.patch.object(demisto, 'getFilePath',
                         side_effect=lambda file_name: {'name': file_name, 'path': f'./test_data/{file_name}'})
     mocker.patch('SMIME_Messaging.fileResult', side_effect=mockFileResult)
@@ -282,6 +398,19 @@ def test_sign_verify(mocker, msg, msg_type):
 
 
 def test_sign_encrypt_decrypt_verify(mocker):
+    """
+    Given:
+        - Client configured with valid key and certificate
+
+    When:
+        - Using sign_and_encrypt to encrypt and sign a message
+        - Then using decrypt_message_body followed by verify to reverse the action
+
+    Then:
+        - The message will decrypt and verify correctly
+        - attachments will be extracted
+
+    """
     mocker.patch.object(demisto, 'getFilePath',
                         side_effect=lambda file_name: {'name': file_name, 'path': f'./test_data/{file_name}'})
     mocker.patch('SMIME_Messaging.fileResult', side_effect=mockFileResult)
@@ -334,6 +463,20 @@ def test_sign_encrypt_decrypt_verify(mocker):
 
 @pytest.mark.parametrize('to, cc, bcc, credentials', test_multi_recipient_params)
 def test_multi_encrypt_decrypt(mocker, to, cc, bcc, credentials):
+    """
+    Given:
+        - Client configured with valid key and certificate
+        - Recipient lists (to, cc, bcc) and their credentials
+
+    When:
+        - Using sign_and_encrypt to encrypt a message to these recipients
+        - Using decrypt_email_body to decrypt the encrypted message with each of the recipient keys
+
+    Then:
+        - The message will decrypt correctly using any one of the recipients private keys
+        - The decryption will fail for a key not matching any recipient certificate
+
+    """
     if to:
         to = json.dumps(to)
     if cc:
@@ -394,6 +537,36 @@ def test_decode_using_chardet(decrypted_text_bytes, expected_output, error_msg, 
 
 
 def test_test_module(mocker):
+    """
+    Given:
+        - Client was configured with a valid key and certificate pair
+
+    When:
+        - Using test module
+
+    Then:
+        - Test module will finish successfully
+
+    """
     from SMIME_Messaging import test_module
     mocker.patch.object(demisto, 'results')
     test_module(client)
+
+
+def test_test_module_fail(mocker):
+    """
+    Given:
+        - Client is configured using non-matching key and certificate
+
+    When:
+        - Using test module
+
+    Then:
+        - Test module will fail
+
+    """
+    from SMIME_Messaging import test_module
+    mocker.patch.object(demisto, 'results')
+    mocker.patch('SMIME_Messaging.return_error', side_effect=Exception())
+    with pytest.raises(Exception):
+        test_module(Client(recipient_key, recipient2_cert))
