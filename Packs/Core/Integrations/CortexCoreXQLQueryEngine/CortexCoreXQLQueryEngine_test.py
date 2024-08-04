@@ -1027,7 +1027,8 @@ def test_start_xql_query_forward_user_run_rbac_true(mock_api_call):
                                           path='some_mock_url/xql/start_xql_query',
                                           data=None,
                                           headers={},
-                                          timeout=None)
+                                          timeout=None,
+                                          response_data_type=None)
     assert response == 'aaa'
 
 
@@ -1053,7 +1054,8 @@ def test_get_xql_query_results_forward_user_run_rbac_true(mock_api_call):
                                           path='some_mock_url/xql/get_query_results',
                                           data=None,
                                           headers={},
-                                          timeout=None)
+                                          timeout=None,
+                                          response_data_type=None)
     assert response == 'aaa'
 
 
