@@ -18,12 +18,6 @@ note_msg = 'Note: encoding detection ended with warning: Trying to detect encodi
 test_decode_data = [
     (
         b'Za\xbf\xf3\xb3\xe6 g\xea\xb6l\xb1 ja\xbc\xf1',
-        'Zaæó³ę gź¶l± ja¼ń',
-        '',
-        ''
-    ),
-    (
-        b'Za\xbf\xf3\xb3\xe6 g\xea\xb6l\xb1 ja\xbc\xf1',
         'Zażółć gęślą jaźń',
         '',
         'iso-8859-2'

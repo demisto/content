@@ -244,7 +244,10 @@ def verify(client: Client, args: dict):
     client.smime.set_x509_stack(sk)
     client.smime.set_x509_store(st)
     try:
-        p7, data = SMIME.smime_load_pkcs7(signed_message['path'])
+        result = SMIME.smime_load_pkcs7(signed_message['path'])
+        if not isinstance(result, tuple):
+            raise DemistoException('SMIME error while loading message')
+        p7, data = result
         v = client.smime.verify(p7, data, flags=SMIME.PKCS7_NOVERIFY)
         human_readable = f'The signature verified\n\n{v}'
 
@@ -337,7 +340,9 @@ def decrypt_email_body(client: Client, args: dict):
     msg = ''
     client.smime.load_key(client.private_key_file, client.public_key_file)
     try:
-        p7, data = SMIME.smime_load_pkcs7(encrypt_message['path'])
+        p7 = SMIME.smime_load_pkcs7(encrypt_message['path'])
+        if isinstance(p7, tuple):
+            p7 = p7[0]
         decrypted_text = client.smime.decrypt(p7)
         if not decrypted_text:
             raise ValueError('Unknown error: failed to decrypt message')
@@ -402,15 +407,15 @@ def sign_and_encrypt(client: Client, args: dict):
     attachment_ids = argToList(args.get('attachment_entry_id', ''))  # type: list[str]
 
     recipients = safe_load_json(args.get('recipients', {}) or '{}')
-    if type(recipients) != dict:
+    if not isinstance(recipients, dict):
         raise DemistoException('Failed to parse recipients. (format `{"recipient@email":"cert", "other@email":"cert"}`)')
 
     cc = safe_load_json(args.get('cc', {}) or '{}')
-    if type(cc) != dict:
+    if not isinstance(cc, dict):
         raise DemistoException('Failed to parse cc. (format `{"recipient@email":"cert", "other@email":"cert"}`)')
 
     bcc = safe_load_json(args.get('bcc', {}) or '{}')
-    if type(bcc) != dict:
+    if not isinstance(bcc, dict):
         raise DemistoException('Failed to parse bcc. (format `{"recipient@email":"cert", "other@email":"cert"}`)')
 
     # Prepare message
@@ -436,7 +441,7 @@ def sign_and_encrypt(client: Client, args: dict):
         with open(file_path, 'rb') as f:
             part.set_payload(f.read())
             encoders.encode_base64(part)
-            part.add_header('Content-Disposition', 'attachment; filename="%s"' % attach_name)
+            part.add_header('Content-Disposition', f'attachment; filename={attach_name}')
             msg.attach(part)
 
     msg_str = msg.as_string()
