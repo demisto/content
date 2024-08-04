@@ -901,8 +901,9 @@ def get_modified_remote_data_command(client, args, xdr_delay: int = 1, last_mirr
         gte_modification_time_milliseconds=gte_modification_time_milliseconds,
         lte_modification_time_milliseconds=lte_modification_time_with_ms,
         limit=100)
+    last_run_mirroring = lte_modification_time_with_ms + timedelta(milliseconds=1)
     last_run_obj = demisto.getLastRun()
-    last_run_obj['mirroring'] = {'time': (lte_modification_time_with_ms + timedelta(milliseconds=1))}  # type: ignore
+    last_run_obj['mirroring'] = {'time': (last_run_mirroring)}  # type: ignore
     demisto.setLastRun(last_run_obj)
     modified_incident_ids = []
     for raw_incident in raw_incidents:
