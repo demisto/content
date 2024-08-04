@@ -434,6 +434,7 @@ def find_reviewer_to_assign(content_repo: Repository, pr: PullRequest, pr_number
     - content_repo - the content repository
     - pr - current new PR
     - pr_number - number of current_pr
+    - content_reviewers - the list of content reviewers
 
     Returns:
     - Reviewer to assign
@@ -549,6 +550,12 @@ def main():
 
     # Add a security architect reviewer if the PR contains security content items
     if is_requires_security_reviewer(pr_files):
+        if isinstance(security_reviewer, list) and len(security_reviewer) == 1:
+            security_reviewer = security_reviewer[0]
+        elif isinstance(security_reviewer, list) and len(security_reviewer) > 1:
+            security_reviewer = determine_random_reviewer(security_reviewer, content_repo)
+        # else security_reviewer is a string of a single reviewer, just add it to the list of reviewers
+
         reviewers.append(security_reviewer)
         pr.add_to_assignees(security_reviewer)
         pr.add_to_labels(SECURITY_LABEL)
