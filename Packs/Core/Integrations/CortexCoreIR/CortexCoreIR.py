@@ -466,7 +466,7 @@ def main():  # pragma: no cover
 
         elif command == 'core-get-incidents':
             return_outputs(*get_incidents_command(client, args))
-        
+
         elif command == 'core-terminate-process':
             return_results(run_polling_command(client=client,
                                                args=args,
@@ -478,7 +478,11 @@ def main():  # pragma: no cover
                                                polling_value=["PENDING",
                                                               "IN_PROGRESS",
                                                               "PENDING_ABORT"
-                                                              ]))
+                                                              ],
+                                               values_raise_error=["FAILED",
+                                                                   "TIMEOUT",
+                                                                   "ABORTED",
+                                                                   "CANCELED"]))
 
         elif command == 'core-terminate-causality':
             return_results(run_polling_command(client=client,
@@ -491,6 +495,10 @@ def main():  # pragma: no cover
                                                polling_value=["PENDING",
                                                               "IN_PROGRESS",
                                                               "PENDING_ABORT"],
+                                               values_raise_error=["FAILED",
+                                                                   "TIMEOUT",
+                                                                   "ABORTED",
+                                                                   "CANCELED"]
                                                ))
         elif command in PREVALENCE_COMMANDS:
             return_results(handle_prevalence_command(client, command, args))
