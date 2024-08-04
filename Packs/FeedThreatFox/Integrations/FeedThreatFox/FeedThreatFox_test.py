@@ -163,3 +163,161 @@ def test_threatfox_get_indicators_command(mocker):
     http = mocker.patch.object(CLIENT, '_http_request', return_value={'query_status': 'ok', 'data': {}})
     threatfox_get_indicators_command(CLIENT, {'id': '41'})
     assert http.call_args.kwargs['json_data'] == { "query": "ioc", "id": 41 }
+
+
+indicator_data = [
+    ({'id': '123', 'ioc': '8.218.152.23:80', 'threat_type_desc': 'bla1',  # case one indicator
+      'ioc_type': 'ip:port', 'malware': 'bla2', 'malware_printable': 'bla3', 'malware_alias': 'bla4', 'confidence_level': 100,
+      'first_seen': '2024-08-04 07:31:49 UTC', 'last_seen': '2024-07-03T05:11:35Z UTC', 'reference': 'bla5',
+      'reporter': 'bla6', 'tags': ['bla7', 'bla8']},
+    [{'ID': '123', 'Value': '8.218.152.23', 'Description': 'bla1', 'MalwareFamilyTags': 'bla3',  # expected
+      'AliasesTags': 'bla4', 'FirstSeenBySource': '2024-08-04 07:31:49 UTC', 'LastSeenBySource': '2024-07-03T05:11:35Z UTC',
+      'ReportedBy': 'bla6', 'Tags': ['bla3', 'bla4', 'bla7', 'bla8', 'port: 80'], 'Confidence': 100,
+      'Publications': [{'link': 'bla5','title': 'bla3', 'source': 'ThreatFox'}]}]
+     ),
+    ([{'id': '456', 'ioc': 'habdvhbkj',  # case two indicators
+       'threat_type_desc': 'bla1', 'ioc_type': 'sha1_hash', 'malware': 'bla2', 'malware_printable': 'bla3',
+       'malware_alias': 'bla4', 'confidence_level': 100, 'first_seen': '2024-08-04 07:31:49 UTC',
+       'last_seen': '2024-07-03T05:11:35Z UTC'},
+      {'id': '789', 'ioc': '8.218.152.23:80', 'threat_type_desc': 'bla1', 'ioc_type': 'ip:port', 'malware': 'bla2',
+      'malware_printable': 'Unknown malware', 'malware_alias': 'bla4', 'confidence_level': 100,
+      'first_seen': '2024-08-04 07:31:49 UTC', 'last_seen': '2024-07-03T05:11:35Z UTC',
+      'tags': ['bla7', 'bla8']}],
+     [{'ID': '456', 'Value': 'habdvhbkj', 'Description': 'bla1', 'MalwareFamilyTags': 'bla3',  # expected
+      'AliasesTags': 'bla4', 'FirstSeenBySource': '2024-08-04 07:31:49 UTC', 'LastSeenBySource': '2024-07-03T05:11:35Z UTC',
+      'Tags': ['bla3', 'bla4'], 'Confidence': 100},
+      {'ID': '789', 'Value': '8.218.152.23', 'Description': 'bla1',
+      'AliasesTags': 'bla4', 'FirstSeenBySource': '2024-08-04 07:31:49 UTC', 'LastSeenBySource': '2024-07-03T05:11:35Z UTC',
+      'Tags': ['bla4', 'bla7', 'bla8', 'port: 80'], 'Confidence': 100}]),
+]
+
+@pytest.mark.parametrize('indicators, expected', indicator_data)
+def test_parse_indicators_for_get_command(indicators, expected):
+    """
+        Given:
+            - The raw response of an indicator.
+        
+        When:
+            - Running parse_indicators_for_get_command func.
+        
+        Then:
+            - The indicator returned is parsed correctly.
+    """
+    from FeedThreatFox import parse_indicators_for_get_command
+    res = parse_indicators_for_get_command(indicators)
+    assert res == expected
+    
+
+from CommonServerPython import FeedIndicatorType
+types_data = [
+    ({'ioc_type': 'domain'}, FeedIndicatorType.FQDN),
+    ({'ioc_type': 'url'}, FeedIndicatorType.URL),
+    ({'ioc_type': 'ip:port'}, FeedIndicatorType.IP),
+    ({'ioc_type': 'envelope_from'}, FeedIndicatorType.Email),
+    ({'ioc_type': 'body_from'}, FeedIndicatorType.Email),
+    ({'ioc_type': 'sha1_hash'}, FeedIndicatorType.File)
+]
+@pytest.mark.parametrize('indicator, expected_type', types_data)
+def test_indicator_type(indicator, expected_type):
+    """
+        Given:
+            - An indicator.
+        
+        When:
+            - Running indicator_type func.
+        
+        Then:
+            - The right indicator type is returned.
+    """
+    from FeedThreatFox import indicator_type
+    type = indicator_type(indicator)
+    assert type == expected_type
+    
+
+publications_data = [
+    ({}, None),  # case no reference field
+    ({'reference': 'bla', 'malware_printable': 'Unknown malware'},  # case malware_printable in unknown
+     [{'link': 'bla','title': 'Malware' , 'source': 'ThreatFox'}]),
+    ({'reference': 'bla', 'malware_printable': 'bla2'},  # case there is malware_printable
+     [{'link': 'bla','title': 'bla2' , 'source': 'ThreatFox'}]),
+    ({'reference': 'bla'},  # case no malware_printable field
+     [{'link': 'bla','title': 'Malware' , 'source': 'ThreatFox'}])
+]
+@pytest.mark.parametrize('indicator, expected', publications_data)
+def test_publications(indicator, expected):
+    """
+        Given:
+            - An indicator.
+        
+        When:
+            - Running publications func.
+        
+        Then:
+            - The right publications list is returned.
+    """
+    from FeedThreatFox import publications
+    publications = publications(indicator)
+    assert publications == expected
+    
+date_data = [
+    ('2024-07-03T05:11:35Z UTC', '2024-07-03T05:11:35Z'),
+    (None, None)
+]
+@pytest.mark.parametrize('given_date, expected', date_data)
+def test_date(given_date, expected):
+    """
+        Given:
+            - A date from raw response.
+        
+        When:
+            - Running date func.
+        
+        Then:
+            - The date is parsed correctly.
+    """
+    from FeedThreatFox import date
+    res_date = date(given_date)
+    assert res_date == expected
+
+
+tags_data = [
+    ({'malware_alias': 'Bla2', 'threat_type': 'bla3', 'ioc_type': 'ip:port', 'ioc': '1.1.1.1:80', 'tags': ['Bla2']}, True,  # case
+     ['bla2', 'bla3', 'port: 80']),  # expected
+    ({'malware_printable': 'bla1', 'tags': ['bla4', 'bla5']}, False,  # second case
+     ['bla1', 'bla4', 'bla5']),  # expected
+    ({'malware_printable': 'Unknown malware'}, False,  # third case
+     [])  # expected
+]
+@pytest.mark.parametrize('indicator, with_ports, expected_tags', tags_data)
+def test_tags(indicator, with_ports, expected_tags):
+    """
+        Given:
+            - The raw json of an indicator and a with_ports boolean argument.
+        
+        When:
+            - Running tags func.
+        
+        Then:
+            - The right list of tags to add to the indicator is returned.
+    """
+    from FeedThreatFox import tags
+    tags = tags(indicator, with_ports)
+    assert tags == expected_tags
+    
+
+value_data = [
+    ({'ioc_type': 'ip:port', 'ioc': '1.1.1.1:80'}, '1.1.1.1'),
+    ({'ioc_type': 'url', 'ioc': 'www...'}, 'www...')
+]
+@pytest.mark.parametrize('indicator, expected_value', value_data)
+def test_value(indicator, expected_value):
+    """
+        Given:
+            - The raw json of an indicator.
+        
+        When:
+            - Running value func.
+        
+        Then:
+            - The value of the indicator is given, when the value is an ip and port then the port is dumped.
+    """
