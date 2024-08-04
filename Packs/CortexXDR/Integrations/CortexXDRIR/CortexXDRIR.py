@@ -883,7 +883,7 @@ def get_mapping_fields_command():
     return mapping_response
 
 
-def get_modified_remote_data_command(client, args, xdr_delay: int = 0, last_mirroring: Optional[dict] = None):
+def get_modified_remote_data_command(client, args, xdr_delay: int = 1, last_mirroring: Optional[dict] = None):
     remote_args = GetModifiedRemoteDataArgs(args)
     last_update = last_mirroring.get(
         'time') if isinstance(last_mirroring, dict) else remote_args.last_update

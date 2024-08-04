@@ -253,6 +253,8 @@ class CoreClient(BaseClient):
         :param page_number: page number
         :param limit: maximum number of incidents to return per page
         :param gte_creation_time_milliseconds: greater than time in milliseconds
+        :param gte_modification_time_milliseconds: greater than time in milliseconds
+        :param lte_modification_time_milliseconds: greater than time in milliseconds
         :return:
         """
         search_from = page_number * limit
@@ -336,6 +338,14 @@ class CoreClient(BaseClient):
                 'operator': 'gte',
                 'value': starred_incidents_fetch_window
             })
+
+        if lte_modification_time and lte_modification_time_milliseconds:
+            raise ValueError('Should be provide either lte_modification_time or '
+                             'lte_modification_time_milliseconds. Can\'t provide both')
+
+        if gte_modification_time and gte_modification_time_milliseconds:
+            raise ValueError('Should be provide either gte_modification_time or '
+                             'gte_modification_time_milliseconds. Can\'t provide both')
 
         if lte_modification_time:
             filters.append({
