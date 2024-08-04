@@ -7,7 +7,7 @@ The EWS O365 integration implants EWS leading services. The integration allows g
 The EWS integration can be used for the following use cases.
 
 * Monitor a specific email account and create incidents from incoming emails to the defined folder.  
-    Follow the instructions in the Fetched Incidents Data section.
+    Follow the instructions in the [Fetched Incidents Data section](https://xsoar.pan.dev/docs/reference/integrations/ewso365#fetch-data).
 
 * Search for an email message across mailboxes and folders.  
     This can be achieved in the following ways:
@@ -88,11 +88,7 @@ To limit the application's permissions to only specific mailboxes, follow the [M
 | Incidents Fetch Interval |  | False |
 | What time field should we filter incidents by? | Default is to filter by received-time, which works well if the folder is an "Inbox". But for a folder emails are dragged into for attention, if we filter by received-time, out-of-order processing of emails means some are ignored. Filtering by modified-time works better for such a scenario. This works best if any modifications \(such as tagging\) happens before moving the email into the folder, such that the move into the folder is the last modification, and triggers Cortex XSOAR to fetch it as an incident. | False |
 
-5. Click **Test** to validate the URLs, token, and connection.
-
 ## Fetch Incidents
-
-#### Description
 
 The integration imports email messages from the destination folder in the target mailbox as incidents. If the message contains any attachments, they are uploaded to the War Room as files. If the attachment is an email, Cortex XSOAR fetches information about the attached email and downloads all of its attachments (if there are any) as files.
 
@@ -242,7 +238,7 @@ No known limitations.
 |--- |--- |--- |
 |item-id|The ID of the email message for which to delete attachments.|Required|
 |target-mailbox|The mailbox in which this attachment was found. If empty, the default mailbox is used. Otherwise, the user might require impersonation rights to this mailbox.|Optional|
-|attachment-ids|A CSV list (or array) of attachment IDs to delete. If empty, all attachments will be deleted from the message.|Optional|
+|attachment-ids|A comma-separated list (or array) of attachment IDs to delete. If empty, all attachments will be deleted from the message.|Optional|
 
 #### Outputs
 
@@ -435,7 +431,7 @@ No known limitations.
 
 |**Argument Name**|**Description**|**Required**|
 |--- |--- |--- |
-|item-ids|The item IDs to delete.|Required|
+|item-ids|A comma-separated list (or array) of IDs to delete.|Required|
 |delete-type|Deletion type. Can be "trash", "soft", or "hard".|Required|
 |target-mailbox|The mailbox on which to run the command.|Optional|
 
@@ -501,7 +497,7 @@ No known limitations.
 |folder-path|The folder path in which to search. If empty, searches all the folders in the mailbox.|Optional|
 |limit|Maximum number of results to return.|Optional|
 |target-mailbox|The mailbox on which to apply the search.|Optional|
-|is-public|Whether the folder is a Public Folder?|Optional|
+|is-public|Whether the folder is a public folder?|Optional|
 |message-id|The message ID of the email. This will be ignored if a query argument is provided.|Optional|
 
 #### Outputs
@@ -1245,7 +1241,7 @@ No known limitations.
 |destination-folder-path|The folder in the destination mailbox to which to move the item. You can specify a complex path, for example, "Inbox\Phishing".|Required|
 |destination-mailbox|The mailbox to which to move the item.|Required|
 |source-mailbox|The mailbox from which to move the item (conventionally called the "target-mailbox", the target mailbox on which to run the command).|Optional|
-|is-public|Whether the destination folder is a Public Folder. Default is "False".|Optional|
+|is-public|Whether the destination folder is a public folder. Default is "False".|Optional|
 
 #### Outputs
 
