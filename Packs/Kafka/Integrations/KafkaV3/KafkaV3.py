@@ -278,7 +278,8 @@ class KafkaCommunicator:
         """
         demisto.debug(f"[test] in get_offset_for_partition, getting get_partition_offsets with {topic=} and {partition=}")
         earliest_offset, oldest_offset = self.get_partition_offsets(topic=topic, partition=partition)
-        demisto.debug(f"[test] in get_offset_for_partition, after get_partition_offsets got {earliest_offset=} and {oldest_offset=}")
+        demisto.debug(
+            f"[test] in get_offset_for_partition, after get_partition_offsets got {earliest_offset=} and {oldest_offset=}")
         offset = str(offset)
         if offset.lower() == 'earliest':
             return earliest_offset
@@ -309,7 +310,8 @@ class KafkaCommunicator:
         if partition != -1 and not isinstance(partition, list):
             demisto.debug(f"Got single partition {partition}, getting offsets with offset {offset}")
             updated_offset = self.get_offset_for_partition(topic, int(partition), offset)
-            demisto.debug(f"[test] In get_topic_partitions if statement, preparing to execute TopicPartition with {topic=}\n{partition=}\n{updated_offset=}")
+            demisto.debug(
+                f"[test] In get_topic_partitions if statement, preparing to execute TopicPartition with {topic=}\n{partition=}\n{updated_offset=}")
             topic_partitions = [TopicPartition(topic=topic, partition=int(partition), offset=updated_offset)]
             demisto.debug(f"[test] In get_topic_partitions if statement, after TopicPartition, {topic_partitions=}")
         elif isinstance(partition, list):
@@ -317,7 +319,8 @@ class KafkaCommunicator:
             for single_partition in partition:
                 try:
                     updated_offset = self.get_offset_for_partition(topic, int(single_partition), offset)
-                    demisto.debug(f"[test] In get_topic_partitions elif statement, preparing to execute TopicPartition with {topic=}\n{partition=}\n{updated_offset=}")
+                    demisto.debug(
+                        f"[test] In get_topic_partitions elif statement, preparing to execute TopicPartition with {topic=}\n{partition=}\n{updated_offset=}")
                     topic_partitions += [TopicPartition(topic=topic, partition=int(single_partition),
                                                         offset=updated_offset)]
                     demisto.debug(f"[test] In get_topic_partitions elif statement, after TopicPartition, {topic_partitions=}")
@@ -334,7 +337,8 @@ class KafkaCommunicator:
             for metadata_partition in topic_metadata.partitions.values():
                 try:
                     updated_offset = self.get_offset_for_partition(topic, metadata_partition.id, offset)
-                    demisto.debug(f"[test] In get_topic_partitions elif statement, preparing to execute TopicPartition with {topic=}\npartition={metadata_partition.id}\n{updated_offset=}")
+                    demisto.debug(
+                        f"[test] In get_topic_partitions elif statement, preparing to execute TopicPartition with {topic=}\npartition={metadata_partition.id}\n{updated_offset=}")
                     topic_partitions += [TopicPartition(topic=topic, partition=metadata_partition.id,
                                                         offset=updated_offset)]
                     demisto.debug(f"[test] In get_topic_partitions else statement, after TopicPartition, {topic_partitions=}")
