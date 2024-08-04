@@ -1,3 +1,4 @@
+import pytz
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -5,6 +6,7 @@ from CommonServerUserPython import *  # noqa
 
 import urllib3
 from typing import Dict, Any
+from dateutil import relativedelta
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -124,9 +126,9 @@ def parse_indicators_for_get_command(indicators)->List[dict[str, Any]]:
             FirstSeenBySource = indicator.get('first_seen'),
             LastSeenBySource = indicator.get('last_seen'),
             ReportedBy = indicator.get('reporter'),
-            Tags = indicator.get('tags'),
+            Tags = tags(indicator, with_ports=True),
             Confidence = indicator.get('confidence_level'),
-            Publications = indicator.get('reference')
+            Publications = publications(indicator)
         ))
     return res
 
@@ -140,8 +142,7 @@ def indicator_type(indicator: dict) -> str:
     elif type == 'url':
         return FeedIndicatorType.URL
     elif type=='ip:port':
-        indicator_type = FeedIndicatorType.ip_to_indicator_type(indicator.get('ioc'))
-        return indicator_type if indicator_type else FeedIndicatorType.IP
+        return  FeedIndicatorType.IP
     elif type == 'envelope_from' or type == 'body_from':
         return FeedIndicatorType.Email
     else:  # 'sha1_hash' 'sha256_hash' 'md5_hash'
@@ -201,10 +202,13 @@ def publications(indicator: dict)->Optional[List[dict[str, Any]]]:
     """
     if not indicator.get('reference'):
         return None
-    return [{'link': indicator.get('reference'),'title': indicator.get('malware_printable') if indicator.get('malware_printable')!= 'Unknown malware' else 'Malware' , 'source': 'ThreatFox'}]
+    malware_printable = indicator.get('malware_printable')
+    return [{'link': indicator.get('reference'),
+             'title': malware_printable if malware_printable and malware_printable != 'Unknown malware' else 'Malware' ,
+             'source': 'ThreatFox'}]
 
 
-def date(date: str)->Optional[str]:
+def date(date: Optional[str])->Optional[str]:
     """parses the date returned from raw response to a date in the right format for indicator fields in XSOAR.
     """
     if date:
@@ -239,7 +243,7 @@ def tags(indicator: dict, with_ports: bool)->List[str]:
     Returns:
         List[str]: List of tags to add to the indicator.
     """
-    res = [indicator.get('malware_printable'), indicator.get('malware_alias'), indicator.get('threat_type')]
+    res = [indicator.get('malware_printable') if indicator.get('malware_printable') != 'Unknown malware' else None, indicator.get('malware_alias'), indicator.get('threat_type')]
     if indicator.get('tags'):
         res.extend(indicator['tags'])
     if with_ports and indicator.get('ioc_type') == "ip:port":
@@ -250,8 +254,6 @@ def tags(indicator: dict, with_ports: bool)->List[str]:
     # remove duplicate tags
     seen = set()
     res =  [tag for tag in res if tag not in seen and not seen.add(tag)]
-    
-    #TODO dedup
     
     return res
 
@@ -326,10 +328,22 @@ def threatfox_get_indicators_command(client: Client, args: dict[str, Any]) -> Co
 
 
 def fetch_indicators_command(client: Client, with_ports: bool, confidence_threshold: int,
-                             create_relationship: bool, interval: int, tlp_color: str):
+                             create_relationship: bool, interval: int, tlp_color: str, last_run: dict):
     
+    now = datetime.now(pytz.utc)
+    days_for_query = int((arg_to_number(interval) or 1440)/1440)
+    
+    if last_run:
+        last_successful_run =  datetime.strptime(last_run["last_successful_run"], '%Y-%m-%dT%H:%M:%SZ').replace(tzinfo=pytz.utc)
+        time_delta = now - last_successful_run
+        wanted_interval = timedelta(days=days_for_query)
+        if time_delta > wanted_interval:
+            days = days_for_query + time_delta.days
+        if days > 7:
+            days = 7
+            
     response = client.get_indicators_request({ "query": "get_iocs",
-                                              "days": int((arg_to_number(interval) or 1)/1440)})
+                                              "days": days})
     
     if response.get('query_status') != 'ok':
         raise DemistoException("couldn't fetch")  # write something better
@@ -349,7 +363,7 @@ def fetch_indicators_command(client: Client, with_ports: bool, confidence_thresh
         
         results.append(parse_indicator_for_fetch(indicator, with_ports, create_relationship, tlp_color))
         
-    return results
+    return now.strftime('%Y-%m-%dT%H:%M:%SZ'), results
 
 
 ''' MAIN FUNCTION '''
@@ -380,11 +394,13 @@ def main() -> None:
             return_results(threatfox_get_indicators_command(client, demisto.args()))
             
         elif command == 'fetch-indicators':
-            res = fetch_indicators_command(client=client, with_ports=with_ports, confidence_threshold=confidence_threshold,
-                                          create_relationship=create_relationship, interval=interval, tlp_color=tlp_color)
+            next_run, res = fetch_indicators_command(client=client, with_ports=with_ports, confidence_threshold=confidence_threshold,
+                                          create_relationship=create_relationship, interval=interval, tlp_color=tlp_color, last_run=demisto.getLastRun())
             for iter_ in batch(res, batch_size=2000):
                 demisto.debug(f"{LOG} {iter_=}")
                 demisto.createIndicators(iter_)
+            demisto.setLastRun({"last_successful_run": next_run})
+
     
     except Exception as e:
         raise Exception(e)
