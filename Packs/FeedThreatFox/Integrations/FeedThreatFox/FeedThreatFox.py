@@ -217,22 +217,6 @@ def date(date: Optional[str])->Optional[str]:
     return None
 
 
-def validate_interval(interval: int)->int:
-    """Validates that the given interval is in days between 1 to 7.
-
-    Raises:
-        DemistoException: If the interval is invalid.
-
-    Returns:
-        int: The interval, if it is valid.
-    """
-    if interval%1440 != 0:
-        raise DemistoException("The fetch interval must be in whole days, between 1-7.")
-    elif interval > 10080:
-        raise DemistoException("The fetch interval must not be more than 7 days.")
-    return interval
-
-
 def tags(indicator: dict, with_ports: bool)->List[str]:
     """Returns a list of tags to add to the indicator given
 
@@ -279,7 +263,7 @@ def create_relationships(value: str, type: str, related_malware: Optional[str], 
         list: List of relationships.
     """
     
-    if related_malware:
+    if related_malware and related_malware != 'Unknown malware':
         name = EntityRelationship.Relationships.COMMUNICATED_BY \
             if type == 'domain' or type == "ip:port" or type == 'url' else EntityRelationship.Relationships.RELATED_TO
         reverse_name = EntityRelationship.Relationships.COMMUNICATED_WITH \
@@ -289,6 +273,21 @@ def create_relationships(value: str, type: str, related_malware: Optional[str], 
                                                     entity_b=related_malware, entity_b_type=FeedIndicatorType.Malware,
                                                     brand='ThreatFox Feed', reverse_name=reverse_name).to_indicator()]
     return []
+
+def validate_interval(interval: int)->int:
+    """Validates that the given interval is in days between 1 to 7.
+
+    Raises:
+        DemistoException: If the interval is invalid.
+
+    Returns:
+        int: The interval, if it is valid.
+    """
+    if interval%1440 != 0:
+        raise DemistoException("The fetch interval must be in whole days, between 1-7.")
+    elif interval > 10080:
+        raise DemistoException("The fetch interval must not be more than 7 days.")
+    return interval
 
 
 def threatfox_get_indicators_command(client: Client, args: dict[str, Any]) -> CommandResults:

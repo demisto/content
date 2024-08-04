@@ -321,3 +321,38 @@ def test_value(indicator, expected_value):
         Then:
             - The value of the indicator is given, when the value is an ip and port then the port is dumped.
     """
+    from FeedThreatFox import value
+    value = value(indicator)
+    assert value == expected_value
+    
+
+from CommonServerPython import FeedIndicatorType
+relationships_data = [
+    ('bla1', 'bla2', None, FeedIndicatorType.Email,  # case no related_malware field
+     []),  # case no relationships
+    ('bla3', 'domain', 'bla4', FeedIndicatorType.FQDN,  # case indicator type is domain
+     [{'name': 'communicated-by', 'reverseName': 'communicated-with',    # expected communicated-by relationship
+       'type': 'IndicatorToIndicator', 'entityA': 'bla3', 'entityAFamily': 'Indicator',
+       'entityAType': 'Domain', 'entityB': 'bla4', 'entityBFamily': 'Indicator', 'entityBType': 'Malware', 'fields': {}}]),
+    ('bla5', 'sha1_hash', 'bla6', FeedIndicatorType.File,  # case indicator type is file
+     [{'name': 'related-to', 'reverseName': 'related-to', 'type': 'IndicatorToIndicator',  # expected related-to relationship
+       'entityA': 'bla5', 'entityAFamily': 'Indicator', 'entityAType': 'File', 'entityB': 'bla6',
+       'entityBFamily': 'Indicator', 'entityBType': 'Malware', 'fields': {}}])
+]
+@pytest.mark.parametrize('value, type, related_malware, demisto_ioc_type, expected', relationships_data)
+def test_create_relationships(value, type, related_malware, demisto_ioc_type, expected):
+    """
+        Given:
+            - A value, type and related_malware fields of an indicator.
+        
+        When:
+            - Running create_relationships func.
+        
+        Then:
+            - The right relationships are returned from the function.
+    """
+    from FeedThreatFox import create_relationships
+    relationships = create_relationships(value, type, related_malware, demisto_ioc_type)
+    assert relationships == expected
+
+    
