@@ -7466,3 +7466,29 @@ def test_resolve_detections_request__url(mocker, Legacy_version, expected_url):
     http_request_mocker = mocker.patch('CrowdStrikeFalcon.http_request')
     resolve_detections_request(ids=["123"])
     assert http_request_mocker.call_args_list[0][1]['url_suffix'] == expected_url
+
+
+def test_get_status(mocker):
+    """
+    Given:
+        - Raw response of get_status_request
+    When:
+        - Running get_status command
+    Then:
+        - Validate that the contains the ids and state
+    """
+    import CrowdStrikeFalcon
+    device_ids = ["0bde2c4645294245aca522971ccc4567", "04a75a2d15b44a5995c9c17200ad1212", "046761c46ec84f40b27b6f79ce7c6543",
+                  "8ed44198a6f64f9fabd0479c30989876", "d4210a0957e640f18c237a2fa1141122"]
+
+    response = load_json('test_data/online_states_response.json')
+
+    mocker.patch.object(CrowdStrikeFalcon, 'http_request', return_value=response)
+
+    results = CrowdStrikeFalcon.get_status(device_ids)
+    assert len(results) == 5
+    assert results == [{'id': '0bde2c4645294245aca522971ccc4567', 'state': 'Online'},
+                       {'id': '04a75a2d15b44a5995c9c17200ad1212', 'state': 'Online'},
+                       {'id': '046761c46ec84f40b27b6f79ce7c6543', 'state': 'Online'},
+                       {'id': '8ed44198a6f64f9fabd0479c30989876', 'state': 'Online'},
+                       {'id': 'd4210a0957e640f18c237a2fa1141122', 'state': 'Online'}]
