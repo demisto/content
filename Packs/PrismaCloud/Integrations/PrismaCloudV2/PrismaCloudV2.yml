@@ -2133,48 +2133,48 @@ script:
     name: update-remote-system
 
   - arguments:
-      - description: Should add description here
+      - description: Access key name
         name: name
         required: true
       - description: Timestamp in milliseconds when access key expires. Default:0
         name: expires-on
-      - description: Should add description here
+      - description: Service account name
         name: service-account-name
     deprecated: false
-    description: Should add description here
+    description: Adds a new access key for the current user. If you have API access, you can create up to two access keys.
     execution: false
     name: prisma-cloud-access-key-create
   - arguments:
-      - description: Should add description here
+      - description: Returns the metadata of the access key that has the specified ID.
         name: access-key
       - description: Maximum number of entries to return.
         name: limit
     deprecated: false
-    description: Should add description here
+    description: Returns all access keys for your tenant if you have a Prisma Cloud System Admin role. Returns just your access keys if you don't have this role.
     execution: false
     name: prisma-cloud-access-keys-list
   - arguments:
-      - description: Should add description here
+      - description: Access key ID
         name: access-key
         required: true
     deprecated: false
-    description: Should add description here
+    description: Deactivates the access key that has the specified ID.
     execution: false
     name: prisma-cloud-access-key-disable
   - arguments:
-      - description: Should add description here
+      - description: Access key ID
         name: access-key
         required: true
     deprecated: false
-    description: Should add description here
+    description: Activates the access key that has the specified ID. You cannot activate an expired access key.
     execution: false
     name: prisma-cloud-access-key-enable
   - arguments:
-      - description: Should add description here
+      - description: Access key ID
         name: access-key
         required: true
     deprecated: false
-    description: Should add description here
+    description: Deletes the access key that has the specified ID.
     execution: false
     name: prisma-cloud-access-key-delete
 

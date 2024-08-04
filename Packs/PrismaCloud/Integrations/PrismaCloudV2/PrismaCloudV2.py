@@ -55,6 +55,7 @@ PAGE_SIZE_DEFAULT_VALUE = 50
 PAGE_SIZE_MAX_VALUE = 10000
 
 DEFAULT_LIMIT = '50'
+ACCESS_KEYS_LIST_DEFAULT_LIMIT = '50'
 
 PRISMA_TO_XSOAR_SEVERITY = {
     'critical': IncidentSeverity.CRITICAL,
@@ -328,7 +329,7 @@ class Client(BaseClient):
 
         return self._http_request('POST', 'code/api/v1/errors/files', json_data=data, headers=headers)
 
-    def access_key_creation(self, args: Dict[str, Any]):
+    def access_key_creation(self, args: Dict[str, Any]) -> Dict[str, Any]:
         payload = json.dumps({
             # "expiresOn": args.get('expires-on'),
             "name": args.get('name'),
@@ -340,26 +341,31 @@ class Client(BaseClient):
             data=payload
         )
 
-    def get_access_keys_list(self, args: Dict[str, Any]):
-        url_suffix = f"/access_keys/{args.get('access-key')}" if args.get('access-key') else '/access_keys'
+    def get_access_key_by_id(self, args: Dict[str, Any]) -> Dict[str, Any]:
         return self._http_request(
             method='GET',
-            url_suffix=url_suffix
+            url_suffix=f"/access_keys/{args.get('access-key')}"
         )
 
-    def patch_access_key_disable(self, access_key: str):
+    def get_access_keys_list(self) -> Dict[List[Dict[str, Any]], Any]:
+        return self._http_request(
+            method='GET',
+            url_suffix='/access_keys'
+        )
+
+    def patch_access_key_disable(self, access_key: str) -> Dict[str, Any]:
         return self._http_request(
             method='PATCH',
             url_suffix=f'/access_keys/{access_key}/status/false',
         )
 
-    def patch_access_key_enable(self, access_key: str):
+    def patch_access_key_enable(self, access_key: str) -> Dict[str, Any]:
         return self._http_request(
             method='PATCH',
             url_suffix=f'/access_keys/{access_key}/status/true',
         )
 
-    def access_key_deletion(self, access_key: str):
+    def access_key_deletion(self, access_key: str) -> Dict[str, Any]:
         return self._http_request(
             method='DELETE',
             url_suffix=f'/access_keys/{access_key}',
@@ -2036,6 +2042,102 @@ def fetch_incidents(client: Client, last_run: Dict[str, Any], params: Dict[str, 
     return incidents, ids_to_insert, updated_last_run_time
 
 
+def access_key_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    access_key = client.access_key_creation(args)
+    transform_access_keys = {
+        'Id': access_key.get('id'),
+        'Secret Key': access_key.get('secretKey'),
+    }
+
+    markdown_table = tableToMarkdown('PrismaCloud Access Key Creation', transform_access_keys, headers=['Id', 'Secret Key'])
+    return CommandResults(
+        outputs_prefix="PrismaCloud.AccessKeys",
+        outputs_key_field='id',
+        outputs=access_key,
+        raw_response=access_key,
+        readable_output=markdown_table,
+    )
+
+
+def get_access_keys_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    return get_access_key_by_id(client, args) if args.get('access-key') else get_access_keys_list(client, args)
+
+
+def get_access_key_by_id(client: Client, args: Dict[str, Any]) -> CommandResults:
+    access_key = client.get_access_key_by_id(args)
+    transform_access_key = {
+        'ID': access_key.get('id'),
+        'Name': access_key.get('name'),
+        'Expires On': timestamp_to_datestring(access_key.get('expiresOn'), DATE_FORMAT)
+    }
+
+    markdown_table = tableToMarkdown('PrismaCloud Access Key', transform_access_key, headers=['ID', 'Name', 'Expires On'])
+    return CommandResults(
+        outputs_prefix="PrismaCloud.AccessKeys",
+        outputs_key_field='id',
+        outputs=access_key,
+        raw_response=access_key,
+        readable_output=markdown_table,
+    )
+
+
+def get_access_keys_list(client: Client, args: Dict[str, Any]) -> CommandResults:
+    access_keys = client.get_access_keys_list()
+    limit = int(args.get('limit', ACCESS_KEYS_LIST_DEFAULT_LIMIT))
+    limited_access_keys_list = access_keys[:limit]
+    transform_access_keys_list = [
+        {
+            'ID': access_key.get('id'),
+            'Name': access_key.get('name'),
+            'Created By': access_key.get('createdBy'),
+            'Created Timestamp': timestamp_to_datestring(access_key.get('createdTs'), DATE_FORMAT),
+            'Last Used Time': timestamp_to_datestring(access_key.get('lastUsedTime'), DATE_FORMAT),
+            'Status': access_key.get('status'),
+            'Expires On': timestamp_to_datestring(access_key.get('expiresOn'), DATE_FORMAT),
+            'Role id': access_key.get('role', {}).get('id'),
+            'Role Name': access_key.get('role', {}).get('name'),
+            'Role Type': access_key.get('roleType'),
+            'Username': access_key.get('username'),
+        }
+        for access_key in limited_access_keys_list
+    ]
+
+    markdown_table = tableToMarkdown('PrismaCloud Access Keys', transform_access_keys_list,
+                                     headers=['ID', 'Name', 'Created By', 'Created Timestamp', 'Last Used Time', 'Status',
+                                              'Expires On', 'Role id', 'Role Name', 'Role Type', 'Username'])
+    return CommandResults(
+        outputs_prefix="PrismaCloud.AccessKeys",
+        outputs_key_field='id',
+        outputs=access_keys,
+        raw_response=access_keys,
+        readable_output=markdown_table,
+    )
+
+
+def access_key_disable_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    access_key = args.get('access-key')
+    client.patch_access_key_disable(access_key)
+    return CommandResults(
+        readable_output=f'Access key {access_key} was disabled successfully',
+    )
+
+
+def access_key_enable_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    access_key = args.get('access-key')
+    client.patch_access_key_enable(access_key)
+    return CommandResults(
+        readable_output=f'Access key f{access_key} was enabled successfully',
+    )
+
+
+def access_key_delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    access_key = args.get('access-key')
+    client.access_key_deletion(access_key)
+    return CommandResults(
+        readable_output=f'Access key {access_key} was successfully deleted successfully',
+    )
+
+
 ''' MIRRORING COMMANDS '''
 
 
@@ -2173,81 +2275,6 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
     return remote_incident_id
 
 
-def access_key_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    access_key = client.access_key_creation(args)
-    print(f"{access_key=}")
-    transform_access_keys = {
-        'Id': access_key.get('id'),
-        'Secret Key': access_key.get('secretKey'),
-    }
-
-    markdown_table = tableToMarkdown('PrismaCloud Access Key Creation', transform_access_keys, headers=['Id', 'Secret Key'])
-    return CommandResults(
-        outputs_prefix="PrismaCloud.AccessKeys",
-        outputs_key_field='id',
-        outputs=access_key,
-        raw_response=access_key,
-        readable_output=markdown_table,
-    )
-
-
-def access_keys_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    access_keys_list = client.get_access_keys_list(args)
-    limit = int(args.get('limit', '50'))
-    limited_access_keys_list = access_keys_list[:limit]
-    transform_access_keys_list = [
-        {
-            'ID': access_key.get('id'),
-            'Name': access_key.get('name'),
-            'Created By': access_key.get('createdBy'),
-            'Created Timestamp': access_key.get('createdTs'),
-            'Last Used Time': access_key.get('lastUsedTime'),
-            'Status': access_key.get('status'),
-            'Expires On': access_key.get('expiresOn'),
-            'Role id': access_key.get('role', {}).get('id'),
-            'Role Name': access_key.get('role', {}).get('name'),
-            'Role Type': access_key.get('roleType'),
-            'Username': access_key.get('username'),
-        }
-        for access_key in limited_access_keys_list
-    ]
-
-    markdown_table = tableToMarkdown('PrismaCloud Access Keys', transform_access_keys_list,
-                                     headers=['ID', 'Name', 'Created By', 'Created Timestamp', 'Last Used Time', 'Status',
-                                              'Expires On', 'Role id', 'Role Name', 'Role Type', 'Username'])
-    return CommandResults(
-        outputs_prefix="PrismaCloud.AccessKeys",
-        outputs_key_field='id',
-        outputs=access_keys_list,
-        raw_response=access_keys_list,
-        readable_output=markdown_table,
-    )
-
-
-def access_key_disable_command(client: Client, args: Dict[str, Any]) -> CommandResults | None:
-    access_key = args.get('access-key')
-    client.patch_access_key_disable(access_key)
-    return CommandResults(
-        readable_output=f'Access key {access_key} was disabled successfully',
-    )
-
-
-def access_key_enable_command(client: Client, args: Dict[str, Any]) -> CommandResults | None:
-    access_key = args.get('access-key')
-    client.patch_access_key_enable(access_key)
-    return CommandResults(
-        readable_output=f'Access key f{access_key} was enabled successfully',
-    )
-
-
-def access_key_delete_command(client: Client, args: Dict[str, Any]) -> CommandResults | None:
-    access_key = args.get('access-key')
-    client.access_key_deletion(access_key)
-    return CommandResults(
-        readable_output=f'Access key {access_key} was successfully deleted successfully',
-    )
-
-
 ''' TEST MODULE '''
 
 
@@ -2346,7 +2373,7 @@ def main() -> None:
             'update-remote-system': update_remote_system_command,
 
             'prisma-cloud-access-key-create': access_key_create_command,
-            'prisma-cloud-access-keys-list': access_keys_list_command,
+            'prisma-cloud-access-keys-list': get_access_keys_command,
             'prisma-cloud-access-key-disable': access_key_disable_command,
             'prisma-cloud-access-key-enable': access_key_enable_command,
             'prisma-cloud-access-key-delete': access_key_delete_command,
