@@ -80,9 +80,14 @@ Packs/ApiModules/Scripts/DemistoClassApiModule/DemistoClassApiModule.py @dantavo
 
 # ML scripts
 /Packs/ML/ @jlevypaloalto
-/Packs/PhishingURL/Scripts/DBotPredictURLPhishing/ @jlevypaloalto
+/Packs/PhishingURL/ @jlevypaloalto
+/Packs/Phishing/Scripts/PhishingDedupPreprocessingRule @jlevypaloalto
+/Packs/Phishing/Scripts/FindDuplicateEmailIncidents @jlevypaloalto
+/Packs/Base/Scripts/DrawRelatedIncidentsCanvas@jlevypaloalto
+/Packs/Campaign/Scripts/FindEmailCampaign/ @jlevypaloalto
 /Packs/CortexXDR/Scripts/DBotGroupXDRIncidents/ @jlevypaloalto
 /Packs/CommonScripts/Scripts/DBotUpdateLogoURLPhishing/ @jlevypaloalto
+/Packs/Base/Scripts/FindSimilarIncidentsByText/ @jlevypaloalto
 /Packs/Base/Scripts/DBotTrainTextClassifierV2/ @jlevypaloalto
 /Packs/Base/Scripts/DBotShowClusteringModelInfo/ @jlevypaloalto
 /Packs/Base/Scripts/DBotPredictPhishingWords/ @jlevypaloalto
