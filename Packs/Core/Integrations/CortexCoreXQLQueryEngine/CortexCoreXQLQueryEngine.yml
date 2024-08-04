@@ -23,8 +23,8 @@ configuration:
   hidden: true
   required: false
 description: Cortex Core - XQL Query Engine enables you to run XQL queries on your data sources.
-display: XDR - XQL Query Engine
-name: XDR - XQL Query Engine
+display: XQL Query Engine
+name: XQL Query Engine
 script:
   commands:
   - arguments:
@@ -1556,5 +1556,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-tests: None
+tests:
+- No tests
 fromversion: 5.5.0

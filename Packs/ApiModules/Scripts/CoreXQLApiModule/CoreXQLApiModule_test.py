@@ -566,7 +566,7 @@ def test_get_query_result_stream(mocker):
     """
     stream_id = 'mock_stream_id'
     mocker.patch.object(CLIENT, 'get_query_result_stream', return_value='Raw Data')
-    response = CoreXQLApiModule.get_query_result_stream(CLIENT, stream_id=stream_id)
+    response = CoreXQLApiModule.get_query_result_stream(CLIENT, stream_id=stream_id, command_name='core-generic-query')
     assert response == 'Raw Data'
 
 

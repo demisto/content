@@ -90,7 +90,8 @@ class CoreClient(BaseClient):
             path=address,
             data=data,
             headers=headers,
-            timeout=timeout
+            timeout=timeout,
+            response_data_type=response_data_type
         )
         if ok_codes and response.get('status') not in ok_codes:
             self._handle_error(error_handler, response, with_metrics)
@@ -110,10 +111,12 @@ class CoreClient(BaseClient):
         query_results = res.get('reply', "")
         return query_results
 
-    def get_query_result_stream(self, data: dict) -> bytes:
+    def get_query_result_stream(self, data: dict, command_name: str) -> bytes:
         res = self._http_request(method='POST', url_suffix='/xql/get_query_results_stream', json_data=data,
-                                 resp_type='response')
-        return res.content
+                                 resp_type='response', response_data_type='bin')
+        if 'xdr' in command_name:
+            return res.content
+        return base64.b64decode(res)
 
     def get_xql_quota(self, data: dict) -> dict:
         res = self._http_request(method='POST', url_suffix='/xql/get_quota', json_data=data)
@@ -451,6 +454,7 @@ def get_xql_query_results(client: CoreClient, args: dict) -> Tuple[dict, Optiona
             'format': 'json',
         }
     }
+    command_name = args.get('command_name')
 
     # Call the Client function and get the raw response
     response = client.get_xql_query_results(data)
@@ -458,13 +462,13 @@ def get_xql_query_results(client: CoreClient, args: dict) -> Tuple[dict, Optiona
     results = response.get('results', {})
     stream_id = results.get('stream_id')
     if stream_id:
-        file_data = get_query_result_stream(client, stream_id)
+        file_data = get_query_result_stream(client, stream_id, command_name)
         return response, file_data
     response['results'] = results.get('data')
     return response, None
 
 
-def get_query_result_stream(client: CoreClient, stream_id: str) -> bytes:
+def get_query_result_stream(client: CoreClient, stream_id: str, command_name: str) -> bytes:
     """Retrieve XQL query results with more than 1000 results.
 
     Args:
@@ -483,7 +487,7 @@ def get_query_result_stream(client: CoreClient, stream_id: str) -> bytes:
         }
     }
     # Call the Client function and get the raw response
-    return client.get_query_result_stream(data)
+    return client.get_query_result_stream(data, command_name)
 
 
 def format_item(item_to_format: Any) -> Any:
