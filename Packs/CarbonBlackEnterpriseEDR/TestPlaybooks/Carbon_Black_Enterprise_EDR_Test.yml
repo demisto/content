@@ -1,6 +1,6 @@
 id: Carbon Black Enterprise EDR Test
-version: 2
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
+fromversion: 5.0.0
 name: Carbon Black Enterprise EDR Test
 starttaskid: "0"
 tasks:
@@ -14,11 +14,11 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -31,6 +31,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "1":
@@ -53,7 +54,6 @@ tasks:
       all:
         simple: "yes"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -66,6 +66,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "2":
@@ -85,7 +86,6 @@ tasks:
       '#none#':
       - "18"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -98,6 +98,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "3":
@@ -149,7 +150,6 @@ tasks:
                   simple: test_watchlist_
               suffix: {}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -162,6 +162,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "4":
@@ -181,7 +182,6 @@ tasks:
       watchlist_id:
         simple: ${CarbonBlackEEDR.Watchlist.ID}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -194,6 +194,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "5":
@@ -204,8 +205,7 @@ tasks:
       id: 646c7528-479d-411f-84c8-ea19e7030d30
       version: -1
       name: Update the watchlist
-      description: Updates the specified watchlist. This will update the tags and
-        alert status as well as any reports or classifiers attached to the watchlist.
+      description: Updates the specified watchlist. This will update the tags and alert status as well as any reports or classifiers attached to the watchlist.
       script: '|||cb-eedr-watchlist-update'
       type: regular
       iscommand: true
@@ -221,7 +221,6 @@ tasks:
       watchlist_name:
         simple: ${CarbonBlackEEDR.Watchlist.Name}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -234,6 +233,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "6":
@@ -256,7 +256,6 @@ tasks:
       watchlist_id:
         simple: ${watchListId}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -269,6 +268,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "7":
@@ -294,7 +294,6 @@ tasks:
             value:
               simple: ${CarbonBlackEEDR.Watchlist.alerts_enabled}
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -307,6 +306,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "9":
@@ -339,7 +339,6 @@ tasks:
       title:
         simple: Report test
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -352,6 +351,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "10":
@@ -374,7 +374,6 @@ tasks:
       report_id:
         simple: ${CarbonBlackEEDR.Report.ID}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -387,6 +386,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "11":
@@ -421,7 +421,6 @@ tasks:
       title:
         simple: ${CarbonBlackEEDR.Report.Title}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -434,6 +433,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "12":
@@ -456,7 +456,6 @@ tasks:
       report_id:
         simple: ${CarbonBlackEEDR.Report.ID}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -469,6 +468,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "13":
@@ -507,7 +507,6 @@ tasks:
           right:
             value:
               simple: Different description.
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -520,6 +519,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "14":
@@ -542,7 +542,6 @@ tasks:
       report_id:
         simple: ${CarbonBlackEEDR.Report.ID}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -555,6 +554,201 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 59c8268c-27d4-4f72-82b1-95bc6bbffcdf
+    type: regular
+    task:
+      id: 59c8268c-27d4-4f72-82b1-95bc6bbffcdf
+      version: -1
+      name: List devices
+      description: List devices based on the search query.
+      script: '|||cb-eedr-devices-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      sort_field:
+        simple: av_pack_version
+      start_time:
+        simple: "2019-01-01T11:00:00.157Z"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 3770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 27fd78a3-5cb4-45d8-8e05-4566f3784fb1
+    type: regular
+    task:
+      id: 27fd78a3-5cb4-45d8-8e05-4566f3784fb1
+      version: -1
+      name: Delete context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 801c51d1-f62c-4bf3-8ff8-720fda9a37a1
+    type: condition
+    task:
+      id: 801c51d1-f62c-4bf3-8ff8-720fda9a37a1
+      version: -1
+      name: Check context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: CarbonBlackEEDR.Watchlist.Name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CarbonBlackEEDR.Watchlist.ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 8a31b67d-d480-4484-885a-6e83c410119b
+    type: condition
+    task:
+      id: 8a31b67d-d480-4484-885a-6e83c410119b
+      version: -1
+      name: Check device context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CarbonBlackEEDR.Device.os
+            iscontext: true
+          right:
+            value:
+              simple: WINDOWS
+      - - operator: isExists
+          left:
+            value:
+              simple: CarbonBlackEEDR.Device.name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CarbonBlackEEDR.Device.id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 3950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 934b0918-d069-4052-8632-26ad9ee68ef9
+    type: title
+    task:
+      id: 934b0918-d069-4052-8632-26ad9ee68ef9
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 4140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "15":
@@ -629,121 +823,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "17":
-    id: "17"
-    taskid: 59c8268c-27d4-4f72-82b1-95bc6bbffcdf
-    type: regular
-    task:
-      id: 59c8268c-27d4-4f72-82b1-95bc6bbffcdf
-      version: -1
-      name: List devices
-      description: List devices based on the search query.
-      script: '|||cb-eedr-devices-list'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "21"
-    scriptarguments:
-      sort_field:
-        simple: av_pack_version
-      start_time:
-        simple: "2019-01-01T11:00:00.157Z"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 460,
-          "y": 3770
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "18":
-    id: "18"
-    taskid: 27fd78a3-5cb4-45d8-8e05-4566f3784fb1
-    type: regular
-    task:
-      id: 27fd78a3-5cb4-45d8-8e05-4566f3784fb1
-      version: -1
-      name: Delete context
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "9"
-    scriptarguments:
-      all:
-        simple: "yes"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 550
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "19":
-    id: "19"
-    taskid: 801c51d1-f62c-4bf3-8ff8-720fda9a37a1
-    type: condition
-    task:
-      id: 801c51d1-f62c-4bf3-8ff8-720fda9a37a1
-      version: -1
-      name: Check context
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "5"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: CarbonBlackEEDR.Watchlist.Name
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: CarbonBlackEEDR.Watchlist.ID
-            iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 2100
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "20":
     id: "20"
     taskid: c48e0ab2-dbe2-475d-8b9b-da1dfc56f27f
@@ -783,84 +862,6 @@ tasks:
         "position": {
           "x": 460,
           "y": 3570
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "21":
-    id: "21"
-    taskid: 8a31b67d-d480-4484-885a-6e83c410119b
-    type: condition
-    task:
-      id: 8a31b67d-d480-4484-885a-6e83c410119b
-      version: -1
-      name: Check device context
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "22"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: CarbonBlackEEDR.Device.os
-            iscontext: true
-          right:
-            value:
-              simple: WINDOWS
-      - - operator: isExists
-          left:
-            value:
-              simple: CarbonBlackEEDR.Device.name
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: CarbonBlackEEDR.Device.id
-            iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 460,
-          "y": 3950
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "22":
-    id: "22"
-    taskid: 934b0918-d069-4052-8632-26ad9ee68ef9
-    type: title
-    task:
-      id: 934b0918-d069-4052-8632-26ad9ee68ef9
-      version: -1
-      name: Done
-      type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 460,
-          "y": 4140
         }
       }
     note: false
@@ -963,3 +964,4 @@ view: |-
   }
 inputs: []
 outputs: []
+description: ''
