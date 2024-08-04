@@ -29,7 +29,7 @@ class Client(BaseClient):
     def __init__(self, params):
         self._client_id = params.get('credentials_client', {}).get('identifier') or params.get('client_id')
         self._client_secret = params.get('credentials_client', {}).get('password') or params.get('client_secret')
-        self._verify_certificate = not demisto.params().get('insecure', False)
+        self._verify_certificate = not params.get('insecure', False)
         self._server_url = params.get('server_url', "https://api.crowdstrike.com/")
         if not (self._client_id and self._client_secret):
             raise DemistoException('API client ID and API client secret must be provided.')
@@ -45,8 +45,14 @@ class Client(BaseClient):
         error_messages_str = '\n'.join(error_messages)
         return error_messages_str
 
-    def http_request(self, method, url_suffix, full_url=None, headers=None, json_data=None, params=None, data=None,
-                     files=None, timeout=10, ok_codes=None, return_empty_response=False, auth=None):
+    def http_request(self, method: str, url_suffix: str, full_url: str = None, headers: dict = None, json_data: dict = None,
+                     params: dict = None,
+                     data: dict = None,
+                     files: dict = None,
+                     timeout: int = 10,
+                     ok_codes: tuple = None,
+                     return_empty_response: bool = False,
+                     auth: tuple = None):
 
         return super()._http_request(method=method, url_suffix=url_suffix, full_url=full_url, headers=headers,
                                      json_data=json_data, params=params, data=data, files=files, timeout=timeout,
@@ -60,7 +66,7 @@ class Client(BaseClient):
         token_res = self.http_request('POST', '/oauth2/token', data=body, auth=(self._client_id, self._client_secret))
         return token_res.get('access_token')
 
-    def create_indicators_from_response(self, response, feed_tags: list, tlp_color: str | None) -> list:
+    def create_indicators_from_response(self, response: dict, feed_tags: list, tlp_color: str | None) -> list:
         parsed_indicators = []  # type:List
         indicator = {}
         for actor in response['resources']:
@@ -87,13 +93,13 @@ class Client(BaseClient):
 
         return parsed_indicators
 
-    def add_target_countries_to_filter(self, country):
+    def add_target_countries_to_filter(self, country: str) -> str:
         return f'target_countries%3A"{country}"%2B'
 
-    def add_target_industries_to_filter(self, industry):
+    def add_target_industries_to_filter(self, industry: str) -> str:
         return f'target_industries%3A"{industry}"%2B'
 
-    def convert_countries_and_industries_to_url_shape(self, list_of_targets):
+    def convert_countries_and_industries_to_url_shape(self, list_of_targets: str) -> List[str]:
         """
         This function converts a list of targets into the form of a URL filter.
         (united states -> united%20states)
@@ -108,7 +114,7 @@ class Client(BaseClient):
         list_of_targets = [target.replace(' ', '%20') for target in list_of_targets if len(target) > 1]
         return list_of_targets
 
-    def build_actors_filter(self, target_countries, target_industries, custom_filter):
+    def build_actors_filter(self, target_countries: str, target_industries: str, custom_filter: str) -> str:
         actors_filter = ''
         if custom_filter:
             actors_filter = custom_filter
@@ -128,7 +134,7 @@ class Client(BaseClient):
             actors_filter = '&filter=' + actors_filter[:-3]
         return actors_filter
 
-    def build_url_suffix(self, params, actors_filter):
+    def build_url_suffix(self, params: str | dict, actors_filter: str) -> str:
         url_suffix = "/intel/combined/actors/v1?fields=__full__"
         if actors_filter:
             url_suffix = url_suffix + actors_filter
@@ -138,11 +144,13 @@ class Client(BaseClient):
             url_suffix = url_suffix + '&filter=' + params
         return url_suffix
 
-    def get_indicators(self, feed_tags: list, tlp_color: str | None, limit=None, offset=None, target_countries=None,
-                       target_industries=None, custom_filter=None, time_filter=None, sort=None):
+    def get_indicators(self, feed_tags: list, tlp_color: str | None, limit: int = None, offset: int = None,
+                       target_countries: str = None,
+                       target_industries: str = None, custom_filter: str = None, time_filter: str = None,
+                       sort: str = None) -> List:
         """Get a list of indicators.
         Returns:
-            list. A list of JSON objects representing indicators fetched from a feed.
+            list. A list of JSON objects representing indicators fetchedf from a feed.
         """
 
         params = {}
@@ -176,7 +184,7 @@ def test_module(client: Client, args: dict, feed_tags: list, tlp_color: str | No
 
 
 def get_indicators_command(client: Client, args: dict, feed_tags: list, tlp_color: str | None) \
-        -> tuple[str, dict, list]:
+    -> tuple[str, dict, list]:
     """Initiate a single fetch-indicators
 
     Args:
@@ -220,7 +228,7 @@ def get_indicators_command(client: Client, args: dict, feed_tags: list, tlp_colo
 
 
 def fetch_indicators(client: Client, feed_tags: list, tlp_color: str | None, limit: int,
-                     target_countries=None, target_industries=None, custom_filter=None) -> tuple:
+                     target_countries: str = None, target_industries: str = None, custom_filter: str = None) -> tuple:
     """Fetch-indicators command from CrowdStrike Feeds
 
     Args:
