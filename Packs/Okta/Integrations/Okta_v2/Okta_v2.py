@@ -174,8 +174,9 @@ class Client(OktaClient):
             json_data=body
         )
 
-    def expire_password(self, user_id, params):
+    def expire_password(self, user_id, args):
         uri = f'/api/v1/users/{user_id}/lifecycle/expire_password'
+        params = {"tempPassword": args.get('temporary_password', 'false')}
         return self.http_request(
             method="POST",
             url_suffix=uri,
@@ -807,8 +808,7 @@ def set_password_command(client, args):
     readable_output = f"{args.get('username')} password was last changed on {raw_response.get('passwordChanged')}"
 
     if argToBoolean(args.get('temporary_password', False)):
-        params = {"tempPassword": "true"}
-        client.expire_password(user_id, params)
+        client.expire_password(user_id, args)
 
     return (
         readable_output,
@@ -823,10 +823,7 @@ def expire_password_command(client, args):
     if not (args.get('username') or user_id):
         raise Exception("You must supply either 'Username' or 'userId")
 
-    temporary_password = args.get("temporary_password")
-    params = {"tempPassword": temporary_password}
-
-    raw_response = client.expire_password(user_id, params)
+    raw_response = client.expire_password(user_id, args)
     user_context = client.get_users_context(raw_response)
 
     readable_output = tableToMarkdown('Okta Expired Password', raw_response, removeNull=True)
