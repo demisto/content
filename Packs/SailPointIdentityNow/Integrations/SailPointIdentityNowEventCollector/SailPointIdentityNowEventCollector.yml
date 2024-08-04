@@ -55,10 +55,11 @@ script:
       name: from_id
       required: false
     - default: false
-      description: Date from which to get events in the format of %Y-%m-%dT%H:%M:%SZ.
+      description: Date from which to get events.
       name: from_date
     deprecated: false
-    description: Gets events from SailPoint IdentityNow.
+    description: Gets events from SailPoint IdentityNow. This command is used for developing/ debugging and is to be used with caution, as it can create events, leading to events duplication and API request limitation exceeding.  
+
     name: identitynow-get-events
   dockerimage: demisto/python3:3.10.14.90585
   isfetchevents: true

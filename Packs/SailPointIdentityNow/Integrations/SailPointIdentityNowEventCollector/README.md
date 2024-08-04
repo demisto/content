@@ -1,5 +1,5 @@
 This is the SailPoint IdentityNow event collector integration for Cortex XSIAM.
-This integration was integrated and tested with version xx of SailPointIdentityNowEventCollector.
+This integration was integrated and tested with version 3 of SailPoint API.
 
 ## Configure SailPoint IdentityNow Event Collector on Cortex XSOAR
 
@@ -9,14 +9,16 @@ This integration was integrated and tested with version xx of SailPointIdentityN
 
     | **Parameter** | **Required** |
     | --- | --- |
-    | IdentityNow Server URL (e.g. https://{tenant}.api.identitynow.com) | True |
-    | Client ID | True |
+    | IdentityNow Server URL (e.g. https://{tenant}.api.identitynow.com)  <br /> In order to get tenant name, follow this [link](https://developer.sailpoint.com/docs/api/getting-started/#find-your-tenant-name).| True |
+    | Client ID <br /> In order to generate Client ID and Client Secret, follow this [link](https://developer.sailpoint.com/docs/api/authentication/#generate-a-personal-access-token).  | True |
     | Client Secret | True |
     | Max number of events per fetch | False |
     | Trust any certificate (not secure) | False |
     | Use system proxy settings | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
+Note: After generating client credentials, it is required to allow the following scopes: sp, search, read.
 
 ## Commands
 

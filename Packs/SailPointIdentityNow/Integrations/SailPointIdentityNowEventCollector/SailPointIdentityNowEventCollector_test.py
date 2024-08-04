@@ -2,7 +2,19 @@ import pytest
 import demistomock as demisto
 from SailPointIdentityNowEventCollector import fetch_events, add_time_and_status_to_events, Client, dedup, get_last_fetched_ids
 
+EVENTS_WITH_THE_SAME_DATE = [
+        {'created': '2022-01-01T00:00:00Z', 'id': '1'},
+        {'created': '2022-01-01T00:00:00Z', 'id': '2'},
+        {'created': '2022-01-01T00:00:00Z', 'id': '3'},
+        {'created': '2022-01-01T00:00:00Z', 'id': '4'},
+    ]
 
+EVENTS_WITH_DIFFERENT_DATE = [
+        {'created': '2022-01-01T00:00:00Z', 'id': '1'},
+        {'created': '2022-01-01T00:00:00Z', 'id': '2'},
+        {'created': '2022-01-02T00:00:00Z', 'id': '3'},
+        {'created': '2022-01-02T00:00:00Z', 'id': '4'},
+    ]
 @pytest.mark.parametrize('expiration_time, expected', [
     (9999999999, 'valid_token'),
     (0, 'new_token')])
@@ -165,83 +177,6 @@ def test_search_events(mocker, prev_id, expected):
     assert mocker_request.call_args.kwargs["data"] == expected
 
 
-def test_dedup__some_duplicates(mocker):
-    """
-    Given:
-        - A list of events with duplicate and unique entries
-        - A list of last fetched ids
-    When:
-        - calling dedup
-    Then:
-        - Ensure the duplicate events are removed
-        - Ensure the log message contains the info of the dropped events.
-    """
-    debug_msg = mocker.patch.object(demisto, 'debug')
-    last_fetched_creation_date = '2022-01-01T00:00:00Z'
-    events = [
-        {'created': '2022-01-01T00:00:00Z', 'id': '1'},
-        {'created': '2022-01-01T00:00:00Z', 'id': '2'},
-        {'created': '2022-01-01T00:00:00Z', 'id': '3'},
-        {'created': '2022-01-02T00:00:00Z', 'id': '4'},
-    ]
-    deduped_events = dedup(events, last_fetched_creation_date=last_fetched_creation_date, last_fetched_ids=['1', '2'])
-
-    assert deduped_events == [
-        {'created': '2022-01-01T00:00:00Z', 'id': '3'},
-        {'created': '2022-01-02T00:00:00Z', 'id': '4'},
-    ]
-    assert "Starting deduping. Number of events before deduping: 4" in debug_msg.call_args_list[0][0][0]
-    assert debug_msg.call_args_list[1][0][0] == "Dropping duplicate event: {'created': '2022-01-01T00:00:00Z', 'id': '1'}"
-    assert debug_msg.call_args_list[2][0][0] == "Dropping duplicate event: {'created': '2022-01-01T00:00:00Z', 'id': '2'}"
-
-
-def test_dedup__all_duplicates(mocker):
-    """
-    Given:
-        - A list of events  all duplicate
-        - A list of last fetched ids
-    When:
-        - calling dedup
-    Then:
-        - Ensure the duplicate events are removed and an empty list is returned
-    """
-    last_fetched_creation_date = '2022-01-01T00:00:00Z'
-    mocker.patch.object(demisto, 'debug')
-    events = [
-        {'created': '2022-01-01T00:00:00Z', 'id': '1'},
-        {'created': '2022-01-01T00:00:00Z', 'id': '2'},
-        {'created': '2022-01-01T00:00:00Z', 'id': '3'},
-        {'created': '2022-01-01T00:00:00Z', 'id': '4'},
-    ]
-    deduped_events = dedup(events, last_fetched_creation_date=last_fetched_creation_date, last_fetched_ids=['1', '2', '3', '4'])
-
-    assert deduped_events == []
-
-
-def test_dedup__no_duplicates(mocker):
-    """
-        Given:
-            - A list of events with no duplicates
-            - A list of last fetched ids
-        When:
-            - calling dedup
-        Then:
-            - Ensure the events are returned as is
-    """
-    mocker.patch.object(demisto, 'debug')
-    last_fetched_creation_date = '2022-01-01T00:00:00Z'
-
-    events = [
-        {'created': '2022-01-01T00:00:00Z', 'id': '1'},
-        {'created': '2022-01-01T00:00:00Z', 'id': '2'},
-        {'created': '2022-01-01T00:00:00Z', 'id': '3'},
-        {'created': '2022-01-01T00:00:00Z', 'id': '4'},
-    ]
-    deduped_events = dedup(events, last_fetched_creation_date=last_fetched_creation_date, last_fetched_ids=['6', '5'])
-
-    assert deduped_events == events
-
-
 def test_get_last_fetched_ids(mocker):
     """
     Given:
@@ -252,12 +187,34 @@ def test_get_last_fetched_ids(mocker):
         - Ensure the function returns the ids of the events that have the same creation date as the last event
     """
     mocker.patch.object(demisto, 'debug')
-    # Define the input events
-    events = [
-        {'created': '2022-01-01T00:00:00Z', 'id': '1'},
-        {'created': '2022-01-01T00:00:00Z', 'id': '2'},
-        {'created': '2022-01-02T00:00:00Z', 'id': '3'},
-        {'created': '2022-01-02T00:00:00Z', 'id': '4'},
-    ]
 
-    assert get_last_fetched_ids(events) == ['4', '3']
+    assert get_last_fetched_ids(EVENTS_WITH_DIFFERENT_DATE) == ['4', '3']
+
+
+@pytest.mark.parametrize('events, last_fetched_ids, expected, debug_msgs', [
+    (EVENTS_WITH_DIFFERENT_DATE, ['1', '2'], [{'created': '2022-01-02T00:00:00Z', 'id': '3'}, {'created': '2022-01-02T00:00:00Z', 'id': '4'}], ["Starting deduping. Number of events before deduping: 4", "Dropping duplicate event: {'created': '2022-01-01T00:00:00Z', 'id': '1'}", "Dropping duplicate event: {'created': '2022-01-01T00:00:00Z', 'id': '2'}"]),
+    (EVENTS_WITH_THE_SAME_DATE, ['1', '2', '3', '4'], [], []),
+    (EVENTS_WITH_THE_SAME_DATE, ['6', '5'], EVENTS_WITH_THE_SAME_DATE, [])
+])
+def test_dedup(mocker, events, last_fetched_ids, expected, debug_msgs):
+    """
+    Given:
+        - A list of events with duplicate and unique entries
+        - A list of last fetched ids
+        case 1  - some of the new events were fetched in the last fetch.
+        case 2  - all of the new events were fetched in the last fetch.
+        case 3  - none of the new events were fetched in the last fetch.
+    When:
+        - calling dedup
+    Then:
+        - Ensure the duplicate events are removed
+        - Ensure the log message contains the info of the dropped events.
+    """
+    debug_msg = mocker.patch.object(demisto, 'debug')
+    last_fetched_creation_date = '2022-01-01T00:00:00Z'
+
+    deduped_events = dedup(events, last_fetched_creation_date=last_fetched_creation_date, last_fetched_ids=last_fetched_ids)
+
+    assert deduped_events == expected
+    for i, msg in enumerate(debug_msgs):
+        assert msg in debug_msg.call_args_list[i][0][0]
