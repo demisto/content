@@ -1,6 +1,6 @@
 import pytest
 import demistomock as demisto
-from SailPointIdentityNowEventCollector import fetch_events, add_time_and_status_to_events, Client,\
+from SailPointIdentityNowEventCollector import fetch_events, add_time_and_status_to_events, Client, \
     dedup_events, get_last_fetched_ids
 
 EVENTS_WITH_THE_SAME_DATE = [

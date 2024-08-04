@@ -280,7 +280,7 @@ def add_time_and_status_to_events(events: List[Dict]) -> None:
 ''' MAIN FUNCTION '''
 
 
-def main() -> None:
+def main() -> None:     # pragma: no cover
     """
     main function, parses params and runs command functions
     """
