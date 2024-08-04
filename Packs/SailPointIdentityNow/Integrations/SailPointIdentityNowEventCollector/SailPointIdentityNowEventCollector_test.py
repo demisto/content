@@ -1,20 +1,23 @@
 import pytest
 import demistomock as demisto
-from SailPointIdentityNowEventCollector import fetch_events, add_time_and_status_to_events, Client, dedup_events, get_last_fetched_ids
+from SailPointIdentityNowEventCollector import fetch_events, add_time_and_status_to_events, Client,\
+    dedup_events, get_last_fetched_ids
 
 EVENTS_WITH_THE_SAME_DATE = [
-        {'created': '2022-01-01T00:00:00Z', 'id': '1'},
-        {'created': '2022-01-01T00:00:00Z', 'id': '2'},
-        {'created': '2022-01-01T00:00:00Z', 'id': '3'},
-        {'created': '2022-01-01T00:00:00Z', 'id': '4'},
-    ]
+    {'created': '2022-01-01T00:00:00Z', 'id': '1'},
+    {'created': '2022-01-01T00:00:00Z', 'id': '2'},
+    {'created': '2022-01-01T00:00:00Z', 'id': '3'},
+    {'created': '2022-01-01T00:00:00Z', 'id': '4'},
+]
 
 EVENTS_WITH_DIFFERENT_DATE = [
-        {'created': '2022-01-01T00:00:00Z', 'id': '1'},
-        {'created': '2022-01-01T00:00:00Z', 'id': '2'},
-        {'created': '2022-01-02T00:00:00Z', 'id': '3'},
-        {'created': '2022-01-02T00:00:00Z', 'id': '4'},
-    ]
+    {'created': '2022-01-01T00:00:00Z', 'id': '1'},
+    {'created': '2022-01-01T00:00:00Z', 'id': '2'},
+    {'created': '2022-01-02T00:00:00Z', 'id': '3'},
+    {'created': '2022-01-02T00:00:00Z', 'id': '4'},
+]
+
+
 @pytest.mark.parametrize('expiration_time, expected', [
     (9999999999, 'valid_token'),
     (0, 'new_token')])
@@ -187,11 +190,12 @@ def test_get_last_fetched_ids(mocker):
     """
     mocker.patch.object(demisto, 'debug')
 
-    assert get_last_fetched_ids(EVENTS_WITH_DIFFERENT_DATE) == ['4', '3']
+    assert get_last_fetched_ids(EVENTS_WITH_DIFFERENT_DATE) == ['3', '4']
 
 
 @pytest.mark.parametrize('events, last_fetched_ids, expected, debug_msgs', [
-    (EVENTS_WITH_DIFFERENT_DATE, ['1', '2'], [{'created': '2022-01-02T00:00:00Z', 'id': '3'}, {'created': '2022-01-02T00:00:00Z', 'id': '4'}],
+    (EVENTS_WITH_DIFFERENT_DATE, ['1', '2'], [{'created': '2022-01-02T00:00:00Z', 'id': '3'},
+                                              {'created': '2022-01-02T00:00:00Z', 'id': '4'}],
      ["Starting deduping. Number of events before deduping: 4, last fetched ids: ['1', '2']",
       'Done deduping. Number of events after deduping: 2']),
     (EVENTS_WITH_THE_SAME_DATE, ['1', '2', '3', '4'], [], []),

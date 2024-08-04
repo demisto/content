@@ -111,7 +111,6 @@ class Client(BaseClient):
             query["query"] = {"query": f"type:* AND created: [{from_date} TO now]"}
             query["timeZone"] = "GMT"
 
-
         url_suffix = f'/v3/search?limit={limit}'
         demisto.debug(f'Searching for events with query: {query}.')
         return self._http_request(method='POST', headers=self.headers, url_suffix=url_suffix, data=json.dumps(query))
@@ -174,11 +173,11 @@ def fetch_events(client: Client,
     Returns:
         Tuple with the next run data and the list of events fetched
     """
-    # currently the API fails fetching events by id, so we are fetching by date only.  
-    # Once the issue is resolved, we just need to uncomment the commented lines, 
+    # currently the API fails fetching events by id, so we are fetching by date only.
+    # Once the issue is resolved, we just need to uncomment the commented lines,
     # and remove the dedup function and last_fetched_ids from everywhere..
     demisto.debug(f'Starting fetch_events with last_run: {last_run}.')
-    #last_fetched_id = last_run.get('prev_id')
+    # last_fetched_id = last_run.get('prev_id')
     last_fetched_creation_date = last_run.get('prev_date', CURRENT_TIME_STR)
     last_fetched_ids: list = last_run.get('last_fetched_ids', [])
 
@@ -212,7 +211,7 @@ def fetch_events(client: Client,
         else:
             # to avoid infinite loop, if no events are fetched, or all events are duplicates, exit the loop
             break
-    #next_run = {'prev_id': last_fetched_id, 'prev_date': last_fetched_creation_date}
+    # next_run = {'prev_id': last_fetched_id, 'prev_date': last_fetched_creation_date}
     next_run = {'prev_date': last_fetched_creation_date, 'last_fetched_ids': last_fetched_ids}
     demisto.debug(f'Done fetching. Sum of all events: {len(all_events)}, the next run is {next_run}.')
     return next_run, all_events
@@ -225,7 +224,7 @@ def dedup_events(events: List[Dict], last_fetched_ids: list) -> List[Dict]:
     """
     Dedupes the events fetched based on the last fetched ids and creation date.
     This process is based on the assumption that the events are sorted by creation date.
-    
+
     Args:
         events: List of events.
         last_fetched_ids: List of the last fetched ids.
