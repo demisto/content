@@ -1,0 +1,18 @@
+args:
+- name: new_comment
+  required: true
+  description: The comment text to be added to the incident comments.
+commonfields:
+  id: MicrosoftSentinelSubmitNewComment
+  version: -1
+comment: This script is used to add a new comment to incident.
+name: MicrosoftSentinelSubmitNewComment
+outputs:
+script: '-'
+tags:
+- dynamic-section
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.10.13.83255
+fromversion: 5.5.0
