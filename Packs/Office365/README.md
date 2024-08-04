@@ -11,7 +11,7 @@ To access the Office 365 Native Collector on your XSIAM tenant:
 2.  At the top-right corner, click **Add Data Source**
 3.  Search for **Office 365** and click **Connect**.
 
-![image](https://raw.githubusercontent.com/demisto/content/33839fe3e0437efec10295ec69e81d8a761bce4f/Packs/Office365/doc_files/Office_365_Collector_Settings.png | width=100)
+![image](https://raw.githubusercontent.com/demisto/content/33839fe3e0437efec10295ec69e81d8a761bce4f/Packs/Office365/doc_files/Office_365_Collector_Settings.png|width=100|height=400)
 
 **Pay Attention:**
 Timestamp ingestion for Office 365 logs is currently available for the following datasets:
