@@ -1,5 +1,6 @@
 import gzip
 import json
+from unittest.mock import MagicMock, patch
 from freezegun import freeze_time
 import XQLQueryingEngine
 import CoreXQLApiModule
@@ -973,3 +974,63 @@ def test_get_built_in_query_results_polling_command(mocker):
     )
     assert res.call_args.args[1]['tenants'] == ["tenantID", "tenantID"]
     assert res.call_args.args[1]['time_frame'] == '7 days'
+
+
+@patch('XQLQueryingEngine.get_nonce')
+@patch('CoreXQLApiModule.demisto.debug')
+@patch('CoreXQLApiModule.demisto.command')
+@patch('CoreXQLApiModule.demisto.args')
+@patch('CoreXQLApiModule.demisto.params')
+@patch('XQLQueryingEngine.Client')
+@patch('CoreXQLApiModule.return_results')
+@patch('CoreXQLApiModule.return_error')
+def test_main_success(mock_return_error, mock_return_results, mock_Client, mock_demisto_params, mock_demisto_args,
+                      mock_demisto_command, mock_demisto_debug, mock_get_nonce):
+    """
+    Given:
+    - demisto.params().
+    - demisto.args().
+    - demisto.command()
+
+    When:
+    - Calling main().
+
+    Then:
+    - Ensure the main() is called properly.
+
+    """
+    import hashlib
+    from XQLQueryingEngine import main
+    mock_demisto_params.return_value = {
+        'apikey': {'password': 'test_apikey'},
+        'apikey_id': {'password': 'test_apikey_id'},
+        'url': 'http://example.com',
+        'insecure': False,
+        'proxy': False
+    }
+    mock_demisto_command.return_value = 'some_command'
+    mock_demisto_args.return_value = {'arg1': 'value1'}
+    mock_get_nonce.return_value = 'random_nonce'
+    mock_Client.return_value = MagicMock()
+    mock_demisto_command.return_value = 'test-module'
+    mock_return_results.return_value = None
+
+    timestamp = str(int(datetime.now(timezone.utc).timestamp()) * 1000)
+    auth_key = f'test_apikeyrandom_nonce{timestamp}'.encode()
+    api_key_hash = hashlib.sha256(auth_key).hexdigest()
+
+    main()
+
+    mock_demisto_debug.assert_called_once_with('Command being called is test-module')
+    mock_Client.assert_called_once_with(
+        base_url='http://example.com/public_api/v1',
+        proxy=False,
+        verify=True,
+        headers={
+            "x-xdr-timestamp": timestamp,
+            "x-xdr-nonce": 'random_nonce',
+            "x-xdr-auth-id": 'test_apikey_id',
+            "Authorization": api_key_hash,
+        }
+    )
+    mock_return_error.assert_not_called()

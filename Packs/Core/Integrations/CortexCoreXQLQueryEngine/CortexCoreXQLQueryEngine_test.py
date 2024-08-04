@@ -1,6 +1,6 @@
 import gzip
 import json
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 from freezegun import freeze_time
 import CortexCoreXQLQueryEngine
 import pytest
@@ -1123,3 +1123,40 @@ def test_get_xql_query_results_forward_user_run_rbac_false(mock_api_call):
     mock_api_call.assert_called_once_with(CLIENT, method='POST', url_suffix='/xql/get_query_results', full_url=None, headers=None,
                                           json_data={}, params=None, data=None, timeout=None, raise_on_status=False,
                                           ok_codes=None, error_handler=None, with_metrics=False, resp_type='json')
+
+
+@patch('CoreXQLApiModule.demisto.debug')
+@patch('CoreXQLApiModule.demisto.command')
+@patch('CoreXQLApiModule.demisto.args')
+@patch('CoreXQLApiModule.demisto.params')
+@patch('CortexCoreXQLQueryEngine.Client')
+@patch('CoreXQLApiModule.return_results')
+@patch('CoreXQLApiModule.return_error')
+def test_main_success_generic_command(mock_return_error, mock_return_results, mock_Client, mock_demisto_params, mock_demisto_args,
+                                      mock_demisto_command, mock_demisto_debug):
+    """
+    Given:
+    - demisto.params().
+    - demisto.args().
+    - demisto.command()
+
+    When:
+    - Calling main().
+
+    Then:
+    - Ensure the main() is called properly.
+
+    """
+    from CortexCoreXQLQueryEngine import main
+    mock_demisto_params.return_value = {'insecure': False, 'proxy': False}
+    mock_demisto_command.return_value = 'test-module'
+    mock_demisto_args.return_value = {'arg1': 'value1'}
+    mock_Client.return_value = MagicMock()
+
+    mock_return_results.return_value = None
+
+    main()
+
+    mock_demisto_debug.assert_called_once_with('Command being called is test-module')
+    mock_Client.assert_called_once_with(base_url='/api/webapp/public_api/v1', proxy=False, verify=True, headers={})
+    mock_return_error.assert_not_called()
