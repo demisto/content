@@ -555,7 +555,7 @@ def main():
         elif isinstance(security_reviewer, list) and len(security_reviewer) > 1:
             security_reviewer = determine_random_reviewer(security_reviewer, content_repo)
         # else security_reviewer is a string of a single reviewer, just add it to the list of reviewers
-
+        print(f'The selected security reviewer {security_reviewer}')
         reviewers.append(security_reviewer)
         pr.add_to_assignees(security_reviewer)
         pr.add_to_labels(SECURITY_LABEL)
