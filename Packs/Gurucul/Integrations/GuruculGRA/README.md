@@ -1136,7 +1136,7 @@ Retrieve anomalies for specified case id from GRA and update in XSOAR.
 #### Human Readable Output
 ### gra-validate-api
 ***
-This command verifies the availability and checks if the service is functioning properly.
+Verifies the Gurucul platform's operational status by assessing system health, reviewing logs, and checking key performance indicators for any errors.
 
 #### Base Command
 
