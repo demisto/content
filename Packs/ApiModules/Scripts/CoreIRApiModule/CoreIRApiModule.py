@@ -241,7 +241,7 @@ class CoreClient(BaseClient):
         if ok_codes and response.get('status') not in ok_codes:
             self._handle_error(error_handler, response, with_metrics)
         try:
-            decoder: function = base64.b64decode if response_data_type == "bin" else json.loads
+            decoder = base64.b64decode if response_data_type == "bin" else json.loads
             demisto.debug(f'{response_data_type=}, {decoder.__name__=}')
             return decoder(response['data'])   # type: ignore[operator]
         except json.JSONDecodeError:
