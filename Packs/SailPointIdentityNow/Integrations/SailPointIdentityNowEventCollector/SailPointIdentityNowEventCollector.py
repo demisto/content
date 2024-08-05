@@ -293,7 +293,7 @@ def main() -> None:     # pragma: no cover
     base_url = params['url']
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
-    limit = arg_to_number(params.get('limit')) or 50000
+    fetch_limit = arg_to_number(params.get('limit')) or 50000
 
     demisto.debug(f'Command being called is {command}')
     try:
@@ -332,7 +332,7 @@ def main() -> None:     # pragma: no cover
             last_run = demisto.getLastRun()
             next_run, events = fetch_events(
                 client=client,
-                limit=limit,
+                limit=fetch_limit,
                 last_run=last_run,
             )
 
