@@ -37,7 +37,7 @@ The EWS integration can be used for the following use cases.
 2.  Search for EWS O365.
 3.  Click **Add instance** to create and configure a new integration instance.
     *   **Name**: a textual name for the integration instance.
-    *   **Azure Cloud**: Azure Cloud environment.
+    *   **Azure Cloud**: Azure Cloud environment. See table below.
     *   **ID / Application ID**: ID recieved from <https://oproxy.demisto.ninja/ms-ews-o365> app registration, or a self deployed Application ID.
     *   **Token / Tenant ID**: Token recieved from <https://oproxy.demisto.ninja/ms-ews-o365> app registration, or a self deployed Application Tenant ID.
     *   **Key / Application Secret**: Key recieved from <https://oproxy.demisto.ninja/ms-ews-o365> app registration, or a self deployed Application Secret.
