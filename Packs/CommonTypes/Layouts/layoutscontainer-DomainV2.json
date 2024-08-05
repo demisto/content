@@ -111,7 +111,6 @@
     "group": "indicator",
     "id": "domainRepUnified",
 	"indicatorsDetails": {
-		"TypeName": "",
 		"tabs": [
 			{
 				"id": "main",
@@ -634,7 +633,6 @@
 		]
 	},
 	"indicatorsQuickView": {
-		"TypeName": "",
 		"tabs": [
 			{
 				"id": "indicator-quick-view-info",
