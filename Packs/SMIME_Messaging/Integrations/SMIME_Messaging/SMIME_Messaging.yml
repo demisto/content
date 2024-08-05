@@ -29,7 +29,6 @@ script:
       - 'false'
       - 'true'
     description: Retrieves items from the service.
-    deprecated: true
     name: smime-sign-email
     outputs:
     - contextPath: SMIME.Signed.Message
@@ -38,12 +37,12 @@ script:
     - contextPath: SMIME.Signed.Headers
       description: The S/MIME signing headers.
       type: String
+    deprecated: true
   - arguments:
     - description: The message body to encrypt.
       name: message
       required: true
     description: Encrypts an email message with S/MIME protocol by using a public RSA certificate.
-    deprecated: true
     name: smime-encrypt-email-body
     outputs:
     - contextPath: SMIME.Encrypted.Message
@@ -52,11 +51,12 @@ script:
     - contextPath: SMIME.Encrypted.Headers
       description: The encryption headers.
       type: String
+    deprecated: true
   - arguments:
-    - description: entity_id of the file with .p7 extension containing the signed message
+    - description: entity_id of the file with .p7 extension containing the signed message.
       name: signed_message
       required: true
-    - description: Sender's public key to verify
+    - description: Sender's public key to verify.
       name: public_key
       defaultValue: instancePublicKey
     - auto: PREDEFINED
@@ -66,7 +66,7 @@ script:
       - 'false'
       - 'true'
     - description: Tags (comma separated) to be included in the war room output.
-      name:  tag
+      name: tag
     description: |-
       Verifies the signature.
 
@@ -89,7 +89,7 @@ script:
       - 'false'
       - 'true'
     - description: Tags (comma separated) to be included in the war room output.
-      name:  tag
+      name: tag
     description: Decrypts the message body.
     name: smime-decrypt-email-body
     outputs:
@@ -115,7 +115,7 @@ script:
         Format: {"bcc@email":"cert", "otherbcc@email":"cert"}
         Use "instancePublicKey" in the cert field to use the instance certificate.
       name: bcc
-    - description: list of war room entry id's of files to attach to the mail
+    - description: list of war room entry id's of files to attach to the mail.
       name: attachment_entry_id
       isArray: true
     - auto: PREDEFINED
@@ -132,9 +132,9 @@ script:
       predefined:
       - 'true'
       - 'false'
-    - description: Sender email address
+    - description: Sender email address.
       name: sender
-    - description: Email Subject
+    - description: Email Subject.
       name: subject
     - auto: PREDEFINED
       description: Whether to create a file with the encrypted/signed content.
@@ -149,7 +149,7 @@ script:
       description: The raw message to send.
       type: String
     - contextPath: SMIME.SignedAndEncrypted.RecipientIds
-      description: Address of recipient
+      description: Address of recipient.
       type: String
     - contextPath: SMIME.SignedAndEncrypted.FileName
       description: Name of file output if create_file_p7 is used.
