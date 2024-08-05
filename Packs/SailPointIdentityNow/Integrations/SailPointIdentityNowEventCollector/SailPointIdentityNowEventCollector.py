@@ -317,7 +317,7 @@ def main() -> None:     # pragma: no cover
             if not (id_to_start or time_to_start) or (id_to_start and time_to_start):
                 raise DemistoException("Please provide either from_id or from_date.")
             events, results = get_events(client, from_date=formatted_time_to_start,
-                                         from_id=id_to_start, limit=limit)   # type:ignore
+                                         from_id=id_to_start, limit=limit)
             return_results(results)
             if should_push_events:
                 add_time_and_status_to_events(events)
