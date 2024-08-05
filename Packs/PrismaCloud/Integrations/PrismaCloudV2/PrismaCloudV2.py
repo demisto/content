@@ -357,18 +357,21 @@ class Client(BaseClient):
         return self._http_request(
             method='PATCH',
             url_suffix=f'/access_keys/{access_key}/status/false',
+            resp_type='content'
         )
 
     def patch_access_key_enable(self, access_key: str) -> Dict[str, Any]:
         return self._http_request(
             method='PATCH',
             url_suffix=f'/access_keys/{access_key}/status/true',
+            resp_type='content'
         )
 
     def access_key_deletion(self, access_key: str) -> Dict[str, Any]:
         return self._http_request(
             method='DELETE',
             url_suffix=f'/access_keys/{access_key}',
+            resp_type='content'
         )
 
 
@@ -2126,7 +2129,7 @@ def access_key_enable_command(client: Client, args: Dict[str, Any]) -> CommandRe
     access_key = args.get('access-key')
     client.patch_access_key_enable(access_key)
     return CommandResults(
-        readable_output=f'Access key f{access_key} was enabled successfully',
+        readable_output=f'Access key {access_key} was enabled successfully',
     )
 
 

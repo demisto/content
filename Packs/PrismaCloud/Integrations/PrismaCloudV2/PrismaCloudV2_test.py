@@ -531,6 +531,96 @@ def test_permission_list_command_with_next_token(mocker, prisma_cloud_v2_client)
     http_request.assert_called_with('POST', 'api/v1/permission/page', json_data={'limit': 2, 'pageToken': 'TOKEN'})
 
 
+# itamar
+def test_access_key_create_command_name_given(mocker, prisma_cloud_v2_client):
+    from PrismaCloudV2 import access_key_create_command
+    args = {'name': 'key-name'}
+    mock_response = {'id': 'id', 'secretKey': 'secretKey'}
+    mocker.patch.object(Client, '_http_request', return_value=mock_response)
+    command_results = access_key_create_command(prisma_cloud_v2_client, args)
+    assert command_results.raw_response == mock_response
+
+
+def test_access_key_create_command_service_account_name_given(mocker, prisma_cloud_v2_client):
+    pass
+
+
+def test_get_access_keys_without_access_key_given(mocker, prisma_cloud_v2_client):
+    from PrismaCloudV2 import get_access_keys_command
+    args = {}
+    mocker.patch.object(Client, '_http_request', return_value='')
+    get_access_keys_list_mock = mocker.patch('PrismaCloudV2.get_access_keys_list', return_value={})
+    get_access_keys_command(prisma_cloud_v2_client, args)
+    get_access_keys_list_mock.assert_called_once_with(prisma_cloud_v2_client, args)
+
+
+def test_get_access_keys_with_access_key_given(mocker, prisma_cloud_v2_client):
+    from PrismaCloudV2 import get_access_keys_command
+    args = {'access-key': 'test_key'}
+    mocker.patch.object(Client, '_http_request', return_value='')
+    get_access_key_by_id_mock = mocker.patch('PrismaCloudV2.get_access_key_by_id', return_value={})
+    get_access_keys_command(prisma_cloud_v2_client, args)
+    get_access_key_by_id_mock.assert_called_once_with(prisma_cloud_v2_client, args)
+
+
+def test_get_access_key_by_id(mocker, prisma_cloud_v2_client):
+    from PrismaCloudV2 import get_access_key_by_id
+    args = {'access-key': 'test_key'}
+    mock_response = {'id': 'id', 'name': 'test_key', 'expiresOn': 0}
+    mocker.patch.object(Client, '_http_request', return_value=mock_response)
+    command_results = get_access_key_by_id(prisma_cloud_v2_client, args)
+    assert command_results.raw_response == mock_response
+    assert command_results.outputs == mock_response
+
+
+def test_get_access_keys_list(mocker, prisma_cloud_v2_client):
+    from PrismaCloudV2 import get_access_keys_list
+    mock_response = [{
+        'id': 'id',
+        'name': 'test_key',
+        'createdBy': 'test_user',
+        'createdTs': '1722861078033',
+        'lastUsedTime': '1722861078033',
+        'status': 'active',
+        'expiresOn': 0,
+        'role': {'id': 'role_id', 'name': 'role_name'},
+        'roleType': 'roleType',
+        'username': 'username'
+    }]
+    mocker.patch.object(Client, '_http_request', return_value=mock_response)
+    args = {'limit': 1}
+    command_results = get_access_keys_list(prisma_cloud_v2_client, args)
+    assert command_results.raw_response == mock_response
+    assert command_results.outputs == mock_response
+    assert '2024-08-05T12:31:18Z' in command_results.readable_output
+    assert 'Created Timestamp' in command_results.readable_output
+    assert 'Role Type' in command_results.readable_output
+
+
+def test_access_key_disable(mocker, prisma_cloud_v2_client):
+    from PrismaCloudV2 import access_key_disable_command
+    args = {'access-key': 'test_key'}
+    mocker.patch.object(Client, '_http_request', return_value='')
+    command_results = access_key_disable_command(prisma_cloud_v2_client, args)
+    assert command_results.readable_output == 'Access key test_key was disabled successfully'
+
+
+def test_access_key_enable(mocker, prisma_cloud_v2_client):
+    from PrismaCloudV2 import access_key_enable_command
+    args = {'access-key': 'test_key'}
+    mocker.patch.object(Client, '_http_request', return_value='')
+    command_results = access_key_enable_command(prisma_cloud_v2_client, args)
+    assert command_results.readable_output == 'Access key test_key was enabled successfully'
+
+
+def test_access_key_delete(mocker, prisma_cloud_v2_client):
+    from PrismaCloudV2 import access_key_delete_command
+    args = {'access-key': 'test_key'}
+    mocker.patch.object(Client, '_http_request', return_value='')
+    command_results = access_key_delete_command(prisma_cloud_v2_client, args)
+    assert command_results.readable_output == 'Access key test_key was successfully deleted successfully'
+
+
 ''' HELPER FUNCTIONS TESTS '''
 
 
@@ -1033,7 +1123,7 @@ def test_fetch_request(mocker, prisma_cloud_v2_client, limit, request_results, e
                          limit=limit,
                          now=now,
                          time_range={'type': 'absolute', 'value': {'endTime': now, 'startTime': 1000000110000}}) == \
-        (expected_incidents, expected_fetched_ids, expected_updated_last_run_time)
+           (expected_incidents, expected_fetched_ids, expected_updated_last_run_time)
 
 
 @pytest.mark.parametrize('limit, expected_incidents, expected_updated_fetched_ids',
@@ -1104,7 +1194,7 @@ def test_fetch_incidents(mocker, prisma_cloud_v2_client, last_run, params, incid
 
     mocker.patch('PrismaCloudV2.fetch_request', return_value=(incidents, fetched_ids, updated_last_run_time))
     assert fetch_incidents(prisma_cloud_v2_client, last_run, params) == \
-        (incidents, expected_fetched_ids, expected_updated_last_run_time)
+           (incidents, expected_fetched_ids, expected_updated_last_run_time)
 
 
 ''' MIRRORING FUNCTIONS TESTS '''
@@ -1464,8 +1554,8 @@ def test_close_alert_in_prisma_cloud(mocker, prisma_cloud_v2_mirroring_client):
     close_alert_in_prisma_cloud(prisma_cloud_v2_mirroring_client, incident_ids_to_close, delta)
 
     assert mock_alert_dismiss_request.call_args.kwargs == \
-        {'dismissal_note': 'Closed by XSOAR - Closing Reason: USER_DISMISSED, Closing Notes: test.',
-         'time_range': time_filter,
+           {'dismissal_note': 'Closed by XSOAR - Closing Reason: USER_DISMISSED, Closing Notes: test.',
+            'time_range': time_filter,
             'alert_ids': incident_ids_to_close}
 
 
