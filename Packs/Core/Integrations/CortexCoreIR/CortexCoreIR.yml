@@ -2939,6 +2939,70 @@ script:
     - contextPath: Core.UserGroup.source
       description: Type of user group.
       type: String
+  - arguments:
+    - description: The agent id.
+      name: agent_id
+      isArray: false
+      required: true
+    - description: The instance id.
+      name: instance_id
+      isArray: true
+      required: true
+    - description: The process name.
+      name: process_name
+      isArray: false
+      required: false
+    - description: The incident id.
+      name: incident_id
+      isArray: false
+      required: false
+    - description: For polling use.
+      isArray: true
+      name: action_id
+      deprecated: true
+    - description: Interval in seconds between each poll.
+      name: interval_in_seconds
+    - description: Polling timeout in seconds.
+      name: timeout_in_seconds
+    name: core-terminate-process
+    description: Terminate a process by it's instance id.
+    polling: true
+    outputs:
+    - contextPath: Core.TerminateProcess.action_id
+      description: The action id.
+      type: String
+  - arguments:
+    - description: The agent id.
+      name: agent_id
+      isArray: false
+      required: true
+    - description: The causality id.
+      name: causality_id
+      isArray: true
+      required: true
+    - description: The process name.
+      name: process_name
+      isArray: false
+      required: false
+    - description: The incident id.
+      name: incident_id
+      isArray: false
+      required: false
+    - description: For polling use.
+      isArray: true
+      name: action_id
+      deprecated: true
+    - description: Interval in seconds between each poll.
+      name: interval_in_seconds
+    - description: Polling timeout in seconds.
+      name: timeout_in_seconds
+    name: core-terminate-causality
+    description: Stops a process by it's causality id.
+    polling: true
+    outputs:
+    - contextPath: Core.TerminateCausality.action_id
+      description: The action id.
+      type: String
   runonce: false
   script: '-'
   subtype: python3

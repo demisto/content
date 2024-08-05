@@ -217,6 +217,7 @@ class CoreClient(BaseClient):
         headers = headers if headers else self._headers
         data = json.dumps(json_data) if json_data else data
         address = full_url if full_url else urljoin(self._base_url, url_suffix)
+        demisto.debug(f"http_request: {method=} {address=} {data=} {headers=}")
         response = demisto._apiCall(
             method=method,
             path=address,
@@ -1531,6 +1532,38 @@ class CoreClient(BaseClient):
             }},
         )
 
+    def terminate_process(self, agent_id, instance_id, process_name, incident_id) -> dict[str, dict[str, str]]:
+        request_data: Dict[str, Any] = {
+            "agent_id": agent_id,
+            "instance_id": instance_id,
+        }
+        if process_name:
+            request_data["process_name"] = process_name
+        if incident_id:
+            request_data["incident_id"] = incident_id
+        response = self._http_request(
+            method='POST',
+            url_suffix="/endpoints/terminate_process/",
+            json_data={"request_data": request_data},
+        )
+        return response.get('reply')
+
+    def terminate_causality(self, agent_id: str, causality_id: str, process_name: Optional[str], incident_id: Optional[str]) -> dict[str, dict[str, str]]:
+        request_data: Dict[str, Any] = {
+            "agent_id": agent_id,
+            "causality_id": causality_id
+        }
+        if process_name:
+            request_data["process_name"] = process_name
+        if incident_id:
+            request_data["incident_id"] = incident_id
+        response = self._http_request(
+            method='POST',
+            url_suffix="/endpoints/terminate_causality/",
+            json_data={"request_data": request_data},
+        )
+        return response.get('reply')
+
 
 class AlertFilterArg:
     def __init__(self, search_field: str, search_type: Optional[str], arg_type: str, option_mapper: dict = None):
@@ -1610,7 +1643,8 @@ def run_polling_command(client: CoreClient,
                         results_function: Callable,
                         polling_field: str,
                         polling_value: List,
-                        stop_polling: bool = False) -> CommandResults:
+                        stop_polling: bool = False,
+                        values_raise_error: List = []) -> CommandResults:
     """
     Arguments:
     args: args
@@ -1667,6 +1701,8 @@ def run_polling_command(client: CoreClient,
     result = outputs_result_func.get(polling_field) if isinstance(outputs_result_func, dict) else \
         outputs_result_func[0].get(polling_field)
     cond = result not in polling_value if stop_polling else result in polling_value
+    if values_raise_error and result in values_raise_error:
+        raise DemistoException(f"Command {cmd} didn't succeeded, received status {result}")
     if cond:
         # schedule next poll
         polling_args = {
@@ -1865,7 +1901,7 @@ def endpoint_scan_command(client: CoreClient, args) -> CommandResults:
 def action_status_get_command(client: CoreClient, args) -> CommandResults:
     action_id_list = argToList(args.get('action_id', ''))
     action_id_list = [arg_to_int(arg=item, arg_name=str(item)) for item in action_id_list]
-
+    demisto.debug(f'action_status_get_command {action_id_list=}')
     result = []
     for action_id in action_id_list:
         data = client.action_status_get(action_id)
@@ -1874,7 +1910,7 @@ def action_status_get_command(client: CoreClient, args) -> CommandResults:
             result.append({
                 'action_id': action_id,
                 'endpoint_id': endpoint_id,
-                'status': status
+                'status': status,
             })
 
     return CommandResults(
@@ -4352,4 +4388,53 @@ def get_incidents_command(client, args):
             f'{args.get("integration_context_brand", "CoreApiModule")}.Incident(val.incident_id==obj.incident_id)': raw_incidents
         },
         raw_incidents
+    )
+
+
+def terminate_process_command(client, args) -> CommandResults:
+    agent_id = args.get('agent_id')
+    instance_ids = argToList(args.get('instance_id'))
+    process_name = args.get('process_name')
+    incident_id = args.get('incident_id')
+    replies = []
+    for instance_id in instance_ids:
+        reply_per_instance_id = client.terminate_process(agent_id=agent_id,
+                                                         instance_id=instance_id,
+                                                         process_name=process_name,
+                                                         incident_id=incident_id)
+        action_id = reply_per_instance_id.get("group_action_id")
+        demisto.debug(f'Action terminate process succeeded with action_id={action_id}')
+        replies.append({"action_id": action_id})
+
+    return CommandResults(
+        readable_output=tableToMarkdown(f'Action process causality created on instance ids: {", ".join(instance_ids)}', replies),
+        outputs={f'{args.get("integration_context_brand", "CoreApiModule")}.TerminateProcess(val.actionId == obj.actionId)': replies},
+        raw_response=replies
+    )
+
+
+def terminate_causality_command(client, args) -> CommandResults:
+    agent_id = args.get('agent_id')
+    causality_ids = argToList(args.get('causality_id'))
+    process_name = args.get('process_name')
+    incident_id = args.get('incident_id')
+    replies = []
+    action_ids = []
+    for causality_id in causality_ids:
+        reply_per_instance_id = client.terminate_causality(agent_id=agent_id,
+                                                           causality_id=causality_id,
+                                                           process_name=process_name,
+                                                           incident_id=incident_id)
+        action_id = reply_per_instance_id.get("group_action_id")
+        demisto.debug(f'Action terminate process succeeded with action_id={action_id}')
+        replies.append({"action_id": action_id})
+
+    if not replies:
+        raise DemistoException('Terminate causality failed')
+    demisto.debug(f'Action terminate causality succeeded with {action_ids=}')
+
+    return CommandResults(
+        readable_output=tableToMarkdown(f'Action terminate causality created on {",".join(causality_ids)}', replies),
+        outputs={f'{args.get("integration_context_brand", "CoreApiModule")}.TerminateCausality(val.actionId == obj.actionId)': replies},
+        raw_response=replies
     )

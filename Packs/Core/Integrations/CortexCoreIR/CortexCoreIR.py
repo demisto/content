@@ -171,7 +171,7 @@ def main():  # pragma: no cover
             }
             add_sensitive_log_strs(api_key)
     else:
-        url = "/api/webapp/"
+        url = "/api/webapp/"  # internal calls to XDR, i.e. FE/internal apps.
     base_url = urljoin(url, url_suffix)
     proxy = demisto.params().get('proxy')
     verify_cert = not demisto.params().get('insecure', False)
@@ -467,6 +467,39 @@ def main():  # pragma: no cover
         elif command == 'core-get-incidents':
             return_outputs(*get_incidents_command(client, args))
 
+        elif command == 'core-terminate-process':
+            return_results(run_polling_command(client=client,
+                                               args=args,
+                                               cmd="core-terminate-process",
+                                               command_function=terminate_process_command,
+                                               command_decision_field="action_id",
+                                               results_function=action_status_get_command,
+                                               polling_field="status",
+                                               polling_value=["PENDING",
+                                                              "IN_PROGRESS",
+                                                              "PENDING_ABORT"
+                                                              ],
+                                               values_raise_error=["FAILED",
+                                                                   "TIMEOUT",
+                                                                   "ABORTED",
+                                                                   "CANCELED"]))
+
+        elif command == 'core-terminate-causality':
+            return_results(run_polling_command(client=client,
+                                               args=args,
+                                               cmd="core-terminate-causality",
+                                               command_function=terminate_causality_command,
+                                               command_decision_field="action_id",
+                                               results_function=action_status_get_command,
+                                               polling_field="status",
+                                               polling_value=["PENDING",
+                                                              "IN_PROGRESS",
+                                                              "PENDING_ABORT"],
+                                               values_raise_error=["FAILED",
+                                                                   "TIMEOUT",
+                                                                   "ABORTED",
+                                                                   "CANCELED"]
+                                               ))
         elif command in PREVALENCE_COMMANDS:
             return_results(handle_prevalence_command(client, command, args))
 
