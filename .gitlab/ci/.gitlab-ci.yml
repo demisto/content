@@ -1,7 +1,7 @@
 variables:
-  CURRENT_BRANCH_NAME: v0.0.1
+  CURRENT_BRANCH_NAME: tags/v0.0.1
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: v0.0.1
+    ref: tags/v0.0.1
     project: "${CI_PROJECT_NAMESPACE}/infra"
