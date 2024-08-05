@@ -98,7 +98,7 @@ class Client(BaseClient):
         Returns:
             List of events
         """
-        query = {
+        query: Dict = {
             "indices": ["events"],
             "queryType": "SAILPOINT",
             "queryVersion": "5.2",
@@ -163,7 +163,7 @@ def get_events(client: Client, from_date: str, from_id: str | None, limit: int =
 
 
 def fetch_events(client: Client,
-                 limit: int, last_run: dict[str, str]) -> tuple[Dict, List[Dict]]:
+                 limit: int, last_run: dict) -> tuple[Dict, List[Dict]]:
     """
     Fetches events from the SailPoint IdentityNow API
     Args:
@@ -309,7 +309,7 @@ def main() -> None:     # pragma: no cover
             return_results(result)
 
         elif command == 'identitynow-get-events':
-            limit = arg_to_number(args.get('limit', 50))
+            limit: int = arg_to_number(args.get('limit', 50) or 50)
             should_push_events = argToBoolean(args.get('should_push_events', False))
             time_to_start = arg_to_datetime(args.get('from_date'))
             formatted_time_to_start = time_to_start.strftime(DATE_FORMAT) if time_to_start else CURRENT_TIME_STR
