@@ -138,11 +138,11 @@ Return all the detailed information available for the given ip.
 | DBotScore.Score | Number | The actual score. | 
 | DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
 | IP.Address | String | IP address. | 
-| IP.Relationships.EntityA | string | The source of the relationship. | 
-| IP.Relationships.EntityB | string | The destination of the relationship. | 
-| IP.Relationships.Relationship | string | The name of the relationship. | 
-| IP.Relationships.EntityAType | string | The type of the source of the relationship. | 
-| IP.Relationships.EntityBType | string | The type of the destination of the relationship. | 
+| IP.Relationships.EntityA | String | The source of the relationship. | 
+| IP.Relationships.EntityB | String | The destination of the relationship. | 
+| IP.Relationships.Relationship | String | The name of the relationship. | 
+| IP.Relationships.EntityAType | String | The type of the source of the relationship. | 
+| IP.Relationships.EntityBType | String | The type of the destination of the relationship. | 
 | IP.ASN | String | The autonomous system name for the IP address, for example: "AS8948". | 
 | IP.Hostname | String | The hostname that is mapped to this IP address. | 
 | IP.Geo.Location | String | The geolocation where the IP address is located, in the format: latitude:longitude. | 
@@ -162,7 +162,7 @@ Return all the detailed information available for the given ip.
 | IP.ASOwner | String | The autonomous system owner of the IP. | 
 | IP.Region | String | The region in which the IP is located. | 
 | IP.Port | String | Ports that are associated with the IP. | 
-| IP.Internal | Bool | Whether or not the IP is internal or external. | 
+| IP.Internal | Boolean | Whether or not the IP is internal or external. | 
 | IP.UpdatedDate | Date | The date that the IP was last updated. | 
 | IP.Registrar.Abuse.Name | String | The name of the contact for reporting abuse. | 
 | IP.Registrar.Abuse.Address | String | The address of the contact for reporting abuse. | 
@@ -1004,11 +1004,11 @@ Return the summary information available for the given domain or IP using Scout 
 | TeamCymruScout.QueryUsage.foundation_api_usage.remaining_queries | Number | The number of remaining queries for the Foundation API. | 
 | TeamCymruScout.QueryUsage.foundation_api_usage.query_limit | Number | The total number of queries allowed for the Foundation API. | 
 | IP.Address | String | IP address. | 
-| IP.Relationships.EntityA | string | The source of the relationship. | 
-| IP.Relationships.EntityB | string | The destination of the relationship. | 
-| IP.Relationships.Relationship | string | The name of the relationship. | 
-| IP.Relationships.EntityAType | string | The type of the source of the relationship. | 
-| IP.Relationships.EntityBType | string | The type of the destination of the relationship. | 
+| IP.Relationships.EntityA | String | The source of the relationship. | 
+| IP.Relationships.EntityB | String | The destination of the relationship. | 
+| IP.Relationships.Relationship | String | The name of the relationship. | 
+| IP.Relationships.EntityAType | String | The type of the source of the relationship. | 
+| IP.Relationships.EntityBType | String | The type of the destination of the relationship. | 
 | IP.ASN | String | The autonomous system name for the IP address, for example: "AS8948". | 
 | IP.Hostname | String | The hostname that is mapped to this IP address. | 
 | IP.Geo.Location | String | The geolocation where the IP address is located, in the format: latitude:longitude. | 
@@ -1028,7 +1028,7 @@ Return the summary information available for the given domain or IP using Scout 
 | IP.ASOwner | String | The autonomous system owner of the IP. | 
 | IP.Region | String | The region in which the IP is located. | 
 | IP.Port | String | Ports that are associated with the IP. | 
-| IP.Internal | Bool | Whether or not the IP is internal or external. | 
+| IP.Internal | Boolean | Whether or not the IP is internal or external. | 
 | IP.UpdatedDate | Date | The date that the IP was last updated. | 
 | IP.Registrar.Abuse.Name | String | The name of the contact for reporting abuse. | 
 | IP.Registrar.Abuse.Address | String | The address of the contact for reporting abuse. | 
@@ -1367,11 +1367,11 @@ Returns the summary information available for the given list of IP(s).
 | TeamCymruScout.QueryUsage.foundation_api_usage.remaining_queries | Number | The number of remaining queries for the Foundation API. | 
 | TeamCymruScout.QueryUsage.foundation_api_usage.query_limit | Number | The total number of queries allowed for the Foundation API. | 
 | IP.Address | String | IP address. | 
-| IP.Relationships.EntityA | string | The source of the relationship. | 
-| IP.Relationships.EntityB | string | The destination of the relationship. | 
-| IP.Relationships.Relationship | string | The name of the relationship. | 
-| IP.Relationships.EntityAType | string | The type of the source of the relationship. | 
-| IP.Relationships.EntityBType | string | The type of the destination of the relationship. | 
+| IP.Relationships.EntityA | String | The source of the relationship. | 
+| IP.Relationships.EntityB | String | The destination of the relationship. | 
+| IP.Relationships.Relationship | String | The name of the relationship. | 
+| IP.Relationships.EntityAType | String | The type of the source of the relationship. | 
+| IP.Relationships.EntityBType | String | The type of the destination of the relationship. | 
 | IP.ASN | String | The autonomous system name for the IP address, for example: "AS8948". | 
 | IP.Hostname | String | The hostname that is mapped to this IP address. | 
 | IP.Geo.Location | String | The geolocation where the IP address is located, in the format: latitude:longitude. | 
@@ -1391,7 +1391,7 @@ Returns the summary information available for the given list of IP(s).
 | IP.ASOwner | String | The autonomous system owner of the IP. | 
 | IP.Region | String | The region in which the IP is located. | 
 | IP.Port | String | Ports that are associated with the IP. | 
-| IP.Internal | Bool | Whether or not the IP is internal or external. | 
+| IP.Internal | Boolean | Whether or not the IP is internal or external. | 
 | IP.UpdatedDate | Date | The date that the IP was last updated. | 
 | IP.Registrar.Abuse.Name | String | The name of the contact for reporting abuse. | 
 | IP.Registrar.Abuse.Address | String | The address of the contact for reporting abuse. | 
