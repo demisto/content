@@ -1,5 +1,5 @@
 This integration ensures interaction with the JizoM API.
-This integration was integrated and tested with version xx of JizoM.
+This integration was integrated and tested with version 12.3.7.0 of JizoM.
 
 ## Configure JizoM on Cortex XSOAR
 
@@ -11,7 +11,7 @@ This integration was integrated and tested with version xx of JizoM.
     | --- | --- | --- |
     | Username | Reliability of the source providing the intelligence data. | True |
     | Password |  | True |
-    | Server URL. e.g., https://127.0.0.1:9001 |  | True |
+    | Server URL. e.g., <https://127.0.0.1:9001> |  | True |
     | Fetch incidents |  | False |
     | Incident type |  | False |
     | Trust any certificate (not secure) |  | False |
