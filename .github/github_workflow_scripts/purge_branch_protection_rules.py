@@ -14,12 +14,14 @@ from typing import Any
 import tabulate
 from utils import get_logger
 
-from github import Github
+from github import (
+    Github,
+    RateLimitExceededException,
+    GithubException
+)
 import github
 import github.Requester
 
-
-DEFAULT_REPO = "demisto/content"
 
 GH_TOKEN_ENV_VAR = "GITHUB_TOKEN"
 
@@ -37,6 +39,8 @@ class BranchProtectionRule:
     id: str
     pattern: str
     matching_refs: int
+    error: GithubException | None = None
+    deleted: bool | None = None
 
 
 # Queries
@@ -74,7 +78,10 @@ def get_repo_owner_and_name() -> tuple[str, str]:
         `ValueError`: If the input string is not in the expected 'owner/repository' format.
     """
 
-    repo = os.getenv(GH_REPO_ENV_VAR, DEFAULT_REPO)
+    repo = os.getenv(GH_REPO_ENV_VAR)
+
+    if not repo:
+        raise OSError(f"Environmental variable '{GH_REPO_ENV_VAR}' not set.")
 
     parts = repo.split('/')
 
@@ -117,7 +124,7 @@ def convert_response_to_rules(response: dict[str, Any]) -> list[BranchProtection
     return rules
 
 
-def should_delete_rule(rule: BranchProtectionRule) -> bool:
+def shouldnt_delete_rule(rule: BranchProtectionRule) -> str | None:
     """
     Check whether we should delete this rule.
     To determine if we should delete the rule we check that:
@@ -126,20 +133,19 @@ def should_delete_rule(rule: BranchProtectionRule) -> bool:
     * The rule does not apply to any branches.
 
     Returns:
-    - `True` if we can delete the rule, `False` otherwise.
+    - `str` with the message why it shouldn't be deleted,
+    `None` if it should be deleted.
     """
 
     if rule.pattern in PROTECTED_RULES:
-        logger.info(f"{rule} not deleted because it's in the list of protected rules '{','.join(PROTECTED_RULES)}'")
-        return False
+        return f"Rule not deleted because it's in the list of protected rules '{','.join(PROTECTED_RULES)}'"
     elif rule.matching_refs > 0:
-        logger.info(f"{rule} not deleted because it's associated to {rule.matching_refs} existing branches/refs")
-        return False
+        return f"Rule not deleted because it's associated to {rule.matching_refs} existing branches/refs"
     else:
-        return True
+        return None
 
 
-def write_deleted_summary_to_file(deleted: list[BranchProtectionRule]) -> None:
+def write_deleted_summary_to_file(processed: list[BranchProtectionRule]) -> None:
     """
     Helper function to create a Markdown summary file for deleted branches
     if the `GITHUB_STEP_SUMMARY` is set. See
@@ -158,12 +164,12 @@ def write_deleted_summary_to_file(deleted: list[BranchProtectionRule]) -> None:
 
         header = "## Deleted Branch Protection Rules"
 
-        if not deleted:
+        if not processed or all(not rule.deleted for rule in processed):
             body = "### No branch protection rules were deleted"
             markdown_content = f"{header}\n\n{body}\n"
         else:
-            headers = ["ID", "Pattern", "Matching Refs"]
-            table_rows = [[rule.id, rule.pattern, rule.matching_refs] for rule in deleted]
+            headers = ["ID", "Pattern", "Matching Refs", "Deleted", "Error"]
+            table_rows = [[rule.id, rule.pattern, rule.matching_refs, rule.deleted, rule.error] for rule in processed]
 
             table_body = tabulate.tabulate(
                 tabular_data=table_rows,
@@ -244,22 +250,37 @@ def purge_branch_protection_rules(
     - `list[BranchProtectionRule]` that were deleted
     """
 
-    deleted: list[BranchProtectionRule] = []
+    processed: list[BranchProtectionRule] = []
 
     num_of_rules = len(rules)
-    for i, rule in enumerate(rules):
-        if should_delete_rule(rule):
-            logger.info(f"Deleting {i}/{num_of_rules}: {rule}...")
+    for i, rule in enumerate(rules, start=1):
+
+        progress = f"({i}/{num_of_rules})"
+        msg = shouldnt_delete_rule(rule)
+        if not msg:
+            logger.info(f"{progress} Deleting {rule}...")
 
             query = DELETE_BRANCH_PROTECTION_RULE_QUERY_TEMPLATE
             variables = {
                 "branchProtectionRuleId": rule.id
             }
-            send_request(gh_requester, query, variables)
-            logger.info(f"{rule} was deleted successfully.")
-            deleted.append(rule)
-
-    return deleted
+            try:
+                send_request(gh_requester, query, variables)
+                rule.deleted = True
+                logger.info(f"{rule} was deleted successfully.")
+            except RateLimitExceededException:
+                rule.deleted = False
+                logger.error(f"Rate limit exceeded while attempting to delete {rule}. Terminating...")
+                raise SystemExit(1)
+            except GithubException as e:
+                rule.deleted = False
+                rule.error = e
+                logger.info(f"{e.__class__.__name__} thrown while attempting to delete {rule}. Rule was not deleted.")
+        else:
+            rule.deleted = False
+            logger.info(f"{progress} Skipping deletion of {rule}. Reason: {msg}")
+        processed.append(rule)
+    return processed
 
 
 def get_branch_protection_rules(
@@ -331,11 +352,20 @@ def main():
         logger.info(f"{len(existing_rules)} rules returned.")
         logger.debug(f"{existing_rules=}")
 
-        deleted = purge_branch_protection_rules(requester, existing_rules)
+        processed_rules = purge_branch_protection_rules(requester, existing_rules)
 
-        write_deleted_summary_to_file(deleted)
+        # If any rule deletion ended in an error
+        # Print details and raise exception
+        rules_with_errors = [rule for rule in processed_rules if rule.error]
+        logger.info(f"Processed {len(processed_rules)} rules, {len(rules_with_errors)} with errors.")
+
+        write_deleted_summary_to_file(processed_rules)
+
+        if rules_with_errors:
+            raise RuntimeError(f"The following rules returned errors:\n{rules_with_errors}")
+
     except Exception as e:
-        logger.exception(f"Error {e.__class__.__name__} running script '{__file__}': {e}")
+        logger.exception(f"{e.__class__.__name__}: {e}")
         sys.exit(1)
 
 
