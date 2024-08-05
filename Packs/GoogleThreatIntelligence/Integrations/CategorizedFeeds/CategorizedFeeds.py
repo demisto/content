@@ -80,7 +80,8 @@ def fetch_indicators_command(client: Client,
                              feed_type: str,
                              tlp_color: str = None,
                              feed_tags: list = None,
-                             limit: int = None) -> list[dict]:
+                             limit: int = None,
+                             minimum_score: int = 0) -> list[dict]:
     """Retrieves indicators from the feed
     Args:
         client (Client): Client object with request
@@ -151,7 +152,8 @@ def fetch_indicators_command(client: Client,
         if tlp_color:
             indicator_obj['fields']['trafficlightprotocol'] = tlp_color
 
-        indicators.append(indicator_obj)
+        if (indicator_obj.get('gti_threat_score') or 0) >= minimum_score:
+            indicators.append(indicator_obj)
 
     return indicators
 
@@ -171,7 +173,15 @@ def get_indicators_command(client: Client,
     tlp_color = params.get('tlp_color')
     feed_tags = argToList(params.get('feedTags', ''))
     limit = int(args.get('limit', 0))
-    indicators = fetch_indicators_command(client, feed_type, tlp_color, feed_tags, limit)
+    minimum_score = int(params.get('feedMinimumGTIScore', 80))
+    indicators = fetch_indicators_command(
+        client,
+        feed_type,
+        tlp_color,
+        feed_tags,
+        limit,
+        minimum_score
+    )
 
     human_readable = tableToMarkdown(
         f'Indicators from Google Threat Intelligence {FEED_STR.get(feed_type, feed_type)} Feeds:',

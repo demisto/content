@@ -68,6 +68,12 @@ configuration:
   defaultvalue: "30"
   type: 19
   required: false
+- name: feedMinimumGTIScore
+  type: 0
+  display: Feed Minimum GTI Score
+  required: true
+  defaultvalue: 80
+  additionalinfo: The minimum GTI score to import as part of the feed
 - display: Bypass exclusion list
   name: feedBypassExclusionList
   type: 8
