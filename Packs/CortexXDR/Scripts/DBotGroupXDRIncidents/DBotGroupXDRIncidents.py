@@ -20,11 +20,9 @@ def get_group_incidents(args: dict) -> dict:
         })
         return res
     elif return_type == 'summary':
-        demisto.debug(f'DBotGroupXDRIncidents: in summary {model_name=}')
         res = demisto.executeCommand('DBotShowClusteringModelInfo', {
             'modelName': model_name
         })
-        demisto.debug(f'DBotGroupXDRIncidents: in summary {res=}')
         return res
     else:
         res = demisto.executeCommand('DBotTrainClustering', {
