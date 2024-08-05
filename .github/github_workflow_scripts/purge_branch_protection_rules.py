@@ -246,9 +246,10 @@ def purge_branch_protection_rules(
 
     deleted: list[BranchProtectionRule] = []
 
+    num_of_rules = len(rules)
     for i, rule in enumerate(rules):
         if should_delete_rule(rule):
-            logger.info(f"Deleting {i}/{len(rules)}: {rule}...")
+            logger.info(f"Deleting {i}/{num_of_rules}: {rule}...")
 
             query = DELETE_BRANCH_PROTECTION_RULE_QUERY_TEMPLATE
             variables = {
