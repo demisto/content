@@ -6,7 +6,7 @@ script: |
 type: python
 tags:
 - dynamic-section
-comment: Display GRA analytical feature on the layout
+comment: Display GRA analytical feature on the layout.
 enabled: true
 scripttarget: 0
 subtype: python3
