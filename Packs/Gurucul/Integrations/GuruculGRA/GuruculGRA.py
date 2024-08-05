@@ -199,6 +199,13 @@ def main() -> None:
             result = test_module_command(client)
             return_results(result)
 
+        elif demisto.command() == 'gra-validate-api':
+            try:
+                result = client.validate_api_key()
+                return_results(result)
+            except Exception:
+                return_error('Error in service')
+
         elif demisto.command() == 'fetch-incidents':
 
             max_results = arg_to_int(

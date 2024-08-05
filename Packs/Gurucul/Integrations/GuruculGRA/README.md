@@ -1134,5 +1134,31 @@ Retrieve anomalies for specified case id from GRA and update in XSOAR.
 ```
 
 #### Human Readable Output
+### gra-validate-api
+***
+This command verifies the availability and checks if the service is functioning properly.
+
+#### Base Command
+
+`gra-validate-api`
+
+#### Input
+
+    []
+
+#### Context Output
+
+    []
+
+
+#### Command Example
+```!gra-validate-api```
+
+#### Context Example
+```
+ok
+```
+
+#### Human Readable Output
 
 

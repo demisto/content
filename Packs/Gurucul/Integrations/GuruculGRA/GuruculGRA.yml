@@ -978,6 +978,9 @@ script:
       description: Current status of anomaly.
       type: String
     description: Retrieve anomalies for specified case id.
+  - name: gra-validate-api
+    arguments: []
+    description: This command verifies the availability and checks if the service is functioning properly.
   dockerimage: demisto/python3:3.10.14.95956
   isfetch: true
   subtype: python3
