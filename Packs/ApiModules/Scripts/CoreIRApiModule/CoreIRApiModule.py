@@ -149,6 +149,11 @@ RBAC_VALIDATIONS_BUILD_NUMBER = '992980'
 FORWARD_USER_RUN_RBAC = is_xsiam() and is_demisto_version_ge(version=RBAC_VALIDATIONS_VERSION,
                                                              build_number=RBAC_VALIDATIONS_BUILD_NUMBER) and not is_using_engine()
 
+ALLOW_BIN_CONTENT_RESPONSE_BUILD_NUM = '1230614'
+ALLOW_BIN_CONTENT_RESPONSE_SERVER_VERSION = '8.7.0'
+ALLOW_RESPONSE_AS_BINARY = is_demisto_version_ge(version=ALLOW_BIN_CONTENT_RESPONSE_SERVER_VERSION,
+                                                 build_number=ALLOW_BIN_CONTENT_RESPONSE_BUILD_NUM)
+
 
 class CoreClient(BaseClient):
 
@@ -219,8 +224,12 @@ class CoreClient(BaseClient):
         headers = headers if headers else self._headers
         data = json.dumps(json_data) if json_data else data
         address = full_url if full_url else urljoin(self._base_url, url_suffix)
-        response_data_type = "bin" if resp_type == 'content' else None
-        response = demisto._apiCall(
+        response_data_type = "bin" if resp_type == 'content' and ALLOW_RESPONSE_AS_BINARY else None
+        if resp_type == 'content' and not ALLOW_RESPONSE_AS_BINARY:
+            allowed_version = f'{ALLOW_BIN_CONTENT_RESPONSE_SERVER_VERSION}-{ALLOW_BIN_CONTENT_RESPONSE_BUILD_NUM}'
+            raise DemistoException('getting binary data from server is allowed from '
+                                   f'version: {allowed_version} and above')
+        params = assign_params(
             method=method,
             path=address,
             data=data,
@@ -228,6 +237,7 @@ class CoreClient(BaseClient):
             timeout=timeout,
             response_data_type=response_data_type
         )
+        response = demisto._apiCall(**params)
         if ok_codes and response.get('status') not in ok_codes:
             self._handle_error(error_handler, response, with_metrics)
         try:
