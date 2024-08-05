@@ -28,7 +28,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### identitynow-get-events
 
 ***
-Gets events from SailPoint IdentityNow.
+Gets events from SailPoint IdentityNow. This command is used for developing/ debugging and is to be used with caution, as it can create events, leading to events duplication and API request limitation exceeding.
 
 #### Base Command
 
