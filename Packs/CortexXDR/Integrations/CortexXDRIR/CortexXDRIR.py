@@ -899,7 +899,7 @@ def get_modified_remote_data_command(client, args, xdr_delay: int = 1):
         gte_modification_time_milliseconds=gte_modification_time_milliseconds,
         lte_modification_time_milliseconds=lte_modification_time_with_ms,
         limit=100)
-    
+
     last_run_mirroring = lte_modification_time_with_ms + timedelta(milliseconds=1)
     set_last_mirror_run({"last_update": last_run_mirroring})
     modified_incident_ids = []
