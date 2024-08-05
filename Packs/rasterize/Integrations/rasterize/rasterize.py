@@ -6,7 +6,6 @@ import base64
 import os
 import pychrome
 import random
-import requests
 import subprocess
 import tempfile
 import threading
@@ -49,7 +48,7 @@ CHROME_OPTIONS = ["--headless",
                   ]
 
 WITH_ERRORS = demisto.params().get('with_error', True)
-IS_HTTP = argToBoolean(demisto.params().get('is_https', False))
+IS_HTTPS = argToBoolean(demisto.params().get('is_https', False))
 
 # The default wait time before taking a screenshot
 DEFAULT_WAIT_TIME = max(int(demisto.params().get('wait_time', 0)), 0)
@@ -197,6 +196,7 @@ class PychromeEventHandler:
         self.tab = tab
         self.tab_ready_event = tab_ready_event
         self.start_frame = None
+        self.is_mailto = False
 
     def page_frame_started_loading(self, frameId):
         demisto.debug(f'PychromeEventHandler.page_frame_started_loading, {frameId=}')
@@ -224,6 +224,10 @@ class PychromeEventHandler:
             demisto.debug('PychromeEventHandler.page_frame_stopped_loading, setting tab_ready_event')
             self.tab_ready_event.set()
 
+    def network_request_will_be_sent(self, documentURL, **kwargs):
+        '''Triggered when a request is sent by the browser, catches mailto URLs.'''
+        demisto.debug(f'PychromeEventHandler.network_request_will_be_sent, {documentURL=}')
+        self.is_mailto = documentURL.lower().startswith('mailto:')
 # endregion
 
 
@@ -554,13 +558,14 @@ def delete_row_with_old_chrome_configurations_from_chrome_instances_file(chrome_
         write_file(CHROME_INSTANCES_FILE_PATH, chrome_instances_contents, overwrite=True)
 
 
-def setup_tab_event(browser, tab):
+def setup_tab_event(browser: pychrome.Browser, tab: pychrome.Tab) -> tuple[PychromeEventHandler, Event]:
     tab_ready_event = Event()
     tab_event_handler = PychromeEventHandler(browser, tab, tab_ready_event)
 
     tab.Network.enable()
     tab.Network.dataReceived = tab_event_handler.network_data_received
     # tab.Network.responseReceived = tab_event_handler.network_response_received
+    tab.Network.requestWillBeSent = tab_event_handler.network_request_will_be_sent
 
     tab.Page.frameStartedLoading = tab_event_handler.page_frame_started_loading
     tab.Page.frameStoppedLoading = tab_event_handler.page_frame_stopped_loading
@@ -568,7 +573,7 @@ def setup_tab_event(browser, tab):
     return tab_event_handler, tab_ready_event
 
 
-def navigate_to_path(browser, tab, path, wait_time, navigation_timeout):  # pragma: no cover
+def navigate_to_path(browser, tab, path, wait_time, navigation_timeout) -> PychromeEventHandler:  # pragma: no cover
     tab_event_handler, tab_ready_event = setup_tab_event(browser, tab)
 
     try:
@@ -605,12 +610,12 @@ def navigate_to_path(browser, tab, path, wait_time, navigation_timeout):  # prag
         heapUsage = tab.Runtime.getHeapUsage()
         demisto.debug(f'heapUsage after navigation {heapUsage=} on {tab.id=}')
 
-        return tab_event_handler
-
     except pychrome.exceptions.TimeoutException as ex:
         return_error(f'Navigation timeout: {ex} thrown while trying to navigate to {path}')
     except pychrome.exceptions.PyChromeException as ex:
         return_error(f'Exception: {ex} thrown while trying to navigate to {path}')
+
+    return tab_event_handler
 
 
 def backoff(polled_item, wait_time=DEFAULT_WAIT_TIME, polling_interval=DEFAULT_POLLING_INTERVAL):
@@ -627,6 +632,9 @@ def screenshot_image(browser, tab, path, wait_time, navigation_timeout, full_scr
     :param include_source: Whether to include the page source in the response
     """
     tab_event_handler = navigate_to_path(browser, tab, path, wait_time, navigation_timeout)
+
+    if tab_event_handler.is_mailto:
+        return None, f'URLs that start with "mailto:" cannot be rasterized.\nURL: {path}'
 
     try:
         page_layout_metrics = tab.Page.getLayoutMetrics()
@@ -795,7 +803,7 @@ def perform_rasterize(path: str | list[str],
             rasterization_results = []
             for current_path in paths:
                 if not current_path.startswith('http') and not current_path.startswith('file:///'):
-                    protocol = 'http' + 's' * IS_HTTP
+                    protocol = 'http' + 's' * IS_HTTPS
                     current_path = f'{protocol}://{current_path}'
 
                 # Start a new thread in group of max_tabs
@@ -830,8 +838,14 @@ def perform_rasterize(path: str | list[str],
 
             # Get the results
             for current_thread in rasterization_threads:
-                rasterization_results.append(current_thread.result())
-
+                ret_value, response_body = current_thread.result()
+                if ret_value:
+                    rasterization_results.append((ret_value, response_body))
+                else:
+                    return_results(CommandResults(
+                        readable_output=str(response_body),
+                        entry_type=(EntryType.ERROR if WITH_ERRORS else EntryType.WARNING)
+                    ))
             return rasterization_results
 
     else:
