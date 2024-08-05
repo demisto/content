@@ -35,7 +35,7 @@ class Client(BaseClient):
         demisto.info(f'completed post of message. response text: {res}')
 
 
-def create_teams_message(message: str, title: str, serverurls: str) -> dict:
+def create_teams_message(message: str, title: str, serverurls: str, adaptive_cards_format: bool = False) -> dict:
     """
     Creates the Teams message using the messageCard format, and returns the card
 
@@ -43,26 +43,65 @@ def create_teams_message(message: str, title: str, serverurls: str) -> dict:
         message (str): The message to send in the message card to Teams.
         title (str): The title of the message card.
         serverurls (str): The URL to send in the message card.
+        adaptive_cards_format (bool): Should the adaptive cards format be used?
 
         Returns:
         messagecard (dict): dict the adaptive card to send to Teams.
     """
-    messagecard = {
-        "@type": "MessageCard",
-        "@context": "http://schema.org/extensions",
-        "themeColor": "0076D7",
-        "summary": "Cortex XSOAR Notification",
-        "sections": [{
-            "activityTitle": "Cortex XSOAR Notification",
-            "activitySubtitle": message,
-            "markdown": True
-        }],
-        "potentialAction": [{
-            "@type": "OpenUri",
-            "name": title,
-            "targets": [{"os": "default", "uri": serverurls}]
-        }]
-    }
+
+    messagecard: dict = {}
+    if adaptive_cards_format:
+        messagecard = {
+            "type": "message",
+            "attachments": [
+                {
+                    "contentType": "application/vnd.microsoft.card.adaptive",
+                    "contentUrl": None,
+                    "content": {
+                        "type": "AdaptiveCard",
+                        "body": [
+                            {
+                                "type": "TextBlock",
+                                "size": "Medium",
+                                "weight": "Bolder",
+                                "text": "Cortex XSOAR Notification"
+                            },
+                            {
+                                "type": "TextBlock",
+                                "text": message,
+                                "wrap": True
+                            }
+                        ],
+                        "actions": [
+                            {
+                                "type": "Action.OpenUrl",
+                                "title": title,
+                                "url": serverurls
+                            }
+                        ],
+                        "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+                        "version": "1.6"
+                    }
+                }
+            ]
+        }
+    else:
+        messagecard = {
+            "@type": "MessageCard",
+            "@context": "http://schema.org/extensions",
+            "themeColor": "0076D7",
+            "summary": "Cortex XSOAR Notification",
+            "sections": [{
+                "activityTitle": "Cortex XSOAR Notification",
+                "activitySubtitle": message,
+                "markdown": True
+            }],
+            "potentialAction": [{
+                "@type": "OpenUri",
+                "name": title,
+                "targets": [{"os": "default", "uri": serverurls}]
+            }]
+        }
 
     return messagecard
 
@@ -88,7 +127,13 @@ def test_module(client: Client, serverurls: str) -> str:
         return f'Error: {e}'
 
 
-def send_teams_message_command(client: Client, message: str, title: str, serverurls: str) -> CommandResults:
+def send_teams_message_command(
+    client: Client,
+    message: str,
+    title: str,
+    serverurls: str,
+    adaptive_cards_format: bool = False
+) -> CommandResults:
     """
     send_teams_message command: Sends the Teams Message to the provided webhook.
 
@@ -97,13 +142,14 @@ def send_teams_message_command(client: Client, message: str, title: str, serveru
         message (str): The message to send in the message card to Teams.
         title (str): The title of the message card.
         serverurls (str): The URL to send in the message card.
+        adaptive_cards_format (bool): Should the adaptive cards format be used?
 
     Returns:
         CommandResults/dict: A ``CommandResults`` compatible to return ``return_results()``,
         which contains the readable_output indicating the message was sent.
     """
 
-    messagecard = create_teams_message(message, title, serverurls)
+    messagecard = create_teams_message(message, title, serverurls, adaptive_cards_format)
     client.send_teams_message(messagecard)
     return CommandResults(readable_output='message sent successfully')
 
@@ -120,6 +166,7 @@ def main() -> None:    # pragma: no cover
     webhook = args.get('team_webhook', params.get('webhookurl'))
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
+    adaptive_cards_format: bool = argToBoolean(args.get("adaptive_cards_format", False))
 
     serverurls = demisto.demistoUrls()
 
@@ -140,7 +187,7 @@ def main() -> None:    # pragma: no cover
             return_results(test_module(client, serverurls))
         elif command == 'ms-teams-message':
             message = args.get("message", "")
-            return_results(send_teams_message_command(client, message, title, serverurls))
+            return_results(send_teams_message_command(client, message, title, serverurls, adaptive_cards_format))
         else:
             raise NotImplementedError(f"command {command} is not implemented.")
 
