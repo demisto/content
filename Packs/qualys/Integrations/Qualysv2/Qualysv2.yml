@@ -2821,7 +2821,7 @@ script:
         required: true
     description: Gets assets from Qualys.
     name: qualys-get-assets
-  dockerimage: demisto/python3:3.10.14.92207
+  dockerimage: demisto/python3:3.11.9.104957
   isfetchevents: true
   isfetchassets: true
   runonce: false
