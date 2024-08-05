@@ -64,7 +64,7 @@ class Zoom_Client(BaseClient):
 
         :return: valid token
         """
-        full_url = OAUTH_OGV_TOKEN_GENERATOR_URL if 'gov' in self.base_url else OAUTH_TOKEN_GENERATOR_URL
+        full_url = OAUTH_OGV_TOKEN_GENERATOR_URL if 'gov' in self._base_url else OAUTH_TOKEN_GENERATOR_URL
         token_res = self._http_request(method="POST", full_url=full_url,
                                        params={"account_id": self.account_id,
                                                "grant_type": "account_credentials"},
@@ -77,7 +77,7 @@ class Zoom_Client(BaseClient):
 
         :return: valid token
         """
-        full_url = OAUTH_OGV_TOKEN_GENERATOR_URL if 'gov' in self.base_url else OAUTH_TOKEN_GENERATOR_URL
+        full_url = OAUTH_OGV_TOKEN_GENERATOR_URL if 'gov' in self._base_url else OAUTH_TOKEN_GENERATOR_URL
         token_res = self._http_request(method="POST", full_url=full_url,
                                        params={"account_id": self.account_id,
                                                "grant_type": "client_credentials"},
