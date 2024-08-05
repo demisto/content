@@ -65,7 +65,7 @@ configuration:
   required: false
 - display: Feed Fetch Interval
   name: feedFetchInterval
-  defaultvalue: "30"
+  defaultvalue: "60"
   type: 19
   required: false
 - name: feedMinimumGTIScore

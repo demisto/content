@@ -131,7 +131,7 @@ def fetch_indicators_command(client: Client,
             'fields': {
                 'md5': attributes.get('md5'),
                 'sha1': attributes.get('sha1'),
-                'sha256': attributes.get('sha256'),
+                'sha256': attributes['sha256'],
                 'size': attributes.get('size'),
                 'tags': attributes.get('tags'),
             },
@@ -154,6 +154,10 @@ def fetch_indicators_command(client: Client,
 
         if (indicator_obj.get('gti_threat_score') or 0) >= minimum_score:
             indicators.append(indicator_obj)
+        else:
+            existing_indicators = list(IndicatorsSearcher(value=indicator_obj['value']))
+            if len(existing_indicators) > 0 and int(existing_indicators[0].get('total', 0)) > 0:
+                indicators.append(indicator_obj)
 
     return indicators
 
