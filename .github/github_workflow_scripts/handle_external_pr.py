@@ -124,6 +124,9 @@ def determine_random_reviewer(potential_reviewers: list[str], repo: Repository) 
     Returns:
         str: The github username to assign to a PR
     """
+    if len(potential_reviewers) == 1:
+        print(f'There is only 1 potential reviewer {potential_reviewers}')
+        return potential_reviewers[0]
     label_to_consider = 'contribution'
     pulls = repo.get_pulls(state='OPEN')
     assigned_prs_per_potential_reviewer = {reviewer: 0 for reviewer in potential_reviewers}
@@ -434,6 +437,7 @@ def find_reviewer_to_assign(content_repo: Repository, pr: PullRequest, pr_number
     - content_repo - the content repository
     - pr - current new PR
     - pr_number - number of current_pr
+    - content_reviewers - the list of content reviewers
 
     Returns:
     - Reviewer to assign
@@ -549,6 +553,10 @@ def main():
 
     # Add a security architect reviewer if the PR contains security content items
     if is_requires_security_reviewer(pr_files):
+        if isinstance(security_reviewer, list):
+            security_reviewer = determine_random_reviewer(security_reviewer, content_repo)
+        # else security_reviewer is a string of a single reviewer, just add it to the list of reviewers
+        print(f'The selected security reviewer {security_reviewer}')
         reviewers.append(security_reviewer)
         pr.add_to_assignees(security_reviewer)
         pr.add_to_labels(SECURITY_LABEL)
