@@ -1,3 +1,4 @@
+import sys
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *
@@ -3998,10 +3999,10 @@ def search_device_command():
     for device in devices:
         device_id = device.get("device_id")
         device_ids.append(device_id)
-    state_list = get_status(device_ids)
+    state_data = get_status(device_ids)
     command_results = []
     for single_device in devices:
-        endpoint = generate_endpoint_by_contex_standard(single_device, state_list)
+        endpoint = generate_endpoint_by_contex_standard(single_device, state_data)
         if not extended_data:
             entry = get_trasnformed_dict(single_device, SEARCH_DEVICE_KEY_MAP)
             headers = ['ID', 'Hostname', 'OS', 'MacAddress', 'LocalIP', 'ExternalIP', 'FirstSeen', 'LastSeen', 'Status']
@@ -4052,7 +4053,16 @@ def enrich_groups(all_group_ids) -> dict[str, Any]:
 
 
 def get_status(device_ids):
-    state_list = []
+    """
+    Get the online status for one or more hosts by specifying each host’s unique ID (up to 100 max).
+    The status can be online, offline, or unknown.
+    Args:
+        device_ids: list of device ids.
+
+    Returns: dictionary contains the id:state
+
+    """
+    state_data = {}
     batch_size = 100
     for i in range(0, len(device_ids), batch_size):
         batch = device_ids[i:i + batch_size]
@@ -4063,11 +4073,8 @@ def get_status(device_ids):
             if state == 'unknown':
                 demisto.debug(f"Device with id: {device_id} returned an unknown state, which indicates that the host has not"
                               f" been seen recently and we are not confident about its current state")
-            state_list.append({
-                'id': device_id,
-                'state': HOST_STATUS_DICT[state]
-            })
-    return state_list
+            state_data[device_id] = HOST_STATUS_DICT[state]
+    return state_data
 
 
 def get_isolation_status(endpoint_status):
@@ -4084,7 +4091,7 @@ def get_isolation_status(endpoint_status):
     return is_isolated
 
 
-def generate_endpoint_by_contex_standard(single_device, state_list):
+def generate_endpoint_by_contex_standard(single_device, state_data):
     device_id = single_device.get('device_id')
     endpoint = Common.Endpoint(
         id=device_id,
@@ -4092,7 +4099,7 @@ def generate_endpoint_by_contex_standard(single_device, state_list):
         ip_address=single_device.get('local_ip'),
         os=single_device.get('platform_name'),
         os_version=single_device.get('os_version'),
-        status=next((item['state'] for item in state_list if item['id'] == device_id), None),
+        status=state_data.get(device_id),
         is_isolated=get_isolation_status(single_device.get('status')),
         mac_address=single_device.get('mac_address'),
         vendor=INTEGRATION_NAME)
@@ -4118,7 +4125,7 @@ def get_endpoint_command():
     for device in devices:
         device_id = device.get("device_id")
         device_ids.append(device_id)
-    state_list = get_status(device_ids)
+    state_data = get_status(device_ids)
 
     # filter hostnames that will match the exact hostnames including case-sensitive
     if hostnames := argToList(args.get('hostname')):
@@ -4127,7 +4134,7 @@ def get_endpoint_command():
 
     standard_endpoints = []
     for single_device in devices:
-        standard_endpoints.append(generate_endpoint_by_contex_standard(single_device, state_list))
+        standard_endpoints.append(generate_endpoint_by_contex_standard(single_device, state_data))
 
     command_results = []
     for endpoint in standard_endpoints:

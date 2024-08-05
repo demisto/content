@@ -7487,8 +7487,8 @@ def test_get_status(mocker):
 
     results = CrowdStrikeFalcon.get_status(device_ids)
     assert len(results) == 5
-    assert results == [{'id': '0bde2c4645294245aca522971ccc4567', 'state': 'Online'},
-                       {'id': '04a75a2d15b44a5995c9c17200ad1212', 'state': 'Online'},
-                       {'id': '046761c46ec84f40b27b6f79ce7c6543', 'state': 'Online'},
-                       {'id': '8ed44198a6f64f9fabd0479c30989876', 'state': 'Online'},
-                       {'id': 'd4210a0957e640f18c237a2fa1141122', 'state': 'Online'}]
+    assert results == {'0bde2c4645294245aca522971ccc4567': 'Online',
+                       '04a75a2d15b44a5995c9c17200ad1212': 'Online',
+                       '046761c46ec84f40b27b6f79ce7c6543': 'Online',
+                       '8ed44198a6f64f9fabd0479c30989876': 'Online',
+                       'd4210a0957e640f18c237a2fa1141122': 'Online'}
