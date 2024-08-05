@@ -37,6 +37,7 @@ The EWS integration can be used for the following use cases.
 2.  Search for EWS O365.
 3.  Click **Add instance** to create and configure a new integration instance.
     *   **Name**: a textual name for the integration instance.
+    *   **Azure Cloud**: Azure Cloud environment. See table below.
     *   **ID / Application ID**: ID recieved from <https://oproxy.demisto.ninja/ms-ews-o365> app registration, or a self deployed Application ID.
     *   **Token / Tenant ID**: Token recieved from <https://oproxy.demisto.ninja/ms-ews-o365> app registration, or a self deployed Application Tenant ID.
     *   **Key / Application Secret**: Key recieved from <https://oproxy.demisto.ninja/ms-ews-o365> app registration, or a self deployed Application Secret.
@@ -51,7 +52,18 @@ The EWS integration can be used for the following use cases.
     *   **Timeout (in seconds) for HTTP requests to Exchange Server**
     *   **Use a self deployed Azure Application**: Select this checkbox if you are using a self-deployed Azure application.
 
-4.  Click **Test** to validate the URLs, token, and connection.
+4. Azure cloud options
+
+    | Azure Cloud | Description                                                              |
+    |-------------|--------------------------------------------------------------------------|
+    | Worldwide   | The publicly accessible Azure Cloud                                      |
+    | US GCC      | Azure cloud for the USA Government Cloud Community (GCC)                 |
+    | US GCC-High | Azure cloud for the USA Government Cloud Community High (GCC-High)       |
+    | DoD         | Azure cloud for the USA Department of Defense (DoD)                      |
+    | Germany     | Azure cloud for the German Government                                    |
+    | China       | Azure cloud for the Chinese Government                                   |
+
+5. Click **Test** to validate the URLs, token, and connection.
 
 ## Authentication
 
