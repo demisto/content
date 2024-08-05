@@ -5,9 +5,7 @@ import secrets
 import string
 from itertools import zip_longest
 from datetime import datetime, timedelta
-
 from CoreIRApiModule import *
-
 # Disable insecure warnings
 urllib3.disable_warnings()
 
@@ -883,10 +881,10 @@ def get_mapping_fields_command():
     return mapping_response
 
 
-def get_modified_remote_data_command(client, args, xdr_delay: int = 1, last_mirroring: Optional[dict] = None):
+def get_modified_remote_data_command(client, args, xdr_delay: int = 1):
     remote_args = GetModifiedRemoteDataArgs(args)
-    last_update = last_mirroring.get(
-        'time') if isinstance(last_mirroring, dict) else remote_args.last_update
+    get_last_mirror_run: Dict[str, Any] = get_last_mirror_run() or {}
+    last_update = get_last_mirror_run.get("last_update") if get_last_mirror_run else remote_args.last_update
     last_update_utc = dateparser.parse(last_update,
                                        settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': False})   # convert to utc format
 
@@ -901,10 +899,9 @@ def get_modified_remote_data_command(client, args, xdr_delay: int = 1, last_mirr
         gte_modification_time_milliseconds=gte_modification_time_milliseconds,
         lte_modification_time_milliseconds=lte_modification_time_with_ms,
         limit=100)
+    
     last_run_mirroring = lte_modification_time_with_ms + timedelta(milliseconds=1)
-    last_run_obj = demisto.getLastRun()
-    last_run_obj['mirroring'] = {'time': (last_run_mirroring)}  # type: ignore
-    demisto.setLastRun(last_run_obj)
+    set_last_mirror_run({"last_update": last_run_mirroring})
     modified_incident_ids = []
     for raw_incident in raw_incidents:
         incident_id = raw_incident.get('incident_id')
