@@ -1,5 +1,5 @@
 This integration ensures interaction with the JizoM API.
-This integration was integrated and tested with version 12.3 of JizoM.
+This integration was integrated and tested with version xx of JizoM.
 
 ## Configure JizoM on Cortex XSOAR
 
@@ -11,13 +11,13 @@ This integration was integrated and tested with version 12.3 of JizoM.
     | --- | --- | --- |
     | Username | Reliability of the source providing the intelligence data. | True |
     | Password |  | True |
-    | Server URL |  | True |
+    | Server URL. e.g., https://127.0.0.1:9001 |  | True |
     | Fetch incidents |  | False |
     | Incident type |  | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
     | Incidents Fetch Interval |  | False |
-    | First fetch time |  | False |
+    | First fetch time (number, time unit, for example, 12 hours, 7 days, 3 months, 1 year) |  | False |
     | Maximum number of alerts per fetch |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
@@ -30,7 +30,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### jizo-m-protocols-get
 
 ***
-Get jizo protocols.
+Get the list of alerts sorted by protocols.
 
 #### Base Command
 
@@ -42,8 +42,8 @@ Get jizo protocols.
 | --- | --- | --- |
 | ip_src | Ipv4 or Ipv6 of the source. | Optional | 
 | ip_dest | Ipv4 or Ipv6 of the destination. | Optional | 
-| datetime_from | Get the alerts that were occurred from this date. The default value is 7 days ago. | Optional | 
-| datetime_to | Get the alerts that were occurred up to this date. The default is now. | Optional | 
+| datetime_from | Get the alerts that were occurred from this date, for example, "3 days ago", "2020-01-01-00:00:00". The default value is 7 days ago. | Optional | 
+| datetime_to | Get the alerts that were occurred up to this date, for example, "3 days ago", "2020-01-01-00:00:00". The default is now. | Optional | 
 | probe_name | The name of the jizo probe. | Optional | 
 | page | A page number for pagination. | Optional | 
 | limit | The maximum number of protocols to display per alert. | Optional | 
@@ -65,7 +65,7 @@ Get jizo protocols.
 ### jizo-m-peers-get
 
 ***
-Get jizo peers.
+Get list of IP addresses connected to a specific one.
 
 #### Base Command
 
@@ -77,8 +77,8 @@ Get jizo peers.
 | --- | --- | --- |
 | ip_src | Ipv4 or Ipv6 of the source. | Optional | 
 | ip_dest | Ipv4 or Ipv6 of the destination. | Optional | 
-| datetime_from | Get the alerts that were occurred from this date. The default value is 7 days ago. | Optional | 
-| datetime_to | Get the alerts that were occurred up to this date. The default is now. | Optional | 
+| datetime_from | Get the alerts that were occurred from this date, for example, "3 days ago", "2020-01-01-00:00:00". The default value is 7 days ago. | Optional | 
+| datetime_to | Get the alerts that were occurred up to this date, for example, "3 days ago", "2020-01-01-00:00:00". The default is now. | Optional | 
 | probe_name | The name of the jizo probe. | Optional | 
 | page | A page number for pagination. | Optional | 
 | limit | The maximum number of samples to display per alert. | Optional | 
@@ -100,7 +100,7 @@ Get jizo peers.
 ### jizo-m-query-records-get
 
 ***
-Get jizo query records.
+Retrieve all information available on Jizo M, mainly alerts.
 
 #### Base Command
 
@@ -112,16 +112,16 @@ Get jizo query records.
 | --- | --- | --- |
 | ip_src | Ipv4 or Ipv6 of the source. | Optional | 
 | ip_dest | Ipv4 or Ipv6 of the destination. | Optional | 
-| proto | The protocol (e.g., TCP, UDP). | Optional | 
-| app_proto | The application protocol(e.g., FTP, HTTP, DNS, DHCP, SMB). | Optional | 
+| proto | The protocol. Possible values are: TCP, UDP, IP, IPSEC, ICMP, ARP. | Optional | 
+| app_proto | The application protocol. Possible values are: HTTP, HTTPS, FTP, DNS, DHCP, DCERPC, SMB, SMTP, SNMP, SSL, SSH, SIP, RDP, RFB, NFS, MQTT, MSN, MODBUS, IMAP, TFTP, KRBS. | Optional | 
 | port_src | The source port. | Optional | 
 | port_dest | The destination port. | Optional | 
 | flow_id | The id of the flow. | Optional | 
-| sid | The id if the rule. | Optional | 
+| sid | The id of the rule. | Optional | 
 | probe_name | The name of the jizo probe. | Optional | 
 | port | The alert port. | Optional | 
-| datetime_from | Get the alerts that were occurred from this date. The default value is 7 days ago. | Optional | 
-| datetime_to | Get the alerts that were occurred up to this date. The default is now. | Optional | 
+| datetime_from | Get the alerts that were occurred from this date, for example, "3 days ago", "2020-01-01-00:00:00". The default value is 7 days ago. | Optional | 
+| datetime_to | Get the alerts that were occurred up to this date, for example, "3 days ago", "2020-01-01-00:00:00". The default is now. | Optional | 
 | page | A page number for pagination. | Optional | 
 | limit | The maximum number of samples to display per alert. | Optional | 
 
@@ -138,117 +138,3 @@ Get jizo query records.
 | JizoM.QueryRecords.alerts_usecase.count | Number | The number of displayed alerts. | 
 | JizoM.QueryRecords.alerts_usecase.data | String | The details of alerts. | 
 | JizoM.QueryRecords.alerts_usecase.total | Number | The total number of alerts. | 
-
-### jizo-m-alert-rules-get
-
-***
-Get jizo alerts rules.
-
-#### Base Command
-
-`jizo-m-alert-rules-get`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| flow_id | The id of the flow. | Optional | 
-| sid | The id if the rule. | Optional | 
-| probe_name | The name of the jizo probe. | Optional | 
-| port | The alert port. | Optional | 
-| datetime_from | Get the alerts that were occurred from this date. The default value is 7 days ago. | Optional | 
-| datetime_to | Get the alerts that were occurred up to this date. The default is now. | Optional | 
-| severity | Relevance/importance of alert varies from 1-4. | Optional | 
-| category | The alert category (e.g., Fraud, Abusive Content). | Optional | 
-| type_data | The data type (default IDS). | Optional | 
-| page | A page number for pagination. | Optional | 
-| limit | The maximum number of samples to display per alert. | Optional | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| JizoM.AlertRules.alerts_flows.count | Number | The number of displayed alerts. | 
-| JizoM.AlertRules.alerts_flows.data | String | The details of alerts. | 
-| JizoM.AlertRules.alerts_flows.total | Number | The total number of alerts. | 
-| JizoM.AlertRules.alerts_files.count | Number | The number of displayed alerts. | 
-| JizoM.AlertRules.alerts_files.data | String | The details of alerts. | 
-| JizoM.AlertRules.alerts_files.total | Number | The total number of alerts. | 
-| JizoM.AlertRules.alerts_usecase.count | Number | The number of displayed alerts. | 
-| JizoM.AlertRules.alerts_usecase.data | String | The details of alerts. | 
-| JizoM.AlertRules.alerts_usecase.total | Number | The total number of alerts. | 
-
-### jizo-m-device-records-get
-
-***
-Get jizo device records.
-
-#### Base Command
-
-`jizo-m-device-records-get`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| flow_id | The id of the flow. | Optional | 
-| mac | The mac address. | Optional | 
-| hostname | The name of the device. | Optional | 
-| probe_name | The name of the jizo probe. | Optional | 
-| port | The alert port. | Optional | 
-| datetime_from | Get the alerts that were occurred from this date. The default value is 7 days ago. | Optional | 
-| datetime_to | Get the alerts that were occurred up to this date. The default is now. | Optional | 
-| page | A page number for pagination. | Optional | 
-| limit | The maximum number of samples to display per alert. | Optional | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| JizoM.Device.Records.alerts_flows.count | Number | The number of displayed alerts. | 
-| JizoM.Device.Records.alerts_flows.data | String | The details of alerts. | 
-| JizoM.Device.Records.alerts_flows.total | Number | The total number of alerts. | 
-| JizoM.Device.Records.alerts_files.count | Number | The number of displayed alerts. | 
-| JizoM.Device.Records.alerts_files.data | String | The details of alerts. | 
-| JizoM.Device.Records.alerts_files.total | Number | The total number of alerts. | 
-| JizoM.Device.Records.alerts_usecase.count | Number | The number of displayed alerts. | 
-| JizoM.Device.Records.alerts_usecase.data | String | The details of alerts. | 
-| JizoM.Device.Records.alerts_usecase.total | Number | The total number of alerts. | 
-
-### jizo-m-device-alerts-get
-
-***
-Get jizo device alerts.
-
-#### Base Command
-
-`jizo-m-device-alerts-get`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| ip_src | Ipv4 or Ipv6 of the source. | Optional | 
-| ip_dest | Ipv4 or Ipv6 of the destination. | Optional | 
-| port_src | The source port. | Optional | 
-| port_dest | The destination port. | Optional | 
-| probe_name | The name of the jizo probe. | Optional | 
-| port | The alert port. | Optional | 
-| datetime_from | Get the alerts that were occurred from this date. The default value is 7 days ago. | Optional | 
-| datetime_to | Get the alerts that were occurred up to this date. The default is now. | Optional | 
-| page | A page number for pagination. | Optional | 
-| limit | The maximum number of samples to display per alert. | Optional | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| JizoM.Device.Alerts.alerts_flows.count | Number | The number of displayed alerts. | 
-| JizoM.Device.Alerts.alerts_flows.data | String | The details of alerts. | 
-| JizoM.Device.Alerts.alerts_flows.total | Number | The total number of alerts. | 
-| JizoM.Device.Alerts.alerts_files.count | Number | The number of displayed alerts. | 
-| JizoM.Device.Alerts.alerts_files.data | String | The details of alerts. | 
-| JizoM.Device.Alerts.alerts_files.total | Number | The total number of alerts. | 
-| JizoM.Device.Alerts.alerts_usecase.count | Number | The number of displayed alerts. | 
-| JizoM.Device.Alerts.alerts_usecase.data | String | The details of alerts. | 
-| JizoM.Device.Alerts.alerts_usecase.total | Number | The total number of alerts. | 

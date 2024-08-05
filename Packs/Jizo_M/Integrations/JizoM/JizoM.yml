@@ -113,7 +113,7 @@ script:
     - contextPath: JizoM.Protocols.alerts_usecase.total
       description: The total number of alerts.
       type: Number
-    description: Get list of alerts sorted by protocols.
+    description: Get the list of alerts sorted by protocols.
   - name: jizo-m-peers-get
     arguments:
     - name: ip_src
@@ -165,7 +165,7 @@ script:
     - contextPath: JizoM.Peers.alerts_usecase.total
       description: The total number of alerts.
       type: Number
-    description: Get list of ip addresses connected to a specific one.
+    description: Get list of IP addresses connected to a specific one.
   - name: jizo-m-query-records-get
     arguments:
     - name: ip_src
@@ -269,7 +269,7 @@ script:
     - contextPath: JizoM.QueryRecords.alerts_usecase.total
       description: The total number of alerts.
       type: Number
-    description: Retrieve all information available on jizo M, mainly alerts.
+    description: Retrieve all information available on Jizo M, mainly alerts.  
   dockerimage: demisto/python3:3.10.14.97608
   isfetch: true
   runonce: false
