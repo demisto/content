@@ -999,7 +999,7 @@ def test_request_for_bin_file_via_demisto_call(mocker, allow_bin_response):
                                                            'data': test_bin_data})
     try:
         res = client._http_request(method="get",
-                                response_data_type='bin')
+                                   response_data_type='bin')
         assert res == test_bin_data
     except DemistoException as e:
         assert f'{ALLOW_BIN_CONTENT_RESPONSE_SERVER_VERSION}-{ALLOW_BIN_CONTENT_RESPONSE_BUILD_NUM}' in str(e)

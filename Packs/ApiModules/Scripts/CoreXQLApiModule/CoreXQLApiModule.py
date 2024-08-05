@@ -89,7 +89,7 @@ class CoreClient(BaseClient):
         headers = headers if headers else self._headers
         data = json.dumps(json_data) if json_data else data
         address = full_url if full_url else urljoin(self._base_url, url_suffix)
-        if response_data_type  == 'bin' and not ALLOW_RESPONSE_AS_BINARY:
+        if response_data_type == 'bin' and not ALLOW_RESPONSE_AS_BINARY:
             raise DemistoException(f"Getting binary data from server is allowed from version "
                                    f"{ALLOW_BIN_CONTENT_RESPONSE_SERVER_VERSION}-{ALLOW_BIN_CONTENT_RESPONSE_BUILD_NUM}.")
         response = demisto._apiCall(
