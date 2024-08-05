@@ -44,6 +44,15 @@ def create_pem_string(base64_cert) -> str:
 
 
 def parse_multipart_message(msg: str):
+    """
+    This function extracts the contents from a MIME message.
+    Images (if any exist) will be added to the html_body,
+    attachments will be added to the context directly.
+
+    Args:
+        msg: String
+
+    """
     # Store attachments
     email_message = message_from_string(msg)
     if email_message.get_content_type() == 'multipart/signed':

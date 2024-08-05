@@ -100,11 +100,20 @@ script:
     - description: The message body to encrypt and sign.
       name: message
       required: true
-    - description: JSON dict of recipients and their public keys
+    - description: |-
+        JSON dict of recipients and their public keys
+        Format: {"recipient@email":"cert", "other@email":"cert"}
+        Use "instancePublicKey" in the cert field to use the instance certificate.
       name: recipients
-    - description: JSON dict of cc recipients and their public keys
+    - description: |-
+        JSON dict of cc recipients and their public keys
+        Format: {"cc@email":"cert", "othercc@email":"cert"}
+        Use "instancePublicKey" in the cert field to use the instance certificate.
       name: cc
-    - description: JSON dict of bcc recipients and their public keys
+    - description: |-
+        JSON dict of bcc recipients and their public keys
+        Format: {"bcc@email":"cert", "otherbcc@email":"cert"}
+        Use "instancePublicKey" in the cert field to use the instance certificate.
       name: bcc
     - description: list of war room entry id's of files to attach to the mail
       name: attachment_entry_id
@@ -143,6 +152,7 @@ script:
       description: Address of recipient
       type: String
     - contextPath: SMIME.SignedAndEncrypted.FileName
+      description: Name of file output if create_file_p7 is used.
       type: String
   dockerimage: demisto/m2crypto:1.0.0.105629
   runonce: false
