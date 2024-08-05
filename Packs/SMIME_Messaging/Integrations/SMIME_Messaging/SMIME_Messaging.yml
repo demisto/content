@@ -154,7 +154,7 @@ script:
     - contextPath: SMIME.SignedAndEncrypted.FileName
       description: Name of file output if create_file_p7 is used.
       type: String
-  dockerimage: demisto/m2crypto:1.0.0.105629
+  dockerimage: demisto/m2crypto:1.0.0.106628
   runonce: false
   script: '-'
   type: python
