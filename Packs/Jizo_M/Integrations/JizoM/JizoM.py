@@ -1,16 +1,10 @@
 import demistomock as demisto
 from CommonServerPython import *
 import json
-
-# import requests
 from typing import Any
 from datetime import datetime
-
 # Disable Secure Warnings
-# requests.packages.urllib3.disable_warnings() # pylint: disable=no-member
 import urllib3
-
-# Disable insecure warnings
 urllib3.disable_warnings()
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
