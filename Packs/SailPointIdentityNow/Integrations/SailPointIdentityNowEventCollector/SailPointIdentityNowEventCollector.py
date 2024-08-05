@@ -309,7 +309,7 @@ def main() -> None:     # pragma: no cover
             return_results(result)
 
         elif command == 'identitynow-get-events':
-            limit: int = arg_to_number(args.get('limit', 50) or 50)
+            limit = arg_to_number(args.get('limit', 50)) or 50
             should_push_events = argToBoolean(args.get('should_push_events', False))
             time_to_start = arg_to_datetime(args.get('from_date'))
             formatted_time_to_start = time_to_start.strftime(DATE_FORMAT) if time_to_start else CURRENT_TIME_STR
