@@ -68,6 +68,13 @@ configuration:
   type: 8
   defaultvalue: "true"
   required: false
+- defaultvalue: 'false'
+  display: Exclude Enrichment
+  name: enrichmentExcluded
+  type: 8
+  hidden:
+    - xsoar_on_prem
+  required: false
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
