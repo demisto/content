@@ -241,9 +241,9 @@ class CoreClient(BaseClient):
         if ok_codes and response.get('status') not in ok_codes:
             self._handle_error(error_handler, response, with_metrics)
         try:
-            decoder = base64.b64decode if response_data_type == "bin" else json.loads
+            decoder: function = base64.b64decode if response_data_type == "bin" else json.loads
             demisto.debug(f'{response_data_type=}, {decoder.__name__=}')
-            return decoder(response['data'])
+            return decoder(response['data'])   # type: ignore[operator]
         except json.JSONDecodeError:
             demisto.debug(f"Converting data to json was failed. Return it as is. The data's type is {type(response['data'])}")
             return response['data']
