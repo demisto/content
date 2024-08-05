@@ -994,7 +994,7 @@ def test_request_for_bin_file_via_demisto_call(mocker, allow_bin_response):
     )
     mocker.patch("CoreXQLApiModule.FORWARD_USER_RUN_RBAC", new=True)
     mocker.patch("CoreXQLApiModule.ALLOW_RESPONSE_AS_BINARY", new=allow_bin_response)
-    mocker.patch.object(demisto, "_apiCall", return_value={'name': '/api/webapp/public_api/v1/distributions/get_versions/',
+    mocker.patch.object(demisto, "_apiCall", return_value={'name': '/api/webapp/public_api/v1',
                                                            'status': 200,
                                                            'data': test_bin_data})
     try:
