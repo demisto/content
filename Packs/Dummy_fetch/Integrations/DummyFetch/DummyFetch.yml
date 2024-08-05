@@ -1,0 +1,53 @@
+category: Email
+sectionorder:
+- Connect
+- Collect
+commonfields:
+  id: DummyFetch
+  version: -1
+configuration:
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  section: Collect
+  required: false
+- display: Incident type
+  name: incidentType
+  type: 13
+  section: Connect
+  required: false
+- defaultvalue: '10 minutes'
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: fetch_time
+  type: 0
+  section: Collect
+  required: false
+- display: Maximum number of incidents per fetch (up to 200). Performance might be affected by a value higher than 50.
+  name: max_fetch
+  type: 0
+  defaultvalue: '50'
+  section: Collect
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+- defaultvalue: '1'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  type: 19
+  section: Collect
+  required: false
+description: Dummy Fetch.
+display: DummyFetch
+name: DummyFetch
+script:
+  dockerimage: demisto/py3ews:5.4.1.100430
+  isfetch: true
+  script: ''
+  subtype: python3
+  type: python
+tests: None
+fromversion: 5.0.0
