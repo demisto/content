@@ -1,11 +1,11 @@
 {
     "CONTRIBUTION_REVIEWERS": [
-        "MosheEichler",
+        "barryyosi-panw",
         "samuelFain",
         "israelpoli"
     ],
-    "CONTRIBUTION_TL": "thefrieddan1",
-    "CONTRIBUTION_SECURITY_REVIEWER": "ssokolovich",
+    "CONTRIBUTION_TL": "DeanArbel",
+    "CONTRIBUTION_SECURITY_REVIEWER": ["efelmandar", "melamedbn"],
     "ON_CALL_DEVS": [
         "skidorball",
         "ayousef"

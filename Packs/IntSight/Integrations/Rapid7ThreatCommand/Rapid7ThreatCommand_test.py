@@ -1,7 +1,7 @@
 import json
 import os
 from http import HTTPStatus
-from typing import Callable
+from collections.abc import Callable
 from urllib.parse import urljoin
 
 import pytest
@@ -28,7 +28,7 @@ def load_mock_response(file_name: str) -> str:
         str: Mock file content.
     """
     file_path = os.path.join("test_data", file_name)
-    with open(file_path, mode="r", encoding="utf-8") as mock_file:
+    with open(file_path, encoding="utf-8") as mock_file:
         return json.loads(mock_file.read())
 
 
@@ -225,7 +225,7 @@ def test_list_cyber_term_command(
     assert result.outputs_prefix == "ThreatCommand.CyberTerm"
     assert result.outputs_key_field == "id"
     assert isinstance(result.outputs, list)
-    assert set(["type", "id"]).issubset(list(result.outputs[0].keys()))
+    assert {"type", "id"}.issubset(list(result.outputs[0].keys()))
 
 
 @pytest.mark.parametrize(
@@ -927,7 +927,6 @@ def test_list_alert_command(
         assert isinstance(result.outputs, list)
         assert len(result.outputs) == args.get("limit", 50)
     if not args.get("retrieve_ids_only") or args.get("retrieve_ids_only") is False:
-        print(result.outputs)
         assert isinstance(result.outputs, list)
         assert result.outputs[0].get("id")
         assert result.outputs[0].get("type")
@@ -1085,7 +1084,7 @@ def test_create_alert_command(
                 "sub_type": "test",
             },
             ReadableErrors.ARGUMENT.value.format(
-                "severity", ArgumentValues.ALERT_IOC_SEVERITY.value
+                "severity", ArgumentValues.ALERT_IOC_AND_DOCUMENT_SEVERITY.value
             ),
         ),
         (
@@ -1268,7 +1267,7 @@ def test_update_alert_severity_command(
         (
             {"alert_id": "test", "severity": "test"},
             ReadableErrors.ARGUMENT.value.format(
-                "severity", ArgumentValues.ALERT_IOC_SEVERITY.value
+                "severity", ArgumentValues.ALERT_IOC_AND_DOCUMENT_SEVERITY.value
             ),
         ),
     ),
@@ -2850,10 +2849,10 @@ def test_fetch_incidents_with_empty_alert_list_response(
 @pytest.mark.parametrize(
     ("response", "args", "result"),
     (
-        ([x for x in range(10)], {}, 10),
-        ([x for x in range(70)], {}, 50),
-        ([x for x in range(70)], {"limit": 3}, 3),
-        ([x for x in range(70)], {"all_results": True}, 70),
+        (list(range(10)), {}, 10),
+        (list(range(70)), {}, 50),
+        (list(range(70)), {"limit": 3}, 3),
+        (list(range(70)), {"all_results": True}, 70),
     ),
 )
 def test_manual_pagination(
