@@ -1,6 +1,6 @@
 import json
 import io
-
+from freezegun import freeze_time
 import pytest
 
 import FeedThreatFox as ftf
@@ -180,7 +180,7 @@ indicator_data = [
        'malware_alias': 'bla4', 'confidence_level': 100, 'first_seen': '2024-08-04 07:31:49 UTC',
        'last_seen': '2024-07-03T05:11:35Z UTC'},
       {'id': '789', 'ioc': '8.218.152.23:80', 'threat_type_desc': 'bla1', 'ioc_type': 'ip:port', 'malware': 'bla2',
-      'malware_printable': 'Unknown malware', 'malware_alias': 'bla4', 'confidence_level': 100,
+      'malware_printable': 'bla11', 'malware_alias': 'bla4', 'confidence_level': 100,
       'first_seen': '2024-08-04 07:31:49 UTC', 'last_seen': '2024-07-03T05:11:35Z UTC',
       'tags': ['bla7', 'bla8']}],
      [{'ID': '456', 'Value': 'habdvhbkj', 'Description': 'bla1', 'MalwareFamilyTags': 'bla3',  # expected
@@ -354,5 +354,100 @@ def test_create_relationships(value, type, related_malware, demisto_ioc_type, ex
     from FeedThreatFox import create_relationships
     relationships = create_relationships(value, type, related_malware, demisto_ioc_type)
     assert relationships == expected
-
     
+parse_fetch_data = [
+    ({'id': '123', 'ioc': 'www...', 'threat_type': 'bla1',  # case without relationships and malware_printable is unknown
+      'threat_type_desc': 'bla2', 'ioc_type': 'url', 'ioc_type_desc': 'bla3', 'malware': 'bla4',
+      'malware_printable': 'Unknown malware', 'malware_alias': 'bla6', 'malware_malpedia': 'bla7',
+      'confidence_level': 100, 'first_seen': '2024-08-04 01:50:15 UTC', 'last_seen': '2024-08-05 01:50:15 UTC',
+      'reference': 'bla8', 'reporter': 'bla9', 'tags': ['bla10']}, True, False, 'CLEAR',
+     {'value': 'www...', 'type': 'URL', 'fields': {'indicatoridentification': '123', 'description': 'bla2',  # expected
+      'aliases': 'bla6', 'firstseenbysource': '2024-08-04T01:50:15Z', 'lastseenbysource': '2024-08-05T01:50:15Z',
+      'reportedby': 'bla9', 'Tags': ['bla6', 'bla1', 'bla10'], 'publications': [{'link': 'bla8',
+      'title': 'Malware', 'source': 'ThreatFox'}], 'confidence': 100, 'trafficlightprotocol': 'CLEAR'},
+      'rawJSON': {'id': '123', 'ioc': 'www...', 'threat_type': 'bla1', 'threat_type_desc': 'bla2', 'ioc_type': 'url',
+      'ioc_type_desc': 'bla3', 'malware': 'bla4', 'malware_printable': 'Unknown malware', 'malware_alias': 'bla6',
+      'malware_malpedia': 'bla7', 'confidence_level': 100, 'first_seen': '2024-08-04 01:50:15 UTC',
+      'last_seen': '2024-08-05 01:50:15 UTC', 'reference': 'bla8', 'reporter': 'bla9', 'tags': ['bla10']}}),
+    ({'id': '123', 'ioc': 'www...', 'threat_type': 'bla1',  # case with relationships and there is malware_printable
+      'threat_type_desc': 'bla2', 'ioc_type': 'url', 'ioc_type_desc': 'bla3', 'malware': 'bla4',
+      'malware_printable': 'bla11', 'malware_alias': 'bla6', 'malware_malpedia': 'bla7',
+      'confidence_level': 100, 'first_seen': '2024-08-04 01:50:15 UTC', 'last_seen': '2024-08-05 01:50:15 UTC',
+      'reference': 'bla8', 'reporter': 'bla9', 'tags': ['bla10']}, True, True, 'CLEAR',
+     {'value': 'www...', 'type': 'URL', 'fields': {'indicatoridentification': '123', 'description': 'bla2',  # expected
+      'malwarefamily': 'bla11', 'aliases': 'bla6', 'firstseenbysource': '2024-08-04T01:50:15Z',
+      'lastseenbysource': '2024-08-05T01:50:15Z', 'reportedby': 'bla9', 'Tags': ['bla11', 'bla6', 'bla1', 'bla10'],
+      'publications': [{'link': 'bla8', 'title': 'bla11', 'source': 'ThreatFox'}], 'confidence': 100,
+      'trafficlightprotocol': 'CLEAR'}, 'relationships': [{'name': 'communicated-by',
+      'reverseName': 'communicated-with', 'type': 'IndicatorToIndicator', 'entityA': 'www...',
+      'entityAFamily': 'Indicator', 'entityAType': 'URL', 'entityB': 'bla11',
+      'entityBFamily': 'Indicator', 'entityBType': 'Malware', 'fields': {}}], 'rawJSON': {'id': '123',
+      'ioc': 'www...', 'threat_type': 'bla1', 'threat_type_desc': 'bla2', 'ioc_type': 'url',
+      'ioc_type_desc': 'bla3', 'malware': 'bla4', 'malware_printable': 'bla11', 'malware_alias': 'bla6',
+      'malware_malpedia': 'bla7', 'confidence_level': 100, 'first_seen': '2024-08-04 01:50:15 UTC',
+      'last_seen': '2024-08-05 01:50:15 UTC', 'reference': 'bla8', 'reporter': 'bla9', 'tags': ['bla10']}})
+]
+@pytest.mark.parametrize('indicator, with_ports, create_relationship, tlp_color, expected', parse_fetch_data)
+def test_parse_indicator_for_fetch(indicator, with_ports, create_relationship, tlp_color, expected):
+    """
+        Given:
+            - An indicator, with_ports, create_relationship, tlp_color arguments
+        
+        When:
+            - Running parse_indicator_for_fetch func.
+        
+        Then:
+            - The indicator is parsed correctly.
+    """
+    from FeedThreatFox import parse_indicator_for_fetch
+    parsed_indicator = parse_indicator_for_fetch(indicator, with_ports, create_relationship, tlp_color)
+    assert parsed_indicator == expected
+    
+    
+first_run_data = [
+    (True, 80, True, 1440, 'CLEAR', None,  # case interval == 1
+     { "query": "get_iocs", "days": 1}),  # expected
+    (True, 80, True, 2880, 'CLEAR', None,  # case interval ==2
+     { "query": "get_iocs", "days": 2})  # expected
+]
+@pytest.mark.parametrize('with_ports, confidence_threshold, create_relationship, interval, tlp_color, last_run, expected', first_run_data)   
+def test_fetch_indicators_command__first_run(mocker, with_ports, confidence_threshold, create_relationship, interval, tlp_color, last_run, expected):
+    """
+        Given:
+            - An arguments with no last_run
+        
+        When:
+            - Running fetch_indicators_command func.
+        
+        Then:
+            - The http request is called with the right number of days.
+    """
+    from FeedThreatFox import fetch_indicators_command
+    http = mocker.patch.object(CLIENT, '_http_request', return_value={'query_status': 'ok', 'data': {}})
+    fetch_indicators_command(CLIENT, with_ports, confidence_threshold, create_relationship, interval, tlp_color, last_run)
+    assert http.call_args.kwargs['json_data'] == expected
+    
+
+second_run_data = [
+    (True, 80, True, 1440, 'CLEAR', {'last_successful_run': '2024-07-08T15:21:13Z'},  # case last run before 2 days
+     { "query": "get_iocs", "days": 3}),
+    (True, 80, True, 2880, 'CLEAR', {'last_successful_run': '2024-07-02T17:22:13Z'},  # case last run before more than 7 days
+     { "query": "get_iocs", "days": 7})
+]
+@freeze_time("2024-07-10T15:21:13Z")
+@pytest.mark.parametrize('with_ports, confidence_threshold, create_relationship, interval, tlp_color, last_run, expected', second_run_data)
+def test_fetch_indicators_command__second_run(mocker, with_ports, confidence_threshold, create_relationship, interval, tlp_color, last_run, expected):
+    """
+        Given:
+            - An indicator, with_ports, create_relationship, tlp_color arguments
+        
+        When:
+            - Running parse_indicator_for_fetch func.
+        
+        Then:
+            - The indicator is parsed correctly.
+    """
+    from FeedThreatFox import fetch_indicators_command
+    http = mocker.patch.object(CLIENT, '_http_request', return_value={'query_status': 'ok', 'data': {}})
+    fetch_indicators_command(CLIENT, with_ports, confidence_threshold, create_relationship, interval, tlp_color, last_run)
+    assert http.call_args.kwargs['json_data'] == expected

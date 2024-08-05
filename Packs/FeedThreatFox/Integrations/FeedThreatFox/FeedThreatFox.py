@@ -283,7 +283,7 @@ def validate_interval(interval: int)->int:
     Returns:
         int: The interval, if it is valid.
     """
-    if interval%1440 != 0:
+    if interval%1440 != 0:  # 1440 is the number of minutes in a day
         raise DemistoException("The fetch interval must be in whole days, between 1-7.")
     elif interval > 10080:
         raise DemistoException("The fetch interval must not be more than 7 days.")
@@ -330,19 +330,17 @@ def fetch_indicators_command(client: Client, with_ports: bool, confidence_thresh
                              create_relationship: bool, interval: int, tlp_color: str, last_run: dict):
     
     now = datetime.now(pytz.utc)
-    days_for_query = int((arg_to_number(interval) or 1440)/1440)
+    days_for_query = int(interval/1440)  # The interval is validated already in the main
     
     if last_run:
         last_successful_run =  datetime.strptime(last_run["last_successful_run"], '%Y-%m-%dT%H:%M:%SZ').replace(tzinfo=pytz.utc)
         time_delta = now - last_successful_run
-        wanted_interval = timedelta(days=days_for_query)
-        if time_delta > wanted_interval:
-            days = days_for_query + time_delta.days
-        if days > 7:
-            days = 7
+        days_for_query = time_delta.days + 1
+        
+    if days_for_query > 7:  # api can get up to 7 days
+        days_for_query = 7
             
-    response = client.get_indicators_request({ "query": "get_iocs",
-                                              "days": days})
+    response = client.get_indicators_request({ "query": "get_iocs", "days": days_for_query})
     
     if response.get('query_status') != 'ok':
         raise DemistoException("couldn't fetch")  # write something better
