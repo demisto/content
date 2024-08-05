@@ -21,4 +21,8 @@ This script is used to add a new comment to incident.
 ## Outputs
 
 ---
-There are no outputs for this script.
+
+### The new comment has been recorded and will appear in your comments field in a minute (Only if you have A 'Mirror In')
+|New Comment|Instance Name|
+|---|---|
+| New Comment Test | Example Instance Name |
