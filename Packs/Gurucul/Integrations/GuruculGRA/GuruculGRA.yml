@@ -981,7 +981,7 @@ script:
   - name: gra-validate-api
     arguments: []
     description: This command verifies the availability and checks if the service is functioning properly.
-  dockerimage: demisto/python3:3.10.14.95956
+  dockerimage: demisto/python3:3.11.9.106008
   isfetch: true
   subtype: python3
 fromversion: 5.0.0
