@@ -4,7 +4,7 @@ sectionorder:
 defaultEnabled: true
 category: Endpoint
 commonfields:
-  id: XDR - XQL Query Engine
+  id: XQL Query Engine
   version: -1
 configuration:
 - display: Server URL (copy URL from Core - click ? to see more info.)
@@ -22,7 +22,7 @@ configuration:
   type: 4
   hidden: true
   required: false
-description: Cortex Core - XQL Query Engine enables you to run XQL queries on your data sources.
+description: XQL Query Engine enables you to run XQL queries on your data sources.
 display: XQL Query Engine
 name: XQL Query Engine
 script:
@@ -1556,6 +1556,8 @@ script:
   script: '-'
   subtype: python3
   type: python
+marketplaces:
+- marketplacev2
 tests:
 - No tests
-fromversion: 5.5.0
+fromversion: 8.6.0
