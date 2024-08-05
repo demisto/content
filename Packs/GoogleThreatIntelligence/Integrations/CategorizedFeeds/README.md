@@ -18,7 +18,7 @@ Use this feed integration to fetch Google Threat Intelligence Feeds matches. It 
     |  |  | False |
     |  |  | False |
     | Feed Fetch Interval |  | False |
-    | Feed Minimum GTI Score | The minimum GTI score to import as part of the feed | True |
+    | Feed Minimum GTI Score | The minimum GTI score to import as part of the feed. | True |
     | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
     | Tags | Supports CSV values. | False |
     | Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed. | False |
