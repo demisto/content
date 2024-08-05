@@ -58,10 +58,10 @@ script:
       description: Date from which to get events.
       name: from_date
     deprecated: false
-    description: Gets events from SailPoint IdentityNow. This command is used for developing/ debugging and is to be used with caution, as it can create events, leading to events duplication and API request limitation exceeding.  
+    description: Gets events from SailPoint IdentityNow. This command is used for developing/ debugging and is to be used with caution, as it can create events, leading to events duplication and API request limitation exceeding.
 
     name: identitynow-get-events
-  dockerimage: demisto/python3:3.10.14.90585
+  dockerimage: demisto/python3:3.11.9.106403
   isfetchevents: true
   runonce: false
   script: '-'
