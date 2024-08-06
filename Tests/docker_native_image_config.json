@@ -103,7 +103,8 @@
             "id":"Json2HtmlTable",
             "reason":"Add json2html to py3-tools: Ignore due to this contribution PR: https://github.com/demisto/dockerfiles/pull/29877.",
             "ignored_native_images":[
-                "native:8.6"
+                "native:8.6",
+                "native:candidate"
             ]
         },
         {
