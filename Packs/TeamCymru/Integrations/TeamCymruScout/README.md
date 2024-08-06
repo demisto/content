@@ -1,6 +1,6 @@
 ## Overview
 
-The Team Cymru Scout integration allows to get immediate insight on IP addresses and domains for threat investigations.
+The Team Cymru Scout integration enables getting immediate insight on IP addresses and domains for threat investigations.
 This integration was integrated and tested with API of Team Cymru Scout.
 
 ### Key Features
@@ -42,9 +42,9 @@ Note:
     | --- | --- | --- |
     | Authentication Type | The authentication type used for secure communication with the Team Cymru Scout platform. | True |
     | API Key | The API key used for secure communication with the Team Cymru Scout platform. Required if "API Key" as Authentication Type is selected. | False |
-    | Username, Password | The Username and Password used for secure communication with the Team Cymru Scout platform. Required if "Basic Auth" as Authentication Type is selected. | False |
+    | Username, Password | The username and password used for secure communication with the Team Cymru Scout platform. Required if "Basic Auth" as Authentication Type is selected. | False |
     | Source Reliability | Reliability of the source providing the intelligence data. | False |
-    | Create relationships | Create relationships between indicators as part of Enrichment. | False |
+    | Create relationships | Create relationships between indicators as part of enrichment. | False |
     | Use system proxy settings |  | False |
     | Trust any certificate (not secure) |  | False |
 
@@ -72,7 +72,7 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TeamCymruScout.QueryUsage.command_name | String | The name of the XSOAR command that triggered the Foundation API. | 
+| TeamCymruScout.QueryUsage.command_name | String | The name of the Cortex XSOAR command that triggered the Foundation API. | 
 | TeamCymruScout.QueryUsage.used_queries | Number | The number of queries used. | 
 | TeamCymruScout.QueryUsage.remaining_queries | Number | The number of remaining queries. | 
 | TeamCymruScout.QueryUsage.query_limit | Number | The total number of queries allowed. | 
@@ -112,7 +112,7 @@ There are no input arguments for this command.
 ### ip
 
 ***
-Return all the detailed information available for the given ip.
+Return all the detailed information available for the given IP address.
 
 #### Base Command
 
@@ -122,11 +122,11 @@ Return all the detailed information available for the given ip.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip | Provide the IP Address to retrieve available IP details. | Required | 
-| start_date | Specify the start date for detailed information.<br/><br/>Supported formats: 2 days, 2 weeks, 2 months, yyyy-mm-dd.<br/><br/>For example: 01 June 2024, 2024-06-17. Default is 30 days. | Optional | 
-| end_date | Specify the end date for detailed information.<br/><br/>Supported formats: 2 days, 2 weeks, 2 months, yyyy-mm-dd.<br/><br/>For example: 01 June 2024, 2024-06-17. Default is now. | Optional | 
-| days | Relative offset in days from current time. It cannot exceed the maximum range of 30 days.<br/><br/>Note: This will take priority over start_date and end_date if all three are passed. | Optional | 
-| size | Specify the maximum number of records to return.<br/><br/>Note: The maximum allowed size is 1000. | Optional | 
+| ip | The IP address for which to retrieve available IP details. | Required | 
+| start_date | The start date for detailed information.<br/><br/>Supported formats: 2 days, 2 weeks, 2 months, yyyy-mm-dd.<br/><br/>For example: 01 June 2024, 2024-06-17. Default is 30 days. | Optional | 
+| end_date | The end date for detailed information.<br/><br/>Supported formats: 2 days, 2 weeks, 2 months, yyyy-mm-dd.<br/><br/>For example: 01 June 2024, 2024-06-17. Default is now. | Optional | 
+| days | Relative offset in days from the current time. It cannot exceed the maximum range of 30 days.<br/><br/>Note: This will take priority over start_date and end_date if all three are passed. | Optional | 
+| size | The maximum number of records to return.<br/><br/>Note: The maximum allowed size is 1000. | Optional | 
 
 #### Context Output
 
@@ -152,34 +152,34 @@ Return all the detailed information available for the given ip.
 | IP.PositiveDetections | Number | The number of engines that positively detected the indicator as malicious. | 
 | IP.Malicious.Vendor | String | The vendor reporting the IP address as malicious. | 
 | IP.Malicious.Description | String | A description explaining why the IP address was reported as malicious. | 
-| IP.Tags | Unknown | \(List\) Tags of the IP. | 
-| IP.FeedRelatedIndicators.value | String | Indicators that are associated with the IP. | 
-| IP.FeedRelatedIndicators.type | String | The type of the indicators that are associated with the IP. | 
-| IP.FeedRelatedIndicators.description | String | The description of the indicators that are associated with the IP. | 
-| IP.MalwareFamily | String | The malware family associated with the IP. | 
-| IP.Organization.Name | String | The organization of the IP. | 
-| IP.Organization.Type | String | The organization type of the IP. | 
-| IP.ASOwner | String | The autonomous system owner of the IP. | 
-| IP.Region | String | The region in which the IP is located. | 
-| IP.Port | String | Ports that are associated with the IP. | 
-| IP.Internal | Boolean | Whether or not the IP is internal or external. | 
-| IP.UpdatedDate | Date | The date that the IP was last updated. | 
+| IP.Tags | Unknown | \(List\) Tags of the IP address. | 
+| IP.FeedRelatedIndicators.value | String | Indicators that are associated with the IP address. | 
+| IP.FeedRelatedIndicators.type | String | The type of the indicators that are associated with the IP address. | 
+| IP.FeedRelatedIndicators.description | String | The description of the indicators that are associated with the IP address. | 
+| IP.MalwareFamily | String | The malware family associated with the IP address. | 
+| IP.Organization.Name | String | The organization of the IP address. | 
+| IP.Organization.Type | String | The organization type of the IP address. | 
+| IP.ASOwner | String | The autonomous system owner of the IP address. | 
+| IP.Region | String | The region in which the IP address is located. | 
+| IP.Port | String | Ports that are associated with the IP address. | 
+| IP.Internal | Boolean | Whether the IP address is internal or external. | 
+| IP.UpdatedDate | Date | The date that the IP address was last updated. | 
 | IP.Registrar.Abuse.Name | String | The name of the contact for reporting abuse. | 
 | IP.Registrar.Abuse.Address | String | The address of the contact for reporting abuse. | 
 | IP.Registrar.Abuse.Country | String | The country of the contact for reporting abuse. | 
 | IP.Registrar.Abuse.Network | String | The network of the contact for reporting abuse. | 
 | IP.Registrar.Abuse.Phone | String | The phone number of the contact for reporting abuse. | 
 | IP.Registrar.Abuse.Email | String | The email address of the contact for reporting abuse. | 
-| IP.Campaign | String | The campaign associated with the IP. | 
-| IP.TrafficLightProtocol | String | The Traffic Light Protocol \(TLP\) color that is suitable for the IP. | 
-| IP.CommunityNotes.note | String | Notes on the IP that were given by the community. | 
+| IP.Campaign | String | The campaign associated with the IP address. | 
+| IP.TrafficLightProtocol | String | The Traffic Light Protocol \(TLP\) color that is suitable for the IP address. | 
+| IP.CommunityNotes.note | String | Notes on the IP address that were given by the community. | 
 | IP.CommunityNotes.timestamp | Date | The time in which the note was published. | 
 | IP.Publications.source | String | The source in which the article was published. | 
 | IP.Publications.title | String | The name of the article. | 
 | IP.Publications.link | String | A link to the original article. | 
 | IP.Publications.timestamp | Date | The time in which the article was published. | 
 | IP.ThreatTypes.threatcategory | String | The threat category associated to this indicator by the source vendor. For example, Phishing, Control, TOR, etc. | 
-| IP.ThreatTypes.threatcategoryconfidence | String | Threat Category Confidence is the confidence level provided by the vendor for the threat type category For example a confidence of 90 for threat type category 'malware' means that the vendor rates that this is 90% confidence of being a malware. | 
+| IP.ThreatTypes.threatcategoryconfidence | String | The confidence level provided by the vendor for the threat type category For example, a confidence of 90 for the threat type category 'malware' means that the vendor rates that this is 90% confidence of being a malware. | 
 | TeamCymruScout.QueryUsage.request_id | String | The request ID of the API call. | 
 | TeamCymruScout.QueryUsage.size | Number | The number of records returned. | 
 | TeamCymruScout.QueryUsage.start_date | Date | The earliest date for detailed information. | 
@@ -187,9 +187,9 @@ Return all the detailed information available for the given ip.
 | TeamCymruScout.QueryUsage.used_queries | Number | The number of queries used. | 
 | TeamCymruScout.QueryUsage.remaining_queries | Number | The number of remaining queries. | 
 | TeamCymruScout.QueryUsage.query_limit | Number | The maximum number of queries allowed. | 
-| TeamCymruScout.QueryUsage.foundation_api_usage.used_queries | Number | The number of queries used by the foundation API. | 
-| TeamCymruScout.QueryUsage.foundation_api_usage.remaining_queries | Number | The number of remaining queries for the foundation API. | 
-| TeamCymruScout.QueryUsage.foundation_api_usage.query_limit | Numbe | The maximum number of queries allowed for the foundation API. | 
+| TeamCymruScout.QueryUsage.foundation_api_usage.used_queries | Number | The number of queries used by the Foundation API. | 
+| TeamCymruScout.QueryUsage.foundation_api_usage.remaining_queries | Number | The number of remaining queries for the Foundation API. | 
+| TeamCymruScout.QueryUsage.foundation_api_usage.query_limit | Numbe | The maximum number of queries allowed for the Foundation API. | 
 | TeamCymruScout.IP.ip | String | The IP address. | 
 | TeamCymruScout.IP.sections | String | The sections of data returned. | 
 | TeamCymruScout.IP.identity.tags | Unknown | The tags associated with the IP address. | 
@@ -202,8 +202,8 @@ Return all the detailed information available for the given ip.
 | TeamCymruScout.IP.whois.asn | Number | The autonomous system number associated with the IP address. | 
 | TeamCymruScout.IP.whois.cidr | String | The network associated with the IP address. | 
 | TeamCymruScout.IP.whois.as_name | String | The name associated with the autonomous system number. | 
-| TeamCymruScout.IP.whois.bgp_asn | Number | The BGP autonomous system number associated with the IP address. | 
-| TeamCymruScout.IP.whois.bgp_asn_name | String | The name associated with the BGP autonomous system number. | 
+| TeamCymruScout.IP.whois.bgp_asn | Number | The Border Gateway Protocol \(BGP\) autonomous system number \(ASN\) associated with the IP address. | 
+| TeamCymruScout.IP.whois.bgp_asn_name | String | The name associated with the Border Gateway Protocol \(BGP\) autonomous system number \(ASN\). | 
 | TeamCymruScout.IP.whois.net_name | String | The name associated with the network. | 
 | TeamCymruScout.IP.whois.net_handle | String | The handle associated with the network. | 
 | TeamCymruScout.IP.whois.description | String | The description associated with the network. | 
@@ -241,8 +241,8 @@ Return all the detailed information available for the given ip.
 | TeamCymruScout.IP.whois.org_country | String | The country associated with the organization. | 
 | TeamCymruScout.IP.whois.org_city | String | The city associated with the organization. | 
 | TeamCymruScout.IP.whois.org_address | String | The address associated with the organization. | 
-| TeamCymruScout.IP.whois.mnt_by_email | String | The email associated with the maintenance by. | 
-| TeamCymruScout.IP.whois.mnt_lower_email | String | The email associated with the maintenance lower. | 
+| TeamCymruScout.IP.whois.mnt_by_email | String | The email associated with the maintainer. | 
+| TeamCymruScout.IP.whois.mnt_lower_email | String | The email associated with the lower maintenance router. | 
 | TeamCymruScout.IP.whois.mnt_router_email | String | The email associated with the maintenance router. | 
 | TeamCymruScout.IP.communications.event_count | Number | The count of events associated with the communication. | 
 | TeamCymruScout.IP.communications.peers.proto | Number | The protocol associated with the peer. | 
@@ -275,7 +275,7 @@ Return all the detailed information available for the given ip.
 | TeamCymruScout.IP.communications.peers.peer.top_services.port | Number | The port associated with the top service of the peer. | 
 | TeamCymruScout.IP.communications.peers.peer.top_services.proto_number | Number | The protocol number associated with the top service of the peer. | 
 | TeamCymruScout.IP.communications.peers.peer.top_services.description | String | The description associated with the top service of the peer. | 
-| TeamCymruScout.IP.communications.peers.event_count | Number | The count of events associated with the communication. | 
+| TeamCymruScout.IP.communications.peers.event_count | Number | The number of events associated with the communication. | 
 | TeamCymruScout.IP.communications.peers.first_seen | Date | The first seen date associated with the communication. | 
 | TeamCymruScout.IP.communications.peers.last_seen | Date | The last seen date associated with the communication. | 
 | TeamCymruScout.IP.communications.peers.peer.tags.id | Number | The ID of the tags associated with the peer. | 
@@ -287,54 +287,54 @@ Return all the detailed information available for the given ip.
 | TeamCymruScout.IP.communications.peers.peer.tags.children.children.children | Unknown | The children of the grandchild tags associated with the peer. | 
 | TeamCymruScout.IP.communications.peers.peer.tags.children.children | Unknown | The grandchild tags associated with the peer. | 
 | TeamCymruScout.IP.communications.peers.peer.tags.children | Unknown | The child tags associated with the peer. | 
-| TeamCymruScout.IP.pdns.event_count | Number | The count of events associated with the pdns. | 
-| TeamCymruScout.IP.pdns.pdns.ip | String | The ip associated with the pdns. | 
-| TeamCymruScout.IP.pdns.pdns.domain | String | The domain associated with the pdns. | 
-| TeamCymruScout.IP.pdns.pdns.root | String | The root associated with the pdns. | 
-| TeamCymruScout.IP.pdns.pdns.tld | String | The tld associated with the pdns. | 
-| TeamCymruScout.IP.pdns.pdns.type | String | The type associated with the pdns. | 
-| TeamCymruScout.IP.pdns.pdns.registrar | String | The registrar associated with the pdns. | 
-| TeamCymruScout.IP.pdns.pdns.domain_created | Date | The creation date associated with the pdns. | 
-| TeamCymruScout.IP.pdns.pdns.domain_expires | Date | The expiration date associated with the pdns. | 
-| TeamCymruScout.IP.pdns.pdns.nameservers.root | String | The root of the nameserver associated with the pdns. | 
-| TeamCymruScout.IP.pdns.pdns.nameservers.nameservers | String | The nameservers associated with the pdns. | 
-| TeamCymruScout.IP.pdns.pdns.country_codes | String | The country codes associated with the pdns. | 
-| TeamCymruScout.IP.pdns.pdns.as_info.asn | Number | The autonomous system number associated with the pdns. | 
-| TeamCymruScout.IP.pdns.pdns.as_info.as_name | String | The name associated with the autonomous system number of the pdns. | 
-| TeamCymruScout.IP.pdns.pdns.tags | Unknown | The tags associated with the pdns. | 
-| TeamCymruScout.IP.pdns.pdns.distinct_ips | Number | The count of distinct ips associated with the pdns. | 
-| TeamCymruScout.IP.pdns.pdns.active_days | Number | The count of active days associated with the pdns. | 
-| TeamCymruScout.IP.pdns.pdns.event_count | Number | The count of events associated with the pdns. | 
-| TeamCymruScout.IP.pdns.pdns.first_seen | Date | The first date the pdns was seen. | 
-| TeamCymruScout.IP.pdns.pdns.last_seen | Date | The last date the pdns was seen. | 
-| TeamCymruScout.IP.pdns.pdns.nameservers | Unknown | The nameservers of the pdns. | 
-| TeamCymruScout.IP.fingerprints.event_count | Number | The count of events associated with the fingerprints. | 
-| TeamCymruScout.IP.fingerprints.fingerprints.ip | String | The ip of the fingerprint. | 
+| TeamCymruScout.IP.pdns.event_count | Number | The number of events associated with the PDNS. | 
+| TeamCymruScout.IP.pdns.pdns.ip | String | The IP address associated with the PDNS. | 
+| TeamCymruScout.IP.pdns.pdns.domain | String | The domain associated with the PDNS. | 
+| TeamCymruScout.IP.pdns.pdns.root | String | The root associated with the PDNS. | 
+| TeamCymruScout.IP.pdns.pdns.tld | String | The top level domain \(TLD\) associated with the PDNS. | 
+| TeamCymruScout.IP.pdns.pdns.type | String | The type associated with the PDNS. | 
+| TeamCymruScout.IP.pdns.pdns.registrar | String | The registrar associated with the PDNS. | 
+| TeamCymruScout.IP.pdns.pdns.domain_created | Date | The creation date associated with the PDNS. | 
+| TeamCymruScout.IP.pdns.pdns.domain_expires | Date | The expiration date associated with the PDNS. | 
+| TeamCymruScout.IP.pdns.pdns.nameservers.root | String | The root of the nameserver associated with the PDNS. | 
+| TeamCymruScout.IP.pdns.pdns.nameservers.nameservers | String | The nameservers associated with the PDNS. | 
+| TeamCymruScout.IP.pdns.pdns.country_codes | String | The country codes associated with the PDNS. | 
+| TeamCymruScout.IP.pdns.pdns.as_info.asn | Number | The autonomous system number associated with the PDNS. | 
+| TeamCymruScout.IP.pdns.pdns.as_info.as_name | String | The name associated with the autonomous system number of the PDNS. | 
+| TeamCymruScout.IP.pdns.pdns.tags | Unknown | The tags associated with the PDNS. | 
+| TeamCymruScout.IP.pdns.pdns.distinct_ips | Number | The number of distinct IP addresses associated with the PDNS. | 
+| TeamCymruScout.IP.pdns.pdns.active_days | Number | The number of active days associated with the PDNS. | 
+| TeamCymruScout.IP.pdns.pdns.event_count | Number | The count of events associated with the PDNS. | 
+| TeamCymruScout.IP.pdns.pdns.first_seen | Date | The first date the PDNS was seen. | 
+| TeamCymruScout.IP.pdns.pdns.last_seen | Date | The last date the PDNS was seen. | 
+| TeamCymruScout.IP.pdns.pdns.nameservers | Unknown | The nameservers of the PDNS. | 
+| TeamCymruScout.IP.fingerprints.event_count | Number | The number of events associated with the fingerprints. | 
+| TeamCymruScout.IP.fingerprints.fingerprints.ip | String | The IP address of the fingerprint. | 
 | TeamCymruScout.IP.fingerprints.fingerprints.type | String | The type of the fingerprint. | 
 | TeamCymruScout.IP.fingerprints.fingerprints.fingerprint | String | The fingerprint of the host. | 
 | TeamCymruScout.IP.fingerprints.fingerprints.port | Number | The port of the fingerprint. | 
 | TeamCymruScout.IP.fingerprints.fingerprints.first_seen | Date | The first date the fingerprint was seen. | 
 | TeamCymruScout.IP.fingerprints.fingerprints.last_seen | Date | The last date the fingerprint was seen. | 
-| TeamCymruScout.IP.fingerprints.fingerprints.distinct_ips | Number | The count of distinct ips associated with the fingerprints. | 
-| TeamCymruScout.IP.fingerprints.fingerprints.active_days | Number | The count of active days associated with the fingerprints. | 
-| TeamCymruScout.IP.fingerprints.fingerprints.event_count | Number | The count of events associated with the fingerprints. | 
-| TeamCymruScout.IP.open_ports.event_count | Number | The count of events associated with the open ports. | 
-| TeamCymruScout.IP.open_ports.unique_ports | Number | The count of unique ports in the open ports. | 
-| TeamCymruScout.IP.open_ports.open_ports.ip | String | The ip of the open port. | 
+| TeamCymruScout.IP.fingerprints.fingerprints.distinct_ips | Number | The number of distinct IP addresses associated with the fingerprints. | 
+| TeamCymruScout.IP.fingerprints.fingerprints.active_days | Number | The number of active days associated with the fingerprints. | 
+| TeamCymruScout.IP.fingerprints.fingerprints.event_count | Number | The number of events associated with the fingerprints. | 
+| TeamCymruScout.IP.open_ports.event_count | Number | The number of events associated with the open ports. | 
+| TeamCymruScout.IP.open_ports.unique_ports | Number | The number of unique ports in the open ports. | 
+| TeamCymruScout.IP.open_ports.open_ports.ip | String | The IP address of the open port. | 
 | TeamCymruScout.IP.open_ports.open_ports.port | Number | The port of the open port. | 
 | TeamCymruScout.IP.open_ports.open_ports.protocol | Number | The protocol of the open port. | 
 | TeamCymruScout.IP.open_ports.open_ports.protocol_text | String | The protocol text of the open port. | 
 | TeamCymruScout.IP.open_ports.open_ports.service | String | The service of the open port. | 
 | TeamCymruScout.IP.open_ports.open_ports.banner | String | The banner of the open port. | 
-| TeamCymruScout.IP.open_ports.open_ports.banner_sha1 | String | The sha1 hash of the banner of the open port. | 
+| TeamCymruScout.IP.open_ports.open_ports.banner_sha1 | String | The SHA1 hash of the banner of the open port. | 
 | TeamCymruScout.IP.open_ports.open_ports.first_seen | Date | The first date the open port was seen. | 
 | TeamCymruScout.IP.open_ports.open_ports.last_seen | Date | The last date the open port was seen. | 
 | TeamCymruScout.IP.open_ports.open_ports.country_codes | String | The country codes of the open port. | 
 | TeamCymruScout.IP.open_ports.open_ports.as_info.asn | Number | The autonomous system number of the open port. | 
 | TeamCymruScout.IP.open_ports.open_ports.as_info.as_name | String | The name of the autonomous system number of the open port. | 
-| TeamCymruScout.IP.open_ports.open_ports.tags.id | Number | The id of the tag associated with the open port. | 
+| TeamCymruScout.IP.open_ports.open_ports.tags.id | Number | The ID of the tag associated with the open port. | 
 | TeamCymruScout.IP.open_ports.open_ports.tags.name | String | The name of the tag associated with the open port. | 
-| TeamCymruScout.IP.open_ports.open_ports.tags.children.id | Number | The id of the child tag associated with the open port. | 
+| TeamCymruScout.IP.open_ports.open_ports.tags.children.id | Number | The ID of the child tag associated with the open port. | 
 | TeamCymruScout.IP.open_ports.open_ports.tags.children.name | String | The name of the child tag associated with the open port. | 
 | TeamCymruScout.IP.open_ports.open_ports.tags.children.children | Unknown | The child tags of the child tag associated with the open port. | 
 | TeamCymruScout.IP.open_ports.open_ports.event_count | Number | The number of events associated with the open port. | 
@@ -383,14 +383,14 @@ Return all the detailed information available for the given ip.
 | TeamCymruScout.IP.summary.whois.net_name | String | The name associated with the network. | 
 | TeamCymruScout.IP.summary.whois.org_name | String | The name associated with the organization. | 
 | TeamCymruScout.IP.summary.pdns.total | Number | The total count of the DNS queries associated with the IP address. | 
-| TeamCymruScout.IP.summary.pdns.top_pdns.event_count | Number | The count of events associated with the top DNS query. | 
+| TeamCymruScout.IP.summary.pdns.top_pdns.event_count | Number | The number of events associated with the top DNS query. | 
 | TeamCymruScout.IP.summary.pdns.top_pdns.domain | String | The domain associated with the top DNS query. | 
 | TeamCymruScout.IP.summary.pdns.top_pdns.first_seen | Date | The first date the top DNS query was seen. | 
 | TeamCymruScout.IP.summary.pdns.top_pdns.last_seen | Date | The last date the top DNS query was seen. | 
 | TeamCymruScout.IP.summary.pdns.top_pdns.css_color | String | The CSS color associated with the top DNS query. | 
-| TeamCymruScout.IP.summary.open_ports.total | Number | The total count of the open ports associated with the IP address. | 
-| TeamCymruScout.IP.summary.open_ports.unique_ports | Number | The count of unique ports in the open ports. | 
-| TeamCymruScout.IP.summary.open_ports.top_open_ports.event_count | Number | The count of events associated with the top open port. | 
+| TeamCymruScout.IP.summary.open_ports.total | Number | The total number of the open ports associated with the IP address. | 
+| TeamCymruScout.IP.summary.open_ports.unique_ports | Number | The number of unique ports in the open ports. | 
+| TeamCymruScout.IP.summary.open_ports.top_open_ports.event_count | Number | The number of events associated with the top open port. | 
 | TeamCymruScout.IP.summary.open_ports.top_open_ports.port | Number | The port associated with the top open port. | 
 | TeamCymruScout.IP.summary.open_ports.top_open_ports.protocol | Number | The protocol number associated with the top open port. | 
 | TeamCymruScout.IP.summary.open_ports.top_open_ports.protocol_text | String | The protocol text associated with the top open port. | 
@@ -925,7 +925,7 @@ Return all the detailed information available for the given ip.
 ### scout-indicator-search
 
 ***
-Return the summary information available for the given domain or IP using Scout query language.
+Return the summary information available for the given domain or IP address using Scout query language.
 
 #### Base Command
 
@@ -936,10 +936,10 @@ Return the summary information available for the given domain or IP using Scout 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | query | A simple or advanced Scout query which may contain the domain or IP address.<br/><br/>For example: comms.ip="0.0.0.1/24". | Required | 
-| start_date | Specify the start date to filter indicators.<br/><br/>Supported formats: 2 days, 2 weeks, 2 months, yyyy-mm-dd.<br/><br/>For example: 01 June 2024, 2024-06-17. Default is 30 days. | Optional | 
-| end_date | Specify the end date to filter indicators.<br/><br/>Supported formats: 2 days, 2 weeks, 2 months, yyyy-mm-dd.<br/><br/>For example: 01 June 2024, 2024-06-17. Default is now. | Optional | 
+| start_date | The start date to filter indicators.<br/><br/>Supported formats: 2 days, 2 weeks, 2 months, yyyy-mm-dd.<br/><br/>For example: 01 June 2024, 2024-06-17. Default is 30 days. | Optional | 
+| end_date | The end date to filter indicators.<br/><br/>Supported formats: 2 days, 2 weeks, 2 months, yyyy-mm-dd.<br/><br/>For example: 01 June 2024, 2024-06-17. Default is now. | Optional | 
 | days | Relative offset in days from current time. It cannot exceed the maximum range of 30 days.<br/><br/>Note: This will take priority over start_date and end_date if all three are passed. | Optional | 
-| size | Specify the maximum number of indicators fetch.<br/><br/>Note: The maximum allowed size is 5000. Default is 20. | Optional | 
+| size | The maximum number of indicators to fetch.<br/><br/>Note: The maximum allowed size is 5000. Default is 20. | Optional | 
 
 #### Context Output
 
@@ -954,7 +954,7 @@ Return the summary information available for the given domain or IP using Scout 
 | TeamCymruScout.IP.tags.children.id | Number | The ID of the child tag. | 
 | TeamCymruScout.IP.tags.children.name | String | The name of the child tag. | 
 | TeamCymruScout.IP.tags.children.children | Unknown | The children of the child tag. | 
-| TeamCymruScout.IP.event_count | Number | The count of events related to the IP. | 
+| TeamCymruScout.IP.event_count | Number | The number of events related to the IP address. | 
 | TeamCymruScout.IP.summary.last_seen | Date | The last time the IP was seen. | 
 | TeamCymruScout.IP.summary.whois.asn | Number | The autonomous system number associated with the IP. | 
 | TeamCymruScout.IP.summary.whois.as_name | String | The name of the autonomous system associated with the IP. | 
@@ -965,17 +965,17 @@ Return the summary information available for the given domain or IP using Scout 
 | TeamCymruScout.IP.summary.open_ports.protocol | Number | The protocol number associated with the open port. | 
 | TeamCymruScout.IP.summary.open_ports.protocol_text | String | The protocol name associated with the open port. | 
 | TeamCymruScout.IP.summary.open_ports.service | String | The service name associated with the open port. | 
-| TeamCymruScout.IP.summary.open_ports.event_count | Number | The count of events related to the open port. | 
+| TeamCymruScout.IP.summary.open_ports.event_count | Number | The number of events related to the open port. | 
 | TeamCymruScout.IP.summary.pdns.ip | String | The IP address associated with the domain. | 
 | TeamCymruScout.IP.summary.pdns.domain | String | The domain associated with the IP. | 
-| TeamCymruScout.IP.summary.pdns.event_count | Number | The count of events related to the domain. | 
+| TeamCymruScout.IP.summary.pdns.event_count | Number | The number of events related to the domain. | 
 | TeamCymruScout.IP.summary.top_peers.ip | String | The IP address of the top peer. | 
-| TeamCymruScout.IP.summary.top_peers.event_count | Number | The count of events related to the top peer. | 
-| TeamCymruScout.IP.summary.comms_total | Number | The total number of communications related to the IP. | 
+| TeamCymruScout.IP.summary.top_peers.event_count | Number | The number of events related to the top peer. | 
+| TeamCymruScout.IP.summary.comms_total | Number | The total number of communications related to the IP address. | 
 | TeamCymruScout.IP.summary.service_counts.proto | Number | The protocol number associated with the service count. | 
 | TeamCymruScout.IP.summary.service_counts.proto_text | String | The protocol name associated with the service count. | 
 | TeamCymruScout.IP.summary.service_counts.port | Number | The port number associated with the service count. | 
-| TeamCymruScout.IP.summary.service_counts.event_count | Number | The count of events related to the service count. | 
+| TeamCymruScout.IP.summary.service_counts.event_count | Number | The number of events related to the service count. | 
 | TeamCymruScout.IP.summary.service_counts.service.service_name | String | The service name associated with the service count. | 
 | TeamCymruScout.IP.summary.service_counts.service.port | Number | The port number associated with the service count. | 
 | TeamCymruScout.IP.summary.service_counts.service.proto_number | Number | The protocol number associated with the service count. | 
@@ -983,14 +983,14 @@ Return the summary information available for the given domain or IP using Scout 
 | TeamCymruScout.IP.summary.fingerprints.ip | String | The IP address associated with the fingerprint. | 
 | TeamCymruScout.IP.summary.fingerprints.type | String | The type of the fingerprint. | 
 | TeamCymruScout.IP.summary.fingerprints.signature | String | The signature of the fingerprint. | 
-| TeamCymruScout.IP.summary.fingerprints.event_count | Number | The count of events related to the fingerprint. | 
+| TeamCymruScout.IP.summary.fingerprints.event_count | Number | The number of events related to the fingerprint. | 
 | TeamCymruScout.IP.summary.certs.ip | String | The IP address associated with the certificate. | 
 | TeamCymruScout.IP.summary.certs.issuer | String | The issuer of the certificate. | 
 | TeamCymruScout.IP.summary.certs.issuer_common_name | String | The common name of the issuer of the certificate. | 
 | TeamCymruScout.IP.summary.certs.common_name | String | The common name of the certificate. | 
 | TeamCymruScout.IP.summary.certs.port | Number | The port number associated with the certificate. | 
-| TeamCymruScout.IP.summary.certs.event_count | Number | The count of events related to the certificate. | 
-| TeamCymruScout.QueryUsage.command_name | String | The name of the XSOAR command that triggered the Foundation API. | 
+| TeamCymruScout.IP.summary.certs.event_count | Number | The number of events related to the certificate. | 
+| TeamCymruScout.QueryUsage.command_name | String | The name of the Cortex XSOAR command that triggered the Foundation API. | 
 | TeamCymruScout.QueryUsage.request_id | String | The unique request ID of the Foundation API response. | 
 | TeamCymruScout.QueryUsage.total | Number | The total number of records available for provided filters. | 
 | TeamCymruScout.QueryUsage.query | String | The query for which the search API was triggered. | 
@@ -1018,34 +1018,34 @@ Return the summary information available for the given domain or IP using Scout 
 | IP.PositiveDetections | Number | The number of engines that positively detected the indicator as malicious. | 
 | IP.Malicious.Vendor | String | The vendor reporting the IP address as malicious. | 
 | IP.Malicious.Description | String | A description explaining why the IP address was reported as malicious. | 
-| IP.Tags | Unknown | \(List\) Tags of the IP. | 
-| IP.FeedRelatedIndicators.value | String | Indicators that are associated with the IP. | 
-| IP.FeedRelatedIndicators.type | String | The type of the indicators that are associated with the IP. | 
-| IP.FeedRelatedIndicators.description | String | The description of the indicators that are associated with the IP. | 
-| IP.MalwareFamily | String | The malware family associated with the IP. | 
-| IP.Organization.Name | String | The organization of the IP. | 
-| IP.Organization.Type | String | The organization type of the IP. | 
-| IP.ASOwner | String | The autonomous system owner of the IP. | 
-| IP.Region | String | The region in which the IP is located. | 
-| IP.Port | String | Ports that are associated with the IP. | 
-| IP.Internal | Boolean | Whether or not the IP is internal or external. | 
-| IP.UpdatedDate | Date | The date that the IP was last updated. | 
+| IP.Tags | Unknown | \(List\) Tags of the IP address. | 
+| IP.FeedRelatedIndicators.value | String | Indicators that are associated with the IP address. | 
+| IP.FeedRelatedIndicators.type | String | The type of the indicators that are associated with the IP address. | 
+| IP.FeedRelatedIndicators.description | String | The description of the indicators that are associated with the IP address. | 
+| IP.MalwareFamily | String | The malware family associated with the IP address. | 
+| IP.Organization.Name | String | The organization of the IP address. | 
+| IP.Organization.Type | String | The organization type of the IP address. | 
+| IP.ASOwner | String | The autonomous system owner of the IP address. | 
+| IP.Region | String | The region in which the IP address is located. | 
+| IP.Port | String | Ports that are associated with the IP address. | 
+| IP.Internal | Boolean | Whether the IP address is internal or external. | 
+| IP.UpdatedDate | Date | The date that the IP address was last updated. | 
 | IP.Registrar.Abuse.Name | String | The name of the contact for reporting abuse. | 
 | IP.Registrar.Abuse.Address | String | The address of the contact for reporting abuse. | 
 | IP.Registrar.Abuse.Country | String | The country of the contact for reporting abuse. | 
 | IP.Registrar.Abuse.Network | String | The network of the contact for reporting abuse. | 
 | IP.Registrar.Abuse.Phone | String | The phone number of the contact for reporting abuse. | 
 | IP.Registrar.Abuse.Email | String | The email address of the contact for reporting abuse. | 
-| IP.Campaign | String | The campaign associated with the IP. | 
-| IP.TrafficLightProtocol | String | The Traffic Light Protocol \(TLP\) color that is suitable for the IP. | 
-| IP.CommunityNotes.note | String | Notes on the IP that were given by the community. | 
+| IP.Campaign | String | The campaign associated with the IP address. | 
+| IP.TrafficLightProtocol | String | The Traffic Light Protocol \(TLP\) color that is suitable for the IP address. | 
+| IP.CommunityNotes.note | String | Notes on the IP address that were given by the community. | 
 | IP.CommunityNotes.timestamp | Date | The time in which the note was published. | 
 | IP.Publications.source | String | The source in which the article was published. | 
 | IP.Publications.title | String | The name of the article. | 
 | IP.Publications.link | String | A link to the original article. | 
 | IP.Publications.timestamp | Date | The time in which the article was published. | 
 | IP.ThreatTypes.threatcategory | String | The threat category associated to this indicator by the source vendor. For example, Phishing, Control, TOR, etc. | 
-| IP.ThreatTypes.threatcategoryconfidence | String | Threat Category Confidence is the confidence level provided by the vendor for the threat type category For example a confidence of 90 for threat type category 'malware' means that the vendor rates that this is 90% confidence of being a malware. | 
+| IP.ThreatTypes.threatcategoryconfidence | String | The confidence level provided by the vendor for the threat type category For example a confidence of 90 for threat type category 'malware' means that the vendor rates that this is 90% confidence of being a malware. | 
 | DBotScore.Indicator | String | The indicator that was tested. | 
 | DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
 | DBotScore.Type | String | The indicator type. | 
@@ -1329,7 +1329,7 @@ Return the summary information available for the given domain or IP using Scout 
 ### scout-ip-list
 
 ***
-Returns the summary information available for the given list of IP(s).
+Returns the summary information available for the given list of IP addresses.
 
 #### Base Command
 
@@ -1339,7 +1339,7 @@ Returns the summary information available for the given list of IP(s).
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip_addresses | Specify the comma separated IP Address(es) to retrieve available IP details. Note: Maximum 10 IPs are allowed. | Required | 
+| ip_addresses | A comma-separated list of IP addresses to retrieve available IP details. Note: Maximum of 10 IP addresses are allowed. | Required | 
 
 #### Context Output
 
@@ -1349,17 +1349,17 @@ Returns the summary information available for the given list of IP(s).
 | TeamCymruScout.IP.country_code | String | The country code. | 
 | TeamCymruScout.IP.as_info.asn | Number | The autonomous system number. | 
 | TeamCymruScout.IP.as_info.as_name | String | The autonomous system name. | 
-| TeamCymruScout.IP.insights.overall_rating | String | The overall rating for the IP. | 
-| TeamCymruScout.IP.insights.insights.rating | String | The individual insight rating for the IP. | 
-| TeamCymruScout.IP.insights.insights.message | String | The individual insight message for the IP. | 
+| TeamCymruScout.IP.insights.overall_rating | String | The overall rating for the IP address. | 
+| TeamCymruScout.IP.insights.insights.rating | String | The individual insight rating for the IP address. | 
+| TeamCymruScout.IP.insights.insights.message | String | The individual insight message for the IP address. | 
 | TeamCymruScout.IP.tags.id | Number | The ID of the tag. | 
 | TeamCymruScout.IP.tags.name | String | The name of the tag. | 
 | TeamCymruScout.IP.tags.children.id | Number | The ID of the child tag. | 
 | TeamCymruScout.IP.tags.children.name | String | The name of the child tag. | 
 | TeamCymruScout.IP.tags.children.children | Unknown | The children of the child tag. | 
-| TeamCymruScout.QueryUsage.command_name | String | The name of the XSOAR command that triggered the Foundation API. | 
+| TeamCymruScout.QueryUsage.command_name | String | The name of the Cortex XSOAR command that triggered the Foundation API. | 
 | TeamCymruScout.QueryUsage.request_id | String | The unique request ID of the Foundation API response. | 
-| TeamCymruScout.QueryUsage.ips | Unknown | The list of IP\(s\) for which the Foundation API was triggered. | 
+| TeamCymruScout.QueryUsage.ips | Unknown | The list of IP addresses for which the Foundation API was triggered. | 
 | TeamCymruScout.QueryUsage.used_queries | Number | The number of queries used. | 
 | TeamCymruScout.QueryUsage.remaining_queries | Number | The number of remaining queries. | 
 | TeamCymruScout.QueryUsage.query_limit | Number | The total number of queries allowed. | 
@@ -1381,34 +1381,34 @@ Returns the summary information available for the given list of IP(s).
 | IP.PositiveDetections | Number | The number of engines that positively detected the indicator as malicious. | 
 | IP.Malicious.Vendor | String | The vendor reporting the IP address as malicious. | 
 | IP.Malicious.Description | String | A description explaining why the IP address was reported as malicious. | 
-| IP.Tags | Unknown | \(List\) Tags of the IP. | 
-| IP.FeedRelatedIndicators.value | String | Indicators that are associated with the IP. | 
-| IP.FeedRelatedIndicators.type | String | The type of the indicators that are associated with the IP. | 
-| IP.FeedRelatedIndicators.description | String | The description of the indicators that are associated with the IP. | 
-| IP.MalwareFamily | String | The malware family associated with the IP. | 
-| IP.Organization.Name | String | The organization of the IP. | 
-| IP.Organization.Type | String | The organization type of the IP. | 
-| IP.ASOwner | String | The autonomous system owner of the IP. | 
-| IP.Region | String | The region in which the IP is located. | 
-| IP.Port | String | Ports that are associated with the IP. | 
-| IP.Internal | Boolean | Whether or not the IP is internal or external. | 
-| IP.UpdatedDate | Date | The date that the IP was last updated. | 
+| IP.Tags | Unknown | \(List\) Tags of the IP address. | 
+| IP.FeedRelatedIndicators.value | String | Indicators that are associated with the IP address. | 
+| IP.FeedRelatedIndicators.type | String | The type of the indicators that are associated with the IP address. | 
+| IP.FeedRelatedIndicators.description | String | The description of the indicators that are associated with the IP address. | 
+| IP.MalwareFamily | String | The malware family associated with the IP address. | 
+| IP.Organization.Name | String | The organization of the IP address. | 
+| IP.Organization.Type | String | The organization type of the IP address. | 
+| IP.ASOwner | String | The autonomous system owner of the IP address. | 
+| IP.Region | String | The region in which the IP address is located. | 
+| IP.Port | String | Ports that are associated with the IP address. | 
+| IP.Internal | Boolean | Whether the IP address is internal or external. | 
+| IP.UpdatedDate | Date | The date that the IP address was last updated. | 
 | IP.Registrar.Abuse.Name | String | The name of the contact for reporting abuse. | 
 | IP.Registrar.Abuse.Address | String | The address of the contact for reporting abuse. | 
 | IP.Registrar.Abuse.Country | String | The country of the contact for reporting abuse. | 
 | IP.Registrar.Abuse.Network | String | The network of the contact for reporting abuse. | 
 | IP.Registrar.Abuse.Phone | String | The phone number of the contact for reporting abuse. | 
 | IP.Registrar.Abuse.Email | String | The email address of the contact for reporting abuse. | 
-| IP.Campaign | String | The campaign associated with the IP. | 
-| IP.TrafficLightProtocol | String | The Traffic Light Protocol \(TLP\) color that is suitable for the IP. | 
-| IP.CommunityNotes.note | String | Notes on the IP that were given by the community. | 
+| IP.Campaign | String | The campaign associated with the IP address. | 
+| IP.TrafficLightProtocol | String | The Traffic Light Protocol \(TLP\) color that is suitable for the IP address. | 
+| IP.CommunityNotes.note | String | Notes on the IP address that were given by the community. | 
 | IP.CommunityNotes.timestamp | Date | The time in which the note was published. | 
 | IP.Publications.source | String | The source in which the article was published. | 
 | IP.Publications.title | String | The name of the article. | 
 | IP.Publications.link | String | A link to the original article. | 
 | IP.Publications.timestamp | Date | The time in which the article was published. | 
 | IP.ThreatTypes.threatcategory | String | The threat category associated to this indicator by the source vendor. For example, Phishing, Control, TOR, etc. | 
-| IP.ThreatTypes.threatcategoryconfidence | String | Threat Category Confidence is the confidence level provided by the vendor for the threat type category For example a confidence of 90 for threat type category 'malware' means that the vendor rates that this is 90% confidence of being a malware. | 
+| IP.ThreatTypes.threatcategoryconfidence | String | The confidence level provided by the vendor for the threat type category For example a confidence of 90 for threat type category 'malware' means that the vendor rates that this is 90% confidence of being a malware. | 
 | DBotScore.Indicator | String | The indicator that was tested. | 
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 

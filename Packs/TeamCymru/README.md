@@ -1,4 +1,4 @@
-Note: Support for this Pack was moved to Partner starting July 29, 2024. In case of any issues arise, please contact the Partner directly at <support@cymru.com>.
+Note: Support for this pack was moved to Partner starting July 29, 2024. In case any issues arise, contact the Partner directly at <support@cymru.com>.
 
 ## Overview
 
@@ -15,7 +15,7 @@ It integrates with the API of Team Cymru Scout and allows immediate access to in
 
 ### Key Features
 
-- Explore the communication data to identify commonalities between IPs, identify compromised hosts, and uncover other indications of an attack.
+- Explore the communication data to identify commonalities between IP addresses, identify compromised hosts, and uncover other indications of an attack.
 - Access to NetFlow communications, Whois information, PDNS, X509 certificates, and fingerprinting details.
 - Supports both IPv4 and IPv6 address queries.
 - Provides real-time threat intelligence and helps in identifying and mitigating potential security threats.

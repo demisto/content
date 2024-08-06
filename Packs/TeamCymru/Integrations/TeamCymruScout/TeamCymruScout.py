@@ -548,20 +548,21 @@ def prepare_hr_for_ip(response: dict) -> str:
                                      json_transform_mapping={'Whois': JsonTransformer(), 'Insights': JsonTransformer(),
                                                              'Tags': JsonTransformer()},
                                      removeNull=True, headers=['Country Code', 'Whois', 'Tags', 'Insights']) + '\n'
-    human_readable += tableToMarkdown('Top PDNS', pdns_hr, headerTransform=header_transformer_for_ip, removeNull=True) + '\n'
+    human_readable += tableToMarkdown(
+        'Top PDNS', pdns_hr, headerTransform=header_transformer_for_ip, removeNull=True) + '\n' if pdns_hr else ''
     human_readable += tableToMarkdown('Top Peers', top_peers_hr, removeNull=True,
                                       json_transform_mapping={'Client Services': JsonTransformer(),
                                                               'Server Services': JsonTransformer()},
                                       headers=['Proto', 'Client IP', 'Client Country Code(s)', 'Client Tag(s)', 'Client Services',
                                                'Server IP', 'Server Country Code(s)', 'Server Tag(s)', 'Server Services',
                                                'Event Count', 'First Seen', 'Last Seen', 'Client AS Name',
-                                               'Server AS Name']) + '\n'
+                                               'Server AS Name']) + '\n' if top_peers_hr else ''
     human_readable += tableToMarkdown('Top Open Ports', open_port_hr, removeNull=True, headers=['Event Count', 'Port', 'Protocol',
-                                      'Protocol Text', 'Service', 'First Seen', 'Last Seen']) + '\n'
+                                      'Protocol Text', 'Service', 'First Seen', 'Last Seen']) + '\n' if open_port_hr else ''
     human_readable += tableToMarkdown('Top Fingerprints', fingerprints_hr, removeNull=True,
-                                      headerTransform=header_transformer_for_ip) + '\n'
+                                      headerTransform=header_transformer_for_ip) + '\n' if fingerprints_hr else ''
     human_readable += tableToMarkdown('Top Certificates', certs_hr, removeNull=True,
-                                      headerTransform=header_transformer_for_ip) + '\n'
+                                      headerTransform=header_transformer_for_ip) + '\n' if certs_hr else ''
 
     return human_readable
 
@@ -718,7 +719,7 @@ def prepare_hr_and_context_for_ip_list(response: dict) -> Tuple[str, Dict, Commo
 
     ip_address = scout_ip_data.get('ip')
 
-    score = DBOT_SCORE_MAPPING[scout_ip_data.get('insights', {}).get('overall_rating', 'no_rating')]
+    score = DBOT_SCORE_MAPPING[scout_ip_data.get('insights', {}).get('overall_rating') or 'no_rating']
     country_code = scout_ip_data.get('country_code', '')
     as_info = scout_ip_data.get('as_info', [])
     as_name = ''
@@ -883,7 +884,7 @@ def ip_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
             indicator=ip,
             indicator_type=DBotScoreType.IP,
             integration_name=VENDOR_NAME,
-            score=DBOT_SCORE_MAPPING.get(response.get('summary', {}).get('insights', {}).get('overall_rating')),
+            score=DBOT_SCORE_MAPPING.get(response.get('summary', {}).get('insights', {}).get('overall_rating') or 'no_rating'),
             malicious_description=find_description(ip, response.get('summary', {}).get('insights', {}).get('insights', [])),
             reliability=demisto.params().get('integrationReliability')
         )
