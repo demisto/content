@@ -388,7 +388,7 @@ def decrypt_email_body(client: Client, args: dict):
             msg_out = email_body
             human_readable = f'### {msg}The decrypted message is: \n ___ \n {email_body}'
         else:
-            human_readable = f'{msg}The decrypted message is signed: \n{out}'
+            human_readable = f'### {msg}The decrypted message is signed, verify to get the original message\n ___ \n{out}'
 
     results = [CommandResults(
         readable_output=human_readable,
@@ -548,7 +548,8 @@ def test_module(client, *_):
         if message_body in decrypt_out['HumanReadable']:
             demisto.results('ok')
     except Exception:
-        return_error('Verify that you provided valid and matching keys.')
+        return_error('''Failed to encrypt->decrypt using the provided credentials.
+                     Verify that the provided keys are valid and matching.''')
     finally:
         os.unlink(test_file.name)
 

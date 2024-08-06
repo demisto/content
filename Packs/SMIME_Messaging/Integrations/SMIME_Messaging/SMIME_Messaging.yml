@@ -28,7 +28,9 @@ script:
       predefined:
       - 'false'
       - 'true'
-    description: Retrieves items from the service.
+    description: |-
+      DEPRECATED - use smime-sign-and-encrypt instead.
+      Retrieves items from the service.
     name: smime-sign-email
     outputs:
     - contextPath: SMIME.Signed.Message
@@ -42,7 +44,9 @@ script:
     - description: The message body to encrypt.
       name: message
       required: true
-    description: Encrypts an email message with S/MIME protocol by using a public RSA certificate.
+    description: |- 
+      DEPRECATED - use smime-sign-and-encrypt instead.
+      Encrypts an email message with S/MIME protocol by using a public RSA certificate.
     name: smime-encrypt-email-body
     outputs:
     - contextPath: SMIME.Encrypted.Message
