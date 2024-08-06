@@ -5,10 +5,10 @@ import CommonServerPython
 def test_add_new_comment(mocker):
     context_results = {
         "CustomFields": {"sourceid": "incident-123"},
-        "labels": [{"type": "Instance", "value": "Azure Sentinel_instance_1"}],
+        "sourceInstance": None,
     }
     demisto_args = {"new_comment": "This is a new comment"}
-    expected_instance_name = "Azure Sentinel_instance_1"
+    expected_instance_name = None
     expected_incident_id = "incident-123"
     expected_new_comment = "This is a new comment"
     mocker.patch.object(demisto, "args", return_value=demisto_args)

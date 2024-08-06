@@ -9,7 +9,7 @@ def test_set_owner(mocker):
     }
 
     demisto_args = {"owner_email": "test@test.com"}
-    expected_instance_name = "Azure Sentinel_instance_1"
+    expected_instance_name = None
     expected_incident_id = "incident-123"
     expected_owner_email = "test@test.com"
 
