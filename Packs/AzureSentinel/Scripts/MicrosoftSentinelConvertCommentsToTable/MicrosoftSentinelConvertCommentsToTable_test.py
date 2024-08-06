@@ -18,7 +18,7 @@ def test_format_comment():
     expected = {
         "name": "test",
         "message": "test_message",
-        "createdTimeUtc": "05/08/2024, 14:19",
+        "createdTime": "05/08/2024, 14:19",
     }
 
     from MicrosoftSentinelConvertCommentsToTable import format_comment
@@ -36,8 +36,8 @@ CONTEXT_RESULTS = (
 
 EXPECTED_TABLE = "|Message|Created Time|Name|\n" \
                  "|---|---|---|\n" \
-                 "| test | test_message | test_time |\n" \
-                 "| test2 | test_message2 | test_time2 |\n"
+                 "| test_message | 05/08/2024, 14:19 | test |\n" \
+                 "| test_message2 | 05/08/2024, 14:19 | test2 |\n"
 
 
 def test_convert_to_table():

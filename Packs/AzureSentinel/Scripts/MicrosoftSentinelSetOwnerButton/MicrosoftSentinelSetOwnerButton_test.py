@@ -44,23 +44,13 @@ def test_set_owner(mocker):
         },
     )
     command_results_mock.assert_called_once_with(
-        readable_output="Markdown Table",
+        readable_output="### Updated incident incident-123 with new owner\n|Assigned To|Email|Object Id|User Principal Name|\n|---|---|---|---|\n| Owner Name | test@test.com | owner-object-id | test@test.com |\n",  # noqa: E501
         outputs_prefix="AzureSentinel.Incident.Owner",
         outputs={
             "assignedTo": "Owner Name",
             "email": "test@test.com",
             "objectId": "owner-object-id",
             "userPrincipalName": "test@test.com",
-        },
-        raw_response={
-            "properties": {
-                "owner": {
-                    "assignedTo": "Owner Name",
-                    "email": "test@test.com",
-                    "objectId": "owner-object-id",
-                    "userPrincipalName": "test@test.com",
-                }
-            }
         },
     )
     assert result == "Command Results"
