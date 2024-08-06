@@ -1,5 +1,5 @@
 [file:FeedElasticsearch.yml]
-ignore=IN122,DO106
+ignore=IN122
 
 [known_words]
 Elasticsearch
