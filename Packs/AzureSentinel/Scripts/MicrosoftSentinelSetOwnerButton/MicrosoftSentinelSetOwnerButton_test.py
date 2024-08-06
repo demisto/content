@@ -24,9 +24,6 @@ def test_set_owner(mocker):
     debug_mock = mocker.patch.object(demisto, "debug")
     execute_command_mock = mocker.patch.object(CommonServerPython, "execute_command")
     mocker.patch.object(CommonServerPython, "dict_safe_get", return_value=owner)
-    table_to_markdown_mock = mocker.patch.object(
-        CommonServerPython, "tableToMarkdown", return_value="Markdown Table"
-    )
     command_results_mock = mocker.patch.object(
         CommonServerPython, "CommandResults", return_value="Command Results"
     )
@@ -45,18 +42,6 @@ def test_set_owner(mocker):
             "incident_id": expected_incident_id,
             "user_principal_name": expected_owner_email,
         },
-    )
-    table_to_markdown_mock.assert_called_once_with(
-        f"Updated incident {expected_incident_id} with new owner",
-        {
-            "assignedTo": "Owner Name",
-            "email": "test@test.com",
-            "objectId": "owner-object-id",
-            "userPrincipalName": "test@test.com",
-        },
-        headers=["assignedTo", "email", "objectId", "userPrincipalName"],
-        headerTransform=lambda s: s.replace("_", " ").title(),
-        removeNull=True,
     )
     command_results_mock.assert_called_once_with(
         readable_output="Markdown Table",

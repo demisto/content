@@ -1,5 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
+from dateutil import parser
 
 
 def format_comment(comment: dict) -> dict:
@@ -8,7 +9,7 @@ def format_comment(comment: dict) -> dict:
     """
     return {
         'message': comment.get('properties', {}).get('message'),
-        'createdTime': datetime.strftime(arg_to_datetime(comment.get('properties', {}).get('createdTimeUtc')), '%d/%m/%Y, %H:%M'), # type: ignore
+        'createdTime': datetime.strftime(parser.parse(comment.get('properties', {}).get('createdTimeUtc')), '%d/%m/%Y, %H:%M'),
         'name': comment.get('properties', {}).get('author', {}).get('name'),
     }
 

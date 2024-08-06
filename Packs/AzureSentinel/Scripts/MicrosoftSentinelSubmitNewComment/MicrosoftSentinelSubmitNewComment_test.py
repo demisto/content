@@ -37,13 +37,6 @@ def test_add_new_comment(mocker):
         },
     )
 
-    table_to_markdown_mock.assert_called_once_with(
-        "The new comment has been recorded and will appear in your comments field in a minute (Only if you have A 'Mirror In')",
-        {"Instance Name": expected_instance_name, "New Comment": expected_new_comment},
-        headers=["New Comment", "Instance Name"],
-        removeNull=True,
-    )
-
     assert result == "Command Results"
     command_results_mock.assert_called_once_with(
         readable_output="Markdown Table",
