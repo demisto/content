@@ -887,7 +887,7 @@ def get_modified_remote_data_command(client, args, xdr_delay: int = 1):
     remote_args = GetModifiedRemoteDataArgs(args)
     integration_context = demisto.getIntegrationContext()
     last_update = integration_context.get(
-        'mirroring_last_update') if isinstance(integration_context, dict) else remote_args.last_update
+        'mirroring_last_update') if integration_context else remote_args.last_update
     last_update_utc = dateparser.parse(last_update,
                                        settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': False})   # convert to utc format
 
