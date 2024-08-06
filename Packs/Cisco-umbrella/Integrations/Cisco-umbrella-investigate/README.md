@@ -1668,7 +1668,7 @@ List the historical tagging timeline for a given domain. Each timeline item incl
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | An domain. For example, cisco.com. | Required |
+| domain | A domain. For example, cisco.com. | Required |
 | all_results | Whether to retrieve all results by overriding the default limit. Possible values are: true, false. | Optional |
 | limit | The maximum number of records to retrieve. Default is 50. | Optional |
 
@@ -1720,7 +1720,7 @@ List the historical tagging timeline for RL. Each timeline item includes lists o
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | An URL. For example www.cisco.com. | Required |
+| url | An URL. For example www.cisco.com. | Required |
 | all_results | Whether to retrieve all results by overriding the default limit. Possible values are: true, false. | Optional |
 | limit | The maximum number of records to retrieve. Default is 50. | Optional |
 
@@ -1772,7 +1772,7 @@ List the historical tagging timeline for a given IP address. Each timeline item 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | An IP address. For example, 8.8.8.8. | Required |
+| ip | An IP address. For example, 8.8.8.8. | Required |
 | all_results | Whether to retrieve all results by overriding the default limit. Possible values are: true, false. | Optional |
 | limit | The maximum number of records to retrieve. Default is 50. | Optional |
 
