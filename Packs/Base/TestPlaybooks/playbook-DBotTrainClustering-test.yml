@@ -1,0 +1,959 @@
+id: DBotTrainClustering-test
+version: -1
+name: DBotTrainClustering-test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 8d47d645-51d6-4558-8c3c-0ee66ba1c125
+    type: start
+    task:
+      id: 8d47d645-51d6-4558-8c3c-0ee66ba1c125
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 784232b8-1fa4-42ec-8364-e8732178eca7
+    type: regular
+    task:
+      id: 784232b8-1fa4-42ec-8364-e8732178eca7
+      version: -1
+      name: Delete context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+      - "6"
+      - "7"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 6ca89c26-e2d5-4bab-86ff-304cf114a3ba
+    type: regular
+    task:
+      id: 6ca89c26-e2d5-4bab-86ff-304cf114a3ba
+      version: -1
+      name: DBotTrainClustering
+      description: Train clustering model on any incident type.
+      scriptName: DBotTrainClustering
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      fieldForClusterName:
+        simple: accountid
+      fieldsForClustering:
+        simple: additionaldata,sourceip
+      forceRetrain:
+        simple: "True"
+      modelName:
+        simple: test_model
+      overrideExistingModel:
+        simple: "True"
+      query:
+        simple: (-status:closed  and sourceip:*)
+      storeModel:
+        simple: "True"
+      type:
+        simple: Simulation
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: c2752ff7-c045-41ec-80fa-6685b9fec5c6
+    type: title
+    task:
+      id: c2752ff7-c045-41ec-80fa-6685b9fec5c6
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 8eca7357-0f46-4ef0-8fb4-8f149570fb94
+    type: regular
+    task:
+      id: 8eca7357-0f46-4ef0-8fb4-8f149570fb94
+      version: -1
+      name: Create incident 1
+      description: commands.local.cmd.create.inc
+      script: Builtin|||createNewIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      accountid:
+        simple: "12345"
+      additionaldata:
+        simple: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum
+      name:
+        simple: Incident 1
+      sourceip:
+        simple: 1.1.1.1
+      type:
+        simple: Simulation
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 9506a849-b09a-4661-8271-3be5e3ed3006
+    type: regular
+    task:
+      id: 9506a849-b09a-4661-8271-3be5e3ed3006
+      version: -1
+      name: Create incident 2
+      description: commands.local.cmd.create.inc
+      script: Builtin|||createNewIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      accountid:
+        simple: "12345"
+      additionaldata:
+        simple: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim
+      name:
+        simple: Incident 2
+      sourceip:
+        simple: 1.1.1.1
+      type:
+        simple: Simulation
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 0b79b530-3848-420a-8918-32c8fe1f365b
+    type: regular
+    task:
+      id: 0b79b530-3848-420a-8918-32c8fe1f365b
+      version: -1
+      name: Create incident 3
+      description: commands.local.cmd.create.inc
+      script: Builtin|||createNewIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      accountid:
+        simple: "12345"
+      additionaldata:
+        simple: ' consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum'
+      name:
+        simple: Incident 3
+      sourceip:
+        simple: 1.1.1.1
+      type:
+        simple: Simulation
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 28ce43a3-ca81-473b-8adf-2c04a3b406ff
+    type: regular
+    task:
+      id: 28ce43a3-ca81-473b-8adf-2c04a3b406ff
+      version: -1
+      name: Create incident 4
+      description: commands.local.cmd.create.inc
+      script: Builtin|||createNewIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      accountid:
+        simple: "67890"
+      additionaldata:
+        simple: Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?
+      name:
+        simple: Incident 4
+      sourceip:
+        simple: 8.8.8.8
+      type:
+        simple: Simulation
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 3d0b2c73-d3d0-4801-8a8c-ff149bae71b0
+    type: regular
+    task:
+      id: 3d0b2c73-d3d0-4801-8a8c-ff149bae71b0
+      version: -1
+      name: Set group 1
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: group1
+      value:
+        simple: ${CreatedIncidentID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 7f672417-ca4c-42ea-8ed4-7eadd94f055b
+    type: regular
+    task:
+      id: 7f672417-ca4c-42ea-8ed4-7eadd94f055b
+      version: -1
+      name: Delete context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+      - "11"
+      - "12"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: CreatedIncidentID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: f7b5e81f-69c7-47b6-8953-a1d4f6535352
+    type: regular
+    task:
+      id: f7b5e81f-69c7-47b6-8953-a1d4f6535352
+      version: -1
+      name: Create incident 5
+      description: commands.local.cmd.create.inc
+      script: Builtin|||createNewIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      accountid:
+        simple: "67890"
+      additionaldata:
+        simple: ' omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?'
+      name:
+        simple: Incident 5
+      sourceip:
+        simple: 8.8.8.8
+      type:
+        simple: Simulation
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: c8175ae6-70c8-4c9d-8f26-29079f08fafd
+    type: regular
+    task:
+      id: c8175ae6-70c8-4c9d-8f26-29079f08fafd
+      version: -1
+      name: Create incident 6
+      description: commands.local.cmd.create.inc
+      script: Builtin|||createNewIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      accountid:
+        simple: "67890"
+      additionaldata:
+        simple: 'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat '
+      name:
+        simple: Incident 6
+      sourceip:
+        simple: 8.8.8.8
+      type:
+        simple: Simulation
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 99abdc0d-56b4-41b0-8875-7df743b3b2b6
+    type: regular
+    task:
+      id: 99abdc0d-56b4-41b0-8875-7df743b3b2b6
+      version: -1
+      name: Set group 2
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: group2
+      value:
+        simple: ${CreatedIncidentID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 876bd45b-fdee-46d8-8b63-3f6122a06b2e
+    type: regular
+    task:
+      id: 876bd45b-fdee-46d8-8b63-3f6122a06b2e
+      version: -1
+      name: Delete context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: CreatedIncidentID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 072fb1cc-cf05-4a0c-897c-d6e095595927
+    type: condition
+    task:
+      id: 072fb1cc-cf05-4a0c-897c-d6e095595927
+      version: -1
+      name: Check outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: JsonObject.data
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: JsonObject.data.name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "12345"
+                accessor: incidents_ids
+                transformers:
+                - operator: sort
+                  args:
+                    descending:
+                      value:
+                        simple: "true"
+                - operator: StringifyArray
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: group1
+                transformers:
+                - operator: sort
+                  args:
+                    descending:
+                      value:
+                        simple: "true"
+                - operator: StringifyArray
+            iscontext: true
+      - - operator: in
+          left:
+            value:
+              complex:
+                root: JsonObject.data
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: JsonObject.data.name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "67890"
+                accessor: incidents_ids
+                transformers:
+                - operator: sort
+                  args:
+                    descending:
+                      value:
+                        simple: "true"
+                - operator: StringifyArray
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: group2
+                transformers:
+                - operator: sort
+                  args:
+                    descending:
+                      value:
+                        simple: "true"
+                - operator: StringifyArray
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: f7e5aac3-e0a9-479c-85d6-0b57eff215c5
+    type: regular
+    task:
+      id: f7e5aac3-e0a9-479c-85d6-0b57eff215c5
+      version: -1
+      name: Delete context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      all:
+        simple: "yes"
+      keysToKeep:
+        simple: group1,group2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 5a318006-2407-44eb-8b65-519cc26e49a5
+    type: regular
+    task:
+      id: 5a318006-2407-44eb-8b65-519cc26e49a5
+      version: -1
+      name: DBotTrainClustering
+      description: Train clustering model on any incident type.
+      scriptName: DBotTrainClustering
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      fieldForClusterName:
+        simple: accountid
+      fieldsForClustering:
+        simple: additionaldata,sourceip
+      forceRetrain:
+        simple: "True"
+      modelName:
+        simple: test_model
+      overrideExistingModel:
+        simple: "True"
+      query:
+        simple: (-status:closed  and sourceip:*)
+      storeModel:
+        simple: "True"
+      type:
+        simple: Simulation
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: df78874c-7495-4fdb-81a6-d5cc5be2cb91
+    type: condition
+    task:
+      id: df78874c-7495-4fdb-81a6-d5cc5be2cb91
+      version: -1
+      name: Check outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: JsonObject.data
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: JsonObject.data.name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "12345"
+                accessor: incidents_ids
+                transformers:
+                - operator: sort
+                  args:
+                    descending:
+                      value:
+                        simple: "true"
+                - operator: StringifyArray
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: group1
+                transformers:
+                - operator: sort
+                  args:
+                    descending:
+                      value:
+                        simple: "true"
+                - operator: StringifyArray
+            iscontext: true
+      - - operator: in
+          left:
+            value:
+              complex:
+                root: JsonObject.data
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: JsonObject.data.name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "67890"
+                accessor: incidents_ids
+                transformers:
+                - operator: sort
+                  args:
+                    descending:
+                      value:
+                        simple: "true"
+                - operator: StringifyArray
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: group2
+                transformers:
+                - operator: sort
+                  args:
+                    descending:
+                      value:
+                        simple: "true"
+                - operator: StringifyArray
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 32ca3902-c998-480e-8f13-56067bf2438a
+    type: regular
+    task:
+      id: 32ca3902-c998-480e-8f13-56067bf2438a
+      version: -1
+      name: Load clusters
+      description: Loads a json from string input, and returns a json object result.
+      scriptName: LoadJSON
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      input:
+        simple: ${DBotTrainClustering}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: a9bed7eb-416b-4810-8db7-c6936dae9d70
+    type: regular
+    task:
+      id: a9bed7eb-416b-4810-8db7-c6936dae9d70
+      version: -1
+      name: Load clusters
+      description: Loads a json from string input, and returns a json object result.
+      scriptName: LoadJSON
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      input:
+        simple: ${DBotTrainClustering}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2660,
+        "width": 1240,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.10.0
+description: ''

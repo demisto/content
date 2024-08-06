@@ -49,7 +49,9 @@ config case_sensitive = true
 
 //<source_interface>:<source_ip>/<source_port> to <dest_interface>:<dest_ip>/<dest_port>
 config case_sensitive = true
-| filter _raw_log ~= "\w+\s[\w\-]+\:(?:\d{1,3}\.){3}\d{1,3}\/\d{1,5}(?:\s*\(.+?\)\s*)?\sto\s[\w\-]+\:(?:\d{1,3}\.){3}\d{1,3}\/\d{1,5}(?:\s*\(.+?\)\s*)?" or
+
+| filter 
+    _raw_log ~= "\w+\s[\w\-]+\:(?:[\w\-\.]+)\/\d{1,5}(?:\s*\(.+?\)\s*)?\sto\s[\w\-]+\:(?:[\w\-\.]+)\/\d{1,5}(?:\s*\(.+?\)\s*)?" or 
     //<source_interface>:<source_ip>/<source_port>(<source_username>) to <dest_interface>:<dest_ip>/<dest_port>
     _raw_log ~= "\w+\s[\w\-]+\:\d+\.\d+\.\d+\.\d+\/\d+\([^\)]+\)\sto\s[\w\-]+\:\d+\.\d+\.\d+\.\d+\/\d+" or
     //<source_interface>:<source_ip>/<source_port> (<mapped_source_ip>/<mapped_source_port>) to <dest_interface>:<dest_ip>/<dest_port> (<mapped_dst_ip>/<mapped_dst_port>)
@@ -62,15 +64,14 @@ config case_sensitive = true
     src_ip = if(action contains "Built inbound",arrayindex(regextract(_raw_log ,"(?:for|to)\s[o|O]utside\:(\d+\.\d+\.\d+\.\d+)\/\d+\s*"),0),
     action contains "Built outbound",arrayindex(regextract(_raw_log ,"(?:for|to)\sinside\:(\d+\.\d+\.\d+\.\d+)\/\d+"),0),
     arrayindex(regextract(_raw_log ,"(?:for|from)\s[\w\-\_]+\:(\d+\.\d+\.\d+\.\d+)\/\d+"),0)),
-    source_port = if(action contains "Built inbound",arrayindex(regextract(_raw_log ,"(?:for|to)\s[o|O]utside\:\s*\d+\.\d+\.\d+\.\d+\/(\d+)"),0),
-    action contains "Built outbound",arrayindex(regextract(_raw_log ,"(?:for|to)\sinside\:\s*\d+\.\d+\.\d+\.\d+\/(\d+)"),0),arrayindex(regextract(_raw_log ,"(?:for|from)\s[\w\-\_]+\:\d+\.\d+\.\d+\.\d+\/(\d+)"),0)),
+    source_port = if(event_id in(302014, 302015, 302016), arrayindex(regextract(_raw_log, "connection \d+ for \S+?:[\w\-\.]+\/(\d{1,5})"), 0), action contains "Built inbound",arrayindex(regextract(_raw_log ,"(?:for|to)\s[o|O]utside\:\s*\d+\.\d+\.\d+\.\d+\/(\d+)"),0), action contains "Built outbound",arrayindex(regextract(_raw_log ,"(?:for|to)\sinside\:\s*\d+\.\d+\.\d+\.\d+\/(\d+)"),0),arrayindex(regextract(_raw_log ,"(?:for|from)\s[\w\-\_]+\:\d+\.\d+\.\d+\.\d+\/(\d+)"),0)),
     dest_ip = if(action contains "Built inbound",arrayindex(regextract(_raw_log ,"(?:for|to)\s[i|I]nside\:(\d+\.\d+\.\d+\.\d+)\/\d+"),0),action contains "Built outbound",arrayindex(regextract(_raw_log ,"(?:for|to)\soutside\:(\d+\.\d+\.\d+\.\d+)\/\d+"),0),
     arrayindex(regextract(_raw_log ,"to\s[\w\-\_]+\:(\d+\.\d+\.\d+\.\d+)\/\d+"),0)),
-    dest_port = if(action contains "Built inbound",arrayindex(regextract(_raw_log ,"(?:for|to)\s[i|I]nside\:\d+\.\d+\.\d+\.\d+\/(\d+)"),0),
+    dest_port = if(event_id in(302014, 302015, 302016), arrayindex(regextract(_raw_log, "to \S+?:[\w\-\.]+\/(\d{1,5})"), 0), action contains "Built inbound",arrayindex(regextract(_raw_log ,"(?:for|to)\s[i|I]nside\:\d+\.\d+\.\d+\.\d+\/(\d+)"),0),
     action contains "Built outbound",arrayindex(regextract(_raw_log ,"(?:for|to)\soutside\:\d+\.\d+\.\d+\.\d+\/(\d+)"),0),
     arrayindex(regextract(_raw_log ,"to\s[\w\-\_]+\:\d+\.\d+\.\d+\.\d+\/(\d+)"),0)),
-    source_interface = if(action contains "Built inbound",arrayindex(regextract(_raw_log ,"(?:for|to)\s([o|O]utside)\:\d+\.\d+\.\d+\.\d+\/\d+"),0), action contains "Built outbound",arrayindex(regextract(_raw_log ,"(?:for|to)\s([i|I]nside)\:\d+\.\d+\.\d+\.\d+\/\d+"),0),arrayindex(regextract(_raw_log ,"(?:for|from)\s([\w\-\_]+)\:\d+\.\d+\.\d+\.\d+\/\d+"),0)),
-    dest_interface = if(action contains "Built inbound",arrayindex(regextract(_raw_log ,"(?:for|to)\s([i|I]nside)\:\d+\.\d+\.\d+\.\d+\/\d+"),0), action contains "Built outbound",arrayindex(regextract(_raw_log ,"(?:for|to)\s([o|O]utside)\:\d+\.\d+\.\d+\.\d+\/\d+"),0),arrayindex(regextract(_raw_log ,"to\s([\w\-\_]+)\:\d+\.\d+\.\d+\.\d+\/\d+"),0)),
+    source_interface = if(event_id in(302014, 302015, 302016), arrayindex(regextract(_raw_log, "for (\S+?):[\w\-\.]+\/\d{1,5}"), 0), action contains "Built inbound",arrayindex(regextract(_raw_log ,"(?:for|to)\s([o|O]utside)\:\d+\.\d+\.\d+\.\d+\/\d+"),0), action contains "Built outbound",arrayindex(regextract(_raw_log ,"(?:for|to)\s([i|I]nside)\:\d+\.\d+\.\d+\.\d+\/\d+"),0),arrayindex(regextract(_raw_log ,"(?:for|from)\s([\w\-\_]+)\:\d+\.\d+\.\d+\.\d+\/\d+"),0)),
+    dest_interface = if(event_id in(302014, 302015, 302016), arrayindex(regextract(_raw_log, "to (\S+?):[\w\-\.]+\/\d{1,5}"), 0), action contains "Built inbound",arrayindex(regextract(_raw_log ,"(?:for|to)\s([i|I]nside)\:\d+\.\d+\.\d+\.\d+\/\d+"),0), action contains "Built outbound",arrayindex(regextract(_raw_log ,"(?:for|to)\s([o|O]utside)\:\d+\.\d+\.\d+\.\d+\/\d+"),0),arrayindex(regextract(_raw_log ,"to\s([\w\-\_]+)\:\d+\.\d+\.\d+\.\d+\/\d+"),0)),
     source_username = if(
         event_id in (302014, 302016), arrayindex(regextract(_raw_log ,"for\s[\w+\-]+\:(?:\d{1,3}\.){3}\d{1,3}\/\d{1,5}\s*\(\s*([^\)\s]+)\s*\)"), 0), 
         action contains "Built (?:inbound|outbound)", arrayindex(regextract(_raw_log ,"(?:for|to)\s(?:[o|O]utside|[i|I]nside)\:(?:\d{1,3}\.){3}\d{1,3}\/\d{1,5}\s*\([^\)]+\)\(([^\)]+)\)"), 0), 
@@ -80,6 +81,8 @@ config case_sensitive = true
         action contains "Built (?:inbound|outbound)",arrayindex(regextract(_raw_log ,"(?:for|to)\s(?:[i|I]nside|[o|O]utside)\:(?:\d{1,3}\.){3}\d{1,3}\/\d{1,5}\s*\([^\)]+\)\s\(([^\)]+)\)"), 0), 
         arrayindex(regextract(_raw_log ,"to\s[\w+\_\-]+\:\d+\.\d+\.\d+\.\d+\/\d+\s*\([^\)]+\)\s\(([^\)]+)\)"),0)),
     dst_username2 = arrayindex(regextract(_raw_log ,",\suser\s([\w\_\-]+)\s"),0),
+    source_host = if(event_id in(302014, 302015, 302016), arrayindex(regextract(_raw_log, "connection \d+ for \S+?:([\w\-\.]+)\/\d{1,5}"), 0)),
+    dest_host = if(event_id in(302014, 302015, 302016), arrayindex(regextract(_raw_log, "to \S+?:([\w\-\.]+)\/\d{1,5}"), 0)),
     bytes1 = arrayindex(regextract(_raw_log  ,"\d{2}\:\d{2}\sbytes\s(\d+)"),0),
     bytes2 = arrayindex(regextract(_raw_log  ,"label\slength\s(\d+)\sbytes\sexceeds"),0),
     protocol1 = arrayindex(regextract(_raw_log ,"\d+\-\d+\:\s*[A-Za-z]*\s+[A-Z]*[a-z]+\s+([A-Z]+)\s+"),0),
@@ -99,7 +102,9 @@ config case_sensitive = true
     source_port = to_integer(if(source_port = null,arrayindex(regextract(_raw_log ,"(?:for|from)\s[\w\-\_]+\:\d+\.\d+\.\d+\.\d+\/(\d+)"),0),source_port)),
     dest_port = to_integer(if(dest_port = null,arrayindex(regextract(_raw_log ,"to\s[\w\-\_]+\:\d+\.\d+\.\d+\.\d+\/(\d+)"),0),dest_port)),
     source_interface = if(source_interface = null,arrayindex(regextract(_raw_log ,"(?:for|from)\s([\w\-\_]+)\:\d+\.\d+\.\d+\.\d+\/\d+"),0),source_interface),
-    dest_interface = if(dest_interface = null,arrayindex(regextract(_raw_log ,"to\s([\w\-\_]+)\:\d+\.\d+\.\d+\.\d+\/\d+"),0),dest_interface)
+    dest_interface = if(dest_interface = null,arrayindex(regextract(_raw_log ,"to\s([\w\-\_]+)\:\d+\.\d+\.\d+\.\d+\/\d+"),0),dest_interface),
+    source_host = if(source_host !~= "(?:\d{1,3}\.){3}\d{1,3}", source_host),
+    dest_host = if(dest_host !~= "(?:\d{1,3}\.){3}\d{1,3}", dest_host)
 // duration
 | alter
         duration_string_no_days = arrayindex(regextract(_raw_log ,"[D|d]uration\:*\s+([hH0-9]+:[mM0-9]+:[sS0-9]+)[\s|\,]*"),0),
@@ -146,12 +151,14 @@ config case_sensitive = true
     xdm.network.session_id = connection_id,
     xdm.observer.name = observer_name,
     xdm.session_context_id = connection_id,
+    xdm.source.host.hostname = if(is_teardown_direction_swap, dest_host, source_host), 
     xdm.source.interface = if(is_teardown_direction_swap, dest_interface, source_interface),
     xdm.source.ipv4 = if(is_teardown_direction_swap, dest_ip, src_ip),
     xdm.source.port = if(is_teardown_direction_swap, dest_port, source_port),
     xdm.source.sent_bytes = if(not is_teardown_direction_swap, sent_bytes),
     xdm.source.user.username = if(is_teardown_direction_swap, dst_username, source_username),
     xdm.source.zone = if(is_teardown_direction_swap, dest_interface, source_interface),
+    xdm.target.host.hostname = if(is_teardown_direction_swap, source_host, dest_host), 
     xdm.target.interface = if(is_teardown_direction_swap, source_interface, dest_interface),
     xdm.target.ipv4 = if(is_teardown_direction_swap, src_ip, dest_ip),
     xdm.target.port = if(is_teardown_direction_swap, source_port, dest_port),

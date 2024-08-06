@@ -1,17 +1,15 @@
 id: Carbon Black Enterprise EDR Test
 version: -1
 fromversion: 5.0.0
-contentitemexportablefields:
-  contentitemfields: {}
 name: Carbon Black Enterprise EDR Test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 35739d07-ec44-4e1c-86c2-bbe86cfea93c
+    taskid: 0c6cc418-0145-4217-8c11-8f6a33b8210b
     type: start
     task:
-      id: 35739d07-ec44-4e1c-86c2-bbe86cfea93c
+      id: 0c6cc418-0145-4217-8c11-8f6a33b8210b
       version: -1
       name: ""
       iscommand: false
@@ -38,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 54912a58-535a-4cee-8d3f-174654133d65
+    taskid: b9787cec-6727-4c27-81ec-b8620603a343
     type: regular
     task:
-      id: 54912a58-535a-4cee-8d3f-174654133d65
+      id: b9787cec-6727-4c27-81ec-b8620603a343
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -73,10 +71,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: c9b168cf-eab6-49eb-83ee-e6340d95a28c
+    taskid: 11e7d4d0-eced-4b51-8eb5-2e9a7ab5722c
     type: regular
     task:
-      id: c9b168cf-eab6-49eb-83ee-e6340d95a28c
+      id: 11e7d4d0-eced-4b51-8eb5-2e9a7ab5722c
       version: -1
       name: List Watchlists
       description: Retrieves all watchlists.
@@ -105,10 +103,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 93e8e519-8a65-4177-89e2-9f44110b2303
+    taskid: a23f6a26-ed6d-4fcc-89b9-c310f57524d9
     type: regular
     task:
-      id: 93e8e519-8a65-4177-89e2-9f44110b2303
+      id: a23f6a26-ed6d-4fcc-89b9-c310f57524d9
       version: -1
       name: Create new watchlist
       description: Create a new report or classifier watchlist.
@@ -118,7 +116,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+      - "19"
     scriptarguments:
       alerts_enabled:
         simple: "false"
@@ -169,10 +167,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 81541315-58d0-40c5-885b-10ef97c04c9f
+    taskid: b1732042-3a84-4494-8ab1-52a315f6bf59
     type: regular
     task:
-      id: 81541315-58d0-40c5-885b-10ef97c04c9f
+      id: b1732042-3a84-4494-8ab1-52a315f6bf59
       version: -1
       name: Get watchlist by ID
       description: Get watchlist information by id.
@@ -180,9 +178,6 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
-    nexttasks:
-      '#none#':
-      - "19"
     scriptarguments:
       watchlist_id:
         simple: ${CarbonBlackEEDR.Watchlist.ID}
@@ -204,10 +199,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 82627039-5460-4b32-818a-22215477ec83
+    taskid: 646c7528-479d-411f-84c8-ea19e7030d30
     type: regular
     task:
-      id: 82627039-5460-4b32-818a-22215477ec83
+      id: 646c7528-479d-411f-84c8-ea19e7030d30
       version: -1
       name: Update the watchlist
       description: Updates the specified watchlist. This will update the tags and alert status as well as any reports or classifiers attached to the watchlist.
@@ -217,14 +212,14 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "6"
+      - "23"
     scriptarguments:
       alerts_enabled:
         simple: "true"
       watchlist_id:
-        simple: ${CarbonBlackEEDR.Watchlist.id}
+        simple: ${CarbonBlackEEDR.Watchlist.ID}
       watchlist_name:
-        simple: ${CarbonBlackEEDR.Watchlist.name}
+        simple: ${CarbonBlackEEDR.Watchlist.Name}
     separatecontext: false
     view: |-
       {
@@ -243,10 +238,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 3bfa22cc-4450-4dab-85be-4b7f3890be7c
+    taskid: f6ddad73-de16-43f7-8b52-8740fe38ec6a
     type: regular
     task:
-      id: 3bfa22cc-4450-4dab-85be-4b7f3890be7c
+      id: f6ddad73-de16-43f7-8b52-8740fe38ec6a
       version: -1
       name: Get updated watchlist
       description: Gets watchlist information by  watchlist ID.
@@ -259,7 +254,7 @@ tasks:
       - "7"
     scriptarguments:
       watchlist_id:
-        simple: ${CarbonBlackEEDR.Watchlist.ID}
+        simple: ${watchListId}
     separatecontext: false
     view: |-
       {
@@ -278,10 +273,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: eb221021-8d91-4550-8e08-1a935edd56f9
+    taskid: 798ae6fb-5535-41b0-8839-8f095fe7e1a0
     type: condition
     task:
-      id: eb221021-8d91-4550-8e08-1a935edd56f9
+      id: 798ae6fb-5535-41b0-8839-8f095fe7e1a0
       version: -1
       name: Check updated watchlist
       type: condition
@@ -297,7 +292,7 @@ tasks:
       - - operator: isTrue
           left:
             value:
-              simple: CarbonBlackEEDR.Watchlist.Alerts_enabled
+              simple: ${CarbonBlackEEDR.Watchlist.alerts_enabled}
             iscontext: true
     view: |-
       {
@@ -316,10 +311,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 492d0791-90c9-4417-88e4-cd0256be62d2
+    taskid: 69c7074c-583c-4ac1-854d-296dcb9fd987
     type: regular
     task:
-      id: 492d0791-90c9-4417-88e4-cd0256be62d2
+      id: 69c7074c-583c-4ac1-854d-296dcb9fd987
       version: -1
       name: Create new report
       description: Adds a new watchlist report.
@@ -340,7 +335,7 @@ tasks:
       tags:
         simple: one,two,three
       timestamp:
-        simple: 2024-01-01T00:00:16
+        simple: 2019-01-01T00:00:16
       title:
         simple: Report test
     separatecontext: false
@@ -361,10 +356,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: d3479ba8-4da9-4877-8383-5388503ba952
+    taskid: f5af6124-b466-4636-8172-4c876a7dfe7c
     type: regular
     task:
-      id: d3479ba8-4da9-4877-8383-5388503ba952
+      id: f5af6124-b466-4636-8172-4c876a7dfe7c
       version: -1
       name: Get new report
       description: Retrieves the specified report.
@@ -396,10 +391,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 70611b45-9898-4e2d-885a-bc862cbc161c
+    taskid: 59b8a0c5-f390-4767-8c44-8b8d7809437b
     type: regular
     task:
-      id: 70611b45-9898-4e2d-885a-bc862cbc161c
+      id: 59b8a0c5-f390-4767-8c44-8b8d7809437b
       version: -1
       name: Update report
       description: Updates the specified report.
@@ -422,7 +417,7 @@ tasks:
       tags:
         simple: hello,world
       timestamp:
-        simple: 2024-05-01T00:00:16
+        simple: 2019-05-01T00:00:16
       title:
         simple: ${CarbonBlackEEDR.Report.Title}
     separatecontext: false
@@ -443,10 +438,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 19af3e73-43d0-4561-8a54-46a7ff0d62f4
+    taskid: 1365d9cb-e858-4ba0-8e6a-82801784e4e2
     type: regular
     task:
-      id: 19af3e73-43d0-4561-8a54-46a7ff0d62f4
+      id: 1365d9cb-e858-4ba0-8e6a-82801784e4e2
       version: -1
       name: Get updated report
       description: Retrieve report with report_id.
@@ -478,10 +473,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: c05cc88a-0a79-4df0-8232-ba8d3fd58500
+    taskid: fb735104-8ff3-4a82-88c2-b1bb990d0386
     type: condition
     task:
-      id: c05cc88a-0a79-4df0-8232-ba8d3fd58500
+      id: fb735104-8ff3-4a82-88c2-b1bb990d0386
       version: -1
       name: Check updated report
       type: condition
@@ -529,10 +524,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: a9accba3-785c-4997-851b-d766905744b3
+    taskid: ca47c357-a076-4c73-867b-0cc5914cb597
     type: regular
     task:
-      id: a9accba3-785c-4997-851b-d766905744b3
+      id: ca47c357-a076-4c73-867b-0cc5914cb597
       version: -1
       name: Delete the report
       description: Remove report with report_id.
@@ -542,7 +537,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "17"
+      - "15"
     scriptarguments:
       report_id:
         simple: ${CarbonBlackEEDR.Report.ID}
@@ -564,10 +559,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 7910a37c-fdeb-40f7-8fc8-01acc98c16f9
+    taskid: 59c8268c-27d4-4f72-82b1-95bc6bbffcdf
     type: regular
     task:
-      id: 7910a37c-fdeb-40f7-8fc8-01acc98c16f9
+      id: 59c8268c-27d4-4f72-82b1-95bc6bbffcdf
       version: -1
       name: List devices
       description: List devices based on the search query.
@@ -579,14 +574,16 @@ tasks:
       '#none#':
       - "21"
     scriptarguments:
-      device_os:
-        simple: WINDOWS
+      sort_field:
+        simple: av_pack_version
+      start_time:
+        simple: "2019-01-01T11:00:00.157Z"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 460,
-          "y": 3160
+          "y": 3770
         }
       }
     note: false
@@ -599,10 +596,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 30a8e76f-1ca1-489d-8cba-d6682c42cb08
+    taskid: 27fd78a3-5cb4-45d8-8e05-4566f3784fb1
     type: regular
     task:
-      id: 30a8e76f-1ca1-489d-8cba-d6682c42cb08
+      id: 27fd78a3-5cb4-45d8-8e05-4566f3784fb1
       version: -1
       name: Delete context
       description: Delete field from context
@@ -634,10 +631,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: c130c609-6d0a-4bd0-831f-b7d7a1a30968
+    taskid: 801c51d1-f62c-4bf3-8ff8-720fda9a37a1
     type: condition
     task:
-      id: c130c609-6d0a-4bd0-831f-b7d7a1a30968
+      id: 801c51d1-f62c-4bf3-8ff8-720fda9a37a1
       version: -1
       name: Check context
       type: condition
@@ -653,12 +650,12 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: CarbonBlackEEDR.Watchlist.name
+              simple: CarbonBlackEEDR.Watchlist.Name
             iscontext: true
       - - operator: isExists
           left:
             value:
-              simple: CarbonBlackEEDR.Watchlist.id
+              simple: CarbonBlackEEDR.Watchlist.ID
             iscontext: true
     view: |-
       {
@@ -677,10 +674,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 106ed621-da8e-4788-887a-12cf7ba7042e
+    taskid: 8a31b67d-d480-4484-885a-6e83c410119b
     type: condition
     task:
-      id: 106ed621-da8e-4788-887a-12cf7ba7042e
+      id: 8a31b67d-d480-4484-885a-6e83c410119b
       version: -1
       name: Check device context
       type: condition
@@ -715,7 +712,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 3350
+          "y": 3950
         }
       }
     note: false
@@ -728,10 +725,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 84e82961-2ba5-49b7-8ebf-5c0dda9dfe96
+    taskid: 934b0918-d069-4052-8632-26ad9ee68ef9
     type: title
     task:
-      id: 84e82961-2ba5-49b7-8ebf-5c0dda9dfe96
+      id: 934b0918-d069-4052-8632-26ad9ee68ef9
       version: -1
       name: Done
       type: title
@@ -743,7 +740,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 3620
+          "y": 4140
         }
       }
     note: false
@@ -754,14 +751,213 @@ tasks:
     continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 5cd88aad-0bff-4e5f-85e9-50fdc6a6a901
+    type: regular
+    task:
+      id: 5cd88aad-0bff-4e5f-85e9-50fdc6a6a901
+      version: -1
+      name: Remove watchlist
+      description: Removes the specified watchlist.
+      script: '|||cb-eedr-watchlist-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      watchlist_id:
+        simple: ${CarbonBlackEEDR.Watchlist.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 3160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 479f4fb1-1c22-436c-8265-803b5faaf49b
+    type: regular
+    task:
+      id: 479f4fb1-1c22-436c-8265-803b5faaf49b
+      version: -1
+      name: List alerts
+      description: Returns a list of alerts.
+      script: Carbon Black Enterprise EDR|||cb-eedr-list-alerts
+      type: regular
+      iscommand: true
+      brand: Carbon Black Enterprise EDR
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      limit:
+        simple: "5"
+      sort_field:
+        simple: first_event_timestamp
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 3360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: c48e0ab2-dbe2-475d-8b9b-da1dfc56f27f
+    type: condition
+    task:
+      id: c48e0ab2-dbe2-475d-8b9b-da1dfc56f27f
+      version: -1
+      name: Check context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: CarbonBlackEEDR.Alert.device_id
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CarbonBlackEEDR.Alert.device_os
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CarbonBlackEEDR.Alert.id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 3570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: be35b2cd-42a7-4231-8966-48b09e75001a
+    type: regular
+    task:
+      id: be35b2cd-42a7-4231-8966-48b09e75001a
+      version: -1
+      name: Set watch list id
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      key:
+        simple: watchListId
+      value:
+        simple: ${CarbonBlackEEDR.Watchlist.ID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 2360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: a3b55ff5-d19c-436b-893a-0c59f4b37b11
+    type: regular
+    task:
+      id: a3b55ff5-d19c-436b-893a-0c59f4b37b11
+      version: -1
+      name: Delete context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: CarbonBlackEEDR.Watchlist
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 2520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3635,
-        "width": 390,
-        "x": 450,
+        "height": 4155,
+        "width": 1190,
+        "x": 80,
         "y": 50
       }
     }

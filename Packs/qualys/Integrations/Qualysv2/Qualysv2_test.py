@@ -23,7 +23,7 @@ from Qualysv2 import (
     get_simple_response_from_raw,
     validate_required_group,
     get_activity_logs_events_command,
-    fetch_events, get_activity_logs_events, fetch_assets, ASSETS_FETCH_FROM, ASSETS_DATE_FORMAT, HOST_LIMIT
+    fetch_events, get_activity_logs_events, fetch_assets, fetch_vulnerabilities, ASSETS_FETCH_FROM, ASSETS_DATE_FORMAT, HOST_LIMIT
 )
 
 from CommonServerPython import *  # noqa: F401
@@ -146,16 +146,41 @@ def test_fetch_assets_command(requests_mock):
     When:
     - Want to list all existing incidents
     Then:
-    - Ensure List assets and vulnerabilities.
+    - Ensure List assets.
     """
     base_url = 'https://server_url/'
     with open('./test_data/host_list_detections_raw.xml') as f:
         assets = f.read()
-    with open('./test_data/vulnerabilities_raw.xml') as f:
-        vulnerabilities = f.read()
     requests_mock.get(f'{base_url}api/2.0/fo/asset/host/vm/detection/'
                       f'?action=list&truncation_limit={HOST_LIMIT}&vm_scan_date_after='
                       f'{arg_to_datetime(ASSETS_FETCH_FROM).strftime(ASSETS_DATE_FORMAT)}', text=assets)
+
+    client = Client(base_url=base_url,
+                    verify=True,
+                    headers={},
+                    proxy=False,
+                    username='demisto',
+                    password='demisto',
+                    )
+    assets, last_run, total_assets, snapshot_id = fetch_assets(client=client, assets_last_run={})
+    assert len(assets) == 8
+    assert total_assets == '8'
+    assert snapshot_id
+    assert last_run['stage'] == 'vulnerabilities'
+
+
+def test_fetch_vulnerabilities_command(requests_mock):
+    """
+    Given:
+    - fetch_vulnerabilities_command
+    When:
+    - Want to list all existing incidents
+    Then:
+    - Ensure List vulnerabilities.
+    """
+    base_url = 'https://server_url/'
+    with open('./test_data/vulnerabilities_raw.xml') as f:
+        vulnerabilities = f.read()
 
     requests_mock.post(f'{base_url}api/2.0/fo/knowledge_base/vuln/'
                        f'?action=list&last_modified_after={arg_to_datetime(ASSETS_FETCH_FROM).strftime(ASSETS_DATE_FORMAT)}',
@@ -168,10 +193,11 @@ def test_fetch_assets_command(requests_mock):
                     username='demisto',
                     password='demisto',
                     )
-    assets, vulnerabilities = fetch_assets(client=client)
-
-    assert len(assets) == 8
+    last_run = {'since_datetime': {arg_to_datetime(ASSETS_FETCH_FROM).strftime(ASSETS_DATE_FORMAT)}}
+    vulnerabilities, last_run = fetch_vulnerabilities(client=client, last_run=last_run)
     assert len(vulnerabilities) == 2
+    assert last_run['next_page'] == ''
+    assert last_run['stage'] == 'assets'
 
 
 class TestIsEmptyResult:
