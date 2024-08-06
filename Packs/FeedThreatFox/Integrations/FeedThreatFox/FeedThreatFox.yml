@@ -23,7 +23,7 @@ configuration:
   - Suspicious
   additionalinfo: Indicators from this integration instance will be marked with this
     reputation.
-- additionalinfo: Reliability of the source providing the intelligence data
+- additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: C - Fairly reliable
   display: Source Reliability
   name: feedReliability
@@ -44,7 +44,8 @@ configuration:
   section: Collect
   type: 0
   advanced: true
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+  additionalinfo: If the indicator's confidence is below this number, it will be dropped.
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed.
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
@@ -123,7 +124,7 @@ configuration:
   type: 8
   required: false
   section: Connect
-description: Use the ThreatFox Feed integration to fetch indicators from the feed.
+description: ThreatFox is a free platform from abuse.ch with the goal of sharing indicators of compromise (IOCs) associated with malware. Use the ThreatFox Feed integration to fetch indicators from the feed.
 display: ThreatFox Feed Dev
 name: ThreatFox Feed Dev
 script:
@@ -132,13 +133,13 @@ script:
     - description: Indicator value to search for.
       name: search_term
       required: false
-    - description: Indicator id to search for.
+    - description: Indicator ID to search for.
       name: id
       required: false
     - description: Hash to search for.
       name: hash
       required: false
-    - description: tag to search for.
+    - description: Tag to search for.
       name: tag
       required: false
     - description: Malware to search for.

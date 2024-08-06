@@ -54,8 +54,8 @@ def test_check_params_good_arguments(query_args, expected_result):
     Then:
         - The function returns (True, {the argument's name}).
     """
-    from FeedThreatFox import check_params_for_query
-    is_valid, query_arg = check_params_for_query(query_args)
+    from FeedThreatFox import check_args_for_query
+    is_valid, query_arg = check_args_for_query(query_args)
     assert (is_valid, query_arg) == expected_result
     
     
@@ -77,8 +77,8 @@ def test_check_params_bad_arguments(query_args, expected_result):
     Then:
         - The function returns (False, None).
     """
-    from FeedThreatFox import check_params_for_query
-    is_valid, query_arg = check_params_for_query(query_args)
+    from FeedThreatFox import check_args_for_query
+    is_valid, query_arg = check_args_for_query(query_args)
     assert (is_valid, query_arg) == expected_result
     
 
@@ -102,7 +102,7 @@ def test_create_query(query_arg, args, expected_query):
             - Wrong arguments for a query.
         
         When:
-            - Running check_params function.
+            - Running create_query function.
         
         Then:
             - The function returns (False, None).
@@ -451,3 +451,22 @@ def test_fetch_indicators_command__second_run(mocker, with_ports, confidence_thr
     http = mocker.patch.object(CLIENT, '_http_request', return_value={'query_status': 'ok', 'data': {}})
     fetch_indicators_command(CLIENT, with_ports, confidence_threshold, create_relationship, interval, tlp_color, last_run)
     assert http.call_args.kwargs['json_data'] == expected
+    
+    
+intervals = [1441, 11520, 10081]
+@pytest.mark.parametrize('interval', intervals)
+def test_validate_interval(interval):
+    """
+        Given:
+            - An invalid interval.
+        
+        When:
+            - Running validate_interval func.
+        
+        Then:
+            - A DemistoException is raised.
+    """
+    from CommonServerPython import DemistoException
+    from FeedThreatFox import validate_interval
+    with pytest.raises(DemistoException):
+            validate_interval(interval)

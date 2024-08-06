@@ -38,16 +38,11 @@ class Client(BaseClient):
         :return: 'ok' if test passed, anything else will fail the test.
         :rtype: ``str``
         """
-        message: str = ''
-        try:
-            self.get_indicators_request({'days': 1, 'limit': 5})
-            message = 'ok'
-        except DemistoException as e:
-                raise e
-        return message
+        self.get_indicators_request({'days': 1, 'limit': 5})
+        return 'ok'
    
         
-def check_params_for_query(args: dict)->tuple[bool, str|None]:
+def check_args_for_query(args: dict)->tuple[bool, str|None]:
     """Checks that there are no extra params and no missing ones for the query.
     Args:
         args: dict
@@ -56,13 +51,13 @@ def check_params_for_query(args: dict)->tuple[bool, str|None]:
         Str: The query type (one of these: 'search_term', 'id', 'hash', 'tag', 'malware', 'days').
             If args are not good than it will be None.
     """
-    args_lst = list({ele for ele in args if args[ele]})
+    args_lst = list(args.keys())
     if 'limit' in args_lst:
         args_lst.remove('limit')
     if len(args_lst) != 1:
-        return False, None
+        raise DemistoException("Arguments given are invalid. Please specify exactly one argument to search by.")
     else:
-        return True, args_lst[0]
+        return args_lst[0]
 
 
 def create_query(query_arg, id: str | None = None, search_term: str | None = None,
@@ -79,9 +74,8 @@ def create_query(query_arg, id: str | None = None, search_term: str | None = Non
     """
     
     query_dict = {'search_term': 'search_ioc', 'id': 'ioc', 'hash': 'search_hash',
-            'tag': 'taginfo', 'malware': 'malwareinfo', 'days': 'get_iocs'}
+            'tag': 'taginfo', 'malware': 'malwareinfo'}
     
-    q_days = str((arg_to_number(days) or 1)/1440)
     q_id = arg_to_number(id)
     
     query = assign_params(
@@ -91,7 +85,6 @@ def create_query(query_arg, id: str | None = None, search_term: str | None = Non
         hash = hash,
         tag = tag,
         malware = malware,
-        days = q_days
     )
     
     # Only queries searching by tag or malware can specify a limit.
@@ -127,7 +120,7 @@ def parse_indicators_for_get_command(indicators)->List[dict[str, Any]]:
             LastSeenBySource = indicator.get('last_seen'),
             ReportedBy = indicator.get('reporter'),
             Tags = tags(indicator, with_ports=True),
-            Confidence = indicator.get('confidence_level'),
+            Confidence = str(indicator.get('confidence_level')),
             Publications = publications(indicator)
         ))
     return res
@@ -203,12 +196,13 @@ def publications(indicator: dict)->Optional[List[dict[str, Any]]]:
     if not indicator.get('reference'):
         return None
     malware_printable = indicator.get('malware_printable')
+    
     return [{'link': indicator.get('reference'),
              'title': malware_printable if malware_printable and malware_printable != 'Unknown malware' else 'Malware' ,
              'source': 'ThreatFox'}]
+             
 
-
-def date(date: Optional[str])->Optional[str]:
+def to_date(date: Optional[str])->Optional[str]:
     """parses the date returned from raw response to a date in the right format for indicator fields in XSOAR.
     """
     if date:
@@ -227,17 +221,18 @@ def tags(indicator: dict, with_ports: bool)->List[str]:
     Returns:
         List[str]: List of tags to add to the indicator.
     """
-    res = [indicator.get('malware_printable') if indicator.get('malware_printable') != 'Unknown malware' else None, indicator.get('malware_alias'), indicator.get('threat_type')]
+    res = [indicator.get('malware_printable') if indicator.get('malware_printable') != 'Unknown malware' else None, indicator.get('threat_type')]
     if indicator.get('tags'):
         res.extend(indicator['tags'])
+    if indicator.get('malware_alias'):
+        res.extend(indicator['malware_alias'].split(','))
     if with_ports and indicator.get('ioc_type') == "ip:port":
             res.append('port: ' + indicator['ioc'].split(':')[1])
             
     res = [tag.lower() for tag in res if tag]
     
     # remove duplicate tags
-    seen = set()
-    res =  [tag for tag in res if tag not in seen and not seen.add(tag)]
+    res = list(set(res))
     
     return res
 
@@ -274,6 +269,7 @@ def create_relationships(value: str, type: str, related_malware: Optional[str], 
                                                     brand='ThreatFox Feed', reverse_name=reverse_name).to_indicator()]
     return []
 
+
 def validate_interval(interval: int)->int:
     """Validates that the given interval is in days between 1 to 7.
 
@@ -299,29 +295,31 @@ def threatfox_get_indicators_command(client: Client, args: dict[str, Any]) -> Co
     malware = args.get('malware')
     limit = args.get('limit')
     
-    is_valid, query_type = check_params_for_query(args)
-    
-    if not is_valid:
-        raise DemistoException("Arguments given are invalid.")
+    query_type = check_args_for_query(args)
     
     query = create_query(query_type, id, search_term, hash, tag, malware, limit=limit)
 
     demisto.debug(f'{LOG} calling api with {query=}')
-    result = client.get_indicators_request(query)
-    demisto.debug(f'{LOG} got {result=}')
-    
+    try:
+        result = client.get_indicators_request(query)
+    except Exception:
+        if 'malware' in query:  # if illegal malware is provided an 502 error response returns
+            demisto.error('make sure..')
+        raise
+            
     query_status = result.get('query_status')
     query_data = result.get('data')
     
     if query_status != 'ok' and query_status:
-        raise DemistoException(f'failed to run command {query_status} {query_data}')
+        raise DemistoException(f'failed to run command, {query_status=}, {query_data=}')
+    
+    demisto.debug(f'{LOG} got indicators')
     
     parsed_indicators = parse_indicators_for_get_command(result.get('data') or result)
-    
     human_readable = tableToMarkdown(name='Indicators', t=parsed_indicators,
                                      headers=['ID', 'Value', 'Description', 'MalwareFamilyTags',
                                               'AliasesTags', 'FirstSeenBySource', 'LastSeenBySource', 'ReportedBy',
-                                              'Tags', 'Confidence', 'Publications'], removeNull=True)
+                                              'Tags', 'Confidence', 'Publications'], removeNull=True, is_auto_json_transform=True)
     
     return CommandResults(readable_output=human_readable)
 
@@ -372,7 +370,7 @@ def main() -> None:
     
     params = demisto.params()
     base_url = urljoin(params['url'], '/api/v1')
-    with_ports = argToBoolean(params.get('with_ports', False))
+    with_ports = argToBoolean(params.get('with_ports'))
     confidence_threshold = arg_to_number(params.get('confidence_threshold')) or 75
     create_relationship = argToBoolean(params.get('create_relationship'))
     tlp_color = params.get('tlp_color') or 'CLEAR'
@@ -399,10 +397,11 @@ def main() -> None:
             demisto.setLastRun({"last_successful_run": next_run})
 
     
+    #except Exception as e:
+    #    raise Exception(e)
     except Exception as e:
-        raise Exception(e)
-   # except Exception as e:
-    #    return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        #print(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
