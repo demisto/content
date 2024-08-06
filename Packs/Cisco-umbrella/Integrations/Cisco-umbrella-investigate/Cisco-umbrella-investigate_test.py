@@ -29,7 +29,7 @@ def mock_client() -> module.Client:
     """Create a test client for DataBee.
 
     Returns:
-        Client: DataBee Client.
+        Client: Cisco Umbrella Investigate API Client.
     """
     return module.Client(
         base_url=BASE_URL,

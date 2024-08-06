@@ -204,12 +204,12 @@ class Client(BaseClient):
         )
 
     @validate_authentication
-    def list_domain_co_occurneces(
+    def list_domain_co_occurrences(
         self,
         domain: str,
     ) -> Response:
         """
-        List domain co-occurneces.
+        List domain co-occurrences.
 
         Args:
             domain (str): A domain name.
@@ -805,7 +805,7 @@ def list_domain_co_occurences_command(
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     domain = args["domain"]
-    res = client.list_domain_co_occurneces(
+    res = client.list_domain_co_occurrences(
         domain,
     )
     outputs = {
