@@ -1059,7 +1059,7 @@ def update_related_alerts(client: Client, args: dict):
         return_results(update_alerts_in_xdr_command(client, args_for_command))
 
 
-def fetch_incidents(client, first_fetch_time, integration_instance, exclude_artifacts: bool, last_run: dict = None,
+def fetch_incidents(client, first_fetch_time, integration_instance, exclude_artifacts: bool, last_run: dict,
                     max_fetch: int = 10, statuses: List = [], starred: Optional[bool] = None,
                     starred_incidents_fetch_window: str = None):
     global ALERTS_LIMIT_PER_INCIDENTS
