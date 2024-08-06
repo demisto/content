@@ -6124,6 +6124,13 @@
         "Aha": "No instance",
         "SlackV2": "Integration slackV2 is deprecated."
     },
+    "native_nightly_packs":[
+        "Palo_Alto_Networks_WildFire",
+        "ipinfo",
+        "Slack",
+        "CortexXDR",
+        "MailSenderNew"
+    ],
     "nightly_packs": [
         "CommonScripts",
         "CommonPlaybooks",
