@@ -621,9 +621,7 @@ def test_get_modified_remote_data_command(requests_mock, last_update):
     args = {
         'lastUpdate': last_update
     }
-
-    response, _ = get_modified_remote_data_command(client, args)
-
+    response = get_modified_remote_data_command(client, args)
     assert response.modified_incident_ids == ['1', '2']
 
 
