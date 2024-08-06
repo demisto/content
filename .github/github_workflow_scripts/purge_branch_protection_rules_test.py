@@ -378,6 +378,20 @@ class TestPurgeBranchProtectionRules():
             36]
 
     def test_main_rate_limit(self, requests_mock: RequestsMocker):
+        """
+        Test `main` function when a request is rate-limited.
+
+
+        Given:
+        - Mock response for get branch protection rules request.
+
+        When:
+        - Mock response for get branch protection rules request raises
+        a `RateLimitExceededException`.
+
+        Then:
+        - The program exits 1.
+        """
 
         requests_mock.post(
             url="https://api.github.com:443/graphql",
@@ -388,10 +402,29 @@ class TestPurgeBranchProtectionRules():
             )
         )
 
-        with pytest.raises(SystemExit):
+        with pytest.raises(SystemExit) as exc:
             main()
 
+        assert exc.value.code == 1
+
     def test_main_rate_limit_2nd(self, requests_mock: RequestsMocker):
+        """
+        Test `main` function when a request is rate-limited.
+
+
+        Given:
+        - Mock response for get branch protection rules request.
+        - Mock response for delete branch protection rule request.
+
+        When:
+        - Mock response for get branch protection rules request is
+        successful.
+        - Mock response for delete branch protection rule request raises
+        a `RateLimitExceededException`.
+
+        Then:
+        - The program exits 1.
+        """
 
         requests_mock.post(
             url="https://api.github.com:443/graphql",
@@ -410,10 +443,33 @@ class TestPurgeBranchProtectionRules():
             ]
         )
 
-        with pytest.raises(SystemExit):
+        with pytest.raises(SystemExit) as exc:
             main()
 
+        assert exc.value.code == 1
+
     def test_main_rate_limit_skipping(self, requests_mock: RequestsMocker, caplog: pytest.LogCaptureFixture):
+        """
+        Test `main` function when a request is rate-limited.
+
+
+        Given:
+        - Mock response for get branch protection rules request.
+        - 4 mock responses for delete branch protection rule request.
+
+        When:
+        - Mock response for get branch protection rules request is
+        successful.
+        - 1st mock response for delete branch protection rule request raises
+        a `UnknownObjectException`.
+        - 2nd-4th mock response for delete branch protection rule request are
+        successful.
+
+        Then:
+        - 4 rules were processed, 1 with error is printed in log.
+        - Which rule deletion failed is printed in log.
+        - The program exits 1.
+        """
 
         requests_mock.post(
             url="https://api.github.com:443/graphql",
@@ -444,16 +500,32 @@ class TestPurgeBranchProtectionRules():
             ]
         )
 
-        with pytest.raises(SystemExit), caplog.at_level(level=logging.DEBUG):
+        with pytest.raises(SystemExit) as exc, caplog.at_level(level=logging.DEBUG):
             main()
+
+        assert exc.value.code == 1
 
         actual_log_output = caplog.text.splitlines()
         assert "UnknownObjectException thrown while attempting to delete" in actual_log_output[21]
         assert "Processed 4 rules, 1 with errors." in actual_log_output[33]
         assert "RuntimeError: The following rules returned errors" in actual_log_output[45]
-        assert True
 
     def test_main_invalid_credentials(self, requests_mock: RequestsMocker):
+        """
+        Test `main` function when a invalid credentials are used
+        to authenticate to GitHub.
+
+
+        Given:
+        - Mock response for get branch protection rules request.
+
+        When:
+        - Mock response for get branch protection rules request is raises
+        a `BadCredentialsException`.
+
+        Then:
+        - The program exits 1.
+        """
 
         requests_mock.post(
             url="https://api.github.com:443/graphql",
@@ -464,5 +536,7 @@ class TestPurgeBranchProtectionRules():
             )
         )
 
-        with pytest.raises(SystemExit):
+        with pytest.raises(SystemExit) as exc:
             main()
+
+        assert exc.value.code == 1
