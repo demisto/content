@@ -302,7 +302,7 @@ script:
         - contextPath: Domain.GeodiversityNormalized.score
           description:
             Score that represents the amount of queries for clients visiting
-            the domain (by country)
+            the domain (by country).
           type: Number
         - contextPath: Domain.GeodiversityNormalized.country_code
           description: Country code for the score.
@@ -310,7 +310,7 @@ script:
         - contextPath: Domain.Geodiversity.score
           description:
             Score that represents the amount of queries for clients visiting
-            the domain (by country)
+            the domain (by country).
           type: Number
         - contextPath: Domain.Geodiversity.country_code
           description: Country code for the score.
