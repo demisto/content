@@ -9,7 +9,6 @@ you are implementing with your integration
 """
 
 import json
-from datetime import datetime, timezone
 import pytest
 from Serenety import Client
 import demistomock as demisto
