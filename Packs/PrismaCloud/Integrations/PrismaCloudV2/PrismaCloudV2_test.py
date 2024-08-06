@@ -532,17 +532,13 @@ def test_permission_list_command_with_next_token(mocker, prisma_cloud_v2_client)
 
 
 # itamar
-def test_access_key_create_command_name_given(mocker, prisma_cloud_v2_client):
+def test_access_key_create_command(mocker, prisma_cloud_v2_client):
     from PrismaCloudV2 import access_key_create_command
     args = {'name': 'key-name'}
     mock_response = {'id': 'id', 'secretKey': 'secretKey'}
     mocker.patch.object(Client, '_http_request', return_value=mock_response)
     command_results = access_key_create_command(prisma_cloud_v2_client, args)
     assert command_results.raw_response == mock_response
-
-
-def test_access_key_create_command_service_account_name_given(mocker, prisma_cloud_v2_client):
-    pass
 
 
 def test_get_access_keys_without_access_key_given(mocker, prisma_cloud_v2_client):

@@ -332,7 +332,8 @@ class Client(BaseClient):
     def access_key_creation(self, args: Dict[str, Any]) -> Dict[str, Any]:
         payload = {"name": args.get('name')}
         if args.get('expires-on'):
-            payload['expiresOn'] = dateparser.parse(args.get('expires-on'), settings={'PREFER_DATES_FROM': 'future'})
+            payload['expiresOn'] = dateparser.parse(args.get('expires-on'), settings={'PREFER_DATES_FROM': 'future'}).strftime(
+                '%s') + '000'
         if args.get('service-account-name'):
             payload['serviceAccountName'] = args.get('service-account-name')
         return self._http_request(
