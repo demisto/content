@@ -330,15 +330,15 @@ class Client(BaseClient):
         return self._http_request('POST', 'code/api/v1/errors/files', json_data=data, headers=headers)
 
     def access_key_creation(self, args: Dict[str, Any]) -> Dict[str, Any]:
-        payload = json.dumps({
-            # "expiresOn": args.get('expires-on'),
-            "name": args.get('name'),
-            # "serviceAccountName": args.get('service-account-name')
-        })
+        payload = {"name": args.get('name')}
+        if args.get('expires-on'):
+            payload['expiresOn'] = dateparser.parse(args.get('expires-on'), settings={'PREFER_DATES_FROM': 'future'})
+        if args.get('service-account-name'):
+            payload['serviceAccountName'] = args.get('service-account-name')
         return self._http_request(
             method='POST',
             url_suffix='/access_keys',
-            data=payload
+            data=json.dumps(payload)
         )
 
     def get_access_key_by_id(self, args: Dict[str, Any]) -> Dict[str, Any]:
@@ -2096,7 +2096,8 @@ def get_access_keys_list(client: Client, args: Dict[str, Any]) -> CommandResults
             'Created Timestamp': timestamp_to_datestring(access_key.get('createdTs'), DATE_FORMAT),
             'Last Used Time': timestamp_to_datestring(access_key.get('lastUsedTime'), DATE_FORMAT),
             'Status': access_key.get('status'),
-            'Expires On': timestamp_to_datestring(access_key.get('expiresOn'), DATE_FORMAT),
+            'Expires On': timestamp_to_datestring(access_key.get('expiresOn'), DATE_FORMAT) if access_key.get(
+                'expiresOn') != 0 else '',
             'Role id': access_key.get('role', {}).get('id'),
             'Role Name': access_key.get('role', {}).get('name'),
             'Role Type': access_key.get('roleType'),
