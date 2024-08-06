@@ -83,6 +83,7 @@ def get_existing_incidents(input_args, current_incident_type):
         type_query = generate_incident_type_query_component(type_field, type_values)
         query_components.append(type_query)
     if len(query_components) > 0:
+        demisto.debug(f'{len(query_components)=}')
         get_incidents_args['query'] = ' and '.join(f'({c})' for c in query_components)
 
     fields = [EMAIL_BODY_FIELD, EMAIL_SUBJECT_FIELD, EMAIL_HTML_FIELD, FROM_FIELD, FROM_DOMAIN_FIELD, 'created', 'id',
@@ -98,7 +99,7 @@ def get_existing_incidents(input_args, current_incident_type):
     if is_error(incidents_query_res):
         return_error(get_error(incidents_query_res))
     incidents_query_contents = '{}'
-
+    demisto.debug(f'{incidents_query_res=}')
     for res in incidents_query_res:
         if res['Contents']:
             incidents_query_contents = res['Contents']
@@ -135,6 +136,7 @@ def get_text_from_html(html):
     text = soup.get_text()
     # break into lines and remove leading and trailing space on each
     lines = (line.strip() for line in text.splitlines())
+    demisto.debug(f'{lines=}')
     # break multi-headlines into a line each
     chunks = (phrase.strip() for line in lines for phrase in line.split("  "))
     # drop blank lines
@@ -148,6 +150,7 @@ def eliminate_urls_extensions(text):
     if len(urls_list) == 0:
         return text
     formatted_urls_list = format_urls(urls_list)
+    demisto.debug(f'{len(urls_list)=}')
     for url, formatted_url in zip(urls_list, formatted_urls_list):
         parsed_uri = urlparse(formatted_url)
         url_with_no_path = '{uri.scheme}://{uri.netloc}/'.format(uri=parsed_uri)
@@ -344,6 +347,7 @@ def format_incident_hr(duplicate_incidents_df):
     incidents_list = duplicate_incidents_df.to_dict('records')
     json_lists = []
     status_map = {'0': 'Pending', '1': 'Active', '2': 'Closed', '3': 'Archive'}
+    demisto.debug(f'{len(incidents_list)=}')
     for incident in incidents_list:
         json_lists.append({'Id': "[{}](#/Details/{})".format(incident['id'], incident['id']),
                            'Name': incident['name'],
