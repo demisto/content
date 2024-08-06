@@ -1142,10 +1142,6 @@ Verifies the Gurucul platform's operational status by assessing system health, r
 
 `gra-validate-api`
 
-#### Input
-
-    []
-
 #### Context Output
 
     []
