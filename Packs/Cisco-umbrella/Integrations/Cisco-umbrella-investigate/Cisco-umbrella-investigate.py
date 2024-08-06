@@ -123,11 +123,11 @@ class Client(BaseClient):
 
     def authenticate(
         self,
-    ) -> Response:
+    ) -> dict[str, Any]:
         """Get API token with username and password.
 
         Returns:
-            Response: API response from Cisco Umbrella Investigate API.
+            dict[str, Any]: API response from Cisco Umbrella Investigate API.
         """
         return self._http_request(
             method="GET",
@@ -143,7 +143,7 @@ class Client(BaseClient):
         self,
         domain: str,
         show_labels: bool,
-    ) -> Response:
+    ) -> dict[str, Any]:
         """
         Get domain categorization.
 
@@ -152,7 +152,7 @@ class Client(BaseClient):
             show_labels (bool): Whether to retrieve the category labels or ids.
 
         Returns:
-            Response: API response from Cisco Umbrella Investigate API.
+            dict[str, Any]: API response from Cisco Umbrella Investigate API.
         """
         url_suffix = f"investigate/v2/domains/categorization/{domain}"
         if show_labels:
@@ -172,7 +172,7 @@ class Client(BaseClient):
         type_: str | None,
         limit: int,
         offset: int,
-    ) -> Response:
+    ) -> dict[str, Any]:
         """
         Search for domain.
 
@@ -186,7 +186,7 @@ class Client(BaseClient):
             offset (int): The optional index of the first data to retrieve.
 
         Returns:
-            Response: API response from Cisco Umbrella Investigate API.
+            dict[str, Any]: API response from Cisco Umbrella Investigate API.
         """
         return self._http_request(
             method="GET",
@@ -207,7 +207,7 @@ class Client(BaseClient):
     def list_domain_co_occurrences(
         self,
         domain: str,
-    ) -> Response:
+    ) -> dict[str, Any]:
         """
         List domain co-occurrences.
 
@@ -215,7 +215,7 @@ class Client(BaseClient):
             domain (str): A domain name.
 
         Returns:
-            Response: API response from Cisco Umbrella Investigate API.
+            dict[str, Any]: API response from Cisco Umbrella Investigate API.
         """
         return self._http_request(
             method="GET",
@@ -226,7 +226,7 @@ class Client(BaseClient):
     def list_related_domains(
         self,
         domain: str,
-    ) -> Response:
+    ) -> dict[str, Any]:
         """
         List domain names that are frequently requested around the same time as the given domain name.
 
@@ -234,7 +234,7 @@ class Client(BaseClient):
             domain (str): A domain name.
 
         Returns:
-            Response: API response from Cisco Umbrella Investigate API.
+            dict[str, Any]: API response from Cisco Umbrella Investigate API.
         """
         return self._http_request(
             method="GET",
@@ -245,7 +245,7 @@ class Client(BaseClient):
     def get_domain_security_score(
         self,
         domain: str,
-    ) -> Response:
+    ) -> dict[str, Any]:
         """
         Get multiple scores or security features for a domain.
 
@@ -253,7 +253,7 @@ class Client(BaseClient):
             domain (str): The domain name.
 
         Returns:
-            Response: API response from Cisco Umbrella Investigate API.
+            dict[str, Any]: API response from Cisco Umbrella Investigate API.
         """
         return self._http_request(
             method="GET",
@@ -264,7 +264,7 @@ class Client(BaseClient):
     def get_domain_risk_score(
         self,
         domain: str,
-    ) -> Response:
+    ) -> dict[str, Any]:
         """
         Get the domain risk score.
 
@@ -272,7 +272,7 @@ class Client(BaseClient):
             domain (str): The domain name.
 
         Returns:
-            Response: API response from Cisco Umbrella Investigate API.
+            dict[str, Any]: API response from Cisco Umbrella Investigate API.
         """
         return self._http_request(
             method="GET",
@@ -296,7 +296,7 @@ class Client(BaseClient):
         required_categories: str | None,
         limit: int,
         offset: int,
-    ) -> Response:
+    ) -> dict[str, Any]:
         """
         List the Resource Record (RR) data for DNS responses.
 
@@ -318,7 +318,7 @@ class Client(BaseClient):
             offset (int): The optional index of the first data to retrieve.
 
         Returns:
-            Response: API response from Cisco Umbrella Investigate API.
+            dict[str, Any]: API response from Cisco Umbrella Investigate API.
         """
         return self._http_request(
             method="GET",
@@ -347,7 +347,7 @@ class Client(BaseClient):
         domain: str,
         offset_name: str | None,
         limit: int | None,
-    ) -> Response:
+    ) -> dict[str, Any]:
         """
         List sub-domains of a given domain.
 
@@ -357,7 +357,7 @@ class Client(BaseClient):
             limit (int | None): The maximum number of records to retrieve.
 
         Returns:
-            Response: API response from Cisco Umbrella Investigate API.
+            dict[str, Any]: API response from Cisco Umbrella Investigate API.
         """
         return self._http_request(
             method="GET",
@@ -374,7 +374,7 @@ class Client(BaseClient):
     def get_ip_bgp(
         self,
         ip: str,
-    ) -> Response:
+    ) -> dict[str, Any]:
         """
         Get data about ASN and IP relationships, showing how IP addresses are related
         to each other and to the regional registries.
@@ -383,7 +383,7 @@ class Client(BaseClient):
             ip (str): The IPv4 IP address where to obtain the AS information.
 
         Returns:
-            Response: API response from Cisco Umbrella Investigate API.
+            dict[str, Any]: API response from Cisco Umbrella Investigate API.
         """
         return self._http_request(
             method="GET",
@@ -394,7 +394,7 @@ class Client(BaseClient):
     def get_asn_bgp(
         self,
         asn: str,
-    ) -> Response:
+    ) -> dict[str, Any]:
         """
         Get BGP Route Information for ASN
 
@@ -402,7 +402,7 @@ class Client(BaseClient):
             asn (str): Autonomous System Number (ASN) for the AS.
 
         Returns:
-            Response: API response from Cisco Umbrella Investigate API.
+            dict[str, Any]: API response from Cisco Umbrella Investigate API.
         """
         return self._http_request(
             method="GET",
@@ -413,7 +413,7 @@ class Client(BaseClient):
     def get_domain_who_is(
         self,
         domain: str,
-    ) -> Response:
+    ) -> dict[str, Any]:
         """
         Get the WHOIS information for the specified domains.
 
@@ -421,7 +421,7 @@ class Client(BaseClient):
             domain (str): The domain name.
 
         Returns:
-            Response: API response from Cisco Umbrella Investigate API.
+            dict[str, Any]: API response from Cisco Umbrella Investigate API.
         """
         return self._http_request(
             method="GET",
@@ -433,7 +433,7 @@ class Client(BaseClient):
         self,
         domain: str,
         limit: int,
-    ) -> Response:
+    ) -> dict[str, Any]:
         """
         Get a WHOIS response record for a single domain with available historical WHOIS data returned in an object
 
@@ -442,7 +442,7 @@ class Client(BaseClient):
             limit (int): The maximum number of records to retrieve.
 
         Returns:
-            Response: API response from Cisco Umbrella Investigate API.
+            dict[str, Any]: API response from Cisco Umbrella Investigate API.
         """
         return self._http_request(
             method="GET",
@@ -460,7 +460,7 @@ class Client(BaseClient):
         sort: str | None,
         limit: int,
         offset: int,
-    ) -> Response:
+    ) -> dict[str, Any]:
         """
         Get WHOIS information for the nameserver.
 
@@ -472,7 +472,7 @@ class Client(BaseClient):
             offset (int): The optional index of the first data to retrieve.
 
         Returns:
-            Response: API response from Cisco Umbrella Investigate API.
+            dict[str, Any]: API response from Cisco Umbrella Investigate API.
         """
         url_suffix = (
             "investigate/v2/whois/nameservers"
@@ -499,7 +499,7 @@ class Client(BaseClient):
         sort: str | None,
         limit: int,
         offset: int,
-    ) -> Response:
+    ) -> dict[str, Any]:
         """
         Get WHOIS information for the email address.
 
@@ -510,7 +510,7 @@ class Client(BaseClient):
             offset (int): The optional index of the first data to retrieve.
 
         Returns:
-            Response: API response from Cisco Umbrella Investigate API.
+            dict[str, Any]: API response from Cisco Umbrella Investigate API.
         """
         return self._http_request(
             method="GET",
@@ -534,7 +534,7 @@ class Client(BaseClient):
         stop: str | None,
         limit: int,
         offset: int,
-    ) -> Response:
+    ) -> dict[str, Any]:
         """
         Performs a regular expression (RegEx) search on the WHOIS data
         (domain, nameserver, and email fields) that was updated or created in the specified time range.
@@ -549,7 +549,7 @@ class Client(BaseClient):
             offset (int): The optional index of the first data to retrieve.
 
         Returns:
-            Response: API response from Cisco Umbrella Investigate API.
+            dict[str, Any]: API response from Cisco Umbrella Investigate API.
         """
         return self._http_request(
             method="GET",
@@ -569,7 +569,7 @@ class Client(BaseClient):
     def get_top_seen_domain(
         self,
         limit: int | None,
-    ) -> Response:
+    ) -> dict[str, Any]:
         """
         List the most seen domains in Umbrella.
 
@@ -577,7 +577,7 @@ class Client(BaseClient):
             limit (int | None): The maximum number of records to retrieve.
 
         Returns:
-            Response: API response from Cisco Umbrella Investigate API.
+            dict[str, Any]: API response from Cisco Umbrella Investigate API.
         """
         return self._http_request(
             method="GET",
@@ -596,7 +596,7 @@ class Client(BaseClient):
         start: str,
         stop: str | None,
         match: str | None,
-    ) -> Response:
+    ) -> dict[str, Any]:
         """
         List the query volume for a domain over the last 30 days.
 
@@ -607,7 +607,7 @@ class Client(BaseClient):
             match (str | None): The type of the query volume for the domain.
 
         Returns:
-            Response: API response from Cisco Umbrella Investigate API.
+            dict[str, Any]: API response from Cisco Umbrella Investigate API.
         """
         return self._http_request(
             method="GET",
@@ -625,7 +625,7 @@ class Client(BaseClient):
     def list_timeline(
         self,
         name: str,
-    ) -> Response:
+    ) -> dict[str, Any]:
         """
         List the historical tagging timeline for a given IP, domain, or URL.
 
@@ -633,7 +633,7 @@ class Client(BaseClient):
             name (str): An IP, a domain, or an URL.
 
         Returns:
-            Response: API response from Cisco Umbrella Investigate API.
+            dict[str, Any]: API response from Cisco Umbrella Investigate API.
         """
         return self._http_request(
             method="GET",
@@ -1912,7 +1912,7 @@ def main() -> None:
         f"{INTEGRATION_COMMAND_PREFIX}-get-ip-timeline",
         f"{INTEGRATION_COMMAND_PREFIX}-get-url-timeline",
     ]
-    timeline_commands_types: dict[str, Callable] = {
+    timeline_commands_types: dict[str, str] = {
         f"{INTEGRATION_COMMAND_PREFIX}-get-domain-timeline": "Domain",
         f"{INTEGRATION_COMMAND_PREFIX}-get-ip-timeline": "IP",
         f"{INTEGRATION_COMMAND_PREFIX}-get-url-timeline": "URL",
