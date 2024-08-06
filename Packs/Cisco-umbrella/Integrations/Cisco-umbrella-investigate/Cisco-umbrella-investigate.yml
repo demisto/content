@@ -25,10 +25,10 @@ configuration:
   - display: Trust any certificate (not secure)
     name: insecure
     type: 8
-    defaultvalue: false
+    defaultvalue: "false"
   - display: Use system proxy settings
     name: proxy
-    defaultvalue: false
+    defaultvalue: "false"
     type: 8
   - additionalinfo: Cisco Umbrella Investigate base URL.
     display: Base URL
@@ -665,16 +665,16 @@ script:
           description: The time when the attribution for this Domain was made.
           type: String
         - contextPath: DBotScore.Indicator
-          description: The Indicator name.
+          description: The indicator that was tested.
           type: String
         - contextPath: DBotScore.Score
-          description: The DBot score.
+          description: The actual score.
           type: String
         - contextPath: DBotScore.Type
-          description: The domain type.
+          description: The indicator type.
           type: String
         - contextPath: DBotScore.Vendor
-          description: The DBot score vendor.
+          description: The vendor used to calculate the score.
           type: String
         - contextPath: Domain.Umbrella.ContentCategories
           description: The Umbrella content category or categories that match this domain. If none of them match, the return will be blank.
@@ -2039,3 +2039,4 @@ script:
   script: "-"
   subtype: python3
   type: python
+fromversion: 5.0.0
