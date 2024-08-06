@@ -34,7 +34,7 @@ CONTEXT_RESULTS = (
     '"createdTimeUtc": "2024-08-05T14:19:49.3176516Z", "author": {"name": "test2", "userPrincipalName": "test_user2"}}}]'
 )
 
-EXPECTED_TABLE = "|Name|Message|Created Time Utc|\n" \
+EXPECTED_TABLE = "|Message|Created Time|Name|\n" \
                  "|---|---|---|\n" \
                  "| test | test_message | test_time |\n" \
                  "| test2 | test_message2 | test_time2 |\n"
