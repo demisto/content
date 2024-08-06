@@ -680,52 +680,52 @@ script:
           description: The Umbrella content category or categories that match this domain. If none of them match, the return will be blank.
           type: String
         - contextPath: Domain.Umbrella.MalwareCategories
-          description: string
+          description: The Umbrella security category, or categories, that match this domain or that this domain is associated with. If none match, the return will be blank.
           type: String
         - contextPath: Domain.Malicious.Vendor
-          description: string
+          description: For malicious domains, the vendor that made the decision.
           type: String
         - contextPath: Domain.Malicious.Description
-          description: string
+          description: For malicious domains, the reason for the vendor to make the decision.
           type: String
         - contextPath: Domain.Admin.Country
-          description: string
+          description: The country of the domain administrator.
           type: String
         - contextPath: Domain.Admin.Email
-          description: string
+          description: The email address of the domain administrator.
           type: String
         - contextPath: Domain.Admin.Name
-          description: string
+          description: The name of the domain administrator.
           type: String
         - contextPath: Domain.Admin.Phone
-          description: string
+          description: The phone number of the domain administrator.
           type: String
         - contextPath: Domain.Registrant.Country
-          description: string
+          description: The country of the registrant.
           type: String
         - contextPath: Domain.Registrant.Email
-          description: string
+          description: The email address of the registrant.
           type: String
         - contextPath: Domain.Registrant.Name
-          description: string
+          description: The name of the registrant.
           type: String
         - contextPath: Domain.Registrant.Phone
-          description: string
+          description: The phone number of the registrant.
           type: String
         - contextPath: Domain.CreationDate
-          description: date
+          description: The date on which the domain was created.
           type: String
         - contextPath: Domain.DomainStatus
-          description: string
+          description: The status of the domain.
           type: String
         - contextPath: Domain.UpdatedDate
-          description: date
+          description: The date on which the domain was last updated.
           type: String
         - contextPath: Domain.ExpirationDate
-          description: date
+          description: The expiration date of the domain.
           type: String
         - contextPath: Domain.Registrar.Name
-          description: string
+          description: The name of the registrar, such as "GoDaddy".
           type: String
     - arguments:
         - default: true
@@ -1518,22 +1518,22 @@ script:
       name: umbrella-get-domain-queryvolume
       outputs:
         - contextPath: Umbrella.QueryVolume.name
-          description: String
+          description: A domain name.
           type: Umbrella.QueryVolume.Domain
         - contextPath: Umbrella.QueryVolume.Domain
-          description: String
+          description: A domain name.
           type: String
         - contextPath: Umbrella.QueryVolume.Data.StartDate
-          description: String
+          description: Start date for which the volume data is returned.
           type: String
         - contextPath: Umbrella.QueryVolume.Data.StopDate
-          description: String
+          description: Stop date for which the volume data is returned.
           type: String
         - contextPath: Umbrella.QueryVolume.QueriesInfo.QueryHour
-          description: String
+          description: Query hour for which the queries data is returned.
           type: Umbrella.QueryVolume.Data.QueriesInfo.QueryHour
         - contextPath: Umbrella.QueryVolume.QueriesInfo.Queries
-          description: String
+          description: Number of DNS queries per hour, in ascending order, to the specified domain.
           type: Umbrella.QueryVolume.Data.QueriesInfo.Queries
     - arguments:
         - default: true
