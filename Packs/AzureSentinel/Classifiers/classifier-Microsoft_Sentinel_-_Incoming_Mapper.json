@@ -98,64 +98,9 @@
                 "Microsoft Sentinel Classification Comment": {
                     "simple": "classificationComment"
                 },
-                "Microsoft Sentinel Comment": {
-					"complex": {
-						"filters": [],
-						"root": "comments",
-						"transformers": [
-							{
-								"operator": "ReverseList"
-							},
-							{
-								"args": {
-									"array1_key": {
-										"isContext": false,
-										"value": {
-											"simple": "properties.author.name"
-										}
-									},
-									"array2": {
-										"isContext": true,
-										"value": {
-											"simple": "comments"
-										}
-									},
-									"array2_key": {
-										"isContext": false,
-										"value": {
-											"simple": "properties"
-										}
-									},
-									"determine_output_length_by": {
-										"isContext": false
-									},
-									"merge_dict": {
-										"isContext": false,
-										"value": {
-											"simple": "array2"
-										}
-									},
-									"output_name1": {
-										"isContext": false,
-										"value": {
-											"simple": "name"
-										}
-									},
-									"output_name2": {
-										"isContext": false,
-										"value": {
-											"simple": "1111"
-										}
-									}
-								},
-								"operator": "MakePair"
-							},
-							{
-								"operator": "ConvertKeysToTableFieldFormat"
-							}
-						]
-					}
-				},
+                "Microsoft Sentinel Comments": {
+                    "simple": "comments"
+                },
                 "Microsoft Sentinel Entities": {
                     "simple": "entities"
                 },
@@ -169,7 +114,7 @@
                         "transformers": [
                             {
                                 "operator": "ConvertKeysToTableFieldFormat"
-							}
+                            }
                         ]
                     }
                 },

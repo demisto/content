@@ -1,6 +1,5 @@
 import demistomock as demisto
 import CommonServerPython
-import pytest
 
 
 def test_add_new_comment(mocker):
@@ -51,7 +50,3 @@ def test_add_new_comment(mocker):
         outputs_prefix="AzureSentinel.AddComment",
         outputs={"incident_id": expected_incident_id, "message": expected_new_comment},
     )
-
-
-if __name__ == "__main__":
-    pytest.main()

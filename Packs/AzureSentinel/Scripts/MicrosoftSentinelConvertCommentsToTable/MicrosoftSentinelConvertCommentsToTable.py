@@ -1,6 +1,5 @@
 import demistomock as demisto
 from CommonServerPython import *
-from itertools import chain
 
 
 def format_comment(comment: dict) -> dict:
@@ -8,10 +7,9 @@ def format_comment(comment: dict) -> dict:
     Converts a comment to a dictionary with the relevant fields.
     """
     return {
-        'name': comment.get('name'),
         'message': comment.get('properties', {}).get('message'),
-        'createdTimeUtc': comment.get('properties', {}).get('createdTimeUtc'),
-        'userPrincipalName': comment.get('properties', {}).get('author', {}).get('userPrincipalName')
+        'createdTime': datetime.strftime(arg_to_datetime(comment.get('properties', {}).get('createdTimeUtc')), '%d/%m/%Y, %H:%M'), # type: ignore
+        'name': comment.get('properties', {}).get('author', {}).get('name'),
     }
 
 
@@ -26,13 +24,13 @@ def convert_to_table(context_results: str) -> CommandResults:
     context_results = json.loads(context_results)
 
     context_formatted = [
-        format_comment(comment) for comment in context_results
+        format_comment(comment) for comment in context_results # type: ignore
     ]
 
     md = tableToMarkdown(
         '',
         context_formatted,
-        headers=[*dict.fromkeys(chain.from_iterable(context_formatted))],
+        headers=["message", "createdTime", "name"],
         removeNull=True,
         sort_headers=False,
         headerTransform=pascalToSpace
@@ -53,7 +51,7 @@ def main():  # pragma: no cover
     if not context:
         return_error('No data to present')
 
-    return_results(convert_to_table(context))
+    return_results(convert_to_table(context)) # type: ignore
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

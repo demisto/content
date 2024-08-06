@@ -571,11 +571,6 @@ MOCKED_RAW_INCIDENT_OUTPUT = {
 }
 
 
-def util_load_json(path):
-    with open(path, encoding="utf-8") as f:
-        return json.loads(f.read())
-
-
 class TestHappyPath:
     """
     Group the Happy path tests
@@ -1633,7 +1628,7 @@ def test_get_mapping_fields_command():
     assert result.scheme_types_mappings[0].fields.keys() == {'description', 'status', 'lastActivityTimeUtc',
                                                              'classificationReason', 'tags', 'classificationComment',
                                                              'severity', 'firstActivityTimeUtc', 'classification',
-                                                             'title', 'etag', 'owner'}
+                                                             'title', 'etag'}
 
 
 def test_update_remote_system_command(mocker):
@@ -2114,44 +2109,3 @@ def test_update_incident_with_client_changed_etag(mocker):
 
     assert http_request_mock.call_count == 2
     assert http_request_mock.call_args[1].get('data', {}).get('etag') == newer_incident_from_azure.get('etag')
-
-
-@pytest.mark.parametrize(
-    "server_owner, remote_owner, expected",
-    [
-        (
-            {"assignedto": "user1", "email": "user1@example.com"},
-            {"assignedTo": "user2", "email": "user2@example.com"},
-            {"assignedTo": "user1", "email": "user1@example.com"}
-        ),
-        (
-            {"assignedto": "user1", "email": "user1@example.com"},
-            {"assignedTo": "user1", "email": "user1@example.com"},
-            {}
-        ),
-        (
-            {"assignedto": "user1", "email": "user1@example.com"},
-            {"assignedTo": "user1", "email": "user2@example.com"},
-            {"email": "user1@example.com"}
-        ),
-        (
-            {},
-            {"assignedTo": "user1", "email": "user1@example.com"},
-            None
-        ),
-        (
-            {"assignedto": "user1", "email": "user1@example.com"},
-            {},
-            None
-        ),
-        (
-            {},
-            {},
-            None
-        )
-    ]
-)
-def test_find_owner_diff(server_owner, remote_owner, expected):
-    from AzureSentinel import find_owner_diff
-    result = find_owner_diff(server_owner, remote_owner)
-    assert result == expected
