@@ -1,5 +1,5 @@
 Cisco Umbrella Investigate enable you to research domains, IPs, and URLs observed by the Umbrella resolvers.
-This integration was integrated and tested with version xx of Cisco Umbrella Investigate.
+This integration was integrated and tested with version 2.0.0 of Cisco Umbrella Investigate.
 
 ## Configure Cisco Umbrella Investigate on Cortex XSOAR
 

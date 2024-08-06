@@ -9,7 +9,7 @@ configuration:
     name: apitoken_creds
     required: true
     type: 9
-  - defaultValue: B - Usually reliable
+  - defaultvalue: B - Usually reliable
     display: Source Reliability
     name: integrationReliability
     options:
@@ -45,7 +45,7 @@ configuration:
     required: true
     type: 0
   - additionalinfo: Make sure the Malicious threshold is less than the suspicious threshold.
-    defaultValue: "0"
+    defaultvalue: "0"
     display: Score Malicious Threshold (-100 to 100)
     name: dboscore_threshold
     required: true
