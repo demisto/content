@@ -437,7 +437,8 @@ tasks:
       '#none#':
       - "15"
     scriptarguments:
-      alert_id: {}
+      alert_id:
+        simple: "51286"
       callback_domain: {}
       dst_ip: {}
       duration: {}
