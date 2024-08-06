@@ -920,6 +920,30 @@ class STIX2XSOARParser(BaseClient):
         return indicator
 
     @staticmethod
+    def get_entity_b_type_and_value(related_obj: str, id_to_object: dict[str, dict[str, Any]],
+                                    is_unit42_report: bool = False) -> tuple:
+        """
+        Gets the type and the value of the indicator.
+
+        Args:
+            related_obj: the indicator to get information on.
+            id_to_object: a dict in the form of - id: stix_object.
+            is_unit42_report: represents whether unit42 report or not.
+
+        Returns:
+            tuple. the indicator type and value.
+        """
+        indicator_obj = id_to_object.get(related_obj, {})
+        entity_b_value = indicator_obj.get('name', '')
+        entity_b_obj_type = STIX_2_TYPES_TO_CORTEX_TYPES.get(indicator_obj.get('type', ''),
+                                                             STIX2XSOARParser.get_ioc_type(related_obj, id_to_object))
+        if indicator_obj.get('type') == "indicator":
+            entity_b_value = STIX2XSOARParser.get_ioc_value(related_obj, id_to_object)
+        elif indicator_obj.get('type') == "attack-pattern" and is_unit42_report:
+            _, entity_b_value = STIX2XSOARParser.get_attack_id_and_value_from_name(indicator_obj)
+        return entity_b_obj_type, entity_b_value
+
+    @staticmethod
     def get_attack_id_and_value_from_name(attack_indicator):
         """
         Split indicator name into MITRE ID and indicator value: 'T1108: Redundant Access' -> MITRE ID = T1108,
@@ -956,14 +980,9 @@ class STIX2XSOARParser(BaseClient):
                 if ignore_reports_relationships and related_obj.startswith('report--'):
                     continue
                 obj_refs_excluding_relationships_prefix.append(related_obj)
-                if (entity_b_obj := id_to_object.get(related_obj, {})):
-                    if (entity_b_obj_type := STIX_2_TYPES_TO_CORTEX_TYPES.get(entity_b_obj.get('type', ''), '')) == '':
-                        entity_b_obj_type = STIX2XSOARParser.get_ioc_type(related_obj, id_to_object)
-                    entity_b_value = (STIX2XSOARParser.get_ioc_value(related_obj, id_to_object)
-                                      if (entity_b_obj.get('type') == "indicator" and is_unit42_report)
-                                      else entity_b_obj.get('name'))
-                    if is_unit42_report and entity_b_obj.get('type') == "attack-pattern":
-                        ind_id, entity_b_value = STIX2XSOARParser.get_attack_id_and_value_from_name(entity_b_obj)
+                if id_to_object.get(related_obj, {}):
+                    entity_b_obj_type, entity_b_value = STIX2XSOARParser.get_entity_b_type_and_value(related_obj, id_to_object,
+                                                                                                     is_unit42_report)
                     relationships.append(
                         EntityRelationship(
                             name='related-to',
