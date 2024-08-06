@@ -11,7 +11,7 @@ Signum password expiry notification
     | username | True |
     | Password | True |
     | verify certificate | False |
-    |  | False |
+    | Use system proxy | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
