@@ -15,8 +15,8 @@ TOKEN_EXPIRY_BUFFER = timedelta(seconds=10)
 DEFAULT_LIMIT = 50
 MAX_LIMIT = 3000
 # TODO: remove print
-print(f"{demisto.args()=}")
-print(f"{demisto.params()=}")
+# print(f"{demisto.args()=}")
+# print(f"{demisto.params()=}")
 
 
 ''' CLIENT CLASS '''
@@ -95,7 +95,7 @@ class Client(BaseClient):
 
         def _make_request() -> Any:
             # TODO: remove print
-            print(f"{kargs}")
+            # print(f"{kargs}")
             response = self._http_request(**kargs)
             if isinstance(response, dict) and (error := response.get("errors", {})):
                 raise DemistoException(error.get("message"))
@@ -384,6 +384,13 @@ def transform_dicts(input_dict: Dict[str, List[str]]) -> List[Dict[str, str]]:
     return result
 
 
+def convert_all_timestamp_to_datestring(incident: dict) -> dict:
+    keys = ['caseCreationTimestamp', 'lastModifiedTimestamp', 'creationTimestamp', 'ingestTimestamp', 'approxLogTime']
+    for key in keys:
+        incident[key] = timestamp_to_datestring(incident[key] / 1000, date_format=DATE_FORMAT)
+    return incident
+
+
 ''' COMMAND FUNCTIONS '''
 
 
@@ -454,7 +461,7 @@ def case_search_command(client: Client, args: dict) -> CommandResults:
             'endTime': end_time,
         }
 
-        all_results = argToBoolean(args.get("all_results"))
+        all_results = argToBoolean(args.get("all_results", False))
         if not all_results:
             kwargs['limit'] = get_limit(args)
 
@@ -464,7 +471,7 @@ def case_search_command(client: Client, args: dict) -> CommandResults:
         response = client.case_search_request(kwargs)
         data_response = response.get("rows", [])
 
-        include_related_rules = argToBoolean(args.get("include_related_rules"))
+        include_related_rules = argToBoolean(args.get("include_related_rules", False))
         human_readable = []
         for row in data_response:
             if parsed_row := _parse_entry(row):
@@ -599,7 +606,7 @@ def table_record_create_command(args: dict, client: Client) -> PollResult:
     tracker_response = client.check_tracker_id(tracker_id)
     upload_status = tracker_response.get("uploadStatus")
     # TODO: print
-    print(f"{upload_status=}")
+    # print(f"{upload_status=}")
     human_readable = {"Total Uploaded": tracker_response.get(
         "totalUploaded"), "Total Errors": tracker_response.get("totalErrors")}
 
@@ -608,6 +615,60 @@ def table_record_create_command(args: dict, client: Client) -> PollResult:
         continue_to_poll=(upload_status != "completed"),
         args_for_next_run=args.update({"tracker_id": tracker_id}),
     )
+
+
+def fetch_incidents(client: Client, params: dict[str, str]) -> tuple[list, str]:
+    last_run = demisto.getLastRun()
+    first_fetch = params.get("first_fetch", "3 days")
+
+    start_time, end_time = get_fetch_run_time_range(
+        last_run=last_run,
+        first_fetch=first_fetch,
+        look_back=0,
+        date_format=DATE_FORMAT,
+    )
+
+    filter = params.get("fetch_query")
+    limit = arg_to_number(params.get("max_fetch"))
+
+    args = {
+        "filter": filter,
+        "startTime": start_time,
+        "endTime": end_time,
+        "limit": limit,
+        "include_related_rules": True
+    }
+    demisto.debug(f"fetching incidents between {start_time=} and {end_time=}")
+    command_results = case_search_command(client, args)
+    cases = command_results.outputs
+    if not isinstance(cases, list):
+        raise
+
+    incidents: list[dict] = []
+    for case in cases:
+        case = convert_all_timestamp_to_datestring(case)
+        alert_name = case.get("alertName", "")
+        incidents.append(
+            {
+                "Name": alert_name,
+                "rawJSON": json.dumps(case),
+            }
+        )
+
+    last_run = update_last_run_object(
+        last_run=last_run,
+        incidents=cases,
+        fetch_limit=limit,
+        start_fetch_time=start_time,
+        end_fetch_time=end_time,
+        look_back=0,
+        created_time_field='creationTimestamp',
+        id_field='alertName',
+        date_format=DATE_FORMAT,
+        increase_last_run_time=True
+    )
+    demisto.debug(f"Last run after the fetch run: {last_run}")
+    return incidents, last_run
 
 
 def test_module(client: Client) -> str:    # pragma: no cover
@@ -654,7 +715,10 @@ def main() -> None:
 
         if command == 'test-module':
             return_results(test_module(client))
-
+        elif command == 'fetch-incidents':
+            incidents, next_run = fetch_incidents(client, params)
+            demisto.setLastRun(next_run)
+            demisto.incidents(incidents)
         elif command == 'exabeam-platform-event-search':
             return_results(event_search_command(client, args))
         elif command == 'exabeam-platform-case-search':
