@@ -66,7 +66,8 @@ def parse_multipart_message(msg: str):
     for part in email_message.walk():
         content_type = part.get_content_type()
         if (content_type == 'application/pkcs7-signature'
-                or content_type == 'application/pkcs7-mime'):
+                or content_type == 'application/pkcs7-mime'
+                or content_type == 'application/x-pkcs7-mime'):
             # The message is signed
             return ['', '']
         if part.is_multipart():
