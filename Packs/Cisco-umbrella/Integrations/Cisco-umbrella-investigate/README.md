@@ -28,7 +28,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### umbrella-domain-categorization
 
 ***
-Get the status, security and content categories for domain.
+Get the status, security, and content categories for the domain.
 
 #### Base Command
 
@@ -39,7 +39,7 @@ Get the status, security and content categories for domain.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | domain | The name of the domain. For example: cnn.com. | Required |
-| show_label | Weather to display the security and content category labels in the response. Possible values are: true, false. Default is true. | Optional |
+| show_label | Whether to display the security and content category labels in the response. Possible values are: true, false. Default is true. | Optional |
 
 #### Context Output
 
@@ -98,8 +98,8 @@ Search for newly seen domains that match a regular expression pattern.
 | --- | --- | --- |
 | regex | A standard regular expression pattern search. For example: exa[a-z]ple.com. | Required |
 | start | Filter for data that appears after this time (within the last 30 days). You can specify a verbal time or time in ISO 8061 format. For example, 2024-03-26T11:03:18Z or 1 day ago. Default is 1 week ago. | Optional |
-| stop | Filter for data that appears before this time (within the last 30 days).  You can specify a verbal time or time in ISO 8061 format. For example, 2024-03-26T11:03:18Z or 1 day ago. Default is now. | Optional |
-| include_category | Weather to retrieve security categories in the response. Possible values are: true, false. | Optional |
+| stop | Filter for data that appears before this time (within the last 30 days). You can specify a verbal time or time in ISO 8061 format. For example, 2024-03-26T11:03:18Z or 1 day ago. Default is now. | Optional |
+| include_category | Whether to retrieve security categories in the response. Possible values are: true, false. | Optional |
 | type | Filter with the search database node type. Possible values are: URL, IP, HOST. | Optional |
 | page | The optional 0 based index of the page to retrieve. Must be an integer greater than or equal to 0. Default is 0. | Optional |
 | page_size | The optional size of the page to retrieve. Must be an integer greater than 0 or less than or equal to 1000. | Optional |
@@ -110,7 +110,7 @@ Search for newly seen domains that match a regular expression pattern.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Domain.Name | String | The name of the query. |
-| Domain.FirstSeen | String | The first time Umbrella related the domain for the resource record, specified in Unix Epoch time. |
+| Domain.FirstSeen | String | The first time Umbrella related the domain for the resource record, specified in Unix epoch time. |
 | Domain.FirstSeenISO | String | The first time Umbrella related the domain for the resource record, specified in ISO date and time format. |
 | Domain.SecurityCategories | Unknown | The list of Umbrella security categories that match the domain. |
 
@@ -123,7 +123,7 @@ Search for newly seen domains that match a regular expression pattern.
 ### umbrella-domain-co-occurrences
 
 ***
-List the co-occurences for the specified domain. A co-occurrence is when two or more domains are accessed by the same users within a small window of time. Co-occurring domains are not necessarily problematic; legitimate sites co-occur with each other as a part of normal web activity. However, unusual or suspicious co-occurences can provide additional information regarding attacks.To determine co-occurrences for a domain, a small time window of traffic across all of our datacenters is taken. Umbrella Investigate checks the sites that end users visited before and after the domain was requested in the API call.
+List the co-occurences for the specified domain. A co-occurrence is when two or more domains are accessed by the same users within a small window of time. Co-occurring domains are not necessarily problematic; legitimate sites co-occur with each other as a part of normal web activity. However, unusual or suspicious co-occurences can provide additional information regarding attacks. To determine co-occurrences for a domain, a small time window of traffic across all of our datacenters is taken. Umbrella Investigate checks the sites that end users visited before and after the domain was requested in the API call.
 
 #### Base Command
 
@@ -140,8 +140,8 @@ List the co-occurences for the specified domain. A co-occurrence is when two or 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Domain.Name | String | The name of the domain. |
-| Domain.CoOccurrences.Name | String | The name of the Co Occurrence domain. |
-| Domain.CoOccurrences.Score | Number | The score of the Co Occurrence domain. |
+| Domain.CoOccurrences.Name | String |  The name of the co-occurrence domain. |
+| Domain.CoOccurrences.Score | Number | The score of the co-occurrence domain. |
 
 #### Command example
 ```!umbrella-domain-co-occurrences domain=cisco.com```
@@ -189,7 +189,7 @@ List domain names that are frequently requested around the same time (up to 60 s
 | --- | --- | --- |
 | Domain.Name | String | The name of the domain. |
 | Domain.Related.Name | String | A related domain name. |
-| Domain.Related.Score | Number | Score is the number of client IP requests to the site around the same time that the site is looked up. |
+| Domain.Related.Score | Number | The number of client IP requests to the site around the same time that the site is looked up. |
 
 #### Command example
 ```!umbrella-domain-related domain=cisco.com```
@@ -232,17 +232,17 @@ Get multiple scores or security features for a domain. You can use the scores or
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Domain.Name | String | The name of the domain. |
-| Domain.Security.DGA | Number | A domain generation algorithm \(DGA\) is used by malware to generate large lists of domain names.This score is created based on the likeliness of the domain name being generated by an algorithm rather than a human. This algorithm is designed to identify domains whichhave been created using an automated randomization strategy, which is a common evasion technique in malware kits or botnets.This score ranges from -100 \(suspicious\) to 0 \(benign\). |
+| Domain.Security.DGA | Number | A domain generation algorithm \(DGA\) is used by malware to generate large lists of domain names. This score is created based on the likeliness of the domain name being generated by an algorithm rather than a human. This algorithm is designed to identify domains that have been created using an automated randomization strategy, which is a common evasion technique in malware kits or botnets. This score ranges from -100 \(suspicious\) to 0 \(benign\). |
 | Domain.Security.Perplexity | Number | A second score on the likeliness of the name to be algorithmically generated, on a scale from 0 to 100. This score is used in conjunction with DGA. |
 | Domain.Security.Entropy | Number | The number of bits required to encode the domain name as a score. This score is used in conjunction with DGA and Perplexity. |
-| Domain.Security.SecureRank | Number | The suspicious rank for a domain that reviews base on the lookup behavior of client IP for the domain. Secure rank is designed to identify hostnames requested by known infectedclients but never requested by clean clients,assuming these domains are more likely to be bad. Scores returned range from -100 \(suspicious\) to 100 \(benign\). |
+| Domain.Security.SecureRank | Number | The suspicious rank for a domain that reviews are based on the lookup behavior of client IP for the domain. Secure rank is designed to identify hostnames requested by known infected clients but never requested by clean clients, assuming these domains are more likely to be bad. Scores returned range from -100 \(suspicious\) to 100 \(benign\). |
 | Domain.Security.PageRank | Number | A popularity score according to Google's PageRank algorithm. |
 | Domain.Security.ASNScore | Number | The ASN reputation score ranges from -100 to 0 where -100 is very suspicious. |
 | Domain.Security.PrefixScore | Number | The prefix ranks domains given their IP prefixes \(an IP prefix is the first three octets in an IP address\) and the reputation score of these prefixes. The scores range from -100 to 0 where -100 is very suspicious. |
 | Domain.Security.RipScore | Number | The RIP ranks domains given their IP addresses and the reputation score of these IP addresses. The scores ranges from -100 to 0 where -100 is very suspicious. |
 | Domain.Security.Popularity | Number | The number of unique client IPs visiting this site, relative to all requests to all sites. A score of how many different client or unique IPs requested to this domain compared to others. |
 | Domain.Security.GeoScore | Number | A score that represents how far the different physical locations serving this name are from each other. |
-| Domain.Security.KolmoorovSmirnov | Number | A number that represents the Kolmogorov-Smirnov test on geo diversity.Zero indicates that the client traffic matches what is expected for this top-level domain. |
+| Domain.Security.KolmoorovSmirnov | Number | A number that represents the Kolmogorov-Smirnov test on geo diversity. Zero indicates that the client traffic matches what is expected for this top-level domain. |
 | Domain.Security.AttackName | String | The name of any known attacks associated with this domain. |
 | Domain.Security.ThreatType | String | The type of the known attack, such as botnet or APT. |
 | Domain.tld_geodiversity | Unknown | The list of scores that represent the top-level domain country code geo diversity as a percentage of clients visiting the domain. |
@@ -309,14 +309,14 @@ Get the domain risk score. The Umbrella Investigate Risk Score is based on an an
 | --- | --- | --- |
 | Domain.Name | String | The name of the domain. |
 | Umbrella.Domain.name | String | The name of the domain. |
-| Umbrella.Domain.risk_score | Number | The Indicator risk score. |
+| Umbrella.Domain.risk_score | Number | The indicator risk score. |
 | Umbrella.Domain.Indicator.score | Number | The raw outcome score from the statistical algorithms. |
 | Umbrella.Domain.Indicator.normalized_score | Number | Normalized risk score. The risk score is scaled from 0 to 100 where 100 is the highest risk and 0 represents no risk at all. |
-| Umbrella.Domain.Indicator.indicator_id | String | The Indicator ID. Each  is a behavioral or lexical feature that contributes to the calculation of the risk score. |
-| Umbrella.Domain.Indicator.indicator | String | The name of the Indicator. |
+| Umbrella.Domain.Indicator.indicator_id | String | The indicator ID. Each  is a behavioral or lexical feature that contributes to the calculation of the risk score. |
+| Umbrella.Domain.Indicator.indicator | String | The name of the indicator. |
 | DBotScore.Indicator | String | The name of the domain. |
-| DBotScore.Vendor | String | The vendor reporting the score of the Indicator. |
-| DBotScore.Type | String | The Indicator type. |
+| DBotScore.Vendor | String | The vendor reporting the score of the indicator. |
+| DBotScore.Type | String | The indicator type. |
 | DBotScore.Score | Number | The domain score. |
 | DBotScore.Reliability | String | The reliability of the source providing the intelligence data. |
 
@@ -370,15 +370,15 @@ List the Resource Record (RR) data for DNS responses, and categorization data, w
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | type | The type of the inserted value. Possible values are: IP, Domain, Raw, Name. | Required |
-| value | The text representation of the data. For example, when type is  raw - %22abc%22. When type is  IP - 8.8.8.8. When type is  Domain - cisco.com. When type is  Name - test . . | Required |
+| value | The text representation of the data. For example, when type is raw - %22abc%22. When type is IP - 8.8.8.8. When type is Domain - cisco.com. When type is Name - test . . | Required |
 | sort_order | Sort records by ascending (asc) or descending (desc) order. Possible values are: asc, desc. Default is desc. | Optional |
 | sort_by | Sort records by one of the following fields. Possible values are: Min Ttl, Max Ttl, First Seen, Last Seen. | Optional |
-| record_type | Comma-Separated list of types of records. For example: A,Cname. Possible values are: A, Cname, Ns, Mx. | Optional |
+| record_type | Comma-separated list of types of records. For example: A,Cname. Possible values are: A, Cname, Ns, Mx. | Optional |
 | include_features | Whether to add the feature sections to the response. If set to true, the response will contain additional information about the IP address, such as record counts and diversity metrics. Possible values are: true, false. | Optional |
-| min_first_seen | Select records where seen first after the inserted value. You can specify a verbal time or time in ISO 8061 format. For example, 2024-03-26T11:03:18Z or 1 day ago. | Optional |
-| max_first_seen | Select records where seen first before the inserted value. You can specify a verbal time or time in ISO 8061 format. For example, 2024-03-26T11:03:18Z or 1 day ago. | Optional |
-| min_last_seen | Select records where last seen after the inserted value. You can specify a verbal time or time in ISO 8061 format. For example, 2024-03-26T11:03:18Z or 1 day ago. | Optional |
-| max_last_seen | Select records where last seen before the inserted value. You can specify a verbal time or time in ISO 8061 format. For example, 2024-03-26T11:03:18Z or 1 day ago. | Optional |
+| min_first_seen | Select records that are first seen after the inserted value. You can specify a verbal time or time in ISO 8061 format. For example, 2024-03-26T11:03:18Z or 1 day ago. | Optional |
+| max_first_seen | Select records that are first seen before the inserted value. You can specify a verbal time or time in ISO 8061 format. For example, 2024-03-26T11:03:18Z or 1 day ago. | Optional |
+| min_last_seen | Select records that were last seen after the inserted value. You can specify a verbal time or time in ISO 8061 format. For example, 2024-03-26T11:03:18Z or 1 day ago. | Optional |
+| max_last_seen | Select records that were last seen before the inserted value. You can specify a verbal time or time in ISO 8061 format. For example, 2024-03-26T11:03:18Z or 1 day ago. | Optional |
 | sort_categories | Comma-separated list of security categories to sort the results. For example, Mobile Threats,Malware. Possible values are: All, Drive-by Downloads/Exploits, Mobile Threats, Dynamic DNS, High Risk Sites and Locations, Command and Control, Malware, Phishing, Newly Seen Domains, Potentially Harmful, DNS Tunneling VPN, Cryptomining. | Optional |
 | required_categories | Comma-separated list of security categories to filter for records that are assigned the specified categories. For example, Malware,Phishing. Possible values are: Drive-by Downloads/Exploits, Mobile Threats, Dynamic DNS, High Risk Sites and Locations, Command and Control, Malware, Phishing, Newly Seen Domains, Potentially Harmful, DNS Tunneling VPN, Cryptomining. . | Optional |
 | page | The optional 0 based index of the page to retrieve. Must be an integer greater than or equal to 0. Default is 0. | Optional |
@@ -397,8 +397,8 @@ List the Resource Record (RR) data for DNS responses, and categorization data, w
 | Umbrella.ResourceRecord.type | String | The DNS record type. |
 | Umbrella.ResourceRecord.name | String | The name of the query. |
 | Umbrella.ResourceRecord.rr | String | The Resource Records, if any that match the domain. |
-| Umbrella.ResourceRecord.last_seen | Number | The last time Umbrella related the domain for the resource record, specifiedin Unix Epoch time. |
-| Umbrella.ResourceRecord.first_seen | Number | The first time Umbrella related the domain for the resource record, specifiedin Unix Epoch time. |
+| Umbrella.ResourceRecord.last_seen | Number | The last time Umbrella related the domain for the resource record, specified in Unix epoch time. |
+| Umbrella.ResourceRecord.first_seen | Number | The first time Umbrella related the domain for the resource record, specified in Unix epoch time. |
 | Umbrella.ResourceRecord.max_ttl | Number | The maximum TTL for the record in seconds. |
 | Umbrella.ResourceRecord.min_ttl | Number | The minimum TTL for the record in seconds. |
 
@@ -458,8 +458,8 @@ List sub-domains of a given domain.
 | --- | --- | --- |
 | Umbrella.Domain.name | String | The name of the domain. |
 | Umbrella.Domain.SubDomain.name | String | The name of the sub-domain. |
-| Umbrella.Domain.SubDomain.first_seen | String | The first time Umbrella related the domain for the resource record, specified in Unix Epoch time. |
-| Umbrella.Domain.SubDomain.security_categories | Unknown | The list of security categories that are tagged on this subdomain. |
+| Umbrella.Domain.SubDomain.first_seen | String | The first time Umbrella related the domain for the resource record, specified in Unix epoch time. |
+| Umbrella.Domain.SubDomain.security_categories | Unknown | The list of security categories that are tagged on this sub-domain. |
 
 #### Command example
 ```!umbrella-list-domain-subdomain domain=cisco.com limit=1```
@@ -507,7 +507,7 @@ Get data about ASN and IP relationships, showing how IP addresses are related to
 | Umbrella.BGPInformation.ip | String | The IP address. |
 | Umbrella.BGPInformation.creation_date | String | The date when the AS was first created. |
 | Umbrella.BGPInformation.ir | Number | The IR number corresponds to one of the 5 Regional Internet Registries \(RIR\). 1 - AfriNIC: Africa2 - APNIC: Asia, Australia, New Zealand, and neighboring countries.3 - ARIN: United States, Canada, several parts of the Caribbean region, and Antarctica.4 - LACNIC: Latin America and parts of the Caribbean region.5 - RIPE NCC: Europe, Russia, the Middle East, and Central Asia.0 - Unknown / Not Available. |
-| Umbrella.BGPInformation.description | String | Network Owner Description as provided by the network owner. |
+| Umbrella.BGPInformation.description | String | Network owner description as provided by the network owner. |
 | Umbrella.BGPInformation.asn | String | The autonomous system number \(ASN\) associated with the IP address. |
 | Umbrella.BGPInformation.cidr | String | The IP CIDR for the ASN. |
 
@@ -538,7 +538,7 @@ Get data about ASN and IP relationships, showing how IP addresses are related to
 ### umbrella-get-asn-bgp
 
 ***
-Get BGP Route Information for ASN. Each hash reference contains two keys: `geo` and `cidr`.   Geo is a hash reference with the country name and country code (the code corresponds to the country code list for ISO-3166-1 alpha-2). CIDR contains the IP prefix for this ASN.
+Get BGP Route Information for ASN. Each hash reference contains two keys: `geo` and `cidr`. Geo is a hash reference with the country name and country code (the code corresponds to the country code list for ISO-3166-1 alpha-2). CIDR contains the IP prefix for this ASN.
 
 #### Base Command
 
@@ -602,10 +602,10 @@ Get the WHOIS information for the specified domains.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Domain.Name | String | The Domain name. |
-| Domain.Umbrella.RiskScore | String | Suspicious rank for a domain that reviews based on the lookup behavior of client IP for the domain. Securerank is designed to identify hostnames requested by known infected clients but never requested by clean clients, assuming these domains are more likely to be bad. Scores returned range from -100 \(suspicious\) to 100 \(benign\). |
-| Domain.Umbrella.SecureRank | String | Suspicious rank for a domain that reviews based on the lookup behavior of client IP for the domain. Securerank is designed to identify hostnames requested by known infected clients but never requested by clean clients, assuming these domains are more likely to be bad. Scores returned range from -100 \(suspicious\) to 100 \(benign\). |
-| Domain.Umbrella.FirstQueriedTime | String | The time when the attribution for this Domain was made. |
+| Domain.Name | String | The domain name. |
+| Domain.Umbrella.RiskScore | String | Suspicious rank for a domain that has reviews based on the lookup behavior of client IP for the domain. Securerank is designed to identify hostnames requested by known infected clients but never requested by clean clients, assuming these domains are more likely to be bad. Scores returned range from -100 \(suspicious\) to 100 \(benign\). |
+| Domain.Umbrella.SecureRank | String | Suspicious rank for a domain that has reviews based on the lookup behavior of client IP for the domain. Securerank is designed to identify hostnames requested by known infected clients but never requested by clean clients, assuming these domains are more likely to be bad. Scores returned range from -100 \(suspicious\) to 100 \(benign\). |
+| Domain.Umbrella.FirstQueriedTime | String | The time when the attribution for this domain was made. |
 | DBotScore.Indicator | String | The Indicator name. |
 | DBotScore.Score | String | The DBot score. |
 | DBotScore.Type | String | The domain type. |
@@ -857,7 +857,7 @@ Get a WHOIS response record for a single domain with available historical WHOIS 
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Umbrella.WHOIS.name | String | The name of domain. |
+| Umbrella.WHOIS.name | String | The name of the domain. |
 | Umbrella.WHOIS.DomainHistory.addresses | String | Addresses related to the domain. |
 | Umbrella.WHOIS.DomainHistory.administrative_contact_city | String | City of the administrative contact. |
 | Umbrella.WHOIS.DomainHistory.administrative_contact_country | String | Country of the administrative contact. |
@@ -1051,7 +1051,7 @@ Get a WHOIS response record for a single domain with available historical WHOIS 
 ### umbrella-get-nameserver-whois
 
 ***
-Get WHOIS information for the nameserver. As a nameserver can potentially register hundreds or thousands of domains.
+Get WHOIS information for the nameserver. A nameserver can potentially register hundreds or thousands of domains.
 
 #### Base Command
 
@@ -1061,8 +1061,8 @@ Get WHOIS information for the nameserver. As a nameserver can potentially regist
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| nameserver | The nameserver's domain name or comma-separated list of nameservers. For example ns1.google.com or ns1.google.com,ns2.google.com. List of nameservers will support when is_list = True. | Required |
-| is_list | Wether nameserver contains a list of comma-separated nameservers. Possible values are: true, false. Default is false. | Optional |
+| nameserver | The nameserver's domain name or comma-separated list of nameservers. For example ns1.google.com or ns1.google.com,ns2.google.com. List of nameservers are support when is_list = True. | Required |
+| is_list | Whether nameserver contains a list of comma-separated nameservers. Possible values are: true, false. Default is false. | Optional |
 | sort | Sort the results by. Possible values are: Created, Updated, Expires, Domain name. | Optional |
 | page | The optional 0 based index of the page to retrieve. Must be an integer greater than or equal to 0. Relevant when is_list=false. Default is 0. | Optional |
 | page_size | The optional size of the page to retrieve. Must be an integer greater than 0 or less than or equal to 1000. Relevant when is_list=false. | Optional |
@@ -1169,7 +1169,7 @@ Performs a regular expression (RegEx) search on the WHOIS data (domain, nameserv
 | regex | A standard regular expression pattern search. For example, exa[a-z]ple.com. | Required |
 | search_field | Specifies the field name to use in the RegEx search. Possible values are: Domain, Nameserver, Email. | Required |
 | start | Filter for data that appears after this time (within the last 30 days). You can specify a verbal time or time in ISO 8061 format. For example, 2024-03-26T11:03:18Z or 1 day ago. Default is 1 week ago. | Optional |
-| stop | Filter for data that appears before this time (within the last 30 days).  You can specify a verbal time or time in ISO 8061 format. For example, 2024-03-26T11:03:18Z or 1 day ago. Default is now. | Optional |
+| stop | Filter for data that appears before this time (within the last 30 days). You can specify a verbal time or time in ISO 8061 format. For example, 2024-03-26T11:03:18Z or 1 day ago. Default is now. | Optional |
 | sort | Sort the results by. Possible values are: Created, Updated, Expires, Domain name. Default is Updated. | Optional |
 | page | The optional 0 based index of the page to retrieve. Must be an integer greater than or equal to 0. Default is 0. | Optional |
 | page_size | The optional size of the page to retrieve. Must be an integer greater than 0 or less than or equal to 1000. | Optional |
@@ -1562,7 +1562,7 @@ Performs a regular expression (RegEx) search on the WHOIS data (domain, nameserv
 ### umbrella-get-top-most-seen-domain
 
 ***
-List the most seen domains in Umbrella. The popularity list contains Cisco Umbrella most queried domains based on passive DNS usage across Umbrella global network. The metric does not only consist of browser-based http requests from users but also takes in to account the number of unique client IPs invoking this domain relative to the sum of all requests to all domains. The ranking reflects the domain's relative internet activity agnostic to the invocation protocols and applications where as site ranking models (such as Alexa) focus on the web activity over port 80 (primarily from browsers). In addition, the Umbrella popularity algorithm also applies data normalization techniques to smooth potential biases that may occur due to sampling of DNS usage data.
+List the most seen domains in Umbrella. The popularity list contains Cisco Umbrella most queried domains based on passive DNS usage across Umbrella global network. The metric does not only consist of browser-based http requests from users but also takes into account the number of unique client IPs invoking this domain relative to the sum of all requests to all domains. The ranking reflects the domain's relative internet activity agnostic to the invocation protocols and applications where as site ranking models (such as Alexa) focus on the web activity over port 80 (primarily from browsers). In addition, the Umbrella popularity algorithm also applies data normalization techniques to smooth potential biases that may occur due to sampling of DNS usage data.
 
 #### Base Command
 
@@ -1613,7 +1613,7 @@ List the query volume for a domain over the last 30 days. If there is no informa
 | --- | --- | --- |
 | domain | A domain name. | Required |
 | start | Filter for data that appears after this time (within the last 30 days). You can specify a verbal time or time in ISO 8061 format. For example, 2024-03-26T11:03:18Z or 1 day ago. Default is 1 week ago. | Optional |
-| stop | Filter for data that appears before this time (within the last 30 days).  You can specify a verbal time or time in ISO 8061 format. For example, 2024-03-26T11:03:18Z or 1 day ago. Default is now. | Optional |
+| stop | Filter for data that appears before this time (within the last 30 days). You can specify a verbal time or time in ISO 8061 format. For example, 2024-03-26T11:03:18Z or 1 day ago. Default is now. | Optional |
 | match | The type of the query volume for the domain. Possible values are: exact, component, all. Default is all. | Optional |
 
 #### Context Output
@@ -1676,7 +1676,7 @@ List the historical tagging timeline for a given domain. Each timeline item incl
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Umbrella.Timeline.Domain | String | An IP, a domain, or an URL. |
+| Umbrella.Timeline.Domain | String | An IP, a domain, or a URL. |
 | Umbrella.Timeline.Data.MalwareCategories | Unknown | The list of security categories assigned at this date and time on the domain, IP, or URL. |
 | Umbrella.Timeline.Data.Attacks | Unknown | The list of threats assigned at this date and time on the domain, IP, or URL. |
 | Umbrella.Timeline.Data.ThreatTypes | Unknown | The list of threat types assigned at this date and time on the domain, IP, or URL. |

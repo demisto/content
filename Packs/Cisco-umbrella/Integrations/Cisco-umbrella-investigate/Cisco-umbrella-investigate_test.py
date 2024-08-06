@@ -884,8 +884,10 @@ def test_domain_command(
             "domain": "test.com",
         },
     )
-    assert result.outputs_prefix == "Domain"
-    assert result.outputs_key_field == "Name"
+    assert isinstance(result, list)
+    assert len(result) == 1
+    assert result[0].outputs_prefix == "Domain"
+    assert result[0].outputs_key_field == "Name"
 
 
 @pytest.mark.parametrize(

@@ -60,6 +60,7 @@ script:
           description: "The name of the domain. For example: cnn.com."
           name: domain
           required: true
+          isArray: true
         - description:
             Whether to display the security and content category labels in
             the response.

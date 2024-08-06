@@ -1679,82 +1679,85 @@ def domain_command(
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    domain = args["domain"]
-    whois_res = client.get_domain_who_is(
-        domain,
-    )
-    whois_data = whois_res
-    risk_score_res = client.get_domain_risk_score(
-        domain,
-    )
-    risk_score_data = risk_score_res
-    categorization_res = client.get_domain_categorization(
-        domain=domain,
-        show_labels=False,
-    )
-    categorization_data = categorization_res[domain]
-
-    security_res = client.get_domain_security_score(
-        domain,
-    )
-    security_data = security_res
-    secure_rank = security_data.get("securerank2")
-    dbot_score = Common.DBotScore(
-        integration_name=INDICATOR_VENDOR,
-        indicator=domain,
-        indicator_type=DBotScoreType.DOMAIN,
-        score=calculate_domain_dbot_score(
-            secure_rank=arg_to_number(int(secure_rank) if secure_rank else None)
-        ),
-        reliability=client.reliability,
-        malicious_description="Malicious domain found with risk score -1",
-    )
-    outputs = {
-        "Name": domain,
-        "Umbrella": {
-            "RiskScore": risk_score_data.get("risk_score"),
-            "SecureRank": security_data.get("securerank2"),
-            "FirstQueriedTime": whois_data.get("created"),
-            "ContentCategories": categorization_data.get("content_categories"),
-            "MalwareCategories": categorization_data.get("security_categories"),
-        },
-        "Admin": {
-            "Country": whois_data.get("administrativeContactCountry"),
-            "Email": whois_data.get("administrativeContactEmail"),
-            "Name": whois_data.get("administrativeContactName"),
-            "Phone": whois_data.get("administrativeContactTelephone"),
-        },
-        "Registrant": {
-            "Country": whois_data.get("registrantCountry"),
-            "Email": whois_data.get("registrantEmail"),
-            "Name": whois_data.get("registrantName"),
-            "Phone": whois_data.get("registrantTelephone"),
-        },
-        "CreationDate": whois_data.get("created"),
-        "DomainStatus": whois_data.get("status"),
-        "UpdatedDate": whois_data.get("updated"),
-        "ExpirationDate": whois_data.get("expires"),
-        "Registrar": {
-            "Name": whois_data.get("registrarName"),
-        },
-    }
-    return CommandResults(
-        outputs=outputs,
-        outputs_key_field="Name",
-        outputs_prefix="Domain",
-        indicator=Common.Domain(
+    domains = argToList(args["domain"]) or []
+    command_results = []
+    for domain in domains:
+        whois_res = client.get_domain_who_is(
+            domain,
+        )
+        whois_data = whois_res
+        risk_score_res = client.get_domain_risk_score(
+            domain,
+        )
+        risk_score_data = risk_score_res
+        categorization_res = client.get_domain_categorization(
             domain=domain,
-            dbot_score=dbot_score,
-        ),
-        readable_output=tableToMarkdown(
-            name=f"{domain} WHOIS information:",
-            t=outputs.get("Umbrella"),
-            headers=[],
-            removeNull=True,
-            headerTransform=string_to_header,
-        ),
-    )
+            show_labels=False,
+        )
+        categorization_data = categorization_res[domain]
 
+        security_res = client.get_domain_security_score(
+            domain,
+        )
+        security_data = security_res
+        secure_rank = security_data.get("securerank2")
+        dbot_score = Common.DBotScore(
+            integration_name=INDICATOR_VENDOR,
+            indicator=domain,
+            indicator_type=DBotScoreType.DOMAIN,
+            score=calculate_domain_dbot_score(
+                secure_rank=arg_to_number(int(secure_rank) if secure_rank else None)
+            ),
+            reliability=client.reliability,
+            malicious_description="Malicious domain found with risk score -1",
+        )
+        outputs = {
+            "Name": domain,
+            "Umbrella": {
+                "RiskScore": risk_score_data.get("risk_score"),
+                "SecureRank": security_data.get("securerank2"),
+                "FirstQueriedTime": whois_data.get("created"),
+                "ContentCategories": categorization_data.get("content_categories"),
+                "MalwareCategories": categorization_data.get("security_categories"),
+            },
+            "Admin": {
+                "Country": whois_data.get("administrativeContactCountry"),
+                "Email": whois_data.get("administrativeContactEmail"),
+                "Name": whois_data.get("administrativeContactName"),
+                "Phone": whois_data.get("administrativeContactTelephone"),
+            },
+            "Registrant": {
+                "Country": whois_data.get("registrantCountry"),
+                "Email": whois_data.get("registrantEmail"),
+                "Name": whois_data.get("registrantName"),
+                "Phone": whois_data.get("registrantTelephone"),
+            },
+            "CreationDate": whois_data.get("created"),
+            "DomainStatus": whois_data.get("status"),
+            "UpdatedDate": whois_data.get("updated"),
+            "ExpirationDate": whois_data.get("expires"),
+            "Registrar": {
+                "Name": whois_data.get("registrarName"),
+            },
+        }
+        command_results.append(CommandResults(
+            outputs=outputs,
+            outputs_key_field="Name",
+            outputs_prefix="Domain",
+            indicator=Common.Domain(
+                domain=domain,
+                dbot_score=dbot_score,
+            ),
+            readable_output=tableToMarkdown(
+                name=f"{domain} WHOIS information:",
+                t=outputs.get("Umbrella"),
+                headers=[],
+                removeNull=True,
+                headerTransform=string_to_header,
+            ),
+        ))
+
+    return command_results
 
 def test_module(client: Client, api_key: str, api_secret: str) -> str:
     """
