@@ -1614,6 +1614,7 @@ def get_domain_volume_command(
 def list_timeline_command(
     client: Client,
     args: dict[str, Any],
+    input_type: str,
 ) -> CommandResults:
     """
     List the historical tagging timeline for a given IP, domain, or URL.
@@ -1632,7 +1633,7 @@ def list_timeline_command(
 
     limit = None if argToBoolean(args["all_results"]) else arg_to_number(args["limit"])
     outputs = {
-        "Domain": name,
+        input_type: name,
         "Data": [
             {
                 "MalwareCategories": obj.get("categories"),
@@ -1901,11 +1902,20 @@ def main() -> None:
         f"{INTEGRATION_COMMAND_PREFIX}-get-regex-whois": get_regex_who_is_command,
         f"{INTEGRATION_COMMAND_PREFIX}-get-top-most-seen-domain": get_top_seen_domain_command,
         f"{INTEGRATION_COMMAND_PREFIX}-get-domain-queryvolume": get_domain_volume_command,
-        f"{INTEGRATION_COMMAND_PREFIX}-get-domain-timeline": list_timeline_command,
         f"{INTEGRATION_COMMAND_PREFIX}-domain-categorization": get_domain_categorization_command,
         f"{INTEGRATION_COMMAND_PREFIX}-get-domain-risk-score": get_domain_risk_score_command,
         f"{INTEGRATION_COMMAND_PREFIX}-get-whois-for-domain": get_domain_who_is_command,
         "domain": domain_command,
+    }
+    timeline_commands: list[str] = [
+        f"{INTEGRATION_COMMAND_PREFIX}-get-domain-timeline",
+        f"{INTEGRATION_COMMAND_PREFIX}-get-ip-timeline",
+        f"{INTEGRATION_COMMAND_PREFIX}-get-url-timeline",
+    ]
+    timeline_commands_types: dict[str, Callable] = {
+        f"{INTEGRATION_COMMAND_PREFIX}-get-domain-timeline": "Domain",
+        f"{INTEGRATION_COMMAND_PREFIX}-get-ip-timeline": "IP",
+        f"{INTEGRATION_COMMAND_PREFIX}-get-url-timeline": "URL",
     }
 
     try:
@@ -1922,6 +1932,10 @@ def main() -> None:
             return_results(test_module(client, api_key, api_secret))
         elif command in commands:
             cr = commands[command](client, args)
+            execution_metrics.success += 1
+            return_results(append_metrics(execution_metrics, [cr]))
+        elif command in timeline_commands:
+            cr = list_timeline_command(client, args, timeline_commands_types[command])
             execution_metrics.success += 1
             return_results(append_metrics(execution_metrics, [cr]))
         else:

@@ -108,7 +108,7 @@ script:
             or 1 day ago.
           name: start
         - description:
-            Filter for data that appears before this time (within the last 30 days).  You can specify
+            Filter for data that appears before this time (within the last 30 days). You can specify
             a verbal time or time in ISO 8061 format. For example, 2024-03-26T11:03:18Z
             or 1 day ago.
           name: stop
@@ -623,7 +623,7 @@ script:
           required: true
       description:
         "Get BGP Route Information for ASN. Each hash reference contains two keys: `geo` \
-        and `cidr`.   Geo is a hash reference with the country name and country code\
+        and `cidr`. Geo is a hash reference with the country name and country code\
         \ (the code corresponds to the country code list for ISO-3166-1 alpha-2). CIDR\
         \ contains the IP prefix for this ASN."
       execution: false
@@ -1199,7 +1199,7 @@ script:
             or 1 day ago.
           name: start
         - description:
-            Filter for data that appears before this time (within the last 30 days).  You can specify
+            Filter for data that appears before this time (within the last 30 days). You can specify
             a verbal time or time in ISO 8061 format. For example, 2024-03-26T11:03:18Z
             or 1 day ago.
           name: stop
@@ -1497,7 +1497,7 @@ script:
             or 1 day ago.
           name: start
         - description:
-            Filter for data that appears before this time (within the last 30 days).  You can specify
+            Filter for data that appears before this time (within the last 30 days). You can specify
             a verbal time or time in ISO 8061 format. For example, 2024-03-26T11:03:18Z
             or 1 day ago.
           name: stop
@@ -1537,7 +1537,7 @@ script:
           type: Umbrella.QueryVolume.Data.QueriesInfo.Queries
     - arguments:
         - default: true
-          description: "An IP, a domain, or an URL. For example, 8.8.8.8 or cisco.com.  "
+          description: "An IP, a domain. For example, cisco.com."
           name: name
           required: true
         - auto: PREDEFINED
@@ -1550,8 +1550,7 @@ script:
         - defaultValue: "50"
           description: The maximum number of records to retrieve.
           name: limit
-      description:
-        List the historical tagging timeline for a given IP, domain, or URL.
+      description: List the historical tagging timeline for a given domain.
         Each timeline item includes lists of security category, attack, or threat type
         associated with the destination. Use the Tagging Timeline endpoint to verify
         when Umbrella assigned or removed a security category, attack, or threat type.
@@ -1564,7 +1563,103 @@ script:
       name: umbrella-get-domain-timeline
       outputs:
         - contextPath: Umbrella.Timeline.Domain
-          description: An IP, a domain, or an URL.
+          description: A domain.
+          type: String
+        - contextPath: Umbrella.Timeline.Data.MalwareCategories
+          description:
+            The list of security categories assigned at this date and time
+            on the domain, IP, or URL.
+          type: Unknown
+        - contextPath: Umbrella.Timeline.Data.Attacks
+          description:
+            The list of threats assigned at this date and time on the domain,
+            IP, or URL.
+          type: Unknown
+        - contextPath: Umbrella.Timeline.Data.ThreatTypes
+          description:
+            The list of threat types assigned at this date and time on the
+            domain, IP, or URL.
+          type: Unknown
+        - contextPath: Umbrella.Timeline.Data.Timestamp
+          description: The date and time of the tagging of the domain, IP, or URL.
+          type: Number
+    - arguments:
+        - default: true
+          description: "An IP address. For example, 8.8.8.8."
+          name: name
+          required: true
+        - auto: PREDEFINED
+          defaultValue: false
+          description: Whether to retrieve all results by overriding the default limit.
+          name: all_results
+          predefined:
+            - "true"
+            - "false"
+        - defaultValue: "50"
+          description: The maximum number of records to retrieve.
+          name: limit
+      description: List the historical tagging timeline for a given IP address.
+        Each timeline item includes lists of security category, attack, or threat type
+        associated with the destination. Use the Tagging Timeline endpoint to verify
+        when Umbrella assigned or removed a security category, attack, or threat type.
+        If the current timeline item contains the security category, type of attack,
+        or threat type not found in the previous timeline item, Umbrella updated the
+        current timeline item. If the current timeline item does not contain the security
+        category, attack, or threat type found in the previous timeline item, Umbrella
+        removed the security category, type of attack, or threat type.
+      execution: false
+      name: umbrella-get-ip-timeline
+      outputs:
+        - contextPath: Umbrella.Timeline.IP
+          description: An IP address.
+          type: String
+        - contextPath: Umbrella.Timeline.Data.MalwareCategories
+          description:
+            The list of security categories assigned at this date and time
+            on the domain, IP, or URL.
+          type: Unknown
+        - contextPath: Umbrella.Timeline.Data.Attacks
+          description:
+            The list of threats assigned at this date and time on the domain,
+            IP, or URL.
+          type: Unknown
+        - contextPath: Umbrella.Timeline.Data.ThreatTypes
+          description:
+            The list of threat types assigned at this date and time on the
+            domain, IP, or URL.
+          type: Unknown
+        - contextPath: Umbrella.Timeline.Data.Timestamp
+          description: The date and time of the tagging of the domain, IP, or URL.
+          type: Number
+    - arguments:
+        - default: true
+          description: "An URL. For example www.cisco.com. "
+          name: name
+          required: true
+        - auto: PREDEFINED
+          defaultValue: false
+          description: Whether to retrieve all results by overriding the default limit.
+          name: all_results
+          predefined:
+            - "true"
+            - "false"
+        - defaultValue: "50"
+          description: The maximum number of records to retrieve.
+          name: limit
+      description: List the historical tagging timeline for a given URL.
+        Each timeline item includes lists of security category, attack, or threat type
+        associated with the destination. Use the Tagging Timeline endpoint to verify
+        when Umbrella assigned or removed a security category, attack, or threat type.
+        If the current timeline item contains the security category, type of attack,
+        or threat type not found in the previous timeline item, Umbrella updated the
+        current timeline item. If the current timeline item does not contain the security
+        category, attack, or threat type found in the previous timeline item, Umbrella
+        removed the security category, type of attack, or threat type.
+      execution: false
+      name: umbrella-get-url-timeline
+      outputs:
+        - contextPath: Umbrella.Timeline.URL
+          description: An URL.
           type: String
         - contextPath: Umbrella.Timeline.Data.MalwareCategories
           description:

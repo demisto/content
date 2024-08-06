@@ -1658,7 +1658,7 @@ List the query volume for a domain over the last 30 days. If there is no informa
 ### umbrella-get-domain-timeline
 
 ***
-List the historical tagging timeline for a given IP, domain, or URL. Each timeline item includes lists of security category, attack, or threat type associated with the destination. Use the Tagging Timeline endpoint to verify when Umbrella assigned or removed a security category, attack, or threat type. If the current timeline item contains the security category, type of attack, or threat type not found in the previous timeline item, Umbrella updated the current timeline item. If the current timeline item does not contain the security category, attack, or threat type found in the previous timeline item, Umbrella removed the security category, type of attack, or threat type.
+List the historical tagging timeline for a given domain. Each timeline item includes lists of security category, attack, or threat type associated with the destination. Use the Tagging Timeline endpoint to verify when Umbrella assigned or removed a security category, attack, or threat type. If the current timeline item contains the security category, type of attack, or threat type not found in the previous timeline item, Umbrella updated the current timeline item. If the current timeline item does not contain the security category, attack, or threat type found in the previous timeline item, Umbrella removed the security category, type of attack, or threat type.
 
 #### Base Command
 
@@ -1668,7 +1668,7 @@ List the historical tagging timeline for a given IP, domain, or URL. Each timeli
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | An IP, a domain, or an URL. For example, 8.8.8.8 or cisco.com.  . | Required |
+| name | An domain. For example, cisco.com. | Required |
 | all_results | Whether to retrieve all results by overriding the default limit. Possible values are: true, false. | Optional |
 | limit | The maximum number of records to retrieve. Default is 50. | Optional |
 
@@ -1698,6 +1698,110 @@ List the historical tagging timeline for a given IP, domain, or URL. Each timeli
                 }
             ],
             "Domain": "maliciouswebsitetest.com"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>Metrics reported successfully.
+
+### umbrella-get-url-timeline
+
+***
+List the historical tagging timeline for RL. Each timeline item includes lists of security category, attack, or threat type associated with the destination. Use the Tagging Timeline endpoint to verify when Umbrella assigned or removed a security category, attack, or threat type. If the current timeline item contains the security category, type of attack, or threat type not found in the previous timeline item, Umbrella updated the current timeline item. If the current timeline item does not contain the security category, attack, or threat type found in the previous timeline item, Umbrella removed the security category, type of attack, or threat type.
+
+#### Base Command
+
+`umbrella-get-url-timeline`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | An URL. For example www.cisco.com. | Required |
+| all_results | Whether to retrieve all results by overriding the default limit. Possible values are: true, false. | Optional |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Umbrella.Timeline.URL | String | An URL.  |
+| Umbrella.Timeline.Data.MalwareCategories | Unknown | The list of security categories assigned at this date and time on the domain, IP, or URL. |
+| Umbrella.Timeline.Data.Attacks | Unknown | The list of threats assigned at this date and time on the domain, IP, or URL. |
+| Umbrella.Timeline.Data.ThreatTypes | Unknown | The list of threat types assigned at this date and time on the domain, IP, or URL. |
+| Umbrella.Timeline.Data.Timestamp | Number | The date and time of the tagging of the domain, IP, or URL. |
+
+#### Command example
+```!umbrella-get-domain-timeline name=www.maliciouswebsitetest.com limit=1```
+#### Context Example
+```json
+{
+    "Umbrella": {
+        "Timeline": {
+            "Data": [
+                {
+                    "Attacks": [],
+                    "MalwareCategories": [],
+                    "ThreatTypes": [],
+                    "Timestamp": 1722693276390
+                }
+            ],
+            "URL": "www.maliciouswebsitetest.com"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>Metrics reported successfully.
+
+### umbrella-get-ip-timeline
+
+***
+List the historical tagging timeline for a given IP address. Each timeline item includes lists of security category, attack, or threat type associated with the destination. Use the Tagging Timeline endpoint to verify when Umbrella assigned or removed a security category, attack, or threat type. If the current timeline item contains the security category, type of attack, or threat type not found in the previous timeline item, Umbrella updated the current timeline item. If the current timeline item does not contain the security category, attack, or threat type found in the previous timeline item, Umbrella removed the security category, type of attack, or threat type.
+
+#### Base Command
+
+`umbrella-get-domain-timeline`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | An IP address. For example, 8.8.8.8. | Required |
+| all_results | Whether to retrieve all results by overriding the default limit. Possible values are: true, false. | Optional |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Umbrella.Timeline.IP | String | An IP address. For example, 8.8.8.8. |
+| Umbrella.Timeline.Data.MalwareCategories | Unknown | The list of security categories assigned at this date and time on the domain, IP, or URL. |
+| Umbrella.Timeline.Data.Attacks | Unknown | The list of threats assigned at this date and time on the domain, IP, or URL. |
+| Umbrella.Timeline.Data.ThreatTypes | Unknown | The list of threat types assigned at this date and time on the domain, IP, or URL. |
+| Umbrella.Timeline.Data.Timestamp | Number | The date and time of the tagging of the domain, IP, or URL. |
+
+#### Command example
+```!umbrella-get-ip-timeline name=8.8.8.8 limit=1```
+#### Context Example
+```json
+{
+    "Umbrella": {
+        "Timeline": {
+            "Data": [
+                {
+                    "Attacks": [],
+                    "MalwareCategories": [],
+                    "ThreatTypes": [],
+                    "Timestamp": 1722693276390
+                }
+            ],
+            "IP": "8.8.8.8"
         }
     }
 }

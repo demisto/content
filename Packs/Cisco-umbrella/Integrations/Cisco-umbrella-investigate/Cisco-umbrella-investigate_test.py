@@ -601,6 +601,7 @@ def test_list_timeline(
             "all_results": "false",
             "limit": "50",
         },
+        "Domain"
     )
     assert result.outputs_prefix == "Umbrella.Timeline"
     assert result.outputs_key_field == "Domain"
