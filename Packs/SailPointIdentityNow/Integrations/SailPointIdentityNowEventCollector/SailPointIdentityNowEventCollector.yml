@@ -3,7 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: SailPointIdentityNowEventCollector - Dev
+  id: SailPointIdentityNowEventCollector
   version: -1
 configuration:
 - display: IdentityNow Server URL (e.g. https://{tenant}.api.identitynow.com)
@@ -33,8 +33,8 @@ configuration:
   type: 8
   section: Connect
 description: This is the SailPoint IdentityNow event collector integration for Cortex XSIAM.
-display: SailPoint IdentityNow Event Collector - Dev
-name: SailPointIdentityNowEventCollector - Dev
+display: SailPoint IdentityNow Event Collector
+name: SailPointIdentityNowEventCollector
 supportlevelheader: xsoar
 script:
   commands:
