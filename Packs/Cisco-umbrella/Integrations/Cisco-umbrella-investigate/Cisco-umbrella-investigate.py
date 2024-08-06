@@ -30,6 +30,8 @@ SUSPICIOUS_THRESHOLD = DEFAULT_SUSPICIOUS_THRESHOLD
 MALICIOUS_THRESHOLD = DEFAULT_MALICIOUS_THRESHOLD
 MAX_THRESHOLD_VALUE = 100
 MIN_THRESHOLD_VALUE = -100
+DEFAULT_PAGE = "0"
+DEFAULT_LIMIT = "50"
 
 
 def validate_authentication(func: Callable) -> Callable:
@@ -284,7 +286,7 @@ class Client(BaseClient):
         self,
         type_: str,
         value: str,
-        sort_order: str,
+        sort_order: str | None,
         sort_by: str | None,
         record_type: str | None,
         include_features: bool,
@@ -746,9 +748,9 @@ def search_domain_command(
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     limit, offset = get_pagination_args(
-        page=args["page"],
+        page=args.get("page") or DEFAULT_PAGE,
         page_size=args.get("page_size"),
-        limit=args["limit"],
+        limit=args.get("limit") or DEFAULT_LIMIT,
     )
     regex = args["regex"]
     res = client.search_domain(
@@ -1011,9 +1013,9 @@ def list_resource_record_command(
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     limit, offset = get_pagination_args(
-        page=args["page"],
+        page=args.get("page") or DEFAULT_PAGE,
         page_size=args.get("page_size"),
-        limit=args["limit"],
+        limit=args.get("limit") or DEFAULT_LIMIT,
     )
 
     value = args["value"]
@@ -1026,7 +1028,7 @@ def list_resource_record_command(
     res = client.list_resource_record(
         type_=types[args["type"]],
         value=value,
-        sort_order=args["sort_order"],
+        sort_order=args.get("sort_order"),
         sort_by=SORT_BY_MAPPER.get(args.get("sort_by") or ""),
         record_type=args["record_type"].upper() if args.get("record_type") else None,
         include_features=argToBoolean(args.get("include_features", False)),
@@ -1098,7 +1100,11 @@ def list_sub_domain_command(
     res = client.list_subdomain(
         domain=args["domain"],
         offset_name=args.get("offset_name"),
-        limit=None if argToBoolean(args["all_results"]) else arg_to_number(args["limit"]),
+        limit=(
+            None
+            if argToBoolean(args.get("all_results"))
+            else arg_to_number(args.get("limit") or DEFAULT_LIMIT)
+        ),
     )
     data = res
     outputs = {
@@ -1382,11 +1388,11 @@ def get_nameserver_who_is_command(
     """
     nameserver = args["nameserver"]
     limit, offset = get_pagination_args(
-        page=args["page"],
+        page=args.get("page") or DEFAULT_PAGE,
         page_size=args.get("page_size"),
-        limit=args["limit"],
+        limit=args.get("limit") or DEFAULT_LIMIT,
     )
-    is_list = argToBoolean(args["is_list"]) or False
+    is_list = argToBoolean(args.get("is_list")) or False
     res = client.get_nameserver_who_is(
         nameserver=nameserver,
         limit=limit,
@@ -1434,9 +1440,9 @@ def get_email_who_is_command(
     """
     email = args["email"]
     limit, offset = get_pagination_args(
-        page=args["page"],
+        page=args.get("page") or DEFAULT_PAGE,
         page_size=args.get("page_size"),
-        limit=args["limit"],
+        limit=args.get("limit") or DEFAULT_LIMIT,
     )
     res = client.get_email_who_is(
         email=email,
@@ -1480,16 +1486,16 @@ def get_regex_who_is_command(
     """
     regex = args["regex"]
     limit, offset = get_pagination_args(
-        page=args["page"],
+        page=args.get("page") or DEFAULT_PAGE,
         page_size=args.get("page_size"),
-        limit=args["limit"],
+        limit=args.get("limit") or DEFAULT_LIMIT,
     )
 
     res = client.get_regex_who_is(
         regex=regex,
         search_field=args["search_field"],
         start=get_unix_time(args["start"]),
-        stop=get_unix_time(args["stop"]),
+        stop=get_unix_time(args.get("stop")),
         sort=args.get("sort"),
         limit=limit,
         offset=offset,
@@ -1527,8 +1533,8 @@ def get_top_seen_domain_command(
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     limit = (
-        (arg_to_number(args["limit"]) or DEFAULT_LIMIT)
-        if argToBoolean(args["all_results"]) is False
+        (arg_to_number(args.get("limit")) or DEFAULT_LIMIT)
+        if argToBoolean(args.get("all_results")) is False
         else None
     )
     res = client.get_top_seen_domain(limit)
@@ -1631,7 +1637,11 @@ def list_timeline_command(
         name,
     )
 
-    limit = None if argToBoolean(args["all_results"]) else arg_to_number(args["limit"])
+    limit = (
+        None
+        if argToBoolean(args["all_results"])
+        else arg_to_number(args.get("limit") or DEFAULT_LIMIT)
+    )
     outputs = {
         input_type: name,
         "Data": [
@@ -1740,24 +1750,27 @@ def domain_command(
                 "Name": whois_data.get("registrarName"),
             },
         }
-        command_results.append(CommandResults(
-            outputs=outputs,
-            outputs_key_field="Name",
-            outputs_prefix="Domain",
-            indicator=Common.Domain(
-                domain=domain,
-                dbot_score=dbot_score,
-            ),
-            readable_output=tableToMarkdown(
-                name=f"{domain} WHOIS information:",
-                t=outputs.get("Umbrella"),
-                headers=[],
-                removeNull=True,
-                headerTransform=string_to_header,
-            ),
-        ))
+        command_results.append(
+            CommandResults(
+                outputs=outputs,
+                outputs_key_field="Name",
+                outputs_prefix="Domain",
+                indicator=Common.Domain(
+                    domain=domain,
+                    dbot_score=dbot_score,
+                ),
+                readable_output=tableToMarkdown(
+                    name=f"{domain} WHOIS information:",
+                    t=outputs.get("Umbrella"),
+                    headers=[],
+                    removeNull=True,
+                    headerTransform=string_to_header,
+                ),
+            )
+        )
 
     return command_results
+
 
 def test_module(client: Client, api_key: str, api_secret: str) -> str:
     """

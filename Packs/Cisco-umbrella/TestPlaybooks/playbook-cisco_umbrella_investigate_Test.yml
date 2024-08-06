@@ -57,7 +57,7 @@ tasks:
       version: -1
       name: umbrella-domain-categorization
       description: ""
-      script: cisco_umbrella_investigate|||umbrella-domain-categorization
+      script: Cisco Umbrella Investigate|||umbrella-domain-categorization
       type: regular
       iscommand: true
       brand: ""
@@ -146,7 +146,7 @@ tasks:
       version: -1
       name: umbrella-domain-search
       description: ""
-      script: cisco_umbrella_investigate|||umbrella-domain-search
+      script: Cisco Umbrella Investigate|||umbrella-domain-search
       type: regular
       iscommand: true
       brand: ""
@@ -217,7 +217,7 @@ tasks:
       version: -1
       name: umbrella-domain-co-occurrences
       description: ""
-      script: cisco_umbrella_investigate|||umbrella-domain-co-occurrences
+      script: Cisco Umbrella Investigate|||umbrella-domain-co-occurrences
       type: regular
       iscommand: true
       brand: ""
@@ -281,7 +281,7 @@ tasks:
       version: -1
       name: umbrella-domain-related
       description: ""
-      script: cisco_umbrella_investigate|||umbrella-domain-related
+      script: Cisco Umbrella Investigate|||umbrella-domain-related
       type: regular
       iscommand: true
       brand: ""
@@ -345,7 +345,7 @@ tasks:
       version: -1
       name: umbrella-domain-security
       description: ""
-      script: cisco_umbrella_investigate|||umbrella-domain-security
+      script: Cisco Umbrella Investigate|||umbrella-domain-security
       type: regular
       iscommand: true
       brand: ""
@@ -489,7 +489,7 @@ tasks:
       version: -1
       name: umbrella-get-domain-risk-score
       description: ""
-      script: cisco_umbrella_investigate|||umbrella-get-domain-risk-score
+      script: Cisco Umbrella Investigate|||umbrella-get-domain-risk-score
       type: regular
       iscommand: true
       brand: ""
@@ -598,7 +598,7 @@ tasks:
       version: -1
       name: umbrella-list-resource-record
       description: ""
-      script: cisco_umbrella_investigate|||umbrella-list-resource-record
+      script: Cisco Umbrella Investigate|||umbrella-list-resource-record
       type: regular
       iscommand: true
       brand: ""
@@ -711,7 +711,7 @@ tasks:
       version: -1
       name: umbrella-list-domain-subdomian
       description: ""
-      script: cisco_umbrella_investigate|||umbrella-list-domain-subdomian
+      script: Cisco Umbrella Investigate|||umbrella-list-domain-subdomian
       type: regular
       iscommand: true
       brand: ""
@@ -777,7 +777,7 @@ tasks:
       version: -1
       name: umbrella-get-ip-bgp
       description: ""
-      script: cisco_umbrella_investigate|||umbrella-get-ip-bgp
+      script: Cisco Umbrella Investigate|||umbrella-get-ip-bgp
       type: regular
       iscommand: true
       brand: ""
@@ -856,7 +856,7 @@ tasks:
       version: -1
       name: umbrella-get-asn-bgp
       description: ""
-      script: cisco_umbrella_investigate|||umbrella-get-asn-bgp
+      script: Cisco Umbrella Investigate|||umbrella-get-asn-bgp
       type: regular
       iscommand: true
       brand: ""
@@ -925,7 +925,7 @@ tasks:
       version: -1
       name: umbrella-get-whois-for-domain
       description: ""
-      script: cisco_umbrella_investigate|||umbrella-get-whois-for-domain
+      script: Cisco Umbrella Investigate|||umbrella-get-whois-for-domain
       type: regular
       iscommand: true
       brand: ""
@@ -1096,7 +1096,7 @@ tasks:
       version: -1
       name: umbrella-get-domain-whois-history
       description: ""
-      script: cisco_umbrella_investigate|||umbrella-get-domain-whois-history
+      script: Cisco Umbrella Investigate|||umbrella-get-domain-whois-history
       type: regular
       iscommand: true
       brand: ""
@@ -1362,7 +1362,7 @@ tasks:
       version: -1
       name: umbrella-get-nameserver-whois
       description: ""
-      script: cisco_umbrella_investigate|||umbrella-get-nameserver-whois
+      script: Cisco Umbrella Investigate|||umbrella-get-nameserver-whois
       type: regular
       iscommand: true
       brand: ""
@@ -1428,7 +1428,7 @@ tasks:
       version: -1
       name: umbrella-get-email-whois
       description: ""
-      script: cisco_umbrella_investigate|||umbrella-get-email-whois
+      script: Cisco Umbrella Investigate|||umbrella-get-email-whois
       type: regular
       iscommand: true
       brand: ""
@@ -1494,7 +1494,7 @@ tasks:
       version: -1
       name: umbrella-get-regex-whois
       description: ""
-      script: cisco_umbrella_investigate|||umbrella-get-regex-whois
+      script: Cisco Umbrella Investigate|||umbrella-get-regex-whois
       type: regular
       iscommand: true
       brand: ""
@@ -1740,7 +1740,7 @@ tasks:
       version: -1
       name: umbrella-get-top-most-seen-domain
       description: ""
-      script: cisco_umbrella_investigate|||umbrella-get-top-most-seen-domain
+      script: Cisco Umbrella Investigate|||umbrella-get-top-most-seen-domain
       type: regular
       iscommand: true
       brand: ""
@@ -1794,7 +1794,7 @@ tasks:
       version: -1
       name: umbrella-get-domain-queryvolume
       description: ""
-      script: cisco_umbrella_investigate|||umbrella-get-domain-queryvolume
+      script: Cisco Umbrella Investigate|||umbrella-get-domain-queryvolume
       type: regular
       iscommand: true
       brand: ""
@@ -1873,7 +1873,7 @@ tasks:
       version: -1
       name: umbrella-get-domain-timeline
       description: ""
-      script: cisco_umbrella_investigate|||umbrella-get-domain-timeline
+      script: Cisco Umbrella Investigate|||umbrella-get-domain-timeline
       type: regular
       iscommand: true
       brand: ""
@@ -1933,9 +1933,141 @@ tasks:
   "38":
     id: "38"
     taskid: "3b2418e6-e1ac-41bf-ba41-6101098d7a38"
-    type: title
+    type: regular
     task:
       id: "3b2418e6-e1ac-41bf-ba41-6101098d7a38"
+      version: -1
+      name: umbrella-get-url-timeline
+      description: ""
+      script: Cisco Umbrella Investigate|||umbrella-get-url-timeline
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+        - "39"
+    scriptarguments:
+      name:
+        simple: www.maliciouswebsitetest.com
+      limit:
+        simple: "1"
+    separatecontext: false
+    view: '{"position":{"x":50,"y":7600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "39":
+    id: "39"
+    taskid: "3b2418e6-e1ac-41bf-ba41-6101098d7a39"
+    type: condition
+    task:
+      id: "3b2418e6-e1ac-41bf-ba41-6101098d7a39"
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ""
+      brand: ""
+    nexttasks:
+      yes:
+        - "40"
+    separatecontext: false
+    conditions:
+      - label: yes
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Umbrella.Timeline.URL
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.Timeline.Data.MalwareCategories
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.Timeline.Data.Timestamp
+                iscontext: true
+    view: '{"position":{"x":50,"y":7800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "40":
+    id: "40"
+    taskid: "3b2418e6-e1ac-41bf-ba41-6101098d7a40"
+    type: regular
+    task:
+      id: "3b2418e6-e1ac-41bf-ba41-6101098d7a40"
+      version: -1
+      name: umbrella-get-url-timeline
+      description: ""
+      script: Cisco Umbrella Investigate|||umbrella-get-domain-timeline
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+        - "41"
+    scriptarguments:
+      name:
+        simple: 8.8.8.8
+      limit:
+        simple: "1"
+    separatecontext: false
+    view: '{"position":{"x":50,"y":8000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "41":
+    id: "41"
+    taskid: "3b2418e6-e1ac-41bf-ba41-6101098d7a41"
+    type: condition
+    task:
+      id: "3b2418e6-e1ac-41bf-ba41-6101098d7a41"
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ""
+      brand: ""
+    nexttasks:
+      yes:
+        - "42"
+    separatecontext: false
+    conditions:
+      - label: yes
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Umbrella.Timeline.IP
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.Timeline.Data.MalwareCategories
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.Timeline.Data.Timestamp
+                iscontext: true
+    view: '{"position":{"x":50,"y":8200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "42":
+    id: "42"
+    taskid: "3b2418e6-e1ac-41bf-ba41-6101098d7a42"
+    type: title
+    task:
+      id: "3b2418e6-e1ac-41bf-ba41-6101098d7a42"
       version: -1
       name: Test Done
       type: title
@@ -1943,7 +2075,7 @@ tasks:
       brand: ""
       description: ""
     separatecontext: false
-    view: '{"position":{"x":50,"y":7600}}'
+    view: '{"position":{"x":50,"y":8400}}'
     note: false
     timertriggers: []
     ignoreworker: false
