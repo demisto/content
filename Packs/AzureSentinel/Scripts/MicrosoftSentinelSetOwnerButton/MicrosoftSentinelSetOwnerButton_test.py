@@ -23,6 +23,7 @@ def test_set_owner(mocker):
     mocker.patch.object(demisto, "args", return_value=demisto_args)
     debug_mock = mocker.patch.object(demisto, "debug")
     execute_command_mock = mocker.patch.object(CommonServerPython, "execute_command")
+    mocker.patch.object(CommonServerPython, "CommandResults", return_value="Command Results")
     mocker.patch.object(CommonServerPython, "dict_safe_get", return_value=owner)
 
     from MicrosoftSentinelSetOwnerButton import set_owner
