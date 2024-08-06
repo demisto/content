@@ -148,7 +148,7 @@ call o365_common_fields
 	Scope = to_integer(Scope)
 | alter
 	check_objectid_filepath = if(arraystring(regextract(ObjectId, "^.+[\/\\]([^\/\\]+)$"), "") ~= "\.", arraystring(regextract(ObjectId, "^.+[\/\\]([^\/\\]+)$"), ""), null),
-	sourcefilename_filename = arraystring(regextract(SourceFileName, "^(\S+)\.\S+"), ""),
+	sourcefilename_filename = arraystring(regextract(SourceFileName, "^\S+\.\S+"), ""),
 	sourcefilename_filextension = arraystring(regextract(SourceFileName, "^\S+\.(\S+)"), "")
 | alter
 	platform_lowercase = lowercase(to_string(Platform)),
