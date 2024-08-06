@@ -8,7 +8,7 @@ Signum password expiry notification
     | **Parameter** | **Required** |
     | --- | --- |
     | Signum URL, in the format https://signmum.keyfactorsaas.com | True |
-    | username | True |
+    | Username | True |
     | Password | True |
     | verify certificate | False |
     | Use system proxy | False |
