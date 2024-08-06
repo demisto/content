@@ -8,6 +8,15 @@ commonfields:
 comment: This script is used to add a new comment to incident.
 name: MicrosoftSentinelSubmitNewComment
 outputs:
+  - contextPath: AzureSentinel.AddComment.InstanceName
+    type: string
+    description: The name of the instance where the comment is added.
+  - contextPath: AzureSentinel.AddComment.IncidentId
+    type: string
+    description: The ID of the incident where the comment was added.
+  - contextPath: AzureSentinel.AddComment.Message
+    type: string
+    description: The message of the comment added to the incident.
 script: '-'
 tags:
 - dynamic-section

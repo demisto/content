@@ -1,0 +1,30 @@
+args:
+- name: owner_email
+  required: true
+  description: The owner email to set as user principal name.
+commonfields:
+  id: MicrosoftSentinelSetOwnerButton
+  version: -1
+comment: This script is used to set owner in remote system.
+name: MicrosoftSentinelSetOwnerButton
+outputs:
+  - contextPath: AzureSentinel.Incident.Owner.assignedTo
+    type: string
+    description: The name of the person assigned as the owner.
+  - contextPath: AzureSentinel.Incident.Owner.email
+    type: string
+    description: The email of the new owner.
+  - contextPath: AzureSentinel.Incident.Owner.objectId
+    type: string
+    description: The object ID of the new owner.
+  - contextPath: AzureSentinel.Incident.Owner.userPrincipalName
+    type: string
+    description: The user principal name of the new owner.
+script: '-'
+tags:
+- dynamic-section
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.10.13.83255
+fromversion: 5.5.0

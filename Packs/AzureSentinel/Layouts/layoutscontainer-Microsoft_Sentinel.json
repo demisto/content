@@ -85,6 +85,19 @@
                                 "startCol": 0
                             },
                             {
+                                "args": {},
+                                "buttonClass": "primary",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "9f6a7320-53be-11ef-9bcc-b913c4688c53",
+                                "index": 4,
+                                "name": "Set Remote Owner",
+                                "scriptId": "MicrosoftSentinelSetOwnerButton",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
                                 "endCol": 2,
                                 "fieldId": "microsoftsentinelowner",
                                 "height": 106,
@@ -315,52 +328,54 @@
                     },
                     {
 						"displayType": "ROW",
-						"h": 2,
+						"h": 1,
 						"hideName": false,
-						"i": "caseinfoid-6ce711b0-4e69-11ef-b3ed-c7467e602847",
+						"i": "caseinfoid-8c5ef130-5331-11ef-90d3-736eac4b13d9",
 						"items": [
 							{
-								"args": {
-									"value": {
-										"simple": "comments"
-									}
-								},
+								"args": {},
 								"buttonClass": "primary",
-								"dropEffect": "move",
 								"endCol": 4,
 								"fieldId": "",
 								"height": 44,
-								"id": "3787d430-4fdd-11ef-832e-ff0311deaa1d",
+								"id": "92aae170-5331-11ef-90d3-736eac4b13d9",
 								"index": 0,
-								"listId": "caseinfoid-6ce711b0-4e69-11ef-b3ed-c7467e602847",
 								"name": "Add New Comment",
 								"scriptId": "MicrosoftSentinelSubmitNewComment",
 								"sectionItemType": "button",
-								"startCol": 0
-							},
-							{
-								"endCol": 4,
-								"fieldId": "microsoftsentinelcomment",
-								"height": 106,
-								"id": "a91d08c0-5223-11ef-a753-9f4277584e86",
-								"index": 1,
-								"sectionItemType": "field",
 								"startCol": 0
 							}
 						],
 						"maxW": 3,
 						"minH": 1,
 						"moved": false,
-						"name": "Comments",
+						"name": "Microsoft Sentinel Comments",
 						"static": false,
+						"w": 2,
+						"x": 1,
+						"y": 4
+					},
+                    {
+						"h": 3,
+                        "hideName": true,
+						"i": "caseinfoid-79f1a100-b73d-11ed-9ec7-a1ea2fc05cd7",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Microsoft Sentinel Comments",
+						"query": "MicrosoftSentinelConvertCommentsToTable",
+						"queryType": "script",
+						"static": false,
+						"type": "dynamic",
 						"w": 2,
 						"x": 1,
 						"y": 4
 					}
                 ],
                 "type": "custom"
-            },
-            {
+                    },
+                    {
                 "hidden": false,
                 "id": "wvikqjhsl6",
                 "name": "Investigation",
