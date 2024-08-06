@@ -48,6 +48,9 @@ def test_add_new_comment(mocker):
     command_results_mock.assert_called_once_with(
         readable_output="Markdown Table",
         outputs_prefix="AzureSentinel.AddComment",
-        outputs={"incidentId": expected_incident_id, "Message": expected_new_comment},
+        outputs={
+            "IncidentId": expected_incident_id,
+            "Message": expected_new_comment,
+            "InstanceName": None,
+        },
     )
-    
