@@ -9514,30 +9514,33 @@ script:
     - description: "Can be: Vulnerability Protection or Anti Spyware."
       name: profile_type
       required: true
+      auto: PREDEFINED
       predefined:
-      - Vulnerability Protection
-      - Anti Spyware
+      - Vulnerability Protection Profile
+      - Anti Spyware Profile
     - description: "The requested threat name/CVE to add."
       name: threat_name
       required: true
     - description: "Can be: Alert, Allow, Block IP, Drop, Reset Both, Reset Client or Reset Server."
       name: action
+      auto: PREDEFINED
       required: false
       predefined:
-      - Alert
-      - Allow
-      - Block IP
-      - Drop
-      - Reset Both
-      - Reset Client
-      - Reset Server
+      - alert
+      - allow
+      - block-ip
+      - drop
+      - reset-both
+      - reset-client
+      - reset-server
     - description: "Can be: Disable, Single Packet or Extended Capture."
       name: packet_capture
       required: false
+      auto: PREDEFINED
       predefined: 
-      - Disable
-      - Single Packet
-      - Extended Capture
+      - disable
+      - single-packet
+      - extended-capture
     - description: TODO
       name: exempt_ip
       required: false
@@ -9547,6 +9550,7 @@ script:
     - description: "Can be: Source or Source And Destination. If action = Block IP , this argument is mandatory."
       name: ip_track_by
       required: false
+      auto: PREDEFINED
       predefined:
       - Source
       - Source And Destination
@@ -9563,30 +9567,33 @@ script:
     - description: "Can be: Vulnerability Protection or Anti Spyware."
       name: profile_type
       required: true
+      auto: PREDEFINED
       predefined:
-      - Vulnerability Protection
-      - Anti Spyware
+      - Vulnerability Protection Profile
+      - Anti Spyware Profile
     - description: "The requested threat name/CVE to add."
       name: threat_name
       required: true
     - description: "Can be: Alert, Allow, Block IP, Drop, Reset Both, Reset Client or Reset Server."
       name: action
       required: false
+      auto: PREDEFINED
       predefined:
-      - Alert
-      - Allow
-      - Block IP
-      - Drop
-      - Reset Both
-      - Reset Client
-      - Reset Server
+      - alert
+      - allow
+      - block-ip
+      - drop
+      - reset-both
+      - reset-client
+      - reset-server
     - description: "Can be: Disable, Single Packet or Extended Capture."
       name: packet_capture
       required: false
+      auto: PREDEFINED
       predefined: 
-      - Disable
-      - Single Packet
-      - Extended Capture
+      - disable
+      - single-packet
+      - extended-capture
     - description: TODO
       name: exempt_ip
       required: false
@@ -9596,6 +9603,7 @@ script:
     - description: "Can be: Source or Source And Destination. If action = Block IP , this argument is mandatory."
       name: ip_track_by
       required: false
+      auto: PREDEFINED
       predefined:
       - Source
       - Source And Destination
@@ -9612,30 +9620,33 @@ script:
     - description: "Can be: Vulnerability Protection or Anti Spyware."
       name: profile_type
       required: true
+      auto: PREDEFINED
       predefined:
-      - Vulnerability Protection
-      - Anti Spyware
+      - Vulnerability Protection Profile
+      - Anti Spyware Profile
     - description: "The requested threat name/CVE to add."
       name: threat_name
       required: true
     - description: "Can be: Alert, Allow, Block IP, Drop, Reset Both, Reset Client or Reset Server."
       name: action
       required: false
+      auto: PREDEFINED
       predefined:
-      - Alert
-      - Allow
-      - Block IP
-      - Drop
-      - Reset Both
-      - Reset Client
-      - Reset Server
+      - alert
+      - allow
+      - block-ip
+      - drop
+      - reset-both
+      - reset-client
+      - reset-server
     - description: "Can be: Disable, Single Packet or Extended Capture."
       name: packet_capture
       required: false
+      auto: PREDEFINED
       predefined: 
-      - Disable
-      - Single Packet
-      - Extended Capture
+      - disable
+      - single-packet
+      - extended-capture
     - description: TODO
       name: exempt_ip
       required: false
@@ -9645,6 +9656,7 @@ script:
     - description: "Can be: Source or Source And Destination. If action = Block IP , this argument is mandatory."
       name: ip_track_by
       required: false
+      auto: PREDEFINED
       predefined:
       - Source
       - Source And Destination
@@ -9661,30 +9673,33 @@ script:
     - description: "Can be: Vulnerability Protection or Anti Spyware."
       name: profile_type
       required: true
+      auto: PREDEFINED
       predefined:
-      - Vulnerability Protection
-      - Anti Spyware
+      - Vulnerability Protection Profile
+      - Anti Spyware Profile
     - description: "The requested threat name/CVE to add."
       name: threat_name
       required: true
     - description: "Can be: Alert, Allow, Block IP, Drop, Reset Both, Reset Client or Reset Server."
       name: action
       required: false
+      auto: PREDEFINED
       predefined:
-      - Alert
-      - Allow
-      - Block IP
-      - Drop
-      - Reset Both
-      - Reset Client
-      - Reset Server
+      - alert
+      - allow
+      - block-ip
+      - drop
+      - reset-both
+      - reset-client
+      - reset-server
     - description: "Can be: Disable, Single Packet or Extended Capture."
       name: packet_capture
       required: false
+      auto: PREDEFINED
       predefined: 
-      - Disable
-      - Single Packet
-      - Extended Capture
+      - disable
+      - single-packet
+      - extended-capture
     - description: TODO
       name: exempt_ip
       required: false
@@ -9694,6 +9709,7 @@ script:
     - description: "Can be: Source or Source And Destination. If action = Block IP , this argument is mandatory."
       name: ip_track_by
       required: false
+      auto: PREDEFINED
       predefined:
       - Source
       - Source And Destination

@@ -50,6 +50,9 @@ OUTPUT_PREFIX = "PANOS."
 UNICODE_FAIL = u'\U0000274c'
 UNICODE_PASS = u'\U00002714\U0000FE0F'
 BLOCK_IP = 'Block IP'
+VULNERABILITY_PROTECTION = 'Vulnerability Protection Profile'
+ANTI_SPYWARE = 'Anti Spyware Profile'
+predefined_threats = {}
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 QUERY_DATE_FORMAT = '%Y/%m/%d %H:%M:%S'
@@ -6303,7 +6306,7 @@ def panorama_override_vulnerability(threatid: str, vulnerability_profile: str, d
 
 
 @logger
-def panorama_get_predefined_threats_list(target: str):
+def panorama_get_predefined_threats_list(target: Optional[str] = None):
     """
     Get the entire list of predefined threats as a file in Demisto
     """
@@ -14054,6 +14057,79 @@ def pan_os_get_audit_comment_command(args: dict) -> CommandResults:
         outputs_key_field=['rule_name', 'rule_type']
     )
 
+def build_xpath_for_profile_exception_commands(profile_name, profile_type, device_group):
+    if profile_type == VULNERABILITY_PROTECTION and device_group:
+        return f"/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='{device_group}']/profiles/vulnerability/entry[@name='{profile_name}']/threat-exception"
+
+    elif profile_type == VULNERABILITY_PROTECTION and VSYS:
+       return f"/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name='{VSYS}']/profiles/vulnerability/entry[@name='{profile_name}']/threat-exception"
+        
+    elif profile_type == ANTI_SPYWARE and device_group:
+        return f"/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='{device_group}']/profiles/spyware/entry[@name='{profile_name}']/threat-exception"
+    
+    elif profile_type == ANTI_SPYWARE and VSYS:
+        return f"/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name='{VSYS}']/profiles/spyware/entry[@name='{profile_name}']/threat-exception"
+    
+    else:
+        raise DemistoException("Invalid profile_type was provided. Can be Vulnerability Protection or Anti Spyware.")
+
+def get_predefined_threats_list():
+    result = panorama_get_predefined_threats_list()
+    predefined_threats = result['response']['result']['threats']["phone-home"]['entry'] 
+    predefined_threats += result['response']['result']['threats']["vulnerability"]['entry']
+    return predefined_threats
+
+def get_threat_id_from_predefined_threates(threat_name):
+    NUMBER_OF_TRIES = 2
+    global predefined_threats
+    if not predefined_threats:
+        predefined_threats = get_predefined_threats_list()
+            
+    extracted_id = ""    
+    while NUMBER_OF_TRIES > 0:
+        for entry in predefined_threats:
+            threatname = entry.get('threatname', "")
+            cve = entry.get('cve', {}).get('member', '')
+            extracted_id = entry['@name']
+            if threatname == threat_name or cve == threat_name or threatname == extracted_id:
+                return extracted_id
+            
+        #if extracted_id was not found, update predefined threats list and check again
+        if not extracted_id:
+            predefined_threats = get_predefined_threats_list()
+        
+        NUMBER_OF_TRIES -= 1
+        
+    raise DemistoException("Invalid threat_name was provided.")
+
+def build_element_for_profile_exception_commands(extracted_id, action, packet_capture, exempt_ip, ip_track_by, ip_duration_sec):
+    if not exempt_ip:
+        exempt_ip = '9.9.9.9'
+        
+    element = f"""
+        <entry name="{extracted_id}">
+            <action>
+                <drop/>
+            </action>
+            <packet-capture>single-packet</packet-capture>
+            <exempt-ip>
+     	        <entry name="{exempt_ip}"/>
+            </exempt-ip>
+        </entry>
+        """
+        
+    if action == BLOCK_IP:
+        element += f"""
+            <block-ip>
+                <track-by>
+                    {ip_track_by}
+                </track-by>
+                <duration>
+                    {ip_duration_sec}
+                </duration>
+            </block-ip>
+            """
+    return element
 
 def pan_os_add_profile_exception_command(args: dict) -> CommandResults:
     profile_name = args.get('profile_name')
@@ -14067,36 +14143,25 @@ def pan_os_add_profile_exception_command(args: dict) -> CommandResults:
     ip_duration_sec = args.get('ip_duration_sec', "")
     
     if action == BLOCK_IP and (not ip_track_by or not ip_duration_sec):
-        raise DemistoException("ip_track_by and ip_duration_sec are required when action is 'Block IP'.")
+        raise DemistoException("ip_track_by and ip_duration_sec are required when action is 'block_ip'.")
+        
+    xpath = build_xpath_for_profile_exception_commands(profile_name, profile_type, device_group)
+    extracted_id = get_threat_id_from_predefined_threates(threat_name)
+    element = build_element_for_profile_exception_commands(extracted_id, action, packet_capture, exempt_ip, ip_track_by, ip_duration_sec)
     
-    #search for the threat_name in the command panorama_get_predefined_threats_list
-    
-    if profile_type == 'Vulnerability Protection':
-        if device_group:
-            xpath='exmaple1'
-        elif VSYS:
-            xpath='example2'
-    elif profile_type == 'Anti Spyware':
-        if device_group:
-            xpath='exmaple1'
-        elif VSYS:
-            xpath='example2'
-    else:
-        raise DemistoException("Invalid profile_type provided. Can be Vulnerability Protection or Anti Spyware.")
-    
-    #create the element for the api request
-    #create the api request
     params = {
         'type': 'config',
         'action': action,
         'xpath': xpath,
         'key': API_KEY,
-        'elemnt': ""
+        'element': element
     }
-    raw_response = http_request(URL, 'GET', params=params)
     
-    #create the results to return
-    return CommandResults()
+    raw_response = http_request(URL, 'GET', params=params)
+    return CommandResults(
+        raw_response=raw_response,
+        readable_output=f'Successfully created Exception: "{threat_name}"',
+    )
 
 def pan_os_edit_profile_exception_command(args: dict) -> CommandResults:
     pass
