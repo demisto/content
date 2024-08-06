@@ -403,5 +403,8 @@
             }
         ]
     },
-    "description": ""
+    "description": "",
+    "marketplaces": [
+        "xsoar"
+    ]
 }
