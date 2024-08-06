@@ -520,7 +520,7 @@ Get data about ASN and IP relationships, showing how IP addresses are related to
         "BGPInformation": [
             {
                 "asn": 3356,
-                "cidr": "8.0.0.0/12",
+                "cidr": "8.8.8.8/12",
                 "creation_date": "2000-03-10",
                 "description": "LEVEL3, US 86400",
                 "ip": "8.8.8.8",
@@ -572,7 +572,7 @@ Get BGP Route Information for ASN. Each hash reference contains two keys: `geo` 
                     "country_name": "United States"
                 },
                 "asn": "3356",
-                "cidr": "4.0.0.0/9"
+                "cidr": "8.8.8.8/9"
             }
         ]
     }
@@ -1271,7 +1271,7 @@ Performs a regular expression (RegEx) search on the WHOIS data (domain, nameserv
                     ],
                     "administrative_contact_city": "Toronto",
                     "administrative_contact_country": "CANADA",
-                    "administrative_contact_email": "manish.handa@nbfc.com",
+                    "administrative_contact_email": "test@test.com",
                     "administrative_contact_fax": null,
                     "administrative_contact_fax_ext": "",
                     "administrative_contact_name": "Manish Handa",
@@ -1301,8 +1301,8 @@ Performs a regular expression (RegEx) search on the WHOIS data (domain, nameserv
                     "created": "2024-05-24",
                     "domain_name": "weclaimdifferently.ca",
                     "emails": [
-                        "wilfred.tan@nbfc.com",
-                        "manish.handa@nbfc.com",
+                        "test@test.com",
+                        "test@test.com",
                         "test@test.com"
                     ],
                     "expires": "2027-05-24",
@@ -1314,7 +1314,7 @@ Performs a regular expression (RegEx) search on the WHOIS data (domain, nameserv
                     "record_expired": false,
                     "registrant_city": "Toronto",
                     "registrant_country": "CANADA",
-                    "registrant_email": "wilfred.tan@nbfc.com",
+                    "registrant_email": "test@test.com",
                     "registrant_fax": "18886429675",
                     "registrant_fax_ext": "",
                     "registrant_name": "Northbridge Financial Corporation",
@@ -1333,7 +1333,7 @@ Performs a regular expression (RegEx) search on the WHOIS data (domain, nameserv
                     ],
                     "technical_contact_city": "Toronto",
                     "technical_contact_country": "CANADA",
-                    "technical_contact_email": "manish.handa@nbfc.com",
+                    "technical_contact_email": "test@test.com",
                     "technical_contact_fax": "18886429675",
                     "technical_contact_fax_ext": "",
                     "technical_contact_name": "Manish Handa",
