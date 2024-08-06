@@ -15,7 +15,6 @@ configuration:
   name: credentials
   type: 9
   required: true
-  additionalinfo: Reliability of the source providing the intelligence data.
 - section: Connect
   display: Server URL. e.g., https://127.0.0.1:9001
   name: url
@@ -49,7 +48,7 @@ configuration:
   name: incidentFetchInterval
   type: 0
   required: false
-- display: First fetch time (<number> <time unit>, for example, 12 hours, 7 days, 3 months, 1 year)  
+- display: First fetch time (<number> <time unit>, for example, 12 hours, 7 days, 3 months, 1 year)
   name: first_fetch
   defaultvalue: 3 days
   type: 0
@@ -71,7 +70,7 @@ script:
       description: Ipv4 or Ipv6 of the destination.
       type: textArea
     - name: datetime_from
-      description: Get the alerts that were occurred from this date, for example, "3 days ago", "2020-01-01-00:00:00". The default value is 7 days ago.  
+      description: Get the alerts that were occurred from this date, for example, "3 days ago", "2020-01-01-00:00:00". The default value is 7 days ago.
       type: textArea
     - name: datetime_to
       description: Get the alerts that were occurred up to this date, for example, "3 days ago", "2020-01-01-00:00:00". The default is now.
@@ -81,10 +80,10 @@ script:
       type: textArea
     - name: page
       description: A page number for pagination.
-      type: keyValue
+      type: textArea
     - name: limit
       description: The maximum number of protocols to display per alert.
-      type: keyValue
+      type: textArea
     outputs:
     - contextPath: JizoM.Protocols.alerts_flows.count
       description: The number of displayed alerts.
@@ -133,10 +132,10 @@ script:
       type: textArea
     - name: page
       description: A page number for pagination.
-      type: keyValue
+      type: textArea
     - name: limit
       description: The maximum number of samples to display per alert.
-      type: keyValue
+      type: textArea
     outputs:
     - contextPath: JizoM.Peers.alerts_flows.count
       description: The number of displayed alerts.
@@ -205,7 +204,7 @@ script:
       - RFB
       - NFS
       - MQTT
-      - MSN 
+      - MSN
       - MODBUS
       - IMAP
       - TFTP
@@ -237,10 +236,10 @@ script:
       type: textArea
     - name: page
       description: A page number for pagination.
-      type: keyValue
+      type: textArea
     - name: limit
       description: The maximum number of samples to display per alert.
-      type: keyValue
+      type: textArea
     outputs:
     - contextPath: JizoM.QueryRecords.alerts_flows.count
       description: The number of displayed alerts.
@@ -269,7 +268,7 @@ script:
     - contextPath: JizoM.QueryRecords.alerts_usecase.total
       description: The total number of alerts.
       type: Number
-    description: Retrieve all information available on Jizo M, mainly alerts.  
+    description: Retrieve all information available on Jizo M, mainly alerts.
   dockerimage: demisto/python3:3.10.14.97608
   isfetch: true
   runonce: false
