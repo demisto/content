@@ -1626,14 +1626,14 @@ Run a remote script that was uploaded to the SentinelOne Script Library.
 | SentinelOne.RunRemoteScript.affected | number | Number of entities affected by the requested operation. | 
 | SentinelOne.RunRemoteScript.parentTaskId | string | The parent task ID of the script execution task. Null in case of pending execution. | 
 
-### sentinelone-get-remote-script-status
+### sentinelone-get-remote-script-task-status
 
 ***
 Get remote scripts tasks using a variety of filters. Accessible via API only parent_task_id query parameter is mandatory
 
 #### Base Command
 
-`sentinelone-get-remote-script-status`
+`sentinelone-get-remote-script-task-status`
 
 #### Input
 
@@ -1695,21 +1695,21 @@ Get remote scripts tasks using a variety of filters. Accessible via API only par
 | SentinelOne.GetRemoteScript.updateAt | string | Remote script upated at. |
 
 
-### sentinelone-get-remote-script-results
+### sentinelone-get-remote-script-task-results
 
 ***
 Get scripts results URLs. Accessible via API only
 
 #### Base Command
 
-`sentinelone-get-remote-script-results`
+`sentinelone-get-remote-script-task-results`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | computerNames | A list of partial or whole computer names, which ran scripts, | Optional | 
-| taskIds | A list of task ids to get a download link for | Optional | 
+| taskIds | A list of task ids to get a download link for | Required | 
 
 
 #### Context Output
@@ -1719,6 +1719,45 @@ Get scripts results URLs. Accessible via API only
 | SentinelOne.RemoteScriptResults.taskId | string | ID of the Task. | 
 | SentinelOne.RemoteScriptResults.fileName | string | File name. | 
 | SentinelOne.RemoteScriptResults.downloadUrl | string | Download Url. | 
+| SentinelOne.RemoteScriptResults.ZippedFile | string | Details of the zipped folder. |
+
+
+### sentinelone-remote-script-automate-results
+
+***
+The polling command will continuously poll the task results until the status of each task is completed, and return the results.
+
+#### Base Command
+
+`sentinelone-remote-script-automate-results`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_ids | A comma-separated list of account IDs. | Required | 
+| output_destination | Output destination. Possible values: DataSetCloud/Local/None/SentinelCloud. Possible values are: DataSetCloud, Local, None, SentinelCloud. | Required | 
+| task_description | Task description. | Required | 
+| script_id | Script ID. | Required | 
+| output_directory | Output directory. | Optional | 
+| agent_ids | A comma-separated list of agent IDs on which the script should run. | Required | 
+| singularity_xdr_Keyword | Singularityxdr keyword. | Optional |
+| singularity_xdr_Url | Singularityxdr keyword. | Optional |
+| api_key | Api key. | Optional |
+| input_params | Input params. | Optional |
+| password | Password. | Optional |
+| script_runtime_timeout_seconds | Script runtime timout in seconds for current execution. | Optional |
+| requires_approval | If set to true, execution will require approval. | Optional |
+| interval | Indicates how long to wait between command execution (in seconds) when 'polling' argument is true. Minimum value is 10 seconds. Default is 60. | Optional |
+| timeout | Indicates the time in seconds until the polling sequence timeouts. Default is 600. | Optional |
+| parentTaskId | parent task id to fetch the status by. Example: '225494730938493804'. | Optional |
+
+
+#### Context Output
+
+There is no context output for this command.
+
+
 
 ### get-mapping-fields
 

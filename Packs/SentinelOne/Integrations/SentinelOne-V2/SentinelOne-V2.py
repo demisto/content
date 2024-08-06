@@ -3271,6 +3271,76 @@ def get_remote_script_results(client: Client, args: dict) -> list[CommandResults
     ]
 
 
+def run_polling_command(client: Client, cmd: str, args: Dict[str, Any]) -> CommandResults:
+    """ Run a pipeline.
+
+    Args:
+        cmd (str): The command name.
+        client (Client): SentinelOne API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    ScheduledCommand.raise_error_if_not_supported()
+    interval = arg_to_number(args.get('interval', 60))
+    timeout = arg_to_number(args.get('timeout', 600))
+    if 'parentTaskId' not in args:
+        command_results = run_remote_script_command(client, args)
+        output = command_results.raw_response
+        parentTaskId = output.get("parentTaskId")
+        args['parentTaskId'] = parentTaskId
+        scheduled_command = schedule_command(interval, timeout, cmd, args)
+        command_results.scheduled_command = scheduled_command
+        return command_results
+
+    parentTaskId = args.get('parentTaskId')
+    status_args = {"parentTaskId": parentTaskId}
+    status_check_command_results = get_remote_script_status(client, status_args)
+    status_outputs = status_check_command_results.raw_response
+    script_executed = False
+    if status_outputs:
+        taskIds = []
+        for output in status_outputs:
+            if output.get("status") != "completed":
+                script_executed = False
+                break
+            else:
+                taskIds.append(output.get("id"))
+                script_executed = True
+        if script_executed:
+            results_args = {"taskIds": taskIds}
+            final_command_results = get_remote_script_results(client, results_args)
+            return final_command_results
+    if not script_executed:
+        scheduled_command = schedule_command(interval, timeout, cmd, args)
+        command_results = CommandResults(scheduled_command=scheduled_command)
+        return command_results
+
+
+def schedule_command(interval: Optional[int], timeout: Optional[int], cmd: str,
+                     args: Dict[str, Any]) -> ScheduledCommand:
+    """ Build scheduled command if operation status is not completed.
+
+    Args:
+        cmd (Callable): The command name to execute.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        ScheduledCommand: Command, args, timeout and interval for CommandResults.
+    """
+    scheduled_command = ScheduledCommand(
+        command=cmd,
+        next_run_in_seconds=interval,  # type: ignore
+        args=args,
+        timeout_in_seconds=timeout)
+    return scheduled_command
+
+
+def remote_script_automate_results(client: Client, args: dict):
+    return_results(run_polling_command(client=client, cmd="sentinelone-remote-script-automate-results", args=args))
+
+
 def get_mapping_fields_command():
     """
     Returns the list of fields to map in outgoing mirroring, for incidents.
@@ -3705,8 +3775,9 @@ def main():
             'sentinelone-remove-item-from-whitelist': remove_item_from_whitelist,
             'sentinelone-run-remote-script': run_remote_script_command,
             'sentinelone-get-accounts': get_accounts,
-            'sentinelone-get-remote-script-status': get_remote_script_status,
-            'sentinelone-get-remote-script-results': get_remote_script_results,
+            'sentinelone-get-remote-script-task-status': get_remote_script_status,
+            'sentinelone-get-remote-script-task-results': get_remote_script_results,
+            'sentinelone-remote-script-automate-results': remote_script_automate_results,
         },
         'commands_with_params': {
             'get-remote-data': get_remote_data_command,

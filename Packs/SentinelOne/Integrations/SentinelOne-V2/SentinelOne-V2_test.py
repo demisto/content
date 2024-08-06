@@ -608,7 +608,7 @@ def test_get_remote_script_status(mocker, requests_mock):
     Given
         - required parentTaskId argument
     When
-        - running sentinelone-get-remote-script-status command
+        - running sentinelone-get-remote-script-task-status command
     Then
         - returns a table of result had the list of taskIds which are available on ParentTaskIds
     """
@@ -649,7 +649,7 @@ def test_get_remote_script_status(mocker, requests_mock):
     mocker.patch.object(demisto, 'params', return_value={'token': 'token',
                                                          'url': 'https://usea1.sentinelone.net',
                                                          'api_version': '2.1'})
-    mocker.patch.object(demisto, 'command', return_value='sentinelone-get-remote-script-status')
+    mocker.patch.object(demisto, 'command', return_value='sentinelone-get-remote-script-task-status')
     mocker.patch.object(demisto, 'args', return_value={
         'parentTaskId': '123456789'
     })
@@ -671,7 +671,7 @@ def test_remote_script_results(mocker, requests_mock):
     Given
         - required taskIds argument
     When
-        - running sentinelone-get-remote-script-results command
+        - running sentinelone-get-remote-script-task-results command
     Then
         - returns file details
     """
@@ -694,7 +694,7 @@ def test_remote_script_results(mocker, requests_mock):
                                                          'url': 'https://usea1.sentinelone.net',
                                                          'api_version': '2.1',
                                                          'fetch_threat_rank': '4'})
-    mocker.patch.object(demisto, 'command', return_value='sentinelone-get-remote-script-results')
+    mocker.patch.object(demisto, 'command', return_value='sentinelone-get-remote-script-task-results')
     mocker.patch.object(demisto, 'args', return_value={
         'taskIds': task_ids,
     })

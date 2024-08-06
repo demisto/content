@@ -2414,13 +2414,14 @@ script:
       description: Remote script upated at.
       type: string
     description: Get remote scripts tasks using a variety of filters. Accessible via API only parent_task_id query parameter is mandatory
-    name: sentinelone-get-remote-script-status
+    name: sentinelone-get-remote-script-task-status
   - arguments:
     - name: computerNames
       isArray: true
       description: A list of partial or whole computer names, which ran scripts, to get a download link for
     - name: taskIds
-      isArray: true 
+      isArray: true
+      required: true
       description: A list of task ids to get a download link for
     outputs:
     - contextPath: SentinelOne.RemoteScriptResults.taskId
@@ -2432,8 +2433,68 @@ script:
     - contextPath: SentinelOne.RemoteScriptResults.downloadUrl
       description: Download Url.
       type: string
+    - contextPath: SentinelOne.RemoteScriptResults.ZippedFile
+      description: Details of the zipped folder.
+      type: string
     description: Get scripts results URLs. Accessible via API only
-    name: sentinelone-get-remote-script-results
+    name: sentinelone-get-remote-script-task-results
+  - arguments:
+    - name: account_ids
+      required: true
+      description: A comma-separated list of account IDs.
+      isArray: true
+    - name: output_destination
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - DataSetCloud
+      - Local
+      - None
+      - SentinelCloud
+      description: 'Output destination. Possible values: DataSetCloud/Local/None/SentinelCloud.'
+    - name: task_description
+      required: true
+      description: Task description.
+    - name: script_id
+      required: true
+      description: Script ID.
+    - name: output_directory
+      description: Output directory.
+    - name: agent_ids
+      required: true
+      description: A comma-separated list of agent IDs on which the script should run.
+      isArray: true
+    - name: singularity_xdr_Keyword
+      description: Singularityxdr keyword.
+    - name: singularity_xdr_Url
+      description: Singularityxdr url.
+    - name: api_key
+      description: Api key.
+    - name: input_params
+      description: Input params.
+    - name: password
+      description: Password.
+    - name: script_runtime_timeout_seconds
+      description: Script runtime timout in seconds for current execution.
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: If set to true, execution will require approval.
+      name: requires_approval
+      predefined:
+      - "false"
+      - "true"
+    - defaultValue: '60'
+      description: Indicates how long to wait between command execution (in seconds) when 'polling' argument is true. Minimum value is 10 seconds. Default is 60.
+      name: interval
+    - defaultValue: '600'
+      description: Indicates the time in seconds until the polling sequence timeouts. Default is 600.
+      name: timeout
+    - description: "parent task id to fetch the status by. Example: '225494730938493804'."
+      name: parentTaskId
+    description: The polling command will continuously poll the task results until the status of each task is completed, and return the results.
+    name: sentinelone-remote-script-automate-results
+    outputs: []
+    polling: true
   - arguments: []
     description: Returns the list of fields for an incident type.
     name: get-mapping-fields
