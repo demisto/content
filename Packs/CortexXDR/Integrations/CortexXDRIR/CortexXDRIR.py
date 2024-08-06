@@ -5,7 +5,9 @@ import secrets
 import string
 from itertools import zip_longest
 from datetime import datetime, timedelta
+
 from CoreIRApiModule import *
+
 # Disable insecure warnings
 urllib3.disable_warnings()
 
@@ -881,33 +883,32 @@ def get_mapping_fields_command():
     return mapping_response
 
 
-def get_modified_remote_data_command(client, args, xdr_delay: int = 1):
+def get_modified_remote_data_command(client, args, xdr_delay: int = 1, last_mirroring: Optional[dict] = None):
     remote_args = GetModifiedRemoteDataArgs(args)
-    get_last_mirror_run: Dict[str, Any] = get_last_mirror_run() or {}
-    last_update = get_last_mirror_run.get("last_update") if get_last_mirror_run else remote_args.last_update
+    last_update = last_mirroring.get(
+        'time') if isinstance(last_mirroring, dict) else remote_args.last_update
     last_update_utc = dateparser.parse(last_update,
                                        settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': False})   # convert to utc format
 
     if last_update_utc:
         gte_modification_time_milliseconds = last_update_utc - timedelta(minutes=xdr_delay)
-        lte_modification_time_with_ms = gte_modification_time_milliseconds + timedelta(minutes=1)
+        lte_modification_time_milliseconds = gte_modification_time_milliseconds + timedelta(minutes=1)
     demisto.debug(
         f'Performing get-modified-remote-data command. {last_update=} | {gte_modification_time_milliseconds=} |'
-        f'{lte_modification_time_with_ms=}'
+        f'{lte_modification_time_milliseconds=}'
     )
     raw_incidents = client.get_incidents(
         gte_modification_time_milliseconds=gte_modification_time_milliseconds,
-        lte_modification_time_milliseconds=lte_modification_time_with_ms,
+        lte_modification_time_milliseconds=lte_modification_time_milliseconds,
         limit=100)
 
-    last_run_mirroring = lte_modification_time_with_ms + timedelta(milliseconds=1)
-    set_last_mirror_run({"last_update": last_run_mirroring})
+    last_run_mirroring = lte_modification_time_milliseconds + timedelta(milliseconds=1)
     modified_incident_ids = []
     for raw_incident in raw_incidents:
         incident_id = raw_incident.get('incident_id')
         modified_incident_ids.append(incident_id)
 
-    return GetModifiedRemoteDataResponse(modified_incident_ids)
+    return GetModifiedRemoteDataResponse(modified_incident_ids), last_run_mirroring
 
 
 def get_remote_data_command(client, args):
@@ -1559,10 +1560,14 @@ def main():  # pragma: no cover
             return_results(action_status_get_command(client, args))
 
         elif command == 'get-modified-remote-data':
-            return_results(get_modified_remote_data_command(client=client,
-                                                            args=demisto.args(),
-                                                            xdr_delay=xdr_delay,
-                                                            last_mirroring=demisto.getLastRun().get('mirroring')))
+            modified_incidents, last_run_mirroring = get_modified_remote_data_command(client=client,
+                                                                                      args=demisto.args(),
+                                                                                      xdr_delay=xdr_delay,
+                                                                                      last_mirroring=demisto.getLastRun().get('mirroring'))
+            last_run_obj = demisto.getLastRun()
+            last_run_obj['mirroring'] = {'time': (last_run_mirroring)}  # type: ignore
+            demisto.setLastRun(last_run_obj)
+            return_results(modified_incidents)
 
         elif command == 'xdr-script-run':  # used with polling = true always
             return_results(script_run_polling_command(args, client))

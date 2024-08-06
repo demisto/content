@@ -622,7 +622,7 @@ def test_get_modified_remote_data_command(requests_mock, last_update):
         'lastUpdate': last_update
     }
 
-    response = get_modified_remote_data_command(client, args)
+    response, _ = get_modified_remote_data_command(client, args)
 
     assert response.modified_incident_ids == ['1', '2']
 
@@ -1595,6 +1595,8 @@ def test_get_modified_remote_data_xdr_delay(mocker):
         - the method is returning a list of incidents IDs that were modified after adding xdr_delay
     """
     from CortexXDRIR import get_modified_remote_data_command, Client
+    from datetime import timedelta
+    import dateparser
     from CommonServerPython import BaseClient
     empty_res = {
         "reply": {
@@ -1607,13 +1609,15 @@ def test_get_modified_remote_data_xdr_delay(mocker):
     args = {
         'lastUpdate': '2020-11-18T13:16:52.005381+02:00',
     }
+    lastUpdate_datetime = dateparser.parse(args['lastUpdate'], settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': False})
     get_incidents_list_response = load_test_data('./test_data/get_incidents_list.json')
     mocker.patch.object(BaseClient, "_http_request", return_value=empty_res)
     client = Client(
         base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False)
-
-    response = get_modified_remote_data_command(client, args)
-    assert not response.modified_incident_ids
+    incidents_response, last_run_mirroring = get_modified_remote_data_command(client, args)
+    assert not incidents_response.modified_incident_ids
+    assert last_run_mirroring - lastUpdate_datetime == timedelta(microseconds=1000)
     mocker.patch.object(BaseClient, "_http_request", return_value=get_incidents_list_response)
-    response = get_modified_remote_data_command(client, args, xdr_delay=5)
-    assert response.modified_incident_ids == ['1', '2']
+    incidents_response, last_run_mirroring = get_modified_remote_data_command(client, args, xdr_delay=5)
+    assert last_run_mirroring - lastUpdate_datetime == timedelta(milliseconds=1) - timedelta(minutes=4)
+    assert incidents_response.modified_incident_ids == ['1', '2']

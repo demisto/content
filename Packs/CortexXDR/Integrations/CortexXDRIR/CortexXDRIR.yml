@@ -3566,7 +3566,6 @@ tests:
 - Test XDR Playbook quarantine file command
 - Test XDR Playbook general commands
 - Test XDR Playbook retrieve file command
-defaultclassifier: "Cortex XDR - Classifier"
 defaultmapperin: Cortex XDR - IR-mapper
 defaultmapperout: Cortex XDR - IR-out-mapper
 fromversion: 5.0.0
