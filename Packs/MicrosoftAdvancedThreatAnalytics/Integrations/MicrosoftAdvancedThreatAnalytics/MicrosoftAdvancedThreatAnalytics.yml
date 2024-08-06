@@ -293,7 +293,7 @@ script:
       description: The time that the bad password was entered.
       type: Date
     - contextPath: MicrosoftATA.Entity.CanonicalName
-      description: The canonical name of the entity,
+      description: The canonical name of the entity.
       type: String
     - contextPath: MicrosoftATA.Entity.CreationTime
       description: The time that entity was created.
