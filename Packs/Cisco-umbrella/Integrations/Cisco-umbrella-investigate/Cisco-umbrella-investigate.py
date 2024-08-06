@@ -188,7 +188,6 @@ class Client(BaseClient):
         Returns:
             Response: API response from Cisco Umbrella Investigate API.
         """
-        print("search for domain")
         return self._http_request(
             method="GET",
             url_suffix=f"investigate/v2/search/{expression}",
@@ -751,7 +750,6 @@ def search_domain_command(
         page_size=args.get("page_size"),
         limit=args["limit"],
     )
-    print("A")
     regex = args["regex"]
     res = client.search_domain(
         expression=regex,
@@ -762,8 +760,6 @@ def search_domain_command(
         limit=limit,
         offset=offset,
     )
-    print(res)
-    print("B")
     data = res
     outputs = [
         {
@@ -1630,13 +1626,11 @@ def list_timeline_command(
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     name = args["name"]
-    res = client.list_timeline(
+    data = client.list_timeline(
         name,
     )
-    data = res
 
     limit = None if argToBoolean(args["all_results"]) else arg_to_number(args["limit"])
-
     outputs = {
         "Domain": name,
         "Data": [
