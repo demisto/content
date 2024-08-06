@@ -6,7 +6,7 @@ commonfields:
   id: SailPointIdentityNowEventCollector
   version: -1
 configuration:
-- display: IdentityNow Server URL (e.g. https://{tenant}.api.identitynow.com)
+- display: IdentityNow Server URL (e.g., https://{tenant}.api.identitynow.com)
   name: url
   required: true
   type: 0
@@ -58,7 +58,7 @@ script:
       description: Date from which to get events.
       name: from_date
     deprecated: false
-    description: Gets events from SailPoint IdentityNow. This command is used for developing/ debugging and is to be used with caution, as it can create events, leading to events duplication and API request limitation exceeding.
+    description: Gets events from SailPoint IdentityNow. This command is used for developing/debugging and is to be used with caution, as it can create events, leading to event duplication and exceeding API request limitations.
 
     name: identitynow-get-events
   dockerimage: demisto/python3:3.11.9.106403
