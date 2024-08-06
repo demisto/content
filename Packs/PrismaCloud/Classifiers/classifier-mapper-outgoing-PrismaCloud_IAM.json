@@ -84,6 +84,9 @@
 			}
 		}
 	},
+    "marketplaces": [
+        "xsoar"
+    ],
 	"name": "User Profile - PrismaCloud (Outgoing)",
 	"type": "mapping-outgoing",
 	"version": -1,
