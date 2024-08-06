@@ -6,13 +6,13 @@ When using Cortex XSOAR credentials, insert your API key as the credential usern
    - Access your Cisco Umbrella account dashboard.
 
 2. **Navigate to API Keys:**
-   - Click on **Investigate** in the menu.
+   Click **Investigate** in the menu.
 
 3. **Create New Token:**
-   - Locate and click on **API Keys**.
-   - Click **CREATE NEW TOKEN**.
-   - Provide a **Title** for your token (e.g., "Cortex XSOAR Integration").
-   - Click **Create** to generate the API key and secret.
+   a. Locate and click **API Keys**.
+   b. Click **CREATE NEW TOKEN**.
+   c. Provide a **Title** for your token (e.g., "Cortex XSOAR Integration").
+   d. Click **Create** to generate the API key and secret.
 
 ### Step 2: Configure Cortex XSOAR Credentials
 

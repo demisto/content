@@ -180,7 +180,7 @@ class Client(BaseClient):
             expression (str): A standard regular expression pattern search.
             start (str): Filter for data that appears after this time.
             stop (str | None): Filter for data that appears before this time.
-            include_category (bool): Weather to retrieve security categories in the response.
+            include_category (bool): Whether to retrieve security categories in the response.
             type (str | None): Filter with the search database node type.
             limit (int): The maximum number of records to retrieve.
             offset (int): The optional index of the first data to retrieve.
@@ -305,12 +305,12 @@ class Client(BaseClient):
             value (str): The text representation of the data.
             sort_order (str): Sort records by ascending (asc) or descending (desc) order.
             sort_by (str | None): Sort records by one of the following fields.
-            record_type (str | None): Comma-Separated list of types of records.
+            record_type (str | None): Comma-separated list of types of records.
             include_features (bool): Whether to add the feature sections to the response.
-            min_first_seen (str | None): Select records where seen first after the inserted value.
-            max_first_seen (str | None): Select records where seen first before the inserted value.
-            min_last_seen (str | None): Select records where last seen after the inserted value.
-            max_last_seen (str | None): Select records where last seen before the inserted value.
+            min_first_seen (str | None): Select records that are first seen after the inserted value.
+            max_first_seen (str | None): Select records that are first seen before the inserted value.
+            min_last_seen (str | None): Select records that were last seen after the inserted value.
+            max_last_seen (str | None): Select records that were last seen before the inserted value.
             sort_categories (str | None): Comma-separated list of security categories to sort the results.
             required_categories (str | None): Comma-separated list of security categories to filter
             for records that are assigned the specified categories.
@@ -465,7 +465,7 @@ class Client(BaseClient):
         Get WHOIS information for the nameserver.
 
         Args:
-            is_list (bool): Wether nameserver contains a list of comma-separated nameservers.
+            is_list (bool): Whether nameserver contains a list of comma-separated nameservers.
             nameserver (str): The nameserver's domain name or comma-separated list of nameservers.
             sort (str | None): Sort the results by.
             limit (int): The maximum number of records to retrieve.
@@ -630,7 +630,7 @@ class Client(BaseClient):
         List the historical tagging timeline for a given IP, domain, or URL.
 
         Args:
-            name (str): An IP, a domain, or an URL.
+            name (str): An IP, a domain, or a URL.
 
         Returns:
             dict[str, Any]: API response from Cisco Umbrella Investigate API.
