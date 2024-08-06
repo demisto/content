@@ -25,7 +25,7 @@ def convert_to_table(context_results: str) -> CommandResults:
     context_results = json.loads(context_results)
 
     context_formatted = [
-        format_comment(comment) for comment in context_results # type: ignore
+        format_comment(comment) for comment in context_results  # type: ignore
     ]
 
     md = tableToMarkdown(
@@ -52,7 +52,7 @@ def main():  # pragma: no cover
     if not context:
         return_error('No data to present')
 
-    return_results(convert_to_table(context)) # type: ignore
+    return_results(convert_to_table(context))  # type: ignore
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
