@@ -1626,7 +1626,7 @@ def list_timeline_command(
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    name = args["name"]
+    name = args[input_type.lower()]
     data = client.list_timeline(
         name,
     )
@@ -1647,7 +1647,7 @@ def list_timeline_command(
 
     return CommandResults(
         outputs=outputs,
-        outputs_key_field="Domain",
+        outputs_key_field=input_type,
         outputs_prefix=f"{INTEGRATION_PREFIX}.Timeline",
         readable_output=tableToMarkdown(
             name=f"{name} tagging timeline:",

@@ -596,7 +596,7 @@ def test_list_timeline(
     result = module.list_timeline_command(
         mock_client,
         {
-            "name": "test.com",
+            "domain": "test.com",
             "all_results": "false",
             "limit": "50",
         },
