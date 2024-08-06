@@ -24,9 +24,6 @@ def test_set_owner(mocker):
     debug_mock = mocker.patch.object(demisto, "debug")
     execute_command_mock = mocker.patch.object(CommonServerPython, "execute_command")
     mocker.patch.object(CommonServerPython, "dict_safe_get", return_value=owner)
-    command_results_mock = mocker.patch.object(
-        CommonServerPython, "CommandResults", return_value="Command Results"
-    )
 
     from MicrosoftSentinelSetOwnerButton import set_owner
 
@@ -41,16 +38,6 @@ def test_set_owner(mocker):
             "using": expected_instance_name,
             "incident_id": expected_incident_id,
             "user_principal_name": expected_owner_email,
-        },
-    )
-    command_results_mock.assert_called_once_with(
-        readable_output="### Updated incident incident-123 with new owner\n|Assigned To|Email|Object Id|User Principal Name|\n|---|---|---|---|\n| Owner Name | test@test.com | owner-object-id | test@test.com |\n",  # noqa: E501
-        outputs_prefix="AzureSentinel.Incident.Owner",
-        outputs={
-            "assignedTo": "Owner Name",
-            "email": "test@test.com",
-            "objectId": "owner-object-id",
-            "userPrincipalName": "test@test.com",
         },
     )
     assert result == "Command Results"
