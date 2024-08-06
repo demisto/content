@@ -3271,7 +3271,7 @@ def get_remote_script_results(client: Client, args: dict) -> list[CommandResults
     ]
 
 
-def run_polling_command(client: Client, cmd: str, args: Dict[str, Any]) -> CommandResults:
+def run_polling_command(client: Client, cmd: str, args: Dict[str, Any]):
     """ Run a pipeline.
 
     Args:
@@ -3288,8 +3288,9 @@ def run_polling_command(client: Client, cmd: str, args: Dict[str, Any]) -> Comma
     if 'parentTaskId' not in args:
         command_results = run_remote_script_command(client, args)
         output = command_results.raw_response
-        parentTaskId = output.get("parentTaskId")
-        args['parentTaskId'] = parentTaskId
+        if isinstance(output, dict):
+            parentTaskId = output.get("parentTaskId")
+            args['parentTaskId'] = parentTaskId
         scheduled_command = schedule_command(interval, timeout, cmd, args)
         command_results.scheduled_command = scheduled_command
         return command_results
@@ -3299,20 +3300,20 @@ def run_polling_command(client: Client, cmd: str, args: Dict[str, Any]) -> Comma
     status_check_command_results = get_remote_script_status(client, status_args)
     status_outputs = status_check_command_results.raw_response
     script_executed = False
-    if status_outputs:
-        taskIds = []
+    taskIds = []
+    if status_outputs and isinstance(status_outputs, list):
         for output in status_outputs:
-            if output.get("status") != "completed":
-                script_executed = False
-                break
-            else:
+            if isinstance(output, dict):
+                if output.get("status") != "completed":
+                    script_executed = False
+                    break
                 taskIds.append(output.get("id"))
                 script_executed = True
-        if script_executed:
-            results_args = {"taskIds": taskIds}
-            final_command_results = get_remote_script_results(client, results_args)
-            return final_command_results
-    if not script_executed:
+    if script_executed:
+        results_args = {"taskIds": taskIds}
+        final_command_results = get_remote_script_results(client, results_args)
+        return final_command_results
+    else:
         scheduled_command = schedule_command(interval, timeout, cmd, args)
         command_results = CommandResults(scheduled_command=scheduled_command)
         return command_results
