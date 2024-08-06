@@ -1,3 +1,5 @@
+from typing import Dict, List, Any
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import json
@@ -5,8 +7,10 @@ import logging
 import time
 
 import urllib3
-
+import re
 import resilient
+from resilient.co3 import SimpleClient, SimpleHTTPException
+from resilient.co3base import RetryHTTPException
 
 ''' IMPORTS '''
 logging.basicConfig()
@@ -44,7 +48,7 @@ TIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 if FETCH_TIME:
     if FETCH_TIME[-1] != 'Z':
         FETCH_TIME = FETCH_TIME + 'Z'
-
+MAX_FETCH = DEMISTO_PARAMS.get('max_fetch', '1000')
 INCIDENT_TYPE_DICT = {
     'CommunicationError': 17,
     'DenialOfService': 21,
@@ -115,21 +119,43 @@ EXP_TYPE_ID_DICT = {
     3: 'Individual'
 }
 
+IBM_QRADAR_INCIDENT_FIELDS = {
+    'description': 'Description of the incident.',
+    'incident_type_ids': 'The IDs of the incident types. ',
+    'resolution_id': '',
+    'resolution_summary': '',
+    'owner_id': 'The principal ID of the incident owner.',
+    'creator_principal': 'The principal that created this incident.',
+    'reporter': 'Who reported the incident.',
+    'severity_code': 'The incident\'s severity.'
+}
+''' CONSTANTS '''
+SCRIPT_ENTITIES = 'entities'
+DEFAULT_RETURN_LEVEL = 'full'
+DEFAULT_RETRIES = 1
+STATUS_NOT_FOUND = 404
+HTML_TAGS_PATTERN = re.compile(r'<[^>]+>')
+IBM_QRADAR_SOAR_INCIDENT_SCHEMA_NAME = 'IBM QRadar SOAR Incident Schema'
+DEFAULT_SEVERITY_CODE = 5
+''' ENDPOINTS '''
+SEARCH_INCIDENTS_ENDPOINT = '/incidents/query_paged'
+CONST_ENDPOINT = '/const'
+
 ''' HELPER FUNCTIONS '''
-
-
 def normalize_timestamp(timestamp):
-    ''' Converts epoch timestamp to human readable timestamp '''
+    """
+    Converts epoch timestamp to human readable timestamp.
+    """
     return datetime.fromtimestamp(timestamp / 1000.0).strftime('%Y-%m-%dT%H:%M:%SZ')
 
 
 def prettify_incidents(client, incidents):
     users = get_users(client)
-    phases = get_phases(client)['entities']
+    phases = get_phases(client).get('entities', [])
     for incident in incidents:
         incident['id'] = str(incident['id'])
         if isinstance(incident['description'], str):
-            incident['description'] = incident['description'].replace('<div>', '').replace('</div>', '')
+            incident['description'] = HTML_TAGS_PATTERN.sub('', incident['description'])
         incident['discovered_date'] = normalize_timestamp(incident['discovered_date'])
         incident['created_date'] = normalize_timestamp(incident['create_date'])
         incident.pop('create_date', None)
@@ -145,9 +171,7 @@ def prettify_incidents(client, incidents):
                 incident['phase'] = phase['name']
                 incident.pop('phase_id', None)
                 break
-        if incident['severity_code']:
-            incident['severity'] = SEVERITY_CODE_DICT.get(incident['severity_code'], incident['severity_code'])
-            incident.pop('severity_code', None)
+        incident['severity'] = incident.get('severity_code', DEFAULT_SEVERITY_CODE)
         start_date = incident.get('start_date')
         if start_date:
             incident['date_occurred'] = normalize_timestamp(start_date)
@@ -172,35 +196,29 @@ def prettify_incidents(client, incidents):
     return incidents
 
 
-''' FUNCTIONS '''
+def prettify_incident_notes(notes: list[dict]) -> list[dict]:
+    """
+    Reformatting retrieved incident notes to be more readable.
+    """
+    formatted_notes = []
+    notes_copy = notes.copy()
+    while notes_copy:
+        note = notes_copy.pop()
+        new_note_obj = {
+            'id': note.get('id', ''),
+            # Removing HTML tags.
+            'text': re.sub(r'<[^>]+>', '', note.get('text', '')),
+            'create_date': normalize_timestamp(note.get('create_date'))}
+        formatted_notes.append(new_note_obj)
+    return formatted_notes
 
 
-def search_incidents_command(client, args):
-    incidents = search_incidents(client, args)
-    entry = None
-    if incidents:
-        pretty_incidents = prettify_incidents(client, incidents)
-        result_incidents = createContext(pretty_incidents, id=None, keyTransform=underscoreToCamelCase, removeNull=True)
-        ec = {
-            'Resilient.Incidents(val.Id && val.Id === obj.Id)': result_incidents
-        }
-        title = 'Resilient Systems Incidents'
-        entry = {
-            'Type': entryTypes['note'],
-            'Contents': incidents,
-            'ContentsFormat': formats['json'],
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown(title, result_incidents,
-                                             headers=['Id', 'Name', 'CreatedDate', 'DiscoveredDate', 'Owner', 'Phase'],
-                                             removeNull=True),
-            'EntryContext': ec
-        }
-        return entry
-    else:
-        return 'No results found.'
+def prepare_search_query_data(args: dict) -> dict:
+    """
+    Preparing the search query filters and pagination parameters for the `search_incidents` request.
+    """
+    demisto.debug(f'prepare_search_query_data {args=}')
 
-
-def search_incidents(client, args):
     conditions = []  # type: Any
     if 'severity' in args:
         value = []
@@ -219,14 +237,14 @@ def search_incidents(client, args):
             'value': value
         })
     if 'date-created-before' in args:
-        value = date_to_timestamp(args['date-created-before'], date_format='%Y-%m-%dT%H:%M:%SZ')
+        value = date_to_timestamp(args['date-created-before'])
         conditions.append({
             'field_name': 'create_date',
             'method': 'lte',
             'value': value
         })
     elif 'date-created-after' in args:
-        value = date_to_timestamp(args['date-created-after'], date_format='%Y-%m-%dT%H:%M:%SZ')
+        value = date_to_timestamp(args['date-created-after'])
         conditions.append({
             'field_name': 'create_date',
             'method': 'gte',
@@ -256,14 +274,14 @@ def search_incidents(client, args):
                 'value': from_time * 1000
             }))
     if 'date-occurred-before' in args:
-        value = date_to_timestamp(args['date-occurred-before'], date_format='%Y-%m-%dT%H:%M:%SZ')
+        value = date_to_timestamp(args['date-occurred-before'])
         conditions.append({
             'field_name': 'start_date',
             'method': 'lte',
             'value': value
         })
     elif 'date-occurred-after' in args:
-        value = date_to_timestamp(args['date-occurred-after'], date_format='%Y-%m-%dT%H:%M:%SZ')
+        value = date_to_timestamp(args['date-occurred-after'])
         conditions.append({
             'field_name': 'start_date',
             'method': 'gte',
@@ -336,13 +354,90 @@ def search_incidents(client, args):
                 'method': 'gte',
                 'value': now * 1000
             }))
+    if 'last-modified-after' in args:
+        value = date_to_timestamp(args['last-modified-after'])
+        conditions.append({
+            'field_name': 'inc_last_modified_date',
+            'method': 'gte',
+            'value': value
+        })
+
     data = {
         'filters': [{
             'conditions': conditions
         }]
     }
-    response = client.post('/incidents/query', data)
-    return response
+
+    # Pagination mechanism.
+    page = int(args.get('page', 0))
+    page_size = int(args.get('page_size', 0))
+    limit = int(args.get('limit', MAX_FETCH))
+    data['length'] = limit
+    # 'limit' parameter is redundant in case proper 'page' and 'page_size' were provided.
+    if page_size > 0 and page > 0:
+        data['start'] = page_size * (page - 1)
+        data['length'] = page_size
+    elif page < 0 or page_size < 0:
+        raise DemistoException('Invalid page number or page size. Page number and page sizes must be positive integers.')
+    demisto.debug(f'prepare_search_query_data {data=}')
+    return data
+
+
+def get_mirroring_data() -> dict:
+    """
+    Get the integration instance's mirroring configuration parameters.
+
+    Returns:
+        dict: A dictionary containing the mirroring configuration parameters.
+    """
+    params = demisto.params()
+    mirror_direction = params.get('mirror_direction')
+    mirror_tags = ''  # TODO - Utilize this
+    return {
+        'mirror_direction': mirror_direction,
+        'mirror_instance': demisto.integrationInstance()
+    }
+
+
+''' COMMAND FUNCTIONS '''
+
+
+def search_incidents_command(client, args):
+    incidents = search_incidents(client, args)
+    if incidents:
+        pretty_incidents = prettify_incidents(client, incidents)
+        result_incidents = createContext(pretty_incidents, id=None, keyTransform=underscoreToCamelCase, removeNull=True)
+        ec = {
+            'Resilient.Incidents(val.Id && val.Id === obj.Id)': result_incidents
+        }
+        title = 'QRadar SOAR Incidents'
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': incidents,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(title, result_incidents,
+                                             headers=['Id', 'Name', 'CreatedDate', 'DiscoveredDate', 'Owner', 'Phase'],
+                                             removeNull=True),
+            'EntryContext': ec
+        }
+        return entry
+    else:
+        return 'No results found.'
+
+
+def search_incidents(client: SimpleClient, args: dict) -> list | dict:
+    """
+    Search and get IBM QRadar incidents according to filters and pagination parameters.
+    :return: List of IBM QRadar incidents matching the search query.
+    """
+    search_query_data = prepare_search_query_data(args)
+
+    return_level = args.get('return_level', DEFAULT_RETURN_LEVEL)
+    endpoint = f'{SEARCH_INCIDENTS_ENDPOINT}?return_level={return_level}'
+
+    response = client.post(endpoint, search_query_data)
+    return response['data']
 
 
 def extract_data_form_other_fields_argument(other_fields, incident, changes):
@@ -543,7 +638,7 @@ def get_incident_command(client, incident_id):
         for vector in hr_incident[0].get('NistAttackVectors', []):
             nist_vectors_str += vector + '\n'
         hr_incident[0]['NistAttackVectors'] = nist_vectors_str
-    title = 'IBM Resilient Systems incident ID ' + str(incident_id)
+    title = 'IBM QRadar SOAR incident ID ' + str(incident_id)
     entry = {
         'Type': entryTypes['note'],
         'Contents': incident,
@@ -622,7 +717,7 @@ def get_users_command(client):
             'Email': user['email']
         })
 
-    title = 'IBM Resilient Systems Users'
+    title = 'IBM QRadar SOAR Users'
     entry = {
         'Type': entryTypes['note'],
         'Contents': users,
@@ -740,7 +835,7 @@ def set_member_command(client, incident_id, members):
 
 
 def set_member(client, incident_id, data):
-    response = client.put('/incidents/' + incident_id + '/members', data)
+    response = client.put(f'/incidents/{incident_id}/members', payload=data)
     return response
 
 
@@ -1030,13 +1125,37 @@ def add_artifact_command(client, incident_id, artifact_type, artifact_value, art
     return entry
 
 
+def date_to_timestamp(date_str_or_dt, date_format='%Y-%m-%dT%H:%M:%SZ'):
+    """
+      Parses date_str_or_dt in the given format (default: %Y-%m-%dT%H:%M:%S) to milliseconds
+      Examples: ('2018-11-06T08:56:41', '2018-11-06T08:56:41', etc.)
+
+      :type date_str_or_dt: ``str`` or ``datetime.datetime``
+      :param date_str_or_dt: The date to be parsed. (required)
+
+      :type date_format: ``str``
+      :param date_format: The date format of the date string (will be ignored if date_str_or_dt is of type
+        datetime.datetime). (optional)
+
+      :return: The parsed timestamp.
+      :rtype: ``int``
+    """
+    if isinstance(date_str_or_dt, STRING_OBJ_TYPES):
+        # return_error(f"[1] - {date_str_or_dt=} | {type(date_str_or_dt)=} | {date_format=}")
+        return int(time.mktime(time.strptime(date_str_or_dt, date_format)) * 1000)
+
+    return_error(f"[2] - {date_str_or_dt=} | {type(date_str_or_dt)=} | {date_format=}")
+    # otherwise datetime.datetime
+    return int(time.mktime(date_str_or_dt.timetuple()) * 1000)
+
+
 def fetch_incidents(client):
-    last_run = demisto.getLastRun() and demisto.getLastRun().get('time')
-    if not last_run:
-        last_run = date_to_timestamp(FETCH_TIME, date_format='%Y-%m-%dT%H:%M:%SZ')
+    last_run_time = demisto.getLastRun() and demisto.getLastRun().get('time')
+    if not last_run_time:
+        last_run_time = date_to_timestamp(FETCH_TIME)
         args = {'date-created-after': FETCH_TIME}
     else:
-        args = {'date-created-after': normalize_timestamp(last_run)}
+        args = {'date-created-after': normalize_timestamp(last_run_time)}
 
     resilient_incidents = search_incidents(client, args)
     incidents = []
@@ -1045,8 +1164,9 @@ def fetch_incidents(client):
         last_incident_creation_time = resilient_incidents[0].get('create_date')  # the first incident's creation time
 
         for incident in resilient_incidents:
+            demisto.debug(f'fetch_incidents {incident=}')
             incident_creation_time = incident.get('create_date')
-            if incident_creation_time > last_run:  # timestamp in milliseconds
+            if incident_creation_time > last_run_time:  # timestamp in milliseconds
                 artifacts = incident_artifacts(client, str(incident.get('id', '')))
                 if artifacts:
                     incident['artifacts'] = artifacts
@@ -1054,41 +1174,408 @@ def fetch_incidents(client):
                 if attachments:
                     incident['attachments'] = attachments
                 if isinstance(incident.get('description'), str):
-                    incident['description'] = incident['description'].replace('<div>', '').replace('</div>', '')
+                    incident['description'] = HTML_TAGS_PATTERN.sub('', incident['description'])
 
                 incident['discovered_date'] = normalize_timestamp(incident.get('discovered_date'))
                 incident['create_date'] = normalize_timestamp(incident_creation_time)
 
                 demisto_incident = dict()  # type: dict
 
-                demisto_incident['name'] = 'IBM Resilient Systems incident ID ' + str(incident['id'])
+                demisto_incident['name'] = 'IBM QRadar SOAR incident ID ' + str(incident['id'])
                 demisto_incident['occurred'] = incident['create_date']
+                demisto_incident.update(get_mirroring_data())
                 demisto_incident['rawJSON'] = json.dumps(incident)
-
+                demisto.debug(f'fetch_incidents {demisto_incident=}')
                 incidents.append(demisto_incident)
 
                 # updating last creation time if needed
                 if incident_creation_time > last_incident_creation_time:
                     last_incident_creation_time = incident_creation_time
-
-        demisto.setLastRun({'time': last_incident_creation_time})
+    demisto.setLastRun({'time': last_incident_creation_time})
     demisto.incidents(incidents)
 
 
-def test():
-    """Verify that the first_fetch parameter is according to the standards, if exists.
+def list_scripts_command(client: SimpleClient, args: dict) -> CommandResults:
+    """
+        Getting the list of scripts of an IBM SOAR organization (client is organization specific)
+        or a specific script if `script_id` argument was provided.
+    """
+    human_readable = ''
+    script_id = args.get("script_id", "")
+    try:
+        response = client.get(f'/scripts/{script_id}')
 
-    Returns:
-        'ok' if test passed, anything else will fail the test.
+        demisto.debug(f'list_scripts_command {response=}')
+
+        script_ids = []
+        scripts_to_process = [response] if script_id else response.get(SCRIPT_ENTITIES, [])
+        human_readable += "Received script IDs: {received_ids}"
+        for script in scripts_to_process:
+            script_id = script.get('id', '')
+            script_ids.append(script_id)
+            # Padding blank lines inorder to format the outputs in a block.
+            human_readable += f"""
+            
+Script ID: {script_id}
+Script Name: {script.get('name, ''')}
+Description: {script.get('description', '')}
+Language: {script.get('language', '')}
+            
+            """
+        demisto.info(f'list_scripts_command received script ids: {str(script_ids)}')
+        return CommandResults(
+            outputs_prefix='Resilient.Script',
+            outputs=response,
+            readable_output=human_readable.format(received_ids=str(script_ids))
+        )
+
+    except (SimpleHTTPException, RetryHTTPException) as e:
+        return_error(f'Could not find a script with ID: {script_id}.\nGot error: {e.response.text}')
+
+
+def upload_incident_attachment_command(client: SimpleClient, args: dict) -> CommandResults:
+    """
+        Uploads a file from XSOAR to an IBM SOAR incident.
+    """
+    incident_id = args.get('incident_id')
+    entry_id = args.get('entry_id')
+    try:
+        file_path_obj = demisto.getFilePath(entry_id)
+    except ValueError as e:
+        return CommandResults(
+            entry_type=EntryType.ERROR,
+            readable_output=f'Could not find a file with entry ID: {entry_id}'
+        )
+
+    file_path, file_name = file_path_obj.get('path'), file_path_obj.get('name')
+
+    try:
+        response = client.post_attachment(uri=f'/incidents/{incident_id}/attachments',
+                                             filepath=file_path,
+                                             filename=file_name)
+        demisto.debug(f'upload_incident_attachment_command {response=}')
+    except SimpleHTTPException as e:
+        return CommandResults(
+            entry_type=EntryType.ERROR,
+            readable_output=f'Could not upload a file with entry ID: {entry_id} to incident: {incident_id}.'
+                            f'\nGot error: {e.response.text}'
+        )
+    return CommandResults(
+        readable_output=f'File was uploaded successfully to {incident_id}.'
+    )
+
+
+def delete_incidents_command(client: SimpleClient, args: dict) -> CommandResults:
+    """
+    Deletes multiple incidents.
+    """
+    incident_ids: list = argToList(args.get('incident_ids', ''))
+    demisto.info(f'delete_incidents_command {incident_ids=}')
+    try:
+        response: dict = client.put(f'/incidents/delete', payload=incident_ids)
+        human_readable: str = f'{incident_ids} were deleted successfully.' if response['success'] else f"{response['message']}"
+    except SimpleHTTPException as e:
+        return CommandResults(
+            entry_type=EntryType.ERROR,
+            readable_output=f'Could not delete incidents {incident_ids}. Got error: {e.response.text} '
+        )
+    return CommandResults(
+        readable_output=human_readable
+    )
+
+
+def list_incident_notes_command(client: SimpleClient, args: dict) -> CommandResults:
+    """
+    Lists an array of open tasks to which the current user is assigned.
+    """
+    incident_id = args.get('incident_id')
+    demisto.debug(f'list_incident_notes_command {incident_id=}')
+    try:
+        response = client.get(f'/incidents/{incident_id}/comments')
+        human_readable: str = tableToMarkdown(f'Incident {incident_id} Notes', t=prettify_incident_notes(response))
+        demisto.debug(f'{response=}')
+        return CommandResults(
+            outputs_prefix='Resilient.IncidentNotes',
+            outputs=response,
+            readable_output=human_readable
+        )
+    except SimpleHTTPException as e:
+        return CommandResults(
+            entry_type=EntryType.ERROR,
+            readable_output=f'Could not retrieve incident nots for incident ID: {incident_id}. Got error {e.response.text}'
+        )
+
+
+def update_incident_note_command(client: SimpleClient, args: dict) -> CommandResults:
+    """
+    Updates an incident's comment.
+    """
+    incident_id, note_id, note_text = args.get('incident_id'), args.get('note_id'), args.get('note')
+    demisto.debug(f'update_incident_note_command {incident_id=}, {note_id=}, {note_text=}')
+    body = {
+        'text': {
+            'format': 'text',
+            'content': note_text
+        }
+    }
+    try:
+        response = client.put(f'/incidents/{incident_id}/comments/{note_id}', payload=body)
+        demisto.debug(f'{response=}')
+        return CommandResults(
+            readable_output=f'Successfully updated note ID {note_id} for incident ID {incident_id}'
+        )
+    except SimpleHTTPException as e:
+        return CommandResults(
+            entry_type=EntryType.ERROR,
+            readable_output=f'Could not update note ID {note_id} for incident ID: {incident_id}. Got error {e.response.text}'
+        )
+
+
+def add_custom_incident_task_command(client: SimpleClient, args: dict):
+    """
+    Creates a new task for the given incident.
+    """
+    incident_id, task_instructions = args.get('incident_id'), args.get('instructions')
+    demisto.debug(f'add_custom_incident_task_command {incident_id=}')
+    body = {
+        'text': {
+            'format': 'text',
+            'content': task_instructions
+        }
+    }
+    try:
+        response = client.post(f'/incidents/{incident_id}/tasks', payload=body)
+        demisto.debug(f'{response=}')
+        return CommandResults(
+            readable_output=f'Successfully created task for incident ID {incident_id}'
+        )
+    except SimpleHTTPException as e:
+        return CommandResults(
+            entry_type=EntryType.ERROR,
+            readable_output=f'Could not create a task for incident ID: {incident_id}. Got error {e.response.text}'
+        )
+
+
+def list_tasks_command(client: SimpleClient) -> CommandResults:
+    """
+    Lists an array of open tasks to which the current user is assigned.
+    """
+    try:
+        response: list = client.get(f'/tasks')
+        demisto.debug(f'{response=}')
+        tasks_list = []
+        for incident_tasks_obj in response:
+            tasks_list.extend(incident_tasks_obj.get('tasks'))
+        # TODO - Figure out what human readable table to produce here
+        human_readable: str = tableToMarkdown(name="Open Tasks", t=tasks_list)
+        return CommandResults(
+            outputs_prefix='Resilient.Tasks',
+            outputs=response,
+            readable_output=human_readable
+        )
+    except SimpleHTTPException as e:
+        return CommandResults(
+            entry_type=EntryType.ERROR,
+            readable_output=f'Could not retrieve tasks. Got error {e.response.text}'
+        )
+
+
+def get_task_members_command(client: SimpleClient, args: dict) -> CommandResults:
+    """
+    Gets the members of a given task by its ID.
+    """
+    task_id = args.get('task_id')
+    try:
+        response = client.get(f'/tasks/{task_id}/members')
+        demisto.debug(f'{response=}')
+    except SimpleHTTPException as e:
+        return CommandResults(
+            entry_type=EntryType.ERROR,
+            readable_output=f'Could not retrieve members of task ID: {task_id}. Got error {e.response.text}'
+        )
+    return CommandResults(
+        outputs_prefix='Resilient.Task',
+        outputs=response,
+        readable_output=response.get('content', '')
+    )
+
+
+def delete_tasks_command(client: SimpleClient, args: dict) -> CommandResults:
+    """
+     Deletes a single or multiple tasks.
+     """
+    task_ids: list = argToList(args.get('task_id'))
+    try:
+        response: dict = client.put(f'/tasks/delete', payload=task_ids)
+        demisto.debug(f'delete_tasks_command {response=}')
+        human_readable = \
+            f'Tasks with IDs {task_ids} were deleted successfully.' if response['success'] else f"{response['message']}"
+    except SimpleHTTPException as e:
+        return CommandResults(
+            entry_type=EntryType.ERROR,
+            readable_output=f'Could not delete tasks with IDs: {task_ids}. Got error {e.response.text}'
+        )
+    demisto.debug(f'{response=}')
+    return CommandResults(
+        readable_output=human_readable
+    )
+
+
+def delete_task_members_command(client: SimpleClient, args: dict) -> CommandResults:
+    """
+    Deletes the members for a given task.
     """
 
-    if FETCH_TIME:
-        try:
-            datetime.strptime(FETCH_TIME, TIME_FORMAT)
-        except ValueError as error:
-            return_error('There is something wrong with the fetch date. Error: {}'.format(error))
+    task_id = args.get('task_id')
+    try:
+        response = client.delete(f'/tasks/{task_id}/members')
+    except SimpleHTTPException as e:
+        return CommandResults(
+            entry_type=EntryType.ERROR,
+            readable_output=f'Could not retrieve instructions for task ID: {task_id}. Got error {e.response.text}'
+        )
+    demisto.debug(f'{response=}')
+    return CommandResults(
+        readable_output=response.get('content', '')
+    )
 
-    demisto.results('ok')
+
+def list_task_instructions_command(client: SimpleClient, args: dict) -> CommandResults:
+    """
+    Gets the instructions for a specific task.
+    """
+    task_id = args.get('task_id')
+    try:
+        response = client.get(f'/tasks/{task_id}/instructions_ex?text_content_output_format=objects_convert_text')
+    except SimpleHTTPException as e:
+        return CommandResults(
+            entry_type=EntryType.ERROR,
+            readable_output=f'Could not retrieve instructions for task ID: {task_id}. Got error {e.response.text}'
+        )
+    demisto.debug(f'{response=}')
+    return CommandResults(
+        outputs_prefix='Resilient.Task',
+        outputs=response,
+        readable_output=response.get('content', '')
+    )
+
+
+def get_modified_remote_data_command(client: SimpleClient, args: dict) -> GetModifiedRemoteDataResponse:
+    remote_args = GetModifiedRemoteDataArgs(args)
+    last_update = remote_args.last_update  # In the first run, this value will be set to 1 minute earlier
+    demisto.debug(f'get-modified-remote-data command {last_update=}')
+
+    incidents = search_incidents(client, args={'last-modified-after': last_update})
+    modified_incident_ids = [incident.get('id') for incident in incidents]
+    demisto.debug(f'get-modified-remote-data command {modified_incident_ids=}')
+    return GetModifiedRemoteDataResponse(modified_incident_ids)
+
+
+def get_remote_data_command(client: SimpleClient, args: dict) -> GetRemoteDataResponse:
+    """ Mirror-in data to incident from IBM QRadar SOAR into an XSOAR incident.
+
+
+    Args:
+        client (SimpleClient): The IBM Resillient client.
+        # TODO - Complete
+        attachment_tag (str): The attachment tag, to tag the mirrored attachments.
+        comment_tag (str): The comment tag, to tag the mirrored comments.
+        fetch_attachments (bool): Whether to fetch the attachments or not.
+        fetch_comments (bool): Whether to fetch the comments or not.
+        mirror_resolved_issue (bool): Whether to mirror Jira issues that have been resolved, or have the status `Done`.
+        args:
+            id: Remote incident id.
+            lastUpdate: Server last sync time with remote server.
+
+    Returns:
+        GetRemoteDataResponse: Structured incident response.
+    """
+    remote_args = GetRemoteDataArgs(args)
+    incident_id = remote_args.remote_incident_id
+    demisto.debug(f'get-remote-data {incident_id=}')
+
+    incident = get_incident(client, incident_id)
+    # TODO - Handle incoming closing incident
+    # TODO - Handle tags for attachments, tasks, notes
+    return GetRemoteDataResponse(mirrored_object=incident, entries=[])
+
+
+def update_remote_system_command(client: SimpleClient, args: dict) -> str:
+    remote_args = UpdateRemoteSystemArgs(args)
+    incident_id = remote_args.remote_incident_id
+    demisto.debug(f"update_remote_system_command {incident_id=} {remote_args=}")
+    if remote_args.delta:
+        demisto.debug(f'update_remote_system_command {str(list(remote_args.delta.keys()))=} {remote_args.remote_incident_id=}')
+
+    # try:
+    #     if remote_args.incident_changed:
+    #         demisto.debug(f"update_remote_system_command {incident_id=} {remote_args.incident_changed=}")
+    #         # TODO - Handle closing issue update_args = get_update_args(remote_args)
+    #         # update_incident_command()
+    #
+    #         # update_args['incident_id'] = remote_args.remote_incident_id
+    #         # demisto.debug(f'Sending incident with remote ID [{remote_args.remote_incident_id}]\n')
+    #         # demisto.debug(f"Before checking status {update_args=}")
+    #         # current_remote_status = remote_args.data.get('status') if remote_args.data else None
+    #         # is_closed = (update_args.get('close_reason') or update_args.get('closeReason') or update_args.get('closeNotes')
+    #         #              or update_args.get('resolve_comment') or update_args.get('closingUserId'))
+    #         # closed_without_status = not update_args.get('close_reason') and not update_args.get('closeReason')
+    #         # remote_is_already_closed = current_remote_status in XDR_RESOLVED_STATUS_TO_XSOAR
+    #         # demisto.debug(f"{remote_is_already_closed=}")
+    #         # if is_closed and closed_without_status and not remote_is_already_closed:
+    #         #     update_args['status'] = XSOAR_RESOLVED_STATUS_TO_XDR.get('Other')
+    #         # demisto.debug(f"After checking status {update_args=}")
+    #         # update_incident_command(client, update_args)
+    #     #     close_alerts_in_xdr = argToBoolean(client._params.get("close_alerts_in_xdr", False))
+    #     #     # Check all relevant fields for an incident being closed in XSOAR UI
+    #     #     demisto.debug(f"Defining whether to close related alerts by: {is_closed=} {close_alerts_in_xdr=}")
+    #     #     if is_closed and closed_without_status and remote_is_already_closed:
+    #     #         update_args['status'] = current_remote_status
+    #     #     if close_alerts_in_xdr and is_closed:
+    #     #         update_related_alerts(client, update_args)
+    #     #
+    #     # else:
+    #     #     demisto.debug(f'Skipping updating remote incident fields [{remote_args.remote_incident_id}] '
+    #     #                   f'as it is not new nor changed')
+    # except Exception as e:
+    #     demisto.error(f'update_remote_system_command {str(e)} | {remote_args.remote_incident_id=}')
+    return remote_args.remote_incident_id
+
+
+def get_mapping_fields_command() -> GetMappingFieldsResponse:
+    ibm_qradar_incident_type_scheme = SchemeTypeMapping(type_name=IBM_QRADAR_SOAR_INCIDENT_SCHEMA_NAME,
+                                                        fields=IBM_QRADAR_INCIDENT_FIELDS)
+    return GetMappingFieldsResponse([ibm_qradar_incident_type_scheme])
+
+
+def test_module(client: SimpleClient):
+    """
+    Verify client connectivity and the first_fetch parameter are according to the standards, if exists.
+
+    Returns:
+        'ok' if all tests passed, anything else will fail the test.
+    """
+    pass
+    # client.get(uri='')
+
+    # try:
+    #     # Making a request to the client's base URL to retrieve information about the organization.
+    #     demisto.debug(f'test_module {response=}')
+    # except Exception as e:
+    #     return f"Connection test failed: {e}"
+    #
+    # # Test - test first fetch time
+    # fetch_time = getattr(client, 'first_fetch', None)  # Assuming the fetch time is a client attribute
+    # time_format = "%Y-%m-%dT%H:%M:%SZ"  # Define your time format here
+    #
+    # if fetch_time:
+    #     try:
+    #         datetime.strptime(fetch_time, time_format)
+    #     except ValueError as error:
+    #         demisto.error(f'test_module {error=}')
+    #         return f"There is something wrong with the fetch date. Error: {error}"
+
+    # return 'ok'
 
 
 ''' EXECUTION CODE '''
@@ -1101,20 +1588,20 @@ def get_client():
         'cafile': os.environ.get('SSL_CERT_FILE') if USE_SSL else 'false',
         'org': ORG_NAME
     }
-    if USERNAME and PASSWORD:
-        opts_dict.update({
-            'email': USERNAME,
-            'password': PASSWORD
-        })
-    elif API_KEY_ID and API_KEY_SECRET:
+    if API_KEY_ID and API_KEY_SECRET:
         opts_dict.update({
             'api_key_id': API_KEY_ID,
             'api_key_secret': API_KEY_SECRET
         })
+    elif USERNAME and PASSWORD:
+        opts_dict.update({
+            'email': USERNAME,
+            'password': PASSWORD
+        })
     else:
-        return_error('Credentials were not provided. Configure either the username and password'
-                     ' or the API Key and API Secret')
+        return_error('Credentials were not provided. Please configure API key ID and API key secret')
     resilient_client = resilient.get_client(opts=opts_dict)
+    resilient_client.request_max_retries = DEFAULT_RETRIES
     return resilient_client
 
 
@@ -1128,41 +1615,72 @@ def main():
     LOG('command is %s' % (demisto.command(),))
 
     try:
+        command = demisto.command()
         args = demisto.args()
-        if demisto.command() == 'test-module':
+        if command == 'test-module':
             # Checks if there is an authenticated session
-            test()
-        elif demisto.command() == 'fetch-incidents':
+            test_module(client)
+        elif command == 'fetch-incidents':
             fetch_incidents(client)
-        elif demisto.command() == 'rs-search-incidents':
+        elif command == 'rs-search-incidents':
             demisto.results(search_incidents_command(client, args))
-        elif demisto.command() == 'rs-update-incident':
+        elif command == 'rs-update-incident':
             demisto.results(update_incident_command(client, args))
-        elif demisto.command() == 'rs-incidents-get-members':
+        elif command == 'rs-incidents-get-members':
             demisto.results(get_members_command(client, args['incident-id']))
-        elif demisto.command() == 'rs-get-incident':
+        elif command == 'rs-get-incident':
             demisto.results(get_incident_command(client, args['incident-id']))
-        elif demisto.command() == 'rs-incidents-update-member':
+        elif command == 'rs-incidents-update-member':
             demisto.results(set_member_command(client, args['incident-id'], args['members']))
-        elif demisto.command() == 'rs-incidents-get-tasks':
+        elif command == 'rs-incidents-get-tasks':
             demisto.results(get_tasks_command(client, args['incident-id']))
-        elif demisto.command() == 'rs-get-users':
+        elif command == 'rs-get-users':
             demisto.results(get_users_command(client))
-        elif demisto.command() == 'rs-close-incident':
+        elif command == 'rs-close-incident':
             demisto.results(close_incident_command(client, args['incident-id']))
-        elif demisto.command() == 'rs-create-incident':
+        elif command == 'rs-create-incident':
             demisto.results(create_incident_command(client, args))
-        elif demisto.command() == 'rs-incident-artifacts':
+        elif command == 'rs-incident-artifacts':
             demisto.results(incident_artifacts_command(client, args['incident-id']))
-        elif demisto.command() == 'rs-incident-attachments':
+        elif command == 'rs-incident-attachments':
             demisto.results(incident_attachments_command(client, args['incident-id']))
-        elif demisto.command() == 'rs-related-incidents':
+        elif command == 'rs-related-incidents':
             demisto.results(related_incidents_command(client, args['incident-id']))
-        elif demisto.command() == 'rs-add-note':
+        elif command == 'rs-add-note':
             demisto.results(add_note_command(client, args['incident-id'], args['note']))
-        elif demisto.command() == 'rs-add-artifact':
+        elif command == 'rs-add-artifact':
             demisto.results(add_artifact_command(client, args['incident-id'], args['artifact-type'],
                                                  args['artifact-value'], args.get('artifact-description')))
+        elif command == 'rs-list-scripts':
+            return_results(list_scripts_command(client, args))
+        elif command == 'rs-upload-incident-attachment':
+            return_results(upload_incident_attachment_command(client, args))
+        elif command == 'rs-delete-incidents':
+            return_results(delete_incidents_command(client, args))
+        elif command == 'rs-list-incident-notes':
+            return_results(list_incident_notes_command(client, args))
+        elif command == 'rs-update-incident-note':
+            return_results(update_incident_note_command(client, args))
+        elif command == 'rs-add-custom-incident-task':
+            return_results(add_custom_incident_task_command(client, args))
+        elif command == 'rs-list-tasks':
+            return_results(list_tasks_command(client))
+        elif command == 'rs-get-task-members':
+            return_results(get_task_members_command(client, args))
+        elif command == 'rs-delete-tasks':
+            return_results(delete_tasks_command(client, args))
+        elif command == 'rs-delete-task-members':
+            return_results(delete_task_members_command(client, args))
+        elif command == 'rs-list-task-instructions':
+            return_results(list_task_instructions_command(client, args))
+        elif command == 'get-remote-data':
+            return_results(get_remote_data_command(client, args))
+        elif command == 'get-modified-remote-data':
+            return_results(get_modified_remote_data_command(client, args))
+        elif command == 'update-remote-system':
+            return_results(update_remote_system_command(client, args))
+        elif command == 'get-mapping-fields':
+            return_results(get_mapping_fields_command())
     except Exception as e:
         LOG(str(e))
         LOG.print_log()
