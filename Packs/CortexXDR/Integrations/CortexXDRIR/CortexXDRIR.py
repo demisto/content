@@ -886,8 +886,7 @@ def get_mapping_fields_command():
 def get_modified_remote_data_command(client, args, xdr_delay: int = 1):
     remote_args = GetModifiedRemoteDataArgs(args)
     integration_context = demisto.getIntegrationContext()
-    last_update = integration_context.get(
-        'mirroring_last_update') if integration_context else remote_args.last_update
+    last_update: str = integration_context.get('mirroring_last_update', remote_args.last_update)
     last_update_utc = dateparser.parse(last_update,
                                        settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': False})   # convert to utc format
 
@@ -895,7 +894,7 @@ def get_modified_remote_data_command(client, args, xdr_delay: int = 1):
         gte_modification_time_milliseconds = last_update_utc - timedelta(minutes=xdr_delay)
         lte_modification_time_milliseconds = gte_modification_time_milliseconds + timedelta(minutes=1)
     demisto.debug(
-        f'Performing get-modified-remote-data command. {last_update=} | {gte_modification_time_milliseconds=} |'
+        f'Performing get-modified-remote-data command {last_update=} | {gte_modification_time_milliseconds=} |'
         f'{lte_modification_time_milliseconds=}'
     )
     raw_incidents = client.get_incidents(
