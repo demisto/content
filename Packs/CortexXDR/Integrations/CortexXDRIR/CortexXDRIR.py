@@ -883,10 +883,11 @@ def get_mapping_fields_command():
     return mapping_response
 
 
-def get_modified_remote_data_command(client, args, xdr_delay: int = 1, last_mirroring: Optional[dict] = None):
+def get_modified_remote_data_command(client, args, xdr_delay: int = 1):
     remote_args = GetModifiedRemoteDataArgs(args)
-    last_update = last_mirroring.get(
-        'time') if isinstance(last_mirroring, dict) else remote_args.last_update
+    integration_context = demisto.getIntegrationContext()
+    last_update = integration_context.get(
+        'mirroring_last_update') if isinstance(integration_context, dict) else remote_args.last_update
     last_update_utc = dateparser.parse(last_update,
                                        settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': False})   # convert to utc format
 
@@ -903,12 +904,13 @@ def get_modified_remote_data_command(client, args, xdr_delay: int = 1, last_mirr
         limit=100)
 
     last_run_mirroring = lte_modification_time_milliseconds + timedelta(milliseconds=1)
+    demisto.setIntegrationContext({'mirroring_last_update': last_run_mirroring})
     modified_incident_ids = []
     for raw_incident in raw_incidents:
         incident_id = raw_incident.get('incident_id')
         modified_incident_ids.append(incident_id)
 
-    return GetModifiedRemoteDataResponse(modified_incident_ids), last_run_mirroring
+    return GetModifiedRemoteDataResponse(modified_incident_ids)
 
 
 def get_remote_data_command(client, args):
@@ -1560,14 +1562,11 @@ def main():  # pragma: no cover
             return_results(action_status_get_command(client, args))
 
         elif command == 'get-modified-remote-data':
-            modified_incidents, last_run_mirroring = get_modified_remote_data_command(client=client,
-                                                                                      args=demisto.args(),
-                                                                                      xdr_delay=xdr_delay,
-                                                                                      last_mirroring=demisto.getLastRun().get('mirroring'))
-            last_run_obj = demisto.getLastRun()
-            last_run_obj['mirroring'] = {'time': (last_run_mirroring)}  # type: ignore
-            demisto.setLastRun(last_run_obj)
-            return_results(modified_incidents)
+            return_results(get_modified_remote_data_command(client=client,
+                                                            args=demisto.args(),
+                                                            xdr_delay=xdr_delay,
+                                                            )
+                           )
 
         elif command == 'xdr-script-run':  # used with polling = true always
             return_results(script_run_polling_command(args, client))
