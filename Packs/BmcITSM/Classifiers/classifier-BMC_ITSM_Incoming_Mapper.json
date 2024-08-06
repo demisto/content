@@ -6,7 +6,7 @@
         "BMC Change-Request": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "BmcITSM Display ID": {
+                "Bmc Display ID": {
                     "simple": "DisplayID"
                 },
                 "BmcITSM Impact": {
@@ -38,7 +38,7 @@
                 "BmcITSM Contact Sensitivity": {
                     "simple": "ContactSensitivity"
                 },
-                "BmcITSM Display ID": {
+                "Bmc Display ID": {
                     "simple": "DisplayID"
                 },
                 "BmcITSM Impact": {
@@ -64,7 +64,7 @@
         "BMC Problem Investigation incident": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "BmcITSM Display ID": {
+                "Bmc Display ID": {
                     "simple": "DisplayID"
                 },
                 "BmcITSM Impact": {
@@ -87,7 +87,7 @@
         "BMC Problem – Known Error": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "BmcITSM Display ID": {
+                "Bmc Display ID": {
                     "simple": "DisplayID"
                 },
                 "BmcITSM Impact": {
@@ -110,7 +110,7 @@
         "BMC Service Request": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "BmcITSM Display ID": {
+                "Bmc Display ID": {
                     "simple": "DisplayID"
                 },
                 "BmcITSM Impact": {
@@ -133,7 +133,7 @@
         "BMC Task": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "BmcITSM Display ID": {
+                "Bmc Display ID": {
                     "simple": "DisplayID"
                 },
                 "BmcITSM Request ID": {
