@@ -1304,7 +1304,7 @@ def searchRelationships(args):
     return {'data': []}
 
 
-def _apiCall(name=None, params=None, data=None, headers=None, method=None, path=None, timeout=None):
+def _apiCall(name=None, params=None, data=None, headers=None, method=None, path=None, timeout=None, response_data_type=None):
     """
     Special apiCall to internal xdr api. Only available to OOB content.
 
@@ -1316,6 +1316,7 @@ def _apiCall(name=None, params=None, data=None, headers=None, method=None, path=
         method: HTTP method to use.
         path: path to append to the base url.
         timeout: The amount of time (in seconds) that a request will wait for a client to send data before the request is aborted.
+        response_data_type: The type of the response. should be None unless the response value is binary then it should be 'bin'.
 
         *Note if data is empty then a GET request is performed instead of a POST.
 
