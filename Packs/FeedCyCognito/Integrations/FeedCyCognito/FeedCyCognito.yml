@@ -121,7 +121,6 @@ configuration:
   - never
   - interval
   - indicatorType
-  - suddenDeath
   type: 17
   required: false
 - name: feedExpirationInterval
@@ -268,7 +267,7 @@ script:
       name: tags
     description: Fetches a given limit of indicators from the CyCognito platform and displays them in human-readable format in the war room.
     name: cycognito-get-indicators
-  dockerimage: demisto/pycountry:1.0.0.82748
+  dockerimage: demisto/pycountry:1.0.0.106693
   feed: true
   runonce: false
   script: '-'

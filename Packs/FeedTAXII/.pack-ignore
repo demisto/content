@@ -1,3 +1,6 @@
+[file:FeedTAXII.yml]
+ignore=IN122
+
 [known_words]
 TLP
 stixid

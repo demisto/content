@@ -49,7 +49,6 @@ configuration:
   - never
   - interval
   - indicatorType
-  - suddenDeath
   required: false
 - display: ''
   name: feedExpirationInterval
@@ -118,7 +117,7 @@ script:
       - desc
     description: Retrieves latest Threat Reports from ORKL.
     name: orkl-get-reports
-  dockerimage: demisto/python3:3.10.13.82467
+  dockerimage: demisto/python3:3.11.9.106403
   feed: true
   isFetchSamples: true
   runonce: false
