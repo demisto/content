@@ -5,6 +5,7 @@ import secrets
 import string
 from itertools import zip_longest
 from datetime import datetime, timedelta
+import pytz
 
 from CoreIRApiModule import *
 
@@ -902,8 +903,11 @@ def get_modified_remote_data_command(client, args, xdr_delay: int = 1):
         lte_modification_time_milliseconds=lte_modification_time_milliseconds,
         limit=100)
 
-    last_run_mirroring = lte_modification_time_milliseconds + timedelta(milliseconds=1)
-    demisto.setIntegrationContext({'mirroring_last_update': last_run_mirroring})
+    last_run_mirroring = (lte_modification_time_milliseconds + timedelta(milliseconds=1))
+    # Format with milliseconds as string, truncate microseconds
+    last_run_mirroring_str = last_run_mirroring.replace(tzinfo=pytz.UTC).strftime(
+        '%Y-%m-%d %H:%M:%S.%f')[:-3] + '+02:00'  # type: ignore
+    demisto.setIntegrationContext({'mirroring_last_update': last_run_mirroring_str})
     modified_incident_ids = []
     for raw_incident in raw_incidents:
         incident_id = raw_incident.get('incident_id')
