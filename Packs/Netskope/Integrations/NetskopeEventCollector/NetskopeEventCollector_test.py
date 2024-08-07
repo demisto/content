@@ -1,7 +1,8 @@
 import json
 import re
 import time
-
+from unittest.mock import MagicMock
+import demistomock as demisto
 import dateparser
 import pytest
 from NetskopeEventCollector import ALL_SUPPORTED_EVENT_TYPES, RATE_LIMIT_REMAINING, RATE_LIMIT_RESET, Client
@@ -167,7 +168,8 @@ def test_setup_last_run(mocker, last_run_dict, expected_operation_value):
 @pytest.mark.parametrize('event_types_to_fetch_param, expected_value', [
     ('Application', ['application']),
     ('Alert, Page, Audit', ['alert', 'page', 'audit']),
-    (['Application', 'Audit', 'Network'], ['application', 'audit', 'network']),
+    (['Application', 'Audit', 'Network', 'Incident'], ['application', 'audit', 'network', 'incident']),
+    ('Incident', ['incident']),
     (None, ALL_SUPPORTED_EVENT_TYPES),
 ])
 def test_event_types_to_fetch_parameter_handling(event_types_to_fetch_param, expected_value):
@@ -253,3 +255,18 @@ def test_fix_last_run(last_run, supported_event_types, expected_result):
     from NetskopeEventCollector import remove_unsupported_event_types
     remove_unsupported_event_types(last_run, supported_event_types)
     assert last_run == expected_result
+
+def test_incident_endpoint(mocker):
+    from datetime import datetime
+    from NetskopeEventCollector import handle_data_export_single_event_type
+    mocker.patch.object(demisto, 'callingContext', {'context': {'IntegrationInstance': 'test_instance'}})
+    mocker.patch('NetskopeEventCollector.is_execution_time_exceeded', return_value=False)
+    mocker.patch('NetskopeEventCollector.print_event_statistics_logs')
+    client = Client(BASE_URL, 'dummy_token', False, False, event_types_to_fetch=['incident'])
+    mock_response = MagicMock()
+    mock_response.json.return_value = {'result': 'fake_result', 'wait_time': 0}
+    request_mock = mocker.patch.object(Client, '_http_request', return_value=mock_response)
+    handle_data_export_single_event_type(client, 'incident', 'next', limit=50, execution_start_time=datetime.now())
+    kwargs = request_mock.call_args.kwargs
+    assert kwargs['url_suffix'] == 'events/dataexport/events/incident'
+    assert kwargs['params'] == {'index': 'xsoar_collector_test_instance_incident', 'operation': 'next'}
