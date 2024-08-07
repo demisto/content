@@ -91,7 +91,7 @@ STIX_2_TYPES_TO_CORTEX_TYPES = {       # pragma: no cover
     "malware": ThreatIntel.ObjectsNames.MALWARE,
     "tool": ThreatIntel.ObjectsNames.TOOL,
     "report": ThreatIntel.ObjectsNames.REPORT,
-    "Threat-actor": ThreatIntel.ObjectsNames.THREAT_ACTOR,
+    "threat-actor": ThreatIntel.ObjectsNames.THREAT_ACTOR,
     "course-of-action": ThreatIntel.ObjectsNames.COURSE_OF_ACTION,
     "campaign": ThreatIntel.ObjectsNames.CAMPAIGN,
     "infrastructure": ThreatIntel.ObjectsNames.INFRASTRUCTURE,
