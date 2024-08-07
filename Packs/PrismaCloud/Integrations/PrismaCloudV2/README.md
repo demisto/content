@@ -2879,17 +2879,17 @@ Get permission list. You must provide either "query" or "next_token".
 
 | **Path**                           | **Type** | **Description**             |
 |------------------------------------|----------|-----------------------------|
-| PrismaCloud.AccessKeys.id          | String   | Access key id               | 
-| PrismaCloud.AccessKeys.name        | String   | Name                        |
-| PrismaCloud.AccessKeys.createdBy   | String   | Created By                  | 
-| PrismaCloud.AccessKeys.createdTs   | String   | Time access key was created |
-| PrismaCloud.AccessKeys.expiresOn   | String   | Access key expires on       |
-| PrismaCloud.AccessKeys.lastUsedTime | String   | Access key last used        | 
-| PrismaCloud.AccessKeys.status      | String   | Access key status           |
-| PrismaCloud.AccessKeys.role.id     | String   | User role id                | 
-| PrismaCloud.AccessKeys.role.name   | String   | User role name              |
-| PrismaCloud.AccessKeys.roleType    | String   | User role permission type   | 
-| PrismaCloud.AccessKeys.username    | String   | Access key user name        |
+| PrismaCloud.AccessKeys.id          | String   | Access key ID.               | 
+| PrismaCloud.AccessKeys.name        | String   | The name of the access key.                        |
+| PrismaCloud.AccessKeys.createdBy   | String   | The user who created the access key.                  | 
+| PrismaCloud.AccessKeys.createdTs   | String   | Time access key was created. |
+| PrismaCloud.AccessKeys.expiresOn   | String   | Access key expires on.       |
+| PrismaCloud.AccessKeys.lastUsedTime | String   | The last time the access key was used.        | 
+| PrismaCloud.AccessKeys.status      | String   | Access key status.           |
+| PrismaCloud.AccessKeys.role.id     | String   | User role ID.       | 
+| PrismaCloud.AccessKeys.role.name   | String   | User role name.              |
+| PrismaCloud.AccessKeys.roleType    | String   | User role permission type.   | 
+| PrismaCloud.AccessKeys.username    | String   | Access key user name.        |
 
 #### Command example
 ```!prisma-cloud-access-keys-list limit=2```
