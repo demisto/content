@@ -1,7 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-
 from abc import ABCMeta
 from collections.abc import Callable
 from collections import defaultdict
@@ -10,6 +9,7 @@ from datetime import timezone
 import hashlib
 from copy import deepcopy
 from mimetypes import guess_type
+
 # Note: time.time_ns() is used instead of time.time() to avoid the precision loss caused by the float type.
 # Source: https://docs.python.org/3/library/time.html#time.time_ns
 
@@ -1189,19 +1189,19 @@ class JiraIssueFieldsParser:
     @staticmethod
     def get_assignee_context(issue_data: Dict[str, Any]) -> Dict[str, str]:
         assignee = demisto.get(issue_data, 'fields.assignee', {}) or {}
-        return {'Assignee': f'{assignee.get("displayName","")}({assignee.get("emailAddress", "")})'
+        return {'Assignee': f'{assignee.get("displayName", "")}({assignee.get("emailAddress", "")})'
                 if assignee else ''}
 
     @staticmethod
     def get_creator_context(issue_data: Dict[str, Any]) -> Dict[str, str]:
         creator = demisto.get(issue_data, 'fields.creator', {}) or {}
-        return {'Creator': f'{creator.get("displayName","")}({creator.get("emailAddress", "")})'
+        return {'Creator': f'{creator.get("displayName", "")}({creator.get("emailAddress", "")})'
                 if creator else ''}
 
     @staticmethod
     def get_reporter_context(issue_data: Dict[str, Any]) -> Dict[str, str]:
         reporter = demisto.get(issue_data, 'fields.reporter', {}) or {}
-        return {'Reporter': f'{reporter.get("displayName","")}({reporter.get("emailAddress", "")})'
+        return {'Reporter': f'{reporter.get("displayName", "")}({reporter.get("emailAddress", "")})'
                 if reporter else ''}
 
     @staticmethod
@@ -1496,24 +1496,6 @@ def create_fields_dict_from_dotted_string(issue_fields: Dict[str, Any], dotted_s
     return nested_dict
 
 
-def parse_value_as_json(value: Any) -> [List[Dict[str, str]]]:
-    """
-    This function will parse the value as a json object, if it is in a specific format,
-    which is a list of dictionaries, where each dictionary has a key named 'value', and the value of this key is a string.
-    Args:
-        value (Any): The value to parse
-    Returns:
-        Optional[List[Dict[str, str]]]: The parsed value, if it is a list of dictionaries, otherwise None.
-    """
-    try:
-        json_loads_res = json.loads(value)
-        if isinstance(json_loads_res, list) and len(json_loads_res) == 1 and 'value' in json_loads_res[0]:
-            return json_loads_res
-    except Exception:
-        pass
-    return None
-
-
 def create_issue_fields(client: JiraBaseClient, issue_args: Dict[str, str],
                         issue_fields_mapper: Dict[str, str]) -> Dict[str, Any]:
     """This will create the issue fields object that will be sent to the API in order to create/edit a Jira issue.
@@ -1549,7 +1531,7 @@ def create_issue_fields(client: JiraBaseClient, issue_args: Dict[str, str],
             parsed_value = [{"name": component} for component in argToList(value)]
         elif issue_arg in ['description', 'environment']:
             parsed_value = text_to_adf(value) if isinstance(client, JiraCloudClient) else value
-        elif not (isinstance(value, list) or isinstance(value, dict)):
+        elif not (isinstance(value, dict | list)):
             # If the value is not a list or a dictionary, we will try to parse it as a json object.
             try:
                 parsed_value = json.loads(value)
@@ -2647,8 +2629,8 @@ def get_id_by_attribute_command(client: JiraBaseClient, args: Dict[str, str]) ->
 
     elif len(account_ids) > 1:
         return CommandResults(readable_output=f'Multiple account IDs were found for attribute: {attribute}.\n'
-                              f'Please try to provide the other attributes available - Email or DisplayName'
-                              ' (and Name in the case of Jira OnPrem).')
+                                              f'Please try to provide the other attributes available - Email or DisplayName'
+                                              ' (and Name in the case of Jira OnPrem).')
     # If reached here, that means there is only one entry in account_ids that holds the right id for the given attribute
     outputs['AccountId'] = account_ids[0]
     return CommandResults(
@@ -3306,7 +3288,7 @@ def fetch_incidents(client: JiraBaseClient, issue_field_to_fetch_from: str, fetc
                 ' "Issue index to start fetching incidents from" parameter.'
                 if smallest_issue_id
                 else 'The id that was configured does not exist in the Jira instance, '
-                'and the fetch query returned no results, therefore, could not start fetching.'
+                     'and the fetch query returned no results, therefore, could not start fetching.'
             ) from e
     # If we did no progress in terms of time (the created, or updated time stayed the same as the last fetch), we should keep the
     # ids of the last fetch until progress is made, so we exclude them in the next fetch.
