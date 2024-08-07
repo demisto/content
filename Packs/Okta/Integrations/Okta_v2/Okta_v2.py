@@ -1,6 +1,9 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
+
 from urllib.parse import urlparse, parse_qs, urlencode, urlunparse
+
 
 from OktaApiModule import *  # noqa: E402
 
@@ -175,7 +178,7 @@ class Client(OktaClient):
         )
 
     def set_temp_password(self, user_id):
-        uri = f'/api/v1/users/{user_id}/lifecycle/expire_password'
+        uri = f'/api/v1/users/{user_id}/lifecycle/expire_password?tempPassword=true'
 
         return self.http_request(
             method="POST",

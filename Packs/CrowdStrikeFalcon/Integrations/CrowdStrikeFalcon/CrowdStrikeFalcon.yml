@@ -453,6 +453,8 @@ script:
       - 'false'
     - description: Username to assign the detections to. (This is usually the user's email address, but may vary based on your configuration). username and assigned_to_uuid are mutually exclusive.
       name: username
+    - description: The tag to add to the detection, supported only for API V3.
+      name: tag
     description: Resolves and updates a detection using the provided arguments. At least one optional argument must be passed, otherwise no change will take place. Note that IDP detections are not supported.
     name: cs-falcon-resolve-detection
   - arguments:
@@ -5048,7 +5050,7 @@ script:
     - contextPath: CrowdStrike.IOARules.version_ids
       description: The IOA rule's version ID.
       type: String
-  dockerimage: demisto/py3-tools:1.0.0.103307
+  dockerimage: demisto/py3-tools:1.0.0.106945
   isfetch: true
   ismappable: true
   isremotesyncin: true
