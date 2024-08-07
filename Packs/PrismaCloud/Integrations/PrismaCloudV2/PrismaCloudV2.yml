@@ -2132,12 +2132,12 @@ script:
     execution: false
     name: update-remote-system
   - arguments:
-      - description: Access key name
+      - description: Access key name.
         name: name
         required: true
-      - description: Timestamp in milliseconds when access key expires. Default:0
+      - description: Timestamp in milliseconds when access key expires. Default:0.
         name: expires-on
-      - description: Service account name
+      - description: Service account name.
         name: service-account-name
     deprecated: false
     description: Adds a new access key for the current user. If you have API access, you can create up to two access keys.
