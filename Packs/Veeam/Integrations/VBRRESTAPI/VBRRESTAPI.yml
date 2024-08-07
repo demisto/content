@@ -567,5 +567,7 @@ script:
   subtype: python3
   type: python
 fromversion: 6.10.0
+defaultclassifier: "Veeam Backup & Replication Incidents Classifier"
+defaultmapperin: "Veeam Backup & Replication incoming mapper"
 tests:
 - No tests (auto formatted)

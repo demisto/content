@@ -16,7 +16,8 @@ import urllib3
 urllib3.disable_warnings()
 
 ''' CONSTANTS '''
-VEEAM_INCIDENT_FROM = 'VBR'
+REPOSITORY_STATE_INCIDENT_TYPE = 'Repository Capacity'
+CONFIGURATION_BACKUP_INCIDENT_TYPE = 'Configuration Backup'
 MAX_ATTEMPTS = 3
 MAX_EVENTS_FOR_FETCH = 30
 GRANT_TYPE = 'password'
@@ -63,17 +64,6 @@ SEVERITY_MAP = {
 
 }
 
-TYPES_MAP = {
-    'EncryptedData': 'Malware Detection - Encrypted Files',
-    'MalwareExtensions': 'Malware Detection - Suspicious Files and Extensions',
-    'YaraScan': 'Malware Detection - Yara Scan',
-    'AntivirusScan': 'Malware Detection - Antivirus Scan',
-    'DeletedUsefulFiles': 'Malware Detection - Deleted Files',
-    'RansomwareNotes': 'Malware Detection - Ransomware Notes',
-    'RenamedFiles': 'Malware Detection - Renamed Files',
-    'Unknown': 'Malware Detection - Unknown',
-
-}
 
 ERROR_COUNT_MAP = {
     2: IncidentSeverity.LOW,
@@ -1065,12 +1055,8 @@ def process_error(error_count: int, error_message: str) -> tuple[dict, int]:
         incident = {
             'name': incident_name,
             'occurred': datetime.now().strftime(DATE_FORMAT),
-            'type': 'Incident Fetch Error',
-            'details': error_message,
-            'severity': ERROR_COUNT_MAP[error_count],
-            'CustomFields': {
-                'veeamsource': VEEAM_INCIDENT_FROM
-            }
+            'rawJSON': json.dumps({'incident_type': 'Incident Fetch Error', 'details': error_message}),
+            'severity': ERROR_COUNT_MAP[error_count]
         }
 
     return incident, error_count
@@ -1105,33 +1091,18 @@ def get_malware_incidents(
 
         if source_exist and type_exist and severity:
             if event_id not in existed_ids:
-                incident_type = TYPES_MAP.get(type_)
                 hostname = event['machine'].get('displayName')
                 details = f"{event['details']}; Hostname: {hostname}"
                 incident_name = f"Veeam - Malware activity detected on {hostname}"
+                event['description'] = details
+                event['incident_type'] = type_
+                event['type_description'] = type_exist
+                event['source_description'] = source_exist
                 incident = {
                     'name': incident_name,
                     'occurred': event['detectionTimeUtc'],
-                    'type': incident_type,
-                    'details': details,
                     'rawJSON': json.dumps(event),
-                    'severity': severity,
-                    'CustomFields': {
-                        'eventid': event_id,
-                        'eventtype': event['type'],
-                        'state': event['state'],
-                        'veeamsource': VEEAM_INCIDENT_FROM,
-                        'affectedmachine': tableToMarkdown("Machine Info", event['machine']),
-                        'backupobjectid': event['machine'].get('backupObjectId'),
-                        'hostname': hostname,
-                        'malwarestatus': event['severity'],
-                        'eventcreatedby': event['createdBy'],
-                        'eventsource': event['source'],
-                        'malwaredetectionmethod': event['engine'],
-                        'malwaredetectiontime': event['detectionTimeUtc'],
-                        'eventsourcedescription': source_exist,
-                        'eventtypedescription': type_exist
-                    }
+                    'severity': severity
                 }
                 new_ids.add(event_id)
                 incidents.append(incident)
@@ -1171,23 +1142,13 @@ def get_configuration_backup_incident(
             details = f"Last successful backup: {time_}"
             integartion_instance = demisto.callingContext.get('context', {}).get('IntegrationInstance', '')
             incident_name = f"Veeam - {integartion_instance} has no configuration backups"
+            response['details'] = details
+            response['incident_type'] = CONFIGURATION_BACKUP_INCIDENT_TYPE
             incident = {
                 'name': incident_name,
                 'occurred': last_fetch_time,
-                'type': 'Configuration Backup',
-                'details': details,
                 'rawJSON': json.dumps(response),
-                'severity': IncidentSeverity.MEDIUM,
-                'CustomFields': {
-                    'isenabled': response['isEnabled'],
-                    'veeamsource': VEEAM_INCIDENT_FROM,
-                    'backuprepositoryid': response['backupRepositoryId'],
-                    'numberofstoredrestorepoints': response['restorePointsToKeep'],
-                    'notifications': tableToMarkdown('Notifications', response['notifications']),
-                    'backupscheduling': tableToMarkdown('Backup Scheduling', response['schedule']),
-                    'lastsuccessfulbackup': tableToMarkdown('Last Successful Backup', response['lastSuccessfulBackup']),
-                    'encryption': tableToMarkdown('Encryption', response['encryption'])
-                }
+                'severity': IncidentSeverity.MEDIUM
             }
 
             last_successful_backup_date = last_time_backup
@@ -1230,25 +1191,13 @@ def get_repository_space_incidents(
                 incident_name = (
                     f"Veeam - Repository {repository['name']} is running low on disk space. Free space: {repository['freeGB']}"
                 )
+                repository['details'] = details
+                repository['incident_type'] = REPOSITORY_STATE_INCIDENT_TYPE
                 incident = {
                     'name': incident_name,
                     'occurred': last_fetch_time,
-                    'type': 'Repository Capacity',
-                    'details': details,
-                    'filepath': repository['path'],
                     'rawJSON': json.dumps(repository),
-                    'severity': IncidentSeverity.HIGH,
-                    'CustomFields': {
-                        'backuprepositoryid': str(repository['id']),
-                        'eventtype': repository['type'],
-                        'veeamsource': VEEAM_INCIDENT_FROM,
-                        'hostid': repository['hostId'],
-                        'hostname': hostname,
-                        'backuprepositoryname': repository['name'],
-                        'backuprepositoryfreespacegb': repository['freeGB'],
-                        'backuprepositoryusedspacegb': repository['usedSpaceGB'],
-                        'backuprepositorycapacitygb': repository['capacityGB']
-                    }
+                    'severity': IncidentSeverity.HIGH
                 }
 
                 incident_repository_ids.add(repository_id)

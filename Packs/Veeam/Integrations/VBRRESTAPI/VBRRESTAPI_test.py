@@ -4,7 +4,7 @@ import json
 from datetime import datetime
 from unittest.mock import Mock
 from CommonServerPython import *
-from VBRRESTAPI import DATE_FORMAT, VEEAM_INCIDENT_FROM, MAX_INT, Client, \
+from VBRRESTAPI import DATE_FORMAT, MAX_INT, Client, \
     fetch_incidents, search_with_paging, get_malware_incidents, overwrite_last_fetch_time, get_configuration_backup_incident, \
     get_repository_space_incidents, validate_ipv4, validate_ipv6, validate_time, validate_uuid, try_cast_to_bool, \
     try_cast_to_int, try_cast_to_double, process_command, handle_command_with_token_refresh, validate_filter_parameter, \
@@ -253,34 +253,15 @@ MALWARE_INCIDENTS = [
     {
         'name': 'Veeam - Malware activity detected on string',
         'occurred': '2024-04-24T15:42:22.198Z',
-        'type': 'Malware Detection - Yara Scan',
-        'details': 'event; Hostname: string',
         'rawJSON': ('{"type": "YaraScan", "state": "Created", "source": "External", "severity": '
                     '"Infected", "id": "b9b6d52f-d8ac-448f-ac32-5b86e07d05fa", "detectionTimeUtc": '
                     '"2024-04-24T15:42:22.198Z", "machine": {"displayName": "string", "uuid": "string", '
                     '"backupObjectId": "dd628dc1-3f7b-46ef-9b3c-f7dd6439c999"}, '
-                    '"details": "event", "createdBy": "string", "engine": "string"}'
+                    '"details": "event", "createdBy": "string", "engine": "string", '
+                    '"description": "event; Hostname: string", "incident_type": "YaraScan", "type_description": '
+                    '"YARA scan", "source_description": "Third-party malware detection software"}'
                     ),
-        'severity': IncidentSeverity.CRITICAL,
-        'CustomFields': {
-            'eventid': 'b9b6d52f-d8ac-448f-ac32-5b86e07d05fa',
-            'eventtype': 'YaraScan',
-            'state': 'Created',
-            'veeamsource': VEEAM_INCIDENT_FROM,
-            'affectedmachine': ('### Machine Info\n|backupObjectId|displayName|uuid'
-                                '|\n|---|---|---|\n| dd628dc1-3f7b-46ef-9b3c-f7dd6439c999 '
-                                '| string | string |\n'
-                                ),
-            'backupobjectid': 'dd628dc1-3f7b-46ef-9b3c-f7dd6439c999',
-            'hostname': 'string',
-            'malwarestatus': 'Infected',
-            'eventcreatedby': 'string',
-            'eventsource': 'External',
-            'malwaredetectionmethod': 'string',
-            'malwaredetectiontime': '2024-04-24T15:42:22.198Z',
-            'eventsourcedescription': 'Third-party malware detection software',
-            'eventtypedescription': 'YARA scan'
-        }
+        'severity': IncidentSeverity.CRITICAL
     }
 ]
 MALWARE_EVENTS_WITHOUT_NEEDED_TYPE = [
@@ -394,8 +375,6 @@ def test_overwrite_last_fetch_time(last_fetch_time, event, expected_result):
 CONF_BACKUP_INCIDENT = {
     'name': 'Veeam -  has no configuration backups',
     'occurred': datetime.now().strftime(DATE_FORMAT),
-    'type': 'Configuration Backup',
-    'details': 'Last successful backup: 2024-05-13T10:00:51.018689-07:00',
     'rawJSON': ('{"isEnabled": true, "backupRepositoryId": "88788f9e-d8f5-4eb4-bc4f-9b3f5403bcec", "restorePointsToKeep": 10, '
                 '"notifications": {"SNMPEnabled": true, "SMTPSettings": {"settingsType": "Custom", "isEnabled": false, '
                 '"recipients": [], "subject": "[%JobResult%] %JobName% (%Time%)", "notifyOnSuccess": true, '
@@ -407,31 +386,11 @@ CONF_BACKUP_INCIDENT = {
                 '"August", "September", "October", "November", "December"]}}, "lastSuccessfulBackup": '
                 '{"lastSuccessfulTime": "2024-05-13T10:00:51.018689-07:00", "sessionId": '
                 '"8465a7d4-6033-45db-b446-bb36fcf1eab5"}, "encryption": {"isEnabled": false, '
-                '"passwordId": "00000000-0000-0000-0000-000000000000"}}'
+                '"passwordId": "00000000-0000-0000-0000-000000000000"}, '
+                '"details": "Last successful backup: 2024-05-13T10:00:51.018689-07:00", '
+                '"incident_type": "Configuration Backup"}'
                 ),
-    'severity': IncidentSeverity.MEDIUM,
-    'CustomFields': {
-        'isenabled': True,
-        'veeamsource': VEEAM_INCIDENT_FROM,
-        'backuprepositoryid': '88788f9e-d8f5-4eb4-bc4f-9b3f5403bcec',
-        'numberofstoredrestorepoints': 10,
-        'notifications': ('### Notifications\n|SMTPSettings|SNMPEnabled|\n|---|---|\n| settingsType: '
-                          'Custom<br>isEnabled: false<br>recipients: <br>subject: [%JobResult%] %JobName% '
-                          '(%Time%)<br>notifyOnSuccess: true<br>notifyOnWarning: true<br>notifyOnError: true | true |\n'
-                          ),
-        'backupscheduling': ('### Backup Scheduling\n|daily|isEnabled|monthly|\n|---|---|---|\n| dailyKind: '
-                             'Everyday<br>isEnabled: true<br>localTime: 10:00<br>days: monday,<br>tuesday,<br>wednesday,'
-                             '<br>thursday,<br>friday,<br>saturday,<br>sunday | true | dayOfWeek: saturday<br>dayNumberInMonth: '
-                             'Fourth<br>isEnabled: false<br>localTime: 22:00<br>dayOfMonth: null<br>months: January,'
-                             '<br>February,<br>March,<br>April,<br>May,<br>June,<br>July,<br>August,<br>September,'
-                             '<br>October,<br>November,<br>December |\n'
-                             ),
-        'lastsuccessfulbackup': ('### Last Successful Backup\n|lastSuccessfulTime|sessionId|\n|---|---|\n| '
-                                 '2024-05-13T10:00:51.018689-07:00 | 8465a7d4-6033-45db-b446-bb36fcf1eab5 |\n'
-                                 ),
-        'encryption': ('### Encryption\n|isEnabled|passwordId|\n|---|---|\n| false | '
-                       '00000000-0000-0000-0000-000000000000 |\n')
-    }
+    'severity': IncidentSeverity.MEDIUM
 }
 
 
@@ -501,28 +460,14 @@ REPOS_SPACE_INCIDENTS = [
     {
         'name': 'Veeam - Repository Default Backup Repository is running low on disk space. Free space: 68.9',
         'occurred': '2024-05-16T07:21:32Z',
-        'type': 'Repository Capacity',
-        'details': ('Created by Veeam Backup; Repository Name: Default Backup Repository; '
-                    'Free Space (GB): 68.9; Hostname: WIN-Q4F3IF4VR1L'
-                    ),
-        'filepath': 'C:\\Backup',
         'rawJSON': ('{"type": "WinLocal", "id": "88788f9e-d8f5-4eb4-bc4f-9b3f5403bcec", '
                     '"name": "Default Backup Repository", "description": "Created by Veeam Backup", '
                     '"hostId": "6745a759-2205-4cd2-b172-8ec8f7e60ef8", "hostName": "WIN-Q4F3IF4VR1L", '
-                    '"path": "C:\\\\Backup", "capacityGB": 149.4, "freeGB": 68.9, "usedSpaceGB": 30.6}'
+                    '"path": "C:\\\\Backup", "capacityGB": 149.4, "freeGB": 68.9, "usedSpaceGB": 30.6, '
+                    '"details": "Created by Veeam Backup; Repository Name: Default Backup Repository; '
+                    'Free Space (GB): 68.9; Hostname: WIN-Q4F3IF4VR1L", "incident_type": "Repository Capacity"}'
                     ),
-        'severity': IncidentSeverity.HIGH,
-        'CustomFields': {
-            'backuprepositoryid': '88788f9e-d8f5-4eb4-bc4f-9b3f5403bcec',
-            'eventtype': 'WinLocal',
-            'veeamsource': VEEAM_INCIDENT_FROM,
-            'hostid': '6745a759-2205-4cd2-b172-8ec8f7e60ef8',
-            'hostname': 'WIN-Q4F3IF4VR1L',
-            'backuprepositoryname': 'Default Backup Repository',
-            'backuprepositoryfreespacegb': 68.9,
-            'backuprepositoryusedspacegb': 30.6,
-            'backuprepositorycapacitygb': 149.4
-        }
+        'severity': IncidentSeverity.HIGH
     }
 ]
 
@@ -583,12 +528,8 @@ def test_get_repository_space_incidents(
 FETCH_ERROR_INCIDENT = {
     'name': 'Veeam - Fetch incident error has occurred on ',
     'occurred': datetime.now().strftime(DATE_FORMAT),
-    'type': 'Incident Fetch Error',
-    'details': 'Sample error message',
-    'severity': IncidentSeverity.MEDIUM,
-    'CustomFields': {
-        'veeamsource': 'VBR'
-    }
+    'rawJSON': '{"incident_type": "Incident Fetch Error", "details": "Sample error message"}',
+    'severity': IncidentSeverity.MEDIUM
 }
 
 
