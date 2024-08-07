@@ -1628,6 +1628,8 @@ def test_get_modified_remote_data_xdr_delay(mocker):
     assert demisto_set_context_mocker.call_args.args[0]['mirroring_last_update'] - \
         lastUpdate_datetime == timedelta(milliseconds=1) - timedelta(minutes=4)
     assert incidents_response.modified_incident_ids == ['1', '2']
+
+
 @freeze_time('1970-01-01 00:00:00.100')
 def test_fetch_incidents_dedup():
     """
