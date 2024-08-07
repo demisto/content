@@ -1513,7 +1513,8 @@ def parse_multiselect_custom_field(value: Any) -> Optional[List[Dict[str, str]]]
         if isinstance(json_loads_res, list) and len(json_loads_res) == 1 and 'value' in json_loads_res[0]:
             return json_loads_res
     except Exception:
-        return None
+        pass
+    return None
 
 
 def create_issue_fields(client: JiraBaseClient, issue_args: Dict[str, str],
