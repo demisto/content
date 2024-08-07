@@ -291,6 +291,117 @@ script:
       - No
       description: If set to 'Yes', filters the context to include the "rules" array related to the cases in the results.
     outputs:  
+    - contextPath: ExabeamPlatform.Alert.alertDescriptionRt
+      description: The description of the alert in real-time.
+      type: String
+    - contextPath: ExabeamPlatform.Alert.alertId
+      description: The unique identifier of the alert.
+      type: String
+    - contextPath: ExabeamPlatform.Alert.alertName
+      description: The name or title of the alert.
+      type: String
+    - contextPath: ExabeamPlatform.Alert.approxLogTime
+      description: The approximate log time of the alert.
+      type: Date
+    - contextPath: ExabeamPlatform.Alert.assignee
+      description: The person assigned to the alert.
+      type: String
+    - contextPath: ExabeamPlatform.Alert.caseCreationTimestamp
+      description: The timestamp when the case was created.
+      type: Number
+    - contextPath: ExabeamPlatform.Alert.caseId
+      description: The unique identifier of the case associated with the alert.
+      type: String
+    - contextPath: ExabeamPlatform.Alert.creationBy
+      description: The user who created the alert.
+      type: String
+    - contextPath: ExabeamPlatform.Alert.creationTimestamp
+      description: The timestamp when the alert was created.
+      type: Date
+    - contextPath: ExabeamPlatform.Alert.destEndpoints
+      description: The destination endpoints involved in the alert.
+      type: Unknown
+    - contextPath: ExabeamPlatform.Alert.destHosts
+      description: The destination hosts involved in the alert.
+      type: Unknown
+    - contextPath: ExabeamPlatform.Alert.destIps
+      description: The destination IP addresses involved in the alert.
+      type: Unknown
+    - contextPath: ExabeamPlatform.Alert.groupedbyKey
+      description: The key used for grouping the alert.
+      type: String
+    - contextPath: ExabeamPlatform.Alert.groupedbyValue
+      description: The value used for grouping the alert.
+      type: String
+    - contextPath: ExabeamPlatform.Alert.groupingRuleId
+      description: The ID of the rule used for grouping the alert.
+      type: String
+    - contextPath: ExabeamPlatform.Alert.hasAttachments
+      description: Indicates if the alert has attachments.
+      type: Boolean
+    - contextPath: ExabeamPlatform.Alert.ingestTimestamp
+      description: The timestamp when the alert was ingested into the system.
+      type: Date
+    - contextPath: ExabeamPlatform.Alert.lastModifiedBy
+      description: The user who last modified the alert.
+      type: String
+    - contextPath: ExabeamPlatform.Alert.lastModifiedTimestamp
+      description: The timestamp when the alert was last modified.
+      type: Date
+    - contextPath: ExabeamPlatform.Alert.mitres.tactic
+      description: The MITRE tactic associated with the alert.
+      type: String
+    - contextPath: ExabeamPlatform.Alert.mitres.tacticKey
+      description: The MITRE tactic key associated with the alert.
+      type: String
+    - contextPath: ExabeamPlatform.Alert.mitres.technique
+      description: The MITRE technique associated with the alert.
+      type: String
+    - contextPath: ExabeamPlatform.Alert.mitres.techniqueKey
+      description: The MITRE technique key associated with the alert.
+      type: String
+    - contextPath: ExabeamPlatform.Alert.priority
+      description: The priority level of the alert.
+      type: String
+    - contextPath: ExabeamPlatform.Alert.products
+      description: The products involved in the alert.
+      type: String
+    - contextPath: ExabeamPlatform.Alert.queue
+      description: The queue in which the alert is placed.
+      type: String
+    - contextPath: ExabeamPlatform.Alert.riskScore
+      description: The risk score associated with the alert.
+      type: Number
+    - contextPath: ExabeamPlatform.Alert.srcEndpoints.ip
+      description: The IP addresses of the source endpoints involved in the alert.
+      type: String
+    - contextPath: ExabeamPlatform.Alert.srcHosts
+      description: The source hosts involved in the alert.
+      type: Unknown
+    - contextPath: ExabeamPlatform.Alert.srcIps
+      description: The source IP addresses involved in the alert.
+      type: String
+    - contextPath: ExabeamPlatform.Alert.stage
+      description: The stage of the alert in the investigation process.
+      type: String
+    - contextPath: ExabeamPlatform.Alert.status
+      description: The status of the alert.
+      type: String
+    - contextPath: ExabeamPlatform.Alert.subscriptionCode
+      description: The subscription code associated with the alert.
+      type: String
+    - contextPath: ExabeamPlatform.Alert.tags
+      description: The tags associated with the alert.
+      type: Unknown
+    - contextPath: ExabeamPlatform.Alert.useCases
+      description: The use cases related to the alert.
+      type: String
+    - contextPath: ExabeamPlatform.Alert.users
+      description: The users involved in the alert.
+      type: Unknown
+    - contextPath: ExabeamPlatform.Alert.vendors
+      description: The vendors associated with the alert.
+      type: String
   - name: exabeam-platform-context-table-list
     description: Retrieve metadata for all existing context tables, including source, operational status, and attribute mapping.
     arguments:
@@ -307,6 +418,42 @@ script:
       - Yes
       - No
     outputs:  
+    - contextPath: ExabeamPlatform.ContextTable.attributeMapping
+      description: 'The attribute mapping of the context table.'
+      type: Unknown
+    - contextPath: ExabeamPlatform.ContextTable.attributes.displayName
+      description: 'The display name of the attribute.'
+      type: String
+    - contextPath: ExabeamPlatform.ContextTable.attributes.id
+      description: 'The unique identifier of the attribute.'
+      type: String
+    - contextPath: ExabeamPlatform.ContextTable.attributes.isKey
+      description: 'Indicates if the attribute is a key attribute.'
+      type: Boolean
+    - contextPath: ExabeamPlatform.ContextTable.attributes.type
+      description: 'The type of the attribute.'
+      type: String
+    - contextPath: ExabeamPlatform.ContextTable.contextType
+      description: 'The type of context the table represents.'
+      type: String
+    - contextPath: ExabeamPlatform.ContextTable.id
+      description: 'The unique identifier of the context table.'
+      type: String
+    - contextPath: ExabeamPlatform.ContextTable.lastUpdated
+      description: 'The timestamp of the last update to the context table.'
+      type: Number
+    - contextPath: ExabeamPlatform.ContextTable.name
+      description: 'The name of the context table.'
+      type: String
+    - contextPath: ExabeamPlatform.ContextTable.source
+      description: 'The source of the context table data.'
+      type: String
+    - contextPath: ExabeamPlatform.ContextTable.status
+      description: 'The status of the context table.'
+      type: String
+    - contextPath: ExabeamPlatform.ContextTable.totalItems
+      description: 'The total number of items in the context table.'
+      type: Number
   - name: exabeam-platform-context-table-delete
     description: Delete a specific context table, including records and attributes.
     arguments:
@@ -320,7 +467,6 @@ script:
       predefined:
       - Yes
       - No 
-    outputs: 
   - name: exabeam-platform-table-record-list
     description: Retrieve the records for a specific context table.
     arguments:
@@ -330,7 +476,6 @@ script:
     - name: limit
       description: The number of records to return.
       defaultValue: 50
-    outputs: 
   - name: exabeam-platform-table-record-create
     description: Add one or more context records directly to an existing table.
     arguments:
@@ -360,7 +505,6 @@ script:
       hidden: true
       description: ''
     polling: true
-    outputs: 
   runonce: false
   script: '-'
   type: python

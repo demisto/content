@@ -583,11 +583,11 @@ def alert_search_command(client: Client, args: dict) -> CommandResults:
             kwargs['limit'] = get_limit(args)
 
         response = client.alert_search_request(kwargs)
-        rows = response.get("rows", [])
+        data_response = response.get("rows", [])
 
         include_related_rules = argToBoolean(args.get("include_related_rules"))
         human_readable = []
-        for row in rows:
+        for row in data_response:
             if parsed_row := _parse_entry(row):
                 human_readable.append(parsed_row)
             if not include_related_rules:
@@ -595,7 +595,7 @@ def alert_search_command(client: Client, args: dict) -> CommandResults:
 
     return CommandResults(
         outputs_prefix="ExabeamPlatform.Alert",
-        outputs=rows,
+        outputs=data_response,
         readable_output=tableToMarkdown(name="Alert", t=human_readable)
     )
 
