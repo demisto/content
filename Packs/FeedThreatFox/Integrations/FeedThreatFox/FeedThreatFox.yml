@@ -3,7 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: ThreatFox Feed Dev
+  id: ThreatFox Feed
   version: -1
 configuration:
 - display: Fetch indicators
@@ -125,8 +125,8 @@ configuration:
   required: false
   section: Connect
 description: ThreatFox is a free platform from abuse.ch with the goal of sharing indicators of compromise (IOCs) associated with malware. Use the ThreatFox Feed integration to fetch indicators from the feed.
-display: ThreatFox Feed Dev
-name: ThreatFox Feed Dev
+display: ThreatFox Feed
+name: ThreatFox Feed
 script:
   commands:
   - arguments:
