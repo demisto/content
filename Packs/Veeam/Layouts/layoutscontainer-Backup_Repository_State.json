@@ -126,7 +126,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "hostid",
+                                "fieldId": "sourceid",
                                 "height": 22,
                                 "id": "b3823580-39df-11ef-a37f-c9eec5259a84",
                                 "index": 6,
@@ -135,7 +135,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "hostname",
+                                "fieldId": "sourcehostname",
                                 "height": 22,
                                 "id": "b8e6fa10-39df-11ef-a37f-c9eec5259a84",
                                 "index": 7,

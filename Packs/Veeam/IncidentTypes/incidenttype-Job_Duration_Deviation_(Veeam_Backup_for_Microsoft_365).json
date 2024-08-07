@@ -1,5 +1,5 @@
 {
-    "autorun": true,
+    "autorun": false,
     "color": "#443663",
     "days": 0,
     "daysR": 0,
@@ -8,7 +8,7 @@
     "disabled": false,
     "extractSettings": {
         "fieldCliNameToExtractSettings": {},
-        "mode": "All"
+        "mode": "Specific"
     },
     "hours": 0,
     "hoursR": 0,
@@ -17,7 +17,6 @@
     "locked": false,
     "name": "Job Duration Deviation (Veeam Backup for Microsoft 365)",
     "onChangeRepAlg": 1,
-    "playbookId": "playbook0",
     "readonly": false,
     "reputationCalc": 0,
     "system": false,

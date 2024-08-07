@@ -1,5 +1,5 @@
 {
-    "autorun": true,
+    "autorun": false,
     "color": "#BA68C8",
     "days": 0,
     "daysR": 0,
@@ -16,7 +16,6 @@
     "locked": false,
     "name": "Incident Fetch Error",
     "onChangeRepAlg": 0,
-    "playbookId": "playbook0",
     "readonly": false,
     "reputationCalc": 0,
     "system": false,

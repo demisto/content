@@ -196,8 +196,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 30,
-          "y": 2020
+          "x": 70,
+          "y": 1930
         }
       }
   "7":
@@ -989,6 +989,9 @@ tasks:
       iscommand: false
       max: 100
       wait: 1
+    nexttasks:
+      '#none#':
+      - "6"
     note: false
     quietmode: 0
     scriptarguments:
@@ -1146,7 +1149,7 @@ tasks:
       id: 69daebd1-71c0-40f4-8a19-07dec7a9a669
       iscommand: false
       name: Get Restored VM Name
-      script: 'GetRestoredVmName'
+      script: GetRestoredVmName
       type: regular
       version: -1
     taskid: 69daebd1-71c0-40f4-8a19-07dec7a9a669
@@ -1168,7 +1171,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 3655,
+        "height": 3565,
         "width": 1860,
         "x": -750,
         "y": -1570

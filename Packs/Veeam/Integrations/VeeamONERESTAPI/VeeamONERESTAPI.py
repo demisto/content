@@ -16,7 +16,6 @@ import urllib3
 urllib3.disable_warnings()
 
 ''' CONSTANTS '''
-VEEAM_INCIDENT_FROM = 'VONE'
 MAX_ATTEMPTS = 3
 MAX_EVENTS_FOR_FETCH = 30
 GRANT_TYPE = 'password'
@@ -392,12 +391,8 @@ def process_error(error_count: int, error_message: str) -> tuple[dict, int]:
         incident = {
             'name': incident_name,
             'occurred': datetime.now().strftime(DATE_FORMAT),
-            'type': 'Incident Fetch Error',
-            'details': error_message,
-            'severity': ERROR_COUNT_MAP[error_count],
-            'CustomFields': {
-                'veeamsource': VEEAM_INCIDENT_FROM
-            }
+            'rawJSON': json.dumps({'incident_type': 'Incident Fetch Error', 'details': error_message}),
+            'severity': ERROR_COUNT_MAP[error_count]
         }
 
     return incident, error_count
@@ -429,32 +424,16 @@ def convert_triggered_alarms_to_incidents(
             break
 
         alarm_id = str(alarm.get('triggeredAlarmId'))
-        alarm_type = DESIRED_TYPES.get(alarm['predefinedAlarmId'])
 
         if alarm_id not in existed_ids:
             object_name = alarm.get('alarmAssignment', {}).get('objectName', NOT_APPLICABLE)
             incident_name = f"Veeam - {alarm['name']} ({object_name})"
+            alarm['incident_type'] = alarm['predefinedAlarmId']
             incident = {
                 'name': incident_name,
                 'occurred': alarm['triggeredTime'],
-                'type': alarm_type,
-                'details': alarm['description'],
                 'rawJSON': json.dumps(alarm),
-                'severity': SEVERITY_MAP.get(alarm['predefinedAlarmId']),
-                'CustomFields': {
-                    'eventid': alarm['triggeredAlarmId'],
-                    'veeamsource': VEEAM_INCIDENT_FROM,
-                    'alarmtemplateid': alarm['alarmTemplateId'],
-                    'predefinedalarmid': alarm['predefinedAlarmId'],
-                    'alarmtemplatename': alarm['name'],
-                    'comment': alarm['comment'],
-                    'assignedobject': tableToMarkdown('Alarm Created By', alarm['alarmAssignment']),
-                    'alarmstatus': alarm['status'],
-                    'numberoftriggeredalarms': alarm['repeatCount'],
-                    'numberofchildalarms': alarm['childAlarmsCount'],
-                    'remediation': tableToMarkdown('Remediation', alarm['remediation']),
-                    'triggeredtime': alarm['triggeredTime']
-                }
+                'severity': SEVERITY_MAP.get(alarm['predefinedAlarmId'])
             }
             new_ids.add(alarm_id)
             incidents.append(incident)

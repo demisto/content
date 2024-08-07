@@ -152,31 +152,13 @@ TRIGGERED_ALARMS_INCIDENTS = [
     {
         'name': 'Veeam - VM with no replica (Virtual Infrastructure)',
         'occurred': '2024-05-27T14:28:52.66Z',
-        'type': 'Virtual Machine Replica',
-        'details': 'All metrics are back to normal',
         'rawJSON': ('{"triggeredAlarmId": 4, "name": "VM with no replica", "alarmTemplateId": 330, '
                     '"predefinedAlarmId": 331, "triggeredTime": "2024-05-27T14:28:52.66Z", "status": "Resolved", '
                     '"description": "All metrics are back to normal", "comment": "", "repeatCount": 13, "alarmAssignment": '
                     '{"objectId": 0, "objectName": "Virtual Infrastructure", "objectType": "VirtualInfrastructure"}, '
-                    '"childAlarmsCount": 0, "remediation": []}'
+                    '"childAlarmsCount": 0, "remediation": [], "incident_type": 331}'
                     ),
-        'severity': IncidentSeverity.CRITICAL,
-        'CustomFields': {
-            'eventid': 4,
-            'veeamsource': 'VONE',
-            'alarmtemplateid': 330,
-            'predefinedalarmid': 331,
-            'alarmtemplatename': 'VM with no replica',
-            'comment': '',
-            'assignedobject': ('### Alarm Created By\n|objectId|objectName|'
-                               'objectType|\n|---|---|---|\n| 0 | Virtual Infrastructure | VirtualInfrastructure |\n'
-                               ),
-            'alarmstatus': 'Resolved',
-            'numberoftriggeredalarms': 13,
-            'numberofchildalarms': 0,
-            'remediation': '### Remediation\n**No entries.**\n',
-            'triggeredtime': '2024-05-27T14:28:52.66Z'
-        }
+        'severity': IncidentSeverity.CRITICAL
     }
 ]
 DEFAULT_FETCH = 20
@@ -254,12 +236,8 @@ def test_overwrite_last_fetch_time(last_fetch_time, alarm, expected_result):
 FETCH_ERROR_INCIDENT = {
     'name': "Veeam - Fetch incident error has occurred on ",
     'occurred': datetime.now().strftime(DATE_FORMAT),
-    'type': 'Incident Fetch Error',
-    'details': 'Sample error message',
-    'severity': IncidentSeverity.MEDIUM,
-    'CustomFields': {
-        'veeamsource': 'VONE'
-    }
+    'rawJSON': '{"incident_type": "Incident Fetch Error", "details": "Sample error message"}',
+    'severity': IncidentSeverity.MEDIUM
 }
 
 

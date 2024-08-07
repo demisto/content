@@ -50,7 +50,7 @@
                 "propagationLabels": [
                     "all"
                 ],
-                "query": "-category:job and -status:archived and -status:closed and (veeamsource:\"VONE\" or veeamsource:\"VBR\")",
+                "query": "-category:job and -status:archived and -status:closed and (sourceBrand:\"VBR REST API\" or sourceBrand:\"Veeam ONE REST API\")",
                 "shouldCommit": false,
                 "sizeInBytes": 0,
                 "toServerVersion": "",
@@ -109,7 +109,7 @@
                 "propagationLabels": [
                     "all"
                 ],
-                "query": "-category:job and -status:archived and -status:closed and (veeamsource:\"VONE\" or veeamsource:\"VBR\")",
+                "query": "-category:job and -status:archived and -status:closed and (sourceBrand:\"VBR REST API\" or sourceBrand:\"Veeam ONE REST API\")",
                 "shouldCommit": false,
                 "sizeInBytes": 0,
                 "toServerVersion": "",
@@ -170,7 +170,7 @@
                 "propagationLabels": [
                     "all"
                 ],
-                "query": "(veeamsource:\"VONE\" or veeamsource:\"VBR\")",
+                "query": "(sourceBrand:\"VBR REST API\" or sourceBrand:\"Veeam ONE REST API\")",
                 "shouldCommit": false,
                 "sizeInBytes": 0,
                 "toServerVersion": "",
@@ -231,7 +231,7 @@
                 "propagationLabels": [
                     "all"
                 ],
-                "query": "-category:job and -status:archived and -status:closed and veeamsource:\"VBR\"",
+                "query": "-category:job and -status:archived and -status:closed and sourceBrand:\"VBR REST API\"",
                 "shouldCommit": false,
                 "sizeInBytes": 0,
                 "toServerVersion": "",
@@ -343,7 +343,7 @@
                 "propagationLabels": [
                     "all"
                 ],
-                "query": "-status:closed -category:job and veeamsource:\"VBR\"",
+                "query": "-status:closed -category:job and sourceBrand:\"VBR REST API\"",
                 "shouldCommit": false,
                 "sizeInBytes": 0,
                 "toServerVersion": "",
@@ -675,7 +675,7 @@
                 "propagationLabels": [
                     "all"
                 ],
-                "query": "-category:job and -status:archived and -status:closed and veeamsource:\"VONE\"",
+                "query": "-category:job and -status:archived and -status:closed and sourceBrand:\"Veeam ONE REST API\"",
                 "shouldCommit": false,
                 "sizeInBytes": 0,
                 "toServerVersion": "",
@@ -787,7 +787,7 @@
                 "propagationLabels": [
                     "all"
                 ],
-                "query": "-status:closed -category:job and veeamsource:\"VONE\"",
+                "query": "-status:closed -category:job and sourceBrand:\"Veeam ONE REST API\"",
                 "shouldCommit": false,
                 "sizeInBytes": 0,
                 "toServerVersion": "",

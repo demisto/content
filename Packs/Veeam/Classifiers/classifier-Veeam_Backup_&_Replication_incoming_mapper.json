@@ -1,0 +1,775 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "Veeam Backup \u0026 Replication incoming mapper",
+    "mapping": {
+        "Configuration Backup": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Backup Repository ID": {
+                    "simple": "backupRepositoryId"
+                },
+                "Backup Scheduling": {
+                    "complex": {
+                        "filters": [],
+                        "root": "schedule",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "headers": {
+                                        "isContext": false
+                                    },
+                                    "is_auto_json_transform": {
+                                        "isContext": false
+                                    },
+                                    "json_transform_properties": {
+                                        "isContext": false
+                                    },
+                                    "title": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "Backup Scheduling"
+                                        }
+                                    }
+                                },
+                                "operator": "JsonToTable"
+                            }
+                        ]
+                    }
+                },
+                "Encryption": {
+                    "complex": {
+                        "filters": [],
+                        "root": "encryption",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "headers": {
+                                        "isContext": false
+                                    },
+                                    "is_auto_json_transform": {
+                                        "isContext": false
+                                    },
+                                    "json_transform_properties": {
+                                        "isContext": false
+                                    },
+                                    "title": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "Encryption"
+                                        }
+                                    }
+                                },
+                                "operator": "JsonToTable"
+                            }
+                        ]
+                    }
+                },
+                "Is Enabled": {
+                    "simple": "isEnabled"
+                },
+                "Last Successful Backup": {
+                    "complex": {
+                        "filters": [],
+                        "root": "lastSuccessfulBackup",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "headers": {
+                                        "isContext": false
+                                    },
+                                    "is_auto_json_transform": {
+                                        "isContext": false
+                                    },
+                                    "json_transform_properties": {
+                                        "isContext": false
+                                    },
+                                    "title": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "Last Successful Backup"
+                                        }
+                                    }
+                                },
+                                "operator": "JsonToTable"
+                            }
+                        ]
+                    }
+                },
+                "Notifications": {
+                    "complex": {
+                        "filters": [],
+                        "root": "notifications",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "headers": {
+                                        "isContext": false
+                                    },
+                                    "is_auto_json_transform": {
+                                        "isContext": false
+                                    },
+                                    "json_transform_properties": {
+                                        "isContext": false
+                                    },
+                                    "title": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "Notifications"
+                                        }
+                                    }
+                                },
+                                "operator": "JsonToTable"
+                            }
+                        ]
+                    }
+                },
+                "Number of Stored Restore Points": {
+                    "simple": "restorePointsToKeep"
+                },
+                "details": {
+                    "simple": "details"
+                }
+            }
+        },
+        "Incident Fetch Error": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "details": {
+                    "simple": "details"
+                }
+            }
+        },
+        "Malware Detection - Antivirus Scan": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Affected Machine": {
+                    "complex": {
+                        "filters": [],
+                        "root": "machine",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "headers": {
+                                        "isContext": false
+                                    },
+                                    "is_auto_json_transform": {
+                                        "isContext": false
+                                    },
+                                    "json_transform_properties": {
+                                        "isContext": false
+                                    },
+                                    "title": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "Machine Info"
+                                        }
+                                    }
+                                },
+                                "operator": "JsonToTable"
+                            }
+                        ]
+                    }
+                },
+                "Backup Object ID": {
+                    "complex": {
+                        "accessor": "backupObjectId",
+                        "filters": [],
+                        "root": "machine",
+                        "transformers": []
+                    }
+                },
+                "Event ID": {
+                    "simple": "id"
+                },
+                "Event Source Description": {
+                    "simple": "source_description"
+                },
+                "Event Type": {
+                    "simple": "type"
+                },
+                "Event Type Description": {
+                    "simple": "type_description"
+                },
+                "Malware Detection Method": {
+                    "simple": "engine"
+                },
+                "Malware Detection Time": {
+                    "simple": "detectionTimeUtc"
+                },
+                "Malware Status": {
+                    "simple": "severity"
+                },
+                "Source Category": {
+                    "simple": "source"
+                },
+                "Source Created By": {
+                    "simple": "createdBy"
+                },
+                "State": {
+                    "simple": "state"
+                },
+                "details": {
+                    "simple": "description"
+                }
+            }
+        },
+        "Malware Detection - Deleted Files": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Affected Machine": {
+                    "complex": {
+                        "filters": [],
+                        "root": "machine",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "headers": {
+                                        "isContext": false
+                                    },
+                                    "is_auto_json_transform": {
+                                        "isContext": false
+                                    },
+                                    "json_transform_properties": {
+                                        "isContext": false
+                                    },
+                                    "title": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "Machine Info"
+                                        }
+                                    }
+                                },
+                                "operator": "JsonToTable"
+                            }
+                        ]
+                    }
+                },
+                "Backup Object ID": {
+                    "complex": {
+                        "accessor": "backupObjectId",
+                        "filters": [],
+                        "root": "machine",
+                        "transformers": []
+                    }
+                },
+                "Event ID": {
+                    "simple": "id"
+                },
+                "Event Source Description": {
+                    "simple": "source_description"
+                },
+                "Event Type": {
+                    "simple": "type"
+                },
+                "Event Type Description": {
+                    "simple": "type_description"
+                },
+                "Malware Detection Method": {
+                    "simple": "engine"
+                },
+                "Malware Detection Time": {
+                    "simple": "detectionTimeUtc"
+                },
+                "Malware Status": {
+                    "simple": "severity"
+                },
+                "Source Category": {
+                    "simple": "source"
+                },
+                "Source Created By": {
+                    "simple": "createdBy"
+                },
+                "State": {
+                    "simple": "state"
+                },
+                "details": {
+                    "simple": "description"
+                }
+            }
+        },
+        "Malware Detection - Encrypted Files": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Affected Machine": {
+                    "complex": {
+                        "filters": [],
+                        "root": "machine",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "headers": {
+                                        "isContext": false
+                                    },
+                                    "is_auto_json_transform": {
+                                        "isContext": false
+                                    },
+                                    "json_transform_properties": {
+                                        "isContext": false
+                                    },
+                                    "title": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "Machine Info"
+                                        }
+                                    }
+                                },
+                                "operator": "JsonToTable"
+                            }
+                        ]
+                    }
+                },
+                "Backup Object ID": {
+                    "complex": {
+                        "accessor": "backupObjectId",
+                        "filters": [],
+                        "root": "machine",
+                        "transformers": []
+                    }
+                },
+                "Event ID": {
+                    "simple": "id"
+                },
+                "Event Source Description": {
+                    "simple": "source_description"
+                },
+                "Event Type": {
+                    "simple": "type"
+                },
+                "Event Type Description": {
+                    "simple": "type_description"
+                },
+                "Malware Detection Method": {
+                    "simple": "engine"
+                },
+                "Malware Detection Time": {
+                    "simple": "detectionTimeUtc"
+                },
+                "Malware Status": {
+                    "simple": "severity"
+                },
+                "Source Category": {
+                    "simple": "source"
+                },
+                "Source Created By": {
+                    "simple": "createdBy"
+                },
+                "State": {
+                    "simple": "state"
+                },
+                "details": {
+                    "simple": "description"
+                }
+            }
+        },
+        "Malware Detection - Ransomware Notes": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Affected Machine": {
+                    "complex": {
+                        "filters": [],
+                        "root": "machine",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "headers": {
+                                        "isContext": false
+                                    },
+                                    "is_auto_json_transform": {
+                                        "isContext": false
+                                    },
+                                    "json_transform_properties": {
+                                        "isContext": false
+                                    },
+                                    "title": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "Machine Info"
+                                        }
+                                    }
+                                },
+                                "operator": "JsonToTable"
+                            }
+                        ]
+                    }
+                },
+                "Backup Object ID": {
+                    "complex": {
+                        "accessor": "backupObjectId",
+                        "filters": [],
+                        "root": "machine",
+                        "transformers": []
+                    }
+                },
+                "Event ID": {
+                    "simple": "id"
+                },
+                "Event Source Description": {
+                    "simple": "source_description"
+                },
+                "Event Type": {
+                    "simple": "type"
+                },
+                "Event Type Description": {
+                    "simple": "type_description"
+                },
+                "Malware Detection Method": {
+                    "simple": "engine"
+                },
+                "Malware Detection Time": {
+                    "simple": "detectionTimeUtc"
+                },
+                "Malware Status": {
+                    "simple": "severity"
+                },
+                "Source Category": {
+                    "simple": "source"
+                },
+                "Source Created By": {
+                    "simple": "createdBy"
+                },
+                "State": {
+                    "simple": "state"
+                },
+                "details": {
+                    "simple": "description"
+                }
+            }
+        },
+        "Malware Detection - Renamed Files": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Affected Machine": {
+                    "complex": {
+                        "filters": [],
+                        "root": "machine",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "headers": {
+                                        "isContext": false
+                                    },
+                                    "is_auto_json_transform": {
+                                        "isContext": false
+                                    },
+                                    "json_transform_properties": {
+                                        "isContext": false
+                                    },
+                                    "title": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "Machine Info"
+                                        }
+                                    }
+                                },
+                                "operator": "JsonToTable"
+                            }
+                        ]
+                    }
+                },
+                "Backup Object ID": {
+                    "complex": {
+                        "accessor": "backupObjectId",
+                        "filters": [],
+                        "root": "machine",
+                        "transformers": []
+                    }
+                },
+                "Event ID": {
+                    "simple": "id"
+                },
+                "Event Source Description": {
+                    "simple": "source_description"
+                },
+                "Event Type": {
+                    "simple": "type"
+                },
+                "Event Type Description": {
+                    "simple": "type_description"
+                },
+                "Malware Detection Method": {
+                    "simple": "engine"
+                },
+                "Malware Detection Time": {
+                    "simple": "detectionTimeUtc"
+                },
+                "Malware Status": {
+                    "simple": "severity"
+                },
+                "Source Category": {
+                    "simple": "source"
+                },
+                "Source Created By": {
+                    "simple": "createdBy"
+                },
+                "State": {
+                    "simple": "state"
+                },
+                "details": {
+                    "simple": "description"
+                }
+            }
+        },
+        "Malware Detection - Suspicious Files and Extensions": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Affected Machine": {
+                    "complex": {
+                        "filters": [],
+                        "root": "machine",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "headers": {
+                                        "isContext": false
+                                    },
+                                    "is_auto_json_transform": {
+                                        "isContext": false
+                                    },
+                                    "json_transform_properties": {
+                                        "isContext": false
+                                    },
+                                    "title": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "Machine Info"
+                                        }
+                                    }
+                                },
+                                "operator": "JsonToTable"
+                            }
+                        ]
+                    }
+                },
+                "Backup Object ID": {
+                    "complex": {
+                        "accessor": "backupObjectId",
+                        "filters": [],
+                        "root": "machine",
+                        "transformers": []
+                    }
+                },
+                "Event ID": {
+                    "simple": "id"
+                },
+                "Event Source Description": {
+                    "simple": "source_description"
+                },
+                "Event Type": {
+                    "simple": "type"
+                },
+                "Event Type Description": {
+                    "simple": "type_description"
+                },
+                "Malware Detection Method": {
+                    "simple": "engine"
+                },
+                "Malware Detection Time": {
+                    "simple": "detectionTimeUtc"
+                },
+                "Malware Status": {
+                    "simple": "severity"
+                },
+                "Source Category": {
+                    "simple": "source"
+                },
+                "Source Created By": {
+                    "simple": "createdBy"
+                },
+                "State": {
+                    "simple": "state"
+                },
+                "details": {
+                    "simple": "description"
+                }
+            }
+        },
+        "Malware Detection - Unknown": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Affected Machine": {
+                    "complex": {
+                        "filters": [],
+                        "root": "machine",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "headers": {
+                                        "isContext": false
+                                    },
+                                    "is_auto_json_transform": {
+                                        "isContext": false
+                                    },
+                                    "json_transform_properties": {
+                                        "isContext": false
+                                    },
+                                    "title": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "Machine Info"
+                                        }
+                                    }
+                                },
+                                "operator": "JsonToTable"
+                            }
+                        ]
+                    }
+                },
+                "Backup Object ID": {
+                    "complex": {
+                        "accessor": "backupObjectId",
+                        "filters": [],
+                        "root": "machine",
+                        "transformers": []
+                    }
+                },
+                "Event ID": {
+                    "simple": "id"
+                },
+                "Event Source Description": {
+                    "simple": "source_description"
+                },
+                "Event Type": {
+                    "simple": "type"
+                },
+                "Event Type Description": {
+                    "simple": "type_description"
+                },
+                "Malware Detection Method": {
+                    "simple": "engine"
+                },
+                "Malware Detection Time": {
+                    "simple": "detectionTimeUtc"
+                },
+                "Malware Status": {
+                    "simple": "severity"
+                },
+                "Source Category": {
+                    "simple": "source"
+                },
+                "Source Created By": {
+                    "simple": "createdBy"
+                },
+                "State": {
+                    "simple": "state"
+                },
+                "details": {
+                    "simple": "description"
+                }
+            }
+        },
+        "Malware Detection - Yara Scan": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Affected Machine": {
+                    "complex": {
+                        "filters": [],
+                        "root": "machine",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "headers": {
+                                        "isContext": false
+                                    },
+                                    "is_auto_json_transform": {
+                                        "isContext": false
+                                    },
+                                    "json_transform_properties": {
+                                        "isContext": false
+                                    },
+                                    "title": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "Machine Info"
+                                        }
+                                    }
+                                },
+                                "operator": "JsonToTable"
+                            }
+                        ]
+                    }
+                },
+                "Backup Object ID": {
+                    "complex": {
+                        "accessor": "backupObjectId",
+                        "filters": [],
+                        "root": "machine",
+                        "transformers": []
+                    }
+                },
+                "Event ID": {
+                    "simple": "id"
+                },
+                "Event Source Description": {
+                    "simple": "source_description"
+                },
+                "Event Type": {
+                    "simple": "type"
+                },
+                "Event Type Description": {
+                    "simple": "type_description"
+                },
+                "Malware Detection Method": {
+                    "simple": "engine"
+                },
+                "Malware Detection Time": {
+                    "simple": "detectionTimeUtc"
+                },
+                "Malware Status": {
+                    "simple": "severity"
+                },
+                "Source Category": {
+                    "simple": "source"
+                },
+                "Source Created By": {
+                    "simple": "createdBy"
+                },
+                "State": {
+                    "simple": "state"
+                },
+                "details": {
+                    "simple": "description"
+                }
+            }
+        },
+        "Repository Capacity": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Backup Repository Capacity (GB)": {
+                    "simple": "capacityGB"
+                },
+                "Backup Repository Free Space (GB)": {
+                    "simple": "freeGB"
+                },
+                "Backup Repository ID": {
+                    "simple": "id"
+                },
+                "Backup Repository Name": {
+                    "simple": "name"
+                },
+                "Backup Repository Used Space (GB)": {
+                    "simple": "usedSpaceGB"
+                },
+                "Event Type": {
+                    "simple": "type"
+                },
+                "File Path": {
+                    "simple": "path"
+                },
+                "Source Hostname": {
+                    "simple": "hostName"
+                },
+                "Source Id": {
+                    "simple": "hostId"
+                },
+                "details": {
+                    "simple": "details"
+                }
+            }
+        }
+    },
+    "name": "Veeam Backup \u0026 Replication incoming mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

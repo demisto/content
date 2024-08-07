@@ -24,7 +24,7 @@
                 "description": "",
                 "fields": [
                     {
-                        "fieldId": "incident_numberofchildalarms",
+                        "fieldId": "incident_numberoffoundrelatedalerts",
                         "isVisible": true
                     },
                     {
@@ -145,7 +145,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "predefinedalarmid",
+                                "fieldId": "alertid",
                                 "height": 22,
                                 "id": "ebe1da40-39f6-11ef-93f6-39990e2712e6",
                                 "index": 7,
@@ -291,7 +291,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "numberofchildalarms",
+                                "fieldId": "numberoffoundrelatedalerts",
                                 "height": 53,
                                 "id": "0a6dfb60-39f7-11ef-93f6-39990e2712e6",
                                 "index": 2,
@@ -376,7 +376,7 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_numberofchildalarms",
+                        "fieldId": "incident_numberoffoundrelatedalerts",
                         "isVisible": true
                     }
                 ],
