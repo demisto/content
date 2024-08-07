@@ -2161,7 +2161,7 @@ script:
     execution: false
     name: prisma-cloud-access-key-disable
   - arguments:
-      - description: Access key ID
+      - description: Access key ID.
         name: access-key
         required: true
     deprecated: false
