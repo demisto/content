@@ -1,0 +1,147 @@
+{
+    "id": 1226,
+    "hostname": "WIN-97RELK05NHD",
+    "description": null,
+    "last_communication": "2021-03-11T11:05:45.000Z",
+    "reboot_required": false,
+    "addresses": [
+      "127.0.0.1",
+      "WIN-97RELK05NHD"
+    ],
+    "updates_count": 23,
+    "boot_at": "2021-03-10T13:45:28.000Z",
+    "category": "server",
+    "created_at": "2021-03-10T15:47:41.000Z",
+    "cve_announcements_count": 259,
+    "analyzed_at": "2021-03-10T15:47:46.000Z",
+    "prioritized_cve_announcements_count": 8,
+    "status": "server_vulnerable",
+    "cve_announcements": [
+      {
+        "cve_code": "CVE-2016-0098",
+        "score": 8.8,
+        "environmental_score": 6.3,
+        "epss": 0.62899,
+        "ignored": false,
+        "active": true,
+        "detected_at": "2021-03-10T16:12:01.000Z",
+        "fixed_at": null,
+        "published": "2016-03-09T10:59:08.747Z",
+        "prioritized": false
+      },
+      {
+        "cve_code": "CVE-2016-0101",
+        "score": 8.8,
+        "environmental_score": 6.3,
+        "epss": 0.62899,
+        "ignored": false,
+        "active": true,
+        "detected_at": "2021-03-10T16:12:01.000Z",
+        "fixed_at": null,
+        "published": "2016-03-09T10:59:11.623Z",
+        "prioritized": false
+      }
+    ],
+    "security_issues": [
+      {
+        "id": 120,
+        "sid": "Obsolete-Os",
+        "level": "level_critical",
+        "title": "Obsolete operating system",
+        "description": "All software...",
+        "editable": false,
+        "detected_at": "2024-05-20T14:59:45.952Z",
+        "status": "active"
+      }
+    ],
+    "os": {
+      "key": "windows_2012_r2",
+      "name": "Windows Server 2012 R2",
+      "arch": null,
+      "eol": "2023-10-10",
+      "short_name": "Windows 2012 R2",
+      "type": "Os::Windows"
+    },
+    "environment": {
+      "id": 32,
+      "name": "Low",
+      "confidentiality_requirement": "confidentiality_requirement_low",
+      "integrity_requirement": "integrity_requirement_low",
+      "availability_requirement": "availability_requirement_low",
+      "ceiling_cvss_v3": null
+    },
+    "groups": [
+      {
+        "id": 789,
+        "name": "0_Compliance",
+        "description": null,
+        "color": "#12AFCB"
+      }
+    ],
+    "compliance_repositories": [
+      {
+        "id": 20,
+        "name": "Mon_Catalogue",
+        "description": null,
+        "color": "#336699"
+      }
+    ],
+    "updates": [
+      {
+        "id": 432294,
+        "ignored": false,
+        "patchable": true,
+        "target": {
+          "vendor": null,
+          "product": "KB2966826",
+          "type": "Packages::Kb",
+          "version": "02b62bb0-33b2-4585-8945-0f0a711b909e"
+        },
+        "current": null,
+        "cve_announcements": [
+          "CVE-2014-4062"
+        ]
+      },
+      {
+        "id": 432295,
+        "ignored": false,
+        "patchable": true,
+        "target": {
+          "vendor": null,
+          "product": "KB5000848",
+          "type": "Packages::Kb",
+          "version": "c882e037-7a57-4c74-ba62-c2d33a967fd8"
+        },
+        "current": null,
+        "cve_announcements": [
+          "CVE-2021-1640",
+          "CVE-2021-26411",
+          "CVE-2021-27077",
+          "CVE-2021-24107",
+          "CVE-2021-26861",
+          "CVE-2021-26862",
+          "CVE-2021-26868",
+          "CVE-2021-26869",
+          "CVE-2021-26872",
+          "CVE-2021-26873",
+          "CVE-2021-26875",
+          "CVE-2021-26877",
+          "CVE-2021-26878",
+          "CVE-2021-26879",
+          "CVE-2021-26881",
+          "CVE-2021-26882",
+          "CVE-2021-26884",
+          "CVE-2021-26886",
+          "CVE-2021-26893",
+          "CVE-2021-26894",
+          "CVE-2021-26895",
+          "CVE-2021-26896",
+          "CVE-2021-26897",
+          "CVE-2021-26898",
+          "CVE-2021-26899",
+          "CVE-2021-26901",
+          "CVE-2021-27063"
+        ]
+      }
+    ]
+  }
