@@ -19,7 +19,7 @@ def load_mock_response(file_name: str) -> str:
         str: Mock file content.
     """
     file_path = os.path.join("test_data", file_name)
-    with open(file_path, mode="r", encoding="utf-8") as mock_file:
+    with open(file_path, encoding="utf-8") as mock_file:
         return json.loads(mock_file.read())
 
 
@@ -94,8 +94,8 @@ def test_search_domain_command(
     requests_mock.get(
         url=urljoin(
             BASE_URL,
-            "investigate/v2/search/exa%5Ba-z%5Dple.com?start=1711443798000"
-            + "&stop=1711443798000&includeCategory=False&limit=50",
+            "investigate/v2/search/exa%5Ba-z%5Dple.com?start=1711450998000"
+            + "&stop=1711450998000&includeCategory=False&limit=50",
         ),
         json=load_mock_response("search_domain.json"),
     )
@@ -138,7 +138,6 @@ def test_list_domain_co_occurens_command(
         BASE_URL,
         "investigate/v2/recommendations/name/test.com.json",
     )
-    print(url)
     requests_mock.get(url=url, json=json_response, status_code=HTTPStatus.OK)
     result = module.list_domain_co_occurences_command(
         mock_client,
@@ -222,33 +221,29 @@ def test_get_domain_security_score_command(
     assert result.outputs_prefix == "Domain"
     assert result.outputs_key_field == "Name"
     assert isinstance(result.outputs, dict)
-    assert set(
-        [
-            "Name",
-            "Security",
-            "tld_geodiversity",
-            "GeodiversityNormalized",
-            "Geodiversity",
-        ]
-    ).issubset(result.outputs)
+    assert {
+        "Name",
+        "Security",
+        "tld_geodiversity",
+        "GeodiversityNormalized",
+        "Geodiversity",
+    }.issubset(result.outputs)
     assert isinstance(result.outputs["Security"], dict)
-    assert set(
-        [
-            "DGA",
-            "Perplexity",
-            "Entropy",
-            "SecureRank",
-            "PageRank",
-            "ASNScore",
-            "PrefixScore",
-            "RipScore",
-            "Popularity",
-            "GeoScore",
-            "KolmoorovSmirnov",
-            "AttackName",
-            "ThreatType",
-        ]
-    ).issubset(result.outputs["Security"])
+    assert {
+        "DGA",
+        "Perplexity",
+        "Entropy",
+        "SecureRank",
+        "PageRank",
+        "ASNScore",
+        "PrefixScore",
+        "RipScore",
+        "Popularity",
+        "GeoScore",
+        "KolmoorovSmirnov",
+        "AttackName",
+        "ThreatType",
+    }.issubset(result.outputs["Security"])
 
 
 def test_get_domain_risk_score_command(
@@ -284,23 +279,19 @@ def test_get_domain_risk_score_command(
     assert result.outputs_key_field == "name"
     assert isinstance(result.outputs, dict)
     assert "Indicator" in result.outputs
-    assert set(
-        [
-            "name",
-            "risk_score",
-            "Indicator",
-        ]
-    ).issubset(result.outputs)
+    assert {
+        "name",
+        "risk_score",
+        "Indicator",
+    }.issubset(result.outputs)
     assert isinstance(result.outputs["Indicator"], list)
     assert len(result.outputs["Indicator"]) == 1
-    assert set(
-        [
-            "score",
-            "normalized_score",
-            "indicator_id",
-            "indicator",
-        ]
-    ).issubset(result.outputs["Indicator"][0])
+    assert {
+        "score",
+        "normalized_score",
+        "indicator_id",
+        "indicator",
+    }.issubset(result.outputs["Indicator"][0])
     assert result.indicator
 
 
@@ -339,22 +330,20 @@ def test_list_resource_record_command(
     assert result.outputs_prefix == "Umbrella.ResourceRecord"
     assert result.outputs_key_field == "rr"
     assert isinstance(result.outputs, list)
-    assert set(
-        [
-            "value",
-            "last_seen_iso",
-            "first_seen_iso",
-            "content_categories",
-            "security_categories",
-            "type",
-            "name",
-            "rr",
-            "last_seen",
-            "first_seen",
-            "max_ttl",
-            "min_ttl",
-        ]
-    ).issubset(result.outputs[0])
+    assert {
+        "value",
+        "last_seen_iso",
+        "first_seen_iso",
+        "content_categories",
+        "security_categories",
+        "type",
+        "name",
+        "rr",
+        "last_seen",
+        "first_seen",
+        "max_ttl",
+        "min_ttl",
+    }.issubset(result.outputs[0])
 
 
 def test_list_sub_domain_command(
@@ -386,21 +375,17 @@ def test_list_sub_domain_command(
     assert result.outputs_prefix == "Umbrella.Domain"
     assert result.outputs_key_field == "name"
     assert isinstance(result.outputs, dict)
-    assert set(
-        [
-            "name",
-            "SubDomain",
-        ]
-    ).issubset(result.outputs)
+    assert {
+        "name",
+        "SubDomain",
+    }.issubset(result.outputs)
     assert isinstance(result.outputs["SubDomain"], list)
     assert len(result.outputs["SubDomain"]) == 2
-    assert set(
-        [
-            "name",
-            "first_seen",
-            "security_categories",
-        ]
-    ).issubset(result.outputs["SubDomain"][0])
+    assert {
+        "name",
+        "first_seen",
+        "security_categories",
+    }.issubset(result.outputs["SubDomain"][0])
 
 
 def test_get_ip_bgp_command(
@@ -435,16 +420,14 @@ def test_get_ip_bgp_command(
     assert result.outputs_prefix == "Umbrella.BGPInformation"
     assert result.outputs_key_field == "cidr"
     assert isinstance(result.outputs, list)
-    assert set(
-        [
-            "ip",
-            "creation_date",
-            "ir",
-            "description",
-            "asn",
-            "cidr",
-        ]
-    ).issubset(result.outputs[0])
+    assert {
+        "ip",
+        "creation_date",
+        "ir",
+        "description",
+        "asn",
+        "cidr",
+    }.issubset(result.outputs[0])
 
 
 def test_get_asn_bgp_command(
@@ -478,13 +461,11 @@ def test_get_asn_bgp_command(
     assert result.outputs_prefix == "Umbrella.BGPInformation"
     assert result.outputs_key_field == "cidr"
     assert isinstance(result.outputs, list)
-    assert set(
-        [
-            "asn",
-            "Geo",
-            "cidr",
-        ]
-    ).issubset(result.outputs[0])
+    assert {
+        "asn",
+        "Geo",
+        "cidr",
+    }.issubset(result.outputs[0])
 
 
 def test_get_top_seen_domain_command(
@@ -537,7 +518,7 @@ def test_get_domain_volume_command(
     json_response = load_mock_response("domain_volume.json")
     url = urljoin(
         BASE_URL,
-        "investigate/v2/domains/volume/test.com?start=1711443798000&stop=1711443798000",
+        "investigate/v2/domains/volume/test.com?start=1711450998000&stop=1711450998000",
     )
     requests_mock.get(url=url, json=json_response, status_code=HTTPStatus.OK)
     result = module.get_domain_volume_command(
@@ -547,28 +528,22 @@ def test_get_domain_volume_command(
     assert result.outputs_prefix == "Umbrella.QueryVolume"
     assert result.outputs_key_field == "name"
     assert isinstance(result.outputs, dict)
-    assert set(
-        [
-            "name",
-            "Domain",
-            "Data",
-            "QueriesInfo",
-        ]
-    ).issubset(result.outputs)
-    assert set(
-        [
-            "StartDate",
-            "StopDate",
-        ]
-    ).issubset(result.outputs["Data"])
+    assert {
+        "name",
+        "Domain",
+        "Data",
+        "QueriesInfo",
+    }.issubset(result.outputs)
+    assert {
+        "StartDate",
+        "StopDate",
+    }.issubset(result.outputs["Data"])
     assert isinstance(result.outputs["QueriesInfo"], list)
     assert len(result.outputs["QueriesInfo"]) == 4
-    assert set(
-        [
-            "QueryHour",
-            "Queries",
-        ]
-    ).issubset(result.outputs["QueriesInfo"][0])
+    assert {
+        "QueryHour",
+        "Queries",
+    }.issubset(result.outputs["QueriesInfo"][0])
 
 
 def test_list_timeline(
@@ -605,22 +580,18 @@ def test_list_timeline(
     assert result.outputs_prefix == "Umbrella.Timeline"
     assert result.outputs_key_field == "Domain"
     assert isinstance(result.outputs, dict)
-    assert set(
-        [
-            "Domain",
-            "Data",
-        ]
-    ).issubset(result.outputs)
+    assert {
+        "Domain",
+        "Data",
+    }.issubset(result.outputs)
     assert isinstance(result.outputs["Data"], list)
     assert len(result.outputs["Data"]) == 2
-    assert set(
-        [
-            "MalwareCategories",
-            "Attacks",
-            "ThreatTypes",
-            "Timestamp",
-        ]
-    ).issubset(result.outputs["Data"][0])
+    assert {
+        "MalwareCategories",
+        "Attacks",
+        "ThreatTypes",
+        "Timestamp",
+    }.issubset(result.outputs["Data"][0])
 
 
 def test_get_domain_who_is_command(
@@ -664,26 +635,22 @@ def test_get_domain_who_is_command(
     assert result.outputs_key_field == "name"
     assert result.indicator
     assert isinstance(result.outputs, dict)
-    assert set(
-        [
-            "name",
-            "Domain",
-            "Data",
-        ]
-    ).issubset(result.outputs)
-    assert set(
-        [
-            "RegistrarName",
-            "LastRetrieved",
-            "Created",
-            "Updated",
-            "Expires",
-            "IANAID",
-            "Emails",
-            "Nameservers",
-            "LastObserved",
-        ]
-    ).issubset(result.outputs["Data"])
+    assert {
+        "name",
+        "Domain",
+        "Data",
+    }.issubset(result.outputs)
+    assert {
+        "RegistrarName",
+        "LastRetrieved",
+        "Created",
+        "Updated",
+        "Expires",
+        "IANAID",
+        "Emails",
+        "Nameservers",
+        "LastObserved",
+    }.issubset(result.outputs["Data"])
 
 
 def test_get_domain_who_is_history_command(
@@ -748,12 +715,10 @@ def test_get_nameserver_who_is_command(
     assert result.outputs_key_field == "name"
     assert isinstance(result.outputs, list)
     assert len(result.outputs) == 1
-    assert set(
-        [
-            "name",
-            "Domain",
-        ]
-    ).issubset(result.outputs[0])
+    assert {
+        "name",
+        "Domain",
+    }.issubset(result.outputs[0])
 
 
 def test_get_email_who_is_command(
@@ -788,12 +753,10 @@ def test_get_email_who_is_command(
     assert result.outputs_prefix == "Umbrella.WHOIS.Email"
     assert result.outputs_key_field == "name"
     assert isinstance(result.outputs, dict)
-    assert set(
-        [
-            "name",
-            "Domain",
-        ]
-    ).issubset(result.outputs)
+    assert {
+        "name",
+        "Domain",
+    }.issubset(result.outputs)
 
 
 def test_get_regex_who_is_command(
@@ -816,7 +779,7 @@ def test_get_regex_who_is_command(
     url = urljoin(
         BASE_URL,
         "investigate/v2/whois/search/Domain/exa%5Ba-z%5Dple.com"
-        + "?start=1711443798000&stop=1711443798000&limit=50&offset=0",
+        + "?start=1711450998000&stop=1711450998000&limit=50&offset=0",
     )
     requests_mock.get(url=url, json=json_response, status_code=HTTPStatus.OK)
     result = module.get_regex_who_is_command(

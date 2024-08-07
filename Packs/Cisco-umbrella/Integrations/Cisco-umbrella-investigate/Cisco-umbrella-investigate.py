@@ -3,8 +3,8 @@ from CommonServerPython import *  # noqa: F401
 
 """ IMPORTS """
 
-from typing import Any, Callable
-from requests import Response
+from typing import Any
+from collections.abc import Callable
 import http
 from functools import wraps
 import time
@@ -13,8 +13,10 @@ import json
 
 INTEGRATION_COMMAND_PREFIX = "umbrella"
 INTEGRATION_PREFIX = "Umbrella"
+DEFAULT_PAGE = 0
 DEFAULT_OFFSET = 0
 DEFAULT_LIMIT = 50
+DEFAULT_TIME = "now"
 HOUR_IN_MS = 3600000
 INDICATOR_VENDOR = "Cisco Umbrella Investigate"
 SORT_BY_MAPPER = {
@@ -30,8 +32,6 @@ SUSPICIOUS_THRESHOLD = DEFAULT_SUSPICIOUS_THRESHOLD
 MALICIOUS_THRESHOLD = DEFAULT_MALICIOUS_THRESHOLD
 MAX_THRESHOLD_VALUE = 100
 MIN_THRESHOLD_VALUE = -100
-DEFAULT_PAGE = "0"
-DEFAULT_LIMIT = "50"
 
 
 def validate_authentication(func: Callable) -> Callable:
@@ -644,16 +644,16 @@ class Client(BaseClient):
 
 
 def get_pagination_args(
-    page: str,
-    limit: str,
+    page: str | int,
+    limit: str | int,
     page_size: str | None,
 ) -> tuple[int, int]:
     """
     Get XSOAR pagination in Cisco Umbrella Investigate API format.
 
     Args:
-        page (str): Page.
-        limit (str): Limit.
+        page (str | int): Page.
+        limit (str | int): Limit.
         page_size (str | None): Page Size.
 
     Returns:
@@ -1495,7 +1495,7 @@ def get_regex_who_is_command(
         regex=regex,
         search_field=args["search_field"],
         start=get_unix_time(args["start"]),
-        stop=get_unix_time(args.get("stop")),
+        stop=get_unix_time(args.get("stop") or DEFAULT_TIME),
         sort=args.get("sort"),
         limit=limit,
         offset=offset,
@@ -1677,7 +1677,7 @@ def list_timeline_command(
 def domain_command(
     client: Client,
     args: dict[str, Any],
-) -> CommandResults:
+) -> list[CommandResults]:
     """
     Get the WHOIS information for the specified domains.
     You can search by multiple email addresses or multiple nameservers.
@@ -1792,14 +1792,13 @@ def test_module(client: Client, api_key: str, api_secret: str) -> str:
         return "ok"
     except DemistoException as err:
         demisto.debug(str(err))
-        return f"Error: {get_request_error_message(err.res)}"
+        return f"Error: {get_request_error_message(err.res.json())}"
 
 
 # HELPER COMMANDS
 
 
-def get_request_error_message(res: Response) -> str:
-    error_data = res.json()
+def get_request_error_message(error_data: dict[str, Any]) -> str:
     return (
         error_data.get("errorMessage") or error_data.get("message") or str(json.dumps(error_data))
     )
@@ -1963,7 +1962,7 @@ def main() -> None:
                 execution_metrics.general_error += 1
             elif err.res.status_code == http.HTTPStatus.TOO_MANY_REQUESTS:
                 execution_metrics.quota_error += 1
-            cr = CommandResults(readable_output=get_request_error_message(err.res))
+            cr = CommandResults(readable_output=get_request_error_message(err.res.json()))
             return_results(append_metrics(execution_metrics, [cr]))
         else:
             return_results(CommandResults(readable_output=str(err)))
