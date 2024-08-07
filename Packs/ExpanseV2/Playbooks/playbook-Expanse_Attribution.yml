@@ -1,7 +1,9 @@
 id: Expanse Attribution
 version: -1
 name: Expanse Attribution
+deprecated: true
 description: |
+  Deprecated. No available replacement.
   Subplaybook for Handle Expanse Incident playbooks. Given an Expanse Issue IP, Issue Provider, Issue Domain,
   Issue Port and Issue Protocol hunts for internal activity related to the detected service.
   The playbook looks for logs on Splunk, Cortex Data Lake, Panorama, and ServiceNow CMDB.

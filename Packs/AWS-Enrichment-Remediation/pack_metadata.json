@@ -33,12 +33,17 @@
         "AWS-S3": {
             "mandatory": true,
             "display_name": "AWS - S3"
+        },
+        "AWS_SystemManager": {
+            "mandatory": true,
+            "display_name": "AWS Systems Manager"
         }
     },
     "displayedImages": [
         "AWS-IAM",
         "CommonScripts",
         "AWS-EC2",
-        "AWS-S3"
+        "AWS-S3",
+        "AWS_SystemManager"
     ]
 }

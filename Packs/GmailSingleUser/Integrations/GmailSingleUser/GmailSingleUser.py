@@ -40,6 +40,7 @@ FETCH_TIME = params.get('fetch_time', '1 days')
 MAX_FETCH = int(params.get('fetch_limit') or 50)
 AUTH_CODE = params.get('auth_code_creds', {}).get('password') or params.get('code')
 AUTH_CODE_UNQUOTE_PREFIX = 'code='
+LEGACY_NAME = argToBoolean(params.get('legacy_name', False))
 
 OOB_CLIENT_ID = "391797357217-pa6jda1554dbmlt3hbji2bivphl0j616.apps.googleusercontent.com"  # guardrails-disable-line
 CLIENT_ID = params.get('credentials', {}).get('identifier') or params.get('client_id') or OOB_CLIENT_ID
@@ -307,22 +308,25 @@ class Client:
                     body += text
 
             else:
-                if part['body'].get('attachmentId') is not None and part.get('headers'):
-                    identifier_id = ""
-                    for header in part['headers']:
+                if part['body'].get('attachmentId') is not None:
+                    content_id = ""
+                    is_inline = False
+                    attachmentName = part['filename']
+                    for header in part.get('headers', []):
                         if header.get('name') == 'Content-ID':
-                            identifier_id = header.get('value')
-                            if not identifier_id or identifier_id == "None":
-                                identifier_id = part['body'].get('attachmentId')
-                            identifier_id = identifier_id.strip("<>")
+                            content_id = header.get('value').strip("<>")
+                        if header.get('name') == 'Content-Disposition':
+                            is_inline = 'inline' in header.get('value').strip('<>')
+                    if is_inline and content_id and content_id != "None" and not LEGACY_NAME:
+                        attachmentName = f"{content_id}-attachmentName-{attachmentName}"
                     attachments.append({
                         'ID': part['body']['attachmentId'],
-                        'Name': f"{identifier_id}-imageName:{part['filename']}",
+                        'Name': attachmentName,
                     })
 
         return body, html, attachments
 
-    def get_attachments(self, user_id, _id, identifiers_filter=""):
+    def get_attachments(self, user_id, _id):
         mail_args = {
             'userId': user_id,
             'id': _id,
@@ -340,14 +344,10 @@ class Client:
         }
         files = []
         for attachment in result.get('Attachments', []):
-            identifiers_filter_array = argToList(identifiers_filter)
             command_args['id'] = attachment['ID']
             result = execute_gmail_action(service, "get_attachments", command_args)
-            if (not identifiers_filter_array
-                or ('-imageName:' in attachment['Name']
-                    and attachment['Name'].split('-imageName:')[0] in identifiers_filter_array)):
-                file_data = base64.urlsafe_b64decode(result['data'].encode('ascii'))
-                files.append((attachment['Name'], file_data))
+            file_data = base64.urlsafe_b64decode(result['data'].encode('ascii'))
+            files.append((attachment['Name'], file_data))
         return files
 
     @staticmethod
@@ -1127,7 +1127,7 @@ def reply_mail_command(client: Client):
     args = demisto.args()
     email_from = args.get('from')
     send_as = args.get('send_as')
-    in_reply_to = args.get('in_reply_to')
+    in_reply_to = args.get('inReplyTo')
     references = argToList(args.get('references'))
 
     return mail_command(client, args, email_from, send_as, 'Re: ', in_reply_to, references)
@@ -1136,9 +1136,8 @@ def reply_mail_command(client: Client):
 def get_attachments_command(client: Client):
     args = demisto.args()
     _id = args.get('message-id')
-    content_ids = args.get('identifiers-filter', "")
 
-    attachments = client.get_attachments('me', _id, content_ids)
+    attachments = client.get_attachments('me', _id)
 
     return [fileResult(name, data) for name, data in attachments]
 

@@ -190,7 +190,7 @@ def blacklist_url(url):
     cmd_url = "/security/advanced/blacklistUrls?action=ADD_TO_LIST"
     data = {"blacklistUrls": urls_to_blacklist}
     json_data = json.dumps(data)
-    http_request("POST", cmd_url, json_data, DEFAULT_HEADERS)
+    http_request("POST", cmd_url, json_data, DEFAULT_HEADERS, resp_type='response')
     list_of_urls = ""
     for url in urls_to_blacklist:
         list_of_urls += "- " + url + "\n"
@@ -213,7 +213,7 @@ def unblacklist_url(url):
 
     data = {"blacklistUrls": urls_to_unblacklist}
     json_data = json.dumps(data)
-    http_request("POST", cmd_url, json_data, DEFAULT_HEADERS)
+    http_request("POST", cmd_url, json_data, DEFAULT_HEADERS, resp_type='response')
     list_of_urls = ""
     for url in urls_to_unblacklist:
         list_of_urls += "- " + url + "\n"
@@ -227,7 +227,7 @@ def blacklist_ip(ip):
     cmd_url = "/security/advanced/blacklistUrls?action=ADD_TO_LIST"
     data = {"blacklistUrls": ips_to_blacklist}
     json_data = json.dumps(data)
-    http_request("POST", cmd_url, json_data, DEFAULT_HEADERS)
+    http_request("POST", cmd_url, json_data, DEFAULT_HEADERS, resp_type='response')
     list_of_ips = ""
     for ip in ips_to_blacklist:
         list_of_ips += "- " + ip + "\n"
@@ -251,7 +251,7 @@ def unblacklist_ip(ip):
         raise Exception("Given IP addresses are not blacklisted.")
     data = {"blacklistUrls": ips_to_unblacklist}
     json_data = json.dumps(data)
-    http_request("POST", cmd_url, json_data, DEFAULT_HEADERS)
+    http_request("POST", cmd_url, json_data, DEFAULT_HEADERS, resp_type='response')
     list_of_ips = ""
     for ip in ips_to_unblacklist:
         list_of_ips += "- " + ip + "\n"
@@ -1308,8 +1308,8 @@ def main():  # pragma: no cover
     elif command == "zscaler-logout":
         return_results(logout_command())
     else:
-        login()
         try:
+            login()
             if command == "test-module":
                 return_results(test_module())
             elif command == "url":
@@ -1378,7 +1378,6 @@ def main():  # pragma: no cover
                 return_results(delete_ip_destination_groups(demisto.args()))
         except Exception as e:
             return_error(f"Failed to execute {command} command. Error: {str(e)}")
-            raise
         finally:
             try:
                 # activate changes only when required
@@ -1390,7 +1389,7 @@ def main():  # pragma: no cover
                 if demisto.params().get("auto_logout"):
                     logout()
             except Exception as err:
-                demisto.info("Zscaler error: " + str(err))
+                return_error("Zscaler error: " + str(err))
 
 
 # python2 uses __builtin__ python3 uses builtins

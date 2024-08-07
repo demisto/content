@@ -336,8 +336,8 @@ HEADERS_PACKAGE = [
     ('', {}),
     ('header=value', {'header': 'value'}),
     ('header1=value1, header2=value2', {'header1': 'value1', 'header2': 'value2'}),
-    # Can not register the same header more then once.
-    ('header3=value3, header3=other_value', {'header3': 'value3'})
+    # Can register the same header more then once.
+    ('header3=value3, header3=other_value', {'header3': 'other_value'})
 ]
 
 
@@ -581,7 +581,7 @@ def test_parse_incident_from_item(mocker, mime_content, expected_data, expected_
     assert incident["rawJSON"]
     raw_json = json.loads(incident["rawJSON"])
     assert raw_json['attachments'][0]['attachmentSHA256'] == expected_attachmentSHA256
-    mock_file_result.assert_called_once_with("None-imageName:demisto_untitled_attachment.eml", expected_data)
+    mock_file_result.assert_called_once_with("demisto_untitled_attachment.eml", expected_data)
 
 
 def test_parse_incident_from_item_with_attachments():
@@ -675,7 +675,7 @@ def test_parse_incident_from_item_with_eml_attachment_header_integrity(mocker):
     mock_file_result = mocker.patch('EWSO365.fileResult')
     parse_incident_from_item(message)
     # assert the fileResult is created with the expected results
-    mock_file_result.assert_called_once_with("None-imageName:demisto_untitled_attachment.eml", expected_data)
+    mock_file_result.assert_called_once_with("demisto_untitled_attachment.eml", expected_data)
 
 
 @pytest.mark.parametrize('params, expected_result', [
@@ -922,7 +922,7 @@ def test_handle_attached_email_with_incorrect_id(mocker, headers, expected_forma
     Then:
         - case 1: verify the header in the correct format
         - case 2: correct the invalid Message-ID header value
-        - case 3: return the header value without without further handling
+        - case 3: return the header value without further handling
 
     """
     mime_content = b'\xc400'
@@ -951,18 +951,52 @@ def test_handle_incorrect_message_id(message_id, expected_message_id_output):
     Then:
         - case 1: verify the header in the correct format
         - case 2: correct the invalid Message-ID header value
-        - case 3: return the header value without without further handling
+        - case 3: return the header value without further handling
 
     """
     assert handle_incorrect_message_id(message_id) == expected_message_id_output
 
 
-@pytest.mark.parametrize("attachment_name, content_id, attachment_id, expected_result", [
-    pytest.param('image1.png', "", '123', "123-imageName:image1.png"),
-    pytest.param('image1.png', '123', '456', "123-imageName:image1.png"),
-    pytest.param('image1.png', None, '456', "456-imageName:image1.png"),
+@pytest.mark.parametrize("attachment_name, content_id, is_inline, expected_result", [
+    pytest.param('image1.png', "", False, "image1.png"),
+    pytest.param('image1.png', '123', True, "123-attachmentName-image1.png"),
+    pytest.param('image1.png', None, False, "image1.png"),
 
 ])
-def test_get_attachment_name(attachment_name, content_id, attachment_id, expected_result):
+def test_get_attachment_name(attachment_name, content_id, is_inline, expected_result):
+    """
+    Given:
+        - case 1: attachment is not inline.
+        - case 1: attachment is inline.
+        - case 3: attachment is not inline.
+    When:
+        - get_attachment_name is called with LEGACY_NAME=FALSE
+    Then:
+        Only case 2 should add an ID to the attachment name.
+
+    """
     assert get_attachment_name(attachment_name=attachment_name, content_id=content_id,
-                               attachment_id=attachment_id) == expected_result
+                               is_inline=is_inline) == expected_result
+
+
+@pytest.mark.parametrize("attachment_name, content_id, is_inline, expected_result", [
+    pytest.param('image1.png', "", False, "image1.png"),
+    pytest.param('image1.png', '123', True, "image1.png"),
+    pytest.param('image1.png', None, False, "image1.png"),
+
+])
+def test_get_attachment_name_legacy_name(monkeypatch, attachment_name, content_id, is_inline, expected_result):
+    """
+    Given:
+        - case 1: attachment is not inline.
+        - case 1: attachment is inline.
+        - case 3: attachment is not inline.
+    When:
+        - get_attachment_name is called with LEGACY_NAME=FALSE
+    Then:
+        All cases should not add an ID to the attachment name.
+
+    """
+    monkeypatch.setattr('EWSO365.LEGACY_NAME', True)
+    assert get_attachment_name(attachment_name=attachment_name, content_id=content_id,
+                               is_inline=is_inline) == expected_result
