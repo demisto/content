@@ -2939,7 +2939,7 @@ Get permission list. You must provide either "query" or "next_token".
 
 | **Argument Name** | **Description**                                              | **Required** |
 |-------------------|--------------------------------------------------------------| --- |
-| access-key              | Access key id                                                | Required | 
+| access-key              | Access key ID.                                                | Required | 
 
 #### Command example
 ```!prisma-cloud-access-key-disable access-key=id```
