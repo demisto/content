@@ -1,0 +1,15 @@
+{
+    "demisto/office-utils": {
+        "content_items": [
+            "Packs/CommonScripts/Scripts/ConvertFile/ConvertFile.yml",
+            "Packs/CommonScripts/Scripts/ExtractHyperlinksFromOfficeFiles/ExtractHyperlinksFromOfficeFiles.yml",
+            "Packs/CommonScripts/Scripts/ExtractIndicatorsFromWordFile/ExtractIndicatorsFromWordFile.yml",
+            "Packs/CommonScripts/Scripts/ParseWordDoc/ParseWordDoc.yml"
+        ],
+        "coverage": "0-100",
+        "pr_labels": [
+            "auto-update-docker"
+        ],
+        "target_tag": "2.0.0.107338"
+    }
+}
