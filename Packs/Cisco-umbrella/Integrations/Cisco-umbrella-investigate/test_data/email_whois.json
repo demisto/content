@@ -1,0 +1,19 @@
+{
+    "test@test.com": {
+        "domains": [
+            {
+                "current": false,
+                "domain": "example.com"
+            },
+            {
+                "current": false,
+                "domain": "example.com"
+            }
+        ],
+        "limit": 500,
+        "moreDataAvailable": true,
+        "offset": 0,
+        "sortField": "updated",
+        "totalResults": 500
+    }
+}
