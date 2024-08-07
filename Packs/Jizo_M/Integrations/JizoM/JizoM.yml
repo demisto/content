@@ -164,7 +164,7 @@ script:
     - contextPath: JizoM.Peers.alerts_usecase.total
       description: The total number of alerts.
       type: Number
-    description: Get list of IP addresses connected to a specific one.
+    description: Get the list of IP addresses connected to a specific one.
   - name: jizo-m-query-records-get
     arguments:
     - name: ip_src

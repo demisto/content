@@ -174,7 +174,7 @@ class Client(BaseClient):
                     alert_type="alert flow",
                     severity=severity,
                     category=category,
-                    signature= alert_data[next_index_to_fetch + i].get("signature", ""),
+                    signature=alert_data[next_index_to_fetch + i].get("signature", ""),
                     IP_source=alert_data[next_index_to_fetch + i].get("ip_src", ""),
                     IP_destination=alert_data[next_index_to_fetch + i].get("ip_dest", ""),
                     date=formatting_date(alert_data[next_index_to_fetch]["date"]["date"]),
@@ -359,7 +359,7 @@ def get_peers_command(client: Client, args: dict[str, Any]) -> List[CommandResul
                 outputs_key_field='flow_id',
                 outputs=result[alert_type],
             ))
-        
+
     return command_results
 
 
@@ -371,7 +371,7 @@ def get_query_records_command(client: Client, args: dict[str, Any]) -> List[Comm
     command_results = []
 
     headers = {'alerts_flows': ['Probe name', 'IP source', 'IP destination', 'Alert category', 'Severity'],
-               'alerts_files': ['Probe name', 'Rule name', 'Rule type', 'File name','Message'],
+               'alerts_files': ['Probe name', 'Rule name', 'Rule type', 'File name', 'Message'],
                'alerts_usecase': ['Probe name', 'IP source', 'IP destination']}
     for alert_type in result:
         alert_data = result[alert_type]["data"]
