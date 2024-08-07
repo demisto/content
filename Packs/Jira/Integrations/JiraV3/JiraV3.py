@@ -1496,6 +1496,26 @@ def create_fields_dict_from_dotted_string(issue_fields: Dict[str, Any], dotted_s
     return nested_dict
 
 
+def parse_multiselect_custom_field(value: Any) -> Optional[List[Dict[str, str]]]:
+    """
+    This function will parse the value of a multiselect custom field, which is a list of dictionaries, and will try to
+    parse it as a json object, if it fails, it will insert the value as is. This is used for multiselect fields with only
+    one value.
+    e.g.
+    value = '[{"value": "Val1"}]' -> [{"value": "Val1"}]
+    Args:
+        value (Any): The value to parse
+    Returns:
+        Optional[List[Dict[str, str]]]: The parsed value, if it is a list of dictionaries, otherwise None.
+    """
+    try:
+        json_loads_res = json.loads(value)
+        if isinstance(json_loads_res, list) and len(json_loads_res) == 1 and 'value' in json_loads_res[0]:
+            return json_loads_res
+    except Exception:
+        return None
+
+
 def create_issue_fields(client: JiraBaseClient, issue_args: Dict[str, str],
                         issue_fields_mapper: Dict[str, str]) -> Dict[str, Any]:
     """This will create the issue fields object that will be sent to the API in order to create/edit a Jira issue.
@@ -1536,6 +1556,8 @@ def create_issue_fields(client: JiraBaseClient, issue_args: Dict[str, str],
             # This is used to deal with the case when the user creates a custom incident field, using
             # the custom fields of Jira.
             dotted_string = f'fields.{issue_arg}'
+        if parsed_json := parse_multiselect_custom_field(value):
+            parsed_value = parsed_json
         issue_fields |= create_fields_dict_from_dotted_string(
             issue_fields=issue_fields, dotted_string=dotted_string, value=parsed_value or value)
     return issue_fields
