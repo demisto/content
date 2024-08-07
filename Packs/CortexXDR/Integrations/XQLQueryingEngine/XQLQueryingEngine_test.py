@@ -7,7 +7,7 @@ import CoreXQLApiModule
 import pytest
 from CommonServerPython import *
 
-CLIENT = XQLQueryingEngine.Client(headers={}, base_url='some_mock_url', verify=False)
+CLIENT = XQLQueryingEngine.Client(headers={}, base_url='some_mock_url', verify=False, is_core=False)
 ENDPOINT_IDS = '"test1","test2"'
 INTEGRATION_CONTEXT = {}
 
@@ -568,7 +568,7 @@ def test_get_query_result_stream(mocker):
     """
     stream_id = 'mock_stream_id'
     mocker.patch.object(CLIENT, 'get_query_result_stream', return_value='Raw Data')
-    response = XQLQueryingEngine.get_query_result_stream(CLIENT, stream_id=stream_id, is_core=False)
+    response = XQLQueryingEngine.get_query_result_stream(CLIENT, stream_id=stream_id)
     assert response == 'Raw Data'
 
 

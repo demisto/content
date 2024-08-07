@@ -135,6 +135,7 @@ class CoreClient(BaseClient):
     def get_query_result_stream(self, data: dict) -> bytes:
         res = self._http_request(method='POST', url_suffix='/xql/get_query_results_stream', json_data=data,
                                  resp_type='response', response_data_type='bin')
+        print(self.is_core)
         if self.is_core:
             return base64.b64decode(res)
         return res.content

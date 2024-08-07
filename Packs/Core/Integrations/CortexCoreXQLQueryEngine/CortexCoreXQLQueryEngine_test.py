@@ -7,7 +7,7 @@ import CortexCoreXQLQueryEngine
 import pytest
 from CommonServerPython import *
 
-CLIENT = CortexCoreXQLQueryEngine.Client(headers={}, base_url='some_mock_url', verify=False)
+CLIENT = CortexCoreXQLQueryEngine.Client(headers={}, base_url='some_mock_url', verify=False, is_core=True)
 ENDPOINT_IDS = '"test1","test2"'
 INTEGRATION_CONTEXT = {}
 
@@ -567,7 +567,7 @@ def test_get_query_result_stream(mocker):
     """
     stream_id = 'mock_stream_id'
     mocker.patch.object(CLIENT, 'get_query_result_stream', return_value='Raw Data')
-    response = CortexCoreXQLQueryEngine.get_query_result_stream(CLIENT, stream_id=stream_id, is_core=True)
+    response = CortexCoreXQLQueryEngine.get_query_result_stream(CLIENT, stream_id=stream_id)
     assert response == 'Raw Data'
 
 
