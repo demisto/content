@@ -688,7 +688,7 @@ class Client(BaseClient):
         )
 
         while res.status_code == 202:
-            safe_sleep(float(res.headers["Retry-After"]))
+            safe_sleep(float(res.headers["retry-after"]))
             res = self._http_request(
                 method='POST',
                 url_suffix=upload_url_suffix + '/commit',
