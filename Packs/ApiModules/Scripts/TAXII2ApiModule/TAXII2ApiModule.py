@@ -1915,18 +1915,18 @@ class STIX2XSOARParser(BaseClient):
         if ioc_obj:
             for key in ('name', 'value', 'pattern'):
                 if ("file:hashes.'SHA-256' = '" in ioc_obj.get(key, '')) and \
-                        (ioc_value := Taxii2FeedClient.get_ioc_value_from_ioc_name(ioc_obj.get(key, ''))):
+                        (ioc_value := Taxii2FeedClient.extract_ioc_value(ioc_obj, key)):
                     return ioc_value
             return ioc_obj.get('name') or ioc_obj.get('value')
         return None
 
     @staticmethod
-    def get_ioc_value_from_ioc_name(ioc_obj):
+    def extract_ioc_value(ioc_obj, key: str = "name"):
         """
-        Extract SHA-256 from string:
+        Extract SHA-256 from specific key, default key is name.
         ([file:name = 'blabla' OR file:name = 'blabla'] AND [file:hashes.'SHA-256' = '1111'])" -> 1111
         """
-        ioc_value = ioc_obj.get('name', '')
+        ioc_value = ioc_obj.get(key, '')
         try:
             ioc_value_groups = re.search("(?<='SHA-256' = ').*?(?=')", ioc_value)
             if ioc_value_groups:

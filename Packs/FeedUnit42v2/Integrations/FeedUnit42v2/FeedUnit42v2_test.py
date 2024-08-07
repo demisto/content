@@ -133,21 +133,6 @@ def test_fetch_indicators_fails_on_invalid_attack_pattern_structure(mocker):
         fetch_indicators(client, create_relationships=True)
 
 
-# def test_get_attack_id_and_value_from_name_on_invalid_indicator():
-#     """
-#     Given
-#         - Invalid attack indicator structure
-
-#     When
-#         - parsing the indicator name.
-
-#     Then
-#         - DemistoException is raised.
-#     """
-#     with pytest.raises(DemistoException, match=r"Failed parsing attack indicator"):
-#         get_attack_id_and_value_from_name({"name": "test"})
-
-
 def test_feed_tags_param(mocker):
     """
     Given
@@ -190,26 +175,6 @@ def test_handle_multiple_dates_in_one_field(field_name, field_value, expected_re
     Validate The field contain one specific date.
     """
     assert handle_multiple_dates_in_one_field(field_name, field_value) == expected_result
-
-
-# @pytest.mark.parametrize('indicator_name, expected_result', [
-#     ({"name": "T1564.004: NTFS File Attributes",
-#       "x_mitre_is_subtechnique": True,
-#       "x_panw_parent_technique_subtechnique": "Hide Artifacts: NTFS File Attributes"},
-#      ("T1564.004", "Hide Artifacts: NTFS File Attributes")),
-#     ({"name": "T1078: Valid Accounts"}, ("T1078", "Valid Accounts"))
-# ])
-# def test_get_attack_id_and_value_from_name(indicator_name, expected_result):
-#     """
-#     Given
-#     - Indicator with name field
-#     When
-#     - we extract this field to ID and value fields
-#     Then
-#     - run the get_attack_id_and_value_from_name
-#     Validate The ID and value fields extracted successfully.
-#     """
-#     assert get_attack_id_and_value_from_name(indicator_name) == expected_result
 
 
 def test_parse_indicators():
@@ -349,7 +314,7 @@ def test_create_list_relationships():
     assert create_list_relationships(RELATIONSHIP_DATA, ID_TO_OBJECT) == RELATIONSHIP_OBJECTS
 
 
-def test_get_ioc_value_from_ioc_name():
+def test_extract_ioc_value():
     """
     Given
     - IOC obj to get its value.

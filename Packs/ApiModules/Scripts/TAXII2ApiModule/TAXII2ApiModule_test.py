@@ -2287,3 +2287,37 @@ def test_create_x509_certificate_object():
         "issuer": "C=ZA, ST=Western Cape, L=Cape Town, O=Thawte Consulting cc, OU=Certification Services Division,"
         " CN=Thawte Server CA/emailAddress=server-certs@thawte.com",
     }
+
+def test_get_attack_id_and_value_from_name_on_invalid_indicator():
+    """
+    Given
+        - Invalid attack indicator structure
+
+    When
+        - parsing the indicator name.
+
+    Then
+        - DemistoException is raised.
+    """
+    with pytest.raises(DemistoException, match=r"Failed parsing attack indicator"):
+        STIX2XSOARParser.get_attack_id_and_value_from_name({"name": "test"})
+
+
+@pytest.mark.parametrize('indicator_name, expected_result', [
+    ({"name": "T1564.004: NTFS File Attributes",
+      "x_mitre_is_subtechnique": True,
+      "x_panw_parent_technique_subtechnique": "Hide Artifacts: NTFS File Attributes"},
+     ("T1564.004", "Hide Artifacts: NTFS File Attributes")),
+    ({"name": "T1078: Valid Accounts"}, ("T1078", "Valid Accounts"))
+])
+def test_get_attack_id_and_value_from_name(indicator_name, expected_result):
+    """
+    Given
+    - Indicator with name field
+    When
+    - we extract this field to ID and value fields
+    Then
+    - run the get_attack_id_and_value_from_name
+    Validate The ID and value fields extracted successfully.
+    """
+    assert STIX2XSOARParser.get_attack_id_and_value_from_name(indicator_name) == expected_result
