@@ -1,0 +1,129 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+id: Send Maintenance Email
+inputs: []
+name: Send Maintenance Email
+outputs: []
+quiet: true
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 23af3943-7959-4c20-8e78-316c87d239f5
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 23af3943-7959-4c20-8e78-316c87d239f5
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      cc:
+        simple: ${incident.emailccto}
+      htmlBody:
+        simple: ${incident.details}<br> Incident Link - <a href="${incident.incidenturl}">${incident.incidenturl}</a>
+      subject:
+        simple: ${incident.monitoremailsubject}
+      to:
+        simple: ${incident.sendemailto}
+      using:
+        simple: ${incident.emailinstance}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sends an email using Gmail.
+      id: cc46bcdf-6c3a-45b4-873b-5b6d535a9030
+      iscommand: true
+      name: Send Email
+      script: '|||send-mail'
+      type: regular
+      version: -1
+    taskid: cc46bcdf-6c3a-45b4-873b-5b6d535a9030
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 190
+        }
+      }
+  "2":
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: 0af7163d-4a79-4291-8909-1ca7fa923f14
+      iscommand: true
+      name: Close Incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: 0af7163d-4a79-4291-8909-1ca7fa923f14
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 360
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 405,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

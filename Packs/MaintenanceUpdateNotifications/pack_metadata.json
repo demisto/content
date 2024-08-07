@@ -1,0 +1,21 @@
+{
+    "name": "Maintenance Update Notifications",
+    "description": "This content pack is designed to monitor the RSS feed at https://status.paloaltonetworks.com/history.rss and send email notifications to users regarding any new XSOAR maintenance notifications. It allows you to filter by region to ensure you are only receiving relevant notifications. Once installed, you must configure the RSS Feed integration to fetch from https://status.paloaltonetworks.com/history.rss and uncheck the Fetches Indicators checkbox. It is highly recommended to watch the demo video to see how to configure the integration and job so this can run on a regular interval to provide maintenance notifications.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Bharathwaj Murali, Rich Fontaine",
+    "url": "",
+    "email": "",
+    "created": "2024-07-08T16:38:07Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "amontminypa"
+    ]
+}
