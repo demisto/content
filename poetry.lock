@@ -752,6 +752,7 @@ files = [
     {file = "demisto_sdk-1.31.6-py3-none-any.whl", hash = "sha256:95013ff271afcf9c7e38d4077fb8e96ed113fcbc846cf106299ba3e48df05f71"},
     {file = "demisto_sdk-1.31.6.tar.gz", hash = "sha256:cc52a45f8bc314d3d0013b4f482917c46bead04ac72f6aea5461311a500575ea"},
 ]
+develop = false
 
 [package.dependencies]
 autopep8 = "^2.0.4"
@@ -4612,4 +4613,4 @@ reference = "pypi-public"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8,<3.11"
-content-hash = "2655261f386879d93078139b9dd818916f73ebd4d03fff4ec4094b06681081eb"
+content-hash = "e6dd29ef4debbc063ae3a093cccc7f9982d9d964d3c8183f12d1b2e1fee779bf"
