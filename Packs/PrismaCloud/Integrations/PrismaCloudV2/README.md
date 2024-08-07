@@ -2839,9 +2839,9 @@ Get permission list. You must provide either "query" or "next_token".
 
 | **Argument Name** | **Description** | **Required** |
 |-------------------| --- | --- |
-| name              | Access key name | Required | 
-| expires-on             | Timestamp in milliseconds when access key expires. Default:0 | Optional | 
-| service-account-name             | Service account name | Optional |
+| name              | Access key name. | Required | 
+| expires-on             | Timestamp in milliseconds when access key expires. Default:0. | Optional | 
+| service-account-name             | Service account name. | Optional |
 
 #### Context Output
 
