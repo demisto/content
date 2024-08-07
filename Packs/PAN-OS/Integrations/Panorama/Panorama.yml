@@ -9641,6 +9641,9 @@ script:
       predefined:
       - Vulnerability Protection Profile
       - Anti Spyware Profile
+    - contextPath: Panorama.ProfileException
+      description: The Profile's exceptions list.
+      type: String
 
   dockerimage: demisto/pan-os-python:1.0.0.105214
   isfetch: true
