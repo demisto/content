@@ -32,10 +32,6 @@
       "type": "string",
       "is_array": false
     },
-    "split": {
-      "type": "string",
-      "is_array": false
-    },
     "textPayload": {
       "type": "string",
       "is_array": false
@@ -71,10 +67,6 @@
       "is_array": false
     },
     "severity": {
-      "type": "string",
-      "is_array": false
-    },
-    "split": {
       "type": "string",
       "is_array": false
     },
