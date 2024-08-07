@@ -1,5 +1,7 @@
-import demistomock as demisto
-from CommonServerPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
+
 import re
 from requests import Session
 import urllib3
@@ -23,7 +25,8 @@ ACTION_TYPE_TO_VALUE = {
     'report': 'report.name',
     'ticket': 'assignee.username'
 }
-FIELDS_TO_INCLUDE = 'id,name,description,type,ownerGroup,owner,tags,modifiedTime'
+
+FIELDS_TO_INCLUDE = 'id,name,description,type,ownerGroup,owner,tags,modifiedTime,restrictedIPs'
 API_KEY = "API_KEY"
 USERNAME_AND_PASSWORD = "USERNAME_AND_PASSWORD"
 ROLE_ID_DICT = {
@@ -387,6 +390,23 @@ class Client(BaseClient, object):
             }
 
         return self.send_request(path, params=params)
+
+    def get_organization(self, fields=None):
+        """
+        Send the request for get_organization_command.
+        Args:
+            fields (str): The fields to include in the response.
+        Returns:
+            Dict: The response.
+        """
+        params = {}  # type: Dict[str, Any]
+
+        if fields:
+            params = {
+                'fields': fields
+            }
+
+        return self.send_request(path='organization', params=params)
 
     def get_system_licensing(self):
         """
@@ -2293,6 +2313,36 @@ def get_alert_command(client: Client, args: Dict[str, Any]):
     )
 
 
+def get_organization_command(client: Client, args: Dict[str, Any]):
+    """
+    Returns organization information.
+    Args:
+        client (Client): The tenable.sc client object.
+        args (Dict): demisto.args() object.
+    Returns:
+        CommandResults: command results object with the response, human readable section, and the context entries to add.
+    """
+    field = args.get('fields')
+    res = client.get_organization(field)
+
+    if not res or 'response' not in res:
+        raise DemistoException('Error: Could not retrieve organization information')
+
+    # status = res['response']
+
+    mapped_restrictedIPs = {
+        'RestrictedIPs': res['response']
+    }
+
+    return CommandResults(
+        outputs=createContext(mapped_restrictedIPs, removeNull=True),
+        outputs_prefix='TenableSC.RestrictedIPs',
+        raw_response=res,
+        outputs_key_field='ID',
+        readable_output=tableToMarkdown('Tenable.sc Restricted IPs', mapped_restrictedIPs, removeNull=True)
+    )
+
+
 def fetch_incidents(client: Client, first_fetch: str = '3 days'):
     """
     fetches incidents and upload them to demisto.incidents().
@@ -2839,7 +2889,8 @@ def main():  # pragma: no cover
         'tenable-sc-update-asset': update_asset_command,
         'tenable-sc-get-vulnerability': get_vulnerability_command,
         'tenable-sc-get-device': get_device_command,
-        'tenable-sc-create-remediation-scan': create_remediation_scan_command
+        'tenable-sc-create-remediation-scan': create_remediation_scan_command,
+        'tenable-sc-get-organization': get_organization_command
     }
 
     try:
