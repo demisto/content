@@ -220,7 +220,7 @@ def poll(target, step, args=(), kwargs=None, timeout=60,
         values.put(last_item)
         tries += 1
         if max_time is not None and time.time() >= max_time:
-            demisto.results('The operation timed out. Please try again with a longer timeout period.')
+            demisto.error('The operation timed out. Please try again with a longer timeout period.')
             demisto.debug('The operation timed out.')
             return False
         time.sleep(step)  # pylint: disable=sleep-exists
