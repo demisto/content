@@ -14063,17 +14063,17 @@ def pan_os_get_audit_comment_command(args: dict) -> CommandResults:
 
 
 
-def build_xpath_for_profile_exception_commands(profile_name, profile_type, device_group, action_type, extracted_id) -> str:
+def build_xpath_for_profile_exception_commands(profile_name, profile_type, device_group, action_type, extracted_id: Optional[str] = None) -> str:
     """
     Creates and return xpath based on the profile type and pan-os/panorama instance.
 
     Args:
         profile_name: The profile name.
         profile_type: The profile type.
-        device_group: The device group if was sent as a argument.
+        device_group: The device group if was sent as a commands argument.
 
     Returns:
-        xpath.
+        The xpath.
     """
     
     if profile_type == VULNERABILITY_PROTECTION and device_group:
@@ -14091,7 +14091,7 @@ def build_xpath_for_profile_exception_commands(profile_name, profile_type, devic
     else:
         raise DemistoException("Invalid profile_type was provided. Can be Vulnerability Protection or Anti Spyware.")
     
-    if action_type in ['edit', 'delete']:
+    if action_type in [EXCEPTIONS_EDIT_COMMAND_TYPE, EXCEPTIONS_DELETE_COMMAND_TYPE]:
         xpath += f"""
         /entry[@name='{extracted_id}']
         """
@@ -14103,7 +14103,7 @@ def get_predefined_threats_list() -> list:
     Get the predefined threats lists.
 
     Returns:
-        The list.
+        The list of threats.
     """
     result = panorama_get_predefined_threats_list()
     predefined_threats = result['response']['result']['threats']["phone-home"]['entry'] 
@@ -14187,16 +14187,16 @@ def build_element_for_profile_exception_commands(extracted_id, action, packet_ca
     return element
 
 
-def profile_exception_crud_commands(args: dict, action_type: str) -> CommandResults:
+def profile_exception_crud_commands(args: dict, action_type: str):
     """
     Build the element for the api that the profile exception commands use.
 
     Args:
         args: The command arguments.
-        action_type: The action type, can be: set, edit, delete, 
+        action_type: The action type, can be: set, edit, delete, get.
         
     Returns:
-        Raw response from api request
+        Raw response from api request.
     """
     profile_name = args.get('profile_name')
     profile_type = args.get('profile_type')
@@ -14208,51 +14208,112 @@ def profile_exception_crud_commands(args: dict, action_type: str) -> CommandResu
     ip_track_by = args.get('ip_track_by', "")
     ip_duration_sec = args.get('ip_duration_sec', "")
     
+    extracted_id = ""
+    
     if action_type == BLOCK_IP and (not ip_track_by or not ip_duration_sec):
         raise DemistoException("ip_track_by and ip_duration_sec are required when action is 'block_ip'.")
         
-    extracted_id = get_threat_id_from_predefined_threates(threat_name)
-    xpath = build_xpath_for_profile_exception_commands(profile_name, profile_type, device_group, action_type, extracted_id)
-    element = build_element_for_profile_exception_commands(extracted_id, xpath_action, packet_capture, exempt_ip, ip_track_by, ip_duration_sec)
+    if action_type != 'get':
+        extracted_id = get_threat_id_from_predefined_threates(threat_name)
     
-    params = {
-        'type': 'config',
-        'action': action_type,
-        'xpath': xpath,
-        'key': API_KEY,
-        'element': element
-    }
+    xpath = build_xpath_for_profile_exception_commands(profile_name, profile_type, device_group, action_type, extracted_id)
+    
+    if action_type in [EXCEPTIONS_ADD_COMMAND_TYPE, EXCEPTIONS_EDIT_COMMAND_TYPE]:
+        element = build_element_for_profile_exception_commands(extracted_id, xpath_action, packet_capture, exempt_ip, ip_track_by, ip_duration_sec)
+        params = {
+            'type': 'config',
+            'action': action_type,
+            'xpath': xpath,
+            'key': API_KEY,
+            'element': element
+        }
+    
+    elif action_type in [EXCEPTIONS_DELETE_COMMAND_TYPE, EXCEPTIONS_LIST_COMMAND_TYPE]:
+        params = {
+            'type': 'config',
+            'action': action_type,
+            'xpath': xpath,
+            'key': API_KEY,
+        }
     
     raw_response = http_request(URL, 'GET', params=params)
     return raw_response
 
 def pan_os_add_profile_exception_command(args: dict) -> CommandResults:
+    """
+    Adds an exception to a Vulnerability Protection or to a Anti Spyware Profile. Must include profile_name, profile_type and threat_name.
+
+    Args:
+        args: The command arguments.
+        
+    Returns:
+        A confirmation for adding the exception.
+    """
     threat_name = args.get('threat_name')
-    raw_response = profile_exception_crud_commands(args, 'set')
+    raw_response = profile_exception_crud_commands(args, EXCEPTIONS_ADD_COMMAND_TYPE)
     return CommandResults(
         raw_response=raw_response,
         readable_output=f'Successfully created Exception: "{threat_name}"',
     )
 
 def pan_os_edit_profile_exception_command(args: dict) -> CommandResults:
+    """
+    Edits an exception in a Vulnerability Protection or in a Anti Spyware Profile. Must include profile_name, profile_type and threat_name.
+
+    Args:
+        args: The command arguments.
+        
+    Returns:
+        A confirmation for editing the exception.
+    """
     threat_name = args.get('threat_name')
-    raw_response = profile_exception_crud_commands(args, 'edit')
+    raw_response = profile_exception_crud_commands(args, EXCEPTIONS_EDIT_COMMAND_TYPE)
     return CommandResults(
         raw_response=raw_response,
         readable_output=f'Successfully edited Exception: "{threat_name}"',
     )
     
 def pan_os_delete_profile_exception_command(args: dict) -> CommandResults:
+    """
+    Deletes an exception in a Vulnerability Protection or in a Anti Spyware Profile. Must include profile_name, profile_type and threat_name.
+
+    Args:
+        args: The command arguments.
+        
+    Returns:
+        A confirmation for deleting the exception.
+    """
     threat_name = args.get('threat_name')
-    raw_response = profile_exception_crud_commands(args, 'delete')
+    raw_response = profile_exception_crud_commands(args, EXCEPTIONS_DELETE_COMMAND_TYPE)
     return CommandResults(
         raw_response=raw_response,
         readable_output=f'Successfully deleted Exception: "{threat_name}"',
     )
 
 def pan_os_list_profile_exception_command(args: dict) -> CommandResults:
-    threat_name = args.get('threat_name')
-    raw_response = profile_exception_crud_commands(args, 'get')
+    """
+    Lists all the exceptions from a Vulnerability Protection Profile or from a Anti Spyware Profile. Must include profile_name, profile_type.
+
+    Args:
+        args: The command arguments.
+        
+    Returns:
+        A confirmation for deleting the exception.
+    """
+    raw_response = profile_exception_crud_commands(args, EXCEPTIONS_LIST_COMMAND_TYPE)
+    outputs = raw_response.get('response')
+    return CommandResults(
+        outputs=outputs,
+        readable_output=outputs,
+        outputs_prefix='Panorama.ProfileException'
+    )
+    
+EXCEPTIONS_ADD_COMMAND_TYPE = 'set'
+EXCEPTIONS_EDIT_COMMAND_TYPE = 'edit'
+EXCEPTIONS_DELETE_COMMAND_TYPE = 'delete'
+EXCEPTIONS_LIST_COMMAND_TYPE = 'get'
+
+
 
 
 """ Fetch Incidents """

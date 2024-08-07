@@ -9641,6 +9641,7 @@ script:
       predefined:
       - Vulnerability Protection Profile
       - Anti Spyware Profile
+    outputs:
     - contextPath: Panorama.ProfileException
       description: The Profile's exceptions list.
       type: String
@@ -9653,7 +9654,7 @@ script:
   type: python
 fromversion: 5.0.0
 tests:
-- palo_alto_firewall_test_pb
+- palo_alto_firewall_test_pb 
 - palo_alto_panorama_test_pb
 - PAN-OS-firewall-topology-test-pb
 - PAN-OS-panorama-topology-test-pb
