@@ -1496,13 +1496,10 @@ def create_fields_dict_from_dotted_string(issue_fields: Dict[str, Any], dotted_s
     return nested_dict
 
 
-def parse_multiselect_custom_field(value: Any) -> Optional[List[Dict[str, str]]]:
+def parse_value_as_json(value: Any) -> [List[Dict[str, str]]]:
     """
-    This function will parse the value of a multiselect custom field, which is a list of dictionaries, and will try to
-    parse it as a json object, if it fails, it will insert the value as is. This is used for multiselect fields with only
-    one value.
-    e.g.
-    value = '[{"value": "Val1"}]' -> [{"value": "Val1"}]
+    This function will parse the value as a json object, if it is in a specific format,
+    which is a list of dictionaries, where each dictionary has a key named 'value', and the value of this key is a string.
     Args:
         value (Any): The value to parse
     Returns:
@@ -1552,13 +1549,18 @@ def create_issue_fields(client: JiraBaseClient, issue_args: Dict[str, str],
             parsed_value = [{"name": component} for component in argToList(value)]
         elif issue_arg in ['description', 'environment']:
             parsed_value = text_to_adf(value) if isinstance(client, JiraCloudClient) else value
+        elif not (isinstance(value, list) or isinstance(value, dict)):
+            # If the value is not a list or a dictionary, we will try to parse it as a json object.
+            try:
+                parsed_value = json.loads(value)
+            except Exception:
+                pass
         dotted_string = issue_fields_mapper.get(issue_arg, '')
         if not dotted_string and issue_arg.startswith('customfield'):
             # This is used to deal with the case when the user creates a custom incident field, using
             # the custom fields of Jira.
             dotted_string = f'fields.{issue_arg}'
-        if parsed_json := parse_multiselect_custom_field(value):
-            parsed_value = parsed_json
+
         issue_fields |= create_fields_dict_from_dotted_string(
             issue_fields=issue_fields, dotted_string=dotted_string, value=parsed_value or value)
     return issue_fields
