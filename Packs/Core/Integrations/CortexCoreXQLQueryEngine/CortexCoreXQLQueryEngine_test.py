@@ -548,7 +548,7 @@ def test_get_xql_query_results_pending(mocker):
         "status": "PENDING"
     }
     mocker.patch.object(CLIENT, 'get_xql_query_results', return_value=mock_response)
-    response, _ = CoreXQLApiModule.get_xql_query_results(CLIENT, args=args)
+    response, _ = CortexCoreXQLQueryEngine.get_xql_query_results(CLIENT, args=args)
     assert response == {'status': 'PENDING',
                         'execution_id': 'query_id_mock',
                         'results': None}
@@ -567,7 +567,7 @@ def test_get_query_result_stream(mocker):
     """
     stream_id = 'mock_stream_id'
     mocker.patch.object(CLIENT, 'get_query_result_stream', return_value='Raw Data')
-    response = CoreXQLApiModule.get_query_result_stream(CLIENT, stream_id=stream_id, is_core=True)
+    response = CortexCoreXQLQueryEngine.get_query_result_stream(CLIENT, stream_id=stream_id, is_core=True)
     assert response == 'Raw Data'
 
 
@@ -616,7 +616,7 @@ def test_format_results_remove_empty_fields():
          }
          }
     ]
-    response = CoreXQLApiModule.format_results(list_to_format, remove_empty_fields=True)
+    response = CortexCoreXQLQueryEngine.format_results(list_to_format, remove_empty_fields=True)
     assert expected == response
 
 
@@ -671,7 +671,7 @@ def test_format_results_do_not_remove_empty_fields():
          }
          }
     ]
-    response = CoreXQLApiModule.format_results(list_to_format, remove_empty_fields=False)
+    response = CortexCoreXQLQueryEngine.format_results(list_to_format, remove_empty_fields=False)
     assert expected == response
 
 
@@ -695,7 +695,7 @@ def test_start_xql_query_polling_not_supported(mocker):
     mocker.patch('CoreXQLApiModule.get_xql_query_results', return_value=(mock_response, None))
     mocker.patch('CoreXQLApiModule.is_demisto_version_ge', return_value=False)
     mocker.patch.object(demisto, 'command', return_value='xdr-xql-generic-query')
-    command_results = CoreXQLApiModule.start_xql_query_polling_command(
+    command_results = CortexCoreXQLQueryEngine.start_xql_query_polling_command(
         CLIENT, {'query': query, 'query_name': 'mock_name'})
     assert command_results.outputs == {'status': 'PENDING',
                                        'execution_id': 'query_id_mock',
@@ -738,7 +738,7 @@ def test_start_xql_query_polling_command(mocker):
     mocker.patch.object(demisto, 'command', return_value='xdr-xql-generic-query')
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
-    command_results = CoreXQLApiModule.start_xql_query_polling_command(
+    command_results = CortexCoreXQLQueryEngine.start_xql_query_polling_command(
         CLIENT, {'query': query, 'query_name': 'mock_name'})
     assert command_results.outputs == {'status': 'SUCCESS', 'number_of_results': 1, 'query_name': 'mock_name',
                                        'query_cost': {'376699223': 0.0031591666666666665}, 'remaining_quota': 1000.0,
@@ -770,7 +770,7 @@ def test_get_xql_query_results_polling_command_success_under_1000(mocker):
                      'execution_id': 'query_id_mock'}
     mocker.patch('CoreXQLApiModule.get_xql_query_results', return_value=(mock_response, None))
     mocker.patch.object(demisto, 'command', return_value='xdr-xql-generic-query')
-    command_results = CoreXQLApiModule.get_xql_query_results_polling_command(CLIENT, {'query': query, })
+    command_results = CortexCoreXQLQueryEngine.get_xql_query_results_polling_command(CLIENT, {'query': query, })
     assert command_results.outputs == {'status': 'SUCCESS', 'number_of_results': 1, 'query_name': '',
                                        'query_cost': {'376699223': 0.0031591666666666665}, 'remaining_quota': 1000.0,
                                        'execution_id': 'query_id_mock', 'results': [{'x': 'test1'}]}
@@ -800,7 +800,7 @@ def test_get_xql_query_results_clear_integration_context_on_success(mocker):
                      'execution_id': 'query_id_mock'}
     mocker.patch('CoreXQLApiModule.get_xql_query_results', return_value=(mock_response, None))
     mocker.patch.object(demisto, 'command', return_value='xdr-xql-generic-query')
-    command_results = CoreXQLApiModule.get_xql_query_results_polling_command(CLIENT, {'query': query})
+    command_results = CortexCoreXQLQueryEngine.get_xql_query_results_polling_command(CLIENT, {'query': query})
     assert command_results.outputs == {'status': 'SUCCESS', 'number_of_results': 1, 'query_name': '',
                                        'query_cost': {'376699223': 0.0031591666666666665}, 'remaining_quota': 1000.0,
                                        'execution_id': 'query_id_mock', 'results': [{'x': 'test1'}]}
@@ -833,7 +833,7 @@ def test_get_xql_query_results_polling_command_success_more_than_1000(mocker):
     mocker.patch('CoreXQLApiModule.fileResult',
                  return_value={'Contents': '', 'ContentsFormat': 'text', 'Type': 3, 'File': 'results.gz',
                                'FileID': '12345'})
-    results = CoreXQLApiModule.get_xql_query_results_polling_command(CLIENT, {'query': query})
+    results = CortexCoreXQLQueryEngine.get_xql_query_results_polling_command(CLIENT, {'query': query})
     assert results[0] == {'Contents': '', 'ContentsFormat': 'text', 'Type': 3, 'File': 'results.gz', 'FileID': '12345'}
     command_result = results[1]
     assert command_result.outputs == {'status': 'SUCCESS', 'number_of_results': 1500, 'query_name': '',
@@ -911,7 +911,7 @@ def test_get_xql_query_results_polling_command_pending(mocker):
     mocker.patch('CoreXQLApiModule.is_demisto_version_ge', return_value=True)
     mocker.patch.object(demisto, 'command', return_value='xdr-xql-generic-query')
     mocker.patch('CortexCoreXQLQueryEngine.ScheduledCommand', return_value=None)
-    command_results = CoreXQLApiModule.get_xql_query_results_polling_command(CLIENT, {'query': query})
+    command_results = CortexCoreXQLQueryEngine.get_xql_query_results_polling_command(CLIENT, {'query': query})
     assert command_results.readable_output == 'Query is still running, it may take a little while...'
     assert command_results.outputs == {'status': 'PENDING', 'execution_id': 'query_id_mock', 'results': None, 'query_name': ''}
 
@@ -936,7 +936,7 @@ def test_get_xql_quota_command(mocker):
         }
     }
     mocker.patch.object(CLIENT, 'get_xql_quota', return_value=mock_response)
-    response = CoreXQLApiModule.get_xql_quota_command(CLIENT, {})
+    response = CortexCoreXQLQueryEngine.get_xql_quota_command(CLIENT, {})
     assert '|Additional Purchased Quota|License Quota|Used Quota|' in response.readable_output
     assert response.outputs == {'license_quota': 1000, 'additional_purchased_quota': 0, 'used_quota': 0.0}
 
@@ -966,7 +966,7 @@ def test_get_built_in_query_results_polling_command(mocker):
     }
     res = mocker.patch('CoreXQLApiModule.start_xql_query_polling_command')
     mocker.patch.object(demisto, 'command', return_value='xdr-xql-file-event-query')
-    CoreXQLApiModule.get_built_in_query_results_polling_command(CLIENT, args)
+    CortexCoreXQLQueryEngine.get_built_in_query_results_polling_command(CLIENT, args)
     assert (
         res.call_args.args[1]["query"]
         == """dataset = xdr_data | filter agent_id in ("123456","654321") and event_type = FILE and action_file_sha256

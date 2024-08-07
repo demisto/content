@@ -12,8 +12,11 @@ urllib3.disable_warnings()
 DEFAULT_LIMIT = 100
 RBAC_VALIDATIONS_VERSION = '8.6.0'
 RBAC_VALIDATIONS_BUILD_NUMBER = '992980'
+#To use apiCall, the machine must be on XSIAM, have a version greater than RBAC_VALIDATIONS_BUILD_NUMBER,
+# and the integration should not run on an engine.
 FORWARD_USER_RUN_RBAC = is_xsiam() and is_demisto_version_ge(version=RBAC_VALIDATIONS_VERSION,
                                                              build_number=RBAC_VALIDATIONS_BUILD_NUMBER) and not is_using_engine()
+#To get binary response type from apiCall, the machine must have a version greater than ALLOW_BIN_CONTENT_RESPONSE_BUILD_NUM.
 ALLOW_BIN_CONTENT_RESPONSE_BUILD_NUM = '1230614'
 ALLOW_BIN_CONTENT_RESPONSE_SERVER_VERSION = '8.7.0'
 ALLOW_RESPONSE_AS_BINARY = is_demisto_version_ge(version=ALLOW_BIN_CONTENT_RESPONSE_SERVER_VERSION,
