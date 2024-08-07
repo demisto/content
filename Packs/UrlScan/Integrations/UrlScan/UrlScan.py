@@ -62,7 +62,7 @@ class Client:
 
 def detect_ip_type(indicator):
     """
-    Helper function which detects wheather an IP is a IP or IPv6 by string
+    Helper function which detects whether an IP is a IP or IPv6 by string
     """
     try:
         socket.inet_aton(indicator)
