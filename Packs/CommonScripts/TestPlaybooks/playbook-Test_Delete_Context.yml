@@ -1,6 +1,7 @@
 id: test_delete_context
 version: -1
 name: Test Delete Context
+fromversion: 5.0.0
 starttaskid: "0"
 tasks:
   "0":
