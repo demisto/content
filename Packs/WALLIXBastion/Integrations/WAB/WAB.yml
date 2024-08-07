@@ -44,6 +44,10 @@ configuration:
   defaultvalue: '3.12'
   type: 0
   required: false
+- name: timeout
+  display: API requests timeout in seconds. The default value is not provided is 60 seconds.
+  type: 0
+  required: false
 script:
   script: ""
   type: python

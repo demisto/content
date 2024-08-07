@@ -28,12 +28,15 @@ def list_arg(args, name):
 
 
 class Client(BaseClient):
-    def __init__(self, auth_key, auth_user, is_password, server_url, verify, proxy):
+    def __init__(self, auth_key, auth_user, is_password, server_url, verify, proxy, timeout):
         self._auth_key = auth_key
         self._auth_user = auth_user
         self._is_password = is_password
 
-        super().__init__(base_url=server_url, verify=verify, proxy=proxy, headers={}, auth=None)
+        timeout = timeout or BaseClient.REQUESTS_TIMEOUT
+
+        super().__init__(base_url=server_url, verify=verify, proxy=proxy, headers={}, auth=None, timeout=timeout
+        )
 
     def _raise_client_exc(self, res: Response):
         if res.status_code == 401:
@@ -1838,6 +1841,16 @@ def main() -> None:
     url = params.get("url")
     verify_certificate: bool = not params.get("insecure", False)
     proxy = params.get("proxy", False)
+    timeout = params.get("timeout", False)
+    
+    if timeout:
+        try:
+            timeout = int(timeout)
+        except:
+            raise ValueError("timeout must be a positive integer")
+        if timeout <= 0:
+            raise ValueError("timeout must be a positive integer")
+            
 
     base_path = "/api"
 
@@ -1861,6 +1874,7 @@ def main() -> None:
             urljoin(url, base_path),
             verify_certificate,
             proxy,
+            timeout
         )
 
         commands = {
