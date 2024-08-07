@@ -1,11 +1,5 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from CommonServerUserPython import *  # noqa
-
-import urllib3
-
-# Disable insecure warnings
-urllib3.disable_warnings()
 
 
 ''' CONSTANTS '''
@@ -369,6 +363,21 @@ def error_fixes(error: str):
 
 
 def transform_dicts(input_dict: Dict[str, List[str]]) -> List[Dict[str, str]]:
+    """
+    Transforms a dictionary of lists into a list of dictionaries.
+
+    This function takes a dictionary where each key is associated with a list of values and transforms it
+    into a list of dictionaries, where each dictionary contains the corresponding elements from each list.
+
+    Args:
+        input_dict (Dict[str, List[str]]): The input dictionary where each key maps to a list of values.
+                                           All lists must be of the same length.
+
+    Returns:
+        List[Dict[str, str]]: A list of dictionaries where each dictionary is constructed by taking the i-th element
+                              from each list in the input dictionary.
+    """
+    # Checking that the lists are equal in length
     lengths = {len(v) for v in input_dict.values()}
     if len(lengths) > 1:
         raise DemistoException("All lists in the attributes must have the same length")
@@ -384,11 +393,74 @@ def transform_dicts(input_dict: Dict[str, List[str]]) -> List[Dict[str, str]]:
     return result
 
 
+def process_attributes(attributes: str) -> Dict[str, List[str]]:
+    if not (attributes.startswith("{") and attributes.endswith("}")):
+        attributes = "{" + attributes + "}"
+
+    attributes_dict = json.loads(attributes)
+    return attributes_dict
+
+
 def convert_all_timestamp_to_datestring(incident: dict) -> dict:
     keys = ['caseCreationTimestamp', 'lastModifiedTimestamp', 'creationTimestamp', 'ingestTimestamp', 'approxLogTime']
     for key in keys:
         incident[key] = timestamp_to_datestring(incident[key] / 1000, date_format=DATE_FORMAT)
     return incident
+
+
+def filter_existing_cases(cases, last_run):
+    """
+    Filters out cases that already exist in the last run.
+
+    Args:
+        cases (list[dict]): List of cases to filter.
+        last_run (dict): Dictionary containing the last run information, including existing case IDs.
+
+    Returns:
+        list[dict]: Filtered list of cases.
+    """
+    ids_exists = last_run.get("last_ids", [])
+    demisto.debug(f"Existing IDs: {ids_exists}")
+
+    filtered_cases = []
+    for case in cases:
+        case_id = case.get("caseId")
+        if case_id not in ids_exists:
+            filtered_cases.append(case)
+        else:
+            demisto.debug(f"Case with ID {case_id} already exists, skipping.")
+
+    demisto.debug(f"Filtered cases count: {len(filtered_cases)}")
+    return filtered_cases
+
+
+def update_last_run(cases, end_time):
+    if cases:
+        max_timestamp = max(case.get("caseCreationTimestamp", 0) for case in cases)
+        list_ids = [case.get("caseId", "") for case in cases if case.get("caseCreationTimestamp", 0) == max_timestamp]
+        last_run_time = timestamp_to_datestring(max_timestamp / 1000, date_format=DATE_FORMAT)
+    else:
+        last_run_time = end_time
+        list_ids = []
+
+    last_run = {
+        "time": last_run_time,
+        "last_ids": list_ids
+    }
+
+    return last_run
+
+
+def create_incidents(cases):
+    incidents = []
+    for case in cases:
+        case = convert_all_timestamp_to_datestring(case)
+        alert_name = case.get("alertName", "")
+        incidents.append({
+            "Name": alert_name,
+            "rawJSON": json.dumps(case),
+        })
+    return incidents
 
 
 ''' COMMAND FUNCTIONS '''
@@ -497,7 +569,7 @@ def alert_search_command(client: Client, args: dict) -> CommandResults:
             raise DemistoException("Start time must be before end time.")
 
         kwargs = {
-            'filter': process_string(args.get('query', '')),
+            'filter': process_string(args.get('query') or ""),
             'fields': argToList(args.get('fields', '*')),
             'startTime': start_time,
             'endTime': end_time,
@@ -592,7 +664,7 @@ def table_record_create_command(args: dict, client: Client) -> PollResult:
     if not (tracker_id := args.get("tracker_id")):
         table_id = args.get("table_id")
         attributes = args.get("attributes", "")
-        attributes_dict = json.loads(attributes)
+        attributes_dict = process_attributes(attributes)
         list_of_dict_attributes = transform_dicts(attributes_dict)
         operation = args.get("operation")
         payload = {
@@ -617,56 +689,31 @@ def table_record_create_command(args: dict, client: Client) -> PollResult:
     )
 
 
-def fetch_incidents(client: Client, params: dict[str, str]) -> tuple[list, str]:
-    last_run = demisto.getLastRun()
-    first_fetch = params.get("first_fetch", "3 days")
+def fetch_incidents(client: Client, params: dict[str, str], last_run) -> tuple[list, dict]:
 
-    start_time, end_time = get_fetch_run_time_range(
-        last_run=last_run,
-        first_fetch=first_fetch,
-        look_back=0,
-        date_format=DATE_FORMAT,
-    )
+    demisto.debug(f"Last run before the fetch run: {last_run}")
 
-    filter = params.get("fetch_query")
+    filter_query = process_string(params.get("fetch_query") or "")
     limit = arg_to_number(params.get("max_fetch"))
+    demisto.debug(f"Fetching incidents with limit={limit}")
 
-    args = {
-        "filter": filter,
-        "startTime": start_time,
-        "endTime": end_time,
-        "limit": limit,
-        "include_related_rules": True
-    }
-    demisto.debug(f"fetching incidents between {start_time=} and {end_time=}")
-    command_results = case_search_command(client, args)
-    cases = command_results.outputs
+    first_fetch = params.get("first_fetch", "3 days")
+    start_time, end_time = get_fetch_run_time_range(last_run=last_run, first_fetch=first_fetch, date_format=DATE_FORMAT)
+    demisto.debug(f"Fetching incidents between start_time={start_time} and end_time={end_time}")
+
+    args = {"query": filter_query, "start_time": start_time, "end_time": end_time, "limit": limit, "include_related_rules": True}
+
+    cases = case_search_command(client, args).outputs
     if not isinstance(cases, list):
-        raise
+        raise DemistoException("The response did not contain a list of cases.")
+    demisto.debug(f"Response contain {len(cases)} cases")
 
-    incidents: list[dict] = []
-    for case in cases:
-        case = convert_all_timestamp_to_datestring(case)
-        alert_name = case.get("alertName", "")
-        incidents.append(
-            {
-                "Name": alert_name,
-                "rawJSON": json.dumps(case),
-            }
-        )
+    cases = filter_existing_cases(cases, last_run)
+    demisto.debug(f"After filtered cases count: {len(cases)}")
 
-    last_run = update_last_run_object(
-        last_run=last_run,
-        incidents=cases,
-        fetch_limit=limit,
-        start_fetch_time=start_time,
-        end_fetch_time=end_time,
-        look_back=0,
-        created_time_field='creationTimestamp',
-        id_field='alertName',
-        date_format=DATE_FORMAT,
-        increase_last_run_time=True
-    )
+    last_run = update_last_run(cases, end_time)
+    incidents = create_incidents(cases)
+
     demisto.debug(f"Last run after the fetch run: {last_run}")
     return incidents, last_run
 
@@ -716,7 +763,8 @@ def main() -> None:
         if command == 'test-module':
             return_results(test_module(client))
         elif command == 'fetch-incidents':
-            incidents, next_run = fetch_incidents(client, params)
+            last_run = demisto.getLastRun()
+            incidents, next_run = fetch_incidents(client, params, last_run)
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
         elif command == 'exabeam-platform-event-search':
