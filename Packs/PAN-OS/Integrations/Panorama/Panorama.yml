@@ -9627,42 +9627,6 @@ script:
     - description: "The requested threat name/CVE to add."
       name: threat_name
       required: true
-    - description: "Can be: Alert, Allow, Block IP, Drop, Reset Both, Reset Client or Reset Server."
-      name: action
-      required: false
-      auto: PREDEFINED
-      predefined:
-      - alert
-      - allow
-      - block-ip
-      - drop
-      - reset-both
-      - reset-client
-      - reset-server
-    - description: "Can be: Disable, Single Packet or Extended Capture."
-      name: packet_capture
-      required: false
-      auto: PREDEFINED
-      predefined: 
-      - disable
-      - single-packet
-      - extended-capture
-    - description: TODO
-      name: exempt_ip
-      required: false
-    - description: TODO
-      name: device_group
-      required: false
-    - description: "Can be: Source or Source And Destination. If action = Block IP , this argument is mandatory."
-      name: ip_track_by
-      required: false
-      auto: PREDEFINED
-      predefined:
-      - Source
-      - Source And Destination
-    - description: If action = Block IP , this argument is mandatory.
-      name: ip_duration_sec
-      required: false
 
   - name: pan-os-list-profile-exception
     description: List the exceptions in a Vulnerability Protection profile or Anti Spyware profile.
@@ -9677,45 +9641,6 @@ script:
       predefined:
       - Vulnerability Protection Profile
       - Anti Spyware Profile
-    - description: "The requested threat name/CVE to add."
-      name: threat_name
-      required: true
-    - description: "Can be: Alert, Allow, Block IP, Drop, Reset Both, Reset Client or Reset Server."
-      name: action
-      required: false
-      auto: PREDEFINED
-      predefined:
-      - alert
-      - allow
-      - block-ip
-      - drop
-      - reset-both
-      - reset-client
-      - reset-server
-    - description: "Can be: Disable, Single Packet or Extended Capture."
-      name: packet_capture
-      required: false
-      auto: PREDEFINED
-      predefined: 
-      - disable
-      - single-packet
-      - extended-capture
-    - description: TODO
-      name: exempt_ip
-      required: false
-    - description: TODO
-      name: device_group
-      required: false
-    - description: "Can be: Source or Source And Destination. If action = Block IP , this argument is mandatory."
-      name: ip_track_by
-      required: false
-      auto: PREDEFINED
-      predefined:
-      - Source
-      - Source And Destination
-    - description: If action = Block IP , this argument is mandatory.
-      name: ip_duration_sec
-      required: false
 
   dockerimage: demisto/pan-os-python:1.0.0.105214
   isfetch: true
