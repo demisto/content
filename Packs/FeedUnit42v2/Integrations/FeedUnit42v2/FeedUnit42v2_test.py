@@ -1,7 +1,7 @@
 import pytest
 
 from FeedUnit42v2 import Client, fetch_indicators, get_indicators_command, handle_multiple_dates_in_one_field, \
-    get_attack_id_and_value_from_name, parse_indicators, parse_campaigns, \
+    parse_indicators, parse_campaigns, \
     parse_reports_and_report_relationships, create_attack_pattern_indicator, create_course_of_action_indicators, \
     get_ioc_type, get_ioc_value, create_list_relationships, extract_ioc_value, DemistoException
 
@@ -106,7 +106,7 @@ def test_fetch_indicators_command(mocker):
     mocker.patch.object(client, 'fetch_stix_objects_from_api', side_effect=mock_get_stix_objects)
 
     indicators = fetch_indicators(client, create_relationships=True)
-    assert len(indicators) == 18
+    assert len(indicators) == 19
     assert DUMMY_INDICATOR_WITH_RELATIONSHIP_LIST in indicators
     assert indicators == FETCH_RESULTS
 
@@ -131,21 +131,6 @@ def test_fetch_indicators_fails_on_invalid_attack_pattern_structure(mocker):
 
     with pytest.raises(DemistoException, match=r"Failed parsing attack indicator"):
         fetch_indicators(client, create_relationships=True)
-
-
-def test_get_attack_id_and_value_from_name_on_invalid_indicator():
-    """
-    Given
-        - Invalid attack indicator structure
-
-    When
-        - parsing the indicator name.
-
-    Then
-        - DemistoException is raised.
-    """
-    with pytest.raises(DemistoException, match=r"Failed parsing attack indicator"):
-        get_attack_id_and_value_from_name({"name": "test"})
 
 
 def test_feed_tags_param(mocker):
@@ -192,26 +177,6 @@ def test_handle_multiple_dates_in_one_field(field_name, field_value, expected_re
     assert handle_multiple_dates_in_one_field(field_name, field_value) == expected_result
 
 
-@pytest.mark.parametrize('indicator_name, expected_result', [
-    ({"name": "T1564.004: NTFS File Attributes",
-      "x_mitre_is_subtechnique": True,
-      "x_panw_parent_technique_subtechnique": "Hide Artifacts: NTFS File Attributes"},
-     ("T1564.004", "Hide Artifacts: NTFS File Attributes")),
-    ({"name": "T1078: Valid Accounts"}, ("T1078", "Valid Accounts"))
-])
-def test_get_attack_id_and_value_from_name(indicator_name, expected_result):
-    """
-    Given
-    - Indicator with name field
-    When
-    - we extract this field to ID and value fields
-    Then
-    - run the get_attack_id_and_value_from_name
-    Validate The ID and value fields extracted successfully.
-    """
-    assert get_attack_id_and_value_from_name(indicator_name) == expected_result
-
-
 def test_parse_indicators():
     """
     Given
@@ -255,6 +220,7 @@ def test_parse_reports():
     """
     client = Client(api_key='1234', verify=False)
     result = parse_reports_and_report_relationships(client, REPORTS_DATA, [], '')
+    assert len(result) == 2
     assert result == REPORTS_INDICATORS
 
 
@@ -348,7 +314,7 @@ def test_create_list_relationships():
     assert create_list_relationships(RELATIONSHIP_DATA, ID_TO_OBJECT) == RELATIONSHIP_OBJECTS
 
 
-def test_get_ioc_value_from_ioc_name():
+def test_extract_ioc_value():
     """
     Given
     - IOC obj to get its value.
@@ -384,7 +350,7 @@ def test_fetch_indicators_command_with_relationship(mocker):
     mocker.patch.object(client, 'fetch_stix_objects_from_api', side_effect=mock_get_stix_objects)
 
     indicators = fetch_indicators(client, create_relationships=True)
-    assert len(indicators) == 18
+    assert len(indicators) == 19
     assert DUMMY_INDICATOR_WITH_RELATIONSHIP_LIST in indicators
     assert REPORTS_INDICATORS_WITH_RELATIONSHIPS in indicators
 

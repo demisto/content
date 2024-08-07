@@ -111,7 +111,7 @@ def parse_indicators(indicator_objects: list, feed_tags: Optional[list] = None,
             raw_name = indicator_object.get('name', '')
             pattern = indicator_object.get('pattern') or ''
 
-            for key in UNIT42_TYPES_TO_DEMISTO_TYPES.keys():
+            for key in UNIT42_TYPES_TO_DEMISTO_TYPES:
                 if pattern.startswith(f'[{key}'):  # retrieve only Demisto indicator types
                     indicator_obj = {
                         "value": raw_name,
@@ -126,7 +126,6 @@ def parse_indicators(indicator_objects: list, feed_tags: Optional[list] = None,
                             "reportedby": 'Unit42',
                         }
                     }
-
                     if "file:hashes.'SHA-256' = '" in pattern:
                         if ioc_value := extract_ioc_value(pattern):
                             indicator_obj['value'] = ioc_value
@@ -164,7 +163,8 @@ def get_campaign_from_sub_reports(report_object, id_to_object):
 
 def is_sub_report(report_obj):
     obj_refs = report_obj.get('object_refs', [])
-    return all(not obj_ref.startswith('report--') for obj_ref in obj_refs)
+    return (all(not obj_ref.startswith('report--') for obj_ref in obj_refs)
+            and report_obj.get('name') == 'ATOM Campaign Report')
 
 
 def parse_reports_and_report_relationships(client: Client, report_objects: list, feed_tags: Optional[list] = None,
@@ -191,7 +191,8 @@ def parse_reports_and_report_relationships(client: Client, report_objects: list,
     for report_object in report_objects:
         if is_sub_report(report_object):
             continue
-        report_list = client.parse_report(report_object, '[Unit42 ATOM] ', ignore_reports_relationships=True)
+        report_list = client.parse_report(report_object, '[Unit42 ATOM] ', ignore_reports_relationships=True,
+                                          is_unit42_report=True)
         report = report_list[0]
         report['value'] = f"[Unit42 ATOM] {report_object.get('name')}"
         report['fields']['tags'] = list((set(report_object.get('labels') or [])).union(set(feed_tags)))
@@ -264,26 +265,6 @@ def handle_multiple_dates_in_one_field(field_name: str, field_value: str):
         return f"{max(dates_as_datetime).strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3]}Z"
 
 
-def get_attack_id_and_value_from_name(attack_indicator):
-    """
-    Split indicator name into MITRE ID and indicator value: 'T1108: Redundant Access' -> MITRE ID = T1108,
-    indicator value = 'Redundant Access'.
-    """
-    ind_name = attack_indicator.get('name')
-    separator = ':'
-    try:
-        idx = ind_name.index(separator)
-    except ValueError:
-        raise DemistoException(f"Failed parsing attack indicator {ind_name}")
-    ind_id = ind_name[:idx]
-    value = ind_name[idx + 2:]
-
-    if attack_indicator.get('x_mitre_is_subtechnique'):
-        value = attack_indicator.get('x_panw_parent_technique_subtechnique')
-
-    return ind_id, value
-
-
 def create_attack_pattern_indicator(client: Client, attack_indicator_objects, feed_tags, tlp_color) -> List:
     """Parse the Attack Pattern objects retrieved from the feed.
 
@@ -302,7 +283,7 @@ def create_attack_pattern_indicator(client: Client, attack_indicator_objects, fe
     for attack_indicator_object in attack_indicator_objects:
         attack_indicator_list = client.parse_attack_pattern(attack_indicator_object, ignore_external_id=True)
         attack_indicator = attack_indicator_list[0]
-        mitre_id, value = get_attack_id_and_value_from_name(attack_indicator_object)
+        mitre_id, value = client.get_attack_id_and_value_from_name(attack_indicator_object)
 
         attack_indicator["value"] = value
         attack_indicator["fields"].update({
@@ -422,7 +403,7 @@ def get_ioc_value(ioc, id_to_obj):
         return f"[Unit42 ATOM] {ioc_obj.get('name')}"
 
     elif ioc_obj.get('type') == 'attack-pattern':
-        return get_attack_id_and_value_from_name(ioc_obj)[1]
+        return STIX2XSOARParser.get_attack_id_and_value_from_name(ioc_obj)[1]
 
     for key in ('name', 'pattern'):
         if ioc_value := extract_ioc_value(ioc_obj.get(key, '')):
