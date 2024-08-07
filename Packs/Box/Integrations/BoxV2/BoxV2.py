@@ -670,19 +670,34 @@ class Client(BaseClient):
         with open(file_path, 'rb') as file_obj:
             final_sha = sha1()  # nosec
             final_sha.update(file_obj.read())
-            whole_file_sha_digest = final_sha.digest()
-            final_headers = {
-                'Content-Type': 'application/json',
-                'As-User': as_user,
-                'Digest': f"SHA={base64.b64encode(whole_file_sha_digest).decode('utf-8')}",
-                'Authorization': self._headers.get('Authorization')
-            }
-            return self._http_request(
+
+        whole_file_sha_digest = final_sha.digest()
+        final_headers = {
+            'Content-Type': 'application/json',
+            'As-User': as_user,
+            'Digest': f"SHA={base64.b64encode(whole_file_sha_digest).decode('utf-8')}",
+            'Authorization': self._headers.get('Authorization')
+        }
+
+        res = self._http_request(
+            method='POST',
+            url_suffix=upload_url_suffix + '/commit',
+            json_data={'parts': parts},
+            headers=final_headers,
+            resp_type='response',
+        )
+
+        while res.status_code == 202:
+            safe_sleep(float(res.headers["Retry-After"]))
+            res = self._http_request(
                 method='POST',
                 url_suffix=upload_url_suffix + '/commit',
                 json_data={'parts': parts},
-                headers=final_headers
+                headers=final_headers,
+                resp_type='response',
             )
+
+        return res.json()
 
     def upload_file(self, entry_id: str, file_name: Optional[str] = None, folder_id: Optional[str] = None,
                     as_user: Optional[str] = None) -> dict:
