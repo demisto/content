@@ -60,12 +60,10 @@ class Client:
 '''HELPER FUNCTIONS'''
 
 
-def detect_ip_type(indicator):
-    """
-    Helper function which detects whether an IP is a IP or IPv6 by string
-    """
+def detect_ip_type(ip_string):
+    """Categorize a given IP address into its feed indicator type - default (v4) or v6."""
     try:
-        socket.inet_aton(indicator)
+        socket.inet_aton(ip_string)
         return FeedIndicatorType.IP
     except OSError:
         return FeedIndicatorType.IPv6
