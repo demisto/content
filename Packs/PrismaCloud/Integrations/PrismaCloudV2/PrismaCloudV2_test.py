@@ -531,8 +531,12 @@ def test_permission_list_command_with_next_token(mocker, prisma_cloud_v2_client)
     http_request.assert_called_with('POST', 'api/v1/permission/page', json_data={'limit': 2, 'pageToken': 'TOKEN'})
 
 
-# itamar
 def test_access_key_create_command(mocker, prisma_cloud_v2_client):
+    """
+    Given: A mock PrismaCloudV2 client.
+    When: Running access_key_create_command to create an access key.
+    Then: Ensure access key created correctly.
+    """
     from PrismaCloudV2 import access_key_create_command
     args = {'name': 'key-name'}
     mock_response = {'id': 'id', 'secretKey': 'secretKey'}
@@ -542,6 +546,11 @@ def test_access_key_create_command(mocker, prisma_cloud_v2_client):
 
 
 def test_get_access_keys_without_access_key_given(mocker, prisma_cloud_v2_client):
+    """
+    Given: A mock PrismaCloudV2 client.
+    When: Running get_access_keys in order to get the list of access keys.
+    Then: Ensure get_access_keys_list called once.
+    """
     from PrismaCloudV2 import get_access_keys_command
     args = {}
     mocker.patch.object(Client, '_http_request', return_value='')
@@ -551,6 +560,11 @@ def test_get_access_keys_without_access_key_given(mocker, prisma_cloud_v2_client
 
 
 def test_get_access_keys_with_access_key_given(mocker, prisma_cloud_v2_client):
+    """
+    Given: A mock PrismaCloudV2 client.
+    When: Running get_access_keys in order to get data of specific access key.
+    Then: Ensure get_access_key_by_id called once.
+    """
     from PrismaCloudV2 import get_access_keys_command
     args = {'access-key': 'test_key'}
     mocker.patch.object(Client, '_http_request', return_value='')
@@ -560,6 +574,11 @@ def test_get_access_keys_with_access_key_given(mocker, prisma_cloud_v2_client):
 
 
 def test_get_access_key_by_id(mocker, prisma_cloud_v2_client):
+    """
+    Given: A mock PrismaCloudV2 client.
+    When: Running get_access_key_by_id in order to get data of specific access key.
+    Then: Ensure function return data about the specific access key with the same access key name.
+    """
     from PrismaCloudV2 import get_access_key_by_id
     args = {'access-key': 'test_key'}
     mock_response = {'id': 'id', 'name': 'test_key', 'expiresOn': 0}
@@ -567,9 +586,18 @@ def test_get_access_key_by_id(mocker, prisma_cloud_v2_client):
     command_results = get_access_key_by_id(prisma_cloud_v2_client, args)
     assert command_results.raw_response == mock_response
     assert command_results.outputs == mock_response
+    assert mock_response.get('name') == args.get('access-key')
 
 
 def test_get_access_keys_list(mocker, prisma_cloud_v2_client):
+    """
+    Given: A mock PrismaCloudV2 client.
+    When: Running get_access_keys_list in order to get the list of access keys.
+    Then:
+        - Ensure the function return list of access keys in the length of limit.
+        - Ensure the function parse unixtime to human-readable date format.
+        - Ensure readable_output contain all needed features,
+    """
     from PrismaCloudV2 import get_access_keys_list
     mock_response = [{
         'id': 'id',
@@ -588,12 +616,19 @@ def test_get_access_keys_list(mocker, prisma_cloud_v2_client):
     command_results = get_access_keys_list(prisma_cloud_v2_client, args)
     assert command_results.raw_response == mock_response
     assert command_results.outputs == mock_response
+    readable_output_features = ['ID', 'Name', 'Created By', 'Created Timestamp', 'Last Used Time', 'Status',
+                                'Expires On', 'Role id', 'Role Name', 'Role Type', 'Username']
+    for feature in readable_output_features:
+        assert feature in command_results.readable_output
     assert '2024-08-05T12:31:18Z' in command_results.readable_output
-    assert 'Created Timestamp' in command_results.readable_output
-    assert 'Role Type' in command_results.readable_output
 
 
 def test_access_key_disable(mocker, prisma_cloud_v2_client):
+    """
+    Given: A mock PrismaCloudV2 client.
+    When: Running access_key_disable in order to disable access key.
+    Then: Ensure readable_output returns the correct response.
+    """
     from PrismaCloudV2 import access_key_disable_command
     args = {'access-key': 'test_key'}
     mocker.patch.object(Client, '_http_request', return_value='')
@@ -602,6 +637,11 @@ def test_access_key_disable(mocker, prisma_cloud_v2_client):
 
 
 def test_access_key_enable(mocker, prisma_cloud_v2_client):
+    """
+    Given: A mock PrismaCloudV2 client.
+    When: Running access_key_enable in order to enable access key.
+    Then: Ensure readable_output returns the correct response.
+    """
     from PrismaCloudV2 import access_key_enable_command
     args = {'access-key': 'test_key'}
     mocker.patch.object(Client, '_http_request', return_value='')
@@ -610,6 +650,11 @@ def test_access_key_enable(mocker, prisma_cloud_v2_client):
 
 
 def test_access_key_delete(mocker, prisma_cloud_v2_client):
+    """
+    Given: A mock PrismaCloudV2 client.
+    When: Running access_key_delete in order to delete access key.
+    Then: Ensure readable_output returns the correct response.
+    """
     from PrismaCloudV2 import access_key_delete_command
     args = {'access-key': 'test_key'}
     mocker.patch.object(Client, '_http_request', return_value='')
