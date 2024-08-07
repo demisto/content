@@ -123,6 +123,7 @@ def main() -> None:
             verify=verify_cert,
             headers=headers,
             proxy=proxy,
+            is_core=False
         )
         if command in GENERIC_QUERY_COMMANDS:
             return_results(GENERIC_QUERY_COMMANDS[command](client, args))

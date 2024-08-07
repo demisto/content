@@ -84,7 +84,6 @@ def main() -> None:
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
     args = demisto.args()
-    args['is_core'] = True
     headers = {}
     url_suffix = "/public_api/v1"
     try:
@@ -95,6 +94,7 @@ def main() -> None:
             proxy=proxy,
             verify=verify_certificate,
             headers=headers,
+            is_core=True
         )
 
         if command in GENERIC_QUERY_COMMANDS:

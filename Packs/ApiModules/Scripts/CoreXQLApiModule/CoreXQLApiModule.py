@@ -25,7 +25,8 @@ ALLOW_RESPONSE_AS_BINARY = is_demisto_version_ge(version=ALLOW_BIN_CONTENT_RESPO
 
 class CoreClient(BaseClient):
 
-    def __init__(self, base_url: str, headers: dict, timeout: int = 120, proxy: bool = False, verify: bool = False, is_core: bool = False):
+    def __init__(self, base_url: str, headers: dict, timeout: int = 120, proxy: bool = False, verify: bool = False,
+                 is_core: bool = False):
         super().__init__(base_url=base_url, headers=headers, proxy=proxy, verify=verify)
         self.timeout = timeout
         self.is_core = is_core
@@ -131,10 +132,10 @@ class CoreClient(BaseClient):
         query_results = res.get('reply', "")
         return query_results
 
-    def get_query_result_stream(self, data: dict, is_core: bool) -> bytes:
+    def get_query_result_stream(self, data: dict) -> bytes:
         res = self._http_request(method='POST', url_suffix='/xql/get_query_results_stream', json_data=data,
                                  resp_type='response', response_data_type='bin')
-        if is_core:
+        if self.is_core:
             return base64.b64decode(res)
         return res.content
 
@@ -474,7 +475,6 @@ def get_xql_query_results(client: CoreClient, args: dict) -> Tuple[dict, Optiona
             'format': 'json',
         }
     }
-    is_core = args.get('is_core', False)
 
     # Call the Client function and get the raw response
     response = client.get_xql_query_results(data)
@@ -482,13 +482,13 @@ def get_xql_query_results(client: CoreClient, args: dict) -> Tuple[dict, Optiona
     results = response.get('results', {})
     stream_id = results.get('stream_id')
     if stream_id:
-        file_data = get_query_result_stream(client, stream_id, is_core)
+        file_data = get_query_result_stream(client, stream_id)
         return response, file_data
     response['results'] = results.get('data')
     return response, None
 
 
-def get_query_result_stream(client: CoreClient, stream_id: str, is_core: bool) -> bytes:
+def get_query_result_stream(client: CoreClient, stream_id: str) -> bytes:
     """Retrieve XQL query results with more than 1000 results.
 
     Args:
@@ -507,7 +507,7 @@ def get_query_result_stream(client: CoreClient, stream_id: str, is_core: bool) -
         }
     }
     # Call the Client function and get the raw response
-    return client.get_query_result_stream(data, is_core)
+    return client.get_query_result_stream(data)
 
 
 def format_item(item_to_format: Any) -> Any:
