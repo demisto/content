@@ -7,6 +7,7 @@ import collections
 import json as JSON
 import time
 from urllib.parse import urlparse
+import socket
 
 import requests
 from requests.utils import quote  # type: ignore
@@ -63,12 +64,11 @@ def detect_ip_type(indicator):
     """
     Helper function which detects wheather an IP is a IP or IPv6 by string
     """
-    indicator_type = ''
-    if '::' in indicator:
-        indicator_type = FeedIndicatorType.IPv6
-    else:
-        indicator_type = FeedIndicatorType.IP
-    return indicator_type
+    try:
+        socket.inet_aton(indicator)
+        return FeedIndicatorType.IP
+    except OSError:
+        return FeedIndicatorType.IPv6
 
 
 def schedule_polling(items_to_schedule, next_polling_interval):
