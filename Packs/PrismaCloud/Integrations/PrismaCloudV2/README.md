@@ -2847,8 +2847,8 @@ Get permission list. You must provide either "query" or "next_token".
 
 | **Path**                  | **Type** | **Description**       |
 |---------------------------| --- |-----------------------|
-| PrismaCloud.AccessKeys.id  | String | Access key ID        | 
-| PrismaCloud.AccessKeys.secretKey | String | Access key secret |
+| PrismaCloud.AccessKeys.id  | String | Access key ID.        | 
+| PrismaCloud.AccessKeys.secretKey | String | Access key secret. |
 
 #### Command example
 ```!prisma-cloud-access-key-create name=MyNewKey```
