@@ -11,11 +11,14 @@ you are implementing with your integration
 """
 
 import json
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta
+import pytz
 
 import pytest
 
 import demistomock as demisto
+
+UTC = pytz.UTC
 
 
 def util_load_json(path):
@@ -238,8 +241,8 @@ def test_limit_validate_input(capfd):
     from CybleEventsV2 import validate_input
 
     args = {
-        'start_date': datetime.now(tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%S%z"),
-        'end_date': datetime.now(tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%S%z"),
+        'start_date': datetime.now(tz=UTC).strftime("%Y-%m-%dT%H:%M:%S%z"),
+        'end_date': datetime.now(tz=UTC).strftime("%Y-%m-%dT%H:%M:%S%z"),
         'from': '0',
         'limit': '-1',
     }
@@ -284,8 +287,8 @@ def test_edate_validate_input(capfd):
     from CybleEventsV2 import validate_input
 
     args = {
-        'start_date': datetime.now(tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%S%z"),
-        'end_date': (datetime.now(tz=timezone.utc) + timedelta(days=4)).strftime("%Y-%m-%dT%H:%M:%S%z"),
+        'start_date': datetime.now(tz=UTC).strftime("%Y-%m-%dT%H:%M:%S%z"),
+        'end_date': (datetime.now(tz=UTC) + timedelta(days=4)).strftime("%Y-%m-%dT%H:%M:%S%z"),
         'from': '0',
         'limit': '1'
     }
@@ -300,8 +303,8 @@ def test_date_validate_input(capfd):
     from CybleEventsV2 import validate_input
 
     args = {
-        'start_date': datetime.now(tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%S%z"),
-        'end_date': (datetime.now(tz=timezone.utc) - timedelta(days=4)).strftime("%Y-%m-%dT%H:%M:%S%z"),
+        'start_date': datetime.now(tz=UTC).strftime("%Y-%m-%dT%H:%M:%S%z"),
+        'end_date': (datetime.now(tz=UTC) - timedelta(days=4)).strftime("%Y-%m-%dT%H:%M:%S%z"),
         'from': '0',
         'limit': '1'
     }
@@ -337,8 +340,8 @@ def test_offset_cyble_vision_fetch_detail(requests_mock, capfd):
     args = {
         'from': '-1',
         'limit': 1,
-        'start_date': datetime.now(tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%S%z"),
-        'end_date': datetime.now(tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%S%z")
+        'start_date': datetime.now(tz=UTC).strftime("%Y-%m-%dT%H:%M:%S%z"),
+        'end_date': datetime.now(tz=UTC).strftime("%Y-%m-%dT%H:%M:%S%z")
     }
 
     url = "https://test.com/apollo/api/v1/y/alerts"
@@ -368,8 +371,8 @@ def test_get_alert_fetch(requests_mock):
     args = {
         'from': 1,
         'limit': 1,
-        'start_date': datetime.now(tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%S%z"),
-        'end_date': datetime.now(tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%S%z")
+        'start_date': datetime.now(tz=UTC).strftime("%Y-%m-%dT%H:%M:%S%z"),
+        'end_date': datetime.now(tz=UTC).strftime("%Y-%m-%dT%H:%M:%S%z")
     }
 
     url = "https://test.com/apollo/api/v1/y/alerts"
@@ -400,8 +403,8 @@ def test_get_alert_fetch2(requests_mock):
     args = {
         'from': 1,
         'limit': 1,
-        'start_date': datetime.now(tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%S%z"),
-        'end_date': datetime.now(tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%S%z")
+        'start_date': datetime.now(tz=UTC).strftime("%Y-%m-%dT%H:%M:%S%z"),
+        'end_date': datetime.now(tz=UTC).strftime("%Y-%m-%dT%H:%M:%S%z")
     }
 
     url = "https://test.com/apollo/api/v1/y/alerts"
@@ -451,8 +454,8 @@ def test_data_alert_invalidate_date(capfd):
     from CybleEventsV2 import validate_input
 
     args = {
-        'start_date': datetime.now(tz=timezone.utc).strftime("%Y-%m-%dT%H:%M"),
-        'end_date': (datetime.now(tz=timezone.utc) - timedelta(days=4)).strftime("%Y-%m-%dT%H:%M"),
+        'start_date': datetime.now(tz=UTC).strftime("%Y-%m-%dT%H:%M"),
+        'end_date': (datetime.now(tz=UTC) - timedelta(days=4)).strftime("%Y-%m-%dT%H:%M"),
         'from': '0',
         'limit': '1'
     }
@@ -467,8 +470,8 @@ def test_data_alert_iocs_date(capfd):
     from CybleEventsV2 import validate_input
 
     args = {
-        'start_date': datetime.now(tz=timezone.utc).strftime("%Y-%m-%dT%H:%M"),
-        'end_date': (datetime.now(tz=timezone.utc) - timedelta(days=4)).strftime("%Y-%m-%dT%H:%M"),
+        'start_date': datetime.now(tz=UTC).strftime("%Y-%m-%dT%H:%M"),
+        'end_date': (datetime.now(tz=UTC) - timedelta(days=4)).strftime("%Y-%m-%dT%H:%M"),
         'from': '0',
         'limit': '1'
     }

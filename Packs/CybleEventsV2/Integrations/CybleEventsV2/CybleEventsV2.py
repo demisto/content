@@ -2,9 +2,12 @@ from CommonServerPython import *
 
 ''' IMPORTS '''
 import requests
-from datetime import datetime, timezone
+from datetime import datetime
+import pytz
 import urllib3
 import json
+
+UTC = pytz.UTC
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -132,10 +135,10 @@ def validate_input(args, is_iocs=False):
             if limit <= 0 or limit > LIMIT_EVENT_ITEMS:
                 raise ValueError(f"The limit argument should contain a positive number, up to 1000, limit: {limit}")
 
-            if _start_date > datetime.now(tz=timezone.utc):
+            if _start_date > datetime.now(tz=UTC):
                 raise ValueError(
-                    f"Start date must be a date before or equal to {datetime.now(tz=timezone.utc).strftime(date_format)}")
-            if _end_date > datetime.now(tz=timezone.utc):
+                    f"Start date must be a date before or equal to {datetime.now(tz=UTC).strftime(date_format)}")
+            if _end_date > datetime.now(tz=UTC):
                 raise ValueError(
                     f"End date must be a date before or equal to {args.get('end_date')}")
             if _start_date > _end_date:
