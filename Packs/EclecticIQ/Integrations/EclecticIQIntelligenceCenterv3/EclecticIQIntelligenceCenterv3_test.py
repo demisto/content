@@ -65,7 +65,7 @@ def test_send_api_request_good(requests_mock):
 
 
 def entity_create_response(*args, **kwargs):
-    return_value = str("123-123-123")
+    return_value = "123-123-123"
     return return_value
 
 

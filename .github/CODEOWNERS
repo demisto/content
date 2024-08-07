@@ -5,33 +5,12 @@
 /Config/approved_categories.json @yaakovpraisler @bakatzir @GuyLibermanPA @demisto/content-leaders
 /Config/core_packs_list.json @yaakovpraisler @bakatzir @GuyLibermanPA @demisto/content-leaders
 /Config/core_packs_mpv2_list.json @yaakovpraisler @bakatzir @GuyLibermanPA @demisto/content-leaders
-/Tests/Marketplace/versions-metadata.json @yaakovpraisler
 /Config/corepacks_override.json @yaakovpraisler
 
 # Docker native image
 /Tests/docker_native_image_config.json @JudahSchwartz @shmuel44
 
-# Marketplace & Upload-Flow
-/Tests/scripts/create_artifacts_graph/create_artifacts.py @RosenbergYehuda
-/Tests/Marketplace/upload_git_snapshot.py @yaakovpraisler
-/Tests/Marketplace/install_packs.sh @yaakovpraisler
-/Tests/Marketplace/configure_and_install_packs.py @yaakovpraisler
-/Tests/Marketplace/copy_and_upload_packs.py @yaakovpraisler
-/Tests/Marketplace/marketplace_services.py @yaakovpraisler @RosenbergYehuda
-/Tests/Marketplace/marketplace_statistics.py @yaakovpraisler
-/Tests/Marketplace/marketplace_constants.py @yaakovpraisler
-/Tests/Marketplace/zip_packs.py @yaakovpraisler
-/Tests/Marketplace/upload_packs.py @yaakovpraisler @RosenbergYehuda
-/Tests/Marketplace/packs_dependencies.py @yaakovpraisler
-/Tests/Marketplace/search_and_install_packs.py @yaakovpraisler
-/Tests/scripts/prepare_content_packs_for_testing.sh @yaakovpraisler
-/Utils/trigger_test_upload_flow.sh @yaakovpraisler
-/Utils/trigger_upload_packs_to_production.sh @yaakovpraisler
-/Utils/should_trigger_test_upload.sh @yaakovpraisler
-/Utils/test_upload_flow/* @yaakovpraisler
-
 # Test Collection
-/Tests/scripts/collect_tests @dorschw @michal-dagan
 /Tests/conf.json @sapirshuker
 
 # PANW Products
@@ -73,28 +52,11 @@
 /Packs/CommonScripts/Scripts/ExtractEmailV2/* @Ni-Knight
 /Packs/CommonScripts/Scripts/UnEscapeIPs/* @Ni-Knight
 
-
 # Build related
 .circleci/config.yml @yucohen
-.gitlab/ci/* @yucohen
-.gitlab/* @yucohen
-.gitlab-ci.yml @yucohen
-/Tests/scripts/wait_in_line_for_cloud_env.sh @yucohen
-/Tests/scripts/uninstall_packs_and_reset_bucket_cloud.sh @yucohen
-/Tests/Marketplace/search_and_uninstall_pack.py @yucohen
-/Tests/scripts/install_content_and_test_integrations.sh @yucohen
-/Tests/configure_and_test_integration_instances.py @yucohen
-/Tests/scripts/print_cloud_machine_details.sh @yucohen
-/Tests/scripts/run_tests.sh @yucohen
-/Tests/scripts/download_demisto_conf.sh @yucohen
-Tests/scripts/test_modeling_rules.sh @AradCarmi
-Tests/scripts/lock_cloud_machines.py @yucohen
-Tests/Marketplace/server_content_items.json @dantavori
-validation_config.toml @YuvHayun @JudahSchwartz @anara123 @SamuelFain
 
 # SDK Related
-.gitlab/ci/.gitlab-ci.sdk-nightly.yml @SamuelFain
-.pre-commit-config_template.yaml @SamuelFain
+.pre-commit-config_template.yaml @SamuelFain @YuvHayun
 
 # XDR Related
 /Packs/CortexXDR/Integrations/ @maimorag
@@ -118,9 +80,14 @@ Packs/ApiModules/Scripts/DemistoClassApiModule/DemistoClassApiModule.py @dantavo
 
 # ML scripts
 /Packs/ML/ @jlevypaloalto
-/Packs/PhishingURL/Scripts/DBotPredictURLPhishing/ @jlevypaloalto
+/Packs/PhishingURL/ @jlevypaloalto
+/Packs/Phishing/Scripts/PhishingDedupPreprocessingRule @jlevypaloalto
+/Packs/Phishing/Scripts/FindDuplicateEmailIncidents @jlevypaloalto
+/Packs/Base/Scripts/DrawRelatedIncidentsCanvas@jlevypaloalto
+/Packs/Campaign/Scripts/FindEmailCampaign/ @jlevypaloalto
 /Packs/CortexXDR/Scripts/DBotGroupXDRIncidents/ @jlevypaloalto
 /Packs/CommonScripts/Scripts/DBotUpdateLogoURLPhishing/ @jlevypaloalto
+/Packs/Base/Scripts/FindSimilarIncidentsByText/ @jlevypaloalto
 /Packs/Base/Scripts/DBotTrainTextClassifierV2/ @jlevypaloalto
 /Packs/Base/Scripts/DBotShowClusteringModelInfo/ @jlevypaloalto
 /Packs/Base/Scripts/DBotPredictPhishingWords/ @jlevypaloalto
