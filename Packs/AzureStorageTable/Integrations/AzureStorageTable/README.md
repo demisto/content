@@ -2,9 +2,11 @@
 Create and Manage Azure Storage Tables and Entities.
 This integration was integrated and tested with version "2020-10-02" of Azure Storage Table
 
-## Configure Azure Storage Table on Cortex XSOAR
+## Configure Azure Storage Table on Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+1. * For XSOAR 6.x users: Navigate to **Settings** > **Integrations** > **Instances**.
+   * For XSOAR 8.x users: Navigate to **Settings & Info** > **Settings** > **Integrations** > **Instances**.
+   * For XSIAM users: Navigate to **Settings** > **Configurations** > **Data Collection** > **Automation & Feed Integrations**.
 2. Search for Azure Storage Table.
 3. Click **Add instance** to create and configure a new integration instance.
 
@@ -28,7 +30,7 @@ please make sure your SAS token contains the following permissions:
 
 * Review and select "Generate".
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### azure-storage-table-create
 ***

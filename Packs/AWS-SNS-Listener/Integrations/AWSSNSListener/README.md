@@ -1,9 +1,11 @@
 Amazon Simple Notification Service (SNS) is a managed service that provides message delivery from publishers to subscribers.
 This integration was integrated and tested with version January 2024 of AWS-SNS-Listener.
 
-## Configure AWS-SNS-Listener on Cortex XSOAR
+## Configure AWS-SNS-Listener on Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+1. * For XSOAR 6.x users: Navigate to **Settings** > **Integrations** > **Instances**.
+   * For XSOAR 8.x users: Navigate to **Settings & Info** > **Settings** > **Integrations** > **Instances**.
+   * For XSIAM users: Navigate to **Settings** > **Configurations** > **Data Collection** > **Automation & Feed Integrations**.
 2. Search for AWS-SNS-Listener.
 3. Click **Add instance** to create and configure a new integration instance.
 
@@ -24,5 +26,5 @@ This integration was integrated and tested with version January 2024 of AWS-SNS-
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.

@@ -61,7 +61,7 @@ To configure a Microsoft integration that uses this authorization flow with a se
 If you are using Device Code Flow or Authorization Code Flow, for testing your authentication and connectivity to the Azure SQL Management service run the ***!azure-sql-auth-test*** command. 
 If you are using Client Credentials Flow, click **Test** when you are configuring the instance.
 
-## Configure Azure SQL Management on Cortex XSOAR
+## Configure Azure SQL Management on Cortex
 
 In both options below, the [device authorization grant flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code) is used.
 
@@ -88,7 +88,7 @@ At the end of the process you'll see a message that you've logged in successfull
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### azure-sql-auth-start

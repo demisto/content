@@ -3,9 +3,11 @@ Use Anomali ThreatStream to query and submit threats.
 Some changes have been made that might affect your existing content. 
 If you are upgrading from a previous version of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-anomali-threatstream-v3).
 
-## Configure Anomali ThreatStream v3 on Cortex XSOAR
+## Configure Anomali ThreatStream v3 on Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+1. * For XSOAR 6.x users: Navigate to **Settings** > **Integrations** > **Instances**.
+   * For XSOAR 8.x users: Navigate to **Settings & Info** > **Settings** > **Integrations** > **Instances**.
+   * For XSIAM users: Navigate to **Settings** > **Configurations** > **Data Collection** > **Automation & Feed Integrations**.
 2. Search for Anomali ThreatStream v3.
 3. Click **Add instance** to create and configure a new integration instance.
 
@@ -44,7 +46,7 @@ If the indicator `confidence` value is above the threshold parameter value, the 
 For example, if in the instance configuration you set **File threshold** to 10 and the `confidence` value  is 15, the DBotScore is set to 3 (Malicious).
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### ip
 ***

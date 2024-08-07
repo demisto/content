@@ -3,9 +3,11 @@ Use the AutoFocus Feeds integration to fetch indicators from AutoFocus.
 For more information click [here](https://docs.paloaltonetworks.com/autofocus/autofocus-admin/autofocus-feeds.html).
 TIM customers that upgraded to version 6.2 or above, can have the API Key pre-configured in their main account so no additional input is needed. To use this feature, upgrade your license so it includes the license key.
 
-## Configure AutoFocus Feed on Cortex XSOAR
+## Configure AutoFocus Feed on Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+1. * For XSOAR 6.x users: Navigate to **Settings** > **Integrations** > **Instances**.
+   * For XSOAR 8.x users: Navigate to **Settings & Info** > **Settings** > **Integrations** > **Instances**.
+   * For XSIAM users: Navigate to **Settings** > **Configurations** > **Data Collection** > **Automation & Feed Integrations**.
 2. Search for AutoFocus Feed.
 3. Click **Add instance** to create and configure a new integration instance.
 
@@ -28,7 +30,7 @@ TIM customers that upgraded to version 6.2 or above, can have the API Key pre-co
 
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### Get Indicators

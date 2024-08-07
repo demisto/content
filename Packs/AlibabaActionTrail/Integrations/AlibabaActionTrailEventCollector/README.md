@@ -1,7 +1,7 @@
 Alibaba log event collector integration for XSIAM.
 This integration was integrated and tested with API version 0.6 of Alicloud Log Service.
 
-## Configure Alibaba Action Trail Event Collector on Cortex XSOAR
+## Configure Alibaba Action Trail Event Collector on Cortex XSIAM
 
 1. Navigate to **Settings** > **Configurations** > **Data Collection** > **Automation & Feed Integrations**.
 2. Search for Alibaba Action Trail Event Collector.

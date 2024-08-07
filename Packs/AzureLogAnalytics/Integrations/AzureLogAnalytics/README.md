@@ -70,9 +70,11 @@ Follow these steps for client-credentials configuration.
 
 To get the **Subscription ID**, **Workspace Name**, **Workspace ID** and **Resource Group** parameters, navigate in the Azure Portal to **Azure Sentinel > YOUR-WORKSPACE > Settings** and click the **Workspace Settings** tab.
 
-## Configure Azure Log Analytics on Cortex XSOAR
+## Configure Azure Log Analytics on Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+1. * For XSOAR 6.x users: Navigate to **Settings** > **Integrations** > **Instances**.
+   * For XSOAR 8.x users: Navigate to **Settings & Info** > **Settings** > **Integrations** > **Instances**.
+   * For XSIAM users: Navigate to **Settings** > **Configurations** > **Data Collection** > **Automation & Feed Integrations**.
 2. Search for Azure Log Analytics.
 3. Click **Add instance** to create and configure a new integration instance.
 
@@ -121,7 +123,7 @@ To get the **Subscription ID**, **Workspace Name**, **Workspace ID** and **Resou
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### azure-log-analytics-execute-query

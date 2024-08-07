@@ -1,9 +1,11 @@
 Amazon Web Services CloudTrail.
 This integration was integrated and tested with version 1.0.11 of AWS - CloudTrail.
 
-## Configure AWS - CloudTrail on Cortex XSOAR
+## Configure AWS - CloudTrail on Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+1. * For XSOAR 6.x users: Navigate to **Settings** > **Integrations** > **Instances**.
+   * For XSOAR 8.x users: Navigate to **Settings & Info** > **Settings** > **Integrations** > **Instances**.
+   * For XSIAM users: Navigate to **Settings** > **Configurations** > **Data Collection** > **Automation & Feed Integrations**.
 2. Search for AWS - CloudTrail.
 3. Click **Add instance** to create and configure a new integration instance.
 
@@ -24,7 +26,7 @@ This integration was integrated and tested with version 1.0.11 of AWS - CloudTra
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### aws-cloudtrail-create-trail

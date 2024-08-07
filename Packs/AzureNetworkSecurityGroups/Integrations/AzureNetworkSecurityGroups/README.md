@@ -72,9 +72,11 @@ In order to use the Cortex XSOAR Azure application, use the default application 
 
 You only need to fill in your subscription ID and resource group name.
 
-## Configure Azure Network Security Groups on Cortex XSOAR
+## Configure Azure Network Security Groups on Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+1. * For XSOAR 6.x users: Navigate to **Settings** > **Integrations** > **Instances**.
+   * For XSOAR 8.x users: Navigate to **Settings & Info** > **Settings** > **Integrations** > **Instances**.
+   * For XSIAM users: Navigate to **Settings** > **Configurations** > **Data Collection** > **Automation & Feed Integrations**.
 2. Search for Azure Network Security Groups.
 3. Click **Add instance** to create and configure a new integration instance.
 
@@ -97,7 +99,7 @@ You only need to fill in your subscription ID and resource group name.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### azure-nsg-security-groups-list

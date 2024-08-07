@@ -9,7 +9,7 @@ This integration was integrated and tested with AttackIQ FireDrill v2.15.96.
 *   Retrieves detailed assessment results.
 *   Triggers other playbook-based assessment results.
 
-## Configure AttackIQ Platform on Cortex XSOAR
+## Configure AttackIQ Platform on Cortex
 
 1.  Navigate to **Settings** > **Integrations**  > **Servers & Services**.
 2.  Search for AttackIQ Platform.
@@ -27,7 +27,7 @@ This integration was integrated and tested with AttackIQ FireDrill v2.15.96.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
+You can execute these commands from the Cortex CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### Get assessment information by ID
 

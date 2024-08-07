@@ -24,10 +24,12 @@ To get your API key, you need to add an authorization code, and then activate th
 Use the API key when configuring the integration.
 For more information on activating the license see [Activating AutoFocus Licenses](https://docs.paloaltonetworks.com/autofocus/autofocus-admin/get-started-with-autofocus/activate-autofocus-licenses.html).
 
-## Configure AutoFocus V2 on Cortex XSOAR
+## Configure AutoFocus V2 on Cortex
 ---
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+1. * For XSOAR 6.x users: Navigate to **Settings** > **Integrations** > **Instances**.
+   * For XSOAR 8.x users: Navigate to **Settings & Info** > **Settings** > **Integrations** > **Instances**.
+   * For XSIAM users: Navigate to **Settings** > **Configurations** > **Data Collection** > **Automation & Feed Integrations**.
 2. Search for AutoFocus V2.
 3. Click **Add instance** to create and configure a new integration instance.
 
@@ -48,7 +50,7 @@ For more information on activating the license see [Activating AutoFocus License
 
 ## Commands
 ---
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
+You can execute these commands from the Cortex CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### Search for samples
 ---

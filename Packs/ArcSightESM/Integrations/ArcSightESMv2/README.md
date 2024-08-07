@@ -43,7 +43,7 @@ Cortex XSOAR is designed for an automatic response, so make sure to define condi
 6.Save the Query Viewer resource ID integration configuration in Cortex XSOAR.
 
 
-# Configure ArcSight ESM on Cortex XSOAR
+# Configure ArcSight ESM on Cortex
 1. Navigate to Settings>Integrations>Servers & Services.
 2. Search for ArcSight ESM.
 3. Click **Add instance** to create and configure a new integration instance.
@@ -77,7 +77,7 @@ The integration can fetch events and cases.
 - In case of slowness, timeouts or crashes try reducing the max fetch parameter.
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of automation, or in a playbook.
+You can execute these commands from the Cortex CLI, as part of automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 1. (Deprecated) Get all case resource IDs: as-get-all-cases

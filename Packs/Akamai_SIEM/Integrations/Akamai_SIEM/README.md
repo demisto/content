@@ -36,7 +36,7 @@
     <li>Now use the credentials for configure Akamai WAF in Cortex XSOAR</li>
 </ol>
 
-<h2>Configure Akamai WAF SIEM on Cortex XSOAR</h2>
+<h2>Configure Akamai WAF SIEM on Cortex</h2>
 <ol>
     <li>Navigate to&nbsp;<strong>Settings</strong>&nbsp;&gt;&nbsp;<strong>Integrations</strong>
         &nbsp;&gt;&nbsp;<strong>Servers &amp; Services</strong>.
@@ -153,7 +153,7 @@
 
 <h2>Commands</h2>
 <p>
-    You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+    You can execute these commands from the Cortex CLI, as part of an automation, or in a playbook.
     After you successfully execute a command, a DBot message appears in the War Room with the command details.
 </p>
 <ol>

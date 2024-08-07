@@ -12,10 +12,12 @@ Fetch incidents is based on using Durable Topic Subscribers, in order to fetch m
 - Read messages from queue or topic
 - Fetch messages from queue or topic and create incidents in Cortex XSOAR per message
 
-## Configure ActiveMQ on Cortex XSOAR
+## Configure ActiveMQ on Cortex
 ---
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+1. * For XSOAR 6.x users: Navigate to **Settings** > **Integrations** > **Instances**.
+   * For XSOAR 8.x users: Navigate to **Settings & Info** > **Settings** > **Integrations** > **Instances**.
+   * For XSIAM users: Navigate to **Settings** > **Configurations** > **Data Collection** > **Automation & Feed Integrations**.
 2. Search for ActiveMQ.
 3. Click **Add instance** to create and configure a new integration instance.
 
@@ -43,7 +45,7 @@ with the message content.
 
 ## Commands
 ---
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 1. activemq-send
 2. activemq-subscribe
