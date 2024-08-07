@@ -25,9 +25,10 @@ ALLOW_RESPONSE_AS_BINARY = is_demisto_version_ge(version=ALLOW_BIN_CONTENT_RESPO
 
 class CoreClient(BaseClient):
 
-    def __init__(self, base_url: str, headers: dict, timeout: int = 120, proxy: bool = False, verify: bool = False):
+    def __init__(self, base_url: str, headers: dict, timeout: int = 120, proxy: bool = False, verify: bool = False, is_core: bool = False):
         super().__init__(base_url=base_url, headers=headers, proxy=proxy, verify=verify)
         self.timeout = timeout
+        self.is_core = is_core
         # For Xpanse tenants requiring direct use of the base client HTTP request instead of the _apiCall,
 
     def _http_request(self, method, url_suffix='', full_url=None, headers=None, json_data=None,
@@ -75,7 +76,19 @@ class CoreClient(BaseClient):
                 The amount of time (in seconds) that a request will wait for a client to
                 establish a connection to a remote machine before a timeout occurs.
                 can be only float (Connection Timeout) or a tuple (Connection Timeout, Read Timeout).
+            
+            
+            :type resp_type: ``str``
+            :param resp_type: Response type when using the _http_request
+            
+            
+            :type response_data_type: ``str`` or None
+            :param response_data_type: Response type when using the apiCall- 'bin' if we expect a 'binary' response and None as
+            default.
         '''
+        if self.is_core and response_data_type == 'bin' and not ALLOW_RESPONSE_AS_BINARY:
+            raise DemistoException(f"Getting binary data from server is allowed from version "
+                        f"{ALLOW_BIN_CONTENT_RESPONSE_SERVER_VERSION}-{ALLOW_BIN_CONTENT_RESPONSE_BUILD_NUM}.")
         if (not FORWARD_USER_RUN_RBAC):
             return BaseClient._http_request(self,  # we use the standard base_client http_request without overriding it
                                             method=method,
@@ -92,9 +105,6 @@ class CoreClient(BaseClient):
         headers = headers if headers else self._headers
         data = json.dumps(json_data) if json_data else data
         address = full_url if full_url else urljoin(self._base_url, url_suffix)
-        if response_data_type == 'bin' and not ALLOW_RESPONSE_AS_BINARY:
-            raise DemistoException(f"Getting binary data from server is allowed from version "
-                                   f"{ALLOW_BIN_CONTENT_RESPONSE_SERVER_VERSION}-{ALLOW_BIN_CONTENT_RESPONSE_BUILD_NUM}.")
         response = demisto._apiCall(
             method=method,
             path=address,
