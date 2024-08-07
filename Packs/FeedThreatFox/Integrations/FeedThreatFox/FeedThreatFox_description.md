@@ -4,6 +4,8 @@ ThreatFox is a free platform from abuse.ch with the goal of sharing indicators o
 
 The ThreatFox Feed allows users to fetch indicators from ThreatFox.
 
+Note, the fetch interval needs to be a whole number of days: 1, 2, 3, 4, 5, 6, or 7.
+
 A manual command is also available to retrieve indicators from ThreatFox as needed.
 For more details, refer to the ThreatFox documentation: <https://threatfox.abuse.ch/api/>
 

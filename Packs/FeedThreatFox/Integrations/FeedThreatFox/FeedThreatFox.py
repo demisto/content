@@ -15,7 +15,7 @@ urllib3.disable_warnings()
 ''' CONSTANTS '''
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
-LOG = "THREAT FOX-"
+LOG_LINE = "THREAT FOX-"
 
 
 class Client(BaseClient):
@@ -43,12 +43,14 @@ class Client(BaseClient):
    
         
 def check_args_for_query(args: dict)->tuple[bool, str|None]:
-    """Checks that there are no extra params and no missing ones for the query.
+    """Checks that the args given are valid.
+       Valid args are: Exactly one field to search by (one of these:
+       'search_term', 'id', 'hash', 'tag', 'malware')
     Args:
         args: dict
     Returns:
         Boolean: True if params are good and False otherwise.
-        Str: The query type (one of these: 'search_term', 'id', 'hash', 'tag', 'malware', 'days').
+        Str: The query type (one of these: 'search_term', 'id', 'hash', 'tag', 'malware').
             If args are not good than it will be None.
     """
     args_lst = list(args.keys())
@@ -165,8 +167,8 @@ def parse_indicator_for_fetch(indicator:dict, with_ports:bool, create_relationsh
         description = indicator.get('threat_type_desc'),
         malwarefamily = indicator.get('malware_printable') if indicator.get('malware_printable') != 'Unknown malware' else None,
         aliases = indicator.get('malware_alias'),
-        firstseenbysource = date(indicator.get('first_seen')),
-        lastseenbysource = date(indicator.get('last_seen')),
+        firstseenbysource = to_date(indicator.get('first_seen')),
+        lastseenbysource = to_date(indicator.get('last_seen')),
         reportedby = indicator.get('reporter'),
         Tags = tags(indicator, with_ports),
         publications = publications(indicator),
@@ -299,12 +301,12 @@ def threatfox_get_indicators_command(client: Client, args: dict[str, Any]) -> Co
     
     query = create_query(query_type, id, search_term, hash, tag, malware, limit=limit)
 
-    demisto.debug(f'{LOG} calling api with {query=}')
+    demisto.debug(f'{LOG_LINE} calling api with {query=}')
     try:
         result = client.get_indicators_request(query)
     except Exception:
         if 'malware' in query:  # if illegal malware is provided an 502 error response returns
-            demisto.error('make sure..')
+            demisto.error('Make sure the malware you entered in valid')
         raise
             
     query_status = result.get('query_status')
@@ -313,7 +315,7 @@ def threatfox_get_indicators_command(client: Client, args: dict[str, Any]) -> Co
     if query_status != 'ok' and query_status:
         raise DemistoException(f'failed to run command, {query_status=}, {query_data=}')
     
-    demisto.debug(f'{LOG} got indicators')
+    demisto.debug(f'{LOG_LINE} got indicators')
     
     parsed_indicators = parse_indicators_for_get_command(result.get('data') or result)
     human_readable = tableToMarkdown(name='Indicators', t=parsed_indicators,
@@ -343,17 +345,17 @@ def fetch_indicators_command(client: Client, with_ports: bool, confidence_thresh
     if response.get('query_status') != 'ok':
         raise DemistoException("couldn't fetch")  # write something better
     
-    demisto.debug(f'{LOG} got {response=}')  # erase
+    demisto.debug(f'{LOG_LINE} got {response=}')  # erase
     
     results = []
        
     for indicator in response['data']:
         
         if indicator.get('ioc_type') == 'sha3_384_hash':
-            demisto.debug(f'{LOG} got indicator of indicator type "sha3" skipping it')
+            demisto.debug(f'{LOG_LINE} got indicator of indicator type "sha3" skipping it')
             continue
         if (arg_to_number(indicator.get('confidence_level')) or 75) < confidence_threshold:
-            demisto.debug(f'{LOG} got indicator with low confidence level, skipping it')
+            demisto.debug(f'{LOG_LINE} got indicator with low confidence level, skipping it')
             continue
         
         results.append(parse_indicator_for_fetch(indicator, with_ports, create_relationship, tlp_color))
@@ -392,15 +394,12 @@ def main() -> None:
             next_run, res = fetch_indicators_command(client=client, with_ports=with_ports, confidence_threshold=confidence_threshold,
                                           create_relationship=create_relationship, interval=interval, tlp_color=tlp_color, last_run=demisto.getLastRun())
             for iter_ in batch(res, batch_size=2000):
-                demisto.debug(f"{LOG} {iter_=}")
+                demisto.debug(f"{LOG_LINE} {iter_=}")
                 demisto.createIndicators(iter_)
             demisto.setLastRun({"last_successful_run": next_run})
 
     
-    #except Exception as e:
-    #    raise Exception(e)
     except Exception as e:
-        #print(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
 

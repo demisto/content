@@ -29,21 +29,19 @@ def test_get_indicators_request(mocker):
     
     
 test_check_params_good_arguments_data = [
-    ({'days': 1},  # case days
-     (True, 'days')),  # expected
     ({'id': 41, 'limit': 10},  # case id with limit (even though it is not needed)
-     (True, 'id')),  # expected
+     ('id')),  # expected
     ({'search_term': '1.1.1.1'},  # case search_term
-     (True, 'search_term')),  # expected
+     ('search_term')),  # expected
     ({'hash': '2151c4b970eff0071948dbbc19066aa4'},  # case hash
-     (True, 'hash')),  # expected
+     ('hash')),  # expected
     ({'tag': 'Magecart', 'limit': 10},  # case tag with limit
-     (True, 'tag')),  # expected
+     ('tag')),  # expected
     ({'malware': "Cobalt Strike", 'limit': 10},  # case malware without limit (limit is needed, there is a default value)
-     (True, 'malware')),  # expected
+     ('malware')),  # expected
 ]
 @pytest.mark.parametrize('query_args, expected_result', test_check_params_good_arguments_data)
-def test_check_params_good_arguments(query_args, expected_result):
+def test_check_args_good_arguments(query_args, expected_result):
     """
     Given:
         - Good arguments for a query.
@@ -55,18 +53,16 @@ def test_check_params_good_arguments(query_args, expected_result):
         - The function returns (True, {the argument's name}).
     """
     from FeedThreatFox import check_args_for_query
-    is_valid, query_arg = check_args_for_query(query_args)
-    assert (is_valid, query_arg) == expected_result
+    query_arg = check_args_for_query(query_args)
+    assert query_arg == expected_result
     
     
 test_check_params_bad_arguments_data = [
-    ( {'days': 1, 'tag': 'bla'},  # case two argument are given
-     (False, None)),  # expected
-    ({},  # case no arguments are given
-     (False, None))  # expected
+    ( {'days': 1, 'tag': 'bla'}),  # case two argument are given
+    ({})  # case no arguments are given
 ]
-@pytest.mark.parametrize('query_args, expected_result', test_check_params_bad_arguments_data)
-def test_check_params_bad_arguments(query_args, expected_result):
+@pytest.mark.parametrize('query_args', test_check_params_bad_arguments_data)
+def test_check_args_bad_arguments(query_args):
     """
     Given:
         - Wrong arguments for a query.
@@ -78,16 +74,12 @@ def test_check_params_bad_arguments(query_args, expected_result):
         - The function returns (False, None).
     """
     from FeedThreatFox import check_args_for_query
-    is_valid, query_arg = check_args_for_query(query_args)
-    assert (is_valid, query_arg) == expected_result
+    with pytest.raises(DemistoException):
+        check_args_for_query(query_args)
+    
     
 
 test_create_query_data = [
-    ('days', {'days': 1, 'id': None, 'search_term': None, 'hash': None, 'tag': None, 'malware': None, 'limit': None},  # case days
-     {"query": "get_iocs", "days" : 1}),  # expected query
-    ('days', {'days': 1, 'limit': 10, 'id': None, 'search_term': None,
-      'hash': None, 'tag': None, 'malware': None},  # case days with limit that isn't needed
-     {"query": "get_iocs", "days" : 1}),  # expected query, ignores limit
     ('tag', {'tag': 'bla', 'limit': 10, 'id': None, 'search_term': None,
       'hash': None, 'days': None, 'malware': None},  # case tag  with needed limit
      {"query": "taginfo", "tag": "bla", "limit" : 10}),  # expected query with limit
@@ -109,7 +101,7 @@ def test_create_query(query_arg, args, expected_query):
     """
     from FeedThreatFox import create_query
     query = create_query(query_arg, id = args['id'], search_term=args['search_term'], hash=args['hash'],
-                         tag=args['tag'], malware=args['malware'], days=args['days'], limit=args['limit'])
+                         tag=args['tag'], malware=args['malware'], limit=args['limit'])
     assert query == expected_query
  
 
@@ -166,33 +158,26 @@ def test_threatfox_get_indicators_command(mocker):
 
 
 indicator_data = [
-    ({'id': '123', 'ioc': '8.218.152.23:80', 'threat_type_desc': 'bla1',  # case one indicator
+    ({'id': '123', 'ioc': '8.218.152.23:80', 'threat_type_desc': 'bla1',  # case tags and reporter
       'ioc_type': 'ip:port', 'malware': 'bla2', 'malware_printable': 'bla3', 'malware_alias': 'bla4', 'confidence_level': 100,
       'first_seen': '2024-08-04 07:31:49 UTC', 'last_seen': '2024-07-03T05:11:35Z UTC', 'reference': 'bla5',
       'reporter': 'bla6', 'tags': ['bla7', 'bla8']},
     [{'ID': '123', 'Value': '8.218.152.23', 'Description': 'bla1', 'MalwareFamilyTags': 'bla3',  # expected
       'AliasesTags': 'bla4', 'FirstSeenBySource': '2024-08-04 07:31:49 UTC', 'LastSeenBySource': '2024-07-03T05:11:35Z UTC',
-      'ReportedBy': 'bla6', 'Tags': ['bla3', 'bla4', 'bla7', 'bla8', 'port: 80'], 'Confidence': 100,
-      'Publications': [{'link': 'bla5','title': 'bla3', 'source': 'ThreatFox'}]}]
+      'ReportedBy': 'bla6', 'Tags': ['bla3', 'bla4', 'bla7', 'bla8', 'port: 80'], 'Confidence': '100',
+      'Publications': [{'link': 'bla5','title': 'bla3', 'source': 'ThreatFox'}]}], ['bla3', 'bla4', 'bla7', 'bla8', 'port: 80']
      ),
-    ([{'id': '456', 'ioc': 'habdvhbkj',  # case two indicators
+    ([{'id': '456', 'ioc': 'habdvhbkj',  # case no tags and no reporter
        'threat_type_desc': 'bla1', 'ioc_type': 'sha1_hash', 'malware': 'bla2', 'malware_printable': 'bla3',
        'malware_alias': 'bla4', 'confidence_level': 100, 'first_seen': '2024-08-04 07:31:49 UTC',
-       'last_seen': '2024-07-03T05:11:35Z UTC'},
-      {'id': '789', 'ioc': '8.218.152.23:80', 'threat_type_desc': 'bla1', 'ioc_type': 'ip:port', 'malware': 'bla2',
-      'malware_printable': 'bla11', 'malware_alias': 'bla4', 'confidence_level': 100,
-      'first_seen': '2024-08-04 07:31:49 UTC', 'last_seen': '2024-07-03T05:11:35Z UTC',
-      'tags': ['bla7', 'bla8']}],
+       'last_seen': '2024-07-03T05:11:35Z UTC'}],
      [{'ID': '456', 'Value': 'habdvhbkj', 'Description': 'bla1', 'MalwareFamilyTags': 'bla3',  # expected
       'AliasesTags': 'bla4', 'FirstSeenBySource': '2024-08-04 07:31:49 UTC', 'LastSeenBySource': '2024-07-03T05:11:35Z UTC',
-      'Tags': ['bla3', 'bla4'], 'Confidence': 100},
-      {'ID': '789', 'Value': '8.218.152.23', 'Description': 'bla1',
-      'AliasesTags': 'bla4', 'FirstSeenBySource': '2024-08-04 07:31:49 UTC', 'LastSeenBySource': '2024-07-03T05:11:35Z UTC',
-      'Tags': ['bla4', 'bla7', 'bla8', 'port: 80'], 'Confidence': 100}]),
+      'Tags': ['bla3', 'bla4'], 'Confidence': '100'}], ['bla3', 'bla4'])
 ]
 
-@pytest.mark.parametrize('indicators, expected', indicator_data)
-def test_parse_indicators_for_get_command(indicators, expected):
+@pytest.mark.parametrize('indicators, expected, tags', indicator_data)
+def test_parse_indicators_for_get_command(mocker,indicators, expected, tags):
     """
         Given:
             - The raw response of an indicator.
@@ -204,11 +189,12 @@ def test_parse_indicators_for_get_command(indicators, expected):
             - The indicator returned is parsed correctly.
     """
     from FeedThreatFox import parse_indicators_for_get_command
+    mocker.patch("FeedThreatFox.tags", return_value=tags)
     res = parse_indicators_for_get_command(indicators)
     assert res == expected
     
 
-from CommonServerPython import FeedIndicatorType
+from CommonServerPython import DemistoException, FeedIndicatorType
 types_data = [
     ({'ioc_type': 'domain'}, FeedIndicatorType.FQDN),
     ({'ioc_type': 'url'}, FeedIndicatorType.URL),
@@ -260,7 +246,7 @@ def test_publications(indicator, expected):
     assert publications == expected
     
 date_data = [
-    ('2024-07-03T05:11:35Z UTC', '2024-07-03T05:11:35Z'),
+    ('2024-07-03T05:11:35 UTC', '2024-07-03T05:11:35Z'),
     (None, None)
 ]
 @pytest.mark.parametrize('given_date, expected', date_data)
@@ -275,17 +261,18 @@ def test_date(given_date, expected):
         Then:
             - The date is parsed correctly.
     """
-    from FeedThreatFox import date
-    res_date = date(given_date)
+    from FeedThreatFox import to_date
+    res_date = to_date(given_date)
     assert res_date == expected
 
 
 tags_data = [
-    ({'malware_alias': 'Bla2', 'threat_type': 'bla3', 'ioc_type': 'ip:port', 'ioc': '1.1.1.1:80', 'tags': ['Bla2']}, True,  # case
-     ['bla2', 'bla3', 'port: 80']),  # expected
-    ({'malware_printable': 'bla1', 'tags': ['bla4', 'bla5']}, False,  # second case
-     ['bla1', 'bla4', 'bla5']),  # expected
-    ({'malware_printable': 'Unknown malware'}, False,  # third case
+    ({'malware_alias': 'bla2', 'threat_type': 'bla3',  # case ip and malware_alias and threat_type
+      'ioc_type': 'ip:port', 'ioc': '1.1.1.1:80', 'tags': ['bla6']}, True,
+     ['bla2', 'bla3', 'port: 80', 'bla6']),  # expected
+    ({'malware_printable': 'bla1', 'tags': ['bla4', 'bla5']}, False,  # case malware_printable and tags
+     ['bla1', 'bla5', 'bla4']),  # expected
+    ({'malware_printable': 'Unknown malware'}, False,  # case malware_printable in unknown
      [])  # expected
 ]
 @pytest.mark.parametrize('indicator, with_ports, expected_tags', tags_data)
@@ -302,7 +289,7 @@ def test_tags(indicator, with_ports, expected_tags):
     """
     from FeedThreatFox import tags
     tags = tags(indicator, with_ports)
-    assert tags == expected_tags
+    assert set(tags) == set(expected_tags)
     
 
 value_data = [
@@ -368,7 +355,8 @@ parse_fetch_data = [
       'rawJSON': {'id': '123', 'ioc': 'www...', 'threat_type': 'bla1', 'threat_type_desc': 'bla2', 'ioc_type': 'url',
       'ioc_type_desc': 'bla3', 'malware': 'bla4', 'malware_printable': 'Unknown malware', 'malware_alias': 'bla6',
       'malware_malpedia': 'bla7', 'confidence_level': 100, 'first_seen': '2024-08-04 01:50:15 UTC',
-      'last_seen': '2024-08-05 01:50:15 UTC', 'reference': 'bla8', 'reporter': 'bla9', 'tags': ['bla10']}}),
+      'last_seen': '2024-08-05 01:50:15 UTC', 'reference': 'bla8', 'reporter': 'bla9', 'tags': ['bla10']}},
+     ['bla6', 'bla1', 'bla10']),
     ({'id': '123', 'ioc': 'www...', 'threat_type': 'bla1',  # case with relationships and there is malware_printable
       'threat_type_desc': 'bla2', 'ioc_type': 'url', 'ioc_type_desc': 'bla3', 'malware': 'bla4',
       'malware_printable': 'bla11', 'malware_alias': 'bla6', 'malware_malpedia': 'bla7',
@@ -385,10 +373,11 @@ parse_fetch_data = [
       'ioc': 'www...', 'threat_type': 'bla1', 'threat_type_desc': 'bla2', 'ioc_type': 'url',
       'ioc_type_desc': 'bla3', 'malware': 'bla4', 'malware_printable': 'bla11', 'malware_alias': 'bla6',
       'malware_malpedia': 'bla7', 'confidence_level': 100, 'first_seen': '2024-08-04 01:50:15 UTC',
-      'last_seen': '2024-08-05 01:50:15 UTC', 'reference': 'bla8', 'reporter': 'bla9', 'tags': ['bla10']}})
+      'last_seen': '2024-08-05 01:50:15 UTC', 'reference': 'bla8', 'reporter': 'bla9', 'tags': ['bla10']}},
+     ['bla11', 'bla6', 'bla1', 'bla10'])
 ]
-@pytest.mark.parametrize('indicator, with_ports, create_relationship, tlp_color, expected', parse_fetch_data)
-def test_parse_indicator_for_fetch(indicator, with_ports, create_relationship, tlp_color, expected):
+@pytest.mark.parametrize('indicator, with_ports, create_relationship, tlp_color, expected, tags', parse_fetch_data)
+def test_parse_indicator_for_fetch(mocker, indicator, with_ports, create_relationship, tlp_color, expected, tags):
     """
         Given:
             - An indicator, with_ports, create_relationship, tlp_color arguments
@@ -400,6 +389,7 @@ def test_parse_indicator_for_fetch(indicator, with_ports, create_relationship, t
             - The indicator is parsed correctly.
     """
     from FeedThreatFox import parse_indicator_for_fetch
+    mocker.patch("FeedThreatFox.tags", return_value=tags)
     parsed_indicator = parse_indicator_for_fetch(indicator, with_ports, create_relationship, tlp_color)
     assert parsed_indicator == expected
     

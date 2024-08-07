@@ -75,7 +75,7 @@ configuration:
   type: 1
   required: false
   section: Collect
-- display: Feed Fetch Interval (in days)
+- display: Feed Fetch Interval (in whole days)
   name: feedFetchInterval
   required: false
   defaultvalue: 1440
