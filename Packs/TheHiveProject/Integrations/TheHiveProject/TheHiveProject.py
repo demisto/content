@@ -927,9 +927,8 @@ def update_remote_system_command(client: Client, args: dict) -> str:
     parsed_args = UpdateRemoteSystemArgs(args)
     changes = {k: v for k, v in parsed_args.delta.items() if k in parsed_args.data}
     demisto.debug(f'Changes from update_remote_system: {changes}')
-    # Convert the value to integer as the api request
-    keys_to_convert = ['severity', 'tlp', 'pap']
-    changes = {k: (int(v) if k in keys_to_convert else v) for k, v in changes.items()}
+    # Convert the values: severity, pap and tlp to integer as the api request
+    changes = {k: (int(v) if v.isdigit() else v) for k, v in changes.items()}
     if parsed_args.remote_incident_id:
         # Apply the updates
         client.update_case(case_id=parsed_args.remote_incident_id, updates=changes)
