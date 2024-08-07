@@ -13,6 +13,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
 from email import encoders, message_from_string
+from email.message import Message
 import pytz
 import mimetypes
 import uuid
@@ -25,15 +26,15 @@ def makebuf(text):
     return BIO.MemoryBuffer(text)
 
 
-def create_pem_string(base64_cert) -> str:
+def create_pem_string(base64_cert: str) -> str:
     """This function takes the base64 encoded certificate received via
     ad-search in the 'UserCertificate' attribute and converts it to a PEM
 
     Args:
-        base64_cert (_type_): _description_
+        base64_cert (str): certificate string with no BEGIN or END markers
 
     Returns:
-        str: PEM string for the certificate
+        pemstring (str): PEM string for the certificate
     """
     pemstring = '-----BEGIN CERTIFICATE-----\n'
     pemstring += '\n'.join(
@@ -43,91 +44,223 @@ def create_pem_string(base64_cert) -> str:
     return pemstring
 
 
-def parse_multipart_message(msg: str):
+def handle_attachment(attachment_part: Message) -> None:
     """
-    This function extracts the contents from a MIME message.
-    Images (if any exist) will be added to the html_body,
+    Extracts and saves the attachment file to the context.
+    p7 files will be ignored.
+
+    Args:
+        attachment_part: attachment message part
+
+    """
+
+    fileName = attachment_part.get_filename()
+    if not fileName:
+        demisto.debug('Got nameless attachment, generating file name')
+        mime_type = attachment_part.get_content_type()
+        extension = mimetypes.guess_extension(mime_type) or '.bin'
+        fileName = f'attachment_{uuid.uuid4()}{extension}'
+
+    if (fileName.lower().endswith('.p7')
+            or fileName.lower().endswith('.p7', 0, -1)):
+        demisto.debug(f'Skipping p7 file: {fileName}')
+        return
+    # create the attachment
+    file_result = fileResult(fileName, attachment_part.get_payload(decode=True))
+
+    # check for error
+    if file_result['Type'] == entryTypes['error']:
+        demisto.error(file_result['Contents'])
+        raise Exception(file_result['Contents'])
+    # return the attachment to war room
+    return_results(file_result)
+
+
+def handle_image(image_part: Message, payload: Any) -> tuple[str, str, str] | None:
+    """
+    Handles the payload for an image, extracting the cid and image data
+
+    Args:
+        image_part: Image message part
+        payload: Message part payload
+
+    Returns:
+        (cid, content_type, image_data): Complete image data to allow embedding into the message
+
+    """
+    # Extract the CID images of the email in html
+    content_type = image_part.get_content_type()
+    image_data_base64 = base64.b64encode(payload).decode('utf-8')
+    cid = image_part.get('Content-Id')
+    if not cid:
+        return None
+
+    # Remove angle brackets if present around CID
+    cid = re.sub(r'<(.*?)>', r'\1', cid)
+    return (cid, content_type, image_data_base64)
+
+
+def extract_email_body(text_part: Message, payload: Any) -> tuple[str, str]:
+    """
+    Handles the payload for the email body part
+
+    Args:
+        text_part: Text message part
+        payload: Message part payload
+
+    Returns:
+        (email_body, body_type): Strings containing the email body, and the body type (text or html)
+
+    """
+    email_body = payload.decode(text_part.get_content_charset('utf-8'), errors='ignore')
+    body_type = 'text'
+    if text_part.get_content_type() == 'text/html':
+        body_type = 'html'
+        # Clean up whitespaces
+        email_body = re.sub(r'</head>\s*<body>', '</head><body>', email_body)
+
+    return email_body, body_type
+
+
+def patch_cid_with_urls(email_body: str, images: list[tuple[str, str, str]]) -> None:
+    """
+    Replaces html image references with their data urls
+
+    Args:
+        email_body (str): The html email message to patch
+        images (list): List of images found in the message, each containing (cid, type, data)
+
+    """
+    for cid, content_type, image_data_base64 in images:
+        cid_reference = 'cid:' + cid
+        data_url = f'data:{content_type};base64,{image_data_base64}'
+        email_body = email_body.replace(cid_reference, data_url)
+
+
+def parse_multipart_message(msg: str) -> tuple[str, str]:
+    """
+    Extracts the contents from a MIME message.
+    Images (if any exist) will be added to the html email_body,
     attachments will be added to the context directly.
 
     Args:
-        msg: String
+        msg (str): Message to parse
+
+    Returns:
+        (email_body, body_type): Strings containing the parsed email, and the message type (text or html)
 
     """
-    # Store attachments
     email_message = message_from_string(msg)
     if email_message.get_content_type() == 'multipart/signed':
         # The message is signed
-        return ['', '']
-    email_body = ''  # Initialize email_body to an empty string
-    email_html = ''  # Initialize email_html to an empty string
-    images = {}      # Initialize a list to store image data
-    cid = ''
+        return ('', '')
+    email_body = ''
+    body_type = ''
+    images = []  # type: list[tuple[str, str, str]]
 
     for part in email_message.walk():
+        if part.is_multipart():
+            continue
+
         content_type = part.get_content_type()
         if (content_type == 'application/pkcs7-signature'
                 or content_type == 'application/pkcs7-mime'
                 or content_type == 'application/x-pkcs7-mime'):
             # The message is signed
-            return ['', '']
-        if part.is_multipart():
-            continue
+            return ('', '')
 
-        # Extract attachments, ignore p7 files
         if part.get_content_disposition() == 'attachment':
-            fileName = part.get_filename()
-            if not fileName:
-                demisto.debug('Got nameless attachment, generating file name')
-                mime_type = part.get_content_type()
-                extension = mimetypes.guess_extension(mime_type) or '.bin'
-                fileName = f'attachment_{uuid.uuid4()}{extension}'
-
-            if (fileName.lower().endswith('.p7')
-                    or fileName.lower().endswith('.p7', 0, -1)):
-                demisto.debug(f'Skipping p7 file: {fileName}')
-                continue
-            # create the attachment
-            file_result = fileResult(fileName, part.get_payload(decode=True))
-
-            # check for error
-            if file_result['Type'] == entryTypes['error']:
-                demisto.error(file_result['Contents'])
-                raise Exception(file_result['Contents'])
-            # return the attachment to war room
-            return_results(file_result)
+            handle_attachment(part)
             continue
 
         payload = part.get_payload(decode=True)
         if not isinstance(payload, bytes):
             raise TypeError(f'Error in message.get_payload(decode=True), expected bytes, got: {type(payload)}')
 
-        # Extract the CID images of the email in html
         if part.get_content_maintype() == 'image':
-            content_type = part.get_content_type()
-            image_data_base64 = base64.b64encode(payload).decode('utf-8')
-            cid = part.get('Content-Id')
-            if cid:
-                # Remove angle brackets if present around CID
-                cid = re.sub(r'<(.*?)>', r'\1', cid)
-                images[cid] = (content_type, image_data_base64)
+            if image := handle_image(part, payload):
+                images.append(image)
 
-        # Extract the body of the email in html
-        elif part.get_content_type() == 'text/html':
-            email_html = payload.decode(part.get_content_charset('utf-8'), errors='ignore')
-            # Clean up whitespaces
-            email_html = re.sub(r'</head>\s*<body>', '</head><body>', email_html)
+        elif part.get_content_maintype() == 'text' and body_type != 'html':
+            email_body, body_type = extract_email_body(part, payload)
 
-        # Extract the body of the email in plain text if there is no html
-        elif part.get_content_maintype() == 'text' and not email_body and not email_html:
-            email_body = payload.decode(part.get_content_charset('utf-8'), errors='ignore')
+    if body_type == 'html':
+        patch_cid_with_urls(email_body, images)
 
-    # Replace CID references with data URLs
-    for cid, (content_type, image_data_base64) in images.items():
-        cid_reference = 'cid:' + cid
-        data_url = f'data:{content_type};base64,{image_data_base64}'
-        email_html = email_html.replace(cid_reference, data_url)
+    return (email_body, body_type)
 
-    return [email_body, email_html]
+
+def create_message_with_attachments(message: str, attach_ids: list[str]) -> str:
+    """
+    Creates a MIMEMultipart formatted message with message body and attachments
+
+    Args:
+        message (str): Message body
+        attach_ids (list): list of war room entries containing files to attach
+
+    Returns:
+        msg (str): Formatted mime message with attachments added
+
+    """
+    msg = MIMEMultipart()
+
+    is_html = bool(re.search(r'<.*?>', message))
+    if is_html:
+        msg.attach(MIMEText(message, 'html'))
+    else:
+        msg.attach(MIMEText(message, 'plain'))
+
+    # Add attachments to message
+    for attach_id in attach_ids:
+        try:
+            fp = demisto.getFilePath(attach_id)
+            file_path = fp['path']
+            attach_name = fp['name']
+        except Exception as ex:
+            raise Exception(f'Error while opening attachment id {attach_id}: {str(ex)}')
+        if isinstance(attach_name, list):
+            attach_name = attach_name[0]
+        part = MIMEBase('application', 'octet-stream')
+        with open(file_path, 'rb') as f:
+            part.set_payload(f.read())
+            encoders.encode_base64(part)
+            part.add_header('Content-Disposition', f'attachment; filename={attach_name}')
+            msg.attach(part)
+
+    return msg.as_string()
+
+
+def create_email_header(sender: str, subject: str, recipients: list[str], cc: list[str], bcc: list[str]) -> BIO.MemoryBuffer:
+    """
+    Creates a memory buffer with email headers
+
+    Args:
+        sender (str): Sender email
+        subject (str): Email subject
+        recipients (list): List of recipient emails
+        cc (list): List of cc emails
+        bcc (list): List of bcc emails
+
+    Returns:
+        header (MemoryBuffer): memory buffer containing email headers
+
+    """
+    header = BIO.MemoryBuffer()
+
+    current_time = datetime.now(pytz.timezone('UTC')).strftime('%a, %d %b %Y %H:%M:%S %z')
+    header.write(f'Date: {current_time}\r\n')
+    if sender:
+        header.write(f'From: {sender}\r\n')
+    if recipients:
+        header.write(f'To: {", ".join(recipients)}\r\n')
+    if cc:
+        header.write(f'CC: {", ".join(cc)}\r\n')
+    if bcc:
+        header.write(f'BCC: {", ".join(bcc)}\r\n')
+    if subject:
+        header.write(f'Subject: {subject}\r\n')
+
+    return header
 
 
 class Client:
@@ -143,6 +276,39 @@ class Client:
         private_key_file.write(bytes(private_key, 'utf-8'))
         self.private_key_file = private_key_file.name
         private_key_file.close()
+
+
+def set_encryption_params(client: Client, certs: list[str]) -> None:
+    """
+    Sets the smime cipher and X509 certificate stack
+
+    Args:
+        client: Client
+        certs: List of recipient certificates to use for the encryption
+
+    """
+    client.smime.set_cipher(SMIME.Cipher('aes_256_cbc'))
+
+    # Create and set certificate stack
+    sk = X509.X509_Stack()
+    if not certs:
+        demisto.debug('No certs given, using instance cert')
+        sk.push(X509.load_cert(client.public_key_file))
+    for cert in certs:
+        if cert == 'instancePublicKey':
+            sk.push(X509.load_cert(client.public_key_file))
+            continue
+        if ('-----BEGIN CERTIFICATE-----') not in cert:
+            demisto.debug('No ---BEGIN CERTIFICATE--- tag, creating pem from cert')
+            cert = create_pem_string(cert)
+
+        with NamedTemporaryFile(delete=False) as public_key_file:
+            public_key_file.write(bytes(cert, 'utf-8'))
+            public_key_file.close()
+            sk.push(X509.load_cert(public_key_file.name))
+            os.unlink(public_key_file.name)
+
+    client.smime.set_x509_stack(sk)
 
 
 ''' COMMANDS '''
@@ -279,17 +445,13 @@ def verify(client: Client, args: dict):
         raise ValueError('Unknown error: failed to verify message')
     msg = v.decode('utf-8')
     msg_out = msg
-    html_readable = ''
     if not raw_output:  # Return message after parsing html/images/attachments
         demisto.debug(f'parsing message:\n\n{msg}')
-        [email_body, email_html] = parse_multipart_message(msg)
-        if email_html:
-            msg_out = email_html
+        msg_out, email_type = parse_multipart_message(msg)
+        if email_type == 'html':
             human_readable = 'The signature verified'
-            html_readable = email_html
-        elif email_body:
-            msg_out = email_body
-            human_readable = f'### The signature verified, message is: \n ___ \n {email_body}'
+        else:
+            human_readable = f'### The signature verified, message is: \n ___ \n {msg_out}'
 
     results = [CommandResults(
         readable_output=human_readable,
@@ -298,9 +460,9 @@ def verify(client: Client, args: dict):
         tags=tags,
     )]
 
-    if html_readable:
+    if email_type == 'html':
         results.append(CommandResults(
-            raw_response=html_readable,
+            raw_response=msg_out,
             content_format=EntryFormat.HTML,
             entry_type=EntryType.NOTE,
         ))
@@ -376,17 +538,15 @@ def decrypt_email_body(client: Client, args: dict):
 
     msg_out = out
     human_readable = f'{msg}The decrypted message is: \n{out}'
-    html_readable = ''
     if not raw_output:  # Return message after parsing html/images/attachments
         demisto.debug(f'parsing message:\n\n{out}')
-        [email_body, email_html] = parse_multipart_message(out)
-        if email_html:
-            msg_out = email_html
-            human_readable = f'{msg}Message decrypted successfully'
-            html_readable = email_html
-        elif email_body:
+        email_body, email_type = parse_multipart_message(out)
+        if email_type == 'html':
             msg_out = email_body
-            human_readable = f'### {msg}The decrypted message is: \n ___ \n {email_body}'
+            human_readable = f'{msg}Message decrypted successfully'
+        elif email_type == 'text':
+            msg_out = email_body
+            human_readable = f'### {msg}The decrypted message is: \n ___ \n {msg_out}'
         else:
             human_readable = f'### {msg}The decrypted message is signed, verify to get the original message\n ___ \n{out}'
 
@@ -397,9 +557,9 @@ def decrypt_email_body(client: Client, args: dict):
         tags=tags,
     )]
 
-    if html_readable:
+    if email_type == 'html':
         results.append(CommandResults(
-            raw_response=html_readable,
+            raw_response=msg_out,
             content_format=EntryFormat.HTML,
             entry_type=EntryType.NOTE,
         ))
@@ -428,111 +588,51 @@ def sign_and_encrypt(client: Client, args: dict):
     if not isinstance(bcc, dict):
         raise DemistoException('Failed to parse bcc. (format `{"recipient@email":"cert", "other@email":"cert"}`)')
 
-    # Prepare message
-    msg = MIMEMultipart()
-
-    is_html = bool(re.search(r'<.*?>', message))
-    if is_html:
-        msg.attach(MIMEText(message, 'html'))
-    else:
-        msg.attach(MIMEText(message, 'plain'))
-
-    # Add attachments to message
-    for attach_id in attachment_ids:
-        try:
-            fp = demisto.getFilePath(attach_id)
-            file_path = fp['path']
-            attach_name = fp['name']
-        except Exception as ex:
-            raise Exception(f'Error while opening attachment id {attach_id}: {str(ex)}')
-        if isinstance(attach_name, list):
-            attach_name = attach_name[0]
-        part = MIMEBase('application', 'octet-stream')
-        with open(file_path, 'rb') as f:
-            part.set_payload(f.read())
-            encoders.encode_base64(part)
-            part.add_header('Content-Disposition', f'attachment; filename={attach_name}')
-            msg.attach(part)
-
-    msg_str = msg.as_string()
+    msg_str = create_message_with_attachments(message, attachment_ids)
     demisto.debug(f'\n\nMessage:\n\n {msg_str} \n\nMessage end\n')
 
-    msg_bio = BIO.MemoryBuffer(msg_str.encode('utf-8'))
-
     if sign:
+        msg_bio = BIO.MemoryBuffer(msg_str.encode('utf-8'))
         client.smime.load_key(client.private_key_file, client.public_key_file)
         p7 = client.smime.sign(msg_bio, algo='sha256')
-        msg_bio = BIO.MemoryBuffer(msg_str.encode('utf-8'))  # Recreate since sign() has consumed it.
 
     if encrypt:
         pub_certs = [cert for dest in [recipients, cc, bcc] for cert in dest.values()]  # all keys are used the same
-        sk = X509.X509_Stack()
-        if not pub_certs:
-            demisto.debug('No certs given, using instance cert')
-            sk.push(X509.load_cert(client.public_key_file))
-        for cert in pub_certs:
-            if cert == 'instancePublicKey':
-                sk.push(X509.load_cert(client.public_key_file))
-                continue
-            if ('-----BEGIN CERTIFICATE-----') not in cert:
-                demisto.debug('No ---BEGIN CERTIFICATE--- tag, creating pem from cert')
-                cert = create_pem_string(cert)
+        set_encryption_params(client, pub_certs)
 
-            with NamedTemporaryFile(delete=False) as public_key_file:
-                public_key_file.write(bytes(cert, 'utf-8'))
-                public_key_file.close()
-                sk.push(X509.load_cert(public_key_file.name))
-                os.unlink(public_key_file.name)
-
-        client.smime.set_x509_stack(sk)
-        client.smime.set_cipher(SMIME.Cipher('aes_256_cbc'))
-        tmp_bio = BIO.MemoryBuffer()
+        msg_bio = BIO.MemoryBuffer()
         if sign:
-            client.smime.write(tmp_bio, p7)
+            client.smime.write(msg_bio, p7)
         else:
-            tmp_bio.write(msg_str)
-        p7 = client.smime.encrypt(tmp_bio)
+            msg_bio.write(msg_str)
+        p7 = client.smime.encrypt(msg_bio)
 
-    out = BIO.MemoryBuffer()
-    # Add email plain-text header
-    current_time = datetime.now(pytz.timezone('UTC')).strftime('%a, %d %b %Y %H:%M:%S %z')
-    out.write(f'Date: {current_time}\r\n')
-    if sender:
-        out.write(f'From: {sender}\r\n')
-    if recipients:
-        out.write(f'To: {", ".join(recipients.keys())}\r\n')
-    if cc:
-        out.write(f'CC: {", ".join(cc.keys())}\r\n')
-    if bcc:
-        out.write(f'BCC: {", ".join(bcc.keys())}\r\n')
-    if subject:
-        out.write(f'Subject: {subject}\r\n')
-
+    # Prepare output
+    out_bio = create_email_header(sender, subject, list(recipients.keys()), list(cc.keys()), list(bcc.keys()))
     if encrypt or sign:
-        client.smime.write(out, p7)
+        client.smime.write(out_bio, p7)
     else:
-        out.write(msg_str)
+        out_bio.write(msg_str)
 
-    msg = out.read().decode('utf-8')
-    outputs = {
-        'Message': msg,
-        'RecipientIds': {
-            'to': list(recipients.keys()),
-            'cc': list(cc.keys()),
-            'bcc': list(bcc.keys()),
-        },
-        'FileName': '',
-    }
+    msg_out = out_bio.read().decode('utf-8')
 
+    file_results = {}
     if create_file:
-        file_results = fileResult(filename=f'SMIME-{demisto.uniqueFile()[:8]}.p7', data=msg, file_type=EntryType.FILE)
+        file_results = fileResult(filename=f'SMIME-{demisto.uniqueFile()[:8]}.p7', data=msg_out, file_type=EntryType.FILE)
         return_results(file_results)
-        outputs['FileName'] = file_results.get('File')
 
     return CommandResults(
-        readable_output=msg,
+        readable_output=msg_out,
         outputs_prefix='SMIME.SignedAndEncrypted',
-        outputs=outputs,
+        outputs={
+            'Message': msg_out,
+            'RecipientIds': {
+                'to': list(recipients.keys()),
+                'cc': list(cc.keys()),
+                'bcc': list(bcc.keys()),
+            },
+            'FileName': file_results.get('File', ''),
+        },
     )
 
 
