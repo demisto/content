@@ -119,7 +119,7 @@ def http_request(client, method, url_suffix, json=None, retries=0):
         return_warning('Your available rate limit remaining is {} and is about to be exhausted. '
                        'The rate limit will reset at {}'.format(str(rate_limit_remaining),
                                                                 r.headers.get("X-Rate-Limit-Reset")))
-    if r.status_code != 200:
+    if not r.ok:
         if r.status_code == 429:
             return {}, ErrorTypes.QUOTA_ERROR, rate_limit_reset_after
 
@@ -174,7 +174,7 @@ def polling(client, uuid):
     if client.user_agent:
         headers['User-Agent'] = client.user_agent
     ready = poll(
-        lambda: requests.get(uri, headers=headers, verify=client.use_ssl).status_code == 200,
+        lambda: requests.get(uri, headers=headers, verify=client.use_ssl).ok,
         step=5,
         ignore_exceptions=(requests.exceptions.ConnectionError),
         timeout=int(TIMEOUT)
