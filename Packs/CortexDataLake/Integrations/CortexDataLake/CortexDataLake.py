@@ -5,7 +5,7 @@ from CommonServerPython import *  # noqa: F401
 import os
 import re
 import json
-from pan_cortex_data_lake import Credentials, exceptions, CortexError, HTTPError, QueryService
+from pan_cortex_data_lake import Credentials, exceptions, QueryService
 import time
 import base64
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
@@ -46,54 +46,6 @@ FETCH_TABLE_HR_NAME = {
     "log.config": "Cortex Common Config"
 }
 BAD_REQUEST_REGEX = r'^Error in API call \[400\].*'
-
-
-def iter_job_results(
-    query_service: QueryService,
-    job_id=None,
-    page_number=None,
-    page_size=None
-):
-    """Retrieve results iteratively in a non-greedy manner using scroll token.
-
-    Args:
-        query_service (QueryService): An instance of the QueryService class.
-        job_id (str): Specifies the ID of the query job.
-
-    Yields:
-        requests.Response: Requests Response() object.
-
-    """
-    params = {
-
-        "pageNumber": page_number,
-        "pageSize": page_size,
-    }
-    while True:
-        r = query_service.get_job_results(
-            job_id=job_id,
-            params=params,
-            enforce_json=True,
-        )
-        if not r.ok:
-            raise HTTPError("%s" % r.text)
-        if r.json()["state"] == "DONE":
-            scroll_token = r.json()["page"].get("pageCursor")
-            r.json()
-            if scroll_token is not None and not page_number:
-                params["pageCursor"] = scroll_token  # Token/handle that can be used to fetch more data.
-                yield r
-            else:
-                yield r
-                break
-        elif r.json()["state"] == "RUNNING":
-            yield r
-            time.sleep(1)
-        elif r.json()["state"] == "FAILED":
-            yield r
-            break
-        else:
-            raise CortexError("Bad state: %s" % r.json()["state"])
 
 
 class Client(BaseClient):
