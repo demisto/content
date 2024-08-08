@@ -1,0 +1,29 @@
+[MODEL: dataset= "sailpoint_identitynow_raw"]
+alter
+    src_name = actor -> name,
+    dst_name = `target` -> name,
+    objects = objects-> []
+| alter
+    src_email = arrayindex(regextract(src_name, "(?:\w+)\@\S+"),0),
+    dst_email = arrayindex(regextract(dst_name, "(?:\w+)\@\S+"),0),
+    objects = arraymap(objects , trim("@element", "\""))
+| alter
+    xdm.event.original_event_type = action,
+    xdm.event.id = id,
+    xdm.alert.name = name,
+    xdm.event.tags = objects,
+    xdm.event.operation_sub_type = operation,
+    xdm.source.user.ou = org,
+    xdm.source.cloud.region = pod,
+    xdm.event.outcome = if(status in ("PASSED", "SUCCESS","APPROVED","PROCESSED","UPDATED","CREATED","DELETED","ENABLED","DISABLED","FORWARDED","ESCALATED","DETECTED", "ACCESSED", "CANCELLED"), XDM_CONST.OUTCOME_SUCCESS, status in ("FAILED","BLOCKED", "REJECTED"), XDM_CONST.OUTCOME_FAILED, status in ("STARTED", "REMEDIATE"), XDM_CONST.OUTCOME_UNKNOWN,status),
+    xdm.event.is_completed = if(status in ("PASSED", "SUCCESS","APPROVED","PROCESSED","UPDATED","CREATED","DELETED","ENABLED","DISABLED","FORWARDED","ESCALATED","DETECTED", "ACCESSED", "CANCELLED", "FAILED", "BLOCKED", "REJECTED"), True, status in ("STARTED","REMEDIATE"), False),
+    xdm.event.type = type,
+    xdm.target.resource.name = if(stack = "", null, stack),
+    xdm.target.resource.type = "Stack",
+    xdm.target.ipv4 = if(incidr(ipAddress, "0.0.0.0/0"), ipAddress),
+    xdm.target.ipv6  = arrayindex(regextract(ipAddress, "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}"), 0),
+    xdm.source.user.username = if(src_email != null, arrayindex(regextract(src_email, "(\w+)\@"),0), src_name),
+    xdm.source.user.upn = src_email,
+    xdm.target.user.username = if(dst_email != null, arrayindex(regextract(dst_email, "(\w+)\@"),0), dst_name),
+    xdm.target.user.upn = dst_email,
+    xdm.event.description = attributes;
