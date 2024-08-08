@@ -136,7 +136,7 @@ script:
     - description: 'Filters events by the `engine` pattern. To substitute one or more characters, use the asterisk (*) character at the beginning, at the end, or both.'
       name: engineFilter
     description: 'Get All Malware Events.'
-    name: veeam-vbr-get-all-malware-events
+    name: veeam-vbr-get-malware-events
     outputs:
     - contextPath: Veeam.VBR.get_malware_events.data.id
       description: "Event ID."
@@ -188,7 +188,7 @@ script:
     - description: 'Filters repository states by repository used space.'
       name: usedSpaceFilter
     description: 'Get All Repository States.'
-    name: veeam-vbr-get-all-repository-states
+    name: veeam-vbr-get-repository-states
     outputs:
     - contextPath: Veeam.VBR.get_repository_states.data.id
       description: "Backup repository ID."
@@ -247,7 +247,7 @@ script:
     - description: 'Filters restore points by malware status.'
       name: malwareStatusFilter
     description: 'Get All Restore Points.'
-    name: veeam-vbr-get-all-restore-points
+    name: veeam-vbr-get-restore-points
     outputs:
     - contextPath: Veeam.VBR.get_restore_points.data.id
       description: "Restore point ID."

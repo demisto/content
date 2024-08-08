@@ -72,19 +72,20 @@ ERROR_COUNT_MAP = {
 
 }
 
-''' GLOBAL VARIABLES '''
-
-skip_items = 0
-items_to_fetch = 0
-http_request_timeout_sec = 120
-
 
 ''' CLIENT CLASS '''
 
 
 class Client(BaseClient):
-    def __init__(self, server_url, verify, proxy, headers, auth):
-        super().__init__(base_url=server_url, verify=verify, proxy=proxy, headers=headers, auth=auth)
+    def __init__(self, server_url, verify, proxy, headers, auth, timeout):
+        super().__init__(
+            base_url=server_url,
+            verify=verify,
+            proxy=proxy,
+            headers=headers,
+            auth=auth,
+            timeout=timeout
+        )
 
     def get_headers(self):
         """
@@ -139,8 +140,7 @@ class Client(BaseClient):
             'post',
             'api/oauth2/token',
             data=data,
-            headers=headers,
-            timeout=http_request_timeout_sec
+            headers=headers
         )
 
         return response
@@ -170,8 +170,7 @@ class Client(BaseClient):
             'post',
             'api/v1/malwareDetection/events',
             json_data=data,
-            headers=headers,
-            timeout=http_request_timeout_sec
+            headers=headers
         )
 
         return response
@@ -224,8 +223,7 @@ class Client(BaseClient):
             'get',
             'api/v1/malwareDetection/events',
             params=params,
-            headers=headers,
-            timeout=http_request_timeout_sec
+            headers=headers
         )
 
         return response
@@ -271,8 +269,7 @@ class Client(BaseClient):
             'get',
             'api/v1/backupInfrastructure/repositories/states',
             params=params,
-            headers=headers,
-            timeout=http_request_timeout_sec
+            headers=headers
         )
 
         return response
@@ -322,8 +319,7 @@ class Client(BaseClient):
             'get',
             'api/v1/restorePoints',
             params=params,
-            headers=headers,
-            timeout=http_request_timeout_sec
+            headers=headers
         )
 
         return response
@@ -343,8 +339,7 @@ class Client(BaseClient):
         response = self._http_request(
             'get',
             f'api/v1/backupObjects/{id_}',
-            headers=headers,
-            timeout=http_request_timeout_sec
+            headers=headers
         )
 
         return response
@@ -358,7 +353,7 @@ class Client(BaseClient):
         """
         headers = self._headers
 
-        response = self._http_request('get', 'api/v1/serverInfo', headers=headers, timeout=http_request_timeout_sec)
+        response = self._http_request('get', 'api/v1/serverInfo', headers=headers)
 
         return response
 
@@ -371,7 +366,7 @@ class Client(BaseClient):
         """
         headers = self._headers
 
-        response = self._http_request('get', 'api/v1/configBackup', headers=headers, timeout=http_request_timeout_sec)
+        response = self._http_request('get', 'api/v1/configBackup', headers=headers)
 
         return response
 
@@ -404,8 +399,7 @@ class Client(BaseClient):
             f'api/v1/inventory/{hostname}',
             params=params,
             json_data=data,
-            headers=headers,
-            timeout=http_request_timeout_sec
+            headers=headers
         )
 
         return response
@@ -422,7 +416,7 @@ class Client(BaseClient):
         """
         headers = self._headers
 
-        response = self._http_request('get', f'api/v1/sessions/{id_}', headers=headers, timeout=http_request_timeout_sec)
+        response = self._http_request('get', f'api/v1/sessions/{id_}', headers=headers)
 
         return response
 
@@ -435,7 +429,7 @@ class Client(BaseClient):
         """
         headers = self._headers
 
-        response = self._http_request('post', 'api/v1/configBackup/backup', headers=headers, timeout=http_request_timeout_sec)
+        response = self._http_request('post', 'api/v1/configBackup/backup', headers=headers)
 
         return response
 
@@ -473,8 +467,7 @@ class Client(BaseClient):
             'post',
             'api/v1/restore/instantRecovery/vSphere/vm',
             json_data=data,
-            headers=headers,
-            timeout=http_request_timeout_sec
+            headers=headers
         )
 
         return response
@@ -521,8 +514,7 @@ class Client(BaseClient):
             'post',
             'api/v1/restore/instantRecovery/vSphere/vm',
             json_data=data,
-            headers=headers,
-            timeout=http_request_timeout_sec
+            headers=headers
         )
 
         return response
@@ -1007,7 +999,7 @@ def search_with_paging(
     size_limit=DEFAULT_SIZE_LIMIT
 ) -> list[dict]:
 
-    global skip_items, items_to_fetch
+    skip_items = 0
     args['skip'] = 0
     items_to_fetch = size_limit
     items: list[dict] = []
@@ -1050,8 +1042,8 @@ def process_error(error_count: int, error_message: str) -> tuple[dict, int]:
     error_count += 1
     incident = {}
     if error_count in ERROR_COUNT_MAP:
-        integartion_instance = demisto.callingContext.get('context', {}).get('IntegrationInstance', '')
-        incident_name = f"Veeam - Fetch incident error has occurred on {integartion_instance}"
+        integration_instance = demisto.callingContext.get('context', {}).get('IntegrationInstance', '')
+        incident_name = f"Veeam - Fetch incident error has occurred on {integration_instance}"
         incident = {
             'name': incident_name,
             'occurred': datetime.now().strftime(DATE_FORMAT),
@@ -1140,8 +1132,8 @@ def get_configuration_backup_incident(
         if not last_successful_backup_date or last_backup_datetime > last_successful_backup_datetime:
             time_ = NOT_APPLICABLE if last_time_backup == EARLIEST_TIME else last_time_backup
             details = f"Last successful backup: {time_}"
-            integartion_instance = demisto.callingContext.get('context', {}).get('IntegrationInstance', '')
-            incident_name = f"Veeam - {integartion_instance} has no configuration backups"
+            integration_instance = demisto.callingContext.get('context', {}).get('IntegrationInstance', '')
+            incident_name = f"Veeam - {integration_instance} has no configuration backups"
             response['details'] = details
             response['incident_type'] = CONFIGURATION_BACKUP_INCIDENT_TYPE
             incident = {
@@ -1366,11 +1358,11 @@ def process_command(command: Any, client: Client, first_fetch_time: datetime,
 
         'veeam-vbr-create-malware-event': create_malware_event_command,
 
-        'veeam-vbr-get-all-malware-events': get_all_malware_events_command,
+        'veeam-vbr-get-malware-events': get_all_malware_events_command,
 
-        'veeam-vbr-get-all-repository-states': get_all_repository_states_command,
+        'veeam-vbr-get-repository-states': get_all_repository_states_command,
 
-        'veeam-vbr-get-all-restore-points': get_all_restore_points_command,
+        'veeam-vbr-get-restore-points': get_all_restore_points_command,
 
         'veeam-vbr-get-backup-object': get_backup_object_command,
 
@@ -1484,11 +1476,12 @@ def main() -> None:
     first_fetch_time = arg_to_datetime(
         arg=params.get('first_fetch', '3 days'),
         arg_name='First fetch time',
-        required=True
+        required=False
     )
-    assert first_fetch_time
 
-    global http_request_timeout_sec
+    if not first_fetch_time:
+        first_fetch_time = datetime.now()
+
     http_request_timeout_sec = int(params.get('http_request_timeout_sec', 120))
 
     headers = {}
@@ -1499,7 +1492,14 @@ def main() -> None:
     demisto.debug(f'Command {command} has been run with the following arguments: {args}')
 
     try:
-        client: Client = Client(urljoin(url, '/'), verify_certificate, proxy, headers=headers, auth=None)
+        client: Client = Client(
+            urljoin(url, '/'),
+            verify_certificate,
+            proxy,
+            headers=headers,
+            auth=None,
+            timeout=http_request_timeout_sec
+        )
         result = process_command(command, client, first_fetch_time, params, args)
         return_results(result)
 

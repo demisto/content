@@ -65,7 +65,7 @@ Get All Malware Events
 
 #### Base Command
 
-`veeam-vbr-get-all-malware-events`
+`veeam-vbr-get-malware-events`
 
 #### Input
 
@@ -106,7 +106,7 @@ Get All Repository States
 
 #### Base Command
 
-`veeam-vbr-get-all-repository-states`
+`veeam-vbr-get-repository-states`
 
 #### Input
 
@@ -145,7 +145,7 @@ Get All Restore Points
 
 #### Base Command
 
-`veeam-vbr-get-all-restore-points`
+`veeam-vbr-get-restore-points`
 
 #### Input
 

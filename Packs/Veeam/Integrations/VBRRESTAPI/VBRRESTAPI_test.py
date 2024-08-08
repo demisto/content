@@ -11,6 +11,7 @@ from VBRRESTAPI import DATE_FORMAT, MAX_INT, Client, \
     convert_to_json, get_vcentername, process_error
 
 SERVER_URL = 'https://test_url.com'
+REQUEST_TIMEOUT = 120
 
 
 class ApiMock:
@@ -36,7 +37,7 @@ def util_load_json(path):
 
 @pytest.fixture()
 def client():
-    return Client(server_url=SERVER_URL, verify=None, proxy=None, headers=None, auth=None)
+    return Client(server_url=SERVER_URL, verify=None, proxy=None, headers=None, auth=None, timeout=REQUEST_TIMEOUT)
 
 
 GET_CONF_BACKUP_RESPONSE = util_load_json('test_data/get_configuration_backup_response.json')
