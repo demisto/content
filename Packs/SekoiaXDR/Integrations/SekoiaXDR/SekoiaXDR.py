@@ -812,7 +812,7 @@ def update_remote_system_command(client: Client, args):
     )
     try:
         if parsed_args.incident_changed:
-            sekoia_status = delta.get("status", None)
+            sekoia_status = delta.get("sekoiaxdralertstatus", None)
             if sekoia_status:
                 demisto.debug(
                     f"The incident #{xsoar_incident} had the sekoia status of the alert \
