@@ -47,20 +47,13 @@ To add a permission:
 
 2. To configure a Microsoft integration that uses this authorization flow with a self-deployed Azure application:
 
-   a. In the **Authentication Type** field, select the **Client Credentials** option.
-
-   b. In the **Application ID** field, enter your Client/Application ID.
-
-   c. In the **Subscription ID** field, enter your Subscription ID.
-
-   d. In the **Resource Group Name** field, enter you Resource Group Name.
-
-   e. In the **Tenant ID** field, enter your Tenant ID.
-
-   f. In the **Client Secret** field, enter your Client Secret.
-
-   g. Click **Test** to validate the URLs, token, and connection
-
+   a. In the **Authentication Type** field, select the **Client Credentials** option.  
+   b. In the **Application ID** field, enter your Client/Application ID.  
+   c. In the **Subscription ID** field, enter your Subscription ID.  
+   d. In the **Resource Group Name** field, enter you Resource Group Name.  
+   e. In the **Tenant ID** field, enter your Tenant ID.  
+   f. In the **Client Secret** field, enter your Client Secret.  
+   g. Click **Test** to validate the URLs, token, and connection  
    h. Save the instance.
 
 

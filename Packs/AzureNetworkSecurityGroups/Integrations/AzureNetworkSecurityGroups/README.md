@@ -34,8 +34,10 @@ To add a permission:
 3. In the *Client Secret* field, enter your Client Secret.
 4. In the *Tenant ID* field, enter your Tenant ID .
 5. In the *Application redirect URI* field, enter your Application redirect URI.
-6. Save the instance.
-7. Run the `!azure-nsg-generate-login-url` command in the War Room and follow the instruction.
+6. In the *Subscription ID* field, enter your Subscription ID.
+7. In the *Resource Group Name* field, enter you Resource Group Name.
+8. Save the instance.
+9. Run the `!azure-nsg-generate-login-url` command in the War Room and follow the instruction.
 
 ### Authentication Using the Client Credentials Flow
 
@@ -44,13 +46,13 @@ To add a permission:
    *Note:* In the *Select members* section, assign the application you created earlier.
 
 2. To configure a Microsoft integration that uses this authorization flow with a self-deployed Azure application:
-   a. In the *Authentication Type* field, select the **Client Credentials** option.
+   a. In the *Authentication Type* field, select the **Client Credentials** option.  
    b. In the *Application ID* field, enter your Client/Application ID.
-   c. In the *Subscription ID* field, enter your Subscription ID.
-   d. In the *Resource Group Name* field, enter you Resource Group Name.
-   e. In the *Tenant ID* field, enter your Tenant ID .
-   f. In the *Client Secret* field, enter your Client Secret.
-   g. Click **Test** to validate the URLs, token, and connection
+   c. In the *Tenant ID* field, enter your Tenant ID.  
+   d. In the *Client Secret* field, enter your Client Secret.  
+   e. In the *Subscription ID* field, enter your Subscription ID.  
+   f. In the *Resource Group Name* field, enter you Resource Group Name.  
+   g. Click **Test** to validate the URLs, token, and connection.  
    h. Save the instance.
 
 ### Authentication Using the Device Code Flow
