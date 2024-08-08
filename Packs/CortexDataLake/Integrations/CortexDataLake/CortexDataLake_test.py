@@ -196,7 +196,7 @@ def test_query_logs_command_transform_results_1():
     cdl_records_xform = load_test_data('./test_data/test_query_logs_command_transform_results_xformed.json')
 
     class MockClient():
-        def query_loggings(self, query):
+        def query_loggings(self, query, page_number=None, page_size=None):
             return cdl_records, []
 
     # test 1, with no transform_results options, should transform to common context
@@ -215,6 +215,7 @@ class TestBackoffStrategy:
     """ A class to test the backoff strategy mechanism
 
     """
+
     @pytest.mark.parametrize('integration_context, exception', [
         ({FIRST_FAILURE_TIME_CONST: (datetime.utcnow() - timedelta(minutes=30)).isoformat(),
           LAST_FAILURE_TIME_CONST: datetime.utcnow().isoformat()}, True),
