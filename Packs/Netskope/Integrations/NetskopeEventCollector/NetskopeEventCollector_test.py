@@ -76,7 +76,7 @@ def test_get_all_events(requests_mock):
     url_matcher = re.compile('https://netskope[.]example[.]com/events/dataexport/events')
     requests_mock.get(url_matcher, json=json_callback)
     events, new_last_run = get_all_events(client, FIRST_LAST_RUN)
-    assert len(events) == 25
+    assert len(events) == 26
     assert events[0].get('event_id') == '1'
     assert events[0].get('_time') == '2023-05-22T10:30:16.000Z'
     assert all(new_last_run[event_type]['operation'] == 'next' for event_type in ALL_SUPPORTED_EVENT_TYPES)
@@ -142,7 +142,8 @@ def test_honor_rate_limiting(mocker, headers, endpoint, expected_sleep):
       'alert': {'operation': 'next'},
       'page': {'operation': 'next'},
       'audit': {'operation': 'next'},
-      'network': {'operation': 'next'}}, 'next'),
+      'network': {'operation': 'next'},
+      'incident': {'operation': 'next'}}, 'next'),
 ])
 def test_setup_last_run(mocker, last_run_dict, expected_operation_value):
     """
@@ -162,7 +163,7 @@ def test_setup_last_run(mocker, last_run_dict, expected_operation_value):
     first_fetch = dateparser.parse('2023-01-01T10:00:00Z')
     mocker.patch.object(dateparser, "parse", return_value=first_fetch)
     last_run = setup_last_run(last_run_dict, ALL_SUPPORTED_EVENT_TYPES)
-    assert all(val.get('operation') == expected_operation_value for key, val in last_run.items())
+    assert all(val.get('operation') == expected_operation_value for _, val in last_run.items())
 
 
 @pytest.mark.parametrize('event_types_to_fetch_param, expected_value', [
@@ -255,6 +256,7 @@ def test_fix_last_run(last_run, supported_event_types, expected_result):
     from NetskopeEventCollector import remove_unsupported_event_types
     remove_unsupported_event_types(last_run, supported_event_types)
     assert last_run == expected_result
+
 
 def test_incident_endpoint(mocker):
     from datetime import datetime
