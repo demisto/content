@@ -6130,8 +6130,8 @@
         "Slack",
         "CortexXDR",
         "MailSenderNew",
-        "Common Scripts",
-        "Filters And Transformers"
+        "CommonScripts",
+        "FiltersAndTransformers"
     ],
     "nightly_packs": [
         "CommonScripts",
