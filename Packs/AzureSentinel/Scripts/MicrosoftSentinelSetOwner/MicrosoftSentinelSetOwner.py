@@ -15,8 +15,8 @@ def set_owner(context_results: dict):
                          and the updated owner information.
     """
     args = demisto.args()
-    incident_id = context_results.get("CustomFields").get("sourceid") or args.get("incident_id")  # type: ignore
-    instance_name = context_results.get("sourceInstance") or args.get("instance_name")
+    incident_id = dict_safe_get(context_results, ["CustomFields", "sourceid"], "") or args.get("incident_id")  # type: ignore
+    instance_name = context_results.get("sourceInstance") or args.get("using")
     user_principal_email = args.get("owner_email")
 
     if not incident_id:

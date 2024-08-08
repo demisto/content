@@ -18,7 +18,6 @@ This script is used to add a new comment to incident.
 | --- | --- | --- |
 | new_comment | The comment text to be added to the incident comments. | Required |
 | incident_id | The ID of the incident to add the comment to. This argument is relevant only when the script is called directly from the War Room. | Optional (Required When the script is called directly from the war room).|
-| instance_name | The name of the instance to use. This argument is relevant only when the script is called directly from the War Room. | Optional |
 
 ## Outputs
 
