@@ -1074,7 +1074,7 @@ def searchIndicators(fromDate='', query='', size=100, page=0, toDate='', value='
       page (int): Response paging (Default value = 0)
       todate (str): The end date to search until to (Default value = '')
       value (str): The indicator value to search (Default value = '')
-      searchAfter (str): Use the last searchIndicators() outputs for search batch (Default value = None)
+      searchAfter (list): Use the last searchIndicators() outputs for search batch (Default value = None)
       populateFields (str): Comma separated fields to filter (e.g. "value,type")
 
     Returns:
