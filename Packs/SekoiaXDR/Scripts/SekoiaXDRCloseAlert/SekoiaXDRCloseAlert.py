@@ -47,10 +47,10 @@ def close_alert(
     if alert_status not in ["Closed", "Rejected"]:
         if isMirrorEnable in ["Out", "Both"]:
             if reject == "false":
-                execute_command("setIncident", {"sekoiaalertstatus": "Closed"})
+                execute_command("setIncident", {"sekoiaxdralertstatus": "Closed"})
                 readable_output = f"**** The alert {alert_id} has been closed. ****"
             if reject == "true":
-                execute_command("setIncident", {"sekoiaalertstatus": "Rejected"})
+                execute_command("setIncident", {"sekoiaxdralertstatus": "Rejected"})
                 readable_output = f"**** The alert {alert_id} has been rejected. ****"
 
         post_closure_comment(alert_id, close_reason, close_notes, username)
@@ -71,14 +71,14 @@ def main():
     incident = demisto.incidents()[0]  # type: ignore
     isMirrorEnable = incident.get("dbotMirrorDirection")
     alert_short_id = incident.get("CustomFields", {}).get("alertid")
-    reject = demisto.getArg["sekoiaalertreject"]  # type: ignore
+    reject = demisto.getArg("sekoiaxdralertreject")  # type: ignore
     close_reason = demisto.getArg("closeReason")
     close_notes = demisto.getArg("closeNotes")
     owner = demisto.getArg("owner")
-    username = demisto.getArg["closingUserId"]  # type: ignore
+    username = demisto.getArg("closingUserId")  # type: ignore
 
     # Check if the owner is set when closing the incident otherwise raise an error.
-    if not owner or owner == "Assign owner" or not incident.get("owner"):
+    if not owner or owner == "Assign owner":
         raise Exception(
             "**** Please select a owner, the incident can't be closed without an owner. ****"
         )

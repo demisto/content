@@ -21,7 +21,7 @@ def post_comment(alert_short_id: str, comment: Optional[str], author: str):
 
 
 def update_status(new_status: str):
-    execute_command("setIncident", {"sekoiaalertstatus": new_status})
+    execute_command("setIncident", {"sekoiaxdralertstatus": new_status})
 
 
 def main():
@@ -34,7 +34,7 @@ def main():
     if new_status in ["Ongoing", "Acknowledged"]:
         if comment and isMirrorEnable in ["Both", "Outgoing"]:
             post_comment(alert_short_id, comment, get_username())
-        update_status(alert_short_id)
+        update_status(new_status)
         readable_output = f"### Status of the alert changed to:\n {new_status}"
         return_results(
             {

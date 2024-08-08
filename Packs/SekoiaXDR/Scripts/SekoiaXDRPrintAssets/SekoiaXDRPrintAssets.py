@@ -37,7 +37,7 @@ def get_assets_ids(alert_uuid: str):
 
 def main():
     incident = demisto.incident()
-    alert_uuid = incident.get("CustomFields", {}).get("alertuuid")
+    alert_uuid = incident.get("CustomFields", {}).get("alertid")
 
     readable_output = get_assets_ids(alert_uuid)
     command_results = CommandResults(readable_output=readable_output)
