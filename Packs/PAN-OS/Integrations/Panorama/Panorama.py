@@ -14274,6 +14274,7 @@ def corr_incident_entry_to_incident_context(incident_entry: Dict[str, Any]) -> D
     Returns:
         dict[str,any]: context formatted incident entry represented by a dictionary
     """
+    incident_entry['type'] = 'CORRELATION'
     match_time = incident_entry.get('match_time', '')
     occurred = (
         occurred_datetime.strftime(DATE_FORMAT)
@@ -14285,7 +14286,6 @@ def corr_incident_entry_to_incident_context(incident_entry: Dict[str, Any]) -> D
         'name': f"Correlation {incident_entry.get('@logid')}",
         'occurred': occurred,
         'rawJSON': json.dumps(incident_entry),
-        'type': 'CORRELATION'
     }
 
 
@@ -14309,7 +14309,6 @@ def incident_entry_to_incident_context(incident_entry: Dict[str, Any]) -> Dict[s
         'name': f"{incident_entry.get('device_name')} {incident_entry.get('seqno')}",
         'occurred': occurred,
         'rawJSON': json.dumps(incident_entry),
-        'type': incident_entry.get('type')
     }
 
 
