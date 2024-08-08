@@ -876,7 +876,7 @@ def get_poll_minutes(current_time: datetime, sent: Optional[str]) -> float:
 
 
 def answer_question(text: str, question: dict, email: str = ''):
-    
+
     entitlement = question.get('entitlement', '')
     content, guid, incident_id, task_id = extract_entitlement(entitlement, text)
     try:
@@ -1656,7 +1656,6 @@ async def check_and_handle_entitlement(text: str, user: dict, thread_id: str) ->
     demisto.debug("SV3: Handling an entitlement reply.")
     integration_context = fetch_context()
     questions = integration_context.get('questions', [])
-    demisto.debug(f'SV3: Answering question for entitlement {entitlement} for {incident_id=} and {task_id=}')
     if questions and thread_id:
         questions = json.loads(questions)
         question_filter = list(filter(lambda q: q.get('thread') == thread_id, questions))
@@ -1943,7 +1942,7 @@ def slack_send():
             except Exception:
                 demisto.info('Slack - could not parse JSON from entitlement message.')
 
-    demisto.debug(f'SV3: Sending slack message request with params: {to=}, {channel=}, {entry=}, {ignore_add_url=}, ' \
+    demisto.debug(f'SV3: Sending slack message request with params: {to=}, {channel=}, {entry=}, {ignore_add_url=}, '
                   f'{thread_id=}, {message=}, {blocks=}, {channel_id=}')
     response = slack_send_request(to, channel, group, entry, ignore_add_url, thread_id, message=message, blocks=blocks,
                                   channel_id=channel_id)
