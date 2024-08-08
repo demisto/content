@@ -1596,9 +1596,8 @@ def test_get_modified_remote_data_xdr_delay(mocker):
         - the method is returning a list of incidents IDs that were modified after adding xdr_delay
     """
     from CortexXDRIR import get_modified_remote_data_command, Client
-    import dateparser
     from CommonServerPython import BaseClient
-    
+
     empty_res = {
         "reply": {
             "total_count": 0,
