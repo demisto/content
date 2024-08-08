@@ -1,6 +1,9 @@
 [INGEST:vendor="Google", product="Cloud Logging", target_dataset="google_cloud_logging_raw", no_hit = keep]
 call GOOGLE_CLOUD_LOGGING_PARSE_TIMESTAMP;
 
+[INGEST:vendor="Google", product="Cloud_Logging", target_dataset="google_cloud_logging_raw", no_hit = keep]
+call GOOGLE_CLOUD_LOGGING_PARSE_TIMESTAMP;
+
 [INGEST:vendor="Google", product="DNS", target_dataset="google_dns_raw", no_hit = keep]
 call GOOGLE_CLOUD_LOGGING_PARSE_TIMESTAMP;
 
