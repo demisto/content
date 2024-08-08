@@ -1535,8 +1535,8 @@ def create_issue_fields(client: JiraBaseClient, issue_args: Dict[str, str],
             # If the value is not a list or a dictionary, we will try to parse it as a json object.
             try:
                 parsed_value = json.loads(value)
-            except Exception:
-                pass
+            except (json.JSONDecodeError, TypeError):
+                pass    # Some values should not be in a JSON format so it maks sense for them to fail parsing.
         dotted_string = issue_fields_mapper.get(issue_arg, '')
         if not dotted_string and issue_arg.startswith('customfield'):
             # This is used to deal with the case when the user creates a custom incident field, using
