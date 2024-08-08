@@ -53,7 +53,7 @@ To add a permission:
    d. In the **Resource Group Name** field, enter you Resource Group Name.  
    e. In the **Tenant ID** field, enter your Tenant ID.  
    f. In the **Client Secret** field, enter your Client Secret.  
-   g. Click **Test** to validate the URLs, token, and connection  
+   g. Click **Test** to validate the URLs, token, and connection.  
    h. Save the instance.
 
 
