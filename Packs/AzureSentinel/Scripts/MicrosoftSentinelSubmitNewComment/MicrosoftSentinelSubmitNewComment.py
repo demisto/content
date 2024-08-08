@@ -13,9 +13,14 @@ def add_new_comment(context_results: dict):
     Returns:
         CommandResults: Includes a markdown-formatted string confirming the new comment and the comment details.
     """
-    incident_id = context_results.get("CustomFields").get("sourceid")  # type: ignore
-    instance_name = context_results.get("sourceInstance")
-    new_comment = demisto.args().get("new_comment")
+    args = demisto.args()
+    incident_id = context_results.get("CustomFields").get("sourceid") or args.get("incident_id")  # type: ignore
+    instance_name = context_results.get("sourceInstance") or args.get("instance_name")
+    new_comment = args.get("new_comment")
+    if not incident_id:
+        return_error(
+            "Incident ID not found. Please provide the remote 'incident_id' either as an argument when running the script from the War Room."
+        )
 
     demisto.debug(f"update remote incident with new XSOAR comments: {new_comment}")
     execute_command(
