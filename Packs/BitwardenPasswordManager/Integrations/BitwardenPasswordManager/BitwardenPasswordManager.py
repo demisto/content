@@ -11,7 +11,7 @@ DEFAULT_MAX_FETCH = 500
 SECONDS_BEFORE_TOKEN_EXPIRED = 120
 AUTHENTICATION_FULL_URL = 'https://identity.bitwarden.com/connect/token'
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%f'
-DEFAULT_FIRST_FETCH = (get_current_time() - timedelta(minutes=1)).strftime(DATE_FORMAT)
+DEFAULT_FIRST_FETC  H = (get_current_time() - timedelta(minutes=1)).strftime(DATE_FORMAT)
 DEFAULT_END_DATE = (get_current_time() + timedelta(days=1)).strftime(DATE_FORMAT)
 
 

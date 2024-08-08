@@ -6,8 +6,9 @@
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
+    "created": "2023-07-18T19:28:02Z",
     "categories": [
-        "Identity and Access Management"
+        "Authentication & Identity Management"
     ],
     "tags": [],
     "useCases": [],
