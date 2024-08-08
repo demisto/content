@@ -27,21 +27,21 @@ def makebuf(text):
 
 
 def create_pem_string(base64_cert: str) -> str:
-    """This function takes the base64 encoded certificate received via
-    ad-search in the 'UserCertificate' attribute and converts it to a PEM
+    """Converts a base64 encoded certificate string to a PEM format.
 
     Args:
         base64_cert (str): certificate string with no BEGIN or END markers
 
     Returns:
-        pemstring (str): PEM string for the certificate
+        pemstring (str): PEM-formatted certificate string
     """
-    pemstring = '-----BEGIN CERTIFICATE-----\n'
-    pemstring += '\n'.join(
-        [base64_cert[i: i + 64] for i in range(0, len(base64_cert), 64)]
-    )
-    pemstring += '\n-----END CERTIFICATE-----\n'
-    return pemstring
+    pem_header = '-----BEGIN CERTIFICATE-----\n'
+    pem_footer = '-----END CERTIFICATE-----\n'
+
+    # Split the base64 certificate into lines of 64 characters each
+    pem_body = '\n'.join(base64_cert[i:i + 64] for i in range(0, len(base64_cert), 64))
+
+    return f"{pem_header}{pem_body}\n{pem_footer}"
 
 
 def handle_attachment(attachment_part: Message) -> None:
@@ -50,28 +50,29 @@ def handle_attachment(attachment_part: Message) -> None:
     p7 files will be ignored.
 
     Args:
-        attachment_part: attachment message part
+        attachment_part (Message): attachment message part
 
     """
 
-    fileName = attachment_part.get_filename()
-    if not fileName:
+    file_name = attachment_part.get_filename()
+    if not file_name:
         demisto.debug('Got nameless attachment, generating file name')
         mime_type = attachment_part.get_content_type()
         extension = mimetypes.guess_extension(mime_type) or '.bin'
-        fileName = f'attachment_{uuid.uuid4()}{extension}'
+        file_name = f'attachment_{uuid.uuid4()}{extension}'
 
-    if (fileName.lower().endswith('.p7')
-            or fileName.lower().endswith('.p7', 0, -1)):
-        demisto.debug(f'Skipping p7 file: {fileName}')
+    # ignore p7 file types and subtypes (e.g. p7m)
+    if (file_name.lower().endswith('.p7')
+            or file_name.lower().endswith('.p7', 0, -1)):
+        demisto.debug(f'Skipping p7 file: {file_name}')
         return
     # create the attachment
-    file_result = fileResult(fileName, attachment_part.get_payload(decode=True))
+    file_result = fileResult(file_name, attachment_part.get_payload(decode=True))
 
     # check for error
     if file_result['Type'] == entryTypes['error']:
-        demisto.error(file_result['Contents'])
         raise Exception(file_result['Contents'])
+
     # return the attachment to war room
     return_results(file_result)
 
@@ -81,23 +82,24 @@ def handle_image(image_part: Message, payload: Any) -> tuple[str, str, str] | No
     Handles the payload for an image, extracting the cid and image data
 
     Args:
-        image_part: Image message part
-        payload: Message part payload
+        image_part (Message): Image message part
+        payload (Any): Message part payload
 
     Returns:
-        (cid, content_type, image_data): Complete image data to allow embedding into the message
+        (cid, content_type, image_data): Complete image data to allow embedding into the message, None if no cid is found
 
     """
-    # Extract the CID images of the email in html
     content_type = image_part.get_content_type()
     image_data_base64 = base64.b64encode(payload).decode('utf-8')
+
     cid = image_part.get('Content-Id')
     if not cid:
         return None
 
     # Remove angle brackets if present around CID
     cid = re.sub(r'<(.*?)>', r'\1', cid)
-    return (cid, content_type, image_data_base64)
+
+    return cid, content_type, image_data_base64
 
 
 def extract_email_body(text_part: Message, payload: Any) -> tuple[str, str]:
@@ -105,36 +107,43 @@ def extract_email_body(text_part: Message, payload: Any) -> tuple[str, str]:
     Handles the payload for the email body part
 
     Args:
-        text_part: Text message part
-        payload: Message part payload
+        text_part (Message): Text message part
+        payload (Any): Message part payload
 
     Returns:
-        (email_body, body_type): Strings containing the email body, and the body type (text or html)
+        (email_body, body_type): Strings containing the email body and the body type (text or html)
 
     """
     email_body = payload.decode(text_part.get_content_charset('utf-8'), errors='ignore')
-    body_type = 'text'
     if text_part.get_content_type() == 'text/html':
         body_type = 'html'
-        # Clean up whitespaces
+        # Clean up whitespaces between </head> and <body> tags
         email_body = re.sub(r'</head>\s*<body>', '</head><body>', email_body)
+    else:
+        body_type = 'text'
 
     return email_body, body_type
 
 
-def patch_cid_with_urls(email_body: str, images: list[tuple[str, str, str]]) -> None:
+def patch_cid_with_urls(email_body: str, images: list[tuple[str, str, str]]) -> str:
     """
-    Replaces html image references with their data urls
+    Replaces HTML image references with their data URLs
 
     Args:
         email_body (str): The html email message to patch
         images (list): List of images found in the message, each containing (cid, type, data)
 
+    Returns:
+        patched_body (str): email body with patched URLs
+
     """
+    patched_body = email_body
     for cid, content_type, image_data_base64 in images:
-        cid_reference = 'cid:' + cid
+        cid_reference = f'cid:{cid}'
         data_url = f'data:{content_type};base64,{image_data_base64}'
-        email_body = email_body.replace(cid_reference, data_url)
+        patched_body = patched_body.replace(cid_reference, data_url)
+
+    return patched_body
 
 
 def parse_multipart_message(msg: str) -> tuple[str, str]:
@@ -156,16 +165,14 @@ def parse_multipart_message(msg: str) -> tuple[str, str]:
         return ('', '')
     email_body = ''
     body_type = ''
-    images = []  # type: list[tuple[str, str, str]]
+    images: list[tuple[str, str, str]] = []
 
     for part in email_message.walk():
         if part.is_multipart():
             continue
 
         content_type = part.get_content_type()
-        if (content_type == 'application/pkcs7-signature'
-                or content_type == 'application/pkcs7-mime'
-                or content_type == 'application/x-pkcs7-mime'):
+        if content_type in {'application/pkcs7-signature', 'application/pkcs7-mime', 'application/x-pkcs7-mime'}:
             # The message is signed
             return ('', '')
 
@@ -185,7 +192,7 @@ def parse_multipart_message(msg: str) -> tuple[str, str]:
             email_body, body_type = extract_email_body(part, payload)
 
     if body_type == 'html':
-        patch_cid_with_urls(email_body, images)
+        email_body = patch_cid_with_urls(email_body, images)
 
     return (email_body, body_type)
 
@@ -290,13 +297,13 @@ def set_encryption_params(client: Client, certs: list[str]) -> None:
     client.smime.set_cipher(SMIME.Cipher('aes_256_cbc'))
 
     # Create and set certificate stack
-    sk = X509.X509_Stack()
+    cert_stack = X509.X509_Stack()
     if not certs:
         demisto.debug('No certs given, using instance cert')
-        sk.push(X509.load_cert(client.public_key_file))
+        cert_stack.push(X509.load_cert(client.public_key_file))
     for cert in certs:
         if cert == 'instancePublicKey':
-            sk.push(X509.load_cert(client.public_key_file))
+            cert_stack.push(X509.load_cert(client.public_key_file))
             continue
         if ('-----BEGIN CERTIFICATE-----') not in cert:
             demisto.debug('No ---BEGIN CERTIFICATE--- tag, creating pem from cert')
@@ -305,10 +312,10 @@ def set_encryption_params(client: Client, certs: list[str]) -> None:
         with NamedTemporaryFile(delete=False) as public_key_file:
             public_key_file.write(bytes(cert, 'utf-8'))
             public_key_file.close()
-            sk.push(X509.load_cert(public_key_file.name))
+            cert_stack.push(X509.load_cert(public_key_file.name))
             os.unlink(public_key_file.name)
 
-    client.smime.set_x509_stack(sk)
+    client.smime.set_x509_stack(cert_stack)
 
 
 ''' COMMANDS '''
