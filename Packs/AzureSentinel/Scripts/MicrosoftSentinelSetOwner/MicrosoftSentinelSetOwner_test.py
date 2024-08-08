@@ -22,7 +22,7 @@ def test_set_owner(mocker):
     result = set_owner(context_results)
 
     debug_mock.assert_any_call(
-        f"set owner remote incident: {expected_incident_id} by instance_name={expected_instance_name} with owner email {expected_owner_email} "
+        f"set owner remote incident: {expected_incident_id} by instance_name={expected_instance_name} with owner email {expected_owner_email} "  # noqa: E501
     )
     execute_command_mock.assert_called_once_with(
         "azure-sentinel-update-incident",

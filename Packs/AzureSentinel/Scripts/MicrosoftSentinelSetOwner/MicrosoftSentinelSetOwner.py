@@ -21,7 +21,7 @@ def set_owner(context_results: dict):
 
     if not incident_id:
         return_error(
-            "Incident ID not found. Please provide the remote 'incident_id' either as an argument when running the script from the War Room."
+            "Incident ID not found. Please provide the remote 'incident_id' either as an argument when running the script from the War Room."  # noqa: E501
         )
 
     demisto.debug(

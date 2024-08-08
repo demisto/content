@@ -19,7 +19,7 @@ def add_new_comment(context_results: dict):
     new_comment = args.get("new_comment")
     if not incident_id:
         return_error(
-            "Incident ID not found. Please provide the remote 'incident_id' either as an argument when running the script from the War Room."
+            "Incident ID not found. Please provide the remote 'incident_id' either as an argument when running the script from the War Room."  # noqa: E501
         )
 
     demisto.debug(f"update remote incident with new XSOAR comments: {new_comment}")
