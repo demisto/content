@@ -15,7 +15,9 @@ def set_owner(context_results: dict):
                          and the updated owner information.
     """
     args = demisto.args()
-    incident_id = dict_safe_get(context_results, ["CustomFields", "sourceid"], "") or args.get("incident_id")  # type: ignore
+    incident_id = dict_safe_get(
+        context_results, ["CustomFields", "sourceid"], ""
+    ) or args.get("incident_id")
     instance_name = context_results.get("sourceInstance") or args.get("using")
     user_principal_email = args.get("owner_email")
 
@@ -35,20 +37,6 @@ def set_owner(context_results: dict):
             "user_principal_name": user_principal_email,
         },
     )
-    # remote_owner: dict = dict_safe_get(result, ["properties", "owner"])  # type: ignore
-    # readable_output = tableToMarkdown(
-    #     f"Updated incident {incident_id} with new owner",
-    #     remote_owner,
-    #     headers=list(remote_owner.keys()),
-    #     headerTransform=pascalToSpace,
-    #     removeNull=True,
-    # )
-    # return CommandResults(
-    #     readable_output=readable_output,
-    #     outputs_prefix="AzureSentinel.Incident.Owner",
-    #     outputs=remote_owner,
-    #     raw_response=result,
-    # )
 
 
 def main():  # pragma: no cover

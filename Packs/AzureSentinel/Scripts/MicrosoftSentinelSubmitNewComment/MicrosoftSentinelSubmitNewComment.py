@@ -14,9 +14,10 @@ def add_new_comment(context_results: dict):
         CommandResults: Includes a markdown-formatted string confirming the new comment and the comment details.
     """
     args = demisto.args()
-    print(f"{args=}")
-    
-    incident_id = dict_safe_get(context_results, ["CustomFields", "sourceid"], "") or args.get("incident_id")  # type: ignore
+
+    incident_id = dict_safe_get(
+        context_results, ["CustomFields", "sourceid"], ""
+    ) or args.get("incident_id")
     instance_name = context_results.get("sourceInstance") or args.get("using")
     new_comment = args.get("new_comment")
     if not incident_id:
