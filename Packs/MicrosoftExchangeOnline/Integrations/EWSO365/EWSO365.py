@@ -60,7 +60,7 @@ from MicrosoftApiModule import *
 warnings.filterwarnings("ignore")
 
 """ Constants """
-
+INTEGRATION_NAME = get_integration_name()
 APP_NAME = "ms-ews-o365"
 FOLDER_ID_LEN = 120
 MAX_INCIDENTS_PER_FETCH = 200
@@ -91,8 +91,8 @@ TARGET_MAILBOX = 'receivedBy'
 
 # context paths
 CONTEXT_UPDATE_EWS_ITEM = f"EWS.Items((val.{ITEM_ID} === obj.{ITEM_ID} || " \
-                          f"(val.{MESSAGE_ID} && obj.{MESSAGE_ID} && val.{MESSAGE_ID} === obj.{MESSAGE_ID}))" \
-                          f" && val.{TARGET_MAILBOX} === obj.{TARGET_MAILBOX})"
+    f"(val.{MESSAGE_ID} && obj.{MESSAGE_ID} && val.{MESSAGE_ID} === obj.{MESSAGE_ID}))" \
+    f" && val.{TARGET_MAILBOX} === obj.{TARGET_MAILBOX})"
 
 CONTEXT_UPDATE_EWS_ITEM_FOR_ATTACHMENT = f"EWS.Items(val.{ITEM_ID} == obj.{ATTACHMENT_ORIGINAL_ITEM_ID})"
 CONTEXT_UPDATE_ITEM_ATTACHMENT = f".ItemAttachments(val.{ATTACHMENT_ID} == obj.{ATTACHMENT_ID})"
@@ -126,6 +126,33 @@ LEGACY_NAME = argToBoolean(demisto.params().get('legacy_name', False))
 UTF_8 = 'utf-8'
 
 """ Classes """
+
+
+class CustomDomainOAuth2Credentials(OAuth2AuthorizationCodeCredentials):
+    def __init__(self, azure_cloud: AzureCloud, **kwargs):
+        self.ad_base_url = azure_cloud.endpoints.active_directory or 'https://login.microsoftonline.com'
+        self.exchange_online_scope = azure_cloud.endpoints.exchange_online or 'https://outlook.office365.com'
+        demisto.debug(f'Initializing {self.__class__}: '
+                      f'{azure_cloud.abbreviation=} | {self.ad_base_url=} | {self.exchange_online_scope}')
+        super().__init__(**kwargs)
+
+    @property
+    def token_url(self):
+        """
+            The URL to request tokens from.
+            Overrides the token_url property to specify custom token retrieval endpoints for different authority's cloud env.
+        """
+        # We may not know (or need) the Microsoft tenant ID. If not, use common/ to let Microsoft select the appropriate
+        # tenant for the provided authorization code or refresh token.
+        return f"{self.ad_base_url}/{self.tenant_id or 'common'}/oauth2/v2.0/token"
+
+    @property
+    def scope(self):
+        """
+            The scope we ask for the token to have
+            Overrides the scope property to specify custom token retrieval endpoints for different authority's cloud env.
+        """
+        return [f"{self.exchange_online_scope}/.default"]
 
 
 class ProxyAdapter(requests.adapters.HTTPAdapter):
@@ -197,7 +224,8 @@ class EWSClient:
             raise Exception('Token / Tenant ID must be provided.')
 
         BaseProtocol.TIMEOUT = int(request_timeout)
-        self.ews_server = "https://outlook.office365.com/EWS/Exchange.asmx/"
+        azure_cloud = get_azure_cloud(kwargs, INTEGRATION_NAME)
+        self.ews_server = f"{azure_cloud.endpoints.exchange_online}/EWS/Exchange.asmx/"
         self.ms_client = MicrosoftClient(
             tenant_id=tenant_id,
             auth_id=client_id,
@@ -207,8 +235,9 @@ class EWSClient:
             verify=not insecure,
             proxy=proxy,
             self_deployed=self_deployed,
-            scope="https://outlook.office.com/.default",
+            scope=f"{azure_cloud.endpoints.exchange_online}/.default",
             command_prefix="ews",
+            azure_cloud=azure_cloud
         )
         self.folder_name = folder
         self.is_public_folder = is_public_folder
@@ -218,12 +247,12 @@ class EWSClient:
         self.client_id = client_id
         self.client_secret = client_secret
         self.account_email = default_target_mailbox
-        self.config = self.__prepare(insecure)
+        self.config = self.__prepare(azure_cloud, insecure)
         self.protocol = BaseProtocol(self.config)
         self.mark_as_read = kwargs.get('mark_as_read', False)
         self.legacy_name = argToBoolean(kwargs.get('legacy_name', False))
 
-    def __prepare(self, insecure):  # pragma: no cover
+    def __prepare(self, azure_cloud: AzureCloud, insecure: bool):  # pragma: no cover
         """
         Prepares the client PROTOCOL, CREDENTIALS and CONFIGURATION
         :param insecure: Trust any certificate (not secure)
@@ -232,7 +261,8 @@ class EWSClient:
         BaseProtocol.HTTP_ADAPTER_CLS = InsecureProxyAdapter if insecure else ProxyAdapter
         access_token = self.ms_client.get_access_token()
         oauth2_token = OAuth2Token({"access_token": access_token})
-        self.credentials = credentials = OAuth2AuthorizationCodeCredentials(
+        self.credentials = credentials = CustomDomainOAuth2Credentials(
+            azure_cloud=azure_cloud,
             client_id=self.client_id,
             client_secret=self.client_secret,
             access_token=oauth2_token,
@@ -243,7 +273,7 @@ class EWSClient:
             "credentials": credentials,
             "auth_type": OAUTH2,
             "version": Version(EXCHANGE_O365),
-            "service_endpoint": "https://outlook.office365.com/EWS/Exchange.asmx",
+            "service_endpoint": f"{azure_cloud.endpoints.exchange_online}/EWS/Exchange.asmx",
         }
 
         return Configuration(**config_args)
@@ -420,7 +450,7 @@ class MarkAsJunk(EWSAccountService):
 
     def get_payload(self, item_id, move_item):  # pragma: no cover
         junk = create_element(
-            f"m:{self.SERVICE_NAME}",
+            f"m: {self.SERVICE_NAME}",
             {"IsJunk": "true", "MoveItem": "true" if move_item else "false"},
         )
 
@@ -468,7 +498,7 @@ class GetSearchableMailboxes(EWSService):
         ]
 
     def get_payload(self):
-        element = create_element(f"m:{self.SERVICE_NAME}")
+        element = create_element(f"m: {self.SERVICE_NAME}")
         return element
 
 
@@ -506,7 +536,7 @@ class ExpandGroup(EWSService):
             sys.exit()
 
     def get_payload(self, email_address):
-        element = create_element(f"m:{self.SERVICE_NAME}")
+        element = create_element(f"m: {self.SERVICE_NAME}")
         mailbox_element = create_element("m:Mailbox")
         add_xml_child(mailbox_element, "t:EmailAddress", email_address)
         element.append(mailbox_element)
@@ -2122,8 +2152,8 @@ def decode_email_data(email_obj: Message):
         data = attached_email_bytes.decode(encoding)
     except UnicodeDecodeError:
         # In case the detected encoding fails apply the default encoding
-        demisto.info(f'Could not decode attached email using detected encoding:{encoding}, retrying '
-                     f'using utf-8.\nAttached email details:'
+        demisto.info(f'Could not decode attached email using detected encoding: {encoding}, retrying '
+                     f'using utf-8.\nAttached email details: '
                      f'\nMessage-ID = {email_obj.get("Message-ID")}'
                      f'\nDate = {email_obj.get("Date")}'
                      f'\nSubject = {email_obj.get("Subject")}'
@@ -2495,7 +2525,7 @@ def fetch_last_emails(
     qs.chunk_size = min(client.max_fetch, 100)
     qs.page_size = min(client.max_fetch, 100)
     demisto.debug("Before iterating on queryset")
-    demisto.debug(f'Size of the queryset object in fetch-incidents:{sys.getsizeof(qs)}')
+    demisto.debug(f'Size of the queryset object in fetch-incidents: {sys.getsizeof(qs)}')
     for item in qs:
         demisto.debug("next iteration of the queryset in fetch-incidents")
         if isinstance(item, Message) and item.message_id not in exclude_ids:
@@ -2710,7 +2740,7 @@ def process_main():
 
 
 def main():  # pragma: no cover
-    # When running big queries, like 'ews-search-mailbox' the memory might not freed by the garbage
+    # When running big queries, like 'ews-search-mailbox' the memory might not be freed by the garbage
     # collector. `separate_process` flag will run the integration on a separate process that will prevent
     # memory leakage.
     separate_process = demisto.params().get("separate_process", False)
