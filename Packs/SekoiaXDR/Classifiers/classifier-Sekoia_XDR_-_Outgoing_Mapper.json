@@ -1,0 +1,27 @@
+{
+    "description": "Maps outgoing Sekoia XDR incidents fields.",
+    "feed": false,
+    "id": "Sekoia XDR - Outgoing Mapper",
+    "mapping": {
+        "Sekoia XDR": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "short_id": {
+                    "simple": "alertid"
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "short_id": {
+                    "simple": "dbotMirrorId"
+                }
+            }
+        }
+    },
+    "name": "Sekoia XDR - Outgoing Mapper",
+    "type": "mapping-outgoing",
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

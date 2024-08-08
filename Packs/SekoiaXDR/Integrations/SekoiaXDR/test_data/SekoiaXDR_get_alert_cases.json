@@ -1,0 +1,27 @@
+{
+    "items": [
+        {
+            "uuid": "05f229e7-0196-45a3",
+            "short_id": "CAs3AT1XeGCp",
+            "created_at": "2022-12-15T10:08:21.434114+00:00",
+            "created_by": "2514dc77-47aa-42f4",
+            "created_by_type": "user",
+            "updated_at": "2023-12-18T14:55:33.061335+00:00",
+            "updated_by": "2514dc77-47aa-42f4",
+            "updated_by_type": "user",
+            "title": "Test Add events",
+            "description": "Test Add events",
+            "priority": "low",
+            "status": "opened",
+            "status_uuid": "6adc2d64-87ee-4394",
+            "community_uuid": "52bd045f-4199-4361",
+            "subscribers": [],
+            "tags": [],
+            "number_of_comments": 0,
+            "first_seen_at": "2022-06-17T04:30:24.976000Z",
+            "last_seen_at": "2023-12-18T13:56:08Z",
+            "manual": true
+        }
+    ],
+    "total": 1
+}
