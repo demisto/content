@@ -2,4 +2,4 @@ ThreatFox is a free platform from abuse.ch with the goal of sharing indicators o
 
 
 ## What does this pack do?
--  Gets indicators from ThreatFox.
+Gets indicators from ThreatFox.
