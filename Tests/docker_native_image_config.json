@@ -145,6 +145,15 @@
             ]
         },
         {
+            "id":"ParseEmailFilesV2",
+            "reason":"Script uses an updated openssl lib than native, see CIAC-11469",
+            "ignored_native_images":[
+                "native:8.6",
+                "native:dev",
+                "native:candidate"
+            ]
+        },
+        {
             "id": "Github Feed",
             "reason": "update docker image",
             "ignored_native_images": [
