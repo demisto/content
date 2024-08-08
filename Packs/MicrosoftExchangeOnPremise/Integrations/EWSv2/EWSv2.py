@@ -1076,9 +1076,11 @@ def parse_incident_from_item(item, is_fetch):  # pragma: no cover
             labels.append({'type': 'Email/html', 'value': item.body})
             email_format = 'HTML'
         labels.append({'type': 'Email/format', 'value': email_format})
+        demisto.debug(f'EWS v2: {labels=}')
 
         # handle attachments
         if item.attachments:
+            demisto.debug('EWS v2: handle attachments')
             incident['attachment'] = []
             for attachment in item.attachments:
                 if attachment is not None:
@@ -1087,6 +1089,7 @@ def parse_incident_from_item(item, is_fetch):  # pragma: no cover
                     label_attachment_type = None
                     label_attachment_id_type = None
                     if isinstance(attachment, FileAttachment):
+                        demisto.debug('EWS v2: The attachment is of type FileAttachment')
                         try:
                             if attachment.content:
                                 # file attachment
@@ -1123,6 +1126,7 @@ def parse_incident_from_item(item, is_fetch):  # pragma: no cover
 
                         # save the attachment
                         if hasattr(attachment, 'item') and attachment.item.mime_content:
+                            demisto.debug('EWS v2: Some items arrive with bytes attachemnt')
                             # Some items arrive with bytes attachemnt
                             if isinstance(attachment.item.mime_content, bytes):
                                 attached_email = email.message_from_bytes(attachment.item.mime_content)
@@ -1146,6 +1150,7 @@ def parse_incident_from_item(item, is_fetch):  # pragma: no cover
                                             and header.name != 'Content-Type':
                                         attached_email.add_header(header.name, header.value)
 
+                            demisto.debug(f'EWS v2: {attached_email=}')
                             file_result = fileResult(get_attachment_name(attachment_name=attachment.name,
                                                                          content_id=attachment.content_id,
                                                                          is_inline=attachment.is_inline) + ".eml",
@@ -1948,6 +1953,7 @@ def get_item_as_eml(item_id, target_mailbox=None):  # pragma: no cover
                     email_content.add_header(header.name, header.value)
 
         eml_name = item.subject if item.subject else 'demisto_untitled_eml'
+        demisto.debug(f'EWS v2: {eml_name=} {email_content=}')
         file_result = fileResult(eml_name + ".eml", email_content.as_string())
         file_result = file_result if file_result else "Failed uploading eml file to war room"
 
