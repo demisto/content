@@ -250,11 +250,19 @@ class Client(BaseClient):
                 error_message = query_result
 
             raise DemistoException(f'Error in query to Cortex Data Lake XSOAR Connector [{status_code}] - {error_message}')
-
+        raw_results = []
         try:
-            raw_results = [r.json() for r in query_service.iter_job_results(job_id=query_result.get(
-                'jobId'), page_number=arg_to_number(page_number), page_size=arg_to_number(page_size) or 50, max_wait=2000,
-                result_format='valuesDictionary')]
+            for r in query_service.iter_job_results(job_id=query_result.get(
+                    'jobId'), page_number=arg_to_number(page_number), page_size=arg_to_number(page_size) or 50, max_wait=2000,
+                    result_format='valuesDictionary'):
+                raw_results.append(r.json())
+        # There is a bug in iter_job_results where it does not handle pageCursor and pageNumber properly after the first job
+        # receives a status of 'DONE' and contains the desired results. This results in a response with an invalid status code
+        # and missing standard fields, including the 'state' field. The method attempts to directly access the 'state' field
+        # and fails. This workaround addresses the issue.
+        except KeyError as e:
+            if not e.args[0] == 'state':
+                raise DemistoException(f'Received error {str(e)} when querying logs.')
         except exceptions.HTTPError as e:
             raise DemistoException(f'Received error {str(e)} when querying logs.')
 
