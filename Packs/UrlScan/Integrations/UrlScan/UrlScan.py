@@ -7,6 +7,7 @@ import collections
 import json as JSON
 import time
 from urllib.parse import urlparse
+import socket
 
 import requests
 from requests.utils import quote  # type: ignore
@@ -59,16 +60,13 @@ class Client:
 '''HELPER FUNCTIONS'''
 
 
-def detect_ip_type(indicator):
-    """
-    Helper function which detects wheather an IP is a IP or IPv6 by string
-    """
-    indicator_type = ''
-    if '::' in indicator:
-        indicator_type = FeedIndicatorType.IPv6
-    else:
-        indicator_type = FeedIndicatorType.IP
-    return indicator_type
+def to_ip_feed_indicator_type(ip_string):
+    """Categorize a given IP address into its feed indicator type - default (v4) or v6."""
+    try:
+        socket.inet_aton(ip_string)
+        return FeedIndicatorType.IP
+    except OSError:
+        return FeedIndicatorType.IPv6
 
 
 def schedule_polling(items_to_schedule, next_polling_interval):
@@ -290,7 +288,7 @@ def create_list_relationships(scans_dict, url, reliability):
                     pass
                 # For a case where the type of the IP indicator should be detected, whether its IPv6/IP
                 if not indicator_type and relationship_dict.get('detect_type'):
-                    indicator_type = detect_ip_type(indicator)
+                    indicator_type = to_ip_feed_indicator_type(indicator)
                 relationship = create_relationship(scan_type=scan_name, field=field, entity_a=url,
                                                    entity_a_type=FeedIndicatorType.URL, entity_b=indicator,
                                                    entity_b_type=indicator_type, reliability=reliability)
