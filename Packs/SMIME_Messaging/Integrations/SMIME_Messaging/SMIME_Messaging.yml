@@ -165,4 +165,5 @@ script:
   subtype: python3
 tests:
 - EWS V2 Send Mail Test 3
+- SMIME_Messaging-Test
 fromversion: 5.0.0
