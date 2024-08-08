@@ -75,6 +75,13 @@ configuration:
   type: 8
   defaultvalue: "true"
   required: false
+- defaultvalue: 'false'
+  display: Exclude Enrichment
+  name: enrichmentExcluded
+  type: 8
+  hidden:
+    - xsoar_on_prem
+  required: false
 - additionalinfo: Timeout of the polling request in seconds.
   defaultvalue: '20'
   display: Request Timeout
