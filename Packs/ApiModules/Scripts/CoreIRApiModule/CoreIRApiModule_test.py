@@ -4080,3 +4080,35 @@ def test_http_request_demisto_call(mocker, data, expected_result):
     res = client._http_request(method="POST",
                                url_suffix="/distributions/get_versions/")
     assert expected_result == res
+
+
+@pytest.mark.parametrize('allow_bin_response', [True, False])
+def test_request_for_bin_file_via_demisto_call(mocker, allow_bin_response):
+    """
+    Given:
+        - An XSIAM machine with a build version that supports demisto._apiCall() with RBAC validations.
+        - case 1 - build version that support response of binary files.
+        - case 2 - build version that doesn't support response of binary files.
+    When:
+        - Calling the http_request method.
+    Then:
+        - case 1 - Make sure the response are as expected (base64 decoded).
+        - case 2 - Make sure en DemistoException was thrown with details about the server version that allowed bin response.
+    """
+    from CoreIRApiModule import CoreClient, ALLOW_BIN_CONTENT_RESPONSE_SERVER_VERSION, ALLOW_BIN_CONTENT_RESPONSE_BUILD_NUM
+    import base64
+    test_bin_data = b'test bin data'
+    client = CoreClient(
+        base_url=f'{Core_URL}/public_api/v1', headers={},
+    )
+    mocker.patch("CoreIRApiModule.FORWARD_USER_RUN_RBAC", new=True)
+    mocker.patch("CoreIRApiModule.ALLOW_RESPONSE_AS_BINARY", new=allow_bin_response)
+    mocker.patch.object(demisto, "_apiCall", return_value={'name': '/api/webapp/public_api/v1/distributions/get_versions/',
+                                                           'status': 200,
+                                                           'data': base64.b64encode(test_bin_data)})
+    try:
+        res = client._http_request(method="get",
+                                   resp_type='content')
+        assert res == test_bin_data
+    except DemistoException as e:
+        assert f'{ALLOW_BIN_CONTENT_RESPONSE_SERVER_VERSION}-{ALLOW_BIN_CONTENT_RESPONSE_BUILD_NUM}' in str(e)
