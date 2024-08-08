@@ -95,7 +95,7 @@
                 "netutils",
                 "auth-utils"
             ],
-            "docker_ref": "demisto/py3-native:8.6.0.104287"
+            "docker_ref": "demisto/py3-native:8.7.0.107893"
         }
     },
     "ignored_content_items":[
@@ -103,8 +103,8 @@
             "id":"Json2HtmlTable",
             "reason":"Add json2html to py3-tools: Ignore due to this contribution PR: https://github.com/demisto/dockerfiles/pull/29877.",
             "ignored_native_images":[
-                "native:8.6",
-                "native:candidate"
+                "native:8.6"
+
             ]
         },
         {
