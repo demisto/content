@@ -1,5 +1,5 @@
 id: Prisma Cloud V2 Test
-version: 12
+version: 14
 vcShouldKeepItemLegacyProdMachine: false
 name: Prisma Cloud V2 Test
 description: Test for Prisma Cloud V2.
@@ -1555,10 +1555,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "48":
     id: "48"
-    taskid: 3d2917b8-77e2-4614-888c-b4727894f575
+    taskid: 2eba3ea0-55e5-4766-8ec0-f2a3a8dab3c3
     type: regular
     task:
-      id: 3d2917b8-77e2-4614-888c-b4727894f575
+      id: 2eba3ea0-55e5-4766-8ec0-f2a3a8dab3c3
       version: -1
       name: prisma-cloud-access-key-create
       description: Adds a new access key for the current user. If you have API access,
@@ -1641,7 +1641,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "53"
+      - "55"
     scriptarguments:
       access-key:
         simple: ${PrismaCloud.AccessKeys.id}
@@ -1676,7 +1676,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "54"
+      - "57"
     scriptarguments:
       access-key:
         simple: ${PrismaCloud.AccessKeys.id}
@@ -1686,43 +1686,7 @@ tasks:
       {
         "position": {
           "x": -150,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "54":
-    id: "54"
-    taskid: 2c8d1eba-45f7-463d-8a88-839a0edb9066
-    type: regular
-    task:
-      id: 2c8d1eba-45f7-463d-8a88-839a0edb9066
-      version: -1
-      name: prisma-cloud-access-key-create
-      description: Adds a new access key for the current user. If you have API access,
-        you can create up to two access keys.
-      script: '|||prisma-cloud-access-key-create'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "55"
-    scriptarguments:
-      name:
-        simple: TestPlaybook_AccessKey_2
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -150,
-          "y": 895
+          "y": 1080
         }
       }
     note: false
@@ -1734,10 +1698,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "55":
     id: "55"
-    taskid: ad0eeab3-faa7-422e-8592-f0d9d614d242
+    taskid: ab86df04-6b74-4672-86c0-d1ead968eedd
     type: regular
     task:
-      id: ad0eeab3-faa7-422e-8592-f0d9d614d242
+      id: ab86df04-6b74-4672-86c0-d1ead968eedd
       version: -1
       name: prisma-cloud-access-key-disable
       description: Deactivates the access key that has the specified ID.
@@ -1757,7 +1721,7 @@ tasks:
       {
         "position": {
           "x": -150,
-          "y": 1070
+          "y": 720
         }
       }
     note: false
@@ -1783,7 +1747,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "57"
+      - "53"
     scriptarguments:
       access-key:
         simple: ${PrismaCloud.AccessKeys.id}
@@ -1793,7 +1757,7 @@ tasks:
       {
         "position": {
           "x": -150,
-          "y": 1265
+          "y": 905
         }
       }
     note: false
@@ -1826,7 +1790,7 @@ tasks:
       {
         "position": {
           "x": -150,
-          "y": 1450
+          "y": 1260
         }
       }
     note: false
@@ -1856,7 +1820,7 @@ tasks:
       {
         "position": {
           "x": -460,
-          "y": 1640
+          "y": 1450
         }
       }
     note: false
