@@ -10,11 +10,11 @@ The Google Cloud Logging Cortex <~XSOAR>XSOAR</~XSOAR><~XSIAM> <~XSIAM>XSIAM</~X
 <~XSIAM>
 ### Remarks
 - When configuring a [sink](https://cloud.google.com/logging/docs/export/configure_export_v2#creating_sink) to route Google Cloud logs to the [Pub/Sub service](https://cloud.google.com/pubsub/docs/pubsub-basics) as described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Ingest-Logs-and-Data-from-a-GCP-Pub/Sub?tocId=q2ZnSo90ZmO~6aLgts8g5g), you may wish to create an inclusion filter to include only a subset of the logs. See filter examples [here](https://cloud.google.com/logging/docs/export/configure_export_v2#filter-examples) and samples below: 
-  -  Filter to include only [Google Cloud Audit Logs](https://cloud.google.com/logging/docs/audit):
+  -  Filter for including only [Google Cloud Audit Logs](https://cloud.google.com/logging/docs/audit):
   ```
      logName:"cloudaudit.googleapis.com"
   ```
-  -  Filter to include only [Google Cloud DNS Query Logs](https://cloud.google.com/dns/docs/monitoring#dns-log-record-format):
+  -  Filter for including only [Google Cloud DNS Query Logs](https://cloud.google.com/dns/docs/monitoring#dns-log-record-format):
   ```
     log_id("dns.googleapis.com/dns_queries") 
   ```
