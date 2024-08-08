@@ -113,7 +113,7 @@ GALAXY_MAP = {
     'misp-galaxy:mitre-course-of-action': ThreatIntel.ObjectsNames.COURSE_OF_ACTION,
 }
 
-LIMIT: int = 10000
+LIMIT: int = 2000
 
 
 class Client(BaseClient):
@@ -537,6 +537,9 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]):
             demisto.createIndicators(iter_)
         params_dict['page'] += 1
         last_run = search_query_per_page['response']['Attribute'][-1]['timestamp']
+        if (limit_str := params.get('max_indicator_to_fetch')) and (limit_num := arg_to_number(limit_str)) and limit_num <= len(
+                indicators):
+            break
         search_query_per_page = client.search_query(params_dict)
     if error_message := search_query_per_page.get('Error'):
         raise DemistoException(f"Error in API call - check the input parameters and the API Key. Error: {error_message}")
