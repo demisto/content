@@ -18,7 +18,6 @@ from hashlib import sha1
 from cryptography import exceptions
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.serialization import load_pem_private_key
-from datetime import UTC
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -1951,8 +1950,7 @@ def test_module(client: Client, params: dict, first_fetch_time: int) -> str:
         if not params.get('as_user'):
             raise DemistoException("In order to use fetch, a User ID for Fetching Incidents is "
                                    "required.")
-        created_after = datetime.fromtimestamp(first_fetch_time, tz=UTC).strftime(
-            DATE_FORMAT)
+        created_after = datetime.fromtimestamp(first_fetch_time, tz=timezone.utc).strftime(DATE_FORMAT)  # noqa: UP017
         response = client.list_events(
             as_user=params.get('as_user'),  # type:ignore
             created_after=created_after,
@@ -1981,12 +1979,11 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
     created_after = last_run.get('time', None)
     incidents = []
     if not created_after:
-        created_after = datetime.fromtimestamp(first_fetch_time, tz=UTC).strftime(
-            DATE_FORMAT)
+        created_after = datetime.fromtimestamp(first_fetch_time, tz=timezone.utc).strftime(DATE_FORMAT)  # noqa: UP017
     results = client.list_events(stream_type='admin_logs', as_user=as_user, limit=max_results,
                                  created_after=created_after)
     raw_incidents = results.get('entries', [])
-    next_run = datetime.now(tz=UTC).strftime(DATE_FORMAT)
+    next_run = datetime.now(tz=timezone.utc).strftime(DATE_FORMAT)  # noqa: UP017
     for raw_incident in raw_incidents:
         event = Event(raw_input=raw_incident)
         xsoar_incident = event.format_incident()
