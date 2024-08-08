@@ -2833,13 +2833,146 @@ Get permission list. You must provide either "query" or "next_token".
 >### Next Page Token:
 >token2
 
+`prisma-cloud-access-key-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+|-------------------| --- | --- |
+| name              | Access key name. | Required | 
+| expires-on             | Timestamp in milliseconds when access key expires. Default:0. | Optional | 
+| service-account-name             | Service account name. | Optional |
+
+#### Context Output
+
+| **Path**                  | **Type** | **Description**       |
+|---------------------------| --- |-----------------------|
+| PrismaCloud.AccessKeys.id  | String | Access key ID.        | 
+| PrismaCloud.AccessKeys.secretKey | String | Access key secret. |
+
+#### Command example
+```!prisma-cloud-access-key-create name=MyNewKey```
+#### Context Example
+```json
+{
+    "PrismaCloud": {
+        "AccessKeys": [
+            {
+                "Id": "Id",
+                "Secret Key": "Secret Key"
+            }
+        ]
+    }
+}
+```
+
+`prisma-cloud-access-keys-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+|-------------------| --- | --- |
+| access-key             | Returns the metadata of the access key that has the specified ID. | Optional | 
+| limit           | Maximum number of entries to return. | Optional | 
+
+#### Context Output
+
+| **Path**                           | **Type** | **Description**             |
+|------------------------------------|----------|-----------------------------|
+| PrismaCloud.AccessKeys.id          | String   | Access key ID.               | 
+| PrismaCloud.AccessKeys.name        | String   | The name of the access key.                        |
+| PrismaCloud.AccessKeys.createdBy   | String   | The user who created the access key.                  | 
+| PrismaCloud.AccessKeys.createdTs   | String   | Time access key was created. |
+| PrismaCloud.AccessKeys.expiresOn   | String   | Access key expires on.       |
+| PrismaCloud.AccessKeys.lastUsedTime | String   | The last time the access key was used.        | 
+| PrismaCloud.AccessKeys.status      | String   | Access key status.           |
+| PrismaCloud.AccessKeys.role.id     | String   | User role ID.       | 
+| PrismaCloud.AccessKeys.role.name   | String   | User role name.              |
+| PrismaCloud.AccessKeys.roleType    | String   | User role permission type.   | 
+| PrismaCloud.AccessKeys.username    | String   | Access key user name.        |
+
+#### Command example
+```!prisma-cloud-access-keys-list limit=2```
+#### Context Example
+```json
+{
+    "PrismaCloud": {
+        "AccessKeys": [
+            {
+                "id": "string",
+                "name": "string",
+                "createdBy": "string",
+                "createdTs": "number",
+                "lastUsedTime": "number",
+                "status": "string",
+                "expiresOn": "number",
+                "role": {
+                    "id": "string",
+                    "name": "string"
+                },
+                "roleType": "string",
+                "username": "string"
+            },
+            {
+                "id": "string",
+                "name": "string",
+                "createdBy": "string",
+                "createdTs": "number",
+                "lastUsedTime": "number",
+                "status": "string",
+                "expiresOn": "number",
+                "role": {
+                    "id": "string",
+                    "name": "string"
+                },
+                "roleType": "string",
+                "username": "string"
+            }
+        ]
+    }
+}
+```
+
+`prisma-cloud-access-key-disable`
+
+#### Input
+
+| **Argument Name** | **Description**                                              | **Required** |
+|-------------------|--------------------------------------------------------------| --- |
+| access-key              | Access key ID.                                                | Required | 
+
+#### Command example
+```!prisma-cloud-access-key-disable access-key=id```
+
+`prisma-cloud-access-key-enable`
+
+#### Input
+
+| **Argument Name** | **Description**                                              | **Required** |
+|-------------------|--------------------------------------------------------------| --- |
+| access-key              | Access key ID.                                                | Required | 
+
+#### Command example
+```!prisma-cloud-access-key-enable access-key=id```
+
+`prisma-cloud-access-key-delete`
+
+#### Input
+
+| **Argument Name** | **Description**                                              | **Required** |
+|-------------------|--------------------------------------------------------------| --- |
+| access-key              | Access key ID.                                                | Required | 
+
+#### Command example
+```!prisma-cloud-access-key-delete access-key=id```
+
 ## Breaking changes from the previous version of this integration - Prisma Cloud v2
 The following sections list the changes in this version.
 
 ### Commands
 #### The following commands were deprecated in this version because they are not supported by the API anymore:
 * ***redlock-list-scans***
-* *redlock-get-scan-status***
+* ***redlock-get-scan-status***
 * ***redlock-get-scan-results***
 
 #### The following commands were replaced in this version:
@@ -2847,14 +2980,14 @@ The following sections list the changes in this version.
 * ***redlock-get-alert-details*** - this command is replaced by ***prisma-cloud-alert-get-details***.
 * ***redlock-get-remediation-details*** - this command is replaced by ***prisma-cloud-remediation-command-list***.
 * ***redlock-get-rql-response*** - this command is replaced by ***prisma-cloud-config-search***.
-* *redlock-list-alert-filters* - this command is replaced by *prisma-cloud-alert-filter-list*.
-* *redlock-reopen-alerts* - this command is replaced by *prisma-cloud-alert-reopen*.
-* *redlock-search-alerts* - this command is replaced by *prisma-cloud-alert-search*.
-* *redlock-search-config* - this command is replaced by *prisma-cloud-config-search*.
-* *redlock-search-event* - this command is replaced by *prisma-cloud-event-search*.
-* *redlock-search-network* - this command is replaced by *prisma-cloud-network-search*.
+* ***redlock-list-alert-filters*** - this command is replaced by ***prisma-cloud-alert-filter-list***.
+* ***redlock-reopen-alerts*** - this command is replaced by ***prisma-cloud-alert-reopen***.
+* ***redlock-search-alerts*** - this command is replaced by ***prisma-cloud-alert-search***.
+* ***redlock-search-config*** - this command is replaced by ***prisma-cloud-config-search***.
+* ***redlock-search-event*** - this command is replaced by ***prisma-cloud-event-search***.
+* ***redlock-search-network*** - this command is replaced by ***prisma-cloud-network-search***.
 
 
 ## Additional Considerations for this version
 * "Risk detail" was removed from all commands because it is not supported by the API anymore.
-* Commands from the previous version were kept in order to make to transition from v1 to v2 easy for existing playbooks. We encourage to use the new version of each command.
+* Commands from the previous version were kept in order to make the transition from v1 to v2 easy for existing playbooks. We encourage you to use the new version of each command.
