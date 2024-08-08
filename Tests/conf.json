@@ -6129,7 +6129,9 @@
         "ipinfo",
         "Slack",
         "CortexXDR",
-        "MailSenderNew"
+        "MailSenderNew",
+        "Common Scripts",
+        "Filters And Transformers"
     ],
     "nightly_packs": [
         "CommonScripts",
