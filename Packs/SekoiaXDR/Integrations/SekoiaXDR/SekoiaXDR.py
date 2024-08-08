@@ -613,14 +613,11 @@ def fetch_incidents(
             "severity": convert_to_demisto_severity(urgency.get("display", "Low")),
         }
         # If the integration parameter is set to mirror add the appropriate fields to the incident
-        if mirror_direction != "None":
-            alert["mirror_instance"] = demisto.integrationInstance()
-            alert["dbotMirrorDirection"] = MIRROR_DIRECTION.get(
-                str(mirror_direction)
-            )
-            alert["dbotMirrorId"] = alert["short_id"]
-            incident["rawJSON"] = json.dumps(alert)
-
+        alert["mirror_instance"] = demisto.integrationInstance()
+        incident["rawJSON"] = json.dumps(alert)
+        incident["dbotMirrorDirection"] = MIRROR_DIRECTION.get(str(mirror_direction))
+        incident["dbotMirrorId"] = alert["short_id"]
+        demisto.debug(f"Incident added : {incident}")
         incidents.append(incident)
 
         # Update last run and add incident if the incident is newer than last fetch
@@ -834,7 +831,7 @@ def update_remote_system_command(client: Client, args):
     )
     try:
         if parsed_args.incident_changed:
-            sekoia_status = delta.get("status", None)
+            sekoia_status = delta.get("sekoiaxdralertstatus", None)
             if sekoia_status:
                 demisto.debug(
                     f"The incident #{xsoar_incident} had the sekoia status of the alert \
