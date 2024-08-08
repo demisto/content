@@ -13,7 +13,7 @@ commonfields:
   id: MicrosoftSentinelSetOwner
   version: -1
 comment: This script can be run from the war room or used by a layout to set the owner field in Microsoft Sentinel.
-name: MicrosoftSentinelSetOwnere
+name: MicrosoftSentinelSetOwner
 outputs:
   - contextPath: AzureSentinel.Incident.ID
     description: The incident ID.

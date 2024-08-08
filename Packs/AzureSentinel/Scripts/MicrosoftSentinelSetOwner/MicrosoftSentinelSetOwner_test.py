@@ -17,7 +17,7 @@ def test_set_owner(mocker):
     debug_mock = mocker.patch.object(demisto, "debug")
     execute_command_mock = mocker.patch.object(CommonServerPython, "execute_command")
 
-    from MicrosoftSentinelSetOwner.MicrosoftSentinelSetOwner import set_owner
+    from MicrosoftSentinelSetOwner import set_owner
 
     result = set_owner(context_results)
 
