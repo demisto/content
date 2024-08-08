@@ -259,6 +259,14 @@ def test_fix_last_run(last_run, supported_event_types, expected_result):
 
 
 def test_incident_endpoint(mocker):
+    """
+    Given:
+        - Netskope client set to fetch incident events.
+    When:
+        - Fetching events.
+    Then:
+        - Assert that the Netskope end point is called with the proper url and paras.
+    """
     from datetime import datetime
     from NetskopeEventCollector import handle_data_export_single_event_type
     mocker.patch.object(demisto, 'callingContext', {'context': {'IntegrationInstance': 'test_instance'}})
