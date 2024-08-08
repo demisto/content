@@ -70,12 +70,6 @@ ERROR_COUNT_MAP = {
 
 DESIRED_STATUSES = ['Warning', 'Error']
 
-''' GLOBAL VARIABLES '''
-
-skip_items = 0
-items_to_fetch = 0
-http_request_timeout_sec = 120
-
 
 class Operation(Enum):
     EQUALS = 'equals'
@@ -124,8 +118,15 @@ class FilterBuilder:
 
 
 class Client(BaseClient):
-    def __init__(self, server_url, verify, proxy, headers, auth):
-        super().__init__(base_url=server_url, verify=verify, proxy=proxy, headers=headers, auth=auth)
+    def __init__(self, server_url, verify, proxy, headers, auth, timeout):
+        super().__init__(
+            base_url=server_url,
+            verify=verify,
+            proxy=proxy,
+            headers=headers,
+            auth=auth,
+            timeout=timeout
+        )
 
     def get_headers(self):
         """
@@ -154,7 +155,7 @@ class Client(BaseClient):
         """
         headers = self._headers.copy()
 
-        response = self._http_request('get', 'api/v2.2/about', headers=headers, timeout=http_request_timeout_sec)
+        response = self._http_request('get', 'api/v2.2/about', headers=headers)
 
         return response
 
@@ -175,7 +176,7 @@ class Client(BaseClient):
         headers = self._headers.copy()
         headers['Content-Type'] = 'application/x-www-form-urlencoded'
 
-        response = self._http_request('post', 'api/token', data=data, headers=headers, timeout=http_request_timeout_sec)
+        response = self._http_request('post', 'api/token', data=data, headers=headers)
 
         return response
 
@@ -200,8 +201,7 @@ class Client(BaseClient):
             'get',
             'api/v2.2/alarms/triggeredAlarms',
             params=params,
-            headers=headers,
-            timeout=http_request_timeout_sec
+            headers=headers
         )
 
         return response
@@ -227,8 +227,7 @@ class Client(BaseClient):
             'api/v2.2/alarms/triggeredAlarms/resolve',
             json_data=data,
             headers=headers,
-            resp_type='response',
-            timeout=http_request_timeout_sec
+            resp_type='response'
         )
 
         result = str(response)
@@ -343,7 +342,7 @@ def search_with_paging(
     size_limit=DEFAULT_SIZE_LIMIT
 ) -> list[dict]:
 
-    global skip_items, items_to_fetch
+    skip_items = 0
     args['Offset'] = 0
     items_to_fetch = size_limit
     items: list[dict] = []
@@ -386,8 +385,8 @@ def process_error(error_count: int, error_message: str) -> tuple[dict, int]:
     error_count += 1
     incident = {}
     if error_count in ERROR_COUNT_MAP:
-        integartion_instance = demisto.callingContext.get('context', {}).get('IntegrationInstance', '')
-        incident_name = f"Veeam - Fetch incident error has occurred on {integartion_instance}"
+        integration_instance = demisto.callingContext.get('context', {}).get('IntegrationInstance', '')
+        incident_name = f"Veeam - Fetch incident error has occurred on {integration_instance}"
         incident = {
             'name': incident_name,
             'occurred': datetime.now().strftime(DATE_FORMAT),
@@ -595,11 +594,12 @@ def main() -> None:
     first_fetch_time = arg_to_datetime(
         arg=params.get('first_fetch', '3 days'),
         arg_name='First fetch time',
-        required=True
+        required=False
     )
-    assert first_fetch_time
 
-    global http_request_timeout_sec
+    if not first_fetch_time:
+        first_fetch_time = datetime.now()
+
     http_request_timeout_sec = int(params.get('http_request_timeout_sec', 120))
 
     headers = {}
@@ -609,7 +609,14 @@ def main() -> None:
     demisto.debug(f'Command {command} has been run with the following arguments: {args}')
 
     try:
-        client: Client = Client(urljoin(url, '/'), verify_certificate, proxy, headers=headers, auth=None)
+        client: Client = Client(
+            urljoin(url, '/'),
+            verify_certificate,
+            proxy,
+            headers=headers,
+            auth=None,
+            timeout=http_request_timeout_sec
+        )
         result = process_command(command, client, first_fetch_time, params, args)
         return_results(result)
 

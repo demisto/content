@@ -89,7 +89,7 @@ tasks:
       id: e97961d7-ed67-4d0a-80b0-5d69b520832c
       iscommand: true
       name: Get All Restore Points
-      script: VBR REST API|||veeam-vbr-get-all-restore-points
+      script: VBR REST API|||veeam-vbr-get-restore-points
       type: regular
       version: -1
     taskid: e97961d7-ed67-4d0a-80b0-5d69b520832c

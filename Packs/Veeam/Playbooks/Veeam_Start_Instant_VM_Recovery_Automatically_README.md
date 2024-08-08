@@ -26,7 +26,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * veeam-vbr-get-inventory-objects
 * veeam-vbr-get-session
 * veeam-vbr-start-instant-recovery-customized
-* veeam-vbr-get-all-restore-points
+* veeam-vbr-get-restore-points
 
 ## Playbook Inputs
 

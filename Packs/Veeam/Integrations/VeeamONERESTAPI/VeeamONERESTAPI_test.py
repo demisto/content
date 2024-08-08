@@ -9,6 +9,7 @@ from VeeamONERESTAPI import DATE_FORMAT, Client, FilterBuilder, Operation, \
     handle_command_with_token_refresh, convert_triggered_alarms_to_incidents, process_error, check_version
 
 SERVER_URL = 'https://test_url.com'
+REQUEST_TIMEOUT = 120
 
 
 class ApiMock:
@@ -34,7 +35,7 @@ def util_load_json(path):
 
 @pytest.fixture()
 def client():
-    return Client(server_url=SERVER_URL, verify=None, proxy=None, headers=None, auth=None)
+    return Client(server_url=SERVER_URL, verify=None, proxy=None, headers=None, auth=None, timeout=REQUEST_TIMEOUT)
 
 
 @pytest.fixture
