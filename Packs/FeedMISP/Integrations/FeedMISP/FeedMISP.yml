@@ -14,7 +14,7 @@ configuration:
   required: true
   hiddenusername: true
 - display: Max. indicators per fetch
-  defaultvalue: 5000
+  defaultvalue: 2000
   name: max_indicator_to_fetch
   type: 0
   additionalinfo: Maximum number of indicators per fetch. Value should be between 1 - 10000. A large value may result in a timeout.
