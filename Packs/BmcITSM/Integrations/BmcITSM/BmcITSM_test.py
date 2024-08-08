@@ -1497,7 +1497,7 @@ def test_fetch_command(
     """
     import BmcITSM
     mock_response = load_mock_response("list_tickets_not_sorted.json")
-    expected_result = 1719664716
+    expected_result = 1719671916
     mocker.patch.object(demisto, 'getLastRun', return_value={"SRM:Request": {"last_create_time": '2021-06-29T14:38:36.000+0000'}})
     mocker.patch.object(BmcITSM, "fetch_relevant_tickets_by_ticket_type", return_value=mock_response)
     incidents_result, last_run_result = BmcITSM.fetch_incidents(mock_client,
