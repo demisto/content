@@ -7,7 +7,7 @@ import requests_mock
 from pytest_mock import MockerFixture
 
 
-# NOTE: Should be fixed in future versions
+# NOTE: Should be fixed in future versions (related to CIAC-11476)
 # def test_check_memory():
 #     if os.getenv("GITHUB_ACTIONS"):
 #         pytest.skip("skipping as in GITHUB ACTIONS this fails")
