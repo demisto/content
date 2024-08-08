@@ -1,6 +1,5 @@
-from DockerHardeningCheck import (check_memory, mem_size_to_bytes, check_pids, check_fd_limits,
+from DockerHardeningCheck import (mem_size_to_bytes, check_pids, check_fd_limits,
                                   get_default_gateway, check_network, CLOUD_METADATA_URL)
-import pytest
 import os
 import ipaddress
 import requests_mock
