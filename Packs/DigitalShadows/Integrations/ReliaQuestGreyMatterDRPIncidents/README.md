@@ -55,7 +55,17 @@ Vulnerability/Exploit Monitoring
 - Take Action and Protect  
   Alerts provide you all the context you need to make quicker, better decisions. Users also benefit from playbooks for remediating the risk, including the ability to launch takedowns.
 
+## Update – Version 2.0.1
+**Ingestion of Triage alerts from new Search Light API Endpoint**
+- Events are then Mapped to one of 38 Incident Types 
+- Corresponding Incident Fields are Mapped from these Types 
+  - These Fields parse the relevant information from the Triage Alerts 
+- Cortex XSOAR Incident Dashboard populated with the Incidents
+- Playbooks updated to use new Endpoints 
+- Handling of Auto-Rejected Alerts 
+  - In the integration, there are settings to allow you to customize what risk Values to ingest as well as the Risk Types. 
+- Ability to ingest Indicators from the Digital Shadows Platform. 
+
 Email: drpsupport@reliaquest.com
 Call us at US 1-888-889-4143, UK +44 (0)203 393 7001
-
 Visit www.reliaquest.com for more information

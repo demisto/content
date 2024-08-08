@@ -1,0 +1,143 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: ReliaQuest GreyMatter DRP Incidents
+  version: -1
+description: ReliaQuest GreyMatter DR monitors and manages an organization's digital risk across the widest range of data sources within the open, deep, and dark web.
+configuration:
+- defaultvalue: "true"
+  display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- additionalinfo: Enter the Digital Shadows SearchLight API URL
+  defaultvalue: https://api.searchlight.app
+  display: DS SearchLight API URL
+  name: searchLightUrl
+  required: true
+  type: 0
+- additionalinfo: Account ID associated with this account.
+  name: accountId
+  required: true
+  type: 0
+- additionalinfo: Enter the API Key for this account.
+  hiddenusername: true
+  displaypassword: API Key
+  display: API Key
+  name: apiKey
+  required: true
+  type: 9
+- display: API Secret
+  hiddenusername: true
+  displaypassword: API Secret
+  name: apiSecret
+  required: true
+  type: 9
+- defaultvalue: "true"
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- additionalinfo: Remove all if you don't want to select  all risk types, and then select specifically
+  defaultvalue: all
+  display: Risk Types
+  name: riskTypes
+  options:
+  - association-with-malware
+  - custom-risk
+  - evidence-of-adversary-impact
+  - evidence-of-credential-access
+  - evidence-of-initial-access
+  - evidence-of-reconnaissance
+  - evidence-of-resource-development
+  - expired-certificate
+  - exposed-access-key
+  - exposed-cloud-service
+  - exposed-commercial-document
+  - exposed-credential
+  - exposed-customer-account
+  - exposed-device
+  - exposed-employee-pii
+  - exposed-payment-card
+  - exposed-technical-document
+  - impersonating-company-profile
+  - impersonating-domain
+  - impersonating-employee-profile
+  - impersonating-mobile-app
+  - impersonating-subdomain
+  - leaked-sensitive-code
+  - leaked-sensitive-technology
+  - marked-document
+  - mention-by-a-threat-actor
+  - misconfigured-web-server
+  - exposed-port
+  - phishing-report
+  - phishing-webpage
+  - report-of-botnet-activity
+  - report-of-technical-vulnerability
+  - reported-data-breach
+  - revoked-certificate
+  - selling-unauthorized-goods
+  - unauthorized-code-commit
+  - vulnerable-product
+  - vulnerable-service
+  - weak-certificate
+  - all
+  required: true
+  type: 16
+- additionalinfo: Remove all if you don't want to select  all risk types, and then select specifically
+  defaultvalue: all
+  display: Risk Level
+  name: riskLevel
+  options:
+  - all
+  - none
+  - low
+  - medium
+  - high
+  - very-low
+  - very-high
+  required: false
+  type: 16
+- additionalinfo: If you don't want to ingest rejected/resolved/closed incidents then set it to False. Otherwise incidents will ingested with auto-closed=True
+  defaultvalue: "true"
+  display: Ingest Rejected/Resolved/Closed Incidents
+  name: ingestClosedIncidents
+  required: false
+  type: 8
+- additionalinfo: The maximum number of incidents to fetch
+  defaultvalue: "50"
+  display: Fetch Limit
+  name: fetchLimit
+  required: true
+  type: 0
+- additionalinfo: This controls how often the integration will perform a fetch_incidents command
+  display: Incidents Fetch Interval
+  defaultvalue: "1"
+  name: incidentFetchInterval
+  required: false
+  type: 19
+- additionalinfo: Since when want to fetch the data with given format(%Y-%m-%dT%H:%M:%SZ)
+  defaultvalue: "2020-01-20T00:00:00Z"
+  display: Start date
+  name: sinceDate
+  required: true
+  type: 0
+display: ReliaQuest GreyMatter DRP Incidents
+name: ReliaQuest GreyMatter DRP Incidents
+script:
+  commands:
+  - arguments:
+    - name: query
+      required: true
+    description: Perform a general search against incidents, threats closed sources, etc.
+    name: ds-search
+  dockerimage: demisto/python3:3.10.13.74666
+  isfetch: true
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 5.0.0
+supportlevelheader: xsoar
+defaultmapperin: Reliaquest GreyMatter DRP Incidents Mapper
+defaultclassifier: Reliaquest GreyMatter DRP Incidents Classifier
