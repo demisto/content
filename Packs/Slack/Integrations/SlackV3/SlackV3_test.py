@@ -5194,7 +5194,7 @@ async def test_listen(client_session):
         await SlackV3.listen(client, req)
 
         # Here we verify the call was processed at all.
-        assert mock_debug.call_count == 2
+        assert mock_debug.call_count == 5
         assert mock_send_slack_request.call_args[1].get('json') == {'text': 'reply to 3', 'replace_original': True}
 
         # Extract the specific information which should be found in the entitlement
