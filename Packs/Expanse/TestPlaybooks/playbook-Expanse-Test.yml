@@ -13,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -233,6 +234,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -330,8 +332,7 @@ tasks:
       id: 3f044a27-3f81-4727-8199-258814f0a7c3
       version: -1
       name: Result Exists
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
+      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -366,8 +367,7 @@ tasks:
       id: 84bf1749-50a8-448e-85dc-24ef52e2d648
       version: -1
       name: Result Exists
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
+      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -402,8 +402,7 @@ tasks:
       id: 17581ad9-4bb7-4014-8d82-6f9f6ff37f50
       version: -1
       name: Result Exists
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
+      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -448,19 +447,22 @@ inputs:
     simple: 74.142.119.130
   required: false
   description: 'IP address '
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: domain
   value:
     simple: shack.com
   required: false
   description: domain
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: common_name
   value:
     simple: shack.com
   required: false
   description: A partial certificate common name
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
-description: ""
+description: "Deprecated. No available replacement."
 fromversion: 5.0.0
+deprecated: true
+tests:
+- No tests (deprecated)

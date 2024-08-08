@@ -190,10 +190,8 @@ def http_request(body=''):  # pragma: no cover
 
     json_result = json.loads(xml2json(response.content))
 
-    if 'Envelope' in json_result:
-        if 'Body' in json_result['Envelope']:
-            if 'Fault' in json_result['Envelope']['Body']:
-                return_error('Request Failed. Reason is: ' + json_result['Envelope']['Body']['Fault']['faultstring'])
+    if 'Envelope' in json_result and 'Body' in json_result['Envelope'] and 'Fault' in json_result['Envelope']['Body']:
+        return_error('Request Failed. Reason is: ' + json_result['Envelope']['Body']['Fault']['faultstring'])
 
     return json_result
 
@@ -209,10 +207,9 @@ def prettify_get_ticket(json_result):
         'ServiceRequestStatus': ticket['ServiceRequestStatus'],
         'Priority': ticket['Priority']
     }
-    if 'Created' in ticket:
-        if 'When' in ticket['Created']:
-            pretty_ticket['Date'] = ticket['Created']['When']['Date']
-            pretty_ticket['Time'] = ticket['Created']['When']['Time']
+    if 'Created' in ticket and 'When' in ticket['Created']:
+        pretty_ticket['Date'] = ticket['Created']['When']['Date']
+        pretty_ticket['Time'] = ticket['Created']['When']['Time']
 
     if 'Details' in ticket:
         pretty_ticket['Details'] = ticket['Details']
@@ -390,7 +387,7 @@ def remedy_update_ticket_command():
 
 
 ''' EXECUTION CODE '''
-LOG('command is %s' % (demisto.command(),))
+LOG(f'command is {demisto.command()}')
 try:
     if demisto.command() == 'test-module':
         remedy_get_ticket('SR000552078')

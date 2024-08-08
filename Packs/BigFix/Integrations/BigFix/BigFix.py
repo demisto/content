@@ -2,9 +2,6 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import requests
 
-import urllib3.util
-
-urllib3.disable_warnings()
 
 BASE_URL = demisto.params().get('url')
 VERIFY_CERTIFICATE = not demisto.params().get('unsecure')
@@ -45,7 +42,7 @@ def get_sites():
     if master_sites and not isinstance(master_sites, list):
         master_sites = [master_sites]
     if master_sites:
-        for idx, site in enumerate(master_sites):
+        for idx, _site in enumerate(master_sites):
             master_sites[idx]['Type'] = 'master'
             master_sites[idx]['Resource'] = master_sites[idx]['@Resource']
             del master_sites[idx]['@Resource']
@@ -56,7 +53,7 @@ def get_sites():
     if external_sites and not isinstance(external_sites, list):
         external_sites = [external_sites]
     if external_sites:
-        for idx, site in enumerate(external_sites):
+        for idx, _site in enumerate(external_sites):
             external_sites[idx]['Type'] = 'external'
             external_sites[idx]['Resource'] = external_sites[idx]['@Resource']
             del external_sites[idx]['@Resource']
@@ -67,7 +64,7 @@ def get_sites():
     if operator_sites and not isinstance(operator_sites, list):
         operator_sites = [operator_sites]
     if operator_sites:
-        for idx, site in enumerate(operator_sites):
+        for idx, _site in enumerate(operator_sites):
             operator_sites[idx]['Type'] = 'operator'
             operator_sites[idx]['Resource'] = operator_sites[idx]['@Resource']
             del operator_sites[idx]['@Resource']
@@ -79,7 +76,7 @@ def get_sites():
         custom_sites = [custom_sites]
 
     if custom_sites:
-        for idx, site in enumerate(custom_sites):
+        for idx, _site in enumerate(custom_sites):
             custom_sites[idx]['Type'] = 'custom'
             custom_sites[idx]['Resource'] = custom_sites[idx]['@Resource']
             del custom_sites[idx]['@Resource']
@@ -195,7 +192,7 @@ def get_endpoints(should_get_endpoint_details):
     if raw_endpoints and not isinstance(raw_endpoints, list):
         raw_endpoints = [raw_endpoints]
 
-    for idx, endpoint in enumerate(raw_endpoints):
+    for idx, _endpoint in enumerate(raw_endpoints):
         raw_endpoints[idx]['Resource'] = raw_endpoints[idx]['@Resource']
         del raw_endpoints[idx]['@Resource']
 

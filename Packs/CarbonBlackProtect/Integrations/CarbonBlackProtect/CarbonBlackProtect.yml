@@ -1475,11 +1475,12 @@ script:
     - contextPath: CBP.FileRule.ReportOnly
       description: Is this rule "reporting only" or is it also "enforcing".
       type: String
-  dockerimage: demisto/python3:3.10.14.99865
+  dockerimage: demisto/python3:3.11.9.104657
   subtype: python3
   isfetch: true
   script: ''
   type: python
 tests:
 - Carbon Black Enterprise Protection V2 Test
+- CbP-PlayBook
 fromversion: 5.0.0

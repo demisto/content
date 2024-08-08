@@ -2,7 +2,7 @@
     "name": "Remedy SR (Beta)",
     "description": "The BMC Service Request Management application enables an IT department and other business departments to easily define available services, publish those services in a service catalog, and automate fulfillment of those services for the user community, enabling users to help themselves.\nThis integration uses SOAP API and supports SRM 9.0 version.",
     "support": "community",
-    "currentVersion": "1.0.14",
+    "currentVersion": "1.0.15",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

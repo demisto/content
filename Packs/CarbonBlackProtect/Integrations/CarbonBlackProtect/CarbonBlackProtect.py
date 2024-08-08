@@ -1,14 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-
-
-''' IMPORTS '''
-
 import json
-import urllib3
 
-# Disable insecure warnings
-urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 params = demisto.params()
