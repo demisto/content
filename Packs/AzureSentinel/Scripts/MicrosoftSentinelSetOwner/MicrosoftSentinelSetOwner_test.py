@@ -13,25 +13,16 @@ def test_set_owner(mocker):
     expected_incident_id = "incident-123"
     expected_owner_email = "test@test.com"
 
-    owner = {
-        "assignedTo": "Owner Name",
-        "email": "test@test.com",
-        "objectId": "owner-object-id",
-        "userPrincipalName": "test@test.com",
-    }
-
     mocker.patch.object(demisto, "args", return_value=demisto_args)
     debug_mock = mocker.patch.object(demisto, "debug")
     execute_command_mock = mocker.patch.object(CommonServerPython, "execute_command")
-    mocker.patch.object(CommonServerPython, "CommandResults", return_value="Command Results")
-    mocker.patch.object(CommonServerPython, "dict_safe_get", return_value=owner)
 
-    from MicrosoftSentinelSetOwnerButton import set_owner
+    from MicrosoftSentinelSetOwner.MicrosoftSentinelSetOwner import set_owner
 
     result = set_owner(context_results)
 
     debug_mock.assert_any_call(
-        f"set owner remote incident with owner email {expected_owner_email}"
+        f"set owner remote incident: {expected_incident_id} by instance_name={expected_instance_name} with owner email {expected_owner_email} "
     )
     execute_command_mock.assert_called_once_with(
         "azure-sentinel-update-incident",
@@ -41,4 +32,5 @@ def test_set_owner(mocker):
             "user_principal_name": expected_owner_email,
         },
     )
-    assert result == "Command Results"
+
+    assert result == execute_command_mock.return_value
