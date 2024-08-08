@@ -29,4 +29,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Traps_Scan_Endpoint](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Traps_Scan_Endpoint.png)
+![Traps_Scan_Endpoint](../doc_files/Traps_Scan_Endpoint.png)

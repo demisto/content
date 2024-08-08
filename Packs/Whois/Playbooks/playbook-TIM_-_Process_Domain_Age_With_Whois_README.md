@@ -39,4 +39,4 @@ This playbook does not use any integrations.
 
 ## Playbook Image
 ---
-![TIM - Process Domain Age With Whois](https://raw.githubusercontent.com/demisto/content/b1805708a947057d21f9b82a3270b3a6de5f7469/Packs/Whois/doc_files/TIM_-_Process_Domain_Age_With_Whois.png)
+![TIM - Process Domain Age With Whois](../doc_files/TIM_-_Process_Domain_Age_With_Whois.png)

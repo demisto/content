@@ -40,4 +40,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![NSA - 5 Security Vulnerabilities Under Active Nation-State Attack](https://raw.githubusercontent.com/demisto/content/0f623dce7c9542ad5346674529176553f2568de7/Packs/ExpanseV2/doc_files/NSA_-_5_Security_Vulnerabilities_Under_Active_Nation-State_Attack.png)
+![NSA - 5 Security Vulnerabilities Under Active Nation-State Attack](../doc_files/NSA_-_5_Security_Vulnerabilities_Under_Active_Nation-State_Attack.png)

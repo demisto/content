@@ -47,4 +47,4 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ## Playbook Image
 ---
-![Detonate_File_CrowdStrike_Falcon_Sandbox](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/CrowdStrike_Falcon_Sandbox_Detonate_file.png) 
+![Detonate_File_CrowdStrike_Falcon_Sandbox](../doc_files/CrowdStrike_Falcon_Sandbox_Detonate_file.png) 

@@ -66,4 +66,4 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ## Playbook Image
 ---
-![Block_IP_Generic](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Block_IP_Generic.png)
+![Block_IP_Generic](../doc_files/Block_IP_Generic.png)

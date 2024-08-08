@@ -40,4 +40,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Block_IOCs_from_CSV_External_Dynamic_List](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Block_IOCs_from_CSV_External_Dynamic_List.png)
+![Block_IOCs_from_CSV_External_Dynamic_List](../doc_files/Block_IOCs_from_CSV_External_Dynamic_List.png)

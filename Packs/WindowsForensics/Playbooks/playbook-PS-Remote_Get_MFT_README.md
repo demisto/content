@@ -39,4 +39,4 @@ This playbook does not use any integrations.
 
 ## Playbook Image
 ---
-![PS-Remote Get MFT](https://raw.githubusercontent.com/demisto/content/65c9d37bc1973acdb297e39173648cb1ba7cb0fb/Packs/WindowsForensicsPack/doc_files/PS-Remote_Get_MFT.png)
+![PS-Remote Get MFT](../doc_files/PS-Remote_Get_MFT.png)

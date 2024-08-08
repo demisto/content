@@ -43,4 +43,4 @@ This playbook does not use any commands.
 
 ## Playbook Image
 ---
-![NIST_Lessons_Learned](https://github.com/demisto/content/raw/751f18104cb7f0a908b610393bc5fb29ff3b9967/Packs/NIST/doc_files/NIST_-_Lessons_Learned.png)
+![NIST_Lessons_Learned](../doc_files/NIST_-_Lessons_Learned.png)

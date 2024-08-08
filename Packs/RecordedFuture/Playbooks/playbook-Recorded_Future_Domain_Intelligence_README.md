@@ -117,4 +117,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![Recorded Future Domain Intelligence](https://github.com/demisto/content/raw/master/Packs/RecordedFuture/doc_files/domain_enrich.png)
+![Recorded Future Domain Intelligence](../doc_files/domain_enrich.png)

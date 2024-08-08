@@ -32,4 +32,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![PhishLabsPopulateIndicators](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/PhishLabsPopulateIndicators.png)
+![PhishLabsPopulateIndicators](../doc_files/PhishLabsPopulateIndicators.png)

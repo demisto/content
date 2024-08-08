@@ -63,4 +63,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![Detonate_File_HybridAnalysis](https://raw.githubusercontent.com/demisto/content/bf8a2c7a52660270f2feb78b649076aa204a25e3/Packs/HybridAnalysis/doc_files/Detonate_File_HybridAnalysis.png)
+![Detonate_File_HybridAnalysis](../doc_files/Detonate_File_HybridAnalysis.png)

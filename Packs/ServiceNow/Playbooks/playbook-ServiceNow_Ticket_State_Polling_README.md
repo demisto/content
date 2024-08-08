@@ -35,4 +35,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![ServiceNow Ticket State Polling](https://raw.githubusercontent.com/demisto/content/master/Packs/ServiceNow/doc_files/ServiceNow_Ticket_State_Polling.png)
+![ServiceNow Ticket State Polling](../doc_files/ServiceNow_Ticket_State_Polling.png)

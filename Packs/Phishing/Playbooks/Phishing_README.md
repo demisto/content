@@ -25,4 +25,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Phishing_Playbook_Manual](https://raw.githubusercontent.com/demisto/content/fa5df62bb61153a5602bbf9fb97ef7a1181f44a8/Packs/Phishing/doc_files/Phishing_Playbook_-_Manual.png)
+![Phishing_Playbook_Manual](../doc_files/Phishing_Playbook_-_Manual.png)

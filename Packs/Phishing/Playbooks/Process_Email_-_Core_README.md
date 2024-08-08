@@ -51,4 +51,4 @@ This playbook does not use any sub-playbooks.
 
 ## Playbook Image
 ---
-![Process_Email_Core](https://raw.githubusercontent.com/demisto/content/82895af983e287954ef4565db548f9ae91d0487a/Packs/Phishing/doc_files/Process_Email_-_Core.png)
+![Process_Email_Core](../doc_files/Process_Email_-_Core.png)

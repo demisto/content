@@ -45,4 +45,4 @@ This playbook does not use any commands.
 
 ## Playbook Image
 ---
-![Extract_Indicators_Generic](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Extract_Indicators_Generic.png)
+![Extract_Indicators_Generic](../doc_files/Extract_Indicators_Generic.png)

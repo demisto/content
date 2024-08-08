@@ -59,4 +59,4 @@ This playbook does not use any integrations.
 
 ## Playbook Image
 ---
-![Splunk_Indicator_Hunting](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Splunk_Indicator_Hunting.png)
+![Splunk_Indicator_Hunting](../doc_files/Splunk_Indicator_Hunting.png)

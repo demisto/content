@@ -37,4 +37,4 @@ This playbook does not use any sub-playbooks.
 
 ## Playbook Image
 ---
-![Domain_Enrichment_Generic](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Domain_Enrichment_Generic.png)
+![Domain_Enrichment_Generic](../doc_files/Domain_Enrichment_Generic.png)

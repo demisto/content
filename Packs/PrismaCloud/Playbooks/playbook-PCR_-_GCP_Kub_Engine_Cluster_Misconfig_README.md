@@ -48,4 +48,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Prisma Cloud Remediation - GCP Kubernetes Engine Cluster Misconfiguration](https://github.com/demisto/content/raw/master/Packs/PrismaCloud/doc_files/PCR_-_GCP_Kub_Engine_Cluster_Misconfig.png)
+![Prisma Cloud Remediation - GCP Kubernetes Engine Cluster Misconfiguration](../doc_files/PCR_-_GCP_Kub_Engine_Cluster_Misconfig.png)

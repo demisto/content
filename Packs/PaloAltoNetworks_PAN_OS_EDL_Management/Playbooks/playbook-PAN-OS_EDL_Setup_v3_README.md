@@ -60,4 +60,4 @@ The default position is &\#x27;top&\#x27; | bottom |  | Optional |
 
 ## Playbook Image
 ---
-![PAN-OS_EDL_Setup_v3](https://raw.githubusercontent.com/demisto/content/master/docs/images/playbooks/PAN-OS_EDL_Setup_v3.png)
+![PAN-OS_EDL_Setup_v3](../doc_files/PAN-OS_EDL_Setup_v3.png)

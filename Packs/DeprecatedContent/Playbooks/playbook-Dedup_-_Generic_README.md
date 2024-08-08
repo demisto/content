@@ -41,4 +41,4 @@ This playbook does not use any commands.
 
 ## Playbook Image
 ---
-![Dedup_Generic](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Dedup_Generic.png)
+![Dedup_Generic](../doc_files/Dedup_Generic.png)
