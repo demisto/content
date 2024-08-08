@@ -23,7 +23,6 @@ INCIDENT_TYPE_NAME = "Sekoia XDR"
 SEKOIA_INCIDENT_FIELDS = {
     "short_id": "The ID of the alert to edit",
     "status": "The name of the status.",
-    "xsoar_id": "The XSOAR incident",
 }
 
 STATUS_TRANSITIONS = {
@@ -823,9 +822,8 @@ def update_remote_system_command(client: Client, args):
     parsed_args = UpdateRemoteSystemArgs(args)
     delta = parsed_args.delta
     remote_incident_id = parsed_args.remote_incident_id
-    xsoar_incident = parsed_args.data.get("xsoar_id")
     demisto.debug(
-        f"Remote_incident_id {remote_incident_id} with local id {xsoar_incident} \
+        f"Remote_incident_id {remote_incident_id} \
         had this changes {parsed_args.incident_changed} \
         with delta {delta} and parsed_args {parsed_args.data}"
     )
@@ -834,8 +832,8 @@ def update_remote_system_command(client: Client, args):
             sekoia_status = delta.get("sekoiaxdralertstatus", None)
             if sekoia_status:
                 demisto.debug(
-                    f"The incident #{xsoar_incident} had the sekoia status of the alert \
-                    {remote_incident_id} changed to: {sekoia_status}. Sending changes to Sekoia."
+                    f"The incident {remote_incident_id} status changed to: {sekoia_status}.\
+                    Sending changes to Sekoia."
                 )
                 sekoia_transition = STATUS_TRANSITIONS.get(sekoia_status)
 
@@ -850,7 +848,7 @@ def update_remote_system_command(client: Client, args):
                         demisto.debug(f"Changing status : {change_status}")
         else:
             demisto.debug(
-                f"There's no changes in our incident with local id {xsoar_incident}"
+                "There's no changes in our incident"
             )
 
     except Exception as e:

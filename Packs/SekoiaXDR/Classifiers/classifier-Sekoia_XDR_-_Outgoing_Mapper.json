@@ -8,9 +8,6 @@
             "internalMapping": {
                 "short_id": {
                     "simple": "alertid"
-                },
-                "xsoar_id": {
-                    "simple": "investigationId"
                 }
             }
         },
@@ -19,9 +16,6 @@
             "internalMapping": {
                 "short_id": {
                     "simple": "dbotMirrorId"
-                },
-                "xsoar_id": {
-                    "simple": "investigationId"
                 }
             }
         }

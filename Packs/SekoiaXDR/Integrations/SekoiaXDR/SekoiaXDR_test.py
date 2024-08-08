@@ -493,7 +493,6 @@ def test_get_mapping_fields():
         "Sekoia XDR": {
             "short_id": "The ID of the alert to edit",
             "status": "The name of the status.",
-            "xsoar_id": "The XSOAR incident",
         }
     }
     schema_result = SekoiaXDR.get_mapping_fields_command()
@@ -680,9 +679,6 @@ def test_update_remote_system_command(client, requests_mock):
     requests_mock.patch(MOCK_URL + "/v1/sic/alerts/ALWVYiP2Msz4/workflow", json={})
 
     args = {
-        "data": {
-            "xsoar_id": "15",
-        },
         "incidentChanged": True,
         "remoteId": "ALWVYiP2Msz4",
         "delta": {
