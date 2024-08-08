@@ -1,6 +1,6 @@
 ## What does this pack do
 
-The Google Cloud Logging Cortex <~XSOAR>XSOAR</~XSOAR><~XSIAM> <~XSIAM>XSIAM</~XSIAM> pack helps users to centralize all their GCP logs in a single location, making it easier to troubleshoot issues and gain insights from their data: 
+The Google Cloud Logging Cortex <~XSOAR>XSOAR</~XSOAR><~XSIAM>XSIAM</~XSIAM> pack helps users to centralize all their GCP logs in a single location, making it easier to troubleshoot issues and gain insights from their data: 
 
 - The *Google Cloud Logging Integration* enables you to retrieve selected log entries that originated from a project/folder/organization/billing account. See the [Google Cloud Logging integration documentation](https://xsoar.pan.dev/docs/reference/integrations/google-cloud-logging) for additional details.   
 <~XSIAM>
