@@ -5,10 +5,6 @@ args:
   - name: incident_id
     required: false
     description: The ID of the remote incident to update. Relevant only when the script is called directly from the War Room.
-  - name: instance_name
-    required: false
-    description: The name of the instance to use. Relevant only when the script is called directly from the War Room.
-
 commonfields:
   id: MicrosoftSentinelSetOwner
   version: -1

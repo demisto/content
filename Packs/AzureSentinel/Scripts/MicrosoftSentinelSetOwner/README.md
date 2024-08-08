@@ -18,7 +18,6 @@ This script can be run from the war room or used by a layout to set the owner fi
 | --- | --- | --- |
 | owner_email | The owner email to set as user principal name. If there is a user in Microsoft Sentinel for this email, they will be represented by their name in the remote and will be mirrored with all their details. Otherwise, only the email will be displayed on the remote, and only the email will be mirrored, with the rest of the details null. | Required |
 | incident_id | The ID of the remote incident to update. Relevant only when the script is called directly from the War Room. | Optional (Required When the script is called directly from the war room)|
-| instance_name | The name of the instance to use. Relevant only when the script is called directly from the War Room. | Optional |
 
 ## Outputs
 
