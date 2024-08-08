@@ -255,4 +255,4 @@ inputs:
   description: ""
   playbookInputQuery: null
 outputs: []
-sourceplaybookid: EWS V2 Send Mail Test 3
+fromversion: 5.0.0
