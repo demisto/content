@@ -1,0 +1,78 @@
+{
+  "google_cloud_logging_raw": {
+    "httpRequest": {
+      "type": "string",
+      "is_array": false
+    },
+    "insertId": {
+      "type": "string",
+      "is_array": false
+    },
+    "jsonPayload": {
+      "type": "string",
+      "is_array": false
+    },
+    "logName": {
+      "type": "string",
+      "is_array": false
+    },
+    "operation": {
+      "type": "string",
+      "is_array": false
+    },
+    "protoPayload": {
+      "type": "string",
+      "is_array": false
+    },
+    "resource": {
+      "type": "string",
+      "is_array": false
+    },
+    "severity": {
+      "type": "string",
+      "is_array": false
+    },
+    "textPayload": {
+      "type": "string",
+      "is_array": false
+    }
+  },
+  "google_dns_raw": {
+    "httpRequest": {
+      "type": "string",
+      "is_array": false
+    },
+    "insertId": {
+      "type": "string",
+      "is_array": false
+    },
+    "jsonPayload": {
+      "type": "string",
+      "is_array": false
+    },
+    "logName": {
+      "type": "string",
+      "is_array": false
+    },
+    "operation": {
+      "type": "string",
+      "is_array": false
+    },
+    "protoPayload": {
+      "type": "string",
+      "is_array": false
+    },
+    "resource": {
+      "type": "string",
+      "is_array": false
+    },
+    "severity": {
+      "type": "string",
+      "is_array": false
+    },
+    "textPayload": {
+      "type": "string",
+      "is_array": false
+    }
+  }
+}
