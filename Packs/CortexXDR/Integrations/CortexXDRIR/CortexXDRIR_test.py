@@ -622,9 +622,7 @@ def test_get_modified_remote_data_command(requests_mock, last_update):
     args = {
         'lastUpdate': last_update
     }
-
     response = get_modified_remote_data_command(client, args)
-
     assert response.modified_incident_ids == ['1', '2']
 
 
@@ -1581,6 +1579,52 @@ def test_get_xsoar_close_reasons(mocker):
     }
     mocker.patch.object(demisto, 'internalHttpRequest', return_value=mock_response)
     assert get_xsoar_close_reasons() == list(XSOAR_RESOLVED_STATUS_TO_XDR.keys()) + ['CustomReason1', 'CustomReason 2', 'Foo']
+
+
+def test_get_modified_remote_data_xdr_delay(mocker):
+    """
+    Given:
+        - an XDR client
+        - arguments - lastUpdate time
+        - raw incidents (result of client.get_incidents)
+        - xdr_delay
+    When
+        - running get_modified_remote_data_command
+    Then
+        - the method is returning a list of incidents IDs that were modified after adding xdr_delay
+    """
+    from CortexXDRIR import get_modified_remote_data_command, Client
+    import dateparser
+    from CommonServerPython import BaseClient
+    empty_res = {
+        "reply": {
+            "total_count": 0,
+            "result_count": 0,
+            "incidents": [],
+            "restricted_incident_ids": []
+        }
+    }
+    mocker.patch.object(demisto,
+                        'getIntegrationContext',
+                        return_value={'mirroring_last_update': '2020-11-18T13:16:52.005381+02:00'}
+                        )
+    args = {
+        'lastUpdate': '2020-11-18T13:16:52.005381+02:00',
+    }
+    dateparser.parse('2020-11-18T13:16:52.005381+02:00',
+                     settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': False})
+    get_incidents_list_response = load_test_data('./test_data/get_incidents_list.json')
+    mocker.patch.object(BaseClient, "_http_request", return_value=empty_res)
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False)
+    demisto_set_context_mocker = mocker.patch.object(demisto, 'setIntegrationContext')
+    incidents_response = get_modified_remote_data_command(client, args)
+    assert not incidents_response.modified_incident_ids
+    assert demisto_set_context_mocker.call_args.args[0]['mirroring_last_update'] == '2020-11-18 11:16:52.006+02:00'
+    mocker.patch.object(BaseClient, "_http_request", return_value=get_incidents_list_response)
+    incidents_response = get_modified_remote_data_command(client, args, xdr_delay=5)
+    assert demisto_set_context_mocker.call_args.args[0]['mirroring_last_update'] == '2020-11-18 11:12:52.006+02:00'
+    assert incidents_response.modified_incident_ids == ['1', '2']
 
 
 @freeze_time('1970-01-01 00:00:00.100')
