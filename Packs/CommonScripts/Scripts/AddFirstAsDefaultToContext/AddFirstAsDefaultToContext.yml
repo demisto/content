@@ -1,0 +1,17 @@
+commonfields:
+  id: AddFirstAsDefaultToContext
+  version: -1
+name: AddFirstAsDefaultToContext
+script: ''
+type: python
+tags: []
+enabled: true
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.11.9.103066
+runas: DBotWeakRole
+engineinfo: {}
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
