@@ -8,7 +8,7 @@ from typing import Any
 urllib3.disable_warnings()
 
 ''' CONSTANTS '''
-
+TEST_VARIABLE = "test"
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 VENDOR = 'hello'
 PRODUCT = 'world'

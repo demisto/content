@@ -25,6 +25,7 @@ import glob
 urllib3.disable_warnings()
 
 ''' GLOBAL VARIABLES '''
+TEST_VARIABLE = "test"
 INTEGRATION_NAME: str = 'Generic Export Indicators service'
 PAGE_SIZE: int = 2000
 PAN_OS_MAX_URL_LEN = 255
