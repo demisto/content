@@ -1,7 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-# type: ignore
 import urllib3
 import copy
 
@@ -326,9 +325,9 @@ def build_custom_object(template_name: str, args: list[dict]):
 
             custom_obj = PYMISP.get_raw_object_template(template_name)
 
-            if not os.path.exists('/tmp/{}'.format(template_name)):
-                os.mkdir('/tmp/{}'.format(template_name))
-            open('/tmp/{}/definition.json'.format(template_name), 'w').write(json.dumps(custom_obj))
+            if not os.path.exists(f'/tmp/{template_name}'):
+                os.mkdir(f'/tmp/{template_name}')
+            open(f'/tmp/{template_name}/definition.json', 'w').write(json.dumps(custom_obj))
 
             misp_object = MISPObject(name=template_name, misp_objects_path_custom='/tmp')
 
@@ -1549,7 +1548,7 @@ def add_custom_object_command(demisto_args: dict):
         if obj is not False:
             return add_object(event_id, obj)
         else:
-            raise DemistoException('Unable to find custom template {}'. format(template))
+            raise DemistoException(f'Unable to find custom template {template}')
 
     except ValueError as e:
         raise DemistoException(

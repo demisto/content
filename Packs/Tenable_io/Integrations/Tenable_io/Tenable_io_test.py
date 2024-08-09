@@ -4,7 +4,6 @@ from freezegun import freeze_time
 from CommonServerPython import *
 import json
 
-# mypy: disable-error-code="operator"
 
 MOCK_PARAMS = {
     'access-key': 'fake_access_key',
