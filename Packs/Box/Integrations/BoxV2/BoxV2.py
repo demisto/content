@@ -670,19 +670,34 @@ class Client(BaseClient):
         with open(file_path, 'rb') as file_obj:
             final_sha = sha1()  # nosec
             final_sha.update(file_obj.read())
-            whole_file_sha_digest = final_sha.digest()
-            final_headers = {
-                'Content-Type': 'application/json',
-                'As-User': as_user,
-                'Digest': f"SHA={base64.b64encode(whole_file_sha_digest).decode('utf-8')}",
-                'Authorization': self._headers.get('Authorization')
-            }
-            return self._http_request(
+
+        whole_file_sha_digest = final_sha.digest()
+        final_headers = {
+            'Content-Type': 'application/json',
+            'As-User': as_user,
+            'Digest': f"SHA={base64.b64encode(whole_file_sha_digest).decode('utf-8')}",
+            'Authorization': self._headers.get('Authorization')
+        }
+
+        res = self._http_request(
+            method='POST',
+            url_suffix=upload_url_suffix + '/commit',
+            json_data={'parts': parts},
+            headers=final_headers,
+            resp_type='response',
+        )
+
+        while res.status_code == 202:
+            safe_sleep(float(res.headers["retry-after"]))
+            res = self._http_request(
                 method='POST',
                 url_suffix=upload_url_suffix + '/commit',
                 json_data={'parts': parts},
-                headers=final_headers
+                headers=final_headers,
+                resp_type='response',
             )
+
+        return res.json()
 
     def upload_file(self, entry_id: str, file_name: Optional[str] = None, folder_id: Optional[str] = None,
                     as_user: Optional[str] = None) -> dict:
@@ -1935,8 +1950,7 @@ def test_module(client: Client, params: dict, first_fetch_time: int) -> str:
         if not params.get('as_user'):
             raise DemistoException("In order to use fetch, a User ID for Fetching Incidents is "
                                    "required.")
-        created_after = datetime.fromtimestamp(first_fetch_time, tz=timezone.utc).strftime(
-            DATE_FORMAT)
+        created_after = datetime.fromtimestamp(first_fetch_time, tz=timezone.utc).strftime(DATE_FORMAT)  # noqa: UP017
         response = client.list_events(
             as_user=params.get('as_user'),  # type:ignore
             created_after=created_after,
@@ -1965,12 +1979,11 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
     created_after = last_run.get('time', None)
     incidents = []
     if not created_after:
-        created_after = datetime.fromtimestamp(first_fetch_time, tz=timezone.utc).strftime(
-            DATE_FORMAT)
+        created_after = datetime.fromtimestamp(first_fetch_time, tz=timezone.utc).strftime(DATE_FORMAT)  # noqa: UP017
     results = client.list_events(stream_type='admin_logs', as_user=as_user, limit=max_results,
                                  created_after=created_after)
     raw_incidents = results.get('entries', [])
-    next_run = datetime.now(tz=timezone.utc).strftime(DATE_FORMAT)
+    next_run = datetime.now(tz=timezone.utc).strftime(DATE_FORMAT)  # noqa: UP017
     for raw_incident in raw_incidents:
         event = Event(raw_input=raw_incident)
         xsoar_incident = event.format_incident()
