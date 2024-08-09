@@ -20,3 +20,4 @@
 !gra-case-action-anomaly action=riskAcceptCaseAnomaly caseId=6 anomalyNames=anomalyName subOption="Correct Detection" caseComment=Done riskAcceptDate=2021-05-12
 !gra-investigate-anomaly-summary modelName=ModelName
 !gra-analytical-features-entity-value modelName=ModelName entityValue=EntityValue
+!gra-validate-api
