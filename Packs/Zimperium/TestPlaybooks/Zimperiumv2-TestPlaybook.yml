@@ -2211,52 +2211,54 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
               simple: Zimperium.Vulnerability.id
             iscontext: true
-      - - operator: isNotEmpty
+          right:
+            value: {}
+      - - operator: isExists
           left:
             value:
               simple: Zimperium.Vulnerability.blueBorneVulnerable
             iscontext: true
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
               simple: Zimperium.Vulnerability.cveCount
             iscontext: true
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
               simple: Zimperium.Vulnerability.lastCveSync
             iscontext: true
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
               simple: Zimperium.Vulnerability.os
             iscontext: true
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
               simple: Zimperium.Vulnerability.osPatchDate
             iscontext: true
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
               simple: Zimperium.Vulnerability.osRiskChecksum
             iscontext: true
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
               simple: Zimperium.Vulnerability.osVersion
             iscontext: true
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
               simple: Zimperium.Vulnerability.osVersionAndPatchDate
             iscontext: true
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
               simple: Zimperium.Vulnerability.risk
@@ -2266,7 +2268,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3345
+          "y": 3350
         }
       }
     note: false

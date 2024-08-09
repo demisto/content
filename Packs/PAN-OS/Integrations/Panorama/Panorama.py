@@ -759,7 +759,7 @@ def prepare_security_rule_params(api_action: str = None, rulename: str = None, s
         else:
             params['xpath'] = f"{XPATH_RULEBASE}{PRE_POST}/security/rules/entry[@name='{rulename}']"
     else:
-        params['xpath'] = f"{XPATH_RULEBASE}[@name='{rulename}']"
+        params['xpath'] = f"{XPATH_RULEBASE}rulebase/security/rules/entry[@name='{rulename}']"
 
     return params
 
@@ -9161,7 +9161,7 @@ class Topology:
 
         return topology
 
-    def get_direct_device(self, firewall: Firewall) -> PanDevice:
+    def get_direct_device(self, firewall: Firewall, ip_address: Optional[str] = None) -> PanDevice:
         """
         Given a firewall object that's proxied via Panorama, create a device that uses a direct API connection
         instead. Used by any command that can't be routed via Panorama.
@@ -9171,7 +9171,7 @@ class Topology:
             # If it's already a direct connection
             return firewall
 
-        ip_address = (firewall.show_system_info().get("system") or {}).get("ip-address")
+        ip_address = ip_address or (firewall.show_system_info().get("system") or {}).get("ip-address")
 
         return PanDevice.create_from_device(
             hostname=ip_address,
@@ -11246,17 +11246,19 @@ class FirewallCommand:
         )
 
     @staticmethod
-    def get_device_state(topology: Topology, target: str):
+    def get_device_state(topology: Topology, target: str, ip_address: Optional[str] = None):
         """
         Returns an exported device state, as binary data. Note that this will attempt to connect directly to the target
         firewall, as it cannot be exported via the Panorama proxy. If there are network issues that prevent that, this command
         will time out.
         :param topology: `Topology` instance.
         :param target: The target serial number to retrieve the device state from.
+        :param ip_address: An ip address to use for service route enabled firewalls.
         """
+
         for firewall in topology.firewalls(target=target):
             # Connect directly to the firewall
-            direct_firewall_connection = topology.get_direct_device(firewall)
+            direct_firewall_connection = topology.get_direct_device(firewall, ip_address)
             direct_firewall_connection.xapi.export(category="device-state")
             return direct_firewall_connection.xapi.export_result.get("content")
 
@@ -11909,13 +11911,14 @@ def get_object(
     )
 
 
-def get_device_state(topology: Topology, target: str, filename: str = None) -> dict:
+def get_device_state(topology: Topology, target: str, filename: str = None, ip_address: Optional[str] = None) -> dict:
     """
     Get the device state from the provided device target (serial number). Note that this will attempt to connect directly to the
     firewall as there is no way to get the device state for a firewall via Panorama.
 
     :param topology: `Topology` instance !no-auto-argument
     :param target: String to filter to only show specific hostnames or serial numbers.
+    :param ip_address: Manually determined ip address of a Service Route firewall.
     """
     if not filename:
         file_name = f"{target}_device_state.tar.gz"
@@ -11924,7 +11927,7 @@ def get_device_state(topology: Topology, target: str, filename: str = None) -> d
 
     return fileResult(
         filename=file_name,
-        data=FirewallCommand.get_device_state(topology, target),
+        data=FirewallCommand.get_device_state(topology, target, ip_address),
         file_type=EntryType.ENTRY_INFO_FILE
     )
 
@@ -14210,22 +14213,25 @@ def filter_fetched_entries(entries_dict: dict[str, list[dict[str, Any]]], id_dic
     return new_entries_dict
 
 
-def update_max_fetch_dict(configured_max_fetch: int, max_fetch_dict: MaxFetch, last_fetch_dict: LastFetchTimes) -> MaxFetch:
+def update_max_fetch_dict(max_fetch_dict: MaxFetch,
+                          last_fetch_dict: LastFetchTimes,
+                          new_incident_entries: dict) -> MaxFetch:
     """ This function updates the max fetch value for each log type according to the last fetch timestamp.
     Args:
-        configured_max_fetch (int): the max fetch value for the first fetch cycle
         max_fetch_dict (MaxFetch): a dictionary of log type and its max fetch value
         last_fetch_dict (LastFetchTimes): a dictionary of log type and its last fetch timestamp
+        new_incident_entries (dict): a dictionary of log type and its raw entries without entries that have already been fetched in the previous fetch cycle.
     Returns:
         max_fetch_dict (MaxFetch): a dictionary of log type and its updated max fetch value
     """
+    configured_max_fetch = arg_to_number(demisto.params().get('max_fetch', 100))
     previous_last_fetch = demisto.getLastRun().get("last_fetch_dict", {})
     # If the latest timestamp of the current fetch is the same as the previous fetch timestamp,
     # that means we did not get all logs for that timestamp, in such a case, we will increase the limit to be last limit + configured limit.
     new_max_fetch = {
         log_type: max_fetch_dict[log_type] + configured_max_fetch  # type: ignore[literal-required]
         for log_type, last_fetch in last_fetch_dict.items()
-        if previous_last_fetch.get(log_type) and previous_last_fetch.get(log_type) == last_fetch
+        if new_incident_entries.get(log_type) and previous_last_fetch.get(log_type) == last_fetch
     }
     demisto.debug(f"{new_max_fetch=}")
     return cast(MaxFetch, new_max_fetch)
@@ -14267,6 +14273,7 @@ def corr_incident_entry_to_incident_context(incident_entry: Dict[str, Any]) -> D
     Returns:
         dict[str,any]: context formatted incident entry represented by a dictionary
     """
+    incident_entry['type'] = 'CORRELATION'
     match_time = incident_entry.get('match_time', '')
     occurred = (
         occurred_datetime.strftime(DATE_FORMAT)
@@ -14278,7 +14285,6 @@ def corr_incident_entry_to_incident_context(incident_entry: Dict[str, Any]) -> D
         'name': f"Correlation {incident_entry.get('@logid')}",
         'occurred': occurred,
         'rawJSON': json.dumps(incident_entry),
-        'type': 'CORRELATION'
     }
 
 
@@ -14302,7 +14308,6 @@ def incident_entry_to_incident_context(incident_entry: Dict[str, Any]) -> Dict[s
         'name': f"{incident_entry.get('device_name')} {incident_entry.get('seqno')}",
         'occurred': occurred,
         'rawJSON': json.dumps(incident_entry),
-        'type': incident_entry.get('type')
     }
 
 
@@ -14364,7 +14369,7 @@ def log_types_queries_to_dict(params: dict[str, str]) -> QueryMap:
     if log_types := params.get('log_types'):
         # if 'All' is chosen in Log Type (log_types) parameter then all query parameters are used, else only the chosen query parameters are used.
         active_log_type_queries = FETCH_INCIDENTS_LOG_TYPES if 'All' in log_types else log_types
-        queries_dict |= {
+        queries_dict |= {  # type: ignore[assignment]
             log_type: log_type_query
             for log_type in active_log_type_queries
             if (log_type_query := params.get(f'{log_type.lower()}_query'))
@@ -14414,7 +14419,7 @@ def get_parsed_incident_entries(incident_entries_dict: dict[str, list[dict[str, 
 def fetch_incidents(last_run: LastRun, first_fetch: str,
                     queries_dict: QueryMap, max_fetch_dict: MaxFetch,
                     fetch_job_polling_max_num_attempts: int
-                    ) -> tuple[LastFetchTimes, LastIDs, list[dict[str, list]]]:
+                    ) -> tuple[LastRun, list[dict[str, list]]]:
     """run one cycle of fetch incidents.
 
     Args:
@@ -14425,7 +14430,7 @@ def fetch_incidents(last_run: LastRun, first_fetch: str,
         fetch_job_polling_max_num_attempts (int): The maximal number of attempts to try and pull results for each log type
 
     Returns:
-        (LastFetchTimes, LastIDs, List[Dict[str, list]]): last fetch per log type dictionary, last unique id per log type dictionary, parsed incidents tuple
+        (LastRun, List[Dict[str, list]]): last fetch per log type dictionary, last unique id per log type dictionary, parsed incidents tuple
     """
     last_fetch_dict = last_run.get('last_fetch_dict', {})
     last_id_dict = last_run.get('last_id_dict', {})
@@ -14447,7 +14452,12 @@ def fetch_incidents(last_run: LastRun, first_fetch: str,
     parsed_incident_entries_list = get_parsed_incident_entries(
         unique_incident_entries_dict, last_fetch_dict, last_id_dict)  # type: ignore[arg-type]
 
-    return last_fetch_dict, last_id_dict, parsed_incident_entries_list  # type: ignore[return-value]
+    next_max_fetch = update_max_fetch_dict(max_fetch_dict, last_fetch_dict,  # type: ignore[arg-type]
+                                           unique_incident_entries_dict)  # type: ignore[arg-type]
+    new_last_run = LastRun(last_fetch_dict=last_fetch_dict, last_id_dict=last_id_dict,  # type: ignore[typeddict-item]
+                           max_fetch_dict=next_max_fetch)  # type: ignore[typeddict-item]
+
+    return new_last_run, parsed_incident_entries_list  # type: ignore[return-value]
 
 
 def test_fetch_incidents_parameters(fetch_params):
@@ -14501,11 +14511,10 @@ def main():  # pragma: no cover
             fetch_max_attempts = arg_to_number(params['fetch_job_polling_max_num_attempts'])
             max_fetch = cast(MaxFetch, dict.fromkeys(queries, configured_max_fetch) | last_run.get('max_fetch_dict', {}))
 
-            last_fetch, last_ids, incident_entries = fetch_incidents(
+            new_last_run, incident_entries = fetch_incidents(
                 last_run, first_fetch, queries, max_fetch, fetch_max_attempts)  # type: ignore[arg-type]
-            next_max_fetch = update_max_fetch_dict(configured_max_fetch, max_fetch, last_fetch)  # type: ignore[arg-type]
 
-            demisto.setLastRun(LastRun(last_fetch_dict=last_fetch, last_id_dict=last_ids, max_fetch_dict=next_max_fetch))
+            demisto.setLastRun(new_last_run)
             demisto.incidents(incident_entries)
 
         elif command == 'panorama' or command == 'pan-os':

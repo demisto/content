@@ -417,7 +417,7 @@ def test_module_success_with_fetch_incident(
     from FireEyeNX import test_function
 
     mock_get_alert.return_value = []
-    mock_last_run = {'alerts': {'start_time': datetime.now().replace(tzinfo=timezone.utc).timestamp(), 'alert_ids': ['1']}}
+    mock_last_run = {'alerts': {'start_time': datetime.now().replace(tzinfo=timezone.utc).timestamp(), 'alert_ids': ['1']}}  # noqa UP017
 
     mock_request.return_value = mock_http_response(
         status=200, headers=AUTHENTICATION_RESP_HEADER, text=''
@@ -1128,7 +1128,7 @@ def test_fetch_incidents_for_alert_success(
     from FireEyeNX import fetch_incidents, API_SUPPORT_DATE_FORMAT
 
     # Configure
-    start_time = datetime.strftime(datetime.now().replace(tzinfo=timezone.utc), API_SUPPORT_DATE_FORMAT)
+    start_time = datetime.strftime(datetime.now().replace(tzinfo=timezone.utc), API_SUPPORT_DATE_FORMAT)  # noqa UP017
     mock_last_run = {'alerts': {'start_time': start_time, 'alert_ids': ['1']}}
 
     dummy_first_fetch = 1
@@ -1222,7 +1222,7 @@ def test_fetch_incidents_for_event_success(
     from FireEyeNX import fetch_incidents
 
     # Configure
-    mock_last_run = {'alerts': {'start_time': datetime.now().replace(tzinfo=timezone.utc).timestamp(), 'alert_ids': ['1']}}
+    mock_last_run = {'alerts': {'start_time': datetime.now().replace(tzinfo=timezone.utc).timestamp(), 'alert_ids': ['1']}}  # noqa UP017
     dummy_first_fetch = 1
     mock_fetch_limit = 1
     mock_api_token.return_value = API_TOKEN

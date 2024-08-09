@@ -47,6 +47,19 @@
             "width": 150
         },
         {
+            "displayName": "tags",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "tags",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        },
+        {
             "displayName": "explainers",
             "fieldCalcScript": "",
             "isDefault": true,

@@ -95,16 +95,15 @@
                 "netutils",
                 "auth-utils"
             ],
-            "docker_ref": "demisto/py3-native:8.6.0.98251"
+            "docker_ref": "demisto/py3-native:8.6.0.104287"
         }
     },
     "ignored_content_items":[
         {
-            "id":"Symantec MSS",
-            "reason":"issue: CIAC-9119 - [Symantec MSS] Module 'OpenSSL.crypto' has deprecated 'load_pkcs12' member",
+            "id":"Json2HtmlTable",
+            "reason":"Add json2html to py3-tools: Ignore due to this contribution PR: https://github.com/demisto/dockerfiles/pull/29877.",
             "ignored_native_images":[
                 "native:8.6",
-                "native:dev",
                 "native:candidate"
             ]
         },
@@ -112,43 +111,21 @@
             "id":"EWSO365",
             "reason":"Issue: CIAC-10245 - Microsoft broke their API, and it was fixed in a newer version of the exchangelib package.",
             "ignored_native_images":[
-                "native:8.6",
-                "native:dev",
-                "native:candidate"
-            ]
-        },
-        {
-            "id":"FetchIndicatorsFromFile",
-            "reason":"issue: CIAC-5243 - ElementTree object (xml) in python3.9 has getiterator attribute while in python 3.10 this attribute does not exist - causing unit tests failures.",
-            "ignored_native_images":[
-                "native:8.6",
-                "native:dev",
-                "native:candidate"
+                "native:8.6"
             ]
         },
         {
             "id":"Rasterize",
             "reason":"Issue: CRTX-72338 and CIAC-7694",
             "ignored_native_images":[
-                "native:8.6",
-                "native:candidate"
+                "native:8.6"
             ]
         },
         {
             "id":"Intezer v2",
-            "reason":"Issue: CIAC-7861",
+            "reason":"Issue: CIAC-10263",
             "ignored_native_images":[
-                "native:8.6",
-                "native:candidate"
-            ]
-        },
-        {
-            "id":"RegexExtractAll",
-            "reason":"Issue: CIAC-6005",
-            "ignored_native_images":[
-                "native:8.6",
-                "native:dev",
-                "native:candidate"
+                "native:8.6"
             ]
         },
         {
@@ -168,8 +145,8 @@
             ]
         },
         {
-            "id":"Ping",
-            "reason":"see CIAC-8493",
+            "id":"ParseEmailFilesV2",
+            "reason":"Script uses an updated openssl lib than native, see CIAC-11469",
             "ignored_native_images":[
                 "native:8.6",
                 "native:dev",
@@ -180,16 +157,35 @@
             "id": "Github Feed",
             "reason": "update docker image",
             "ignored_native_images": [
-                "native:8.6",
-                "native:candidate"
+                "native:8.6"
             ]
         },
         {
-            "id": "ZipFile",
-            "reason": "see CIAC-10361",
+            "id":"CyrenThreatInDepthRenderRelated",
+            "reason": "CIAC-11186, This integration support only from python 3.11",
+            "ignored_native_images":[
+                "native:8.6"
+            ]
+        },
+        {
+            "id": "rapid7_threat_command",
+            "reason": "CIAC-11186, This integration support only from python 3.11",
             "ignored_native_images": [
-                "native:8.6",
-                "native:candidate"
+                "native:8.6"
+            ]
+        },
+        {
+            "id": "Respond_Analyst",
+            "reason": "CIAC-11186, This integration support only from python 3.11",
+            "ignored_native_images": [
+                "native:8.6"
+            ]
+        },
+        {
+            "id": "rapid7appsec",
+            "reason": "CIAC-11186, This integration support only from python 3.11",
+            "ignored_native_images": [
+                "native:8.6"
             ]
         }
     ],

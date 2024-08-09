@@ -886,7 +886,7 @@ script:
       description: "The report id, unique for every run."
       type: Number
   - name: o365-defender-safelinks-atp-policy-get
-    description: Get APT policy. In order to manage BlockURLs, use the o365-defender-safelinks-global-url-blocklist command.
+    description: Get Advanced Threat Protection policies.
     outputs:
     - contextPath: O365Defender.SafeLinks.AtpPolicy.Name
       description: ATP policy name.
@@ -916,7 +916,7 @@ script:
       description: When the ATP policy was changed in UTC format.
       type: String
   - name: o365-defender-safelinks-atp-policy-set
-    description: Set the ATP policy.
+    description: Set Advanced Threat Protection policy.
     arguments:
     - name: allow_safe_docs_open
       description: Whether users can click through and bypass the Protected View container even when Safe Documents identifies a file as malicious.

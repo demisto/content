@@ -186,7 +186,7 @@ def main():  # pragma: no cover
         proxy=proxy,
         verify=verify_cert,
         headers=headers,
-        timeout=timeout
+        timeout=timeout,
     )
 
     try:

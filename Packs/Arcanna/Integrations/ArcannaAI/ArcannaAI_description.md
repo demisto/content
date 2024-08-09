@@ -16,4 +16,4 @@ If the job Id was configured both as parameter and as command argument, the comm
 Email at dev@siscale.com
 
 More information is available at
-[View  Documentation](https://arcanna.ai)
+[View  Documentation](https://docs.arcanna.ai/docs/implementation-tutorials/cortex-xsoar)

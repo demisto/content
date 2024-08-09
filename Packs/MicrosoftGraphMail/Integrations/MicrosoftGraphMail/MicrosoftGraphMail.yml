@@ -78,7 +78,7 @@ configuration:
   section: Collect
   required: false
 - display: Email address from which to fetch incidents
-  additionalinfo: For example, "example@demisto.com"
+  additionalinfo: For example, "example@mail.com"
   name: mailbox_to_fetch
   type: 0
   section: Collect
@@ -185,6 +185,12 @@ configuration:
   section: Connect
   advanced: true
   required: false
+- display: Use legacy attachment name
+  name: legacy_name
+  section: Collect
+  type: 8
+  advanced: true
+  defaultvalue: 'false'
 description: Microsoft Graph lets your app get authorized access to a user's Outlook mail data in a personal or organization account.
 display: O365 Outlook Mail (Using Graph API)
 fromversion: 5.0.0

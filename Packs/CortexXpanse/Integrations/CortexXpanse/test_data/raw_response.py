@@ -1755,6 +1755,294 @@ ALERT_UPDATE_RAW = {
     }
 }
 
+XSOAR_SEARCH_INDICATOR_DOMAIN_RESPONSE_RAW = {
+    "total": 1,
+    "iocs": [
+        {
+            "id": "abcd1b2abcd1a0b20c7a8bc5d67e8eea",
+            "version": 26,
+            "cacheVersn": 0,
+            "sequenceNumber": 5460,
+            "primaryTerm": 1,
+            "modified": "2099-12-31T23:59:59.9999999Z",
+            "sizeInBytes": 2920,
+            "sortValues": [
+                "1718702883637",
+                "abcd1b2abcd1a0b20c7a8bc5d67e8eea"
+            ],
+            "comments": [
+                {
+                    "id": "2556bab0-4390-4383-8b61-bc8e4698e11c",
+                    "version": 0,
+                    "cacheVersn": 0,
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sizeInBytes": 0,
+                    "content": "Created",
+                    "user": "DBot",
+                    "created": "2099-12-31T23:59:59.9999999Z",
+                    "type": "IndicatorCommentTimeLine",
+                    "source": "DBot",
+                    "entryId": "",
+                    "category": "Sighting"
+                }
+            ],
+            "timestamp": "2099-12-31T23:59:59.9999999Z",
+            "indicator_type": "Domain",
+            "value": "www.toysrus.com",
+            "sourceInstances": [
+                "Cortex Xpanse"
+            ],
+            "sourceBrands": [
+                "Cortex Xpanse"
+            ],
+            "lastSeen": "2099-12-31T23:59:59.9999999Z",
+            "firstSeen": "2099-12-31T23:59:59.9999999Z",
+            "lastSeenEntryID": "f9e8d7c6-5b4a-3210-9876-543210fedcba@fedcba98-7654-3210-9876-543210fedcba",
+            "firstSeenEntryID": "f9e8d7c6-5b4a-3210-9876-543210fedcba@fedcba98-7654-3210-9876-543210fedcba",
+            "score": 0,
+            "insightCache": {
+                "id": "www.toysrus.com",
+                "version": 18,
+                "cacheVersn": 0,
+                "sequenceNumber": 652451,
+                "primaryTerm": 1,
+                "modified": "2024-06-18T09:00:00.9999999Z",
+                "sizeInBytes": 829,
+                "scores": {
+                    "Cortex Xpanse": {
+                        "score": 0,
+                        "content": "null",
+                        "contentFormat": "json",
+                        "timestamp": "2099-12-31T23:59:59.9999999Z",
+                        "scoreChangeTimestamp": "2099-12-31T23:59:59.9999999Z",
+                        "isTypedIndicator": false,
+                        "type": "domain",
+                        "context": {
+                            "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [
+                                {
+                                    "Indicator": "www.toysrus.com",
+                                    "Reliability": "A+ - 3rd party enrichment",
+                                    "Score": 0,
+                                    "Type": "domain",
+                                    "Vendor": "Cortex Xpanse"
+                                }
+                            ],
+                            "Domain(val.Name && val.Name == obj.Name)": [
+                                {
+                                    "Name": "www.toysrus.com"
+                                }
+                            ]
+                        },
+                        "reliability": "A+ - 3rd party enrichment"
+                    }
+                }
+            },
+            "moduleToFeedMap": {
+                "Cortex Xpanse": {
+                    "reliability": "A+ - 3rd party enrichment",
+                    "fetchTime": "2099-12-31T23:59:59.9999999Z",
+                    "sourceBrand": "Cortex Xpanse",
+                    "sourceInstance": "Cortex Xpanse",
+                    "moduleId": "Cortex Xpanse",
+                    "expirationPolicy": "indicatorType",
+                    "expirationInterval": 0,
+                    "bypassExclusionList": false,
+                    "score": 0,
+                    "classifierVersion": 0,
+                    "classifierId": "",
+                    "mapperVersion": 0,
+                    "mapperId": "",
+                    "type": "Domain",
+                    "value": "www.toysrus.com",
+                    "timestamp": "0001-01-01T00:00:00Z",
+                    "fields": null,
+                    "modifiedTime": "0001-01-01T00:00:00Z",
+                    "ExpirationSource": {
+                        "setTime": "2099-12-31T23:59:59.9999999Z",
+                        "source": "indicatorType",
+                        "user": "",
+                        "brand": "Cortex Xpanse",
+                        "instance": "Cortex Xpanse",
+                        "moduleId": "Cortex Xpanse",
+                        "expirationPolicy": "indicatorType",
+                        "expirationInterval": 20160
+                    },
+                    "rawJSON": null,
+                    "isEnrichment": true
+                }
+            },
+            "expiration": "2099-12-31T23:59:59.9999999Z",
+
+            "expirationStatus": "active",
+            "expirationSource": {
+                "setTime": "2099-12-31T23:59:59.9999999Z",
+                "source": "indicatorType",
+                "user": "",
+                "brand": "Cortex Xpanse",
+                "instance": "Cortex Xpanse",
+                "moduleId": "Cortex Xpanse",
+                "expirationPolicy": "indicatorType",
+                "expirationInterval": 20160
+            },
+            "calculatedTime": "2099-12-31T23:59:59.9999999Z",
+            "lastReputationRun": "2099-12-31T23:59:59.9999999Z",
+            "modifiedTime": "2099-12-31T23:59:59.9999999Z",
+            "isDetectable": false,
+            "isPreventable": false
+        }
+    ],
+    "searchAfter": [
+        "1718702883637",
+        "abcd1b2abcd1a0b20c7a8bc5d67e8eea"
+    ],
+    "accountErrors": null,
+    "totalAccounts": 0
+}
+
+XSOAR_SEARCH_INDICATOR_IP_RESPONSE_RAW = {
+    "total": 1,
+    "iocs": [
+        {
+            "id": "abcd1b2abcd1a0b20c7a8bc5d67e8eea",
+            "version": 26,
+            "cacheVersn": 0,
+            "sequenceNumber": 5460,
+            "primaryTerm": 1,
+            "modified": "2099-12-31T23:59:59.9999999Z",
+            "sizeInBytes": 2920,
+            "sortValues": [
+                "1718702883637",
+                "abcd1b2abcd1a0b20c7a8bc5d67e8eea"
+            ],
+            "comments": [
+                {
+                    "id": "2556bab0-4390-4383-8b61-bc8e4698e11c",
+                    "version": 0,
+                    "cacheVersn": 0,
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sizeInBytes": 0,
+                    "content": "Created",
+                    "user": "DBot",
+                    "created": "2099-12-31T23:59:59.9999999Z",
+                    "type": "IndicatorCommentTimeLine",
+                    "source": "DBot",
+                    "entryId": "",
+                    "category": "Sighting"
+                }
+            ],
+            "timestamp": "2099-12-31T23:59:59.9999999Z",
+            "indicator_type": "IP",
+            "value": "1.1.1.2",
+            "sourceInstances": [
+                "Cortex Xpanse"
+            ],
+            "sourceBrands": [
+                "Cortex Xpanse"
+            ],
+            "lastSeen": "2099-12-31T23:59:59.9999999Z",
+            "firstSeen": "2099-12-31T23:59:59.9999999Z",
+            "lastSeenEntryID": "f9e8d7c6-5b4a-3210-9876-543210fedcba@fedcba98-7654-3210-9876-543210fedcba",
+            "firstSeenEntryID": "f9e8d7c6-5b4a-3210-9876-543210fedcba@fedcba98-7654-3210-9876-543210fedcba",
+            "score": 0,
+            "insightCache": {
+                "id": "www.toysrus.com",
+                "version": 18,
+                "cacheVersn": 0,
+                "sequenceNumber": 652451,
+                "primaryTerm": 1,
+                "modified": "2024-06-18T09:00:00.9999999Z",
+                "sizeInBytes": 829,
+                "scores": {
+                    "Cortex Xpanse": {
+                        "score": 0,
+                        "content": "null",
+                        "contentFormat": "json",
+                        "timestamp": "2099-12-31T23:59:59.9999999Z",
+                        "scoreChangeTimestamp": "2099-12-31T23:59:59.9999999Z",
+                        "isTypedIndicator": false,
+                        "type": "domain",
+                        "context": {
+                            "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [
+                                {
+                                    "Indicator": "1.1.1.2",
+                                    "Reliability": "A+ - 3rd party enrichment",
+                                    "Score": 0,
+                                    "Type": "IP",
+                                    "Vendor": "Cortex Xpanse"
+                                }
+                            ],
+                            "Domain(val.Name && val.Name == obj.Name)": [
+                                {
+                                    "Name": "1.1.1.2"
+                                }
+                            ]
+                        },
+                        "reliability": "A+ - 3rd party enrichment"
+                    }
+                }
+            },
+            "moduleToFeedMap": {
+                "Cortex Xpanse": {
+                    "reliability": "A+ - 3rd party enrichment",
+                    "fetchTime": "2099-12-31T23:59:59.9999999Z",
+                    "sourceBrand": "Cortex Xpanse",
+                    "sourceInstance": "Cortex Xpanse",
+                    "moduleId": "Cortex Xpanse",
+                    "expirationPolicy": "indicatorType",
+                    "expirationInterval": 0,
+                    "bypassExclusionList": false,
+                    "score": 0,
+                    "classifierVersion": 0,
+                    "classifierId": "",
+                    "mapperVersion": 0,
+                    "mapperId": "",
+                    "type": "IP",
+                    "value": "1.1.1.2",
+                    "timestamp": "0001-01-01T00:00:00Z",
+                    "fields": null,
+                    "modifiedTime": "0001-01-01T00:00:00Z",
+                    "ExpirationSource": {
+                        "setTime": "2099-12-31T23:59:59.9999999Z",
+                        "source": "indicatorType",
+                        "user": "",
+                        "brand": "Cortex Xpanse",
+                        "instance": "Cortex Xpanse",
+                        "moduleId": "Cortex Xpanse",
+                        "expirationPolicy": "indicatorType",
+                        "expirationInterval": 20160
+                    },
+                    "rawJSON": null,
+                    "isEnrichment": true
+                }
+            },
+            "expiration": "2099-12-31T23:59:59.9999999Z",
+
+            "expirationStatus": "active",
+            "expirationSource": {
+                "setTime": "2099-12-31T23:59:59.9999999Z",
+                "source": "indicatorType",
+                "user": "",
+                "brand": "Cortex Xpanse",
+                "instance": "Cortex Xpanse",
+                "moduleId": "Cortex Xpanse",
+                "expirationPolicy": "indicatorType",
+                "expirationInterval": 20160
+            },
+            "calculatedTime": "2099-12-31T23:59:59.9999999Z",
+            "lastReputationRun": "2099-12-31T23:59:59.9999999Z",
+            "modifiedTime": "2099-12-31T23:59:59.9999999Z",
+            "isDetectable": false,
+            "isPreventable": false
+        }
+    ],
+    "searchAfter": [
+        "1718702883637",
+        "abcd1b2abcd1a0b20c7a8bc5d67e8eea"
+    ],
+    "accountErrors": null,
+    "totalAccounts": 0
+}
+
 IP_DOMAIN_RAW = {
     "reply": {
         "total_count": 1,

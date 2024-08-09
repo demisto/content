@@ -1,14 +1,14 @@
 {
     "CONTRIBUTION_REVIEWERS": [
-        "RotemAmit",
-        "jlevypaloalto",
-        "Shellyber"
+        "barryyosi-panw",
+        "samuelFain",
+        "israelpoli"
     ],
-    "CONTRIBUTION_TL": "BEAdi",
-    "CONTRIBUTION_SECURITY_REVIEWER": "ssokolovich",
+    "CONTRIBUTION_TL": "DeanArbel",
+    "CONTRIBUTION_SECURITY_REVIEWER": ["efelmandar", "melamedbn"],
     "ON_CALL_DEVS": [
-        "acarmi",
-        "ypreisler"
+        "skidorball",
+        "ayousef"
     ],
     "DOC_REVIEWER": "ShirleyDenkberg",
     "TIM_REVIEWER": "MLainer1"
