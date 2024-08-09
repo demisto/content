@@ -10966,7 +10966,7 @@ class UniversalCommand:
     """Command list for commands that are consistent between PANORAMA and NGFW"""
     SYSTEM_INFO_COMMAND = "show system info"
     SHOW_JOBS_COMMAND = "show jobs all"
-    SHOW_JOBS_ID_PREFIX = "show jobs id"
+    SHOW_JOBS_ID_PREFIX = "show jobs id \"{}\""
 
     @staticmethod
     def get_system_info(
@@ -11124,10 +11124,8 @@ class UniversalCommand:
         """
         result_data = []
         for device in topology.all(filter_string=device_filter_str, target=target):
-            if id:
-                response = run_op_command(device, f'{UniversalCommand.SHOW_JOBS_ID_PREFIX} "{id}"')
-            else:
-                response = run_op_command(device, UniversalCommand.SHOW_JOBS_COMMAND)
+            command =  UniversalCommand.SHOW_JOBS_ID_PREFIX.format(id) if id else UniversalCommand.SHOW_JOBS_COMMAND
+            response = run_op_command(device, command)
 
             for job in response.findall("./result/job"):
                 result_data_obj: ShowJobsAllResultData = dataclass_from_element(device, ShowJobsAllResultData,
