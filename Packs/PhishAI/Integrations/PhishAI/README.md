@@ -159,7 +159,7 @@
 <div class="cl-preview-section">
 <h5 id="human-readable-output">Human Readable Output</h5>
 </div>
-<div class="cl-preview-section"><img src="https://user-images.githubusercontent.com/37335599/53904776-86393180-404f-11e9-91b0-bb572f709568.png" alt="phishaiscan" width="1080"></div>
+<div class="cl-preview-section"><img src="../../doc_files/53904776-86393180-404f-11e9-91b0-bb572f709568.png" alt="phishaiscan" width="1080"></div>
 <div class="cl-preview-section">
 <h3 id="check-a-url-status">2. Check a URL status</h3>
 </div>
@@ -240,7 +240,7 @@
 <div class="cl-preview-section">
 <h5 id="human-readable-output-1">Human Readable Output</h5>
 </div>
-<div class="cl-preview-section"><img src="https://user-images.githubusercontent.com/37335599/53904907-d6b08f00-404f-11e9-9cce-14c2e2092783.png" alt="phishaicheck" width="1094"></div>
+<div class="cl-preview-section"><img src="../../doc_files/53904907-d6b08f00-404f-11e9-9cce-14c2e2092783.png" alt="phishaicheck" width="1094"></div>
 <div class="cl-preview-section">
 <h3 id="dispute-a-scan-result">3. Dispute a scan result</h3>
 </div>
@@ -293,4 +293,4 @@
 <div class="cl-preview-section">
 <h5 id="human-readable-output-2">Human Readable Output</h5>
 </div>
-<div class="cl-preview-section"><img src="https://user-images.githubusercontent.com/37335599/53904858-b8e32a00-404f-11e9-8976-b74d63b9deeb.png" alt="phishaidispute" width="1097"></div>
+<div class="cl-preview-section"><img src="../../doc_files/53904858-b8e32a00-404f-11e9-8976-b74d63b9deeb.png" alt="phishaidispute" width="1097"></div>

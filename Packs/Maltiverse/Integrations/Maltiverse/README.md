@@ -71,7 +71,7 @@ Checks the reputation of an IP address
 ```!ip ip=8.8.8.8```
 
 ##### Human Readable Output
-![image](https://user-images.githubusercontent.com/61732335/79124252-98ce8000-7da4-11ea-9fdb-2534acebeeae.png)
+![image](../../doc_files/79124252-98ce8000-7da4-11ea-9fdb-2534acebeeae.png)
 
 ### 2. domain
 ---
@@ -120,7 +120,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 ```!domain domain=google.com```
 
 ##### Human Readable Output
-![image](https://user-images.githubusercontent.com/61732335/79124344-ca474b80-7da4-11ea-8beb-cfeb362749c9.png)
+![image](../../doc_files/79124344-ca474b80-7da4-11ea-8beb-cfeb362749c9.png)
 
 
 
@@ -173,7 +173,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 ```!url url=https://dv-expert.org```
 
 ##### Human Readable Output
-![image](https://user-images.githubusercontent.com/61732335/79124473-0d092380-7da5-11ea-9db6-145daec1dae1.png)
+![image](../../doc_files/79124473-0d092380-7da5-11ea-9db6-145daec1dae1.png)
 
 
 
@@ -233,7 +233,7 @@ Check the reputation of a file
 ```!file file=edb2f88c29844117cd74acf8bb357edf92487a1b142fe6f60b6ac5e15d2d718f```
 
 ##### Human Readable Output
-![image](https://user-images.githubusercontent.com/61732335/79423383-30abb400-7fc7-11ea-8fd5-4b8d3574d953.png)
+![image](../../doc_files/79423383-30abb400-7fc7-11ea-8fd5-4b8d3574d953.png)
 
 
 ## Additional Information
