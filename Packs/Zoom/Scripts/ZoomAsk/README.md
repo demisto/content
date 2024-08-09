@@ -1,6 +1,7 @@
 Sends a message (question) to either a user (in a direct message) or to a channel. The message includes predefined reply options. The response can also close a task (might be conditional) in a playbook.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,11 +11,13 @@ Sends a message (question) to either a user (in a direct message) or to a channe
 | Version | 5.5.0 |
 
 ## Use Case
+
 ---
 This automation allows you to ask users in Zoom (including users who are external to Cortex XSOAR) questions, have them respond and 
 reflect the answer back to Cortex XSOAR.
 
 ## Dependencies
+
 ---
 Requires an instance of the Zoom integration with Long Running instance checked.
 
@@ -22,6 +25,7 @@ This script uses the following commands and scripts.
 send-notification
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -40,18 +44,21 @@ send-notification
 | defaultResponse | Default response in case the question expires. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.
 
 ## Guide
+
 ---
 The automation is most useful in a playbook to determine the outcome of a conditional task - which will be one of the provided options.
 It uses a mechanism that allows external users to respond in Cortex XSOAR (per investigation) with entitlement strings embedded within the message contents.
-![SlackAsk](https://user-images.githubusercontent.com/35098543/66044107-7de39f00-e529-11e9-8099-049502b4d62f.png)
+![SlackAsk](../../doc_files/66044107-7de39f00-e529-11e9-8099-049502b4d62f.png)
 
 The automation can utilize the interactive capabilities of Zoom to send a form with buttons. 
 This requires the external endpoint for interactive responses to be available for connection. (See the Zoom integration documentation for more information).
 You can also utilize a dropdown list instead, by specifying the `responseType` argument.
 
 ## Notes
+
 ---
