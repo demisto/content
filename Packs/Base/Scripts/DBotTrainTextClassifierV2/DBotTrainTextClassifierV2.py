@@ -395,7 +395,7 @@ def main():
     if len(data) < MIN_INCIDENTS_THRESHOLD:
         return_results(
             f'{len(data)} incident(s) received.'
-            '\nMinimum number of incidents per label required for training: {MIN_INCIDENTS_THRESHOLD}.'
+            f'\nMinimum number of incidents per label required for training: {MIN_INCIDENTS_THRESHOLD}.'
             '\nMake sure that all arguments are set correctly and that enough incidents exist in the environment.'
         )
     else:
