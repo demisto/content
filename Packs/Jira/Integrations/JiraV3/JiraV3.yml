@@ -1461,6 +1461,56 @@ script:
     description: Use this command to create a link between two issues.
     name: jira-issue-to-issue-link
   - arguments:
+    - description: The issue ID.
+      name: issue_id
+      required: true
+    description: Fetches questions and answers for forms tied to a Jira issue.
+    name: jira-issue-get-forms
+    outputs:
+    - contextPath: JiraForms.ID
+      description: The ID of the form.
+      type: Unknown
+    - contextPath: JiraForms.Issue
+      description: Issue the form belongs to.
+      type: Unknown
+    - contextPath: JiraForms.Questions
+      description: Questions for the form.
+      type: Unknown
+  - arguments:
+    - description: The user's key (also called ID).
+      name: key
+      required: false
+    - description: The user's username.
+      name: username
+      required: false
+    description: Get's information about the specified user.
+    name: jira-get-user
+    outputs:
+    - contextPath: Jira.Users.Key
+      description: The user's key or ID.
+      type: Unknown
+    - contextPath: Jira.Users.Name
+      description: Name of the user.
+      type: Unknown
+    - contextPath: Jira.Users.Email
+      description: User's email address.
+      type: Unknown
+    - contextPath: Jira.Users.Display Name
+      description: Display name for the user.
+      type: Unknown
+    - contextPath: Jira.Users.Active
+      description: If the user is active or not.
+      type: Unknown
+    - contextPath: Jira.Users.Deleted
+      description: If the user is deleted or not.
+      type: Unknown
+    - contextPath: Jira.Users.Timezone
+      description: Timezone setting for the user.
+      type: Unknown
+    - contextPath: Jira.Users.Locale
+      description: Locale setting for the user.
+      type: Unknown
+  - arguments:
     - description: The remote incident ID.
       name: id
       required: true

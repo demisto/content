@@ -815,6 +815,26 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
             url_suffix=f'rest/api/{self.api_version}/myself'
         )
 
+    def get_user(self, identifier: str) -> Dict[str, Any]:
+        """Gets the user from Jira via API
+
+        :param identifier: The URL parameter used to identify the user,
+                           i.e. `f'key={key}'` or `f'username={username}'`
+        :type identifier: str
+        :return: The user's information as returned by the API
+        :rtype: Dict[str, Any]
+        """
+        j_res = self.http_request(
+            'GET',
+            url_suffix=f'rest/api/2/user?{identifier}',
+            ok_codes=[200, 404],
+            resp_type='response'
+        )
+        if j_res.status_code == 404:
+            return {}
+        else:
+            return j_res.json()
+
 
 class JiraCloudClient(JiraBaseClient):
     """This class inherits the JiraBaseClient class and implements the required abstract methods,
@@ -1122,6 +1142,25 @@ class JiraOnPremClient(JiraBaseClient):
             method='GET',
             url_suffix='rest/api/2/project'
         )
+
+    def issue_get_forms(self, issue_id: str) -> List:
+        """Makes an API call to pull down all forms their data for an issue
+
+        :param issue_id: Issue to pull forms for
+        :type issue_id: str
+        :return: The raw response and a cleaned up response
+        :rtype: tuple[List, List]
+        """
+        j_res = self.http_request(
+            method='GET',
+            url_suffix=f'rest/proforma/api/2/issues/{issue_id}/forms',
+            ok_codes=[200, 404],
+            resp_type='response'
+        )
+        if j_res.status_code == 404:
+            return []
+        else:
+            return j_res.json()
 
 
 class JiraIssueFieldsParser:
@@ -1799,6 +1838,56 @@ def apply_issue_transition(client: JiraBaseClient, issue_id_or_key: str, transit
                 issue_id_or_key=issue_id_or_key, json_data=json_data
             )
     raise DemistoException(f'Transition "{transition_name}" not found. \nValid transitions are: {transitions_name} \n')
+
+
+def get_issue_forms(client: JiraBaseClient, issue_id: str) -> tuple[List, List]:
+    """Gets the forms from the client and processes them into a usable JSON format.
+
+    :param client: Client to make the API call with
+    :type client: JiraBaseClient
+    :param issue_id: Issue ID to get the forms for
+    :type issue_id: str
+    :return: The raw JSON response and the formatted outputs
+    :rtype: tuple[List, List]
+    """
+    j_res = client.issue_get_forms(issue_id=issue_id)
+    demisto.debug(f'Response from Jira API rest/proforma/api/2/issues/{issue_id}/forms: {json.dumps(j_res)}')
+    outputs = []
+    for form in j_res:
+        questions = []
+        for q_id, q_data in form.get('design', {}).get('questions').items():
+            answer = form.get('state', {}).get('answers', {}).get(q_id)
+            name = form.get('design', {}).get('settings', {}).get('name')
+            # Get choice details if the answer type was a choice
+            if answer and answer.get('choices', ''):
+                final_answer: Dict[str, Any] = {
+                    'choices': []
+                }
+                choices = q_data.get('choices')
+                for choice in choices:
+                    for answer_choice in answer.get('choices'):
+                        if answer_choice == choice.get('id'):
+                            final_answer.get('choices').append(choice)  # type: ignore[union-attr]
+            elif answer:
+                final_answer = answer
+            else:  # Not all questions are required to be answered.
+                final_answer = {}
+
+            questions.append({
+                'ID': q_id,
+                'Label': q_data.get('label'),
+                'Type': q_data.get('type'),
+                'Description': q_data.get('description'),
+                'Key': q_data.get('questionKey'),
+                'Answer': final_answer,
+            })
+        outputs.append({
+            'ID': form.get('id'),
+            'Name': name,
+            'Issue': issue_id,
+            'Questions': questions
+        })
+    return j_res, outputs
 
 
 # Issues Commands
@@ -3497,6 +3586,12 @@ def create_incident_from_issue(client: JiraBaseClient, issue: Dict[str, Any], fe
     ]
     issue['mirror_instance'] = demisto.integrationInstance()
     issue['extractedAttachments'] = attachments
+
+    # Fetch any forms for the issue
+    if isinstance(client, JiraOnPremClient):
+        _, forms = get_issue_forms(client, issue.get('key'))
+        issue['forms'] = forms
+
     return {
         "name": incident_name,
         "labels": labels,
@@ -3882,6 +3977,86 @@ def handle_incoming_resolved_issue(issue: Dict[str, Any]) -> Dict[str, Any]:
     return closing_entry
 
 
+def issue_get_forms_command(client: JiraBaseClient, args: Dict[str, Any]) -> List[CommandResults]:
+    """Pulls down all forms with their questions and answers for a given issue
+
+    :param client: The Jira client to use for making the API calls
+    :type client: JiraBaseClient
+    :param args: Generic arguments dict which has the argument `issue_id` for finding
+                 the specific issue and it's forms
+    :type args: Dict[str, Any]
+    :raises DemistoException: When the command is tried for a Jira Cloud platform which is not supported.
+    :raises ValueError: When the `issue_id` argument is not supplied
+    :return: One CommandResult per form that is found with the form data
+    :rtype: List[CommandResults]
+    """
+    if not isinstance(client, JiraOnPremClient):
+        raise DemistoException('This command is only supported on Jira OnPrem')
+
+    issue_id = args.get('issue_id', '')
+    if not issue_id:
+        raise ValueError('No issue_id specified for jira-get-issue-forms')
+
+    raw, forms = get_issue_forms(client, issue_id)
+    if not forms:
+        return CommandResults(readable_output="No forms found")
+
+    results = []
+    for form in forms:
+        results.append(CommandResults(
+            outputs_prefix='Jira.Forms',
+            outputs_key_field='ID',
+            outputs=form,
+            readable_output=f'Pulled data for form {form.get("ID")} from issue {issue_id}.',
+            raw_response=raw
+        ))
+    return results
+
+
+def get_user_command(client: JiraBaseClient, args: Dict[str, Any]) -> CommandResults:
+    """Gets a user's information from Jira
+
+    :param client: The Jira client for calling the API
+    :type client: JiraBaseClient
+    :param args: Generic arguments dict which has the argument `username` or `key` for finding
+                 the user
+    :type args: Dict[str, Any]
+    :raises ValueError: When no key or username is provided to the command
+    :return: The CommandResults object with the data returned by the API
+    :rtype: CommandResults
+    """
+    key = args.get('key', '')
+    username = args.get('username', '')
+    if key:
+        identifier = f'key={key}'
+    elif username:
+        identifier = f'username={username}'
+    else:
+        raise ValueError('No key or username specified for jira-get-user')
+
+    j_res = client.get_user(identifier)
+    if not j_res:
+        return CommandResults(readable_output="No users found")
+
+    output = {
+        'Key': j_res.get('key'),
+        'Name': j_res.get('name'),
+        'Email': j_res.get('emailAddress'),
+        'Display Name': j_res.get('displayName'),
+        'Active': j_res.get('active'),
+        'Deleted': j_res.get('deleted'),
+        'Timezone': j_res.get('timeZone'),
+        'Locale': j_res.get('locale'),
+    }
+
+    return CommandResults(
+        outputs_prefix='Jira.Users',
+        outputs_key_field='Key',
+        outputs=output,
+        raw_response=j_res
+    )
+
+
 def get_mapping_fields_command(client: JiraBaseClient) -> GetMappingFieldsResponse:
     """
     This command pulls the remote schema for the different incident types, and their associated incident fields,
@@ -4127,6 +4302,8 @@ def main():  # pragma: no cover
         'jira-issue-link-type-get': get_issue_link_types_command,
         'jira-issue-to-issue-link': link_issue_to_issue_command,
         'jira-issue-delete-file': delete_attachment_file_command,
+        'jira-issue-get-forms': issue_get_forms_command,
+        'jira-get-user': get_user_command,
     }
     try:
         client: JiraBaseClient

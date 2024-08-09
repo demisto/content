@@ -211,6 +211,58 @@ Scope: `read:jira-work`
 
 #### Human Readable Output
 
+### jira-issue-get-forms
+
+***
+Fetches questions and answers for forms tied to a Jira issue.
+
+#### Base Command
+
+`jira-issue-get-forms`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| issue_id | The issue ID. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| JiraForms.ID | Unknown | The ID of the form. | 
+| JiraForms.Issue | Unknown | Issue the form belongs to. | 
+| JiraForms.Questions | Unknown | Questions for the form. | 
+
+### jira-get-user
+
+***
+Get's information about the specified user.
+
+#### Base Command
+
+`jira-get-user`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| key | The user's key (also called ID). | Optional | 
+| username | The user's username. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Jira.Users.Key | Unknown | The user's key or ID. | 
+| Jira.Users.Name | Unknown | Name of the user. | 
+| Jira.Users.Email | Unknown | User's email address. | 
+| Jira.Users.Display Name | Unknown | Display name for the user. | 
+| Jira.Users.Active | Unknown | If the user is active or not. | 
+| Jira.Users.Deleted | Unknown | If the user is deleted or not. | 
+| Jira.Users.Timezone | Unknown | Timezone setting for the user. | 
+| Jira.Users.Locale | Unknown | Locale setting for the user. | 
+
 ### jira-delete-issue
 
 ***
