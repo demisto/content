@@ -6,8 +6,8 @@ This integration was integrated and tested with version V1 of AzureDataExplorer.
 In order to connect to the Azure Data Explorer using either Cortex XSOAR Azure App or the Self-Deployed Azure App, use one of the following methods:
 
 1. *Authorization Code Flow* (Recommended).
-2. *Device Code Flow*.
-3. *Client Credentials Flow*.
+2. *Client Credentials Flow*.
+3. *Device Code Flow*.
 
 ## Self-Deployed Azure App
 
@@ -37,6 +37,22 @@ To add a permission:
 7. Run the `!azure-data-explorer-generate-login-url` command in the War Room and follow the instruction.
 8. Save the instance.
    
+
+### Authentication Using the Client Credentials Flow
+
+1. Assign Azure roles using the Azure portal [Microsoft article](https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-portal)
+
+   *Note:* In the *Select members* section, assign the application you created earlier.
+
+2. To configure a Microsoft integration that uses this authorization flow with a self-deployed Azure application:
+   a. In the *Authentication Type* field, select the **Client Credentials** option.  
+   b. In the *Application ID* field, enter your Client/Application ID.  
+   e. In the *Tenant ID* field, enter your Tenant ID.  
+   f. In the *Client Secret* field, enter your Client Secret.  
+   g. Click **Test** to validate the URLs, token, and connection.  
+   h. Save the instance.
+
+
 ### Authentication Using the Device Code Flow
 
 Use the [device code flow](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#device-code-flow)
@@ -53,21 +69,6 @@ At end of the process you'll see a message that you've logged in successfully.
 #### Cortex XSOAR Azure App
 
 In order to use the Cortex XSOAR Azure application, use the default application ID (a9ce8db2-847a-46af-9bfb-725d8a8d3c53).
-
-### Authentication Using the Client Credentials Flow
-
-1. Assign Azure roles using the Azure portal [Microsoft article](https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-portal)
-
-   *Note:* In the *Select members* section, assign the application you created earlier.
-
-2. To configure a Microsoft integration that uses this authorization flow with a self-deployed Azure application:
-   a. In the *Authentication Type* field, select the **Client Credentials** option.
-   b. In the *Application ID* field, enter your Client/Application ID.
-   e. In the *Tenant ID* field, enter your Tenant ID .
-   f. In the *Client Secret* field, enter your Client Secret.
-   g. Click **Test** to validate the URLs, token, and connection
-   h. Save the instance.
-
 
 ## Configure Azure Data Explorer on Cortex XSOAR
 
