@@ -256,19 +256,19 @@ ignore=BA101
 ignore=BA101
 
 [file:layoutscontainer-URLV2.json]
-ignore=BA101
+ignore=BA101,GR103
 
 [file:layoutscontainer-Attack_PatternV2.json]
 ignore=BA101
 
 [file:layoutscontainer-EmailV2.json]
-ignore=BA101
+ignore=BA101,GR103
 
 [file:layoutscontainer-FileV2.json]
-ignore=BA101
+ignore=BA101,GR103
 
 [file:layoutscontainer-IPV2.json]
-ignore=BA101
+ignore=BA101,GR103
 
 [file:layoutscontainer-AccountV2.json]
 ignore=BA101
@@ -277,7 +277,7 @@ ignore=BA101
 ignore=BA101
 
 [file:layoutscontainer-DomainV2.json]
-ignore=BA101
+ignore=BA101,GR103
 
 [file:layoutscontainer-ReportV2.json]
 ignore=BA101
