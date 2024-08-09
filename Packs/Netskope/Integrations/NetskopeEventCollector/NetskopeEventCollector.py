@@ -11,7 +11,7 @@ urllib3.disable_warnings()  # pylint: disable=no-member
 
 ''' CONSTANTS '''
 
-ALL_SUPPORTED_EVENT_TYPES = ['application', 'alert', 'page', 'audit', 'network']
+ALL_SUPPORTED_EVENT_TYPES = ['application', 'alert', 'page', 'audit', 'network', 'incident']
 MAX_EVENTS_PAGE_SIZE = 10000
 MAX_SKIP = 50000
 
