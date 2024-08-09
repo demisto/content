@@ -2,6 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import io
 import json
+import requests
 import traceback
 from datetime import datetime
 import zipfile
@@ -952,6 +953,57 @@ class Client(BaseClient):
         payload["data"] = self.remove_empty_fields(payload.get("data", {}))
         response = self._http_request(method='POST', url_suffix=endpoint_url, json_data=payload)
         return response.get('data', {})
+
+    def get_remote_script_status_request(self, accountIds: str = None, computerName__contains: str = None,
+                                         countOnly: str = None, createdAt__gt: str = None, createdAt__gte: str = None,
+                                         createdAt__lt: str = None, createdAt__lte: str = None, cursor: str = None,
+                                         description__contains: str = None, detailedStatus__contains: str = None,
+                                         groupIds: str = None, ids: str = None, initiatedBy__contains: str = None,
+                                         limit: str = '50', parentTaskId: str = None, parentTaskId__in: str = None,
+                                         query: str = None, siteIds: str = None, status: str = None,
+                                         tenant: str = None, updatedAt__gt: str = None, updatedAt__gte: str = None,
+                                         updatedAt__lt: str = None, updatedAt__lte: str = None, uuid__contains: str = None):
+        params = assign_params(
+            accountIds=argToList(accountIds),
+            computerName__contains=computerName__contains,
+            countOnly=countOnly,
+            createdAt__gt=createdAt__gt,
+            createdAt__gte=createdAt__gte,
+            createdAt__lt=createdAt__lt,
+            createdAt__lte=createdAt__lte,
+            cursor=cursor,
+            description__contains=description__contains,
+            detailedStatus__contains=argToList(detailedStatus__contains),
+            groupIds=argToList(groupIds),
+            ids=argToList(ids),
+            initiatedBy__contains=argToList(initiatedBy__contains),
+            limit=int(limit),
+            parentTaskId=parentTaskId,
+            parentTaskId__in=argToList(parentTaskId__in),
+            query=query,
+            siteIds=argToList(siteIds),
+            status=status,
+            tenant=tenant,
+            updatedAt__gt=updatedAt__gt,
+            updatedAt__gte=updatedAt__gte,
+            updatedAt__lt=updatedAt__lt,
+            updatedAt__lte=updatedAt__lte,
+            uuid__contains=uuid__contains,
+        )
+        response = self._http_request(method='GET', url_suffix='remote-scripts/status', params=params)
+        return response.get('data', {})
+
+    def get_remote_script_results_request(self, computer_names: list, task_ids: list):
+        endpoint_url = "remote-scripts/fetch-files"
+        payload = {
+            "data": {
+                "taskIds": task_ids,
+                "computerNames": computer_names,
+            }
+        }
+        payload["data"] = self.remove_empty_fields(payload.get("data", {}))
+        response = self._http_request(method='POST', url_suffix=endpoint_url, json_data=payload)
+        return response.get("data", {}).get("download_links", [])
 
     def remove_empty_fields(self, json_payload):
         """
@@ -3170,6 +3222,126 @@ def run_remote_script_command(client: Client, args: dict) -> CommandResults:
         raw_response=run_remote_script)
 
 
+def get_remote_script_status(client: Client, args: dict) -> CommandResults:
+    """
+    Get the Satus of the Remote Script Tasks
+    """
+    headers = ["id", "createdAt", "description", "statusDescription", "parentTaskId", "accountId",
+               "accountName", "agentId", "agentIsActive", "agentOsType", "initiatedBy", "initiatedById"]
+    remote_script_statuses = client.get_remote_script_status_request(**args)
+
+    return CommandResults(
+        readable_output=tableToMarkdown("SentinelOne - Get Remote Scripts Tasks Status",
+                                        remote_script_statuses, headers=headers, removeNull=True),
+        outputs_prefix="SentinelOne.GetRemoteScript",
+        outputs=remote_script_statuses,
+        raw_response=remote_script_statuses)
+
+
+def get_remote_script_results(client: Client, args: dict) -> list[CommandResults]:
+    """
+    Get the remote script results
+    """
+    context_entries = []
+    headers = ["taskId", "fileName"]
+    # Get arguments
+    computer_names = argToList(args.get("computerNames"))
+    task_ids = argToList(args.get("taskIds"))
+    results = client.get_remote_script_results_request(computer_names, task_ids)
+    files = []
+    for result in results:
+        if result.get("downloadUrl", ""):
+            response = requests.get(url=result.get("downloadUrl"))
+            zip_file_data = response.content
+            files.append(fileResult(filename=result.get('fileName', ''), data=zip_file_data, file_type=EntryType.ENTRY_INFO_FILE))
+            zipped_file = fileResult(filename=result.get('fileName', ''), data=zip_file_data, file_type=EntryType.ENTRY_INFO_FILE)
+            context_entries.append({
+                'taskId': result.get("taskId"),
+                'fileName': result.get("fileName"),
+                'downloadUrl': result.get("downloadUrl"),
+                'ZippedFile': zipped_file
+            })
+    return [CommandResults(
+        readable_output=tableToMarkdown("SentinelOne - Get Remote Scripts Results", results, headers=headers, removeNull=True),
+        outputs_prefix="SentinelOne.RemoteScriptResults",
+        outputs_key_field='taskId',
+        outputs=context_entries,
+        raw_response=results),
+        *files
+    ]
+
+
+def run_polling_command(client: Client, cmd: str, args: Dict[str, Any]):
+    """ Run a pipeline.
+
+    Args:
+        cmd (str): The command name.
+        client (Client): SentinelOne API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    ScheduledCommand.raise_error_if_not_supported()
+    interval = arg_to_number(args.get('interval', 60))
+    timeout = arg_to_number(args.get('timeout', 600))
+    if 'parentTaskId' not in args:
+        command_results = run_remote_script_command(client, args)
+        output = command_results.raw_response
+        if isinstance(output, dict):
+            parentTaskId = output.get("parentTaskId")
+            args['parentTaskId'] = parentTaskId
+        scheduled_command = schedule_command(interval, timeout, cmd, args)
+        command_results.scheduled_command = scheduled_command
+        return command_results
+
+    parentTaskId = args.get('parentTaskId')
+    status_args = {"parentTaskId": parentTaskId}
+    status_check_command_results = get_remote_script_status(client, status_args)
+    status_outputs = status_check_command_results.raw_response
+    script_executed = False
+    taskIds = []
+    if status_outputs and isinstance(status_outputs, list):
+        for output in status_outputs:
+            if isinstance(output, dict):
+                if output.get("status") != "completed":
+                    script_executed = False
+                    break
+                taskIds.append(output.get("id"))
+                script_executed = True
+    if script_executed:
+        results_args = {"taskIds": taskIds}
+        final_command_results = get_remote_script_results(client, results_args)
+        return final_command_results
+    else:
+        scheduled_command = schedule_command(interval, timeout, cmd, args)
+        command_results = CommandResults(scheduled_command=scheduled_command)
+        return command_results
+
+
+def schedule_command(interval: Optional[int], timeout: Optional[int], cmd: str,
+                     args: Dict[str, Any]) -> ScheduledCommand:
+    """ Build scheduled command if operation status is not completed.
+
+    Args:
+        cmd (Callable): The command name to execute.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        ScheduledCommand: Command, args, timeout and interval for CommandResults.
+    """
+    scheduled_command = ScheduledCommand(
+        command=cmd,
+        next_run_in_seconds=interval,  # type: ignore
+        args=args,
+        timeout_in_seconds=timeout)
+    return scheduled_command
+
+
+def remote_script_automate_results(client: Client, args: dict):
+    return_results(run_polling_command(client=client, cmd="sentinelone-remote-script-automate-results", args=args))
+
+
 def get_mapping_fields_command():
     """
     Returns the list of fields to map in outgoing mirroring, for incidents.
@@ -3604,6 +3776,9 @@ def main():
             'sentinelone-remove-item-from-whitelist': remove_item_from_whitelist,
             'sentinelone-run-remote-script': run_remote_script_command,
             'sentinelone-get-accounts': get_accounts,
+            'sentinelone-get-remote-script-task-status': get_remote_script_status,
+            'sentinelone-get-remote-script-task-results': get_remote_script_results,
+            'sentinelone-remote-script-automate-results': remote_script_automate_results,
         },
         'commands_with_params': {
             'get-remote-data': get_remote_data_command,
