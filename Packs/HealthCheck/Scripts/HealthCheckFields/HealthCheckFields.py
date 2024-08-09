@@ -11,9 +11,9 @@ def find_indexed_longText_fields(fields):
     return found
 
 
-DESCRIPTION = ['Custom fields which useually contains big data are being indexed, consider not to index it']
+DESCRIPTION = ['Custom fields which usually contains big data are being indexed, consider not to index it']
 
-RESOLUTION = ['Navigate to incident field page (Settings > Advanced > Fields), select Field > Edit, '
+RESOLUTION = ['Navigate to incident field page (Settings > Object Setup > Incidents > Incident Fields), select Field > Edit, '
               'and turn off Make data available for search under the Attributes tab its determines if '
               'the values in these fields are available when searching.']
 
