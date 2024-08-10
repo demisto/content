@@ -9,8 +9,8 @@ TOKEN_EXPIRY_BUFFER = timedelta(seconds=10)
 DEFAULT_LIMIT = 50
 MAX_LIMIT = 3000
 # TODO: remove print
-# print(f"{demisto.args()=}")
-# print(f"{demisto.params()=}")
+print(f"{demisto.args()=}")
+print(f"{demisto.params()=}")
 
 
 ''' CLIENT CLASS '''
@@ -313,6 +313,7 @@ def _parse_entry(entry: dict):
         "Context Type": entry.get("contextType"),
         "# Items": entry.get("totalItems"),
         "Status": entry.get("status"),
+        "Last Updated": entry.get("lastUpdated"),
     }
     final = remove_empty_elements(parsed)
     return final if final else None
@@ -402,9 +403,11 @@ def process_attributes(attributes: str) -> Dict[str, List[str]]:
 
 
 def convert_all_timestamp_to_datestring(incident: dict) -> dict:
-    keys = ['caseCreationTimestamp', 'lastModifiedTimestamp', 'creationTimestamp', 'ingestTimestamp', 'approxLogTime']
+    keys = ['caseCreationTimestamp', 'lastModifiedTimestamp', 'creationTimestamp',
+            'ingestTimestamp', 'approxLogTime', 'lastUpdated']
     for key in keys:
-        incident[key] = timestamp_to_datestring(incident[key] / 1000, date_format=DATE_FORMAT)
+        if key in incident:
+            incident[key] = timestamp_to_datestring(incident[key] / 1000, date_format=DATE_FORMAT)
     return incident
 
 
@@ -603,7 +606,8 @@ def alert_search_command(client: Client, args: dict) -> CommandResults:
 def context_table_list_command(client: Client, args: dict) -> CommandResults:
     if (table_id := args.get("table_id")):
         response = client.get_context_table(table_id)
-        human_readable = _parse_entry(response)
+        readable_output = _parse_entry(response)
+        table_name = "Table"
     else:
         limit = get_limit(args)
 
@@ -611,18 +615,19 @@ def context_table_list_command(client: Client, args: dict) -> CommandResults:
 
         include_attributes = argToBoolean(args.get("include_attributes"))
 
-        human_readable = []
-        for entry in response:
-            if parsed_entry := _parse_entry(entry):
-                parsed_entry["Last Updated"] = timestamp_to_datestring(entry.get("lastUpdated", 0) * 1000)  # type: ignore
-                human_readable.append(parsed_entry)
+        readable_output = []
+        for table in response:
+            table = convert_all_timestamp_to_datestring(table)
+            parsed_table = _parse_entry(table)
+            readable_output.append(parsed_table)
             if not include_attributes:
-                entry.pop("attributes", None)
+                table.pop("attributes", None)
+        table_name = "Tables"
 
     return CommandResults(
         outputs_prefix="ExabeamPlatform.ContextTable",
         outputs=response,
-        readable_output=tableToMarkdown(name="Table", t=human_readable)
+        readable_output=tableToMarkdown(name=table_name, t=readable_output)
     )
 
 

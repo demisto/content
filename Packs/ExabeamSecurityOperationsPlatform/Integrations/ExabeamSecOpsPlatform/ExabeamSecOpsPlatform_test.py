@@ -12,6 +12,7 @@ from ExabeamSecOpsPlatform import (
     process_string,
     _parse_group_by,
     case_search_command,
+    context_table_list_command,
 )
 
 
@@ -435,3 +436,36 @@ def test_case_search_request(mocker):
         full_url=f"{base_url}/threat-center/v1/search/cases",
         data=json.dumps(data_dict),
     )
+
+
+@pytest.mark.parametrize(
+    "args, mock_response, expected_outputs, expected_readable_output",
+    [
+        (
+            {"table_id": "123"},
+            {"id": "123", "name": "Sample Table", "attributes": {"attr1": "value1"}},
+            {"id": "123", "name": "Sample Table", "attributes": {"attr1": "value1"}},
+            "### Table\n|Id|Name|\n|---|---|\n| 123 | Sample Table |\n",
+        ),
+        (
+            {"limit": "1", "include_attributes": "Yes"},
+            [
+                {"id": "123", "name": "Table 1", "attributes": {"attr1": "value1"}},
+                {"id": "124", "name": "Table 2", "attributes": {"attr2": "value2"}},
+            ],
+            [{"id": "123", "name": "Table 1", "attributes": {"attr1": "value1"}}],
+            "### Tables\n|Id|Name|\n|---|---|\n| 123 | Table 1 |\n",
+        ),
+    ],
+)
+def test_context_table_list_command(mocker, args, mock_response, expected_outputs, expected_readable_output):
+    client = MockClient("", "", "", False, False)
+    if "table_id" in args:
+        mocker.patch.object(client, "get_context_table", return_value=mock_response)
+    else:
+        mocker.patch.object(client, "list_context_table", return_value=mock_response)
+
+    result = context_table_list_command(client, args)
+
+    assert result.outputs == expected_outputs
+    assert result.readable_output == expected_readable_output
