@@ -2476,6 +2476,7 @@ script:
   - arguments:
     - description: 'Optional fields to return specific values, example: restrictedIPs.'
       name: fields
+      isArray: true
     description: Requires administrator role. Command to get a list of organizations' information, depending on the fields provided.
     name: tenable-sc-get-organization
   isfetch: true
