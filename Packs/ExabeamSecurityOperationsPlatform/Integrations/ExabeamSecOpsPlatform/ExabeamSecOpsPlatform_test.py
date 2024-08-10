@@ -339,10 +339,6 @@ def test_get_new_token(mocker, expected_response, expected_token):
         (
             {
                 "case_id": "123",
-                "all_results": "No",
-                "start_time": "7 days ago",
-                "end_time": "today",
-                "include_related_rules": "No",
             },
             {
                 "caseId": "123",
@@ -366,12 +362,12 @@ def test_get_new_token(mocker, expected_response, expected_token):
                 "queue": "Tier 1 Analyst",
                 "rules": [{"ruleSource": "CR"}],
             },
-            "### Cases\n|Alert ID|Case ID|Grouped by Key|Priority|Queue|Risk Score|Src IPs|Stage|\n"
+            "### Case\n|Alert ID|Case ID|Grouped by Key|Priority|Queue|Risk Score|Src IPs|Stage|\n"
             "|---|---|---|---|---|---|---|---|\n"
             "| 456 | 123 | Src Ip | LOW | Tier 1 Analyst | 75 | 1.1.1.1 | NEW |\n",
         ),
         (
-            {"all_results": "No", "start_time": "7 days ago", "end_time": "today", "include_related_rules": "No", "limit": "1"},
+            {"limit": "1"},
             {
                 "rows": [
                     {

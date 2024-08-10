@@ -9,8 +9,8 @@ TOKEN_EXPIRY_BUFFER = timedelta(seconds=10)
 DEFAULT_LIMIT = 50
 MAX_LIMIT = 3000
 # TODO: remove print
-print(f"{demisto.args()=}")
-print(f"{demisto.params()=}")
+# print(f"{demisto.args()=}")
+# print(f"{demisto.params()=}")
 
 
 ''' CLIENT CLASS '''
@@ -128,11 +128,7 @@ class Client(BaseClient):
         """
         data = json.dumps(data_dict)
         full_url = f"{self._base_url}/threat-center/v1/search/cases"
-        response = self.request(
-            method="POST",
-            full_url=full_url,
-            data=data,
-        )
+        response = self.request(method="POST", full_url=full_url, data=data)
         return response
 
     def get_case_request(self, case_id: int) -> dict:
@@ -189,10 +185,10 @@ class Client(BaseClient):
         response = self.request(method="GET", full_url=full_url, params=params)
         return response
 
-    def get_alert_request(self, case_id: int) -> dict:
+    def get_alert_request(self, alert_id: int) -> dict:
         """
         """
-        full_url = f"{self._base_url}/threat-center/v1/alerts/{case_id}"
+        full_url = f"{self._base_url}/threat-center/v1/alerts/{alert_id}"
         response = self.request(method="GET", full_url=full_url)
         return response
 
@@ -363,6 +359,54 @@ def error_fixes(error: str):
     return new_error
 
 
+def generic_search_command(client: Client, args: dict, item_type: str) -> CommandResults:
+    if item_id := args.get(f"{item_type}_id"):
+        if item_type == "case":
+            data_response = client.get_case_request(item_id)
+        elif item_type == "alert":
+            data_response = client.get_alert_request(item_id)
+
+        human_readable = _parse_entry(data_response)
+        table_name = f"{item_type.capitalize()}"
+    else:
+        start_time = get_date(args.get('start_time', '7 days ago'), "start_time")
+        end_time = get_date(args.get('end_time', 'today'), "end_time")
+        if start_time > end_time:
+            raise DemistoException("Start time must be before end time.")
+        kwargs = {
+            'filter': process_string(args.get('query') or ""),
+            'fields': argToList(args.get('fields', '*')),
+            'startTime': start_time,
+            'endTime': end_time,
+        }
+        all_results = argToBoolean(args.get("all_results", False))
+        if not all_results:
+            kwargs['limit'] = get_limit(args)
+        if order_by := args.get("order_by", ""):
+            kwargs["orderBy"] = argToList(order_by)
+
+        if item_type == "case":
+            response = client.case_search_request(kwargs)
+        elif item_type == "alert":
+            response = client.alert_search_request(kwargs)
+        data_response = response.get("rows", [])
+        include_related_rules = argToBoolean(args.get("include_related_rules", False))
+        human_readable = []
+        for row in data_response:
+            if parsed_row := _parse_entry(row):
+                human_readable.append(parsed_row)
+            if not include_related_rules:
+                row.pop("rules", None)
+
+        table_name = f"{item_type.capitalize()}s"
+
+    return CommandResults(
+        outputs_prefix=f"ExabeamPlatform.{item_type.capitalize()}",
+        outputs=data_response,
+        readable_output=tableToMarkdown(name=table_name, t=human_readable)
+    )
+
+
 def transform_dicts(input_dict: Dict[str, List[str]]) -> List[Dict[str, str]]:
     """
     Transforms a dictionary of lists into a list of dictionaries.
@@ -520,87 +564,11 @@ def event_search_command(client: Client, args: dict) -> CommandResults:
 
 
 def case_search_command(client: Client, args: dict) -> CommandResults:
-    if (case_id := args.get("case_id")):
-        data_response = client.get_case_request(case_id)
-        human_readable = _parse_entry(data_response)
-    else:
-        start_time = get_date(args.get('start_time', '7 days ago'), "start_time")
-        end_time = get_date(args.get('end_time', 'today'), "end_time")
-        if start_time > end_time:
-            raise DemistoException("Start time must be before end time.")
-
-        kwargs = {
-            'filter': process_string(args.get('query', '')),
-            'fields': argToList(args.get('fields', '*')),
-            'startTime': start_time,
-            'endTime': end_time,
-        }
-
-        all_results = argToBoolean(args.get("all_results", False))
-        if not all_results:
-            kwargs['limit'] = get_limit(args)
-
-        if (order_by := args.get("order_by", "")):
-            kwargs["orderBy"] = argToList(order_by)
-
-        response = client.case_search_request(kwargs)
-        data_response = response.get("rows", [])
-
-        include_related_rules = argToBoolean(args.get("include_related_rules", False))
-        human_readable = []
-        for row in data_response:
-            if parsed_row := _parse_entry(row):
-                human_readable.append(parsed_row)
-            if not include_related_rules:
-                row.pop("rules", None)
-
-    return CommandResults(
-        outputs_prefix="ExabeamPlatform.Case",
-        outputs=data_response,
-        readable_output=tableToMarkdown(name="Cases", t=human_readable)
-    )
+    return generic_search_command(client, args, "case")
 
 
 def alert_search_command(client: Client, args: dict) -> CommandResults:
-    if (alert_id := args.get("alert_id")):
-        data_response = client.get_alert_request(alert_id)
-        human_readable = _parse_entry(data_response)
-    else:
-        start_time = get_date(args.get('start_time', '7 days ago'), "start_time")
-        end_time = get_date(args.get('end_time', 'today'), "end_time")
-        if start_time > end_time:
-            raise DemistoException("Start time must be before end time.")
-
-        kwargs = {
-            'filter': process_string(args.get('query') or ""),
-            'fields': argToList(args.get('fields', '*')),
-            'startTime': start_time,
-            'endTime': end_time,
-        }
-
-        if (order_by := args.get("order_by", "")):
-            kwargs["orderBy"] = argToList(order_by)
-
-        all_results = argToBoolean(args.get("all_results"))
-        if not all_results:
-            kwargs['limit'] = get_limit(args)
-
-        response = client.alert_search_request(kwargs)
-        data_response = response.get("rows", [])
-
-        include_related_rules = argToBoolean(args.get("include_related_rules"))
-        human_readable = []
-        for row in data_response:
-            if parsed_row := _parse_entry(row):
-                human_readable.append(parsed_row)
-            if not include_related_rules:
-                row.pop("rules", None)
-
-    return CommandResults(
-        outputs_prefix="ExabeamPlatform.Alert",
-        outputs=data_response,
-        readable_output=tableToMarkdown(name="Alert", t=human_readable)
-    )
+    return generic_search_command(client, args, "alert")
 
 
 def context_table_list_command(client: Client, args: dict) -> CommandResults:
