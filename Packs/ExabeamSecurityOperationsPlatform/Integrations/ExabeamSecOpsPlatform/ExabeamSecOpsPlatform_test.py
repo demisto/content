@@ -459,13 +459,19 @@ def test_case_search_request(mocker):
     ],
 )
 def test_context_table_list_command(mocker, args, mock_response, expected_outputs, expected_readable_output):
-    client = MockClient("", "", "", False, False)
+    client = MockClient("example.com", "", "", False, False)
+
     if "table_id" in args:
-        mocker.patch.object(client, "get_context_table", return_value=mock_response)
+        mock_get = mocker.patch.object(client, "get_context_table", return_value=mock_response)
     else:
-        mocker.patch.object(client, "list_context_table", return_value=mock_response)
+        mock_list = mocker.patch.object(client, "list_context_table", return_value=mock_response)
 
     result = context_table_list_command(client, args)
+
+    if "table_id" in args:
+        mock_get.assert_called_once_with(args['table_id'])
+    else:
+        mock_list.assert_called_once()
 
     assert result.outputs == expected_outputs
     assert result.readable_output == expected_readable_output
