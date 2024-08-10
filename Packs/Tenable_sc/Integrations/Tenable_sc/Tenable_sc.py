@@ -2322,30 +2322,30 @@ def get_organization_command(client: Client, args: Dict[str, Any]):
     Returns:
         CommandResults: command results object with the response, human readable section, and the context entries to add.
     """
-    field = args.get('fields')
+    field = argToList(args.get('fields', []))
     res = client.get_organization(field)
 
     if not res or 'response' not in res:
         raise DemistoException('Error: Could not retrieve organization information')
 
-    restrictedIPs_headers = ['ID', 'Name', 'Restricted IPs']
-    restrictedIPs =  res.get('response', {})
-    restrictedIPs_output = []
-    if restrictedIPs:
-        for restrictedIP in restrictedIPs:
+    organization_headers = ['ID', 'Name', 'Restricted IPs']
+    response =  res.get('response', {})
+    res_output = []
+    if response:
+        for curr_res in response:
             restrictedIPMap = {
-                'ID': restrictedIP.get('id', ''),
-                'Name': restrictedIP.get('name', ''),
-                'Restricted IPs': restrictedIP.get('restrictedIPs', ''),
+                'ID': curr_res.get('id', ''),
+                'Name': curr_res.get('name', ''),
+                'Restricted IPs': curr_res.get('restrictedIPs', ''),
             }
-            restrictedIPs_output.append(restrictedIPMap)
+            res_output.append(restrictedIPMap)
         
     return CommandResults(
-        outputs=createContext(restrictedIPs, removeNull=True),
+        outputs=createContext(response, removeNull=True),
         outputs_prefix='TenableSC.RestrictedIPs',
         raw_response=res,
         outputs_key_field='ID',
-        readable_output=tableToMarkdown('Tenable.sc Restricted IPs',restrictedIPs_output,headers=restrictedIPs_headers,
+        readable_output=tableToMarkdown('Tenable.sc Restricted IPs',res_output,headers=organization_headers,
                                         removeNull=True)
     )
 
