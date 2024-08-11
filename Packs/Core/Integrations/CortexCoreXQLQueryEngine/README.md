@@ -31,7 +31,7 @@ Execute an XQL query and retrieve results of an executed XQL query API. The comm
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | String of the XQL query. By default up to 100 results are returned. To retrieve more results, enter a custom limit in the query. | Required | 
+| query | XQL query string. By default up to 100 results are returned. To retrieve more results, enter a custom limit in the query. | Required | 
 | time_frame | Time in relative date or range format (for example: "1 day", "3 weeks ago", "between 2021-01-01 12:34:56 +02:00 and between 2021-02-01 12:34:56 +02:00"). The default is the last 24 hours. | Optional | 
 | tenant_id | List of strings used for running APIs on local and Managed Security tenants. Valid values:<br/>For single tenant (local tenant) query, enter a single-item list with your tenant_id. Additional valid values are, empty list ([]) or null (default).<br/>For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter a multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children. | Optional | 
 | interval_in_seconds | Interval in seconds between each poll. | Optional | 
@@ -44,7 +44,7 @@ Execute an XQL query and retrieve results of an executed XQL query API. The comm
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksXQL.GenericQuery.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the  xdr-xql-get-query-results command. | 
+| PaloAltoNetworksXQL.GenericQuery.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the xdr-xql-get-query-results command. | 
 | PaloAltoNetworksXQL.GenericQuery.query_name | String | The given name of the query. | 
 | PaloAltoNetworksXQL.GenericQuery.status | String | String representing the status of the API call; SUCCESS, FAIL, or PENDING.
 For multi-tenant queries, PARTIAL_SUCCESS means that at least one tenant failed to execute the query. Only partial results are available. | 
@@ -316,7 +316,7 @@ Query process events by the SHA256 process.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | PaloAltoNetworksXQL.ProcessEvent.query_name | String | The given name of the query. | 
-| PaloAltoNetworksXQL.ProcessEvent.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the  xdr-xql-get-query-results command. | 
+| PaloAltoNetworksXQL.ProcessEvent.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the xdr-xql-get-query-results command. | 
 | PaloAltoNetworksXQL.ProcessEvent.status | String | String representing the status of the API call; SUCCESS, FAIL, or PENDING.
 For multi-tenant queries, PARTIAL_SUCCESS means that at least one tenant failed to execute the query. Only partial results are available. | 
 | PaloAltoNetworksXQL.ProcessEvent.number_of_results | Number | Integer representing the number of results returned. | 
@@ -388,7 +388,7 @@ Query DLL module events by the SHA256 DLL.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | PaloAltoNetworksXQL.DllModule.query_name | String | The given name of the query. | 
-| PaloAltoNetworksXQL.DllModule.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the  xdr-xql-get-query-results command. | 
+| PaloAltoNetworksXQL.DllModule.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the xdr-xql-get-query-results command. | 
 | PaloAltoNetworksXQL.DllModule.status | String | String representing the status of the API call; SUCCESS, FAIL, or PENDING.
 For multi-tenant queries, PARTIAL_SUCCESS means that at least one tenant failed to execute the query. Only partial results are available. | 
 | PaloAltoNetworksXQL.DllModule.number_of_results | Number | Integer representing the number of results returned. | 
@@ -461,7 +461,7 @@ Query network connections between a source IP, destination IP and port.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | PaloAltoNetworksXQL.NetworkConnection.query_name | String | The given name of the query. | 
-| PaloAltoNetworksXQL.NetworkConnection.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the  xdr-xql-get-query-results command. | 
+| PaloAltoNetworksXQL.NetworkConnection.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the xdr-xql-get-query-results command. | 
 | PaloAltoNetworksXQL.NetworkConnection.status | String | String representing the status of the API call; SUCCESS, FAIL, or PENDING.
 For multi-tenant queries, PARTIAL_SUCCESS means that at least one tenant failed to execute the query. Only partial results are available. | 
 | PaloAltoNetworksXQL.NetworkConnection.number_of_results | Number | Integer representing the number of results returned. | 
@@ -472,8 +472,8 @@ For multi-tenant queries, the field displays a value per child tenant. For examp
 | PaloAltoNetworksXQL.NetworkConnection.results.agent_ip_addresses | String | The agent IP addresses. | 
 | PaloAltoNetworksXQL.NetworkConnection.results.agent_id | String | Endpoint ID. | 
 | PaloAltoNetworksXQL.NetworkConnection.results.actor_effective_username | String | Parent user name. | 
-| PaloAltoNetworksXQL.NetworkConnection.results.action_local_ip | String | Local IP. | 
-| PaloAltoNetworksXQL.NetworkConnection.results.action_remote_ip | String | Remote IP. | 
+| PaloAltoNetworksXQL.NetworkConnection.results.action_local_ip | String | Local IP address. | 
+| PaloAltoNetworksXQL.NetworkConnection.results.action_remote_ip | String | Remote IP address. | 
 | PaloAltoNetworksXQL.NetworkConnection.results.action_remote_port | String | Remote port. | 
 | PaloAltoNetworksXQL.NetworkConnection.results.dst_action_external_hostname | String | External hostname. | 
 | PaloAltoNetworksXQL.NetworkConnection.results.action_country | String | Action country. | 
@@ -532,7 +532,7 @@ Query windows registry by registry key name.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | PaloAltoNetworksXQL.Registry.query_name | String | The given name of the query. | 
-| PaloAltoNetworksXQL.Registry.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the  xdr-xql-get-query-results command. | 
+| PaloAltoNetworksXQL.Registry.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the xdr-xql-get-query-results command. | 
 | PaloAltoNetworksXQL.Registry.status | String | String representing the status of the API call; SUCCESS, FAIL, or PENDING.
 For multi-tenant queries, PARTIAL_SUCCESS means that at least one tenant failed to execute the query. Only partial results are available. | 
 | PaloAltoNetworksXQL.Registry.number_of_results | Number | Integer representing the number of results returned. | 
@@ -584,7 +584,7 @@ Query event logs by event ID.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | endpoint_id | XDR endpoint ID to run the query on. | Optional | 
-| event_id | event log ID to search. - Windows: Event ID of the event-log - Linux: For action_evtlog_source = AuthLog, one of the following: 0 = Unknown 1 = Successful Login 2 = Failed Login 3 = Failed Password (Same as failed login, but should include a username) 4 = Logout. | Required | 
+| event_id | Event log ID to search. - Windows: Event ID of the event-log - Linux: For action_evtlog_source = AuthLog, one of the following: 0 = Unknown 1 = Successful Login 2 = Failed Login 3 = Failed Password (Same as failed login, but should include a username) 4 = Logout. | Required | 
 | extra_fields | Extra fields to add to the query results. | Optional | 
 | time_frame | Time in relative date or range format (for example: "1 day", "3 weeks ago", "between 2021-01-01 12:34:56 +02:00 and between 2021-02-01 12:34:56 +02:00"). The default is the last 24 hours. | Optional | 
 | limit | Integer representing the maximum number of results to return. For example:<br/>If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.<br/>If limit = 100 and the query produced 50 results, only 50 results will be returned.<br/>If limit=5000, 5,000 results are returned.<br/>If limit=null or empty (default) up to 100 results are returned. . Default is 100. | Optional | 
@@ -598,7 +598,7 @@ Query event logs by event ID.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | PaloAltoNetworksXQL.EventLog.query_name | String | The given name of the query. | 
-| PaloAltoNetworksXQL.EventLog.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the  xdr-xql-get-query-results command. | 
+| PaloAltoNetworksXQL.EventLog.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the xdr-xql-get-query-results command. | 
 | PaloAltoNetworksXQL.EventLog.status | String | String representing the status of the API call; SUCCESS, FAIL, or PENDING.
 For multi-tenant queries, PARTIAL_SUCCESS means that at least one tenant failed to execute the query. Only partial results are available. | 
 | PaloAltoNetworksXQL.EventLog.number_of_results | Number | Integer representing the number of results returned. | 
@@ -664,7 +664,7 @@ Query by DNS query or domain name.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | PaloAltoNetworksXQL.DNS.query_name | String | The given name of the query. | 
-| PaloAltoNetworksXQL.DNS.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the  xdr-xql-get-query-results command. | 
+| PaloAltoNetworksXQL.DNS.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the xdr-xql-get-query-results command. | 
 | PaloAltoNetworksXQL.DNS.status | String | String representing the status of the API call; SUCCESS, FAIL, or PENDING.
 For multi-tenant queries, PARTIAL_SUCCESS means that at least one tenant failed to execute the query. Only partial results are available. | 
 | PaloAltoNetworksXQL.DNS.number_of_results | Number | Integer representing the number of results returned. | 
@@ -681,7 +681,7 @@ For multi-tenant queries, the field displays a value per child tenant. For examp
 | PaloAltoNetworksXQL.DNS.results.action_remote_port | String | Remote port. | 
 | PaloAltoNetworksXQL.DNS.results.dst_action_external_hostname | String | External hostname. | 
 | PaloAltoNetworksXQL.DNS.results.dns_query_name | String | DNS query name. | 
-| PaloAltoNetworksXQL.DNS.results.action_app_id_transitions | String | List of application IDs action, actual activities that took place and recorded by the agent | 
+| PaloAltoNetworksXQL.DNS.results.action_app_id_transitions | String | List of application IDs action. Actual activities that took place and recorded by the agent | 
 | PaloAltoNetworksXQL.DNS.results.action_total_download | String | Total downloads. | 
 | PaloAltoNetworksXQL.DNS.results.action_total_upload | String | Total uploads. | 
 | PaloAltoNetworksXQL.DNS.results.action_country | String | Action country. | 
@@ -740,7 +740,7 @@ Search for the process that wrote the given file, by its SHA256 or file path.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | PaloAltoNetworksXQL.FileDropper.query_name | String | The given name of the query. | 
-| PaloAltoNetworksXQL.FileDropper.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the  xdr-xql-get-query-results command. | 
+| PaloAltoNetworksXQL.FileDropper.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the xdr-xql-get-query-results command. | 
 | PaloAltoNetworksXQL.FileDropper.status | String | String representing the status of the API call; SUCCESS, FAIL, or PENDING.
 For multi-tenant queries, PARTIAL_SUCCESS means that at least one tenant failed to execute the query. Only partial results are available. | 
 | PaloAltoNetworksXQL.FileDropper.number_of_results | Number | Integer representing the number of results returned. | 
@@ -766,7 +766,7 @@ For multi-tenant queries, the field displays a value per child tenant. For examp
 | PaloAltoNetworksXQL.FileDropper.results.os_actor_process_image_sha256 | String | The SHA256 value of the operating system parent. | 
 | PaloAltoNetworksXQL.FileDropper.results.os_actor_effective_username | String | Operating system parent user name. | 
 | PaloAltoNetworksXQL.FileDropper.results.causality_actor_remote_host | String | Remote host. | 
-| PaloAltoNetworksXQL.FileDropper.results.causality_actor_remote_ip | String | remote IP. | 
+| PaloAltoNetworksXQL.FileDropper.results.causality_actor_remote_ip | String | remote IP address. | 
 | PaloAltoNetworksXQL.FileDropper.results._vendor | String | The result vendor. | 
 | PaloAltoNetworksXQL.FileDropper.results._time | String | Result time. | 
 | PaloAltoNetworksXQL.FileDropper.results.insert_timestamp | String | Result insert timestamp. | 
@@ -816,7 +816,7 @@ Search for network connection created by a given process instance ID.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.query_name | String | The given name of the query. | 
-| PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the  xdr-xql-get-query-results command. | 
+| PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the xdr-xql-get-query-results command. | 
 | PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.status | String | String representing the status of the API call; SUCCESS, FAIL, or PENDING.
 For multi-tenant queries, PARTIAL_SUCCESS means that at least one tenant failed to execute the query. Only partial results are available. | 
 | PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.number_of_results | Number | Integer representing the number of results returned. | 
@@ -831,7 +831,7 @@ For multi-tenant queries, the field displays a value per child tenant. For examp
 | PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.action_remote_port | String | Remote port. | 
 | PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.dst_action_external_hostname | String | External hostname. | 
 | PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.dns_query_name | String | DNS query name. | 
-| PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.action_app_id_transitions | String | List of application IDs action, actual activities that took place and recorded by the agent. | 
+| PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.action_app_id_transitions | String | List of application IDs action. Actual activities that took place and recorded by the agent. | 
 | PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.action_total_download | String | Total downloads. | 
 | PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.action_total_upload | String | Total uploads. | 
 | PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.action_country | String | Action country. | 
@@ -841,7 +841,7 @@ For multi-tenant queries, the field displays a value per child tenant. For examp
 | PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.actor_process_image_path | String | Path of the initiating process. | 
 | PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.actor_process_signature_vendor | String | Initiator signer. | 
 | PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.actor_process_signature_product | String | Initiator product. | 
-| PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.actor_causality_id | String | CID. | 
+| PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.actor_causality_id | String | Causality identifier (CID). | 
 | PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.actor_process_image_command_line | String | Image command line. | 
 | PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.actor_process_instance_id | String | Initiator instance ID. | 
 | PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results._vendor | String | The result vendor. | 
@@ -891,7 +891,7 @@ Search for network connection created by a given process causality ID.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.query_name | String | The given name of the query. | 
-| PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the  xdr-xql-get-query-results command. | 
+| PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.execution_id | String | An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the xdr-xql-get-query-results command. | 
 | PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.status | String | String representing the status of the API call; SUCCESS, FAIL, or PENDING.
 For multi-tenant queries, PARTIAL_SUCCESS means that at least one tenant failed to execute the query. Only partial results are available. | 
 | PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.number_of_results | Number | Integer representing the number of results returned. | 
@@ -906,7 +906,7 @@ For multi-tenant queries, the field displays a value per child tenant. For examp
 | PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.action_remote_port | String | Remote port. | 
 | PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.dst_action_external_hostname | String | External hostname. | 
 | PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.dns_query_name | String | DNS query name. | 
-| PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.action_app_id_transitions | String | List of application IDs action, actual activities that took place and recorded by the agent. | 
+| PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.action_app_id_transitions | String | List of application IDs action. Actual activities that took place and recorded by the agent. | 
 | PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.action_total_download | String | Total downloads. | 
 | PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.action_total_upload | String | Total uploads. | 
 | PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.action_country | String | Action country. | 
@@ -916,7 +916,7 @@ For multi-tenant queries, the field displays a value per child tenant. For examp
 | PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.actor_process_image_path | String | Path of the initiating process. | 
 | PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.actor_process_signature_vendor | String | Initiator signer. | 
 | PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.actor_process_signature_product | String | Initiator product. | 
-| PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.actor_causality_id | String | CID. | 
+| PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.actor_causality_id | String | Causality identifier (CID). | 
 | PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.actor_process_image_command_line | String | Image command line. | 
 | PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.actor_process_instance_id | String | Initiator instance ID. | 
 | PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results._vendor | String | The result vendor. | 

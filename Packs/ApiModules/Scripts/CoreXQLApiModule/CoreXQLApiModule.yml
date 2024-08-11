@@ -8,7 +8,7 @@ subtype: python3
 tags:
 - infra
 - server
-comment: Common Core XQL Client, provides generic Infrastructure.
+comment: Common Core XQL Client provides generic infrastructure.
 scripttarget: 0
 dependson: {}
 timeout: 0s
