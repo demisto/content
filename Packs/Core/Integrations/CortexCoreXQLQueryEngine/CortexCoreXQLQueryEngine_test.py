@@ -977,12 +977,12 @@ def test_get_built_in_query_results_polling_command(mocker):
     assert res.call_args.args[1]['time_frame'] == '7 days'
 
 
-@patch('CoreXQLApiModule.FORWARD_USER_RUN_RBAC', True)
+@patch('CoreXQLApiModule.IS_CORE_AVAILABLE', True)
 @patch('CoreXQLApiModule.demisto._apiCall')
-def test_get_xql_quota_forward_user_run_rbac_true(mock_api_call):
+def test_get_xql_quota_is_core_available_true(mock_api_call):
     """
     Given:
-    - FORWARD_USER_RUN_RBAC is true meaning we run on xsiam.
+    - IS_CORE_AVAILABLE is true meaning we run on necessary version of xsiam.
 
     When:
     - Calling get_xql_quota function.
@@ -1007,12 +1007,12 @@ def test_get_xql_quota_forward_user_run_rbac_true(mock_api_call):
                                   'used_quota': 0.0}}
 
 
-@patch('CoreXQLApiModule.FORWARD_USER_RUN_RBAC', True)
+@patch('CoreXQLApiModule.IS_CORE_AVAILABLE', True)
 @patch('CoreXQLApiModule.demisto._apiCall')
-def test_start_xql_query_forward_user_run_rbac_true(mock_api_call):
+def test_start_xql_query_is_core_available_true(mock_api_call):
     """
     Given:
-    - FORWARD_USER_RUN_RBAC is true meaning we run on xsiam.
+    - IS_CORE_AVAILABLE is true meaning we run on necessary version of xsiam.
 
     When:
     - Calling start_xql_query function.
@@ -1034,12 +1034,12 @@ def test_start_xql_query_forward_user_run_rbac_true(mock_api_call):
     assert response == 'aaa'
 
 
-@patch('CoreXQLApiModule.FORWARD_USER_RUN_RBAC', True)
+@patch('CoreXQLApiModule.IS_CORE_AVAILABLE', True)
 @patch('CoreXQLApiModule.demisto._apiCall')
-def test_get_xql_query_results_forward_user_run_rbac_true(mock_api_call):
+def test_get_xql_query_results_is_core_necessary_true(mock_api_call):
     """
     Given:
-    - FORWARD_USER_RUN_RBAC is true meaning we run on xsiam.
+    - IS_CORE_AVAILABLE is true meaning we run on necessary version of xsiam.
 
     When:
     - Calling get_xql_query_results function.
@@ -1061,12 +1061,12 @@ def test_get_xql_query_results_forward_user_run_rbac_true(mock_api_call):
     assert response == 'aaa'
 
 
-@patch('CoreXQLApiModule.FORWARD_USER_RUN_RBAC', False)
+@patch('CoreXQLApiModule.IS_CORE_AVAILABLE', False)
 @patch('CoreXQLApiModule.BaseClient._http_request')
-def test_get_xql_quota_forward_user_run_rbac_false(mock_http_request):
+def test_get_xql_quota_is_core_available_false(mock_http_request):
     """
     Given:
-    - FORWARD_USER_RUN_RBAC is true meaning we run on xsiam.
+    - IS_CORE_AVAILABLE is true meaning we run on necessary version of xsiam.
 
     When:
     - Calling get_xql_quota function.
@@ -1085,12 +1085,12 @@ def test_get_xql_quota_forward_user_run_rbac_false(mock_http_request):
                                               resp_type='json')
 
 
-@patch('CoreXQLApiModule.FORWARD_USER_RUN_RBAC', False)
+@patch('CoreXQLApiModule.IS_CORE_AVAILABLE', False)
 @patch('CoreXQLApiModule.BaseClient._http_request')
-def test_start_xql_query_forward_user_run_rbac_false(mock_api_call):
+def test_start_xql_query_is_core_available_false(mock_api_call):
     """
     Given:
-    - FORWARD_USER_RUN_RBAC is true meaning we run on xsiam.
+    - IS_CORE_AVAILABLE is true meaning we run on necessary version of xsiam.
 
     When:
     - Calling start_xql_query function.
@@ -1108,12 +1108,12 @@ def test_start_xql_query_forward_user_run_rbac_false(mock_api_call):
                                           ok_codes=None, error_handler=None, with_metrics=False, resp_type='json')
 
 
-@patch('CoreXQLApiModule.FORWARD_USER_RUN_RBAC', False)
+@patch('CoreXQLApiModule.IS_CORE_AVAILABLE', False)
 @patch('CoreXQLApiModule.BaseClient._http_request')
-def test_get_xql_query_results_forward_user_run_rbac_false(mock_api_call):
+def test_get_xql_query_results_is_core_available_false(mock_api_call):
     """
     Given:
-    - FORWARD_USER_RUN_RBAC is true meaning we run on xsiam.
+    - IS_CORE_AVAILABLE is true meaning we run on necessary version of xsiam.
 
     When:
     - Calling get_xql_query_results function.

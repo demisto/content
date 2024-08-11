@@ -84,7 +84,6 @@ def main() -> None:
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
     args = demisto.args()
-    headers = {}
     url_suffix = "/public_api/v1"
     try:
         url = "/api/webapp/"
@@ -93,7 +92,7 @@ def main() -> None:
             base_url=base_url,
             proxy=proxy,
             verify=verify_certificate,
-            headers=headers,
+            headers={},
             is_core=True
         )
 
