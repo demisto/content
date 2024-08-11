@@ -108,11 +108,11 @@ def get_saved_queries(
 def make_api_call(
     endpoint: str,
     payload: dict = None,
-) -> requests.Response:
+) -> requests.Response | None:
     params: dict = demisto.params()
     url: str | None = params.get('ax_url')
-    key: str | None = params.get('credentials', {}).get('identifier')
-    secret: str | None = params.get('credentials', {}).get('password')
+    key: str = params.get('credentials', {}).get('identifier')
+    secret: str = params.get('credentials', {}).get('password')
     certverify: bool = not params.get('insecure', False)
     
     if not url:
@@ -121,7 +121,7 @@ def make_api_call(
     url = url + '/' if url[-1] != '/' else url
     url = url + endpoint
     
-    headers = {
+    headers: dict = {
         "accept": "application/json",
         "api-key": key,
         "api-secret": secret,
