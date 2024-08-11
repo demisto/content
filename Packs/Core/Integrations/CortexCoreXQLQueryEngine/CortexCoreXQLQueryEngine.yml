@@ -28,7 +28,7 @@ name: XQL Query Engine
 script:
   commands:
   - arguments:
-    - description: String of the XQL query. By default up to 100 results are returned. To retrieve more results, enter a custom limit in the query.
+    - description: XQL query string. By default up to 100 results are returned. To retrieve more results, enter a custom limit in the query.
       name: query
       required: true
     - description: 'Time in relative date or range format (for example: "1 day", "3 weeks ago", "between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00"). The default is the last 24 hours.'
@@ -62,7 +62,7 @@ script:
     name: xdr-xql-generic-query
     outputs:
     - contextPath: PaloAltoNetworksXQL.GenericQuery.execution_id
-      description: An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the  xdr-xql-get-query-results command.
+      description: An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the xdr-xql-get-query-results command.
       type: String
     - contextPath: PaloAltoNetworksXQL.GenericQuery.query_name
       description: The given name of the query.
@@ -460,7 +460,7 @@ script:
       description: The given name of the query.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessEvent.execution_id
-      description: An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the  xdr-xql-get-query-results command.
+      description: An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the xdr-xql-get-query-results command.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessEvent.status
       description: |-
@@ -582,7 +582,7 @@ script:
       description: The given name of the query.
       type: String
     - contextPath: PaloAltoNetworksXQL.DllModule.execution_id
-      description: An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the  xdr-xql-get-query-results command.
+      description: An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the xdr-xql-get-query-results command.
       type: String
     - contextPath: PaloAltoNetworksXQL.DllModule.status
       description: |-
@@ -707,7 +707,7 @@ script:
       description: The given name of the query.
       type: String
     - contextPath: PaloAltoNetworksXQL.NetworkConnection.execution_id
-      description: An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the  xdr-xql-get-query-results command.
+      description: An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the xdr-xql-get-query-results command.
       type: String
     - contextPath: PaloAltoNetworksXQL.NetworkConnection.status
       description: |-
@@ -738,10 +738,10 @@ script:
       description: Parent user name.
       type: String
     - contextPath: PaloAltoNetworksXQL.NetworkConnection.results.action_local_ip
-      description: Local IP.
+      description: Local IP address.
       type: String
     - contextPath: PaloAltoNetworksXQL.NetworkConnection.results.action_remote_ip
-      description: Remote IP.
+      description: Remote IP address.
       type: String
     - contextPath: PaloAltoNetworksXQL.NetworkConnection.results.action_remote_port
       description: Remote port.
@@ -829,7 +829,7 @@ script:
       description: The given name of the query.
       type: String
     - contextPath: PaloAltoNetworksXQL.Registry.execution_id
-      description: An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the  xdr-xql-get-query-results command.
+      description: An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the xdr-xql-get-query-results command.
       type: String
     - contextPath: PaloAltoNetworksXQL.Registry.status
       description: |-
@@ -893,7 +893,7 @@ script:
     - description: XDR endpoint ID to run the query on.
       isArray: true
       name: endpoint_id
-    - description: 'event log ID to search. - Windows: Event ID of the event-log - Linux: For action_evtlog_source = AuthLog, one of the following: 0 = Unknown 1 = Successful Login 2 = Failed Login 3 = Failed Password (Same as failed login, but should include a username) 4 = Logout.'
+    - description: 'Event log ID to search. - Windows: Event ID of the event-log - Linux: For action_evtlog_source = AuthLog, one of the following: 0 = Unknown 1 = Successful Login 2 = Failed Login 3 = Failed Password (Same as failed login, but should include a username) 4 = Logout.'
       isArray: true
       name: event_id
       required: true
@@ -936,7 +936,7 @@ script:
       description: The given name of the query.
       type: String
     - contextPath: PaloAltoNetworksXQL.EventLog.execution_id
-      description: An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the  xdr-xql-get-query-results command.
+      description: An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the xdr-xql-get-query-results command.
       type: String
     - contextPath: PaloAltoNetworksXQL.EventLog.status
       description: |-
@@ -1045,7 +1045,7 @@ script:
       description: The given name of the query.
       type: String
     - contextPath: PaloAltoNetworksXQL.DNS.execution_id
-      description: An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the  xdr-xql-get-query-results command.
+      description: An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the xdr-xql-get-query-results command.
       type: String
     - contextPath: PaloAltoNetworksXQL.DNS.status
       description: |-
@@ -1094,7 +1094,7 @@ script:
       description: DNS query name.
       type: String
     - contextPath: PaloAltoNetworksXQL.DNS.results.action_app_id_transitions
-      description: List of application IDs action, actual activities that took place and recorded by the agent.
+      description: List of application IDs action. Actual activities that took place and recorded by the agent.
       type: String
     - contextPath: PaloAltoNetworksXQL.DNS.results.action_total_download
       description: Total downloads.
@@ -1181,7 +1181,7 @@ script:
       description: The given name of the query.
       type: String
     - contextPath: PaloAltoNetworksXQL.FileDropper.execution_id
-      description: An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the  xdr-xql-get-query-results command.
+      description: An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the xdr-xql-get-query-results command.
       type: String
     - contextPath: PaloAltoNetworksXQL.FileDropper.status
       description: |-
@@ -1257,7 +1257,7 @@ script:
       description: Remote host.
       type: String
     - contextPath: PaloAltoNetworksXQL.FileDropper.results.causality_actor_remote_ip
-      description: remote IP.
+      description: remote IP address.
       type: String
     - contextPath: PaloAltoNetworksXQL.FileDropper.results._vendor
       description: The result vendor.
@@ -1318,7 +1318,7 @@ script:
       description: The given name of the query.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.execution_id
-      description: An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the  xdr-xql-get-query-results command.
+      description: An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the xdr-xql-get-query-results command.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.status
       description: |-
@@ -1361,7 +1361,7 @@ script:
       description: DNS query name.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.action_app_id_transitions
-      description: List of application IDs action, actual activities that took place and recorded by the agent.
+      description: List of application IDs action. Actual activities that took place and recorded by the agent.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.action_total_download
       description: Total downloads.
@@ -1458,7 +1458,7 @@ script:
       description: The given name of the query.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.execution_id
-      description: An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the  xdr-xql-get-query-results command.
+      description: An integer representing a unique ID of a successful XQL query execution. The execution_id value can be passed to the xdr-xql-get-query-results command.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.status
       description: |-
@@ -1501,7 +1501,7 @@ script:
       description: DNS query name.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.action_app_id_transitions
-      description: List of application IDs action, actual activities that took place and recorded by the agent.
+      description: List of application IDs action. Actual activities that took place and recorded by the agent.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.action_total_download
       description: Total downloads.
@@ -1531,7 +1531,7 @@ script:
       description: Initiator product.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.actor_causality_id
-      description: CID.
+      description: Causality identifier (CID).
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.actor_process_image_command_line
       description: Image command line.
