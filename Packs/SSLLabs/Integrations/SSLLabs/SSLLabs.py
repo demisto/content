@@ -44,7 +44,8 @@ class Client(BaseClient):
             method='POST',
             json_data=json_data,
             raise_on_status=True,
-            url_suffix='/register'
+            url_suffix='/register',
+            headers={'Content-Type': 'application/json'}
         )
         demisto.info(f'Registration Sent. Response {res}')
         return res
@@ -62,7 +63,8 @@ class Client(BaseClient):
         res = self._http_request(
             method='GET',
             raise_on_status=True,
-            url_suffix='/info'
+            url_suffix='/info',
+            headers={'Content-Type': 'application/json'}
         )
         demisto.info(f'SSL Labs Info. Response {res}')
         return res
@@ -335,7 +337,6 @@ def main() -> None:
 
         # Runs the Register Email command.
         if command == 'ssl-labs-register-email':
-            client.headers = {'Content-Type': 'application/json'}
             first_name = args.get('firstName', '')
             last_name = args.get('lastName', '')
             email = args.get('email', '')
@@ -343,7 +344,6 @@ def main() -> None:
             return_results(register_email_command(client, first_name, last_name, email, org))
         # Runs the Info command.
         elif command == 'ssl-labs-info':
-            client.headers = {'Content-Type': 'application/json'}
             return_results(info_command(client))
         # Runs the Analyze command.
         elif command == 'ssl-labs-analyze':
