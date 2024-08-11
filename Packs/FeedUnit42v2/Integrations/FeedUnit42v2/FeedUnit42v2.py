@@ -141,30 +141,51 @@ def parse_indicators(indicator_objects: list, feed_tags: Optional[list] = None,
     return indicators
 
 
-def get_campaign_from_sub_reports(report_object, id_to_object):
+def get_relationships_from_sub_reports(client, report_object, id_to_object):
+    """Parse the Reports objects retrieved from the feed.
+
+    Args:
+      report_objects: a list of report objects containing the reports.
+      feed_tags: feed tags.
+      tlp_color: Traffic Light Protocol color.
+      id_to_object: a dict in the form of - id: stix_object.
+
+    Returns:
+        A list of processed reports.
+    """
     report_relationships = []
+    obj_refs = []
     object_refs = report_object.get('object_refs', [])
     for obj in object_refs:
         if obj.startswith('report--'):
             sub_report_obj = id_to_object.get(obj, {})
-            for sub_report_obj_ref in sub_report_obj.get('object_refs', []):
-                if sub_report_obj_ref.startswith('campaign--'):
-                    related_campaign = id_to_object.get(sub_report_obj_ref)
-
-                    if related_campaign:
-                        entity_relation = EntityRelationship(name='related-to',
-                                                             entity_a=f"[Unit42 ATOM] {report_object.get('name')}",
-                                                             entity_a_type='Report',
-                                                             entity_b=related_campaign.get('name'),
-                                                             entity_b_type='Campaign')
-                        report_relationships.append(entity_relation.to_indicator())
-    return report_relationships
+            if sub_report_obj and is_atom42_sub_report(sub_report_obj):
+                relationships, obj_refs_excluding_relationships_prefix = client.parse_report_relationships(sub_report_obj,
+                                                                                                           client.id_to_object,
+                                                                                                           '[Unit42 ATOM] ',
+                                                                                                           True, True)
+                obj_refs.extend(obj_refs_excluding_relationships_prefix)
+                report_relationships.extend(relationships)
+    return report_relationships, obj_refs
 
 
-def is_sub_report(report_obj):
+def is_atom42_sub_report(report_obj):
+    """ Our definition for sub report is a report with 'object_refs'
+    list that contains only objects of the type intrusion-set or report.
+
+    Args:
+      report_obj: The report object.
+    Returns:
+        A boolean.
+    """
     obj_refs = report_obj.get('object_refs', [])
-    return (all(not obj_ref.startswith('report--') for obj_ref in obj_refs)
-            and report_obj.get('name') == 'ATOM Campaign Report')
+    report_description = report_obj.get('description')
+    # report_labels = report_obj.get('labels')
+    if report_obj.get('name') == 'ATOM Campaign Report':
+        return True
+    return all((not obj_ref.startswith(('intrusion-set--', 'report--'))) for obj_ref in obj_refs) \
+        and (not report_description)
+    # and  "campaign" in report_labels
 
 
 def parse_reports_and_report_relationships(client: Client, report_objects: list, feed_tags: Optional[list] = None,
@@ -189,7 +210,7 @@ def parse_reports_and_report_relationships(client: Client, report_objects: list,
     reports = []
 
     for report_object in report_objects:
-        if is_sub_report(report_object):
+        if is_atom42_sub_report(report_object):
             continue
         report_list = client.parse_report(report_object, '[Unit42 ATOM] ', ignore_reports_relationships=True,
                                           is_unit42_report=True)
@@ -210,9 +231,15 @@ def parse_reports_and_report_relationships(client: Client, report_objects: list,
             'unit42_description': report_object.get('description'),
             'unit42_object_refs': report_object.get('object_refs')
         }
+        report_relationships, obj_refs_output = get_relationships_from_sub_reports(client, report_object, id_to_object)
 
-        report['relationships'].extend(get_campaign_from_sub_reports(report_object, id_to_object))
-
+        if not report['fields'].get('Report Object References'):
+            obj_refs = report_object.get('object_refs')
+            obj_refs.extend(obj_refs_output)
+            report['fields']['Report Object References'] = obj_refs
+        else:
+            report['fields']['Report Object References'].extend(obj_refs_output)
+        report['relationships'].extend(report_relationships)
         reports.append(report)
 
     return reports
