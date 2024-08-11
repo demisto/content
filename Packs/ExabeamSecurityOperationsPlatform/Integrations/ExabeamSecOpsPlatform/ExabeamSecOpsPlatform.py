@@ -78,6 +78,24 @@ class Client(BaseClient):
         self.access_token = new_token
 
     def request(self, **kargs):
+        """
+        Executes an HTTP request with automatic token refresh on expiration.
+
+        This method sets the required headers, including the Authorization token,
+        and performs the HTTP request using `_http_request`. If the request fails
+        due to an expired JWT token, the token is refreshed and the request is retried.
+
+        Args:
+            **kargs: Arbitrary keyword arguments passed to `_http_request`,
+                    such as method, url, data, params, etc.
+
+        Returns:
+            Any: The response from the HTTP request, typically a JSON object.
+
+        Raises:
+            DemistoException: If the response contains an error message or if
+                            the request fails due to reasons other than token expiration.
+        """
         kargs["headers"] = {
             "accept": "application/json",
             "Content-Type": "application/json",
@@ -120,6 +138,7 @@ class Client(BaseClient):
 
     def case_search_request(self, data_dict: dict) -> dict:
         """
+        Searches for cases in the threat center.
         """
         data = json.dumps(data_dict)
         full_url = f"{self._base_url}/threat-center/v1/search/cases"
@@ -128,6 +147,7 @@ class Client(BaseClient):
 
     def get_case_request(self, case_id: int) -> dict:
         """
+        Retrieves details of a specific case by its ID.
         """
         full_url = f"{self._base_url}/threat-center/v1/cases/{case_id}"
         response = self.request(
@@ -138,6 +158,7 @@ class Client(BaseClient):
 
     def alert_search_request(self, data_dict: dict) -> dict:
         """
+        Searches for alerts in the threat center.
         """
         data = json.dumps(data_dict)
         full_url = f"{self._base_url}/threat-center/v1/search/alerts"
@@ -145,43 +166,56 @@ class Client(BaseClient):
         return response
 
     def create_table_record(self, table_id, json_data):
-        """ """
+        """
+        Creates a new record in the specified table.
+        """
         full_url = f"{self._base_url}/context-management/v1/tables/{table_id}/addRecords"
         response = self.request(method="POST", full_url=full_url, json_data=json_data)
         return response
 
     def check_tracker_id(self, tracker_id):
-        """ """
+        """
+        Checks the upload status of a tracker by its ID.
+        """
         full_url = f"{self._base_url}/context-management/v1/tables/uploadStatus/{tracker_id}"
         response = self.request(method="GET", full_url=full_url)
         return response
 
     def list_context_table(self) -> dict:
-        """ """
+        """
+        Lists all context tables.
+        """
         full_url = f"{self._base_url}/context-management/v1/tables"
         response = self.request(method="GET", full_url=full_url)
         return response
 
     def get_context_table(self, table_id) -> dict:
-        """ """
+        """
+        Retrieves details of a specific context table by its ID.
+        """
         full_url = f"{self._base_url}/context-management/v1/tables/{table_id}"
         response = self.request(method="GET", full_url=full_url)
         return response
 
     def delete_context_table(self, table_id, params) -> dict:
-        """ """
+        """
+        Deletes a context table and optionally any unused custom attributes.
+        """
         full_url = f"{self._base_url}/context-management/v1/tables/{table_id}"
         response = self.request(method="DELETE", full_url=full_url, params=params)
         return response
 
     def get_table_record_list(self, table_id, params) -> dict:
-        """ """
+        """
+        Retrieves a list of records from a specific table.
+        """
         full_url = f"{self._base_url}/context-management/v1/tables/{table_id}/records"
         response = self.request(method="GET", full_url=full_url, params=params)
         return response
 
     def get_alert_request(self, alert_id: int) -> dict:
         """
+        Retrieves details of a specific alert by its ID.
         """
         full_url = f"{self._base_url}/threat-center/v1/alerts/{alert_id}"
         response = self.request(method="GET", full_url=full_url)
@@ -355,6 +389,17 @@ def error_fixes(error: str):
 
 
 def generic_search_command(client: Client, args: dict, item_type: str) -> CommandResults:
+    """
+    Searches for and retrieves items based on the provided item type and arguments.
+
+    Args:
+        client (Client): API client instance.
+        args (dict): Search and filter parameters, including optional item IDs.
+        item_type (str): Type of item to search for ('case' or 'alert').
+
+    Returns:
+        CommandResults: Contains search results and a Markdown table of the results.
+    """
     if item_id := args.get(f"{item_type}_id"):
         if item_type == "case":
             data_response = client.get_case_request(item_id)
@@ -434,6 +479,15 @@ def transform_dicts(input_dict: Dict[str, List[str]]) -> List[Dict[str, str]]:
 
 
 def process_attributes(attributes: str) -> Dict[str, List[str]]:
+    """
+    Parses a string representation of attributes into a dictionary.
+
+    Args:
+        attributes (str): A JSON-like string representing attributes.
+
+    Returns:
+        Dict[str, List[str]]: Parsed dictionary of attributes.
+    """
     if not (attributes.startswith("{") and attributes.endswith("}")):
         attributes = "{" + attributes + "}"
 
@@ -442,6 +496,15 @@ def process_attributes(attributes: str) -> Dict[str, List[str]]:
 
 
 def convert_all_timestamp_to_datestring(incident: dict) -> dict:
+    """
+    Converts specified timestamp fields in an incident dictionary to date strings.
+
+    Args:
+        incident (dict): A dictionary containing incident data with timestamp fields.
+
+    Returns:
+        dict: The incident dictionary with timestamp fields converted to date strings.
+    """
     keys = ['caseCreationTimestamp', 'lastModifiedTimestamp', 'creationTimestamp',
             'ingestTimestamp', 'approxLogTime', 'lastUpdated']
     for key in keys:
@@ -477,6 +540,18 @@ def filter_existing_cases(cases, last_run):
 
 
 def update_last_run(cases, end_time):
+    """
+    Updates the last run time and list of case IDs based on the provided cases.
+
+    Args:
+        cases (list): A list of case dictionaries, each containing a 'caseCreationTimestamp' and 'caseId'.
+        end_time (str): The end time to use if no cases are provided.
+
+    Returns:
+        dict: A dictionary with:
+            - 'time': The latest case creation timestamp formatted as a date string (or end_time if no cases are provided).
+            - 'last_ids': A list of case IDs where the 'caseCreationTimestamp' matches the latest timestamp exactly.
+    """
     if cases:
         max_timestamp = max(case.get("caseCreationTimestamp", 0) for case in cases)
         list_ids = [case.get("caseId", "") for case in cases if case.get("caseCreationTimestamp", 0) == max_timestamp]
@@ -489,11 +564,21 @@ def update_last_run(cases, end_time):
         "time": last_run_time,
         "last_ids": list_ids
     }
-
     return last_run
 
 
 def create_incidents(cases):
+    """
+    Converts a list of cases into a list of incidents with formatted timestamps.
+
+    Args:
+        cases (list): A list of case dictionaries.
+
+    Returns:
+        list: A list of incident dictionaries, each containing:
+            - 'Name': The alert name from the case.
+            - 'rawJSON': The case data as a JSON string.
+    """
     incidents = []
     for case in cases:
         case = convert_all_timestamp_to_datestring(case)
@@ -567,6 +652,21 @@ def alert_search_command(client: Client, args: dict) -> CommandResults:
 
 
 def context_table_list_command(client: Client, args: dict) -> CommandResults:
+    """
+    Retrieves and returns context tables based on provided arguments.
+
+    Args:
+        client (Client): The client instance used for API requests.
+        args (dict): A dictionary of arguments. May include:
+            - 'table_id': ID of a specific context table to retrieve.
+            - 'include_attributes': Boolean to determine if attributes should be included in the output.
+
+    Returns:
+        CommandResults: Contains:
+            - outputs_prefix: Prefix for the output keys.
+            - outputs: The raw data response from the API.
+            - readable_output: A Markdown table of the context tables.
+    """
     if (table_id := args.get("table_id")):
         response = client.get_context_table(table_id)
         readable_output = _parse_entry(response)
@@ -595,6 +695,18 @@ def context_table_list_command(client: Client, args: dict) -> CommandResults:
 
 
 def context_table_delete_command(client: Client, args: dict) -> CommandResults:
+    """
+    Deletes a context table based on the provided table ID and optional parameters.
+
+    Args:
+        client (Client): The client instance used for API requests.
+        args (dict): A dictionary of arguments. May include:
+            - 'table_id': ID of the context table to delete.
+            - 'delete_unused_custom_attributes': Boolean to specify if unused custom attributes should be deleted.
+
+    Returns:
+        CommandResults: Contains a readable message confirming the deletion of the context table.
+    """
     table_id = args.get("table_id")
     include_attributes = argToBoolean(args.get("delete_unused_custom_attributes"))
     params = {"deleteUnusedCustomAttributes": str(include_attributes)}
@@ -608,6 +720,15 @@ def context_table_delete_command(client: Client, args: dict) -> CommandResults:
 
 
 def table_record_list_command(client: Client, args: dict) -> CommandResults:
+    """
+    Retrieves and returns records from a specified table.
+
+    Args:
+        client (Client): The client instance used for API requests.
+        args (dict): A dictionary of arguments, including:
+            - 'table_id': ID of the table from which to retrieve records.
+            - 'limit': Maximum number of records to retrieve.
+    """
     table_id = args.get("table_id")
     params = {'limit': get_limit(args)}
 
@@ -629,6 +750,19 @@ def table_record_list_command(client: Client, args: dict) -> CommandResults:
     requires_polling_arg=False,
 )
 def table_record_create_command(args: dict, client: Client) -> PollResult:
+    """
+    Creates table records and polls their creation status.
+
+    On first run, sends a request to create records and retrieves a `tracker_id`.
+    On subsequent runs, checks the status using the `tracker_id`.
+
+    Args:
+        args (dict): Includes 'tracker_id', 'table_id', 'attributes', and 'operation'.
+        client (Client): The client for API requests.
+
+    Returns:
+        PollResult: Contains the status and results of the record creation.
+    """
     if not (tracker_id := args.get("tracker_id")):
         table_id = args.get("table_id")
         attributes = args.get("attributes", "")
@@ -656,7 +790,22 @@ def table_record_create_command(args: dict, client: Client) -> PollResult:
 
 
 def fetch_incidents(client: Client, params: dict[str, str], last_run) -> tuple[list, dict]:
+    """
+    Fetches incidents from the client based on specified parameters and updates the last run time.
 
+    Args:
+        client (Client): The client instance used for API requests.
+        params (dict[str, str]): Dictionary of parameters for fetching incidents, including:
+            - 'fetch_query': Filter query for incidents.
+            - 'max_fetch': Maximum number of incidents to fetch.
+            - 'first_fetch': Time range for the first fetch.
+        last_run (dict): Last run data used to filter existing incidents.
+
+    Returns:
+        tuple[list, dict]:
+            - A list of incidents.
+            - Updated last run data.
+    """
     demisto.debug(f"Last run before the fetch run: {last_run}")
 
     filter_query = process_string(params.get("fetch_query") or "")
@@ -695,7 +844,7 @@ def test_module(client: Client) -> str:    # pragma: no cover
         If we've reached this point, it indicates that the login process was successful.
 
     """
-    if client.access_token:
+    if client.access_token and generic_search_command(client, {}, "case"):
         return 'ok'
     else:
         raise DemistoException('Access Token Generation Failure.')
