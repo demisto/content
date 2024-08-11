@@ -29,7 +29,7 @@ script:
       - 'false'
       - 'true'
     description: |-
-      DEPRECATED - use smime-sign-and-encrypt instead.
+      Deprecated. Use smime-sign-and-encrypt instead.
       Retrieves items from the service.
     name: smime-sign-email
     outputs:
@@ -45,7 +45,7 @@ script:
       name: message
       required: true
     description: |- 
-      DEPRECATED - use smime-sign-and-encrypt instead.
+      Deprecated. Use smime-sign-and-encrypt instead.
       Encrypts an email message with S/MIME protocol by using a public RSA certificate.
     name: smime-encrypt-email-body
     outputs:
@@ -57,19 +57,19 @@ script:
       type: String
     deprecated: true
   - arguments:
-    - description: entity_id of the file with .p7 extension containing the signed message.
+    - description: Entity ID of the file with a .p7 extension containing the signed message.
       name: signed_message
       required: true
     - description: Sender's public key to verify.
       name: public_key
       defaultValue: instancePublicKey
     - auto: PREDEFINED
-      description: Get the full raw output of the email.
+      description: Whether to get the full raw output of the email.
       name: raw_output
       predefined:
       - 'false'
       - 'true'
-    - description: Tags (comma separated) to be included in the war room output.
+    - description: A comma-separated list of tags to be included in the War Room output.
       name: tag
     description: |-
       Verifies the signature.
@@ -81,18 +81,18 @@ script:
       description: The decoded signed message.
       type: String
   - arguments:
-    - description: entity_id of the file with .p7 extension containing the encrypted email.
+    - description: Entity ID of the file with a .p7 extension containing the encrypted email.
       name: encrypt_message
       required: true
     - description: The encoding code to use when decode the message body, e.g 'ISO-8859-2''.
       name: encoding
     - auto: PREDEFINED
-      description: Get the full raw output of the email.
+      description: Whether to get the full raw output of the email.
       name: raw_output
       predefined:
       - 'false'
       - 'true'
-    - description: Tags (comma separated) to be included in the war room output.
+    - description: A comma-separated list of tags to be included in the War Room output.
       name: tag
     description: Decrypts the message body.
     name: smime-decrypt-email-body
@@ -119,18 +119,18 @@ script:
         Format: {"bcc@email":"cert", "otherbcc@email":"cert"}
         Use "instancePublicKey" in the cert field to use the instance certificate.
       name: bcc
-    - description: list of war room entry id's of files to attach to the mail.
+    - description: List of War Room entry IDs of files to attach to the mail.
       name: attachment_entry_id
       isArray: true
     - auto: PREDEFINED
-      description: Define whether the mail should be signed.
+      description: Whether the mail should be signed.
       name: signed
       defaultValue: 'true'
       predefined:
       - 'true'
       - 'false'
     - auto: PREDEFINED
-      description: Define whether the mail should be encrypted.
+      description: Whether the mail should be encrypted.
       name: encrypted
       defaultValue: 'true'
       predefined:
@@ -138,7 +138,7 @@ script:
       - 'false'
     - description: Sender email address.
       name: sender
-    - description: Email Subject.
+    - description: Email subject.
       name: subject
     - auto: PREDEFINED
       description: Whether to create a file with the encrypted/signed content.
@@ -153,10 +153,10 @@ script:
       description: The raw message to send.
       type: String
     - contextPath: SMIME.SignedAndEncrypted.RecipientIds
-      description: Address of recipient.
+      description: Address of the recipient.
       type: String
     - contextPath: SMIME.SignedAndEncrypted.FileName
-      description: Name of file output if create_file_p7 is used.
+      description: Name of the file output if create_file_p7 is used.
       type: String
   dockerimage: demisto/m2crypto:1.0.0.107193
   runonce: false
