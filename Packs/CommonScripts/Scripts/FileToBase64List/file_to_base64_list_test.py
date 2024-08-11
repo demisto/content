@@ -31,8 +31,8 @@ def test_file_to_base64_list(mocker):
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
     mocker.patch.object(demisto, 'results')
     result_entry = main()
-    assert 'Success' in result_entry['HumanReadable']
-    assert 'Size' in result_entry['HumanReadable']
+    assert result_entry['HumanReadable'] == (
+        '### File successfully stored in list\n|File Entry ID|List Name|Size|\n|---|---|---|\n| 1 | test | 28 |\n')
     assert len(result_entry['Contents']) > 0
 
 

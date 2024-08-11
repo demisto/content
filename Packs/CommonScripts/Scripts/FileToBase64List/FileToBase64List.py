@@ -17,7 +17,7 @@ def main():
     list_name = demisto.args()['listName']
     is_zip = (demisto.args()['zipFile'] == 'true')
     entry_id = demisto.args()['entryId']
-    
+
     res = demisto.getFilePath(entry_id)
     if not res:
         return_error(f"Entry {entry_id} not found")
