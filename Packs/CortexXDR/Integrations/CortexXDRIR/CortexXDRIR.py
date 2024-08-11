@@ -884,10 +884,10 @@ def get_mapping_fields_command():
     return mapping_response
 
 
-def get_modified_remote_data_command(client, args, xdr_delay: int = 1):
+def get_modified_remote_data_command(client, args, mirroring_last_run:Dict[str, Any] = {}, xdr_delay: int = 1):
     remote_args = GetModifiedRemoteDataArgs(args)
-    integration_context = demisto.getIntegrationContext()
-    last_update: str = integration_context.get('mirroring_last_update', remote_args.last_update)
+    demisto.debug('MIRRORING MAIMORAG get_modified_remote_data_command ')
+    last_update: str = mirroring_last_run.get('mirroring_last_update', remote_args.last_update)
     last_update_utc = dateparser.parse(last_update,
                                        settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': False})   # convert to utc format
 
@@ -898,22 +898,23 @@ def get_modified_remote_data_command(client, args, xdr_delay: int = 1):
         f'Performing get-modified-remote-data command {last_update=} | {gte_modification_time_milliseconds=} |'
         f'{lte_modification_time_milliseconds=}'
     )
+    demisto.debug(f'MIRRORING MAIMORAG get_modified_remote_data_command BEFORE REQUEST {time.strftime=}')
     raw_incidents = client.get_incidents(
         gte_modification_time_milliseconds=gte_modification_time_milliseconds,
         lte_modification_time_milliseconds=lte_modification_time_milliseconds,
         limit=100)
+    demisto.debug(f'MIRRORING MAIMORAG get_modified_remote_data_command AFTER REQUEST {time.strftime=} {raw_incidents=}')
 
     last_run_mirroring = (lte_modification_time_milliseconds + timedelta(milliseconds=1))
     # Format with milliseconds as string, truncate microseconds
-    last_run_mirroring_str = last_run_mirroring.replace(tzinfo=pytz.UTC).strftime(
+    last_run_mirroring_str = last_run_mirroring.replace(tzinfo=pytz.UTC).strftime( # type: ignore
         '%Y-%m-%d %H:%M:%S.%f')[:-3] + '+02:00'  # type: ignore
-    demisto.setIntegrationContext({'mirroring_last_update': last_run_mirroring_str})
     modified_incident_ids = []
     for raw_incident in raw_incidents:
         incident_id = raw_incident.get('incident_id')
         modified_incident_ids.append(incident_id)
-
-    return GetModifiedRemoteDataResponse(modified_incident_ids)
+    demisto.debug(f'MIRRORING MAIMORAG get_modified_remote_data_command END {time.strftime=} {modified_incident_ids=}')
+    return GetModifiedRemoteDataResponse(modified_incident_ids), last_run_mirroring_str
 
 
 def get_remote_data_command(client, args):
@@ -1305,10 +1306,10 @@ def main():  # pragma: no cover
     """
     Executes an integration command
     """
+    demisto.debug('MAIN')
     command = demisto.command()
     params = demisto.params()
     LOG(f'Command being called is {command}')
-
     # using two different credentials object as they both fields need to be encrypted
     first_fetch_time = params.get('fetch_time', '3 days')
     base_url = urljoin(params.get('url'), '/public_api/v1')
@@ -1574,11 +1575,17 @@ def main():  # pragma: no cover
             return_results(action_status_get_command(client, args))
 
         elif command == 'get-modified-remote-data':
-            return_results(get_modified_remote_data_command(client=client,
-                                                            args=demisto.args(),
-                                                            xdr_delay=xdr_delay,
-                                                            )
-                           )
+            demisto.debug(f'MIRRORING MAIMORAG main get-modified-remote-data {time.strftime=}')
+            modified_incidents, next_run =get_modified_remote_data_command(
+                client=client,
+                mirroring_last_run=demisto.getLastRun().get('mirroring', {}) or {},
+                args=demisto.args(),
+                xdr_delay=xdr_delay,
+            )
+            last_run_obj = demisto.getLastRun()
+            last_run_obj['mirroring'] = {'next_run_mirroring': next_run}
+            demisto.setLastRun(last_run_obj)
+            return_results(modified_incidents)
 
         elif command == 'xdr-script-run':  # used with polling = true always
             return_results(script_run_polling_command(args, client))
