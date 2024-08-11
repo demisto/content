@@ -252,12 +252,15 @@ IP_TRACK_BY_TYPES_MAP = {
     'Source And Destination': 'source-and-destination'
 }
 
-
-
 VULNERABILITY_PROTECTION_DEVICE_GROUP_PATH = "/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='{device_group}']/profiles/vulnerability/entry[@name='{profile_name}']/threat-exception"
 VULNERABILITY_PROTECTION_VSYS_PATH = "/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name='{VSYS}']/profiles/vulnerability/entry[@name='{profile_name}']/threat-exception"
 ANTI_SPYWARE_DEVICE_GROUP_PATH = "/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='{device_group}']/profiles/spyware/entry[@name='{profile_name}']/threat-exception"
 ANTI_SPYWARE_VSYS_PATH = "/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name='{VSYS}']/profiles/spyware/entry[@name='{profile_name}']/threat-exception"
+
+ADD_EXCEPTION_COMMAND_TYPE = 'set'
+EDIT_EXCEPTION_COMMAND_TYPE = 'edit'
+DELETE_EXCEPTION_COMMAND_TYPE = 'delete'
+LIST_EXCEPTION_COMMAND_TYPE = 'get'
 
 class QueryMap(TypedDict):
     '''dict[str, str]
@@ -14317,9 +14320,7 @@ def pan_os_add_profile_exception_command(args: dict) -> CommandResults:
         
     Returns:
         A confirmation for adding the exception.
-    """
-    get_all_profile_names_from_profile_type('vulnerability')
-    
+    """    
     threat_name = args.get('threat_name')
     raw_response = profile_exception_crud_commands(args, ADD_EXCEPTION_COMMAND_TYPE)
     return CommandResults(
@@ -14372,20 +14373,33 @@ def pan_os_list_profile_exception_command(args: dict) -> CommandResults:
         A confirmation for deleting the exception.
     """
     raw_response = profile_exception_crud_commands(args, LIST_EXCEPTION_COMMAND_TYPE)
-    outputs = raw_response.get('response')
+    
+    exceptions_response_list = raw_response['response']['result']['threat-exception']['entry'] or []
+    if not isinstance(exceptions_response_list, list):
+        exceptions_response_list = [exceptions_response_list]
+
+    for exception in exceptions_response_list:
+        parse_pan_os_un_committed_data(exception, ['@admin', '@dirtyId', '@time'])
+        exception["name"] = exception.pop("@name", "")
+    
+    hr = []
+    for exception in exceptions_response_list:
+         hr.append({'Name': exception['name'],
+                    'Actions': exception['action'],
+                    'Exempt IP': exception.get('exempt-ip', ''),
+                    'Packet Capture': exception.get('packet-capture', '')
+                })
+    
     return CommandResults(
-        outputs=outputs,
-        readable_output=outputs,
+        outputs=raw_response,
+        readable_output=tableToMarkdown(
+            name='Profile Exceptions',
+            t=hr,
+            headers=['Name', 'Actions', 'Exempt IP', 'Packet Capture']
+        ),
         outputs_prefix='Panorama.ProfileException'
     )
     
-ADD_EXCEPTION_COMMAND_TYPE = 'set'
-EDIT_EXCEPTION_COMMAND_TYPE = 'edit'
-DELETE_EXCEPTION_COMMAND_TYPE = 'delete'
-LIST_EXCEPTION_COMMAND_TYPE = 'get'
-
-
-
 
 """ Fetch Incidents """
 
