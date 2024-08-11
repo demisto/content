@@ -1686,7 +1686,7 @@ def test_fetch_incidents_dedup():
     assert 'XDR Incident 4' in result_2[1]['name']
     assert last_run['incidents_at_last_timestamp'] == ['4']
 
-    # run empty test and assert last_run['incidents_at_last_timestamp'] is empty
+    # run empty test and assert last_run['incidents_at_last_timestamp'] stays the same
     last_run, result_2 = fetch_incidents(
         client=mock_client,
         first_fetch_time='3 days',
@@ -1696,4 +1696,4 @@ def test_fetch_incidents_dedup():
         max_fetch=0,
     )
 
-    assert last_run['incidents_at_last_timestamp'] == []
+    assert last_run['incidents_at_last_timestamp'] == ['4']
