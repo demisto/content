@@ -4,7 +4,7 @@ from CommonServerPython import *  # noqa: F401
 """Tests the script functions of the Json2HtmlTable script"""
 
 import pytest
-import Json2HtmlTable
+from Json2HtmlTable import json_to_html_command, get_json_from_string
 
 
 @pytest.mark.parametrize("value,exptected", [
@@ -15,7 +15,7 @@ import Json2HtmlTable
 def test_get_json_from_string(value, exptected):
     """Tests the get_json_from_string function"""
 
-    result: dict | str | None = Json2HtmlTable.get_json_from_string(value=value)
+    result: dict | str | None = get_json_from_string(value=value)
     assert result == exptected
 
 
@@ -28,7 +28,7 @@ def test_json_to_html_command(value, expected):
     demisto_args: dict = {
         "value": value
     }
-    result: CommandResults = Json2HtmlTable.json_to_html_command(
+    result: CommandResults = json_to_html_command(
         args=demisto_args
     )
     assert result.outputs == expected
