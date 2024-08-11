@@ -1391,7 +1391,7 @@ script:
       description: Initiator product.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.actor_causality_id
-      description: CID.
+      description: Causality identifier (CID).
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.actor_process_image_command_line
       description: Image command line.
