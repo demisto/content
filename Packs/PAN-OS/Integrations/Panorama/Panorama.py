@@ -14101,11 +14101,11 @@ def get_all_profile_names_from_profile_type(profile_type):
     
     profile_names = []
     for entry in results:
-        profile_name = entry.get('name')
+        profile_name = entry.get('@name')
         if profile_name:
             profile_names.append(profile_name)
             
-    return profile_name
+    return profile_names
 
 def check_profile_type_by_given_profile_name(profile_name):
     vulnerability_protection_profile_names = get_all_profile_names_from_profile_type('vulnerability')
@@ -14154,9 +14154,7 @@ def build_xpath_for_profile_exception_commands(profile_name, profile_type, devic
         raise DemistoException("Invalid profile_type was provided. Can be Vulnerability Protection or Anti Spyware.")
     
     if action_type in [EDIT_EXCEPTION_COMMAND_TYPE, DELETE_EXCEPTION_COMMAND_TYPE]:
-        xpath += f"""
-        /entry[@name='{extracted_id}']
-        """
+        xpath += f"/entry[@name='{extracted_id}']"
         
     return xpath
 
@@ -14264,7 +14262,7 @@ def profile_exception_crud_commands(args: dict, action_type: str):
         
     Returns:
         Raw response from api request.
-    """
+    """    
     profile_name = args.get('profile_name')
     profile_type = args.get('profile_type', '')
     threat_name = args.get('threat_name', '')
@@ -14325,7 +14323,7 @@ def pan_os_add_profile_exception_command(args: dict) -> CommandResults:
     raw_response = profile_exception_crud_commands(args, ADD_EXCEPTION_COMMAND_TYPE)
     return CommandResults(
         raw_response=raw_response,
-        readable_output=f'Successfully created Exception: "{threat_name}"',
+        readable_output=f'Successfully created Exception: {threat_name}',
     )
 
 def pan_os_edit_profile_exception_command(args: dict) -> CommandResults:
@@ -14342,7 +14340,7 @@ def pan_os_edit_profile_exception_command(args: dict) -> CommandResults:
     raw_response = profile_exception_crud_commands(args, EDIT_EXCEPTION_COMMAND_TYPE)
     return CommandResults(
         raw_response=raw_response,
-        readable_output=f'Successfully edited Exception: "{threat_name}"',
+        readable_output=f'Successfully edited Exception: {threat_name}',
     )
     
 def pan_os_delete_profile_exception_command(args: dict) -> CommandResults:
@@ -14359,7 +14357,7 @@ def pan_os_delete_profile_exception_command(args: dict) -> CommandResults:
     raw_response = profile_exception_crud_commands(args, DELETE_EXCEPTION_COMMAND_TYPE)
     return CommandResults(
         raw_response=raw_response,
-        readable_output=f'Successfully deleted Exception: "{threat_name}"',
+        readable_output=f'Successfully deleted Exception: {threat_name}',
     )
 
 def pan_os_list_profile_exception_command(args: dict) -> CommandResults:
