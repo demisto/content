@@ -29,7 +29,6 @@ configuration:
   name: device_group
   type: 0
   section: Connect
-  advanced: true
   required: false
 - additionalinfo: Located in the Firewall URL; by default of PAN-OS it is vsys1
   display: Vsys - Firewall instances only
@@ -47,8 +46,7 @@ configuration:
   display: Use URL Filtering for auto enrichment
   name: use_url_filtering
   type: 8
-  section: Collect
-  advanced: true
+  section: Connect
   required: false
 - display: URL Filtering Additional suspicious categories. CSV list of categories that will be considered suspicious.
   name: additional_suspicious
@@ -149,8 +147,7 @@ configuration:
   - Wildfire
   - Decryption
   - All
-  section: Connect
-  advanced: true
+  section: Collect
   required: false
 - display: Log type max number of job pulling attempts
   name: fetch_job_polling_max_num_attempts
@@ -165,61 +162,53 @@ configuration:
   additionalinfo: "Traffic Log Type query example: (addr.src in {source}) and (addr.dst in {destination}) and (action eq {action}).\nIn case of multiple devices, for the sake of speed it is recommended to narrow the query to a specific device. \nFor example:(device_name eq dummy_device)"
   type: 12
   section: Collect
-  advanced: true
   required: false
 - display: Threat Log Type Query
   name: threat_query
   additionalinfo: "Threat Log Type query example: (severity geq high).\nIn case of multiple devices, for the sake of speed it is recommended to narrow the query to a specific device. \nFor example:(device_name eq dummy_device)"
   type: 12
   section: Collect
-  advanced: true
   required: false
 - display: URL Log Type Query
   name: url_query
   additionalinfo: "URL Log Type query example: ((action eq block-override) or (action eq block-url)) and (severity geq high).\nIn case of multiple devices, for the sake of speed it is recommended to narrow the query to a specific device. \nFor example:(device_name eq dummy_device)"
   type: 12
   section: Collect
-  advanced: true
   required: false
 - display: Data Log Type Query
   name: data_query
   additionalinfo: "Data Log Type query example: ((action eq alert) or (action eq wildfire-upload-success) or (action eq forward)) and (severity geq high).\nIn case of multiple devices, for the sake of speed it is recommended to narrow the query to a specific device. \nFor example:(device_name eq dummy_device)"
   type: 12
   section: Collect
-  advanced: true
   required: false
 - display: Correlation Log Type Query
   name: correlation_query
   additionalinfo: "Correlation Log Type query example: (hostid eq {host_id}) and (match_time in {last_x_time}) and (objectname eq {object_name}) and (severity geq '{severity}'') and (src in {source_address}).\nIn case of multiple devices, for the sake of speed it is recommended to narrow the query to a specific device. \nFor example:(device_name eq dummy_device)"
   type: 12
   section: Collect
-  advanced: true
   required: false
 - display: System Log Type Query
   name: system_query
   additionalinfo: "System Log Type query example: (subtype eq {sub_type}) and (severity geq {severity}). \nIn case of multiple devices, for the sake of speed it is recommended to narrow the query to a specific device. \nFor example:(device_name eq dummy_device)"
   type: 12
   section: Collect
-  advanced: true
   required: false
 - display: Wildfire Submission Log Type Query
   name: wildfire_query
   additionalinfo: "Wildfire Submission Log Type query example: ((action eq wildfire-upload-fail) or (action eq wildfire-upload-skip) or (action eq sinkhole)). \nIn case of multiple devices, for the sake of speed it is recommended to narrow the query to a specific device. \nFor example:(device_name eq dummy_device)"
   type: 12
   section: Collect
-  advanced: true
   required: false
 - display: Decryption Log Type Query
   name: decryption_query
   additionalinfo: "Decryption Log Type query example: (app eq {application}) and (policy_name geq {policy_name}) and ((src in {source}) or (dst in {destination})). \nIn case of multiple devices, for the sake of speed it is recommended to narrow the query to a specific device. \nFor example:(device_name eq dummy_device)"
   type: 12
   section: Collect
-  advanced: true
   required: false
 - display: Incident type
   name: incidentType
   type: 13
-  section: Connect
+  section: Collect
   required: false
 - defaultvalue: '1'
   display: Incidents Fetch Interval
