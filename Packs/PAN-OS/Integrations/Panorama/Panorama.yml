@@ -9526,21 +9526,21 @@ script:
       auto: PREDEFINED
       required: false
       predefined:
-      - alert
-      - allow
-      - block-ip
-      - drop
-      - reset-both
-      - reset-client
-      - reset-server
+      - Alert
+      - Allow
+      - Block IP
+      - Drop
+      - Reset Both
+      - Reset Client
+      - Reset Server
     - description: "Can be: Disable, Single Packet or Extended Capture."
       name: packet_capture
       required: false
       auto: PREDEFINED
       predefined: 
-      - disable
-      - single-packet
-      - extended-capture
+      - Disable
+      - Single Packet
+      - Extended Capture
     - description: TODO
       name: exempt_ip
       required: false
@@ -9579,21 +9579,21 @@ script:
       required: false
       auto: PREDEFINED
       predefined:
-      - alert
-      - allow
-      - block-ip
-      - drop
-      - reset-both
-      - reset-client
-      - reset-server
+      - Alert
+      - Allow
+      - Block IP
+      - Drop
+      - Reset Both
+      - Reset Client
+      - Reset Server
     - description: "Can be: Disable, Single Packet or Extended Capture."
       name: packet_capture
       required: false
       auto: PREDEFINED
       predefined: 
-      - disable
-      - single-packet
-      - extended-capture
+      - Disable
+      - Single Packet
+      - Extended Capture
     - description: TODO
       name: exempt_ip
       required: false
