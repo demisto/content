@@ -1469,6 +1469,7 @@ script:
       required: true
     description: Uploads a file to the given folder.
     name: box-upload-file
+    polling: true
     outputs:
     - contextPath: Box.File.id
       description: The ID of the item found.

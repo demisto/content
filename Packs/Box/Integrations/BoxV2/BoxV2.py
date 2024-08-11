@@ -653,7 +653,7 @@ class Client(BaseClient):
         return parts, upload_url_suffix
 
     def commit_file(self, file_path: str, as_user: Optional[str], parts: List[Dict],
-                    upload_url_suffix: str) -> dict:
+                    upload_url_suffix: str) -> Response:
         """
         Once a file has been uploaded, the file must be committed. This request requires the SHA1
         digest of the entire file to be sent in the header. We reread the file to ensure the SHA is
@@ -665,12 +665,11 @@ class Client(BaseClient):
                                       was uploaded.
         :param upload_url_suffix: - str - The url suffix used to commit the file. (unique and given
                                           only after requesting the upload session)
-        :return: dict containing the results of the upload session.
+        :return: Response object containing the results of the upload session.
         """
         with open(file_path, 'rb') as file_obj:
             final_sha = sha1()  # nosec
             final_sha.update(file_obj.read())
-
         whole_file_sha_digest = final_sha.digest()
         final_headers = {
             'Content-Type': 'application/json',
@@ -678,8 +677,7 @@ class Client(BaseClient):
             'Digest': f"SHA={base64.b64encode(whole_file_sha_digest).decode('utf-8')}",
             'Authorization': self._headers.get('Authorization')
         }
-
-        res = self._http_request(
+        return self._http_request(
             method='POST',
             url_suffix=upload_url_suffix + '/commit',
             json_data={'parts': parts},
@@ -687,20 +685,8 @@ class Client(BaseClient):
             resp_type='response',
         )
 
-        while res.status_code == 202:
-            safe_sleep(float(res.headers["retry-after"]))
-            res = self._http_request(
-                method='POST',
-                url_suffix=upload_url_suffix + '/commit',
-                json_data={'parts': parts},
-                headers=final_headers,
-                resp_type='response',
-            )
-
-        return res.json()
-
     def upload_file(self, entry_id: str, file_name: Optional[str] = None, folder_id: Optional[str] = None,
-                    as_user: Optional[str] = None) -> dict:
+                    as_user: Optional[str] = None) -> dict | tuple:
         """
         Main function used to handle the `box-upload-file` command. Box enforces size limitations
         which determines which endpoint is used to upload a file. for files under 50MB, the generic
@@ -710,7 +696,8 @@ class Client(BaseClient):
         :param file_name: str - Name which the file will be saved as. Must contain an extension.
         :param folder_id: str - The UUID of the folder which the file will be contained in.
         :param as_user: str - The ID of the user making the request.
-        :return: dict containing the results of the upload request.
+        :return: dict containing the results of the upload request or
+            commit info for next interation (in case the file is nt ready yet).
         """
         self._base_url = 'https://upload.box.com/api/2.0'
         #  Because of _course_ they have a separate base_url for uploads
@@ -724,9 +711,12 @@ class Client(BaseClient):
         file_path = demisto_file_object.get('path')
         file_size = os.path.getsize(file_path)
         if file_size > maximum_chunk_size:
-            parts, upload_url_suffix = self.chunk_upload(file_name, file_size, file_path, folder_id,
-                                                         as_user)
-            return self.commit_file(file_path, as_user, parts, upload_url_suffix)
+            parts, upload_url_suffix = self.chunk_upload(file_name, file_size, file_path, folder_id, as_user)
+            response = self.commit_file(file_path, as_user, parts, upload_url_suffix)
+            if response.status_code == 200:
+                return response.json()
+            else:
+                return file_path, as_user, parts, upload_url_suffix
         else:
             with open(file_path, 'rb') as file:
                 validated_as_user = self.handle_as_user(as_user_arg=as_user)
@@ -738,12 +728,12 @@ class Client(BaseClient):
                 }
                 data = {'attributes': json.dumps(attributes)}
                 files = {'file': ('unused', file)}
-                return self._http_request(
-                    method='POST',
-                    url_suffix=upload_url_suffix,
-                    data=data,
-                    files=files
-                )
+            return self._http_request(
+                method='POST',
+                url_suffix=upload_url_suffix,
+                data=data,
+                files=files,
+            )
 
     def trashed_items_list(self, as_user: str, limit: int, offset: int):
         """
@@ -1518,7 +1508,8 @@ def list_users_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def upload_file_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+@polling_function('box-upload-file')
+def upload_file_command(client: Client, args: Dict[str, Any]) -> PollResult:
     """
     Uploads a file to Box. For files with a size over the set limit, the file will be uploaded in
     chunks. For files which are under the limit, they will be submitted using a POST request.
@@ -1533,15 +1524,24 @@ def upload_file_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     file_name: str = args.get('file_name')  # type:ignore
     folder_id: str = args.get('folder_id')  # type:ignore
     as_user: str = args.get('as_user')  # type:ignore
-    response: dict = client.upload_file(entry_id=entry_id, file_name=file_name, folder_id=folder_id,
-                                        as_user=as_user)
-    readable_output = "File was successfully uploaded"
-    return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix='Box.File',
-        outputs_key_field='id',
-        outputs=response.get('entities')
-    )
+    response: dict | tuple = client.upload_file(entry_id=entry_id, file_name=file_name, folder_id=folder_id, as_user=as_user)
+
+    if isinstance(response, tuple):
+        retry_after = response.headers['Retry-After']
+        readable_message = f'All file chunks have been uploaded but not yet processed will try to commit in {retry_after} seconds.'
+        command_results = CommandResults(
+            readable_output=readable_message
+        )
+        return PollResult(command_results, continue_to_poll=True)
+    else:
+        response_json = response.json()
+        command_results = CommandResults(
+            readable_output="File was successfully uploaded",
+            outputs_prefix='Box.File',
+            outputs_key_field='id',
+            outputs=response_json.get('entities')
+        )
+        return PollResult(response=command_results)
 
 
 def trashed_items_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
