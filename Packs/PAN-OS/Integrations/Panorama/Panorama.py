@@ -14109,7 +14109,7 @@ def check_profile_type_by_given_profile_name(profile_name):
     anti_spyware_profile_names = get_all_profile_names_from_profile_type('spyware')
     
     if profile_name in vulnerability_protection_profile_names and profile_name in anti_spyware_profile_names:
-        raise DemistoException("Profile name was found both in Vulnerability Protection Profiles and in Anti Spyware Profiles. Please add profile_type as a argument.")
+        raise DemistoException("Profile name was found both in Vulnerability Protection Profiles and in Anti Spyware Profiles. Please specify profile_type.")
     
     elif profile_name in vulnerability_protection_profile_names:
         return 'Vulnerability Protection Profile'
@@ -14117,6 +14117,7 @@ def check_profile_type_by_given_profile_name(profile_name):
     elif profile_name in anti_spyware_profile_names:
         return 'Anti Spyware Profile'
     
+    #TODO needed? or to let the request fail?
     else:
         raise DemistoException("Profile name was not found in Vulnerability Protection Profiles or in Anti Spyware Profiles.")
         

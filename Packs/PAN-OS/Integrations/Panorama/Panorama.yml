@@ -9511,16 +9511,16 @@ script:
     - description: The profile name.
       name: profile_name
       required: true
+    - description: "The requested threat name/CVE to add."
+      name: threat_name
+      required: true
     - description: "Can be: Vulnerability Protection or Anti Spyware."
       name: profile_type
-      required: true
+      required: false
       auto: PREDEFINED
       predefined:
       - Vulnerability Protection Profile
       - Anti Spyware Profile
-    - description: "The requested threat name/CVE to add."
-      name: threat_name
-      required: true
     - description: "Can be: Alert, Allow, Block IP, Drop, Reset Both, Reset Client or Reset Server."
       name: action
       auto: PREDEFINED
@@ -9564,16 +9564,16 @@ script:
     - description: The profile name.
       name: profile_name
       required: true
+    - description: "The requested threat name/CVE to add."
+      name: threat_name
+      required: true
     - description: "Can be: Vulnerability Protection or Anti Spyware."
       name: profile_type
-      required: true
+      required: false
       auto: PREDEFINED
       predefined:
       - Vulnerability Protection Profile
       - Anti Spyware Profile
-    - description: "The requested threat name/CVE to add."
-      name: threat_name
-      required: true
     - description: "Can be: Alert, Allow, Block IP, Drop, Reset Both, Reset Client or Reset Server."
       name: action
       required: false
@@ -9617,16 +9617,16 @@ script:
     - description: The profile name.
       name: profile_name
       required: true
+    - description: "The requested threat name/CVE to add."
+      name: threat_name
+      required: true
     - description: "Can be: Vulnerability Protection or Anti Spyware."
       name: profile_type
-      required: true
+      required: false
       auto: PREDEFINED
       predefined:
       - Vulnerability Protection Profile
       - Anti Spyware Profile
-    - description: "The requested threat name/CVE to add."
-      name: threat_name
-      required: true
 
   - name: pan-os-list-profile-exception
     description: List the exceptions in a Vulnerability Protection profile or Anti Spyware profile.
@@ -9636,7 +9636,7 @@ script:
       required: true
     - description: "Can be: Vulnerability Protection or Anti Spyware."
       name: profile_type
-      required: true
+      required: false
       auto: PREDEFINED
       predefined:
       - Vulnerability Protection Profile
