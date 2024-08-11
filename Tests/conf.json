@@ -5783,6 +5783,10 @@
         },
         {
             "playbookID": "DBotTrainClustering-test"
+        },
+        {
+            "integrations": "XQL Query Engine",
+            "playbookID": "XQL Query Engine - Test"
         }
     ],
     "skipped_tests": {
