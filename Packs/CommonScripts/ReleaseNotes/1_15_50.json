@@ -1,0 +1,5 @@
+{
+    "breakingChanges": true,
+    "marketplace": "marketplacev2",
+    "breakingChangesNotes": "Fixed an issue for checking BC RN."
+}

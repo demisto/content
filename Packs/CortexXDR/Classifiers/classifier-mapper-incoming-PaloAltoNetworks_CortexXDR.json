@@ -1,5 +1,5 @@
 {
-    "description": "Maps incoming Cortex XDR incidents fields.",
+    "description": "Maps incoming Cortex XDR incidents fields",
     "feed": false,
     "id": "Cortex XDR - IR-mapper",
     "name": "XDR - Incoming Mapper",
