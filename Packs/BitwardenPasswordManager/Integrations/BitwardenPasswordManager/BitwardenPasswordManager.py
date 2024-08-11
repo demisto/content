@@ -225,6 +225,7 @@ def main() -> None:  # pragma: no cover
 
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
+    demisto.debug('Dummy log')
     try:
         client = Client(
             base_url=base_url,
