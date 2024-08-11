@@ -17,6 +17,10 @@ class DummyDevices:
     @staticmethod
     def get_by_hostname(value: str, max_rows: int, fields: list):
         return DUMMY_DEVICES
+    
+    @staticmethod
+    def get(query: str, max_rows: int, fields: list):
+        return DUMMY_DEVICES
 
 
 class DummyDevicesSavedQueries:
@@ -111,3 +115,15 @@ def test_get_device():
     args: dict = {"value": "DESKTOP-Gary-Gaither"}
     result = run_command(client=client, args=args, command="axonius-get-devices-by-hostname")
     assert EXPECTED_DEVICE["internal_axon_id"] == result.outputs["internal_axon_id"]
+    
+    
+def test_get_by_aql():
+    client = DummyConnect()
+    args: dict = {"query": "(\"specific_data.data.name\" == regex(\"john\", \"i\"))"}
+    result = run_command(client=client, args=args, command="axonius-get-devices-by-aql")
+    assert EXPECTED_DEVICE["internal_axon_id"] == result.outputs["internal_axon_id"]
+    
+
+def test_add_note():
+    result = run_command(client=client, args=args, command="axonius-add-note")
+    assert 0 == result.outputs

@@ -108,7 +108,7 @@ def get_saved_queries(
 def make_api_call(
     endpoint: str,
     payload: dict = None,
-) -> dict:
+) -> requests.Response:
     params: dict = demisto.params()
     url: str = params["ax_url"]
     key: str = params.get('credentials', {}).get('identifier')
@@ -157,7 +157,7 @@ def add_note(
     
     readable_output = f"{success_count} {asset_type}(s) updated."
     return CommandResults(
-        outputs_prefix=f"Axonius.asset.updates",
+        outputs_prefix="Axonius.asset.updates",
         readable_output=readable_output,
         outputs=success_count,
         raw_response=success_count,
