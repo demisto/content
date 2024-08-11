@@ -15,6 +15,7 @@ from ExabeamSecOpsPlatform import (
     context_table_list_command,
     context_table_delete_command,
     table_record_list_command,
+    generic_search_command,
 )
 
 
@@ -523,3 +524,50 @@ def test_table_record_list_command(mocker, args, mock_response, expected_output)
 
     assert result.outputs == expected_output
     mock_get.assert_called_once_with("12345", {"limit": 2})
+
+
+@pytest.mark.parametrize(
+    "args, item_type, mock_response, expected_output, expected_prefix",
+    [
+        # with item_id
+        (
+            {"case_id": "123"},
+            "case",
+            {"id": "123", "name": "Test Case"},
+            {"id": "123", "name": "Test Case"},
+            "ExabeamPlatform.Case",
+        ),
+        (
+            {"alert_id": "456"},
+            "alert",
+            {"id": "456", "name": "Test Alert"},
+            {"id": "456", "name": "Test Alert"},
+            "ExabeamPlatform.Alert",
+        ),
+        #  without item_id
+        (
+            {},
+            "case",
+            {"rows": [{"id": "123", "name": "Test Case"}]},
+            [{"id": "123", "name": "Test Case"}],
+            "ExabeamPlatform.Case",
+        ),
+    ],
+)
+def test_generic_search_command(mocker, args, item_type, mock_response, expected_output, expected_prefix):
+    client = MockClient("example.com", "", "", False, False)
+
+    if f"{item_type}_id" in args:
+        request = mocker.patch.object(client, f"get_{item_type}_request", return_value=mock_response)
+    else:
+        request = mocker.patch.object(client, f"{item_type}_search_request", return_value=mock_response)
+
+    result = generic_search_command(client, args, item_type)
+
+    assert result.outputs == expected_output
+    assert result.outputs_prefix == expected_prefix
+
+    if f"{item_type}_id" in args:
+        request.assert_called_once_with(args[f"{item_type}_id"])
+    else:
+        request.assert_called_once()
