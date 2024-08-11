@@ -7448,11 +7448,37 @@ def test_pan_os_add_profile_exception(mocker):
     assert command_results.raw_response == {'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
     assert command_results.readable_output == 'Successfully created Exception: 1000'
     
-def test_pan_os_edit_profile_exception():
-    pass
+def test_pan_os_edit_profile_exception(mocker):
+    import Panorama
+    import requests
+    
+    expected_text_response = '<response status="success" code="20"><msg>command succeeded</msg></response>'
 
-def test_pan_os_delete_profile_exception():
-    pass
+    mock_response = MockedResponse(text=expected_text_response, status_code=200)
+    mocker.patch.object(requests, 'request', return_value=mock_response)
+    
+    command_results = Panorama.pan_os_edit_profile_exception_command(args={"profile_name": "test_spg",
+                                                                     "threat_name": '1000',
+                                                                     "profile_type": "Vulnerability Protection Profile",
+                                                                     "device_group": 'device_group'})
+    assert command_results.raw_response == {'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
+    assert command_results.readable_output == 'Successfully edited Exception: 1000'
+
+def test_pan_os_delete_profile_exception(mocker):
+    import Panorama
+    import requests
+    
+    expected_text_response = '<response status="success" code="20"><msg>command succeeded</msg></response>'
+
+    mock_response = MockedResponse(text=expected_text_response, status_code=200)
+    mocker.patch.object(requests, 'request', return_value=mock_response)
+    
+    command_results = Panorama.pan_os_delete_profile_exception_command(args={"profile_name": "test_spg",
+                                                                     "threat_name": '1000',
+                                                                     "profile_type": "Vulnerability Protection Profile",
+                                                                     "device_group": 'device_group'})
+    assert command_results.raw_response == {'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
+    assert command_results.readable_output == 'Successfully deleted Exception: 1000'
 
 def test_pan_os_list_profile_exception():
     pass
