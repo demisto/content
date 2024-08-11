@@ -37,6 +37,14 @@ VERDICTS = {
     'VERDICT_MALICIOUS': 'MALICIOUS',
 }
 
+TYPE_TO_ENDPOINT = {
+    'file': 'files',
+    'hash': 'files',
+    'domain': 'domains',
+    'url': 'urls',
+    'ip': 'ip_addresses',
+}
+
 
 """RELATIONSHIP TYPE"""
 RELATIONSHIP_TYPE = {
@@ -464,6 +472,29 @@ class Client(BaseClient):
         return self._http_request(
             'GET',
             f'files/{file_hash}/sigma_analysis',
+        )
+
+    def curated_collections(self, resource_id: str, resource_type: str, collection_type: str) -> dict:
+        """Returns curated collections."""
+        if resource_type not in TYPE_TO_ENDPOINT:
+            raise DemistoException(f'Could not find resource type of "{resource_type}"')
+        if collection_type not in ('campaign', 'malware-family', 'threat-actor'):
+            raise DemistoException(f'Could not find collection type of "{collection_type}"')
+
+        if resource_type == 'url':
+            resource_id = encode_url_to_base64(resource_id)
+
+        collection_type_filter = f'collection_type:{collection_type}'
+        if collection_type == 'malware-family':
+            collection_type_filter = f'({collection_type_filter} OR collection_type:software-tookit)'
+
+        return self._http_request(
+            'GET',
+            f'{TYPE_TO_ENDPOINT[resource_type]}/{resource_id}/collections',
+            params={
+                'filter': f'owner:Mandiant {collection_type_filter}'
+            },
+            ok_codes=(404, 429, 200)
         )
 
 
@@ -1943,7 +1974,12 @@ def upload_file(client: Client, args: dict, private: bool = False) -> List[Comma
     return results
 
 
-def file_scan_and_get_analysis(client: Client, args: dict):
+def file_scan_and_get_analysis(
+        client: Client,
+        score_calculator: ScoreCalculator,
+        args: dict,
+        file_relationships: str
+):
     """Calls to file-scan and gti-analysis-get."""
     interval = int(args.get('interval_in_seconds', 60))
     extended = argToBoolean(args.get('extended_data', False))
@@ -1960,6 +1996,9 @@ def file_scan_and_get_analysis(client: Client, args: dict):
             args={
                 'entryID': args.get('entryID'),
                 'id': outputs.get('vtScanID'),
+                'file': outputs.get(
+                    f'{INTEGRATION_ENTRY_CONTEXT}.Submission(val.id && val.id === obj.id)',
+                    {}).get('SHA256'),
                 'interval_in_seconds': interval,
                 'extended_data': extended,
             },
@@ -1973,13 +2012,14 @@ def file_scan_and_get_analysis(client: Client, args: dict):
     if not isinstance(outputs, dict):
         raise DemistoException('outputs is expected to be a dict')
     if outputs.get('data', {}).get('attributes', {}).get('status') == 'completed':
-        return command_result
+        return file_command(client, score_calculator, args, file_relationships)
     scheduled_command = ScheduledCommand(
         command=f'{COMMAND_PREFIX}-file-scan-and-analysis-get',
         next_run_in_seconds=interval,
         args={
             'entryID': args.get('entryID'),
             'id': outputs.get('id'),
+            'file': args.get('file'),
             'interval_in_seconds': interval,
             'extended_data': extended,
         },
@@ -2033,7 +2073,12 @@ def private_file_scan_and_get_analysis(client: Client, args: dict):
     return CommandResults(scheduled_command=scheduled_command)
 
 
-def url_scan_and_get_analysis(client: Client, args: dict):
+def url_scan_and_get_analysis(
+        client: Client,
+        score_calculator: ScoreCalculator,
+        args: dict,
+        url_relationships: str
+):
     """Calls to url-scan and gti-analysis-get."""
     interval = int(args.get('interval_in_seconds', 60))
     extended = argToBoolean(args.get('extended_data', False))
@@ -2062,7 +2107,7 @@ def url_scan_and_get_analysis(client: Client, args: dict):
     if not isinstance(outputs, dict):
         raise DemistoException('outputs is expected to be a dict')
     if outputs.get('data', {}).get('attributes', {}).get('status') == 'completed':
-        return command_result
+        return url_command(client, score_calculator, args, url_relationships)
     scheduled_command = ScheduledCommand(
         command=f'{COMMAND_PREFIX}-url-scan-and-analysis-get',
         next_run_in_seconds=interval,
@@ -2564,7 +2609,6 @@ def get_assessment_command(client: Client, score_calculator: ScoreCalculator, ar
     """Get Google Threat Intelligence assessment for a given resource."""
     resource = args['resource']
     resource_type = args.get('resource_type', 'file').lower()
-    # Will find if there's one and only one True in the list.
     if resource_type in ('hash', 'file'):
         raise_if_hash_not_valid(resource)
         raw_response = client.file(resource)
@@ -2631,6 +2675,66 @@ def get_assessment_command(client: Client, score_calculator: ScoreCalculator, ar
     )
 
 
+def _get_curated_collections_command(client: Client, args: dict, collection_type: str) -> CommandResults:
+    """Get Google Threat Intelligence collections for a given resource."""
+    resource = args['resource']
+    resource_type = args.get('resource_type', 'file').lower()
+    raw_response = client.curated_collections(resource, resource_type, collection_type)
+
+    data = raw_response.get('data', [])
+    collections = []
+    for collection in data:
+        attributes = collection.get('attributes', {})
+        collections.append({
+            'name': attributes.get('name'),
+            'last_modification_date': epoch_to_timestamp(attributes.get('last_modification_date')),
+            'targeted_regions': ', '.join(attributes.get('targeted_regions', [])),
+            'targeted_industries': ', '.join(attributes.get('targeted_industries', [])),
+            'link': f'https://www.virustotal.com/gui/collection/{collection["id"]}'
+        })
+
+    type_str = collection_type.replace('-', ' ')
+    type_context = type_str.title().replace(' ', '')
+    type_title = f'{type_str[:-1]}ies' if type_str.endswith('y') else f'{type_str}s'
+
+    return CommandResults(
+        outputs_prefix=f'{INTEGRATION_ENTRY_CONTEXT}.{type_context}',
+        outputs_key_field='id',
+        readable_output=tableToMarkdown(
+            f'Curated {type_title} of {resource_type}: "{resource}"',
+            collections,
+            headers=[
+                'name',
+                'last_modification_date',
+                'targeted_regions',
+                'targeted_industries',
+                'link',
+            ],
+            headerTransform=string_to_table_header,
+        ),
+        outputs={
+            'id': resource,
+            'collections': data,
+        },
+        raw_response=raw_response,
+    )
+
+
+def get_curated_campaigns_command(client: Client, args: dict) -> CommandResults:
+    """Get Google Threat Intelligence campaigns for a given resource."""
+    return _get_curated_collections_command(client, args, 'campaign')
+
+
+def get_curated_malware_families_command(client: Client, args: dict) -> CommandResults:
+    """Get Google Threat Intelligence malware families for a given resource."""
+    return _get_curated_collections_command(client, args, 'malware-family')
+
+
+def get_curated_threat_actors_command(client: Client, args: dict) -> CommandResults:
+    """Get Google Threat Intelligence threat actors for a given resource."""
+    return _get_curated_collections_command(client, args, 'threat-actor')
+
+
 def arg_to_relationships(arg):
     """Get an argument and return the relationship list."""
     return (','.join(argToList(arg))).replace('* ', '').replace(' ', '_')
@@ -2695,11 +2799,17 @@ def main(params: dict, args: dict, command: str):
     elif command == f'{COMMAND_PREFIX}-assessment-get':
         results = get_assessment_command(client, score_calculator, args)
     elif command == f'{COMMAND_PREFIX}-file-scan-and-analysis-get':
-        results = file_scan_and_get_analysis(client, args)
+        results = file_scan_and_get_analysis(client, score_calculator, args, file_relationships)
     elif command == f'{COMMAND_PREFIX}-private-file-scan-and-analysis-get':
         results = private_file_scan_and_get_analysis(client, args)
     elif command == f'{COMMAND_PREFIX}-url-scan-and-analysis-get':
-        results = url_scan_and_get_analysis(client, args)
+        results = url_scan_and_get_analysis(client, score_calculator, args, url_relationships)
+    elif command == f'{COMMAND_PREFIX}-curated-campaigns-get':
+        results = get_curated_campaigns_command(client, args)
+    elif command == f'{COMMAND_PREFIX}-curated-malware-families-get':
+        results = get_curated_malware_families_command(client, args)
+    elif command == f'{COMMAND_PREFIX}-curated-threat-actors-get':
+        results = get_curated_threat_actors_command(client, args)
     else:
         raise NotImplementedError(f'Command {command} not implemented')
     return_results(results)
