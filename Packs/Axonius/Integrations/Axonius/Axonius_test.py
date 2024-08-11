@@ -125,5 +125,7 @@ def test_get_by_aql():
     
 
 def test_add_note():
+    client = DummyConnect()
+    args: dict = {"type": "devices", "ids": DUMMY_DEVICES_IDS, "note": "note1"}
     result = run_command(client=client, args=args, command="axonius-add-note")
     assert 0 == result.outputs
