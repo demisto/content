@@ -215,7 +215,6 @@ def test_module():
 
 '''COMMAND_CLASIFIER'''
 try:
-    demisto.debug("Testing, ignore")
     if demisto.command() == 'test-module':
         # This is the call made when pressing the integration test button.
         if test_module():
