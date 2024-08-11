@@ -9,7 +9,7 @@ configuration:
   required: false
   type: 0
 description: 'Analyze a host or a URL. '
-display: SSL Labs (Community Contribution)
+display: SSL Labs
 name: SSL Labs
 script:
   commands:
