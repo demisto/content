@@ -87,6 +87,9 @@ class Boto3Client:
     def delete_virtual_mfa_device(self):
         pass
 
+    def list_mfa_devices(self):
+        pass
+
     @property
     def exceptions(self):
         raise NoSuchEntityException
@@ -577,3 +580,44 @@ def test_delete_virtual_mfa_device(mocker: MockerFixture):
     AWS_IAM.delete_virtual_mfa_device(args, client)
 
     assert results.call_args[0][0] == "The User test1 mfa device has been deleted"
+
+
+@pytest.mark.parametrize(
+    "page_size",
+    [
+        1,
+        2
+    ]
+)
+def test_list_mfa_devices(mocker: MockerFixture, page_size: int):
+    """
+    Given:
+        - page_size argument
+    Then:
+        - run `list_mfa_devices` function
+    When:
+        - Ensure that `outputs_prefix` is as expected
+        - Ensure that the number of returned devices is as expected
+    """
+    mock_res = {
+        "MFADevices": [
+            {
+                "UserName": "test",
+                "SerialNumber": "test",
+                "EnableDate": datetime.datetime(2021, 11, 7, 15, 55, 3)
+            },
+            {
+                "UserName": "test2",
+                "SerialNumber": "test2",
+                "EnableDate": datetime.datetime(2022, 11, 7, 15, 55, 3)
+            }
+        ],
+        "Marker": "test"
+    }
+    mocker.patch.object(Boto3Client, "list_mfa_devices", return_value=mock_res)
+
+    client = Boto3Client()
+    res = AWS_IAM.list_mfa_devices({"page_size": page_size, "page": 1}, client)
+
+    assert len(res.outputs["Devices"]) == page_size
+    assert res.outputs_prefix == "AWS.IAM.MFADevices"

@@ -393,8 +393,8 @@ def list_mfa_devices(args, client):
     limit, is_manual, page_size = get_limit(args)
 
     kwargs = {
-	        'UserName': user_name,
-	        'MaxItems': limit
+        'UserName': user_name,
+        'MaxItems': limit
         }
     if marker:
         kwargs.update({'Marker': marker})
