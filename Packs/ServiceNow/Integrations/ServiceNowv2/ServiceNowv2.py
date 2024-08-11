@@ -2420,7 +2420,7 @@ def test_instance(client: Client):
     """
     # Validate fetch_time parameter is valid (if not, parse_date_range will raise the error message)
     parse_date_range(client.fetch_time, DATE_FORMAT)
-    params = {'sysparm_limit': 1, 'sysparm_fields': f'sys_id,{client.timestamp_field},{client.incident_name}'}
+    params = {'sysparm_limit': 1, 'sysparm_query': 'active=true'}
     result = client.send_request(f'table/{client.ticket_type}', params=params, method='GET')
     if 'result' not in result:
         raise Exception('ServiceNow error: ' + str(result))
