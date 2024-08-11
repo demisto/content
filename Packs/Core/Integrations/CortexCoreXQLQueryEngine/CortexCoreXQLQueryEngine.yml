@@ -1559,5 +1559,5 @@ script:
 marketplaces:
 - marketplacev2
 tests:
-- No tests
+- XQL Query Engine - Test
 fromversion: 8.7.0
