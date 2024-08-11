@@ -1161,7 +1161,7 @@ def fetch_incidents(client, first_fetch_time, integration_instance, exclude_arti
         next_run['incidents_from_previous_run'] = []
 
     next_run['time'] = last_fetch
-    next_run['incidents_at_last_timestamp'] = new_incidents_at_last_timestamp
+    next_run['incidents_at_last_timestamp'] = new_incidents_at_last_timestamp or last_run.get('incidents_at_last_timestamp', [])
 
     return next_run, incidents
 
