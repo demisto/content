@@ -1546,7 +1546,7 @@ script:
       description: When IsTruncated is true, this element is present and contains the value to use for the Marker parameter in a subsequent pagination request.
       type: string
   - arguments:
-    - description: The name of the user whose MFA devices you want to list.	
+    - description: The name of the user whose MFA devices you want to list.
       name: userName
       required: true
     - description: The Amazon Resource Name (ARN) of the role to assume.
