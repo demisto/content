@@ -9,8 +9,9 @@
                 "sections": [
                     {
                         "h": 3,
-                        "i": "default-main-relationshipsTable",
+                        "i": "default-main-Sigma Rule Layout-default-main-Sigma Rule Layout-default-main-Sigma Rule Layout-default-main-relationshipsTable",
                         "maxW": 3,
+                        "minH": 1,
                         "moved": false,
                         "name": "Relationships",
                         "static": false,
@@ -21,26 +22,27 @@
                     },
                     {
                         "h": 2,
-                        "i": "default-main-relatedIncidents",
+                        "i": "default-main-Sigma Rule Layout-default-main-Sigma Rule Layout-default-main-Sigma Rule Layout-default-main-relatedIncidents",
                         "maxW": 3,
+                        "minH": 1,
                         "moved": false,
                         "name": "Related Incidents",
                         "static": false,
                         "type": "relatedIncidents",
-                        "w": 3,
+                        "w": 2,
                         "x": 0,
                         "y": 8
                     },
                     {
                         "displayType": "ROW",
                         "h": 4,
-                        "i": "default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+                        "i": "default-main-Sigma Rule Layout-default-main-Sigma Rule Layout-default-main-Sigma Rule Layout-default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
                         "items": [
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "timestamp",
-                                "height": 26,
+                                "height": 22,
                                 "id": "indicator-timestamp",
                                 "index": 0,
                                 "listId": "default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
@@ -51,7 +53,7 @@
                                 "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "modified",
-                                "height": 26,
+                                "height": 22,
                                 "id": "indicator-modified",
                                 "index": 1,
                                 "listId": "default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
@@ -62,7 +64,7 @@
                                 "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "expiration",
-                                "height": 26,
+                                "height": 22,
                                 "id": "indicator-expiration",
                                 "index": 2,
                                 "listId": "default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
@@ -72,7 +74,7 @@
                             {
                                 "endCol": 2,
                                 "fieldId": "sigmaruleid",
-                                "height": 26,
+                                "height": 22,
                                 "id": "e8734970-4293-11ef-8f1a-b9be5629a211",
                                 "index": 3,
                                 "sectionItemType": "field",
@@ -81,7 +83,7 @@
                             {
                                 "endCol": 2,
                                 "fieldId": "author",
-                                "height": 26,
+                                "height": 22,
                                 "id": "04020910-4294-11ef-8f1a-b9be5629a211",
                                 "index": 4,
                                 "sectionItemType": "field",
@@ -90,7 +92,7 @@
                             {
                                 "endCol": 2,
                                 "fieldId": "sigmarulelevel",
-                                "height": 26,
+                                "height": 22,
                                 "id": "f7a11710-4293-11ef-8f1a-b9be5629a211",
                                 "index": 5,
                                 "sectionItemType": "field",
@@ -99,7 +101,7 @@
                             {
                                 "endCol": 2,
                                 "fieldId": "sigmarulestatus",
-                                "height": 26,
+                                "height": 22,
                                 "id": "f1d50530-4293-11ef-8f1a-b9be5629a211",
                                 "index": 6,
                                 "sectionItemType": "field",
@@ -108,7 +110,7 @@
                             {
                                 "endCol": 2,
                                 "fieldId": "trafficlightprotocol",
-                                "height": 26,
+                                "height": 22,
                                 "id": "8b79dd61-4293-11ef-8f1a-b9be5629a211",
                                 "index": 7,
                                 "sectionItemType": "field",
@@ -118,7 +120,7 @@
                                 "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "sigmarulelicense",
-                                "height": 26,
+                                "height": 22,
                                 "id": "f5fa44e0-4293-11ef-8f1a-b9be5629a211",
                                 "index": 8,
                                 "listId": "default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
@@ -128,7 +130,7 @@
                             {
                                 "endCol": 2,
                                 "fieldId": "tags",
-                                "height": 26,
+                                "height": 22,
                                 "id": "7f92af40-4293-11ef-8f1a-b9be5629a211",
                                 "index": 9,
                                 "sectionItemType": "field",
@@ -184,6 +186,7 @@
                             }
                         ],
                         "maxW": 3,
+                        "minH": 1,
                         "moved": false,
                         "name": "Basic Information",
                         "static": false,
@@ -194,33 +197,36 @@
                     {
                         "displayType": "ROW",
                         "h": 3,
-                        "i": "default-main-indicatorTimeline",
+                        "i": "default-main-Sigma Rule Layout-default-main-Sigma Rule Layout-default-main-Sigma Rule Layout-default-main-indicatorTimeline",
                         "maxW": 3,
+                        "minH": 1,
                         "moved": false,
                         "name": "Timeline",
                         "static": false,
                         "type": "indicatorTimeline",
                         "w": 1,
                         "x": 2,
-                        "y": 2
+                        "y": 5
                     },
                     {
-                        "h": 3,
-                        "i": "default-main-comments",
+                        "h": 2,
+                        "i": "default-main-Sigma Rule Layout-default-main-Sigma Rule Layout-default-main-Sigma Rule Layout-default-main-comments",
                         "maxW": 3,
+                        "minH": 1,
                         "moved": false,
                         "name": "Comments",
                         "static": false,
                         "type": "comments",
                         "w": 1,
                         "x": 2,
-                        "y": 5
+                        "y": 8
                     },
                     {
                         "h": 1,
                         "hideName": true,
-                        "i": "default-main-expirationStatus",
+                        "i": "default-main-Sigma Rule Layout-default-main-Sigma Rule Layout-default-main-Sigma Rule Layout-default-main-expirationStatus",
                         "maxW": 3,
+                        "minH": 1,
                         "moved": false,
                         "name": "Expiration Status",
                         "static": false,
@@ -233,41 +239,43 @@
                         "displayType": "ROW",
                         "h": 2,
                         "hideName": false,
-                        "i": "default-main-93c3e790-4293-11ef-8f1a-b9be5629a211",
+                        "i": "default-main-Sigma Rule Layout-default-main-Sigma Rule Layout-default-main-Sigma Rule Layout-default-main-93c3e790-4293-11ef-8f1a-b9be5629a211",
                         "items": [
                             {
                                 "endCol": 2,
                                 "fieldId": "product",
-                                "height": 26,
+                                "height": 22,
                                 "id": "ab62f670-4293-11ef-8f1a-b9be5629a211",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "service",
-                                "height": 26,
-                                "id": "ae5beb20-4293-11ef-8f1a-b9be5629a211",
                                 "index": 1,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "category",
-                                "height": 26,
-                                "id": "b1310420-4293-11ef-8f1a-b9be5629a211",
+                                "fieldId": "service",
+                                "height": 22,
+                                "id": "ae5beb20-4293-11ef-8f1a-b9be5629a211",
                                 "index": 2,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
+                                "fieldId": "category",
+                                "height": 22,
+                                "id": "b1310420-4293-11ef-8f1a-b9be5629a211",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
                                 "fieldId": "definition",
-                                "height": 26,
+                                "height": 22,
                                 "id": "b76e4e60-4293-11ef-8f1a-b9be5629a211",
                                 "index": 3,
+                                "listId": "default-main-Sigma Rule Layout-default-main-Sigma Rule Layout-default-main-93c3e790-4293-11ef-8f1a-b9be5629a211",
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
@@ -279,14 +287,14 @@
                         "static": false,
                         "w": 1,
                         "x": 2,
-                        "y": 0
+                        "y": 3
                     },
                     {
                         "displayType": "CARD",
                         "h": 5,
                         "hideItemTitleOnlyOne": false,
                         "hideName": false,
-                        "i": "default-main-1654e470-4294-11ef-8f1a-b9be5629a211",
+                        "i": "default-main-Sigma Rule Layout-default-main-Sigma Rule Layout-default-main-Sigma Rule Layout-default-main-1654e470-4294-11ef-8f1a-b9be5629a211",
                         "items": [
                             {
                                 "dropEffect": "move",
@@ -317,6 +325,64 @@
                         "w": 1,
                         "x": 1,
                         "y": 0
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 1,
+                        "hideItemTitleOnlyOne": false,
+                        "hideName": false,
+                        "i": "default-main-Sigma Rule Layout-default-main-88188820-53e5-11ef-8590-adf00dd49707",
+                        "items": [
+                            {
+                                "args": {},
+                                "buttonClass": "primary",
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 53,
+                                "id": "5511b580-53d8-11ef-8590-adf00dd49707",
+                                "index": 0,
+                                "listId": "default-main-88188820-53e5-11ef-8590-adf00dd49707",
+                                "name": "Convert to query",
+                                "scriptId": "sigma-button-convert",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Actions",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "default-main-Sigma Rule Layout-default-main-7dca5540-5400-11ef-8590-adf00dd49707",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "sigmaconvertedquery",
+                                "height": 53,
+                                "id": "71497f30-5400-11ef-8590-adf00dd49707",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Query",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 1
                     }
                 ],
                 "type": "custom"

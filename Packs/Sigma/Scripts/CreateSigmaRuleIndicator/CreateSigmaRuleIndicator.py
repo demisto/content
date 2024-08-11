@@ -37,16 +37,19 @@ def get_mitre_technique_name(mitre_id: str) -> str:
         return ""
 
 
-def create_indicator_relationships(indicator, product, techniques) -> None:
+def create_indicator_relationships(indicator, product, techniques, cves) -> None:
     # Create the relationship if product is available
     
     relationships = []
     
     if product:
-        relationships.append(create_relationship(indicator, product, "Software"))
+        relationships.append(create_relationship(indicator, product.capitalize(), "Software"))
     
     for technique in techniques:
         relationships.append(create_relationship(indicator, technique, "Attack Pattern"))
+    
+    for cve in cves:
+        relationships.append(create_relationship(indicator, cve, "CVE"))
     
     return_results(CommandResults(readable_output=f'Created A new Sigma Rule indicator:\n{indicator}',
                                   relationships=relationships))
@@ -65,7 +68,7 @@ def create_relationship(indicator_value: str, entity_b: str, entity_b_type: str)
             entity_a = indicator_value,
             entity_a_type = "Sigma Rule Indicator",
             name = "related-to",
-            entity_b = entity_b.capitalize(),
+            entity_b = entity_b,
             entity_b_type = entity_b_type
         )
         
@@ -90,28 +93,43 @@ def parse_detection_field(detection: dict) -> list:
         if key == 'condition':
             continue
         
-        for sub_key, sub_value in value.items():
-            modifiers = sub_key.split("|")[1:]
-            sub_key = sub_key.split("|")[0]
+        if isinstance(value, str):
+            value = [value]
             
-            if isinstance(sub_value, list):
-                formatted_values = "\n".join([f"({i+1}) {v}" for i, v in enumerate(sub_value)])
-            
-            else:
-                formatted_values = f"(1) {sub_value}"
-            
+        if isinstance(value, list):
+            formatted_values = "\n".join([f"({i+1}) {v}" for i, v in enumerate(value)])
+            modifiers = key.split("|")[1:]
             detection_grid.append({
                 "selection": key,
-                "key": sub_key,
+                "key": "",
                 "modifiers": ",".join(modifiers),
                 "values": formatted_values
             })
+        
+        elif isinstance(value, dict):
+            for sub_key, sub_value in value.items():
+                modifiers = sub_key.split("|")[1:]
+                sub_key = sub_key.split("|")[0]
+            
+                if isinstance(sub_value, list):
+                    formatted_values = "\n".join([f"({i+1}) {v}" for i, v in enumerate(sub_value)])
+            
+                else:
+                    formatted_values = f"(1) {sub_value}"
+            
+                detection_grid.append({
+                    "selection": key,
+                    "key": sub_key,
+                    "modifiers": ",".join(modifiers),
+                    "values": formatted_values
+                })
     
     return detection_grid
 
 
-def parse_attack_mitre_tags(tags: list) -> list[str]:
+def parse_tags(tags: list) -> tuple[list[str], list[str]]:
     techniques = []
+    cves = []
 
     for tag in tags:
         if re.match(r"attack.t\d{4}", tag):
@@ -120,8 +138,12 @@ def parse_attack_mitre_tags(tags: list) -> list[str]:
             mitre_name = get_mitre_technique_name(mitre_id)
             if mitre_name:
                 techniques.append(mitre_name)
+        
+        elif re.match(r"cve[-.]\d{4}", tag):
+            demisto.debug(f'Found a CVE tag - {tag}')
+            cves.append(tag.replace(".", "-").upper())
     
-    return techniques
+    return techniques, cves
 
 
 def parse_and_create_indicator(rule_dict: dict) -> None:
@@ -164,12 +186,12 @@ def parse_and_create_indicator(rule_dict: dict) -> None:
             })
 
     indicator["publications"] = publications
-    techniques = parse_attack_mitre_tags(rule_dict["tags"])
+    techniques, cves = parse_tags(rule_dict["tags"])
     indicator["tags"] += techniques
     
     # Create the indicator in XSOAR
     demisto.executeCommand("createNewIndicator", indicator)
-    create_indicator_relationships(indicator["value"], indicator["product"], techniques)
+    create_indicator_relationships(indicator["value"], indicator["product"], techniques, cves)
 
 
 def main() -> None:
