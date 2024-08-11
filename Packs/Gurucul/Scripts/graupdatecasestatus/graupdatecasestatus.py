@@ -29,11 +29,17 @@ def closeCase():
     if _caseId == "":
         raise Exception('caseId was not found in the incident labels')
 
+    res = demisto.executeCommand('gra-validate-api', {'using': incident['sourceInstance']})
+
+    if res is not None and res[0]['Contents'] == 'Error in service':
+        raise Exception('Case cannot be closed as GRA services are currently unavailable.')
+
     demisto.executeCommand('gra-case-action', {
         'action': action,
         'subOption': subOption,
         'caseId': _caseId,
-        'caseComment': close_notes
+        'caseComment': close_notes,
+        'using': incident['sourceInstance']
     })
 
 
