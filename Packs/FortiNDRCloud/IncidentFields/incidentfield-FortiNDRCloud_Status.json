@@ -1,0 +1,29 @@
+{
+    "version": -1,
+    "fromVersion": "6.6.0",
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Fortinet FortiNDR Cloud Detection"
+    ],
+    "caseInsensitive": true,
+    "cliName": "fortindrcloudstatus",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_fortindrcloudstatus",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Fortinet FortiNDR Cloud Status",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false
+}

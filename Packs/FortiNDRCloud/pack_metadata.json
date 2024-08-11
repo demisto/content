@@ -1,0 +1,23 @@
+{
+    "name": "Fortinet FortiNDR Cloud",
+    "description": "Fortinet FortiNDR Cloud allows a fast detection and effective response to active threats.",
+    "support": "partner",
+    "currentVersion": "1.0.1",
+    "author": "Fortinet",
+    "url": "https://www.fortinet.com/products/network-detection-and-response",
+    "email": "fnc-cortex@fortinet.com",
+    "categories": [
+        "Network Security"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "devEmail": [
+        "fnc-cortex@fortinet.com"
+    ],
+    "githubUser": []
+}

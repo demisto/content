@@ -1,0 +1,20 @@
+!fortindr-cloud-get-sensors account_uuid=bedf5bf3-94b0-49fa-9085-12ca29876dc3
+!fortindr-cloud-get-sensors account_code=gdm
+!fortindr-cloud-get-devices cidr=21.5.0.0/16
+!fortindr-cloud-get-telemetry-events start_date=2022-08-22T23:00:00.000Z end_date=2022-08-23T01:00:00.000Z
+!fortindr-cloud-get-telemetry-network start_date=2022-08-21T00:00:00.000Z end_date=2022-08-21T01:00:00.000Z interval=day
+!fortindr-cloud-get-telemetry-packetstats start_date=2022-08-22T23:00:00.000Z end_date=2022-08-23T01:00:00.000Z
+!fortindr-cloud-get-tasks task_uuid=de1ada61-fef3-4cc7-9287-43370cb53ccd
+
+!fortindr-cloud-get-entity-summary entity=8.8.8.8
+!fortindr-cloud-get-entity-pdns entity=google.com limit=3
+!fortindr-cloud-get-entity-dhcp entity=10.20.0.69 start_date=2023-01-01T00:00:00.000Z
+!fortindr-cloud-get-entity-file hash=2b7a609371b2a844181c2f79f1b45cf7
+
+!fortindr-cloud-get-detections status=active include=rules created_or_shared_start_date=2022-08-23T22:00:00.000Z created_or_shared_end_date=2022-08-23T22:30:00.000Z
+!fortindr-cloud-get-detection-rules confidence=high category=Attack:Installation limit=2
+!fortindr-cloud-get-detection-rule-events rule_uuid=0215f6db-82f1-4f71-8754-79104eecaab6 limit=3
+
+!fortindr-cloud-resolve-detection detection_uuid=ff801244-3c31-4f2e-a4be-9559a07ead65 resolution=false_positive resolution_comment="detection is false positive"
+!fortindr-cloud-create-detection-rule account_uuid=bedf5bf3-94b0-49fa-9085-12ca29876dc3 name="New Test Rule" category="Posture:Anomalous Activity" query_signature="ip=1.2.3.4" description="Test rule" severity=high confidence=moderate run_account_uuids=bedf5bf3-94b0-49fa-9085-12ca29876dc3 device_ip_fields=DEFAULT
+!fortindr-cloud-create-task name="Possible Exfiltration via FTP" account_uuid=bedf5bf3-94b0-49fa-9085-12ca29876dc3 description="Capture possible exfiltration via FTP" bpf="host 1.2.3.4 and port 21" requested_start_date=2019-01-01T00:00:00.000Z requested_end_date=2019-01-31T23:59:59.999Z
