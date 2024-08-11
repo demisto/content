@@ -4,7 +4,7 @@ from CommonServerPython import *  # noqa: F401
 
 from CommonServerUserPython import *
 import json
-from json2html import *
+from json2html import convert
 from typing import Any
 
 
@@ -47,7 +47,7 @@ def json_to_html(value: str) -> str:
 
     json_value: dict | str | None = get_json_from_string(value=value)
 
-    return json2html.convert(json=json_value)
+    return convert(json=json_value)
 
 
 ''' COMMAND FUNCTION '''
