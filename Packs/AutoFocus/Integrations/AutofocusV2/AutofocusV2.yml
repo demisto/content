@@ -1356,7 +1356,7 @@ script:
       description: The domain name.
       type: String
     polling: true
-  dockerimage: demisto/python3:3.10.14.98471
+  dockerimage: demisto/python3:3.11.9.107902
   runonce: false
   script: '-'
   subtype: python3
