@@ -1,7 +1,7 @@
 from taxii2client.exceptions import TAXIIServiceException, InvalidJSONError
 
 from CommonServerPython import *
-from TAXII2ApiModule import Taxii2FeedClient, TAXII_VER_2_1, \
+from TAXII2ApiModule import Taxii2FeedClient, STIX_2_TYPES_TO_CORTEX_TYPES, TAXII_VER_2_1, \
     HEADER_USERNAME, XSOAR2STIXParser, STIX2XSOARParser, uuid, PAWN_UUID
 from taxii2client import v20, v21
 import pytest
@@ -589,6 +589,12 @@ class TestFetchingStixObjects:
         result = mock_client.load_stix_objects_from_envelope(objects_envelopes, -1)
         assert mock_client.id_to_object == id_to_object
         assert result == parsed_objects
+        reports = [obj for obj in result if obj.get('type') == 'Report']
+        report_with_relationship = [report for report in reports if report.get('relationships')]
+        for report in report_with_relationship:
+            for relationship in report.get('relationships'):
+                assert relationship.get('entityBType') in STIX_2_TYPES_TO_CORTEX_TYPES.values()
+                assert relationship.get('entityAType') in STIX_2_TYPES_TO_CORTEX_TYPES.values()
 
     def test_load_stix_objects_from_envelope_v20(self):
         """
@@ -1531,8 +1537,39 @@ class TestParsingObjects:
         reports = [obj for obj in result if obj.get('type') == 'Report']
         report_with_relationship = [report for report in reports if report.get('relationships')]
 
-        assert len(report_with_relationship) == 1
+        assert len(report_with_relationship) == 2
         assert len(report_with_relationship[0].get('relationships')) == 2
+        assert len(report_with_relationship[1].get('relationships')) == 2
+
+    def test_parsing_report_with_relationships_verify_relationships_type(self):
+        """
+        Scenario: Test parsing report envelope for v2.0
+
+        Given:
+        - Envelope with reports.
+
+        When:
+        - load_stix_objects_from_envelope is called.
+
+        Then:
+        - validate the result contained the report with relationships as expected.
+        - validate the relationships inside the report are valid as expected.
+        - validate the indicators type inside the relationships.
+
+        """
+        mock_client = Taxii2FeedClient(url='', collection_to_fetch='', proxies=[], verify=False, objects_to_fetch=[])
+
+        result = mock_client.load_stix_objects_from_envelope(envelopes_v20)
+        reports = [obj for obj in result if obj.get('type') == 'Report']
+        report_with_relationship = [report for report in reports if report.get('relationships')]
+
+        assert len(report_with_relationship) == 2
+        assert len(report_with_relationship[0].get('relationships')) == 2
+        assert len(report_with_relationship[1].get('relationships')) == 2
+        for report in report_with_relationship:
+            for relationship in report.get('relationships'):
+                assert relationship.get('entityBType') in STIX_2_TYPES_TO_CORTEX_TYPES.values()
+                assert relationship.get('entityAType') in STIX_2_TYPES_TO_CORTEX_TYPES.values()
 
 
 @pytest.mark.parametrize('limit, element_count, return_value',
@@ -2287,6 +2324,7 @@ def test_create_x509_certificate_object():
         "issuer": "C=ZA, ST=Western Cape, L=Cape Town, O=Thawte Consulting cc, OU=Certification Services Division,"
         " CN=Thawte Server CA/emailAddress=server-certs@thawte.com",
     }
+
 
 def test_get_attack_id_and_value_from_name_on_invalid_indicator():
     """

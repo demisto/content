@@ -941,6 +941,8 @@ class STIX2XSOARParser(BaseClient):
             entity_b_value = STIX2XSOARParser.get_ioc_value(related_obj, id_to_object)
         elif indicator_obj.get('type') == "attack-pattern" and is_unit42_report:
             _, entity_b_value = STIX2XSOARParser.get_attack_id_and_value_from_name(indicator_obj)
+        elif indicator_obj.get('type') == "report" and is_unit42_report:
+            entity_b_value = f"[Unit42 ATOM] {indicator_obj.get('name')}"
         return entity_b_obj_type, entity_b_value
 
     @staticmethod
@@ -980,7 +982,7 @@ class STIX2XSOARParser(BaseClient):
                 if ignore_reports_relationships and related_obj.startswith('report--'):
                     continue
                 obj_refs_excluding_relationships_prefix.append(related_obj)
-                if id_to_object.get(related_obj, {}):
+                if id_to_object.get(related_obj):
                     entity_b_obj_type, entity_b_value = STIX2XSOARParser.get_entity_b_type_and_value(related_obj, id_to_object,
                                                                                                      is_unit42_report)
                     relationships.append(
