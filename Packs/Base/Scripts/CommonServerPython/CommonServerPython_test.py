@@ -68,7 +68,7 @@ Parameters used:
         "instance-name": "test_integration_instance",
         "final-reporting-device": "www.test_url.com",
         "collector-type": "assets",
-        "snapshot-id": "123000",
+        "snapshot-id": "test_integration_instance123000",
         "total-items-count": "2"
 }}
 
@@ -8960,6 +8960,49 @@ class TestSendEventsToXSIAMTest:
             demisto.updateModuleHealth.assert_called_with({'assetsPulled': number_of_items})
             assert arguments_called['headers']['snapshot-id'] == '123000'
             assert arguments_called['headers']['total-items-count'] == '2'
+
+    @pytest.mark.parametrize('data_type, snapshot_id, items_count, expected', [
+        ('assets', None, None, {'snapshot_id': '123000', 'items_count': '2'}),
+        ('assets', '12345', 25, {'snapshot_id': '12345', 'items_count': '25'})
+    ])
+    def test_send_data_to_xsiam_custom_snapshot_id_and_items_count(self, mocker, data_type, snapshot_id, items_count, expected):
+        """
+        Test the send_data_to_xsiam with and without custom snapshot_id and items_count
+        Given:
+            Case a: no custom snapshot_id and items_count.
+            Case b: custom snapshot_id and items_count.
+
+        When:
+            Case a: Calling the send_assets_to_xsiam function without custom snapshot_id and items_count.
+            Case b: Calling the send_assets_to_xsiam function with custom snapshot_id and items_count.
+
+        Then ensure that:
+            Case a: The headers was set with the default data.
+            Case b: The headers was set with the custom data
+        """
+        if not IS_PY3:
+            return
+
+        from CommonServerPython import BaseClient
+        from requests import Response
+        mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
+        mocker.patch.object(demisto, 'updateModuleHealth')
+        mocker.patch('time.time', return_value=123)
+
+        api_response = Response()
+        api_response.status_code = 200
+        api_response._content = json.dumps({'error': 'false'}).encode('utf-8')
+
+        _http_request_mock = mocker.patch.object(BaseClient, '_http_request', return_value=api_response)
+
+        items = self.test_data['json_assets'][data_type]
+        send_data_to_xsiam(data=items, vendor='some vendor', product='some product', data_type=data_type, snapshot_id=snapshot_id,
+                           items_count=items_count)
+
+        arguments_called = _http_request_mock.call_args[1]
+        assert arguments_called['headers']['collector-type'] == data_type
+        assert arguments_called['headers']['snapshot-id'] == expected['snapshot_id']
+        assert arguments_called['headers']['total-items-count'] == expected['items_count']
 
     @pytest.mark.parametrize('error_msg, data_type', [(None, "events"), ({'error': 'error'}, "events"), ('', "events"),
                                                       ({'error': 'error'}, "assets")])
