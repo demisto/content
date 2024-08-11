@@ -24,5 +24,5 @@ The ingestion is made using the CreationTime field in the following formats:
 * yyyy-mm-ddThh:mm:ssZ
 * yyyy-mm-ddThh:mm:ss.msZ
 * yyyy-mm-dd hh:mm:ss UTC
-* * yyyy-mm-dd hh:mm:ss.ms UTC
+* yyyy-mm-dd hh:mm:ss.ms UTC
 </~XSIAM>
