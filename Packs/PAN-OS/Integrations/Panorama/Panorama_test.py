@@ -6528,7 +6528,6 @@ class TestFetchIncidentsHelperFunctions:
                 'name': 'dummy_device 1',
                 'occurred': occured.strftime(DATE_FORMAT),
                 'rawJSON': json.dumps(raw_entry),
-                'type': 'TYPE'
             }
         assert incident_entry_to_incident_context(raw_entry) == context_entry
 
@@ -6649,7 +6648,7 @@ class TestFetchIncidentsFlows:
         raw_entries = {'seqno': '000000001', 'type': 'X_log_type', 'time_generated': '2022/1/1 12:00:00',
                        'device_name': 'device_for_test'}
         expected_parsed_incident_entries = {'name': 'device_for_test 000000001', 'occurred': '2022-01-01T12:00:00Z',
-                                            'rawJSON': json.dumps(raw_entries), 'type': 'X_log_type'}
+                                            'rawJSON': json.dumps(raw_entries)}
         fetch_start_datetime_dict = {'X_log_type': dateparser.parse('2022/1/1 11:00:00', settings={'TIMEZONE': 'UTC'})}
 
         mocker.patch('Panorama.get_query_entries', return_value=[raw_entries])
@@ -6724,7 +6723,7 @@ class TestFetchIncidentsFlows:
                         'device_name': 'dummy_device'}]
 
         expected_parsed_incident_entries = [{'name': 'dummy_device 000000002', 'occurred': '2022-01-01T13:00:00Z',
-                                             'rawJSON': json.dumps(raw_entries[0]), 'type': 'X_log_type'}]
+                                             'rawJSON': json.dumps(raw_entries[0])}]
         fetch_start_datetime_dict = {'X_log_type': dateparser.parse('2022/1/1 12:00:00', settings={'TIMEZONE': 'UTC'})}
 
         mocker.patch('Panorama.get_query_entries', return_value=raw_entries)
@@ -6771,9 +6770,9 @@ class TestFetchIncidentsFlows:
         fetch_incidents_request_result = {'X_log_type': [raw_entries[0]], 'Y_log_type': [raw_entries[1]]}
 
         expected_parsed_incident_entries = [{'name': 'dummy_device1 000000002', 'occurred': '2022-01-01T13:00:00Z',
-                                             'rawJSON': json.dumps(raw_entries[0]), 'type': 'X_log_type'},
+                                             'rawJSON': json.dumps(raw_entries[0])},
                                             {'name': 'dummy_device2 000000001', 'occurred': '2022-01-01T13:00:00Z',
-                                             'rawJSON': json.dumps(raw_entries[1]), 'type': 'Y_log_type'}]
+                                             'rawJSON': json.dumps(raw_entries[1])}]
         fetch_start_datetime_dict = {'X_log_type': dateparser.parse(
             '2022/1/1 11:00:00', settings={'TIMEZONE': 'UTC'}),
             'Y_log_type': dateparser.parse(
@@ -6824,9 +6823,9 @@ class TestFetchIncidentsFlows:
         fetch_incidents_request_result = {'X_log_type': X_log_type_raw_entries, 'Y_log_type': Y_log_type_raw_entries}
 
         expected_parsed_incident_entries = [{'name': 'dummy_device1 000000002', 'occurred': '2022-01-01T13:00:00Z',
-                                             'rawJSON': json.dumps(X_log_type_raw_entries[0]), 'type': 'X_log_type'},
+                                             'rawJSON': json.dumps(X_log_type_raw_entries[0])},
                                             {'name': 'dummy_device2 000000003', 'occurred': '2022-01-01T13:00:00Z',
-                                             'rawJSON': json.dumps(Y_log_type_raw_entries[0]), 'type': 'Y_log_type'}]
+                                             'rawJSON': json.dumps(Y_log_type_raw_entries[0])}]
         fetch_start_datetime_dict = {'X_log_type': dateparser.parse('2022/1/1 11:00:00', settings={'TIMEZONE': 'UTC'}),
                                      'Y_log_type': dateparser.parse('2022/1/1 11:00:00', settings={'TIMEZONE': 'UTC'})}
 
@@ -7453,7 +7452,7 @@ def test_fetch_incidents_correlation(mocker: MockerFixture):
     )
 
     assert entries[0]["name"] == "Correlation 1"
-    assert entries[0]["type"] == "CORRELATION"
+    assert "CORRELATION" in entries[0]["rawJSON"]
     assert mock_get_query_entries.call_args_list[0].args == (
         "Correlation", "query and (match_time geq '2024/04/08 07:22:54')", 10, 1
     )  # asserting that "match_time" is used instead of "time_generated".
