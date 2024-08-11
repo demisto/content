@@ -1577,7 +1577,7 @@ script:
         description: First element of next page of items.
         type: string
   - arguments:
-    - description: The name of the user whose MFA devices you want to list.	
+    - description: The name of the user whose MFA devices you want to list.
       name: userName
       required: true
     - description: The serial number that uniquely identifies the MFA device. For virtual MFA devices, the serial number is the same as the ARN.
