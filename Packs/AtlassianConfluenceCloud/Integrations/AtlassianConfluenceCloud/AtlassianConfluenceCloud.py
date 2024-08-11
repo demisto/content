@@ -151,7 +151,7 @@ class Client(BaseClient):
     def search_events(self, limit: int, start_index: int = None, start_date: str = None) -> Dict:
         return super()._http_request(
             method='GET',
-            urlsuffix=URL_SUFFIX['EVENTS'],
+            url_suffix=URL_SUFFIX['EVENTS'],
             params={'limit': limit, 'start': start_index, 'startDate': start_date}
         )
 
@@ -1382,22 +1382,28 @@ def fetch_events(client: Client, last_run: dict[str, Any], limit: int) -> tuple[
 
 
 def get_events(client: Client, args: dict) -> tuple[list[Dict], CommandResults]:
-    limit = int(args.get('limit', 50))
     start_index = args.get('start')
     start_date = args.get('start_date')
     if start_index and start_date:
         raise ValueError('Please provide either start_index or start_date, not both.')
+
+    limit = int(args.get('limit', 50))
+    kwargs = {'limit': limit}
+
     if not start_index and not start_date:
-        events = client.search_events(limit=limit, start_index=0).get('results')
-        return events, CommandResults(readable_output=tableToMarkdown('Events', events, removeNull=True))
+        kwargs['start_index'] = 0
 
-    if start_index:
-        events = client.search_events(limit=limit, start_index=start_index).get('results')
-        return events, CommandResults(readable_output=tableToMarkdown('Events', events, removeNull=True))
+    elif start_index:
+        kwargs['start_index'] = start_index
 
-    if start_date:
-        events = client.search_events(limit=limit, start_date=start_date).get('results')
-        return events, CommandResults(readable_output=tableToMarkdown('Events', events, removeNull=True))
+    else:
+        kwargs['start_date'] = start_date
+
+    demisto.debug(f'Calling search_events with {kwargs}.')
+    response = client.search_events(**kwargs)
+    events = response.get('results')
+    demisto.debug(f'API Response: {response}.')
+    return events, CommandResults(readable_output=tableToMarkdown('Events', events, removeNull=True))
 
 
 ''' MAIN FUNCTION '''
@@ -1468,7 +1474,7 @@ def main() -> None:
             demisto.setLastRun(next_run)
 
         elif command == 'confluence-cloud-get-events':
-            should_push_events = argToBoolean(args.get('should_push_events'))
+            should_push_events = argToBoolean(args.get('should_push_events', False))
             events, results = get_events(client, args)
             return_results(results)
             if should_push_events:
