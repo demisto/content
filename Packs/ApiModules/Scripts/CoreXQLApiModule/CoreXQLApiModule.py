@@ -10,17 +10,19 @@ from typing import Tuple
 # Disable insecure warnings
 urllib3.disable_warnings()
 DEFAULT_LIMIT = 100
-RBAC_VALIDATIONS_VERSION = '8.6.0'
-RBAC_VALIDATIONS_BUILD_NUMBER = '992980'
-#To use apiCall, the machine must be on XSIAM, have a version greater than RBAC_VALIDATIONS_BUILD_NUMBER,
-# and the integration should not run on an engine.
-FORWARD_USER_RUN_RBAC = is_xsiam() and is_demisto_version_ge(version=RBAC_VALIDATIONS_VERSION,
-                                                             build_number=RBAC_VALIDATIONS_BUILD_NUMBER) and not is_using_engine()
-#To get binary response type from apiCall, the machine must have a version greater than ALLOW_BIN_CONTENT_RESPONSE_BUILD_NUM.
-ALLOW_BIN_CONTENT_RESPONSE_BUILD_NUM = '1230614'
-ALLOW_BIN_CONTENT_RESPONSE_SERVER_VERSION = '8.7.0'
-ALLOW_RESPONSE_AS_BINARY = is_demisto_version_ge(version=ALLOW_BIN_CONTENT_RESPONSE_SERVER_VERSION,
-                                                 build_number=ALLOW_BIN_CONTENT_RESPONSE_BUILD_NUM)
+SERVER_VERSION = '8.7.0'
+BUILD_VERSION = '1241866'
+#TODO change to the version below after platform merge
+# BUILD_VERSION = '1247804'
+#To use apiCall, the machine must be XSIAM, have a version greater than RBAC_VALIDATIONS_BUILD_NUMBER,
+# and is_using_engine()=False.
+IS_CORE_AVAILABLE = is_xsiam() and is_demisto_version_ge(version=SERVER_VERSION,
+                                                             build_number=BUILD_VERSION) and not is_using_engine()
+##To get binary response type from apiCall, the machine must have a version greater than ALLOW_BIN_CONTENT_RESPONSE_BUILD_NUM.
+#ALLOW_BIN_CONTENT_RESPONSE_BUILD_NUM = '1230614'
+#ALLOW_BIN_CONTENT_RESPONSE_SERVER_VERSION = '8.7.0'
+#ALLOW_RESPONSE_AS_BINARY = is_demisto_version_ge(version=ALLOW_BIN_CONTENT_RESPONSE_SERVER_VERSION,
+#                                                 build_number=ALLOW_BIN_CONTENT_RESPONSE_BUILD_NUM)
 
 
 class CoreClient(BaseClient):
@@ -87,10 +89,14 @@ class CoreClient(BaseClient):
             :param response_data_type: Response type when using the apiCall- 'bin' if we expect a 'binary' response and None as
             default.
         '''
-        if self.is_core and response_data_type == 'bin' and not ALLOW_RESPONSE_AS_BINARY:
-            raise DemistoException(f"Getting binary data from server is allowed from version "
-                        f"{ALLOW_BIN_CONTENT_RESPONSE_SERVER_VERSION}-{ALLOW_BIN_CONTENT_RESPONSE_BUILD_NUM}.")
-        if (not FORWARD_USER_RUN_RBAC):
+        if self.is_core and not IS_CORE_AVAILABLE:
+            raise DemistoException(f"Using the XQL Query Engine from the core Pack is available only from version "
+                                   f"{SERVER_VERSION}-{BUILD_VERSION}")
+        ## I think this is unnecessary
+        #if self.is_core and response_data_type == 'bin' and not ALLOW_RESPONSE_AS_BINARY:
+        #    raise DemistoException(f"Getting binary data from server is allowed from version "
+        #                f"{ALLOW_BIN_CONTENT_RESPONSE_SERVER_VERSION}-{ALLOW_BIN_CONTENT_RESPONSE_BUILD_NUM}.")
+        if (not IS_CORE_AVAILABLE):
             return BaseClient._http_request(self,  # we use the standard base_client http_request without overriding it
                                             method=method,
                                             url_suffix=url_suffix,

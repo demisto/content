@@ -1560,4 +1560,4 @@ marketplaces:
 - marketplacev2
 tests:
 - No tests
-fromversion: 8.6.0
+fromversion: 8.7.0
