@@ -204,7 +204,7 @@ def register_email_command(client: Client, first_name: str, last_name: str, emai
         return results
     return CommandResults(
         entry_type=EntryType.ERROR,
-        redable_output='Could not register email'
+        readable_output='Could not register email'
     )
 
 def info_command(client: Client) -> CommandResults:
@@ -242,7 +242,7 @@ def info_command(client: Client) -> CommandResults:
         return results
     return CommandResults(
         entry_type=EntryType.ERROR,
-        redable_output='Could not retrieve client info'
+        readable_output='Could not retrieve client info'
     )
 
 def analyze_command(client: Client, host: str, publish: Optional[str], start_new: Optional[str],
