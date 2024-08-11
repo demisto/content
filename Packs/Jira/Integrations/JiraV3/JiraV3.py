@@ -3415,13 +3415,17 @@ def get_comments_entries_for_fetched_incident(
 
 def get_attachments_entries_for_fetched_incident(
         client: JiraBaseClient,
-        attachments_metadata: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        attachments_metadata: List[Dict[str, Any]],
+        incident_modified_date: datetime | None = None,
+        user_timezone_name: str = "") -> List[Dict[str, Any]]:
     """Return the attachments' entries for a fetched and mirrored incident
 
     Args:
         client (JiraBaseClient): The Jira client.
         attachments_metadata (List[str]): The metadata of the attachments, which includes the ids and created time of the
         attachments.
+        incident_modified_date (datetime | None): The modified date of the incident.
+        user_timezone_name (str): The timezone of the user.
 
     Returns:
         List[Dict[str, Any]]: The attachment entries for a fetched or mirrored incident.
@@ -3429,6 +3433,13 @@ def get_attachments_entries_for_fetched_incident(
     attachment_ids: List[str] = []
     attachments_entries: List[Dict[str, Any]] = []
     for attachment_metadata in attachments_metadata:
+        if (incident_modified_date
+            and (attachment_created_date := dateparser.parse(attachment_metadata.get('created', ''),
+                                                             settings={'TIMEZONE': user_timezone_name}))
+                and attachment_created_date < incident_modified_date):
+            demisto.debug(f"The attachment with the id {attachment_metadata.get('id', '')} was created before the incident"
+                          f" was modified, therefore, it will not be fetched.")
+            continue
         attachment_id = attachment_metadata.get('id', '')
         attachments_entries.append(create_file_info_from_attachment(
             client=client, attachment_id=attachment_id
@@ -3807,6 +3818,8 @@ def get_updated_remote_data(client: JiraBaseClient, issue: Dict[str, Any], updat
         attachments_entries = get_attachments_entries_for_fetched_incident(
             client=client,
             attachments_metadata=demisto.get(issue, 'fields.attachment') or [],
+            incident_modified_date=incident_modified_date,
+            user_timezone_name=user_timezone_name
         )
         attachments_incident_field = []
         demisto.debug(f'Got the following attachments entries {attachments_entries}')
