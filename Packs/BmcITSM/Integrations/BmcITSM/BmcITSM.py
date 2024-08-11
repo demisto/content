@@ -877,6 +877,7 @@ class Client(BaseClient):
         urgency: str,
         scedulded_start_date: str,
         scedulded_end_date: str,
+        customer_company: str,
         **additional_fields,
     ) -> Dict[str, Any]:
         """
@@ -905,6 +906,7 @@ class Client(BaseClient):
             urgency (str): Ticket urgency.
             scedulded_start_date (str): Schedulded start date.
             scedulded_end_date (str):  Schedulded end date.
+            customer_company (str): Customer company name.
 
         Returns:
             Dict[str, Any]: API respnse from BmcITSM.
@@ -932,7 +934,7 @@ class Client(BaseClient):
             "Urgency": urgency,
             "State": "Active",
             "Parent Linked": "Active",
-            "Customer Company": "Calbro Services",
+            "Customer Company": customer_company,
             "Assigned To": assignee,
             "Scheduled Start Date": scedulded_start_date,
             "Scheduled End Date": scedulded_end_date,
@@ -965,6 +967,7 @@ class Client(BaseClient):
         location_company: str,
         scedulded_start_date: str,
         schedulded_end_date: str,
+        customer_company: str,
         **additional_fields,
     ):
         """
@@ -987,6 +990,7 @@ class Client(BaseClient):
             location_company (str): Company assoiciated with ticet process.
             scedulded_start_date (str): Schedulded start date.
             scedulded_end_date (str):  Schedulded end date.
+            customer_company (str):  Customer company name.
         Returns:
             str: API respnse from BmcITSM.
         """
@@ -1008,6 +1012,7 @@ class Client(BaseClient):
             "Assignee": assignee,
             "Scheduled Start Date": scedulded_start_date,
             "Scheduled End Date": schedulded_end_date,
+            "Customer Company": customer_company,
             **additional_fields,
         })
         data = {"values": properties}
@@ -2194,6 +2199,7 @@ def task_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     impact = args.get("impact")
     urgency = args.get("urgency")
     support_company = args.get("support_company")
+    customer_company = args.get("customer_company")
 
     assigned_support_organization = args.get("assigned_support_organization")
     assigned_support_group_name = args.get("assigned_support_group")
@@ -2229,6 +2235,7 @@ def task_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         assigned_support_organization=assigned_support_organization,  # type: ignore[arg-type]
         scedulded_start_date=scedulded_start_date.isoformat() if scedulded_start_date else None,  # type: ignore[arg-type]
         scedulded_end_date=scedulded_end_date.isoformat() if scedulded_end_date else None,  # type: ignore[arg-type]
+        customer_company=customer_company,  # type: ignore[arg-type]
         **additional_fields,
     )
 
@@ -2282,6 +2289,7 @@ def task_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     assignee = args.get("assignee")
     scedulded_start_date: datetime = arg_to_datetime(args.get("scedulded_start_date"))  # type: ignore[assignment]
     schedulded_end_date: datetime = arg_to_datetime(args.get("schedulded_end_date"))  # type: ignore[assignment]
+    customer_company = args.get("customer_company")  # type: ignore[assignment]
 
     additional_fields = extract_args_from_additional_fields_arg(args.get("additional_fields"),  # type: ignore[arg-type]
                                                                 "additional_fields")
@@ -2306,6 +2314,7 @@ def task_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         assigned_support_group_name=assigned_support_group_name,  # type: ignore[arg-type]
         scedulded_start_date=scedulded_start_date.isoformat() if scedulded_start_date else None,  # type: ignore[arg-type]
         schedulded_end_date=schedulded_end_date.isoformat if schedulded_end_date else None,  # type: ignore[arg-type]
+        customer_company=customer_company,  # type: ignore[arg-type]
         **additional_fields,
     )
 
