@@ -395,11 +395,11 @@ def list_mfa_devices(args, client):
     kwargs = {
         'UserName': user_name,
         'MaxItems': limit
-        }
+    }
     if marker:
         kwargs.update({'Marker': marker})
     response = client.list_mfa_devices(**kwargs)
-    
+
     mfa_devices = response['MFADevices']
     data = []
 
@@ -410,14 +410,15 @@ def list_mfa_devices(args, client):
             'EnableDate': datetime.strftime(mfa_device['EnableDate'], '%Y-%m-%d %H:%M:%S'),
         })
     if is_manual and page_size and len(data) > page_size:
-       data = data[-1 * page_size:]
+        data = data[-1 * page_size:]
     human_readable = tableToMarkdown('AWS IAM Users MFA Devices', data)
     return CommandResults(
         readable_output=human_readable,
-        outputs_key_field= "UserName",
+        outputs_key_field="UserName",
         outputs_prefix="AWS.IAM.MFADevices",
         outputs={"Devices": data, "Marker": response["Marker"]},
     )
+
 
 def deactivate_mfa_device(args, client):
     response = client.deactivate_mfa_device(
@@ -425,7 +426,7 @@ def deactivate_mfa_device(args, client):
         SerialNumber=args['serialNumber']
     )
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-        demisto.results('The User {0} mfa device has been deactivated'.format(args.get('userName')))
+        demisto.results('The User {} mfa device has been deactivated'.format(args.get('userName')))
 
 
 def delete_virtual_mfa_device(args, client):
@@ -433,7 +434,7 @@ def delete_virtual_mfa_device(args, client):
         SerialNumber=args['serialNumber']
     )
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-        demisto.results('The User {0} mfa device has been deleted'.format(args.get('serialNumber')))
+        demisto.results('The User {} mfa device has been deleted'.format(args.get('serialNumber')))
 
 
 def create_instance_profile(args, client):  # pragma: no cover
