@@ -110,10 +110,13 @@ def make_api_call(
     payload: dict = None,
 ) -> requests.Response:
     params: dict = demisto.params()
-    url: str = params["ax_url"]
+    url: str = params.get('ax_url')
     key: str = params.get('credentials', {}).get('identifier')
     secret: str = params.get('credentials', {}).get('password')
-    certverify: bool = not params.get("insecure", False)
+    certverify: bool = not params.get('insecure', False)
+    
+    if not url:
+        return None
     
     url = url + '/' if url[-1] != '/' else url
     url = url + endpoint
@@ -152,7 +155,7 @@ def add_note(
     
     for id in internal_axon_id_arr:
         response = make_api_call(endpoint=f'api/{asset_type}/{id}/notes', payload=payload)
-        if response.status_code == 200:
+        if response and response.status_code == 200:
             success_count += 1
     
     readable_output = f"{success_count} {asset_type}(s) updated."
