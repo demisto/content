@@ -16,6 +16,9 @@ from ExabeamSecOpsPlatform import (
     context_table_delete_command,
     table_record_list_command,
     generic_search_command,
+    transform_dicts,
+    process_attributes,
+    convert_all_timestamp_to_datestring,
 )
 
 
@@ -571,3 +574,65 @@ def test_generic_search_command(mocker, args, item_type, mock_response, expected
         request.assert_called_once_with(args[f"{item_type}_id"])
     else:
         request.assert_called_once()
+
+
+@pytest.mark.parametrize(
+    "dict_input, dict_expected",
+    [
+        (
+            {
+                "name": ["Alice", "Bob", "Charlie"],
+                "age": ["25", "30", "35"],
+                "city": ["New York", "Los Angeles", "Chicago"]
+            },
+            [
+                {"name": "Alice", "age": "25", "city": "New York"},
+                {"name": "Bob", "age": "30", "city": "Los Angeles"},
+                {"name": "Charlie", "age": "35", "city": "Chicago"}
+            ]
+        ),
+    ]
+)
+def test_transform_dicts(dict_input, dict_expected):
+    result = transform_dicts(dict_input)
+    assert result == dict_expected
+
+
+@pytest.mark.parametrize(
+    "attributes_input, expected_output",
+    [
+        (
+            '{"name": ["Alice", "Bob"], "age": ["25", "30"], "city": ["New York", "Los Angeles"]}',
+            {
+                "name": ["Alice", "Bob"],
+                "age": ["25", "30"],
+                "city": ["New York", "Los Angeles"]
+            }
+        ),
+        (
+            '{"name": ["Charlie"], "age": ["35"], "city": ["Chicago"]}',
+            {
+                "name": ["Charlie"],
+                "age": ["35"],
+                "city": ["Chicago"]
+            }
+        ),
+    ]
+)
+def test_process_attributes(attributes_input, expected_output):
+    result = process_attributes(attributes_input)
+    assert result == expected_output
+
+
+@pytest.mark.parametrize(
+    "attributes_input, expected_output",
+    [
+        (
+            {"caseCreationTimestamp": 1672531200000000, "lastModifiedTimestamp": 1672617600000000},
+            {"caseCreationTimestamp": "2023-01-01T00:00:00Z", "lastModifiedTimestamp": "2023-01-02T00:00:00Z"}
+        ),
+    ]
+)
+def test_convert_all_timestamp_to_datestring(attributes_input, expected_output):
+    result = convert_all_timestamp_to_datestring(attributes_input)
+    assert result == expected_output
