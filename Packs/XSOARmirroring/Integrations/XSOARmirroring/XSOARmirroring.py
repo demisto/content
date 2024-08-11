@@ -134,9 +134,9 @@ class Client(BaseClient):
             demisto.debug(f'the entry has inv_id {incident_id}\nformat {entry.get("format")}\n contents '
                           f'{entry.get("contents")}')
             json_data = {
-                    'contents': entry.get('contents'),
-                    'format': entry.get('format'),
-                    'investigationId': incident_id
+                'contents': entry.get('contents'),
+                'format': entry.get('format'),
+                'investigationId': incident_id
             }
             try:
                 self._http_request(
@@ -148,14 +148,14 @@ class Client(BaseClient):
                 demisto.debug(str(e))
             finally:
                 self._http_request(
-                method='POST',
-                url_suffix='/entry/note',
-                json_data={
-                    "investigationId": incident_id,
-                    "data": f'{entry.get("contents", "False")} {entry.get("format")}',
-                    "markdown": 'markdown'
-                }
-            )
+                    method='POST',
+                    url_suffix='/entry/note',
+                    json_data={
+                        "investigationId": incident_id,
+                        "data": f'{entry.get("contents", "False")} {entry.get("format")}',
+                        "markdown": 'markdown'
+                    }
+                )
 
         else:
             demisto.debug(f'the entry has inv_id {incident_id}\ndata {entry.get("date")}\n'
@@ -809,7 +809,8 @@ def update_remote_system_command(client: Client, args: dict[str, Any], mirror_ta
     if parsed_args.entries:
         for entry in parsed_args.entries:
             if 'xSOAR Customer Attachment' in entry.get('tags', []):
-                demisto.debug(f'### update_remote_system_command entry {entry.get("id")} contains "xSOAR Customer Attachment" tag')
+                demisto.debug(
+                    f'### update_remote_system_command entry {entry.get("id")} contains "xSOAR Customer Attachment" tag')
             demisto.info(f"this is the tag {entry.get('tags', [])}")
             if mirror_tags.intersection(set(entry.get('tags', []))):
                 demisto.debug(f'Sending entry {entry.get("id")}')
