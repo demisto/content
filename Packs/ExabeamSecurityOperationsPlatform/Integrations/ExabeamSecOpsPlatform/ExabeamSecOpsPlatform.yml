@@ -94,7 +94,7 @@ script:
     description: Search for cases that match one or more search criteria. For example, you can search for cases that are associated with a specific caseId and that reference specific rules.
     arguments:
     - name: case_id
-      description: An optional case id parameter to get a specific case. 
+      description: An optional case id parameter to get a specific case.
     - name: start_time
       description: Timestamp to start the search.
       defaultValue: "7 days ago"
@@ -256,7 +256,7 @@ script:
     description: Search for alerts that match one or more search criteria.
     arguments:
     - name: alert_id
-      description: Unique ID that identifies an alert. 
+      description: Unique ID that identifies an alert.
     - name: start_time
       description: Timestamp to start the search.
       defaultValue: "7 days ago"
@@ -290,7 +290,7 @@ script:
       - Yes
       - No
       description: If set to 'Yes', filters the context to include the "rules" array related to the cases in the results.
-    outputs:  
+    outputs:
     - contextPath: ExabeamPlatform.Alert.alertDescriptionRt
       description: The description of the alert in real-time.
       type: String
@@ -406,7 +406,7 @@ script:
     description: Retrieve metadata for all existing context tables, including source, operational status, and attribute mapping.
     arguments:
     - name: table_id
-      description: Specify the ID of an existing context table
+      description: Specify the ID of an existing context table.
     - name: limit
       defaultValue: 50
       description: Limit the number of results returned from the request.
@@ -417,42 +417,42 @@ script:
       predefined:
       - Yes
       - No
-    outputs:  
+    outputs:
     - contextPath: ExabeamPlatform.ContextTable.attributeMapping
-      description: 'The attribute mapping of the context table.'
+      description: The attribute mapping of the context table.
       type: Unknown
     - contextPath: ExabeamPlatform.ContextTable.attributes.displayName
-      description: 'The display name of the attribute.'
+      description: The display name of the attribute.
       type: String
     - contextPath: ExabeamPlatform.ContextTable.attributes.id
-      description: 'The unique identifier of the attribute.'
+      description: The unique identifier of the attribute.
       type: String
     - contextPath: ExabeamPlatform.ContextTable.attributes.isKey
       description: 'Indicates if the attribute is a key attribute.'
       type: Boolean
     - contextPath: ExabeamPlatform.ContextTable.attributes.type
-      description: 'The type of the attribute.'
+      description: The type of the attribute.
       type: String
     - contextPath: ExabeamPlatform.ContextTable.contextType
       description: 'The type of context the table represents.'
       type: String
     - contextPath: ExabeamPlatform.ContextTable.id
-      description: 'The unique identifier of the context table.'
+      description: The unique identifier of the context table.
       type: String
     - contextPath: ExabeamPlatform.ContextTable.lastUpdated
-      description: 'The timestamp of the last update to the context table.'
+      description: The timestamp of the last update to the context table.
       type: Number
     - contextPath: ExabeamPlatform.ContextTable.name
-      description: 'The name of the context table.'
+      description: The name of the context table.
       type: String
     - contextPath: ExabeamPlatform.ContextTable.source
-      description: 'The source of the context table data.'
+      description: The source of the context table data.
       type: String
     - contextPath: ExabeamPlatform.ContextTable.status
-      description: 'The status of the context table.'
+      description: The status of the context table.
       type: String
     - contextPath: ExabeamPlatform.ContextTable.totalItems
-      description: 'The total number of items in the context table.'
+      description: The total number of items in the context table.
       type: Number
   - name: exabeam-platform-context-table-delete
     description: Delete a specific context table, including records and attributes.
@@ -466,7 +466,7 @@ script:
       auto: PREDEFINED
       predefined:
       - Yes
-      - No 
+      - No
   - name: exabeam-platform-table-record-list
     description: Retrieve the records for a specific context table.
     arguments:
@@ -503,16 +503,15 @@ script:
       hidden: true
     - name: hide_polling_output
       hidden: true
-      description: ''
+      description: Suppresses the output of polling operations to reduce clutter in logs.
     polling: true
   runonce: false
   script: '-'
   type: python
-  isfetch: true
   subtype: python3
   dockerimage: demisto/python3:3.10.14.95956
+  isfetch: true
 fromversion: 6.10.0
 tests:
 - ExabeamSecurityOperationsPlatform-test
 defaultmapperin: "Exabeam Platform - Incoming Mapper"
-
