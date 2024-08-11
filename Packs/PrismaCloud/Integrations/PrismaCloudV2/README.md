@@ -2833,7 +2833,19 @@ Get permission list. You must provide either "query" or "next_token".
 >### Next Page Token:
 >token2
 
+### Access Keys
+
+***
+Access Keys are a secure way to enable programmatic access to the Prisma Cloud API. By default, only the System Admin has API access and can enable API access for other administrators. If you have API access, you can create up to two access keys.
+
+A service account is a special Prisma Cloud identity used to access Prisma Cloud programmatically via API.
+
+To create a service account, see [Add Service Accounts On Prisma Cloud
+](https://docs.prismacloud.io/en/enterprise-edition/content-collections/administration/add-service-account-prisma-cloud)
+#### Base Command
+
 `prisma-cloud-access-key-create`
+
 
 #### Input
 
@@ -2841,7 +2853,6 @@ Get permission list. You must provide either "query" or "next_token".
 |-------------------| --- | --- |
 | name              | Access key name. | Required | 
 | expires-on             | Timestamp in milliseconds when access key expires. Default:0. | Optional | 
-| service-account-name             | Service account name. | Optional |
 
 #### Context Output
 
