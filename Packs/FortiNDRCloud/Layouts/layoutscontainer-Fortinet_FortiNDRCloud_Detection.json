@@ -1,7 +1,7 @@
 {
-    "id": "Fortinet FortiNDR CloudDetection",
+    "id": "Fortinet FortiNDR Cloud Detection",
     "group": "incident",
-    "name": "Fortinet FortiNDR CloudDetection",
+    "name": "Fortinet FortiNDR Cloud Detection",
     "version": -1,
     "detailsV2": {
         "tabs": [
