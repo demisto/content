@@ -256,10 +256,12 @@ class Client(BaseClient):
                     'jobId'), page_number=arg_to_number(page_number), page_size=arg_to_number(page_size) or 50, max_wait=2000,
                     result_format='valuesDictionary'):
                 raw_results.append(r.json())
-        # There is a bug in iter_job_results where it does not handle pageCursor and pageNumber properly after the first job
-        # receives a status of 'DONE' and contains the desired results. This results in a response with an invalid status code
-        # and missing standard fields, including the 'state' field. The method attempts to directly access the 'state' field
-        # and fails. This workaround addresses the issue.
+
+        # There is a known issue in iter_job_results where pageCursor and pageNumber are not handled as expected after the first
+        # job reaches a 'DONE' status and contains the desired results. This may result in a response with an unexpected
+        # status code and missing standard fields, including the 'state' field. The method then attempts to access the 'state'
+        # field directly, which can lead to an error. This workaround helps to address the situation.
+
         except KeyError as e:
             if not e.args[0] == 'state':
                 raise DemistoException(f'Received error {str(e)} when querying logs.')
