@@ -14089,7 +14089,16 @@ def pan_os_get_audit_comment_command(args: dict) -> CommandResults:
     )
     
     
-def get_all_profile_names_from_profile_type(profile_type):
+def get_all_profile_names_from_profile_type(profile_type) -> list:
+    """
+    Retrieves all profile names from a specified profile type.
+
+    Args:
+        profile_type: The type of profile to retrieve, 'vulnerability' or 'spyware'.
+
+    Returns:
+        A list of profile names associated with the specified profile type.
+    """
     params = {
         'type': 'config',
         'action': 'get',
@@ -14107,7 +14116,16 @@ def get_all_profile_names_from_profile_type(profile_type):
             
     return profile_names
 
-def check_profile_type_by_given_profile_name(profile_name):
+def check_profile_type_by_given_profile_name(profile_name) -> str:
+    """
+    Checks the profile type based on a given profile name.
+
+    Args:
+        profile_name: The name of the profile to check.
+
+    Returns:
+        The profile type: 'Vulnerability Protection Profile' or 'Anti Spyware Profile'.
+    """
     vulnerability_protection_profile_names = get_all_profile_names_from_profile_type('vulnerability')
     anti_spyware_profile_names = get_all_profile_names_from_profile_type('spyware')
     
@@ -14115,10 +14133,10 @@ def check_profile_type_by_given_profile_name(profile_name):
         raise DemistoException("Profile name was found both in Vulnerability Protection Profiles and in Anti Spyware Profiles. Please specify profile_type.")
     
     elif profile_name in vulnerability_protection_profile_names:
-        return 'Vulnerability Protection Profile'
+        return VULNERABILITY_PROTECTION
     
     elif profile_name in anti_spyware_profile_names:
-        return 'Anti Spyware Profile'
+        return ANTI_SPYWARE
     
     #TODO needed? or to let the request fail?
     else:
