@@ -14,7 +14,7 @@ SERVER_VERSION = '8.7.0'
 BUILD_VERSION = '1241866'
 #TODO change to the version below after platform merge
 # BUILD_VERSION = '1247804'
-#To use apiCall, the machine must be XSIAM, have a version greater than RBAC_VALIDATIONS_BUILD_NUMBER,
+#To use apiCall, the machine must be XSIAM, have a version greater than 8.7.0-1247804,
 # and is_using_engine()=False.
 IS_CORE_AVAILABLE = is_xsiam() and is_demisto_version_ge(version=SERVER_VERSION,
                                                              build_number=BUILD_VERSION) and not is_using_engine()
@@ -23,7 +23,6 @@ IS_CORE_AVAILABLE = is_xsiam() and is_demisto_version_ge(version=SERVER_VERSION,
 #ALLOW_BIN_CONTENT_RESPONSE_SERVER_VERSION = '8.7.0'
 #ALLOW_RESPONSE_AS_BINARY = is_demisto_version_ge(version=ALLOW_BIN_CONTENT_RESPONSE_SERVER_VERSION,
 #                                                 build_number=ALLOW_BIN_CONTENT_RESPONSE_BUILD_NUM)
-
 
 class CoreClient(BaseClient):
 
@@ -183,8 +182,6 @@ def get_file_event_query(endpoint_ids: str, args: dict) -> str:
         str: The created query.
     """
     file_sha256_list = args.get('file_sha256', '')
-    if not file_sha256_list:
-        raise DemistoException('Please provide a file_sha256 argument.')
     file_sha256_list = wrap_list_items_in_double_quotes(file_sha256_list)
     return f'''dataset = xdr_data | filter agent_id in ({endpoint_ids}) and event_type = FILE and action_file_sha256
  in ({file_sha256_list})| fields agent_hostname, agent_ip_addresses, agent_id, action_file_path, action_file_sha256,
@@ -202,8 +199,6 @@ def get_process_event_query(endpoint_ids: str, args: dict) -> str:
         str: The created query.
     """
     process_sha256_list = args.get('process_sha256', '')
-    if not process_sha256_list:
-        raise DemistoException('Please provide a process_sha256 argument.')
     process_sha256_list = wrap_list_items_in_double_quotes(process_sha256_list)
     return f'''dataset = xdr_data | filter agent_id in ({endpoint_ids}) and event_type = PROCESS and
  action_process_image_sha256 in ({process_sha256_list}) | fields agent_hostname, agent_ip_addresses, agent_id,
@@ -224,8 +219,6 @@ def get_dll_module_query(endpoint_ids: str, args: dict) -> str:
         str: The created query.
     """
     loaded_module_sha256 = args.get('loaded_module_sha256', '')
-    if not loaded_module_sha256:
-        raise DemistoException('Please provide a loaded_module_sha256 argument.')
     loaded_module_sha256 = wrap_list_items_in_double_quotes(loaded_module_sha256)
     return f'''dataset = xdr_data | filter agent_id in ({endpoint_ids}) and event_type = LOAD_IMAGE and
  action_module_sha256 in ({loaded_module_sha256})| fields agent_hostname, agent_ip_addresses, agent_id,
@@ -245,8 +238,6 @@ def get_network_connection_query(endpoint_ids: str, args: dict) -> str:
         str: The created query.
     """
     remote_ip_list = args.get('remote_ip', '')
-    if not remote_ip_list:
-        raise DemistoException('Please provide a remote_ip argument.')
     remote_ip_list = wrap_list_items_in_double_quotes(remote_ip_list)
     local_ip_filter = ''
     if args.get('local_ip'):
@@ -272,8 +263,6 @@ def get_registry_query(endpoint_ids: str, args: dict) -> str:
         str: The created query.
     """
     reg_key_name = args.get('reg_key_name', '')
-    if not reg_key_name:
-        raise DemistoException('Please provide a reg_key_name argument.')
     reg_key_name = wrap_list_items_in_double_quotes(reg_key_name)
     return f'''dataset = xdr_data | filter agent_id in ({endpoint_ids}) and event_type = REGISTRY and
  action_registry_key_name in ({reg_key_name}) | fields agent_hostname, agent_id, agent_ip_addresses, agent_os_type,
@@ -292,8 +281,6 @@ def get_event_log_query(endpoint_ids: str, args: dict) -> str:
         str: The created query.
     """
     event_id = args.get('event_id', '')
-    if not event_id:
-        raise DemistoException('Please provide a event_id argument.')
     return f'''dataset = xdr_data | filter agent_id in ({endpoint_ids}) and event_type = EVENT_LOG and
  action_evtlog_event_id in ({event_id}) | fields agent_hostname, agent_id, agent_ip_addresses, agent_os_type,
  agent_os_sub_type, action_evtlog_event_id, event_type, event_sub_type, action_evtlog_message,
@@ -358,8 +345,6 @@ def get_process_instance_network_activity_query(endpoint_ids: str, args: dict) -
         str: The created query.
     """
     process_instance_id_list = args.get('process_instance_id', '')
-    if not process_instance_id_list:
-        raise DemistoException('Please provide a process_instance_id argument.')
     process_instance_id_list = wrap_list_items_in_double_quotes(process_instance_id_list)
     return f'''dataset = xdr_data | filter agent_id in ({endpoint_ids}) and event_type = NETWORK and
  actor_process_instance_id in ({process_instance_id_list}) | fields agent_hostname, agent_ip_addresses, agent_id,
@@ -380,8 +365,6 @@ def get_process_causality_network_activity_query(endpoint_ids: str, args: dict) 
         str: The created query.
     """
     process_causality_id_list = args.get('process_causality_id', '')
-    if not process_causality_id_list:
-        raise DemistoException('Please provide a process_causality_id argument.')
     process_causality_id_list = wrap_list_items_in_double_quotes(process_causality_id_list)
 
     return f'''dataset = xdr_data | filter agent_id in ({endpoint_ids}) and event_type = NETWORK
