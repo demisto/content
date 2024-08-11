@@ -10,9 +10,7 @@ This integration was integrated and tested with version 3.0 of Cortex Core - XQL
 
 ## Troubleshooting
 
-1. To use this integration, the machine must be an XSIAM machine with version 8.6.0-992980 or higher.
-2. When using a query with more than 1000 results, the XSIAM version must be at least 8.7.0-1230614.
-As a result, if the XSIAM version is lower than the mentioned version, please set the limit to 1000 or fewer.
+1. To use this integration, the machine must be an XSIAM machine with version 8.7.0-1247804 or higher.
 
 ## Commands
 
