@@ -1,3 +1,4 @@
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *
 
@@ -2052,7 +2053,7 @@ def resolve_detection(ids, status, assigned_to_uuid, show_in_ui, comment, tag):
         demisto.debug(f"in resolve_detection: {LEGACY_VERSION =} and {payload=}")
         # modify the payload to match the Raptor API
         ids = payload.pop('ids')
-        payload["assign_to_user_id"] = payload.pop("assigned_to_uuid") if "assigned_to_uuid" in payload else None
+        payload["assign_to_uuid"] = payload.pop("assigned_to_uuid") if "assigned_to_uuid" in payload else None
         payload["update_status"] = payload.pop("status") if "status" in payload else None
         payload["append_comment"] = payload.pop("comment") if "comment" in payload else None
         if tag:
@@ -3989,24 +3990,18 @@ def search_device_command():
         :return: EntryObject of search device command
     """
     raw_res = search_device()
+    device_ids = []
     if not raw_res:
         return create_entry_object(hr='Could not find any devices.')
     devices = raw_res.get('resources')
     extended_data = argToBoolean(demisto.args().get('extended_data', False))
+    for device in devices:
+        device_id = device.get("device_id")
+        device_ids.append(device_id)
+    state_data = get_status(device_ids)
     command_results = []
     for single_device in devices:
-        # demisto.debug(f"single device info: {single_device}")
-        # status, is_isolated = generate_status_fields(single_device.get('status'), single_device.get("device_id"))
-        endpoint = Common.Endpoint(
-            id=single_device.get('device_id'),
-            hostname=single_device.get('hostname'),
-            ip_address=single_device.get('local_ip'),
-            os=single_device.get('platform_name'),
-            os_version=single_device.get('os_version'),
-            status=get_status(single_device.get("device_id")),
-            is_isolated=get_isolation_status(single_device.get('status')),
-            mac_address=single_device.get('mac_address'),
-            vendor=INTEGRATION_NAME)
+        endpoint = generate_endpoint_by_contex_standard(single_device, state_data)
         if not extended_data:
             entry = get_trasnformed_dict(single_device, SEARCH_DEVICE_KEY_MAP)
             headers = ['ID', 'Hostname', 'OS', 'MacAddress', 'LocalIP', 'ExternalIP', 'FirstSeen', 'LastSeen', 'Status']
@@ -4056,13 +4051,29 @@ def enrich_groups(all_group_ids) -> dict[str, Any]:
     return result
 
 
-def get_status(device_id):
-    raw_res = http_request('GET', '/devices/entities/online-state/v1', params={'ids': device_id})
-    state = raw_res.get('resources')[0].get('state', '')
-    if state == 'unknown':
-        demisto.debug(f"Device with id: {device_id} returned an unknown state, which indicates that the host has not"
-                      f" been seen recently and we are not confident about its current state")
-    return HOST_STATUS_DICT[state]
+def get_status(device_ids):
+    """
+    Get the online status for one or more hosts by specifying each host’s unique ID (up to 100 max).
+    The status can be online, offline, or unknown.
+    Args:
+        device_ids: list of device ids.
+
+    Returns: dictionary contains the id:state
+
+    """
+    state_data = {}
+    batch_size = 100
+    for i in range(0, len(device_ids), batch_size):
+        batch = device_ids[i:i + batch_size]
+        raw_res = http_request('GET', '/devices/entities/online-state/v1', params={'ids': batch})
+        for res in raw_res.get('resources'):
+            state = res.get('state', '')
+            device_id = res.get('id', '')
+            if state == 'unknown':
+                demisto.debug(f"Device with id: {device_id} returned an unknown state, which indicates that the host has not"
+                              f" been seen recently and we are not confident about its current state")
+            state_data[device_id] = HOST_STATUS_DICT[state]
+    return state_data
 
 
 def get_isolation_status(endpoint_status):
@@ -4079,22 +4090,19 @@ def get_isolation_status(endpoint_status):
     return is_isolated
 
 
-def generate_endpoint_by_contex_standard(devices):
-    standard_endpoints = []
-    for single_device in devices:
-        # status, is_isolated = generate_status_fields(single_device.get('status'), single_device.get("device_id"))
-        endpoint = Common.Endpoint(
-            id=single_device.get('device_id'),
-            hostname=single_device.get('hostname'),
-            ip_address=single_device.get('local_ip'),
-            os=single_device.get('platform_name'),
-            os_version=single_device.get('os_version'),
-            status=get_status(single_device.get("device_id")),
-            is_isolated=get_isolation_status(single_device.get('status')),
-            mac_address=single_device.get('mac_address'),
-            vendor=INTEGRATION_NAME)
-        standard_endpoints.append(endpoint)
-    return standard_endpoints
+def generate_endpoint_by_contex_standard(single_device, state_data):
+    device_id = single_device.get('device_id')
+    endpoint = Common.Endpoint(
+        id=device_id,
+        hostname=single_device.get('hostname'),
+        ip_address=single_device.get('local_ip'),
+        os=single_device.get('platform_name'),
+        os_version=single_device.get('os_version'),
+        status=state_data.get(device_id),
+        is_isolated=get_isolation_status(single_device.get('status')),
+        mac_address=single_device.get('mac_address'),
+        vendor=INTEGRATION_NAME)
+    return endpoint
 
 
 def get_endpoint_command():
@@ -4112,13 +4120,20 @@ def get_endpoint_command():
     if not raw_res:
         return create_entry_object(hr='Could not find any devices.')
     devices = raw_res.get('resources')
+    device_ids = []
+    for device in devices:
+        device_id = device.get("device_id")
+        device_ids.append(device_id)
+    state_data = get_status(device_ids)
 
     # filter hostnames that will match the exact hostnames including case-sensitive
     if hostnames := argToList(args.get('hostname')):
         lowercase_hostnames = {hostname.lower() for hostname in hostnames}
         devices = [device for device in devices if (device.get('hostname') or '').lower() in lowercase_hostnames]
 
-    standard_endpoints = generate_endpoint_by_contex_standard(devices)
+    standard_endpoints = []
+    for single_device in devices:
+        standard_endpoints.append(generate_endpoint_by_contex_standard(single_device, state_data))
 
     command_results = []
     for endpoint in standard_endpoints:

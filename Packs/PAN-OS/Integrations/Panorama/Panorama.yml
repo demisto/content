@@ -9646,7 +9646,7 @@ script:
       description: The Profile's exceptions list.
       type: String
 
-  dockerimage: demisto/pan-os-python:1.0.0.105214
+  dockerimage: demisto/pan-os-python:1.0.0.107786
   isfetch: true
   runonce: false
   script: ''
