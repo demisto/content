@@ -1,0 +1,10 @@
+{
+    "id": 42,
+    "sid": "Pentest-2020-01",
+    "level": "level_critical",
+    "title": "Capacité à faire une injection SQL",
+    "description": "",
+    "editable": true,
+    "servers": [],
+    "cve_announcements": []
+  }

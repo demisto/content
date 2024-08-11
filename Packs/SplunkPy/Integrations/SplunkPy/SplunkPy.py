@@ -951,6 +951,19 @@ def get_notable_field_and_value(raw_field, notable_data, raw=None):
     return "", ""
 
 
+def remove_double_quotes(query: str) -> str:
+    """
+        query (str): query with double double quotes.
+
+        Return: query with no double double quotes. Example: "this is a ""test""\" -> "this is a "test""
+    """
+    # Regular expression to match two consecutive quotation marks with any character(s) in between
+    pattern = re.compile(r'""(.*?)""')
+
+    # Substitute the pattern with single quotes around the matched content
+    return pattern.sub(r'"\1"', query)
+
+
 def build_drilldown_search(notable_data, search, raw_dict, is_query_name=False):
     """ Replaces all needed fields in a drilldown search query, or a search query name
     Args:
@@ -992,8 +1005,9 @@ def build_drilldown_search(notable_data, search, raw_dict, is_query_name=False):
     searchable_search.append(search[start:])  # Handling the tail of the query
 
     parsed_query = ''.join(searchable_search)
+
     # Avoiding double quotes in splunk variables that were surrounded by quotation marks in the original query (ex: '"$user|s"')
-    parsed_query = parsed_query.replace('""', '"')
+    parsed_query = remove_double_quotes(parsed_query)
     demisto.debug(f"Parsed query is: {parsed_query}")
 
     return parsed_query
@@ -1111,8 +1125,8 @@ def drilldown_enrichment(service: client.Service, notable_data, num_enrichment_e
             if isinstance(search, dict):
                 query_name = search.get("name", "")
                 query_search = search.get("search", "")
-                earliest_offset = search.get("earliest", "")  # The earliest time to query from.
-                latest_offset = search.get("latest", "")  # The latest time to query to.
+                earliest_offset = search.get("earliest") or search.get("earliest_offset", "")  # The earliest time to query from.
+                latest_offset = search.get("latest") or search.get("latest_offset", "")  # The latest time to query to.
 
             else:
                 # Got a single drilldown search under the 'drilldown_search' key (BC)

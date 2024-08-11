@@ -1,5 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
+
 import botocore.exceptions
 from datetime import datetime, date
 
@@ -383,6 +385,56 @@ def delete_access_key(args, client):  # pragma: no cover
     response = client.delete_access_key(**kwargs)
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
         demisto.results("The Access Key was deleted")
+
+
+def list_mfa_devices(args, client):
+    user_name = args.get('userName', "")
+    marker = args.get('marker', None)
+    limit, is_manual, page_size = get_limit(args)
+
+    kwargs = {
+        'UserName': user_name,
+        'MaxItems': limit
+    }
+    if marker:
+        kwargs.update({'Marker': marker})
+    response = client.list_mfa_devices(**kwargs)
+
+    mfa_devices = response['MFADevices']
+    data = []
+
+    for mfa_device in mfa_devices:
+        data.append({
+            'UserName': mfa_device['UserName'],
+            'SerialNumber': mfa_device['SerialNumber'],
+            'EnableDate': datetime.strftime(mfa_device['EnableDate'], '%Y-%m-%d %H:%M:%S'),
+        })
+    if is_manual and page_size and len(data) > page_size:
+        data = data[-1 * page_size:]
+    human_readable = tableToMarkdown('AWS IAM Users MFA Devices', data)
+    return CommandResults(
+        readable_output=human_readable,
+        outputs_key_field="UserName",
+        outputs_prefix="AWS.IAM.MFADevices",
+        outputs={"Devices": data, "Marker": response["Marker"]},
+    )
+
+
+def deactivate_mfa_device(args, client):
+    response = client.deactivate_mfa_device(
+        UserName=args['userName'],
+        SerialNumber=args['serialNumber']
+    )
+    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+        demisto.results('The User {} mfa device has been deactivated'.format(args.get('userName')))
+
+
+def delete_virtual_mfa_device(args, client):
+    response = client.delete_virtual_mfa_device(
+        SerialNumber=args['serialNumber']
+    )
+    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+        demisto.results('The User {} mfa device has been deleted'.format(args.get('serialNumber')))
 
 
 def create_instance_profile(args, client):  # pragma: no cover
@@ -1321,6 +1373,12 @@ def main():     # pragma: no cover
             remove_user_from_group(args, client)
         elif command == 'aws-iam-delete-access-key':
             delete_access_key(args, client)
+        elif command == 'aws-iam-list-mfa-devices':
+            list_mfa_devices(args, client)
+        elif command == 'aws-iam-deactivate-mfa-devices':
+            deactivate_mfa_device(args, client)
+        elif command == 'aws-iam-delete-mfa-devices':
+            delete_virtual_mfa_device(args, client)
         elif command == 'aws-iam-create-instance-profile':
             create_instance_profile(args, client)
         elif command == 'aws-iam-delete-instance-profile':
