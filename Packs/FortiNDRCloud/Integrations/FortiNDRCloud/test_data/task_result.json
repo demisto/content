@@ -8,7 +8,7 @@
         "test1"
       ],
       "account_code": "test",
-      "bpf": "host 132.215.7.238",
+      "bpf": "host 5.1.2.1",
       "created_uuid": "fd47730b-dc10-4a04-8762-40eb1585bedb",
       "created_email": "test@test.com",
       "created": "2022-06-29T17:28:12.238Z",

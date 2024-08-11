@@ -1,6 +1,6 @@
 !fortindr-cloud-get-sensors account_uuid=bedf5bf3-94b0-49fa-9085-12ca29876dc3
 !fortindr-cloud-get-sensors account_code=gdm
-!fortindr-cloud-get-devices cidr=21.5.0.0/16
+!fortindr-cloud-get-devices cidr=2.4.1.1/16
 !fortindr-cloud-get-telemetry-events start_date=2022-08-22T23:00:00.000Z end_date=2022-08-23T01:00:00.000Z
 !fortindr-cloud-get-telemetry-network start_date=2022-08-21T00:00:00.000Z end_date=2022-08-21T01:00:00.000Z interval=day
 !fortindr-cloud-get-telemetry-packetstats start_date=2022-08-22T23:00:00.000Z end_date=2022-08-23T01:00:00.000Z
@@ -8,7 +8,7 @@
 
 !fortindr-cloud-get-entity-summary entity=8.8.8.8
 !fortindr-cloud-get-entity-pdns entity=google.com limit=3
-!fortindr-cloud-get-entity-dhcp entity=10.20.0.69 start_date=2023-01-01T00:00:00.000Z
+!fortindr-cloud-get-entity-dhcp entity=1.3.1.1 start_date=2023-01-01T00:00:00.000Z
 !fortindr-cloud-get-entity-file hash=2b7a609371b2a844181c2f79f1b45cf7
 
 !fortindr-cloud-get-detections status=active include=rules created_or_shared_start_date=2022-08-23T22:00:00.000Z created_or_shared_end_date=2022-08-23T22:30:00.000Z

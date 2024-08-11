@@ -2,19 +2,19 @@
   "devices": {
     "device_list": [
       {
-        "ip_address": "156.112.68.177",
+        "ip_address": "6.1.5.3",
         "date": null,
         "internal": true,
         "external": true
       },
       {
-        "ip_address": "156.112.68.176",
+        "ip_address": "6.1.5.2",
         "date": null,
         "internal": false,
         "external": true
       },
       {
-        "ip_address": "156.112.68.175",
+        "ip_address": "6.1.5.1",
         "date": null,
         "internal": false,
         "external": true

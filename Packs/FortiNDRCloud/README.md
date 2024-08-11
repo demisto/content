@@ -299,7 +299,7 @@ Get a list of all devices.
 
 #### Command example
 
-```!fortindr-cloud-get-devices cidr=21.5.0.0/16```
+```!fortindr-cloud-get-devices cidr=2.4.1.1/16```
 
 #### Context Example
 
@@ -311,19 +311,19 @@ Get a list of all devices.
                 "date": null,
                 "external": true,
                 "internal": true,
-                "ip_address": "21.5.31.1"
+                "ip_address": "2.4.2.1"
             },
             {
                 "date": null,
                 "external": true,
                 "internal": true,
-                "ip_address": "21.5.31.5"
+                "ip_address": "2.4.2.2"
             },
             {
                 "date": null,
                 "external": true,
                 "internal": true,
-                "ip_address": "21.5.31.101"
+                "ip_address": "2.4.2.3"
             }
         ]
     }
@@ -336,9 +336,9 @@ Get a list of all devices.
 
 >|date|external|internal|ip_address|
 >|---|---|---|---|
->|  | true | true | 21.5.31.1 |
->|  | true | true | 21.5.31.5 |
->|  | true | true | 21.5.31.101 |
+>|  | true | true | 2.4.2.1 |
+>|  | true | true | 2.4.2.2 |
+>|  | true | true | 2.4.2.3 |
 
 ### fortindr-cloud-get-tasks
 
@@ -392,11 +392,11 @@ Get a list of all the PCAP tasks.
             "account_code": "ice",
             "actual_end_time": "2020-01-18T03:16:12.214Z",
             "actual_start_time": "2020-01-17T03:16:12.214Z",
-            "bpf": "src host 10.30.8.192 and dst port 10001",
+            "bpf": "src host 1.4.1.1 and dst port 10001",
             "created": "2020-01-17T03:18:17.584Z",
             "created_email": "test@test.com",
             "created_uuid": "32329e78-c51f-4da4-bd56-6bfb35d84a9c",
-            "description": "src host 10.30.8.192 and dst port 10001",
+            "description": "src host 1.4.1.1 and dst port 10001",
             "files": [],
             "has_files": false,
             "name": "Meh-Ike phone 10001",
@@ -421,7 +421,7 @@ Get a list of all the PCAP tasks.
 
 >|account_code|actual_end_time|actual_start_time|bpf|created|created_email|created_uuid|description|files|has_files|name|requested_end_time|requested_start_time|sensor_ids|status|task_uuid|updated|updated_email|updated_uuid|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| ice | 2020-01-18T03:16:12.214Z | 2020-01-17T03:16:12.214Z | src host 10.30.8.192 and dst port 10001 | 2020-01-17T03:18:17.584Z | test@test.com | 32329e78-c51f-4da4-bd56-6bfb35d84a9c | src host 10.30.8.192 and dst port 10001 |  | false | Meh-Ike phone 10001 | 2020-01-18T03:16:12.214Z | 2020-01-17T03:16:12.214Z | ice1 | inactive | de1ada61-fef3-4cc7-9287-43370cb53ccd | 2020-01-18T03:17:35.937Z |  |  |
+>| ice | 2020-01-18T03:16:12.214Z | 2020-01-17T03:16:12.214Z | src host 1.4.1.1 and dst port 10001 | 2020-01-17T03:18:17.584Z | test@test.com | 32329e78-c51f-4da4-bd56-6bfb35d84a9c | src host 1.4.1.1 and dst port 10001 |  | false | Meh-Ike phone 10001 | 2020-01-18T03:16:12.214Z | 2020-01-17T03:16:12.214Z | ice1 | inactive | de1ada61-fef3-4cc7-9287-43370cb53ccd | 2020-01-18T03:17:35.937Z |  |  |
 
 
 ### fortindr-cloud-create-task
@@ -875,7 +875,7 @@ Get passive DNS information about an IP or domain.
                     "first_seen": "2022-04-06T00:00:00.000Z",
                     "last_seen": "2022-08-24T00:00:00.000Z",
                     "record_type": "a",
-                    "resolved": "132.215.12.206",
+                    "resolved": "5.1.3.1",
                     "sensor_id": "gdm2",
                     "source": "icebrg_dns"
                 },
@@ -884,7 +884,7 @@ Get passive DNS information about an IP or domain.
                     "first_seen": "2022-04-03T00:00:00.000Z",
                     "last_seen": "2022-08-21T00:00:00.000Z",
                     "record_type": "a",
-                    "resolved": "132.215.5.238",
+                    "resolved": "5.1.1.1",
                     "sensor_id": "gdm2",
                     "source": "icebrg_dns"
                 },
@@ -893,7 +893,7 @@ Get passive DNS information about an IP or domain.
                     "first_seen": "2022-03-30T00:00:00.000Z",
                     "last_seen": "2022-08-24T00:00:00.000Z",
                     "record_type": "a",
-                    "resolved": "132.215.7.238",
+                    "resolved": "5.1.2.1",
                     "sensor_id": "gdm2",
                     "source": "icebrg_dns"
                 }
@@ -909,9 +909,9 @@ Get passive DNS information about an IP or domain.
 
 >|account_uuid|first_seen|last_seen|record_type|resolved|sensor_id|source|
 >|---|---|---|---|---|---|---|
->| dc9ab97f-9cdf-46af-8ca2-e71e8e8243c8 | 2022-04-06T00:00:00.000Z | 2022-08-24T00:00:00.000Z | a | 132.215.12.206 | gdm2 | icebrg_dns |
->| dc9ab97f-9cdf-46af-8ca2-e71e8e8243c8 | 2022-04-03T00:00:00.000Z | 2022-08-21T00:00:00.000Z | a | 132.215.5.238 | gdm2 | icebrg_dns |
->| dc9ab97f-9cdf-46af-8ca2-e71e8e8243c8 | 2022-03-30T00:00:00.000Z | 2022-08-24T00:00:00.000Z | a | 132.215.7.238 | gdm2 | icebrg_dns |
+>| dc9ab97f-9cdf-46af-8ca2-e71e8e8243c8 | 2022-04-06T00:00:00.000Z | 2022-08-24T00:00:00.000Z | a | 5.1.3.1 | gdm2 | icebrg_dns |
+>| dc9ab97f-9cdf-46af-8ca2-e71e8e8243c8 | 2022-04-03T00:00:00.000Z | 2022-08-21T00:00:00.000Z | a | 5.1.1.1 | gdm2 | icebrg_dns |
+>| dc9ab97f-9cdf-46af-8ca2-e71e8e8243c8 | 2022-03-30T00:00:00.000Z | 2022-08-24T00:00:00.000Z | a | 5.1.2.1 | gdm2 | icebrg_dns |
 
 ### fortindr-cloud-get-entity-dhcp
 
@@ -946,7 +946,7 @@ Get DHCP information about an IP address.
 
 #### Command example
 
-```!fortindr-cloud-get-entity-dhcp entity=10.20.0.69 start_date=2023-01-01T00:00:00.000Z```
+```!fortindr-cloud-get-entity-dhcp entity=1.3.1.1 start_date=2023-01-01T00:00:00.000Z```
 
 #### Context Example
 
@@ -960,7 +960,7 @@ Get DHCP information about an IP address.
                     "hostnames": [
                         "DZVZZY2"
                     ],
-                    "ip": "10.20.0.69",
+                    "ip": "1.3.1.1",
                     "lease_end": null,
                     "lease_start": "2023-04-10T16:00:25.623Z",
                     "mac": "98:e7:43:c6:69:e2",
@@ -972,7 +972,7 @@ Get DHCP information about an IP address.
                     "hostnames": [
                         "C02YC4RCJHD2"
                     ],
-                    "ip": "10.20.0.69",
+                    "ip": "1.3.1.1",
                     "lease_end": null,
                     "lease_start": "2019-12-03T20:00:57.802Z",
                     "mac": "d8:d0:90:06:8b:3b",
@@ -984,7 +984,7 @@ Get DHCP information about an IP address.
                     "hostnames": [
                         "C02CK4ADLVDL"
                     ],
-                    "ip": "10.20.0.69",
+                    "ip": "1.3.1.1",
                     "lease_end": "2023-04-10T16:00:25.623Z",
                     "lease_start": "2023-03-13T14:43:16.004Z",
                     "mac": "00:24:9b:48:03:e7",
@@ -996,7 +996,7 @@ Get DHCP information about an IP address.
                     "hostnames": [
                         "C02YG1D9JHD2"
                     ],
-                    "ip": "10.20.0.69",
+                    "ip": "1.3.1.1",
                     "lease_end": "2023-03-13T14:43:16.004Z",
                     "lease_start": "2023-02-21T17:43:46.991Z",
                     "mac": "70:88:6b:88:25:a6",
@@ -1006,7 +1006,7 @@ Get DHCP information about an IP address.
                 {
                     "customer_id": "chf",
                     "hostnames": [],
-                    "ip": "10.20.0.69",
+                    "ip": "1.3.1.1",
                     "lease_end": "2023-02-21T17:43:46.991Z",
                     "lease_start": "2023-02-21T17:41:33.830Z",
                     "mac": "70:88:6b:88:25:a6",
@@ -1018,7 +1018,7 @@ Get DHCP information about an IP address.
                     "hostnames": [
                         "HQ_MFG_TE_LAB1"
                     ],
-                    "ip": "10.20.0.69",
+                    "ip": "1.3.1.1",
                     "lease_end": "2023-02-21T17:41:33.830Z",
                     "lease_start": "2022-05-15T20:32:25.250Z",
                     "mac": "98:90:96:b5:82:b4",
@@ -1037,12 +1037,12 @@ Get DHCP information about an IP address.
 
 >|customer_id|hostnames|ip|lease_end|lease_start|mac|sensor_id|start_lease_as_long|
 >|---|---|---|---|---|---|---|---|
->| chf | DZVZZY2 | 10.20.0.69 |  | 2023-04-10T16:00:25.623Z | 98:e7:43:c6:69:e2 |  | 1681142425623 |
->| gst | C02YC4RCJHD2 | 10.20.0.69 |  | 2019-12-03T20:00:57.802Z | d8:d0:90:06:8b:3b |  | 1575403257802 |
->| chf | C02CK4ADLVDL | 10.20.0.69 | 2023-04-10T16:00:25.623Z | 2023-03-13T14:43:16.004Z | 00:24:9b:48:03:e7 |  | 1678718596004 |
->| chf | C02YG1D9JHD2 | 10.20.0.69 | 2023-03-13T14:43:16.004Z | 2023-02-21T17:43:46.991Z | 70:88:6b:88:25:a6 |  | 1677001426991 |
->| chf |  | 10.20.0.69 | 2023-02-21T17:43:46.991Z | 2023-02-21T17:41:33.830Z | 70:88:6b:88:25:a6 |  | 1677001293830 |
->| chf | HQ_MFG_TE_LAB1 | 10.20.0.69 | 2023-02-21T17:41:33.830Z | 2022-05-15T20:32:25.250Z | 98:90:96:b5:82:b4 |  | 1652646745250 |
+>| chf | DZVZZY2 | 1.3.1.1 |  | 2023-04-10T16:00:25.623Z | 98:e7:43:c6:69:e2 |  | 1681142425623 |
+>| gst | C02YC4RCJHD2 | 1.3.1.1 |  | 2019-12-03T20:00:57.802Z | d8:d0:90:06:8b:3b |  | 1575403257802 |
+>| chf | C02CK4ADLVDL | 1.3.1.1 | 2023-04-10T16:00:25.623Z | 2023-03-13T14:43:16.004Z | 00:24:9b:48:03:e7 |  | 1678718596004 |
+>| chf | C02YG1D9JHD2 | 1.3.1.1 | 2023-03-13T14:43:16.004Z | 2023-02-21T17:43:46.991Z | 70:88:6b:88:25:a6 |  | 1677001426991 |
+>| chf |  | 1.3.1.1 | 2023-02-21T17:43:46.991Z | 2023-02-21T17:41:33.830Z | 70:88:6b:88:25:a6 |  | 1677001293830 |
+>| chf | HQ_MFG_TE_LAB1 | 1.3.1.1 | 2023-02-21T17:41:33.830Z | 2022-05-15T20:32:25.250Z | 98:90:96:b5:82:b4 |  | 1652646745250 |
 
 
 ### fortindr-cloud-get-entity-file
@@ -1185,7 +1185,7 @@ Get a list of detections.
             {
                 "account_uuid": "1e5dbd92-9dca-4f36-bec5-c292172cbeaa",
                 "created": "2022-08-23T22:24:44.047670Z",
-                "device_ip": "172.18.96.86",
+                "device_ip": "7.3.2.1",
                 "event_count": 2,
                 "first_seen": "2022-08-23T21:44:33.343000Z",
                 "hostname": null,
@@ -1216,7 +1216,7 @@ Get a list of detections.
             {
                 "account_uuid": "1e5dbd92-9dca-4f36-bec5-c292172cbeaa",
                 "created": "2022-08-23T22:25:41.295229Z",
-                "device_ip": "172.18.96.86",
+                "device_ip": "7.3.2.1",
                 "event_count": 2,
                 "first_seen": "2022-08-23T21:44:33.343000Z",
                 "hostname": null,
@@ -1247,7 +1247,7 @@ Get a list of detections.
             {
                 "account_uuid": "1e5dbd92-9dca-4f36-bec5-c292172cbeaa",
                 "created": "2022-08-23T22:26:36.675600Z",
-                "device_ip": "172.18.96.86",
+                "device_ip": "7.3.2.1",
                 "event_count": 2,
                 "first_seen": "2022-08-23T21:44:33.343000Z",
                 "hostname": null,
@@ -1278,7 +1278,7 @@ Get a list of detections.
             {
                 "account_uuid": "55985199-810b-4a7b-aa88-10190796fb6b",
                 "created": "2022-08-23T22:00:02.068235Z",
-                "device_ip": "172.19.104.101",
+                "device_ip": "7.4.1.1",
                 "event_count": 84,
                 "first_seen": "2022-08-23T18:12:32.545000Z",
                 "hostname": null,
@@ -1317,10 +1317,10 @@ Get a list of detections.
 
 >|account_uuid|created|device_ip|event_count|first_seen|hostname|indicators|last_seen|muted|muted_comment|muted_device_uuid|muted_rule|muted_timestamp|muted_user_uuid|resolution|resolution_comment|resolution_timestamp|resolution_user_uuid|rule_category|rule_confidence|rule_description|rule_name|rule_severity|rule_uuid|sensor_id|status|updated|username|uuid|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 1e5dbd92-9dca-4f36-bec5-c292172cbeaa | 2022-08-23T22:24:44.047670Z | 172.18.96.86 | 2 | 2022-08-23T21:44:33.343000Z |  |  | 2022-08-23T22:02:18.535000Z | false |  |  | true |  |  |  |  |  |  | Miscellaneous | high | test | test icebrg | high | 40b4d7e2-66f7-412f-b997-4ec6734313f4 | rzt37 | active | 2022-08-23T23:25:06.721425Z |  | 631616f0-27ad-434e-bbfa-f8808785ec40 |
->| 1e5dbd92-9dca-4f36-bec5-c292172cbeaa | 2022-08-23T22:25:41.295229Z | 172.18.96.86 | 2 | 2022-08-23T21:44:33.343000Z |  |  | 2022-08-23T22:02:18.535000Z | false |  |  | true |  |  |  |  |  |  | Miscellaneous | high | test | test icebrg | high | 432ec2a3-11d8-4bd8-81fa-abd39dac5a8d | rzt37 | active | 2022-08-23T23:25:58.939678Z |  | 6e534db2-07db-4cb5-ad36-7bbbcdd9f31f |
->| 1e5dbd92-9dca-4f36-bec5-c292172cbeaa | 2022-08-23T22:26:36.675600Z | 172.18.96.86 | 2 | 2022-08-23T21:44:33.343000Z |  |  | 2022-08-23T22:02:18.535000Z | false |  |  | true |  |  |  |  |  |  | Miscellaneous | high | test | test icebrg | high | 46e00dd4-2bf2-4d1c-99e7-b5ac8bc71b62 | rzt37 | active | 2022-08-23T23:26:59.600742Z |  | d1264843-cb3d-4f31-a19c-7291a5a4fbbd |
->| 55985199-810b-4a7b-aa88-10190796fb6b | 2022-08-23T22:00:02.068235Z | 172.19.104.101 | 84 | 2022-08-23T18:12:32.545000Z |  |  | 2022-10-31T01:45:51.512000Z | false |  | 9e62c23c-93e0-422c-915f-0fdb8ba49bcd | false |  |  |  |  |  |  | Posture:Potentially Unauthorized Software or Device | high | This logic is intended to detect HTTP connections made by the TeamViewer remote administration tool. A remote administration tool is a type of software that allows remote users to manage a host as if they had physical access. These types of tools can serve legitimate purposes in an enterprise environment but, if installed without authorization, may also indicate a compromised host. An attacker with access to a remote administration tool on a system can use it to surveil the user, install malware, or exfiltrate files from the remote host. Unauthorized installations also provide access to the enterprise network, circumventing any network controls. <br/><br/>FortiGuard ATR considers TeamViewer to be moderate severity, since it is not inherently malicious, but may be indicative of an attempt to circumvent organizational security controls or a malicious actor using it unbeknownst to the user for privileged remote access. FortiGuard ATR considers this detection high confidence due to the uniqueness of the user agent in HTTP requests made by the client.<br/><br/>## Next Steps <br/>1. Determine if this detection is a true positive by verifying that the affected host has the TeamViewer software installed.<br/>2. Remove any unapproved software.<br/>3. Control software installations on company assets. | TeamViewer Remote Administration Tool | moderate | b1258c0b-3442-43e8-a98e-66440ebdbe6d | csp1 | active | 2022-10-31T02:52:02.084699Z |  | 280fc4c8-8e04-4110-86f5-4022595882bf |
+>| 1e5dbd92-9dca-4f36-bec5-c292172cbeaa | 2022-08-23T22:24:44.047670Z | 7.3.2.1 | 2 | 2022-08-23T21:44:33.343000Z |  |  | 2022-08-23T22:02:18.535000Z | false |  |  | true |  |  |  |  |  |  | Miscellaneous | high | test | test icebrg | high | 40b4d7e2-66f7-412f-b997-4ec6734313f4 | rzt37 | active | 2022-08-23T23:25:06.721425Z |  | 631616f0-27ad-434e-bbfa-f8808785ec40 |
+>| 1e5dbd92-9dca-4f36-bec5-c292172cbeaa | 2022-08-23T22:25:41.295229Z | 7.3.2.1 | 2 | 2022-08-23T21:44:33.343000Z |  |  | 2022-08-23T22:02:18.535000Z | false |  |  | true |  |  |  |  |  |  | Miscellaneous | high | test | test icebrg | high | 432ec2a3-11d8-4bd8-81fa-abd39dac5a8d | rzt37 | active | 2022-08-23T23:25:58.939678Z |  | 6e534db2-07db-4cb5-ad36-7bbbcdd9f31f |
+>| 1e5dbd92-9dca-4f36-bec5-c292172cbeaa | 2022-08-23T22:26:36.675600Z | 7.3.2.1 | 2 | 2022-08-23T21:44:33.343000Z |  |  | 2022-08-23T22:02:18.535000Z | false |  |  | true |  |  |  |  |  |  | Miscellaneous | high | test | test icebrg | high | 46e00dd4-2bf2-4d1c-99e7-b5ac8bc71b62 | rzt37 | active | 2022-08-23T23:26:59.600742Z |  | d1264843-cb3d-4f31-a19c-7291a5a4fbbd |
+>| 55985199-810b-4a7b-aa88-10190796fb6b | 2022-08-23T22:00:02.068235Z | 7.4.1.1 | 84 | 2022-08-23T18:12:32.545000Z |  |  | 2022-10-31T01:45:51.512000Z | false |  | 9e62c23c-93e0-422c-915f-0fdb8ba49bcd | false |  |  |  |  |  |  | Posture:Potentially Unauthorized Software or Device | high | This logic is intended to detect HTTP connections made by the TeamViewer remote administration tool. A remote administration tool is a type of software that allows remote users to manage a host as if they had physical access. These types of tools can serve legitimate purposes in an enterprise environment but, if installed without authorization, may also indicate a compromised host. An attacker with access to a remote administration tool on a system can use it to surveil the user, install malware, or exfiltrate files from the remote host. Unauthorized installations also provide access to the enterprise network, circumventing any network controls. <br/><br/>FortiGuard ATR considers TeamViewer to be moderate severity, since it is not inherently malicious, but may be indicative of an attempt to circumvent organizational security controls or a malicious actor using it unbeknownst to the user for privileged remote access. FortiGuard ATR considers this detection high confidence due to the uniqueness of the user agent in HTTP requests made by the client.<br/><br/>## Next Steps <br/>1. Determine if this detection is a true positive by verifying that the affected host has the TeamViewer software installed.<br/>2. Remove any unapproved software.<br/>3. Control software installations on company assets. | TeamViewer Remote Administration Tool | moderate | b1258c0b-3442-43e8-a98e-66440ebdbe6d | csp1 | active | 2022-10-31T02:52:02.084699Z |  | 280fc4c8-8e04-4110-86f5-4022595882bf |
 
 
 ### fortindr-cloud-get-detection-rules
@@ -1759,7 +1759,7 @@ Get a list of the events that matched on a specific rule.
                     "asn": null,
                     "geo": null,
                     "internal": true,
-                    "ip": "10.1.12.89",
+                    "ip": "1.1.1.3",
                     "ip_bytes": null,
                     "pkts": null,
                     "port": 55585
@@ -1772,12 +1772,12 @@ Get a list of the events that matched on a specific rule.
                         "asn": null,
                         "geo": null,
                         "internal": true,
-                        "ip": "10.3.12.89",
+                        "ip": "1.2.1.3",
                         "ip_bytes": null,
                         "pkts": null,
                         "port": null
                     },
-                    "hostname": "10.3.12.89",
+                    "hostname": "1.2.1.3",
                     "method": "GET",
                     "protocol": "HTTP/1.1",
                     "redirect": null,
@@ -1803,7 +1803,7 @@ Get a list of the events that matched on a specific rule.
                     "asn": null,
                     "geo": null,
                     "internal": true,
-                    "ip": "10.3.12.89",
+                    "ip": "1.2.1.3",
                     "ip_bytes": null,
                     "pkts": null,
                     "port": 80
@@ -1817,7 +1817,7 @@ Get a list of the events that matched on a specific rule.
                     "asn": null,
                     "geo": null,
                     "internal": true,
-                    "ip": "10.1.12.88",
+                    "ip": "1.1.1.2",
                     "ip_bytes": null,
                     "pkts": null,
                     "port": 45955
@@ -1856,7 +1856,7 @@ Get a list of the events that matched on a specific rule.
                     "asn": null,
                     "geo": null,
                     "internal": true,
-                    "ip": "10.3.12.88",
+                    "ip": "1.2.1.2",
                     "ip_bytes": null,
                     "pkts": null,
                     "port": 80
@@ -1870,7 +1870,7 @@ Get a list of the events that matched on a specific rule.
                     "asn": null,
                     "geo": null,
                     "internal": true,
-                    "ip": "10.1.12.80",
+                    "ip": "1.1.1.1",
                     "ip_bytes": null,
                     "pkts": null,
                     "port": 45009
@@ -1883,12 +1883,12 @@ Get a list of the events that matched on a specific rule.
                         "asn": null,
                         "geo": null,
                         "internal": true,
-                        "ip": "10.3.12.80",
+                        "ip": "1.2.1.1",
                         "ip_bytes": null,
                         "pkts": null,
                         "port": null
                     },
-                    "hostname": "10.3.12.80",
+                    "hostname": "1.2.1.1",
                     "method": "GET",
                     "protocol": "HTTP/1.1",
                     "redirect": null,
@@ -1914,7 +1914,7 @@ Get a list of the events that matched on a specific rule.
                     "asn": null,
                     "geo": null,
                     "internal": true,
-                    "ip": "10.3.12.80",
+                    "ip": "1.2.1.1",
                     "ip_bytes": null,
                     "pkts": null,
                     "port": 80
@@ -1933,9 +1933,9 @@ Get a list of the events that matched on a specific rule.
 
 >|customer_id|dst|event_type|flow_id|geo_distance|http|intel|payload|proto|sensor_id|sig_category|sig_id|sig_name|sig_rev|sig_severity|source|src|timestamp|uuid|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| gig | ip: 10.1.12.89<br/>port: 55585<br/>ip_bytes: null<br/>pkts: null<br/>geo: null<br/>asn: null<br/>internal: true | suricata |  |  | status: 200<br/>protocol: HTTP/1.1<br/>uri: /9Azi<br/>host: {"ip": "10.3.12.89", "port": null, "ip_bytes": null, "pkts": null, "geo": null, "asn": null, "internal": true}<br/>hostname: 10.3.12.89<br/>response_len: 11644<br/>method: GET<br/>response_mime: application/octet-stream<br/>referrer: null<br/>user_agent: Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko<br/>redirect: null<br/>xff: null |  |  | tcp | gig7 | Misc activity | 2900330 | ATR INSTALLATION Cobalt Strike Encrypted Beacon x64 | 4.0 | 3 | Suricata | ip: 10.3.12.89<br/>port: 80<br/>ip_bytes: null<br/>pkts: null<br/>geo: null<br/>asn: null<br/>internal: true | 2023-05-11T04:28:02.348Z | c0fb758b-efb4-11ed-9f54-0a0561bac71d |
->| gig | ip: 10.1.12.88<br/>port: 45955<br/>ip_bytes: null<br/>pkts: null<br/>geo: null<br/>asn: null<br/>internal: true | suricata |  |  | status: 200<br/>protocol: HTTP/1.1<br/>uri: /clients3.google.com/generate_204<br/>host: {"domain": "acpananma.com", "domain_entropy": 2.6235198974609375}<br/>hostname: acpananma.com<br/>response_len: 14540<br/>method: GET<br/>response_mime: text/html<br/>referrer: null<br/>user_agent: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/587.38<br/>redirect: null<br/>xff: null |  |  | tcp | gig7 | Misc activity | 2900330 | ATR INSTALLATION Cobalt Strike Encrypted Beacon x64 | 4.0 | 3 | Suricata | ip: 10.3.12.88<br/>port: 80<br/>ip_bytes: null<br/>pkts: null<br/>geo: null<br/>asn: null<br/>internal: true | 2023-05-11T04:27:59.190Z | c0fb7581-efb4-11ed-9f54-0a0561bac71d |
->| gig | ip: 10.1.12.80<br/>port: 45009<br/>ip_bytes: null<br/>pkts: null<br/>geo: null<br/>asn: null<br/>internal: true | suricata |  |  | status: 200<br/>protocol: HTTP/1.1<br/>uri: /9Azi<br/>host: {"ip": "10.3.12.80", "port": null, "ip_bytes": null, "pkts": null, "geo": null, "asn": null, "internal": true}<br/>hostname: 10.3.12.80<br/>response_len: 7300<br/>method: GET<br/>response_mime: application/octet-stream<br/>referrer: null<br/>user_agent: Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko<br/>redirect: null<br/>xff: null |  |  | tcp | gig7 | Misc activity | 2900330 | ATR INSTALLATION Cobalt Strike Encrypted Beacon x64 | 4.0 | 3 | Suricata | ip: 10.3.12.80<br/>port: 80<br/>ip_bytes: null<br/>pkts: null<br/>geo: null<br/>asn: null<br/>internal: true | 2023-05-11T04:10:13.389Z | f5d5c2cb-efb1-11ed-9b38-020b36c82a21 |
+>| gig | ip: 1.1.1.3<br/>port: 55585<br/>ip_bytes: null<br/>pkts: null<br/>geo: null<br/>asn: null<br/>internal: true | suricata |  |  | status: 200<br/>protocol: HTTP/1.1<br/>uri: /9Azi<br/>host: {"ip": "1.2.1.3", "port": null, "ip_bytes": null, "pkts": null, "geo": null, "asn": null, "internal": true}<br/>hostname: 1.2.1.3<br/>response_len: 11644<br/>method: GET<br/>response_mime: application/octet-stream<br/>referrer: null<br/>user_agent: Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko<br/>redirect: null<br/>xff: null |  |  | tcp | gig7 | Misc activity | 2900330 | ATR INSTALLATION Cobalt Strike Encrypted Beacon x64 | 4.0 | 3 | Suricata | ip: 1.2.1.3<br/>port: 80<br/>ip_bytes: null<br/>pkts: null<br/>geo: null<br/>asn: null<br/>internal: true | 2023-05-11T04:28:02.348Z | c0fb758b-efb4-11ed-9f54-0a0561bac71d |
+>| gig | ip: 1.1.1.2<br/>port: 45955<br/>ip_bytes: null<br/>pkts: null<br/>geo: null<br/>asn: null<br/>internal: true | suricata |  |  | status: 200<br/>protocol: HTTP/1.1<br/>uri: /clients3.google.com/generate_204<br/>host: {"domain": "acpananma.com", "domain_entropy": 2.6235198974609375}<br/>hostname: acpananma.com<br/>response_len: 14540<br/>method: GET<br/>response_mime: text/html<br/>referrer: null<br/>user_agent: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/587.38<br/>redirect: null<br/>xff: null |  |  | tcp | gig7 | Misc activity | 2900330 | ATR INSTALLATION Cobalt Strike Encrypted Beacon x64 | 4.0 | 3 | Suricata | ip: 1.2.1.2<br/>port: 80<br/>ip_bytes: null<br/>pkts: null<br/>geo: null<br/>asn: null<br/>internal: true | 2023-05-11T04:27:59.190Z | c0fb7581-efb4-11ed-9f54-0a0561bac71d |
+>| gig | ip: 1.1.1.1<br/>port: 45009<br/>ip_bytes: null<br/>pkts: null<br/>geo: null<br/>asn: null<br/>internal: true | suricata |  |  | status: 200<br/>protocol: HTTP/1.1<br/>uri: /9Azi<br/>host: {"ip": "1.2.1.1", "port": null, "ip_bytes": null, "pkts": null, "geo": null, "asn": null, "internal": true}<br/>hostname: 1.2.1.1<br/>response_len: 7300<br/>method: GET<br/>response_mime: application/octet-stream<br/>referrer: null<br/>user_agent: Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko<br/>redirect: null<br/>xff: null |  |  | tcp | gig7 | Misc activity | 2900330 | ATR INSTALLATION Cobalt Strike Encrypted Beacon x64 | 4.0 | 3 | Suricata | ip: 1.2.1.1<br/>port: 80<br/>ip_bytes: null<br/>pkts: null<br/>geo: null<br/>asn: null<br/>internal: true | 2023-05-11T04:10:13.389Z | f5d5c2cb-efb1-11ed-9b38-020b36c82a21 |
 
 
 ### fortindr-cloud-create-detection-rule
