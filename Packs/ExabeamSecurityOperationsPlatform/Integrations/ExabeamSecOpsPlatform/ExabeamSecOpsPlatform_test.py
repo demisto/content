@@ -13,6 +13,8 @@ from ExabeamSecOpsPlatform import (
     _parse_group_by,
     case_search_command,
     context_table_list_command,
+    context_table_delete_command,
+    table_record_list_command,
 )
 
 
@@ -471,3 +473,53 @@ def test_context_table_list_command(mocker, args, mock_response, expected_output
 
     assert result.outputs == expected_outputs
     assert result.readable_output == expected_readable_output
+
+
+@pytest.mark.parametrize(
+    "args, mock_response, expected_output",
+    [
+        (
+            {"table_id": "12345", "delete_unused_custom_attributes": "True"},
+            {"id": "1234"},
+            "The context table with ID 1234 has been successfully deleted.",
+        ),
+        (
+            {"table_id": "12345", "delete_unused_custom_attributes": "False"},
+            {"id": "12345"},
+            "The context table with ID 12345 has been successfully deleted.",
+        )
+    ]
+)
+def test_context_table_delete_command(mocker, args, mock_response, expected_output):
+    client = MockClient("example.com", "", "", False, False)
+    mock_delete = mocker.patch.object(client, "delete_context_table", return_value=mock_response)
+
+    result = context_table_delete_command(client, args)
+
+    assert result.readable_output == expected_output
+    mock_delete.assert_called_once_with(
+        args["table_id"], {"deleteUnusedCustomAttributes": str(args["delete_unused_custom_attributes"])}
+    )
+
+
+@pytest.mark.parametrize(
+    "args, mock_response, expected_output",
+    [
+        (
+            {"table_id": "12345", "limit": "2"},
+            {"records": [{"id": "1", "name": "Record1"}, {"id": "2", "name": "Record2"}]},
+            [
+                {"id": "1", "name": "Record1"},
+                {"id": "2", "name": "Record2"},
+            ],
+        )
+    ]
+)
+def test_table_record_list_command(mocker, args, mock_response, expected_output):
+    client = MockClient("example.com", "", "", False, False)
+    mock_get = mocker.patch.object(client, "get_table_record_list", return_value=mock_response)
+
+    result = table_record_list_command(client, args)
+
+    assert result.outputs == expected_output
+    mock_get.assert_called_once_with("12345", {"limit": 2})

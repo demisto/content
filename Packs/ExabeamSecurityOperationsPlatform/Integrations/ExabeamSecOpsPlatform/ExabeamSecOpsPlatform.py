@@ -8,9 +8,6 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 TOKEN_EXPIRY_BUFFER = timedelta(seconds=10)
 DEFAULT_LIMIT = 50
 MAX_LIMIT = 3000
-# TODO: remove print
-# print(f"{demisto.args()=}")
-# print(f"{demisto.params()=}")
 
 
 ''' CLIENT CLASS '''
@@ -88,8 +85,6 @@ class Client(BaseClient):
         }
 
         def _make_request() -> Any:
-            # TODO: remove print
-            # print(f"{kargs}")
             response = self._http_request(**kargs)
             if isinstance(response, dict) and (error := response.get("errors", {})):
                 raise DemistoException(error.get("message"))
@@ -600,7 +595,7 @@ def context_table_list_command(client: Client, args: dict) -> CommandResults:
 
 
 def context_table_delete_command(client: Client, args: dict) -> CommandResults:
-    table_id = args.get("table_id", 0)
+    table_id = args.get("table_id")
     include_attributes = argToBoolean(args.get("delete_unused_custom_attributes"))
     params = {"deleteUnusedCustomAttributes": str(include_attributes)}
 
@@ -650,8 +645,6 @@ def table_record_create_command(args: dict, client: Client) -> PollResult:
 
     tracker_response = client.check_tracker_id(tracker_id)
     upload_status = tracker_response.get("uploadStatus")
-    # TODO: print
-    # print(f"{upload_status=}")
     human_readable = {"Total Uploaded": tracker_response.get(
         "totalUploaded"), "Total Errors": tracker_response.get("totalErrors")}
 
