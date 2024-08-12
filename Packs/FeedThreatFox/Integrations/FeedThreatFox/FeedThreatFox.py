@@ -346,13 +346,15 @@ def fetch_indicators_command(client: Client, with_ports: bool, confidence_thresh
     response = client.get_indicators_request({"query": "get_iocs", "days": days_for_query})
 
     if response.get('query_status') != 'ok':
-        raise DemistoException("couldn't fetch")  # write something better
+        raise DemistoException(f"couldn't fetch, {response.get('query_status')}")
 
-    demisto.debug(f'{LOG_LINE} got {response=}')  # erase
+
+    indicators = response['data']
+    demisto.debug(f'{LOG_LINE} got {len(indicators)}')
 
     results = []
 
-    for indicator in response['data']:
+    for indicator in indicators:
 
         if indicator.get('ioc_type') == 'sha3_384_hash':
             demisto.debug(f'{LOG_LINE} got indicator of indicator type "sha3" skipping it')
