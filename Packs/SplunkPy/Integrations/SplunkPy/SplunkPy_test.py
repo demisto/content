@@ -217,6 +217,7 @@ class Jobs:
     def create(self, query, **kwargs):
         job = client.Job(sid='123456', service=self.service, **kwargs)
         job.resultCount = 0
+        job._state = self.state
         return job
 
 
@@ -2308,6 +2309,34 @@ def test_splunk_search_command(mocker, polling, status):
         assert search_result.outputs['Splunk.Result'] == []
         assert search_result.readable_output == '### Splunk Search results for query:\n' \
                                                 'sid: 123456\n**No entries.**\n'
+
+
+@pytest.mark.parametrize('messages,expected_msg', [
+    ({'fatal': ['fatal msg']}, 'fatal msg'),
+    ({'error': ['error msg']}, 'error msg')
+])
+def test_err_in_splunk_search(mocker, messages, expected_msg):
+    """
+    Given:
+        A wrong search query.
+
+    When:
+        Running the splunk_search_command.
+
+    Then:
+        Ensure the result as expected in polling and in regular search.
+    """
+    mock_args = {
+        "query": "wrong search query",
+        "earliest_time": "2021-11-23T10:10:10",
+        "latest_time": "2020-10-20T10:10:20",
+        "fast_mode": "false",
+    }
+    service = Service(status="FAILED")
+    service.jobs.state.content['messages'] = messages
+    with pytest.raises(DemistoException) as e:
+        splunk.splunk_search_command(service, mock_args)
+    assert f'Failed to run the search in Splunk: {expected_msg}' in str(e)
 
 
 @pytest.mark.parametrize(
