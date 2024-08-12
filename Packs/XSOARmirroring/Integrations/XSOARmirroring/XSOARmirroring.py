@@ -261,6 +261,33 @@ def test_module(client: Client, first_fetch_time: str) -> str:
             raise e
 
 
+def get_start_time_for_fetch(last_fetch: Union[str, int], first_fetch_time: Union[int, str], look_back: int = 0):
+    now = get_current_time()
+
+    if not last_fetch:
+        last_fetch = first_fetch_time
+    else:
+        demisto.debug('Trying to convert the last_fetch to int, and convert it to date string if succeed. '
+                      'This is for preventing backward compatibility breakage.')
+        try:
+            last_fetch = int(last_fetch)
+            last_fetch = datetime.fromtimestamp(last_fetch).strftime(XSOAR_DATE_FORMAT)
+        except Exception:
+            pass
+
+    # make sure last fetch is in UTC
+    last_fetch = dateparser.parse(last_fetch, settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': True})
+
+    # if we have look_back, we will look further back beyond the last fetch
+    if look_back and look_back > 0:
+        demisto.debug("look back is greater than 0, calculating start time with look_back")
+        if now - last_fetch < timedelta(minutes=look_back):
+            last_run_time = now - timedelta(minutes=look_back)
+            return last_run_time.strftime(XSOAR_DATE_FORMAT), now.strftime(XSOAR_DATE_FORMAT)
+
+    return last_fetch.strftime(XSOAR_DATE_FORMAT), now.strftime(XSOAR_DATE_FORMAT)
+
+
 def fetch_incidents(client: Client, max_results: int, last_run: dict[str, Union[str, int, list[str]]],
                     last_fetch: Union[str, int],
                     first_fetch_time: Union[int, str], query: str | None, mirror_direction: str,
@@ -318,7 +345,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict[str, Union[
     demisto.debug(f'last run is: {last_run}')
 
     demisto.debug(f"XSOAR Mirroring: Getting start time for fetch with look_back {look_back=}")
-    start_fetch_time, end_fetch_time = get_fetch_run_time_range(last_run, first_fetch_time, look_back, 0, XSOAR_DATE_FORMAT)
+    start_fetch_time, end_fetch_time = get_start_time_for_fetch(last_fetch, first_fetch_time, look_back)
     demisto.debug(f"XSOAR Mirroring: {start_fetch_time=}, {end_fetch_time=}")
     max_results = last_run.get('limit') or max_results
 
