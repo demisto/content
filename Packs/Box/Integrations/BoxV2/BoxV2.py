@@ -689,14 +689,12 @@ class Client(BaseClient):
             resp_type='response',
         )
 
-    def upload_file(self, entry_id: str, file_name: Optional[str] = None, folder_id: Optional[str] = None,
+    def upload_file(self, file_path: str, file_name: Optional[str] = None, folder_id: Optional[str] = None,
                     as_user: Optional[str] = None) -> dict:
         """
-        Main function used to handle the `box-upload-file` command. Box enforces size limitations
-        which determines which endpoint is used to upload a file. for files under 50MB, the generic
-        endpoint is used. For files over 50MB, an upload session must be requested.
+        Main function used to handle the `box-upload-file` command.
 
-        :param entry_id: str - Entry ID of the file uploaded to the war room.
+        :param file_path: str - File path of the file uploaded to the war room.
         :param file_name: str - Name which the file will be saved as. Must contain an extension.
         :param folder_id: str - The UUID of the folder which the file will be contained in.
         :param as_user: str - The ID of the user making the request.
@@ -704,8 +702,6 @@ class Client(BaseClient):
         """
         self._base_url = 'https://upload.box.com/api/2.0'
         #  Because of _course_ they have a separate base_url for uploads
-        demisto_file_object = demisto.getFilePath(entry_id)
-        file_path = demisto_file_object.get('path')
         with open(file_path, 'rb') as file:
             validated_as_user = self.handle_as_user(as_user_arg=as_user)
             self._headers.update({'As-User': validated_as_user})
@@ -1522,8 +1518,9 @@ def upload_file_command(client: Client, args: Dict[str, Any]) -> PollResult:
     if '.' not in file_name:  # type: ignore
         raise DemistoException('A file extension is required in the filename.')
 
+    # A generic endpoint is used for files under 50 MB, while an upload session is required for files over 50 MB.
     if file_size < maximum_chunk_size:
-        response: dict = client.upload_file(entry_id=entry_id, file_name=file_name, folder_id=folder_id, as_user=as_user)
+        response: dict = client.upload_file(file_path=file_path, file_name=file_name, folder_id=folder_id, as_user=as_user)
         command_results = CommandResults(
             readable_output="File was successfully uploaded",
             outputs_prefix='Box.File',
@@ -1532,12 +1529,14 @@ def upload_file_command(client: Client, args: Dict[str, Any]) -> PollResult:
         )
         return PollResult(response=command_results)
     else:
-        parts, upload_url_suffix = client.chunk_upload(file_name, file_size, file_path, folder_id, as_user)
+        if not (parts := argToList(args.get('parts'))) or not (upload_url_suffix := args.get('upload_url_suffix')):
+            parts, upload_url_suffix = client.chunk_upload(file_name, file_size, file_path, folder_id, as_user)
         response: Response = client.commit_file(file_path, as_user, parts, upload_url_suffix)
 
-        if response.status_code == 202:
+        if response.status_code == 202:  # The response
             retry_after = response.headers['retry-after'] or 30
-            readable_message = f'All file chunks have been uploaded but not yet processed will try to commit in {retry_after} seconds'
+            readable_message = (f'File chunks have been uploaded but have not yet been processed. '
+                                f'Commit will attempt within {retry_after} seconds')
             command_results = CommandResults(
                 readable_output=readable_message
             )
@@ -1553,6 +1552,7 @@ def upload_file_command(client: Client, args: Dict[str, Any]) -> PollResult:
                 outputs=response_json.get('entities')
             )
             return PollResult(response=command_results)
+
 
 def trashed_items_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
