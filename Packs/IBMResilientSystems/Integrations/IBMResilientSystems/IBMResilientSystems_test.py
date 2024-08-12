@@ -156,6 +156,9 @@ def test_test_module(mocker):
     """
     Tests whether the test module returns expected result for valid and invalid responses.
     """
+    mocker.patch.object(demisto, 'params', return_value={
+        'server': 'example.com:80', 'org': 'example', 'proxy': True, 'max_fetch': DEFAULT_MAX_FETCH
+    })
     from IBMResilientSystems import test_module, SimpleClient
     client = SimpleClient()
     mocker.patch.object(client, 'get', return_value={})

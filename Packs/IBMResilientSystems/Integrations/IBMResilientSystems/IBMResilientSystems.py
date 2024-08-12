@@ -1555,15 +1555,13 @@ def test_module(client: SimpleClient):
     Returns:
         'ok' if all tests passed, anything else will fail the test.
     """
-    pass
-    # client.get(uri='')
+    try:
+        # Making a request to the client's base URL to retrieve information about the organization.
+        response = super(client).get(uri='')
+        # demisto.debug(f'test_module {response=}')
+    except SimpleHTTPException as e:
+        return f"Connection test failed: {e}"
 
-    # try:
-    #     # Making a request to the client's base URL to retrieve information about the organization.
-    #     demisto.debug(f'test_module {response=}')
-    # except Exception as e:
-    #     return f"Connection test failed: {e}"
-    #
     # # Test - test first fetch time
     # fetch_time = getattr(client, 'first_fetch', None)  # Assuming the fetch time is a client attribute
     # time_format = "%Y-%m-%dT%H:%M:%SZ"  # Define your time format here
@@ -1575,7 +1573,7 @@ def test_module(client: SimpleClient):
     #         demisto.error(f'test_module {error=}')
     #         return f"There is something wrong with the fetch date. Error: {error}"
 
-    # return 'ok'
+    return 'ok'
 
 
 ''' EXECUTION CODE '''
