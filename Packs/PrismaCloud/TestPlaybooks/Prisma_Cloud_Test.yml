@@ -1,5 +1,5 @@
 id: Prisma Cloud V2 Test
-version: 14
+version: 15
 vcShouldKeepItemLegacyProdMachine: false
 name: Prisma Cloud V2 Test
 description: Test for Prisma Cloud V2.
@@ -1627,10 +1627,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "50":
     id: "50"
-    taskid: faef45dd-aa51-493c-85a0-f3f537869f86
+    taskid: 99a33240-fe05-4b1d-868d-6e4f7650836a
     type: regular
     task:
-      id: faef45dd-aa51-493c-85a0-f3f537869f86
+      id: 99a33240-fe05-4b1d-868d-6e4f7650836a
       version: -1
       name: prisma-cloud-access-keys-list Verify Access key by ID
       description: Returns all access keys for your tenant if you have a Prisma Cloud
@@ -1644,7 +1644,7 @@ tasks:
       - "55"
     scriptarguments:
       access-key:
-        simple: ${PrismaCloud.AccessKeys.id}
+        simple: ${PrismaCloud.AccessKeys.[0].id}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1663,10 +1663,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "53":
     id: "53"
-    taskid: 934787ea-3236-4aa9-82e9-5ba749186f37
+    taskid: 1f730f9e-9049-4a6d-8590-d7c9597e3a9e
     type: regular
     task:
-      id: 934787ea-3236-4aa9-82e9-5ba749186f37
+      id: 1f730f9e-9049-4a6d-8590-d7c9597e3a9e
       version: -1
       name: prisma-cloud-access-key-delete
       description: Deletes the access key that has the specified ID.
@@ -1679,7 +1679,7 @@ tasks:
       - "57"
     scriptarguments:
       access-key:
-        simple: ${PrismaCloud.AccessKeys.id}
+        simple: ${PrismaCloud.AccessKeys.[0].id}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1698,10 +1698,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "55":
     id: "55"
-    taskid: ab86df04-6b74-4672-86c0-d1ead968eedd
+    taskid: e0b1360f-989d-481a-86b7-17c3e04b5737
     type: regular
     task:
-      id: ab86df04-6b74-4672-86c0-d1ead968eedd
+      id: e0b1360f-989d-481a-86b7-17c3e04b5737
       version: -1
       name: prisma-cloud-access-key-disable
       description: Deactivates the access key that has the specified ID.
@@ -1714,7 +1714,7 @@ tasks:
       - "56"
     scriptarguments:
       access-key:
-        simple: ${PrismaCloud.AccessKeys.id}
+        simple: ${PrismaCloud.AccessKeys.[0].id}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1733,10 +1733,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "56":
     id: "56"
-    taskid: 1b7a6826-b937-4ced-860c-96ea26aecdc3
+    taskid: 1a9597b5-4686-484d-8e6f-4cab649f9cff
     type: regular
     task:
-      id: 1b7a6826-b937-4ced-860c-96ea26aecdc3
+      id: 1a9597b5-4686-484d-8e6f-4cab649f9cff
       version: -1
       name: prisma-cloud-access-key-enable
       description: Activates the access key that has the specified ID. You cannot
@@ -1750,7 +1750,7 @@ tasks:
       - "53"
     scriptarguments:
       access-key:
-        simple: ${PrismaCloud.AccessKeys.id}
+        simple: ${PrismaCloud.AccessKeys.[0].id}
     separatecontext: false
     continueonerrortype: ""
     view: |-
