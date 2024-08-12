@@ -330,14 +330,22 @@ class Client(BaseClient):
         return self._http_request('POST', 'code/api/v1/errors/files', json_data=data, headers=headers)
 
     def access_key_creation(self, args: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Create an access key using the provided arguments.
+
+        Args:
+        - args (Dict[str, Any]): A dictionary containing the required parameters for key creation.
+            - name (str): required
+            - expires-on (str): optional
+        Returns:
+        - Dict[str, Any]: A dictionary containing the response from the API request to create the access key.
+        """
         payload = {"name": args.get('name')}
         if args.get('expires-on'):
             dateparser_datetime_object = dateparser.parse(args.get('expires-on', ''),
                                                           settings={'PREFER_DATES_FROM': 'future'})
             if isinstance(dateparser_datetime_object, datetime):
                 payload['expiresOn'] = dateparser_datetime_object.strftime('%s') + '000'  # API require milliseconds timestamp
-        if args.get('service-account-name'):
-            payload['serviceAccountName'] = args.get('service-account-name', '')
         return self._http_request(
             method='POST',
             url_suffix='/access_keys',
@@ -632,7 +640,7 @@ def expire_stored_ids(fetched_ids: Dict[str, int], updated_last_run_time: int, l
 
 
 def calculate_fetch_time_range(now: int, first_fetch: str, look_back: int = 0, last_run_time: Optional[int] = None) -> \
-        Dict[str, Any]:
+    Dict[str, Any]:
     if last_run_time:
         last_run_time = add_look_back(int(last_run_time), look_back)
     else:  # first fetch
@@ -1028,7 +1036,7 @@ def format_v1_response(response: Any) -> Any:
 
 
 def alert_search_v1_command(client: Client, args: Dict[str, Any], return_v1_output: bool) -> \
-        Union[CommandResults, List[Union[CommandResults, str]], Dict]:
+    Union[CommandResults, List[Union[CommandResults, str]], Dict]:
     """
     This command is for supporting backwards compatibility, to make transition to V2 easier for users with custom playbooks.
     """
@@ -1079,7 +1087,7 @@ def alert_get_details_v1_command(client: Client, args: Dict[str, Any], return_v1
 
 
 def alert_dismiss_v1_command(client: Client, args: Dict[str, Any], return_v1_output: bool) -> \
-        Union[CommandResults, List[Union[CommandResults, str]], Dict]:
+    Union[CommandResults, List[Union[CommandResults, str]], Dict]:
     """
     This command is for supporting backwards compatibility, to make transition to V2 easier for users with custom playbooks.
     """
@@ -1108,7 +1116,7 @@ def alert_dismiss_v1_command(client: Client, args: Dict[str, Any], return_v1_out
 
 
 def alert_reopen_v1_command(client: Client, args: Dict[str, Any], return_v1_output: bool) -> \
-        Union[CommandResults, List[Union[CommandResults, str]], Dict]:
+    Union[CommandResults, List[Union[CommandResults, str]], Dict]:
     """
     This command is for supporting backwards compatibility, to make transition to V2 easier for users with custom playbooks.
     """
@@ -1134,7 +1142,7 @@ def alert_reopen_v1_command(client: Client, args: Dict[str, Any], return_v1_outp
 
 
 def remediation_command_list_v1_command(client: Client, args: Dict[str, Any], return_v1_output: bool) -> \
-        Union[CommandResults, Dict]:
+    Union[CommandResults, Dict]:
     """
     This command is for supporting backwards compatibility, to make transition to V2 easier for users with custom playbooks.
     """
@@ -1323,7 +1331,7 @@ def alert_search_command(client: Client, args: Dict[str, Any]) -> CommandResults
         extract_nested_values(readable_response, nested_headers)
 
     headers = ['Alert ID', 'reason', 'status', 'alertTime', 'firstSeen', 'lastSeen', 'lastUpdated'] \
-        + list(nested_headers.values())[1:]
+              + list(nested_headers.values())[1:]
     output = {
         'PrismaCloud.AlertPageToken(val.nextPageToken)': {'nextPageToken': next_page_token},  # values are overridden
         'PrismaCloud.Alert(val.id && val.id == obj.id)': response_items  # values are appended to list based on id
@@ -1373,7 +1381,7 @@ def alert_get_details_command(client: Client, args: Dict[str, Any]) -> CommandRe
                       'resource.url': 'Resource Url',
                       }
     headers = ['Alert ID', 'reason', 'status', 'alertTime', 'firstSeen', 'lastSeen', 'lastUpdated', 'eventOccurred'] \
-        + list(nested_headers.values())[1:]
+              + list(nested_headers.values())[1:]
     extract_nested_values(readable_response, nested_headers)
 
     command_results = CommandResults(
@@ -2026,7 +2034,7 @@ def permission_list_command(client: Client, args: Dict[str, Any]) -> CommandResu
 
 
 def fetch_incidents(client: Client, last_run: Dict[str, Any], params: Dict[str, Any]) -> \
-        tuple[List[Dict[str, Any]], Dict[str, int], int]:
+    tuple[List[Dict[str, Any]], Dict[str, int], int]:
     """
     Retrieve new incidents periodically based on pre-defined instance parameters
     """
@@ -2049,6 +2057,16 @@ def fetch_incidents(client: Client, last_run: Dict[str, Any], params: Dict[str, 
 
 
 def access_key_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Perform an API request to create an access key using the provided client.
+
+    Args:
+    - client (Client): An instance of the client used to make the API request.
+    - args (Dict[str, Any]): A dictionary containing any additional arguments required for the API request.
+
+    Returns:
+    - CommandResults: An object containing the raw response and table representation of the access key.
+    """
     access_key = client.access_key_creation(args)
     transform_access_keys = {
         'Id': access_key.get('id'),
@@ -2066,10 +2084,30 @@ def access_key_create_command(client: Client, args: Dict[str, Any]) -> CommandRe
 
 
 def get_access_keys_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Get information about specific access key or a list of all access keys.
+
+    Args:
+    - client (Client): An instance of the client used to make the API request.
+    - args (Dict[str, Any]): A dictionary that may contain access-key ID argument for specific access-key
+
+    Returns:
+    - CommandResults: An object containing the response and table representation of the access key(s).
+    """
     return get_access_key_by_id(client, args) if args.get('access-key') else get_access_keys_list(client, args)
 
 
 def get_access_key_by_id(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Get specific information about an access key using the provided client.
+
+    Args:
+    - client (Client): An instance of the client used to make the API request.
+    - args (Dict[str, Any]): A dictionary containing access-key ID arguments required for the API request.
+
+    Returns:
+    - CommandResults: An object containing the raw response and table representation of the access key information.
+    """
     access_key = client.get_access_key_by_id(args)
     transform_access_key = {
         'ID': access_key.get('id'),
@@ -2088,6 +2126,17 @@ def get_access_key_by_id(client: Client, args: Dict[str, Any]) -> CommandResults
 
 
 def get_access_keys_list(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Get a list of access keys using the provided client.
+
+    Args:
+    - client (Client): An instance of the client used to make the API request.
+    - args (Dict[str, Any]): A dictionary containing any additional arguments required for the API request, including an optional
+     'limit' to restrict the number of access keys returned.
+
+    Returns:
+    - CommandResults: An object containing the raw response and table representation of the access key list.
+    """
     access_keys = client.get_access_keys_list()
     limit = int(args.get('limit', ACCESS_KEYS_LIST_DEFAULT_LIMIT))
     limited_access_keys_list = access_keys[:limit]
@@ -2122,6 +2171,16 @@ def get_access_keys_list(client: Client, args: Dict[str, Any]) -> CommandResults
 
 
 def access_key_disable_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Disable an access key using the provided client.
+
+    Args:
+    - client (Client): An instance of the client used to make the API request.
+    - args (Dict[str, Any]): A dictionary containing the 'access-key' ID for disabling the access key.
+
+    Returns:
+    - CommandResults: An object containing the readable output to announce that the access key has been disabled.
+    """
     access_key = args.get('access-key', '')
     client.patch_access_key_disable(access_key)
     return CommandResults(
@@ -2130,6 +2189,16 @@ def access_key_disable_command(client: Client, args: Dict[str, Any]) -> CommandR
 
 
 def access_key_enable_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Enable an access key using the provided client.
+
+    Args:
+    - client (Client): An instance of the client used to make the API request.
+    - args (Dict[str, Any]): A dictionary containing the 'access-key' ID for enabling the access key.
+
+    Returns:
+    - CommandResults: An object containing the readable output to announce that the access key has been enabled.
+    """
     access_key = args.get('access-key', '')
     client.patch_access_key_enable(access_key)
     return CommandResults(
@@ -2138,6 +2207,16 @@ def access_key_enable_command(client: Client, args: Dict[str, Any]) -> CommandRe
 
 
 def access_key_delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Delete an access key using the provided client.
+
+    Args:
+    - client (Client): An instance of the client used to make the API request.
+    - args (Dict[str, Any]): A dictionary containing the 'access-key' ID for deleting the access key.
+
+    Returns:
+    - CommandResults: An object containing the readable output to announce that the access key has been deleted.
+    """
     access_key = args.get('access-key', '')
     client.access_key_deletion(access_key)
     return CommandResults(
