@@ -7426,14 +7426,30 @@ def test_xpath_creation_for_exception_crud():
     import Panorama
 
     results = Panorama.build_xpath_for_profile_exception_commands(
-        'name', 'Vulnerability Protection Profile', 'device_group', 'drop', '1000')
-    assert results == "/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='device_group'] \
-        /profiles/vulnerability/entry[@name='name']/threat-exception"
+        'name',
+        'Vulnerability Protection Profile',
+        'device_group',
+        'drop',
+        '1000'
+    )
+    assert results == (
+        "/config/devices/entry[@name='localhost.localdomain']"
+        "/device-group/entry[@name='device_group']"
+        "/profiles/vulnerability/entry[@name='name']/threat-exception"
+    )
 
     results = Panorama.build_xpath_for_profile_exception_commands(
-        'name', 'Anti Spyware Profile', 'device_group', 'default', '1000')
-    assert results == "/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='device_group'] \
-        /profiles/spyware/entry[@name='name']/threat-exception"
+        'name',
+        'Anti Spyware Profile',
+        'device_group',
+        'default',
+        '1000'
+    )
+    assert results == (
+        "/config/devices/entry[@name='localhost.localdomain']"
+        "/device-group/entry[@name='device_group']"
+        "/profiles/spyware/entry[@name='name']/threat-exception"
+    )
 
 
 def test_pan_os_add_profile_exception(mocker):
