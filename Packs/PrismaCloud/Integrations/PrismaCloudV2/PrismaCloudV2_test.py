@@ -542,7 +542,7 @@ def test_access_key_create_command(mocker, prisma_cloud_v2_client):
     mock_response = {'id': 'id', 'secretKey': 'secretKey'}
     mocker.patch.object(Client, '_http_request', return_value=mock_response)
     command_results = access_key_create_command(prisma_cloud_v2_client, args)
-    assert command_results.raw_response == mock_response
+    assert command_results.outputs == mock_response
 
 
 def test_get_access_keys_without_access_key_given(mocker, prisma_cloud_v2_client):
@@ -1164,7 +1164,7 @@ def test_fetch_request(mocker, prisma_cloud_v2_client, limit, request_results, e
                          limit=limit,
                          now=now,
                          time_range={'type': 'absolute', 'value': {'endTime': now, 'startTime': 1000000110000}}) == \
-        (expected_incidents, expected_fetched_ids, expected_updated_last_run_time)
+           (expected_incidents, expected_fetched_ids, expected_updated_last_run_time)
 
 
 @pytest.mark.parametrize('limit, expected_incidents, expected_updated_fetched_ids',
@@ -1235,7 +1235,7 @@ def test_fetch_incidents(mocker, prisma_cloud_v2_client, last_run, params, incid
 
     mocker.patch('PrismaCloudV2.fetch_request', return_value=(incidents, fetched_ids, updated_last_run_time))
     assert fetch_incidents(prisma_cloud_v2_client, last_run, params) == \
-        (incidents, expected_fetched_ids, expected_updated_last_run_time)
+           (incidents, expected_fetched_ids, expected_updated_last_run_time)
 
 
 ''' MIRRORING FUNCTIONS TESTS '''
@@ -1595,8 +1595,8 @@ def test_close_alert_in_prisma_cloud(mocker, prisma_cloud_v2_mirroring_client):
     close_alert_in_prisma_cloud(prisma_cloud_v2_mirroring_client, incident_ids_to_close, delta)
 
     assert mock_alert_dismiss_request.call_args.kwargs == \
-        {'dismissal_note': 'Closed by XSOAR - Closing Reason: USER_DISMISSED, Closing Notes: test.',
-         'time_range': time_filter,
+           {'dismissal_note': 'Closed by XSOAR - Closing Reason: USER_DISMISSED, Closing Notes: test.',
+            'time_range': time_filter,
             'alert_ids': incident_ids_to_close}
 
 

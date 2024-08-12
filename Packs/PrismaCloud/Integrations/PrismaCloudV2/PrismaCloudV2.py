@@ -2068,12 +2068,8 @@ def access_key_create_command(client: Client, args: Dict[str, Any]) -> CommandRe
     - CommandResults: An object containing the raw response and table representation of the access key.
     """
     access_key = client.access_key_creation(args)
-    transform_access_keys = {
-        'Id': access_key.get('id'),
-        'Secret Key': access_key.get('secretKey'),
-    }
-
-    markdown_table = tableToMarkdown('PrismaCloud Access Key Creation', transform_access_keys, headers=['Id', 'Secret Key'])
+    markdown_table = tableToMarkdown('PrismaCloud Access Key Creation', access_key, headers=['id', 'secretKey'],
+                                     headerTransform=pascalToSpace)
     return CommandResults(
         outputs_prefix="PrismaCloud.AccessKeys",
         outputs_key_field='id',
@@ -2109,13 +2105,11 @@ def get_access_key_by_id(client: Client, args: Dict[str, Any]) -> CommandResults
     - CommandResults: An object containing the raw response and table representation of the access key information.
     """
     access_key = client.get_access_key_by_id(args)
-    transform_access_key = {
-        'ID': access_key.get('id'),
-        'Name': access_key.get('name'),
-        'Expires On': timestamp_to_datestring(access_key.get('expiresOn'), DATE_FORMAT)
-    }
+    if access_key.get('expiresOn'):
+        access_key['expiresOn'] = timestamp_to_datestring(access_key.get('expiresOn'), DATE_FORMAT)
 
-    markdown_table = tableToMarkdown('PrismaCloud Access Key', transform_access_key, headers=['ID', 'Name', 'Expires On'])
+    markdown_table = tableToMarkdown('PrismaCloud Access Key', access_key, headers=['id', 'name', 'expiresOn'],
+                                     headerTransform=pascalToSpace)
     return CommandResults(
         outputs_prefix="PrismaCloud.AccessKeys",
         outputs_key_field='id',
@@ -2140,27 +2134,16 @@ def get_access_keys_list(client: Client, args: Dict[str, Any]) -> CommandResults
     access_keys = client.get_access_keys_list()
     limit = int(args.get('limit', ACCESS_KEYS_LIST_DEFAULT_LIMIT))
     limited_access_keys_list = access_keys[:limit]
-    transform_access_keys_list = [
-        {
-            'ID': access_key.get('id'),
-            'Name': access_key.get('name'),
-            'Created By': access_key.get('createdBy'),
-            'Created Timestamp': timestamp_to_datestring(access_key.get('createdTs'), DATE_FORMAT),
-            'Last Used Time': timestamp_to_datestring(access_key.get('lastUsedTime'), DATE_FORMAT),
-            'Status': access_key.get('status'),
-            'Expires On': timestamp_to_datestring(access_key.get('expiresOn'), DATE_FORMAT) if access_key.get(
-                'expiresOn') != 0 else '',
-            'Role id': access_key.get('role', {}).get('id'),
-            'Role Name': access_key.get('role', {}).get('name'),
-            'Role Type': access_key.get('roleType'),
-            'Username': access_key.get('username'),
-        }
-        for access_key in limited_access_keys_list
-    ]
+    for access_key in limited_access_keys_list:
+        access_key['createdTs'] = timestamp_to_datestring(access_key.get('createdTs'), DATE_FORMAT)
+        access_key['lastUsedTime'] = timestamp_to_datestring(access_key.get('lastUsedTime'), DATE_FORMAT)
+        access_key['expiresOn'] = timestamp_to_datestring(access_key.get('expiresOn'), DATE_FORMAT) if access_key.get(
+            'expiresOn') != 0 else ''
 
-    markdown_table = tableToMarkdown('PrismaCloud Access Keys', transform_access_keys_list,
-                                     headers=['ID', 'Name', 'Created By', 'Created Timestamp', 'Last Used Time', 'Status',
-                                              'Expires On', 'Role id', 'Role Name', 'Role Type', 'Username'])
+    markdown_table = tableToMarkdown('PrismaCloud Access Keys', limited_access_keys_list,
+                                     headers=['id', 'name', 'createdBy', 'createdTs', 'lastUsedTime', 'status',
+                                              'expiresOn', 'roleId', 'roleName', 'roleType', 'username'],
+                                     headerTransform=pascalToSpace)
     return CommandResults(
         outputs_prefix="PrismaCloud.AccessKeys",
         outputs_key_field='id',
@@ -2457,7 +2440,6 @@ def main() -> None:
 
             'get-remote-data': get_remote_data_command,
             'update-remote-system': update_remote_system_command,
-
             'prisma-cloud-access-key-create': access_key_create_command,
             'prisma-cloud-access-keys-list': get_access_keys_command,
             'prisma-cloud-access-key-disable': access_key_disable_command,
