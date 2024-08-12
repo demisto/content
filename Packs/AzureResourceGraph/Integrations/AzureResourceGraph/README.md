@@ -5,6 +5,7 @@ Azure Resource Graph is an Azure service designed to extend Azure Resource Manag
 To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. To add the registration, see the [Microsoft article](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app).
 
 ## Authentication
+
 To enable and configure authentication using self deployed app, follow the [Self-Deployed Application Authentication](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#self-deployed-application)
 
 For more details about the authentication used in this integration, see [Microsoft Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication).
@@ -182,3 +183,18 @@ After you successfully execute a command, a DBot message appears in the War Room
 | ---------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- | ------------------------------------- | ------------------------------------- |
 | /subscriptions/1abc234d-12a3-12a3-12a3-1234abcde123/resourceGroups/test-vm-resource-group/providers/Microsoft.Network/publicIPAddresses/test-vm-1-ip | test-vm-1-ip | {'displayName': 'grand-child-managment-group', 'name': 'grand-child-managment-group'},<br>{'displayName': 'child-management-group', 'name': 'child-management-group'},<br>{'displayName': 'test-new-managment-group', 'name': 'test-new-managment-group'},<br>{'displayName': 'Tenant Root Group', 'name': 'a11111111-222-3333-12a3-1234abcde123'} | test-vm-resource-group  | 1abc234d-12a3-12a3-12a3-1234abcde123  | a11111111-222-3333-12a3-1234abcde123  |                                                                                                                                         |          |                                                                                                                                                                                                                                                                                                                                                    |               |                                      |                                      |                                      |
 
+### azure-rg-auth-reset
+
+Run this command if for some reason you need to rerun the authentication process.
+
+#### Base Command
+
+`azure-rg-auth-reset`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.

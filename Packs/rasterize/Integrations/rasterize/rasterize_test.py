@@ -3,12 +3,14 @@ from rasterize import *
 import demistomock as demisto
 from CommonServerPython import entryTypes
 from tempfile import NamedTemporaryFile
+from pytest_mock import MockerFixture
 import os
 import logging
 import http.server
 import time
 import threading
 import pytest
+import requests
 
 # disable warning from urllib3. these are emitted when python driver can't connect to chrome yet
 logging.getLogger("urllib3").setLevel(logging.ERROR)
@@ -150,9 +152,9 @@ def http_wait_server():
 # curl -v -H 'user-agent: HeadlessChrome' --max-time 10  "http://www.grainger.com/"  # disable-secrets-detection
 # This tests access a server which waits for 10 seconds and makes sure we timeout
 @pytest.mark.filterwarnings('ignore::ResourceWarning')
-def test_rasterize_url_long_load(mocker, http_wait_server, capfd):
+def test_rasterize_url_long_load(mocker: MockerFixture, http_wait_server, capfd):
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
-    time.sleep(1)  # give time to the servrer to start
+    time.sleep(1)  # give time to the server to start
     with capfd.disabled():
         mocker.patch.object(rasterize, 'support_multithreading')
         perform_rasterize('http://localhost:10888', width=250, height=250,
@@ -670,3 +672,60 @@ def test_delete_row_with_old_chrome_configurations_from_info_file():
     """.strip()
 
     assert expected_mock_file_content == mock_file_content_edited
+
+
+def test_get_chrome_browser_error(mocker: MockerFixture):
+    """
+    Given   A connection error.
+    When    Launching a pychrome browser.
+    Then    Make sure the error is caught and debugged properly.
+    """
+    from rasterize import get_chrome_browser
+
+    def raise_connection_error(url):
+        raise requests.exceptions.ConnectionError('connection error')
+
+    mocker.patch('pychrome.Browser', side_effect=raise_connection_error)
+    mocker.patch('time.sleep')
+    debug = mocker.patch.object(demisto, 'debug')
+
+    res = get_chrome_browser('port')
+
+    assert res is None
+    debug.assert_called_with(
+        "Failed to connect to Chrome on port port on iteration 3. ConnectionError,"
+        " exp_str='connection error', exp=ConnectionError('connection error')")
+
+
+def test_backoff(mocker):
+    """
+    Given   Waiting for a process to complete.
+    When    Launching a pychrome browser.
+    Then    Make sure to wait the required amount.
+    """
+    from rasterize import backoff
+
+    sleep_mock = mocker.patch('time.sleep')
+
+    res = backoff(None, 2, 1)
+
+    assert res == (None, 2)
+    sleep_mock.assert_called_with(1)
+
+
+def test_is_mailto_urls(mocker: MockerFixture):
+    """
+    Given   A mailto URL is called.
+    When    Attempting to make a screenshot.
+    Then    Make sure the correct output is returned.
+    """
+    from rasterize import screenshot_image
+
+    mocker.patch(
+        'rasterize.navigate_to_path',
+        return_results=type('PychromeEventHandler', (), {'is_mailto': True})
+    )
+
+    res = screenshot_image(None, None, 'url', None, None)
+
+    assert res == (None, 'URLs that start with "mailto:" cannot be rasterized.\nURL: url')

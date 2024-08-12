@@ -1,0 +1,194 @@
+[
+    {
+        "Event": {
+            "CryptographicKey": [],
+            "EventReport": [],
+            "Tag": [
+                {
+                    "is_custom_galaxy": false,
+                    "is_galaxy": true,
+                    "local": 0,
+                    "local_only": false,
+                    "name": "misp-galaxy:mitre-enterprise-attack-attack-pattern=\"Code Signing - 1000\"",
+                    "numerical_value": null
+                },
+                {
+                    "is_custom_galaxy": false,
+                    "is_galaxy": false,
+                    "local": 0,
+                    "local_only": false,
+                    "name": "infrastructure:100",
+                    "numerical_value": null
+                },
+                {
+                    "is_custom_galaxy": false,
+                    "is_galaxy": false,
+                    "local": 0,
+                    "local_only": false,
+                    "name": "malware:100",
+                    "numerical_value": null
+                },
+                {
+                    "is_custom_galaxy": false,
+                    "is_galaxy": false,
+                    "local": 0,
+                    "local_only": false,
+                    "name": "mitre:100",
+                    "numerical_value": null
+                },
+                {
+                    "is_custom_galaxy": false,
+                    "is_galaxy": false,
+                    "local": 0,
+                    "local_only": false,
+                    "name": "source:100",
+                    "numerical_value": null
+                }
+            ],
+            "attack_ids": [
+                "100"
+            ],
+            "attribute_count": "1",
+            "date": "2024-04-13",
+            "event_creator_email": "info@flashpoint-intel.com",
+            "fpid": "100000",
+            "href": "https://api.flashpoint.io/technical-intelligence/vx/event/100000",
+            "info": "Observation: 100 [2024-04-13 14:00:26]",
+            "malware_description": "",
+            "protected": null,
+            "publish_timestamp": "1713023454",
+            "timestamp": "1713023450",
+            "uuid": "1000-0000-0000-0000"
+        },
+        "Galaxy": [],
+        "_meta": {
+            "size": {
+                "base_document": 1000
+            }
+        },
+        "basetypes": [
+            "indicator",
+            "indicator_100"
+        ],
+        "category": "Network activity",
+        "earliest_sort_date": "2024-04-13T14:10:17Z",
+        "first_observed_at": {
+            "date-time": "2024-04-13T14:11:08+00:00",
+            "raw": "1000000.100000",
+            "timestamp": 1713017469
+        },
+        "first_seen": null,
+        "fpid": "1000000000",
+        "header_": {
+            "indexed_at": 1713023477,
+            "ingested_at": 1713023475,
+            "is_visible": true,
+            "observed_at": 1713023475,
+            "pipeline_duration": 1,
+            "source": "urn:fp:resource:qualified:indicator"
+        },
+        "href": "https://api.flashpoint.io/technical-intelligence/vx/attribute/1000000000",
+        "last_seen": null,
+        "malware_description": "<p>\"100\" is an open source remote access trojan (RAT) that originated in 2019.</p>",
+        "sort_date": "2024-04-13T15:50:50Z",
+        "timestamp": "1713017417",
+        "type": "ip-dst",
+        "uuid": "1000-0000-0000-0000-0000",
+        "value": {
+            "comment": "",
+            "ip-dst": "0.0.0.1"
+        }
+    },
+    {
+        "Event": {
+            "CryptographicKey": [],
+            "EventReport": [],
+            "Tag": [
+                {
+                    "is_custom_galaxy": false,
+                    "is_galaxy": false,
+                    "local": 0,
+                    "local_only": false,
+                    "name": "malware:100",
+                    "numerical_value": null
+                },
+                {
+                    "is_custom_galaxy": false,
+                    "is_galaxy": false,
+                    "local": 0,
+                    "local_only": false,
+                    "name": "os:100",
+                    "numerical_value": null
+                },
+                {
+                    "is_custom_galaxy": false,
+                    "is_galaxy": false,
+                    "local": 0,
+                    "local_only": false,
+                    "name": "source:100",
+                    "numerical_value": null
+                },
+                {
+                    "is_custom_galaxy": false,
+                    "is_galaxy": false,
+                    "local": 0,
+                    "local_only": false,
+                    "name": "type:100",
+                    "numerical_value": null
+                }
+            ],
+            "attack_ids": [],
+            "attribute_count": "3",
+            "benign_attributes_found": 0,
+            "date": "2024-04-13",
+            "event_creator_email": "info@dummy.com",
+            "fpid": "1000000000",
+            "href": "https://api.flashpoint.io/technical-intelligence/v1/event/1000000000",
+            "info": "Observation: 100x \"1000000000\" [2024-04-13 17:10:40]",
+            "malware_description": "",
+            "protected": null,
+            "publish_timestamp": "1713031287",
+            "timestamp": "1713031284",
+            "total_attributes": 3,
+            "uuid": "100-100-100-100-100"
+        },
+        "Galaxy": [],
+        "_meta": {
+            "size": {
+                "base_document": 1000
+            }
+        },
+        "basetypes": [
+            "indicator",
+            "indicator_attribute"
+        ],
+        "category": "Payload delivery",
+        "earliest_sort_date": "2024-04-13T18:01:24Z",
+        "first_observed_at": {
+            "date-time": "2024-04-13T18:02:08+00:00",
+            "raw": "1713031328",
+            "timestamp": 1713031328
+        },
+        "first_seen": null,
+        "fpid": "100",
+        "header_": {
+            "indexed_at": 1713031328,
+            "ingested_at": 1713031327,
+            "is_visible": true,
+            "observed_at": 1716858075,
+            "pipeline_duration": 2,
+            "source": "100:100:resource:qualified:indicator"
+        },
+        "href": "https://api.flashpoint.io/technical-intelligence/v1/attribute/100",
+        "last_seen": null,
+        "malware_description": "<p>\"100\" is a stealer and form grabber that originated in 2016.</p>",
+        "sort_date": "2024-05-28T01:00:23Z",
+        "timestamp": "1716858023",
+        "type": "md5",
+        "uuid": "100-100-100-100-100",
+        "value": {
+            "comment": "",
+            "md5": "100"
+        }
+    }
+]

@@ -11815,7 +11815,7 @@ def has_passed_time_threshold(timestamp_str, seconds_threshold):
 
 def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
                        chunk_size=XSIAM_EVENT_CHUNK_SIZE, data_type=EVENTS, should_update_health_module=True,
-                       add_proxy_to_request=False):
+                       add_proxy_to_request=False, snapshot_id='', items_count=None):
     """
     Send the supported fetched data types into the XDR data-collector private api.
 
@@ -11853,6 +11853,12 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
     :type add_proxy_to_request: ``bool``
     :param add_proxy_to_request: whether to add proxy to the send evnets request.
 
+    :type snapshot_id: ``str``
+    :param snapshot_id: the snapshot id.
+
+    :type items_count: ``str``
+    :param items_count: the asset snapshot items count.
+
     :return: None
     :rtype: ``None``
     """
@@ -11862,7 +11868,8 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
     calling_context = demisto.callingContext.get('context', {})
     instance_name = calling_context.get('IntegrationInstance', '')
     collector_name = calling_context.get('IntegrationBrand', '')
-    items_count = len(data) if isinstance(data, list) else 1
+    if not items_count:
+        items_count = len(data) if isinstance(data, list) else 1
     if data_type not in DATA_TYPES:
         demisto.debug("data type must be one of these values: {types}".format(types=DATA_TYPES))
         return
@@ -11903,7 +11910,9 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
         'collector-type': ASSETS if data_type == ASSETS else EVENTS
     }
     if data_type == ASSETS:
-        headers['snapshot-id'] = str(round(time.time() * 1000))
+        if not snapshot_id:
+            snapshot_id = str(round(time.time() * 1000))
+        headers['snapshot-id'] = instance_name + snapshot_id
         headers['total-items-count'] = str(items_count)
 
     header_msg = 'Error sending new {data_type} into XSIAM.\n'.format(data_type=data_type)
