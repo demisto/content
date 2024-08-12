@@ -108,7 +108,8 @@ class Client(BaseClient):
         if tracker:
             tracker = quote(tracker, safe="!~*'()")  # remove invalid characters from tracker
             demisto.debug(f'DEC: This is the tracker after encoding: {tracker=}')
-
+        else:
+            tracker = ""
         url_suffix_tracker = f"?tracker={tracker}"
 
         headers = (self._headers or {}) | {
