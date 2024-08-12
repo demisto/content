@@ -16,10 +16,10 @@ def upload_file_command(args: dict) -> list[CommandResults]:
     body = args.get('body', '')
     target = args.get('target', 'war room entry')
     using = args.get('using', '')
-    print(args)
+    demisto.info(args)
     for entry_id in entry_ids:
         response = upload_file(incident_id, entry_id, body, using, target == 'incident attachment')
-        print(response)
+        demisto.info(response)
         if is_error(response[0]):
             raise DemistoException("There was an issue uploading the file. Check your API key and input arguments.")
 
