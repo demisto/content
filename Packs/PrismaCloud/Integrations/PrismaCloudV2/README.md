@@ -2955,16 +2955,24 @@ To create a service account, see [Add Service Accounts On Prisma Cloud
 #### Command example
 ```!prisma-cloud-access-key-disable access-key=id```
 
+#### Human Readable Output
+
+> Access key mockmock-mock-mock-mock-mockmockmock was disabled successfully
+
 `prisma-cloud-access-key-enable`
 
 #### Input
 
 | **Argument Name** | **Description**                                              | **Required** |
 |-------------------|--------------------------------------------------------------| --- |
-| access-key              | Access key ID.                                                | Required | 
+| access-key              | Access key ID.                                                | Required |
 
 #### Command example
 ```!prisma-cloud-access-key-enable access-key=id```
+
+#### Human Readable Output
+
+> Access key mockmock-mock-mock-mock-mockmockmock was enabled successfully
 
 `prisma-cloud-access-key-delete`
 
@@ -2976,6 +2984,10 @@ To create a service account, see [Add Service Accounts On Prisma Cloud
 
 #### Command example
 ```!prisma-cloud-access-key-delete access-key=id```
+
+#### Human Readable Output
+
+> Access key mockmock-mock-mock-mock-mockmockmock was successfully deleted successfully
 
 ## Breaking changes from the previous version of this integration - Prisma Cloud v2
 The following sections list the changes in this version.
