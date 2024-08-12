@@ -46,15 +46,14 @@ def run_monkeytype(path: Path):
         print(e.stdout)
         raise
     modules = subprocess.run(
-        ["python3", "-m", "monkeytype", "list-modules"], text=True, check=True, capture_output=True, cwd=path, env=env
+        ["python", "-m", "monkeytype", "list-modules"], text=True, check=True, capture_output=True, cwd=path, env=env
     ).stdout.splitlines()
-    print(6)
-    # filtered_modules = set(modules).difference(("demistomock", "CommonServerPython"))
-    # runner_path.write_text("\n".join(f"import {module}\n{module}.main()" for module in filtered_modules))
-    # for module in filtered_modules:
-    #     subprocess.run(["monkeytype", "-v", "stub", module], check=True, cwd=path, env=env)
-    #     subprocess.run(["monkeytype", "-v", "apply", module], check=True, cwd=path, env=env)
-    # runner_path.unlink()
+    filtered_modules = set(modules).difference(("demistomock", "CommonServerPython"))
+    runner_path.write_text("\n".join(f"import {module}\n{module}.main()" for module in filtered_modules))
+    for module in filtered_modules:
+        subprocess.run(["python", "-m", "monkeytype", "-v", "stub", module], check=True, cwd=path, env=env)
+        subprocess.run(["python", "-m", "monkeytype", "-v", "apply", module], check=True, cwd=path, env=env)
+    runner_path.unlink()
 
 
 if __name__ == "__main__":
