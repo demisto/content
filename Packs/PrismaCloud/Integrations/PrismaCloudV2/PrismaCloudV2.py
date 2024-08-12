@@ -123,6 +123,54 @@ class Client(BaseClient):
         demisto.debug("Successfully got the auth token")
         self._headers[REQUEST_CSPM_AUTH_HEADER] = token
 
+    
+    def code_issues_list_request(self,fixable_only, scopes, term, branch, check_status, git_users=[], iac_categories=[], iac_labels=[],
+                                 file_types=[],  repositories=[], secrets_risk_factors=[], severities=[],
+                                 vulnerability_risk_factors=[], iac_tags=[], license_type=[], code_categories=[]):
+        body = assign_params(filters=assign_params(
+            branch=branch,
+            checkStatus=check_status,
+            codeCategories=code_categories,
+            fileTypes=file_types,
+            fixableOnly=fixable_only,
+            gitUsers=git_users,
+            iacCategories=iac_categories,
+            iacLabels=iac_labels,
+            iacTags=iac_tags,
+            licenseType=license_type,
+            repositories=repositories,
+            secretsRiskFactors=secrets_risk_factors,
+            severities=severities,
+            vulnerabilityRiskFactors=vulnerability_risk_factors
+        ))
+        body = {"filters": {
+            "branch": "string",
+            "checkStatus": "Error",
+            "codeCategories": ["IacMisconfiguration"],
+            "fileTypes": ["string"],
+            "fixableOnly": True,
+            "gitUsers": ["string"],
+            "iacCategories": ["IAM"],
+            "iacLabels": ["CustomPolicy"],
+            "iacTags": ["string"],
+            "licenseType": ["OSI_APACHE"],
+            "repositories": ["string"],
+            "secretsRiskFactors": ["PublicRepository"],
+            "severities": ["INFO"],
+            "vulnerabilityRiskFactors": [ "AttackComplexity"]
+        },
+        "search": {
+            "scopes": [
+            "IacMisconfiguration"
+            ],
+            "term": "string"
+        },
+        "limit": 0,
+        "offset": 0
+        }
+
+    
+    
     def alert_filter_list_request(self):
         return self._http_request('GET', 'filter/alert/suggest')
 
@@ -2136,6 +2184,10 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
     return remote_incident_id
 
 
+def prisma_cloud_code_issues_list(client, args):
+    return
+
+
 ''' TEST MODULE '''
 
 
@@ -2264,6 +2316,9 @@ def main() -> None:
             })
         elif command == 'get-modified-remote-data':
             return_results(get_modified_remote_data_command(client, args, params))
+        elif command == 'prisma-cloud-code-issues-list':
+            return_results(prisma_cloud_code_issues_list(client, args))
+
         else:
             raise NotImplementedError(f'{command} command is not implemented.')
 
