@@ -15,6 +15,7 @@ urllib3.disable_warnings()
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 LOG_LINE = "THREAT FOX-"
+LIMIT_SUPPORTED_QUERIES = ['tags', 'malware']
 
 
 class Client(BaseClient):
@@ -47,7 +48,7 @@ def check_args_for_query(args: dict) -> tuple[bool, str | None]:
     Args:
         args: dict
     Returns:
-        Boolean: True if params are good and False otherwise.
+        Boolean: True if params are valid and False otherwise.
         Str: The query type (one of these: 'search_term', 'id', 'hash', 'tag', 'malware').
             If args are not good than it will be None.
     """
@@ -88,7 +89,7 @@ def create_query(query_arg, id: str | None = None, search_term: str | None = Non
     )
 
     # Only queries searching by tag or malware can specify a limit.
-    if query_arg == 'tag' or query_arg == 'malware':
+    if query_arg in LIMIT_SUPPORTED_QUERIES:
         q_limit = arg_to_number(limit) or 50
         if q_limit > 1000:
             q_limit = 1000
@@ -111,7 +112,7 @@ def parse_indicators_for_get_command(indicators) -> List[dict[str, Any]]:
     for indicator in indicators:
         res.append(assign_params(
             ID=indicator.get('id'),
-            Value=value(indicator),
+            Value=get_value(indicator),
             Description=indicator.get('threat_type_desc'),
             MalwareFamilyTags=indicator.get('malware_printable') if indicator.get(
                 'malware_printable') != 'Unknown malware' else None,
@@ -156,7 +157,7 @@ def parse_indicator_for_fetch(indicator: dict, with_ports: bool, create_relation
     """
 
     demisto_ioc_type = indicator_type(indicator)
-    ioc_value = value(indicator)
+    ioc_value = get_value(indicator)
     relationships = create_relationships(ioc_value, indicator['ioc_type'], indicator.get("malware_printable"),
                                          demisto_ioc_type) if create_relationship else None
 
@@ -238,7 +239,7 @@ def tags(indicator: dict, with_ports: bool) -> List[str]:
     return res
 
 
-def value(indicator) -> str:
+def get_value(indicator) -> str:
     """Returns the value of the indicator.
     """
     if indicator.get('ioc_type') == 'ip:port':
@@ -272,7 +273,8 @@ def create_relationships(value: str, type: str, related_malware: Optional[str], 
 
 
 def validate_interval(interval: int) -> int:
-    """Validates that the given interval is in days between 1 to 7.
+    """Validates that the given interval is in days between 1 to 7,
+    due to using the standard interval input type which supports minutes as well.
 
     Raises:
         DemistoException: If the interval is invalid.
@@ -314,9 +316,10 @@ def threatfox_get_indicators_command(client: Client, args: dict[str, Any]) -> Co
     if query_status != 'ok' and query_status:
         raise DemistoException(f'failed to run command, {query_status=}, {query_data=}')
 
-    demisto.debug(f'{LOG_LINE} got indicators')
-
     parsed_indicators = parse_indicators_for_get_command(result.get('data') or result)
+    
+    demisto.debug(f'{LOG_LINE} got {len(parsed_indicators)} indicators')
+    
     human_readable = tableToMarkdown(name='Indicators', t=parsed_indicators,
                                      headers=['ID', 'Value', 'Description', 'MalwareFamilyTags',
                                               'AliasesTags', 'FirstSeenBySource', 'LastSeenBySource', 'ReportedBy',
@@ -336,6 +339,7 @@ def fetch_indicators_command(client: Client, with_ports: bool, confidence_thresh
         time_delta = now - last_successful_run
         days_for_query = time_delta.days + 1
 
+    # handling case of more than 7 days history, as the API fail longer-fetching queries.
     if days_for_query > 7:  # api can get up to 7 days
         days_for_query = 7
 

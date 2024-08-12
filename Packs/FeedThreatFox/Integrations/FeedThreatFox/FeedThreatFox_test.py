@@ -31,7 +31,7 @@ def test_get_indicators_request(mocker):
 
 
 test_check_params_good_arguments_data = [
-    ({'id': 41, 'limit': 10},  # case id with limit (even though it is not needed)
+    ({'id': 41, 'limit': 10},  # case id with unnecessary limit
      ('id')),  # expected
     ({'search_term': '1.1.1.1'},  # case search_term
      ('search_term')),  # expected

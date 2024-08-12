@@ -130,19 +130,19 @@ name: ThreatFox Feed
 script:
   commands:
   - arguments:
-    - description: Indicator value to search for.
+    - description: Indicator value to search by.
       name: search_term
       required: false
-    - description: Indicator ID to search for.
+    - description: Indicator ID to search by.
       name: id
       required: false
-    - description: Hash to search for.
+    - description: Hash to search by.
       name: hash
       required: false
-    - description: Tag to search for.
+    - description: Tag to search by.
       name: tag
       required: false
-    - description: Malware to search for.
+    - description: Malware to search by. For example, 'Cobalt Strike'.
       name: malware
       required: false
     - description: Maximum indicators to search for. Available only when searching by 'malware' or 'tag'.
