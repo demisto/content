@@ -7,7 +7,7 @@ commonfields:
   id: XQL Query Engine
   version: -1
 configuration:
-- display: Server URL (copy URL from Core - click ? to see more info.)
+- display: Server URL
   name: url
   type: 0
   hidden: true
