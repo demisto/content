@@ -1,3 +1,5 @@
+from urllib.parse import quote
+
 import demistomock as demisto
 from CommonServerPython import *
 import urllib3
@@ -101,8 +103,10 @@ class Client(BaseClient):
         Returns:
             dict: List of events
         """
-
-        url_suffix_tracker = f"?tracker={tracker}" if tracker else ""
+        demisto.debug(f'This is the tracker before encoding: {tracker=}')
+        encoded_tracker = quote(tracker, safe="!~*'()")  # trackers may contain invalid characters
+        demisto.debug(f'This is the tracker after encoding: {tracker=}')
+        url_suffix_tracker = f"?tracker={encoded_tracker}" if tracker else ""
         headers = (self._headers or {}) | {
             "accept": "application/json"
         }  # self._headers won't really be None, just for mypy
