@@ -2983,7 +2983,7 @@ The following sections list the changes in this version.
 ### Commands
 #### The following commands were deprecated in this version because they are not supported by the API anymore:
 * ***redlock-list-scans***
-* ***redlock-get-scan-status***
+* *redlock-get-scan-status***
 * ***redlock-get-scan-results***
 
 #### The following commands were replaced in this version:
@@ -2991,14 +2991,14 @@ The following sections list the changes in this version.
 * ***redlock-get-alert-details*** - this command is replaced by ***prisma-cloud-alert-get-details***.
 * ***redlock-get-remediation-details*** - this command is replaced by ***prisma-cloud-remediation-command-list***.
 * ***redlock-get-rql-response*** - this command is replaced by ***prisma-cloud-config-search***.
-* ***redlock-list-alert-filters*** - this command is replaced by ***prisma-cloud-alert-filter-list***.
-* ***redlock-reopen-alerts*** - this command is replaced by ***prisma-cloud-alert-reopen***.
-* ***redlock-search-alerts*** - this command is replaced by ***prisma-cloud-alert-search***.
-* ***redlock-search-config*** - this command is replaced by ***prisma-cloud-config-search***.
-* ***redlock-search-event*** - this command is replaced by ***prisma-cloud-event-search***.
-* ***redlock-search-network*** - this command is replaced by ***prisma-cloud-network-search***.
+* *redlock-list-alert-filters* - this command is replaced by *prisma-cloud-alert-filter-list*.
+* *redlock-reopen-alerts* - this command is replaced by *prisma-cloud-alert-reopen*.
+* *redlock-search-alerts* - this command is replaced by *prisma-cloud-alert-search*.
+* *redlock-search-config* - this command is replaced by *prisma-cloud-config-search*.
+* *redlock-search-event* - this command is replaced by *prisma-cloud-event-search*.
+* *redlock-search-network* - this command is replaced by *prisma-cloud-network-search*.
 
 
 ## Additional Considerations for this version
 * "Risk detail" was removed from all commands because it is not supported by the API anymore.
-* Commands from the previous version were kept in order to make the transition from v1 to v2 easy for existing playbooks. We encourage you to use the new version of each command.
+* Commands from the previous version were kept in order to make to transition from v1 to v2 easy for existing playbooks. We encourage to use the new version of each command.
