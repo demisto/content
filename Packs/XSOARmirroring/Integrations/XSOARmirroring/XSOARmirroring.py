@@ -421,7 +421,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict[str, Union[
         incident_result['attachment'] = file_attachments
         incidents_result.append(incident_result)
 
-    # --------------------------------
+    # -------------------------------- set next run ------------------------------------------------
     next_run = update_last_run_object(last_run=last_run, incidents=incidents_result, fetch_limit=max_results,
                                       start_fetch_time=start_fetch_time, end_fetch_time=end_fetch_time, look_back=look_back,
                                       created_time_field='created', id_field='dbotMirrorId', date_format=XSOAR_DATE_FORMAT)
