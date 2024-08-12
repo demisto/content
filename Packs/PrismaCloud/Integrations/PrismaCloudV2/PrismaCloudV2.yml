@@ -1,6 +1,6 @@
 sectionOrder:
-  - Connect
-  - Collect
+- Connect
+- Collect
 commonfields:
   id: PrismaCloud v2
   version: -1
@@ -9,105 +9,105 @@ display: Prisma Cloud v2
 category: Network Security
 description: Prisma Cloud secures infrastructure, workloads and applications, across the entire cloud-native technology stack.
 configuration:
-  - additionalinfo: 'Prisma Cloud service tenant admin console URL. The URL for the Prisma Cloud service varies depending on the cluster on which your tenant is deployed. For more information see: https://pan.dev/prisma-cloud/api/cspm/api-urls/.'
-    name: url
-    display: Server URL
-    defaultvalue: https://api.prismacloud.io/
-    type: 0
-    required: true
-    section: Connect
-  - display: Username / Access Key ID
-    name: credentials
-    required: true
-    type: 9
-    displaypassword: Password / Access Key Secret
-    section: Connect
-  - name: proxy
-    display: Use system proxy settings
-    defaultvalue: 'false'
-    type: 8
-    section: Connect
-    advanced: true
-    required: false
-  - name: insecure
-    display: Trust any certificate (not secure)
-    defaultvalue: 'false'
-    type: 8
-    section: Connect
-    advanced: true
-    required: false
-  - display: Incident type
-    name: incidentType
-    type: 13
-    section: Connect
-    required: false
-  - additionalinfo: Maximum is limited to 200.
-    defaultvalue: '50'
-    display: Maximum number of incidents to fetch
-    name: max_fetch
-    type: 0
-    section: Collect
-    required: false
-  - additionalinfo: Date or relative timestamp to start fetching incidents from, in the format of <number> <time unit>. For example, 2 minutes, 12 hours, 6 days, 2 weeks, 3 months, 1 year, ISO timestamp. Default is 3 days.
-    defaultvalue: 3 days
-    display: First fetch time interval
-    name: first_fetch
-    type: 0
-    section: Collect
-    required: false
-  - additionalinfo: Use this parameter to determine how far back to look in the search for incidents that were created before the last run time and did not match the query when they were created. When choosing to increase this value, duplicate incidents might occur at increase time.
-    defaultvalue: 20
-    display: 'Advanced: Time in minutes to look back when fetching incidents'
-    name: look_back
-    type: 0
-    section: Collect
-    advanced: true
-    required: false
-  - display: Fetch only incidents matching these filters
-    defaultvalue: 'alert.status=open'
-    name: filters
-    type: 0
-    additionalinfo: 'Comma-separated list of filter name and value, in the following format: filtername1=filtervalue1,filtername2=filtervalue2,etc. Names and possible values for filters can be found by running the "prisma-cloud-alert-filter-list" command.'
-    section: Collect
-    advanced: true
-    required: false
-  - display: Fetch incidents
-    name: isFetch
-    type: 8
-    section: Collect
-  - additionalinfo: 'Choose the direction to mirror the incident: Incoming (from Prisma Cloud to Cortex XSOAR), Outgoing (from Cortex XSOAR to Prisma Cloud), or Incoming and Outgoing (from/to Cortex XSOAR and Prisma Cloud).'
-    defaultvalue: None
-    display: Incident Mirroring Direction
-    name: mirror_direction
-    options:
-      - None
-      - Incoming
-      - Outgoing
-      - Incoming And Outgoing
-    required: false
-    type: 15
-    section: Collect
-  - additionalinfo: When selected, closing and re-opening the Prisma Cloud alert is mirrored in Cortex XSOAR.
-    defaultvalue: 'false'
-    display: Close Mirrored XSOAR Incident
-    name: close_incident
-    required: false
-    type: 8
-    section: Collect
-  - additionalinfo: When selected, closing and re-opening the Cortex XSOAR incident is mirrored in Prisma Cloud.
-    defaultvalue: 'false'
-    display: Close Mirrored Prisma Cloud Alert
-    name: close_alert
-    required: false
-    type: 8
-    section: Collect
-  - name: output_old_format
-    display: Output results of V1 commands to the context data in the old format
-    defaultvalue: 'false'
-    type: 8
-    section: Connect
-    advanced: true
-    required: false
+- additionalinfo: 'Prisma Cloud service tenant admin console URL. The URL for the Prisma Cloud service varies depending on the cluster on which your tenant is deployed. For more information see: https://pan.dev/prisma-cloud/api/cspm/api-urls/.'
+  name: url
+  display: Server URL
+  defaultvalue: https://api.prismacloud.io/
+  type: 0
+  required: true
+  section: Connect
+- display: Username / Access Key ID
+  name: credentials
+  required: true
+  type: 9
+  displaypassword: Password / Access Key Secret
+  section: Connect
+- name: proxy
+  display: Use system proxy settings
+  defaultvalue: 'false'
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+- name: insecure
+  display: Trust any certificate (not secure)
+  defaultvalue: 'false'
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+- display: Incident type
+  name: incidentType
+  type: 13
+  section: Connect
+  required: false
+- additionalinfo: Maximum is limited to 200.
+  defaultvalue: '50'
+  display: Maximum number of incidents to fetch
+  name: max_fetch
+  type: 0
+  section: Collect
+  required: false
+- additionalinfo: Date or relative timestamp to start fetching incidents from, in the format of <number> <time unit>. For example, 2 minutes, 12 hours, 6 days, 2 weeks, 3 months, 1 year, ISO timestamp. Default is 3 days.
+  defaultvalue: 3 days
+  display: First fetch time interval
+  name: first_fetch
+  type: 0
+  section: Collect
+  required: false
+- additionalinfo: Use this parameter to determine how far back to look in the search for incidents that were created before the last run time and did not match the query when they were created. When choosing to increase this value, duplicate incidents might occur at increase time.
+  defaultvalue: 20
+  display: 'Advanced: Time in minutes to look back when fetching incidents'
+  name: look_back
+  type: 0
+  section: Collect
+  advanced: true
+  required: false
+- display: Fetch only incidents matching these filters
+  defaultvalue: 'alert.status=open'
+  name: filters
+  type: 0
+  additionalinfo: 'Comma-separated list of filter name and value, in the following format: filtername1=filtervalue1,filtername2=filtervalue2,etc. Names and possible values for filters can be found by running the "prisma-cloud-alert-filter-list" command.'
+  section: Collect
+  advanced: true
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  section: Collect
+- additionalinfo: 'Choose the direction to mirror the incident: Incoming (from Prisma Cloud to Cortex XSOAR), Outgoing (from Cortex XSOAR to Prisma Cloud), or Incoming and Outgoing (from/to Cortex XSOAR and Prisma Cloud).'
+  defaultvalue: None
+  display: Incident Mirroring Direction
+  name: mirror_direction
+  options:
+  - None
+  - Incoming
+  - Outgoing
+  - Incoming And Outgoing
+  required: false
+  type: 15
+  section: Collect
+- additionalinfo: When selected, closing and re-opening the Prisma Cloud alert is mirrored in Cortex XSOAR.
+  defaultvalue: 'false'
+  display: Close Mirrored XSOAR Incident
+  name: close_incident
+  required: false
+  type: 8
+  section: Collect
+- additionalinfo: When selected, closing and re-opening the Cortex XSOAR incident is mirrored in Prisma Cloud.
+  defaultvalue: 'false'
+  display: Close Mirrored Prisma Cloud Alert
+  name: close_alert
+  required: false
+  type: 8
+  section: Collect
+- name: output_old_format
+  display: Output results of V1 commands to the context data in the old format
+  defaultvalue: 'false'
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
 script:
   script: ''
   type: python
@@ -117,2104 +117,2103 @@ script:
   isremotesyncin: true
   isremotesyncout: true
   commands:
-    - arguments:
-        - description: Comma-separated list of alert IDs to be dismissed.
-          isArray: true
-          name: alert_ids
-        - description: Comma-separated list of policy IDs.
-          isArray: true
-          name: policy_ids
-        - description: The amount of time for snoozing alert. Both snooze value and unit must be specified if snoozing.
-          name: snooze_value
-        - auto: PREDEFINED
-          description: The time unit for snoozing alert. Both snooze value and unit must be specified if snoozing.
-          name: snooze_unit
-          predefined:
-            - hour
-            - day
-            - week
-            - month
-            - year
-        - description: Reason for dismissal.
-          name: dismissal_note
-          required: true
-        - description: 'Start time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time).'
-          name: time_range_date_from
-        - description: 'End time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time).'
-          name: time_range_date_to
-        - auto: PREDEFINED
-          description: 'The search time unit. The "login" and "epoch" options are only available if "time_range_value" is not provided.'
-          name: time_range_unit
-          predefined:
-            - hour
-            - day
-            - week
-            - month
-            - year
-            - login
-            - epoch
-        - description: The amount of "time_range_unit" to go back in time. For example, 3 days, 5 weeks, etc.
-          name: time_range_value
-        - description: 'Comma-separated list of filter name and value, in the following format: filtername1=filtervalue1,filtername2=filtervalue2,etc. Names and possible values for filters can be found by running the "prisma-cloud-alert-filter-list" command.'
-          isArray: true
-          name: filters
-      description: Dismiss or snooze the alerts matching the given filter. Either policy IDs or alert IDs must be provided. When no absolute time nor relative time arguments are provided, the default time range is all times. For snoozing, provide "snooze_unit" and "snooze_value" arguments.
-      execution: true
-      name: prisma-cloud-alert-dismiss
-    - arguments:
-        - default: true
-          description: The alert ID.
-          name: alert_id
-          required: true
-        - auto: PREDEFINED
-          defaultValue: 'true'
-          description: Whether to retrieve the entire / trimmed alert model.
-          name: detailed
-          predefined:
-            - 'true'
-            - 'false'
-      description: Gets the details of an alert based on the alert ID.
-      name: prisma-cloud-alert-get-details
-      outputs:
-        - contextPath: PrismaCloud.Alert.id
-          description: The alert ID.
-          type: String
-        - contextPath: PrismaCloud.Alert.status
-          description: The alert status.
-          type: String
-        - contextPath: PrismaCloud.Alert.reason
-          description: The alert reason.
-          type: String
-        - contextPath: PrismaCloud.Alert.alertTime
-          description: The time of the alert.
-          type: Date
-        - contextPath: PrismaCloud.Alert.firstSeen
-          description: The time the alert was first seen.
-          type: Date
-        - contextPath: PrismaCloud.Alert.lastSeen
-          description: The time the alert was last seen.
-          type: Date
-        - contextPath: PrismaCloud.Alert.eventOccurred
-          description: The time the event occurred.
-          type: Date
-        - contextPath: PrismaCloud.Alert.alertRules
-          description: Names of the alert rules that triggered this alert.
-          type: String
-        - contextPath: PrismaCloud.Alert.resource.resourceApiName
-          description: The resource API name.
-          type: String
-        - contextPath: PrismaCloud.Alert.resource.id
-          description: The resource ID.
-          type: String
-        - contextPath: PrismaCloud.Alert.resource.account
-          description: The resource account.
-          type: String
-        - contextPath: PrismaCloud.Alert.resource.accountId
-          description: The resource account ID.
-          type: String
-        - contextPath: PrismaCloud.Alert.resource.resourceType
-          description: The resource type.
-          type: String
-        - contextPath: PrismaCloud.Alert.policy.policyId
-          description: The policy ID.
-          type: String
-        - contextPath: PrismaCloud.Alert.policy.name
-          description: The policy name.
-          type: String
-        - contextPath: PrismaCloud.Alert.policy.policyType
-          description: The type of policy.
-          type: String
-        - contextPath: PrismaCloud.Alert.policy.severity
-          description: The policy severity.
-          type: String
-        - contextPath: PrismaCloud.Alert.policy.recommendation
-          description: The policy recommendation.
-          type: String
-        - contextPath: PrismaCloud.Alert.policy.remediation.description
-          description: The policy remediation description.
-          type: String
-        - contextPath: PrismaCloud.Alert.policy.remediation.cliScriptTemplate
-          description: The policy remediation CLI script template.
-          type: String
-        - contextPath: PrismaCloud.Alert.policy.description
-          description: The policy description.
-          type: String
-        - contextPath: PrismaCloud.Alert.policy.labels
-          description: The policy labels.
-          type: Unknown
-        - contextPath: PrismaCloud.Alert.resource.cloudType
-          description: The resource cloud type.
-          type: String
-        - contextPath: PrismaCloud.Alert.resource.rrn
-          description: The restricted resource name.
-          type: String
-        - contextPath: PrismaCloud.Alert.resource.regionId
-          description: The resource region ID.
-          type: String
-        - contextPath: PrismaCloud.Alert.resource.url
-          description: The resource URL.
-          type: String
-        - contextPath: PrismaCloud.Alert.policy.remediable
-          description: Whether the policy is remediable.
-          type: Boolean
-        - contextPath: PrismaCloud.Alert.policy.systemDefault
-          description: Whether the policy is the system default.
-          type: Boolean
-        - contextPath: PrismaCloud.Alert.policy.deleted
-          description: Whether the policy was deleted.
-          type: Boolean
-    - description: List the acceptable filters and values for alerts.
-      name: prisma-cloud-alert-filter-list
-      outputs:
-        - contextPath: PrismaCloud.AlertFilters.filterName
-          description: The filter name.
-          type: String
-        - contextPath: PrismaCloud.AlertFilters.options
-          description: The filter value options.
-          type: String
-        - contextPath: PrismaCloud.AlertFilters.staticFilter
-          description: Whether the filter is static.
-          type: Unknown
-    - arguments:
-        - description: Comma-seperated list of alert IDs for which to get remediation details. Provided alert IDs must be associated with the same policy. If a policy is specified, all the alerts specified must belong to that policy.
-          isArray: true
-          name: alert_ids
-        - description: Policy ID for which to get remediation details.
-          name: policy_id
-        - description: 'Start time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time).'
-          name: time_range_date_from
-        - description: 'End time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time).'
-          name: time_range_date_to
-        - auto: PREDEFINED
-          description: 'The search time unit. The "login" and "epoch" options are only available if "time_range_value" is not provided.'
-          name: time_range_unit
-          predefined:
-            - hour
-            - day
-            - week
-            - month
-            - year
-            - login
-            - epoch
-        - description: The amount of "time_range_unit" to go back in time. For example, 3 days, 5 weeks, etc.
-          name: time_range_value
-        - defaultValue: '50'
-          description: Maximum number of entries to return.
-          name: limit
-        - auto: PREDEFINED
-          description: Whether to retrieve all results. The "limit" argument will be ignored.
-          name: all_results
-          predefined:
-            - 'true'
-            - 'false'
-      description: Generates and returns a list of remediation commands for the specified alerts and policies. Data returned for a successful call include fully constructed commands for remediation. Either a policy ID or alert IDs must be provided. The returned information can be retrieved in the UI by clicking the "Remediate" button under the "Actions" column for supported alerts. When no absolute time nor relative time arguments are provided, the default time range is all times.
-      name: prisma-cloud-remediation-command-list
-      outputs:
-        - contextPath: PrismaCloud.AlertRemediation.description
-          description: Description of CLI remediation instructions.
-          type: String
-        - contextPath: PrismaCloud.AlertRemediation.scriptImpact
-          description: Impact of CLI remediation instructions.
-          type: String
-        - contextPath: PrismaCloud.AlertRemediation.alertId
-          description: The ID of the alert to which the remediation details apply.
-          type: String
-        - contextPath: PrismaCloud.AlertRemediation.CLIScript
-          description: The exact CLI command string.
-          type: String
-    - arguments:
-        - default: true
-          description: The alert ID.
-          name: alert_id
-          required: true
-      name: prisma-cloud-alert-remediate
-      description: Remediates the alert with the specified ID, if that alert is associated with a remediable policy. In order to check what remediation would run, use the "prisma-cloud-remediation-command-list" command first.
-      execution: true
-      outputs:
-        - contextPath: PrismaCloud.AlertRemediation.alertId
-          description: The ID of the alert to which the remediation apply.
-          type: String
-        - contextPath: PrismaCloud.AlertRemediation.successful
-          description: Whether the remediation was successful.
-          type: Boolean
-        - contextPath: PrismaCloud.AlertRemediation.failureReason
-          description: The failure reason for the remediation.
-          type: String
-        - contextPath: PrismaCloud.AlertRemediation.errorValue
-          description: The error value for the remediation.
-          type: String
-    - arguments:
-        - description: Comma-separated list of alert IDs to be reopened.
-          isArray: true
-          name: alert_ids
-        - description: Comma-separated list of policy IDs.
-          isArray: true
-          name: policy_ids
-        - description: 'Start time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time).'
-          name: time_range_date_from
-        - description: 'End time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time).'
-          name: time_range_date_to
-        - auto: PREDEFINED
-          description: 'The search time unit. The "login" and "epoch" options are only available if "time_range_value" is not provided.'
-          name: time_range_unit
-          predefined:
-            - hour
-            - day
-            - week
-            - month
-            - year
-            - login
-            - epoch
-        - description: The amount of "time_range_unit" to go back in time. For example, 3 days, 5 weeks, etc.
-          name: time_range_value
-        - description: 'Comma-separated list of filter name and value, in the following format: filtername1=filtervalue1,filtername2=filtervalue2,etc. Names and possible values for filters can be found by running the "prisma-cloud-alert-filter-list" command.'
-          isArray: true
-          name: filters
-      description: Re-open the alerts matching the given filter. Either policy IDs or alert IDs must be provided. When no absolute time nor relative time arguments are provided, the default time range is all times.
-      execution: true
-      name: prisma-cloud-alert-reopen
-    - arguments:
-        - description: 'Start time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time).'
-          name: time_range_date_from
-        - description: 'End time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time).'
-          name: time_range_date_to
-        - auto: PREDEFINED
-          description: 'The search time unit. The "login" and "epoch" options are only available if "time_range_value" is not provided.'
-          name: time_range_unit
-          predefined:
-            - hour
-            - day
-            - week
-            - month
-            - year
-            - login
-            - epoch
-        - description: The amount of "time_range_unit" to go back in time. For example, 3 days, 5 weeks, etc.
-          name: time_range_value
-        - description: 'Comma-separated list of filter name and value, in the following format: filtername1=filtervalue1,filtername2=filtervalue2,etc. Names and possible values for filters can be found by running the "prisma-cloud-alert-filter-list" command.'
-          isArray: true
-          name: filters
-        - auto: PREDEFINED
-          defaultValue: 'true'
-          description: Whether to retrieve the entire / trimmed alert model.
-          name: detailed
-          predefined:
-            - 'true'
-            - 'false'
-        - defaultValue: '50'
-          description: Maximum number of entries to return.
-          name: limit
-        - description: Token of the next page to retrive. When provided, other arguments are ignored.
-          name: next_token
-        - description: 'The field to sort the results by. Possible values are: alertTime,firstSeen,lastSeen,lastUpdated.'
-          name: sort_field
-          auto: PREDEFINED
-          predefined:
-            - alertTime
-            - firstSeen
-            - lastSeen
-            - lastUpdated
-        - description: 'The direction to sort the results by. Sort field must be specified if sorting. Possible values are: asc, desc. Default is asc.'
-          name: sort_direction
-          defaultValue: asc
-          auto: PREDEFINED
-          predefined:
-            - asc
-            - desc
-      description: Search alerts on the Prisma Cloud platform. When no absolute time nor relative time arguments are provided, the search will show alerts from the last 7 days.
-      name: prisma-cloud-alert-search
-      outputs:
-        - contextPath: PrismaCloud.AlertPageToken.nextPageToken
-          description: Next page token.
-          type: String
-        - contextPath: PrismaCloud.Alert.id
-          description: The ID of the returned alert.
-          type: String
-        - contextPath: PrismaCloud.Alert.status
-          description: The status of the returned alert.
-          type: String
-        - contextPath: PrismaCloud.Alert.reason
-          description: The reason of the returned alert.
-          type: String
-        - contextPath: PrismaCloud.Alert.lastSeen
-          description: The time the returned alert was last seen.
-          type: String
-        - contextPath: PrismaCloud.Alert.firstSeen
-          description: The time the returned alert was first seen.
-          type: String
-        - contextPath: PrismaCloud.Alert.lastUpdated
-          description: The time the returned alert was last updated.
-          type: String
-        - contextPath: PrismaCloud.Alert.alertTime
-          description: The time of the returned alert.
-          type: String
-        - contextPath: PrismaCloud.Alert.policy.policyId
-          description: The policy ID of the returned alert.
-          type: String
-        - contextPath: PrismaCloud.Alert.policy.name
-          description: The policy name of the returned alert.
-          type: String
-        - contextPath: PrismaCloud.Alert.policy.policyType
-          description: The policy type of the returned alert.
-          type: String
-        - contextPath: PrismaCloud.Alert.policy.severity
-          description: The policy severity of the returned alert.
-          type: String
-        - contextPath: PrismaCloud.Alert.policy.remediable
-          description: Whether the policy is remediable.
-          type: Boolean
-        - contextPath: PrismaCloud.Alert.policy.description
-          description: The policy description of the returned alert.
-          type: String
-        - contextPath: PrismaCloud.Alert.policy.recommendation
-          description: The policy recommendation of the returned alert.
-          type: String
-        - contextPath: PrismaCloud.Alert.policy.remediation.description
-          description: The policy remediation description of the returned alert.
-          type: String
-        - contextPath: PrismaCloud.Alert.policy.remediation.cliScriptTemplate
-          description: The policy CLI script template description of the returned alert.
-          type: String
-        - contextPath: PrismaCloud.Alert.policy.systemDefault
-          description: Whether the policy is the system default.
-          type: Boolean
-        - contextPath: PrismaCloud.Alert.policy.deleted
-          description: Whether the policy was deleted.
-          type: Boolean
-        - contextPath: PrismaCloud.Alert.resource.resourceType
-          description: The resource type of the returned alert.
-          type: String
-        - contextPath: PrismaCloud.Alert.resource.name
-          description: The resource name of the returned alert.
-          type: String
-        - contextPath: PrismaCloud.Alert.resource.account
-          description: The resource account of the returned alert.
-          type: String
-        - contextPath: PrismaCloud.Alert.resource.cloudType
-          description: The resource cloud type of the returned alert.
-          type: String
-        - contextPath: PrismaCloud.Alert.resource.rrn
-          description: The restricted resource name of the returned alert.
-          type: String
-    - arguments:
-        - description: 'Start time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time).'
-          name: time_range_date_from
-        - description: 'End time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time).'
-          name: time_range_date_to
-        - auto: PREDEFINED
-          description: 'The search time unit. The "login" and "epoch" options are only available if "time_range_value" is not provided.'
-          name: time_range_unit
-          predefined:
-            - hour
-            - day
-            - week
-            - month
-            - year
-            - login
-            - epoch
-        - description: The amount of "time_range_unit" to go back in time. For example, 3 days, 5 weeks, etc.
-          name: time_range_value
-        - description: 'Query to run in Prisma Cloud config API using RQL language. For more information see: https://docs.paloaltonetworks.com/prisma/prisma-cloud/prisma-cloud-rql-reference/rql-reference/config-query.'
-          name: query
-          required: true
-        - defaultValue: '50'
-          description: Maximum number of entries to return.
-          name: limit
-        - description: Search ID. Can be used to rerun the same search.
-          name: search_id
-        - auto: PREDEFINED
-          defaultValue: 'desc'
-          description: The direction to sort the results by. Both sort direction and field must be specified if sorting.
-          name: sort_direction
-          predefined:
-            - asc
-            - desc
-        - auto: PREDEFINED
-          defaultValue: 'insertTs'
-          description: The field to sort the results by. Both sort direction and field must be specified if sorting.
-          name: sort_field
-          predefined:
-            - id
-            - time
-            - apiName
-            - customerId
-            - insertTs
-            - json
-            - cloudAccount
-            - cloudRegion
-            - stateId
-        - description: 'Whether to include the resource JSON or not. Default is "true". "false" will not return the resource JSON, "true" will return the resource JSON. Note that if the value is "true", some of the keys, which contain large data objects, are still omitted by default and in order to retrieve them, set the "include_additional_resource_fields" argument to "true". Doing so can increase the context size dramatically.'
-          name: include_resource_json
-          defaultValue: 'true'
-          auto: PREDEFINED
-          predefined:
-            - 'true'
-            - 'false'
-        - description: 'Whether to retrieve all of the resource JSON, including keys with large objects such as: "disks.shieldedInstanceInitialState" and "configure-sh" key under metadata. Default is "false".'
-          name: include_additional_resource_fields
-          defaultValue: 'false'
-          auto: PREDEFINED
-          predefined:
-            - 'true'
-            - 'false'
-      description: Search configuration inventory on the Prisma Cloud platform using RQL language. Use this command for all queries that start with "config". When no absolute time nor relative time arguments are provided, the default time range is all times.
-      name: prisma-cloud-config-search
-      outputs:
-        - contextPath: PrismaCloud.Config.accountId
-          description: Cloud account ID.
-          type: String
-        - contextPath: PrismaCloud.Config.accountName
-          description: Cloud account name.
-          type: String
-        - contextPath: PrismaCloud.Config.allowDrillDown
-          description: Whether to allow drill down.
-          type: Boolean
-        - contextPath: PrismaCloud.Config.cloudType
-          description: Cloud type.
-          type: String
-        - contextPath: PrismaCloud.Config.deleted
-          description: Whether the asset was deleted.
-          type: Boolean
-        - contextPath: PrismaCloud.Config.hasExtFindingRiskFactors
-          description: Whether the configuration has external finding risk factors.
-          type: Boolean
-        - contextPath: PrismaCloud.Config.hasExternalFinding
-          description: Whether the configuration has an external finding.
-          type: Boolean
-        - contextPath: PrismaCloud.Config.hasExternalIntegration
-          description: Whether the configuration has an external integration.
-          type: Boolean
-        - contextPath: PrismaCloud.Config.hasNetwork
-          description: Whether the configuration has a network.
-          type: Boolean
-        - contextPath: PrismaCloud.Config.id
-          description: Prisma Cloud configuration ID.
-          type: String
-        - contextPath: PrismaCloud.Config.assetId
-          description: Prisma Cloud asset ID.
-          type: String
-        - contextPath: PrismaCloud.Config.data
-          description: Prisma Cloud asset specific data.
-          type: Unknown
-        - contextPath: PrismaCloud.Config.insertTs
-          description: Insert timestamp.
-          type: Date
-        - contextPath: PrismaCloud.Config.createdTs
-          description: Created timestamp.
-          type: Date
-        - contextPath: PrismaCloud.Config.name
-          description: Asset name.
-          type: String
-        - contextPath: PrismaCloud.Config.regionId
-          description: Cloud region ID.
-          type: String
-        - contextPath: PrismaCloud.Config.regionName
-          description: Cloud region name.
-          type: String
-        - contextPath: PrismaCloud.Config.resourceType
-          description: Cloud resource type.
-          type: String
-        - contextPath: PrismaCloud.Config.rrn
-          description: Cloud restricted resource name.
-          type: String
-        - contextPath: PrismaCloud.Config.service
-          description: Cloud service.
-          type: String
-        - contextPath: PrismaCloud.Config.stateId
-          description: State ID.
-          type: String
-    - arguments:
-        - description: 'Start time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time).'
-          name: time_range_date_from
-        - description: 'End time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time).'
-          name: time_range_date_to
-        - auto: PREDEFINED
-          description: The search time unit. The "login" and "epoch" options are only available if "time_range_value" is not provided.
-          name: time_range_unit
-          predefined:
-            - hour
-            - day
-            - week
-            - month
-            - year
-            - login
-            - epoch
-        - description: The amount of "time_range_unit" to go back in time. For example, 3 days, 5 weeks, etc.
-          name: time_range_value
-        - description: 'Query to run in Prisma Cloud event API using RQL language. For more information see: https://docs.paloaltonetworks.com/prisma/prisma-cloud/prisma-cloud-rql-reference/rql-reference/event-query.'
-          name: query
-          required: true
-        - defaultValue: '50'
-          description: Maximum number of entries to return.
-          name: limit
-        - description: 'The field to sort the results by. Possible values are: cloudService, operation, cloudAccount, cloudRegion, id, time, crud, user.'
-          name: sort_field
-          auto: PREDEFINED
-          predefined:
-            - cloudService
-            - operation
-            - cloudAccount
-            - cloudRegion
-            - id
-            - time
-            - crud
-            - user
-        - description: 'The direction to sort the results by. Sort field must be specified if sorting. Possible values are: asc, desc. Default is asc.'
-          name: sort_direction
-          defaultValue: asc
-          auto: PREDEFINED
-          predefined:
-            - asc
-            - desc
-      description: Search events inventory on the Prisma Cloud platform using RQL language. Use this command for all queries that start with "event". When no absolute time nor relative time arguments are provided, the default time range is all times. In order to reduce the returned data, set the "include_resource_json" argument to "false".
-      name: prisma-cloud-event-search
-      outputs:
-        - contextPath: PrismaCloud.Event.subject
-          description: Cloud event subject.
-          type: String
-        - contextPath: PrismaCloud.Event.accountName
-          description: Cloud event account name.
-          type: String
-        - contextPath: PrismaCloud.Event.name
-          description: Cloud event name.
-          type: String
-        - contextPath: PrismaCloud.Event.source
-          description: Cloud event source.
-          type: String
-        - contextPath: PrismaCloud.Event.ip
-          description: Cloud event IP address.
-          type: String
-        - contextPath: PrismaCloud.Event.eventTs
-          description: Cloud event timestamp.
-          type: Date
-        - contextPath: PrismaCloud.Event.countryName
-          description: Cloud event country name.
-          type: String
-        - contextPath: PrismaCloud.Event.stateName
-          description: Cloud event state name.
-          type: String
-        - contextPath: PrismaCloud.Event.cityName
-          description: Cloud event city name.
-          type: String
-        - contextPath: PrismaCloud.Event.location
-          description: Cloud event location.
-          type: String
-        - contextPath: PrismaCloud.Event.account
-          description: Cloud event account.
-          type: String
-        - contextPath: PrismaCloud.Event.regionId
-          description: Cloud event region ID.
-          type: Number
-        - contextPath: PrismaCloud.Event.type
-          description: Cloud event type.
-          type: String
-        - contextPath: PrismaCloud.Event.id
-          description: Cloud event ID.
-          type: Number
-        - contextPath: PrismaCloud.Event.role
-          description: Cloud event role.
-          type: String
-        - contextPath: PrismaCloud.Event.accessKeyUsed
-          description: Whether the cloud event access key is used.
-          type: Boolean
-        - contextPath: PrismaCloud.Event.success
-          description: Whether the cloud event is successful.
-          type: Boolean
-        - contextPath: PrismaCloud.Event.internal
-          description: Whether the cloud event is internal.
-          type: Boolean
-        - contextPath: PrismaCloud.Event.cityId
-          description: Cloud event city ID.
-          type: Number
-        - contextPath: PrismaCloud.Event.cityLatitude
-          description: Cloud event city latitude.
-          type: Number
-        - contextPath: PrismaCloud.Event.cityLongitude
-          description: Cloud event city longitude.
-          type: Number
-        - contextPath: PrismaCloud.Event.countryId
-          description: Cloud event country ID.
-          type: Number
-        - contextPath: PrismaCloud.Event.dynamicData
-          description: Cloud event dynamic data.
-          type: String
-        - contextPath: PrismaCloud.Event.stateId
-          description: Cloud event state ID.
-          type: Number
-    - arguments:
-        - description: 'Start time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time).'
-          name: time_range_date_from
-        - description: 'End time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time).'
-          name: time_range_date_to
-        - auto: PREDEFINED
-          description: 'The search time unit. The "login" and "epoch" options are only available if "time_range_value" is not provided.'
-          name: time_range_unit
-          predefined:
-            - hour
-            - day
-            - week
-            - month
-            - year
-            - login
-            - epoch
-        - description: The amount of "time_range_unit" to go back in time. For example, 3 days, 5 weeks, etc.
-          name: time_range_value
-        - description: 'Query to run in Prisma Cloud network API using RQL language. For more information see: https://docs.paloaltonetworks.com/prisma/prisma-cloud/prisma-cloud-rql-reference/rql-reference/network-query.'
-          name: query
-          required: true
-        - auto: PREDEFINED
-          description: The cloud in which the network should be searched.
-          name: cloud_type
-          predefined:
-            - aws
-            - azure
-            - gcp
-            - alibaba_cloud
-            - oci
-        - description: Search ID. Can be used to rerun the same search.
-          name: search_id
-      description: 'Search networks inventory on the Prisma Cloud platform using RQL language. Use this command for all queries that start with "networks". When no absolute time nor relative time arguments are provided, the default time range is all times. In order to limit the results returning, use "limit search records to" at the end of the RQL query, followed by a value from one of these options: 1, 10, 100, 1000, and 10,000.'
-      name: prisma-cloud-network-search
-      outputs:
-        - contextPath: PrismaCloud.Network.Node.id
-          description: Cloud network node ID.
-          type: Number
-        - contextPath: PrismaCloud.Network.Node.name
-          description: Cloud network node name.
-          type: String
-        - contextPath: PrismaCloud.Network.Node.ipAddr
-          description: Cloud network node IP address.
-          type: String
-        - contextPath: PrismaCloud.Network.Node.grouped
-          description: Whether the cloud network node is grouped.
-          type: Boolean
-        - contextPath: PrismaCloud.Network.Node.suspicious
-          description: Whether the cloud network node is suspicious.
-          type: Boolean
-        - contextPath: PrismaCloud.Network.Node.vulnerable
-          description: Whether the cloud network node is vulnerable.
-          type: Boolean
-        - contextPath: PrismaCloud.Network.Node.metadata
-          description: Cloud network node metadata.
-          type: Unknown
-        - contextPath: PrismaCloud.Network.Connection.from
-          description: Cloud network connection from node ID.
-          type: Number
-        - contextPath: PrismaCloud.Network.Connection.to
-          description: Cloud network connection to node ID.
-          type: Number
-        - contextPath: PrismaCloud.Network.Connection.label
-          description: Cloud network connection label.
-          type: String
-        - contextPath: PrismaCloud.Network.Connection.suspicious
-          description: Whether the cloud network node is suspicious.
-          type: Boolean
-        - contextPath: PrismaCloud.Network.Connection.metadata
-          description: Cloud network connection metadata.
-          type: Unknown
-    - arguments:
-        - description: ID number of the CICD run.
-          name: cicd_run_id
-        - description: Comma-separated list of authors of the files.
-          isArray: true
-          name: authors
-        - description: Branch of the files.
-          name: branch
-        - description: 'Comma-separated list of categories of the files. Available options are: IAM, Compute, Monitoring, Networking, Kubernetes, General, Storage, Secrets, Public, Vulnerabilities, Drift, BuildIntegrity, Licenses.'
-          isArray: true
-          name: categories
-        - auto: PREDEFINED
-          description: The code status.
-          name: code_status
-          predefined:
-            - hasFix
-        - description: 'Comma-separated list of file types of the files. Available options are: tf, json, yml, yaml, template, .checkov.baseline, hcl, Dockerfile, package.json, package-lock.json, bower.json, pom.xml, build.gradle, build.gradle.kts, gradle.properties, gradle-wrapper.properties, go.sum, go.mod, requirements.txt, METADATA, bicep, Pipfile.lock, Pipfile, yarn.lock, Gemfile, Gemfile.lock, gemspec, env, settings.py, main.py, application.py, config.py, app.js, config.js, dev.js, db.properties, application.properties, private.pem, privatekey.pem, index.php, config.php, config.xml, strings.xml, app.module.ts, environment.ts, tpl, tfvars, unknown.'
-          isArray: true
-          name: file_types
-        - description: Repository of the files.
-          name: repository
-          required: true
-        - description: Repository ID of the files.
-          name: repository_id
-        - description: 'Comma-separated list of search options of the files. Available options are: path, code.'
-          isArray: true
-          name: search_options
-        - description: Search text in the files.
-          name: search_text
-        - auto: PREDEFINED
-          description: Search title of the files.
-          name: search_title
-          predefined:
-            - 'title'
-            - 'constructive_title'
-            - 'descriptive_title'
-        - description: 'Comma-separated list of severities of the files. Available options are: CRITICAL, HIGH, MEDIUM, LOW, INFO.'
-          isArray: true
-          name: severities
-        - description: 'Comma-separated list of source types of the files. Available options are: Github, Bitbucket, Gitlab, AzureRepos, cli, AWS, Azure, GCP, Docker, githubEnterprise, gitlabEnterprise, bitbucketEnterprise, terraformCloud, githubActions, circleci, codebuild, jenkins, tfcRunTasks, admissionController, terraformEnterprise.'
-          isArray: true
-          name: source_types
-          required: true
-        - description: 'Comma-separated list of tag key and value, in the following format: tagkey1=tagvalue1,tagkey2=tagvalue2,etc.'
-          isArray: true
-          name: tags
-        - description: 'Comma-separated list of statuses of the files. Available options are: Errors, Suppressed, Passed, Fixed.'
-          isArray: true
-          name: statuses
-        - defaultValue: '50'
-          description: Maximum number of entries to return.
-          name: limit
-        - auto: PREDEFINED
-          description: Whether to retrieve all results. The "limit" argument will be ignored.
-          name: all_results
-          predefined:
-            - 'true'
-            - 'false'
-      description: Lists scanned files that contain errors. In order to use this command, the "Code Security" module needs to be enabled and accessible in the Prisma Cloud UI.
-      name: prisma-cloud-error-file-list
-      outputs:
-        - contextPath: PrismaCloud.ErrorFile.filePath
-          description: Error file path.
-          type: String
-        - contextPath: PrismaCloud.ErrorFile.suppressedErrorsCount
-          description: The number of error file suppressed errors.
-          type: Number
-        - contextPath: PrismaCloud.ErrorFile.passedCount
-          description: The number of error files passed.
-          type: Number
-        - contextPath: PrismaCloud.ErrorFile.openErrorsCount
-          description: The number of error file open errors.
-          type: Number
-        - contextPath: PrismaCloud.ErrorFile.errorsCount
-          description: The number of error file errors.
-          type: Number
-        - contextPath: PrismaCloud.ErrorFile.fixedCount
-          description: The number of error files fixed.
-          type: Number
-        - contextPath: PrismaCloud.ErrorFile.type
-          description: Error file type.
-          type: String
-    - name: prisma-cloud-trigger-scan
-      description: Trigger asynchronous scan of all resources to refresh the current state at Prisma Cloud Code Security. In order to use this command, the "Code Security" module needs to be enabled and accessible in the Prisma Cloud UI.
-    - arguments:
-        - description: Restricted Resource Name of the resource to get details about. Can be retrieved by running a command that has that RRN.
-          name: rrn
-          required: true
-      description: Get resource details.
-      name: prisma-cloud-resource-get
-      outputs:
-        - contextPath: PrismaCloud.Resource.rrn
-          description: Prisma Cloud restricted resource name.
-          type: String
-        - contextPath: PrismaCloud.Resource.id
-          description: Prisma Cloud resource ID.
-          type: String
-        - contextPath: PrismaCloud.Resource.name
-          description: Resource name.
-          type: String
-        - contextPath: PrismaCloud.Resource.url
-          description: Resource URL.
-          type: String
-        - contextPath: PrismaCloud.Resource.accountId
-          description: Cloud account ID.
-          type: String
-        - contextPath: PrismaCloud.Resource.accountName
-          description: Cloud account name.
-          type: String
-        - contextPath: PrismaCloud.Resource.cloudType
-          description: Cloud type.
-          type: String
-        - contextPath: PrismaCloud.Resource.regionId
-          description: Cloud region ID.
-          type: String
-        - contextPath: PrismaCloud.Resource.regionName
-          description: Cloud region Name.
-          type: String
-        - contextPath: PrismaCloud.Resource.service
-          description: Cloud service.
-          type: String
-        - contextPath: PrismaCloud.Resource.resourceType
-          description: Cloud resource type.
-          type: String
-        - contextPath: PrismaCloud.Resource.insertTs
-          description: Insert timestamp.
-          type: Date
-        - contextPath: PrismaCloud.Resource.deleted
-          description: Whether the resource was deleted.
-          type: Boolean
-        - contextPath: PrismaCloud.Resource.vpcId
-          description: VPC ID.
-          type: String
-        - contextPath: PrismaCloud.Resource.vpcName
-          description: VPC name.
-          type: String
-        - contextPath: PrismaCloud.Resource.tags
-          description: Prisma Cloud resource tags.
-          type: Unknown
-        - contextPath: PrismaCloud.Resource.riskGrade
-          description: Risk grade.
-          type: String
-        - contextPath: PrismaCloud.Resource.hasNetwork
-          description: Whether the resource has a network.
-          type: Boolean
-        - contextPath: PrismaCloud.Resource.hasExternalFinding
-          description: Whether the resource has an external finding.
-          type: Boolean
-        - contextPath: PrismaCloud.Resource.hasExternalIntegration
-          description: Whether the resource has an external integration.
-          type: Boolean
-        - contextPath: PrismaCloud.Resource.allowDrillDown
-          description: Whether to allow drill down.
-          type: Boolean
-        - contextPath: PrismaCloud.Resource.hasExtFindingRiskFactors
-          description: Whether the resource has external finding risk factors.
-          type: Boolean
-        - contextPath: PrismaCloud.Resource.data
-          description: Prisma Cloud resource specific data.
-          type: Unknown
-    - arguments:
-        - description: The resource list type.
-          name: list_type
-        - description: The namespace to return only resources associated with it.
-          name: namespace
-        - defaultValue: '50'
-          description: Maximum number of entries to return.
-          name: limit
-        - auto: PREDEFINED
-          description: Whether to retrieve all results. The "limit" argument will be ignored.
-          name: all_results
-          predefined:
-            - 'true'
-            - 'false'
-      description: Returns all the resource lists. Maps to the Resource Lists under Settings > Resource Lists in the Console UI.
-      name: prisma-cloud-resource-list
-      outputs:
-        - contextPath: PrismaCloud.ResourceList.id
-          description: Prisma Cloud resource list ID.
-          type: String
-        - contextPath: PrismaCloud.ResourceList.name
-          description: Resource list name.
-          type: String
-        - contextPath: PrismaCloud.ResourceList.resourceListType
-          description: Resource list type.
-          type: String
-        - contextPath: PrismaCloud.ResourceList.description
-          description: Resource list description.
-          type: String
-        - contextPath: PrismaCloud.ResourceList.lastModifiedBy
-          description: Resource list last modified user.
-          type: String
-        - contextPath: PrismaCloud.ResourceList.lastModifiedTs
-          description: Resource list last modified time.
-          type: Date
-        - contextPath: PrismaCloud.ResourceList.members
-          description: Resource list members.
-          type: Unknown
-        - contextPath: PrismaCloud.ResourceList.namespaces
-          description: Resource list namespaces.
-          type: Unknown
-    - arguments:
-        - description: The role id to get details of.
-          name: role_id
-        - description: The resource list name to return only user roles associated with it.
-          name: resource_list_name
-        - defaultValue: '50'
-          description: Maximum number of entries to return.
-          name: limit
-        - auto: PREDEFINED
-          description: Whether to retrieve all results. The "limit" argument will be ignored.
-          name: all_results
-          predefined:
-            - 'true'
-            - 'false'
-      description: Retrieves user roles. Maps to Settings > Access Control > Roles in the Console UI.
-      name: prisma-cloud-user-roles-list
-      outputs:
-        - contextPath: PrismaCloud.UserRoles.id
-          description: Prisma Cloud user roles ID.
-          type: String
-        - contextPath: PrismaCloud.UserRoles.name
-          description: User roles name.
-          type: String
-        - contextPath: PrismaCloud.UserRoles.resourceListIds
-          description: User roles resource list IDs.
-          type: Unknown
-        - contextPath: PrismaCloud.UserRoles.description
-          description: User roles description.
-          type: String
-        - contextPath: PrismaCloud.UserRoles.lastModifiedBy
-          description: User roles last modified user.
-          type: String
-        - contextPath: PrismaCloud.UserRoles.lastModifiedTs
-          description: User roles last modified time.
-          type: Date
-        - contextPath: PrismaCloud.UserRoles.associatedUsers
-          description: User roles associated users.
-          type: Unknown
-        - contextPath: PrismaCloud.UserRoles.restrictDismissalAccess
-          description: Whether dismissal access is restricted for the user role.
-          type: Boolean
-        - contextPath: PrismaCloud.UserRoles.roleType
-          description: User roles role type.
-          type: String
-        - contextPath: PrismaCloud.UserRoles.additionalAttributes
-          description: User roles additional attributes.
-          type: Unknown
-        - contextPath: PrismaCloud.UserRoles.codeRepositoryIds
-          description: User roles code repository IDs.
-          type: Unknown
-        - contextPath: PrismaCloud.UserRoles.accountGroupIds
-          description: User roles account group IDs.
-          type: Unknown
-        - contextPath: PrismaCloud.UserRoles.resourceLists
-          description: User roles resource lists.
-          type: Unknown
-        - contextPath: PrismaCloud.UserRoles.permissionGroup
-          description: User roles permission group.
-          type: Unknown
-        - contextPath: PrismaCloud.UserRoles.codeRepositories
-          description: User roles code repositories.
-          type: Unknown
-        - contextPath: PrismaCloud.UserRoles.accountGroups
-          description: User roles account groups.
-          type: Unknown
-    - arguments:
-        - defaultValue: '50'
-          description: Maximum number of entries to return.
-          name: limit
-        - auto: PREDEFINED
-          description: Whether to retrieve all results. The "limit" argument will be ignored.
-          name: all_results
-          predefined:
-            - 'true'
-            - 'false'
-        - description: Usernames to return only users associated with.
-          name: usernames
-          isArray: true
-      description: Lists all users and service accounts for your tenant. Maps to Settings > Access Control > Users in the Console UI.
-      name: prisma-cloud-users-list
-      outputs:
-        - contextPath: PrismaCloud.Users.email
-          description: Prisma Cloud user email.
-          type: String
-        - contextPath: PrismaCloud.Users.firstName
-          description: User first name.
-          type: String
-        - contextPath: PrismaCloud.Users.lastName
-          description: User last name.
-          type: String
-        - contextPath: PrismaCloud.Users.timeZone
-          description: User time zone.
-          type: String
-        - contextPath: PrismaCloud.Users.enabled
-          description: User enabled.
-          type: Boolean
-        - contextPath: PrismaCloud.Users.lastModifiedBy
-          description: User last modified user.
-          type: String
-        - contextPath: PrismaCloud.Users.lastModifiedTs
-          description: User last modified time.
-          type: Date
-        - contextPath: PrismaCloud.Users.lastLoginTs
-          description: User last login time.
-          type: Date
-        - contextPath: PrismaCloud.Users.displayName
-          description: User display name.
-          type: String
-        - contextPath: PrismaCloud.Users.ssoBypassAllowed
-          description: Whether SSO bypass is allowed for the user role.
-          type: Boolean
-        - contextPath: PrismaCloud.Users.accessKeysAllowed
-          description: Whether access keys are allowed for the user role.
-          type: Boolean
-        - contextPath: PrismaCloud.Users.defaultRoleId
-          description: User default role ID.
-          type: String
-        - contextPath: PrismaCloud.Users.roleIds
-          description: User role IDs.
-          type: Unknown
-        - contextPath: PrismaCloud.Users.roles
-          description: User roles.
-          type: Unknown
-        - contextPath: PrismaCloud.Users.username
-          description: User username.
-          type: String
-        - contextPath: PrismaCloud.Users.type
-          description: User type.
-          type: String
-        - contextPath: PrismaCloud.Users.enableKeyExpiration
-          description: Whether key expiration is enabled for the user role.
-          type: Boolean
-        - contextPath: PrismaCloud.Users.accessKeysCount
-          description: User access keys count.
-          type: Number
-    - arguments:
-        - auto: PREDEFINED
-          defaultValue: 'false'
-          description: Whether to exclude account group details.
-          name: exclude_account_group_details
-          predefined:
-            - 'true'
-            - 'false'
-        - defaultValue: '50'
-          description: Maximum number of entries to return.
-          name: limit
-        - auto: PREDEFINED
-          description: Whether to retrieve all results. The "limit" argument will be ignored.
-          name: all_results
-          predefined:
-            - 'true'
-            - 'false'
-      description: List accounts.
-      name: prisma-cloud-account-list
-      outputs:
-        - contextPath: PrismaCloud.Account.name
-          description: Account name.
-          type: String
-        - contextPath: PrismaCloud.Account.cloudType
-          description: Account cloud type.
-          type: String
-        - contextPath: PrismaCloud.Account.accountType
-          description: Account type.
-          type: String
-        - contextPath: PrismaCloud.Account.enabled
-          description: Whether the account is enabled.
-          type: Boolean
-        - contextPath: PrismaCloud.Account.lastModifiedTs
-          description: Account last modified time.
-          type: Date
-        - contextPath: PrismaCloud.Account.storageScanEnabled
-          description: Whether account storage scan is enabled.
-          type: Boolean
-        - contextPath: PrismaCloud.Account.protectionMode
-          description: Account protection mode.
-          type: String
-        - contextPath: PrismaCloud.Account.ingestionMode
-          description: Account ingestion mode.
-          type: Number
-        - contextPath: PrismaCloud.Account.deploymentType
-          description: Account deployment type.
-          type: String
-        - contextPath: PrismaCloud.Account.groupIds
-          description: Account group IDs.
-          type: Unknown
-        - contextPath: PrismaCloud.Account.groups
-          description: Account groups.
-          type: Unknown
-        - contextPath: PrismaCloud.Account.status
-          description: Account status.
-          type: String
-        - contextPath: PrismaCloud.Account.numberOfChildAccounts
-          description: The number of child accounts.
-          type: Number
-        - contextPath: PrismaCloud.Account.accountId
-          description: Account ID.
-          type: String
-        - contextPath: PrismaCloud.Account.addedOn
-          description: Account added on time.
-          type: Date
-    - arguments:
-        - description: A comma-separated list of accound IDs. To get account IDs, run the "prisma-cloud-account-list" command.
-          isArray: true
-          name: account_ids
-          required: true
-      description: Get the statuses of the provided accounts.
-      name: prisma-cloud-account-status-get
-      outputs:
-        - contextPath: PrismaCloud.Account.accountId
-          description: Account ID.
-          type: String
-        - contextPath: PrismaCloud.Account.name
-          description: Account name.
-          type: String
-        - contextPath: PrismaCloud.Account.status
-          description: Account status.
-          type: String
-        - contextPath: PrismaCloud.Account.message
-          description: Account message.
-          type: String
-        - contextPath: PrismaCloud.Account.remediation
-          description: Account remediation action.
-          type: String
-    - arguments:
-        - description: A comma-separated list of account IDs. To get account IDs, run the "prisma-cloud-account-list" command.
-          isArray: true
-          name: account_ids
-          required: true
-      description: Get the owners of the provided accounts.
-      name: prisma-cloud-account-owner-list
-      outputs:
-        - contextPath: PrismaCloud.Account.accountId
-          description: Account ID.
-          type: String
-        - contextPath: PrismaCloud.Account.emails
-          description: Account owner emails.
-          type: Unknown
-    - arguments:
-        - description: Restricted Resource Name of the resource to get host finding of. Can be retrieved by running a command that has that RRN.
-          name: rrn
-          required: true
-        - description: 'Comma separated list of finding types to look for. Available options are: guard_duty_host, guard_duty_iam, inspector_sbp, compliance_cis, host_vulnerability_cve. When left empty, will return all options.'
-          isArray: true
-          name: finding_types
-        - description: 'Comma separated list of risk factors to look for. Available options are: CRITICAL_SEVERITY, HIGH_SEVERITY, MEDIUM_SEVERITY, HAS_FIX, REMOTE_EXECUTION, DOS, RECENT_VULNERABILITY, EXPLOIT_EXISTS, ATTACK_COMPLEXITY_LOW, ATTACK_VECTOR_NETWORK, REACHABLE_FROM_THE_INTERNET, LISTENING_PORTS, CONTAINER_IS_RUNNING_AS_ROOT, NO_MANDATORY_SECURITY_PROFILE_APPLIED, RUNNING_AS_PRIVILEGED_CONTAINER, PACKAGE_IN_USE. When left empty, will return all options.'
-          isArray: true
-          name: risk_factors
-        - defaultValue: '50'
-          description: Maximum number of entries to return.
-          name: limit
-        - auto: PREDEFINED
-          description: Whether to retrieve all results. The "limit" argument will be ignored.
-          name: all_results
-          predefined:
-            - 'true'
-            - 'false'
-      description: Get resource host finding list.
-      name: prisma-cloud-host-finding-list
-      outputs:
-        - contextPath: PrismaCloud.HostFinding.accountId
-          description: Host finding account ID.
-          type: String
-        - contextPath: PrismaCloud.HostFinding.regionId
-          description: Host finding region ID.
-          type: String
-        - contextPath: PrismaCloud.HostFinding.findingId
-          description: Host finding ID.
-          type: String
-        - contextPath: PrismaCloud.HostFinding.type
-          description: Host finding type.
-          type: String
-        - contextPath: PrismaCloud.HostFinding.source
-          description: Host finding source.
-          type: String
-        - contextPath: PrismaCloud.HostFinding.severity
-          description: Host finding severity.
-          type: String
-        - contextPath: PrismaCloud.HostFinding.status
-          description: Host finding status.
-          type: String
-        - contextPath: PrismaCloud.HostFinding.createdOn
-          description: The date on which the host finding was created.
-          type: Date
-        - contextPath: PrismaCloud.HostFinding.updatedOn
-          description: The date on which the host finding was updated.
-          type: Date
-        - contextPath: PrismaCloud.HostFinding.normalizedNames
-          description: Host finding normalized names.
-          type: Unknown
-        - contextPath: PrismaCloud.HostFinding.scanId
-          description: Host finding scan ID.
-          type: String
-        - contextPath: PrismaCloud.HostFinding.resourceCloudId
-          description: Host finding resource cloud ID.
-          type: String
-        - contextPath: PrismaCloud.HostFinding.sourceData.accountId
-          description: Host finding source data account ID.
-          type: String
-        - contextPath: PrismaCloud.HostFinding.sourceData.arn
-          description: Host finding source data ARN.
-          type: String
-        - contextPath: PrismaCloud.HostFinding.title
-          description: Host finding title.
-          type: String
-        - contextPath: PrismaCloud.HostFinding.description
-          description: Host finding description.
-          type: String
-        - contextPath: PrismaCloud.HostFinding.resourceUrl
-          description: Host finding resource URL.
-          type: String
-        - contextPath: PrismaCloud.HostFinding.rlUpdatedOn
-          description: The date on which the RL was updated.
-          type: Date
-        - contextPath: PrismaCloud.HostFinding.externalFindingId
-          description: External finding ID.
-          type: String
-        - contextPath: PrismaCloud.HostFinding.sourceData
-          description: Host finding source data.
-          type: Unknown
-        - contextPath: PrismaCloud.HostFinding.score
-          description: Host finding score.
-          type: String
-        - contextPath: PrismaCloud.HostFinding.count
-          description: The number of host findings.
-          type: Number
-    - arguments:
-        - description: User ID to look for. Must be provided with the "query" argument.
-          name: user_id
-        - description: 'IAM query to run in Prisma Cloud config API using RQL language. For more information see: https://docs.paloaltonetworks.com/prisma/prisma-cloud/prisma-cloud-rql-reference/rql-reference/iam-query.'
-          name: query
-        - defaultValue: '50'
-          description: Maximum number of entries to return.
-          name: limit
-        - description: Token of the next page to retrive.
-          name: next_token
-      description: Get permission list. You must provide either "query" or "next_token".
-      name: prisma-cloud-permission-list
-      outputs:
-        - contextPath: PrismaCloud.PermissionPageToken.nextPageToken
-          description: Next page token.
-          type: String
-        - contextPath: PrismaCloud.Permission.id
-          description: Permission ID.
-          type: String
-        - contextPath: PrismaCloud.Permission.sourceCloudType
-          description: Permission source cloud type.
-          type: String
-        - contextPath: PrismaCloud.Permission.sourceCloudAccount
-          description: Permission source cloud account.
-          type: String
-        - contextPath: PrismaCloud.Permission.sourceResourceId
-          description: Permission source resource ID.
-          type: String
-        - contextPath: PrismaCloud.Permission.destCloudType
-          description: Permission destination cloud type.
-          type: String
-        - contextPath: PrismaCloud.Permission.destCloudServiceName
-          description: Permission destination cloud service name.
-          type: String
-        - contextPath: PrismaCloud.Permission.destResourceType
-          description: Permission destination resource type.
-          type: String
-        - contextPath: PrismaCloud.Permission.effectiveActionName
-          description: Permission effective action name.
-          type: String
-        - contextPath: PrismaCloud.Permission.grantedByCloudType
-          description: Permission granted by cloud type.
-          type: String
-        - contextPath: PrismaCloud.Permission.grantedByCloudPolicyId
-          description: Permission granted by cloud policy ID.
-          type: String
-        - contextPath: PrismaCloud.Permission.grantedByCloudPolicyName
-          description: Permission granted by cloud policy name.
-          type: String
-        - contextPath: PrismaCloud.Permission.grantedByCloudPolicyType
-          description: Permission granted by cloud policy type.
-          type: String
-        - contextPath: PrismaCloud.Permission.grantedByCloudPolicyRrn
-          description: Permission granted by cloud policy restricted resource name.
-          type: String
-        - contextPath: PrismaCloud.Permission.grantedByCloudEntityId
-          description: Permission granted by cloud entity ID.
-          type: String
-        - contextPath: PrismaCloud.Permission.grantedByCloudEntityName
-          description: Permission granted by cloud entity name.
-          type: String
-        - contextPath: PrismaCloud.Permission.grantedByCloudEntityRrn
-          description: Permission granted by cloud entity restricted resource name.
-          type: String
-        - contextPath: PrismaCloud.Permission.sourcePublic
-          description: Whether the permission source is public.
-          type: Boolean
-        - contextPath: PrismaCloud.Permission.sourceCloudRegion
-          description: Permission source cloud region.
-          type: String
-        - contextPath: PrismaCloud.Permission.sourceCloudServiceName
-          description: Permission source cloud service name.
-          type: String
-        - contextPath: PrismaCloud.Permission.sourceResourceName
-          description: Permission source resource name.
-          type: String
-        - contextPath: PrismaCloud.Permission.sourceResourceType
-          description: Permission source resource type.
-          type: String
-        - contextPath: PrismaCloud.Permission.sourceIdpService
-          description: Permission source IDP service.
-          type: String
-        - contextPath: PrismaCloud.Permission.sourceIdpDomain
-          description: Permission source IDP domain.
-          type: String
-        - contextPath: PrismaCloud.Permission.sourceIdpEmail
-          description: Permission source IDP email.
-          type: String
-        - contextPath: PrismaCloud.Permission.sourceIdpUsername
-          description: Permission source IDP username.
-          type: String
-        - contextPath: PrismaCloud.Permission.sourceIdpGroup
-          description: Permission source IDP group.
-          type: String
-        - contextPath: PrismaCloud.Permission.sourceIdpRrn
-          description: Permission source IDP restricted resource name.
-          type: String
-        - contextPath: PrismaCloud.Permission.sourceCloudResourceRrn
-          description: Permission source cloud resource restricted resource name.
-          type: String
-        - contextPath: PrismaCloud.Permission.destCloudAccount
-          description: Permission destination cloud account.
-          type: String
-        - contextPath: PrismaCloud.Permission.destCloudRegion
-          description: Permission destination cloud region.
-          type: String
-        - contextPath: PrismaCloud.Permission.destResourceName
-          description: Permission destination resource name.
-          type: String
-        - contextPath: PrismaCloud.Permission.destResourceId
-          description: Permission destination resource ID.
-          type: String
-        - contextPath: PrismaCloud.Permission.destCloudResourceRrn
-          description: Permission destination cloud resource restricted resource name.
-          type: String
-        - contextPath: PrismaCloud.Permission.grantedByCloudEntityType
-          description: Permission granted by cloud entity type.
-          type: String
-        - contextPath: PrismaCloud.Permission.accessedResourcesCount
-          description: Permission accessed resources count.
-          type: String
-        - contextPath: PrismaCloud.Permission.lastAccessDate
-          description: Permission last access date.
-          type: String
-        - contextPath: PrismaCloud.Permission.lastAccessStatus
-          description: Permission last access status.
-          type: String
-        - contextPath: PrismaCloud.Permission.isWildCardDestCloudResourceName
-          description: Whether the destination cloud resource name is a wildcard.
-          type: Boolean
-        - contextPath: PrismaCloud.Permission.exceptions
-          description: Permission exceptions.
-          type: Unknown
-        - contextPath: PrismaCloud.Permission.grantedByLevelType
-          description: Permission granted by level type.
-          type: String
-        - contextPath: PrismaCloud.Permission.grantedByLevelId
-          description: Permission granted by level ID.
-          type: String
-        - contextPath: PrismaCloud.Permission.grantedByLevelName
-          description: Permission granted by level name.
-          type: String
-        - contextPath: PrismaCloud.Permission.grantedByLevelRrn
-          description: Permission granted by level restricted resource name.
-          type: String
-    - arguments:
-        - description: Start time for the search in the following string format - MM/DD/YYYY.
-          name: time-range-date-from
-        - description: End time for the search in the following format - MM/DD/YYYY.
-          name: time-range-date-to
-        - description: The number of units to go back in time.
-          name: time-range-value
-        - auto: PREDEFINED
-          description: The search unit. login and epoch are only available if timeRangeValue is not provided.
-          name: time-range-unit
-          predefined:
-            - hour
-            - day
-            - week
-            - month
-            - year
-            - login
-            - epoch
-        - auto: PREDEFINED
-          description: The policy name.
-          name: policy-name
-          predefined:
-            - IAM password policy does not have a symbol
-            - IAM password policy does not expire in 90 days
-            - IAM password policy does not have a lowercase character
-            - IAM password policy does not have a minimum of 14 characters
-            - IAM password policy allows password reuse
-            - Default Security Group does not restrict all traffic
-            - IAM password policy does not have password expiration period
-            - IAM password policy does not exist
-            - Access keys are not rotated for 90 days
-            - Security Groups allow internet traffic from internet to RDP port (3389)
-            - Internet connectivity via tcp over insecure port
-            - IAM policy allow full administrative privileges
-            - Primitive IAM roles should not be used
-            - Internet exposed instances
-            - IAM user has both Console access and Access Keys
-            - S3 buckets are accessible to public
-            - Access logging not enabled on all CloudTrail buckets
-            - CloudTrail trail is not integrated with CloudWatch Log
-            - Security Groups allow internet traffic to SSH port (22)
-            - CloudTrail logs are not encrypted using Customer Master Keys (CMKs)
-            - Excessive login failures
-            - VPC endpoints were not used for consuming S3 storage from within the VPC
-            - Access logging not enabled on S3 buckets
-            - S3 buckets do not have server side encryption
-            - Account hijacking attempts
-            - Security groups allow internet traffic
-            - VPC subnets should not allow automatic public IP assignment
-            - VPC Flow Logs not enabled
-            - MFA not enabled for IAM users
-            - Inactive users for more than 30 days
-        - description: The policy label.
-          name: policy-label
-        - description: The number of alerts to return.
-          name: limit
-        - description: The policy compliance standard.
-          name: policy-compliance-standard
-        - description: The cloud account ID.
-          name: cloud-account-id
-        - description: The cloud account name.
-          name: cloud-account
-        - description: The cloud region name.
-          name: cloud-region
-        - description: The alert rule name.
-          name: alert-rule-name
-        - description: The resource ID.
-          name: resource-id
-        - description: The resource name.
-          name: resource-name
-        - description: The resource type.
-          name: resource-type
-        - auto: PREDEFINED
-          defaultValue: open
-          description: The alert status.
-          name: alert-status
-          predefined:
-            - open
-            - resolved
-            - dismissed
-        - description: The alert ID.
-          name: alert-id
-        - auto: PREDEFINED
-          description: The cloud type.
-          name: cloud-type
-          predefined:
-            - aws
-            - azure
-            - gcp
-        - auto: PREDEFINED
-          description: The risk grade.
-          name: risk-grade
-          predefined:
-            - A
-            - B
-            - C
-            - F
-          deprecated: true
-        - auto: PREDEFINED
-          description: The policy type.
-          name: policy-type
-          predefined:
-            - anomaly
-            - audit_event
-            - config
-            - network
-        - auto: PREDEFINED
-          description: The policy severity.
-          name: policy-severity
-          predefined:
-            - high
-            - medium
-            - low
+  - arguments:
+    - description: Comma-separated list of alert IDs to be dismissed.
+      isArray: true
+      name: alert_ids
+    - description: Comma-separated list of policy IDs.
+      isArray: true
+      name: policy_ids
+    - description: The amount of time for snoozing alert. Both snooze value and unit must be specified if snoozing.
+      name: snooze_value
+    - auto: PREDEFINED
+      description: The time unit for snoozing alert. Both snooze value and unit must be specified if snoozing.
+      name: snooze_unit
+      predefined:
+      - hour
+      - day
+      - week
+      - month
+      - year
+    - description: Reason for dismissal.
+      name: dismissal_note
+      required: true
+    - description: 'Start time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time).'
+      name: time_range_date_from
+    - description: 'End time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time).'
+      name: time_range_date_to
+    - auto: PREDEFINED
+      description: 'The search time unit. The "login" and "epoch" options are only available if "time_range_value" is not provided.'
+      name: time_range_unit
+      predefined:
+      - hour
+      - day
+      - week
+      - month
+      - year
+      - login
+      - epoch
+    - description: The amount of "time_range_unit" to go back in time. For example, 3 days, 5 weeks, etc.
+      name: time_range_value
+    - description: 'Comma-separated list of filter name and value, in the following format: filtername1=filtervalue1,filtername2=filtervalue2,etc. Names and possible values for filters can be found by running the "prisma-cloud-alert-filter-list" command.'
+      isArray: true
+      name: filters
+    description: Dismiss or snooze the alerts matching the given filter. Either policy IDs or alert IDs must be provided. When no absolute time nor relative time arguments are provided, the default time range is all times. For snoozing, provide "snooze_unit" and "snooze_value" arguments.
+    execution: true
+    name: prisma-cloud-alert-dismiss
+  - arguments:
+    - default: true
+      description: The alert ID.
+      name: alert_id
+      required: true
+    - auto: PREDEFINED
+      defaultValue: 'true'
+      description: Whether to retrieve the entire / trimmed alert model.
+      name: detailed
+      predefined:
+      - 'true'
+      - 'false'
+    description: Gets the details of an alert based on the alert ID.
+    name: prisma-cloud-alert-get-details
+    outputs:
+    - contextPath: PrismaCloud.Alert.id
+      description: The alert ID.
+      type: String
+    - contextPath: PrismaCloud.Alert.status
+      description: The alert status.
+      type: String
+    - contextPath: PrismaCloud.Alert.reason
+      description: The alert reason.
+      type: String
+    - contextPath: PrismaCloud.Alert.alertTime
+      description: The time of the alert.
+      type: Date
+    - contextPath: PrismaCloud.Alert.firstSeen
+      description: The time the alert was first seen.
+      type: Date
+    - contextPath: PrismaCloud.Alert.lastSeen
+      description: The time the alert was last seen.
+      type: Date
+    - contextPath: PrismaCloud.Alert.eventOccurred
+      description: The time the event occurred.
+      type: Date
+    - contextPath: PrismaCloud.Alert.alertRules
+      description: Names of the alert rules that triggered this alert.
+      type: String
+    - contextPath: PrismaCloud.Alert.resource.resourceApiName
+      description: The resource API name.
+      type: String
+    - contextPath: PrismaCloud.Alert.resource.id
+      description: The resource ID.
+      type: String
+    - contextPath: PrismaCloud.Alert.resource.account
+      description: The resource account.
+      type: String
+    - contextPath: PrismaCloud.Alert.resource.accountId
+      description: The resource account ID.
+      type: String
+    - contextPath: PrismaCloud.Alert.resource.resourceType
+      description: The resource type.
+      type: String
+    - contextPath: PrismaCloud.Alert.policy.policyId
+      description: The policy ID.
+      type: String
+    - contextPath: PrismaCloud.Alert.policy.name
+      description: The policy name.
+      type: String
+    - contextPath: PrismaCloud.Alert.policy.policyType
+      description: The type of policy.
+      type: String
+    - contextPath: PrismaCloud.Alert.policy.severity
+      description: The policy severity.
+      type: String
+    - contextPath: PrismaCloud.Alert.policy.recommendation
+      description: The policy recommendation.
+      type: String
+    - contextPath: PrismaCloud.Alert.policy.remediation.description
+      description: The policy remediation description.
+      type: String
+    - contextPath: PrismaCloud.Alert.policy.remediation.cliScriptTemplate
+      description: The policy remediation CLI script template.
+      type: String
+    - contextPath: PrismaCloud.Alert.policy.description
+      description: The policy description.
+      type: String
+    - contextPath: PrismaCloud.Alert.policy.labels
+      description: The policy labels.
+      type: Unknown
+    - contextPath: PrismaCloud.Alert.resource.cloudType
+      description: The resource cloud type.
+      type: String
+    - contextPath: PrismaCloud.Alert.resource.rrn
+      description: The restricted resource name.
+      type: String
+    - contextPath: PrismaCloud.Alert.resource.regionId
+      description: The resource region ID.
+      type: String
+    - contextPath: PrismaCloud.Alert.resource.url
+      description: The resource URL.
+      type: String
+    - contextPath: PrismaCloud.Alert.policy.remediable
+      description: Whether the policy is remediable.
+      type: Boolean
+    - contextPath: PrismaCloud.Alert.policy.systemDefault
+      description: Whether the policy is the system default.
+      type: Boolean
+    - contextPath: PrismaCloud.Alert.policy.deleted
+      description: Whether the policy was deleted.
+      type: Boolean
+  - description: List the acceptable filters and values for alerts.
+    name: prisma-cloud-alert-filter-list
+    outputs:
+    - contextPath: PrismaCloud.AlertFilters.filterName
+      description: The filter name.
+      type: String
+    - contextPath: PrismaCloud.AlertFilters.options
+      description: The filter value options.
+      type: String
+    - contextPath: PrismaCloud.AlertFilters.staticFilter
+      description: Whether the filter is static.
+      type: Unknown
+  - arguments:
+    - description: Comma-seperated list of alert IDs for which to get remediation details. Provided alert IDs must be associated with the same policy. If a policy is specified, all the alerts specified must belong to that policy.
+      isArray: true
+      name: alert_ids
+    - description: Policy ID for which to get remediation details.
+      name: policy_id
+    - description: 'Start time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time).'
+      name: time_range_date_from
+    - description: 'End time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time).'
+      name: time_range_date_to
+    - auto: PREDEFINED
+      description: 'The search time unit. The "login" and "epoch" options are only available if "time_range_value" is not provided.'
+      name: time_range_unit
+      predefined:
+      - hour
+      - day
+      - week
+      - month
+      - year
+      - login
+      - epoch
+    - description: The amount of "time_range_unit" to go back in time. For example, 3 days, 5 weeks, etc.
+      name: time_range_value
+    - defaultValue: '50'
+      description: Maximum number of entries to return.
+      name: limit
+    - auto: PREDEFINED
+      description: Whether to retrieve all results. The "limit" argument will be ignored.
+      name: all_results
+      predefined:
+      - 'true'
+      - 'false'
+    description: Generates and returns a list of remediation commands for the specified alerts and policies. Data returned for a successful call include fully constructed commands for remediation. Either a policy ID or alert IDs must be provided. The returned information can be retrieved in the UI by clicking the "Remediate" button under the "Actions" column for supported alerts. When no absolute time nor relative time arguments are provided, the default time range is all times.
+    name: prisma-cloud-remediation-command-list
+    outputs:
+    - contextPath: PrismaCloud.AlertRemediation.description
+      description: Description of CLI remediation instructions.
+      type: String
+    - contextPath: PrismaCloud.AlertRemediation.scriptImpact
+      description: Impact of CLI remediation instructions.
+      type: String
+    - contextPath: PrismaCloud.AlertRemediation.alertId
+      description: The ID of the alert to which the remediation details apply.
+      type: String
+    - contextPath: PrismaCloud.AlertRemediation.CLIScript
+      description: The exact CLI command string.
+      type: String
+  - arguments:
+    - default: true
+      description: The alert ID.
+      name: alert_id
+      required: true
+    name: prisma-cloud-alert-remediate
+    description: Remediates the alert with the specified ID, if that alert is associated with a remediable policy. In order to check what remediation would run, use the "prisma-cloud-remediation-command-list" command first.
+    execution: true
+    outputs:
+    - contextPath: PrismaCloud.AlertRemediation.alertId
+      description: The ID of the alert to which the remediation apply.
+      type: String
+    - contextPath: PrismaCloud.AlertRemediation.successful
+      description: Whether the remediation was successful.
+      type: Boolean
+    - contextPath: PrismaCloud.AlertRemediation.failureReason
+      description: The failure reason for the remediation.
+      type: String
+    - contextPath: PrismaCloud.AlertRemediation.errorValue
+      description: The error value for the remediation.
+      type: String
+  - arguments:
+    - description: Comma-separated list of alert IDs to be reopened.
+      isArray: true
+      name: alert_ids
+    - description: Comma-separated list of policy IDs.
+      isArray: true
+      name: policy_ids
+    - description: 'Start time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time).'
+      name: time_range_date_from
+    - description: 'End time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time).'
+      name: time_range_date_to
+    - auto: PREDEFINED
+      description: 'The search time unit. The "login" and "epoch" options are only available if "time_range_value" is not provided.'
+      name: time_range_unit
+      predefined:
+      - hour
+      - day
+      - week
+      - month
+      - year
+      - login
+      - epoch
+    - description: The amount of "time_range_unit" to go back in time. For example, 3 days, 5 weeks, etc.
+      name: time_range_value
+    - description: 'Comma-separated list of filter name and value, in the following format: filtername1=filtervalue1,filtername2=filtervalue2,etc. Names and possible values for filters can be found by running the "prisma-cloud-alert-filter-list" command.'
+      isArray: true
+      name: filters
+    description: Re-open the alerts matching the given filter. Either policy IDs or alert IDs must be provided. When no absolute time nor relative time arguments are provided, the default time range is all times.
+    execution: true
+    name: prisma-cloud-alert-reopen
+  - arguments:
+    - description: 'Start time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time).'
+      name: time_range_date_from
+    - description: 'End time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time).'
+      name: time_range_date_to
+    - auto: PREDEFINED
+      description: 'The search time unit. The "login" and "epoch" options are only available if "time_range_value" is not provided.'
+      name: time_range_unit
+      predefined:
+      - hour
+      - day
+      - week
+      - month
+      - year
+      - login
+      - epoch
+    - description: The amount of "time_range_unit" to go back in time. For example, 3 days, 5 weeks, etc.
+      name: time_range_value
+    - description: 'Comma-separated list of filter name and value, in the following format: filtername1=filtervalue1,filtername2=filtervalue2,etc. Names and possible values for filters can be found by running the "prisma-cloud-alert-filter-list" command.'
+      isArray: true
+      name: filters
+    - auto: PREDEFINED
+      defaultValue: 'true'
+      description: Whether to retrieve the entire / trimmed alert model.
+      name: detailed
+      predefined:
+      - 'true'
+      - 'false'
+    - defaultValue: '50'
+      description: Maximum number of entries to return.
+      name: limit
+    - description: Token of the next page to retrive. When provided, other arguments are ignored.
+      name: next_token
+    - description: 'The field to sort the results by. Possible values are: alertTime,firstSeen,lastSeen,lastUpdated.'
+      name: sort_field
+      auto: PREDEFINED
+      predefined:
+      - alertTime
+      - firstSeen
+      - lastSeen
+      - lastUpdated
+    - description: 'The direction to sort the results by. Sort field must be specified if sorting. Possible values are: asc, desc. Default is asc.'
+      name: sort_direction
+      defaultValue: asc
+      auto: PREDEFINED
+      predefined:
+      - asc
+      - desc
+    description: Search alerts on the Prisma Cloud platform. When no absolute time nor relative time arguments are provided, the search will show alerts from the last 7 days.
+    name: prisma-cloud-alert-search
+    outputs:
+    - contextPath: PrismaCloud.AlertPageToken.nextPageToken
+      description: Next page token.
+      type: String
+    - contextPath: PrismaCloud.Alert.id
+      description: The ID of the returned alert.
+      type: String
+    - contextPath: PrismaCloud.Alert.status
+      description: The status of the returned alert.
+      type: String
+    - contextPath: PrismaCloud.Alert.reason
+      description: The reason of the returned alert.
+      type: String
+    - contextPath: PrismaCloud.Alert.lastSeen
+      description: The time the returned alert was last seen.
+      type: String
+    - contextPath: PrismaCloud.Alert.firstSeen
+      description: The time the returned alert was first seen.
+      type: String
+    - contextPath: PrismaCloud.Alert.lastUpdated
+      description: The time the returned alert was last updated.
+      type: String
+    - contextPath: PrismaCloud.Alert.alertTime
+      description: The time of the returned alert.
+      type: String
+    - contextPath: PrismaCloud.Alert.policy.policyId
+      description: The policy ID of the returned alert.
+      type: String
+    - contextPath: PrismaCloud.Alert.policy.name
+      description: The policy name of the returned alert.
+      type: String
+    - contextPath: PrismaCloud.Alert.policy.policyType
+      description: The policy type of the returned alert.
+      type: String
+    - contextPath: PrismaCloud.Alert.policy.severity
+      description: The policy severity of the returned alert.
+      type: String
+    - contextPath: PrismaCloud.Alert.policy.remediable
+      description: Whether the policy is remediable.
+      type: Boolean
+    - contextPath: PrismaCloud.Alert.policy.description
+      description: The policy description of the returned alert.
+      type: String
+    - contextPath: PrismaCloud.Alert.policy.recommendation
+      description: The policy recommendation of the returned alert.
+      type: String
+    - contextPath: PrismaCloud.Alert.policy.remediation.description
+      description: The policy remediation description of the returned alert.
+      type: String
+    - contextPath: PrismaCloud.Alert.policy.remediation.cliScriptTemplate
+      description: The policy CLI script template description of the returned alert.
+      type: String
+    - contextPath: PrismaCloud.Alert.policy.systemDefault
+      description: Whether the policy is the system default.
+      type: Boolean
+    - contextPath: PrismaCloud.Alert.policy.deleted
+      description: Whether the policy was deleted.
+      type: Boolean
+    - contextPath: PrismaCloud.Alert.resource.resourceType
+      description: The resource type of the returned alert.
+      type: String
+    - contextPath: PrismaCloud.Alert.resource.name
+      description: The resource name of the returned alert.
+      type: String
+    - contextPath: PrismaCloud.Alert.resource.account
+      description: The resource account of the returned alert.
+      type: String
+    - contextPath: PrismaCloud.Alert.resource.cloudType
+      description: The resource cloud type of the returned alert.
+      type: String
+    - contextPath: PrismaCloud.Alert.resource.rrn
+      description: The restricted resource name of the returned alert.
+      type: String
+  - arguments:
+    - description: 'Start time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time).'
+      name: time_range_date_from
+    - description: 'End time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time).'
+      name: time_range_date_to
+    - auto: PREDEFINED
+      description: 'The search time unit. The "login" and "epoch" options are only available if "time_range_value" is not provided.'
+      name: time_range_unit
+      predefined:
+      - hour
+      - day
+      - week
+      - month
+      - year
+      - login
+      - epoch
+    - description: The amount of "time_range_unit" to go back in time. For example, 3 days, 5 weeks, etc.
+      name: time_range_value
+    - description: 'Query to run in Prisma Cloud config API using RQL language. For more information see: https://docs.paloaltonetworks.com/prisma/prisma-cloud/prisma-cloud-rql-reference/rql-reference/config-query.'
+      name: query
+      required: true
+    - defaultValue: '50'
+      description: Maximum number of entries to return.
+      name: limit
+    - description: Search ID. Can be used to rerun the same search.
+      name: search_id
+    - auto: PREDEFINED
+      defaultValue: 'desc'
+      description: The direction to sort the results by. Both sort direction and field must be specified if sorting.
+      name: sort_direction
+      predefined:
+      - asc
+      - desc
+    - auto: PREDEFINED
+      defaultValue: 'insertTs'
+      description: The field to sort the results by. Both sort direction and field must be specified if sorting.
+      name: sort_field
+      predefined:
+      - id
+      - time
+      - apiName
+      - customerId
+      - insertTs
+      - json
+      - cloudAccount
+      - cloudRegion
+      - stateId
+    - description: 'Whether to include the resource JSON or not. Default is "true". "false" will not return the resource JSON, "true" will return the resource JSON. Note that if the value is "true", some of the keys, which contain large data objects, are still omitted by default and in order to retrieve them, set the "include_additional_resource_fields" argument to "true". Doing so can increase the context size dramatically.'
+      name: include_resource_json
+      defaultValue: 'true'
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - description: 'Whether to retrieve all of the resource JSON, including keys with large objects such as: "disks.shieldedInstanceInitialState" and "configure-sh" key under metadata. Default is "false".'
+      name: include_additional_resource_fields
+      defaultValue: 'false'
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    description: Search configuration inventory on the Prisma Cloud platform using RQL language. Use this command for all queries that start with "config". When no absolute time nor relative time arguments are provided, the default time range is all times.
+    name: prisma-cloud-config-search
+    outputs:
+    - contextPath: PrismaCloud.Config.accountId
+      description: Cloud account ID.
+      type: String
+    - contextPath: PrismaCloud.Config.accountName
+      description: Cloud account name.
+      type: String
+    - contextPath: PrismaCloud.Config.allowDrillDown
+      description: Whether to allow drill down.
+      type: Boolean
+    - contextPath: PrismaCloud.Config.cloudType
+      description: Cloud type.
+      type: String
+    - contextPath: PrismaCloud.Config.deleted
+      description: Whether the asset was deleted.
+      type: Boolean
+    - contextPath: PrismaCloud.Config.hasExtFindingRiskFactors
+      description: Whether the configuration has external finding risk factors.
+      type: Boolean
+    - contextPath: PrismaCloud.Config.hasExternalFinding
+      description: Whether the configuration has an external finding.
+      type: Boolean
+    - contextPath: PrismaCloud.Config.hasExternalIntegration
+      description: Whether the configuration has an external integration.
+      type: Boolean
+    - contextPath: PrismaCloud.Config.hasNetwork
+      description: Whether the configuration has a network.
+      type: Boolean
+    - contextPath: PrismaCloud.Config.id
+      description: Prisma Cloud configuration ID.
+      type: String
+    - contextPath: PrismaCloud.Config.assetId
+      description: Prisma Cloud asset ID.
+      type: String
+    - contextPath: PrismaCloud.Config.data
+      description: Prisma Cloud asset specific data.
+      type: Unknown
+    - contextPath: PrismaCloud.Config.insertTs
+      description: Insert timestamp.
+      type: Date
+    - contextPath: PrismaCloud.Config.createdTs
+      description: Created timestamp.
+      type: Date
+    - contextPath: PrismaCloud.Config.name
+      description: Asset name.
+      type: String
+    - contextPath: PrismaCloud.Config.regionId
+      description: Cloud region ID.
+      type: String
+    - contextPath: PrismaCloud.Config.regionName
+      description: Cloud region name.
+      type: String
+    - contextPath: PrismaCloud.Config.resourceType
+      description: Cloud resource type.
+      type: String
+    - contextPath: PrismaCloud.Config.rrn
+      description: Cloud restricted resource name.
+      type: String
+    - contextPath: PrismaCloud.Config.service
+      description: Cloud service.
+      type: String
+    - contextPath: PrismaCloud.Config.stateId
+      description: State ID.
+      type: String
+  - arguments:
+    - description: 'Start time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time).'
+      name: time_range_date_from
+    - description: 'End time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time).'
+      name: time_range_date_to
+    - auto: PREDEFINED
+      description: The search time unit. The "login" and "epoch" options are only available if "time_range_value" is not provided.
+      name: time_range_unit
+      predefined:
+      - hour
+      - day
+      - week
+      - month
+      - year
+      - login
+      - epoch
+    - description: The amount of "time_range_unit" to go back in time. For example, 3 days, 5 weeks, etc.
+      name: time_range_value
+    - description: 'Query to run in Prisma Cloud event API using RQL language. For more information see: https://docs.paloaltonetworks.com/prisma/prisma-cloud/prisma-cloud-rql-reference/rql-reference/event-query.'
+      name: query
+      required: true
+    - defaultValue: '50'
+      description: Maximum number of entries to return.
+      name: limit
+    - description: 'The field to sort the results by. Possible values are: cloudService, operation, cloudAccount, cloudRegion, id, time, crud, user.'
+      name: sort_field
+      auto: PREDEFINED
+      predefined:
+      - cloudService
+      - operation
+      - cloudAccount
+      - cloudRegion
+      - id
+      - time
+      - crud
+      - user
+    - description: 'The direction to sort the results by. Sort field must be specified if sorting. Possible values are: asc, desc. Default is asc.'
+      name: sort_direction
+      defaultValue: asc
+      auto: PREDEFINED
+      predefined:
+      - asc
+      - desc
+    description: Search events inventory on the Prisma Cloud platform using RQL language. Use this command for all queries that start with "event". When no absolute time nor relative time arguments are provided, the default time range is all times. In order to reduce the returned data, set the "include_resource_json" argument to "false".
+    name: prisma-cloud-event-search
+    outputs:
+    - contextPath: PrismaCloud.Event.subject
+      description: Cloud event subject.
+      type: String
+    - contextPath: PrismaCloud.Event.accountName
+      description: Cloud event account name.
+      type: String
+    - contextPath: PrismaCloud.Event.name
+      description: Cloud event name.
+      type: String
+    - contextPath: PrismaCloud.Event.source
+      description: Cloud event source.
+      type: String
+    - contextPath: PrismaCloud.Event.ip
+      description: Cloud event IP address.
+      type: String
+    - contextPath: PrismaCloud.Event.eventTs
+      description: Cloud event timestamp.
+      type: Date
+    - contextPath: PrismaCloud.Event.countryName
+      description: Cloud event country name.
+      type: String
+    - contextPath: PrismaCloud.Event.stateName
+      description: Cloud event state name.
+      type: String
+    - contextPath: PrismaCloud.Event.cityName
+      description: Cloud event city name.
+      type: String
+    - contextPath: PrismaCloud.Event.location
+      description: Cloud event location.
+      type: String
+    - contextPath: PrismaCloud.Event.account
+      description: Cloud event account.
+      type: String
+    - contextPath: PrismaCloud.Event.regionId
+      description: Cloud event region ID.
+      type: Number
+    - contextPath: PrismaCloud.Event.type
+      description: Cloud event type.
+      type: String
+    - contextPath: PrismaCloud.Event.id
+      description: Cloud event ID.
+      type: Number
+    - contextPath: PrismaCloud.Event.role
+      description: Cloud event role.
+      type: String
+    - contextPath: PrismaCloud.Event.accessKeyUsed
+      description: Whether the cloud event access key is used.
+      type: Boolean
+    - contextPath: PrismaCloud.Event.success
+      description: Whether the cloud event is successful.
+      type: Boolean
+    - contextPath: PrismaCloud.Event.internal
+      description: Whether the cloud event is internal.
+      type: Boolean
+    - contextPath: PrismaCloud.Event.cityId
+      description: Cloud event city ID.
+      type: Number
+    - contextPath: PrismaCloud.Event.cityLatitude
+      description: Cloud event city latitude.
+      type: Number
+    - contextPath: PrismaCloud.Event.cityLongitude
+      description: Cloud event city longitude.
+      type: Number
+    - contextPath: PrismaCloud.Event.countryId
+      description: Cloud event country ID.
+      type: Number
+    - contextPath: PrismaCloud.Event.dynamicData
+      description: Cloud event dynamic data.
+      type: String
+    - contextPath: PrismaCloud.Event.stateId
+      description: Cloud event state ID.
+      type: Number
+  - arguments:
+    - description: 'Start time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time).'
+      name: time_range_date_from
+    - description: 'End time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time).'
+      name: time_range_date_to
+    - auto: PREDEFINED
+      description: 'The search time unit. The "login" and "epoch" options are only available if "time_range_value" is not provided.'
+      name: time_range_unit
+      predefined:
+      - hour
+      - day
+      - week
+      - month
+      - year
+      - login
+      - epoch
+    - description: The amount of "time_range_unit" to go back in time. For example, 3 days, 5 weeks, etc.
+      name: time_range_value
+    - description: 'Query to run in Prisma Cloud network API using RQL language. For more information see: https://docs.paloaltonetworks.com/prisma/prisma-cloud/prisma-cloud-rql-reference/rql-reference/network-query.'
+      name: query
+      required: true
+    - auto: PREDEFINED
+      description: The cloud in which the network should be searched.
+      name: cloud_type
+      predefined:
+      - aws
+      - azure
+      - gcp
+      - alibaba_cloud
+      - oci
+    - description: Search ID. Can be used to rerun the same search.
+      name: search_id
+    description: 'Search networks inventory on the Prisma Cloud platform using RQL language. Use this command for all queries that start with "networks". When no absolute time nor relative time arguments are provided, the default time range is all times. In order to limit the results returning, use "limit search records to" at the end of the RQL query, followed by a value from one of these options: 1, 10, 100, 1000, and 10,000.'
+    name: prisma-cloud-network-search
+    outputs:
+    - contextPath: PrismaCloud.Network.Node.id
+      description: Cloud network node ID.
+      type: Number
+    - contextPath: PrismaCloud.Network.Node.name
+      description: Cloud network node name.
+      type: String
+    - contextPath: PrismaCloud.Network.Node.ipAddr
+      description: Cloud network node IP address.
+      type: String
+    - contextPath: PrismaCloud.Network.Node.grouped
+      description: Whether the cloud network node is grouped.
+      type: Boolean
+    - contextPath: PrismaCloud.Network.Node.suspicious
+      description: Whether the cloud network node is suspicious.
+      type: Boolean
+    - contextPath: PrismaCloud.Network.Node.vulnerable
+      description: Whether the cloud network node is vulnerable.
+      type: Boolean
+    - contextPath: PrismaCloud.Network.Node.metadata
+      description: Cloud network node metadata.
+      type: Unknown
+    - contextPath: PrismaCloud.Network.Connection.from
+      description: Cloud network connection from node ID.
+      type: Number
+    - contextPath: PrismaCloud.Network.Connection.to
+      description: Cloud network connection to node ID.
+      type: Number
+    - contextPath: PrismaCloud.Network.Connection.label
+      description: Cloud network connection label.
+      type: String
+    - contextPath: PrismaCloud.Network.Connection.suspicious
+      description: Whether the cloud network node is suspicious.
+      type: Boolean
+    - contextPath: PrismaCloud.Network.Connection.metadata
+      description: Cloud network connection metadata.
+      type: Unknown
+  - arguments:
+    - description: ID number of the CICD run.
+      name: cicd_run_id
+    - description: Comma-separated list of authors of the files.
+      isArray: true
+      name: authors
+    - description: Branch of the files.
+      name: branch
+    - description: 'Comma-separated list of categories of the files. Available options are: IAM, Compute, Monitoring, Networking, Kubernetes, General, Storage, Secrets, Public, Vulnerabilities, Drift, BuildIntegrity, Licenses.'
+      isArray: true
+      name: categories
+    - auto: PREDEFINED
+      description: The code status.
+      name: code_status
+      predefined:
+      - hasFix
+    - description: 'Comma-separated list of file types of the files. Available options are: tf, json, yml, yaml, template, .checkov.baseline, hcl, Dockerfile, package.json, package-lock.json, bower.json, pom.xml, build.gradle, build.gradle.kts, gradle.properties, gradle-wrapper.properties, go.sum, go.mod, requirements.txt, METADATA, bicep, Pipfile.lock, Pipfile, yarn.lock, Gemfile, Gemfile.lock, gemspec, env, settings.py, main.py, application.py, config.py, app.js, config.js, dev.js, db.properties, application.properties, private.pem, privatekey.pem, index.php, config.php, config.xml, strings.xml, app.module.ts, environment.ts, tpl, tfvars, unknown.'
+      isArray: true
+      name: file_types
+    - description: Repository of the files.
+      name: repository
+      required: true
+    - description: Repository ID of the files.
+      name: repository_id
+    - description: 'Comma-separated list of search options of the files. Available options are: path, code.'
+      isArray: true
+      name: search_options
+    - description: Search text in the files.
+      name: search_text
+    - auto: PREDEFINED
+      description: Search title of the files.
+      name: search_title
+      predefined:
+      - 'title'
+      - 'constructive_title'
+      - 'descriptive_title'
+    - description: 'Comma-separated list of severities of the files. Available options are: CRITICAL, HIGH, MEDIUM, LOW, INFO.'
+      isArray: true
+      name: severities
+    - description: 'Comma-separated list of source types of the files. Available options are: Github, Bitbucket, Gitlab, AzureRepos, cli, AWS, Azure, GCP, Docker, githubEnterprise, gitlabEnterprise, bitbucketEnterprise, terraformCloud, githubActions, circleci, codebuild, jenkins, tfcRunTasks, admissionController, terraformEnterprise.'
+      isArray: true
+      name: source_types
+      required: true
+    - description: 'Comma-separated list of tag key and value, in the following format: tagkey1=tagvalue1,tagkey2=tagvalue2,etc.'
+      isArray: true
+      name: tags
+    - description: 'Comma-separated list of statuses of the files. Available options are: Errors, Suppressed, Passed, Fixed.'
+      isArray: true
+      name: statuses
+    - defaultValue: '50'
+      description: Maximum number of entries to return.
+      name: limit
+    - auto: PREDEFINED
+      description: Whether to retrieve all results. The "limit" argument will be ignored.
+      name: all_results
+      predefined:
+      - 'true'
+      - 'false'
+    description: Lists scanned files that contain errors. In order to use this command, the "Code Security" module needs to be enabled and accessible in the Prisma Cloud UI.
+    name: prisma-cloud-error-file-list
+    outputs:
+    - contextPath: PrismaCloud.ErrorFile.filePath
+      description: Error file path.
+      type: String
+    - contextPath: PrismaCloud.ErrorFile.suppressedErrorsCount
+      description: The number of error file suppressed errors.
+      type: Number
+    - contextPath: PrismaCloud.ErrorFile.passedCount
+      description: The number of error files passed.
+      type: Number
+    - contextPath: PrismaCloud.ErrorFile.openErrorsCount
+      description: The number of error file open errors.
+      type: Number
+    - contextPath: PrismaCloud.ErrorFile.errorsCount
+      description: The number of error file errors.
+      type: Number
+    - contextPath: PrismaCloud.ErrorFile.fixedCount
+      description: The number of error files fixed.
+      type: Number
+    - contextPath: PrismaCloud.ErrorFile.type
+      description: Error file type.
+      type: String
+  - name: prisma-cloud-trigger-scan
+    description: Trigger asynchronous scan of all resources to refresh the current state at Prisma Cloud Code Security. In order to use this command, the "Code Security" module needs to be enabled and accessible in the Prisma Cloud UI.
+  - arguments:
+    - description: Restricted Resource Name of the resource to get details about. Can be retrieved by running a command that has that RRN.
+      name: rrn
+      required: true
+    description: Get resource details.
+    name: prisma-cloud-resource-get
+    outputs:
+    - contextPath: PrismaCloud.Resource.rrn
+      description: Prisma Cloud restricted resource name.
+      type: String
+    - contextPath: PrismaCloud.Resource.id
+      description: Prisma Cloud resource ID.
+      type: String
+    - contextPath: PrismaCloud.Resource.name
+      description: Resource name.
+      type: String
+    - contextPath: PrismaCloud.Resource.url
+      description: Resource URL.
+      type: String
+    - contextPath: PrismaCloud.Resource.accountId
+      description: Cloud account ID.
+      type: String
+    - contextPath: PrismaCloud.Resource.accountName
+      description: Cloud account name.
+      type: String
+    - contextPath: PrismaCloud.Resource.cloudType
+      description: Cloud type.
+      type: String
+    - contextPath: PrismaCloud.Resource.regionId
+      description: Cloud region ID.
+      type: String
+    - contextPath: PrismaCloud.Resource.regionName
+      description: Cloud region Name.
+      type: String
+    - contextPath: PrismaCloud.Resource.service
+      description: Cloud service.
+      type: String
+    - contextPath: PrismaCloud.Resource.resourceType
+      description: Cloud resource type.
+      type: String
+    - contextPath: PrismaCloud.Resource.insertTs
+      description: Insert timestamp.
+      type: Date
+    - contextPath: PrismaCloud.Resource.deleted
+      description: Whether the resource was deleted.
+      type: Boolean
+    - contextPath: PrismaCloud.Resource.vpcId
+      description: VPC ID.
+      type: String
+    - contextPath: PrismaCloud.Resource.vpcName
+      description: VPC name.
+      type: String
+    - contextPath: PrismaCloud.Resource.tags
+      description: Prisma Cloud resource tags.
+      type: Unknown
+    - contextPath: PrismaCloud.Resource.riskGrade
+      description: Risk grade.
+      type: String
+    - contextPath: PrismaCloud.Resource.hasNetwork
+      description: Whether the resource has a network.
+      type: Boolean
+    - contextPath: PrismaCloud.Resource.hasExternalFinding
+      description: Whether the resource has an external finding.
+      type: Boolean
+    - contextPath: PrismaCloud.Resource.hasExternalIntegration
+      description: Whether the resource has an external integration.
+      type: Boolean
+    - contextPath: PrismaCloud.Resource.allowDrillDown
+      description: Whether to allow drill down.
+      type: Boolean
+    - contextPath: PrismaCloud.Resource.hasExtFindingRiskFactors
+      description: Whether the resource has external finding risk factors.
+      type: Boolean
+    - contextPath: PrismaCloud.Resource.data
+      description: Prisma Cloud resource specific data.
+      type: Unknown
+  - arguments:
+    - description: The resource list type.
+      name: list_type
+    - description: The namespace to return only resources associated with it.
+      name: namespace
+    - defaultValue: '50'
+      description: Maximum number of entries to return.
+      name: limit
+    - auto: PREDEFINED
+      description: Whether to retrieve all results. The "limit" argument will be ignored.
+      name: all_results
+      predefined:
+      - 'true'
+      - 'false'
+    description: Returns all the resource lists. Maps to the Resource Lists under Settings > Resource Lists in the Console UI.
+    name: prisma-cloud-resource-list
+    outputs:
+    - contextPath: PrismaCloud.ResourceList.id
+      description: Prisma Cloud resource list ID.
+      type: String
+    - contextPath: PrismaCloud.ResourceList.name
+      description: Resource list name.
+      type: String
+    - contextPath: PrismaCloud.ResourceList.resourceListType
+      description: Resource list type.
+      type: String
+    - contextPath: PrismaCloud.ResourceList.description
+      description: Resource list description.
+      type: String
+    - contextPath: PrismaCloud.ResourceList.lastModifiedBy
+      description: Resource list last modified user.
+      type: String
+    - contextPath: PrismaCloud.ResourceList.lastModifiedTs
+      description: Resource list last modified time.
+      type: Date
+    - contextPath: PrismaCloud.ResourceList.members
+      description: Resource list members.
+      type: Unknown
+    - contextPath: PrismaCloud.ResourceList.namespaces
+      description: Resource list namespaces.
+      type: Unknown
+  - arguments:
+    - description: The role id to get details of.
+      name: role_id
+    - description: The resource list name to return only user roles associated with it.
+      name: resource_list_name
+    - defaultValue: '50'
+      description: Maximum number of entries to return.
+      name: limit
+    - auto: PREDEFINED
+      description: Whether to retrieve all results. The "limit" argument will be ignored.
+      name: all_results
+      predefined:
+      - 'true'
+      - 'false'
+    description: Retrieves user roles. Maps to Settings > Access Control > Roles in the Console UI.
+    name: prisma-cloud-user-roles-list
+    outputs:
+    - contextPath: PrismaCloud.UserRoles.id
+      description: Prisma Cloud user roles ID.
+      type: String
+    - contextPath: PrismaCloud.UserRoles.name
+      description: User roles name.
+      type: String
+    - contextPath: PrismaCloud.UserRoles.resourceListIds
+      description: User roles resource list IDs.
+      type: Unknown
+    - contextPath: PrismaCloud.UserRoles.description
+      description: User roles description.
+      type: String
+    - contextPath: PrismaCloud.UserRoles.lastModifiedBy
+      description: User roles last modified user.
+      type: String
+    - contextPath: PrismaCloud.UserRoles.lastModifiedTs
+      description: User roles last modified time.
+      type: Date
+    - contextPath: PrismaCloud.UserRoles.associatedUsers
+      description: User roles associated users.
+      type: Unknown
+    - contextPath: PrismaCloud.UserRoles.restrictDismissalAccess
+      description: Whether dismissal access is restricted for the user role.
+      type: Boolean
+    - contextPath: PrismaCloud.UserRoles.roleType
+      description: User roles role type.
+      type: String
+    - contextPath: PrismaCloud.UserRoles.additionalAttributes
+      description: User roles additional attributes.
+      type: Unknown
+    - contextPath: PrismaCloud.UserRoles.codeRepositoryIds
+      description: User roles code repository IDs.
+      type: Unknown
+    - contextPath: PrismaCloud.UserRoles.accountGroupIds
+      description: User roles account group IDs.
+      type: Unknown
+    - contextPath: PrismaCloud.UserRoles.resourceLists
+      description: User roles resource lists.
+      type: Unknown
+    - contextPath: PrismaCloud.UserRoles.permissionGroup
+      description: User roles permission group.
+      type: Unknown
+    - contextPath: PrismaCloud.UserRoles.codeRepositories
+      description: User roles code repositories.
+      type: Unknown
+    - contextPath: PrismaCloud.UserRoles.accountGroups
+      description: User roles account groups.
+      type: Unknown
+  - arguments:
+    - defaultValue: '50'
+      description: Maximum number of entries to return.
+      name: limit
+    - auto: PREDEFINED
+      description: Whether to retrieve all results. The "limit" argument will be ignored.
+      name: all_results
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Usernames to return only users associated with.
+      name: usernames
+      isArray: true
+    description: Lists all users and service accounts for your tenant. Maps to Settings > Access Control > Users in the Console UI.
+    name: prisma-cloud-users-list
+    outputs:
+    - contextPath: PrismaCloud.Users.email
+      description: Prisma Cloud user email.
+      type: String
+    - contextPath: PrismaCloud.Users.firstName
+      description: User first name.
+      type: String
+    - contextPath: PrismaCloud.Users.lastName
+      description: User last name.
+      type: String
+    - contextPath: PrismaCloud.Users.timeZone
+      description: User time zone.
+      type: String
+    - contextPath: PrismaCloud.Users.enabled
+      description: User enabled.
+      type: Boolean
+    - contextPath: PrismaCloud.Users.lastModifiedBy
+      description: User last modified user.
+      type: String
+    - contextPath: PrismaCloud.Users.lastModifiedTs
+      description: User last modified time.
+      type: Date
+    - contextPath: PrismaCloud.Users.lastLoginTs
+      description: User last login time.
+      type: Date
+    - contextPath: PrismaCloud.Users.displayName
+      description: User display name.
+      type: String
+    - contextPath: PrismaCloud.Users.ssoBypassAllowed
+      description: Whether SSO bypass is allowed for the user role.
+      type: Boolean
+    - contextPath: PrismaCloud.Users.accessKeysAllowed
+      description: Whether access keys are allowed for the user role.
+      type: Boolean
+    - contextPath: PrismaCloud.Users.defaultRoleId
+      description: User default role ID.
+      type: String
+    - contextPath: PrismaCloud.Users.roleIds
+      description: User role IDs.
+      type: Unknown
+    - contextPath: PrismaCloud.Users.roles
+      description: User roles.
+      type: Unknown
+    - contextPath: PrismaCloud.Users.username
+      description: User username.
+      type: String
+    - contextPath: PrismaCloud.Users.type
+      description: User type.
+      type: String
+    - contextPath: PrismaCloud.Users.enableKeyExpiration
+      description: Whether key expiration is enabled for the user role.
+      type: Boolean
+    - contextPath: PrismaCloud.Users.accessKeysCount
+      description: User access keys count.
+      type: Number
+  - arguments:
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Whether to exclude account group details.
+      name: exclude_account_group_details
+      predefined:
+      - 'true'
+      - 'false'
+    - defaultValue: '50'
+      description: Maximum number of entries to return.
+      name: limit
+    - auto: PREDEFINED
+      description: Whether to retrieve all results. The "limit" argument will be ignored.
+      name: all_results
+      predefined:
+      - 'true'
+      - 'false'
+    description: List accounts.
+    name: prisma-cloud-account-list
+    outputs:
+    - contextPath: PrismaCloud.Account.name
+      description: Account name.
+      type: String
+    - contextPath: PrismaCloud.Account.cloudType
+      description: Account cloud type.
+      type: String
+    - contextPath: PrismaCloud.Account.accountType
+      description: Account type.
+      type: String
+    - contextPath: PrismaCloud.Account.enabled
+      description: Whether the account is enabled.
+      type: Boolean
+    - contextPath: PrismaCloud.Account.lastModifiedTs
+      description: Account last modified time.
+      type: Date
+    - contextPath: PrismaCloud.Account.storageScanEnabled
+      description: Whether account storage scan is enabled.
+      type: Boolean
+    - contextPath: PrismaCloud.Account.protectionMode
+      description: Account protection mode.
+      type: String
+    - contextPath: PrismaCloud.Account.ingestionMode
+      description: Account ingestion mode.
+      type: Number
+    - contextPath: PrismaCloud.Account.deploymentType
+      description: Account deployment type.
+      type: String
+    - contextPath: PrismaCloud.Account.groupIds
+      description: Account group IDs.
+      type: Unknown
+    - contextPath: PrismaCloud.Account.groups
+      description: Account groups.
+      type: Unknown
+    - contextPath: PrismaCloud.Account.status
+      description: Account status.
+      type: String
+    - contextPath: PrismaCloud.Account.numberOfChildAccounts
+      description: The number of child accounts.
+      type: Number
+    - contextPath: PrismaCloud.Account.accountId
+      description: Account ID.
+      type: String
+    - contextPath: PrismaCloud.Account.addedOn
+      description: Account added on time.
+      type: Date
+  - arguments:
+    - description: A comma-separated list of accound IDs. To get account IDs, run the "prisma-cloud-account-list" command.
+      isArray: true
+      name: account_ids
+      required: true
+    description: Get the statuses of the provided accounts.
+    name: prisma-cloud-account-status-get
+    outputs:
+    - contextPath: PrismaCloud.Account.accountId
+      description: Account ID.
+      type: String
+    - contextPath: PrismaCloud.Account.name
+      description: Account name.
+      type: String
+    - contextPath: PrismaCloud.Account.status
+      description: Account status.
+      type: String
+    - contextPath: PrismaCloud.Account.message
+      description: Account message.
+      type: String
+    - contextPath: PrismaCloud.Account.remediation
+      description: Account remediation action.
+      type: String
+  - arguments:
+    - description: A comma-separated list of account IDs. To get account IDs, run the "prisma-cloud-account-list" command.
+      isArray: true
+      name: account_ids
+      required: true
+    description: Get the owners of the provided accounts.
+    name: prisma-cloud-account-owner-list
+    outputs:
+    - contextPath: PrismaCloud.Account.accountId
+      description: Account ID.
+      type: String
+    - contextPath: PrismaCloud.Account.emails
+      description: Account owner emails.
+      type: Unknown
+  - arguments:
+    - description: Restricted Resource Name of the resource to get host finding of. Can be retrieved by running a command that has that RRN.
+      name: rrn
+      required: true
+    - description: 'Comma separated list of finding types to look for. Available options are: guard_duty_host, guard_duty_iam, inspector_sbp, compliance_cis, host_vulnerability_cve. When left empty, will return all options.'
+      isArray: true
+      name: finding_types
+    - description: 'Comma separated list of risk factors to look for. Available options are: CRITICAL_SEVERITY, HIGH_SEVERITY, MEDIUM_SEVERITY, HAS_FIX, REMOTE_EXECUTION, DOS, RECENT_VULNERABILITY, EXPLOIT_EXISTS, ATTACK_COMPLEXITY_LOW, ATTACK_VECTOR_NETWORK, REACHABLE_FROM_THE_INTERNET, LISTENING_PORTS, CONTAINER_IS_RUNNING_AS_ROOT, NO_MANDATORY_SECURITY_PROFILE_APPLIED, RUNNING_AS_PRIVILEGED_CONTAINER, PACKAGE_IN_USE. When left empty, will return all options.'
+      isArray: true
+      name: risk_factors
+    - defaultValue: '50'
+      description: Maximum number of entries to return.
+      name: limit
+    - auto: PREDEFINED
+      description: Whether to retrieve all results. The "limit" argument will be ignored.
+      name: all_results
+      predefined:
+      - 'true'
+      - 'false'
+    description: Get resource host finding list.
+    name: prisma-cloud-host-finding-list
+    outputs:
+    - contextPath: PrismaCloud.HostFinding.accountId
+      description: Host finding account ID.
+      type: String
+    - contextPath: PrismaCloud.HostFinding.regionId
+      description: Host finding region ID.
+      type: String
+    - contextPath: PrismaCloud.HostFinding.findingId
+      description: Host finding ID.
+      type: String
+    - contextPath: PrismaCloud.HostFinding.type
+      description: Host finding type.
+      type: String
+    - contextPath: PrismaCloud.HostFinding.source
+      description: Host finding source.
+      type: String
+    - contextPath: PrismaCloud.HostFinding.severity
+      description: Host finding severity.
+      type: String
+    - contextPath: PrismaCloud.HostFinding.status
+      description: Host finding status.
+      type: String
+    - contextPath: PrismaCloud.HostFinding.createdOn
+      description: The date on which the host finding was created.
+      type: Date
+    - contextPath: PrismaCloud.HostFinding.updatedOn
+      description: The date on which the host finding was updated.
+      type: Date
+    - contextPath: PrismaCloud.HostFinding.normalizedNames
+      description: Host finding normalized names.
+      type: Unknown
+    - contextPath: PrismaCloud.HostFinding.scanId
+      description: Host finding scan ID.
+      type: String
+    - contextPath: PrismaCloud.HostFinding.resourceCloudId
+      description: Host finding resource cloud ID.
+      type: String
+    - contextPath: PrismaCloud.HostFinding.sourceData.accountId
+      description: Host finding source data account ID.
+      type: String
+    - contextPath: PrismaCloud.HostFinding.sourceData.arn
+      description: Host finding source data ARN.
+      type: String
+    - contextPath: PrismaCloud.HostFinding.title
+      description: Host finding title.
+      type: String
+    - contextPath: PrismaCloud.HostFinding.description
+      description: Host finding description.
+      type: String
+    - contextPath: PrismaCloud.HostFinding.resourceUrl
+      description: Host finding resource URL.
+      type: String
+    - contextPath: PrismaCloud.HostFinding.rlUpdatedOn
+      description: The date on which the RL was updated.
+      type: Date
+    - contextPath: PrismaCloud.HostFinding.externalFindingId
+      description: External finding ID.
+      type: String
+    - contextPath: PrismaCloud.HostFinding.sourceData
+      description: Host finding source data.
+      type: Unknown
+    - contextPath: PrismaCloud.HostFinding.score
+      description: Host finding score.
+      type: String
+    - contextPath: PrismaCloud.HostFinding.count
+      description: The number of host findings.
+      type: Number
+  - arguments:
+    - description: User ID to look for. Must be provided with the "query" argument.
+      name: user_id
+    - description: 'IAM query to run in Prisma Cloud config API using RQL language. For more information see: https://docs.paloaltonetworks.com/prisma/prisma-cloud/prisma-cloud-rql-reference/rql-reference/iam-query.'
+      name: query
+    - defaultValue: '50'
+      description: Maximum number of entries to return.
+      name: limit
+    - description: Token of the next page to retrive.
+      name: next_token
+    description: Get permission list. You must provide either "query" or "next_token".
+    name: prisma-cloud-permission-list
+    outputs:
+    - contextPath: PrismaCloud.PermissionPageToken.nextPageToken
+      description: Next page token.
+      type: String
+    - contextPath: PrismaCloud.Permission.id
+      description: Permission ID.
+      type: String
+    - contextPath: PrismaCloud.Permission.sourceCloudType
+      description: Permission source cloud type.
+      type: String
+    - contextPath: PrismaCloud.Permission.sourceCloudAccount
+      description: Permission source cloud account.
+      type: String
+    - contextPath: PrismaCloud.Permission.sourceResourceId
+      description: Permission source resource ID.
+      type: String
+    - contextPath: PrismaCloud.Permission.destCloudType
+      description: Permission destination cloud type.
+      type: String
+    - contextPath: PrismaCloud.Permission.destCloudServiceName
+      description: Permission destination cloud service name.
+      type: String
+    - contextPath: PrismaCloud.Permission.destResourceType
+      description: Permission destination resource type.
+      type: String
+    - contextPath: PrismaCloud.Permission.effectiveActionName
+      description: Permission effective action name.
+      type: String
+    - contextPath: PrismaCloud.Permission.grantedByCloudType
+      description: Permission granted by cloud type.
+      type: String
+    - contextPath: PrismaCloud.Permission.grantedByCloudPolicyId
+      description: Permission granted by cloud policy ID.
+      type: String
+    - contextPath: PrismaCloud.Permission.grantedByCloudPolicyName
+      description: Permission granted by cloud policy name.
+      type: String
+    - contextPath: PrismaCloud.Permission.grantedByCloudPolicyType
+      description: Permission granted by cloud policy type.
+      type: String
+    - contextPath: PrismaCloud.Permission.grantedByCloudPolicyRrn
+      description: Permission granted by cloud policy restricted resource name.
+      type: String
+    - contextPath: PrismaCloud.Permission.grantedByCloudEntityId
+      description: Permission granted by cloud entity ID.
+      type: String
+    - contextPath: PrismaCloud.Permission.grantedByCloudEntityName
+      description: Permission granted by cloud entity name.
+      type: String
+    - contextPath: PrismaCloud.Permission.grantedByCloudEntityRrn
+      description: Permission granted by cloud entity restricted resource name.
+      type: String
+    - contextPath: PrismaCloud.Permission.sourcePublic
+      description: Whether the permission source is public.
+      type: Boolean
+    - contextPath: PrismaCloud.Permission.sourceCloudRegion
+      description: Permission source cloud region.
+      type: String
+    - contextPath: PrismaCloud.Permission.sourceCloudServiceName
+      description: Permission source cloud service name.
+      type: String
+    - contextPath: PrismaCloud.Permission.sourceResourceName
+      description: Permission source resource name.
+      type: String
+    - contextPath: PrismaCloud.Permission.sourceResourceType
+      description: Permission source resource type.
+      type: String
+    - contextPath: PrismaCloud.Permission.sourceIdpService
+      description: Permission source IDP service.
+      type: String
+    - contextPath: PrismaCloud.Permission.sourceIdpDomain
+      description: Permission source IDP domain.
+      type: String
+    - contextPath: PrismaCloud.Permission.sourceIdpEmail
+      description: Permission source IDP email.
+      type: String
+    - contextPath: PrismaCloud.Permission.sourceIdpUsername
+      description: Permission source IDP username.
+      type: String
+    - contextPath: PrismaCloud.Permission.sourceIdpGroup
+      description: Permission source IDP group.
+      type: String
+    - contextPath: PrismaCloud.Permission.sourceIdpRrn
+      description: Permission source IDP restricted resource name.
+      type: String
+    - contextPath: PrismaCloud.Permission.sourceCloudResourceRrn
+      description: Permission source cloud resource restricted resource name.
+      type: String
+    - contextPath: PrismaCloud.Permission.destCloudAccount
+      description: Permission destination cloud account.
+      type: String
+    - contextPath: PrismaCloud.Permission.destCloudRegion
+      description: Permission destination cloud region.
+      type: String
+    - contextPath: PrismaCloud.Permission.destResourceName
+      description: Permission destination resource name.
+      type: String
+    - contextPath: PrismaCloud.Permission.destResourceId
+      description: Permission destination resource ID.
+      type: String
+    - contextPath: PrismaCloud.Permission.destCloudResourceRrn
+      description: Permission destination cloud resource restricted resource name.
+      type: String
+    - contextPath: PrismaCloud.Permission.grantedByCloudEntityType
+      description: Permission granted by cloud entity type.
+      type: String
+    - contextPath: PrismaCloud.Permission.accessedResourcesCount
+      description: Permission accessed resources count.
+      type: String
+    - contextPath: PrismaCloud.Permission.lastAccessDate
+      description: Permission last access date.
+      type: String
+    - contextPath: PrismaCloud.Permission.lastAccessStatus
+      description: Permission last access status.
+      type: String
+    - contextPath: PrismaCloud.Permission.isWildCardDestCloudResourceName
+      description: Whether the destination cloud resource name is a wildcard.
+      type: Boolean
+    - contextPath: PrismaCloud.Permission.exceptions
+      description: Permission exceptions.
+      type: Unknown
+    - contextPath: PrismaCloud.Permission.grantedByLevelType
+      description: Permission granted by level type.
+      type: String
+    - contextPath: PrismaCloud.Permission.grantedByLevelId
+      description: Permission granted by level ID.
+      type: String
+    - contextPath: PrismaCloud.Permission.grantedByLevelName
+      description: Permission granted by level name.
+      type: String
+    - contextPath: PrismaCloud.Permission.grantedByLevelRrn
+      description: Permission granted by level restricted resource name.
+      type: String
+  - arguments:
+    - description: Start time for the search in the following string format - MM/DD/YYYY.
+      name: time-range-date-from
+    - description: End time for the search in the following format - MM/DD/YYYY.
+      name: time-range-date-to
+    - description: The number of units to go back in time.
+      name: time-range-value
+    - auto: PREDEFINED
+      description: The search unit. login and epoch are only available if timeRangeValue is not provided.
+      name: time-range-unit
+      predefined:
+      - hour
+      - day
+      - week
+      - month
+      - year
+      - login
+      - epoch
+    - auto: PREDEFINED
+      description: The policy name.
+      name: policy-name
+      predefined:
+      - IAM password policy does not have a symbol
+      - IAM password policy does not expire in 90 days
+      - IAM password policy does not have a lowercase character
+      - IAM password policy does not have a minimum of 14 characters
+      - IAM password policy allows password reuse
+      - Default Security Group does not restrict all traffic
+      - IAM password policy does not have password expiration period
+      - IAM password policy does not exist
+      - Access keys are not rotated for 90 days
+      - Security Groups allow internet traffic from internet to RDP port (3389)
+      - Internet connectivity via tcp over insecure port
+      - IAM policy allow full administrative privileges
+      - Primitive IAM roles should not be used
+      - Internet exposed instances
+      - IAM user has both Console access and Access Keys
+      - S3 buckets are accessible to public
+      - Access logging not enabled on all CloudTrail buckets
+      - CloudTrail trail is not integrated with CloudWatch Log
+      - Security Groups allow internet traffic to SSH port (22)
+      - CloudTrail logs are not encrypted using Customer Master Keys (CMKs)
+      - Excessive login failures
+      - VPC endpoints were not used for consuming S3 storage from within the VPC
+      - Access logging not enabled on S3 buckets
+      - S3 buckets do not have server side encryption
+      - Account hijacking attempts
+      - Security groups allow internet traffic
+      - VPC subnets should not allow automatic public IP assignment
+      - VPC Flow Logs not enabled
+      - MFA not enabled for IAM users
+      - Inactive users for more than 30 days
+    - description: The policy label.
+      name: policy-label
+    - description: The number of alerts to return.
+      name: limit
+    - description: The policy compliance standard.
+      name: policy-compliance-standard
+    - description: The cloud account ID.
+      name: cloud-account-id
+    - description: The cloud account name.
+      name: cloud-account
+    - description: The cloud region name.
+      name: cloud-region
+    - description: The alert rule name.
+      name: alert-rule-name
+    - description: The resource ID.
+      name: resource-id
+    - description: The resource name.
+      name: resource-name
+    - description: The resource type.
+      name: resource-type
+    - auto: PREDEFINED
+      defaultValue: open
+      description: The alert status.
+      name: alert-status
+      predefined:
+      - open
+      - resolved
+      - dismissed
+    - description: The alert ID.
+      name: alert-id
+    - auto: PREDEFINED
+      description: The cloud type.
+      name: cloud-type
+      predefined:
+      - aws
+      - azure
+      - gcp
+    - auto: PREDEFINED
+      description: The risk grade.
+      name: risk-grade
+      predefined:
+      - A
+      - B
+      - C
+      - F
       deprecated: true
-      description: Search alerts on the Prisma Cloud platform. If no time-range arguments are given, the search will filter only alerts from the last 7 days.
-      name: redlock-search-alerts
-      outputs:
-        - contextPath: PrismaCloud.AlertPageToken.nextPageToken
-          description: Next page token.
-          type: String
-        - contextPath: PrismaCloud.Alert.id
-          description: The ID of the returned alert.
-          type: String
-        - contextPath: PrismaCloud.Alert.status
-          description: The status of the returned alert.
-          type: String
-        - contextPath: PrismaCloud.Alert.reason
-          description: The reason for the returned alert.
-          type: String
-        - contextPath: PrismaCloud.Alert.lastSeen
-          description: The time the returned alert was last seen.
-          type: String
-        - contextPath: PrismaCloud.Alert.firstSeen
-          description: The time the returned alert was first seen.
-          type: String
-        - contextPath: PrismaCloud.Alert.lastUpdated
-          description: The time the returned alert was last updated.
-          type: String
-        - contextPath: PrismaCloud.Alert.alertTime
-          description: The time of the returned alert.
-          type: String
-        - contextPath: PrismaCloud.Alert.policy.policyId
-          description: The policy ID of the returned alert.
-          type: String
-        - contextPath: PrismaCloud.Alert.policy.name
-          description: The policy name of the returned alert.
-          type: String
-        - contextPath: PrismaCloud.Alert.policy.policyType
-          description: The policy type of the returned alert.
-          type: String
-        - contextPath: PrismaCloud.Alert.policy.severity
-          description: The policy severity of the returned alert.
-          type: String
-        - contextPath: PrismaCloud.Alert.policy.remediable
-          description: Whether the policy is remediable.
-          type: Boolean
-        - contextPath: PrismaCloud.Alert.policy.description
-          description: The policy description of the returned alert.
-          type: String
-        - contextPath: PrismaCloud.Alert.policy.recommendation
-          description: The policy recommendation of the returned alert.
-          type: String
-        - contextPath: PrismaCloud.Alert.policy.remediation.description
-          description: The policy remediation description of the returned alert.
-          type: String
-        - contextPath: PrismaCloud.Alert.policy.remediation.cliScriptTemplate
-          description: The policy CLI script template description of the returned alert.
-          type: String
-        - contextPath: PrismaCloud.Alert.policy.systemDefault
-          description: Whether the policy is the system default.
-          type: Boolean
-        - contextPath: PrismaCloud.Alert.policy.deleted
-          description: Whether the policy was deleted.
-          type: Boolean
-        - contextPath: PrismaCloud.Alert.resource.resourceType
-          description: The resource type of the returned alert.
-          type: String
-        - contextPath: PrismaCloud.Alert.resource.name
-          description: The resource name of the returned alert.
-          type: String
-        - contextPath: PrismaCloud.Alert.resource.account
-          description: The resource account of the returned alert.
-          type: String
-        - contextPath: PrismaCloud.Alert.resource.cloudType
-          description: The resource cloud type of the returned alert.
-          type: String
-        - contextPath: PrismaCloud.Alert.resource.rrn
-          description: The restricted resource name of the returned alert.
-          type: String
-    - arguments:
-        - default: true
-          description: The alert ID.
-          name: alert-id
-          required: true
+    - auto: PREDEFINED
+      description: The policy type.
+      name: policy-type
+      predefined:
+      - anomaly
+      - audit_event
+      - config
+      - network
+    - auto: PREDEFINED
+      description: The policy severity.
+      name: policy-severity
+      predefined:
+      - high
+      - medium
+      - low
+    deprecated: true
+    description: Search alerts on the Prisma Cloud platform. If no time-range arguments are given, the search will filter only alerts from the last 7 days.
+    name: redlock-search-alerts
+    outputs:
+    - contextPath: PrismaCloud.AlertPageToken.nextPageToken
+      description: Next page token.
+      type: String
+    - contextPath: PrismaCloud.Alert.id
+      description: The ID of the returned alert.
+      type: String
+    - contextPath: PrismaCloud.Alert.status
+      description: The status of the returned alert.
+      type: String
+    - contextPath: PrismaCloud.Alert.reason
+      description: The reason for the returned alert.
+      type: String
+    - contextPath: PrismaCloud.Alert.lastSeen
+      description: The time the returned alert was last seen.
+      type: String
+    - contextPath: PrismaCloud.Alert.firstSeen
+      description: The time the returned alert was first seen.
+      type: String
+    - contextPath: PrismaCloud.Alert.lastUpdated
+      description: The time the returned alert was last updated.
+      type: String
+    - contextPath: PrismaCloud.Alert.alertTime
+      description: The time of the returned alert.
+      type: String
+    - contextPath: PrismaCloud.Alert.policy.policyId
+      description: The policy ID of the returned alert.
+      type: String
+    - contextPath: PrismaCloud.Alert.policy.name
+      description: The policy name of the returned alert.
+      type: String
+    - contextPath: PrismaCloud.Alert.policy.policyType
+      description: The policy type of the returned alert.
+      type: String
+    - contextPath: PrismaCloud.Alert.policy.severity
+      description: The policy severity of the returned alert.
+      type: String
+    - contextPath: PrismaCloud.Alert.policy.remediable
+      description: Whether the policy is remediable.
+      type: Boolean
+    - contextPath: PrismaCloud.Alert.policy.description
+      description: The policy description of the returned alert.
+      type: String
+    - contextPath: PrismaCloud.Alert.policy.recommendation
+      description: The policy recommendation of the returned alert.
+      type: String
+    - contextPath: PrismaCloud.Alert.policy.remediation.description
+      description: The policy remediation description of the returned alert.
+      type: String
+    - contextPath: PrismaCloud.Alert.policy.remediation.cliScriptTemplate
+      description: The policy CLI script template description of the returned alert.
+      type: String
+    - contextPath: PrismaCloud.Alert.policy.systemDefault
+      description: Whether the policy is the system default.
+      type: Boolean
+    - contextPath: PrismaCloud.Alert.policy.deleted
+      description: Whether the policy was deleted.
+      type: Boolean
+    - contextPath: PrismaCloud.Alert.resource.resourceType
+      description: The resource type of the returned alert.
+      type: String
+    - contextPath: PrismaCloud.Alert.resource.name
+      description: The resource name of the returned alert.
+      type: String
+    - contextPath: PrismaCloud.Alert.resource.account
+      description: The resource account of the returned alert.
+      type: String
+    - contextPath: PrismaCloud.Alert.resource.cloudType
+      description: The resource cloud type of the returned alert.
+      type: String
+    - contextPath: PrismaCloud.Alert.resource.rrn
+      description: The restricted resource name of the returned alert.
+      type: String
+  - arguments:
+    - default: true
+      description: The alert ID.
+      name: alert-id
+      required: true
+    deprecated: true
+    description: Gets the details of an alert based on the alert ID.
+    name: redlock-get-alert-details
+  - arguments:
+    - description: Comma-separated list of string IDs to be dismissed.
+      name: alert-id
+    - description: The amount of time to snooze. Both snooze value and unit must be specified.
+      name: snooze-value
+    - auto: PREDEFINED
+      description: The time unit for snoozing alert.  Both snooze value and unit must be specified if snoozing.
+      name: snooze-unit
+      predefined:
+      - hour
+      - day
+      - week
+      - month
+      - year
+      - epoch
+    - description: Reason for dismissal.
+      name: dismissal-note
+      required: true
+    - description: Start time for the search in the following string format - MM/DD/YYYY.
+      name: time-range-date-from
+    - description: End time for the search in the following format - MM/DD/YYYY.
+      name: time-range-date-to
+    - description: The number of units to go back in time.
+      name: time-range-value
+    - auto: PREDEFINED
+      description: The search unit.
+      name: time-range-unit
+      predefined:
+      - hour
+      - day
+      - week
+      - month
+      - year
+      - login
+      - epoch
+    - auto: PREDEFINED
+      description: The policy name.
+      name: policy-name
+      predefined:
+      - IAM password policy does not have a symbol
+      - IAM password policy does not expire in 90 days
+      - IAM password policy does not have a lowercase character
+      - IAM password policy does not have a minimum of 14 characters
+      - IAM password policy allows password reuse
+      - Default Security Group does not restrict all traffic
+      - IAM password policy does not have password expiration period
+      - IAM password policy does not exist
+      - Access keys are not rotated for 90 days
+      - Security Groups allow internet traffic from internet to RDP port (3389)
+      - Internet connectivity via tcp over insecure port
+      - IAM policy allow full administrative privileges
+      - Primitive IAM roles should not be used
+      - Internet exposed instances
+      - IAM user has both Console access and Access Keys
+      - S3 buckets are accessible to public
+      - Access logging not enabled on all CloudTrail buckets
+      - CloudTrail trail is not integrated with CloudWatch Log
+      - Security Groups allow internet traffic to SSH port (22)
+      - CloudTrail logs are not encrypted using Customer Master Keys (CMKs)
+      - Excessive login failures
+      - VPC endpoints were not used for consuming S3 storage from within the VPC
+      - Access logging not enabled on S3 buckets
+      - S3 buckets do not have server side encryption
+      - Account hijacking attempts
+      - Security groups allow internet traffic
+      - VPC subnets should not allow automatic public IP assignment
+      - VPC Flow Logs not enabled
+      - MFA not enabled for IAM users
+      - Inactive users for more than 30 days
+    - description: The policy label.
+      name: policy-label
+    - description: The policy compliance standard.
+      name: policy-compliance-standard
+    - description: The cloud account.
+      name: cloud-account
+    - description: The cloud region.
+      name: cloud-region
+    - description: The alert rule name.
+      name: alert-rule-name
+    - description: The resource ID.
+      name: resource-id
+    - description: The resource name.
+      name: resource-name
+    - description: The resource type.
+      name: resource-type
+    - auto: PREDEFINED
+      description: The alert status.
+      name: alert-status
+      predefined:
+      - open
+      - resolved
+      - dismissed
+    - auto: PREDEFINED
+      description: The cloud type.
+      name: cloud-type
+      predefined:
+      - aws
+      - azure
+      - gcp
+    - auto: PREDEFINED
+      description: The risk grade.
+      name: risk-grade
+      predefined:
+      - A
+      - B
+      - C
+      - F
       deprecated: true
-      description: Gets the details of an alert based on the alert ID.
-      name: redlock-get-alert-details
-    - arguments:
-        - description: Comma-separated list of string IDs to be dismissed.
-          name: alert-id
-        - description: The amount of time to snooze. Both snooze value and unit must be specified.
-          name: snooze-value
-        - auto: PREDEFINED
-          description: The time unit for snoozing alert.  Both snooze value and unit must be specified if snoozing.
-          name: snooze-unit
-          predefined:
-            - hour
-            - day
-            - week
-            - month
-            - year
-            - epoch
-        - description: Reason for dismissal.
-          name: dismissal-note
-          required: true
-        - description: Start time for the search in the following string format - MM/DD/YYYY.
-          name: time-range-date-from
-        - description: End time for the search in the following format - MM/DD/YYYY.
-          name: time-range-date-to
-        - description: The number of units to go back in time.
-          name: time-range-value
-        - auto: PREDEFINED
-          description: The search unit.
-          name: time-range-unit
-          predefined:
-            - hour
-            - day
-            - week
-            - month
-            - year
-            - login
-            - epoch
-        - auto: PREDEFINED
-          description: The policy name.
-          name: policy-name
-          predefined:
-            - IAM password policy does not have a symbol
-            - IAM password policy does not expire in 90 days
-            - IAM password policy does not have a lowercase character
-            - IAM password policy does not have a minimum of 14 characters
-            - IAM password policy allows password reuse
-            - Default Security Group does not restrict all traffic
-            - IAM password policy does not have password expiration period
-            - IAM password policy does not exist
-            - Access keys are not rotated for 90 days
-            - Security Groups allow internet traffic from internet to RDP port (3389)
-            - Internet connectivity via tcp over insecure port
-            - IAM policy allow full administrative privileges
-            - Primitive IAM roles should not be used
-            - Internet exposed instances
-            - IAM user has both Console access and Access Keys
-            - S3 buckets are accessible to public
-            - Access logging not enabled on all CloudTrail buckets
-            - CloudTrail trail is not integrated with CloudWatch Log
-            - Security Groups allow internet traffic to SSH port (22)
-            - CloudTrail logs are not encrypted using Customer Master Keys (CMKs)
-            - Excessive login failures
-            - VPC endpoints were not used for consuming S3 storage from within the VPC
-            - Access logging not enabled on S3 buckets
-            - S3 buckets do not have server side encryption
-            - Account hijacking attempts
-            - Security groups allow internet traffic
-            - VPC subnets should not allow automatic public IP assignment
-            - VPC Flow Logs not enabled
-            - MFA not enabled for IAM users
-            - Inactive users for more than 30 days
-        - description: The policy label.
-          name: policy-label
-        - description: The policy compliance standard.
-          name: policy-compliance-standard
-        - description: The cloud account.
-          name: cloud-account
-        - description: The cloud region.
-          name: cloud-region
-        - description: The alert rule name.
-          name: alert-rule-name
-        - description: The resource ID.
-          name: resource-id
-        - description: The resource name.
-          name: resource-name
-        - description: The resource type.
-          name: resource-type
-        - auto: PREDEFINED
-          description: The alert status.
-          name: alert-status
-          predefined:
-            - open
-            - resolved
-            - dismissed
-        - auto: PREDEFINED
-          description: The cloud type.
-          name: cloud-type
-          predefined:
-            - aws
-            - azure
-            - gcp
-        - auto: PREDEFINED
-          description: The risk grade.
-          name: risk-grade
-          predefined:
-            - A
-            - B
-            - C
-            - F
-          deprecated: true
-        - auto: PREDEFINED
-          description: The policy type.
-          name: policy-type
-          predefined:
-            - anomaly
-            - audit_event
-            - config
-            - network
-        - auto: PREDEFINED
-          description: The policy severity.
-          name: policy-severity
-          predefined:
-            - high
-            - medium
-            - low
-        - description: Comma-separated string of policy IDs.
-          isArray: true
-          name: policy-id
+    - auto: PREDEFINED
+      description: The policy type.
+      name: policy-type
+      predefined:
+      - anomaly
+      - audit_event
+      - config
+      - network
+    - auto: PREDEFINED
+      description: The policy severity.
+      name: policy-severity
+      predefined:
+      - high
+      - medium
+      - low
+    - description: Comma-separated string of policy IDs.
+      isArray: true
+      name: policy-id
+    deprecated: true
+    description: Dismiss the alerts matching the given filter. Must provide either policy IDs or alert IDs.
+    execution: true
+    name: redlock-dismiss-alerts
+  - arguments:
+    - description: The IDs of alerts to reopen.
+      name: alert-id
+    - description: Start time for search in the following string format -  MM/DD/YYYY.
+      name: time-range-date-from
+    - description: End time for search in the following format -  MM/DD/YYYY.
+      name: time-range-date-to
+    - description: The number of units to go back in time.
+      name: time-range-value
+    - auto: PREDEFINED
+      description: The search unit.
+      name: time-range-unit
+      predefined:
+      - hour
+      - day
+      - week
+      - month
+      - year
+      - login
+      - epoch
+    - auto: PREDEFINED
+      description: The policy name.
+      name: policy-name
+      predefined:
+      - IAM password policy does not have a symbol
+      - IAM password policy does not expire in 90 days
+      - IAM password policy does not have a lowercase character
+      - IAM password policy does not have a minimum of 14 characters
+      - IAM password policy allows password reuse
+      - Default Security Group does not restrict all traffic
+      - IAM password policy does not have password expiration period
+      - IAM password policy does not exist
+      - Access keys are not rotated for 90 days
+      - Security Groups allow internet traffic from internet to RDP port (3389)
+      - Internet connectivity via tcp over insecure port
+      - IAM policy allow full administrative privileges
+      - Primitive IAM roles should not be used
+      - Internet exposed instances
+      - IAM user has both Console access and Access Keys
+      - S3 buckets are accessible to public
+      - Access logging not enabled on all CloudTrail buckets
+      - CloudTrail trail is not integrated with CloudWatch Log
+      - Security Groups allow internet traffic to SSH port (22)
+      - CloudTrail logs are not encrypted using Customer Master Keys (CMKs)
+      - Excessive login failures
+      - VPC endpoints were not used for consuming S3 storage from within the VPC
+      - Access logging not enabled on S3 buckets
+      - S3 buckets do not have server side encryption
+      - Account hijacking attempts
+      - Security groups allow internet traffic
+      - VPC subnets should not allow automatic public IP assignment
+      - VPC Flow Logs not enabled
+      - MFA not enabled for IAM users
+      - Inactive users for more than 30 days
+    - description: The policy label.
+      name: policy-label
+    - description: The policy compliance standard.
+      name: policy-compliance-standard
+    - description: The cloud account.
+      name: cloud-account
+    - description: The cloud region.
+      name: cloud-region
+    - description: The alert rule name.
+      name: alert-rule-name
+    - description: The resource ID.
+      name: resource-id
+    - description: The resource name.
+      name: resource-name
+    - description: The resource type.
+      name: resource-type
+    - auto: PREDEFINED
+      description: The alert status.
+      name: alert-status
+      predefined:
+      - open
+      - resolved
+      - dismissed
+    - auto: PREDEFINED
+      description: The cloud type.
+      name: cloud-type
+      predefined:
+      - aws
+      - azure
+      - gcp
+    - auto: PREDEFINED
+      description: The risk grade.
+      name: risk-grade
+      predefined:
+      - A
+      - B
+      - C
+      - F
       deprecated: true
-      description: Dismiss the alerts matching the given filter. Must provide either policy IDs or alert IDs.
-      execution: true
-      name: redlock-dismiss-alerts
-    - arguments:
-        - description: The IDs of alerts to reopen.
-          name: alert-id
-        - description: Start time for search in the following string format -  MM/DD/YYYY.
-          name: time-range-date-from
-        - description: End time for search in the following format -  MM/DD/YYYY.
-          name: time-range-date-to
-        - description: The number of units to go back in time.
-          name: time-range-value
-        - auto: PREDEFINED
-          description: The search unit.
-          name: time-range-unit
-          predefined:
-            - hour
-            - day
-            - week
-            - month
-            - year
-            - login
-            - epoch
-        - auto: PREDEFINED
-          description: The policy name.
-          name: policy-name
-          predefined:
-            - IAM password policy does not have a symbol
-            - IAM password policy does not expire in 90 days
-            - IAM password policy does not have a lowercase character
-            - IAM password policy does not have a minimum of 14 characters
-            - IAM password policy allows password reuse
-            - Default Security Group does not restrict all traffic
-            - IAM password policy does not have password expiration period
-            - IAM password policy does not exist
-            - Access keys are not rotated for 90 days
-            - Security Groups allow internet traffic from internet to RDP port (3389)
-            - Internet connectivity via tcp over insecure port
-            - IAM policy allow full administrative privileges
-            - Primitive IAM roles should not be used
-            - Internet exposed instances
-            - IAM user has both Console access and Access Keys
-            - S3 buckets are accessible to public
-            - Access logging not enabled on all CloudTrail buckets
-            - CloudTrail trail is not integrated with CloudWatch Log
-            - Security Groups allow internet traffic to SSH port (22)
-            - CloudTrail logs are not encrypted using Customer Master Keys (CMKs)
-            - Excessive login failures
-            - VPC endpoints were not used for consuming S3 storage from within the VPC
-            - Access logging not enabled on S3 buckets
-            - S3 buckets do not have server side encryption
-            - Account hijacking attempts
-            - Security groups allow internet traffic
-            - VPC subnets should not allow automatic public IP assignment
-            - VPC Flow Logs not enabled
-            - MFA not enabled for IAM users
-            - Inactive users for more than 30 days
-        - description: The policy label.
-          name: policy-label
-        - description: The policy compliance standard.
-          name: policy-compliance-standard
-        - description: The cloud account.
-          name: cloud-account
-        - description: The cloud region.
-          name: cloud-region
-        - description: The alert rule name.
-          name: alert-rule-name
-        - description: The resource ID.
-          name: resource-id
-        - description: The resource name.
-          name: resource-name
-        - description: The resource type.
-          name: resource-type
-        - auto: PREDEFINED
-          description: The alert status.
-          name: alert-status
-          predefined:
-            - open
-            - resolved
-            - dismissed
-        - auto: PREDEFINED
-          description: The cloud type.
-          name: cloud-type
-          predefined:
-            - aws
-            - azure
-            - gcp
-        - auto: PREDEFINED
-          description: The risk grade.
-          name: risk-grade
-          predefined:
-            - A
-            - B
-            - C
-            - F
-          deprecated: true
-        - auto: PREDEFINED
-          description: The policy type.
-          name: policy-type
-          predefined:
-            - anomaly
-            - audit_event
-            - config
-            - network
-        - auto: PREDEFINED
-          description: The policy severity.
-          name: policy-severity
-          predefined:
-            - high
-            - medium
-            - low
-      deprecated: true
-      description: Re-open the alerts matching the given filter. Must provide either policy IDs or alert IDs.
-      execution: true
-      name: redlock-reopen-alerts
-    - arguments:
-        - description: The alert ID for which to get remediation details.
-          name: alert-id
-      deprecated: true
-      description: Gets remediation details for the given alert.
-      name: redlock-get-remediation-details
-    - deprecated: true
-      description: List the acceptable filters and values for alerts.
-      name: redlock-list-alert-filters
-    - arguments:
-        - description: Start time for the search, in the following string format -  MM/DD/YYYY.
-          name: time-range-date-from
-        - description: End time for the search, in the following format -  MM/DD/YYYY.
-          name: time-range-date-to
-        - description: The number of time range value units for the search. For example, 3 days, 5 weeks, etc.
-          name: time-range-value
-        - auto: PREDEFINED
-          description: |-
-            The search unit. The "login" and "epoch" options are only available if timeRangeValue
-            is not provided.
-          name: time-range-unit
-          predefined:
-            - hour
-            - day
-            - week
-            - month
-            - year
-            - login
-            - epoch
-        - description: Query to run in Prisma Cloud config API using RQL language.
-          name: query
-          required: true
-        - defaultValue: '100'
-          description: Maximum number of entries to return.
-          name: limit
-      deprecated: true
-      description: Search the configuration inventory on the Prisma Cloud platform using RQL language.
-      name: redlock-search-config
-      outputs:
-        - contextPath: PrismaCloud.Config.accountId
-          description: Cloud account ID.
-          type: String
-        - contextPath: PrismaCloud.Config.accountName
-          description: Cloud account name.
-          type: String
-        - contextPath: PrismaCloud.Config.allowDrillDown
-          description: Whether to allow drill down.
-          type: Boolean
-        - contextPath: PrismaCloud.Config.cloudType
-          description: Cloud type.
-          type: String
-        - contextPath: PrismaCloud.Config.deleted
-          description: Whether the asset was deleted.
-          type: Boolean
-        - contextPath: PrismaCloud.Config.hasExtFindingRiskFactors
-          description: Whether the configuration has external finding risk factors.
-          type: Boolean
-        - contextPath: PrismaCloud.Config.hasExternalFinding
-          description: Whether the configuration has an external finding.
-          type: Boolean
-        - contextPath: PrismaCloud.Config.hasExternalIntegration
-          description: Whether the configuration has an external integration.
-          type: Boolean
-        - contextPath: PrismaCloud.Config.hasNetwork
-          description: Whether the configuration has a network.
-          type: Boolean
-        - contextPath: PrismaCloud.Config.id
-          description: Prisma Cloud configuration ID.
-          type: String
-        - contextPath: PrismaCloud.Config.assetId
-          description: Prisma Cloud asset ID.
-          type: String
-        - contextPath: PrismaCloud.Config.data
-          description: Prisma Cloud asset specific data.
-          type: Unknown
-        - contextPath: PrismaCloud.Config.insertTs
-          description: Insert timestamp.
-          type: Date
-        - contextPath: PrismaCloud.Config.createdTs
-          description: Created timestamp.
-          type: Date
-        - contextPath: PrismaCloud.Config.name
-          description: Asset name.
-          type: String
-        - contextPath: PrismaCloud.Config.regionId
-          description: Cloud region ID.
-          type: String
-        - contextPath: PrismaCloud.Config.regionName
-          description: Cloud region Name.
-          type: String
-        - contextPath: PrismaCloud.Config.resourceType
-          description: Cloud resource type.
-          type: String
-        - contextPath: PrismaCloud.Config.rrn
-          description: Cloud restricted resource name.
-          type: String
-        - contextPath: PrismaCloud.Config.service
-          description: Cloud service.
-          type: String
-        - contextPath: PrismaCloud.Config.stateId
-          description: State ID.
-          type: String
-    - arguments:
-        - description: The maximum number of records to return. '; limit search records to {}' is appended to every query where {} is the maximum number of records to return. If no value is provided, only 1 record is returned.
-          name: limit
-        - description: 'The RQL config query to run. Examples of RQL config queries can be found here: https://docs.paloaltonetworks.com/prisma/prisma-cloud/prisma-cloud-rql-reference/rql-reference/config-query/config-query-examples.html. Note that ` limit search records to 1` is automatically appended to each query and a `;` may need to be added to the end of the RQL input to make the entire query valid.  The limit parameter adjusts this to be a value other than 1.'
-          name: rql
-          required: true
-      deprecated: true
-      description: Returns the results of an RQL config query.
-      name: redlock-get-rql-response
-    - arguments:
-        - description: Start time for the search, in the following format -  MM/DD/YYYY.
-          name: time-range-date-from
-        - description: End time for the search, in the following format -  MM/DD/YYYY.
-          name: time-range-date-to
-        - description: The number of time range value units for the search. For example, 3 days, 5 weeks, etc.
-          name: time-range-value
-        - auto: PREDEFINED
-          description: |-
-            The search unit. The "login" and "epoch" options are only available if timeRangeValue
-            is not provided.
-          name: time-range-unit
-          predefined:
-            - hour
-            - day
-            - week
-            - month
-            - year
-            - login
-            - epoch
-        - description: Query to run in Prisma Cloud search API using RQL language.
-          name: query
-          required: true
-        - defaultValue: '100'
-          description: Maximum number of entries to return.
-          name: limit
-      deprecated: true
-      description: Search events on the Prisma Cloud platform using RQL language.
-      name: redlock-search-event
-    - arguments:
-        - description: Start time for the search, in the following format -  MM/DD/YYYY.
-          name: time-range-date-from
-        - description: End time for the search, in the following format -  MM/DD/YYYY.
-          name: time-range-date-to
-        - description: The number of time range value units for the search. For example, 3 days, 5 weeks, etc.
-          name: time-range-value
-        - auto: PREDEFINED
-          description: |-
-            The search unit. The "login" and "epoch" options are only available if timeRangeValue
-            is not provided.
-          name: time-range-unit
-          predefined:
-            - hour
-            - day
-            - week
-            - month
-            - year
-            - login
-            - epoch
-        - description: Query to run in Prisma Cloud search API using RQL language.
-          name: query
-          required: true
-        - auto: PREDEFINED
-          description: The cloud in which the network should be searched.
-          name: cloud-type
-          predefined:
-            - aws
-            - azure
-            - gcp
-            - alibaba_cloud
-            - oci
-      deprecated: true
-      description: Search networks on the Prisma Cloud platform using RQL language.
-      name: redlock-search-network
-    - arguments:
-        - default: false
-          description: Date string representing the local time. The incident is only returned if it was modified after the last update time.
-          isArray: false
-          name: lastUpdate
-          required: false
-          secret: false
-      deprecated: false
-      description: Get the list of incidents that were modified since the last update time. This method is used for debugging purposes. The get-modified-remote-data command is used as part of the Mirroring feature that was introduced in Cortex XSOAR version 6.1.
-      execution: false
-      name: get-modified-remote-data
-    - arguments:
-        - default: false
-          description: The remote incident ID.
-          isArray: false
-          name: id
-          required: true
-          secret: false
-        - default: false
-          defaultValue: '0'
-          description: The UTC timestamp in seconds of the last update. The incident is only updated if it was modified after the last update time.
-          isArray: false
-          name: lastUpdate
-          required: false
-          secret: false
-      deprecated: false
-      description: Get remote data from a remote incident. This method does not update the current incident, and should be used for debugging purposes only.
-      execution: false
-      name: get-remote-data
-    - arguments: [ ]
-      deprecated: false
-      description: Updates the remote incident with local incident changes. This method is only used for debugging purposes and will not update the current incident.
-      execution: false
-      name: update-remote-system
-    - arguments:
-        - description: Access key name.
-          name: name
-          required: true
-        - description: Timestamp in milliseconds when access key expires. Default:0.
-          name: expires-on
-      deprecated: false
-      description: Adds a new access key for the current user. If you have API access, you can create up to two access keys.
-      execution: false
-      name: prisma-cloud-access-key-create
-      outputs:
-        - contextPath: PrismaCloud.AccessKeys.id
-          description: Access key ID.
-          type: String
-        - contextPath: PrismaCloud.AccessKeys.secretKey
-          description: Access key secret.
-          type: String
-    - arguments:
-        - description: Returns the metadata of the access key that has the specified ID.
-          name: access-key
-        - description: Maximum number of entries to return.
-          name: limit
-      deprecated: false
-      description: Returns all access keys for your tenant if you have a Prisma Cloud System Admin role. Returns just your access keys if you don't have this role.
-      execution: false
-      name: prisma-cloud-access-keys-list
-      outputs:
-        - contextPath: PrismaCloud.AccessKeys.id
-          description: Access key ID.
-          type: String
-        - contextPath: PrismaCloud.AccessKeys.createdBy
-          description: Created By.
-          type: String
-        - contextPath: PrismaCloud.AccessKeys.createdTs
-          description: Time access key was created.
-          type: Number
-        - contextPath: PrismaCloud.AccessKeys.expiresOn
-          description: Access key expires on.
-          type: Number
-        - contextPath: PrismaCloud.AccessKeys.lastUsedTime
-          description: Access key last used.
-          type: Number
-        - contextPath: PrismaCloud.AccessKeys.name
-          description: Name.
-          type: String
-        - contextPath: PrismaCloud.AccessKeys.role
-          description: User role.
-          type: Object
-        - contextPath: PrismaCloud.AccessKeys.roleType
-          description: User role permission type.
-          type: String
-        - contextPath: PrismaCloud.AccessKeys.status
-          description: Access key status.
-          type: String
-        - contextPath: PrismaCloud.AccessKeys.username
-          description: Access key user name.
-          type: String
-    - arguments:
-        - description: Access key ID.
-          name: access-key
-          required: true
-      deprecated: false
-      description: Deactivates the access key that has the specified ID.
-      execution: false
-      name: prisma-cloud-access-key-disable
-    - arguments:
-        - description: Access key ID.
-          name: access-key
-          required: true
-      deprecated: false
-      description: Activates the access key that has the specified ID. You cannot activate an expired access key.
-      execution: false
-      name: prisma-cloud-access-key-enable
-    - arguments:
-        - description: Access key ID.
-          name: access-key
-          required: true
-      deprecated: false
-      description: Deletes the access key that has the specified ID.
-      execution: false
-      name: prisma-cloud-access-key-delete
-
+    - auto: PREDEFINED
+      description: The policy type.
+      name: policy-type
+      predefined:
+      - anomaly
+      - audit_event
+      - config
+      - network
+    - auto: PREDEFINED
+      description: The policy severity.
+      name: policy-severity
+      predefined:
+      - high
+      - medium
+      - low
+    deprecated: true
+    description: Re-open the alerts matching the given filter. Must provide either policy IDs or alert IDs.
+    execution: true
+    name: redlock-reopen-alerts
+  - arguments:
+    - description: The alert ID for which to get remediation details.
+      name: alert-id
+    deprecated: true
+    description: Gets remediation details for the given alert.
+    name: redlock-get-remediation-details
+  - deprecated: true
+    description: List the acceptable filters and values for alerts.
+    name: redlock-list-alert-filters
+  - arguments:
+    - description: Start time for the search, in the following string format -  MM/DD/YYYY.
+      name: time-range-date-from
+    - description: End time for the search, in the following format -  MM/DD/YYYY.
+      name: time-range-date-to
+    - description: The number of time range value units for the search. For example, 3 days, 5 weeks, etc.
+      name: time-range-value
+    - auto: PREDEFINED
+      description: |-
+        The search unit. The "login" and "epoch" options are only available if timeRangeValue
+        is not provided.
+      name: time-range-unit
+      predefined:
+      - hour
+      - day
+      - week
+      - month
+      - year
+      - login
+      - epoch
+    - description: Query to run in Prisma Cloud config API using RQL language.
+      name: query
+      required: true
+    - defaultValue: '100'
+      description: Maximum number of entries to return.
+      name: limit
+    deprecated: true
+    description: Search the configuration inventory on the Prisma Cloud platform using RQL language.
+    name: redlock-search-config
+    outputs:
+    - contextPath: PrismaCloud.Config.accountId
+      description: Cloud account ID.
+      type: String
+    - contextPath: PrismaCloud.Config.accountName
+      description: Cloud account name.
+      type: String
+    - contextPath: PrismaCloud.Config.allowDrillDown
+      description: Whether to allow drill down.
+      type: Boolean
+    - contextPath: PrismaCloud.Config.cloudType
+      description: Cloud type.
+      type: String
+    - contextPath: PrismaCloud.Config.deleted
+      description: Whether the asset was deleted.
+      type: Boolean
+    - contextPath: PrismaCloud.Config.hasExtFindingRiskFactors
+      description: Whether the configuration has external finding risk factors.
+      type: Boolean
+    - contextPath: PrismaCloud.Config.hasExternalFinding
+      description: Whether the configuration has an external finding.
+      type: Boolean
+    - contextPath: PrismaCloud.Config.hasExternalIntegration
+      description: Whether the configuration has an external integration.
+      type: Boolean
+    - contextPath: PrismaCloud.Config.hasNetwork
+      description: Whether the configuration has a network.
+      type: Boolean
+    - contextPath: PrismaCloud.Config.id
+      description: Prisma Cloud configuration ID.
+      type: String
+    - contextPath: PrismaCloud.Config.assetId
+      description: Prisma Cloud asset ID.
+      type: String
+    - contextPath: PrismaCloud.Config.data
+      description: Prisma Cloud asset specific data.
+      type: Unknown
+    - contextPath: PrismaCloud.Config.insertTs
+      description: Insert timestamp.
+      type: Date
+    - contextPath: PrismaCloud.Config.createdTs
+      description: Created timestamp.
+      type: Date
+    - contextPath: PrismaCloud.Config.name
+      description: Asset name.
+      type: String
+    - contextPath: PrismaCloud.Config.regionId
+      description: Cloud region ID.
+      type: String
+    - contextPath: PrismaCloud.Config.regionName
+      description: Cloud region Name.
+      type: String
+    - contextPath: PrismaCloud.Config.resourceType
+      description: Cloud resource type.
+      type: String
+    - contextPath: PrismaCloud.Config.rrn
+      description: Cloud restricted resource name.
+      type: String
+    - contextPath: PrismaCloud.Config.service
+      description: Cloud service.
+      type: String
+    - contextPath: PrismaCloud.Config.stateId
+      description: State ID.
+      type: String
+  - arguments:
+    - description: The maximum number of records to return. '; limit search records to {}' is appended to every query where {} is the maximum number of records to return. If no value is provided, only 1 record is returned.
+      name: limit
+    - description: 'The RQL config query to run. Examples of RQL config queries can be found here: https://docs.paloaltonetworks.com/prisma/prisma-cloud/prisma-cloud-rql-reference/rql-reference/config-query/config-query-examples.html. Note that ` limit search records to 1` is automatically appended to each query and a `;` may need to be added to the end of the RQL input to make the entire query valid.  The limit parameter adjusts this to be a value other than 1.'
+      name: rql
+      required: true
+    deprecated: true
+    description: Returns the results of an RQL config query.
+    name: redlock-get-rql-response
+  - arguments:
+    - description: Start time for the search, in the following format -  MM/DD/YYYY.
+      name: time-range-date-from
+    - description: End time for the search, in the following format -  MM/DD/YYYY.
+      name: time-range-date-to
+    - description: The number of time range value units for the search. For example, 3 days, 5 weeks, etc.
+      name: time-range-value
+    - auto: PREDEFINED
+      description: |-
+        The search unit. The "login" and "epoch" options are only available if timeRangeValue
+        is not provided.
+      name: time-range-unit
+      predefined:
+      - hour
+      - day
+      - week
+      - month
+      - year
+      - login
+      - epoch
+    - description: Query to run in Prisma Cloud search API using RQL language.
+      name: query
+      required: true
+    - defaultValue: '100'
+      description: Maximum number of entries to return.
+      name: limit
+    deprecated: true
+    description: Search events on the Prisma Cloud platform using RQL language.
+    name: redlock-search-event
+  - arguments:
+    - description: Start time for the search, in the following format -  MM/DD/YYYY.
+      name: time-range-date-from
+    - description: End time for the search, in the following format -  MM/DD/YYYY.
+      name: time-range-date-to
+    - description: The number of time range value units for the search. For example, 3 days, 5 weeks, etc.
+      name: time-range-value
+    - auto: PREDEFINED
+      description: |-
+        The search unit. The "login" and "epoch" options are only available if timeRangeValue
+        is not provided.
+      name: time-range-unit
+      predefined:
+      - hour
+      - day
+      - week
+      - month
+      - year
+      - login
+      - epoch
+    - description: Query to run in Prisma Cloud search API using RQL language.
+      name: query
+      required: true
+    - auto: PREDEFINED
+      description: The cloud in which the network should be searched.
+      name: cloud-type
+      predefined:
+      - aws
+      - azure
+      - gcp
+      - alibaba_cloud
+      - oci
+    deprecated: true
+    description: Search networks on the Prisma Cloud platform using RQL language.
+    name: redlock-search-network
+  - arguments:
+    - default: false
+      description: Date string representing the local time. The incident is only returned if it was modified after the last update time.
+      isArray: false
+      name: lastUpdate
+      required: false
+      secret: false
+    deprecated: false
+    description: Get the list of incidents that were modified since the last update time. This method is used for debugging purposes. The get-modified-remote-data command is used as part of the Mirroring feature that was introduced in Cortex XSOAR version 6.1.
+    execution: false
+    name: get-modified-remote-data
+  - arguments:
+    - default: false
+      description: The remote incident ID.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: The UTC timestamp in seconds of the last update. The incident is only updated if it was modified after the last update time.
+      isArray: false
+      name: lastUpdate
+      required: false
+      secret: false
+    deprecated: false
+    description: Get remote data from a remote incident. This method does not update the current incident, and should be used for debugging purposes only.
+    execution: false
+    name: get-remote-data
+  - arguments: []
+    deprecated: false
+    description: Updates the remote incident with local incident changes. This method is only used for debugging purposes and will not update the current incident.
+    execution: false
+    name: update-remote-system
+  - arguments:
+      - description: Access key name.
+        name: name
+        required: true
+      - description: Timestamp in milliseconds when access key expires. Default:0.
+        name: expires-on
+    deprecated: false
+    description: Adds a new access key for the current user. If you have API access, you can create up to two access keys.
+    execution: false
+    name: prisma-cloud-access-key-create
+    outputs:
+      - contextPath: PrismaCloud.AccessKeys.id
+        description: Access key ID.
+        type: String
+      - contextPath: PrismaCloud.AccessKeys.secretKey
+        description: Access key secret.
+        type: String
+  - arguments:
+      - description: Returns the metadata of the access key that has the specified ID.
+        name: access-key
+      - description: Maximum number of entries to return.
+        name: limit
+    deprecated: false
+    description: Returns all access keys for your tenant if you have a Prisma Cloud System Admin role. Returns just your access keys if you don't have this role.
+    execution: false
+    name: prisma-cloud-access-keys-list
+    outputs:
+      - contextPath: PrismaCloud.AccessKeys.id
+        description: Access key ID.
+        type: String
+      - contextPath: PrismaCloud.AccessKeys.createdBy
+        description: Created By.
+        type: String
+      - contextPath: PrismaCloud.AccessKeys.createdTs
+        description: Time access key was created.
+        type: Number
+      - contextPath: PrismaCloud.AccessKeys.expiresOn
+        description: Access key expires on.
+        type: Number
+      - contextPath: PrismaCloud.AccessKeys.lastUsedTime
+        description: Access key last used.
+        type: Number
+      - contextPath: PrismaCloud.AccessKeys.name
+        description: Name.
+        type: String
+      - contextPath: PrismaCloud.AccessKeys.role
+        description: User role.
+        type: Object
+      - contextPath: PrismaCloud.AccessKeys.roleType
+        description: User role permission type.
+        type: String
+      - contextPath: PrismaCloud.AccessKeys.status
+        description: Access key status.
+        type: String
+      - contextPath: PrismaCloud.AccessKeys.username
+        description: Access key user name.
+        type: String
+  - arguments:
+      - description: Access key ID.
+        name: access-key
+        required: true
+    deprecated: false
+    description: Deactivates the access key that has the specified ID.
+    execution: false
+    name: prisma-cloud-access-key-disable
+  - arguments:
+      - description: Access key ID.
+        name: access-key
+        required: true
+    deprecated: false
+    description: Activates the access key that has the specified ID. You cannot activate an expired access key.
+    execution: false
+    name: prisma-cloud-access-key-enable
+  - arguments:
+      - description: Access key ID.
+        name: access-key
+        required: true
+    deprecated: false
+    description: Deletes the access key that has the specified ID.
+    execution: false
+    name: prisma-cloud-access-key-delete
 tests:
-  - Prisma Cloud V2 Test
+- Prisma Cloud V2 Test
 defaultmapperin: RedLock-mapper
 defaultclassifier: RedLock
 fromversion: 6.5.0
