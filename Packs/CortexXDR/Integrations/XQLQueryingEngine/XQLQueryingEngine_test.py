@@ -3,7 +3,6 @@ import json
 from unittest.mock import MagicMock, patch
 from freezegun import freeze_time
 import XQLQueryingEngine
-import CoreXQLApiModule
 import pytest
 from CommonServerPython import *
 
@@ -881,7 +880,7 @@ def test_get_xql_query_results_polling_command_success_more_than_1000_results_pa
     mocker.patch('CoreXQLApiModule.get_xql_query_results', return_value=(mock_response, compressed_mock_file_data))
     mocker.patch.object(demisto, 'command', return_value='xdr-xql-generic-query')
     results = XQLQueryingEngine.get_xql_query_results_polling_command(CLIENT, {'query': query,
-                                                                              'parse_result_file_to_context': True})
+                                                                               'parse_result_file_to_context': True})
 
     assert results.outputs.get('results', []) == expected_results_in_context, \
         'There might be a problem in parsing the results into the context'
@@ -1031,9 +1030,8 @@ def test_main_success(mock_return_error, mock_return_results, mock_Client, mock_
                  'Authorization': api_key_hash},
         proxy=False,
         is_core=False
-        )
+    )
     mock_return_error.assert_not_called()
-
 
 
 @patch('CoreXQLApiModule.IS_CORE_AVAILABLE', False)

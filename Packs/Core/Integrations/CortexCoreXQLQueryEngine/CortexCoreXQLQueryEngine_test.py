@@ -2,7 +2,6 @@ import gzip
 import json
 from unittest.mock import MagicMock, patch
 from freezegun import freeze_time
-import CoreXQLApiModule
 import CortexCoreXQLQueryEngine
 import pytest
 from CommonServerPython import *
