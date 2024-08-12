@@ -1,3 +1,5 @@
+from freezegun import freeze_time
+
 from XSOARmirroring import get_mapping_fields_command, Client, fetch_incidents, update_remote_system_command, \
     validate_and_prepare_basic_params, XSOAR_DATE_FORMAT
 from datetime import datetime, timedelta
@@ -149,7 +151,7 @@ def test_fetch_incidents(mocker):
                                                  query='', mirror_direction='None', mirror_tag=[], fetch_incident_history=True)
 
     assert len(incidents_result) == 3
-    assert dateparser.parse(next_run['last_fetch']) == dateparser.parse(INCIDENTS[-1]['created'])
+    assert dateparser.parse(next_run['time']) == dateparser.parse(INCIDENTS[-1]['created'])
     assert mock_integration_context.call_args.kwargs['context'] == {'XSOARMirror_mirror_reset': {1: True, 2: True, 3: True}}
 
 
@@ -178,7 +180,7 @@ def test_fetch_incidents_with_integration_context(mocker):
                                                  query='', mirror_direction='None', mirror_tag=[], fetch_incident_history=True)
 
     assert len(incidents_result) == 3
-    assert dateparser.parse(next_run['last_fetch']) == dateparser.parse(INCIDENTS[-1]['created'])
+    assert dateparser.parse(next_run['time']) == dateparser.parse(INCIDENTS[-1]['created'])
     assert mock_integration_context.call_args.kwargs['context'] == {
         'XSOARMirror_mirror_reset': {
             4: True,
@@ -306,7 +308,6 @@ case_incidents_with_different_times = (
     ),
 )
 
-
 case_incidents_with_the_same_times = (
     "2023-09-26T15:13:45.000000Z",
     # responses from search_incidents
@@ -337,7 +338,6 @@ case_incidents_with_the_same_times = (
     ),
 )
 
-
 case_with_empty_response_with_incidents_last_fetch_ids = (
     "2023-09-26T15:13:41.000000Z",
     # responses from search_incidents
@@ -352,7 +352,6 @@ case_with_empty_response_with_incidents_last_fetch_ids = (
         dateparser.parse("2023-09-26T15:13:41Z")
     ),
 )
-
 
 case_with_empty_response_without_incidents_last_fetch_ids = (
     "2023-09-26T15:13:41.000000Z",
@@ -429,7 +428,6 @@ case_with_an_incident_that_was_fetched = (
     ),
 )
 
-
 case_with_an_incident_that_was_fetched_and_there_are_more_with_the_same_time = (
     "2023-09-26T15:13:41.000000Z",
     # responses from search_incidents
@@ -482,53 +480,6 @@ case_incidents_not_utc_time = (
 )
 
 
-@pytest.mark.parametrize(
-    "last_fetch, incident_to_return , max_fetch, incidents_last_fetch_ids, expected_result",
-    [
-        case_incidents_with_different_times,
-        case_incidents_with_the_same_times,
-        case_with_empty_response_with_incidents_last_fetch_ids,
-        case_with_empty_response_without_incidents_last_fetch_ids,
-        case_with_more_then_one_API_call_with_incidents_last_fetch_ids,
-        case_with_an_incident_that_was_fetched,
-        case_with_an_incident_that_was_fetched_and_there_are_more_with_the_same_time,
-        case_incidents_not_utc_time,
-    ],
-)
-def test_dedup_incidents_with_seconds_timestamp(
-    mocker,
-    last_fetch,
-    incident_to_return,
-    max_fetch,
-    incidents_last_fetch_ids,
-    expected_result,
-):
-    """
-    Given:
-        - Case 1: All incidents from the current fetch cycle have different timestamp.
-        - Case 2: All incidents from the current fetch cycle have the same timestamp and were not fetched.
-        - Case 3: All incidents from the previous fetch cycle were fetched. No new incidents received from API response.
-        - Case 4: Empty response without incidents_last_fetch_ids provided.
-        - Case 5: More than one API call received with incidents_last_fetch_ids provided.
-        - Case 6: An incident that was already fetched in the previous run is received again.
-        - Case 7: Incidents with equal time stamp to an incident that was already fetched were received.
-    When:
-        - Using the dedup mechanism while fetching incidents.
-    Then:
-        - Verify that the dedup mechanism correctly handles the different test cases by comparing the expected and actual results.
-    """
-    from XSOARmirroring import get_and_dedup_incidents
-
-    client = Client("")
-    mocker.patch.object(Client, "search_incidents", side_effect=incident_to_return)
-    assert (
-        get_and_dedup_incidents(
-            client, incidents_last_fetch_ids, "", max_fetch, last_fetch
-        )
-        == expected_result
-    )
-
-
 def test_get_incident_entries_without_entries(mocker):
     """
     Given:
@@ -563,3 +514,87 @@ def test_get_incident_entries_without_entries(mocker):
     )
     assert result is not None
     assert result == []
+
+
+class TestFetchIncidentsWithLookBack:
+    FREEZE_TIMESTAMP = '2022-07-28T12:09:17Z'
+
+    @staticmethod
+    def start_freeze_time(timestamp):
+        from freezegun import freeze_time
+        _start_freeze_time = freeze_time(timestamp)
+        _start_freeze_time.start()
+        return datetime.now()
+
+    def create_incidents_queue(self):
+        first_incident = {
+            'id': '1',
+            'created': (
+                self.start_freeze_time(self.FREEZE_TIMESTAMP) - timedelta(minutes=2)
+            ).strftime(XSOAR_DATE_FORMAT)
+        }
+
+        second_incident = {
+            'id': '2',
+            'created': (
+                self.start_freeze_time(self.FREEZE_TIMESTAMP) - timedelta(minutes=5)
+            ).strftime(XSOAR_DATE_FORMAT)
+        }
+
+        third_incident = {
+            'id': '3',
+            'created': (
+                self.start_freeze_time(self.FREEZE_TIMESTAMP) - timedelta(minutes=10)
+            ).strftime(XSOAR_DATE_FORMAT)
+        }
+
+        return (
+            [[third_incident], [],
+             [second_incident, third_incident], [],
+             [first_incident, second_incident, third_incident], []]
+        )
+
+    @pytest.mark.parametrize('look_back', [30, 40, 400])
+    def test_fetch_emails_with_look_back_greater_than_zero(self, mocker, look_back):
+        """
+        Given
+         - a look back parameter.
+         - incidents queue.
+
+        When
+         - trying to fetch emails with the look-back mechanism.
+
+        Then
+         - make sure only one incident is being returned each time, based on the 'cache' look-back mechanism.
+         - make sure the correct timestamp to query the api was called based on the look-back parameter.
+         - make sure the correct incident is being returned by its name without any duplication whatsoever.
+         - make sure the 'time' for the look-back for the last run is being set to the latest incident occurred incident
+         - make sure the 'ID' field is being removed from the incidents before fetching.
+        """
+
+        last_incidents_mocker = mocker.patch.object(Client, 'search_incidents', side_effect=self.create_incidents_queue())
+        mocker.patch('XSOARmirroring.set_to_integration_context_with_retries')
+
+        first_fetch = (self.start_freeze_time(self.FREEZE_TIMESTAMP) - timedelta(days=3)).strftime(XSOAR_DATE_FORMAT)
+
+        client = Client("")
+
+        last_run = {
+            'time': (datetime.utcnow() - timedelta(minutes=20)).strftime(XSOAR_DATE_FORMAT)
+        }
+
+        expected_last_run_timestamps = ['2022-07-28T12:07:17.000000Z',
+                                        '2022-07-28T12:04:17.000000Z',
+                                        '2022-07-28T11:59:17.000000Z']
+
+        for i in range(3, 0, -1):
+            next_run, incidents_result = fetch_incidents(client=client, max_results=3, last_run=last_run,
+                                                         last_fetch=last_run.get('time'), first_fetch_time=first_fetch,
+                                                         query='', mirror_direction='None', mirror_tag=[],
+                                                         fetch_incident_history=True, look_back=look_back)
+            assert last_incidents_mocker.call_args.kwargs['start_time'] == (
+                datetime.now() - timedelta(minutes=look_back)
+            ).strftime(XSOAR_DATE_FORMAT)
+            assert next_run['time'] == expected_last_run_timestamps[i - 1]
+            assert len(incidents_result) == 1
+            assert 'id' not in incidents_result[0]

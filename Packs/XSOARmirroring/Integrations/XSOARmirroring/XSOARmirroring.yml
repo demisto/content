@@ -49,6 +49,13 @@ configuration:
   type: 0
   additionalinfo: Date or relative timestamp to start fetching incidents from, in the format of <number> <time unit>. For example, 2 minutes, 12 hours, 6 days, 2 weeks, 3 months, 1 year, ISO timestamp. Default is 3 days.
   required: false
+- defaultvalue: 0
+  display: 'Advanced: Minutes to look back when fetching'
+  additionalinfo: Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created.
+  name: look_back
+  type: 0
+  required: false
+  advanced: true
 - display: Entry Categories
   name: categories
   defaultvalue: notes,chats,attachments
