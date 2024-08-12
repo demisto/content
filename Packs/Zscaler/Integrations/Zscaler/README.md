@@ -614,13 +614,14 @@ Retrieves a list of all categories.
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Zscaler.Category.ID | string | The ID of the category. | 
-| Zscaler.Category.CustomCategory | boolean | True, if the category is a custom category. Otherwise, false. | 
-| Zscaler.Category.URL | string | The URL of the category. | 
-| Zscaler.Category.Description | string | The description of the category. | 
-| Zscaler.Category.Name | string | The name of the category. | 
+| **Path**                                     | **Type** | **Description**                                               |
+|----------------------------------------------|----------|---------------------------------------------------------------|
+| Zscaler.Category.ID                          | string   | The ID of the category.                                       | 
+| Zscaler.Category.CustomCategory              | boolean  | True, if the category is a custom category. Otherwise, false. | 
+| Zscaler.Category.URL                         | List     | The URL of the category.                                      | 
+| Zscaler.Category.URLsRetainingParentCategory | List     | The URL of the retaining parent category.                     | 
+| Zscaler.Category.Description                 | string   | The description of the category.                              | 
+| Zscaler.Category.Name                        | string   | The name of the category.                                     | 
 
 #### Command Example
 
@@ -645,6 +646,10 @@ Retrieves a list of all categories.
       "URL":[  
          "demisto.com",
          "apple.com"
+      ],
+      "URLsRetainingParentCategory":[  
+         "pandora.com",
+         "spotify.com"
       ],
       "CustomCategory":"true"
    }
