@@ -15,4 +15,4 @@ runas: DBotWeakRole
 engineinfo: {}
 tests:
 - No tests (auto formatted)
-fromversion: 6.10.0
+fromversion: 8.8.0
