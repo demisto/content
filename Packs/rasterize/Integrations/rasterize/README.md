@@ -15,6 +15,7 @@ If you are using the integration to rasterize un-trusted URLs or HTML content, s
 | wait_time | Time to wait before taking a screenshot \(in seconds\). | False |
 | max_page_load_time | Maximum amount of time to wait for a page to load \(in seconds\). | False |
 | chrome_options | Chrome options (Advanced. See `Configuration Notes`.) | False |
+| is_https | Use secure requests protocol \(HTTPS\). | False |
 | proxy | Use system proxy settings. | False |
 | rasterize_mode | Rasterize Mode. (See `Configuration Notes`.) | False |
 
@@ -28,6 +29,7 @@ If you are using the integration to rasterize un-trusted URLs or HTML content, s
     ```
 
     To set a language for the browser, add the *--accept-lang* argument followed by the desired language code in IETF BCP 47 format. For example, `--accept-lang=de-DE`.
+If you want to set the language to en-US, use en-GB instead.
 * Rasterize Mode: It is possible to rasterize either via Chrome WebDriver or Chrome Headless CLI. WebDriver supports more options than Headless CLI. Such as support for the `offline` option in the `rasterize-emails` command. There are some urls that do not rasterize well with WebDriver and may succeed with Headless CLI. Thus, it is recommended to use the `WebDriver - Preferred` mode, which will use WebDriver as a start and fallback to Headless CLI if it fails.
 * Use system proxy settings: Select this checkbox to use the system's proxy settings. **Important**: this integration does not support proxies which require authentication.
 

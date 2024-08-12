@@ -1,21 +1,48 @@
 {
     "name": "Team Cymru",
-    "description": "Team Cymru is an internet security firm that offers research services making the internet a more secure place.",
-    "support": "xsoar",
-    "currentVersion": "1.0.23",
-    "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
-    "email": "",
+    "description": "Team Cymru integration provides comprehensive insights on the IP addresses and domains for threat investigations.",
+    "support": "partner",
+    "currentVersion": "2.0.0",
+    "author": "Team Cymru",
+    "url": "",
+    "email": "support@cymru.com",
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
     "tags": [
+        "Network",
+        "Security",
+        "Threat Intelligence",
+        "Security Analytics",
+        "Relationship",
+        "Attack",
+        "Breach",
+        "Forensics",
+        "Incident Handling",
+        "Incident Response",
+        "Malware",
         "Getting Started",
         "Free Enricher",
         "Plug & Enrich"
     ],
-    "useCases": [],
-    "keywords": [],
+    "useCases": [
+        "Network Security",
+        "Threat Intelligence Management",
+        "Hunting",
+        "Phishing",
+        "Ransomware"
+    ],
+    "keywords": [
+        "Cymru",
+        "Scout",
+        "IOC",
+        "real-time",
+        "Network Security",
+        "Intelligence",
+        "Enrichment",
+        "whois",
+        "Threat Intelligence"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2"
