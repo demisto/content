@@ -85,6 +85,9 @@
 						]
 					}
 				},
+                "State": {
+					"simple": "triage_item.state"
+				},
 				"DS Auto Closed": {
 					"simple": "auto-closed"
 				},

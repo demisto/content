@@ -100,7 +100,7 @@ configuration:
   type: 16
 - additionalinfo: If you don't want to ingest rejected/resolved/closed incidents then set it to False. Otherwise incidents will ingested with auto-closed=True
   defaultvalue: "true"
-  display: Ingest Rejected/Resolved/Closed Incidents
+  display: Ingest Closed / Auto-rejected Alerts
   name: ingestClosedIncidents
   required: false
   type: 8
