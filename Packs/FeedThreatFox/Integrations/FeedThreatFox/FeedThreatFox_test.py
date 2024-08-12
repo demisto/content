@@ -42,8 +42,6 @@ test_check_params_good_arguments_data = [
     ({'malware': "Cobalt Strike", 'limit': 10},  # case malware without limit (limit is needed, there is a default value)
      ('malware')),  # expected
 ]
-
-
 @pytest.mark.parametrize('query_args, expected_result', test_check_params_good_arguments_data)
 def test_check_args_good_arguments(query_args, expected_result):
     """

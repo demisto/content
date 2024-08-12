@@ -241,6 +241,10 @@ def tags(indicator: dict, with_ports: bool) -> List[str]:
 
 def get_value(indicator) -> str:
     """Returns the value of the indicator.
+    For example, when indicator is: {'id': '123', 'ioc': '1.1.1.1:80', 'ioc_type': 'ip:port'}
+    then returned value will be '1.1.1.1'.
+    When indicator is: {'id': '456', 'ioc': 'habbkj', 'ioc_type': 'sha1_hash'}
+    then returned value will be 'habbkj'.
     """
     if indicator.get('ioc_type') == 'ip:port':
         return indicator.get('ioc').split(':')[0]
