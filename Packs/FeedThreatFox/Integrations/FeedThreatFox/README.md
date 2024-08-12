@@ -1,5 +1,5 @@
 Use the ThreatFox Feed integration to fetch indicators from the feed.
-This integration was integrated and tested with version xx of ThreatFox Feed.
+This integration was integrated and tested with version 6.0.3 of ThreatFox Feed.
 
 ## Configure ThreatFox Feed on Cortex XSOAR
 
