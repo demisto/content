@@ -1,3 +1,4 @@
+from pydoc import cli
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from keepercommander import api
@@ -12,9 +13,14 @@ from keepercommander.proto import APIRequest_pb2
 VENDOR = "Keeper"
 PRODUCT = "Secrets Manager"
 LOG_LINE = f"{VENDOR}_{PRODUCT}:"
-DEFAULT_MAX_FETCH = 1000
+DEFAULT_MAX_FETCH = 10000
 API_MAX_FETCH = 1000
 SESSION_TOKEN_TTL = 3600  # In seconds
+REGISTRATION_FLOW_MESSAGE = (
+    "In order to authorize the instance, first run the command `!ksm-event-collector-register-start`."
+    " A code will be sent to your email, copy it and paste that value in the command"
+    " `!ksm-event-collector-register-complete` as an argument to finish the process."
+)
 
 """ Fetch Events Classes"""
 LAST_RUN = "Last Run"
@@ -265,7 +271,7 @@ class Client:
             )
         elif resp.loginState == APIRequest_pb2.REQUIRES_AUTH_HASH:  # type: ignore
             raise DemistoException(
-                "Device is already registered, try running the 'ksm-event-collector-auth-complete'"
+                "Device is already registered, try running the 'ksm-event-collector-register-complete'"
                 " command without supplying a code argument."
             )
         else:
@@ -369,16 +375,12 @@ class Client:
         }
         return api.communicate(self.keeper_params, request_query)
 
-
-def test_module() -> None:
-    raise DemistoException(
-        "In order to authorize the instance, first run the command `!ksm-event-collector-auth-start`."
-        " A code will be sent to your email, copy it and paste that value in the command"
-        " `!ksm-event-collector-auth-complete` as an argument to finish the process."
-    )
-
-
-""" MAIN FUNCTION """
+    def test_registration(self) -> None:
+        demisto.debug(f"{type(self.keeper_params.session_token)}=")
+        if not self.keeper_params.session_token:
+            demisto.debug("No session token configured")
+            raise DemistoException(REGISTRATION_FLOW_MESSAGE)
+        self.query_audit_logs(limit=1, start_event_time=0)
 
 
 def load_json(path: str):
@@ -403,7 +405,6 @@ def get_audit_logs(
         audit_events_count = len(audit_events)
         demisto.debug(f"{LOG_LINE} got {audit_events_count} events from API")
         if audit_events:
-            # dedup
             dedupped_audit_events = dedup_events(audit_events, fetched_ids)
             dedupped_events_count = len(dedupped_audit_events)
             demisto.debug(f"{LOG_LINE} Events count after dedup {dedupped_events_count}")
@@ -420,6 +421,11 @@ def get_audit_logs(
                     for audit_event in dedupped_audit_events
                     if int(audit_event["created"]) == start_time_to_fetch
                 }
+                # Last run of pagination, avoiding endless loop if all page has the same time.
+                # We do not have other eay to handle this case.
+                if start_event_time == start_time_to_fetch:
+                    demisto.debug("Got equal start and end time, this was the last page.")
+                    continue_fetching = False
             else:
                 continue_fetching = False
         else:
@@ -427,9 +433,11 @@ def get_audit_logs(
     demisto.setLastRun({"last_fetch_epoch_time": str(start_time_to_fetch), "last_fetch_ids": list(fetched_ids)})
     return events_to_return
 
+
 def add_time_to_events(audit_events: list[dict[str, Any]]):
     for audit_event in audit_events:
-        audit_event['_time'] = audit_event['created']
+        audit_event["_time"] = audit_event["created"]
+
 
 def dedup_events(audit_events: list[dict[str, Any]], last_fetched_ids: set[str]) -> list[dict[str, Any]]:
     dedupped_audit_events = list(
@@ -463,15 +471,23 @@ def start_login_command(client: Client):
     client.start_login()
     return CommandResults(readable_output="Code was sent successfully to the user's email")
 
+
 def complete_login_command(client: Client, code: str):
     client.complete_login(code=code)
     return CommandResults(readable_output="Login completed")
 
+
 def test_authorization(
     client: Client,
 ) -> CommandResults:
-    print(client.query_audit_logs(limit=1, start_event_time=0))
+    client.test_registration()
     return CommandResults(readable_output="Successful connection.")
+
+
+def test_module() -> str:
+    # We are unable to use client.test_registration(), since the method uses the integration context
+    # and when we are running test-module, we don't have access to it
+    raise DemistoException(REGISTRATION_FLOW_MESSAGE)
 
 
 def main() -> None:
@@ -492,15 +508,15 @@ def main() -> None:
         password=password,
     )
     client.refresh_session_token_if_needed()
-    demisto.debug(f"Come one work Command being called is {demisto.command()}")
+    demisto.debug(f"Command being called is {demisto.command()}")
     try:
         if command == "test-module":
             return_results(test_module())
-        elif command == "ksm-event-collector-auth-start":
+        elif command == "ksm-event-collector-register-start":
             return_results(start_login_command(client=client))
-        elif command == "ksm-event-collector-auth-complete":
+        elif command == "ksm-event-collector-register-complete":
             return_results(complete_login_command(client=client, code=args.get("code", "")))
-        elif command == "ksm-event-collector-auth-test":
+        elif command == "ksm-event-collector-register-test":
             return_results(test_authorization(client=client))
         elif command == "fetch-events":
             last_run = demisto.getLastRun()
