@@ -3436,7 +3436,7 @@ def get_attachments_entries_for_fetched_incident(
         if (incident_modified_date
             and (attachment_created_date := dateparser.parse(attachment_metadata.get('created', ''),
                                                              settings={'TIMEZONE': user_timezone_name}))
-                and attachment_created_date < incident_modified_date):
+                and attachment_created_date <= incident_modified_date):
             demisto.debug(f"The attachment with the id {attachment_metadata.get('id', '')} was created before the incident"
                           f" was modified, therefore, it will not be fetched.")
             continue
