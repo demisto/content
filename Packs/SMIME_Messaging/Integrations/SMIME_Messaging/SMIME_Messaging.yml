@@ -44,7 +44,7 @@ script:
     - description: The message body to encrypt.
       name: message
       required: true
-    description: |- 
+    description: |-
       Deprecated. Use smime-sign-and-encrypt instead.
       Encrypts an email message with S/MIME protocol by using a public RSA certificate.
     name: smime-encrypt-email-body
@@ -158,7 +158,7 @@ script:
     - contextPath: SMIME.SignedAndEncrypted.FileName
       description: Name of the file output if create_file_p7 is used.
       type: String
-  dockerimage: demisto/m2crypto:1.0.0.107193
+  dockerimage: demisto/m2crypto:1.0.0.108031
   runonce: false
   script: '-'
   type: python

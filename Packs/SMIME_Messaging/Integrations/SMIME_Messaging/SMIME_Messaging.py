@@ -398,12 +398,12 @@ def encrypt_email_body(client: Client, args: dict):
     )
 
 
-def verify(client: Client, args: dict):
+def verify(client: Client, args: dict) -> List[CommandResults]:
     """ Verify the signature
 
     Args:
-        client: Client
-        args: Dict
+        client (Client): The client instance.
+        args (dict): The arguments for verification.
 
     """
     signed_message = demisto.getFilePath(args.get('signed_message'))
@@ -417,12 +417,13 @@ def verify(client: Client, args: dict):
         sk.push(X509.load_cert(client.public_key_file))
         st.load_info(client.public_key_file)
     elif cert:
-        public_key_file = NamedTemporaryFile(delete=False)
-        public_key_file.write(bytes(cert, 'utf-8'))
-        public_key_file.close()
-        sk.push(X509.load_cert(public_key_file.name))
-        st.load_info(public_key_file.name)
-        os.unlink(public_key_file.name)
+        with NamedTemporaryFile(delete=False) as public_key_file:
+            public_key_file.write(cert.encode('utf-8'))
+            public_key_file_name = public_key_file.name
+
+        sk.push(X509.load_cert(public_key_file_name))
+        st.load_info(public_key_file_name)
+        os.unlink(public_key_file_name)
 
     client.smime.set_x509_stack(sk)
     client.smime.set_x509_store(st)
@@ -431,29 +432,29 @@ def verify(client: Client, args: dict):
         if not isinstance(result, tuple):
             raise DemistoException('SMIME error while loading message')
         p7, data = result
-        v = client.smime.verify(p7, data, flags=SMIME.PKCS7_NOVERIFY)
-        human_readable = f'The signature verified\n\n{v}'
+        verified_data = client.smime.verify(p7, data, flags=SMIME.PKCS7_NOVERIFY)
+        human_readable = f'The signature verified\n\n{verified_data}'
 
     except SMIME.SMIME_Error as e:
 
-        if str(e) == 'no content type':  # If no content type; see if we can process as DER format
+        if str(e) == 'no content type':
             demisto.debug('No content type found in message, testing if it is in DER format (binary)')
             with open(signed_message['path'], 'rb') as message_file:
                 p7data = message_file.read()
             p7bio = BIO.MemoryBuffer(p7data)
             p7 = SMIME.load_pkcs7_bio_der(p7bio)
-            v = client.smime.verify(p7, flags=SMIME.PKCS7_NOVERIFY)
-            return_results(fileResult(f'unwrapped-{signed_message["name"]}', v))
+            verified_data = client.smime.verify(p7, flags=SMIME.PKCS7_NOVERIFY)
+            return_results(fileResult(f'unwrapped-{signed_message["name"]}', verified_data))
             human_readable = 'The signature verified\n\n'
         else:
             raise e
 
-    if not v:
+    if not verified_data:
         raise ValueError('Unknown error: failed to verify message')
-    msg = v.decode('utf-8')
+    msg = verified_data.decode('utf-8')
     msg_out = msg
     if not raw_output:  # Return message after parsing html/images/attachments
-        demisto.debug(f'parsing message:\n\n{msg}')
+        demisto.debug(f'Parsing message:\n\n{msg}')
         msg_out, email_type = parse_multipart_message(msg)
         if email_type == 'html':
             human_readable = 'The signature verified'
@@ -499,18 +500,18 @@ def decode_str(decrypted_text: bytes, encoding: str) -> tuple[str, str]:
     return out, msg
 
 
-def decrypt_email_body(client: Client, args: dict):
-    """ Decrypt the message
+def decrypt_email_body(client: Client, args: dict) -> List[CommandResults]:
+    """Decrypt the message
 
     Args:
-        client: Client
-        args: Dict
+        client (Client): The client instance.
+        args (Dict): The arguments for decryption.
     """
     if 'test_file_path' in args:  # test module
         encrypt_message = {'path': args.get('test_file_path', '')}
     else:
         encrypt_message = demisto.getFilePath(args.get('encrypt_message', ''))
-        demisto.debug(f'\n\nFile Name:{encrypt_message["name"]}; Type:{type(encrypt_message["name"])}\n\n')
+        demisto.debug(f'File Name:{encrypt_message["name"]}; Type:{type(encrypt_message["name"])}')
 
     encoding = args.get('encoding', '')
     raw_output = argToBoolean(args.get('raw_output', 'false'))
@@ -574,7 +575,13 @@ def decrypt_email_body(client: Client, args: dict):
     return results
 
 
-def sign_and_encrypt(client: Client, args: dict):
+def sign_and_encrypt(client: Client, args: dict) -> CommandResults:
+    """Sign and encrypt the message
+
+    Args:
+        client (Client): The client instance.
+        args (Dict): The arguments for signing and encrypting.
+    """
     message = args.get('message', '')
     sign = argToBoolean(args.get('signed', 'true'))
     encrypt = argToBoolean(args.get('encrypted', 'true'))
@@ -604,7 +611,7 @@ def sign_and_encrypt(client: Client, args: dict):
         p7 = client.smime.sign(msg_bio, algo='sha256')
 
     if encrypt:
-        pub_certs = [cert for dest in [recipients, cc, bcc] for cert in dest.values()]  # all keys are used the same
+        pub_certs = [cert for dest in [recipients, cc, bcc] for cert in dest.values()]  # Consolidate all recipient certificates
         set_encryption_params(client, pub_certs)
 
         msg_bio = BIO.MemoryBuffer()
@@ -646,14 +653,23 @@ def sign_and_encrypt(client: Client, args: dict):
 def test_module(client, *_):
     message_body = 'testing'
     try:
+        # Encrypt the message
         encrypted_out = sign_and_encrypt(client, {'message': message_body, 'signed': 'false'}).to_context()
         encrypted_msg = encrypted_out['EntryContext']['SMIME.SignedAndEncrypted']['Message']
-        test_file = NamedTemporaryFile(delete=False)
-        test_file.write(bytes(encrypted_msg, 'utf-8'))
-        test_file.close()
-        decrypt_out = decrypt_email_body(client, {'test_file_path': test_file.name})[0].to_context()
-        if message_body in decrypt_out['HumanReadable']:
+
+        # Write the encrypted message to a temporary file
+        with NamedTemporaryFile(delete=False) as test_file:
+            test_file.write(bytes(encrypted_msg, 'utf-8'))
+            test_file_name = test_file.name
+
+        # Decrypt the message
+        decrypt_out = decrypt_email_body(client, {'test_file_path': test_file_name})[0].to_context()
+        decrypted_msg = decrypt_out['HumanReadable']
+        if message_body in decrypted_msg:
             demisto.results('ok')
+        else:
+            raise Exception
+
     except Exception:
         return_error('''Failed to encrypt->decrypt using the provided credentials.
                      Verify that the provided keys are valid and matching.''')
