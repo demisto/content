@@ -2424,7 +2424,7 @@ def parse_batch_of_results(current_batch_of_results, max_results_to_add, app):
     return parsed_batch_results, batch_dbot_scores
 
 
-def handle_failed_job(job):
+def raise_error_for_failed_job(job):
     """
     Handle the case that the search job failed due to dome reason like parsing issues etc
     raise DemistoException in case there is a fatal error in the search job.
@@ -2462,7 +2462,7 @@ def splunk_search_command(service: client.Service, args: dict) -> CommandResults
         search_job = service.jobs.create(query, **search_kwargs)
         job_sid = search_job["sid"]
         args['sid'] = job_sid
-        handle_failed_job(search_job)
+        raise_error_for_failed_job(search_job)
 
     status_cmd_result: CommandResults | None = None
     if polling:
