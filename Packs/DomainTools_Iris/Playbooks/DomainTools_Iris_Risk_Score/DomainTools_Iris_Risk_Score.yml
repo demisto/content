@@ -8,15 +8,15 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 35d84c5a-14d2-4327-8e4b-cdc99abcade8
+    taskid: c2779e16-988b-4195-83ad-73b33c53c1a8
     type: start
     task:
-      id: 35d84c5a-14d2-4327-8e4b-cdc99abcade8
+      id: c2779e16-988b-4195-83ad-73b33c53c1a8
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
+      description: ""
     nexttasks:
       '#none#':
       - "2"
@@ -37,10 +37,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 0a48240b-2885-4f7b-8da6-30c37fbdce3e
+    taskid: 08b08446-929b-441c-81ea-bcf87d579a9e
     type: regular
     task:
-      id: 0a48240b-2885-4f7b-8da6-30c37fbdce3e
+      id: 08b08446-929b-441c-81ea-bcf87d579a9e
       version: -1
       name: Lookup Domain
       description: Returns a complete profile of the domain (SLD.TLD) using Iris Investigate. If parsing of FQDNs is desired, see domainExtractAndInvestigate.
@@ -73,16 +73,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 7847d81f-0488-4c08-8d37-a99e6c195fb2
+    taskid: be4768c6-16e0-4ff8-81da-f6049550209d
     type: condition
     task:
-      id: 7847d81f-0488-4c08-8d37-a99e6c195fb2
+      id: be4768c6-16e0-4ff8-81da-f6049550209d
       version: -1
       name: Is there any domain over the risk score threshold?
       type: condition
       iscommand: false
-      description: ""
       brand: ""
+      description: ""
     nexttasks:
       '#default#':
       - "6"
@@ -118,10 +118,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 518d25e8-536a-4b55-8b23-4c29f854e800
+    taskid: 1a415462-d6bd-4e24-8e2f-590ca8f4f124
     type: regular
     task:
-      id: 518d25e8-536a-4b55-8b23-4c29f854e800
+      id: 1a415462-d6bd-4e24-8e2f-590ca8f4f124
       version: -1
       name: Add High Risk Domain(s) to Indicators
       description: Sets Data for a Domain in the Indicator Table.
@@ -163,22 +163,22 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: ad4b9ed8-0a46-4323-8650-85bb5d34ad6d
+    taskid: 41bbfbb5-1c50-4a96-82f1-f13be8ae64cd
     type: title
     task:
-      id: ad4b9ed8-0a46-4323-8650-85bb5d34ad6d
+      id: 41bbfbb5-1c50-4a96-82f1-f13be8ae64cd
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
-      description: ''
+      description: ""
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 152.5,
-          "y": 1060
+          "y": 1150
         }
       }
     note: false
@@ -190,10 +190,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 2d1be531-1663-4eff-8496-6721e1de1bce
+    taskid: aff9d379-4bea-4635-8f3b-34143a36b265
     type: condition
     task:
-      id: 2d1be531-1663-4eff-8496-6721e1de1bce
+      id: aff9d379-4bea-4635-8f3b-34143a36b265
       version: -1
       name: Should wait for an analyst review?
       type: condition
@@ -230,16 +230,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 7ae4ed37-2737-4c52-8fe5-8f5258bab4e2
+    taskid: 5affb93c-4947-426b-8466-ee2f214fca1c
     type: collection
     task:
-      id: 7ae4ed37-2737-4c52-8fe5-8f5258bab4e2
+      id: 5affb93c-4947-426b-8466-ee2f214fca1c
       version: -1
       name: Select Domains to Add as Indicator
       type: collection
       iscommand: false
-      description: ""
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "11"
@@ -249,7 +249,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 720
+          "y": 810
         }
       }
     note: false
@@ -310,10 +310,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: a91240ea-b2aa-416f-8862-a9ea374c3490
+    taskid: 3394381d-83f4-435e-86db-0731d893b2c0
     type: regular
     task:
-      id: a91240ea-b2aa-416f-8862-a9ea374c3490
+      id: 3394381d-83f4-435e-86db-0731d893b2c0
       version: -1
       name: Add Selected High Risk Score Domain(s) to Indicators
       description: Sets Data for a Domain in the Indicator Table.
@@ -343,7 +343,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 895
+          "y": 955
         }
       }
     note: false
@@ -358,7 +358,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1075,
+        "height": 1165,
         "width": 940,
         "x": -80,
         "y": 50
@@ -367,8 +367,7 @@ view: |-
   }
 inputs:
 - key: domains
-  value:
-    simple: ''
+  value: {}
   required: true
   description: "The domain(s) to query. Can lookup multiple domains using a comma-separated values. \n\ne.g mydomain1.com,mydomain2.com"
   playbookInputQuery:
