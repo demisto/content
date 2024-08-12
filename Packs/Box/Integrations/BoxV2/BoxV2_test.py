@@ -630,7 +630,7 @@ def test_upload_file_command_with_chunks(requests_mock, mocker):
         'as_user': '0'
     }
 
-    response = upload_file_command(client, args)
+    response = upload_file_command(args, client)
 
     # Validate request to open a session
     assert requests_mock.request_history[0].headers.get('Authorization') == "Bearer JWT_TOKEN"
@@ -699,7 +699,7 @@ def test_test_upload_file_command_small_file(requests_mock, mocker):
         'as_user': '0'
     }
 
-    response = upload_file_command(client, args)
+    response = upload_file_command(args, client)
 
     # Validate request to open a session
     assert requests_mock.request_history[0].headers.get('Authorization') == "Bearer JWT_TOKEN"

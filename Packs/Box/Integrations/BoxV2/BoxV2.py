@@ -1497,14 +1497,13 @@ def list_users_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     interval=arg_to_number(demisto.args().get('retry_after') or 30),
     poll_message='Uploading file to Box'
 )
-def upload_file_command(client: Client, args: Dict[str, Any]) -> PollResult:
+def upload_file_command(args: Dict[str, Any], client: Client) -> PollResult:
     """
     Uploads a file to Box. For files with a size over the set limit, the file will be uploaded in
     chunks. For files which are under the limit, they will be submitted using a POST request.
 
+    :param args: demisto.args() dictionary - Used to pass the necessary arguments to the client function.
     :param client: Client - Initialized Client object.
-    :param args: demisto.args() dictionary - Used to pass the necessary arguments to the client
-    function.
     :return: CommandResults - Returns a CommandResults object which is consumed by the
     return_results function in main()
     """
