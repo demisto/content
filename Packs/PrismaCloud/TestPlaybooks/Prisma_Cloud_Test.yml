@@ -1,5 +1,5 @@
 id: Prisma Cloud V2 Test
-version: 15
+version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: Prisma Cloud V2 Test
 description: Test for Prisma Cloud V2.
