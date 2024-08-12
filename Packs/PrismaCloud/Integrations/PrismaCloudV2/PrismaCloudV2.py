@@ -55,7 +55,6 @@ PAGE_SIZE_DEFAULT_VALUE = 50
 PAGE_SIZE_MAX_VALUE = 10000
 
 DEFAULT_LIMIT = '50'
-ACCESS_KEYS_LIST_DEFAULT_LIMIT = '50'
 
 PRISMA_TO_XSOAR_SEVERITY = {
     'critical': IncidentSeverity.CRITICAL,
@@ -2132,7 +2131,7 @@ def get_access_keys_list(client: Client, args: Dict[str, Any]) -> CommandResults
     - CommandResults: An object containing the raw response and table representation of the access key list.
     """
     access_keys = client.get_access_keys_list()
-    limit = int(args.get('limit', ACCESS_KEYS_LIST_DEFAULT_LIMIT))
+    limit = int(args.get('limit', DEFAULT_LIMIT))
     limited_access_keys_list = access_keys[:limit]
     for access_key in limited_access_keys_list:
         access_key['createdTs'] = timestamp_to_datestring(access_key.get('createdTs'), DATE_FORMAT)
@@ -2146,6 +2145,7 @@ def get_access_keys_list(client: Client, args: Dict[str, Any]) -> CommandResults
                                      headers=['id', 'name', 'createdBy', 'createdTs', 'lastUsedTime', 'status',
                                               'expiresOn', 'roleId', 'roleName', 'roleType', 'username'],
                                      headerTransform=pascalToSpace)
+
     return CommandResults(
         outputs_prefix="PrismaCloud.AccessKeys",
         outputs_key_field='id',
