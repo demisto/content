@@ -1831,11 +1831,11 @@
         {
             "integrations": [
                 "SMIME Messaging",
-                "Mail Sender (New)"
+                "EWS v2"
             ],
             "instance_names": [
-                "Mail_Sender_(New)_STARTTLS",
-                "SMIME Messaging"
+                "SMIME Messaging",
+                "ews_mail_sender_labdemisto"
             ],
             "playbookID": "SMIME_Messaging-Test"
         },

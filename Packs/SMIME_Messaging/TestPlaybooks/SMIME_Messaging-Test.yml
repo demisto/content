@@ -160,23 +160,25 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 412e36e4-b283-4596-8da2-cbbe24e8e7f7
+    taskid: 4e40e920-c2ca-413b-84e1-0a9d33e866f2
     type: regular
     task:
-      id: 412e36e4-b283-4596-8da2-cbbe24e8e7f7
+      id: 4e40e920-c2ca-413b-84e1-0a9d33e866f2
       version: -1
       name: Send mail
-      description: Send an email.
-      script: Mail Sender (New)|||send-mail
+      description: Sends an email using EWS.
+      script: '|||send-mail'
       type: regular
       iscommand: true
-      brand: Mail Sender (New)
+      brand: ""
     nexttasks:
       '#none#':
       - "3"
     scriptarguments:
       raw_message:
         simple: ${SMIME.SignedAndEncrypted.Message}
+      subject:
+        simple: SMIME Test subject
       to:
         simple: ${inputs.recipient}
     separatecontext: false
