@@ -51,11 +51,12 @@ configuration:
   required: false
 - defaultvalue: 0
   display: 'Advanced: Minutes to look back when fetching'
-  additionalinfo: Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created.
+  additionalinfo: Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did indexed on time.
   name: look_back
   type: 0
   required: false
   advanced: true
+  section: Collect
 - display: Entry Categories
   name: categories
   defaultvalue: notes,chats,attachments
