@@ -1861,7 +1861,7 @@ script:
     description: Batch retrieve specic tags by their ids
   isfetch: true
 fromversion: 5.0.0
-defaultmapperin:  Digital Shadows Incident Mapper
+defaultmapperin: Digital Shadows Incident Mapper
 defaultclassifier: Digital Shadows Incident Classifier
 tests:
 - No tests (auto formatted)
