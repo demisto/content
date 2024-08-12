@@ -11,7 +11,7 @@ import secrets
 import jwt
 import re
 from distutils.util import strtobool
-from datetime import timezone
+from datetime import UTC
 from typing import Any, Dict, Tuple, List, Optional, BinaryIO
 from requests.models import Response
 from hashlib import sha1
@@ -604,7 +604,7 @@ class Client(BaseClient):
             yield data
 
     def chunk_upload(self, file_name: Optional[str], file_size: int, file_path: str,
-                     folder_id: Optional[str], as_user: Optional[str]):
+                     folder_id: Optional[str], as_user: Optional[str]) -> tuple:
         """
         Handles the uploading of the file parts to the session endpoint. Box requires a SHA1 digest
         hash to be included as part of the request headers. This function handles that as it
@@ -622,6 +622,8 @@ class Client(BaseClient):
                                                    the request made to commit the file once it has
                                                    been uploaded.
         """
+        self._base_url = 'https://upload.box.com/api/2.0'
+        #  Because of _course_ they have a separate base_url for uploads
         upload_session_data = self._create_upload_session(file_name=file_name, file_size=file_size,
                                                           folder_id=folder_id, as_user=as_user)
         session_id: str = upload_session_data.get('id')  # type:ignore
@@ -667,6 +669,8 @@ class Client(BaseClient):
                                           only after requesting the upload session)
         :return: Response object containing the results of the upload session.
         """
+        self._base_url = 'https://upload.box.com/api/2.0'
+        #  Because of _course_ they have a separate base_url for uploads
         with open(file_path, 'rb') as file_obj:
             final_sha = sha1()  # nosec
             final_sha.update(file_obj.read())
@@ -686,7 +690,7 @@ class Client(BaseClient):
         )
 
     def upload_file(self, entry_id: str, file_name: Optional[str] = None, folder_id: Optional[str] = None,
-                    as_user: Optional[str] = None) -> dict | tuple:
+                    as_user: Optional[str] = None) -> dict:
         """
         Main function used to handle the `box-upload-file` command. Box enforces size limitations
         which determines which endpoint is used to upload a file. for files under 50MB, the generic
@@ -696,43 +700,27 @@ class Client(BaseClient):
         :param file_name: str - Name which the file will be saved as. Must contain an extension.
         :param folder_id: str - The UUID of the folder which the file will be contained in.
         :param as_user: str - The ID of the user making the request.
-        :return: dict containing the results of the upload request or
-            commit info for next interation (in case the file is nt ready yet).
+        :return: dict containing the results of the upload request.
         """
         self._base_url = 'https://upload.box.com/api/2.0'
         #  Because of _course_ they have a separate base_url for uploads
-        maximum_chunk_size = 20000000
         demisto_file_object = demisto.getFilePath(entry_id)
-        if not file_name:
-            file_name = demisto_file_object.get('name')
-        #  Box requires files to have a file extension. We validate that here.
-        if '.' not in file_name:  # type: ignore
-            raise DemistoException('A file extension is required in the filename.')
         file_path = demisto_file_object.get('path')
-        file_size = os.path.getsize(file_path)
-        if file_size > maximum_chunk_size:
-            parts, upload_url_suffix = self.chunk_upload(file_name, file_size, file_path, folder_id, as_user)
-            response = self.commit_file(file_path, as_user, parts, upload_url_suffix)
-            if response.status_code == 200:
-                return response.json()
-            else:
-                return file_path, as_user, parts, upload_url_suffix
-        else:
-            with open(file_path, 'rb') as file:
-                validated_as_user = self.handle_as_user(as_user_arg=as_user)
-                self._headers.update({'As-User': validated_as_user})
-                upload_url_suffix = '/files/content'
-                attributes = {
-                    'name': file_name,
-                    'parent': {'id': folder_id}
-                }
-                data = {'attributes': json.dumps(attributes)}
-                files = {'file': ('unused', file)}
+        with open(file_path, 'rb') as file:
+            validated_as_user = self.handle_as_user(as_user_arg=as_user)
+            self._headers.update({'As-User': validated_as_user})
+            upload_url_suffix = '/files/content'
+            attributes = {
+                'name': file_name,
+                'parent': {'id': folder_id}
+            }
+            data = {'attributes': json.dumps(attributes)}
+            files = {'file': ('unused', file)}
             return self._http_request(
                 method='POST',
                 url_suffix=upload_url_suffix,
                 data=data,
-                files=files,
+                files=files
             )
 
     def trashed_items_list(self, as_user: str, limit: int, offset: int):
@@ -1508,7 +1496,7 @@ def list_users_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-@polling_function('box-upload-file')
+@polling_function('box-upload-file', interval=arg_to_number(demisto.args().get('retry_after') or 30))
 def upload_file_command(client: Client, args: Dict[str, Any]) -> PollResult:
     """
     Uploads a file to Box. For files with a size over the set limit, the file will be uploaded in
@@ -1524,25 +1512,47 @@ def upload_file_command(client: Client, args: Dict[str, Any]) -> PollResult:
     file_name: str = args.get('file_name')  # type:ignore
     folder_id: str = args.get('folder_id')  # type:ignore
     as_user: str = args.get('as_user')  # type:ignore
-    response: dict | tuple = client.upload_file(entry_id=entry_id, file_name=file_name, folder_id=folder_id, as_user=as_user)
 
-    if isinstance(response, tuple):
-        retry_after = response.headers['Retry-After']
-        readable_message = f'All file chunks have been uploaded but not yet processed will try to commit in {retry_after} seconds.'
-        command_results = CommandResults(
-            readable_output=readable_message
-        )
-        return PollResult(command_results, continue_to_poll=True)
-    else:
-        response_json = response.json()
+    maximum_chunk_size = 20000000
+    demisto_file_object = demisto.getFilePath(entry_id)
+    file_name = file_name or demisto_file_object.get('name')
+    file_path = demisto_file_object.get('path')
+    file_size = os.path.getsize(file_path)
+    #  Box requires files to have a file extension. We validate that here.
+    if '.' not in file_name:  # type: ignore
+        raise DemistoException('A file extension is required in the filename.')
+
+    if file_size < maximum_chunk_size:
+        response: dict = client.upload_file(entry_id=entry_id, file_name=file_name, folder_id=folder_id, as_user=as_user)
         command_results = CommandResults(
             readable_output="File was successfully uploaded",
             outputs_prefix='Box.File',
             outputs_key_field='id',
-            outputs=response_json.get('entities')
+            outputs=response.get('entities')
         )
         return PollResult(response=command_results)
+    else:
+        parts, upload_url_suffix = client.chunk_upload(file_name, file_size, file_path, folder_id, as_user)
+        response: Response = client.commit_file(file_path, as_user, parts, upload_url_suffix)
 
+        if response.status_code == 202:
+            retry_after = response.headers['retry-after'] or 30
+            readable_message = f'All file chunks have been uploaded but not yet processed will try to commit in {retry_after} seconds'
+            command_results = CommandResults(
+                readable_output=readable_message
+            )
+            args_for_next_run = {'retry_after': retry_after, 'file_path': file_path, 'as_user': as_user, 'parts': parts,
+                                 'upload_url_suffix': upload_url_suffix}
+            return PollResult(command_results, continue_to_poll=True, args_for_next_run=args_for_next_run)
+        else:
+            response_json = response.json()
+            command_results = CommandResults(
+                readable_output="File was successfully uploaded",
+                outputs_prefix='Box.File',
+                outputs_key_field='id',
+                outputs=response_json.get('entities')
+            )
+            return PollResult(response=command_results)
 
 def trashed_items_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
@@ -1950,7 +1960,7 @@ def test_module(client: Client, params: dict, first_fetch_time: int) -> str:
         if not params.get('as_user'):
             raise DemistoException("In order to use fetch, a User ID for Fetching Incidents is "
                                    "required.")
-        created_after = datetime.fromtimestamp(first_fetch_time, tz=timezone.utc).strftime(DATE_FORMAT)  # noqa: UP017
+        created_after = datetime.fromtimestamp(first_fetch_time, tz=UTC).strftime(DATE_FORMAT)
         response = client.list_events(
             as_user=params.get('as_user'),  # type:ignore
             created_after=created_after,
@@ -1979,11 +1989,11 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
     created_after = last_run.get('time', None)
     incidents = []
     if not created_after:
-        created_after = datetime.fromtimestamp(first_fetch_time, tz=timezone.utc).strftime(DATE_FORMAT)  # noqa: UP017
+        created_after = datetime.fromtimestamp(first_fetch_time, tz=UTC).strftime(DATE_FORMAT)
     results = client.list_events(stream_type='admin_logs', as_user=as_user, limit=max_results,
                                  created_after=created_after)
     raw_incidents = results.get('entries', [])
-    next_run = datetime.now(tz=timezone.utc).strftime(DATE_FORMAT)  # noqa: UP017
+    next_run = datetime.now(tz=UTC).strftime(DATE_FORMAT)
     for raw_incident in raw_incidents:
         event = Event(raw_input=raw_incident)
         xsoar_incident = event.format_incident()

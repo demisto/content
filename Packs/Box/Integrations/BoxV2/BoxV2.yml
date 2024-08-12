@@ -1467,6 +1467,18 @@ script:
     - description: The ID of the folder the file is being uploaded to. Default is "0/root".
       name: folder_id
       required: true
+    - description: The number of seconds until the next run, Used for the polling command.
+      name: retry_after
+      hidden: true
+    - description: The path of the file, Used for the polling command.
+      name: file_path
+      hidden: true
+    - description: The parts of the file (the file where divide py parts during the upload), Used for the polling command.
+      name: parts
+      hidden: true
+    - description: The upload url suffix (the session of uploading the file), Used for the polling command.
+      name: upload_url_suffix
+      hidden: true
     description: Uploads a file to the given folder.
     name: box-upload-file
     polling: true
