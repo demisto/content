@@ -2139,6 +2139,8 @@ def get_access_keys_list(client: Client, args: Dict[str, Any]) -> CommandResults
         access_key['lastUsedTime'] = timestamp_to_datestring(access_key.get('lastUsedTime'), DATE_FORMAT)
         access_key['expiresOn'] = timestamp_to_datestring(access_key.get('expiresOn'), DATE_FORMAT) if access_key.get(
             'expiresOn') != 0 else ''
+        access_key['roleId'] = access_key.get('role', {}).get('id', '')
+        access_key['roleName'] = access_key.get('role', {}).get('name', '')
 
     markdown_table = tableToMarkdown('PrismaCloud Access Keys', limited_access_keys_list,
                                      headers=['id', 'name', 'createdBy', 'createdTs', 'lastUsedTime', 'status',
