@@ -341,8 +341,9 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict[str, Union[
     """
     demisto.debug(f'last run is: {last_run}')
 
-    demisto.debug(f"Getting start time for fetch with look_back {look_back=}")
-    start_fetch_time, end_fetch_time = get_start_time_for_fetch(last_fetch, first_fetch_time, look_back)
+    demisto.debug(f"XSOAR Mirroring: Getting start time for fetch with look_back {look_back=}")
+    start_fetch_time, end_fetch_time = get_fetch_run_time_range(last_run, first_fetch_time, look_back, 0, XSOAR_DATE_FORMAT)
+    demisto.debug(f"XSOAR Mirroring: {start_fetch_time=}, {end_fetch_time=}")
     max_results = last_run.get('limit') or max_results
 
     incidents_result: list[dict[str, Any]] = []
