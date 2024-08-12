@@ -418,7 +418,7 @@ script:
     - contextPath: MicrosoftATA.Entity.Profile.UpdateTime
       description: The update time of the entity profile.
       type: Date
-  dockerimage: demisto/ntlm:1.0.0.107312
+  dockerimage: demisto/ntlm:1.0.0.107683
   isfetch: true
   runonce: false
   script: '-'
