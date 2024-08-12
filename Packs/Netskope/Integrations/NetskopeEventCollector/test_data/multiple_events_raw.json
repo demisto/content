@@ -1703,5 +1703,10 @@
                 "userkey": "some@email.com"
             }
         ]
+    },
+    "incident": {
+        "status": "success",
+        "msg": "",
+        "result": [{"timestamp": 1684751416}]
     }
 }
