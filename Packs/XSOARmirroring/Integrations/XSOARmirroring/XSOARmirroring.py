@@ -261,30 +261,6 @@ def test_module(client: Client, first_fetch_time: str) -> str:
             raise e
 
 
-def get_start_time_for_fetch(last_fetch: Union[str, int], first_fetch_time: Union[int, str], look_back: int = 0):
-    now = datetime.utcnow()
-    if not last_fetch:
-        last_fetch = first_fetch_time  # type: ignore
-    else:
-        demisto.debug('Trying to convert the last_fetch to int, and convert it to date string if succeed. '
-                      'This is for preventing backward compatibility breakage.')
-        try:
-            last_fetch = int(last_fetch)
-            last_fetch = datetime.fromtimestamp(last_fetch).strftime(XSOAR_DATE_FORMAT)
-        except Exception:
-            pass
-
-    # if we have look_back, we will look further back beyond the last fetch
-    if look_back and look_back > 0:
-        demisto.debug("look back is greater than 0, calculating start time with look_back")
-        last_fetch_datetime = datetime.strptime(last_fetch, XSOAR_DATE_FORMAT)
-        if now - last_fetch_datetime < timedelta(minutes=look_back):
-            last_run_time = now - timedelta(minutes=look_back)
-            return last_run_time.strftime(XSOAR_DATE_FORMAT), now.strftime(XSOAR_DATE_FORMAT)
-
-    return last_fetch, now.strftime(XSOAR_DATE_FORMAT)
-
-
 def fetch_incidents(client: Client, max_results: int, last_run: dict[str, Union[str, int, list[str]]],
                     last_fetch: Union[str, int],
                     first_fetch_time: Union[int, str], query: str | None, mirror_direction: str,
