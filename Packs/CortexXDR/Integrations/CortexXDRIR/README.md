@@ -47,9 +47,11 @@ You need to collect several pieces of information in order to configure the inte
 4. Copy and paste the key.
 5. From the ID column, copy the Key ID.
 
-*Note*: When Configuring a role for the API Key's permission you can create a custom role or use a builtin.
+*Note 1*: When Configuring a role for the API Key's permission you can create a custom role or use a builtin.
 The highest privileged builtin role is the Instance Admin. 
-For builtin role with less permission but maximum command running abilities, use the `Privileged Responder`.  
+For builtin role with less permission but maximum command running abilities, use the `Privileged Responder`.
+
+*Note 2*: In case of missing updates in mirroring incoming changes from XDR, use the xdr_delay parameter to extend the look-back period. However, be aware that this may result in increased latency when updating incidents.
 
 #### URL
 

@@ -886,7 +886,6 @@ def get_mapping_fields_command():
 
 def get_modified_remote_data_command(client, args, mirroring_last_run:Dict[str, Any] = {}, xdr_delay: int = 1):
     remote_args = GetModifiedRemoteDataArgs(args)
-    demisto.debug('MIRRORING MAIMORAG get_modified_remote_data_command ')
     last_update: str = mirroring_last_run.get('mirroring_last_update', remote_args.last_update)
     last_update_utc = dateparser.parse(last_update,
                                        settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': False})   # convert to utc format
@@ -898,13 +897,10 @@ def get_modified_remote_data_command(client, args, mirroring_last_run:Dict[str, 
         f'Performing get-modified-remote-data command {last_update=} | {gte_modification_time_milliseconds=} |'
         f'{lte_modification_time_milliseconds=}'
     )
-    demisto.debug(f'MIRRORING MAIMORAG get_modified_remote_data_command BEFORE REQUEST {time.strftime=}')
     raw_incidents = client.get_incidents(
         gte_modification_time_milliseconds=gte_modification_time_milliseconds,
         lte_modification_time_milliseconds=lte_modification_time_milliseconds,
         limit=100)
-    demisto.debug(f'MIRRORING MAIMORAG get_modified_remote_data_command AFTER REQUEST {time.strftime=} {raw_incidents=}')
-
     last_run_mirroring = (lte_modification_time_milliseconds + timedelta(milliseconds=1))
     # Format with milliseconds as string, truncate microseconds
     last_run_mirroring_str = last_run_mirroring.replace(tzinfo=pytz.UTC).strftime( # type: ignore
@@ -913,7 +909,6 @@ def get_modified_remote_data_command(client, args, mirroring_last_run:Dict[str, 
     for raw_incident in raw_incidents:
         incident_id = raw_incident.get('incident_id')
         modified_incident_ids.append(incident_id)
-    demisto.debug(f'MIRRORING MAIMORAG get_modified_remote_data_command END {time.strftime=} {modified_incident_ids=}')
     return GetModifiedRemoteDataResponse(modified_incident_ids), last_run_mirroring_str
 
 
