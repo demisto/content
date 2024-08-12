@@ -52,7 +52,7 @@ UNICODE_PASS = u'\U00002714\U0000FE0F'
 BLOCK_IP = 'Block IP'
 VULNERABILITY_PROTECTION = 'Vulnerability Protection Profile'
 ANTI_SPYWARE = 'Anti Spyware Profile'
-predefined_threats = {}
+predefined_threats: List[Dict] = []
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 QUERY_DATE_FORMAT = '%Y/%m/%d %H:%M:%S'
@@ -14212,23 +14212,23 @@ def get_threat_id_from_predefined_threates(threat_name):
     while NUMBER_OF_TRIES > 0:
         for entry in predefined_threats:
             search_keys = []
-            
-            search_keys.append(entry.get('threatname', ''))
-            
-            extracted_id = entry['@name']
+
+            search_keys.append(entry.get("threatname", ""))
+
+            extracted_id = entry["@name"]
             search_keys.append(extracted_id)
-            
-            cves = entry.get('cve', {}).get('member', '')
+
+            cves = entry.get("cve", {}).get("member", "")
             if not isinstance(cves, list):
                 cves = [cves]
             for cve in cves:
                 search_keys.append(cve.lower())
                 search_keys.append(cve.upper())
-            
+
             if threat_name in search_keys:
                 return extracted_id
 
-        # if extracted_id was not found, update predefined threats list and check again
+        # if extracted_id was not found, update predefined threats list and check again ggggggggggggggg
         if not extracted_id:
             predefined_threats = get_predefined_threats_list()
 
