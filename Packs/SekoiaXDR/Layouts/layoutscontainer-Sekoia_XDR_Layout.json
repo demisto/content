@@ -219,8 +219,8 @@
                         "name": "Child Incidents",
                         "static": false,
                         "type": "childInv",
-                        "w": 1,
-                        "x": 1,
+                        "w": 2,
+                        "x": 0,
                         "y": 8
                     },
                     {
@@ -534,23 +534,23 @@
                 "name": "Sekoia Alert",
                 "sections": [
                     {
-                        "h": 4,
+                        "h": 3,
                         "hideName": false,
                         "i": "xwqxiqdriy-field-changed-xwqxiqdriy-caseinfoid-xwqxiqdriy-field-changed-xwqxiqdriy-caseinfoid-xwqxiqdriy-caseinfoid-7bde8760-a95c-11ed-9145-25ddf42500b6",
                         "items": [],
                         "maxH": null,
-                        "maxW": 1,
+                        "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
+                        "minW": 3,
                         "moved": false,
                         "name": "Comments",
                         "query": "SekoiaXDRPrintComments",
                         "queryType": "script",
                         "static": false,
                         "type": "dynamic",
-                        "w": 1,
-                        "x": 1,
-                        "y": 2
+                        "w": 3,
+                        "x": 0,
+                        "y": 4
                     },
                     {
                         "displayType": "ROW",
@@ -669,7 +669,7 @@
                     },
                     {
                         "displayType": "ROW",
-                        "h": 6,
+                        "h": 4,
                         "hideItemTitleOnlyOne": true,
                         "hideName": false,
                         "i": "xwqxiqdriy-field-changed-xwqxiqdriy-caseinfoid-xwqxiqdriy-field-changed-xwqxiqdriy-caseinfoid-xwqxiqdriy-caseinfoid-06bcc2c0-a95d-11ed-9145-25ddf42500b6",
@@ -711,8 +711,8 @@
                         "static": false,
                         "type": "dynamic",
                         "w": 1,
-                        "x": 0,
-                        "y": 4
+                        "x": 1,
+                        "y": 2
                     },
                     {
                         "displayType": "ROW",
