@@ -37,6 +37,7 @@ class MsGraphMailBaseClient(MicrosoftClient):
                  mark_fetched_read: bool = False,
                  look_back: int | None = 0,
                  fetch_html_formatting=True,
+                 legacy_name=False,
                  **kwargs):
         super().__init__(retry_on_rate_limit=True, managed_identities_resource_uri=Resources.graph,
                          command_prefix="msgraph-mail",
@@ -49,6 +50,7 @@ class MsGraphMailBaseClient(MicrosoftClient):
         self._mark_fetched_read = mark_fetched_read
         self._look_back = look_back
         self.fetch_html_formatting = fetch_html_formatting
+        self.legacy_name = legacy_name
 
     @classmethod
     def _build_inline_layout_attachments_input(cls, inline_from_layout_attachments):
@@ -277,11 +279,11 @@ class MsGraphMailBaseClient(MicrosoftClient):
         for attachment in attachments:
 
             attachment_type = attachment.get('@odata.type', '')
-            attachment_identifier_id = attachment.get('contentId')
-            if not attachment_identifier_id or attachment_identifier_id == "None":
-                attachment_identifier_id = attachment.get('id', '')
-            attachment_name = f"{attachment_identifier_id}-attachmentName-{attachment.get('name', 'untitled_attachment')}"
-
+            attachment_content_id = attachment.get('contentId')
+            attachment_is_inline = attachment.get('isInline')
+            attachment_name = attachment.get('name', 'untitled_attachment')
+            if attachment_is_inline and not self.legacy_name and attachment_content_id and attachment_content_id != "None":
+                attachment_name = f"{attachment_content_id}-attachmentName-{attachment_name}"
             if not attachment_name.isascii():
                 try:
                     demisto.debug(f"Trying to decode the attachment file name: {attachment_name}")
@@ -1287,7 +1289,7 @@ class GraphMailUtils:
             return CommandResults(readable_output=human_readable, raw_response=raw_attachment)
 
     @staticmethod
-    def file_result_creator(raw_attachment: dict) -> dict:
+    def file_result_creator(raw_attachment: dict, legacy_name=False) -> dict:
         """Create FileResult from the attachment
 
         Args:
@@ -1299,10 +1301,11 @@ class GraphMailUtils:
         Returns:
             dict: FileResult with the b64decode of the attachment content
         """
-        identifier_id = raw_attachment.get('contentId')
-        if not identifier_id or identifier_id == "None":
-            identifier_id = raw_attachment.get('id', '')
-        name = f"{identifier_id}-attachmentName-{raw_attachment.get('name','')}"
+        name = raw_attachment.get('name', '')
+        content_id = raw_attachment.get('contentId')
+        is_inline = raw_attachment.get('isInline')
+        if is_inline and content_id and content_id != "None" and not legacy_name:
+            name = f"{content_id}-attachmentName-{name}"
         data = raw_attachment.get('contentBytes')
         try:
             data = base64.b64decode(data)  # type: ignore
@@ -1311,7 +1314,7 @@ class GraphMailUtils:
             raise DemistoException('Attachment could not be decoded')
 
     @staticmethod
-    def create_attachment(raw_attachment, user_id) -> CommandResults | dict:
+    def create_attachment(raw_attachment, user_id, legacy_name=False) -> CommandResults | dict:
 
         attachment_type = raw_attachment.get('@odata.type', '')
         # Documentation about the different attachment types
@@ -1319,7 +1322,7 @@ class GraphMailUtils:
         if 'itemAttachment' in attachment_type:
             return GraphMailUtils.item_result_creator(raw_attachment, user_id)
         elif 'fileAttachment' in attachment_type:
-            return GraphMailUtils.file_result_creator(raw_attachment)
+            return GraphMailUtils.file_result_creator(raw_attachment, legacy_name)
         else:
             human_readable = f'Integration does not support attachments from type {attachment_type}'
             return CommandResults(readable_output=human_readable, raw_response=raw_attachment)
@@ -1828,14 +1831,8 @@ def get_attachment_command(client: MsGraphMailBaseClient, args) -> list[CommandR
     kwargs = {arg_key: args.get(arg_key) for arg_key in ['message_id', 'folder_id', 'attachment_id']}
     kwargs['user_id'] = args.get('user_id', client._mailbox_to_fetch)
     raw_response = client.get_attachment(**kwargs)
-    identifiers_filter = argToList(args.get('identifiers_filter'))
-    return [GraphMailUtils.create_attachment(attachment, user_id=kwargs['user_id'])
-            for attachment in raw_response
-            if (
-                (not identifiers_filter)
-                or (attachment.get('contentId') in identifiers_filter or attachment.get('id') in identifiers_filter)
-    )
-    ]
+    return [GraphMailUtils.create_attachment(attachment, user_id=kwargs['user_id'], legacy_name=client.legacy_name)
+            for attachment in raw_response]
 
 
 def create_folder_command(client: MsGraphMailBaseClient, args) -> CommandResults:
