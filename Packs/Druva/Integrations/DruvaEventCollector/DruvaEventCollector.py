@@ -106,11 +106,12 @@ class Client(BaseClient):
         demisto.debug(f'DEC: This is the tracker before encoding: {tracker=}')
 
         if tracker:
-            tracker = quote(tracker, safe="!~*'()")  # remove invalid characters from tracker
-            demisto.debug(f'DEC: This is the tracker after encoding: {tracker=}')
+            encoding_tracker = quote(tracker, safe="!~*'()")  # remove invalid characters from tracker
+            demisto.debug(f'DEC: This is the tracker after encoding: {encoding_tracker=}')
         else:
-            tracker = ""
-        url_suffix_tracker = f"?tracker={tracker}"
+            encoding_tracker = ""
+
+        url_suffix_tracker = f"?tracker={encoding_tracker}" if encoding_tracker else ""
 
         headers = (self._headers or {}) | {
             "accept": "application/json"
