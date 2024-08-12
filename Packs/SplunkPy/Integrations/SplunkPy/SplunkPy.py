@@ -17,7 +17,7 @@ from splunklib.binding import AuthenticationError, HTTPError, namespace
 
 OUTPUT_MODE_JSON = 'json'  # type of response from splunk-sdk query (json/csv/xml)
 # Define utf8 as default encoding
-params = demisto.params()
+params = demisto.params() 
 SPLUNK_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 DEFAULT_ASSET_ENRICH_TABLES = 'asset_lookup_by_str,asset_lookup_by_cidr'
 DEFAULT_IDENTITY_ENRICH_TABLE = 'identity_lookup_expanded'

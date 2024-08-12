@@ -46,7 +46,7 @@ configuration:
   section: Connect
   required: false
 - defaultvalue: 'true'
-  display: Use Splunk Clock Time For Fetch
+  display: Use Splunk Clock Time For Fetch 
   name: useSplunkTime
   type: 8
   section: Collect
