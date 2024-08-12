@@ -37,7 +37,7 @@ class KafkaCommunicator:
     client_key_path: Optional[str] = None
     kafka_logger: Optional[logging.Logger] = None
 
-    SESSION_TIMEOUT: int = 10000
+    SESSION_TIMEOUT: int = 100000
     REQUESTS_TIMEOUT: float = 10.0
     POLL_TIMEOUT: float = 1.0
     MAX_POLLS_FOR_LOG: int = 100
