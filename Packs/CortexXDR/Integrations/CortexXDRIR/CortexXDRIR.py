@@ -884,7 +884,7 @@ def get_mapping_fields_command():
     return mapping_response
 
 
-def get_modified_remote_data_command(client, args, mirroring_last_run:Dict[str, Any] = {}, xdr_delay: int = 1):
+def get_modified_remote_data_command(client, args, mirroring_last_run: Dict[str, Any] = {}, xdr_delay: int = 1):
     remote_args = GetModifiedRemoteDataArgs(args)
     last_update: str = mirroring_last_run.get('mirroring_last_update', remote_args.last_update)
     last_update_utc = dateparser.parse(last_update,
@@ -903,7 +903,7 @@ def get_modified_remote_data_command(client, args, mirroring_last_run:Dict[str, 
         limit=100)
     last_run_mirroring = (lte_modification_time_milliseconds + timedelta(milliseconds=1))
     # Format with milliseconds as string, truncate microseconds
-    last_run_mirroring_str = last_run_mirroring.replace(tzinfo=pytz.UTC).strftime( # type: ignore
+    last_run_mirroring_str = last_run_mirroring.replace(tzinfo=pytz.UTC).strftime(  # type: ignore
         '%Y-%m-%d %H:%M:%S.%f')[:-3] + '+02:00'  # type: ignore
     modified_incident_ids = []
     for raw_incident in raw_incidents:
@@ -1571,7 +1571,7 @@ def main():  # pragma: no cover
 
         elif command == 'get-modified-remote-data':
             demisto.debug(f'MIRRORING MAIMORAG main get-modified-remote-data {time.strftime=}')
-            modified_incidents, next_run =get_modified_remote_data_command(
+            modified_incidents, next_run = get_modified_remote_data_command(
                 client=client,
                 mirroring_last_run=demisto.getLastRun().get('mirroring', {}) or {},
                 args=demisto.args(),
