@@ -1,0 +1,31 @@
+!cbd-get-alert-details alertId=1234
+!cbd-alerts-search reputation=NOT_LISTED rows=3 type=all
+
+!cbd-get-policy policyId=1234
+!cbd-get-policies-summary
+!cbd-create-policy policy="{\"name\": \"test4\", \"description\": \"aaaaaaaa\",\"org_key\": \"abc123\", \"priority_level\": \"MEDIUM\", \"rules\": [], \"sensor_settings\": [{\"name\": \"ALLOW_UNINSTALL\", \"value\": \"true\"}]}"
+!cbd-update-policy id=1234 policy="{\"name\": \"AWN BAS\", \"description\": \"aaaaaaaa\",\"org_key\": \"abc123\", \"priority_level\": \"MEDIUM\", \"rules\": [], \"sensor_settings\": [{\"name\": \"ALLOW_UNINSTALL\", \"value\": \"true\"}]}"
+!cbd-set-policy policy=1234 policy="{\"id\":\"1234\",\"name\": \"AWN BAS\", \"description\": \"aaaaaaaa\",\"org_key\": \"abc123\", \"priority_level\": \"MEDIUM\", \"rules\": [], \"sensor_settings\": [{\"name\": \"ALLOW_UNINSTALL\", \"value\": \"true\"}]}"
+!cbd-delete-policy policyId=169977
+
+!cbd-add-rule-to-policy action=IGNORE operation=RANSOM policyId=1234 required=false type=NAME_PATH value=COMMON_WHITE_LIST
+!cbd-update-rule-in-policy action=IGNORE type=REPUTATION value=COMMON_WHITE_LIST operation=MEMORY_SCRAPE required=true policyId=1234 id=47
+!cbd-delete-rule-from-policy ruleId=47 policyId=1234
+
+!cbd-find-processes device_id=1111
+!cbd-find-observation-details process_hash=abc123
+!cbd-find-observation device_id=1111
+
+!cbd-device-search device_id=1111
+!cbd-device-quarantine device_id=1111
+!cbd-device-unquarantine device_id=1111
+!cbd-device-background-scan device_id=1111
+!cbd-device-background-scan-stop device_id=1111
+!cbd-device-bypass device_id=1111
+!cbd-device-unbypass device_id=1111
+!cbd-device-policy-update device_id=1111 policy_id=1234
+!cbd-device-update-sensor-version sensor_version={\"SUSE\":\"1.1.1.1\"} device_id=1111
+
+!cbd-find-processes-results job_id=abc-123 rows=2
+!cbd-find-observation-details-results job_id=abc-123 rows=2
+!cbd-find-observation-results job_id=abc-123 rows=2

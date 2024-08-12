@@ -1,0 +1,19 @@
+[INGEST:vendor="msft", product="o365_general", target_dataset="msft_o365_general_raw", no_hit=keep]
+filter to_string(CreationTime) ~= ".*\d{2}:\d{2}:\d{2}.*"
+| alter
+    _time = CreationTime;
+
+[INGEST:vendor="msft", product="o365_exchange_online", target_dataset="msft_o365_exchange_online_raw", no_hit=keep]
+filter to_string(CreationTime) ~= ".*\d{2}:\d{2}:\d{2}.*"
+| alter
+    _time = CreationTime;
+
+[INGEST:vendor="msft", product="o365_sharepoint_online", target_dataset="msft_o365_sharepoint_online_raw", no_hit=keep]
+filter to_string(CreationTime) ~= ".*\d{2}:\d{2}:\d{2}.*"
+| alter
+    _time = CreationTime;
+
+[INGEST:vendor="msft", product="o365_dlp", target_dataset="msft_o365_dlp_raw", no_hit=keep]
+filter to_string(CreationTime) ~= ".*\d{2}:\d{2}:\d{2}.*"
+| alter
+    _time = CreationTime;

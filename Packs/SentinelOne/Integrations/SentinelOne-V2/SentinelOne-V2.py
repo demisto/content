@@ -102,6 +102,7 @@ def get_agents_outputs(agents, column_to_display: list | None = None):
             'Domain': agent.get('domain'),
             'CreatedAt': agent.get('createdAt'),
             'SiteName': agent.get('siteName'),
+            'Tags': agent.get('tags'),
         }
 
         for c in set(column_to_display or []).intersection(agent.keys()):
