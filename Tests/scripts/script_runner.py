@@ -9,9 +9,6 @@ from pathlib import Path
 
 
 def run_script(args, files):
-    print(f'{args=}')
-    print(f'{files=}')
-    print(Path.cwd())
     results = []
     try:
         for file in files:
