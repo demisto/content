@@ -131,13 +131,14 @@ class Client(BaseClient):
                 )
 
         if not entry.get('note', False):
-            demisto.debug(f'the entry has inv_id {incident_id}\nformat {entry.get("format")}\n contents '
+            demisto.debug(f'add_incident_entry: the entry has inv_id {incident_id}\nformat {entry.get("format")}\n contents '
                           f'{entry.get("contents")}')
             json_data = {
-                'contents': entry.get('contents'),
+                'contents': entry.get('contents', ""),
                 'format': entry.get('format'),
                 'investigationId': incident_id
             }
+            demisto.debug(f'add_incident_entry: the entry has inv_id {incident_id}  | {json_data=} | {entry=} ')
             try:
                 self._http_request(
                     method='POST',
@@ -147,16 +148,14 @@ class Client(BaseClient):
             except Exception as e:
                 demisto.debug(str(e))
             finally:
-                self._http_request(
+                demisto.debug('got to finally section')
+                json_data['format'] = 'json'
+                res = self._http_request(
                     method='POST',
-                    url_suffix='/entry/note',
-                    json_data={
-                        "investigationId": incident_id,
-                        "data": f'{entry.get("contents", "False")} {entry.get("format")}',
-                        "markdown": 'markdown'
-                    }
+                    url_suffix='/entry/formatted',
+                    json_data=json.dumps(json_data)
                 )
-
+                demisto.debug(f'{res=}')
         else:
             demisto.debug(f'the entry has inv_id {incident_id}\ndata {entry.get("date")}\n'
                           f'markdown {entry.get("markdown")}')
