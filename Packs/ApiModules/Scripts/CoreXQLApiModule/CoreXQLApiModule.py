@@ -90,7 +90,7 @@ class CoreClient(BaseClient):
         '''
         if self.is_core and not IS_CORE_AVAILABLE:
             raise DemistoException(f"Using the XQL Query Engine from the core Pack is available only from version "
-                                   f"{SERVER_VERSION}-{BUILD_VERSION}")
+                                   f"{SERVER_VERSION}-{BUILD_VERSION}.")
         ## I think this is unnecessary
         #if self.is_core and response_data_type == 'bin' and not ALLOW_RESPONSE_AS_BINARY:
         #    raise DemistoException(f"Getting binary data from server is allowed from version "

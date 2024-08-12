@@ -1024,13 +1024,37 @@ def test_main_success(mock_return_error, mock_return_results, mock_Client, mock_
     mock_demisto_debug.assert_called_once_with('Command being called is test-module')
     mock_Client.assert_called_once_with(
         base_url='http://example.com/public_api/v1',
-        proxy=False,
         verify=True,
-        headers={
-            "x-xdr-timestamp": timestamp,
-            "x-xdr-nonce": 'random_nonce',
-            "x-xdr-auth-id": 'test_apikey_id',
-            "Authorization": api_key_hash,
-        }
-    )
+        headers={'x-xdr-timestamp': timestamp,
+                 'x-xdr-nonce': 'random_nonce',
+                 'x-xdr-auth-id': 'test_apikey_id',
+                 'Authorization': api_key_hash},
+        proxy=False,
+        is_core=False
+        )
     mock_return_error.assert_not_called()
+
+
+
+@patch('CoreXQLApiModule.IS_CORE_AVAILABLE', False)
+@patch('CoreXQLApiModule.BaseClient._http_request')
+def test_get_xql_quota_is_core_available_false(mock_http_request):
+    """
+    Given:
+    - IS_CORE_AVAILABLE is false meaning we run on necessary version of xsiam.
+
+    When:
+    - Calling get_xql_quota function.
+
+    Then:
+    - Ensure the request for get_xql_quota use the _http_request.
+
+    """
+    mock_http_request.return_value = {'name': '/api/webapp/public_api/v1/xql/get_quota', 'status': 200, 'data':
+                                      '{"reply": {"license_quota": 1, "additional_purchased_quota": 0.0, "used_quota": 0.0,'
+                                      ' "eval_quota": 0.0}}'}
+    CLIENT.get_xql_quota({})
+    mock_http_request.assert_called_once_with(CLIENT, method='POST', url_suffix='/xql/get_quota',
+                                              full_url=None, headers=None, json_data={}, params=None, data=None, timeout=None,
+                                              raise_on_status=False, ok_codes=None, error_handler=None, with_metrics=False,
+                                              resp_type='json')

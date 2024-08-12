@@ -1066,23 +1066,21 @@ def test_get_xql_query_results_is_core_necessary_true(mock_api_call):
 def test_get_xql_quota_is_core_available_false(mock_http_request):
     """
     Given:
-    - IS_CORE_AVAILABLE is true meaning we run on necessary version of xsiam.
+    - IS_CORE_AVAILABLE is false meaning we run on necessary version of xsiam.
 
     When:
     - Calling get_xql_quota function.
 
     Then:
-    - Ensure the request for get_xql_quota use the _http_request.
+    - Raises an error.
 
     """
     mock_http_request.return_value = {'name': '/api/webapp/public_api/v1/xql/get_quota', 'status': 200, 'data':
                                       '{"reply": {"license_quota": 1, "additional_purchased_quota": 0.0, "used_quota": 0.0,'
                                       ' "eval_quota": 0.0}}'}
-    CLIENT.get_xql_quota({})
-    mock_http_request.assert_called_once_with(CLIENT, method='POST', url_suffix='/xql/get_quota',
-                                              full_url=None, headers=None, json_data={}, params=None, data=None, timeout=None,
-                                              raise_on_status=False, ok_codes=None, error_handler=None, with_metrics=False,
-                                              resp_type='json')
+    with pytest.raises(DemistoException) as e:
+        CLIENT.get_xql_quota({})
+    assert e.value.message == 'Using the XQL Query Engine from the core Pack is available only from version 8.7.0-1241866.'
 
 
 @patch('CoreXQLApiModule.IS_CORE_AVAILABLE', False)
@@ -1090,22 +1088,21 @@ def test_get_xql_quota_is_core_available_false(mock_http_request):
 def test_start_xql_query_is_core_available_false(mock_api_call):
     """
     Given:
-    - IS_CORE_AVAILABLE is true meaning we run on necessary version of xsiam.
+    - IS_CORE_AVAILABLE is false meaning we run on necessary version of xsiam.
 
     When:
     - Calling start_xql_query function.
 
     Then:
-    - Ensure the request for start_xql_query use the _http_request.
+    - Raises an error.
 
     """
     mock_api_call.return_value = {'name': '/api/webapp/public_api/v1/xql/start_xql_query',
                                   'status': 200,
                                   'data': '{"reply": "aaa"}'}
-    CLIENT.start_xql_query({})
-    mock_api_call.assert_called_once_with(CLIENT, method='POST', url_suffix='/xql/start_xql_query', full_url=None, headers=None,
-                                          json_data={}, params=None, data=None, timeout=None, raise_on_status=False,
-                                          ok_codes=None, error_handler=None, with_metrics=False, resp_type='json')
+    with pytest.raises(DemistoException) as e:
+        CLIENT.start_xql_query({})
+    assert e.value.message == 'Using the XQL Query Engine from the core Pack is available only from version 8.7.0-1241866.'
 
 
 @patch('CoreXQLApiModule.IS_CORE_AVAILABLE', False)
@@ -1113,22 +1110,21 @@ def test_start_xql_query_is_core_available_false(mock_api_call):
 def test_get_xql_query_results_is_core_available_false(mock_api_call):
     """
     Given:
-    - IS_CORE_AVAILABLE is true meaning we run on necessary version of xsiam.
+    - IS_CORE_AVAILABLE is false meaning we run on necessary version of xsiam.
 
     When:
     - Calling get_xql_query_results function.
 
     Then:
-    - Ensure the request for get_xql_query_results use the _http_request.
+    - Raises an error.
 
     """
     mock_api_call.return_value = {'name': '/api/webapp/public_api/v1/xql/start_xql_query',
                                   'status': 200,
                                   'data': '{"reply": "aaa"}'}
-    CLIENT.get_xql_query_results({})
-    mock_api_call.assert_called_once_with(CLIENT, method='POST', url_suffix='/xql/get_query_results', full_url=None, headers=None,
-                                          json_data={}, params=None, data=None, timeout=None, raise_on_status=False,
-                                          ok_codes=None, error_handler=None, with_metrics=False, resp_type='json')
+    with pytest.raises(DemistoException) as e:
+        CLIENT.get_xql_query_results({})
+    assert e.value.message == 'Using the XQL Query Engine from the core Pack is available only from version 8.7.0-1241866.'
 
 
 @patch('CoreXQLApiModule.demisto.debug')
@@ -1164,5 +1160,5 @@ def test_main_success_generic_command(mock_return_error, mock_return_results, mo
     main()
 
     mock_demisto_debug.assert_called_once_with('Command being called is test-module')
-    mock_Client.assert_called_once_with(base_url='/api/webapp/public_api/v1', proxy=False, verify=True, headers={})
+    mock_Client.assert_called_once_with(base_url='/api/webapp/public_api/v1', proxy=False, verify=True, headers={}, is_core=True)
     mock_return_error.assert_not_called()
