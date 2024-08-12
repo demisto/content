@@ -7,7 +7,9 @@
     "url": "",
     "email": "",
     "created": "2024-08-02T19:19:32Z",
-    "categories": ["Identify and Access Management"],
+    "categories": [
+        "Identity and Access Management"
+    ],
     "tags": [],
     "useCases": [],
     "keywords": [],
