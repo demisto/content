@@ -639,7 +639,7 @@ def expire_stored_ids(fetched_ids: Dict[str, int], updated_last_run_time: int, l
 
 
 def calculate_fetch_time_range(now: int, first_fetch: str, look_back: int = 0, last_run_time: Optional[int] = None) -> \
-    Dict[str, Any]:
+        Dict[str, Any]:
     if last_run_time:
         last_run_time = add_look_back(int(last_run_time), look_back)
     else:  # first fetch
@@ -1035,7 +1035,7 @@ def format_v1_response(response: Any) -> Any:
 
 
 def alert_search_v1_command(client: Client, args: Dict[str, Any], return_v1_output: bool) -> \
-    Union[CommandResults, List[Union[CommandResults, str]], Dict]:
+        Union[CommandResults, List[Union[CommandResults, str]], Dict]:
     """
     This command is for supporting backwards compatibility, to make transition to V2 easier for users with custom playbooks.
     """
@@ -1086,7 +1086,7 @@ def alert_get_details_v1_command(client: Client, args: Dict[str, Any], return_v1
 
 
 def alert_dismiss_v1_command(client: Client, args: Dict[str, Any], return_v1_output: bool) -> \
-    Union[CommandResults, List[Union[CommandResults, str]], Dict]:
+        Union[CommandResults, List[Union[CommandResults, str]], Dict]:
     """
     This command is for supporting backwards compatibility, to make transition to V2 easier for users with custom playbooks.
     """
@@ -1115,7 +1115,7 @@ def alert_dismiss_v1_command(client: Client, args: Dict[str, Any], return_v1_out
 
 
 def alert_reopen_v1_command(client: Client, args: Dict[str, Any], return_v1_output: bool) -> \
-    Union[CommandResults, List[Union[CommandResults, str]], Dict]:
+        Union[CommandResults, List[Union[CommandResults, str]], Dict]:
     """
     This command is for supporting backwards compatibility, to make transition to V2 easier for users with custom playbooks.
     """
@@ -1141,7 +1141,7 @@ def alert_reopen_v1_command(client: Client, args: Dict[str, Any], return_v1_outp
 
 
 def remediation_command_list_v1_command(client: Client, args: Dict[str, Any], return_v1_output: bool) -> \
-    Union[CommandResults, Dict]:
+        Union[CommandResults, Dict]:
     """
     This command is for supporting backwards compatibility, to make transition to V2 easier for users with custom playbooks.
     """
@@ -1330,7 +1330,7 @@ def alert_search_command(client: Client, args: Dict[str, Any]) -> CommandResults
         extract_nested_values(readable_response, nested_headers)
 
     headers = ['Alert ID', 'reason', 'status', 'alertTime', 'firstSeen', 'lastSeen', 'lastUpdated'] \
-              + list(nested_headers.values())[1:]
+        + list(nested_headers.values())[1:]
     output = {
         'PrismaCloud.AlertPageToken(val.nextPageToken)': {'nextPageToken': next_page_token},  # values are overridden
         'PrismaCloud.Alert(val.id && val.id == obj.id)': response_items  # values are appended to list based on id
@@ -1380,7 +1380,7 @@ def alert_get_details_command(client: Client, args: Dict[str, Any]) -> CommandRe
                       'resource.url': 'Resource Url',
                       }
     headers = ['Alert ID', 'reason', 'status', 'alertTime', 'firstSeen', 'lastSeen', 'lastUpdated', 'eventOccurred'] \
-              + list(nested_headers.values())[1:]
+        + list(nested_headers.values())[1:]
     extract_nested_values(readable_response, nested_headers)
 
     command_results = CommandResults(
@@ -2033,7 +2033,7 @@ def permission_list_command(client: Client, args: Dict[str, Any]) -> CommandResu
 
 
 def fetch_incidents(client: Client, last_run: Dict[str, Any], params: Dict[str, Any]) -> \
-    tuple[List[Dict[str, Any]], Dict[str, int], int]:
+        tuple[List[Dict[str, Any]], Dict[str, int], int]:
     """
     Retrieve new incidents periodically based on pre-defined instance parameters
     """
