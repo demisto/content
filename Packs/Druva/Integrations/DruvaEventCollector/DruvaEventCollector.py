@@ -6,7 +6,7 @@ import urllib3
 import base64
 
 MIN_FETCH = 1
-MAX_FETCH = 10000
+MAX_FETCH = 10_000
 MAX_EVENTS_API_CALL = 500  # As a limitation of the API, we can only retrieve 500 events at a time
 # Disable insecure warnings
 urllib3.disable_warnings()
