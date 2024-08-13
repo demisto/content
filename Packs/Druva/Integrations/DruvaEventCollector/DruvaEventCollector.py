@@ -100,15 +100,14 @@ class Client(BaseClient):
         Returns:
             dict: List of events
         """
-        demisto.debug(f'DEC: This is the tracker before encoding: {tracker=}')
+        demisto.debug(f'This is the tracker before encoding: {tracker=}')
 
         if tracker:
             encoding_tracker = quote(tracker, safe="!~*'()")  # remove invalid characters from tracker
             demisto.debug(f'after encoding: {encoding_tracker=}')
+            url_suffix_tracker = f"?tracker={encoding_tracker}"
         else:
-            encoding_tracker = ""
-
-        url_suffix_tracker = f"?tracker={encoding_tracker}" if encoding_tracker else ""
+            url_suffix_tracker = ""
 
         headers = (self._headers or {}) | {
             "accept": "application/json"
@@ -126,6 +125,9 @@ class Client(BaseClient):
         return response
 
     def _set_headers(self, token: str):
+        """
+        This method is called during the client's building or when a new token is generated since the old one has expired.
+        """
         self._headers = {"Authorization": f"Bearer {token}"}
 
     def _max_fetch_validation(self):
@@ -152,6 +154,7 @@ def test_module(client: Client) -> str:
 def get_events(client: Client, tracker: Optional[str] = None) -> tuple[list[dict], str]:
     """
     Gets events from Druva API in one batch (max 500), if a tracker is given, the API returns events starting from its timestamp.
+    There will be no changes to the tracker if no events occur.
     Args:
         client: Druva client to use.
         tracker: A string received in a previous run, marking the point in time from which we want to fetch.
