@@ -252,8 +252,9 @@ class Client(BaseClient):
             raise DemistoException(f'Error in query to Cortex Data Lake XSOAR Connector [{status_code}] - {error_message}')
         raw_results = []
         try:
+            page_size = arg_to_number(page_size) or 50 if page_number else None
             for r in query_service.iter_job_results(job_id=query_result.get(
-                    'jobId'), page_number=arg_to_number(page_number), page_size=arg_to_number(page_size) or 50, max_wait=2000,
+                    'jobId'), page_number=arg_to_number(page_number), page_size=page_size, max_wait=2000,
                     result_format='valuesDictionary'):
                 raw_results.append(r.json())
 
