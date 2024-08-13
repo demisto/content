@@ -153,22 +153,37 @@ def get_relationships_from_sub_reports(client, report_object, id_to_object):
     Returns:
         A list of processed reports.
     """
-    report_relationships = []
-    obj_refs = []
+    object_ref_to_return = []
     object_refs = report_object.get('object_refs', [])
+    relationships: list[dict[str, Any]] = []
+    obj_refs_excluding_relationships_prefix = []
     for obj in object_refs:
         if obj.startswith('report--'):
             sub_report_obj = id_to_object.get(obj, {})
-            if sub_report_obj and is_atom42_sub_report(sub_report_obj):
-                relationships, obj_refs_excluding_relationships_prefix = client.parse_report_relationships(sub_report_obj,
-                                                                                                           client.id_to_object,
-                                                                                                           '[Unit42 ATOM] ', True,
-                                                                                                           True)
-                if obj_refs_excluding_relationships_prefix:
-                    obj_refs.extend([{'objectstixid': object} for object in obj_refs_excluding_relationships_prefix])
-
-                report_relationships.extend(relationships)
-    return report_relationships, obj_refs
+            if sub_report_obj:
+                sub_report_obj_object_refs = sub_report_obj.get('object_refs', [])
+                for related_obj in sub_report_obj_object_refs:
+                    # relationship-- objects ref handled in parse_relationships
+                    if not related_obj.startswith('relationship--'):
+                        if related_obj.startswith('report--'):
+                            continue
+                        obj_refs_excluding_relationships_prefix.append(related_obj)
+                        if id_to_object.get(related_obj):
+                            entity_b_obj_type, entity_b_value = STIX2XSOARParser.get_entity_b_type_and_value(related_obj,
+                                                                                                             id_to_object,
+                                                                                                             True)
+                            relationships.append(
+                                EntityRelationship(
+                                    name='related-to',
+                                    entity_a=f"[Unit42 ATOM] {report_object.get('name')}",
+                                    entity_a_type=ThreatIntel.ObjectsNames.REPORT,
+                                    entity_b=entity_b_value,
+                                    entity_b_type=entity_b_obj_type
+                                ).to_indicator()
+                            )
+    if obj_refs_excluding_relationships_prefix:
+        object_ref_to_return.extend([{'objectstixid': object} for object in obj_refs_excluding_relationships_prefix])
+    return relationships, object_ref_to_return
 
 
 def is_atom42_main_report(report_obj):

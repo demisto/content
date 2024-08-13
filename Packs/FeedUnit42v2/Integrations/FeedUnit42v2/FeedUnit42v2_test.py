@@ -391,7 +391,15 @@ def test_create_course_of_action_indicators_with_tlp():
     ({"object_refs": ["intrusion-set--a", "report--ab"]}, False)
 ])
 def test_is_atom42_sub_report(report_obj, expected_result):
-
+    """
+    Given
+    - report object.
+    When
+    - call the is_atom42_sub_report method
+    Then
+    - run the is_atom42_sub_report method with a report.
+    - Validate that the function output is correct.
+    """
     from FeedUnit42v2 import is_atom42_sub_report
     assert is_atom42_sub_report(report_obj) is expected_result
 
@@ -419,6 +427,15 @@ def test_is_atom42_sub_report(report_obj, expected_result):
     ({"object_refs": ["intrusion-set--a", "report--ab"]}, True)
 ])
 def test_is_atom42_main_report(report_obj, expected_result):
+    """
+    Given
+    - report object.
+    When
+    - call the is_atom42_main_report method
+    Then
+    - run the is_atom42_main_report method with report
+    - Validate that the function output is correct.
+    """
 
     from FeedUnit42v2 import is_atom42_main_report
     assert is_atom42_main_report(report_obj) is expected_result

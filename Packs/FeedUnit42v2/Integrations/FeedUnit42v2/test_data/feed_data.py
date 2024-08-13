@@ -1212,6 +1212,18 @@ FETCH_RESULTS = [
             "tags": ["intrusion-set"],
             "Report Object References": [
                 {"objectstixid": "intrusion-set--a"},
+                {
+                    "objectstixid": "attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055"
+                },
+                {"objectstixid": "campaign--95c0884b-71e7-40fd-9307-626634425a93"},
+                {
+                    "objectstixid": "course-of-action--fd0da09e-a0b2-4018-9476-1a7edd809b59"
+                },
+                {"objectstixid": "identity--c6f27733-7387-4685-946e-3159d72ba15f"},
+                {"objectstixid": "indicator--13a5365a-894f-47a3-9ce4-6cf85718419f"},
+                {"objectstixid": "indicator--f2eb1d6c-df89-49e2-97f8-5c58706e9519"},
+                {"objectstixid": "intrusion-set--98e7093d-a86a-44b5-b7b3-d89ca457ec78"},
+                {"objectstixid": "malware--f351db0d-0667-4ca0-aed8-205bcef1d9a9"},
             ],
             "reportedby": "Unit42",
         },
@@ -1224,7 +1236,32 @@ FETCH_RESULTS = [
             "unit42_description": "A description of the report",
             "unit42_object_refs": ["intrusion-set--a", "report--ab"],
         },
-        "relationships": [],
+        "relationships": [
+            {
+                "name": "related-to",
+                "reverseName": "related-to",
+                "type": "IndicatorToIndicator",
+                "entityA": "[Unit42 ATOM] Main Report",
+                "entityAFamily": "Indicator",
+                "entityAType": "Report",
+                "entityB": "Windows Management Instrumentation",
+                "entityBFamily": "Indicator",
+                "entityBType": "Attack Pattern",
+                "fields": {},
+            },
+            {
+                "name": "related-to",
+                "reverseName": "related-to",
+                "type": "IndicatorToIndicator",
+                "entityA": "[Unit42 ATOM] Main Report",
+                "entityAFamily": "Indicator",
+                "entityAType": "Report",
+                "entityB": "XBash",
+                "entityBFamily": "Indicator",
+                "entityBType": "Malware",
+                "fields": {},
+            },
+        ],
     },
     {
         "type": "Report",
