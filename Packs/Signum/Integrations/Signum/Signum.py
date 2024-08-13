@@ -67,48 +67,45 @@ class Client(BaseClient):
         userToken = f'UsernameToken-{digest}'
 
         # structured XML
-        soapHeader = f"""
-            <soap:Header xmlns:wsa="http://www.w3.org/2005/08/addressing">
-            <wsse:Security xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1
-            .0.xsd"
-             xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">
-            <wsse:UsernameToken wsu:Id="{userToken}">
-            <wsse:Username>{username}</wsse:Username>
-            <wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0
-            #PasswordText">{password}</wsse:Password>
-            <wsse:Nonce EncodingType="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-soap-message-security
-            -1.0
-            #Base64Binary">{str(nonce)}</wsse:Nonce>
-            <wsu:Created>{created}</wsu:Created>
-            </wsse:UsernameToken>
-            </wsse:Security><wsa:Action>urn:evolium:redtrust:administration:ws/RTAdminService/ListDomainUsers</wsa
-            :Action
-            ><wsa:To>
-            https://signum.fis.us.app.az.keyfactorsaas.com/RTAdminService.svc/basic</wsa:To>
-            </soap:Header>
-        """
-        payload = f"""
-            <soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope"
-            xmlns:urn="urn:evolium:redtrust:administration:ws">
-                {soapHeader}
-                <soap:Body>
-                    <urn:ListDomainUsers>
-                        <!--Optional:-->
-                        <urn:domainId>{domain_id}</urn:domainId>
-                        <!--Optional:-->
-                        <urn:viewType>VIEW_ALL</urn:viewType>
-                        <!--Optional:-->
-                        <urn:filter></urn:filter>
-                        <!--Optional:-->
-                        <urn:numBlock>0</urn:numBlock>
-                        <!--Optional:-->
-                        <urn:orderColumn>ORDER_BY_NAME</urn:orderColumn>
-                        <!--Optional:-->
-                        <urn:orderType>ORDER_ASCENDING</urn:orderType>
-                    </urn:ListDomainUsers>
-                </soap:Body>
-            </soap:Envelope>
-        """
+        soapHeader = (
+            f'<soap:Header xmlns:wsa="http://www.w3.org/2005/08/addressing">'
+            f'<wsse:Security xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"'
+            f' xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">'
+            f'<wsse:UsernameToken wsu:Id="{userToken}"> '
+            f'<wsse:Username>{username}</wsse:Username>'
+            f'<wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0'
+            f'#PasswordText">{password}</wsse:Password>'
+            f'<wsse:Nonce EncodingType="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-soap-message-security-1.0'
+            f'#Base64Binary">{str(nonce)}</wsse:Nonce>'
+            f'<wsu:Created>{created}</wsu:Created>'
+            f'</wsse:UsernameToken>'
+            f'</wsse:Security><wsa:Action>urn:evolium:redtrust:administration:ws/RTAdminService/ListDomainUsers</wsa:Action>'
+            f'<wsa:To>'
+            f'https://signum.fis.us.app.az.keyfactorsaas.com/RTAdminService.svc/basic</wsa:To>'
+            f'</soap:Header>'
+        )
+        payload = (
+            f'<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:urn="urn:evolium:redtrust:'
+            f'administration:ws">'
+            f'    {soapHeader}'
+            f'    <soap:Body>'
+            f'        <urn:ListDomainUsers>'
+            f'            <!--Optional:-->'
+            f'            <urn:domainId>{domain_id}</urn:domainId>'
+            f'            <!--Optional:-->'
+            f'            <urn:viewType>VIEW_ALL</urn:viewType>'
+            f'            <!--Optional:-->'
+            f'            <urn:filter></urn:filter>'
+            f'            <!--Optional:-->'
+            f'            <urn:numBlock>0</urn:numBlock>'
+            f'            <!--Optional:-->'
+            f'            <urn:orderColumn>ORDER_BY_NAME</urn:orderColumn>'
+            f'            <!--Optional:-->'
+            f'            <urn:orderType>ORDER_ASCENDING</urn:orderType>'
+            f'        </urn:ListDomainUsers>'
+            f'    </soap:Body>'
+            f'</soap:Envelope>'
+        )
 
         # headers
         headers = {
@@ -169,7 +166,7 @@ def dict_find_key_recursively(d: dict, target_key: str, result=None):
     return result
 
 
-def list_domain_users_ec(raw_response: dict = {}, simple_view: bool = True) -> tuple[list, list, dict]:
+def list_domain_users_ec(raw_response, simple_view: bool = True) -> tuple[list, list, dict]:
     """
         Get users info
     Args:
@@ -180,7 +177,7 @@ def list_domain_users_ec(raw_response: dict = {}, simple_view: bool = True) -> t
     """
     entry_context = []
     human_readable = []
-    if raw_response_text := raw_response.get('text', ''):
+    if raw_response_text := raw_response.text:
         xml = re.findall("<s:Envelope.*<\/s:Envelope>", raw_response_text)[0]
         root_xml = ElementTree.fromstring(xml)
         xml_dict = xml_to_dict_recursive(root=root_xml, simple_view=simple_view)
