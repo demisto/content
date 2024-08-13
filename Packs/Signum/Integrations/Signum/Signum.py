@@ -67,45 +67,53 @@ class Client(BaseClient):
         userToken = f'UsernameToken-{digest}'
 
         # structured XML
-        soapHeader = (
-            f'<soap:Header xmlns:wsa="http://www.w3.org/2005/08/addressing">'
-            f'<wsse:Security xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"'
-            f' xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">'
-            f'<wsse:UsernameToken wsu:Id="{userToken}"> '
-            f'<wsse:Username>{username}</wsse:Username>'
-            f'<wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText">{password}</wsse:Password>'
-            f'<wsse:Nonce EncodingType="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-soap-message-security-1.0#Base64Binary">{nonce}</wsse:Nonce>'
-            f'<wsu:Created>{created}</wsu:Created>'
-            f'</wsse:UsernameToken>'
-            f'</wsse:Security><wsa:Action>urn:evolium:redtrust:administration:ws/RTAdminService/ListDomainUsers</wsa:Action><wsa:To>'
-            f'https://signum.fis.us.app.az.keyfactorsaas.com/RTAdminService.svc/basic</wsa:To>'
-            f'</soap:Header>'
-        )
-        payload = (
-            f'<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:urn="urn:evolium:redtrust:administration:ws">'
-            f'    {soapHeader}'
-            f'    <soap:Body>'
-            f'        <urn:ListDomainUsers>'
-            f'            <!--Optional:-->'
-            f'            <urn:domainId>{domain_id}</urn:domainId>'
-            f'            <!--Optional:-->'
-            f'            <urn:viewType>VIEW_ALL</urn:viewType>'
-            f'            <!--Optional:-->'
-            f'            <urn:filter></urn:filter>'
-            f'            <!--Optional:-->'
-            f'            <urn:numBlock>0</urn:numBlock>'
-            f'            <!--Optional:-->'
-            f'            <urn:orderColumn>ORDER_BY_NAME</urn:orderColumn>'
-            f'            <!--Optional:-->'
-            f'            <urn:orderType>ORDER_ASCENDING</urn:orderType>'
-            f'        </urn:ListDomainUsers>'
-            f'    </soap:Body>'
-            f'</soap:Envelope>'
-        )
+        soapHeader = f"""
+            <soap:Header xmlns:wsa="http://www.w3.org/2005/08/addressing">
+            <wsse:Security xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1
+            .0.xsd"
+             xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">
+            <wsse:UsernameToken wsu:Id="{userToken}">
+            <wsse:Username>{username}</wsse:Username>
+            <wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0
+            #PasswordText">{password}</wsse:Password>
+            <wsse:Nonce EncodingType="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-soap-message-security
+            -1.0
+            #Base64Binary">{str(nonce)}</wsse:Nonce>
+            <wsu:Created>{created}</wsu:Created>
+            </wsse:UsernameToken>
+            </wsse:Security><wsa:Action>urn:evolium:redtrust:administration:ws/RTAdminService/ListDomainUsers</wsa
+            :Action
+            ><wsa:To>
+            https://signum.fis.us.app.az.keyfactorsaas.com/RTAdminService.svc/basic</wsa:To>
+            </soap:Header>
+        """
+        payload = f"""
+            <soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope"
+            xmlns:urn="urn:evolium:redtrust:administration:ws">
+                {soapHeader}
+                <soap:Body>
+                    <urn:ListDomainUsers>
+                        <!--Optional:-->
+                        <urn:domainId>{domain_id}</urn:domainId>
+                        <!--Optional:-->
+                        <urn:viewType>VIEW_ALL</urn:viewType>
+                        <!--Optional:-->
+                        <urn:filter></urn:filter>
+                        <!--Optional:-->
+                        <urn:numBlock>0</urn:numBlock>
+                        <!--Optional:-->
+                        <urn:orderColumn>ORDER_BY_NAME</urn:orderColumn>
+                        <!--Optional:-->
+                        <urn:orderType>ORDER_ASCENDING</urn:orderType>
+                    </urn:ListDomainUsers>
+                </soap:Body>
+            </soap:Envelope>
+        """
 
         # headers
         headers = {
-            'Content-Type': 'application/soap+xml; charset=UTF-8; action="urn:evolium:redtrust:administration:ws/RTAdminService/ListDomainUsers"'
+            'Content-Type': 'application/soap+xml; charset=UTF-8; '
+                            'action="urn:evolium:redtrust:administration:ws/RTAdminService/ListDomainUsers"'
         }
 
         raw_response = self._http_request(method='POST',
@@ -139,29 +147,29 @@ def xml_to_dict_recursive(root, simple_view: bool = True) -> dict:
             return {root.tag: list(map(xml_to_dict_recursive, list(root)))}
 
 
-def dict_find_key_recursive(d: dict, key: str, result=None):
+def dict_find_key_recursively(d: dict, target_key: str, result=None):
     """
         Find the value of specific key in dictionary
     Args:
         d: Dictionary
-        key: Name of the key to find
+        target_key: The key for which the value is being searched.
         result: result of findings
     Returns:
-        Response dictionary
+        any: The value associated with the target_key, if found; otherwise, None.
     """
     if result is None:
-        for k, v in d.items():
-            if k == key:
-                return v
-            if isinstance(v, dict):
-                result = dict_find_key_recursive(v, key, result)
-            if isinstance(v, list):
-                for l in v:
-                    result = dict_find_key_recursive(l, key, result)
+        for current_key, value in d.items():
+            if current_key == target_key:
+                return value
+            if isinstance(value, dict):
+                result = dict_find_key_recursively(value, target_key, result)
+            elif isinstance(value, list):
+                for item in value:
+                    result = dict_find_key_recursively(item, target_key, result)
     return result
 
 
-def list_domain_users_ec(raw_response: str = None, simple_view: bool = True) -> tuple[list, list, dict]:
+def list_domain_users_ec(raw_response: dict = {}, simple_view: bool = True) -> tuple[list, list, dict]:
     """
         Get users info
     Args:
@@ -172,13 +180,13 @@ def list_domain_users_ec(raw_response: str = None, simple_view: bool = True) -> 
     """
     entry_context = []
     human_readable = []
-    if raw_response:
-        xml = re.findall("<s:Envelope.*<\/s:Envelope>", raw_response.text)[0]
+    if raw_response_text := raw_response.get('text', ''):
+        xml = re.findall("<s:Envelope.*<\/s:Envelope>", raw_response_text)[0]
         root_xml = ElementTree.fromstring(xml)
         xml_dict = xml_to_dict_recursive(root=root_xml, simple_view=simple_view)
         result = None
         if simple_view:
-            result = dict_find_key_recursive(d=xml_dict, key="ResultData", result=result)
+            result = dict_find_key_recursively(d=xml_dict, target_key="ResultData", result=result)
         else:
             result = xml_dict
         for item in result:
@@ -212,7 +220,7 @@ def test_module_command(client: Client, username: str, password: str, *_) -> tup
         DemistoException: If test failed.
     """
     results = client.test_module(username=username, password=password)
-    if results.status_code == 200:
+    if results.get('status_code', None) == 200:
         return None, None, 'ok'
     raise DemistoException(f'Test module failed, {results}')
 
