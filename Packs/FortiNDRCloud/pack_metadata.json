@@ -1,7 +1,7 @@
 {
     "name": "Fortinet FortiNDR Cloud",
     "description": "Fortinet FortiNDR Cloud allows a fast detection and effective response to active threats.",
-    "support": "partner",
+    "support": "community",
     "currentVersion": "1.0.1",
     "author": "Fortinet",
     "url": "https://www.fortinet.com/products/network-detection-and-response",
