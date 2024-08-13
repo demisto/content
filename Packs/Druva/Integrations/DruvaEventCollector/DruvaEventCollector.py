@@ -53,12 +53,11 @@ class Client(BaseClient):
         raw_token, expires_in_seconds = self._refresh_access_token()
         self._set_headers(raw_token)
 
-        #  token["expires_in"] - 60 seconds for safety
         set_integration_context(
             {
                 "Token": raw_token,
                 "expiration_time": (
-                    now + timedelta(seconds=(expires_in_seconds - 60))
+                    now + timedelta(seconds=(expires_in_seconds - 60)) # decreasing 60s from token expiry for safety
                 ).strftime(DATE_FORMAT_FOR_TOKEN),
             }
         )
