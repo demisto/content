@@ -34,7 +34,7 @@ Gets events from Druva API in one batch (max 500). If tracker is given, only its
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| should_push_events | Set this argument to true in order to create XSIAM events, otherwise the command will only display them. Possible values are: true, false. Default is false. | Required | 
+| should_push_events | Set this argument to true in order to create Cortex XSIAM events, otherwise the command will only display them. Possible values are: true, false. Default is false. | Required | 
 | tracker | A string received in a previous run, marking the point in time from which we want to fetch. | Optional | 
 
 #### Context Output
