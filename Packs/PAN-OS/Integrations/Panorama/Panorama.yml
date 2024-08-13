@@ -9504,7 +9504,6 @@ script:
     - contextPath: Panorama.AuditComment.rule_type
       description: The rule type.
       type: String
-
   - name: pan-os-add-profile-exception
     description: Add an exception to a Vulnerability Protection profile or Anti Spyware profile.
     arguments:
@@ -9541,10 +9540,10 @@ script:
       - Disable
       - Single Packet
       - Extended Capture
-    - description: TODO
+    - description: Specifies IP addresses.
       name: exempt_ip
       required: false
-    - description: TODO
+    - description: Device group. This will override any configured device group or vsys.
       name: device_group
       required: false
     - description: "Can be: Source or Source And Destination. If action = Block IP , this argument is mandatory."
@@ -9557,7 +9556,6 @@ script:
     - description: If action = Block IP , this argument is mandatory.
       name: ip_duration_sec
       required: false
-
   - name: pan-os-edit-profile-exception
     description: Edit an exception to a Vulnerability Protection profile or Anti Spyware profile.
     arguments:
@@ -9594,10 +9592,10 @@ script:
       - Disable
       - Single Packet
       - Extended Capture
-    - description: TODO
+    - description: Specifies IP addresses.
       name: exempt_ip
       required: false
-    - description: TODO
+    - description: Device group. This will override any configured device group or vsys.
       name: device_group
       required: false
     - description: "Can be: Source or Source And Destination. If action = Block IP , this argument is mandatory."
@@ -9610,7 +9608,6 @@ script:
     - description: If action = Block IP , this argument is mandatory.
       name: ip_duration_sec
       required: false
-
   - name: pan-os-delete-profile-exception
     description: Delete an exception to a Vulnerability Protection profile or Anti Spyware profile.
     arguments:
@@ -9627,7 +9624,6 @@ script:
       predefined:
       - Vulnerability Protection Profile
       - Anti Spyware Profile
-
   - name: pan-os-list-profile-exception
     description: List the exceptions in a Vulnerability Protection profile or Anti Spyware profile.
     arguments:
@@ -9645,7 +9641,6 @@ script:
     - contextPath: Panorama.ProfileException
       description: The Profile's exceptions list.
       type: String
-
   dockerimage: demisto/pan-os-python:1.0.0.107786
   isfetch: true
   runonce: false
