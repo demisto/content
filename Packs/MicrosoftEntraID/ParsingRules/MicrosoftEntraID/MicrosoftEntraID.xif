@@ -1,0 +1,9 @@
+[INGEST:vendor="msft", product="azure", target_dataset="msft_azure_raw", no_hit=keep]
+filter category in("AuditLogs", "SignInLogs", "NonInteractiveUserSignInLogs", "ServicePrincipalSignInLogs", "ManagedIdentitySignInLogs", "ADFSSignInLogs", "ProvisioningLogs", "UserRiskEvents", "RiskyUsers", "RiskyServicePrincipals", "ServicePrincipalRiskEvents")
+| alter
+        tmp_time = if(category in ("AuditLogs", "ProvisioningLogs", "UserRiskEvents", "ServicePrincipalRiskEvents"), json_extract_scalar(properties, "$.activityDateTime"), category in("SignInLogs", "NonInteractiveUserSignInLogs", "ServicePrincipalSignInLogs", "ManagedIdentitySignInLogs"), json_extract_scalar(properties, "$.createdDateTime"), category in ("RiskyUsers", "RiskyServicePrincipals"), json_extract_scalar(properties, "$.riskLastUpdatedDateTime"), null)
+| alter
+        tmp_time = arrayindex(regextract(tmp_time, "(\d{4}-\d{2}-\d{2}[T\s]\d{1,2}:\d{1,2}:\d{1,2}\.?\d{0,3})"), 0)
+| alter
+        _time = parse_timestamp("%Y-%m-%dT%H:%M:%E*S", tmp_time)
+| fields -tmp_time;

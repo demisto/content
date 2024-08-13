@@ -10,6 +10,14 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
+def util_load_txt(path: str):
+    """
+    Utility to load text data from a local folder.
+    """
+    with open(path, encoding='utf-8') as file:
+        return file.read()
+
+
 @pytest.fixture(scope='module')
 def akamai_waf_client():
     return Client(base_url="https://hostname/",
@@ -249,4 +257,53 @@ def test_acknowledge_warning_command(mocker, akamai_waf_client):
                                                                               change_path=change_path)
     assert expected_raw_response == raw_response
     assert expected_human_readable == human_readable
+    assert expected_context_entry == context_entry
+
+
+def test_cancel_cps_change_command(mocker, akamai_waf_client):
+    """
+    Given:
+        - enrollment ID and change ID.
+    When:
+        - running the command cancel_cps_change_command.
+    Then:
+        - enrollment ID is cancelled correctly.
+    """
+    from Akamai_WAF import cancel_cps_change_command
+    expected_raw_response = {
+        "change": "/cps/v2/enrollments/193622/changes/3914270"
+    }
+    expected_human_readable = "### Akamai WAF - cps cancel change\n|change|\n|---|\n|\
+ /cps/v2/enrollments/193622/changes/3914270 |\n"
+    expected_context_entry = {
+        'Akamai.Cps.Change.Canceled': {
+            'change': '/cps/v2/enrollments/193622/changes/3914270'
+        }
+    }
+    mocker.patch.object(akamai_waf_client, 'cancel_cps_change', return_value=expected_raw_response)
+    human_readable, context_entry, raw_response = cancel_cps_change_command(client=akamai_waf_client,
+                                                                            enrollment_id="193622",
+                                                                            change_id="3914270")
+    assert expected_raw_response == raw_response
+    assert expected_human_readable == human_readable
+    assert expected_context_entry == context_entry
+
+
+def test_get_cps_enrollment_by_id_command(mocker, akamai_waf_client):
+    """
+    Given:
+        - enrollment ID.
+    When:
+        - running the command get_cps_enrollment_by_id_command.
+    Then:
+        - we get details of enrollment.
+    """
+    from Akamai_WAF import get_cps_enrollment_by_id_command
+    test_data = util_load_json('test_data/get_cps_enrollment_by_id_test.json')
+    expected_raw_response = test_data
+    expected_context_entry = util_load_json('test_data/get_cps_enrollment_by_id_context.json')
+
+    mocker.patch.object(akamai_waf_client, 'get_cps_enrollment_by_id', return_value=expected_raw_response)
+    _, context_entry, raw_response = get_cps_enrollment_by_id_command(client=akamai_waf_client, enrollment_id=193622)
+    assert expected_raw_response == raw_response
     assert expected_context_entry == context_entry
