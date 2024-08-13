@@ -9510,7 +9510,7 @@ script:
     - description: The profile name.
       name: profile_name
       required: true
-    - description: "The requested threat name/CVE to add."
+    - description: "The requested threat name/CVE/ID to add."
       name: threat_name
       required: true
     - description: "Can be: Vulnerability Protection or Anti Spyware."
@@ -9562,7 +9562,7 @@ script:
     - description: The profile name.
       name: profile_name
       required: true
-    - description: "The requested threat name/CVE to add."
+    - description: "The requested threat name/CVE/ID to edit."
       name: threat_name
       required: true
     - description: "Can be: Vulnerability Protection or Anti Spyware."
@@ -9614,7 +9614,7 @@ script:
     - description: The profile name.
       name: profile_name
       required: true
-    - description: "The requested threat name/CVE to add."
+    - description: "The requested threat name/CVE/ID to delete."
       name: threat_name
       required: true
     - description: "Can be: Vulnerability Protection or Anti Spyware."
