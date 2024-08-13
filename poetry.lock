@@ -788,7 +788,7 @@ nltk = "^3.7"
 ordered-set = "^4.1.0"
 orjson = "^3.8.3"
 packaging = "^24.0"
-paramiko = "^2.11.0"
+paramiko = ">=2.11,<4.0"
 Pebble = ">=4.6.3,<6.0.0"
 pre-commit = "^3.5.0"
 prettytable = "^3.2.0"
@@ -822,8 +822,8 @@ generate-unit-tests = ["klara (>=0.6.3,<0.7.0)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk"
-reference = "45007b135453aee9174972aed13faf1e724bca3c"
-resolved_reference = "45007b135453aee9174972aed13faf1e724bca3c"
+reference = "YR/Add-support-level-to-all-content-objects/CIAC-10624"
+resolved_reference = "f0e2287de5926c1026cbe9e7ef67ea504125a8c4"
 
 [[package]]
 name = "deprecated"
@@ -4598,4 +4598,4 @@ reference = "pypi-public"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8,<3.11"
-content-hash = "084906c6faf07d49e6d46e69466523a4016ff46b58e7fe46ed2e5765a8fc7b8a"
+content-hash = "4cd63d3f6c342b5cc31fcbf4efc5dc31c355931dfc369602647f2656ad7acc36"
