@@ -8,6 +8,7 @@ from sigma.backends.sentinelone import SentinelOneBackend
 from sigma.backends.qradar import QradarBackend
 from sigma.backends.microsoft365defender import Microsoft365DefenderBackend
 from sigma.backends.carbonblack import CarbonBlackBackend
+from sigma.backends.elasticsearch import LuceneBackend
 
 import json
 
@@ -17,7 +18,8 @@ siems = {
     "sentinel_one": SentinelOneBackend(),
     "qradar": QradarBackend(),
     "microsoft_defender": Microsoft365DefenderBackend(),
-    "carbon_black": CarbonBlackBackend()
+    "carbon_black": CarbonBlackBackend(),
+    "elastic": LuceneBackend()
 }
 
 indicator = demisto.callingContext['args']['indicator']

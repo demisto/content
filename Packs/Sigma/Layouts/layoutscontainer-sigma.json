@@ -244,27 +244,27 @@
                             {
                                 "endCol": 2,
                                 "fieldId": "product",
-                                "height": 22,
+                                "height": 26,
                                 "id": "ab62f670-4293-11ef-8f1a-b9be5629a211",
-                                "index": 1,
+                                "index": 0,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
                                 "fieldId": "service",
-                                "height": 22,
+                                "height": 26,
                                 "id": "ae5beb20-4293-11ef-8f1a-b9be5629a211",
-                                "index": 2,
+                                "index": 1,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
                                 "fieldId": "category",
-                                "height": 22,
+                                "height": 26,
                                 "id": "b1310420-4293-11ef-8f1a-b9be5629a211",
-                                "index": 3,
+                                "index": 2,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -272,7 +272,7 @@
                                 "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "definition",
-                                "height": 22,
+                                "height": 26,
                                 "id": "b76e4e60-4293-11ef-8f1a-b9be5629a211",
                                 "index": 3,
                                 "listId": "default-main-Sigma Rule Layout-default-main-Sigma Rule Layout-default-main-93c3e790-4293-11ef-8f1a-b9be5629a211",
@@ -313,6 +313,15 @@
                                 "height": 106,
                                 "id": "4fb7e6e0-4294-11ef-8f1a-b9be5629a211",
                                 "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sigmafalsepositives",
+                                "height": 26,
+                                "id": "769fc4a0-58bd-11ef-985f-5f0ea1744742",
+                                "index": 2,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }

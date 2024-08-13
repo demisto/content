@@ -1,13 +1,18 @@
 commonfields:
-  id: sigma-button-convert
-  version: -1
-name: sigma-button-convert
+  id: SigmaConverttoQuery
+  version: 16
+vcShouldKeepItemLegacyProdMachine: false
+name: SigmaConverttoQuery
 script: ''
 type: python
 tags:
-- indicator-action-button
+- Sigma
+comment: Allows to convert a Sigma Rule indicator into a SIEM query.
 enabled: true
 args:
+- name: indicator
+  required: true
+  description: The sigma rule indicator to convert to a query
 - name: SIEM
   required: true
   auto: PREDEFINED
@@ -21,10 +26,9 @@ args:
   - Elastic
 scripttarget: 0
 subtype: python3
+pswd: ''
 runonce: false
 dockerimage: devdemisto/pysigma:1.0.0.108216
 runas: DBotWeakRole
 engineinfo: {}
-tests:
-- No tests (auto formatted)
-fromversion: 6.10.0
+mainengineinfo: {}

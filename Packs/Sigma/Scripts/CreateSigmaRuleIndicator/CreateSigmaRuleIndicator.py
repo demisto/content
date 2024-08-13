@@ -127,23 +127,35 @@ def parse_detection_field(detection: dict) -> list:
     return detection_grid
 
 
-def parse_tags(tags: list) -> tuple[list[str], list[str]]:
+def parse_tags(tags: list) -> tuple[list[str], list[str], list[str]]:
     techniques = []
     cves = []
-
-    for tag in tags:
+    
+    for tag in tags.copy():
         if re.match(r"attack.t\d{4}", tag):
+            tags.remove(tag)
             mitre_id = tag.replace("attack.", "")  # Get only the technique id
             demisto.debug(f'Searching for the technique {mitre_id} in TIM')
             mitre_name = get_mitre_technique_name(mitre_id)
+            
             if mitre_name:
                 techniques.append(mitre_name)
+                tags.append(f'{mitre_id.upper()} - {mitre_name}')
+            
+            else:
+                tags.append(f'{mitre_id.upper()}')
+        
+        elif tag.startswith('attack.'):
+            tags.remove(tag)
+            tags.append(tag.replace('attack.', '').replace('-', ' ').title())
         
         elif re.match(r"cve[-.]\d{4}", tag):
             demisto.debug(f'Found a CVE tag - {tag}')
-            cves.append(tag.replace(".", "-").upper())
+            cve = tag.replace(".", "-").upper()
+            cves.append(cve)
+            tags.append(cve)
     
-    return techniques, cves
+    return techniques, cves, tags
 
 
 def parse_and_create_indicator(rule_dict: dict) -> None:
@@ -171,7 +183,8 @@ def parse_and_create_indicator(rule_dict: dict) -> None:
         "sigmaruleraw": json.dumps(rule_dict),
         "sigmacondition": [{"condition": rule_dict.get("detection",{}).get("condition", "")}],
         "tags": rule_dict["tags"],
-        "sigmadetection": parse_detection_field(rule_dict.get("detection", {}))
+        "sigmadetection": parse_detection_field(rule_dict.get("detection", {})),
+        "sigmafalsepositives": [{"reason": fp} for fp in rule_dict.get("falsepositives", [])],
     }
 
     # Create publications grid field
@@ -186,8 +199,8 @@ def parse_and_create_indicator(rule_dict: dict) -> None:
             })
 
     indicator["publications"] = publications
-    techniques, cves = parse_tags(rule_dict["tags"])
-    indicator["tags"] += techniques
+    techniques, cves, tags = parse_tags(rule_dict["tags"])
+    indicator["tags"] = tags
     
     # Create the indicator in XSOAR
     demisto.executeCommand("createNewIndicator", indicator)
