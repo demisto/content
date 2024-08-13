@@ -1,19 +1,39 @@
 [INGEST:vendor="msft", product="o365_general", target_dataset="msft_o365_general_raw", no_hit=keep]
-filter to_string(CreationTime) ~= ".*\d{2}:\d{2}:\d{2}.*"
+filter to_string(CreationTime) ~= "UTC|:\d{2}(?:[\.\d]+)?Z"
 | alter
-    _time = CreationTime;
+    tmp_string_CreationTime = to_string(CreationTime)
+| alter
+    tmp_check_format = if(tmp_string_CreationTime ~= "UTC", parse_timestamp("%Y-%m-%d %H:%M:%E*S %Z", tmp_string_CreationTime), tmp_string_CreationTime ~= ":\d{2}(?:[\.\d]+)?Z", parse_timestamp("%Y-%m-%dT%H:%M:%E*SZ", tmp_string_CreationTime))
+| alter
+    _time = tmp_check_format
+| fields -tmp*;
 
 [INGEST:vendor="msft", product="o365_exchange_online", target_dataset="msft_o365_exchange_online_raw", no_hit=keep]
-filter to_string(CreationTime) ~= ".*\d{2}:\d{2}:\d{2}.*"
+filter to_string(CreationTime) ~= "UTC|:\d{2}(?:[\.\d]+)?Z"
 | alter
-    _time = CreationTime;
+    tmp_string_CreationTime = to_string(CreationTime)
+| alter
+    tmp_check_format = if(tmp_string_CreationTime ~= "UTC", parse_timestamp("%Y-%m-%d %H:%M:%E*S %Z", tmp_string_CreationTime), tmp_string_CreationTime ~= ":\d{2}(?:[\.\d]+)?Z", parse_timestamp("%Y-%m-%dT%H:%M:%E*SZ", tmp_string_CreationTime))
+| alter
+    _time = tmp_check_format
+| fields -tmp*;
 
 [INGEST:vendor="msft", product="o365_sharepoint_online", target_dataset="msft_o365_sharepoint_online_raw", no_hit=keep]
-filter to_string(CreationTime) ~= ".*\d{2}:\d{2}:\d{2}.*"
+filter to_string(CreationTime) ~= "UTC|:\d{2}(?:[\.\d]+)?Z"
 | alter
-    _time = CreationTime;
+    tmp_string_CreationTime = to_string(CreationTime)
+| alter
+    tmp_check_format = if(tmp_string_CreationTime ~= "UTC", parse_timestamp("%Y-%m-%d %H:%M:%E*S %Z", tmp_string_CreationTime), tmp_string_CreationTime ~= ":\d{2}(?:[\.\d]+)?Z", parse_timestamp("%Y-%m-%dT%H:%M:%E*SZ", tmp_string_CreationTime))
+| alter
+    _time = tmp_check_format
+| fields -tmp*;
 
 [INGEST:vendor="msft", product="o365_dlp", target_dataset="msft_o365_dlp_raw", no_hit=keep]
-filter to_string(CreationTime) ~= ".*\d{2}:\d{2}:\d{2}.*"
+filter to_string(CreationTime) ~= "UTC|:\d{2}(?:[\.\d]+)?Z"
 | alter
-    _time = CreationTime;
+    tmp_string_CreationTime = to_string(CreationTime)
+| alter
+    tmp_check_format = if(tmp_string_CreationTime ~= "UTC", parse_timestamp("%Y-%m-%d %H:%M:%E*S %Z", tmp_string_CreationTime), tmp_string_CreationTime ~= ":\d{2}(?:[\.\d]+)?Z", parse_timestamp("%Y-%m-%dT%H:%M:%E*SZ", tmp_string_CreationTime))
+| alter
+    _time = tmp_check_format
+| fields -tmp*;
