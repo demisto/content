@@ -12,10 +12,10 @@ alter
 // Get all of the keys and values.
     // Get all of the object names to a regex format.
     tmp_get_keys = rtrim(arraystring(arraymap(tmp_get_field, concat("(?P<", lowercase("@element" -> name), ">[^|]+)?\|")), ""), "\|"),
-    // Get all of the objest values to a String format.
+    // Get all of the object values to a String format.
     tmp_get_values = arraystring(arraymap(tmp_get_field, if("@element" ~= "intValue", "@element" -> intValue, "@element" ~= "value", "@element" -> value, "")), "|")
 | alter 
-    // Only work in Parsing Rules, use the regexcapture function to display the data in an organised JSON format.
+    // Only work in Parsing Rules, use the regexcapture function to display the data in an organized JSON format.
     parameters = if(event =null, regexcapture(tmp_get_values, tmp_get_keys), event)
 
 // -------------- TIME --------------
