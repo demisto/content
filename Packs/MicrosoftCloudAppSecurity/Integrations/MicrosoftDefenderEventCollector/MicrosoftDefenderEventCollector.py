@@ -17,6 +17,7 @@ import dateparser
 from MicrosoftApiModule import *
 import urllib3
 
+MAX_FETCH = 100
 # Disable insecure warnings
 urllib3.disable_warnings()
 DEFAULT_FROM_FETCH_PARAMETER = '3 days'
@@ -111,7 +112,7 @@ class IntegrationOptions(BaseModel):
     """Add here any option you need to add to the logic"""
 
     proxy: bool | None = False
-    limit: int | None = Field(None, ge=1)
+    limit: int | None = Field(None, ge=1, le=MAX_FETCH)
 
 
 class IntegrationEventsClient(ABC):
