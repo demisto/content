@@ -1,6 +1,6 @@
 This is the Druva event collector integration for Cortex XSIAM.
 
-## Configure Druva Event Collector on Cortex XSOAR
+## Configure Druva Event Collector on Cortex XSIAM
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Druva Event Collector.
