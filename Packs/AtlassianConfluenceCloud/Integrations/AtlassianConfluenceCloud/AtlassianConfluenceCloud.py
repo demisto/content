@@ -1384,8 +1384,8 @@ def fetch_events(client: Client, last_run: dict[str, Any], limit: int) -> tuple[
 def get_events(client: Client, args: dict) -> tuple[list[Dict], CommandResults]:
     start_index = args.get('start')
     start_date = args.get('start_date')
-    if start_index and start_date:
-        raise ValueError('Please provide either start_index or start_date, not both.')
+    # if start_index and start_date:
+    #     raise ValueError('Please provide either start_index or start_date, not both.')
 
     limit = int(args.get('limit', 50))
     kwargs = {'limit': limit}
@@ -1393,10 +1393,10 @@ def get_events(client: Client, args: dict) -> tuple[list[Dict], CommandResults]:
     if not start_index and not start_date:
         kwargs['start_index'] = 0
 
-    elif start_index:
+    if start_index:
         kwargs['start_index'] = start_index
 
-    else:
+    if start_date:
         kwargs['start_date'] = start_date
 
     demisto.debug(f'Calling search_events with {kwargs}.')
