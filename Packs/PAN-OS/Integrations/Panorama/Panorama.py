@@ -14115,9 +14115,6 @@ def get_all_profile_names_from_profile_type(profile_type: str, device_group: str
     profiles = raw_response["response"]["result"][f"{profile_type}"]["entry"]
 
     profile_names = []
-    if not isinstance(profiles, list):
-        profiles = [profiles]
-
     for entry in profiles:
         profile_name = entry.get("@name")
         if profile_name:
