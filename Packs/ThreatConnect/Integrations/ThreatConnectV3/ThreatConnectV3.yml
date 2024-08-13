@@ -2963,7 +2963,7 @@ script:
     - contextPath: TC.AttributeType.TC.AttributeType.validationRule.version
       description: The attribute type validation rule version.
       type: string
-  dockerimage: demisto/python3:3.10.14.99865
+  dockerimage: demisto/python3:3.11.9.103066
   isfetch: true
   script: ''
   subtype: python3

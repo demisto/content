@@ -281,10 +281,11 @@ class OAuth2DeviceCodeClient {
     [bool]$insecure
     [bool]$proxy
     [string]$app_secret
+    [string]$tenant_id
 
     OAuth2DeviceCodeClient([string]$device_code, [string]$device_code_expires_in, [string]$device_code_creation_time, [string]$access_token,
                             [string]$refresh_token,[string]$access_token_expires_in, [string]$access_token_creation_time,
-                           [bool]$insecure, [bool]$proxy, [string]$application_id, [string]$app_secret) {
+                           [bool]$insecure, [bool]$proxy, [string]$application_id, [string]$app_secret, [string]$tenant_id) {
         $this.device_code = $device_code
         $this.device_code_expires_in = $device_code_expires_in
         $this.device_code_creation_time = $device_code_creation_time
@@ -296,6 +297,7 @@ class OAuth2DeviceCodeClient {
         $this.proxy = $proxy
         $this.application_id = $application_id
         $this.app_secret = $app_secret
+        $this.tenant_id = $tenant_id
         <#
             .DESCRIPTION
             OAuth2DeviceCodeClient manage state of OAuth2.0 device-code flow described in https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code.
@@ -344,10 +346,10 @@ class OAuth2DeviceCodeClient {
         #>
     }
 
-    static [OAuth2DeviceCodeClient]CreateClientFromIntegrationContext([bool]$insecure, [bool]$proxy, [string]$application_id, [string]$app_secret) {
+    static [OAuth2DeviceCodeClient]CreateClientFromIntegrationContext([bool]$insecure, [bool]$proxy, [string]$application_id, [string]$app_secret, [string]$tenant_id) {
         $ic = GetIntegrationContext
         $client = [OAuth2DeviceCodeClient]::new($ic.DeviceCode, $ic.DeviceCodeExpiresIn, $ic.DeviceCodeCreationTime, $ic.AccessToken, $ic.RefreshToken,
-                                                $ic.AccessTokenExpiresIn, $ic.AccessTokenCreationTime, $insecure, $proxy, $application_id, $app_secret)
+                                                $ic.AccessTokenExpiresIn, $ic.AccessTokenCreationTime, $insecure, $proxy, $application_id, $app_secret, $tenant_id)
 
         return $client
         <#
@@ -369,7 +371,7 @@ class OAuth2DeviceCodeClient {
         $this.device_code_creation_time = $null
         # Get device-code and user-code
         $params = @{
-            "URI" = "https://login.microsoftonline.com/organizations/oauth2/v2.0/devicecode"
+            "URI" = "https://login.microsoftonline.com/$($this.tenant_id)/oauth2/v2.0/devicecode"
             "Method" = "Post"
             "Headers" = @{
                 "Content-Type" = "application/x-www-form-urlencoded"
@@ -406,7 +408,7 @@ class OAuth2DeviceCodeClient {
         # Get new token using device-code
         try {
             $params = @{
-                "URI" = "https://login.microsoftonline.com/organizations/oauth2/v2.0/token"
+                "URI" = "https://login.microsoftonline.com/$($this.tenant_id)/oauth2/v2.0/token"
                 "Method" = "Post"
                 "Headers" = (New-Object "System.Collections.Generic.Dictionary[[String],[String]]").Add("Content-Type", "application/x-www-form-urlencoded")
                 "Body" = "grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Adevice_code&code=$($this.device_code)&client_id=$($this.application_id)"
@@ -456,7 +458,7 @@ class OAuth2DeviceCodeClient {
         # Get new token using refresh token
         try {
             $params = @{
-                "URI" = "https://login.microsoftonline.com/organizations/oauth2/v2.0/token"
+                "URI" = "https://login.microsoftonline.com/$($this.tenant_id)/oauth2/v2.0/token"
                 "Method" = "Post"
                 "Headers" = (New-Object "System.Collections.Generic.Dictionary[[String],[String]]").Add("Content-Type", "application/x-www-form-urlencoded")
                 "Body" = "grant_type=refresh_token&client_id=$($this.application_id)&refresh_token=$($this.refresh_token)&scope=$($this.application_scope)"
@@ -1908,7 +1910,8 @@ function Main {
         $Demisto.Debug("Command being called is $Command")
 
         # Creating Compliance and search client
-        $oauth2_client = [OAuth2DeviceCodeClient]::CreateClientFromIntegrationContext($insecure, $false, $integration_params.app_id, $integration_params.app_secret)
+        $oauth2_client = [OAuth2DeviceCodeClient]::CreateClientFromIntegrationContext($insecure, $false,
+            $integration_params.app_id, $integration_params.app_secret, $integration_params.tenant_id)
 
         # Executing oauth2 commands
         switch ($command) {

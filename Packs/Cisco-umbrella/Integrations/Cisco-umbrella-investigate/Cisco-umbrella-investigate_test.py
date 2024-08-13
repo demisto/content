@@ -27,7 +27,7 @@ def test_verify_threshold_suspicious_and_malicious_parameters(suspicious, malici
         Then:
             - Verify suspicious is bigger then malicious and both of them in range of -100 to 100
     """
-    mock_result = mocker.patch('Cisco-umbrella-investigate.return_error')
+    mock_result = mocker.patch.object(Cisco_umbrella_investigate, 'return_error')
     Cisco_umbrella_investigate.verify_threshold_params(suspicious, malicious)
 
     if not mock_result.call_args:

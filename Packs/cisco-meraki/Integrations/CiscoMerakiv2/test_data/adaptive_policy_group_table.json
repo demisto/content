@@ -1,0 +1,14 @@
+[
+    {
+        "Group ID": "1234",
+        "Name": "Employee Group",
+        "Description": "Group of XYZ Corp Employees",
+        "Security Group Tag": 1000,
+        "Policy Object IDs": [
+            "2345"
+        ],
+        "Policy Object Names": [
+            "Example Policy Object"
+        ]
+    }
+]

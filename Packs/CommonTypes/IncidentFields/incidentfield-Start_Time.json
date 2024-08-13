@@ -13,7 +13,8 @@
         "Microsoft Sentinel Incident",
         "Graph Security Alert",
         "CrowdStrike Falcon IDP Detection",
-        "Stamus Networks DoC"
+        "Stamus Networks DoC",
+        "Exabeam Notable User"
     ],
     "breachScript": "",
     "caseInsensitive": true,
