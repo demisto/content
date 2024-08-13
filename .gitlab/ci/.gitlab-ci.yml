@@ -1,7 +1,7 @@
 variables:
-  CURRENT_BRANCH_NAME: $INFRA_BRANCH
+  CURRENT_BRANCH_NAME: ciac-11145-split-modeling-rules
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: $INFRA_BRANCH
+    ref: ciac-11145-split-modeling-rules
     project: "${CI_PROJECT_NAMESPACE}/infra"
