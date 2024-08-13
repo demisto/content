@@ -131,47 +131,46 @@
             "docker_ref": "demisto/py3-native:8.8.0.108239"
         }
     },
-    "ignored_content_items":[
+    "ignored_content_items": [
         {
-            "id":"Json2HtmlTable",
-            "reason":"Add json2html to py3-tools: Ignore due to this contribution PR: https://github.com/demisto/dockerfiles/pull/29877.",
-            "ignored_native_images":[
-                "native:8.6"
-
-            ]
-        },
-        {
-            "id":"EWSO365",
-            "reason":"Issue: CIAC-10245 - Microsoft broke their API, and it was fixed in a newer version of the exchangelib package.",
-            "ignored_native_images":[
+            "id": "Json2HtmlTable",
+            "reason": "Add json2html to py3-tools: Ignore due to this contribution PR: https://github.com/demisto/dockerfiles/pull/29877.",
+            "ignored_native_images": [
                 "native:8.6"
             ]
         },
         {
-            "id":"Rasterize",
-            "reason":"Issue: CRTX-72338 and CIAC-7694",
-            "ignored_native_images":[
+            "id": "EWSO365",
+            "reason": "Issue: CIAC-10245 - Microsoft broke their API, and it was fixed in a newer version of the exchangelib package.",
+            "ignored_native_images": [
                 "native:8.6"
             ]
         },
         {
-            "id":"Intezer v2",
-            "reason":"Issue: CIAC-10263",
-            "ignored_native_images":[
+            "id": "Rasterize",
+            "reason": "Issue: CRTX-72338 and CIAC-7694",
+            "ignored_native_images": [
                 "native:8.6"
             ]
         },
         {
-            "id":"ConvertFile",
-            "reason":"Issue: CIAC-7625",
-            "ignored_native_images":[
+            "id": "Intezer v2",
+            "reason": "Issue: CIAC-10263",
+            "ignored_native_images": [
                 "native:8.6"
             ]
         },
         {
-            "id":"DockerHardeningCheck",
-            "reason":"This script is supposed to run inside a container, does not support podman",
-            "ignored_native_images":[
+            "id": "ConvertFile",
+            "reason": "Issue: CIAC-7625",
+            "ignored_native_images": [
+                "native:8.6"
+            ]
+        },
+        {
+            "id": "DockerHardeningCheck",
+            "reason": "This script is supposed to run inside a container, does not support podman",
+            "ignored_native_images": [
                 "native:8.7",
                 "native:8.6",
                 "native:dev",
@@ -196,9 +195,9 @@
             ]
         },
         {
-            "id":"CyrenThreatInDepthRenderRelated",
+            "id": "CyrenThreatInDepthRenderRelated",
             "reason": "CIAC-11186, This integration support only from python 3.11",
-            "ignored_native_images":[
+            "ignored_native_images": [
                 "native:8.6"
             ]
         },
