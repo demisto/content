@@ -190,7 +190,7 @@
         },
         {
             "id": "Github Feed",
-    "reason": "update docker image",
+            "reason": "update docker image",
             "ignored_native_images": [
                 "native:8.6"
             ]
@@ -222,12 +222,19 @@
             "ignored_native_images": [
                 "native:8.6"
             ]
+        },
+        {
+            "id": "FireEyeNX",
+            "reason": "CIAC-11186, This integration support only from python 3.11",
+            "ignored_native_images": [
+                "native:8.6"
+            ]
         }
     ],
-    "flags_versions_mapping":{
-        "native:dev":"native:dev",
-        "native:candidate": "native:candidate",
+    "flags_versions_mapping": {
+        "native:dev": "native:dev",
         "native:maintenance": "native:8.6",
-        "native:ga":"native:8.6"
+        "native:ga": "native:8.7",
+        "native:candidate": "native:candidate"
     }
 }
