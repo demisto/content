@@ -49,7 +49,7 @@ PRE_POST = ''
 OUTPUT_PREFIX = "PANOS."
 UNICODE_FAIL = u'\U0000274c'
 UNICODE_PASS = u'\U00002714\U0000FE0F'
-BLOCK_IP = 'Block IP'
+BLOCK_IP = 'block-ip'
 VULNERABILITY_PROTECTION = 'Vulnerability Protection Profile'
 ANTI_SPYWARE = 'Anti Spyware Profile'
 predefined_threats: List[Dict] = []
@@ -14090,7 +14090,7 @@ def pan_os_get_audit_comment_command(args: dict) -> CommandResults:
     )
 
 
-def get_all_profile_names_from_profile_type(profile_type) -> list:
+def get_all_profile_names_from_profile_type(profile_type, device_group) -> list:
     """
     Retrieves all profile names from a specified profile type.
 
@@ -14100,16 +14100,32 @@ def get_all_profile_names_from_profile_type(profile_type) -> list:
     Returns:
         A list of profile names associated with the specified profile type.
     """
+    xpath = ''
+    results = ''
+    
+    if device_group:
+        xpath = f'/config/devices/entry/device-group/entry/profiles/{profile_type}'
+    elif VSYS: 
+        xpath = f'/config/devices/entry/vsys/entry/profiles/{profile_type}'
+        
     params = {
         'type': 'config',
         'action': 'get',
-        'xpath': f'/config/devices/entry/vsys/entry/profiles/{profile_type}',
+        'xpath': xpath,
         'key': API_KEY
     }
+    
     raw_response = http_request(URL, 'GET', params=params)
-    results = raw_response['response']['result'][f'{profile_type}']['entry']
+    
+    if device_group:
+        results = raw_response['response']['result'][f'{profile_type}'][0]['entry']
+    elif VSYS: 
+        results = raw_response['response']['result'][f'{profile_type}']['entry']
 
     profile_names = []
+    if not isinstance(results, list):
+        results = [results]
+        
     for entry in results:
         profile_name = entry.get('@name')
         if profile_name:
@@ -14118,7 +14134,7 @@ def get_all_profile_names_from_profile_type(profile_type) -> list:
     return profile_names
 
 
-def check_profile_type_by_given_profile_name(profile_name) -> str:
+def check_profile_type_by_given_profile_name(profile_name, device_group) -> str:
     """
     Checks the profile type based on a given profile name.
 
@@ -14128,8 +14144,8 @@ def check_profile_type_by_given_profile_name(profile_name) -> str:
     Returns:
         The profile type: 'Vulnerability Protection Profile' or 'Anti Spyware Profile'.
     """
-    vulnerability_protection_profile_names = get_all_profile_names_from_profile_type('vulnerability')
-    anti_spyware_profile_names = get_all_profile_names_from_profile_type('spyware')
+    vulnerability_protection_profile_names = get_all_profile_names_from_profile_type('vulnerability', device_group)
+    anti_spyware_profile_names = get_all_profile_names_from_profile_type('spyware', device_group)
 
     if profile_name in vulnerability_protection_profile_names and profile_name in anti_spyware_profile_names:
         raise DemistoException(
@@ -14255,6 +14271,18 @@ def build_element_for_profile_exception_commands(extracted_id, action, packet_ca
 
     element = f"""
         <entry name="{extracted_id}">
+        """
+    if action == BLOCK_IP:
+        element += f"""
+            <action>
+                <block-ip>
+                    <track-by>{ip_track_by}</track-by>
+                    <duration>{ip_duration_sec}</duration>
+                </block-ip>
+            </action>
+        """
+    else:
+        element += f"""
             <action>
                 <{action}/>
             </action>
@@ -14269,17 +14297,6 @@ def build_element_for_profile_exception_commands(extracted_id, action, packet_ca
      	        <entry name="{exempt_ip}"/>
             </exempt-ip>
         """
-    if action == BLOCK_IP:
-        element += f"""
-            <block-ip>
-                <track-by>
-                    {ip_track_by}
-                </track-by>
-                <duration>
-                    {ip_duration_sec}
-                </duration>
-            </block-ip>
-            """
     element += f"""
         </entry>
     """
@@ -14308,11 +14325,12 @@ def profile_exception_crud_commands(args: dict, action_type: str):
     ip_duration_sec = args.get('ip_duration_sec', '')
     extracted_id = ''
 
-    if action_type == BLOCK_IP and (not ip_track_by or not ip_duration_sec):
+
+    if xpath_action == BLOCK_IP and (not ip_track_by or not ip_duration_sec):
         raise DemistoException("ip_track_by and ip_duration_sec are required when action is 'Block IP'.")
 
     if not profile_type:
-        profile_type = check_profile_type_by_given_profile_name(profile_name)
+        profile_type = check_profile_type_by_given_profile_name(profile_name, device_group)
 
     if action_type != 'get':
         if threat_name.isnumeric():
