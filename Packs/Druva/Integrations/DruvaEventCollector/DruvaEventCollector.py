@@ -179,7 +179,7 @@ def fetch_events(
     """
     demisto.debug(f'Last Run: {last_run}')
     final_events: list[dict] = []
-    last_interation: bool = False
+    done_fetching: bool = False
     while len(final_events) < max_fetch and not last_interation:
         tracker = last_run.get("tracker")  # None on first run
         # when fetching events, in case of "Invalid tracker", we catch the exception and restore the same tracker
