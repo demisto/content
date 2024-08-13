@@ -14100,34 +14100,32 @@ def get_all_profile_names_from_profile_type(profile_type, device_group) -> list:
     Returns:
         A list of profile names associated with the specified profile type.
     """
-    profiles = ''
-    
     # if device_group:
     #     xpath = f'/config/devices/entry/device-group/entry/profiles/{profile_type}'
-    # elif VSYS: 
+    # elif VSYS:
     #     xpath = f'/config/devices/entry/vsys/entry/profiles/{profile_type}'
-        
-    xpath = f'{XPATH_RULEBASE}profiles/{profile_type}'
-    
+
+    xpath = f"{XPATH_RULEBASE}profiles/{profile_type}"
+
     # params = {
     #     'type': 'config',
     #     'action': 'get',
     #     'xpath': xpath,
     #     'key': API_KEY
     # }
-    
+
     # raw_response = http_request(URL, 'GET', params=params)
-    
+
     raw_response = get_security_profile(xpath)
-    
-    profiles = raw_response['response']['result'][f'{profile_type}']['entry']
+
+    profiles = raw_response["response"]["result"][f"{profile_type}"]["entry"]
 
     profile_names = []
     if not isinstance(profiles, list):
         profiles = [profiles]
-        
+
     for entry in profiles:
-        profile_name = entry.get('@name')
+        profile_name = entry.get("@name")
         if profile_name:
             profile_names.append(profile_name)
 
@@ -14323,11 +14321,12 @@ def profile_exception_crud_commands(args: dict, action_type: str):
     device_group = args.get('device_group', DEVICE_GROUP)
     ip_track_by = IP_TRACK_BY_TYPES_MAP.get(args.get('ip_track_by', ''), '')
     ip_duration_sec = args.get('ip_duration_sec', '')
-    extracted_id = ''
-
+    extracted_id = ""
 
     if xpath_action == BLOCK_IP and (not ip_track_by or not ip_duration_sec):
-        raise DemistoException("ip_track_by and ip_duration_sec are required when action is 'Block IP'.")
+        raise DemistoException(
+            "ip_track_by and ip_duration_sec are required when action is 'Block IP'."
+        )
 
     if not profile_type:
         profile_type = check_profile_type_by_given_profile_name(profile_name, device_group)
