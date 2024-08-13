@@ -1,5 +1,5 @@
 id: da7fa1c4-11b7-4c6c-8afa-15d0e3e5f417
-version: 41
+version: 93
 vcShouldKeepItemLegacyProdMachine: false
 name: 'DSPM Automated Incident Response: JIRA Integration and AWS S3 Security'
 description: Automates incident response by integrating JIRA for issue tracking and
@@ -10,10 +10,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 3faae195-5e01-4661-8290-db55eb8685ca
+    taskid: 06a9dd1c-c492-431a-8f07-a0559d73da34
     type: start
     task:
-      id: 3faae195-5e01-4661-8290-db55eb8685ca
+      id: 06a9dd1c-c492-431a-8f07-a0559d73da34
       version: -1
       name: ""
       iscommand: false
@@ -39,10 +39,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 80ac86cd-5113-4587-8714-f8c9188e856e
+    taskid: 22583693-6900-47e7-8a6b-ce6862d1a494
     type: condition
     task:
-      id: 80ac86cd-5113-4587-8714-f8c9188e856e
+      id: 22583693-6900-47e7-8a6b-ce6862d1a494
       version: -1
       name: Check if the Action is value
       type: condition
@@ -54,7 +54,7 @@ tasks:
       No Response from user:
       - "29"
       Remedition action (Sensitive asset open to world):
-      - "31"
+      - "40"
     separatecontext: false
     conditions:
     - label: Jira action
@@ -91,8 +91,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 195
+          "x": -770,
+          "y": 825
         }
       }
     note: false
@@ -104,10 +104,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: e7390e40-6af5-4a6b-8e18-59308ab7b76b
+    taskid: 06d31c35-1c1d-4a1f-8483-fbf75a97660c
     type: regular
     task:
-      id: e7390e40-6af5-4a6b-8e18-59308ab7b76b
+      id: 06d31c35-1c1d-4a1f-8483-fbf75a97660c
       version: -1
       name: Update Slack Incident with JIRA details
       description: commands.local.cmd.set.incident
@@ -127,8 +127,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -220,
-          "y": 730
+          "x": -1720,
+          "y": 1150
         }
       }
     note: false
@@ -140,10 +140,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: d490238c-efa2-4792-871b-bd6084b3c883
+    taskid: 067bb493-7aae-4bfc-8ab0-d03b3542be63
     type: regular
     task:
-      id: d490238c-efa2-4792-871b-bd6084b3c883
+      id: 067bb493-7aae-4bfc-8ab0-d03b3542be63
       version: -1
       name: Closed current  Incident
       description: commands.local.cmd.close.inv
@@ -163,8 +163,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1010,
-          "y": 1350
+          "x": -110,
+          "y": 1685
         }
       }
     note: false
@@ -176,10 +176,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: b15852f5-4062-47f2-8516-cfe86fa7028a
+    taskid: 3a72194e-45e9-4f21-81ff-a46d94c500a2
     type: regular
     task:
-      id: b15852f5-4062-47f2-8516-cfe86fa7028a
+      id: 3a72194e-45e9-4f21-81ff-a46d94c500a2
       version: -1
       name: Create Jira Issue
       description: Creates a new issue in Jira.
@@ -196,7 +196,7 @@ tasks:
       description:
         simple: |-
           The issue created from incident Id: ${incident.id} and Incident Name: ${incident.name}
-          Remediation steps :  ${incident.remediateDescription}
+          Remediation steps :  ${incident.remediateSteps}
       issue_type_id:
         simple: ${User.JiraTicketTypeID}
       project_name:
@@ -208,8 +208,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -220,
-          "y": 550
+          "x": -1720,
+          "y": 980
         }
       }
     note: false
@@ -221,10 +221,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 78dfd491-e613-4ecf-8851-3357c93cd3cf
+    taskid: 7a261869-ae18-4101-85cb-b390babfc15b
     type: regular
     task:
-      id: 78dfd491-e613-4ecf-8851-3357c93cd3cf
+      id: 7a261869-ae18-4101-85cb-b390babfc15b
       version: -1
       name: Get Assignee ID from email
       scriptName: DSPM-Get-Jira-accountId
@@ -242,44 +242,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -220,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "18":
-    id: "18"
-    taskid: 200f7986-6603-4939-8818-3e2c3b4495aa
-    type: regular
-    task:
-      id: 200f7986-6603-4939-8818-3e2c3b4495aa
-      version: -1
-      name: Update Slack Incident with AWS details
-      description: commands.local.cmd.set.incident
-      script: Builtin|||setIncident
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "32"
-    scriptarguments:
-      details:
-        simple: Successfully applied public access block to the ${incident_object.assetName}
-          bucket.
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 370,
-          "y": 550
+          "x": -1720,
+          "y": 840
         }
       }
     note: false
@@ -291,10 +255,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: f4b27385-b845-4c47-8384-43ece1434646
+    taskid: 3f090e75-02a7-4344-84ee-9a380a1c5fbc
     type: regular
     task:
-      id: f4b27385-b845-4c47-8384-43ece1434646
+      id: 3f090e75-02a7-4344-84ee-9a380a1c5fbc
       version: -1
       name: ParseSlackBlockBuilderResponse
       scriptName: ParseSlackBlockBuilderResponse
@@ -309,8 +273,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 20
+          "x": -770,
+          "y": 640
         }
       }
     note: false
@@ -322,10 +286,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 71f8abac-729c-439d-8ce8-7375d407b114
+    taskid: 35679bee-6b45-4920-8b01-e39b4f40d6ee
     type: regular
     task:
-      id: 71f8abac-729c-439d-8ce8-7375d407b114
+      id: 35679bee-6b45-4920-8b01-e39b4f40d6ee
       version: -1
       name: SlackBlockBuilder
       description: SlackBlockBuilder will format a given Slack block into a format
@@ -344,14 +308,14 @@ tasks:
       list_name:
         simple: ${block_list_name}
       user:
-        simple: manas
+        simple: Sachin Indoriya
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": -310
+          "x": -470,
+          "y": 80
         }
       }
     note: false
@@ -363,10 +327,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 5f5c7294-2202-471c-8360-a74665690f7c
+    taskid: 650ad09a-fcff-4e29-89a6-03feff12c895
     type: regular
     task:
-      id: 5f5c7294-2202-471c-8360-a74665690f7c
+      id: 650ad09a-fcff-4e29-89a6-03feff12c895
       version: -1
       name: GetSlackBlockBuilderResponse
       description: GetSlackBlockBuilderResponse will format a SlackBlockBuilder response
@@ -377,20 +341,20 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "21"
+      - "39"
     scriptarguments:
       retry-count:
-        simple: "1"
+        simple: "3"
       retry-interval:
-        simple: "300"
+        simple: "30"
     separatecontext: false
     continueonerror: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 290,
-          "y": -130
+          "x": -470,
+          "y": 270
         }
       }
     note: false
@@ -402,10 +366,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 3e98c078-04fa-4cc9-8d2c-c24b156554a0
+    taskid: de7433da-093b-4c09-86f9-4500cb02d4a0
     type: regular
     task:
-      id: 3e98c078-04fa-4cc9-8d2c-c24b156554a0
+      id: de7433da-093b-4c09-86f9-4500cb02d4a0
       version: -1
       name: DSPM_risk_status_update
       scriptName: DSPM_risk_status_update
@@ -423,8 +387,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 720,
-          "y": 960
+          "x": -1250,
+          "y": 1780
         }
       }
     note: false
@@ -436,10 +400,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 4d3eafb1-b89e-4f50-8535-eb3b8eaaf0fe
+    taskid: 22a3b26c-acef-4d84-8433-dea621ca4841
     type: regular
     task:
-      id: 4d3eafb1-b89e-4f50-8535-eb3b8eaaf0fe
+      id: 22a3b26c-acef-4d84-8433-dea621ca4841
       version: -1
       name: DSPM_fetch_incident_details
       scriptName: DSPM_fetch_incident_details
@@ -458,7 +422,7 @@ tasks:
       {
         "position": {
           "x": 240,
-          "y": -790
+          "y": -830
         }
       }
     note: false
@@ -470,10 +434,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 50ea8673-0a22-404b-866f-8cbf3305912c
+    taskid: e5d02c0c-9196-4ab9-8f26-36d6f808e9ab
     type: regular
     task:
-      id: 50ea8673-0a22-404b-866f-8cbf3305912c
+      id: e5d02c0c-9196-4ab9-8f26-36d6f808e9ab
       version: -1
       name: DSPM_fetch_list_of_jira_project
       scriptName: DSPM_fetch_list_of_jira_project
@@ -482,14 +446,15 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "27"
+      - "35"
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 250,
-          "y": -640
+          "x": 240,
+          "y": -650
         }
       }
     note: false
@@ -501,10 +466,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: db47ebcd-cb64-4e19-87d1-cda5f44a6c7d
+    taskid: 992b9cd0-6923-48b1-811f-158f6f687f05
     type: regular
     task:
-      id: db47ebcd-cb64-4e19-87d1-cda5f44a6c7d
+      id: 992b9cd0-6923-48b1-811f-158f6f687f05
       version: -1
       name: CreateDSPMRiskSlackBlocks
       scriptName: CreateDSPMRiskSlackBlocks
@@ -513,19 +478,20 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "22"
+      - "36"
     scriptarguments:
       dspm_incident:
         simple: ${incident_object}
       list_of_project:
         simple: ${projects_list}
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": -455
+          "x": -100,
+          "y": -290
         }
       }
     note: false
@@ -537,10 +503,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: 7fed1525-ee69-4248-8bc9-5fca64ff32a4
+    taskid: 6288362f-9f6a-42ea-8433-873c13d96c68
     type: regular
     task:
-      id: 7fed1525-ee69-4248-8bc9-5fca64ff32a4
+      id: 6288362f-9f6a-42ea-8433-873c13d96c68
       version: -1
       name: RemoveSlackBlockList
       scriptName: RemoveSlackBlockList
@@ -558,8 +524,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1000,
-          "y": 1160
+          "x": -110,
+          "y": 1410
         }
       }
     note: false
@@ -571,10 +537,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 9a598a7d-6067-4404-81d0-0ca2f15a1c42
+    taskid: 4e85695d-3b52-4a5c-8f1f-c1dbc95dddc7
     type: regular
     task:
-      id: 9a598a7d-6067-4404-81d0-0ca2f15a1c42
+      id: 4e85695d-3b52-4a5c-8f1f-c1dbc95dddc7
       version: -1
       name: OverwriteListAndNotify
       description: This automation script overwrites the value of a specified list
@@ -603,8 +569,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 970,
-          "y": 370
+          "x": -110,
+          "y": 980
         }
       }
     note: false
@@ -616,10 +582,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: 4811815c-a0a4-4aff-860c-be6000f9b923
+    taskid: 82902fbc-2813-4535-8c29-d215a3d6573b
     type: regular
     task:
-      id: 4811815c-a0a4-4aff-860c-be6000f9b923
+      id: 82902fbc-2813-4535-8c29-d215a3d6573b
       version: -1
       name: SlackBlockBuilder
       description: SlackBlockBuilder will format a given Slack block into a format
@@ -638,100 +604,14 @@ tasks:
       list_name:
         simple: ${block_list_name}
       user:
-        simple: manas
+        simple: Sachin Indoriya
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 970,
-          "y": 575
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "31":
-    id: "31"
-    taskid: 97814007-89ee-4e58-8df0-42e5b4efa338
-    type: regular
-    task:
-      id: 97814007-89ee-4e58-8df0-42e5b4efa338
-      version: -1
-      name: aws-s3-put-public-access-block
-      description: Creates or modifies the PublicAccessBlock configuration for an
-        Amazon S3 bucket.
-      script: AWS - S3|||aws-s3-put-public-access-block
-      type: regular
-      iscommand: true
-      brand: AWS - S3
-    nexttasks:
-      '#none#':
-      - "18"
-    scriptarguments:
-      BlockPublicAcls:
-        simple: "true"
-      BlockPublicPolicy:
-        simple: "true"
-      IgnorePublicAcls:
-        simple: "true"
-      RestrictPublicBuckets:
-        simple: "true"
-      bucket:
-        simple: dig-security-integration
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 340,
-          "y": 385
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "32":
-    id: "32"
-    taskid: 7e44ff80-495f-4274-8286-9fb7b37a719b
-    type: regular
-    task:
-      id: 7e44ff80-495f-4274-8286-9fb7b37a719b
-      version: -1
-      name: OverwriteListAndNotify
-      description: This automation script overwrites the value of a specified list
-        and sends a Slack notification to inform the user that they failed to respond
-        to an incident notification in a timely manner. The notification includes
-        a message indicating the end of the incident playbook and an invitation to
-        reopen the incident if necessary.
-      scriptName: OverwriteListAndNotify
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "34"
-    scriptarguments:
-      list_name:
-        simple: ${block_list_name}
-      message:
-        simple: 'For XSOAR incident ID : ${incident.id} successfully applied public
-          access block to the ${incident_object.assetName} bucket.'
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 370,
-          "y": 700
+          "x": -110,
+          "y": 1180
         }
       }
     note: false
@@ -743,10 +623,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: fd41673f-1873-41cb-8b29-e62194cf7895
+    taskid: 742cb050-03f7-46f2-8017-62dd7cd3243a
     type: regular
     task:
-      id: fd41673f-1873-41cb-8b29-e62194cf7895
+      id: 742cb050-03f7-46f2-8017-62dd7cd3243a
       version: -1
       name: OverwriteListAndNotify
       description: This automation script overwrites the value of a specified list
@@ -772,8 +652,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -220,
-          "y": 930
+          "x": -1720,
+          "y": 1325
         }
       }
     note: false
@@ -785,10 +665,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 7067f9e9-4a56-48d4-82f2-7334897b8cb0
+    taskid: e1a65e68-05be-4def-81a4-ca49f68c981c
     type: regular
     task:
-      id: 7067f9e9-4a56-48d4-82f2-7334897b8cb0
+      id: e1a65e68-05be-4def-81a4-ca49f68c981c
       version: -1
       name: SlackBlockBuilder
       description: SlackBlockBuilder will format a given Slack block into a format
@@ -807,14 +687,235 @@ tasks:
       list_name:
         simple: ${block_list_name}
       user:
-        simple: manas
+        simple: Sachin Indoriya
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 200,
-          "y": 1090
+          "x": -1250,
+          "y": 1600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 74b8157c-fa21-4947-832c-c75b512f94e7
+    type: condition
+    task:
+      id: 74b8157c-fa21-4947-832c-c75b512f94e7
+      version: -1
+      name: Are we able to get list of project IDs
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If array is provided, will return yes
+        if one of the entries returned an error.
+      scriptName: isError
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "27"
+      "yes":
+      - "37"
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": -460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 24847a76-d646-43be-82dc-59f6ea015074
+    type: condition
+    task:
+      id: 24847a76-d646-43be-82dc-59f6ea015074
+      version: -1
+      name: 'did we created the slack block list successfully for Incident ID : ${incident_object.id}'
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If array is provided, will return yes
+        if one of the entries returned an error.
+      scriptName: isError
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "22"
+      "yes":
+      - "38"
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -100,
+          "y": -115
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 9dd15ba9-d4a7-4f2b-8144-deb012bd343e
+    type: regular
+    task:
+      id: 9dd15ba9-d4a7-4f2b-8144-deb012bd343e
+      version: -1
+      name: closeInvestigation
+      description: Close the current incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      closeNotes:
+        simple: Closing the playbook before sending notification to user.
+      closeReason:
+        simple: Unable to fetch the list of project.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": -290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 3365a13f-5a93-48d6-889f-16eccd737a7e
+    type: regular
+    task:
+      id: 3365a13f-5a93-48d6-889f-16eccd737a7e
+      version: -1
+      name: closeInvestigation
+      description: Close the current incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      closeNotes:
+        simple: Closing the playbook before sending notification to user.
+      closeReason:
+        simple: Unable to create custom slack block for this incident.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 330,
+          "y": 80
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 2487b00a-2b58-4622-87ad-7082f79da3a4
+    type: condition
+    task:
+      id: 2487b00a-2b58-4622-87ad-7082f79da3a4
+      version: -1
+      name: Did we received response from user
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If array is provided, will return yes
+        if one of the entries returned an error.
+      scriptName: isError
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "29"
+      "yes":
+      - "21"
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -470,
+          "y": 450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: cec2781b-44eb-4c77-8981-7b0842effc6d
+    type: playbook
+    task:
+      id: cec2781b-44eb-4c77-8981-7b0842effc6d
+      version: -1
+      name: DSPM Remediation playbook for Sensitive asset open to world.
+      playbookName: DSPM Remediation playbook for Sensitive asset open to world.
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    separatecontext: false
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -780,
+          "y": 1085
         }
       }
     note: false
@@ -829,9 +930,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2415,
-        "width": 1610,
-        "x": -220,
+        "height": 2845,
+        "width": 2660,
+        "x": -1720,
         "y": -970
       }
     }

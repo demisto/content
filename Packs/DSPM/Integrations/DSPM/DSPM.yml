@@ -28,16 +28,25 @@ configuration:
   required: true
   hiddenusername: true
   type: 9
-- display: Your XSOAR instance base URL
-  name: xsoarUrl
+- display: Azure Storage Account name
+  name: azureStorageName
   required: true
   type: 0
-- displaypassword: API Key
-  additionalinfo: The API Key that you have created on XSOAR instance
-  name: xsoarApiKey
+- displaypassword: Azure Storage Shared Key
+  additionalinfo: The Shared API Key that is available in Azure Storage Account
+  name: azureSharedKey
   required: true
   hiddenusername: true
   type: 9
+- display: GCP Service Account JSON
+  name: serviceAccountJson
+  required: true
+  type: 0
+- display: Lifetime for slack notification ( in hours)
+  name: slackMsgLifetime
+  required: true
+  defaultvalue: 2
+  type: 0
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8

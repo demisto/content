@@ -1,6 +1,6 @@
 commonfields:
   id: bd8ff7bf-775a-4856-82fa-c226c406e27a
-  version: 59
+  version: 10
 vcShouldKeepItemLegacyProdMachine: false
 name: DSPM_fetch_list_of_jira_project
 script: |+
@@ -43,9 +43,14 @@ script: |+
           api_key = integration_conf.get('jiraApiToken')
           url = integration_conf.get('jiraServerUrl')
           email = integration_conf.get('jiraEmail')
+          slack_msg_lifetime = integration_conf.get('slackMsgLifetime')
+          slack_msg_lifetime = f"{slack_msg_lifetime} hour"
           print("api key :",api_key)
           print("url",url)
           print("email ",email)
+
+          # set context for slack msg lifetime
+          demisto.setContext("SlackMsgLifetime", slack_msg_lifetime)
 
           # Fetch the list of projects from Jira
           return fetch_jira_projects(email, api_key, url)
@@ -93,6 +98,7 @@ tags: []
 enabled: true
 outputs:
 - contextPath: projects_list
+- contextPath: SlackMsgLifetime
 scripttarget: 0
 subtype: python3
 pswd: ""

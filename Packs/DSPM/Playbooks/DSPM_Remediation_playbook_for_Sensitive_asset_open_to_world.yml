@@ -1,0 +1,301 @@
+id: c7f9a77b-18e3-45ca-8307-b39035938abe
+version: 26
+vcShouldKeepItemLegacyProdMachine: false
+name: DSPM Remediation playbook for Sensitive asset open to world.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 733d3205-3d04-4a5d-8c4c-f727fca7dd1b
+    type: start
+    task:
+      id: 733d3205-3d04-4a5d-8c4c-f727fca7dd1b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": -190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: a0acff2d-448a-45dd-8f80-2543c27a8d30
+    type: regular
+    task:
+      id: a0acff2d-448a-45dd-8f80-2543c27a8d30
+      version: -1
+      name: aws-s3-put-public-access-block
+      description: Creates or modifies the PublicAccessBlock configuration for an
+        Amazon S3 bucket.
+      script: AWS - S3|||aws-s3-put-public-access-block
+      type: regular
+      iscommand: true
+      brand: AWS - S3
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      BlockPublicAcls:
+        simple: "true"
+      BlockPublicPolicy:
+        simple: "true"
+      IgnorePublicAcls:
+        simple: "true"
+      RestrictPublicBuckets:
+        simple: "true"
+      bucket:
+        simple: dig-security-integration
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 330,
+          "y": 170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 0c05a22a-416f-44c7-8cf0-17983a328570
+    type: regular
+    task:
+      id: 0c05a22a-416f-44c7-8cf0-17983a328570
+      version: -1
+      name: Slack block list overwritten with a success message
+      description: This automation script overwrites the value of a specified list
+        and sends a Slack notification to inform the user that they failed to respond
+        to an incident notification in a timely manner. The notification includes
+        a message indicating the end of the incident playbook and an invitation to
+        reopen the incident if necessary.
+      scriptName: OverwriteListAndNotify
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      list_name:
+        simple: ${block_list_name}
+      message:
+        simple: 'For XSOAR incident ID : ${incident.id} successfully applied public
+          access block to the ${incident_object.assetName} bucket.'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1270,
+          "y": 630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: a1cf0509-1907-40ab-8c23-64185c0ba4ab
+    type: condition
+    task:
+      id: a1cf0509-1907-40ab-8c23-64185c0ba4ab
+      version: -1
+      name: Check the Cloud Provider of asset
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      AWS:
+      - "8"
+      Azure:
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: AWS
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${incident_object.cloudProvider}
+            iscontext: true
+          right:
+            value:
+              simple: AWS
+    - label: Azure
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${incident_object.cloudProvider}
+            iscontext: true
+          right:
+            value:
+              simple: AZURE
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": -20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: d2bd0d18-4b3d-4380-8b77-3ef60d4e77cb
+    type: condition
+    task:
+      id: d2bd0d18-4b3d-4380-8b77-3ef60d4e77cb
+      version: -1
+      name: Has asset risk been effectively eliminated?
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If array is provided, will return yes
+        if one of the entries returned an error.
+      scriptName: isError
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "3"
+      "yes":
+      - "7"
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 348d2ec9-cd00-4c26-8ca3-0640bedb72c0
+    type: regular
+    task:
+      id: 348d2ec9-cd00-4c26-8ca3-0640bedb72c0
+      version: -1
+      name: Slack block list overwritten with a error message
+      description: This automation script overwrites the value of a specified list
+        and sends a Slack notification to inform the user that they failed to respond
+        to an incident notification in a timely manner. The notification includes
+        a message indicating the end of the incident playbook and an invitation to
+        reopen the incident if necessary.
+      scriptName: OverwriteListAndNotify
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      list_name:
+        simple: ${block_list_name}
+      message:
+        simple: 'For XSOAR incident ID : ${incident.id} got error while applying public
+          access block to the ${incident_object.assetName} bucket.'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 590,
+          "y": 630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 2ed2c838-ed4c-40e1-8f4a-b7433d7be49b
+    type: regular
+    task:
+      id: 2ed2c838-ed4c-40e1-8f4a-b7433d7be49b
+      version: -1
+      name: BlockPublicAccessOnAzureContainer
+      scriptName: BlockPublicAccessOnAzureContainer
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      container_name:
+        simple: my-dummy-bucket
+      storage_account_name:
+        simple: dspmbuckets
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 915,
+        "width": 1320,
+        "x": 330,
+        "y": -190
+      }
+    }
+  }
+inputs: []
+outputs: []

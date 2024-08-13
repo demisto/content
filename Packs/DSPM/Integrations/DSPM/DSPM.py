@@ -8,6 +8,12 @@ from requests.auth import HTTPBasicAuth  # type: ignore
 
 import urllib3
 from typing import Any
+import hashlib
+import hmac
+import base64
+from requests.exceptions import ConnectionError
+from google.oauth2 import service_account
+from google.auth.transport.requests import Request
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -229,6 +235,110 @@ def check_jira_credentials():
         demisto.debug(e)
 
 
+def check_azure_credentials():
+    try:
+        account_name = str(demisto.params().get('azureStorageName'))
+        account_key = str(demisto.params().get('azureSharedKey', {}).get('password'))
+        api_version = '2024-11-04'
+        request_url = f'https://{account_name}.blob.core.windows.net/?comp=list'
+        request_date = datetime.utcnow().strftime('%a, %d %b %Y %H:%M:%S GMT')
+
+        # string for API signature
+        string_to_sign = (
+            f"GET\n"  # HTTP Verb
+            f"\n"  # Content-Encoding
+            f"\n"  # Content-Language
+            f"\n"  # Content-Length
+            f"\n"  # Content-MD5
+            f"\n"  # Content-Type
+            f"\n"  # Date
+            f"\n"  # If-Modified-Since
+            f"\n"  # If-Match
+            f"\n"  # If-None-Match
+            f"\n"  # If-Unmodified-Since
+            f"\n"  # Range
+            f"x-ms-date:{request_date}\n"
+            f"x-ms-version:{api_version}\n"
+            f"/{account_name}/\n"
+            "comp:list"
+        )
+
+        # create signature token for API auth
+        decoded_key = base64.b64decode(account_key)
+        signature = hmac.new(decoded_key, string_to_sign.encode('utf-8'), hashlib.sha256).digest()
+        encoded_signature = base64.b64encode(signature).decode('utf-8')
+
+        authorization_header = f"SharedKey {account_name}:{encoded_signature}"
+        headers = {
+            'x-ms-date': request_date,
+            'x-ms-version': api_version,
+            'Authorization': authorization_header
+        }
+        response = requests.get(request_url, headers=headers)
+
+        if response.status_code == 200:
+            return True
+        else:
+            return_error(f"The provided Azure shared Key is invalid, Status Code '{response.status_code}'.")
+    except ConnectionError:
+        return_error(f"The provided Azure Storage account name - '{account_name}' is invalid.")
+    except Exception:
+        return_error("The provided Azure shared Key is invalid.")
+
+
+def create_gcp_access_token(gcp_service_account_json):
+    # Remove extra escape char
+    gcp_service_account_json = gcp_service_account_json.encode().decode('unicode_escape')
+
+    # Parse the JSON string into a dictionary
+    service_account_info = json.loads(gcp_service_account_json)
+
+    # Create credentials from the JSON dictionary
+    credentials = service_account.Credentials.from_service_account_info(service_account_info)
+
+    # Set the scope for the token
+    scoped_credentials = credentials.with_scopes(['https://www.googleapis.com/auth/cloud-platform'])
+
+    # Request an access token
+    scoped_credentials.refresh(Request())
+
+    # Get the access token
+    access_token = scoped_credentials.token
+
+    return access_token
+
+
+def validate_gcp_access_token(access_token):
+    validation_url = f"https://www.googleapis.com/oauth2/v1/tokeninfo?access_token={access_token}"
+    response = requests.get(validation_url)
+    return response.status_code == 200
+
+
+def check_gcp_json_credentials():
+    try:
+        # create GCP access token
+        gcp_service_account_json = demisto.params().get('serviceAccountJson')
+        gcp_access_token = create_gcp_access_token(gcp_service_account_json)
+
+        # validate the GCP access token
+        is_access_token_valid = validate_gcp_access_token(gcp_access_token)
+        return is_access_token_valid
+
+    except Exception as err:
+        return_error(f"Failed to validate the GCP credentials, Err: {err}")
+        return False
+
+
+def check_slack_notification_lifetime():
+    max_lifetime = 48
+    try:
+        slackMsgLifetime = int(demisto.params().get('slackMsgLifetime'))  # type: ignore
+        if slackMsgLifetime > max_lifetime:
+            return_error(f"Provided Slack Notification lifetime '{slackMsgLifetime}' is more than {max_lifetime} hours")
+    except Exception as err:
+        return_error(f"Failed to validate Slack Notification lifetime, Err: {err}")
+
+
 def validate_parameter_list_and_equal(param_name: str, param_in: str, param_equal: str, supported_list: List[str]):
     if param_in:
         param_list = [item.strip() for item in param_in.split(',') if item.strip()]
@@ -251,11 +361,22 @@ def test_module(client: Client) -> str:
 
         # validate jira creds
         response = check_jira_credentials()
-
         if response.status_code != 200:
             raise Exception("Invalid Jira credentials")
-        else:
-            return 'ok'
+
+        # validate Azure creds
+        is_azure_creds_valid = check_azure_credentials()
+        if not is_azure_creds_valid:
+            raise Exception("Invalid Azure credentials")
+
+        # validate GCP creds
+        is_gcp_creds_valid = check_gcp_json_credentials()
+        if not is_gcp_creds_valid:
+            raise Exception("Invalid GCP credentials")
+
+        check_slack_notification_lifetime()
+
+        return 'ok'
 
     except DemistoException as e:
         if 'Forbidden' in str(e) or 'Authorization' in str(e):
@@ -706,13 +827,19 @@ def fetch_incidents(client: Client, mirror_direction):
 
 
 def get_integration_config_command():
+    # create GCP access token
+    gcp_service_account_json = demisto.params().get('serviceAccountJson')
+    gcp_access_token = create_gcp_access_token(gcp_service_account_json)
+
     integration_config = {
         "jiraEmail": demisto.params().get('jiraEmail'),
         "jiraServerUrl": demisto.params().get('jiraServerUrl'),
         "jiraApiToken": demisto.params().get('jiraApiToken', {}).get('password'),
-        "xsoarServerUrl": demisto.params().get('xsoarUrl'),
-        "xsoarApiKey": demisto.params().get('xsoarApiKey', {}).get('password'),
-        "dspmApiKey": demisto.params().get('dspmApiKey', {}).get('password')
+        "azureStorageName": demisto.params().get('azureStorageName'),
+        "azureSharedKey": demisto.params().get('azureSharedKey', {}).get('password'),
+        "dspmApiKey": demisto.params().get('dspmApiKey', {}).get('password'),
+        "GCPAccessToken": gcp_access_token,
+        "slackMsgLifetime": demisto.params().get('slackMsgLifetime'),
     }
     demisto.debug(f" integration config : ${integration_config}")
 
