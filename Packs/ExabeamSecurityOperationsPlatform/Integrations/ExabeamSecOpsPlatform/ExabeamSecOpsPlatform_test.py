@@ -686,8 +686,8 @@ def test_convert_all_timestamp_to_datestring(attributes_input, expected_output):
             CommandResults(
                 outputs_prefix="ExabeamPlatform.Case",
                 readable_output="",
-                outputs=[{"caseId": "aa11","alertName": "alert1","caseCreationTimestamp": 1723212955501077,},
-                         {"caseId": "bb22","alertName": "alert2","caseCreationTimestamp": 1723212955501077,}]),
+                outputs=[{"caseId": "aa11", "alertName": "alert1", "caseCreationTimestamp": 1723212955501077, },
+                         {"caseId": "bb22", "alertName": "alert2", "caseCreationTimestamp": 1723212955501077, }]),
             {
                 "fetch_query": "priority:LOW",
                 "max_fetch": "2",
