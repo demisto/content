@@ -1,6 +1,6 @@
 {
-    "name": "Gigamon ThreatINSIGHT",
-    "description": "Gigamon ThreatINSIGHT allows a fast detection and effective response to active threats.",
+    "name": "Gigamon ThreatINSIGHT (Deprecated)",
+    "description": "Deprecated. Use the 'Fortinet FortiNDR Cloud' add-on instead. Gigamon ThreatINSIGHT allows a fast detection and effective response to active threats.",
     "support": "community",
     "currentVersion": "1.0.4",
     "author": "Gigamon",
