@@ -172,7 +172,7 @@ def get_user_id(admin_api, username):
 # Duo client return 2 different known structures of error messages
 def test_instance(admin_api):
     try:
-        admin_api.get_users()
+        admin_api.get_users(limit=1)
         demisto.results('ok')
 
     except Exception as e:
