@@ -7,11 +7,13 @@ alter tmp_event_name = arrayindex(events -> [], 0) -> name
 
 |alter
         device_platform = lowercase(temporary_os),
-        tmp_local_url = coalesce(parameters -> localized_url_category, parameters -> url_category),
+        url_category = coalesce(parameters -> localized_url_category, parameters -> url_category),
         tmp_int_user_username = coalesce(parameters ->profile_user, parameters ->profile_user_name),
         tmp_reason = coalesce(parameters -> event_reason, parameters -> reason),
         tmp_result = coalesce(parameters -> event_result, parameters -> result)
 
+// |alter git
+//         url_category = uppercase(tmp_local_url)
 
 // Mapping to xdm fields
 | alter
