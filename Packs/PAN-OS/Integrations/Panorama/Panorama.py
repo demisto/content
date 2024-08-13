@@ -235,8 +235,8 @@ XPATH_ACTIONS_TYPES_MAP = {
     'Allow': 'allow',
     'Block IP': 'block-ip',
     'Drop': 'drop',
-    'Reset Both': 'rest-both',
-    'Reset Client': 'rest-client',
+    'Reset Both': 'reset-both',
+    'Reset Client': 'reset-client',
     'Reset Server': 'reset-server',
     'default': 'default'
 }
