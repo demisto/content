@@ -38,7 +38,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: When true, the integration creates XSIAM events. Otherwise, they will only be displayed.
+      description: When true, the integration creates Cortex XSIAM events. Otherwise, they will only be displayed.
       name: should_push_events
       predefined:
       - 'true'
