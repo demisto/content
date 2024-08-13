@@ -639,46 +639,6 @@ def test_convert_all_timestamp_to_datestring(attributes_input, expected_output):
     assert result == expected_output
 
 
-# def test_fetch_incidents(mocker):
-#     mock_response = CommandResults(
-#         outputs_prefix="A",
-#         readable_output="",
-#         outputs=[
-#             {
-#                 "caseId": "aa11",
-#                 "alertName": "alert1",
-#                 "caseCreationTimestamp": 1723212955501077,
-#             },
-#             {
-#                 "caseId": "bb22",
-#                 "alertName": "alert2",
-#                 "caseCreationTimestamp": 1723212955501077,
-#             }
-#         ]
-#     )
-#     client = MockClient("example.com", "", "", False, False)
-
-#     params = {
-#         "fetch_query": "priority:LOW",
-#         "max_fetch": "2",
-#         "first_fetch": "3 days"
-#     }
-#     last_run = {'time': '2024-08-12T01:55:36Z', 'last_ids': ['aa11']}
-
-#     mocker.patch("ExabeamSecOpsPlatform.case_search_command", return_value=mock_response)
-
-#     incidents, updated_last_run = fetch_incidents(client, params, last_run)
-
-#     expected_incidents = [
-#         {'Name': 'alert2',
-#          'rawJSON': '{"caseId": "bb22", "alertName": "alert2", "caseCreationTimestamp": "2024-08-09T14:15:55Z"}'}]
-
-#     expected_last_run = {'time': '2024-08-09T14:15:55Z', 'last_ids': ['bb22']}
-
-#     assert incidents == expected_incidents
-#     assert updated_last_run == expected_last_run
-
-
 @pytest.mark.parametrize(
     "mock_response, params, last_run, expected_incidents, expected_last_run",
     [
