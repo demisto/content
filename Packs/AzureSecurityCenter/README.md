@@ -15,10 +15,10 @@ Must be enabled on at least 1 Azure subscription.
 <~XSIAM>
 
 ### This pack includes:
-- Log Normalization - XDM mapping for key event types.
+- Log Normalization - XDM mapping.
 
 ### Supported Event Types:
-- Alerts
+- Security Alerts
 
 ### Supported Timestamp Formats:
 - YYYY-MM-DDTHH:MM:SS.S* (UTC)
