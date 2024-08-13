@@ -64,6 +64,12 @@ args:
   predefined:
   - "false"
   - "true"
+- description: If enabled, “Info” severity alerts are received alongside alerts of other severities. Default is false.
+  name: includeinformational
+  auto: PREDEFINED
+  predefined:
+  - "false"
+  - "true"
 - description: A comma seperated list of fields to add to context when using summarized version, (default- id,name,type,severity,status,owner,created,closed).
   name: add_fields_to_summarize_context
 comment: |-

@@ -121,7 +121,7 @@ def transform_to_alert_data(incidents: List):
     return incidents
 
 
-def search_incidents(args: Dict):   # pragma: no cover
+def search_incidents(args: Dict):  # pragma: no cover
     is_summarized_version = argToBoolean(args.get('summarizedversion', False))
     platform = get_demisto_version().get('platform', 'xsoar')
     if not is_valid_args(args):
@@ -141,6 +141,11 @@ def search_incidents(args: Dict):   # pragma: no cover
 
         if args.get('trimevents') == '0':
             args.pop('trimevents')
+
+    if args.get('includeinformational'):
+        if platform == 'xsoar' or platform == 'xsoar_hosted':
+            raise ValueError('The includeinformational argument is not supported in XSOAR.')
+        args['includeinformational'] = argToBoolean(args.get('includeinformational', False))
 
     # handle list of ids
     if args.get('id'):
