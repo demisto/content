@@ -104,7 +104,7 @@ class Client(BaseClient):
 
         if tracker:
             encoding_tracker = quote(tracker, safe="!~*'()")  # remove invalid characters from tracker
-            demisto.debug(f'DEC: This is the tracker after encoding: {encoding_tracker=}')
+            demisto.debug(f'after encoding: {encoding_tracker=}')
         else:
             encoding_tracker = ""
 
