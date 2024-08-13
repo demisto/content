@@ -1,16 +1,14 @@
 id: Prisma Cloud V2 Test
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: Prisma Cloud V2 Test
-description: Test for Prisma Cloud V2.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: e1fe81d8-9039-4fcb-8f48-5f38cb43b5e2
+    taskid: 79f3555b-090a-4921-842a-c2e903dbb1fb
     type: start
     task:
-      id: e1fe81d8-9039-4fcb-8f48-5f38cb43b5e2
+      id: 79f3555b-090a-4921-842a-c2e903dbb1fb
       version: -1
       name: ""
       iscommand: false
@@ -36,10 +34,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 0acbdee9-205a-4414-839d-81617a92f90c
+    taskid: b4b3d675-d82c-4bbe-8343-b3c24df5288e
     type: regular
     task:
-      id: 0acbdee9-205a-4414-839d-81617a92f90c
+      id: b4b3d675-d82c-4bbe-8343-b3c24df5288e
       version: -1
       name: Delete Context
       description: |-
@@ -80,10 +78,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: f00ade5e-4d72-4adb-8095-d1cc66812c21
+    taskid: 83495fc7-7d1c-4425-8cd2-4f4c8fc87ac2
     type: regular
     task:
-      id: f00ade5e-4d72-4adb-8095-d1cc66812c21
+      id: 83495fc7-7d1c-4425-8cd2-4f4c8fc87ac2
       version: -1
       name: prisma-cloud-alert-filter-list
       description: List the acceptable filters and values for alerts
@@ -112,10 +110,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 5a3ea8f2-4aef-433f-81d3-bb2f403ab167
+    taskid: 1ae61b6e-eab3-4b26-8737-8596ec740a01
     type: condition
     task:
-      id: 5a3ea8f2-4aef-433f-81d3-bb2f403ab167
+      id: 1ae61b6e-eab3-4b26-8737-8596ec740a01
       version: -1
       name: Verify Outputs
       type: condition
@@ -150,10 +148,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: efe40f00-722c-4d1e-8ac0-99966284245d
+    taskid: 4dbdd14b-aee9-4589-8ced-c6552ed7afce
     type: title
     task:
-      id: efe40f00-722c-4d1e-8ac0-99966284245d
+      id: 4dbdd14b-aee9-4589-8ced-c6552ed7afce
       version: -1
       name: Test Finished Successfully
       type: title
@@ -177,15 +175,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 2e3bd8de-9cb1-45c3-8607-0966b46d46e1
+    taskid: 19b7cd8c-b33a-4a00-846f-b140b6c67771
     type: regular
     task:
-      id: 2e3bd8de-9cb1-45c3-8607-0966b46d46e1
+      id: 19b7cd8c-b33a-4a00-846f-b140b6c67771
       version: -1
       name: prisma-cloud-alert-search
-      description: Search alerts on the Prisma Cloud platform. When no absolute time
-        nor relative time arguments are provided, the search will show alerts from
-        the last 7 days.
+      description: Search alerts on the Prisma Cloud platform. When no absolute time nor relative time arguments are provided, the search will show alerts from the last 7 days.
       script: '|||prisma-cloud-alert-search'
       type: regular
       iscommand: true
@@ -220,10 +216,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 3d1d22f0-39c6-430a-8353-4ffb48e18250
+    taskid: f0de7417-cbe2-4ea2-8983-7a0d6ad9b8fb
     type: condition
     task:
-      id: 3d1d22f0-39c6-430a-8353-4ffb48e18250
+      id: f0de7417-cbe2-4ea2-8983-7a0d6ad9b8fb
       version: -1
       name: Verify Outputs
       type: condition
@@ -269,10 +265,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: d5cec778-808e-4590-823b-0b4249da483d
+    taskid: 575e1f52-f1a4-4fe9-876b-b34f21ba11de
     type: regular
     task:
-      id: d5cec778-808e-4590-823b-0b4249da483d
+      id: 575e1f52-f1a4-4fe9-876b-b34f21ba11de
       version: -1
       name: prisma-cloud-alert-get-details
       description: Gets the details of an alert based on alert ID
@@ -304,10 +300,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: e3b19e7e-8a40-4c5f-83fb-7fa374e82c05
+    taskid: 36c74e11-7262-4b5c-8ed0-24db4c68abd0
     type: condition
     task:
-      id: e3b19e7e-8a40-4c5f-83fb-7fa374e82c05
+      id: 36c74e11-7262-4b5c-8ed0-24db4c68abd0
       version: -1
       name: Verify Outputs
       type: condition
@@ -346,16 +342,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 0c3b6f82-d6fd-4010-88c5-0f899e209d57
+    taskid: 94471ca1-33a3-4d35-88e1-9cc5ae07a2a8
     type: regular
     task:
-      id: 0c3b6f82-d6fd-4010-88c5-0f899e209d57
+      id: 94471ca1-33a3-4d35-88e1-9cc5ae07a2a8
       version: -1
       name: prisma-cloud-alert-dismiss
-      description: Dismiss or snooze the alerts matching the given filter. Either
-        policy IDs or alert IDs must be provided. When no absolute time nor relative
-        time arguments are provided, default time range is all times. For snoozing,
-        provide "snooze_unit" and "snooze_value" arguments.
+      description: Dismiss or snooze the alerts matching the given filter. Either policy IDs or alert IDs must be provided. When no absolute time nor relative time arguments are provided, default time range is all times. For snoozing, provide "snooze_unit" and "snooze_value" arguments.
       script: '|||prisma-cloud-alert-dismiss'
       type: regular
       iscommand: true
@@ -388,10 +381,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 69eceed5-f4de-49ca-8449-3e7c4456d486
+    taskid: 1dc42406-d1a7-4732-8406-d48da87e426e
     type: regular
     task:
-      id: 69eceed5-f4de-49ca-8449-3e7c4456d486
+      id: 1dc42406-d1a7-4732-8406-d48da87e426e
       version: -1
       name: prisma-cloud-alert-get-details
       description: Gets the details of an alert based on alert ID
@@ -423,10 +416,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: cb81a529-f610-4364-82ff-d796887b110c
+    taskid: 352573c8-1860-4b2d-871a-91c63e7bb5b8
     type: condition
     task:
-      id: cb81a529-f610-4364-82ff-d796887b110c
+      id: 352573c8-1860-4b2d-871a-91c63e7bb5b8
       version: -1
       name: Verify Outputs
       type: condition
@@ -472,15 +465,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 60e63476-c815-4c22-8e53-443b89a3f39e
+    taskid: f6502e8e-bd02-4f5d-8382-c7666801ebb9
     type: regular
     task:
-      id: 60e63476-c815-4c22-8e53-443b89a3f39e
+      id: f6502e8e-bd02-4f5d-8382-c7666801ebb9
       version: -1
       name: prisma-cloud-alert-reopen
-      description: Re-open the alerts matching the given filter. Either policy IDs
-        or alert IDs must be provided. When no absolute time nor relative time arguments
-        are provided, default time range is all times.
+      description: Re-open the alerts matching the given filter. Either policy IDs or alert IDs must be provided. When no absolute time nor relative time arguments are provided, default time range is all times.
       script: '|||prisma-cloud-alert-reopen'
       type: regular
       iscommand: true
@@ -509,10 +500,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: c24c5db8-2d7a-42d7-81a6-b449d24d442d
+    taskid: 42059885-6d3d-4146-8156-7702d8dc2995
     type: regular
     task:
-      id: c24c5db8-2d7a-42d7-81a6-b449d24d442d
+      id: 42059885-6d3d-4146-8156-7702d8dc2995
       version: -1
       name: prisma-cloud-alert-get-details
       description: Gets the details of an alert based on alert ID
@@ -544,10 +535,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 2aac5663-5209-4f2f-855f-26b6f02e4d15
+    taskid: 9aaba689-ba32-4ed8-814d-a072822a690f
     type: condition
     task:
-      id: 2aac5663-5209-4f2f-855f-26b6f02e4d15
+      id: 9aaba689-ba32-4ed8-814d-a072822a690f
       version: -1
       name: Verify Outputs
       type: condition
@@ -593,16 +584,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: eb479885-a2e6-4ac0-8ff1-3207f4c9b5dc
+    taskid: 9956b851-559a-43cd-8140-917bd55a5d4c
     type: regular
     task:
-      id: eb479885-a2e6-4ac0-8ff1-3207f4c9b5dc
+      id: 9956b851-559a-43cd-8140-917bd55a5d4c
       version: -1
       name: prisma-cloud-config-search
-      description: Search configuration inventory on the Prisma Cloud platform using
-        RQL language. Use this command for all queries that start with "config". When
-        no absolute time nor relative time arguments are provided, default time range
-        is all times.
+      description: Search configuration inventory on the Prisma Cloud platform using RQL language. Use this command for all queries that start with "config". When no absolute time nor relative time arguments are provided, default time range is all times.
       script: '|||prisma-cloud-config-search'
       type: regular
       iscommand: true
@@ -614,8 +602,7 @@ tasks:
       limit:
         simple: "1"
       query:
-        simple: config from cloud.resource where cloud.region = 'AWS Ohio' AND cloud.service
-          = 'Amazon EC2'
+        simple: 'config from cloud.resource where cloud.region = ''AWS Ohio'' AND cloud.service = ''Amazon EC2'''
       time_range_unit:
         simple: hour
       time_range_value:
@@ -638,10 +625,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: ed7b22ce-fe6f-42ed-8a8c-16538f51f6ea
+    taskid: 3ffc707e-a310-401c-80f5-4ade9b2f3adc
     type: condition
     task:
-      id: ed7b22ce-fe6f-42ed-8a8c-16538f51f6ea
+      id: 3ffc707e-a310-401c-80f5-4ade9b2f3adc
       version: -1
       name: Verify Outputs
       type: condition
@@ -684,16 +671,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 60a9bf3a-413c-4933-8e06-a4b616acb501
+    taskid: 3d5d32c3-40e4-483c-822e-a98b4ce24a03
     type: regular
     task:
-      id: 60a9bf3a-413c-4933-8e06-a4b616acb501
+      id: 3d5d32c3-40e4-483c-822e-a98b4ce24a03
       version: -1
       name: prisma-cloud-event-search
-      description: Search events inventory on the Prisma Cloud platform using RQL
-        language. Use this command for all queries that start with "event". When no
-        absolute time nor relative time arguments are provided, default time range
-        is all times.
+      description: Search events inventory on the Prisma Cloud platform using RQL language. Use this command for all queries that start with "event". When no absolute time nor relative time arguments are provided, default time range is all times.
       script: '|||prisma-cloud-event-search'
       type: regular
       iscommand: true
@@ -705,8 +689,7 @@ tasks:
       limit:
         simple: "1"
       query:
-        simple: event from cloud.audit_logs where cloud.type = 'aws' AND cloud.region
-          = 'AWS Oregon'
+        simple: event from cloud.audit_logs where cloud.type = 'aws' AND cloud.region = 'AWS Oregon'
       time_range_unit:
         simple: hour
       time_range_value:
@@ -729,10 +712,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: e4393825-4b9a-4322-8e90-4ff8dc6214a8
+    taskid: ae3c7441-e40d-4a01-8162-f6bf7a8527c3
     type: condition
     task:
-      id: e4393825-4b9a-4322-8e90-4ff8dc6214a8
+      id: ae3c7441-e40d-4a01-8162-f6bf7a8527c3
       version: -1
       name: Verify Outputs
       type: condition
@@ -775,10 +758,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: d25490db-4245-4bf6-8f9d-11c86f985f7a
+    taskid: 58c9f25e-bbd4-4779-89e5-b51493bdc10b
     type: regular
     task:
-      id: d25490db-4245-4bf6-8f9d-11c86f985f7a
+      id: 58c9f25e-bbd4-4779-89e5-b51493bdc10b
       version: -1
       name: prisma-cloud-resource-get
       description: Get resource details.
@@ -810,10 +793,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 427afb74-d0d9-4fbf-892f-a864cec38eea
+    taskid: 0f9da6a1-f5ba-4e06-891c-4ab65743ff9f
     type: condition
     task:
-      id: 427afb74-d0d9-4fbf-892f-a864cec38eea
+      id: 0f9da6a1-f5ba-4e06-891c-4ab65743ff9f
       version: -1
       name: Verify Outputs
       type: condition
@@ -852,10 +835,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: 43ac0551-7287-4607-8abb-cdef8472cbad
+    taskid: 4a36bd3a-e6a0-4444-8b46-eb8884704a2b
     type: regular
     task:
-      id: 43ac0551-7287-4607-8abb-cdef8472cbad
+      id: 4a36bd3a-e6a0-4444-8b46-eb8884704a2b
       version: -1
       name: prisma-cloud-account-list
       description: List accounts.
@@ -887,10 +870,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 483d23b7-9cab-4015-8d7b-6ef919742c5f
+    taskid: 71ae85e9-cb4c-4aca-8466-46aa21d776e2
     type: condition
     task:
-      id: 483d23b7-9cab-4015-8d7b-6ef919742c5f
+      id: 71ae85e9-cb4c-4aca-8466-46aa21d776e2
       version: -1
       name: Verify Outputs
       type: condition
@@ -925,10 +908,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: 68c54238-342b-4ec6-8ff6-613320f58d4c
+    taskid: 0baca1c0-c349-44c5-89b4-4a37630639bb
     type: regular
     task:
-      id: 68c54238-342b-4ec6-8ff6-613320f58d4c
+      id: 0baca1c0-c349-44c5-89b4-4a37630639bb
       version: -1
       name: prisma-cloud-account-status-get
       description: Get accounts statuses.
@@ -960,10 +943,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 67e2ff92-fdfd-4c1a-8212-ccd1d03f3fc6
+    taskid: cb47c81e-559a-44fb-8f07-b57b84368cda
     type: condition
     task:
-      id: 67e2ff92-fdfd-4c1a-8212-ccd1d03f3fc6
+      id: cb47c81e-559a-44fb-8f07-b57b84368cda
       version: -1
       name: Verify Outputs
       type: condition
@@ -1002,10 +985,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 7c423564-30e1-4be3-8216-563d1bed5fe2
+    taskid: 94f2a736-0e0e-441e-8bc5-207b3845f11f
     type: regular
     task:
-      id: 7c423564-30e1-4be3-8216-563d1bed5fe2
+      id: 94f2a736-0e0e-441e-8bc5-207b3845f11f
       version: -1
       name: prisma-cloud-account-owner-list
       description: Get accounts owners.
@@ -1037,10 +1020,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: f57b4f5e-e0f4-4183-8677-435ad085c241
+    taskid: 938b3fdc-2c77-4ec9-851e-3b12e521cb7b
     type: condition
     task:
-      id: f57b4f5e-e0f4-4183-8677-435ad085c241
+      id: 938b3fdc-2c77-4ec9-851e-3b12e521cb7b
       version: -1
       name: Verify Outputs
       type: condition
@@ -1079,10 +1062,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: 267efa6e-d0a8-431c-871e-02d7b2ecc146
+    taskid: bcc9abff-5a39-4aab-8b81-fe7b746c90e2
     type: regular
     task:
-      id: 267efa6e-d0a8-431c-871e-02d7b2ecc146
+      id: bcc9abff-5a39-4aab-8b81-fe7b746c90e2
       version: -1
       name: prisma-cloud-permission-list
       description: Get permission list. You must provide either "query" or "next_token".
@@ -1097,8 +1080,7 @@ tasks:
       limit:
         simple: "5"
       query:
-        simple: config from iam where dest.cloud.region = 'AWS Virginia' AND dest.cloud.service.name
-          = 'lambda' AND dest.cloud.resource.type = 'function'
+        simple: config from iam where dest.cloud.region = 'AWS Virginia' AND dest.cloud.service.name = 'lambda' AND dest.cloud.resource.type = 'function'
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1117,10 +1099,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: bc066903-e5db-4147-8ebe-433ea03db5de
+    taskid: 5c79af5a-0e8b-4cc1-8eeb-79ba187d2dcf
     type: condition
     task:
-      id: bc066903-e5db-4147-8ebe-433ea03db5de
+      id: 5c79af5a-0e8b-4cc1-8eeb-79ba187d2dcf
       version: -1
       name: Verify Outputs
       type: condition
@@ -1171,16 +1153,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: dcae8a89-39d6-4f4a-880d-acf612dfd2a1
+    taskid: 0a2dbc5b-5458-4843-8f91-a0bf31507c1e
     type: regular
     task:
-      id: dcae8a89-39d6-4f4a-880d-acf612dfd2a1
+      id: 0a2dbc5b-5458-4843-8f91-a0bf31507c1e
       version: -1
       name: prisma-cloud-alert-dismiss
-      description: Dismiss or snooze the alerts matching the given filter. Either
-        policy IDs or alert IDs must be provided. When no absolute time nor relative
-        time arguments are provided, default time range is all times. For snoozing,
-        provide "snooze_unit" and "snooze_value" arguments.
+      description: Dismiss or snooze the alerts matching the given filter. Either policy IDs or alert IDs must be provided. When no absolute time nor relative time arguments are provided, default time range is all times. For snoozing, provide "snooze_unit" and "snooze_value" arguments.
       script: '|||prisma-cloud-alert-dismiss'
       type: regular
       iscommand: true
@@ -1215,10 +1194,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: bda4f304-5ae6-4d9d-8e1b-df6bce8e469e
+    taskid: afcceb51-0567-450c-8de2-c64c0c835e6b
     type: regular
     task:
-      id: bda4f304-5ae6-4d9d-8e1b-df6bce8e469e
+      id: afcceb51-0567-450c-8de2-c64c0c835e6b
       version: -1
       name: prisma-cloud-alert-get-details
       description: Gets the details of an alert based on alert ID
@@ -1250,10 +1229,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: 2c0bb8d4-ef77-4756-8905-ed9c51118eef
+    taskid: 00a7cd59-b0fe-4a6b-8088-57685eb946e4
     type: condition
     task:
-      id: 2c0bb8d4-ef77-4756-8905-ed9c51118eef
+      id: 00a7cd59-b0fe-4a6b-8088-57685eb946e4
       version: -1
       name: Verify Outputs
       type: condition
@@ -1299,10 +1278,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: e74f098c-f883-4e07-8962-ca6ff6f062e7
+    taskid: eaca5dce-b2ad-41cc-817d-679e8ff8867f
     type: regular
     task:
-      id: e74f098c-f883-4e07-8962-ca6ff6f062e7
+      id: eaca5dce-b2ad-41cc-817d-679e8ff8867f
       version: -1
       name: prisma-cloud-resource-list
       description: Get resource lists.
@@ -1334,10 +1313,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: 1fbd01eb-b839-4b34-8971-61ae9b191c76
+    taskid: cec79ad0-8dc8-4d7c-8caa-efa6bd812468
     type: condition
     task:
-      id: 1fbd01eb-b839-4b34-8971-61ae9b191c76
+      id: cec79ad0-8dc8-4d7c-8caa-efa6bd812468
       version: -1
       name: Verify Outputs
       type: condition
@@ -1372,10 +1351,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: 2b460427-cc47-4251-8e80-f197740c1208
+    taskid: b76daca0-7d5e-4626-8220-7248b035d428
     type: regular
     task:
-      id: 2b460427-cc47-4251-8e80-f197740c1208
+      id: b76daca0-7d5e-4626-8220-7248b035d428
       version: -1
       name: prisma-cloud-user-roles-list
       description: Get user roles lists.
@@ -1407,10 +1386,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: ac1aefa8-3508-4136-89f1-863c4b00f9b1
+    taskid: 19e9f72b-9707-401c-8b5c-c0ec83fb38bd
     type: condition
     task:
-      id: ac1aefa8-3508-4136-89f1-863c4b00f9b1
+      id: 19e9f72b-9707-401c-8b5c-c0ec83fb38bd
       version: -1
       name: Verify Outputs
       type: condition
@@ -1445,10 +1424,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: 9bdc0b68-09a7-45cb-8ed1-a12e1e8805f4
+    taskid: a962633f-f69c-4fda-8d0a-f9ce636d8b13
     type: condition
     task:
-      id: 9bdc0b68-09a7-45cb-8ed1-a12e1e8805f4
+      id: a962633f-f69c-4fda-8d0a-f9ce636d8b13
       version: -1
       name: Verify Outputs
       type: condition
@@ -1483,10 +1462,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "46":
     id: "46"
-    taskid: 1e34c832-621a-468c-8134-801bdaf497dd
+    taskid: 6da8f94a-a7db-4d85-8582-522d6a005ffc
     type: regular
     task:
-      id: 1e34c832-621a-468c-8134-801bdaf497dd
+      id: 6da8f94a-a7db-4d85-8582-522d6a005ffc
       version: -1
       name: prisma-cloud-users-list
       description: Get users lists.
@@ -1518,15 +1497,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "47":
     id: "47"
-    taskid: 319df04f-4abb-40b8-823c-efd1698f2e84
+    taskid: c5a9929e-2ccf-4d8a-8e5e-93bb2db4f59a
     type: regular
     task:
-      id: 319df04f-4abb-40b8-823c-efd1698f2e84
+      id: c5a9929e-2ccf-4d8a-8e5e-93bb2db4f59a
       version: -1
       name: Reopen snoozed alert (for next playbook run)
-      description: Re-open the alerts matching the given filter. Either policy IDs
-        or alert IDs must be provided. When no absolute time nor relative time arguments
-        are provided, default time range is all times.
+      description: Re-open the alerts matching the given filter. Either policy IDs or alert IDs must be provided. When no absolute time nor relative time arguments are provided, default time range is all times.
       script: '|||prisma-cloud-alert-reopen'
       type: regular
       iscommand: true
@@ -1846,3 +1823,5 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 6.5.0
+description: Test for Prisma Cloud V2.
