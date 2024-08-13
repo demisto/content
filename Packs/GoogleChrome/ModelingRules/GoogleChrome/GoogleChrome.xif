@@ -12,8 +12,8 @@ alter tmp_event_name = arrayindex(events -> [], 0) -> name
         tmp_reason = coalesce(parameters -> event_reason, parameters -> reason),
         tmp_result = coalesce(parameters -> event_result, parameters -> result)
 
-// |alter git
-//         url_category = uppercase(tmp_local_url)
+|alter git
+        url_category = uppercase(tmp_local_url)
 
 // Mapping to xdm fields
 | alter
