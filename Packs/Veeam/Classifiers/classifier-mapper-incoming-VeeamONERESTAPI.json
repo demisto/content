@@ -6,19 +6,19 @@
         "Backup Copy Creation Time": {
             "dontMapEventToLabels": true,
             "internalMapping": {
-                "Alarm Status": {
+                "Veeam Alarm Status": {
                     "simple": "status"
                 },
-                "Alarm Template ID": {
+                "Veeam Alarm Template ID": {
                     "simple": "alarmTemplateId"
                 },
-                "Alarm Template Name": {
+                "Veeam Alarm Template Name": {
                     "simple": "name"
                 },
                 "Alert ID": {
                     "simple": "predefinedAlarmId"
                 },
-                "Assigned Object": {
+                "Veeam Assigned Object": {
                     "complex": {
                         "filters": [],
                         "root": "alarmAssignment",
@@ -55,10 +55,10 @@
                 "Number Of Found Related Alerts": {
                     "simple": "childAlarmsCount"
                 },
-                "Number of Triggered Alarms": {
+                "Veeam Number of Triggered Alarms": {
                     "simple": "repeatCount"
                 },
-                "Remediation": {
+                "Veeam Remediation": {
                     "complex": {
                         "filters": [],
                         "root": "remediation",
@@ -86,7 +86,7 @@
                         ]
                     }
                 },
-                "Triggered Time": {
+                "Veeam Triggered Time": {
                     "simple": "triggeredTime"
                 },
                 "details": {
@@ -97,19 +97,19 @@
         "Backup Server Security Status": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "Alarm Status": {
+                "Veeam Alarm Status": {
                     "simple": "status"
                 },
-                "Alarm Template ID": {
+                "Veeam Alarm Template ID": {
                     "simple": "alarmTemplateId"
                 },
-                "Alarm Template Name": {
+                "Veeam Alarm Template Name": {
                     "simple": "name"
                 },
                 "Alert ID": {
                     "simple": "predefinedAlarmId"
                 },
-                "Assigned Object": {
+                "Veeam Assigned Object": {
                     "complex": {
                         "filters": [],
                         "root": "alarmAssignment",
@@ -146,10 +146,10 @@
                 "Number Of Found Related Alerts": {
                     "simple": "childAlarmsCount"
                 },
-                "Number of Triggered Alarms": {
+                "Veeam Number of Triggered Alarms": {
                     "simple": "repeatCount"
                 },
-                "Remediation": {
+                "Veeam Remediation": {
                     "complex": {
                         "filters": [],
                         "root": "remediation",
@@ -177,7 +177,7 @@
                         ]
                     }
                 },
-                "Triggered Time": {
+                "Veeam Triggered Time": {
                     "simple": "triggeredTime"
                 },
                 "details": {
@@ -188,19 +188,19 @@
         "Enterprise Application Backup": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "Alarm Status": {
+                "Veeam Alarm Status": {
                     "simple": "status"
                 },
-                "Alarm Template ID": {
+                "Veeam Alarm Template ID": {
                     "simple": "alarmTemplateId"
                 },
-                "Alarm Template Name": {
+                "Veeam Alarm Template Name": {
                     "simple": "name"
                 },
                 "Alert ID": {
                     "simple": "predefinedAlarmId"
                 },
-                "Assigned Object": {
+                "Veeam Assigned Object": {
                     "complex": {
                         "filters": [],
                         "root": "alarmAssignment",
@@ -237,10 +237,10 @@
                 "Number Of Found Related Alerts": {
                     "simple": "childAlarmsCount"
                 },
-                "Number of Triggered Alarms": {
+                "Veeam Number of Triggered Alarms": {
                     "simple": "repeatCount"
                 },
-                "Remediation": {
+                "Veeam Remediation": {
                     "complex": {
                         "filters": [],
                         "root": "remediation",
@@ -268,7 +268,7 @@
                         ]
                     }
                 },
-                "Triggered Time": {
+                "Veeam Triggered Time": {
                     "simple": "triggeredTime"
                 },
                 "details": {
@@ -279,19 +279,19 @@
         "Immutability Change Tracking": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "Alarm Status": {
+                "Veeam Alarm Status": {
                     "simple": "status"
                 },
-                "Alarm Template ID": {
+                "Veeam Alarm Template ID": {
                     "simple": "alarmTemplateId"
                 },
-                "Alarm Template Name": {
+                "Veeam Alarm Template Name": {
                     "simple": "name"
                 },
                 "Alert ID": {
                     "simple": "predefinedAlarmId"
                 },
-                "Assigned Object": {
+                "Veeam Assigned Object": {
                     "complex": {
                         "filters": [],
                         "root": "alarmAssignment",
@@ -328,10 +328,10 @@
                 "Number Of Found Related Alerts": {
                     "simple": "childAlarmsCount"
                 },
-                "Number of Triggered Alarms": {
+                "Veeam Number of Triggered Alarms": {
                     "simple": "repeatCount"
                 },
-                "Remediation": {
+                "Veeam Remediation": {
                     "complex": {
                         "filters": [],
                         "root": "remediation",
@@ -359,7 +359,7 @@
                         ]
                     }
                 },
-                "Triggered Time": {
+                "Veeam Triggered Time": {
                     "simple": "triggeredTime"
                 },
                 "details": {
@@ -370,19 +370,19 @@
         "Immutability State": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "Alarm Status": {
+                "Veeam Alarm Status": {
                     "simple": "status"
                 },
-                "Alarm Template ID": {
+                "Veeam Alarm Template ID": {
                     "simple": "alarmTemplateId"
                 },
-                "Alarm Template Name": {
+                "Veeam Alarm Template Name": {
                     "simple": "name"
                 },
                 "Alert ID": {
                     "simple": "predefinedAlarmId"
                 },
-                "Assigned Object": {
+                "Veeam Assigned Object": {
                     "complex": {
                         "filters": [],
                         "root": "alarmAssignment",
@@ -419,10 +419,10 @@
                 "Number Of Found Related Alerts": {
                     "simple": "childAlarmsCount"
                 },
-                "Number of Triggered Alarms": {
+                "Veeam Number of Triggered Alarms": {
                     "simple": "repeatCount"
                 },
-                "Remediation": {
+                "Veeam Remediation": {
                     "complex": {
                         "filters": [],
                         "root": "remediation",
@@ -450,7 +450,7 @@
                         ]
                     }
                 },
-                "Triggered Time": {
+                "Veeam Triggered Time": {
                     "simple": "triggeredTime"
                 },
                 "details": {
@@ -469,19 +469,19 @@
         "Incremental Backup Size": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "Alarm Status": {
+                "Veeam Alarm Status": {
                     "simple": "status"
                 },
-                "Alarm Template ID": {
+                "Veeam Alarm Template ID": {
                     "simple": "alarmTemplateId"
                 },
-                "Alarm Template Name": {
+                "Veeam Alarm Template Name": {
                     "simple": "name"
                 },
                 "Alert ID": {
                     "simple": "predefinedAlarmId"
                 },
-                "Assigned Object": {
+                "Veeam Assigned Object": {
                     "complex": {
                         "filters": [],
                         "root": "alarmAssignment",
@@ -518,10 +518,10 @@
                 "Number Of Found Related Alerts": {
                     "simple": "childAlarmsCount"
                 },
-                "Number of Triggered Alarms": {
+                "Veeam Number of Triggered Alarms": {
                     "simple": "repeatCount"
                 },
-                "Remediation": {
+                "Veeam Remediation": {
                     "complex": {
                         "filters": [],
                         "root": "remediation",
@@ -549,7 +549,7 @@
                         ]
                     }
                 },
-                "Triggered Time": {
+                "Veeam Triggered Time": {
                     "simple": "triggeredTime"
                 },
                 "details": {
@@ -560,19 +560,19 @@
         "Job Disabling": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "Alarm Status": {
+                "Veeam Alarm Status": {
                     "simple": "status"
                 },
-                "Alarm Template ID": {
+                "Veeam Alarm Template ID": {
                     "simple": "alarmTemplateId"
                 },
-                "Alarm Template Name": {
+                "Veeam Alarm Template Name": {
                     "simple": "name"
                 },
                 "Alert ID": {
                     "simple": "predefinedAlarmId"
                 },
-                "Assigned Object": {
+                "Veeam Assigned Object": {
                     "complex": {
                         "filters": [],
                         "root": "alarmAssignment",
@@ -609,10 +609,10 @@
                 "Number Of Found Related Alerts": {
                     "simple": "childAlarmsCount"
                 },
-                "Number of Triggered Alarms": {
+                "Veeam Number of Triggered Alarms": {
                     "simple": "repeatCount"
                 },
-                "Remediation": {
+                "Veeam Remediation": {
                     "complex": {
                         "filters": [],
                         "root": "remediation",
@@ -640,7 +640,7 @@
                         ]
                     }
                 },
-                "Triggered Time": {
+                "Veeam Triggered Time": {
                     "simple": "triggeredTime"
                 },
                 "details": {
@@ -651,19 +651,19 @@
         "Job Duration": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "Alarm Status": {
+                "Veeam Alarm Status": {
                     "simple": "status"
                 },
-                "Alarm Template ID": {
+                "Veeam Alarm Template ID": {
                     "simple": "alarmTemplateId"
                 },
-                "Alarm Template Name": {
+                "Veeam Alarm Template Name": {
                     "simple": "name"
                 },
                 "Alert ID": {
                     "simple": "predefinedAlarmId"
                 },
-                "Assigned Object": {
+                "Veeam Assigned Object": {
                     "complex": {
                         "filters": [],
                         "root": "alarmAssignment",
@@ -700,10 +700,10 @@
                 "Number Of Found Related Alerts": {
                     "simple": "childAlarmsCount"
                 },
-                "Number of Triggered Alarms": {
+                "Veeam Number of Triggered Alarms": {
                     "simple": "repeatCount"
                 },
-                "Remediation": {
+                "Veeam Remediation": {
                     "complex": {
                         "filters": [],
                         "root": "remediation",
@@ -731,7 +731,7 @@
                         ]
                     }
                 },
-                "Triggered Time": {
+                "Veeam Triggered Time": {
                     "simple": "triggeredTime"
                 },
                 "details": {
@@ -742,19 +742,19 @@
         "Job Duration Deviation (Veeam Backup for Microsoft 365)": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "Alarm Status": {
+                "Veeam Alarm Status": {
                     "simple": "status"
                 },
-                "Alarm Template ID": {
+                "Veeam Alarm Template ID": {
                     "simple": "alarmTemplateId"
                 },
-                "Alarm Template Name": {
+                "Veeam Alarm Template Name": {
                     "simple": "name"
                 },
                 "Alert ID": {
                     "simple": "predefinedAlarmId"
                 },
-                "Assigned Object": {
+                "Veeam Assigned Object": {
                     "complex": {
                         "filters": [],
                         "root": "alarmAssignment",
@@ -791,10 +791,10 @@
                 "Number Of Found Related Alerts": {
                     "simple": "childAlarmsCount"
                 },
-                "Number of Triggered Alarms": {
+                "Veeam Number of Triggered Alarms": {
                     "simple": "repeatCount"
                 },
-                "Remediation": {
+                "Veeam Remediation": {
                     "complex": {
                         "filters": [],
                         "root": "remediation",
@@ -822,7 +822,7 @@
                         ]
                     }
                 },
-                "Triggered Time": {
+                "Veeam Triggered Time": {
                     "simple": "triggeredTime"
                 },
                 "details": {
@@ -833,19 +833,19 @@
         "Malware Detection Change Tracking": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "Alarm Status": {
+                "Veeam Alarm Status": {
                     "simple": "status"
                 },
-                "Alarm Template ID": {
+                "Veeam Alarm Template ID": {
                     "simple": "alarmTemplateId"
                 },
-                "Alarm Template Name": {
+                "Veeam Alarm Template Name": {
                     "simple": "name"
                 },
                 "Alert ID": {
                     "simple": "predefinedAlarmId"
                 },
-                "Assigned Object": {
+                "Veeam Assigned Object": {
                     "complex": {
                         "filters": [],
                         "root": "alarmAssignment",
@@ -882,10 +882,10 @@
                 "Number Of Found Related Alerts": {
                     "simple": "childAlarmsCount"
                 },
-                "Number of Triggered Alarms": {
+                "Veeam Number of Triggered Alarms": {
                     "simple": "repeatCount"
                 },
-                "Remediation": {
+                "Veeam Remediation": {
                     "complex": {
                         "filters": [],
                         "root": "remediation",
@@ -913,7 +913,7 @@
                         ]
                     }
                 },
-                "Triggered Time": {
+                "Veeam Triggered Time": {
                     "simple": "triggeredTime"
                 },
                 "details": {
@@ -924,19 +924,19 @@
         "Physical Machine Backup": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "Alarm Status": {
+                "Veeam Alarm Status": {
                     "simple": "status"
                 },
-                "Alarm Template ID": {
+                "Veeam Alarm Template ID": {
                     "simple": "alarmTemplateId"
                 },
-                "Alarm Template Name": {
+                "Veeam Alarm Template Name": {
                     "simple": "name"
                 },
                 "Alert ID": {
                     "simple": "predefinedAlarmId"
                 },
-                "Assigned Object": {
+                "Veeam Assigned Object": {
                     "complex": {
                         "filters": [],
                         "root": "alarmAssignment",
@@ -973,10 +973,10 @@
                 "Number Of Found Related Alerts": {
                     "simple": "childAlarmsCount"
                 },
-                "Number of Triggered Alarms": {
+                "Veeam Number of Triggered Alarms": {
                     "simple": "repeatCount"
                 },
-                "Remediation": {
+                "Veeam Remediation": {
                     "complex": {
                         "filters": [],
                         "root": "remediation",
@@ -1004,7 +1004,7 @@
                         ]
                     }
                 },
-                "Triggered Time": {
+                "Veeam Triggered Time": {
                     "simple": "triggeredTime"
                 },
                 "details": {
@@ -1015,19 +1015,19 @@
         "Possible Malware Activity": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "Alarm Status": {
+                "Veeam Alarm Status": {
                     "simple": "status"
                 },
-                "Alarm Template ID": {
+                "Veeam Alarm Template ID": {
                     "simple": "alarmTemplateId"
                 },
-                "Alarm Template Name": {
+                "Veeam Alarm Template Name": {
                     "simple": "name"
                 },
                 "Alert ID": {
                     "simple": "predefinedAlarmId"
                 },
-                "Assigned Object": {
+                "Veeam Assigned Object": {
                     "complex": {
                         "filters": [],
                         "root": "alarmAssignment",
@@ -1064,10 +1064,10 @@
                 "Number Of Found Related Alerts": {
                     "simple": "childAlarmsCount"
                 },
-                "Number of Triggered Alarms": {
+                "Veeam Number of Triggered Alarms": {
                     "simple": "repeatCount"
                 },
-                "Remediation": {
+                "Veeam Remediation": {
                     "complex": {
                         "filters": [],
                         "root": "remediation",
@@ -1095,7 +1095,7 @@
                         ]
                     }
                 },
-                "Triggered Time": {
+                "Veeam Triggered Time": {
                     "simple": "triggeredTime"
                 },
                 "details": {
@@ -1106,19 +1106,19 @@
         "Virtual Machine Backup": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "Alarm Status": {
+                "Veeam Alarm Status": {
                     "simple": "status"
                 },
-                "Alarm Template ID": {
+                "Veeam Alarm Template ID": {
                     "simple": "alarmTemplateId"
                 },
-                "Alarm Template Name": {
+                "Veeam Alarm Template Name": {
                     "simple": "name"
                 },
                 "Alert ID": {
                     "simple": "predefinedAlarmId"
                 },
-                "Assigned Object": {
+                "Veeam Assigned Object": {
                     "complex": {
                         "filters": [],
                         "root": "alarmAssignment",
@@ -1155,10 +1155,10 @@
                 "Number Of Found Related Alerts": {
                     "simple": "childAlarmsCount"
                 },
-                "Number of Triggered Alarms": {
+                "Veeam Number of Triggered Alarms": {
                     "simple": "repeatCount"
                 },
-                "Remediation": {
+                "Veeam Remediation": {
                     "complex": {
                         "filters": [],
                         "root": "remediation",
@@ -1186,7 +1186,7 @@
                         ]
                     }
                 },
-                "Triggered Time": {
+                "Veeam Triggered Time": {
                     "simple": "triggeredTime"
                 },
                 "details": {
@@ -1197,19 +1197,19 @@
         "Virtual Machine Replica": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "Alarm Status": {
+                "Veeam Alarm Status": {
                     "simple": "status"
                 },
-                "Alarm Template ID": {
+                "Veeam Alarm Template ID": {
                     "simple": "alarmTemplateId"
                 },
-                "Alarm Template Name": {
+                "Veeam Alarm Template Name": {
                     "simple": "name"
                 },
                 "Alert ID": {
                     "simple": "predefinedAlarmId"
                 },
-                "Assigned Object": {
+                "Veeam Assigned Object": {
                     "complex": {
                         "filters": [],
                         "root": "alarmAssignment",
@@ -1246,10 +1246,10 @@
                 "Number Of Found Related Alerts": {
                     "simple": "childAlarmsCount"
                 },
-                "Number of Triggered Alarms": {
+                "Veeam Number of Triggered Alarms": {
                     "simple": "repeatCount"
                 },
-                "Remediation": {
+                "Veeam Remediation": {
                     "complex": {
                         "filters": [],
                         "root": "remediation",
@@ -1277,7 +1277,7 @@
                         ]
                     }
                 },
-                "Triggered Time": {
+                "Veeam Triggered Time": {
                     "simple": "triggeredTime"
                 },
                 "details": {

@@ -6,7 +6,7 @@
         "Configuration Backup": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "Backup Repository ID": {
+                "Veeam Backup Repository ID": {
                     "simple": "backupRepositoryId"
                 },
                 "Backup Scheduling": {
@@ -37,7 +37,7 @@
                         ]
                     }
                 },
-                "Encryption": {
+                "Veeam Encryption": {
                     "complex": {
                         "filters": [],
                         "root": "encryption",
@@ -65,10 +65,10 @@
                         ]
                     }
                 },
-                "Is Enabled": {
+                "Veeam Is Enabled": {
                     "simple": "isEnabled"
                 },
-                "Last Successful Backup": {
+                "Veeam Last Successful Backup": {
                     "complex": {
                         "filters": [],
                         "root": "lastSuccessfulBackup",
@@ -96,7 +96,7 @@
                         ]
                     }
                 },
-                "Notifications": {
+                "Veeam Notifications": {
                     "complex": {
                         "filters": [],
                         "root": "notifications",
@@ -124,7 +124,7 @@
                         ]
                     }
                 },
-                "Number of Stored Restore Points": {
+                "Veeam Number of Stored Restore Points": {
                     "simple": "restorePointsToKeep"
                 },
                 "details": {
@@ -143,7 +143,7 @@
         "Malware Detection - Antivirus Scan": {
             "dontMapEventToLabels": true,
             "internalMapping": {
-                "Affected Machine": {
+                "Veeam Affected Machine": {
                     "complex": {
                         "filters": [],
                         "root": "machine",
@@ -171,7 +171,7 @@
                         ]
                     }
                 },
-                "Backup Object ID": {
+                "Veeam Backup Object ID": {
                     "complex": {
                         "accessor": "backupObjectId",
                         "filters": [],
@@ -182,22 +182,22 @@
                 "Event ID": {
                     "simple": "id"
                 },
-                "Event Source Description": {
+                "Veeam Event Source Description": {
                     "simple": "source_description"
                 },
                 "Event Type": {
                     "simple": "type"
                 },
-                "Event Type Description": {
+                "Veeam Event Type Description": {
                     "simple": "type_description"
                 },
-                "Malware Detection Method": {
+                "Veeam Malware Detection Method": {
                     "simple": "engine"
                 },
-                "Malware Detection Time": {
+                "Veeam Malware Detection Time": {
                     "simple": "detectionTimeUtc"
                 },
-                "Malware Status": {
+                "Veeam Malware Status": {
                     "simple": "severity"
                 },
                 "Source Category": {
@@ -217,7 +217,7 @@
         "Malware Detection - Deleted Files": {
             "dontMapEventToLabels": true,
             "internalMapping": {
-                "Affected Machine": {
+                "Veeam Affected Machine": {
                     "complex": {
                         "filters": [],
                         "root": "machine",
@@ -245,7 +245,7 @@
                         ]
                     }
                 },
-                "Backup Object ID": {
+                "Veeam Backup Object ID": {
                     "complex": {
                         "accessor": "backupObjectId",
                         "filters": [],
@@ -256,22 +256,22 @@
                 "Event ID": {
                     "simple": "id"
                 },
-                "Event Source Description": {
+                "Veeam Event Source Description": {
                     "simple": "source_description"
                 },
                 "Event Type": {
                     "simple": "type"
                 },
-                "Event Type Description": {
+                "Veeam Event Type Description": {
                     "simple": "type_description"
                 },
-                "Malware Detection Method": {
+                "Veeam Malware Detection Method": {
                     "simple": "engine"
                 },
-                "Malware Detection Time": {
+                "Veeam Malware Detection Time": {
                     "simple": "detectionTimeUtc"
                 },
-                "Malware Status": {
+                "Veeam Malware Status": {
                     "simple": "severity"
                 },
                 "Source Category": {
@@ -291,7 +291,7 @@
         "Malware Detection - Encrypted Files": {
             "dontMapEventToLabels": true,
             "internalMapping": {
-                "Affected Machine": {
+                "Veeam Affected Machine": {
                     "complex": {
                         "filters": [],
                         "root": "machine",
@@ -319,7 +319,7 @@
                         ]
                     }
                 },
-                "Backup Object ID": {
+                "Veeam Backup Object ID": {
                     "complex": {
                         "accessor": "backupObjectId",
                         "filters": [],
@@ -330,22 +330,22 @@
                 "Event ID": {
                     "simple": "id"
                 },
-                "Event Source Description": {
+                "Veeam Event Source Description": {
                     "simple": "source_description"
                 },
                 "Event Type": {
                     "simple": "type"
                 },
-                "Event Type Description": {
+                "Veeam Event Type Description": {
                     "simple": "type_description"
                 },
-                "Malware Detection Method": {
+                "Veeam Malware Detection Method": {
                     "simple": "engine"
                 },
-                "Malware Detection Time": {
+                "Veeam Malware Detection Time": {
                     "simple": "detectionTimeUtc"
                 },
-                "Malware Status": {
+                "Veeam Malware Status": {
                     "simple": "severity"
                 },
                 "Source Category": {
@@ -365,7 +365,7 @@
         "Malware Detection - Ransomware Notes": {
             "dontMapEventToLabels": true,
             "internalMapping": {
-                "Affected Machine": {
+                "Veeam Affected Machine": {
                     "complex": {
                         "filters": [],
                         "root": "machine",
@@ -393,7 +393,7 @@
                         ]
                     }
                 },
-                "Backup Object ID": {
+                "Veeam Backup Object ID": {
                     "complex": {
                         "accessor": "backupObjectId",
                         "filters": [],
@@ -404,22 +404,22 @@
                 "Event ID": {
                     "simple": "id"
                 },
-                "Event Source Description": {
+                "Veeam Event Source Description": {
                     "simple": "source_description"
                 },
                 "Event Type": {
                     "simple": "type"
                 },
-                "Event Type Description": {
+                "Veeam Event Type Description": {
                     "simple": "type_description"
                 },
-                "Malware Detection Method": {
+                "Veeam Malware Detection Method": {
                     "simple": "engine"
                 },
-                "Malware Detection Time": {
+                "Veeam Malware Detection Time": {
                     "simple": "detectionTimeUtc"
                 },
-                "Malware Status": {
+                "Veeam Malware Status": {
                     "simple": "severity"
                 },
                 "Source Category": {
@@ -439,7 +439,7 @@
         "Malware Detection - Renamed Files": {
             "dontMapEventToLabels": true,
             "internalMapping": {
-                "Affected Machine": {
+                "Veeam Affected Machine": {
                     "complex": {
                         "filters": [],
                         "root": "machine",
@@ -467,7 +467,7 @@
                         ]
                     }
                 },
-                "Backup Object ID": {
+                "Veeam Backup Object ID": {
                     "complex": {
                         "accessor": "backupObjectId",
                         "filters": [],
@@ -478,22 +478,22 @@
                 "Event ID": {
                     "simple": "id"
                 },
-                "Event Source Description": {
+                "Veeam Event Source Description": {
                     "simple": "source_description"
                 },
                 "Event Type": {
                     "simple": "type"
                 },
-                "Event Type Description": {
+                "Veeam Event Type Description": {
                     "simple": "type_description"
                 },
-                "Malware Detection Method": {
+                "Veeam Malware Detection Method": {
                     "simple": "engine"
                 },
-                "Malware Detection Time": {
+                "Veeam Malware Detection Time": {
                     "simple": "detectionTimeUtc"
                 },
-                "Malware Status": {
+                "Veeam Malware Status": {
                     "simple": "severity"
                 },
                 "Source Category": {
@@ -513,7 +513,7 @@
         "Malware Detection - Suspicious Files and Extensions": {
             "dontMapEventToLabels": true,
             "internalMapping": {
-                "Affected Machine": {
+                "Veeam Affected Machine": {
                     "complex": {
                         "filters": [],
                         "root": "machine",
@@ -541,7 +541,7 @@
                         ]
                     }
                 },
-                "Backup Object ID": {
+                "Veeam Backup Object ID": {
                     "complex": {
                         "accessor": "backupObjectId",
                         "filters": [],
@@ -552,22 +552,22 @@
                 "Event ID": {
                     "simple": "id"
                 },
-                "Event Source Description": {
+                "Veeam Event Source Description": {
                     "simple": "source_description"
                 },
                 "Event Type": {
                     "simple": "type"
                 },
-                "Event Type Description": {
+                "Veeam Event Type Description": {
                     "simple": "type_description"
                 },
-                "Malware Detection Method": {
+                "Veeam Malware Detection Method": {
                     "simple": "engine"
                 },
-                "Malware Detection Time": {
+                "Veeam Malware Detection Time": {
                     "simple": "detectionTimeUtc"
                 },
-                "Malware Status": {
+                "Veeam Malware Status": {
                     "simple": "severity"
                 },
                 "Source Category": {
@@ -587,7 +587,7 @@
         "Malware Detection - Unknown": {
             "dontMapEventToLabels": true,
             "internalMapping": {
-                "Affected Machine": {
+                "Veeam Affected Machine": {
                     "complex": {
                         "filters": [],
                         "root": "machine",
@@ -615,7 +615,7 @@
                         ]
                     }
                 },
-                "Backup Object ID": {
+                "Veeam Backup Object ID": {
                     "complex": {
                         "accessor": "backupObjectId",
                         "filters": [],
@@ -626,22 +626,22 @@
                 "Event ID": {
                     "simple": "id"
                 },
-                "Event Source Description": {
+                "Veeam Event Source Description": {
                     "simple": "source_description"
                 },
                 "Event Type": {
                     "simple": "type"
                 },
-                "Event Type Description": {
+                "Veeam Event Type Description": {
                     "simple": "type_description"
                 },
-                "Malware Detection Method": {
+                "Veeam Malware Detection Method": {
                     "simple": "engine"
                 },
-                "Malware Detection Time": {
+                "Veeam Malware Detection Time": {
                     "simple": "detectionTimeUtc"
                 },
-                "Malware Status": {
+                "Veeam Malware Status": {
                     "simple": "severity"
                 },
                 "Source Category": {
@@ -661,7 +661,7 @@
         "Malware Detection - Yara Scan": {
             "dontMapEventToLabels": true,
             "internalMapping": {
-                "Affected Machine": {
+                "Veeam Affected Machine": {
                     "complex": {
                         "filters": [],
                         "root": "machine",
@@ -689,7 +689,7 @@
                         ]
                     }
                 },
-                "Backup Object ID": {
+                "Veeam Backup Object ID": {
                     "complex": {
                         "accessor": "backupObjectId",
                         "filters": [],
@@ -700,22 +700,22 @@
                 "Event ID": {
                     "simple": "id"
                 },
-                "Event Source Description": {
+                "Veeam Event Source Description": {
                     "simple": "source_description"
                 },
                 "Event Type": {
                     "simple": "type"
                 },
-                "Event Type Description": {
+                "Veeam Event Type Description": {
                     "simple": "type_description"
                 },
-                "Malware Detection Method": {
+                "Veeam Malware Detection Method": {
                     "simple": "engine"
                 },
-                "Malware Detection Time": {
+                "Veeam Malware Detection Time": {
                     "simple": "detectionTimeUtc"
                 },
-                "Malware Status": {
+                "Veeam Malware Status": {
                     "simple": "severity"
                 },
                 "Source Category": {
@@ -735,19 +735,19 @@
         "Repository Capacity": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "Backup Repository Capacity (GB)": {
+                "Veeam Backup Repository Capacity (GB)": {
                     "simple": "capacityGB"
                 },
-                "Backup Repository Free Space (GB)": {
+                "Veeam Backup Repository Free Space (GB)": {
                     "simple": "freeGB"
                 },
-                "Backup Repository ID": {
+                "Veeam Backup Repository ID": {
                     "simple": "id"
                 },
-                "Backup Repository Name": {
+                "Veeam Backup Repository Name": {
                     "simple": "name"
                 },
-                "Backup Repository Used Space (GB)": {
+                "Veeam Backup Repository Used Space (GB)": {
                     "simple": "usedSpaceGB"
                 },
                 "Event Type": {

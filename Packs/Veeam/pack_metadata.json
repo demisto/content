@@ -4,8 +4,8 @@
     "support": "partner",
     "currentVersion": "1.0.0",
     "author": "Veeam Software",
-    "url": "",
-    "email": "",
+    "url": "https://www.veeam.com/support.html",
+    "email": "paloaltoappsupport@veeam.com",
     "categories": [
         "Vulnerability Management"
     ],

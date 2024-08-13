@@ -24,27 +24,27 @@
                 "description": "",
                 "fields": [
                     {
-                        "fieldId": "incident_lastsuccessfulbackup",
+                        "fieldId": "incident_veeamlastsuccessfulbackup",
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_encryption",
+                        "fieldId": "incident_veeamencryption",
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_backupscheduling",
+                        "fieldId": "incident_veeambackupscheduling",
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_backuprepositoryid",
+                        "fieldId": "incident_veeambackuprepositoryid",
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_isenabled",
+                        "fieldId": "incident_veeamisenabled",
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_numberofstoredrestorepoints",
+                        "fieldId": "incident_veeamnumberofstoredrestorepoints",
                         "isVisible": true
                     }
                 ],
@@ -130,7 +130,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "backuprepositoryid",
+                                "fieldId": "veeambackuprepositoryid",
                                 "height": 22,
                                 "id": "6ba0c2d0-39e0-11ef-a37f-c9eec5259a84",
                                 "index": 6,
@@ -139,7 +139,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "isenabled",
+                                "fieldId": "veeamisenabled",
                                 "height": 22,
                                 "id": "6f8724c0-39e0-11ef-a37f-c9eec5259a84",
                                 "index": 7,
@@ -148,7 +148,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "numberofstoredrestorepoints",
+                                "fieldId": "veeamnumberofstoredrestorepoints",
                                 "height": 22,
                                 "id": "a6a87490-39e0-11ef-a37f-c9eec5259a84",
                                 "index": 8,
@@ -189,7 +189,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "lastsuccessfulbackup",
+                                "fieldId": "veeamlastsuccessfulbackup",
                                 "height": 106,
                                 "id": "568f8ac0-39e0-11ef-a37f-c9eec5259a84",
                                 "index": 2,
@@ -198,7 +198,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "backupscheduling",
+                                "fieldId": "veeambackupscheduling",
                                 "height": 106,
                                 "id": "5b83da40-39e0-11ef-a37f-c9eec5259a84",
                                 "index": 3,
@@ -240,7 +240,7 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "encryption",
+                                "fieldId": "veeamencryption",
                                 "height": 106,
                                 "id": "48bd5580-39e0-11ef-a37f-c9eec5259a84",
                                 "index": 0,
@@ -249,7 +249,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "notifications",
+                                "fieldId": "veeamnotifications",
                                 "height": 106,
                                 "id": "4f7b8f90-39e0-11ef-a37f-c9eec5259a84",
                                 "index": 1,
@@ -310,27 +310,27 @@
                 "description": "",
                 "fields": [
                     {
-                        "fieldId": "incident_numberofstoredrestorepoints",
+                        "fieldId": "incident_veeamnumberofstoredrestorepoints",
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_isenabled",
+                        "fieldId": "incident_veeamisenabled",
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_backupscheduling",
+                        "fieldId": "incident_veeambackupscheduling",
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_encryption",
+                        "fieldId": "incident_veeamencryption",
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_lastsuccessfulbackup",
+                        "fieldId": "incident_veeamlastsuccessfulbackup",
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_backuprepositoryid",
+                        "fieldId": "incident_veeambackuprepositoryid",
                         "isVisible": true
                     }
                 ],

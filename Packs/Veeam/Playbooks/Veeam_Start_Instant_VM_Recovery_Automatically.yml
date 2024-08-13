@@ -16,7 +16,7 @@ inputs:
   required: false
   value:
     complex:
-      accessor: backupobjectid
+      accessor: veeambackupobjectid
       root: incident
 name: Veeam - Start Instant VM Recovery Automatically
 outputs: []
@@ -391,23 +391,12 @@ tasks:
             iscontext: true
             value:
               complex:
-                accessor: result
-                root: Veeam.VBR.get_session.result
+                accessor: state
+                root: Veeam.VBR.get_session
           operator: isEqualString
           right:
             value:
-              simple: Success
-        - ignorecase: true
-          left:
-            iscontext: true
-            value:
-              complex:
-                accessor: result
-                root: Veeam.VBR.get_session.result
-          operator: isEqualString
-          right:
-            value:
-              simple: Warning
+              simple: Working
       label: "yes"
     continueonerrortype: ""
     id: "15"
@@ -1057,7 +1046,7 @@ tasks:
       Timeout:
         simple: "30"
       dt:
-        simple: Veeam.VBR.get_session(val.state != 'Stopped' && (!val.result || val.result.result == 'None')).id
+        simple: Veeam.VBR.get_session(val.state != 'Stopped' && val.state != 'Working').id
     separatecontext: true
     skipunavailable: false
     task:

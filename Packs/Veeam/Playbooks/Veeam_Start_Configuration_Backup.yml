@@ -350,7 +350,7 @@ tasks:
       Timeout:
         simple: "120"
       dt:
-        simple: Veeam.VBR.get_session(val.state != 'Stopped' && (!val.result || val.result.result == 'None')).id
+        simple: Veeam.VBR.get_session(val.state != 'Stopped').id
     separatecontext: true
     skipunavailable: false
     task:
