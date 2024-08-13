@@ -162,16 +162,19 @@ def get_relationships_from_sub_reports(client, report_object, id_to_object):
             if sub_report_obj and is_atom42_sub_report(sub_report_obj):
                 relationships, obj_refs_excluding_relationships_prefix = client.parse_report_relationships(sub_report_obj,
                                                                                                            client.id_to_object,
-                                                                                                           '[Unit42 ATOM] ',
-                                                                                                           True, True)
-                obj_refs.extend(obj_refs_excluding_relationships_prefix)
+                                                                                                           '[Unit42 ATOM] ', True,
+                                                                                                           True)
+                if obj_refs_excluding_relationships_prefix:
+                    obj_refs.extend([{'objectstixid': object} for object in obj_refs_excluding_relationships_prefix])
+
                 report_relationships.extend(relationships)
     return report_relationships, obj_refs
 
 
-def is_atom42_sub_report(report_obj):
-    """ Our definition for sub report is a report with 'object_refs'
-    list that contains only objects of the type intrusion-set or report.
+def is_atom42_main_report(report_obj):
+    """ Our definition for main report is a report with 'object_refs'
+    list that contains only objects of the type not a report and a report with
+    description.
 
     Args:
       report_obj: The report object.
@@ -179,13 +182,38 @@ def is_atom42_sub_report(report_obj):
         A boolean.
     """
     obj_refs = report_obj.get('object_refs', [])
-    report_description = report_obj.get('description')
-    # report_labels = report_obj.get('labels')
+    contain_report = False
+    contain_intrusion_set = False
+    if report_obj.get('name') == 'ATOM Campaign Report':
+        return False
+    for obj_ref in obj_refs:
+        if not obj_ref.startswith(('report--', 'intrusion-set--')):
+            return False
+        if obj_ref.startswith('intrusion-set--'):
+            contain_intrusion_set = True
+        if obj_ref.startswith('report--'):
+            contain_report = True
+    return contain_intrusion_set and contain_report
+
+
+def is_atom42_sub_report(report_obj):
+    """ Our definition for sub report is a report with 'object_refs'
+    list that contains only objects not for type intrusion-set or report.
+
+    Args:
+      report_obj: The report object.
+    Returns:
+        A boolean.
+    """
+    obj_refs = report_obj.get('object_refs', [])
+    is_report_description = report_obj.get('description') is not None
+    only_reports_and_intrusion_set = True
     if report_obj.get('name') == 'ATOM Campaign Report':
         return True
-    return all((not obj_ref.startswith(('intrusion-set--', 'report--'))) for obj_ref in obj_refs) \
-        and (not report_description)
-    # and  "campaign" in report_labels
+    for obj_ref in obj_refs:
+        if not obj_ref.startswith(('report--', 'intrusion-set--')):
+            only_reports_and_intrusion_set &= False
+    return (not is_report_description) and (not only_reports_and_intrusion_set)
 
 
 def parse_reports_and_report_relationships(client: Client, report_objects: list, feed_tags: Optional[list] = None,
@@ -212,7 +240,8 @@ def parse_reports_and_report_relationships(client: Client, report_objects: list,
     for report_object in report_objects:
         if is_atom42_sub_report(report_object):
             continue
-        report_list = client.parse_report(report_object, '[Unit42 ATOM] ', ignore_reports_relationships=True,
+        is_main_report = is_atom42_main_report(report_object)
+        report_list = client.parse_report(report_object, '[Unit42 ATOM] ', ignore_reports_relationships=is_main_report,
                                           is_unit42_report=True)
         report = report_list[0]
         report['value'] = f"[Unit42 ATOM] {report_object.get('name')}"
@@ -231,15 +260,15 @@ def parse_reports_and_report_relationships(client: Client, report_objects: list,
             'unit42_description': report_object.get('description'),
             'unit42_object_refs': report_object.get('object_refs')
         }
-        report_relationships, obj_refs_output = get_relationships_from_sub_reports(client, report_object, id_to_object)
-
-        if not report['fields'].get('Report Object References'):
-            obj_refs = report_object.get('object_refs')
-            obj_refs.extend(obj_refs_output)
-            report['fields']['Report Object References'] = obj_refs
-        else:
-            report['fields']['Report Object References'].extend(obj_refs_output)
-        report['relationships'].extend(report_relationships)
+        if is_main_report:
+            report_relationships, obj_refs_output = get_relationships_from_sub_reports(client, report_object, id_to_object)
+            if not report['fields'].get('Report Object References'):
+                obj_refs = report_object.get('object_refs')
+                obj_refs.extend(obj_refs_output)
+                report['fields']['Report Object References'] = obj_refs
+            else:
+                report['fields']['Report Object References'].extend(obj_refs_output)
+            report['relationships'].extend(report_relationships)
         reports.append(report)
 
     return reports
@@ -529,7 +558,6 @@ def fetch_indicators(client: Client, feed_tags: Optional[list] = None, tlp_color
 
     for type_, objects in client.objects_data.items():
         demisto.info(f'Fetched {len(objects)} Unit42 {type_} objects.')
-
     id_to_object = {
         obj.get('id'): obj for obj in
         client.objects_data['report'] + client.objects_data['indicator'] + client.objects_data['malware']

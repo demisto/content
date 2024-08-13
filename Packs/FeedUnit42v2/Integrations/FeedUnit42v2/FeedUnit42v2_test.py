@@ -374,105 +374,51 @@ def test_create_course_of_action_indicators_with_tlp():
     )
 
 
-def test_is_atom42_sub_report_not_a_sub_report():
-    """
-    Given
-    - A report object.
-    When
-    - call the is_atom42_sub_report method
-    Then
-    - Validate that the function determines correctly a sub report.
-    """
+@pytest.mark.parametrize('report_obj, expected_result', [
+    ({"object_refs": [
+        "indicator--a",
+        "indicator--b",
+        "indicator--c",
+        "indicator--d"
+    ]}, True),
+    ({"object_refs": ["intrusion-set--a", "indicator--ab"]}, True),
+    ({"object_refs": ["intrusion-set--a", "indicator--ab"], "description": "description"}, False),
+    ({"object_refs": ["intrusion-set--a"], "description": "description"}, False),
+    ({"object_refs": ["intrusion-set--a"]}, False),
+    ({"object_refs": ["indicator--a", "indicator--ab"]}, True),
+    ({"object_refs": ["indicator--a", "indicator--ab"], "description": "description"}, False),
+    ({"object_refs": ["intrusion-set--a", "report--ab"], "description": "description"}, False),
+    ({"object_refs": ["intrusion-set--a", "report--ab"]}, False)
+])
+def test_is_atom42_sub_report(report_obj, expected_result):
+
     from FeedUnit42v2 import is_atom42_sub_report
-    assert is_atom42_sub_report({"object_refs": ["intrusion-set--a", "report--ab"]}) is False
+    assert is_atom42_sub_report(report_obj) is expected_result
 
 
-def test_is_atom42_sub_report_not_a_sub_report_with_description():
-    """
-    Given
-    - A report object.
-    When
-    - call the is_atom42_sub_report method
-    Then
-    - Validate that the function determines correctly a sub report.
-    """
-    from FeedUnit42v2 import is_atom42_sub_report
-    assert is_atom42_sub_report({"object_refs": ["intrusion-set--a", "report--ab"], "description": "description"}) is False
+@pytest.mark.parametrize('report_obj, expected_result', [
+    ({"object_refs": [
+        "indicator--a",
+        "indicator--b",
+        "indicator--c",
+        "indicator--d"
+    ]}, False),
+    ({"object_refs": [
+        "indicator--a",
+        "indicator--b",
+        "indicator--c",
+        "indicator--d"
+    ], "description": "description"}, False),
+    ({"object_refs": ["intrusion-set--a", "indicator--ab"]}, False),
+    ({"object_refs": ["intrusion-set--a", "indicator--ab"], "description": "description"}, False),
+    ({"object_refs": ["intrusion-set--a"], "description": "description"}, False),
+    ({"object_refs": ["intrusion-set--a"]}, False),
+    ({"object_refs": ["indicator--a", "indicator--ab"]}, False),
+    ({"object_refs": ["indicator--a", "indicator--ab"], "description": "description"}, False),
+    ({"object_refs": ["intrusion-set--a", "report--ab"], "description": "description"}, True),
+    ({"object_refs": ["intrusion-set--a", "report--ab"]}, True)
+])
+def test_is_atom42_main_report(report_obj, expected_result):
 
-
-def test_is_atom42_sub_report_not_a_sub_report_with_description_and_indicators():
-    """
-    Given
-    - A report object.
-    When
-    - call the is_atom42_sub_report method
-    Then
-    - Validate that the function determines correctly a sub report.
-    """
-    from FeedUnit42v2 import is_atom42_sub_report
-    assert is_atom42_sub_report({"object_refs": ["indicator--a", "indicator--ab"], "description": "description"}) is False
-
-
-def test_is_atom42_sub_report_a_sub_report():
-    """
-    Given
-    - A report object.
-    When
-    - call the is_atom42_sub_report method
-    Then
-    - Validate that the function determines correctly a sub report.
-    """
-    from FeedUnit42v2 import is_atom42_sub_report
-    assert is_atom42_sub_report({"object_refs": ["indicator--a", "indicator--ab"]}) is True
-
-
-def test_is_atom42_sub_report_not_sub_report_with_intrusion_set():
-    """
-    Given
-    - A report object.
-    When
-    - call the is_atom42_sub_report method
-    Then
-    - Validate that the function determines correctly a sub report.
-    """
-    from FeedUnit42v2 import is_atom42_sub_report
-    assert is_atom42_sub_report({"object_refs": ["intrusion-set--a"]}) is False
-
-
-def test_is_atom42_sub_report_not_sub_report_with_intrusion_set_and_description():
-    """
-    Given
-    - A report object.
-    When
-    - call the is_atom42_sub_report method
-    Then
-    - Validate that the function determines correctly a sub report.
-    """
-    from FeedUnit42v2 import is_atom42_sub_report
-    assert is_atom42_sub_report({"object_refs": ["intrusion-set--a"], "description": "description"}) is False
-
-
-def test_is_atom42_sub_report_not_sub_report_with_intrusion_set_and_description_1():
-    """
-    Given
-    - A report object.
-    When
-    - call the is_atom42_sub_report method
-    Then
-    - Validate that the function determines correctly a sub report.
-    """
-    from FeedUnit42v2 import is_atom42_sub_report
-    assert is_atom42_sub_report({"object_refs": ["intrusion-set--a", "indicator--ab"], "description": "description"}) is False
-
-
-# def test_is_atom42_sub_report_not_sub_report_with_intrusion_set_and_description_2():
-#     """
-#     Given
-#     - A report object.
-#     When
-#     - call the is_atom42_sub_report method
-#     Then
-#     - Validate that the function determines correctly a sub report.
-#     """
-#     from FeedUnit42v2 import is_atom42_sub_report
-#     assert is_atom42_sub_report({"object_refs": ["intrusion-set--a","indicator--ab"]}) is True
+    from FeedUnit42v2 import is_atom42_main_report
+    assert is_atom42_main_report(report_obj) is expected_result
