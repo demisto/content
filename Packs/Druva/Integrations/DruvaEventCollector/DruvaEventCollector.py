@@ -45,7 +45,7 @@ class Client(BaseClient):
 
             # check if token is still valid, and use the old one. otherwise regenerate a new one
             if (seconds_left := (expiration_time - now).total_seconds()) > 0:
-                demisto.debug("No need to regenerate the token, it is still valid for {seconds_left} more seconds")
+                demisto.debug(f"No need to regenerate the token, it is still valid for {seconds_left} more seconds")
                 self._set_headers(token)
                 return
 
@@ -57,7 +57,7 @@ class Client(BaseClient):
             {
                 "Token": raw_token,
                 "expiration_time": (
-                    now + timedelta(seconds=(expires_in_seconds - 60)) # decreasing 60s from token expiry for safety
+                    now + timedelta(seconds=(expires_in_seconds - 60))  # decreasing 60s from token expiry for safety
                 ).strftime(DATE_FORMAT_FOR_TOKEN),
             }
         )
@@ -180,7 +180,7 @@ def fetch_events(
     demisto.debug(f'Last Run: {last_run}')
     final_events: list[dict] = []
     done_fetching: bool = False
-    while len(final_events) < max_fetch and not last_interation:
+    while len(final_events) < max_fetch and not done_fetching:
         tracker = last_run.get("tracker")  # None on first run
         # when fetching events, in case of "Invalid tracker", we catch the exception and restore the same tracker
         try:
@@ -194,7 +194,7 @@ def fetch_events(
                 raise e
 
         # It means there are no more events to retrieve when there are fewer than 500 events
-        last_interation = len(events) < MAX_EVENTS_API_CALL
+        done_fetching = len(events) < MAX_EVENTS_API_CALL
 
         # Save the next_run as a dict with the last_fetch key to be stored
         next_run = {"tracker": new_tracker}
