@@ -52,7 +52,6 @@ UNICODE_PASS = u'\U00002714\U0000FE0F'
 BLOCK_IP = 'block-ip'
 VULNERABILITY_PROTECTION = 'Vulnerability Protection Profile'
 ANTI_SPYWARE = 'Anti Spyware Profile'
-predefined_threats: List[Dict] = []
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 QUERY_DATE_FORMAT = '%Y/%m/%d %H:%M:%S'
@@ -14100,24 +14099,8 @@ def get_all_profile_names_from_profile_type(profile_type, device_group) -> list:
     Returns:
         A list of profile names associated with the specified profile type.
     """
-    # if device_group:
-    #     xpath = f'/config/devices/entry/device-group/entry/profiles/{profile_type}'
-    # elif VSYS:
-    #     xpath = f'/config/devices/entry/vsys/entry/profiles/{profile_type}'
-
     xpath = f"{XPATH_RULEBASE}profiles/{profile_type}"
-
-    # params = {
-    #     'type': 'config',
-    #     'action': 'get',
-    #     'xpath': xpath,
-    #     'key': API_KEY
-    # }
-
-    # raw_response = http_request(URL, 'GET', params=params)
-
     raw_response = get_security_profile(xpath)
-
     profiles = raw_response["response"]["result"][f"{profile_type}"]["entry"]
 
     profile_names = []
