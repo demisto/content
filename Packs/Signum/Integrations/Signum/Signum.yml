@@ -27,7 +27,7 @@ script:
   commands:
   - arguments:
     - defaultValue: '1'
-      description: 'Identification of the Domain to be listed the users. '
+      description: 'Identification of the Domain to be listed the users.'
       name: domain_id
       required: true
     - auto: PREDEFINED
@@ -37,6 +37,7 @@ script:
       predefined:
       - 'True'
       - 'False'
+    description: 'List all the users for a given domain Id.'      
     name: signum-list-domain-users
     outputs:
     - contextPath: Signum.ListDomainUsers
