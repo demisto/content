@@ -14217,36 +14217,25 @@ def get_threat_id_from_predefined_threates(threat_name):
     Returns:
         The id that fit to the threat_name
     """
-    NUMBER_OF_TRIES = 2
-    global predefined_threats
-    if not predefined_threats:
-        predefined_threats = get_predefined_threats_list()
+    predefined_threats = get_predefined_threats_list()
 
-    extracted_id = ""
-    while NUMBER_OF_TRIES > 0:
-        for entry in predefined_threats:
-            search_keys = []
+    for entry in predefined_threats:
+        search_keys = []
 
-            search_keys.append(entry.get("threatname", ""))
+        search_keys.append(entry.get("threatname", ""))
 
-            extracted_id = entry["@name"]
-            search_keys.append(extracted_id)
+        extracted_id = entry["@name"]
+        search_keys.append(extracted_id)
 
-            cves = entry.get("cve", {}).get("member", "")
-            if not isinstance(cves, list):
-                cves = [cves]
-            for cve in cves:
-                search_keys.append(cve.lower())
-                search_keys.append(cve.upper())
+        cves = entry.get("cve", {}).get("member", "")
+        if not isinstance(cves, list):
+            cves = [cves]
+        for cve in cves:
+            search_keys.append(cve.lower())
+            search_keys.append(cve.upper())
 
-            if threat_name in search_keys:
-                return extracted_id
-
-        # if extracted_id was not found, update predefined threats list and check again ggggggggggggggg
-        if not extracted_id:
-            predefined_threats = get_predefined_threats_list()
-
-        NUMBER_OF_TRIES -= 1
+        if threat_name in search_keys:
+            return extracted_id
 
     raise DemistoException("Invalid threat_name was provided.")
 
@@ -15615,7 +15604,6 @@ def main():  # pragma: no cover
             return_results(pan_os_delete_security_profile_group_command(args))
         elif command == 'pan-os-get-audit-comment':
             return_results(pan_os_get_audit_comment_command(args))
-
         elif command == 'pan-os-add-profile-exception':
             return_results(pan_os_add_profile_exception_command(args))
         elif command == 'pan-os-edit-profile-exception':
@@ -15624,7 +15612,6 @@ def main():  # pragma: no cover
             return_results(pan_os_delete_profile_exception_command(args))
         elif command == 'pan-os-list-profile-exception':
             return_results(pan_os_list_profile_exception_command(args))
-
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
     except Exception as err:
