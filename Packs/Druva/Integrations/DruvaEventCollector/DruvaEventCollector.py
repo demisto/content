@@ -69,12 +69,11 @@ class Client(BaseClient):
             - the token
             - the expiration in seconds
         """
-        encoded_credentials = base64.b64encode(self.credentials.encode())
-        decoded_credentials = encoded_credentials.decode("utf-8")
+        credentials = base64.b64encode(self.credentials.encode()).decode("utf-8")
 
         headers = {
             "Content-Type": "application/x-www-form-urlencoded",
-            "Authorization": f"Basic {decoded_credentials}",
+            "Authorization": f"Basic {credentials}",
         }
         data = {"grant_type": "client_credentials", "scope": "read"}
 
