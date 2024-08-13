@@ -151,6 +151,48 @@
                 "native:dev",
                 "native:candidate"
             ]
+        },
+        {
+            "id": "Github Feed",
+            "reason": "update docker image",
+            "ignored_native_images": [
+                "native:8.6"
+            ]
+        },
+        {
+            "id":"CyrenThreatInDepthRenderRelated",
+            "reason": "CIAC-11186, This integration support only from python 3.11",
+            "ignored_native_images":[
+                "native:8.6"
+            ]
+        },
+        {
+            "id": "rapid7_threat_command",
+            "reason": "CIAC-11186, This integration support only from python 3.11",
+            "ignored_native_images": [
+                "native:8.6"
+            ]
+        },
+        {
+            "id": "Respond_Analyst",
+            "reason": "CIAC-11186, This integration support only from python 3.11",
+            "ignored_native_images": [
+                "native:8.6"
+            ]
+        },
+        {
+            "id": "rapid7appsec",
+            "reason": "CIAC-11186, This integration support only from python 3.11",
+            "ignored_native_images": [
+                "native:8.6"
+            ]
+        },
+        {
+            "id": "FireEyeNX",
+            "reason": "CIAC-11186, This integration support only from python 3.11",
+            "ignored_native_images": [
+                "native:8.6"
+            ]
         }
     ],
     "flags_versions_mapping": {
