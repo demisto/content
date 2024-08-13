@@ -182,7 +182,7 @@ filter _collector_type = "Azure Event Hub"
         //xdm.target.host.ipv6_public_addresses = Entities_ip_address_public_v6,
         xdm.target.host.ipv6_addresses = Entities_ip_address_v6,
         xdm.source.process.executable.directory = Entities_process_image_directory,
-        xdm.source.process.executable.filename = Entities_file_Name
+        xdm.source.process.executable.filename = Entities_file_Name;
 
 
 
