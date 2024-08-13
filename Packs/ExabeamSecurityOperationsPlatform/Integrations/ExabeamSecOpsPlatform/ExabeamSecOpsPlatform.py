@@ -525,17 +525,19 @@ def filter_existing_cases(cases, last_run):
         list[dict]: Filtered list of cases.
     """
     ids_exists = last_run.get("last_ids", [])
-    demisto.debug(f"Existing IDs: {ids_exists}")
+    if ids_exists:
+        demisto.debug(f"Existing IDs in last_run: {ids_exists}")
 
-    filtered_cases = []
-    for case in cases:
-        case_id = case.get("caseId")
-        if case_id not in ids_exists:
-            filtered_cases.append(case)
-        else:
-            demisto.debug(f"Case with ID {case_id} already exists, skipping.")
-
-    demisto.debug(f"Filtered cases count: {len(filtered_cases)}")
+        filtered_cases = []
+        for case in cases:
+            case_id = case.get("caseId")
+            if case_id not in ids_exists:
+                filtered_cases.append(case)
+            else:
+                demisto.debug(f"Case with ID {case_id} already exists, skipping.")
+        demisto.debug(f"After filtered cases count: {len(filtered_cases)}")
+    else:
+        filtered_cases = cases
     return filtered_cases
 
 
@@ -816,7 +818,8 @@ def fetch_incidents(client: Client, params: dict[str, str], last_run) -> tuple[l
     start_time, end_time = get_fetch_run_time_range(last_run=last_run, first_fetch=first_fetch, date_format=DATE_FORMAT)
     demisto.debug(f"Fetching incidents between start_time={start_time} and end_time={end_time}")
 
-    args = {"query": filter_query, "start_time": start_time, "end_time": end_time, "limit": limit, "include_related_rules": True}
+    args = {"order_by": "caseCreationTimestamp", "query": filter_query, "start_time": start_time, "end_time": end_time,
+            "limit": limit, "include_related_rules": True}
 
     cases = case_search_command(client, args).outputs
     if not isinstance(cases, list):
@@ -824,12 +827,12 @@ def fetch_incidents(client: Client, params: dict[str, str], last_run) -> tuple[l
     demisto.debug(f"Response contain {len(cases)} cases")
 
     cases = filter_existing_cases(cases, last_run)
-    demisto.debug(f"After filtered cases count: {len(cases)}")
 
     last_run = update_last_run(cases, end_time)
-    incidents = create_incidents(cases)
-
     demisto.debug(f"Last run after the fetch run: {last_run}")
+
+    incidents = create_incidents(cases)
+    demisto.debug(f"After the fetch incidents count: {len(incidents)}")
     return incidents, last_run
 
 
@@ -853,11 +856,10 @@ def test_module(client: Client) -> str:    # pragma: no cover
 ''' MAIN FUNCTION '''
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
-
     credentials = params.get('credentials', {})
     client_id = credentials.get('identifier')
     client_secret = credentials.get('password')
