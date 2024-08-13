@@ -14100,33 +14100,33 @@ def get_all_profile_names_from_profile_type(profile_type, device_group) -> list:
     Returns:
         A list of profile names associated with the specified profile type.
     """
-    xpath = ''
-    results = ''
+    profiles = ''
     
-    if device_group:
-        xpath = f'/config/devices/entry/device-group/entry/profiles/{profile_type}'
-    elif VSYS: 
-        xpath = f'/config/devices/entry/vsys/entry/profiles/{profile_type}'
+    # if device_group:
+    #     xpath = f'/config/devices/entry/device-group/entry/profiles/{profile_type}'
+    # elif VSYS: 
+    #     xpath = f'/config/devices/entry/vsys/entry/profiles/{profile_type}'
         
-    params = {
-        'type': 'config',
-        'action': 'get',
-        'xpath': xpath,
-        'key': API_KEY
-    }
+    xpath = f'{XPATH_RULEBASE}profiles/{profile_type}'
     
-    raw_response = http_request(URL, 'GET', params=params)
+    # params = {
+    #     'type': 'config',
+    #     'action': 'get',
+    #     'xpath': xpath,
+    #     'key': API_KEY
+    # }
     
-    if device_group:
-        results = raw_response['response']['result'][f'{profile_type}'][0]['entry']
-    elif VSYS: 
-        results = raw_response['response']['result'][f'{profile_type}']['entry']
+    # raw_response = http_request(URL, 'GET', params=params)
+    
+    raw_response = get_security_profile(xpath)
+    
+    profiles = raw_response['response']['result'][f'{profile_type}']['entry']
 
     profile_names = []
-    if not isinstance(results, list):
-        results = [results]
+    if not isinstance(profiles, list):
+        profiles = [profiles]
         
-    for entry in results:
+    for entry in profiles:
         profile_name = entry.get('@name')
         if profile_name:
             profile_names.append(profile_name)
