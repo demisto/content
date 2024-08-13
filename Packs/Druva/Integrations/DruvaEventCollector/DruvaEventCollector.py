@@ -44,8 +44,8 @@ class Client(BaseClient):
             )
 
             # check if token is still valid, and use the old one. otherwise regenerate a new one
-            if (expiration_time - now).total_seconds() > 0:
-                demisto.debug("No need to regenerate the token, it is still valid")
+            if (seconds_left := (expiration_time - now).total_seconds()) > 0:
+                demisto.debug("No need to regenerate the token, it is still valid for {seconds_left} more seconds")
                 self._set_headers(token)
                 return
 
