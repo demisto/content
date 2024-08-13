@@ -85,10 +85,9 @@ class Client(BaseClient):
             )
         except Exception as e:
             # 400 - "invalid_grant" - reason: invalid Server URL, Client ID or Secret Key.
-            if isinstance(e, DemistoException) and e.res is not None and e.res.status_code == 400:
-                informative_message = "Make sure Server URL, Client ID and Secret Key are correctly entered."
+            if "invalid_grant" in str(e):
                 raise DemistoException(
-                    f"Error in test-module: {informative_message}"
+                    f"Error in test-module: Make sure Server URL, Client ID and Secret Key are correctly entered."
                 ) from e
             raise
         return response_json["access_token"], response_json["expires_in"]
