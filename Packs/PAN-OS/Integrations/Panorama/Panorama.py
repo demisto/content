@@ -14089,12 +14089,13 @@ def pan_os_get_audit_comment_command(args: dict) -> CommandResults:
     )
 
 
-def get_all_profile_names_from_profile_type(profile_type, device_group) -> list:
+def get_all_profile_names_from_profile_type(profile_type: str, device_group: str) -> list:
     """
     Retrieves all profile names from a specified profile type.
 
     Args:
         profile_type: The type of profile to retrieve, 'vulnerability' or 'spyware'.
+        device_group: If device_group was provided as a command argument, it will override the configured one.
 
     Returns:
         A list of profile names associated with the specified profile type.
@@ -14108,8 +14109,6 @@ def get_all_profile_names_from_profile_type(profile_type, device_group) -> list:
             xpath = "/config/devices/entry/device-group/entry[@name=\'" + device_group + "\']/"
     else:
         xpath = "/config/devices/entry/vsys/entry[@name=\'" + VSYS + "\']/" 
-
-    # xpath = f"{XPATH_RULEBASE}profiles/{profile_type}"
     xpath += f"profiles/{profile_type}"
 
     raw_response = get_security_profile(xpath)
@@ -14127,12 +14126,13 @@ def get_all_profile_names_from_profile_type(profile_type, device_group) -> list:
     return profile_names
 
 
-def check_profile_type_by_given_profile_name(profile_name, device_group) -> str:
+def check_profile_type_by_given_profile_name(profile_name: str, device_group: str) -> str:
     """
     Checks the profile type based on a given profile name.
 
     Args:
         profile_name: The name of the profile to check.
+        device_group: If device_group was provided as a command argument, it will override the configured one.
 
     Returns:
         The profile type: 'Vulnerability Protection Profile' or 'Anti Spyware Profile'.
@@ -14150,12 +14150,11 @@ def check_profile_type_by_given_profile_name(profile_name, device_group) -> str:
     elif profile_name in anti_spyware_profile_names:
         return ANTI_SPYWARE
 
-    # TODO needed? or to let the request fail?
     else:
         raise DemistoException("Profile name was not found in Vulnerability Protection Profiles or in Anti Spyware Profiles.")
 
 
-def build_xpath_for_profile_exception_commands(profile_name, profile_type, device_group, action_type, extracted_id: Optional[str] = None) -> str:
+def build_xpath_for_profile_exception_commands(profile_name: str, profile_type: str, device_group: str, action_type: str, extracted_id: Optional[str] = None) -> str:
     """
     Creates and return xpath based on the profile type and pan-os/panorama instance.
 
@@ -14163,6 +14162,8 @@ def build_xpath_for_profile_exception_commands(profile_name, profile_type, devic
         profile_name: The profile name.
         profile_type: The profile type.
         device_group: The device group if was sent as a commands argument.
+        action_type: Action type for api request.
+        extracted_id: The id of the exception.
 
     Returns:
         The xpath.
@@ -14189,7 +14190,7 @@ def build_xpath_for_profile_exception_commands(profile_name, profile_type, devic
     return xpath
 
 
-def get_predefined_threats_list():
+def get_predefined_threats_list() -> list:
     """
     Get the predefined threats lists.
 
@@ -14202,7 +14203,7 @@ def get_predefined_threats_list():
     return predefined_threats
 
 
-def get_threat_id_from_predefined_threates(threat_name):
+def get_threat_id_from_predefined_threates(threat_name: str) -> str:
     """
     Search the threat id in the threats list by using the threat_name argument.
 
@@ -14235,17 +14236,17 @@ def get_threat_id_from_predefined_threates(threat_name):
     raise DemistoException("Invalid threat_name was provided.")
 
 
-def build_element_for_profile_exception_commands(extracted_id, action, packet_capture, exempt_ip, ip_track_by, ip_duration_sec):
+def build_element_for_profile_exception_commands(extracted_id: str, action: str, packet_capture: str, exempt_ip: str, ip_track_by: str, ip_duration_sec: str) -> str:
     """
     Build the element for the api that the profile exception commands use.
 
     Args:
-        extracted_id
-        action
-        packet_capture
-        exempt_ip
-        ip_track_by: Needed when action == BLOCK_IP
-        ip_duration_sec: Needed when action == BLOCK_IP
+        extracted_id: Not a mandtatory field for building element.
+        action: A mandatory field for building element, default value: default.
+        packet_capture: Not a mandtatory field for building element.
+        exempt_ip: Not a mandtatory field for building element.
+        ip_track_by: Mandatory when action == BLOCK_IP
+        ip_duration_sec: Mandatory when action == BLOCK_IP
 
     Returns:
         The element for the api request
@@ -14296,7 +14297,7 @@ def profile_exception_crud_commands(args: dict, action_type: str):
     Returns:
         Raw response from api request.
     """
-    profile_name = args.get('profile_name')
+    profile_name = args.get('profile_name', "")
     profile_type = args.get('profile_type', '')
     threat_name = args.get('threat_name', '')
     xpath_action = XPATH_ACTIONS_TYPES_MAP[args.get('action', 'default')]
