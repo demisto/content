@@ -945,11 +945,13 @@ def test_set_temp_password_command():
     with requests_mock.Mocker() as m:
         m.get('https://demisto.com/api/v1/users?filter=profile.login eq "test"', json=[{'id': '1234'}])
         m.post('https://demisto.com/api/v1/users/1234', json={'passwordChanged': '2023-03-22T10:15:26.000Z'})
-        m.post('https://demisto.com/api/v1/users/1234/lifecycle/expire_password', json={})
+        m.post('https://demisto.com/api/v1/users/1234/lifecycle/expire_password?tempPassword=true',
+               json={"tempPassword":"cAn5N3gx"})
 
         result = set_password_command(client, {'username': 'test', 'password': 'a1b2c3', 'temporary_password': 'true'})
-
-    assert result[0] == 'test password was last changed on 2023-03-22T10:15:26.000Z'
+    expected_results = "test password was last changed on 2023-03-22T10:15:26.000Z\n" \
+                       "### Okta Temporary Password\n|tempPassword|\n|---|\n| cAn5N3gx |\n"
+    assert result[0] == expected_results
 
 
 def mock_get_paged_results(url_suffix='', query_params=None, max_limit=None):

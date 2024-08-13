@@ -806,7 +806,6 @@ def reset_factor_command(client, args):
 def set_password_command(client, args):
     user_id = client.get_user_id(args.get('username'))
     password = args.get('password')
-    expire_password_readable_output = ""
 
     raw_response = client.set_password(user_id, password)
     readable_output = f"{args.get('username')} password was last changed on {raw_response.get('passwordChanged')}"
@@ -814,9 +813,10 @@ def set_password_command(client, args):
     if argToBoolean(args.get('temporary_password', False)):
         expire_password_response = client.expire_password(user_id, args)
         expire_password_readable_output = tableToMarkdown('Okta Temporary Password', expire_password_response, removeNull=True)
+        readable_output = f"{readable_output}\n{expire_password_readable_output}"
 
     return (
-        f"{readable_output}\n{expire_password_readable_output}",
+        readable_output,
         {},
         raw_response
     )
