@@ -1659,7 +1659,7 @@ def fetch_incidents(client: Client, max_fetch: int, last_run: dict[str, int],
     )
     
     parsed_time = parser.isoparse(start_xpanse_fetch_time)
-    look_back_epoch_time = int(parsed_time.timestamp())
+    look_back_epoch_time = int(parsed_time.timestamp() * 1000)
     demisto.debug(f"CortexXpanse - last fetched alert timestamp with look back: {look_back_epoch_time}")
     
     # server_creation_time is used to reflect the creation time of Xpanse alerts
