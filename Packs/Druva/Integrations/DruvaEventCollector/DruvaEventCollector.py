@@ -185,7 +185,6 @@ def fetch_events(
     last_interation: bool = False
     while len(final_events) < max_fetch and not last_interation:
         tracker = last_run.get("tracker")  # None on first run
-        events, new_tracker = [], {}
         # when fetching events, in case of "Invalid tracker", we catch the exception and restore the same tracker
         try:
             events, new_tracker = get_events(client, tracker)
@@ -193,8 +192,7 @@ def fetch_events(
             if "Invalid tracker" in str(e):
                 demisto.debug("The tracker is invalid,"
                               " catching the error and continuing with the same tracker for the next time.")
-                events, new_tracker = [], tracker
-            # TODO
+                events, new_tracker = [], tracker  # type:ignore[assignment]
             else:
                 raise e
 
