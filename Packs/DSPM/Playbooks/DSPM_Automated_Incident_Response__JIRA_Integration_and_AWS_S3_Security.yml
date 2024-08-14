@@ -853,12 +853,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: 99a640e0-9f77-455e-85d3-580782905dce
+    taskid: 86442225-ef8e-4371-8a82-bfd086da8f06
     type: condition
     task:
-      id: 99a640e0-9f77-455e-85d3-580782905dce
+      id: 86442225-ef8e-4371-8a82-bfd086da8f06
       version: -1
-      name: Did the user respond to us regarding the incident ID?
+      name: Was There an Error in User Response?
       description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
         to check the previous task entries. If array is provided, will return yes
         if one of the entries returned an error.
