@@ -944,14 +944,14 @@ def fetch_incidents(fetchLimit, last_run, ingestClosed, riskLevel, riskTypes, se
 ''' MAIN FUNCTION '''
 
 
-def get_base_url(command, SL_base_url):
+def get_base_url(command):
     """
     Returns base url for client
     """
     if command == 'ds-search':
         return DS_BASE_URL
     else:
-        return SL_base_url
+        return demisto.params()['searchLightUrl']
 
 
 def main() -> None:
@@ -970,9 +970,6 @@ def main() -> None:
         riskTypes = [RISK_TYPE_ALL]
     if RISK_LEVEL_ALL in riskLevel:
         riskLevel = [RISK_LEVEL_ALL]
-
-    # get the service API url
-    base_url = demisto.params()['searchLightUrl']
     verify_certificate = not demisto.params().get('insecure', False)
     fetchLimit = arg_to_number(demisto.params()['fetchLimit'], "fetchLimit", True)
     if fetchLimit > 100:
@@ -985,7 +982,7 @@ def main() -> None:
     demisto.params().get('proxy', False)
     LOG(f'Command being called is {demisto.command()}')
     try:
-        base_url = get_base_url(demisto.command(), base_url)
+        base_url = get_base_url(demisto.command())
         rq_client = Client(
             base_url=base_url,
             account_id=accountId,
