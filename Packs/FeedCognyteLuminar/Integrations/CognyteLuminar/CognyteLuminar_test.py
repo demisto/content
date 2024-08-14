@@ -31,7 +31,7 @@ generic_expected_output = {
 }
 enrich_malware_output = {
     "value": "Ukraine Power Grid",
-    "occurred":  "01/04/2016, " + "00:00:00",
+    "occurred": "01/04/2016, " + "00:00:00",
     "type": "Malware",
     "rawJSON": {
         "type": "malware",
