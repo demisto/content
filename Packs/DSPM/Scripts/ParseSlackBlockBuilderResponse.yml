@@ -1,6 +1,6 @@
 commonfields:
   id: d93ce82d-4704-4d9a-887e-c8b59d472d74
-  version: 11
+  version: 156
 vcShouldKeepItemLegacyProdMachine: false
 name: ParseSlackBlockBuilderResponse
 script: |
@@ -13,7 +13,7 @@ script: |
   CREATE_JIRA_TICKET = "Create a Jira ticket"
   REMEDIATE_RISK = "Remediate a Risk"
 
-  def get_jira_issue_type_id(issue_type_name) -> str:
+  def get_jira_issue_type_id(issue_type_name, project_id) -> str:
       try:
           result = demisto.executeCommand("dspm-get-integration-cofig", {})
           integration_conf = result[0].get("Contents", {}).get("integration_config", {})
@@ -23,13 +23,14 @@ script: |
           api_key = integration_conf.get('jiraApiToken')
           jiraEmail = integration_conf.get('jiraEmail')
 
-          url = f"https://{jira_url}/rest/api/2/project/DIG"
+          url = f"https://{jira_url}/rest/api/2/project/{project_id}"
           auth = HTTPBasicAuth(jiraEmail, api_key)
           headers = {
               "Accept": "application/json",
           }
 
           response = requests.request("GET", url, headers=headers, auth=auth)
+          print("get_jira_issue_type_id res: ",response.text)
           if response.status_code == 200:
               issue_types = response.json()['issueTypes']
               for issue_type in issue_types:
@@ -63,7 +64,8 @@ script: |
               project_name = user_input_data.get("static_select_1", {}).get("static_select-action", {}).get("selected_option", {}).get("value")
               ticket_type = user_input_data.get("static_select_2", {}).get("static_select-action", {}).get("selected_option", {}).get("value")
 
-              ticket_type_id = get_jira_issue_type_id(ticket_type)
+              ticket_type_id = get_jira_issue_type_id(ticket_type, project_name)
+              print("ticket_type_id: ",ticket_type_id)
 
               demisto.setContext("User.Action", "jira")
               demisto.setContext("User.Email", user_email)
@@ -80,7 +82,7 @@ script: |
           print("User response is not found in slackBlockState.")
           demisto.setContext("User.Action", 'no_response')
       except Exception as ex:
-          demisto.error(traceback.format_exc())  # log the traceback
+          print(traceback.format_exc())  # log the traceback
           return_error(f'Failed to parse Slack block builder response: {str(ex)}')
 
   ''' MAIN FUNCTION '''

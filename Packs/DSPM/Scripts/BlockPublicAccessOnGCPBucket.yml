@@ -1,0 +1,85 @@
+commonfields:
+  id: f50337bb-8c1f-4e32-8589-bcc67876b774
+  version: 12
+vcShouldKeepItemLegacyProdMachine: false
+name: BlockPublicAccessOnGCPBucket
+script: |-
+  register_module_line('BlockPublicAccessOnGCPBucket', 'start', __line__())
+  ### pack version: 3.4.14
+
+  import requests
+  import hashlib
+  import hmac
+  import base64
+  import json
+  from datetime import datetime
+
+
+
+
+  def block_public_access_on_gcp_bucket():
+      # fetch creds from the DSPM Instance
+      result = demisto.executeCommand("dspm-get-integration-cofig", {})
+      integration_conf = result[0].get("Contents",{}).get('integration_config',{})
+
+      # Extract GCP's access token
+      access_token = integration_conf.get('GCPAccessToken')
+
+      bucket_name = demisto.args().get("bucket_name")
+
+      url = f"https://storage.googleapis.com/storage/v1/b/{bucket_name}?fields=iamConfiguration"
+
+      payload = json.dumps({
+        "iamConfiguration": {
+          "publicAccessPrevention": "enforced"
+        }
+      })
+      headers = {
+        'Authorization': f'Bearer {access_token}',
+        'Content-Type': 'application/json'
+      }
+
+      response = requests.request("PATCH", url, headers=headers, data=payload)
+      print(response.text)
+
+      if response.status_code == 200:
+          return_results(f"Public access to GCP bucket '{bucket_name}' has been successfully blocked")
+      else:
+          return_error(f"Failed to block public access, Status code: {response.status_code}")
+          return_error(f"Error: {response.text}")
+
+
+
+
+
+  ''' MAIN FUNCTION '''
+
+
+  def main():  # pragma: no cover
+      try:
+          block_public_access_on_gcp_bucket()
+
+      except Exception as excep:
+          demisto.error(traceback.format_exc())  # print the traceback
+          return_error(f'Failed to execute BlockPublicAccessOnGCPBucket. Error: {str(excep)}')
+
+
+  ''' ENTRY POINT '''
+
+  if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
+      main()
+
+  register_module_line('BlockPublicAccessOnGCPBucket', 'end', __line__())
+type: python
+tags: []
+enabled: true
+args:
+- name: bucket_name
+scripttarget: 0
+subtype: python3
+pswd: ""
+runonce: false
+dockerimage: demisto/python3:3.11.9.107902
+runas: DBotWeakRole
+engineinfo: {}
+mainengineinfo: {}

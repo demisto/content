@@ -1,15 +1,15 @@
 id: c7f9a77b-18e3-45ca-8307-b39035938abe
-version: 26
+version: 35
 vcShouldKeepItemLegacyProdMachine: false
 name: DSPM Remediation playbook for Sensitive asset open to world.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 733d3205-3d04-4a5d-8c4c-f727fca7dd1b
+    taskid: 120f1007-63fa-4f4a-893e-bfc2ec612c78
     type: start
     task:
-      id: 733d3205-3d04-4a5d-8c4c-f727fca7dd1b
+      id: 120f1007-63fa-4f4a-893e-bfc2ec612c78
       version: -1
       name: ""
       iscommand: false
@@ -35,10 +35,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: a0acff2d-448a-45dd-8f80-2543c27a8d30
+    taskid: f17e49f1-075b-4e7c-8326-48d7aa76c64a
     type: regular
     task:
-      id: a0acff2d-448a-45dd-8f80-2543c27a8d30
+      id: f17e49f1-075b-4e7c-8326-48d7aa76c64a
       version: -1
       name: aws-s3-put-public-access-block
       description: Creates or modifies the PublicAccessBlock configuration for an
@@ -62,12 +62,13 @@ tasks:
       bucket:
         simple: dig-security-integration
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 330,
-          "y": 170
+          "x": 320,
+          "y": 200
         }
       }
     note: false
@@ -79,10 +80,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 0c05a22a-416f-44c7-8cf0-17983a328570
+    taskid: 48ec0bfe-6920-4c50-8531-25f1952c1ae1
     type: regular
     task:
-      id: 0c05a22a-416f-44c7-8cf0-17983a328570
+      id: 48ec0bfe-6920-4c50-8531-25f1952c1ae1
       version: -1
       name: Slack block list overwritten with a success message
       description: This automation script overwrites the value of a specified list
@@ -118,10 +119,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: a1cf0509-1907-40ab-8c23-64185c0ba4ab
+    taskid: fdf0f483-52e8-410d-8b9e-228fa3e4d4b0
     type: condition
     task:
-      id: a1cf0509-1907-40ab-8c23-64185c0ba4ab
+      id: fdf0f483-52e8-410d-8b9e-228fa3e4d4b0
       version: -1
       name: Check the Cloud Provider of asset
       description: Check whether the values provided in arguments are equal. If either
@@ -131,9 +132,11 @@ tasks:
       brand: ""
     nexttasks:
       AWS:
-      - "8"
-      Azure:
       - "1"
+      Azure:
+      - "8"
+      GCP:
+      - "9"
     separatecontext: false
     conditions:
     - label: AWS
@@ -156,6 +159,16 @@ tasks:
           right:
             value:
               simple: AZURE
+    - label: GCP
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${incident_object.cloudProvider}
+            iscontext: true
+          right:
+            value:
+              simple: GCP
     continueonerrortype: ""
     view: |-
       {
@@ -173,10 +186,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: d2bd0d18-4b3d-4380-8b77-3ef60d4e77cb
+    taskid: c8763013-45de-45b7-8a0a-940167f55868
     type: condition
     task:
-      id: d2bd0d18-4b3d-4380-8b77-3ef60d4e77cb
+      id: c8763013-45de-45b7-8a0a-940167f55868
       version: -1
       name: Has asset risk been effectively eliminated?
       description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
@@ -212,10 +225,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 348d2ec9-cd00-4c26-8ca3-0640bedb72c0
+    taskid: c614fdef-dba4-48c7-85e9-136950253a4e
     type: regular
     task:
-      id: 348d2ec9-cd00-4c26-8ca3-0640bedb72c0
+      id: c614fdef-dba4-48c7-85e9-136950253a4e
       version: -1
       name: Slack block list overwritten with a error message
       description: This automation script overwrites the value of a specified list
@@ -251,10 +264,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 2ed2c838-ed4c-40e1-8f4a-b7433d7be49b
+    taskid: c9a25d96-491b-431b-8632-dbe9297bc05b
     type: regular
     task:
-      id: 2ed2c838-ed4c-40e1-8f4a-b7433d7be49b
+      id: c9a25d96-491b-431b-8632-dbe9297bc05b
       version: -1
       name: BlockPublicAccessOnAzureContainer
       scriptName: BlockPublicAccessOnAzureContainer
@@ -267,9 +280,8 @@ tasks:
     scriptarguments:
       container_name:
         simple: my-dummy-bucket
-      storage_account_name:
-        simple: dspmbuckets
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
@@ -285,14 +297,49 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 5d69efc8-8ff9-458d-8dce-b0605a1e44ce
+    type: regular
+    task:
+      id: 5d69efc8-8ff9-458d-8dce-b0605a1e44ce
+      version: -1
+      name: BlockPublicAccessOnGCPBucket
+      scriptName: BlockPublicAccessOnGCPBucket
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      bucket_name:
+        simple: dspmbucket
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1500,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 915,
-        "width": 1320,
-        "x": 330,
+        "width": 1560,
+        "x": 320,
         "y": -190
       }
     }
