@@ -2171,7 +2171,7 @@ script:
         description: The time the access key expires.
         type: Number
       - contextPath: PrismaCloud.AccessKeys.lastUsedTime
-        description: Access key last used.
+        description: The last time the access key was used.
         type: Number
       - contextPath: PrismaCloud.AccessKeys.name
         description: Name.
