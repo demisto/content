@@ -1708,3 +1708,22 @@ Creates a remediation scan. Requires security manager role. This command is a pr
 ## Troubleshooting
 
 For errors within Tenable.sc, the cause is generally specified, e.g., The currently logged in used is not an administrator, Unable to retrieve Asset #2412. Asset #2412 does not exist or Invalid login credentials. However there might be connection errors, for example when the server URL provided is incorrect.
+
+### tenable-sc-get-organization
+
+***
+Requires administrator role. Command to get a list of organizations' information, depending on the comma-separated list of fields provided.
+
+#### Base Command
+
+`tenable-sc-get-organization`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| fields | Optional fields to return specific values, example: restrictedIPs. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
