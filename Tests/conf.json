@@ -5997,7 +5997,8 @@
         "Test XDR Playbook general commands": "CIAC-11274",
         "Test XDR Playbook": "CIAC-11274",
         "Account Enrichment - Generic v2.1 - Test": "CIAC-11274",
-        "Test_XFE_v2": "CRTX-112127"
+        "Test_XFE_v2": "CRTX-112127",
+        "Microsoft Advanced Threat Analytics - Test": "CIAC-11499"
     },
     "skipped_integrations": {
         "AWS - Lambda": "No instance - wrong creds, issue CRTX-110456",
