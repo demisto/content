@@ -69,7 +69,6 @@ configuration:
   - never
   - interval
   - indicatorType
-  - suddenDeath
   name: feedExpirationPolicy
   required: false
 - display: ''

@@ -90,7 +90,6 @@ configuration:
   - never
   - interval
   - indicatorType
-  - suddenDeath
   required: false
 - display: ''
   name: feedExpirationInterval

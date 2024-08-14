@@ -84,7 +84,6 @@ configuration:
   - never
   - interval
   - indicatorType
-  - suddenDeath
   required: false
 - name: feedExpirationInterval
   defaultvalue: "20160"

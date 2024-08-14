@@ -21,6 +21,12 @@ configuration:
   hiddenusername: true
   section: Connect
   required: false
+- display: Incremental Feed
+  defaultvalue: 'true'
+  hidden: true
+  name: feedIncremental
+  type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   required: false

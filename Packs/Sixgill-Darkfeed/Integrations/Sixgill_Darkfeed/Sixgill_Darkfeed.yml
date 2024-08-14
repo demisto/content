@@ -70,7 +70,6 @@ configuration:
   - never
   - interval
   - indicatorType
-  - suddenDeath
   required: false
 - defaultvalue: '20160'
   display: ""
