@@ -114,7 +114,7 @@ filter _collector_type = "Azure Event Hub"
         ExtendedProperties_IP_address_v4 = if(json_extract_scalar(ExtendedProperties, "$.IP address") ~= "(?:\d{1,3}\.){3}\d{1,3}", json_extract_scalar(ExtendedProperties, "$.IP address"), null),
         ExtendedProperties_IP_address_v6 = if(json_extract_scalar(ExtendedProperties, "$.IP address") ~= "(?:[a-fA-F\d]{0,4}\:){1,7}[a-fA-F\d]{0,4}", json_extract_scalar(ExtendedProperties, "$.IP address"), null),
         ExtendedProperties_Image_Name = if(json_extract_scalar(ExtendedProperties, "$.Image Name") != null, json_extract_scalar(ExtendedProperties, "$.Image Name"), json_extract_scalar(ExtendedProperties, "$.ImageName") != null, json_extract_scalar(ExtendedProperties, "$.ImageName"), null),
-        ExtendedProperties_Payload_size = multiply(to_number(json_extract_scalar(ExtendedProperties, "$['Payload Size (KB)']")), 1024),
+        ExtendedProperties_Payload_size = multiply(to_number(arrayindex(regextract(json_extract_scalar(ExtendedProperties, "$['Payload Size (KB)']"), "(\d+)\.?\d*"),0)), 1024),
         ExtendedProperties_Port = to_number(json_extract_scalar(ExtendedProperties, "$.Port")),
         ExtendedProperties_Process_Id = json_extract_scalar(ExtendedProperties, "$.Process Id"),
         ExtendedProperties_Process_Name = json_extract_scalar(ExtendedProperties, "$.Process Name"),
