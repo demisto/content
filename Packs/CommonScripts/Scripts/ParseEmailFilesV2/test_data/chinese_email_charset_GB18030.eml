@@ -1,9 +1,0 @@
-From: sender@example.com
-To: recipient@example.com
-Subject: 测试邮件 (Test Email)
-Content-Type: text/plain; charset=GB18030
-
-这是一封测试邮件。
-这是用GB18030编码的邮件内容。
-
-谢谢。
