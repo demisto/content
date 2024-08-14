@@ -6503,3 +6503,4 @@ Retrieve vulnerability details for a specific ID and host. Supported with the Cr
 ## Troubleshooting
 * When encountering connectivity or authorization errors within Cortex XSOAR 8, it is necessary to include the IP address corresponding to the relevant region in the CrowdStrike Falcon allow list.
 * When encountering a 429 error code returned from Crowdstrike Falcon within Cortex XSOAR 8, the solution is to use an engine as explained in this [link](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Administrator-Guide/Engines).
+* In the different query parameters such as Endpoint Detections fetch query, Endpoint Incidents fetch query, etc. if one wants to query for multiple values in the same field for example, retrieving sevirity_name that equals to Medium, High, and Critical, one needs to use the following format: field:['value1','value2','value3'].
