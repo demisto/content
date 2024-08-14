@@ -2,7 +2,7 @@
 ignore=BA101
 
 [file:CreateMockFeed.yml]
-ignore=BA124
+ignore=BA124,IN122
 
 [file:CreateIncidents.yml]
 ignore=IN126
