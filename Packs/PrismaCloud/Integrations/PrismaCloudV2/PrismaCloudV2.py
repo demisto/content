@@ -90,6 +90,74 @@ STATUSES_OPTIONS = ['Errors', 'Suppressed', 'Passed', 'Fixed']
 TIME_FIELDS = ['firstSeen', 'lastSeen', 'alertTime', 'eventOccurred', 'lastUpdated', 'insertTs', 'createdTs', 'lastModifiedTs',
                'addedOn', 'eventTs', 'createdOn', 'updatedOn', 'rlUpdatedOn', 'lastLoginTs']
 
+LICENSE_TYPES = ['OSI_APACHE', 'OSI_ARTISTIC', 'OSI_BSD', 'OSI_EFL', 'OSI_FDL', 'OSI_LGPL', 'OSI_ZPL', 'CC-BY-SA-2.1-JP',
+                'GPL-2.0-or-later', 'AMDPLPA', 'CC-BY-SA-3.0-DE', 'ECL-2.0', 'EPICS', 'eCos-2.0', 'GPL-3.0-with-GCC-exception',
+                'KiCad-libraries-exception', 'GFDL-1.3-invariants-or-later', 'APSL-1.1', 'MIT', 'CC-BY-NC-ND-3.0-DE', 'GPL-3.0',
+                'CC-BY-SA-1.0', 'ADSL', 'MIT-CMU', 'Linux-man-pages-copyleft', 'diffmark', 'GPL-2.0', 'HPND', 'OSL-1.0',
+                'ClArtistic', 'IJG', 'IPL-1.0', 'NCGL-UK-2.0', 'CC-BY-2.5', 'LGPL-3.0-or-later', 'LiLiQ-Rplus-1.1', 'CC0-1.0',
+                'Glide', 'ImageMagick', 'CECILL-1.1', 'AGPL-3.0-only', 'eGenix', 'ANTLR-PD', 'CC-BY-NC-SA-4.0', 'CECILL-C',
+                'GFDL-1.3-no-invariants-only', 'SHL-0.5', 'MIT-Modern-Variant', 'CC-BY-3.0-NL', 'MIT-feh', 'SMLNJ',
+                'CC-BY-ND-2.0', 'HaskellReport', 'AGPL-1.0', 'BitTorrent-1.0', 'CDL-1.0', 'SISSL', 'CC-BY-SA-3.0', 'C-UDA-1.0',
+                'YPL-1.1', 'AGPL-1.0-or-later', 'NLOD-2.0', 'Unlicense', 'D-FSL-1.0', 'Linux-OpenIB', 'GPL-1.0-only', 'libtiff',
+                'Plexus', 'BSD-1-Clause', 'MPL-2.0', 'Intel-ACPI', 'Barr', 'OGL-Canada-2.0', 'ANTLR-PD-fallback', 'Zed',
+                'MIT-open-group', 'LGPL-2.1-or-later', 'mpich2', 'Motosoto', 'OGDL-Taiwan-1.0', 'PDDL-1.0',
+                'GFDL-1.3-invariants-only', 'EUPL-1.1', 'EUPL-1.0', 'Entessa', 'CC-BY-NC-ND-2.0', 'W3C',
+                'GFDL-1.2-no-invariants-or-later', 'Saxpath', 'GFDL-1.3-only', 'FreeImage', 'CNRI-Python', 'Apache-1.0',
+                'OLDAP-1.4', 'JSON', 'GPL-3.0-or-later', 'DSDP', 'MPL-2.0-no-copyleft-exception', 'Condor-1.1', 'Imlib2',
+                'iMatix', 'OLDAP-2.6', 'Rdisc', 'LiLiQ-P-1.1', 'xpp', 'FDK-AAC', 'CC-BY-NC-3.0', 'Jam',
+                'GFDL-1.3-no-invariants-or-later', 'GFDL-1.3-or-later', 'ICU', 'LGPL-2.1', 'AFL-2.1', 'JasPer-2.0', 'SSPL-1.0',
+                'CC-BY-SA-2.0', 'BSD-3-Clause-Clear', 'OSL-2.0', 'CC-BY-SA-4.0', 'SISSL-1.2', 'ODC-By-1.0', 'ZPL-2.1', 'QPL-1.0',
+                'LGPL-2.0-only', 'CC-BY-SA-2.5', 'Zimbra-1.3', 'MTLL', 'Eurosym', 'NPL-1.0', 'blessing', 'GFDL-1.3', 'GPL-1.0+',
+                'GFDL-1.1-no-invariants-only', 'CC-BY-NC-ND-3.0', 'Xerox', 'Unicode-TOU', 'Aladdin', 'CC-BY-NC-SA-2.5',
+                'Artistic-1.0', 'BSL-1.0', 'CC-BY-ND-2.5', 'NetCDF', 'MulanPSL-2.0', 'UCL-1.0', 'PostgreSQL', 'GFDL-1.1-only',
+                'RHeCos-1.1', 'Sendmail-8.23', 'psfrag', 'SNIA', 'EPL-2.0', '0BSD', 'MPL-1.0', 'GFDL-1.1-or-later', 'XFree86-1.1',
+                'WTFPL', 'CDLA-Sharing-1.0', 'CAL-1.0', 'CERN-OHL-S-2.0', 'CC-BY-NC-SA-3.0-DE', 'CC-BY-NC-1.0', 'Artistic-2.0',
+                'BUSL-1.1', 'EUPL-1.2', 'GPL-2.0-with-font-exception', 'LGPL-2.0+', 'AGPL-1.0-only', 'SGI-B-1.0', 'W3C-20150513',
+                'Adobe-2006', 'xinetd', 'BSD-3-Clause-No-Military-License', 'DRL-1.0', 'LGPL-2.0', 'MirOS',
+                'PolyForm-Small-Business-1.0.0', 'CDLA-Permissive-2.0', 'LiLiQ-R-1.1', 'Vim', 'curl', 'OLDAP-2.2.2',
+                'CATOSL-1.1', 'CC-BY-ND-4.0', 'CC-BY-NC-SA-2.0-UK', 'APSL-1.0', 'GPL-2.0-with-classpath-exception', 'OLDAP-2.0.1',
+                'NIST-PD-fallback', 'Glulxe', 'NPL-1.1', 'CC-BY-NC-ND-1.0', 'CC-BY-NC-2.5', 'Parity-6.0.0', 'CC-BY-NC-SA-3.0-IGO',
+                'CPAL-1.0', 'CC-BY-2.5-AU', 'SWL', 'LAL-1.2', 'NRL', 'OGL-UK-3.0', 'MS-RL', 'OSL-2.1', 'LPL-1.0', 'OSET-PL-2.1',
+                'OFL-1.0-no-RFN', 'OML', 'Arphic-1999', 'BSD-2-Clause', 'MulanPSL-1.0', 'EPL-1.0', 'BSD-4-Clause-Shortened',
+                'Elastic-2.0', 'NLPL', 'LPPL-1.2', 'SchemeReport', 'Multics', 'Net-SNMP', 'SHL-0.51', 'MIT-advertising',
+                'GPL-3.0-with-autoconf-exception', 'MS-PL', 'wxWindows', 'ZPL-1.1', 'ISC', 'CC-BY-NC-SA-3.0', 'GPL-2.0-only',
+                'Giftware', 'CPL-1.0', 'EUDatagrid', 'SGI-B-1.1', 'CC-BY-1.0', 'bzip2-1.0.5', 'libselinux-1.0', 'SMPPL',
+                'Latex2e', 'Watcom-1.0', 'VSL-1.0', 'CC-BY-NC-SA-1.0', 'FreeBSD-DOC', 'Nunit', 'LPPL-1.0', 'OLDAP-2.4',
+                'TAPR-OHL-1.0', 'OLDAP-2.3', 'CECILL-2.0', 'LPPL-1.3a', 'Qhull', 'CNRI-Python-GPL-Compatible', 'Frameworx-1.0',
+                'CDLA-Permissive-1.0', 'X11-distribute-modifications-variant', 'EFL-1.0', 'DOC', 'GFDL-1.2-or-later',
+                'BSD-3-Clause-No-Nuclear-License', 'LPPL-1.1', 'CC-BY-3.0-US', 'TOSL', 'Spencer-99', 'copyleft-next-0.3.1',
+                'FSFAP', 'CC-BY-NC-ND-4.0', 'OLDAP-2.8', 'Bahyph', 'Newsletr', 'CC-BY-NC-4.0', 'OFL-1.1', 'TU-Berlin-2.0',
+                'GFDL-1.2-invariants-or-later', 'BSD-2-Clause-NetBSD', 'Crossword', 'YPL-1.0', 'GPL-2.0-with-bison-exception',
+                'NIST-PD', 'IPA', 'GFDL-1.1-invariants-or-later', 'CC-BY-NC-ND-3.0-IGO', 'BSD-Source-Code', 'BitTorrent-1.1',
+                'AFL-3.0', 'Zend-2.0', 'GFDL-1.1', 'HPND-sell-variant', 'Abstyles', 'Interbase-1.0', 'MakeIndex', 'EFL-2.0',
+                'LPL-1.02', 'OLDAP-2.2', 'LGPL-3.0-only', 'LPPL-1.3c', 'libpng-2.0', 'Hippocratic-2.1',
+                'BSD-3-Clause-No-Nuclear-License-2014', 'AAL', 'NOSL', 'CC-BY-3.0-AT', 'HTMLTIDY', 'GPL-1.0-or-later', 'RPL-1.5',
+                'BSD-4-Clause-UC', 'Wsuipa', 'Cube', 'SCEA', 'IBM-pibs', 'Borceux', 'CC-BY-ND-3.0-DE', 'CC-BY-NC-SA-2.0-FR',
+                'Afmparse', 'CUA-OPL-1.0', 'CC-BY-SA-3.0-AT', 'LGPL-2.1+', 'OLDAP-2.7', 'GLWTPL', 'CC-BY-NC-SA-2.0', 'OCCT-PL',
+                'CNRI-Jython', 'Leptonica', 'OFL-1.0-RFN', 'OpenSSL', 'RSA-MD', 'TORQUE-1.1', 'X11', 'BSD-Protection', 'JPNIC',
+                'App-s2p', 'GFDL-1.2-only', 'CPOL-1.02', 'CC-BY-ND-3.0', 'GPL-1.0', 'Zlib', 'Python-2.0', 'OLDAP-1.3', 'Mup',
+                'LGPLLR', 'CC-BY-4.0', 'OCLC-2.0', 'OGTSL', 'DL-DE-BY-2.0', 'OFL-1.0', 'GFDL-1.2-invariants-only', 'Sendmail',
+                'CC-BY-NC-3.0-DE', 'VOSTROM', 'Beerware', 'FSFULLR', 'Fair', 'BSD-2-Clause-FreeBSD', 'Community-Spec-1.0',
+                'SSH-short', 'FSFUL', 'GFDL-1.1-no-invariants-or-later', 'CrystalStacker', 'GFDL-1.1-invariants-only', 'Ruby',
+                'BSD-3-Clause-Open-MPI', 'Baekmuk', 'Libpng', 'GD', 'OLDAP-2.1', 'Sleepycat', 'CERN-OHL-P-2.0', 'GFDL-1.2',
+                'CC-BY-2.0', 'SPL-1.0', 'OLDAP-1.2', 'etalab-2.0', 'TMate', 'NCSA', 'NBPL-1.0', 'Intel', 'GPL-3.0-only',
+                'APSL-2.0', 'GPL-2.0-with-autoconf-exception', 'TU-Berlin-1.0', 'Noweb', 'SSH-OpenSSH',
+                'BSD-3-Clause-Attribution', 'PSF-2.0', 'psutils', 'CERN-OHL-1.2', 'SimPL-2.0', 'OLDAP-2.2.1', 'SGI-B-2.0',
+                'GPL-2.0+', 'COIL-1.0', 'Naumen', 'CC-BY-ND-1.0', 'Unicode-DFS-2016', 'AFL-1.2', 'OSL-3.0', 'OFL-1.1-RFN',
+                'SAX-PD', 'Xnet', 'AML', 'Apache-1.1', 'NAIST-2003', 'NGPL', 'ZPL-2.0', 'OFL-1.1-no-RFN', 'APSL-1.2', 'MPL-1.1',
+                'BlueOak-1.0.0', 'Unicode-DFS-2015', 'PHP-3.01', 'GL2PS', 'NTP-0', 'BSD-4-Clause', 'TCL', 'RSCPL', 'MIT-enna',
+                'CERN-OHL-1.1', 'OSL-1.1', 'BSD-3-Clause-LBNL', 'Bitstream-Vera', 'Adobe-Glyph', 'MITNFA', 'CC-BY-3.0-DE',
+                'CECILL-1.0', 'SugarCRM-1.1.3', 'CAL-1.0-Combined-Work-Exception', 'BSD-3-Clause', 'Info-ZIP', 'LGPL-3.0+',
+                'Zimbra-1.4', 'zlib-acknowledgement', 'Spencer-94', 'MIT-0', 'AGPL-3.0', 'CC-PDDC', 'CC-BY-NC-2.0', 'mplus',
+                'ODbL-1.0', 'RPSL-1.0', 'APAFML', 'OGL-UK-1.0', 'CDDL-1.1', 'bzip2-1.0.6', 'LGPL-2.1-only', 'OGC-1.0',
+                'BSD-3-Clause-No-Nuclear-Warranty', 'ErlPL-1.1', 'ECL-1.0', 'CERN-OHL-W-2.0', 'OGL-UK-2.0', 'O-UDA-1.0', 'NTP',
+                'NASA-1.3', 'copyleft-next-0.3.0', 'TCP-wrappers', 'Apache-2.0', 'CC-BY-3.0', 'CECILL-B', 'Nokia', 'GPL-3.0+',
+                'GPL-2.0-with-GCC-exception', 'OPL-1.0', 'OPUBL-1.0', 'UPL-1.0', 'AFL-2.0', 'LGPL-2.0-or-later', 'CECILL-2.1',
+                'gnuplot', 'Caldera', 'PolyForm-Noncommercial-1.0.0', 'OLDAP-2.0', 'CDDL-1.0', 'APL-1.0', 'dvipdfm', 'XSkat',
+                'Spencer-86', 'NLOD-1.0', 'W3C-19980720', 'BSD-2-Clause-Patent', 'AMPAS', 'AGPL-3.0-or-later', 'RPL-1.1',
+                'Parity-7.0.0', 'OLDAP-1.1', 'AFL-1.1', 'Artistic-1.0-cl8', 'FTL', 'Dotseqn', 'CC-BY-NC-ND-2.5',
+                'GFDL-1.2-no-invariants-only', 'PHP-3.0', 'CC-BY-SA-2.0-UK', 'BSD-3-Clause-Modification', 'LAL-1.3', 'gSOAP-1.3b',
+                'StandardML-NJ', 'NPOSL-3.0', 'LGPL-3.0', 'Artistic-1.0-Perl', 'OLDAP-2.5', 'BSD-2-Clause-Views']
 ''' CLIENT CLASS '''
 
 
@@ -2190,6 +2258,9 @@ def code_issues_list_command(client, args):
     license_type = argToList(args.get('license_type'))
     code_categories = argToList(args.get('code_categories'))
     limit = arg_to_number(args.get('limit')) or 50
+    
+    if license_type not in LICENSE_TYPES:
+        raise DemistoException('invalid license type')
     
     limit_for_request = limit
     if limit>1000:
