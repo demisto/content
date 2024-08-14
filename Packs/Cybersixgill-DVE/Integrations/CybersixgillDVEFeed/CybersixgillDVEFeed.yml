@@ -108,7 +108,7 @@ script:
       name: limit
     description: Fetching Sixgill DVE Feed indicators.
     name: cybersixgill-get-indicators
-  dockerimage: demisto/sixgill:1.0.0.73690
+  dockerimage: demisto/sixgill:1.0.0.108071
   feed: true
   runonce: false
   script: '-'
