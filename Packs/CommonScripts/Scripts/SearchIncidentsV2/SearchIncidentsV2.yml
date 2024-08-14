@@ -129,7 +129,7 @@ tags:
 - Utility
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.10.13.83255
+dockerimage: demisto/python3:3.11.9.107902
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
