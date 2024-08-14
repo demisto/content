@@ -37,7 +37,7 @@ script:
       predefined:
       - 'True'
       - 'False'
-    description: 'List all the users for a given domain Id.'      
+    description: 'List all the users for a given domain ID.'      
     name: signum-list-domain-users
     outputs:
     - contextPath: Signum.ListDomainUsers
