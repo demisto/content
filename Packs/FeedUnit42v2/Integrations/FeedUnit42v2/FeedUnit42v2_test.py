@@ -439,3 +439,24 @@ def test_is_atom42_main_report(report_obj, expected_result):
 
     from FeedUnit42v2 import is_atom42_main_report
     assert is_atom42_main_report(report_obj) is expected_result
+
+
+def test_test_module(mocker):
+    """
+    Given
+    - A response from the API.
+    When
+    - call the test_module method
+    Then
+    - run the test_module method
+    - Validate that the response is correct.
+    """
+
+    def mock_get_stix_objects(test, **kwargs):
+        type_ = kwargs.get('type')
+        client.objects_data[type_] = TYPE_TO_RESPONSE_FETCH[type_]
+
+    client = Client(api_key='1234', verify=False)
+    mocker.patch.object(client, 'fetch_stix_objects_from_api', side_effect=mock_get_stix_objects)
+    from FeedUnit42v2 import test_module
+    assert test_module(client) == "ok"
