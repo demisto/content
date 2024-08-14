@@ -1727,5 +1727,4 @@ def main():  # pragma: no cover
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
-    # comment
     main()
