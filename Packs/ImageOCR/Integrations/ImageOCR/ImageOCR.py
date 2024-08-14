@@ -6,6 +6,8 @@ TESSERACT_EXE = 'tesseract'
 CORRUPTED_ERR = 'pix not read'
 CORRUPTED_MSG = 'WARNING: failed to extract text - image is corrupted'
 
+test = "test"
+
 
 def list_languages() -> list[str]:
     lang_out = subprocess.check_output([TESSERACT_EXE, '--list-langs'], universal_newlines=True)
