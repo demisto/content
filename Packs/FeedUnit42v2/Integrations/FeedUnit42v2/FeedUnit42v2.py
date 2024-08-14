@@ -165,8 +165,6 @@ def get_relationships_from_sub_reports(client, report_object, id_to_object):
                 for related_obj in sub_report_obj_object_refs:
                     # relationship-- objects ref handled in parse_relationships
                     if not related_obj.startswith('relationship--'):
-                        if related_obj.startswith('report--'):
-                            continue
                         obj_refs_excluding_relationships_prefix.append(related_obj)
                         if id_to_object.get(related_obj):
                             entity_b_obj_type, entity_b_value = STIX2XSOARParser.get_entity_b_type_and_value(related_obj,
