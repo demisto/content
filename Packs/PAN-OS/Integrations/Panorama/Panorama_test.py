@@ -7510,7 +7510,7 @@ def test_pan_os_list_profile_exception(mocker):
     mock_response = MockedResponse(text='list_example', status_code=200)
     mocker.patch.object(requests, 'request', return_value=mock_response)
     
-    command_results = Panorama.pan_os_delete_profile_exception_command(args={"profile_name": "test_spg"})
+    command_results = Panorama.pan_os_list_profile_exception_command(args={"profile_name": "test_spg"})
 
     assert command_results.raw_response == {'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
 
