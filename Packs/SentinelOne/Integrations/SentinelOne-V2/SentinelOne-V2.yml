@@ -209,6 +209,9 @@ script:
     - contextPath: SentinelOne.Agents.SiteName
       description: Site name associated with the agent.
       type: string
+    - contextPath: SentinelOne.Agents.Tags
+      description: Tags associated with the agent.
+      type: unknown
   - arguments:
     - auto: PREDEFINED
       description: Exclusion item type.

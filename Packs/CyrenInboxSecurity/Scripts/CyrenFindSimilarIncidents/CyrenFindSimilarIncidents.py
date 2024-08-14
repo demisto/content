@@ -1,8 +1,5 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-# noqa: F401
-# noqa: F401
-# type: ignore
 
 TIME_FIELD = "created"
 MAX_CANDIDATES_IN_LIST = 1000

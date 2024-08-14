@@ -60,7 +60,7 @@ from MicrosoftApiModule import *
 warnings.filterwarnings("ignore")
 
 """ Constants """
-
+INTEGRATION_NAME = get_integration_name()
 APP_NAME = "ms-ews-o365"
 FOLDER_ID_LEN = 120
 MAX_INCIDENTS_PER_FETCH = 200
@@ -91,8 +91,8 @@ TARGET_MAILBOX = 'receivedBy'
 
 # context paths
 CONTEXT_UPDATE_EWS_ITEM = f"EWS.Items((val.{ITEM_ID} === obj.{ITEM_ID} || " \
-                          f"(val.{MESSAGE_ID} && obj.{MESSAGE_ID} && val.{MESSAGE_ID} === obj.{MESSAGE_ID}))" \
-                          f" && val.{TARGET_MAILBOX} === obj.{TARGET_MAILBOX})"
+    f"(val.{MESSAGE_ID} && obj.{MESSAGE_ID} && val.{MESSAGE_ID} === obj.{MESSAGE_ID}))" \
+    f" && val.{TARGET_MAILBOX} === obj.{TARGET_MAILBOX})"
 
 CONTEXT_UPDATE_EWS_ITEM_FOR_ATTACHMENT = f"EWS.Items(val.{ITEM_ID} == obj.{ATTACHMENT_ORIGINAL_ITEM_ID})"
 CONTEXT_UPDATE_ITEM_ATTACHMENT = f".ItemAttachments(val.{ATTACHMENT_ID} == obj.{ATTACHMENT_ID})"
@@ -121,9 +121,38 @@ ITEMS_RESULTS_HEADERS = [
     "textBody",
 ]
 
+# attachment name param
+LEGACY_NAME = argToBoolean(demisto.params().get('legacy_name', False))
 UTF_8 = 'utf-8'
 
 """ Classes """
+
+
+class CustomDomainOAuth2Credentials(OAuth2AuthorizationCodeCredentials):
+    def __init__(self, azure_cloud: AzureCloud, **kwargs):
+        self.ad_base_url = azure_cloud.endpoints.active_directory or 'https://login.microsoftonline.com'
+        self.exchange_online_scope = azure_cloud.endpoints.exchange_online or 'https://outlook.office365.com'
+        demisto.debug(f'Initializing {self.__class__}: '
+                      f'{azure_cloud.abbreviation=} | {self.ad_base_url=} | {self.exchange_online_scope}')
+        super().__init__(**kwargs)
+
+    @property
+    def token_url(self):
+        """
+            The URL to request tokens from.
+            Overrides the token_url property to specify custom token retrieval endpoints for different authority's cloud env.
+        """
+        # We may not know (or need) the Microsoft tenant ID. If not, use common/ to let Microsoft select the appropriate
+        # tenant for the provided authorization code or refresh token.
+        return f"{self.ad_base_url}/{self.tenant_id or 'common'}/oauth2/v2.0/token"
+
+    @property
+    def scope(self):
+        """
+            The scope we ask for the token to have
+            Overrides the scope property to specify custom token retrieval endpoints for different authority's cloud env.
+        """
+        return [f"{self.exchange_online_scope}/.default"]
 
 
 class ProxyAdapter(requests.adapters.HTTPAdapter):
@@ -195,7 +224,8 @@ class EWSClient:
             raise Exception('Token / Tenant ID must be provided.')
 
         BaseProtocol.TIMEOUT = int(request_timeout)
-        self.ews_server = "https://outlook.office365.com/EWS/Exchange.asmx/"
+        azure_cloud = get_azure_cloud(kwargs, INTEGRATION_NAME)
+        self.ews_server = f"{azure_cloud.endpoints.exchange_online}/EWS/Exchange.asmx/"
         self.ms_client = MicrosoftClient(
             tenant_id=tenant_id,
             auth_id=client_id,
@@ -205,8 +235,9 @@ class EWSClient:
             verify=not insecure,
             proxy=proxy,
             self_deployed=self_deployed,
-            scope="https://outlook.office.com/.default",
+            scope=f"{azure_cloud.endpoints.exchange_online}/.default",
             command_prefix="ews",
+            azure_cloud=azure_cloud
         )
         self.folder_name = folder
         self.is_public_folder = is_public_folder
@@ -216,11 +247,12 @@ class EWSClient:
         self.client_id = client_id
         self.client_secret = client_secret
         self.account_email = default_target_mailbox
-        self.config = self.__prepare(insecure)
+        self.config = self.__prepare(azure_cloud, insecure)
         self.protocol = BaseProtocol(self.config)
         self.mark_as_read = kwargs.get('mark_as_read', False)
+        self.legacy_name = argToBoolean(kwargs.get('legacy_name', False))
 
-    def __prepare(self, insecure):  # pragma: no cover
+    def __prepare(self, azure_cloud: AzureCloud, insecure: bool):  # pragma: no cover
         """
         Prepares the client PROTOCOL, CREDENTIALS and CONFIGURATION
         :param insecure: Trust any certificate (not secure)
@@ -229,7 +261,8 @@ class EWSClient:
         BaseProtocol.HTTP_ADAPTER_CLS = InsecureProxyAdapter if insecure else ProxyAdapter
         access_token = self.ms_client.get_access_token()
         oauth2_token = OAuth2Token({"access_token": access_token})
-        self.credentials = credentials = OAuth2AuthorizationCodeCredentials(
+        self.credentials = credentials = CustomDomainOAuth2Credentials(
+            azure_cloud=azure_cloud,
             client_id=self.client_id,
             client_secret=self.client_secret,
             access_token=oauth2_token,
@@ -240,7 +273,7 @@ class EWSClient:
             "credentials": credentials,
             "auth_type": OAUTH2,
             "version": Version(EXCHANGE_O365),
-            "service_endpoint": "https://outlook.office365.com/EWS/Exchange.asmx",
+            "service_endpoint": f"{azure_cloud.endpoints.exchange_online}/EWS/Exchange.asmx",
         }
 
         return Configuration(**config_args)
@@ -377,7 +410,7 @@ class EWSClient:
             raise Exception(item_to_reply_to)
 
         subject = subject or item_to_reply_to.subject
-        htmlBody, htmlAttachments = handle_html(htmlBody) if htmlBody else None, []  # type: ignore
+        htmlBody, htmlAttachments = handle_html(htmlBody) if htmlBody else (None, [])
         message_body = HTMLBody(htmlBody) if htmlBody else body
         reply = item_to_reply_to.create_reply(subject='Re: ' + subject, body=message_body, to_recipients=to,
                                               cc_recipients=cc,
@@ -417,7 +450,7 @@ class MarkAsJunk(EWSAccountService):
 
     def get_payload(self, item_id, move_item):  # pragma: no cover
         junk = create_element(
-            f"m:{self.SERVICE_NAME}",
+            f"m: {self.SERVICE_NAME}",
             {"IsJunk": "true", "MoveItem": "true" if move_item else "false"},
         )
 
@@ -465,7 +498,7 @@ class GetSearchableMailboxes(EWSService):
         ]
 
     def get_payload(self):
-        element = create_element(f"m:{self.SERVICE_NAME}")
+        element = create_element(f"m: {self.SERVICE_NAME}")
         return element
 
 
@@ -503,7 +536,7 @@ class ExpandGroup(EWSService):
             sys.exit()
 
     def get_payload(self, email_address):
-        element = create_element(f"m:{self.SERVICE_NAME}")
+        element = create_element(f"m: {self.SERVICE_NAME}")
         mailbox_element = create_element("m:Mailbox")
         add_xml_child(mailbox_element, "t:EmailAddress", email_address)
         element.append(mailbox_element)
@@ -588,23 +621,26 @@ def start_logging():
 """ Helper Functions """
 
 
-def get_attachment_name(attachment_name, eml_extension=False, content_id="", attachment_id=""):
+def get_attachment_name(attachment_name, eml_extension=False, content_id="", is_inline=False):
     """
     Retrieve attachment name or error string if none is provided
     :param attachment_name: attachment name to retrieve
     :param eml_extension: Indicates whether the eml extension should be added
     :return: string
     """
-    identifier_id = content_id
-    if not identifier_id or identifier_id == "None":
-        identifier_id = attachment_id
+    if is_inline and content_id and content_id != "None" and not LEGACY_NAME:
+        if attachment_name is None or attachment_name == "":
+            return (f"{content_id}-attachmentName-demisto_untitled_attachment.eml"
+                    if eml_extension
+                    else f"{content_id}-attachmentName-demisto_untitled_attachment")
+        elif eml_extension and not attachment_name.endswith(".eml"):
+            return f'{content_id}-attachmentName-{attachment_name}.eml'
+        return f'{content_id}-attachmentName-{attachment_name}'
     if attachment_name is None or attachment_name == "":
-        return (f"{identifier_id}-imageName:demisto_untitled_attachment.eml"
-                if eml_extension
-                else f"{identifier_id}-imageName:demisto_untitled_attachment")
+        return "demisto_untitled_attachment.eml" if eml_extension else "demisto_untitled_attachment"
     elif eml_extension and not attachment_name.endswith(".eml"):
-        return f'{identifier_id}-imageName:{attachment_name}.eml'
-    return f'{identifier_id}-imageName:{attachment_name}'
+        return f'{attachment_name}.eml'
+    return attachment_name
 
 
 def get_entry_for_object(title, context_key, obj, headers=None):
@@ -892,7 +928,7 @@ def get_entry_for_file_attachment(item_id, attachment):
     :return: file entry dict for attachment
     """
     entry = fileResult(get_attachment_name(attachment_name=attachment.name, content_id=attachment.content_id,
-                       attachment_id=attachment.attachment_id.id), attachment.content)
+                       is_inline=attachment.is_inline), attachment.content)
     entry["EntryContext"] = {
         CONTEXT_UPDATE_EWS_ITEM_FOR_ATTACHMENT
         + CONTEXT_UPDATE_FILE_ATTACHMENT: parse_attachment_as_dict(item_id, attachment)
@@ -920,7 +956,7 @@ def parse_attachment_as_dict(item_id, attachment):
             ATTACHMENT_ID: attachment.attachment_id.id,
             "attachmentName": get_attachment_name(attachment_name=attachment.name,
                                                   content_id=attachment.content_id,
-                                                  attachment_id=attachment.attachment_id.id),
+                                                  is_inline=attachment.is_inline),
             "attachmentSHA256": hashlib.sha256(attachment_content).hexdigest()
             if attachment_content
             else None,
@@ -942,7 +978,7 @@ def parse_attachment_as_dict(item_id, attachment):
             ATTACHMENT_ID: attachment.attachment_id.id,
             "attachmentName": get_attachment_name(attachment_name=attachment.name,
                                                   content_id=attachment.content_id,
-                                                  attachment_id=attachment.attachment_id.id),
+                                                  is_inline=attachment.is_inline),
             "attachmentSHA256": None,
             "attachmentContentType": attachment.content_type,
             "attachmentContentId": attachment.content_id,
@@ -970,7 +1006,7 @@ def get_entry_for_item_attachment(item_id, attachment, target_email):  # pragma:
         parse_item_as_dict(item, target_email, camel_case=True, compact_fields=True)
     )
     title = (f'EWS get attachment got item for "{target_email}", '
-             f'"{get_attachment_name(attachment_name=attachment.name, content_id=attachment.content_id, attachment_id=attachment.attachment_id.id)}"')  # noqa: E501
+             f'"{get_attachment_name(attachment_name=attachment.name, content_id=attachment.content_id, is_inline=attachment.is_inline)}"')  # noqa: E501
 
     return get_entry_for_object(
         title,
@@ -1076,31 +1112,28 @@ def fetch_attachments_for_message(
     attachments = client.get_attachments_for_item(item_id, account, attachment_ids)
     entries = []
     for attachment in attachments:
-        if (not identifiers_filter
-            or attachment.content_id in identifiers_filter
-                or attachment.attachment_id.id in identifiers_filter):
-            if isinstance(attachment, FileAttachment):
-                try:
-                    if attachment.content:
-                        entries.append(get_entry_for_file_attachment(item_id, attachment))
-                except TypeError as e:
-                    if str(e) != "must be string or buffer, not None":
-                        raise
-            else:
+        if isinstance(attachment, FileAttachment):
+            try:
+                if attachment.content:
+                    entries.append(get_entry_for_file_attachment(item_id, attachment))
+            except TypeError as e:
+                if str(e) != "must be string or buffer, not None":
+                    raise
+        else:
+            entries.append(
+                get_entry_for_item_attachment(
+                    item_id, attachment, account.primary_smtp_address
+                )
+            )
+            if attachment.item.mime_content:
                 entries.append(
-                    get_entry_for_item_attachment(
-                        item_id, attachment, account.primary_smtp_address
+                    fileResult(
+                        get_attachment_name(attachment_name=attachment.name, eml_extension=True,
+                                            content_id=attachment.content_id,
+                                            is_inline=attachment.is_inline),
+                        attachment.item.mime_content,
                     )
                 )
-                if attachment.item.mime_content:
-                    entries.append(
-                        fileResult(
-                            get_attachment_name(attachment_name=attachment.name, eml_extension=True,
-                                                content_id=attachment.content_id,
-                                                attachment_id=attachment.attachment_id.id),
-                            attachment.item.mime_content,
-                        )
-                    )
 
     return entries
 
@@ -1934,8 +1967,13 @@ def add_additional_headers(additional_headers):
         try:
             Message.register(header_name, TempClass)
             headers[header_name] = header_value
-        except ValueError as e:
-            demisto.debug('EWSO365 - Header ' + header_name + ' could not be registered. ' + str(e))
+        except ValueError:
+            Message.deregister(header_name)
+            try:
+                Message.register(header_name, TempClass)
+                headers[header_name] = header_value
+            except ValueError as e:
+                demisto.debug('EWSO365 - Header ' + header_name + ' could not be registered. ' + str(e))
 
     return headers
 
@@ -2114,8 +2152,8 @@ def decode_email_data(email_obj: Message):
         data = attached_email_bytes.decode(encoding)
     except UnicodeDecodeError:
         # In case the detected encoding fails apply the default encoding
-        demisto.info(f'Could not decode attached email using detected encoding:{encoding}, retrying '
-                     f'using utf-8.\nAttached email details:'
+        demisto.info(f'Could not decode attached email using detected encoding: {encoding}, retrying '
+                     f'using utf-8.\nAttached email details: '
                      f'\nMessage-ID = {email_obj.get("Message-ID")}'
                      f'\nDate = {email_obj.get("Date")}'
                      f'\nSubject = {email_obj.get("Subject")}'
@@ -2207,7 +2245,7 @@ def parse_incident_from_item(item):  # pragma: no cover
                         # save the attachment
                         file_name = get_attachment_name(attachment_name=attachment.name,
                                                         content_id=attachment.content_id,
-                                                        attachment_id=attachment.attachment_id.id)
+                                                        is_inline=attachment.is_inline)
                         demisto.debug(f"saving content number {attachment_counter}, "
                                       f"of size {sys.getsizeof(attachment.content)}, of email with id {item.id}")
                         file_result = fileResult(file_name, attachment.content)
@@ -2223,7 +2261,8 @@ def parse_incident_from_item(item):  # pragma: no cover
                                 "path": file_result["FileID"],
                                 "name": get_attachment_name(attachment_name=attachment.name,
                                                             content_id=attachment.content_id,
-                                                            attachment_id=attachment.attachment_id.id),
+                                                            is_inline=attachment.is_inline),
+                                "description": FileAttachmentType.ATTACHED if not attachment.is_inline else "",
                             }
                         )
                 except TypeError as e:
@@ -2284,7 +2323,7 @@ def parse_incident_from_item(item):  # pragma: no cover
                     data = decode_email_data(attached_email)
                     file_result = fileResult(get_attachment_name(attachment_name=attachment.name,
                                              eml_extension=True, content_id=attachment.content_id,
-                                             attachment_id=attachment.attachment_id.id), data)
+                                             is_inline=attachment.is_inline), data)
 
                 if file_result:
                     # check for error
@@ -2299,7 +2338,7 @@ def parse_incident_from_item(item):  # pragma: no cover
                             "name": get_attachment_name(attachment_name=attachment.name,
                                                         eml_extension=True,
                                                         content_id=attachment.content_id,
-                                                        attachment_id=attachment.attachment_id.id),
+                                                        is_inline=attachment.is_inline),
                         }
                     )
 
@@ -2308,7 +2347,7 @@ def parse_incident_from_item(item):  # pragma: no cover
                     "type": label_attachment_type,
                     "value": get_attachment_name(attachment_name=attachment.name,
                                                  content_id=attachment.content_id,
-                                                 attachment_id=attachment.attachment_id.id),
+                                                 is_inline=attachment.is_inline),
                 }
             )
             labels.append(
@@ -2486,7 +2525,7 @@ def fetch_last_emails(
     qs.chunk_size = min(client.max_fetch, 100)
     qs.page_size = min(client.max_fetch, 100)
     demisto.debug("Before iterating on queryset")
-    demisto.debug(f'Size of the queryset object in fetch-incidents:{sys.getsizeof(qs)}')
+    demisto.debug(f'Size of the queryset object in fetch-incidents: {sys.getsizeof(qs)}')
     for item in qs:
         demisto.debug("next iteration of the queryset in fetch-incidents")
         if isinstance(item, Message) and item.message_id not in exclude_ids:
@@ -2701,7 +2740,7 @@ def process_main():
 
 
 def main():  # pragma: no cover
-    # When running big queries, like 'ews-search-mailbox' the memory might not freed by the garbage
+    # When running big queries, like 'ews-search-mailbox' the memory might not be freed by the garbage
     # collector. `separate_process` flag will run the integration on a separate process that will prevent
     # memory leakage.
     separate_process = demisto.params().get("separate_process", False)
