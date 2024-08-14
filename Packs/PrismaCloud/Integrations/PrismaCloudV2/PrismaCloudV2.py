@@ -123,6 +123,42 @@ class Client(BaseClient):
         demisto.debug("Successfully got the auth token")
         self._headers[REQUEST_CSPM_AUTH_HEADER] = token
 
+    
+    def code_issues_list_request(self, fixable_only:Optional[bool]=None, scopes:Optional[List[str]]=[], term:Optional[str]=None,
+                                 branch:Optional[str]=None, check_status:Optional[str]=None, git_users:Optional[List[str]]=[],
+                                 iac_categories:Optional[List[str]]=[], iac_labels:Optional[List[str]]=[],
+                                 file_types:Optional[List[str]]=[],  repositories:Optional[List[str]]=[],
+                                 secrets_risk_factors:Optional[List[str]]=[], severities:Optional[List[str]]=[],
+                                 vulnerability_risk_factors:Optional[List[str]]=[], iac_tags:Optional[List[str]]=[],
+                                 license_type:Optional[List[str]]=[], code_categories:Optional[List[str]]=[],
+                                 limit:Optional[float]=50, offset:Optional[float]=0):
+        body = assign_params(
+            filters=assign_params(
+            branch=branch,
+            checkStatus=check_status,
+            codeCategories=code_categories,
+            fileTypes=file_types,
+            fixableOnly=fixable_only,
+            gitUsers=git_users,
+            iacCategories=iac_categories,
+            iacLabels=iac_labels,
+            iacTags=iac_tags,
+            licenseType=license_type,
+            repositories=repositories,
+            secretsRiskFactors=secrets_risk_factors,
+            severities=severities,
+            vulnerabilityRiskFactors=vulnerability_risk_factors
+        ),
+        search=assign_params(
+            scopes=scopes,
+            term=term),
+        limit=limit,
+        offset=offset
+        )
+
+        return self._http_request('POST', '/code/api/v2/code-issues/branch_scan', json_data=body)
+    
+    
     def alert_filter_list_request(self):
         return self._http_request('GET', 'filter/alert/suggest')
 
@@ -2136,6 +2172,66 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
     return remote_incident_id
 
 
+def code_issues_list_command(client, args):
+    fixable_only = argToBoolean(args.get('fixable_only', False))
+    scopes = argToList(args.get('scopes'))
+    term = args.get('term')
+    branch = args.get('branch')
+    check_status = args.get('check_status')
+    git_users = argToList(args.get('git_users'))
+    iac_categories = argToList(args.get('iac_categories'))
+    iac_labels = argToList(args.get('iac_labels'))
+    file_types = argToList(args.get('file_types'))
+    repositories = argToList(args.get('repositories'))
+    secrets_risk_factors = argToList(args.get('secrets_risk_factors'))
+    severities = argToList(args.get('severities'))
+    vulnerability_risk_factors = argToList(args.get('vulnerability_risk_factors'))
+    iac_tags = argToList(args.get('iac_tags'))
+    license_type = argToList(args.get('license_type'))
+    code_categories = argToList(args.get('code_categories'))
+    limit = arg_to_number(args.get('limit')) or 50
+    
+    limit_for_request = limit
+    if limit>1000:
+        limit_for_request = 1000
+    has_next = True
+    offset = 0
+    
+    res_issues = []
+    issues_for_readable_output = []
+    while len(res_issues)<limit and has_next:
+        
+        response = client.code_issues_list_request(fixable_only=fixable_only, scopes=scopes, term=term, branch=branch,
+                                                   check_status=check_status, git_users=git_users, iac_categories=iac_categories,
+                                                   iac_labels=iac_labels, file_types=file_types, repositories=repositories,
+                                                   secrets_risk_factors=secrets_risk_factors, severities=severities,
+                                                   vulnerability_risk_factors=vulnerability_risk_factors, iac_tags=iac_tags,
+                                                   license_type=license_type, code_categories=code_categories,
+                                                   limit=limit_for_request, offset=offset)
+        res_issues.extend([response])
+        
+        for issue in response['data']:
+            issues_for_readable_output.append({
+                'Repository': issue.get('repository'),
+                'First Detected': issue['firstDetected'],
+                'Policy': issue['policy'],
+                'Severity': issue['severity'],
+                'Labels': issue['labels'].get('label') if issue['labels'].get('label') else issue['labels']  # response changes
+            })
+                
+        has_next = response['hasNext']
+        offset = len(res_issues)
+        
+    headers = ['Repository', 'First Detected', 'Policy', 'Severity', 'Labels']
+    readable_output = tableToMarkdown('Issues list:', issues_for_readable_output, headers, removeNull=True)
+    return CommandResults(outputs_prefix='PrismaCloud.CodeIssue',
+                          outputs_key_field='need to check this out',  #TODO
+                          readable_output=readable_output,
+                          raw_response=  [] #TODO
+                          )
+
+
+
 ''' TEST MODULE '''
 
 
@@ -2177,7 +2273,7 @@ def test_module(client: Client, params: Dict[str, Any]) -> str:
 
 def main() -> None:
     params: Dict[str, Any] = demisto.params()
-    args: Dict[str, Any] = demisto.args()
+    args={'scopes': ['Secrets', 'Licenses'], 'offset': 10, 'term': 'bla'}#: Dict[str, Any] = demisto.args()
     url = format_url(str(params.get('url')))
     verify_certificate: bool = not params.get('insecure', False)
     proxy = params.get('proxy', False)
@@ -2191,7 +2287,7 @@ def main() -> None:
 
     return_v1_output = params.get('output_old_format', False)
 
-    command = demisto.command()
+    command = 'prisma-cloud-code-issues-list'#demisto.command()
     demisto.debug(f'Command being called is {command}')
     is_test_module: bool = (command == 'test-module')
 
@@ -2200,6 +2296,7 @@ def main() -> None:
         client: Client = Client(url, verify_certificate, proxy, headers=HEADERS, username=username, password=password,
                                 mirror_direction=mirror_direction, close_incident=close_incident, close_alert=close_alert,
                                 is_test_module=is_test_module)
+        #res = client.code_issues_list_request(**args)
         commands_without_args = {
             'prisma-cloud-alert-filter-list': alert_filter_list_command,
 
@@ -2264,6 +2361,9 @@ def main() -> None:
             })
         elif command == 'get-modified-remote-data':
             return_results(get_modified_remote_data_command(client, args, params))
+        elif command == 'prisma-cloud-code-issues-list':
+            return_results(code_issues_list_command(client, args))
+
         else:
             raise NotImplementedError(f'{command} command is not implemented.')
 

@@ -1561,3 +1561,27 @@ def test_remove_additional_resource_fields(prisma_cloud_v2_client):
     remove_additional_resource_fields(input_dict=input)
 
     assert input == expected
+    
+
+code_issues_list_request_data = [
+    # case 'fixable_only', 'scopes' with one value, 'term', 'branch' and 'limit'.
+    ({'fixable_only': True, 'scopes': ['Secrets'], 'term': 'bla1', 'branch': 'bla2', 'limit': 30},
+     {'filters': {'branch': 'bla2', 'fixableOnly': True},  # expected
+      'search': {'scopes': ['Secrets'], 'term': 'bla1'}, 'limit': 30, 'offset': 0}),
+    # case 'scopes' with more than one value and offset.
+    ({'scopes': ['Secrets', 'Licenses'], 'offset': 10},
+     {'search': {'scopes': ['Secrets', 'Licenses']}, 'limit': 50, 'offset': 10}),
+]
+@pytest.mark.parametrize('args, expected', code_issues_list_request_data)
+def test_code_issues_list_request(mocker, prisma_cloud_v2_client, args, expected):
+    """
+        Given
+            args for code-issues-list command
+        When
+            - Running code_issues_list_request func.
+        Then
+            The http request is called with the right json body.
+    """
+    http_request = mocker.patch.object(prisma_cloud_v2_client, '_http_request', return_value={})
+    prisma_cloud_v2_client.code_issues_list_request(**args)
+    assert http_request.call_args.kwargs['json_data'] == expected
