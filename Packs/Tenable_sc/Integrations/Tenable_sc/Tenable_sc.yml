@@ -1,4 +1,7 @@
 category: Vulnerability Management
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: Tenable.sc
   version: -1
