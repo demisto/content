@@ -2174,7 +2174,7 @@ script:
         description: The last time the access key was used.
         type: Number
       - contextPath: PrismaCloud.AccessKeys.name
-        description: Name.
+        description: The name of the access key.
         type: String
       - contextPath: PrismaCloud.AccessKeys.role
         description: User role.
