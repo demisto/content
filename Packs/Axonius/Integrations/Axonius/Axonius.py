@@ -103,7 +103,7 @@ def get_saved_queries(
         extension="saved_queries",
         exclude_raw=True,
     )
-    
+
 
 def make_api_call(
     endpoint: str,
@@ -114,23 +114,23 @@ def make_api_call(
     key: str = params.get('credentials', {}).get('identifier')
     secret: str = params.get('credentials', {}).get('password')
     certverify: bool = not params.get('insecure', False)
-    
+
     if not url:
         return None
-    
+
     url = url + '/' if url[-1] != '/' else url
     url = url + endpoint
-    
+
     headers: dict = {
         "accept": "application/json",
         "api-key": key,
         "api-secret": secret,
         "content-type": "application/json",
     }
-    
+
     return requests.post(url, json=payload, headers=headers, verify=certverify)
 
-    
+
 def add_note(
     client: Connect,
     args: dict
@@ -142,7 +142,7 @@ def add_note(
     success_count: int = 0
     if isinstance(internal_axon_id_arr, str):
         internal_axon_id_arr = argToList(internal_axon_id_arr, separator=",")
-    
+
     payload: dict = {
         "meta": None,
         "data": {
@@ -152,12 +152,12 @@ def add_note(
             "type": "notes_schema"
         },
     }
-    
+
     for id in internal_axon_id_arr:
         response = make_api_call(endpoint=f'api/{asset_type}/{id}/notes', payload=payload)
         if response and response.status_code == 200:
             success_count += 1
-    
+
     readable_output = f"{success_count} {asset_type}(s) updated."
     return CommandResults(
         outputs_prefix="Axonius.asset.updates",
@@ -294,81 +294,81 @@ def parse_assets(
 def run_command(client: Connect, args: dict, command: str):
 
     results: Union[CommandResults, str, None] = None
-    
+
     if command == "test-module":
         results = test_module(client=client)
-        
+
     elif command == "axonius-get-devices-by-savedquery":
         results = get_by_sq(api_obj=client.devices, args=args)
-        
+
     elif command == "axonius-get-users-by-savedquery":
         results = get_by_sq(api_obj=client.users, args=args)
-        
+
     elif command == "axonius-get-devices-by-aql":
         results = get(api_obj=client.devices, args=args)
-        
+
     elif command == "axonius-get-users-by-aql":
         results = get(api_obj=client.users, args=args)
-    
+
     elif command == "axonius-get-users-by-mail":
         results = get_by_value(api_obj=client.users, args=args, method_name="mail")
-        
+
     elif command == "axonius-get-users-by-mail-regex":
         results = get_by_value(
             api_obj=client.users, args=args, method_name="mail_regex"
         )
-        
+
     elif command == "axonius-get-users-by-username":
         results = get_by_value(
             api_obj=client.users, args=args, method_name="username"
         )
-        
+
     elif command == "axonius-get-users-by-username-regex":
         results = get_by_value(
             api_obj=client.users, args=args, method_name="username_regex"
         )
-        
+
     elif command == "axonius-get-devices-by-hostname":
         results = get_by_value(
             api_obj=client.devices, args=args, method_name="hostname"
         )
-        
+
     elif command == "axonius-get-devices-by-hostname-regex":
         results = get_by_value(
             api_obj=client.devices, args=args, method_name="hostname_regex"
         )
-        
+
     elif command == "axonius-get-devices-by-ip":
         results = get_by_value(api_obj=client.devices, args=args, method_name="ip")
-        
+
     elif command == "axonius-get-devices-by-ip-regex":
         results = get_by_value(
             api_obj=client.devices, args=args, method_name="ip_regex"
         )
-        
+
     elif command == "axonius-get-devices-by-mac":
         results = get_by_value(api_obj=client.devices, args=args, method_name="mac")
-        
+
     elif command == "axonius-get-devices-by-mac-regex":
         results = get_by_value(
             api_obj=client.devices, args=args, method_name="mac_regex"
         )
-        
+
     elif command == "axonius-get-saved-queries":
         results = get_saved_queries(client=client, args=args)
-        
+
     elif command == "axonius-get-tags":
         results = get_tags(client=client, args=args)
-        
+
     elif command == "axonius-add-note":
         results = add_note(client=client, args=args)
-        
+
     elif command == "axonius-add-tag":
         results = update_tags(client=client, args=args, method_name="add")
-        
+
     elif command == "axonius-remove-tag":
         results = update_tags(client=client, args=args, method_name="remove")
-        
+
     return results
 
 
