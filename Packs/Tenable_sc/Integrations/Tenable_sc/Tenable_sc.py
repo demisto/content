@@ -10,7 +10,7 @@ import json
 from datetime import datetime
 from requests import cookies
 import pytz
-from typing import Dict, Any
+from typing import Any
 
 # disable insecure warnings
 urllib3.disable_warnings()
@@ -40,7 +40,7 @@ ROLE_ID_DICT = {
 }
 
 
-class Client(BaseClient, object):
+class Client(BaseClient):
     def __init__(self, verify_ssl: bool = True, proxy: bool = False, user_name: str = "",
                  password: str = "", access_key: str = "", secret_key: str = "", url: str = ""):
 
@@ -115,7 +115,7 @@ class Client(BaseClient, object):
         headers = headers if headers is not None else self.headers
 
         headers['X-SecurityCenter'] = self.token
-        url = '{}/{}'.format(self.url, path)
+        url = f'{self.url}/{path}'
 
         session_cookie = cookies.create_cookie('TNS_SESSIONID', self.cookie)
         self.session.cookies.set_cookie(session_cookie)  # type: ignore
@@ -198,7 +198,7 @@ class Client(BaseClient, object):
         if self.auth_method == USERNAME_AND_PASSWORD:
             self.send_request(path='token', method='DELETE')
 
-    def create_scan(self, args: Dict[str, Any]):
+    def create_scan(self, args: dict[str, Any]):
         """
         Send the request for create_scan_command and create_remediation_scan_command.
         Args:
@@ -249,10 +249,10 @@ class Client(BaseClient, object):
 
         if asset_ids := args.get("asset_ids"):
             if str(asset_ids).startswith('All'):
-                manageable = True if asset_ids == 'AllManageable' else False
+                manageable = asset_ids == 'AllManageable'
                 res = self.get_assets(None)
                 assets = get_elements(res['response'], manageable)
-                asset_ids = list(map(lambda a: a['id'], assets))
+                asset_ids = [a['id'] for a in assets]
             body['assets'] = [{'id': a_id} for a_id in argToList(asset_ids)]
 
         if credentials := args.get("credentials"):
@@ -890,7 +890,7 @@ def create_get_device_request_params_and_path(uuid: str, ip: str, dns_name: str,
     return path, params
 
 
-def create_policy_request_body(args: Dict[str, Any]):
+def create_policy_request_body(args: dict[str, Any]):
     """
     Construct the body for create_policy request.
     Args:
@@ -921,7 +921,7 @@ def create_policy_request_body(args: Dict[str, Any]):
     return body
 
 
-def create_user_request_body(args: Dict[str, Any]):
+def create_user_request_body(args: dict[str, Any]):
     """
     Create user request body for update or create user commands.
     Args:
@@ -979,7 +979,7 @@ def get_server_url(url):
     return url
 
 
-def validate_user_body_params(args: Dict[str, Any], command_type: str):
+def validate_user_body_params(args: dict[str, Any], command_type: str):
     """
     Validate all given arguments are valid according to the command type (update or create).
     Args:
@@ -1054,7 +1054,7 @@ def scan_duration_to_demisto_format(duration, default_returned_value=''):
 ''' FUNCTIONS '''
 
 
-def list_scans_command(client: Client, args: Dict[str, Any]):
+def list_scans_command(client: Client, args: dict[str, Any]):
     """
     List scans.
     Args:
@@ -1094,7 +1094,7 @@ def list_scans_command(client: Client, args: Dict[str, Any]):
     )
 
 
-def list_policies_command(client: Client, args: Dict[str, Any]):
+def list_policies_command(client: Client, args: dict[str, Any]):
     """
     List policies.
     Args:
@@ -1137,7 +1137,7 @@ def list_policies_command(client: Client, args: Dict[str, Any]):
     )
 
 
-def list_repositories_command(client: Client, args: Dict[str, Any]):
+def list_repositories_command(client: Client, args: dict[str, Any]):
     """
     List repositories.
     Args:
@@ -1173,7 +1173,7 @@ def list_repositories_command(client: Client, args: Dict[str, Any]):
     )
 
 
-def list_credentials_command(client: Client, args: Dict[str, Any]):
+def list_credentials_command(client: Client, args: dict[str, Any]):
     """
     List credentials.
     Args:
@@ -1216,7 +1216,7 @@ def list_credentials_command(client: Client, args: Dict[str, Any]):
     )
 
 
-def list_assets_command(client: Client, args: Dict[str, Any]):
+def list_assets_command(client: Client, args: dict[str, Any]):
     """
     List assets.
     Args:
@@ -1259,7 +1259,7 @@ def list_assets_command(client: Client, args: Dict[str, Any]):
     )
 
 
-def get_asset_command(client: Client, args: Dict[str, Any]):
+def get_asset_command(client: Client, args: dict[str, Any]):
     """
     Retrieve an asset by a given asset ID.
     Args:
@@ -1307,7 +1307,7 @@ def get_asset_command(client: Client, args: Dict[str, Any]):
     )
 
 
-def create_asset_command(client: Client, args: Dict[str, Any]):
+def create_asset_command(client: Client, args: dict[str, Any]):
     """
     Create an asset.
     Args:
@@ -1352,7 +1352,7 @@ def create_asset_command(client: Client, args: Dict[str, Any]):
     )
 
 
-def delete_asset_command(client: Client, args: Dict[str, Any]):
+def delete_asset_command(client: Client, args: dict[str, Any]):
     """
     Delete an asset by a given asset ID.
     Args:
@@ -1374,7 +1374,7 @@ def delete_asset_command(client: Client, args: Dict[str, Any]):
     )
 
 
-def list_report_definitions_command(client: Client, args: Dict[str, Any]):
+def list_report_definitions_command(client: Client, args: dict[str, Any]):
     """
     Lists report definitions.
     Args:
@@ -1422,7 +1422,7 @@ def list_report_definitions_command(client: Client, args: Dict[str, Any]):
     )
 
 
-def list_zones_command(client: Client, args: Dict[str, Any]):
+def list_zones_command(client: Client, args: dict[str, Any]):
     """
     Lists zones
     Args:
@@ -1498,7 +1498,7 @@ def get_elements(elements, manageable):
     return elements.get('manageable', [])
 
 
-def create_scan_command(client: Client, args: Dict[str, Any]):
+def create_scan_command(client: Client, args: dict[str, Any]):
     """
     Creates a scan.
     Args:
@@ -1539,7 +1539,7 @@ def create_scan_command(client: Client, args: Dict[str, Any]):
     )
 
 
-def validate_create_scan_inputs(args: Dict[str, Any]):
+def validate_create_scan_inputs(args: dict[str, Any]):
     """
     Validate all given arguments are valid for create scan command.
     Args:
@@ -1563,7 +1563,7 @@ def validate_create_scan_inputs(args: Dict[str, Any]):
         raise DemistoException('Error: Dependent schedule must include a dependent scan ID')
 
 
-def process_launch_scan_response(res: Dict[str, Any]):
+def process_launch_scan_response(res: dict[str, Any]):
     """
     Process the launch scan response.
     Args:
@@ -1602,7 +1602,7 @@ def process_launch_scan_response(res: Dict[str, Any]):
                   requires_polling_arg=True,
                   poll_message="Scan in progress.",
                   timeout=arg_to_number(demisto.args().get("timeout_in_seconds", '10800')))
-def launch_scan_command(args: Dict[str, Any], client: Client):
+def launch_scan_command(args: dict[str, Any], client: Client):
     """
     Polling command. Launch a scan by a given scan ID, following the scan status and retrieve the scan report.
     Args:
@@ -1632,7 +1632,7 @@ def launch_scan_command(args: Dict[str, Any], client: Client):
         return PollResult(get_scan_report_command(client, args))
 
 
-def launch_scan(client: Client, args: Dict[str, Any]):
+def launch_scan(client: Client, args: dict[str, Any]):
     """
     Launching a scan with a given scan ID.
     Args:
@@ -1656,7 +1656,7 @@ def launch_scan(client: Client, args: Dict[str, Any]):
     return res
 
 
-def get_scan_status_command(client: Client, args: Dict[str, Any]):
+def get_scan_status_command(client: Client, args: dict[str, Any]):
     """
     Return information about the scan status by a given scan results ID.
     Args:
@@ -1686,7 +1686,7 @@ def get_scan_status_command(client: Client, args: Dict[str, Any]):
     )
 
 
-def get_scan_status(client: Client, args: Dict[str, Any]):
+def get_scan_status(client: Client, args: dict[str, Any]):
     """
     Return information about the scan status by a given scan results ID.
     Args:
@@ -1708,7 +1708,7 @@ def get_scan_status(client: Client, args: Dict[str, Any]):
     return scans_results, res
 
 
-def get_scan_report_command(client: Client, args: Dict[str, Any]):
+def get_scan_report_command(client: Client, args: dict[str, Any]):
     """
     Return scan report information by a given scan results ID.
     Args:
@@ -1837,7 +1837,7 @@ def get_vulnerabilities(client: Client, scan_results_id):
     return mapped_vulns
 
 
-def get_vulnerability_command(client: Client, args: Dict[str, Any]):
+def get_vulnerability_command(client: Client, args: dict[str, Any]):
     """
     Return information about a vulnerability by a given vulnerability ID.
     Args:
@@ -1875,10 +1875,10 @@ def get_vulnerability_command(client: Client, args: Dict[str, Any]):
         # Extract CVE
         cve_filter = list(filter(lambda x: x.strip().startswith('CVE'), vuln['xrefs'].split(',')))
         if cve_filter and len(cve_filter) > 0:
-            cves = list(map(lambda c: c.replace('CVE:', '').strip(), cve_filter))
-            cves_output += map(lambda c: {
+            cves = [c.replace('CVE:', '').strip() for c in cve_filter]
+            cves_output += ({
                 'ID': c
-            }, cves)
+            } for c in cves)
 
     mapped_vuln = {
         'ID': vuln['id'],
@@ -1966,7 +1966,7 @@ def get_vulnerability_hosts_from_analysis(results):
     } for host in results]
 
 
-def delete_scan_command(client: Client, args: Dict[str, Any]):
+def delete_scan_command(client: Client, args: dict[str, Any]):
     """
     Deletes a scan.
     Args:
@@ -1988,7 +1988,7 @@ def delete_scan_command(client: Client, args: Dict[str, Any]):
     )
 
 
-def get_device_command(client: Client, args: Dict[str, Any]):
+def get_device_command(client: Client, args: dict[str, Any]):
     """
     Returns device info by a given device UUID.
     Args:
@@ -2057,7 +2057,7 @@ def get_device_command(client: Client, args: Dict[str, Any]):
     return command_results
 
 
-def list_users_command(client: Client, args: Dict[str, Any]):
+def list_users_command(client: Client, args: dict[str, Any]):
     """
     Lists all users.
     Args:
@@ -2115,7 +2115,7 @@ def list_users_command(client: Client, args: Dict[str, Any]):
     )
 
 
-def get_system_licensing_command(client: Client, args: Dict[str, Any]):
+def get_system_licensing_command(client: Client, args: dict[str, Any]):
     """
     Returns system licensing information.
     Args:
@@ -2152,7 +2152,7 @@ def get_system_licensing_command(client: Client, args: Dict[str, Any]):
     )
 
 
-def get_system_information_command(client: Client, args: Dict[str, Any]):
+def get_system_information_command(client: Client, args: dict[str, Any]):
     """
     Return system information.
     Args:
@@ -2200,7 +2200,7 @@ def get_system_information_command(client: Client, args: Dict[str, Any]):
     )
 
 
-def list_alerts_command(client: Client, args: Dict[str, Any]):
+def list_alerts_command(client: Client, args: dict[str, Any]):
     """
     Lists all alerts.
     Args:
@@ -2242,7 +2242,7 @@ def list_alerts_command(client: Client, args: Dict[str, Any]):
     )
 
 
-def get_alert_command(client: Client, args: Dict[str, Any]):
+def get_alert_command(client: Client, args: dict[str, Any]):
     """
     Return information about an alert by a given alert ID.
     Args:
@@ -2313,7 +2313,7 @@ def get_alert_command(client: Client, args: Dict[str, Any]):
     )
 
 
-def get_organization_command(client: Client, args: Dict[str, Any]):
+def get_organization_command(client: Client, args: dict[str, Any]):
     """
     Returns organization information.
     Args:
@@ -2328,7 +2328,7 @@ def get_organization_command(client: Client, args: Dict[str, Any]):
     if not res or 'response' not in res:
         raise DemistoException('Error: Could not retrieve organization information')
 
-    response =  res.get('response', {})
+    response = res.get('response', {})
     res_output = []
     if response:
         for curr_res in response:
@@ -2339,13 +2339,13 @@ def get_organization_command(client: Client, args: Dict[str, Any]):
             for field in fields:
                 restrictedIPMap[field] = curr_res.get(field, '')
             res_output.append(restrictedIPMap)
-        
+
     return CommandResults(
         outputs=createContext(response, removeNull=True),
         outputs_prefix='TenableSC.Organization',
         raw_response=res,
         outputs_key_field='ID',
-        readable_output=tableToMarkdown('Tenable.sc Orgnization',res_output, removeNull=True)
+        readable_output=tableToMarkdown('Tenable.sc Orgnization', res_output, removeNull=True)
     )
 
 
@@ -2389,7 +2389,7 @@ def fetch_incidents(client: Client, first_fetch: str = '3 days'):
     demisto.setLastRun({'time': max_timestamp})
 
 
-def list_groups_command(client: Client, args: Dict[str, Any]):
+def list_groups_command(client: Client, args: dict[str, Any]):
     """
     Lists all groups
     Args:
@@ -2436,7 +2436,7 @@ def list_groups_command(client: Client, args: Dict[str, Any]):
     )
 
 
-def get_all_scan_results_command(client: Client, args: Dict[str, Any]):
+def get_all_scan_results_command(client: Client, args: dict[str, Any]):
     """
     Lists all scan results.
     Args:
@@ -2478,9 +2478,9 @@ def get_all_scan_results_command(client: Client, args: Dict[str, Any]):
         'ImportStatus': elem.get('importStatus', '')
     } for elem in elements[page:page + limit]]
 
-    readable_title = 'Tenable.sc Scan results - {0}-{1}'.format(page, page + limit - 1)
+    readable_title = f'Tenable.sc Scan results - {page}-{page + limit - 1}'
     hr = tableToMarkdown(readable_title, scan_results, headers, removeNull=True,
-                         metadata='Total number of elements is {}'.format(len(elements)))
+                         metadata=f'Total number of elements is {len(elements)}')
 
     return CommandResults(
         outputs=createContext(scan_results, removeNull=True),
@@ -2491,7 +2491,7 @@ def get_all_scan_results_command(client: Client, args: Dict[str, Any]):
     )
 
 
-def create_user_command(client: Client, args: Dict[str, Any]):
+def create_user_command(client: Client, args: dict[str, Any]):
     """
     Create a user.
     Args:
@@ -2506,7 +2506,7 @@ def create_user_command(client: Client, args: Dict[str, Any]):
     return process_update_and_create_user_response(res, hr_header)
 
 
-def update_user_command(client: Client, args: Dict[str, Any]):
+def update_user_command(client: Client, args: dict[str, Any]):
     """
     Update a user by given user ID.
     Args:
@@ -2558,7 +2558,7 @@ def process_update_and_create_user_response(res, hr_header):
     )
 
 
-def delete_user_command(client: Client, args: Dict[str, Any]):
+def delete_user_command(client: Client, args: dict[str, Any]):
     """
    Delete a user by a given user ID.
     Args:
@@ -2576,7 +2576,7 @@ def delete_user_command(client: Client, args: Dict[str, Any]):
     )
 
 
-def list_plugin_family_command(client: Client, args: Dict[str, Any]):
+def list_plugin_family_command(client: Client, args: dict[str, Any]):
     """
     return info about a query / list of queries.
     Args:
@@ -2612,7 +2612,7 @@ def list_plugin_family_command(client: Client, args: Dict[str, Any]):
     )
 
 
-def create_policy_command(client: Client, args: Dict[str, Any]):
+def create_policy_command(client: Client, args: dict[str, Any]):
     """
     Creates a policy.
     Args:
@@ -2651,7 +2651,7 @@ def create_policy_command(client: Client, args: Dict[str, Any]):
     )
 
 
-def create_remediation_scan_command(client: Client, args: Dict[str, Any]):
+def create_remediation_scan_command(client: Client, args: dict[str, Any]):
     """
     Creates remediation scan.
     Args:
@@ -2704,7 +2704,7 @@ def create_remediation_scan_command(client: Client, args: Dict[str, Any]):
     )
 
 
-def list_query_command(client: Client, args: Dict[str, Any]):
+def list_query_command(client: Client, args: dict[str, Any]):
     """
     return info about a query / list of queries.
     Args:
@@ -2729,7 +2729,7 @@ def list_query_command(client: Client, args: Dict[str, Any]):
     )
 
 
-def update_asset_command(client: Client, args: Dict[str, Any]):
+def update_asset_command(client: Client, args: dict[str, Any]):
     """
     Update an asset by a given asset ID.
     Args:
@@ -2831,7 +2831,7 @@ def list_queries(client: Client, type):
     return res, hr, queries
 
 
-def test_module(client: Client, args: Dict[str, Any]):
+def test_module(client: Client, args: dict[str, Any]):
     """
     Lists queries and return the processed results.
     Args:
