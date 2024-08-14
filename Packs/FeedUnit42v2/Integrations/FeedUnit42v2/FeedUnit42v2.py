@@ -141,7 +141,30 @@ def parse_indicators(indicator_objects: list, feed_tags: Optional[list] = None,
     return indicators
 
 
-def get_relationships_from_sub_reports(client, report_object, id_to_object):
+def get_campaign_from_sub_reports(report_object, id_to_object):
+    report_relationships = []
+    obj_refs_excluding_relationships_prefix = []
+    object_refs = report_object.get('object_refs', [])
+    object_ref_to_return = []
+    for obj in object_refs:
+        if obj.startswith('report--'):
+            sub_report_obj = id_to_object.get(obj, {})
+            for sub_report_obj_ref in sub_report_obj.get('object_refs', []):
+                if sub_report_obj_ref.startswith('campaign--'):
+                    related_campaign = id_to_object.get(sub_report_obj_ref)
+                    if related_campaign:
+                        obj_refs_excluding_relationships_prefix.append(related_campaign)
+                        entity_relation = EntityRelationship(name='related-to',
+                                                             entity_a=f"[Unit42 ATOM] {report_object.get('name')}",
+                                                             entity_a_type='Report',
+                                                             entity_b=related_campaign.get('name'),
+                                                             entity_b_type='Campaign')
+                        report_relationships.append(entity_relation.to_indicator())
+    object_ref_to_return.extend([{'objectstixid': object.get("id")} for object in obj_refs_excluding_relationships_prefix])
+    return report_relationships, object_ref_to_return
+
+
+def get_relationships_from_sub_reports(client, report_object, id_to_object, report_relationships):
     """Parse the Reports objects retrieved from the feed.
 
     Args:
@@ -170,15 +193,15 @@ def get_relationships_from_sub_reports(client, report_object, id_to_object):
                             entity_b_obj_type, entity_b_value = STIX2XSOARParser.get_entity_b_type_and_value(related_obj,
                                                                                                              id_to_object,
                                                                                                              True)
-                            relationships.append(
-                                EntityRelationship(
-                                    name='related-to',
-                                    entity_a=f"[Unit42 ATOM] {report_object.get('name')}",
-                                    entity_a_type=ThreatIntel.ObjectsNames.REPORT,
-                                    entity_b=entity_b_value,
-                                    entity_b_type=entity_b_obj_type
-                                ).to_indicator()
-                            )
+                            relationship = EntityRelationship(
+                                name='related-to',
+                                entity_a=f"[Unit42 ATOM] {report_object.get('name')}",
+                                entity_a_type=ThreatIntel.ObjectsNames.REPORT,
+                                entity_b=entity_b_value,
+                                entity_b_type=entity_b_obj_type
+                            ).to_indicator()
+                            if relationship not in report_relationships:
+                                relationships.append(relationship)
     if obj_refs_excluding_relationships_prefix:
         object_ref_to_return.extend([{'objectstixid': object} for object in obj_refs_excluding_relationships_prefix])
     return relationships, object_ref_to_return
@@ -229,6 +252,19 @@ def is_atom42_sub_report(report_obj):
     return (not is_report_description) and (not only_reports_and_intrusion_set)
 
 
+def extend_obj_refs(report: dict, obj_refs_list: list):
+    """Extends the object ref list.
+
+    Args:
+      report: the report object.
+      obj_refs_list: the obj_ref list.
+    """
+    if not report['fields'].get('Report Object References'):
+        report['fields']['Report Object References'] = obj_refs_list
+    else:
+        report['fields']['Report Object References'].extend(obj_refs_list)
+
+
 def parse_reports_and_report_relationships(client: Client, report_objects: list, feed_tags: Optional[list] = None,
                                            tlp_color: Optional[str] = None, id_to_object: Optional[dict] = None):
     """Parse the Reports objects retrieved from the feed.
@@ -273,14 +309,13 @@ def parse_reports_and_report_relationships(client: Client, report_objects: list,
             'unit42_description': report_object.get('description'),
             'unit42_object_refs': report_object.get('object_refs')
         }
+        campaign_report_relationships, object_ref_campaign = get_campaign_from_sub_reports(report_object, id_to_object)
+        report['relationships'].extend(campaign_report_relationships)
+        extend_obj_refs(report, object_ref_campaign)
         if is_main_report:
-            report_relationships, obj_refs_output = get_relationships_from_sub_reports(client, report_object, id_to_object)
-            if not report['fields'].get('Report Object References'):
-                obj_refs = report_object.get('object_refs')
-                obj_refs.extend(obj_refs_output)
-                report['fields']['Report Object References'] = obj_refs
-            else:
-                report['fields']['Report Object References'].extend(obj_refs_output)
+            report_relationships, obj_refs_output = get_relationships_from_sub_reports(client, report_object, id_to_object,
+                                                                                       report['relationships'])
+            extend_obj_refs(report, obj_refs_output)
             report['relationships'].extend(report_relationships)
         reports.append(report)
 
