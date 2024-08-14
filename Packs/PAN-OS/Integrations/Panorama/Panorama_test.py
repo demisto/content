@@ -7455,37 +7455,41 @@ def test_pan_os_xpath_creation_for_exception_crud():
 def test_pan_os_add_profile_exception(mocker):
     import Panorama
     import requests
-    Panorama.URL = 'https://1.1.1.1:443/'
-    Panorama.API_KEY = 'thisisabogusAPIKEY!'
 
     expected_text_response = '<response status="success" code="20"><msg>command succeeded</msg></response>'
 
     mock_response = MockedResponse(text=expected_text_response, status_code=200)
     mocker.patch.object(requests, 'request', return_value=mock_response)
+    mocker.patch.object(Panorama, 'get_threat_id_from_predefined_threates', return_value=('1000', 'threatname'))
 
     command_results = Panorama.pan_os_add_profile_exception_command(args={"profile_name": "test_spg",
                                                                           "threat_name": '1000',
                                                                           "profile_type": "Vulnerability Protection Profile",
                                                                           "device_group": 'device_group'})
     assert command_results.raw_response == {'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
-    assert command_results.readable_output == 'Successfully created Exception: 1000'
+    assert command_results.readable_output == 'Successfully created Exception: "threatname" with ID 1000.'
 
 
 def test_pan_os_edit_profile_exception(mocker):
     import Panorama
     import requests
+    Panorama.URL = 'https://1.1.1.1:443/'
+    Panorama.API_KEY = 'thisisabogusAPIKEY!'
+    Panorama.DEVICE_GROUP = 'device_group'
 
     expected_text_response = '<response status="success" code="20"><msg>command succeeded</msg></response>'
 
     mock_response = MockedResponse(text=expected_text_response, status_code=200)
     mocker.patch.object(requests, 'request', return_value=mock_response)
+    mocker.patch.object(Panorama, 'get_threat_id_from_predefined_threates', return_value=('1000', 'threatname'))
+
 
     command_results = Panorama.pan_os_edit_profile_exception_command(args={"profile_name": "test_spg",
-                                                                     "threat_name": '1000',
+                                                                           "threat_name": '1000',
                                                                            "profile_type": "Vulnerability Protection Profile",
                                                                            "device_group": 'device_group'})
     assert command_results.raw_response == {'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
-    assert command_results.readable_output == 'Successfully edited Exception: 1000'
+    assert command_results.readable_output == 'Successfully edited Exception: "threatname" with ID 1000.'
 
 
 def test_pan_os_delete_profile_exception(mocker):
@@ -7496,30 +7500,72 @@ def test_pan_os_delete_profile_exception(mocker):
 
     mock_response = MockedResponse(text=expected_text_response, status_code=200)
     mocker.patch.object(requests, 'request', return_value=mock_response)
+    mocker.patch.object(Panorama, 'get_threat_id_from_predefined_threates', return_value=('1000', 'threatname'))
 
     command_results = Panorama.pan_os_delete_profile_exception_command(args={"profile_name": "test_spg",
                                                                              "threat_name": '1000',
                                                                              "profile_type": "Vulnerability Protection Profile",
                                                                              "device_group": 'device_group'})
     assert command_results.raw_response == {'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
-    assert command_results.readable_output == 'Successfully deleted Exception: 1000'
+    assert command_results.readable_output == 'Successfully deleted Exception: "threatname" with ID 1000.'
 
 
 def test_pan_os_list_profile_exception(mocker):
     import Panorama
-    import requests
+
     Panorama.URL = 'https://1.1.1.1:443/'
     Panorama.API_KEY = 'thisisabogusAPIKEY!'
     Panorama.DEVICE_GROUP = 'device_group'
-    expected_text_response = '<response status="success" code="20"><msg>command succeeded</msg></response>'
+    mocker.patch.object(
+        Panorama,
+        'profile_exception_crud_commands',
+        return_value=({
+            'response': {
+                'result': {
+                    'threat-exception': {
+                        'entry': [
+                            {
+                                '@name': 'Test Exception 1',
+                                'action': 'block',
+                                'exempt-ip': '192.168.1.1',
+                                'packet-capture': 'yes',
+                                '@admin': 'admin1',
+                                '@dirtyId': 'dirty1',
+                                '@time': '2024-08-14T12:00:00'
+                            },
+                            {
+                                '@name': 'Test Exception 2',
+                                'action': 'allow',
+                                'packet-capture': 'no',
+                                '@admin': 'admin2',
+                                '@dirtyId': 'dirty2',
+                                '@time': '2024-08-14T12:00:00'
+                            }
+                        ]
+                    }
+                }
+            },
+        }, 'id', 'name')
+    )
 
-    mock_response = MockedResponse(text=expected_text_response, status_code=200)
-    mocker.patch.object(requests, 'request', return_value=mock_response)
+    args = {
+        'profile_name': 'test_profile',
+        'profile_type': 'vulnerability'
+    }
+    result = Panorama.pan_os_list_profile_exception_command(args)
 
-    command_results = Panorama.pan_os_list_profile_exception_command(args={"profile_name": "test_spg",
-                                                                           "profile_type": "Vulnerability Protection Profile"})
-
-    assert command_results.raw_response == {'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == 'Panorama.ProfileException'
+    
+    expected_hr = [
+        {'Name': 'Test Exception 1', 'Actions': 'block', 'Exempt IP': '192.168.1.1', 'Packet Capture': 'yes'},
+        {'Name': 'Test Exception 2', 'Actions': 'allow', 'Exempt IP': '', 'Packet Capture': 'no'}
+    ]
+    
+    assert 'Profile Exceptions' in result.readable_output
+    for hr_entry in expected_hr:
+        for key, value in hr_entry.items():
+            assert value in result.readable_output
 
 
 def test_fetch_incidents_correlation(mocker: MockerFixture):
