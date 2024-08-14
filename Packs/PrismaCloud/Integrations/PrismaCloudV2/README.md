@@ -2894,7 +2894,7 @@ To create a service account, see [Add Service Accounts On Prisma Cloud
 | PrismaCloud.AccessKeys.name        | String   | The name of the access key.                        |
 | PrismaCloud.AccessKeys.createdBy   | String   | The user who created the access key.                  | 
 | PrismaCloud.AccessKeys.createdTs   | String   | Time access key was created. |
-| PrismaCloud.AccessKeys.expiresOn   | String   | Access key expires on.       |
+| PrismaCloud.AccessKeys.expiresOn   | String   | The time the access key expires.       |
 | PrismaCloud.AccessKeys.lastUsedTime | String   | The last time the access key was used.        | 
 | PrismaCloud.AccessKeys.status      | String   | Access key status.           |
 | PrismaCloud.AccessKeys.role.id     | String   | User role ID.       | 
