@@ -16,7 +16,7 @@ alter
     tmp_get_values = arraystring(arraymap(tmp_get_field, if("@element" ~= "intValue", "@element" -> intValue, "@element" ~= "value", "@element" -> value, "")), "|")
 | alter 
     // Only work in Parsing Rules, use the regexcapture function to display the data in an organized JSON format.
-    parameters = if(event =null, regexcapture(tmp_get_values, tmp_get_keys), event)
+    parameters = if(event =null, to_string(regexcapture(tmp_get_values, tmp_get_keys)), event)
 
 // -------------- TIME --------------
 | alter tmp_time_stamp_string = replace(coalesce(parameters -> timestamp, parameters -> time), ".", "")
