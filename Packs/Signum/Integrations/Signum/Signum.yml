@@ -27,7 +27,7 @@ script:
   commands:
   - arguments:
     - defaultValue: '1'
-      description: 'Identification of the Domain to be listed the users.'
+      description: 'Identification of the domain for which to list the users.'
       name: domain_id
       required: true
     - auto: PREDEFINED
