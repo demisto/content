@@ -33,7 +33,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | domain_id | Identification of the domain for which to list the users.  Default is 1. | Required | 
-| simple_view | if "True", strip off prefixes, such as "{urn:.*}" and "{http://.*}", from each dictionary Key name. Possible values are: True, False. Default is True. | Optional | 
+| simple_view | If "True", strip off prefixes, such as "{urn:.*}" and "{http://.*}", from each dictionary key name. Possible values are: True, False. Default is True. | Optional | 
 
 #### Context Output
 
