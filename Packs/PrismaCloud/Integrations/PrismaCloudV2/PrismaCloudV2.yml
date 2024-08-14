@@ -2162,7 +2162,7 @@ script:
         description: Access key ID.
         type: String
       - contextPath: PrismaCloud.AccessKeys.createdBy
-        description: Created By.
+        description: The user who created the access key.
         type: String
       - contextPath: PrismaCloud.AccessKeys.createdTs
         description: Time access key was created.
