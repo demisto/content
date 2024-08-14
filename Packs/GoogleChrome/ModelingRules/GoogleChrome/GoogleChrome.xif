@@ -1,4 +1,5 @@
 [MODEL: dataset = google_workspace_chrome_raw]
+// Extracting and organizing data from logs 
 alter tmp_event_name = arrayindex(events -> [], 0) -> name
 
 | alter tmp_event_os = concat(parameters -> os_platform," ", parameters -> os_version),
@@ -15,10 +16,10 @@ alter tmp_event_name = arrayindex(events -> [], 0) -> name
 |alter 
         url_category = uppercase(tmp_local_url)
 
-// Mapping to xdm fields
+// Mapping to XDM fields
 | alter
-        xdm.event.type = event_name,//events -> name,
-        xdm.event.description = tmp_reason,//parameters -> event_reason,
+        xdm.event.type = event_name,
+        xdm.event.description = tmp_reason,
         xdm.event.outcome_reason = parameters -> trigger_type,
         xdm.source.host.device_id = parameters -> device_id,
         xdm.source.host.hostname = parameters -> device_name,
@@ -26,8 +27,8 @@ alter tmp_event_name = arrayindex(events -> [], 0) -> name
         xdm.source.user.domain = parameters -> trigger_user,
         xdm.network.http.browser = concat(parameters -> client_type, " ", parameters -> browser_version),
         xdm.source.user.username = lowercase(parameters -> device_user),
-        xdm.intermediate.user.username = lowercase(tmp_int_user_username),//lowercase(parameters -> profile_user_name),
-        xdm.observer.action = tmp_result,//parameters -> event_result,
+        xdm.intermediate.user.username = lowercase(tmp_int_user_username),
+        xdm.observer.action = tmp_result,
         xdm.source.user_agent = parameters -> user_agent,
         xdm.target.resource.name = parameters -> app_name,
         xdm.target.resource.id = parameters -> app_id,
