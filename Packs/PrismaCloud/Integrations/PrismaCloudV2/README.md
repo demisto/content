@@ -2836,7 +2836,7 @@ Get permission list. You must provide either "query" or "next_token".
 ### Access Keys
 
 ***
-Access Keys are a secure way to enable programmatic access to the Prisma Cloud API. By default, only the System Admin has API access and can enable API access for other administrators. If you have API access, you can create up to two access keys.
+Access keys are a secure way to enable programmatic access to the Prisma Cloud API. By default, only the System Admin has API access and can enable API access for other administrators. If you have API access, you can create up to two access keys.
 
 A service account is a special Prisma Cloud identity used to access Prisma Cloud programmatically via API.
 
