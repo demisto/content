@@ -23,7 +23,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### signum-list-domain-users
 
 ***
-    List domain users by domain_id.
+List domain users by domain ID.
 #### Base Command
 
 `signum-list-domain-users`
