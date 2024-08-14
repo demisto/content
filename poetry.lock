@@ -744,13 +744,13 @@ reference = "pypi-public"
 
 [[package]]
 name = "demisto-sdk"
-version = "1.31.6"
+version = "1.31.7"
 description = "\"A Python library for the Demisto SDK\""
 optional = false
 python-versions = ">=3.8,<3.12"
 files = [
-    {file = "demisto_sdk-1.31.6-py3-none-any.whl", hash = "sha256:95013ff271afcf9c7e38d4077fb8e96ed113fcbc846cf106299ba3e48df05f71"},
-    {file = "demisto_sdk-1.31.6.tar.gz", hash = "sha256:cc52a45f8bc314d3d0013b4f482917c46bead04ac72f6aea5461311a500575ea"},
+    {file = "demisto_sdk-1.31.7-py3-none-any.whl", hash = "sha256:c9c8e14eb61a7d3348674d0d314ce970476625d5c1f2dc843dc7de60fbd5a7d2"},
+    {file = "demisto_sdk-1.31.7.tar.gz", hash = "sha256:8e4969d1048049edc47437a46175a2f2d4663ca33e77c47e835b324ea1dc1058"},
 ]
 
 [package.dependencies]
@@ -790,7 +790,7 @@ nltk = ">=3.7,<4.0"
 ordered-set = ">=4.1.0,<5.0.0"
 orjson = ">=3.8.3,<4.0.0"
 packaging = ">=24.0,<25.0"
-paramiko = ">=2.11.0,<3.0.0"
+paramiko = ">=2.11,<4.0"
 Pebble = ">=4.6.3,<6.0.0"
 pre-commit = ">=3.5.0,<4.0.0"
 prettytable = ">=3.2.0,<4.0.0"
@@ -4599,4 +4599,4 @@ reference = "pypi-public"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8,<3.11"
-content-hash = "39dc3bbe1f3aeacff6855304f7eb7b54bc6c34b5885e6689e9ce39ff5a290098"
+content-hash = "f289ddf337fdd1a64477fef4bc9650de6d6adaca63b85e8d04cdd36650879f4e"
