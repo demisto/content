@@ -152,7 +152,7 @@ def get_comments_map(triage_item_comments):
     Returns:
 
     """
-    comment_map = {}  # type: Dict[str, list]
+    comment_map: Dict[str, list] = {}
     for comment in triage_item_comments:
         if comment[TRIAGE_ITEM_ID] in comment_map:
             comment_map[comment[TRIAGE_ITEM_ID]].append(comment)
@@ -295,7 +295,6 @@ class Client(BaseClient):
 
         """
         r = self._http_request('GET', url_suffix=url, resp_type='response', params=params, headers=headers, **kwargs)
-        LOG(f"respnse incidents->> {r.json()}")
         return self.rate_limit_response(r)
 
     def post(self, url, headers={}, data=None, **kwargs):
@@ -836,7 +835,7 @@ class SearchLightTriagePoller:
         if not events:
             LOG("No events were fetched. Event num start: {}, Event created after: {}, Limit:"
                 " {}, risk_level: {}, alert_risk_types: {}".format(
-                    event_num_start, event_created_after, limit, risk_level, alert_risk_types))
+                event_num_start, event_created_after, limit, risk_level, alert_risk_types))
             return PollResult(max_event_num, [])
 
         triage_item_ids = [e[TRIAGE_ITEM_ID] for e in events]
@@ -903,18 +902,18 @@ class SearchLightTriagePoller:
 ''' FETCH INCIDENT '''
 
 
-def fetch_incidents(fetchLimit, ingestClosed, riskLevel, riskTypes, search_light_request_handler, sinceDate):
+def fetch_incidents(fetchLimit, last_run, ingestClosed, riskLevel, riskTypes, search_light_request_handler, sinceDate):
     """
     fetch incidents will take config for fetching and ingesting incidents in xsoar
     Args:
         fetchLimit: no of incidents needs to fetch per iteration
+        last_run: last run offset
         ingestClosed: closed incidents should be ingested or not
         riskLevel: risk levels needs to ingest
         riskTypes: risk types needs to ingest
         search_light_request_handler: request handler to fetch data
         sinceDate: since when we want to ingest data
     """
-    last_run = demisto.getLastRun()
     last_event_num = last_run.get('incidents', {}).get('last_fetch', 0)
     LOG(f"fetch_incidents last run: {last_event_num}")
     search_list_triage_poller = SearchLightTriagePoller(search_light_request_handler)
@@ -924,27 +923,35 @@ def fetch_incidents(fetchLimit, ingestClosed, riskLevel, riskTypes, search_light
                                                         should_ingest_closed=ingestClosed)
     data = poll_result.triage_data
     last_polled_number = poll_result.max_event_number
+
     if data:
-        incidents = []
-        for item in data:
-            incident = {
+        incidents = [
+            {
                 'name': item["triage_item"]['title'],
                 'occurred': item["triage_item"]['raised'],
                 'rawJSON': json.dumps(item)
             }
-            incidents.append(incident)
-        demisto.incidents(incidents)
-        LOG(f"settings  last run: {last_event_num}")
-        demisto.setLastRun({'incidents': {'last_fetch': last_polled_number}})
+            for item in data
+        ]
         LOG(f"data found for iteration last_polled_number:{last_polled_number}")
     else:
+        incidents = []
         LOG(f"No data found for iteration last_polled_number:{last_polled_number}")
-        demisto.incidents([])
-        LOG(f"settings  last run: {last_event_num}")
-        demisto.setLastRun({'incidents': {'last_fetch': last_polled_number}})
+
+    return {'incidents': {'last_fetch': last_polled_number}}, incidents
 
 
 ''' MAIN FUNCTION '''
+
+
+def get_base_url(command, SL_base_url):
+    """
+    Returns base url for client
+    """
+    if command == 'ds-search':
+        return DS_BASE_URL
+    else:
+        return SL_base_url
 
 
 def main() -> None:
@@ -970,35 +977,36 @@ def main() -> None:
     fetchLimit = arg_to_number(demisto.params()['fetchLimit'], "fetchLimit", True)
     if fetchLimit > 100:
         raise DemistoException("fetch limit must be less than 100")
+    if fetchLimit < 0:
+        raise DemistoException("fetch limit must be greater than 0")
     sinceDate = parse_date(demisto.params()['sinceDate'])
+    if sinceDate > datetime.now():
+        raise DemistoException("Since date should not be greate than current date")
     demisto.params().get('proxy', False)
     LOG(f'Command being called is {demisto.command()}')
     try:
-        search_light_client = Client(
+        base_url = get_base_url(demisto.command(), base_url)
+        rq_client = Client(
             base_url=base_url,
             account_id=accountId,
             access_key=accessKey,
             secret_key=secretKey,
             verify=verify_certificate
         )
-        # Creating different client as base url is different here which pointing to old apis for ds-search command
-        digital_shadows_client = Client(
-            base_url=DS_BASE_URL,
-            account_id=accountId,
-            access_key=accessKey,
-            secret_key=secretKey,
-            verify=verify_certificate
-        )
+
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result = test_module(search_light_client)
-            return_results(result)
+            return_results(test_module(rq_client))
         elif demisto.command() == 'fetch-incidents':
-            fetch_incidents(fetchLimit, ingestClosed, riskLevel, riskTypes, search_light_client, sinceDate)
+            next_run, incidents = fetch_incidents(fetchLimit, demisto.getLastRun(), ingestClosed, riskLevel, riskTypes, rq_client,
+                                                  sinceDate)
+            demisto.setLastRun(next_run)
+            demisto.incidents(incidents)
         elif demisto.command() == 'ds-search':
-            return_results(search_find(digital_shadows_client, demisto.args()))
+            return_results(search_find(rq_client, demisto.args()))
         else:
             raise NotImplementedError(f'{demisto.command()} command is not implemented.')
+
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback

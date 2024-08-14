@@ -1,71 +1,51 @@
-Note: Support for this pack moved to the partner on March, 22, 2022.
+ReliaQuest GreyMatter DR monitors and manages an organization's digital risk across the widest range of data sources within the open, deep, and dark web.
+This integration was integrated and tested with version xx of ReliaQuest GreyMatter DRP Incidents.
 
-ReliaQuest GreyMatter DRP minimizes digital risk by identifying unwanted exposure and protecting against external threats. The award-winning ReliaQuest GreyMatter DRP solution provides ongoing monitoring of a customer's unique assets and exposure across the open, deep, and dark web. This enables clients to detect data loss, brand impersonation, infrastructure risks, cyber threats, and much more.
+This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
 
-## Overview
-- Leader in Digital Risk Protection
-- Combination of technology and analysts
-- SaaS-based portal
-- Integrates into existing technologies via API
-- Lowest total cost of ownership
-- Nine years of indexed data
+## Configure ReliaQuest GreyMatter DRP Incidents on Cortex XSOAR
 
-**Data Leakage Detection**
-Marked Documents
-Customer Details
-Employee Credentials
+1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+2. Search for ReliaQuest GreyMatter DRP Incidents.
+3. Click **Add instance** to create and configure a new integration instance.
 
-**Brand Protection**
-Impersonating Domains
-Phishing Sites
-Spoof Social Media Profiles
-Spoof Mobile Apps
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | Fetch incidents | Start fetching incidents | False |
+    | DS SearchLight API URL | Enter the Digital Shadows SearchLight API URL | True |
+    | Account ID | Account ID associated with this account. | True |
+    | API Key | Enter the API Key for this account. | True |
+    | API Secret | Enter the API Secret for this account. | True |
+    | Trust any certificate (not secure) | Verify certificate | False |
+    | Risk Types | Remove all if you don't want to select  all risk types, and then select specifically | True |
+    | Risk Level | Remove all if you don't want to select  all risk types, and then select specifically | False |
+    | Ingest Closed / Auto-rejected Alerts | If you don't want to ingest rejected/resolved/closed incidents then set it to False. Otherwise incidents will ingested with auto-closed=True | False |
+    | Fetch Limit | The maximum number of incidents to fetch | True |
+    | Incidents Fetch Interval | This controls how often the integration will perform a fetch_incidents command | False |
+    | Start date | Since when want to fetch the data with given format\(%Y-%m-%dT%H:%M:%SZ\) | True |
 
-**Technical Leakage Detection**
-Exposed Access Keys
-Unauthorized Code Commit
-Leaked Sensitive Technology
-Leaked Sensitive Code
+4. Click **Test** to validate the URLs, token, and connection.
 
-**Dark Web Monitoring**
-Accounts for Sale
-Mentioned by Threat Actor
-Phishing Kits
+## Commands
 
-**Attack Surface Monitoring**
-Exploitable Vulnerabilities
-Certificate Issues
-Open Ports
-Misconfigured Devices
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-**Threat Intelligence**
-Threat Actor Profiles/Tracking
-Intelligence Incidents
-Supplier/Vendor Monitoring
-Vulnerability/Exploit Monitoring
+### ds-search
 
-## What makes ReliaQuest GreyMatter DRP unique
+***
+Perform a general search against incidents, threats closed sources, etc.
 
-- Exposure monitoring  
-  ReliaQuest GreyMatter DRP monitors for the exposure of these assets across the open, deep, and dark web. This includes code-sharing sites, file-sharing sites, criminal forums, chat messages, social media, and search engines. For additional enrichment and incident response, users can search across many of these sources via "Shadow Search". Furthermore, our Collections and Closed Sources teams focus on continually adding to these sources.
+#### Base Command
 
-- Risk Identification
-  Our technology reduces the mentions of these assets to only those instances that constitute a risk to your business. On average, this combination of technology and human analysis removes more than 95% of the total mentions of an organization's assets. Each alert has a risk score, ensuring your team is not overwhelmed by irrelevant mentions and can easily prioritize alerts.
+`ds-search`
 
-- Take Action and Protect  
-  Alerts provide you all the context you need to make quicker, better decisions. Users also benefit from playbooks for remediating the risk, including the ability to launch takedowns.
+#### Input
 
-## Update – Version 2.0.1
-**Ingestion of Triage alerts from new Search Light API Endpoint**
-- Events are then Mapped to one of 38 Incident Types 
-- Corresponding Incident Fields are Mapped from these Types 
-  - These Fields parse the relevant information from the Triage Alerts 
-- Cortex XSOAR Incident Dashboard populated with the Incidents
-- Playbooks updated to use new Endpoints 
-- Handling of Auto-Rejected Alerts 
-  - In the integration, there are settings to allow you to customize what risk Values to ingest as well as the Risk Types. 
-- Ability to ingest Indicators from the Digital Shadows Platform. 
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| query | No description provided. | Required | 
 
-Email: drpsupport@reliaquest.com
-Call us at US 1-888-889-4143, UK +44 (0)203 393 7001
-Visit www.reliaquest.com for more information
+#### Context Output
+
+There is no context output for this command.

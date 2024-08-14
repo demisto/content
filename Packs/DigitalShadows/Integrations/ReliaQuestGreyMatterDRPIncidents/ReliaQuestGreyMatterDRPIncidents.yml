@@ -5,6 +5,7 @@ commonfields:
 description: ReliaQuest GreyMatter DR monitors and manages an organization's digital risk across the widest range of data sources within the open, deep, and dark web.
 configuration:
 - defaultvalue: "true"
+  additionalinfo: Start fetching incidents
   display: Fetch incidents
   name: isFetch
   required: false
@@ -17,22 +18,23 @@ configuration:
   type: 0
 - additionalinfo: Account ID associated with this account.
   name: accountId
+  display: Account ID
   required: true
   type: 0
 - additionalinfo: Enter the API Key for this account.
   hiddenusername: true
   displaypassword: API Key
-  display: API Key
   name: apiKey
   required: true
   type: 9
-- display: API Secret
+- additionalinfo: Enter the API Secret for this account.
   hiddenusername: true
   displaypassword: API Secret
   name: apiSecret
   required: true
   type: 9
 - defaultvalue: "true"
+  additionalinfo: Verify certificate
   display: Trust any certificate (not secure)
   name: insecure
   required: false
