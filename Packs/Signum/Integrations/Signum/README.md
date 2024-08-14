@@ -39,4 +39,4 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Signum.ListDomainUsers | unknown | The result of List Domain Users command. | 
+| Signum.ListDomainUsers | unknown | The result of the signum-list-domain-users command. | 
