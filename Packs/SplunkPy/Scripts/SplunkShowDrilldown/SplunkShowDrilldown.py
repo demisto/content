@@ -37,7 +37,7 @@ def main():
                     markdown += "\nDrilldown enrichment failed."
 
                 elif results := drilldown.get("query_results", []):
-                    markdown += tableToMarkdown("", results, headers=results[0].keys())
+                    markdown += tableToMarkdown("", results[:2], headers=results[0].keys())
 
                 else:
                     markdown += "\nNo results found for drilldown search."

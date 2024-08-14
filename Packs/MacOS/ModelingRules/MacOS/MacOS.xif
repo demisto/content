@@ -24,3 +24,4 @@ alter
     xdm.source.process.executable.directory = get_nsurl,
     xdm.source.process.executable.signer = get_pkinstallpackageidentifier,
     xdm.alert.description = get_nslocalizeddescription;
+    

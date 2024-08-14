@@ -377,3 +377,4 @@ filter _raw_log ~= "%\S+\-\d\-\S+:"
     xdm.target.interface = interface_port_id,
     xdm.target.ipv4 = coalesce(server_ipv4, target_ipv4),
     xdm.target.port = to_integer(target_port);
+    

@@ -79,3 +79,4 @@ filter _raw_log ~= ":\s+last\s+message\s+repeated.*"
 | alter
     xdm.source.host.hostname = arraystring(regextract(_raw_log, "\d{2}:\d{2}:\d{2}\s+Message\s+forwarded\s+from\s+(\S+)\:"), ""),
     xdm.event.description = arraystring(regextract(_raw_log, "last\s+message\s+repeated.*"), "");
+    
