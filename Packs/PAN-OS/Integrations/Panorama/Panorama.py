@@ -229,7 +229,7 @@ RULE_TYPES_MAP = {
     "PBF Rule": "pbf"
 }
 
-XPATH_ACTIONS_TYPES_MAP = {
+XPATH_EXCEPTIONS_ACTIONS_TYPES_MAP = {
     'Alert': 'alert',
     'Allow': 'allow',
     'Block IP': 'block-ip',
@@ -240,13 +240,13 @@ XPATH_ACTIONS_TYPES_MAP = {
     'default': 'default'
 }
 
-PACKET_CAPTURE_TYPES_MAP = {
+EXCEPTIONS_PACKET_CAPTURE_TYPES_MAP = {
     'Disable': 'disable',
     'Single Packet': 'single-packet',
     'Extended Capture': 'extended-capture'
 }
 
-IP_TRACK_BY_TYPES_MAP = {
+EXCEPTIONS_IP_TRACK_BY_TYPES_MAP = {
     'Source': 'source',
     'Source And Destination': 'source-and-destination'
 }
@@ -14300,11 +14300,11 @@ def profile_exception_crud_commands(args: dict, action_type: str):
     profile_name = args.get('profile_name', "")
     profile_type = args.get('profile_type', '')
     threat_name = args.get('threat_name', '')
-    xpath_action = XPATH_ACTIONS_TYPES_MAP[args.get('action', 'default')]
-    packet_capture = PACKET_CAPTURE_TYPES_MAP.get(args.get('packet_capture', ''), '')
+    xpath_action = XPATH_EXCEPTIONS_ACTIONS_TYPES_MAP[args.get('action', 'default')]
+    packet_capture = EXCEPTIONS_PACKET_CAPTURE_TYPES_MAP.get(args.get('packet_capture', ''), '')
     exempt_ip = args.get('exempt_ip', '')
     device_group = args.get('device_group', DEVICE_GROUP)
-    ip_track_by = IP_TRACK_BY_TYPES_MAP.get(args.get('ip_track_by', ''), '')
+    ip_track_by = EXCEPTIONS_IP_TRACK_BY_TYPES_MAP.get(args.get('ip_track_by', ''), '')
     ip_duration_sec = args.get('ip_duration_sec', '')
     exception_id = ""
 
