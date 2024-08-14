@@ -9,3 +9,6 @@
 !axonius-get-tags type type=devices
 !axonius-add-tag type=users tag_name=tag ids="e17ebcf985a70881b255c16f4fdd76b6"
 !axonius-remove-tag tag_name="api test1" type="devices" ids="[\"e17ebcf985a70881b255c16f4fdd76b6\",\"5d0e353ed75feef1ef92c74b31db195e\"]"
+!axonius-get-devices-by-aql query="((\"specific_data.data.name\" == ({\"$exists\":true,\"$ne\":\"\"})))" max_results="50"
+!axonius-get-users-by-aql query="((\"specific_data.data.username\" == ({\"$exists\":true,\"$ne\":\"\"})))" max_results="50"
+!axonius-add-note note="Note1" ids="[\"1a0308e2f37e2dde0343d6ec8c438522\"]" type="devices"
