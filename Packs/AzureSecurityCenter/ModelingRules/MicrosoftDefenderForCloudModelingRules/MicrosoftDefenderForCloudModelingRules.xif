@@ -145,7 +145,6 @@ filter _collector_type = "Azure Event Hub"
         xdm.alert.description = Description,
         xdm.alert.severity = Severity,
         xdm.alert.original_alert_id = SystemAlertId,
-        xdm.source.cloud.source_type = arraystring(arraymap(ResourceIdentifiers, if(json_extract_scalar("@element", "$.Type") != null, json_extract_scalar("@element", "$.Type"), "-")), ", "),
         xdm.source.cloud.project_id = arraystring(arraymap(ResourceIdentifiers, if(json_extract_scalar("@element", "$.AzureResourceTenantId") != null, json_extract_scalar("@element", "$.AzureResourceTenantId"), json_extract_scalar("@element", "$.AadTenantId") != null, json_extract_scalar("@element", "$.AadTenantId"), json_extract_scalar("@element", "$.workspaceId") != null, json_extract_scalar("@element", "$.workspaceId"), "-")), ", "),
         // Entities and Extended Properties fields
         xdm.source.user.identifier = coalesce (ExtendedProperties_AAD_user_id, Entities_account_Identifier),
