@@ -1,0 +1,23 @@
+name: Run Legacy Validate on Contributions
+on:
+  pull_request_target:
+    branches:
+      - contrib/**
+
+jobs:
+  check_label_job:
+    runs-on: ubuntu-latest
+    if: github.repository == 'demisto/content' # the rest is checked in the `on:` key
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Setup Poetry
+        uses: Gr1N/setup-poetry@v9
+      - name: Install Python Dependencies
+        run: poetry install --with github-actions
+      - name: Run legacy validate step
+        run: poetry run demisto_sdk validate -g --post-commit --graph --skip-pack-dependencies --run-old-validate --skip-new-validate
