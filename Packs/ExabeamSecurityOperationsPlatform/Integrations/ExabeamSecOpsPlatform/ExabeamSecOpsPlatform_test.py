@@ -611,11 +611,11 @@ def test_transform_dicts(dict_input, dict_expected):
             }
         ),
         (
-            '{"name": ["Charlie"], "age": ["35"], "city": ["Chicago"]}',
+            '{"name": ["Charlie"], "age": ["35"], "city": ["city_test"]}',
             {
                 "name": ["Charlie"],
                 "age": ["35"],
-                "city": ["Chicago"]
+                "city": ["city_test"]
             }
         ),
     ]
