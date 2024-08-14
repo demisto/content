@@ -825,8 +825,8 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         :rtype: Dict[str, Any]
         """
         j_res = self.http_request(
-            'GET',
-            url_suffix=f'rest/api/2/user?{identifier}',
+            method='GET',
+            url_suffix=f'rest/api/{self.api_version}/user?{identifier}',
             ok_codes=[200, 404],
             resp_type='response'
         )
@@ -1153,7 +1153,7 @@ class JiraOnPremClient(JiraBaseClient):
         """
         j_res = self.http_request(
             method='GET',
-            url_suffix=f'rest/proforma/api/2/issues/{issue_id}/forms',
+            url_suffix=f'rest/proforma/api/{self.api_version}/issues/{issue_id}/forms',
             ok_codes=[200, 404],
             resp_type='response'
         )
