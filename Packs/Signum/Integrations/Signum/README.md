@@ -1,4 +1,4 @@
-Signum password expiry notification
+Signum password expiry notification.
 ## Configure Signum on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
