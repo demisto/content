@@ -5,8 +5,9 @@ from CommonServerPython import *  # noqa: F401
 
 import requests
 import traceback
-from typing import Dict, Any
+from typing import Dict, Any, Optional, List
 import urllib3
+import datetime
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -1314,7 +1315,7 @@ def main() -> None:
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
 
-        headers: Dict = {"Authorization": f"Token {api_key}", "X-SSC-Application-Name": "Cortex XSOAR", "X-SSC-Application-Version": "2.0"}
+        headers: Dict = {"Authorization": f"Token {api_key}", "X-SSC-Application-Name": "Cortex XSOAR", "X-SSC-Application-Version": "1.1.0"}
 
         client = SecurityScorecardClient(
             base_url=base_url,
