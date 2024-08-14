@@ -46,7 +46,7 @@ def test_map_indicator_type():
 
 
 def test_get_incidents_last_fetch_date(mocker):
-    date = datetime(2020, 6, 17, 15, 20, 10, tzinfo=timezone.utc)
+    date = datetime(2020, 6, 17, 15, 20, 10, tzinfo=timezone.utc) # noqa: UP017
     timestamp = int(date.timestamp())
 
     mocker.patch.object(demisto, 'getIntegrationContext', return_value={
@@ -76,7 +76,7 @@ def test_set_indicators_last_fetch_date(mocker):
 
     assert demisto.getIntegrationContext() == {}
 
-    date = datetime(2020, 6, 17, 15, 20, 10, tzinfo=timezone.utc)
+    date = datetime(2020, 6, 17, 15, 20, 10, tzinfo=timezone.utc) # noqa: UP017
     timestamp = int(date.timestamp())
 
     set_indicators_last_fetch_date(timestamp)
@@ -89,7 +89,7 @@ def test_set_indicators_last_fetch_date_does_not_break_existing_context(mocker):
 
     assert demisto.getIntegrationContext() == {'Test': True, 'Value': 12345}
 
-    date = datetime(2020, 6, 17, 15, 20, 10, tzinfo=timezone.utc)
+    date = datetime(2020, 6, 17, 15, 20, 10, tzinfo=timezone.utc) # noqa: UP017
     timestamp = int(date.timestamp())
 
     set_indicators_last_fetch_date(timestamp)
