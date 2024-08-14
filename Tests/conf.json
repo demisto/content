@@ -22,6 +22,14 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Carbon Black Enterprise EDR",
+            "playbookID": "Carbon Black Enterprise EDR process search with polling Test"
+        },
+        {
+            "integrations": "Carbon Black Enterprise EDR",
+            "playbookID": "Carbon Black Enterprise EDR alert-workflow-update Test"
+        },
+        {
             "integrations": "CipherTrust",
             "playbookID": "Thales CipherTrust Test Playbook - Access Management",
             "fromversion": "6.10.0"
@@ -1819,6 +1827,17 @@
                 "SMIME Messaging"
             ],
             "playbookID": "EWS V2 Send Mail Test 3"
+        },
+        {
+            "integrations": [
+                "SMIME Messaging",
+                "EWS v2"
+            ],
+            "instance_names": [
+                "SMIME Messaging",
+                "ews_mail_sender_labdemisto"
+            ],
+            "playbookID": "SMIME_Messaging-Test"
         },
         {
             "playbookID": "decodemimeheader_-_test"
@@ -4404,13 +4423,6 @@
             ]
         },
         {
-            "playbookID": "Carbon Black Enterprise EDR Process Search Test",
-            "fromversion": "5.0.0",
-            "integrations": [
-                "Carbon Black Enterprise EDR"
-            ]
-        },
-        {
             "playbookID": "Logzio - Test",
             "fromversion": "5.0.0",
             "integrations": [
@@ -5779,6 +5791,9 @@
             "scripts": [
                 "MattermostAskUser"
             ]
+        },
+        {
+            "playbookID": "DBotTrainClustering-test"
         }
     ],
     "skipped_tests": {
@@ -5981,6 +5996,7 @@
         "Test XDR Playbook execute script commands": "CIAC-11274",
         "Test XDR Playbook general commands": "CIAC-11274",
         "Test XDR Playbook": "CIAC-11274",
+        "Account Enrichment - Generic v2.1 - Test": "CIAC-11274",
         "Test_XFE_v2": "CRTX-112127"
     },
     "skipped_integrations": {
