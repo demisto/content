@@ -41,7 +41,7 @@ script:
     name: signum-list-domain-users
     outputs:
     - contextPath: Signum.ListDomainUsers
-      description: The result of List Domain Users command.
+      description: The result of the signum-list-domain-users command.
   dockerimage: demisto/python3:3.11.9.106008
   runonce: false
   script: ''
