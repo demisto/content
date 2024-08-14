@@ -145,7 +145,7 @@
     "type": "grid",
     "unmapped": false,
     "unsearchable": false,
-    "useAsKpi": false,
+    "useAsKpi": true,
     "version": -1,
     "fromVersion": "6.8.0"
 }
