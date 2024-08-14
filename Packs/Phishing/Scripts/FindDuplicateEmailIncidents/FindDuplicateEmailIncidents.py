@@ -50,8 +50,10 @@ IGNORE_INCIDENT_TYPE_VALUE = 'None'
 def func_logger(func):
     def func_wrapper(*args, **kwargs):
         demisto.debug(f'calling {func.__name__}({args=}, {kwargs}')
+        before = datetime.now()
         ret_val = func(*args, **kwargs)
-        demisto.debug(f'Return value [{func.__name__}]: {ret_val!r}')
+        after = datetime.now()
+        demisto.debug(f'Return value [{func.__name__}]: {ret_val!r}\nCommand {func.__name__!r} ran for {abs(before - after)}')
         return ret_val
     return func_wrapper
 
