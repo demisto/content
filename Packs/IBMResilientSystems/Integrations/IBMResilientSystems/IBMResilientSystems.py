@@ -1,3 +1,4 @@
+import os
 from typing import Dict, List, Any
 
 import demistomock as demisto  # noqa: F401
@@ -24,14 +25,23 @@ except Exception:
     # client with no co3 instance should pass this exception
     pass
 
-if not demisto.params()['proxy']:
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
-
 ''' GLOBAL VARS '''
-DEMISTO_PARAMS = demisto.params()
+DEMISTO_PARAMS = (demisto.params()
+                  # TODO delete
+                  or {
+                      'proxy': False,
+                      'server': os.getenv('SERVER'),
+                      'org': os.getenv('org'),
+                      'api_key_id': os.getenv('API_KEY_ID'),
+                      'api_key_secret': os.getenv('API_KEY_SECRET'),
+                      'fetch_time': '2020-02-02T19:00:00Z'
+                  })
+
+if not DEMISTO_PARAMS['proxy']:
+    for var in ['HTTP_PROXY', 'HTTPS_PROXY', 'http_proxy', 'https_proxy']:
+        if os.environ.get(var):
+            del os.environ[var]
+
 URL = DEMISTO_PARAMS['server'][:-1] if DEMISTO_PARAMS['server'].endswith('/') else DEMISTO_PARAMS['server']
 # Remove the http/s from the url (It's added automatically later)
 URL = URL.replace('http://', '').replace('https://', '')
@@ -43,11 +53,9 @@ PASSWORD = DEMISTO_PARAMS.get('credentials', {}).get('password')
 API_KEY_ID = DEMISTO_PARAMS.get('credentials_api_key', {}).get('identifier') or DEMISTO_PARAMS.get('api_key_id')
 API_KEY_SECRET = DEMISTO_PARAMS.get('credentials_api_key', {}).get('password') or DEMISTO_PARAMS.get('api_key_secret')
 USE_SSL = not DEMISTO_PARAMS.get('insecure', False)
-FETCH_TIME = DEMISTO_PARAMS.get('fetch_time', '')
+
 TIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-if FETCH_TIME:
-    if FETCH_TIME[-1] != 'Z':
-        FETCH_TIME = FETCH_TIME + 'Z'
+
 MAX_FETCH = DEMISTO_PARAMS.get('max_fetch', '1000')
 INCIDENT_TYPE_DICT = {
     'CommunicationError': 17,
@@ -139,9 +147,24 @@ IBM_QRADAR_SOAR_INCIDENT_SCHEMA_NAME = 'IBM QRadar SOAR Incident Schema'
 DEFAULT_SEVERITY_CODE = 5
 ''' ENDPOINTS '''
 SEARCH_INCIDENTS_ENDPOINT = '/incidents/query_paged'
-CONST_ENDPOINT = '/const'
 
 ''' HELPER FUNCTIONS '''
+
+
+def validate_fetch_time(fetch_time: str) -> str:
+    """
+    Ensures the input timestamp string ends with a 'Z' to denote Zulu time (UTC).
+
+    Args:
+    fetch_time (str): The timestamp string to check and modify if needed.
+
+    Returns:
+    str: The modified timestamp string with a 'Z' suffix if it wasn't already present.
+    """
+    if fetch_time:
+        return fetch_time if fetch_time.endswith('Z') else fetch_time + 'Z'
+    else:
+        return fetch_time
 def normalize_timestamp(timestamp):
     """
     Converts epoch timestamp to human readable timestamp.
@@ -437,6 +460,7 @@ def search_incidents(client: SimpleClient, args: dict) -> list | dict:
     endpoint = f'{SEARCH_INCIDENTS_ENDPOINT}?return_level={return_level}'
 
     response = client.post(endpoint, search_query_data)
+    demisto.debug(f'search_incidents {response}')
     return response['data']
 
 
@@ -1149,11 +1173,11 @@ def date_to_timestamp(date_str_or_dt, date_format='%Y-%m-%dT%H:%M:%SZ'):
     return int(time.mktime(date_str_or_dt.timetuple()) * 1000)
 
 
-def fetch_incidents(client):
+def fetch_incidents(client, fetch_time: str):
     last_run_time = demisto.getLastRun() and demisto.getLastRun().get('time')
     if not last_run_time:
-        last_run_time = date_to_timestamp(FETCH_TIME)
-        args = {'date-created-after': FETCH_TIME}
+        last_run_time = date_to_timestamp(fetch_time)
+        args = {'date-created-after': fetch_time}
     else:
         args = {'date-created-after': normalize_timestamp(last_run_time)}
 
@@ -1251,8 +1275,8 @@ def upload_incident_attachment_command(client: SimpleClient, args: dict) -> Comm
 
     try:
         response = client.post_attachment(uri=f'/incidents/{incident_id}/attachments',
-                                             filepath=file_path,
-                                             filename=file_name)
+                                          filepath=file_path,
+                                          filename=file_name)
         demisto.debug(f'upload_incident_attachment_command {response=}')
     except SimpleHTTPException as e:
         return CommandResults(
@@ -1548,31 +1572,23 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
     return GetMappingFieldsResponse([ibm_qradar_incident_type_scheme])
 
 
-def test_module(client: SimpleClient):
+def test_module(client: SimpleClient, fetch_time: str):
     """
-    Verify client connectivity and the first_fetch parameter are according to the standards, if exists.
+    Verify client connectivity and the fetch_time parameter are according to the standards, if exists.
 
     Returns:
         'ok' if all tests passed, anything else will fail the test.
     """
-    try:
-        # Making a request to the client's base URL to retrieve information about the organization.
-        response = super(client).get(uri='')
-        # demisto.debug(f'test_module {response=}')
-    except SimpleHTTPException as e:
-        return f"Connection test failed: {e}"
+    # Making a request to the client's base URL to retrieve information about the organization.
+    client.get(uri='')
 
-    # # Test - test first fetch time
-    # fetch_time = getattr(client, 'first_fetch', None)  # Assuming the fetch time is a client attribute
-    # time_format = "%Y-%m-%dT%H:%M:%SZ"  # Define your time format here
-    #
-    # if fetch_time:
-    #     try:
-    #         datetime.strptime(fetch_time, time_format)
-    #     except ValueError as error:
-    #         demisto.error(f'test_module {error=}')
-    #         return f"There is something wrong with the fetch date. Error: {error}"
-
+    # Testing fetch_time parameter's value.
+    if fetch_time:
+        try:
+            datetime.strptime(fetch_time, TIME_FORMAT)
+        except ValueError as e:
+            raise DemistoException(f'Invalid first fetch timestamp format, should be (YYYY-MM-DDTHH:MM:SSZ).'
+                                   f' For example: 2020-02-02T19:00:00Z')
     return 'ok'
 
 
@@ -1604,6 +1620,8 @@ def get_client():
 
 
 def main():
+    params = demisto.params()
+    fetch_time = validate_fetch_time(params.get('fetch_time', ''))
     client = get_client()
 
     # Disable SDK logging warning messages
@@ -1617,9 +1635,9 @@ def main():
         args = demisto.args()
         if command == 'test-module':
             # Checks if there is an authenticated session
-            test_module(client)
+            return_results(test_module(client, fetch_time))
         elif command == 'fetch-incidents':
-            fetch_incidents(client)
+            fetch_incidents(client, fetch_time)
         elif command == 'rs-search-incidents':
             demisto.results(search_incidents_command(client, args))
         elif command == 'rs-update-incident':

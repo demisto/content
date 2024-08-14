@@ -1,8 +1,17 @@
+import json
+
 import pytest
+from pytest import raises
 
 import demistomock as demisto
+from CommonServerPython import DemistoException
 
 DEFAULT_MAX_FETCH = 1000
+
+def load_test_data(json_path):
+    with open(json_path) as f:
+        return json.load(f)
+
 
 class MockClient:
     @staticmethod
@@ -101,7 +110,7 @@ def test_update_incident_command_with_invalid_json(mocker):
     }
     from IBMResilientSystems import update_incident_command
 
-    with pytest.raises(Exception) as exception:
+    with raises(Exception) as exception:
         update_incident_command(MockClient, args)
     assert 'The other_fields argument is not a valid json.' in exception.value.args[0]
 
@@ -154,7 +163,7 @@ def test_add_incident_artifact(mocker):
 
 def test_test_module(mocker):
     """
-    Tests whether the test module returns expected result for valid and invalid responses.
+    Tests whether the test module returns expected result for default http response.
     """
     mocker.patch.object(demisto, 'params', return_value={
         'server': 'example.com:80', 'org': 'example', 'proxy': True, 'max_fetch': DEFAULT_MAX_FETCH
@@ -162,7 +171,33 @@ def test_test_module(mocker):
     from IBMResilientSystems import test_module, SimpleClient
     client = SimpleClient()
     mocker.patch.object(client, 'get', return_value={})
-    assert test_module(client) == "ok"
+    assert test_module(client, '2024-01-01T00:00:00Z') == "ok"
+
+
+@pytest.mark.parametrize('fetch_time, expected_result', [
+    ('2024-01-01T00:00:00Z', 'ok'),
+    ('2024-01-01T00:00:00', 'ok'),
+    ('', 'ok'),
+    ('2024/01/01 00:00:00', 'fail'),
+    ('invalid-date', 'fail'),
+])
+def test_test_module_fetch_time(fetch_time, expected_result, mocker):
+    """
+    Tests whether the test module returns expected result for valid and invalid responses.
+    """
+    mocker.patch.object(demisto, 'params', return_value={
+        'server': 'example.com:80', 'org': 'example', 'proxy': True, 'max_fetch': DEFAULT_MAX_FETCH
+    })
+    from IBMResilientSystems import test_module, SimpleClient, validate_fetch_time
+    client = SimpleClient()
+    mocker.patch.object(client, 'get', return_value={})
+    fetch_time = validate_fetch_time(fetch_time)
+    if expected_result == 'fail':
+        with raises(DemistoException):
+            test_module(client, fetch_time)
+    else:
+        assert test_module(client, fetch_time) == expected_result
+
 
 @pytest.mark.parametrize("args, expected", [
     ({}, {'filters': [{'conditions': []}], 'length': DEFAULT_MAX_FETCH}),  # Test without any filters or pagination params
@@ -187,8 +222,8 @@ def test_test_module(mocker):
         'start': 0,
         'length': 10
     })
-    ], ids=['no-filters-query', 'args-1-query', 'args-2-query', 'pagination-params-query']
-)
+], ids=['no-filters-query', 'args-1-query', 'args-2-query', 'pagination-params-query']
+                         )
 def test_prepare_search_query_data(mocker, args, expected):
     mocker.patch.object(demisto, 'params', return_value={
         'server': 'example.com:80', 'org': 'example', 'proxy': True, 'max_fetch': DEFAULT_MAX_FETCH
@@ -259,6 +294,7 @@ def test_prettify_incident_notes(mocker, input_notes, expected_output):
     from IBMResilientSystems import prettify_incident_notes
     assert prettify_incident_notes(input_notes) == expected_output
 
+
 # TODO - Complete this
 @pytest.mark.parametrize(
     "args", [
@@ -271,11 +307,12 @@ def test_search_incidents(mocker, args):
     mocker.patch.object(demisto, 'params', return_value={
         'server': 'example.com:80', 'org': 'example', 'proxy': True, 'max_fetch': DEFAULT_MAX_FETCH
     })
+    from requests import Session
     from co3 import SimpleClient
     from IBMResilientSystems import search_incidents, DEFAULT_RETURN_LEVEL
-    request = mocker.patch.object(SimpleClient, "post", return_value={"data": [{}]})
+    request = mocker.patch.object(Session, "post", return_value=load_test_data('./test_data/test_response.json'))
     # TODO - fix
-    search_incidents(client=SimpleClient, args=args)
+    search_incidents(client=SimpleClient(), args=args)
     request.assert_called_with(
         method="POST",
         url_suffix=f"/rest/orgs/201/incidents/query_paged?return_level={args.get('return_level', DEFAULT_RETURN_LEVEL)}",
