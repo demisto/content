@@ -9540,20 +9540,22 @@ script:
       - Disable
       - Single Packet
       - Extended Capture
-    - description: Specifies IP addresses.
+    - description: Specifies IP address. Configure an exempt IP address to enforce a threat exception only when the associated
+        session has either a matching source or destination IP address; for all other sessions, the threat
+        is enforced based on the default signature action.
       name: exempt_ip
       required: false
     - description: Device group. This will override any configured device group or vsys.
       name: device_group
       required: false
-    - description: "Can be: Source or Source And Destination. If action = Block IP , this argument is mandatory."
+    - description: Specify whether to Track By and block the IP address using the IP source or the IP source and destination. If action = Block IP , this argument is mandatory.
       name: ip_track_by
       required: false
       auto: PREDEFINED
       predefined:
       - Source
       - Source And Destination
-    - description: If action = Block IP , this argument is mandatory.
+    - description: Specify the Time period (in seconds) after which to trigger the action. If action = Block IP , this argument is mandatory.
       name: ip_duration_sec
       required: false
   - name: pan-os-edit-profile-exception
@@ -9592,20 +9594,22 @@ script:
       - Disable
       - Single Packet
       - Extended Capture
-    - description: Specifies IP addresses.
+    - description: Specifies IP address. Configure an exempt IP address to enforce a threat exception only when the associated
+        session has either a matching source or destination IP address; for all other sessions, the threat
+        is enforced based on the default signature action.
       name: exempt_ip
       required: false
     - description: Device group. This will override any configured device group or vsys.
       name: device_group
       required: false
-    - description: "Can be: Source or Source And Destination. If action = Block IP , this argument is mandatory."
+    - description: Specify whether to Track By and block the IP address using the IP source or the IP source and destination. If action = Block IP , this argument is mandatory.
       name: ip_track_by
       required: false
       auto: PREDEFINED
       predefined:
       - Source
       - Source And Destination
-    - description: If action = Block IP , this argument is mandatory.
+    - description: Specify the Time period (in seconds) after which to trigger the action. If action = Block IP , this argument is mandatory.
       name: ip_duration_sec
       required: false
   - name: pan-os-delete-profile-exception

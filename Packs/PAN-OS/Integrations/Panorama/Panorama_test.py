@@ -7422,7 +7422,7 @@ def test_pan_os_delete_security_profile_group_command(mocker):
     assert command_results.readable_output == 'Successfully deleted Security Profile Group: "test_spg"'
 
 
-def test_xpath_creation_for_exception_crud():
+def test_pan_os_xpath_creation_for_exception_crud():
     import Panorama
 
     results = Panorama.build_xpath_for_profile_exception_commands(
@@ -7455,6 +7455,8 @@ def test_xpath_creation_for_exception_crud():
 def test_pan_os_add_profile_exception(mocker):
     import Panorama
     import requests
+    Panorama.URL = 'https://1.1.1.1:443/'
+    Panorama.API_KEY = 'thisisabogusAPIKEY!'
 
     expected_text_response = '<response status="success" code="20"><msg>command succeeded</msg></response>'
 
@@ -7506,13 +7508,16 @@ def test_pan_os_delete_profile_exception(mocker):
 def test_pan_os_list_profile_exception(mocker):
     import Panorama
     import requests
-
+    Panorama.URL = 'https://1.1.1.1:443/'
+    Panorama.API_KEY = 'thisisabogusAPIKEY!'
+    Panorama.DEVICE_GROUP = 'device_group'
     expected_text_response = '<response status="success" code="20"><msg>command succeeded</msg></response>'
 
     mock_response = MockedResponse(text=expected_text_response, status_code=200)
     mocker.patch.object(requests, 'request', return_value=mock_response)
 
-    command_results = Panorama.pan_os_list_profile_exception_command(args={"profile_name": "test_spg"})
+    command_results = Panorama.pan_os_list_profile_exception_command(args={"profile_name": "test_spg",
+                                                                           "profile_type": "Vulnerability Protection Profile"})
 
     assert command_results.raw_response == {'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
 

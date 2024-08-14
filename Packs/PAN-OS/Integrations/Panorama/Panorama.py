@@ -14203,7 +14203,7 @@ def get_predefined_threats_list() -> list:
     return predefined_threats
 
 
-def get_threat_id_from_predefined_threates(threat_name: str) -> str:
+def get_threat_id_from_predefined_threates(threat_name: str) -> tuple[str, str]:
     """
     Search the threat id in the threats list by using the threat_name argument.
 
@@ -14217,8 +14217,8 @@ def get_threat_id_from_predefined_threates(threat_name: str) -> str:
 
     for entry in predefined_threats:
         search_keys = []
-
-        search_keys.append(entry.get("threatname", ""))
+        exception_name = entry.get("threatname", "")
+        search_keys.append(exception_name)
 
         extracted_id = entry["@name"]
         search_keys.append(extracted_id)
@@ -14231,7 +14231,7 @@ def get_threat_id_from_predefined_threates(threat_name: str) -> str:
             search_keys.append(cve.upper())
 
         if threat_name in search_keys:
-            return extracted_id
+            return extracted_id, exception_name
 
     raise DemistoException("Invalid threat_name was provided.")
 
@@ -14306,7 +14306,7 @@ def profile_exception_crud_commands(args: dict, action_type: str):
     device_group = args.get('device_group', DEVICE_GROUP)
     ip_track_by = IP_TRACK_BY_TYPES_MAP.get(args.get('ip_track_by', ''), '')
     ip_duration_sec = args.get('ip_duration_sec', '')
-    extracted_id = ""
+    exception_id = ""
 
     if xpath_action == BLOCK_IP and (not ip_track_by or not ip_duration_sec):
         raise DemistoException(
@@ -14317,16 +14317,13 @@ def profile_exception_crud_commands(args: dict, action_type: str):
         profile_type = check_profile_type_by_given_profile_name(profile_name, device_group)
 
     if action_type != 'get':
-        if threat_name.isnumeric():
-            extracted_id = threat_name
-        else:
-            extracted_id = get_threat_id_from_predefined_threates(threat_name)
+        exception_id, exception_name = get_threat_id_from_predefined_threates(threat_name)
 
-    xpath = build_xpath_for_profile_exception_commands(profile_name, profile_type, device_group, action_type, extracted_id)
+    xpath = build_xpath_for_profile_exception_commands(profile_name, profile_type, device_group, action_type, exception_id)
 
     if action_type in [ADD_EXCEPTION_COMMAND_TYPE, EDIT_EXCEPTION_COMMAND_TYPE]:
         element = build_element_for_profile_exception_commands(
-            extracted_id, xpath_action, packet_capture, exempt_ip, ip_track_by, ip_duration_sec)
+            exception_id, xpath_action, packet_capture, exempt_ip, ip_track_by, ip_duration_sec)
         params = {
             'type': 'config',
             'action': action_type,
@@ -14344,7 +14341,7 @@ def profile_exception_crud_commands(args: dict, action_type: str):
         }
 
     raw_response = http_request(URL, 'GET', params=params)
-    return raw_response
+    return raw_response, exception_id, exception_name
 
 
 def pan_os_add_profile_exception_command(args: dict) -> CommandResults:
@@ -14357,11 +14354,10 @@ def pan_os_add_profile_exception_command(args: dict) -> CommandResults:
     Returns:
         A confirmation for adding the exception.
     """
-    threat_name = args.get('threat_name')
-    raw_response = profile_exception_crud_commands(args, ADD_EXCEPTION_COMMAND_TYPE)
+    raw_response, exception_id, exception_name = profile_exception_crud_commands(args, ADD_EXCEPTION_COMMAND_TYPE)
     return CommandResults(
         raw_response=raw_response,
-        readable_output=f'Successfully created Exception: {threat_name}',
+        readable_output=f'Successfully created Exception: "{exception_name}" with ID {exception_id}.',
     )
 
 
@@ -14375,11 +14371,10 @@ def pan_os_edit_profile_exception_command(args: dict) -> CommandResults:
     Returns:
         A confirmation for editing the exception.
     """
-    threat_name = args.get('threat_name')
-    raw_response = profile_exception_crud_commands(args, EDIT_EXCEPTION_COMMAND_TYPE)
+    raw_response, exception_id, exception_name = profile_exception_crud_commands(args, EDIT_EXCEPTION_COMMAND_TYPE)
     return CommandResults(
         raw_response=raw_response,
-        readable_output=f'Successfully edited Exception: {threat_name}',
+        readable_output=f'Successfully edited Exception: "{exception_name}" with ID {exception_id}.',
     )
 
 
@@ -14393,11 +14388,10 @@ def pan_os_delete_profile_exception_command(args: dict) -> CommandResults:
     Returns:
         A confirmation for deleting the exception. 
     """
-    threat_name = args.get('threat_name')
-    raw_response = profile_exception_crud_commands(args, DELETE_EXCEPTION_COMMAND_TYPE)
+    raw_response, exception_id, exception_name = profile_exception_crud_commands(args, DELETE_EXCEPTION_COMMAND_TYPE)
     return CommandResults(
         raw_response=raw_response,
-        readable_output=f'Successfully deleted Exception: {threat_name}',
+        readable_output=f'Successfully deleted Exception: "{exception_name}" with ID {exception_id}.',
     )
 
 
@@ -14411,7 +14405,7 @@ def pan_os_list_profile_exception_command(args: dict) -> CommandResults:
     Returns:
         A confirmation for deleting the exception.
     """
-    raw_response = profile_exception_crud_commands(args, LIST_EXCEPTION_COMMAND_TYPE)
+    raw_response, _, _ = profile_exception_crud_commands(args, LIST_EXCEPTION_COMMAND_TYPE)
 
     exceptions_response_list = raw_response['response']['result']['threat-exception']['entry']
     if not isinstance(exceptions_response_list, list):
