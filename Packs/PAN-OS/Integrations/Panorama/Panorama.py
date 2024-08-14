@@ -263,12 +263,6 @@ class ExceptionCommandType(enum.Enum):
     DELETE = 'delete'
     LIST = 'get'
 
-ADD_EXCEPTION_COMMAND_TYPE = 'set'
-EDIT_EXCEPTION_COMMAND_TYPE = 'edit'
-DELETE_EXCEPTION_COMMAND_TYPE = 'delete'
-LIST_EXCEPTION_COMMAND_TYPE = 'get'
-
-
 class QueryMap(TypedDict):
     '''dict[str, str]
     Contains the log types mapped to the query
@@ -14225,7 +14219,7 @@ def get_threat_id_from_predefined_threates(threat_name: str) -> tuple[str, str]:
     for entry in predefined_threats:
         search_keys = []
         exception_name = entry.get("threatname", "")
-        search_keys.append(exception_name)
+        search_keys.append(exception_name.lower())
 
         extracted_id = entry["@name"]
         search_keys.append(extracted_id)
@@ -14235,9 +14229,8 @@ def get_threat_id_from_predefined_threates(threat_name: str) -> tuple[str, str]:
             cves = [cves]
         for cve in cves:
             search_keys.append(cve.lower())
-            search_keys.append(cve.upper())
 
-        if threat_name in search_keys:
+        if threat_name.lower() in search_keys:
             return extracted_id, exception_name
 
     raise DemistoException("Invalid threat_name was provided.")
