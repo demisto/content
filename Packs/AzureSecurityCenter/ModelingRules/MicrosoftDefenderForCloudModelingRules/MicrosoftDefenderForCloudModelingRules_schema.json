@@ -59,6 +59,10 @@
         "SystemAlertId": {
             "type": "string",
             "is_array": false
+        },
+        "_collector_type": {
+            "type": "string",
+            "is_array": false
         }
     }
 }
