@@ -1,5 +1,5 @@
 Use the Tenable.sc integration to get a real-time, continuous assessment of your security posture so you can find and fix vulnerabilities faster.
-All data in Tenable.sc is managed using group level permissions. If you have several groups, data (scans, scan results, assets, etc) can be viewable but not manageable. Users with Security Manager role  can manage everything. These permissions come into play when multiple groups are in use.
+All data in Tenable.sc is managed using group level permissions. If you have several groups, data (scans, scan results, assets, etc) can be viewable but not manageable. Users with Security Manager role  can manage everything. These permissions come into play when multiple groups are in use.
 It is important to know what data is manageable for the user in order to work with the integration.
 This integration was integrated and tested with Tenable.sc v5.7.0.
 
@@ -29,10 +29,8 @@ This integration was integrated and tested with Tenable.sc v5.7.0.
     | Fetch incidents |  | False |
     | Incident type |  | False |
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | The timestamp to start the fetch from. | False |
-    | Incidents Fetch Interval |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
-
 
 ## Commands
 
@@ -118,6 +116,22 @@ Requires security manager role. Launch an existing scan from Tenable.sc. Set pol
 | TenableSC.ScanResults.Owner | string | Relevant only when polling is true. Scan owner user name. | 
 | TenableSC.ScanResults.Duration | number | Relevant only when polling is true. Scan duration in minutes. | 
 | TenableSC.ScanResults.ImportTime | date | Relevant only when polling is true. Scan import time. | 
+
+#### Human Readable Output
+
+When polling is set to false:
+### Tenable.sc Scan
+
+|Name|ID|OwnerID|JobID|Status|
+|---|---|---|---|---|
+| test_scan_2023 | 169 | 38 | 118864 | Queued |
+
+When polling is set to true:
+### Tenable.sc Scan 130 Report
+
+|ID|Name|Description|Policy|Group|Owner|ScannedIPs|StartTime|EndTime|Duration|Checks|ImportTime|RepositoryName|Status|Scan Type|Completed IPs|
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 130 | test_scan_2023 | Test scan 2023 | Network Scan | Full Access | hayun_test_sec_man | 156 | 2023-05-16T12:18:10Z | 2023-05-16T17:20:00Z | 301.8333333333333 | 22649640 | 2023-05-16T17:20:02Z | Local | Completed | regular | 156 |
 
 ### tenable-sc-get-vulnerability
 
@@ -425,35 +439,19 @@ There are no input arguments for this command.
 #### Context Output
 
 | **Path** | **Type** | **Description** |
-### tenable-sc-list-repositories
-
-***
-Requires security manager role. Get a list of Tenable.sc scan repositories.
-
-#### Base Command
-
-`tenable-sc-list-repositories`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | TenableSC.ScanRepository.Name | string | Scan Repository name. | 
 | TenableSC.ScanRepository.ID | number | Scan Repository ID. | 
 | TenableSC.ScanRepository.Description | string | Scan Repository. | 
 
-| --- | --- | --- |
-| TenableSC.ScanZone.Name | string | Scan Zone name. | 
-| TenableSC.ScanZone.ID | number | Scan Zone ID. | 
-| TenableSC.ScanZone.Description | string | Scan Zone description. | 
-| TenableSC.ScanZone.IPList | unknown | Scan Zone IP list. | 
-| TenableSC.ScanZone.ActiveScanners | number | Scan Zone active scanners. | 
-| TenableSC.ScanZone.Scanner.Name | string | Scanner name. | 
+#### Human Readable Output
+
+### Tenable.sc Scan Repositories
+
+|ID|Name|
+|---|---|
+| 1 | Local |
+
 ### tenable-sc-list-zones
 
 ***
@@ -465,8 +463,7 @@ Requires admin role. Get a list of Tenable.sc scan zones.
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
+There are no input arguments for this command.
 
 #### Context Output
 
@@ -482,6 +479,43 @@ Requires admin role. Get a list of Tenable.sc scan zones.
 | TenableSC.ScanZone.Scanner.Description | string | Scanner description. | 
 | TenableSC.ScanZone.Scanner.Status | number | Scanner status. | 
 
+#### Human Readable Output
+
+### Tenable.sc Scan Zones
+
+|ID|Name|IPList|activeScanners|
+|---|---|---|---|
+| 1 | Default Scan Zone | ip | 1 |
+
+### Tenable.sc Scanners
+
+|ID|Name|Status|
+|---|---|---|
+| 2 | RHEL6 Scanner | 1 |
+
+### tenable-sc-create-scan
+
+***
+Requires security manager role. Create a scan on Tenable.sc
+
+#### Base Command
+
+`tenable-sc-create-scan`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | Scan name. | Required | 
+| policy_id | Policy ID, can be retrieved from the list-policies command. | Required | 
+| plugin_id | Plugin ID. | Optional | 
+| description | Scan description. | Optional | 
+| repository_id | Scan Repository ID. Can be retrieved from the list-repositories command. | Required | 
+| zone_id | Scan zone ID (default is all zones). Can be retrieved from the list-zones command. | Optional | 
+| schedule | Schedule for the scan. Possible values are: dependent, ical, never, rollover, now. | Optional | 
+| asset_ids | Either all assets or comma-separated asset IDs to scan. Can be retrieved from the list-assets command. Possible values are: All, AllManageable. | Optional | 
+| scan_virtual_hosts | Whether to include virtual hosts. Default is false. Possible values are: true, false. | Optional | 
+| ip_list | Comma-separated IPs to scan, e.g., 10.0.0.1,10.0.0.2 . | Optional | 
 | report_ids | Comma- separated list of report definition IDs to create post-scan. Can be retrieved from the list-report-definitions command. | Optional | 
 | credentials | Comma-separated credentials IDs to use. Can be retrieved from the list-credentials command. | Optional | 
 | timeout_action | Scan timeout action. Default is import. Possible values are: discard, import, rollover. | Optional | 
@@ -887,48 +921,11 @@ Get the system information and diagnostics from Tenable.sc. Requires admin role.
 
 #### Base Command
 
-### tenable-sc-get-system-licensing
-
-***
-Retrieve licensing information from Tenable.sc. Requires admin role.
-
-#### Base Command
-
-`tenable-sc-get-system-licensing`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| TenableSC.Status.ActiveIPS | number | Number of active IP addresses. | 
-| TenableSC.Status.LicensedIPS | Unknown | Number of licensed IP addresses. | 
-| TenableSC.Status.License | Unknown | License status. | 
-
-
-***
-Returns all scan results in Tenable.sc. Requires security manager role.
-
-#### Base Command
-
-`tenable-sc-get-all-scan-results`
-### tenable-sc-get-system-information
-
-***
-Get the system information and diagnostics from Tenable.sc. Requires admin role.
-
-#### Base Command
-
 `tenable-sc-get-system-information`
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
+There are no input arguments for this command.
 
 #### Context Output
 
@@ -944,6 +941,57 @@ Get the system information and diagnostics from Tenable.sc. Requires admin role.
 | TenableSC.System.DiskThreshold | number | Disk threshold. | 
 | TenableSC.System.LastCheck | date | System last check time. | 
 
+#### Human Readable Output
+
+### Tenable.sc System information
+
+|RPMStatus|JavaStatus|DiskStatus|DiskThreshold|LastCheck|
+|---|---|---|---|---|
+| true | true | true | 5% | 2023-05-24T04:10:02Z |
+
+### tenable-sc-get-all-scan-results
+
+***
+Returns all scan results in Tenable.sc. Requires security manager role.
+
+#### Base Command
+
+`tenable-sc-get-all-scan-results`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| manageable | Filter only manageable alerts. By default, returns both usable and manageable alerts. Possible values are: true, false. Default is false. | Optional | 
+| page | The page to return, starting from 0. Default is 0. | Optional | 
+| limit | The number of objects to return in one response (maximum limit is 200). Default is 50. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| TenableSC.ScanResults.ID | Number | Scan ID. | 
+| TenableSC.ScanResults.Name | string | Scan name. | 
+| TenableSC.ScanResults.Status | string | Scan status. | 
+| TenableSC.ScanResults.Description | string | Scan description. | 
+| TenableSC.ScanResults.Policy | string | Scan policy. | 
+| TenableSC.ScanResults.Group | string | Scan group name. | 
+| TenableSC.ScanResults.Checks | number | Scan completed number of checks. | 
+| TenableSC.ScanResults.StartTime | date | Scan results start time. | 
+| TenableSC.ScanResults.EndTime | date | Scan results end time. | 
+| TenableSC.ScanResults.Duration | number | Scan duration in minutes. | 
+| TenableSC.ScanResults.ImportTime | date | Scan import time. | 
+| TenableSC.ScanResults.ScannedIPs | number | Number of scanned IPs. | 
+| TenableSC.ScanResults.Owner | string | Scan owner name. | 
+| TenableSC.ScanResults.RepositoryName | string | Scan repository name. | 
+| TenableSC.ScanResults.ImportStatus | string | Scan import status. | 
+
+#### Human Readable Output
+
+### Tenable.sc Scan results - 0-1
+
+Total number of elements is 77
+|ID|Name|Status|Description|Policy|Group|Owner|ScannedIPs|StartTime|EndTime|Duration|Checks|ImportTime|RepositoryName|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 92 | test_scan_2023-mart-05-1950 | Error | Test scan 2023 | Network Scan | Full Access | secman | 0 | 2023-04-24T23:50:07Z | 2023-04-25T01:10:13Z | 80.1 | 22639720 |  | Local |
 | 93 | test_scan_2023-mart-05-1950 | Error | Test scan 2023 | Network Scan | Full Access | secman | 0 | 2023-04-25T23:50:07Z | 2023-04-26T00:30:44Z | 40.61666666666667 | 12624659 |  | Local |
@@ -1045,56 +1093,6 @@ Creates a new user. This command can be executed with both roles (admin or secur
 | TenableSC.User.FailedLogins | String | Number of failed user logins. | 
 | TenableSC.User.Fax | String | User fax. | 
 | TenableSC.User.Fingerprint | Unknown | User fingerprint. | 
-### tenable-sc-create-user
-
-***
-Creates a new user. This command can be executed with both roles (admin or security manager) based on the role_id you choose.
-
-#### Base Command
-
-`tenable-sc-create-user`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| first_name | The user's first name. | Optional | 
-| last_name | The user's last name. | Optional | 
-| user_name | The user's username. | Required | 
-| email | The user's email address. Required if email_notice is given. | Optional | 
-| address | The user's postal address. | Optional | 
-| phone | The user's phone number. | Optional | 
-| city | The city the user is living in. | Optional | 
-| state | The state the user is living in. | Optional | 
-| country | The country the user is living in. | Optional | 
-| locked | Whether the user should be locked. Possible values are: true, false. Default is false. | Optional | 
-| email_notice | If different from None, a valid email address must be given. Possible values are: both, password, id, none. Default is none. | Optional | 
-| auth_type | The authentication type. Tenable (TNS). Lightweight Directory Access Protocol (LDAP). Security Assertion Markup Language (SAML). LDAP server or SAML authentication needs to be configured in order to select LDAP or SAML. Possible values are: ldap, legacy, linked, saml, tns. Default is tns. | Required | 
-| password | The user's password. Must be at least 3 characters. | Required | 
-| time_zone | The user timezone, possible values can be found here: https://docs.oracle.com/middleware/1221/wcs/tag-ref/MISC/TimeZones.html. | Optional | 
-| role_id | The user's role. Only an Administrator can create Administrator accounts. Possible values are: Administrator, Security Manager, Security Analyst, Vulnerability Analyst, Executive, Credential Manager, Auditor. | Required | 
-| must_change_password | Whether the password must be changed. When choosing LDAP or SAML auth types, 'must_change_password' must be set to False. For all other cases can be either True or False. Possible values are: false, true. Default is false. | Optional | 
-| managed_users_groups | Comma-separated list of session user's role that can manage groups. Use tenable-sc-list-groups to get all available groups. Default is 0. | Optional | 
-| managed_objects_groups | Comma-separated list of the session user's role that can manage groups. Use tenable-sc-list-groups to get all available groups. Default is 0. | Optional | 
-| group_id | Valid group ID whose users can be managed by the created user. Default is 0. | Required | 
-| responsible_asset_id | Default is 0. ID of a valid, usable, accessible asset. Use tenable-sc-list-assets to get all available assets. -1 is not set, 0 is all assets, and other numbers are asset ID. Default is 0. | Required | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| TenableSC.User.Address | String | User address. | 
-| TenableSC.User.ApiKeys | Unknown | User API keys. | 
-| TenableSC.User.AuthType | String | User auth type. | 
-| TenableSC.User.CanManage | Boolean | Whether the user has manage permissions. | 
-| TenableSC.User.CanUse | Boolean | Whether the user has use permissions. | 
-| TenableSC.User.City | String | User city of residence. | 
-| TenableSC.User.Country | String | User country of residence. | 
-| TenableSC.User.CreatedTime | Date | User creation time. | 
-| TenableSC.User.Email | String | User email address. | 
-| TenableSC.User.FailedLogins | String | Number of failed user logins. | 
-| TenableSC.User.Fax | String | User fax. | 
-| TenableSC.User.Fingerprint | Unknown | User fingerprint. | 
 | TenableSC.User.Firstname | String | User first name. | 
 | TenableSC.User.group.Description | String | User group's description. | 
 | TenableSC.User.Group.ID | String | User group's ID. | 
@@ -1134,14 +1132,14 @@ Creates a new user. This command can be executed with both roles (admin or secur
 | TenableSC.User.Username | String | User username. | 
 | TenableSC.User.UUID | String | User UUID. | 
 
-| TenableSC.User.Firstname | String | User first name. | 
-| TenableSC.User.group.Description | String | User group's description. | 
-| TenableSC.User.Group.ID | String | User group's ID. | 
-| TenableSC.User.Group.Name | String | User group's name. | 
-| TenableSC.User.ID | String | User ID. | 
-| TenableSC.User.LastLogin | String | User last login time. | 
-| TenableSC.User.LastLoginIP | String | User last login IP. | 
-| TenableSC.User.Lastname | String | User last name. | 
+#### Human Readable Output
+
+### User example_output was created successfully.
+
+|User type|User Id|User Status|User Name|User Role Name|User Group Name|
+|---|---|---|---|---|---|
+| regular | 57 | 0 | example_output | Security Analyst | Full Access |
+
 ### tenable-sc-update-user
 
 ***
@@ -1168,10 +1166,10 @@ Update user details of the given user_id.
 | time_zone | The user timezone. Possible values can be found here: https://docs.oracle.com/middleware/1221/wcs/tag-ref/MISC/TimeZones.html. | Optional | 
 | role_id | The user's role. Only an Administrator can create Administrator accounts. Possible values are: Administrator, Security Manager, Security Analyst, Vulnerability Analyst, Executive, Credential Manager, Auditor. | Optional | 
 | must_change_password | Whether the password must be changed. When choosing LDAP or SAML auth types, 'must_change_password' must be set to False. For all other cases can be either True or False. Possible values are: false, true. Default is false. | Optional | 
-| managed_users_groups | Comma-separated list of session user's role that can manage groups. Use tenable-sc-list-groups to get all available groups. Default is 0. | Optional | 
-| managed_objects_groups | Comma-separated list of session user's role that  can manage groups. Use tenable-sc-list-groups to get all available groups. Default is 0. | Optional | 
-| group_id | Valid group ID whose users can be managed by the created user. Default is 0. | Optional | 
-| responsible_asset_id | ID of a valid, usable, accessible asset. Use tenable-sc-list-assets to get all available assets. -1 is not set, 0 is all assets, and other numbers are asset ID. Default is 0. | Optional | 
+| managed_users_groups | Comma-separated list of session user's role that can manage groups. Use tenable-sc-list-groups to get all available groups. | Optional | 
+| managed_objects_groups | Comma-separated list of session user's role that  can manage groups. Use tenable-sc-list-groups to get all available groups. | Optional | 
+| group_id | Valid group ID whose users can be managed by the created user. | Optional | 
+| responsible_asset_id | ID of a valid, usable, accessible asset. Use tenable-sc-list-assets to get all available assets. -1 is not set, 0 is all assets, and other numbers are asset ID. | Optional | 
 | password | The new password to set. Must be given with current_password. Must be at least 3 characters. | Optional | 
 | current_password | This is the admin/Security Manager password from the instance parameters. Required when attempting to change a user's password. | Optional | 
 | user_id | The ID of the user whose details you want to update. | Required | 
@@ -1231,14 +1229,14 @@ Update user details of the given user_id.
 | TenableSC.User.Username | String | User username. | 
 | TenableSC.User.UUID | String | User UUID. | 
 
-| 0 | N/A |
-| 1 | Red Hat Local Security Checks |
+#### Human Readable Output
 
-When plugin_id is given:
+### user 23 was updated successfully.
 
-### Plugin families:
+|User type|User Id|User Status|User Name|First Name|Lat Name |Email |User Role Name|User Group Name|
+|---|---|---|---|---|---|---|---|---|
+| regular | 23 | 0 | testuser30 | testuser30 | testuser30 | <testuser30@mymail.com> | Credential Manager | Full Access |
 
-|Plugin ID|Plugin Name|Is Active|
 ### tenable-sc-delete-user
 
 ***
@@ -1257,57 +1255,57 @@ Delete a user by given user_id. This command can be executed with both roles (ad
 #### Context Output
 
 There is no context output for this command.
-| family_id | Family ID. Can be retrieved from the result of the tenable-sc-list-plugin-family command. | Required | 
-| plugins_id | Comma-separated list of plugin_ids, Can be retrieved from the result of  the tenable-sc-list-plugin-family command  with family_id as the argument. | Required | 
-| syn_firewall_detection | Rely on local port enumeration first before relying on network port scans. Possible values are: Automatic (normal), Do not detect RST rate limitation(soft), Ignore closed ports(aggressive), Disabled(softer). Default is Automatic (normal). | Optional | 
+
+#### Human Readable Output
+
+User {user_id} was deleted successfully.
+
+### tenable-sc-list-plugin-family
+
+***
+List plugin families / return information about a plugin family given ID. Requires security manager role.
+
+#### Base Command
+
+`tenable-sc-list-plugin-family`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| plugin_id | The ID of the plugin to search. If given, other arguments will be ignored. | Optional | 
+| limit | The number of objects to return in one response (maximum limit is 200). Ignored when plugin_id is given. Default is 50. | Optional | 
+| is_active | Default is none. none - both active and passive Plugin Families are returned. true - Only active Plugin Families will be returned. false - Only passive Plugin Families will be returned. Ignored when plugin_id is given. Possible values are: true, false. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TenableSC.ScanPolicy.AuditFiles | Unknown | Policy audit files. | 
-| TenableSC.ScanPolicy.CanManage | String | Policy permissions. | 
-| TenableSC.ScanPolicy.CanUse | String | Policy permissions. | 
-| TenableSC.ScanPolicy.Context | String | Policy context. | 
-| TenableSC.ScanPolicy.CreatedTime | Date | Policy creation time. | 
-| TenableSC.ScanPolicy.Creator.Firstname | String | Policy creator first name. | 
-| TenableSC.ScanPolicy.Creator.ID | String | Policy creator ID. | 
-| TenableSC.ScanPolicy.Creator.Lastname | String | Policy creator last name. | 
-| TenableSC.ScanPolicy.Creator.Username | String | Policy creator user name. | 
-| TenableSC.ScanPolicy.Creator.UUID | String | Policy creator UUID. | 
-| TenableSC.ScanPolicy.Description | String | Policy description. | 
-| TenableSC.ScanPolicy.Families.Count | String | Policy number of families. | 
-| TenableSC.ScanPolicy.Families.ID | String | Policy family ID. | 
-| TenableSC.ScanPolicy.Families.Name | String | Policy family name. | 
-| TenableSC.ScanPolicy.Families.Plugins | Unknown | Policy family plugins. | 
-| TenableSC.ScanPolicy.GenerateXCCDFResults | String | Policy generated XCCDF results. | 
-| TenableSC.ScanPolicy.Groups | Unknown | Policy groups. | 
-| TenableSC.ScanPolicy.ID | String | Policy ID. | 
-| TenableSC.ScanPolicy.ModifiedTime | Date | Policy last modification time. | 
-| TenableSC.ScanPolicy.Name | String | Policy name. | 
-| TenableSC.ScanPolicy.Owner.Firstname | String | Policy owner first name. | 
-| TenableSC.ScanPolicy.Owner.ID | String | Policy owner ID. | 
-| TenableSC.ScanPolicy.Owner.Lastname | String | Policy owner last name. | 
-| TenableSC.ScanPolicy.Owner.Username | String | Policy owner username. | 
-| TenableSC.ScanPolicy.Owner.UUID | String | Policy owner UUID. | 
-| TenableSC.ScanPolicy.OwnerGroup.Description | String | Policy owner group description. | 
-| TenableSC.ScanPolicy.OwnerGroup.ID | String | Policy owner group ID. | 
-| TenableSC.ScanPolicy.OwnerGroup.Name | String | Policy owner group name. | 
-| TenableSC.ScanPolicy.PolicyTemplate.Agent | String | Policy template agent. | 
-| TenableSC.ScanPolicy.PolicyTemplate.Description | String | Policy template description. | 
-| TenableSC.ScanPolicy.PolicyTemplate.ID | String | Policy template ID. | 
-| TenableSC.ScanPolicy.PolicyTemplate.Name | String | Policy template name. | 
-| TenableSC.ScanPolicy.Preferences.PortscanRange | String | Policy port scan range. | 
-| TenableSC.ScanPolicy.Preferences.SynFirewallDetection | String | Policy SYN firewall detection. | 
-| TenableSC.ScanPolicy.Preferences.SynScanner | String | Policy SYN scanner. | 
-| TenableSC.ScanPolicy.Preferences.TcpScanner | String | Policy TCP scanner. | 
-| TenableSC.ScanPolicy.Preferences.UdpScanner | String | Policy UDP scanner. | 
-| TenableSC.ScanPolicy.Status | String | Policy status. | 
-| TenableSC.ScanPolicy.tags | String | Policy tags. | 
-| TenableSC.ScanPolicy.TargetGroup.Description | String | Policy target group description. | 
-| TenableSC.ScanPolicy.TargetGroup.ID | Number | Policy target group ID. | 
-| TenableSC.ScanPolicy.TargetGroup.Name | String | Policy target group name. | 
-| TenableSC.ScanPolicy.UUID | String | Policy UUID. | 
+| TenableSC.PluginFamily.ID | String | Plugin family ID. | 
+| TenableSC.PluginFamily.Name | String | Plugin family name. | 
+| TenableSC.PluginFamily.Count | String | Number of plugins in a family. | 
+| TenableSC.PluginFamily.Plugins | String | The plugins list. | 
+| TenableSC.PluginFamily.Type | String | Plugin family type. | 
+
+#### Human Readable Output
+
+When plugin_id isn't given:
+
+### Plugin families:
+
+|Plugin ID|Plugin Name|
+|---|---|
+| 0 | N/A |
+| 1 | Red Hat Local Security Checks |
+
+When plugin_id is given:
+
+### Plugin families:
+
+|Plugin ID|Plugin Name|Is Active|
+|---|---|---|
+| 2 | HP-UX Local Security Checks | true |
+
 ### tenable-sc-create-policy
 
 ***
@@ -1380,6 +1378,85 @@ Creates a policy. Requires security manager role. This command is prerequisite f
 | TenableSC.ScanPolicy.TargetGroup.Name | String | Policy target group name. | 
 | TenableSC.ScanPolicy.UUID | String | Policy UUID. | 
 
+#### Human Readable Output
+
+### Policy was created successfully:
+
+|Policy type|name|Created Time|Plugin Families|Policy  Status|Policy UUID|Policy can Manage|Creator Username|policyTemplate Name|
+|---|---|---|---|---|---|---|---|---|
+| regular | scan_name | 1684923394 | {'id': '1', 'name': 'Red Hat Local Security Checks', 'count': '9297', 'plugins': []} | 0 | {policy UUID} | true | yuv | Advanced Scan |
+
+### tenable-sc-list-query
+
+***
+Lists the queries. Requires security manager role.
+
+#### Base Command
+
+`tenable-sc-list-query`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| query_id | The ID of the query to search. | Optional | 
+| type | The query type to retrieve. When no type is set all queries are returned. Possible values are: alert, lce, mobile, ticket, user. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| TenableSC.Query.Manageable.BrowseColumns | String | Relevant only when query_id is not given. Manageable Query browse columns. | 
+| TenableSC.Query.Manageable.BrowseSortColumn | String | Relevant only when query_id is not given. Manageable Query browse sort column. | 
+| TenableSC.Query.Manageable.BrowseSortDirection | String | Relevant only when query_id is not given. Manageable Query browse sort direction. | 
+| TenableSC.Query.Manageable.CanManage | String | Relevant only when query_id is not given. Manageable Query permissions. | 
+| TenableSC.Query.Manageable.CanUse | String | Relevant only when query_id is not given. Manageable Query permissions. | 
+| TenableSC.Query.Manageable.Context | String | Relevant only when query_id is not given. Manageable Query context. | 
+| TenableSC.Query.Manageable.CreatedTime | Date | Relevant only when query_id is not given. Manageable Query creation time. | 
+| TenableSC.Query.Manageable.Creator.Firstname | String | Relevant only when query_id is not given. Manageable Query Creator first name. | 
+| TenableSC.Query.Manageable.Creator.ID | String | Relevant only when query_id is not given. Manageable Query Creator ID. | 
+| TenableSC.Query.Manageable.Creator.Lastname | String | Relevant only when query_id is not given. Manageable Query Creator last name. | 
+| TenableSC.Query.Manageable.Creator.Username | String | Relevant only when query_id is not given. Manageable Query Creator user name. | 
+| TenableSC.Query.Manageable.Creator.UUID | String | Relevant only when query_id is not given. Manageable Query Creator UUID. | 
+| TenableSC.Query.Manageable.Description | String | Relevant only when query_id is not given. Manageable Query description. | 
+| TenableSC.Query.Manageable.Filters.FilterName | String | Relevant only when query_id is not given. Manageable Query filter name. | 
+| TenableSC.Query.Manageable.Filters.Operator | String | Relevant only when query_id is not given. Manageable Query filter operator. | 
+| TenableSC.Query.Manageable.Filters.Value | String | Relevant only when query_id is not given. Manageable Query filter value | 
+| TenableSC.Query.Manageable.Groups | Unknown | Relevant only when query_id is not given. Manageable Query groups. | 
+| TenableSC.Query.Manageable.ID | String | Relevant only when query_id is not given. Manageable Query ID. | 
+| TenableSC.Query.Manageable.ModifiedTime | Date | Relevant only when query_id is not given. Manageable Query modification time. | 
+| TenableSC.Query.Manageable.Name | String | Relevant only when query_id is not given. Manageable Query name. | 
+| TenableSC.Query.Manageable.Owner.Firstname | String | Relevant only when query_id is not given. Manageable Query owner first name. | 
+| TenableSC.Query.Manageable.Owner.ID | String | Relevant only when query_id is not given. Manageable Query owner ID. | 
+| TenableSC.Query.Manageable.Owner.Lastname | String | Relevant only when query_id is not given. Manageable Query owner last name. | 
+| TenableSC.Query.Manageable.Owner.Username | String | Relevant only when query_id is not given. Manageable Query owner user name. | 
+| TenableSC.Query.Manageable.Owner.UUID | String | Relevant only when query_id is not given. Manageable Query owner UUID. | 
+| TenableSC.Query.Manageable.OwnerGroup.Description | String | Relevant only when query_id is not given. Manageable Query owner group description. | 
+| TenableSC.Query.Manageable.OwnerGroup.ID | String | Relevant only when query_id is not given. Manageable Query owner group ID. | 
+| TenableSC.Query.Manageable.OwnerGroup.Name | String | Relevant only when query_id is not given. Manageable Query owner group name. | 
+| TenableSC.Query.Manageable.Status | String | Relevant only when query_id is not given. Manageable Query status. | 
+| TenableSC.Query.Manageable.Tags | String | Relevant only when query_id is not given. Manageable Query tags. | 
+| TenableSC.Query.Manageable.TargetGroup.Description | String | Relevant only when query_id is not given. Manageable Query target group description. | 
+| TenableSC.Query.Manageable.TargetGroup.ID | Number | Relevant only when query_id is not given. Manageable Query target group ID. | 
+| TenableSC.Query.Manageable.TargetGroup.Name | String | Relevant only when query_id is not given. Manageable Query target group name. | 
+| TenableSC.Query.Manageable.Tool | String | Relevant only when query_id is not given. Manageable Query tool. | 
+| TenableSC.Query.Manageable.Type | String | Relevant only when query_id is not given. Manageable Query type. | 
+| TenableSC.Query.Manageable.Filters.Value.Description | String | Relevant only when query_id is not given. Manageable Query filter value description. | 
+| TenableSC.Query.Manageable.Filters.Value.ID | String | Relevant only when query_id is not given. Manageable Query filter value ID. | 
+| TenableSC.Query.Manageable.Filters.Value.Name | String | Relevant only when query_id is not given. Manageable Query filter value name. | 
+| TenableSC.Query.Manageable.Filters.Value.Type | String | Relevant only when query_id is not given. Manageable Query filter value type. | 
+| TenableSC.Query.Manageable.Filters.Value.UUID | String | Relevant only when query_id is not given. Manageable Query filter value UUID | 
+| TenableSC.Query.Manageable.Filters | Unknown | Relevant only when query_id is not given. Manageable Query filters. | 
+| TenableSC.Query.Usable.BrowseColumns | String | Relevant only when query_id is not given. Usable Query browse columns. | 
+| TenableSC.Query.Usable.BrowseSortColumn | String | Relevant only when query_id is not given. Usable Query browse sort column. | 
+| TenableSC.Query.Usable.BrowseSortDirection | String | Relevant only when query_id is not given. Usable Query browse sort direction. | 
+| TenableSC.Query.Usable.CanManage | String | Relevant only when query_id is not given. Usable Query permissions. | 
+| TenableSC.Query.Usable.CanUse | String | Relevant only when query_id is not given. Usable Query permissions. | 
+| TenableSC.Query.Usable.Context | String | Relevant only when query_id is not given. Usable Query context. | 
+| TenableSC.Query.Usable.CreatedTime | Date | Relevant only when query_id is not given. Usable Query creation time. | 
+| TenableSC.Query.Usable.Creator.Firstname | String | Relevant only when query_id is not given. Usable Query Creator first name. | 
+| TenableSC.Query.Usable.Creator.ID | String | Relevant only when query_id is not given. Usable Query Creator ID. | 
+| TenableSC.Query.Usable.Creator.Lastname | String | Relevant only when query_id is not given. Usable Query Creator last name. | 
 | TenableSC.Query.Usable.Creator.Username | String | Relevant only when query_id is not given. Usable Query Creator user name. | 
 | TenableSC.Query.Usable.Creator.UUID | String | Relevant only when query_id is not given. Usable Query Creator UUID. | 
 | TenableSC.Query.Usable.Description | String | Relevant only when query_id is not given. Usable Query description. | 
@@ -1543,85 +1620,6 @@ Creates a remediation scan. Requires security manager role. This command is a pr
 | TenableSC.Scan.ClassifyMitigatedAge | String | Scan classify mitigated age. | 
 | TenableSC.Scan.CreatedTime | Date | Scan creation time. | 
 | TenableSC.Scan.Creator.Firstname | String | Scan creator first name. | 
-### tenable-sc-update-asset
-
-***
-Requires security manager role. Update an asset.
-
-#### Base Command
-
-`tenable-sc-update-asset`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| name | Asset name. | Optional | 
-| asset_id | The ID of the asset to update. | Required | 
-| description | The asset description. | Optional | 
-| owner_id | The asset owner ID. | Optional | 
-| tag | The asset tag. | Optional | 
-| ip_list | Comma-separated list of the asset IPs list. | Optional | 
-
-#### Context Output
-
-There is no context output for this command.
-| TenableSC.Scan.Policy.Description | String | Scan policy description. | 
-| TenableSC.Scan.Policy.ID | String | Scan policy ID. | 
-| TenableSC.Scan.Policy.Name | String | Scan policy name. | 
-| TenableSC.Scan.Policy.Owner.Firstname | String | Scan policy owner first name. | 
-| TenableSC.Scan.Policy.Owner.ID | String | Scan policy owner ID. | 
-### tenable-sc-create-remediation-scan
-
-***
-Creates a remediation scan. Requires security manager role. This command is a prerequisite for creating remediation scan.
-
-#### Base Command
-
-`tenable-sc-create-remediation-scan`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| policy_name | The name of the policy to create. | Optional | 
-| policy_description | The description of the policy to create. | Optional | 
-| port_scan_range | Possible values: default, all or a comma-separated list of values - 21,23,25,80,110. | Optional | 
-| tcp_scanner | Only possible if you are using Linux or FreeBSD. On Windows or macOS, the scanner does not do a TCP scan and instead uses the SYN scanner..If you enable this option, you can also set the syn_firewall_detection. Possible values are: no, yes. Default is no. | Optional | 
-| syn_scanner | Identifies open TCP ports on the target hosts. If you enable this option, you can also set the syn_firewall_detection option. Possible values are: no, yes. Default is yes. | Optional | 
-| udp_scanner | Enabling the UDP port scanner may dramatically increase the scan time and produce unreliable results. Consider using the netstat or SNMP port enumeration options instead if possible. Possible values are: no, yes. Default is no. | Optional | 
-| syn_firewall_detection | Default is Automatic (normal). Rely on local port enumeration first before relying on network port scans. Possible values are: Automatic (normal), Do not detect RST rate limitation(soft), Ignore closed ports(aggressive), Disabled(softer). Default is Automatic (normal). | Optional | 
-| family_id | Can be retrieved from the result of the tenable-sc-list-plugin-family command. | Required | 
-| plugins_id | Comma-separated list of plugin_ids, Can be retrieved from the result of the tenable-sc-list-plugin-family command  with family_id as the argument. | Required | 
-| scan_name | Scan name. | Required | 
-| description | Scan description. | Optional | 
-| repository_id | Scan Repository ID, can be retrieved from the list-repositories command. Default is 1. | Required | 
-| time_zone | The timezone for the given start_time. Possible values can be found here: https://docs.oracle.com/middleware/1221/wcs/tag-ref/MISC/TimeZones.html. | Optional | 
-| start_time | The scan start time, in the format of YYYY-MM-DD:HH:MM:SS or relative timestamp (i.e., now, 3 days). | Optional | 
-| repeat_rule_freq | Specifies repeating events based on an interval of a repeat_rule_freq or more. Possible values are: HOURLY, DAILY, WEEKLY, MONTHLY, YEARLY. | Optional | 
-| repeat_rule_interval | The number of repeat_rule_freq between each interval (for example: If repeat_rule_freq=DAILY and repeat_rule_interval=8 it means every eight days.). | Optional | 
-| repeat_rule_by_day | A comma-separated list of days of the week to run the schedule. Possible values are: SU, MO, TU, WE, TH, FR, SA. | Optional | 
-| asset_ids | Either no assets or comma-separated list of asset IDs to scan. Can be retrieved from the list-assets command. | Optional | 
-| scan_virtual_hosts | Default is false. Whether to include virtual hosts. Possible values are: true, false. Default is false. | Optional | 
-| ip_list | Comma-separated IPs to scan, e.g., 10.0.0.1,10.0.0.2 . | Optional | 
-| report_ids | Comma-separated list of report definition IDs to create post-scan. Can be retrieved from the list-report-definitions command. | Optional | 
-| credentials | Comma-separated credentials IDs to use. Can be retrieved from the list-credentials command. | Optional | 
-| timeout_action | discard - do not import any of the results obtained by the scan to the database. import - Import the results of the current scan and discard the information for any unscanned targets. rollover-Import the results from the scan into the database and create a rollover scan that may be launched at a later time to complete the scan. Possible values are: discard, import, rollover. Default is import. | Optional | 
-| max_scan_time | Maximum scan run time in hours. Default is 1. | Optional | 
-| dhcp_tracking | Track hosts which have been issued new IP address, (e.g., DHCP). Possible values are: true, false. Default is false. | Optional | 
-| enabled | Whether the schedule is enabled. The "enabled" field can only be set to "false" for schedules of type "ical". For all other schedules types, "enabled" is set to "true". Possible values are: true, false. Default is true. | Optional | 
-| rollover_type | Create a rollover scan scheduled to launch the next day at the same start time as the just completed scan. template-Create a rollover scan as a template for users to launch manually This field is required if the timeout_action is set to rollover. Default is nextDay. | Optional | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| TenableSC.Scan.Assets | Unknown | Scan assets. | 
-| TenableSC.Scan.CanManage | String | Scan permissions. | 
-| TenableSC.Scan.CanUse | String | Scan permissions. | 
-| TenableSC.Scan.ClassifyMitigatedAge | String | Scan classify mitigated age. | 
-| TenableSC.Scan.CreatedTime | Date | Scan creation time. | 
-| TenableSC.Scan.Creator.Firstname | String | Scan creator first name. | 
 | TenableSC.Scan.Creator.ID | String | Scan creator ID. | 
 | TenableSC.Scan.Creator.Lastname | String | Scan creator last name. | 
 | TenableSC.Scan.Creator.Username | String | Scan creator username. | 
@@ -1692,21 +1690,21 @@ Creates a remediation scan. Requires security manager role. This command is a pr
 | TenableSC.Scan.Zone.ID | Number | Scan zone ID. | 
 | TenableSC.Scan.Zone.Name | String | Scan zone name. | 
 
-### tenable-sc-get-organization
+#### Human Readable Output
 
-***
-Requires administrator role. Command to get a list of organizations' information, depending on the fields provided
+### Remediation scan created successfully
 
-#### Base Command
+|Scan ID|Scan Name|Scan Type|Dhcp Tracking status|Created Time|Modified Time|Max Scan Time|Policy id |Policy context|Schedule type|Group|Owner|
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| 69 | my_Test_scan | policy | false | 2023-05-24T10:12:27Z | 1684923147 | 3600 | 1000044 | scan | now | Full Access | yuv |
 
-`tenable-sc-get-organization`
+### Vulnerabilities
 
-#### Input
+|ID|Name|Family|Severity|Total|
+|---|---|---|---|---|
+| 10092 | FTP Server Detection | Service detection | Info | 6 |
+| 10107 | HTTP Server Type and Version | Web Servers | Info | 61 |
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| fields | Optional fields to return specific values, example: restrictedIPs. | Optional | 
+## Troubleshooting
 
-#### Context Output
-
-There is no context output for this command.
+For errors within Tenable.sc, the cause is generally specified, e.g., The currently logged in used is not an administrator, Unable to retrieve Asset #2412. Asset #2412 does not exist or Invalid login credentials. However there might be connection errors, for example when the server URL provided is incorrect.
