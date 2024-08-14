@@ -1,5 +1,5 @@
 id: da7fa1c4-11b7-4c6c-8afa-15d0e3e5f417
-version: 50
+version: 10
 vcShouldKeepItemLegacyProdMachine: false
 name: 'DSPM Automated Incident Response: JIRA Integration and AWS S3 Security'
 description: Automates incident response by integrating JIRA for issue tracking and
@@ -868,9 +868,9 @@ tasks:
       brand: ""
     nexttasks:
       "no":
-      - "29"
-      "yes":
       - "21"
+      "yes":
+      - "29"
     scriptarguments:
       entryId:
         simple: ${lastCompletedTaskEntries}
@@ -928,7 +928,9 @@ tasks:
     isautoswitchedtoquietmode: false
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "3_29_No Response from user": 0.52
+    },
     "paper": {
       "dimensions": {
         "height": 3085,
