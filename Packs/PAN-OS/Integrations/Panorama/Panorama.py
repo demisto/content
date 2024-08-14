@@ -256,6 +256,13 @@ VULNERABILITY_PROTECTION_VSYS_PATH = "/config/devices/entry[@name='localhost.loc
 ANTI_SPYWARE_DEVICE_GROUP_PATH = "/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='{device_group}']/profiles/spyware/entry[@name='{profile_name}']/threat-exception"
 ANTI_SPYWARE_VSYS_PATH = "/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name='{VSYS}']/profiles/spyware/entry[@name='{profile_name}']/threat-exception"
 
+
+class ExceptionCommandType(enum.Enum):
+    ADD = 'set'
+    EDIT = 'edit'
+    DELETE = 'delete'
+    LIST = 'get'
+
 ADD_EXCEPTION_COMMAND_TYPE = 'set'
 EDIT_EXCEPTION_COMMAND_TYPE = 'edit'
 DELETE_EXCEPTION_COMMAND_TYPE = 'delete'
@@ -14184,7 +14191,7 @@ def build_xpath_for_profile_exception_commands(profile_name: str, profile_type: 
     else:
         raise DemistoException("Invalid profile_type was provided. Can be Vulnerability Protection or Anti Spyware.")
 
-    if action_type in [EDIT_EXCEPTION_COMMAND_TYPE, DELETE_EXCEPTION_COMMAND_TYPE]:
+    if action_type in [ExceptionCommandType.EDIT.value, ExceptionCommandType.DELETE.value]:
         xpath += f"/entry[@name='{extracted_id}']"
 
     return xpath
@@ -14316,12 +14323,12 @@ def profile_exception_crud_commands(args: dict, action_type: str):
     if not profile_type:
         profile_type = check_profile_type_by_given_profile_name(profile_name, device_group)
 
-    if action_type != 'get':
+    if action_type != ExceptionCommandType.LIST.value:
         exception_id, exception_name = get_threat_id_from_predefined_threates(threat_name)
 
     xpath = build_xpath_for_profile_exception_commands(profile_name, profile_type, device_group, action_type, exception_id)
 
-    if action_type in [ADD_EXCEPTION_COMMAND_TYPE, EDIT_EXCEPTION_COMMAND_TYPE]:
+    if action_type in [ExceptionCommandType.ADD.value, ExceptionCommandType.EDIT.value]:
         element = build_element_for_profile_exception_commands(
             exception_id, xpath_action, packet_capture, exempt_ip, ip_track_by, ip_duration_sec)
         params = {
@@ -14332,7 +14339,7 @@ def profile_exception_crud_commands(args: dict, action_type: str):
             'element': element
         }
 
-    elif action_type in [DELETE_EXCEPTION_COMMAND_TYPE, LIST_EXCEPTION_COMMAND_TYPE]:
+    elif action_type in [ExceptionCommandType.DELETE.value, ExceptionCommandType.LIST.value]:
         params = {
             'type': 'config',
             'action': action_type,
@@ -14354,7 +14361,7 @@ def pan_os_add_profile_exception_command(args: dict) -> CommandResults:
     Returns:
         A confirmation for adding the exception.
     """
-    raw_response, exception_id, exception_name = profile_exception_crud_commands(args, ADD_EXCEPTION_COMMAND_TYPE)
+    raw_response, exception_id, exception_name = profile_exception_crud_commands(args, ExceptionCommandType.ADD.value)
     return CommandResults(
         raw_response=raw_response,
         readable_output=f'Successfully created Exception: "{exception_name}" with ID {exception_id}.',
@@ -14371,7 +14378,7 @@ def pan_os_edit_profile_exception_command(args: dict) -> CommandResults:
     Returns:
         A confirmation for editing the exception.
     """
-    raw_response, exception_id, exception_name = profile_exception_crud_commands(args, EDIT_EXCEPTION_COMMAND_TYPE)
+    raw_response, exception_id, exception_name = profile_exception_crud_commands(args, ExceptionCommandType.EDIT.value)
     return CommandResults(
         raw_response=raw_response,
         readable_output=f'Successfully edited Exception: "{exception_name}" with ID {exception_id}.',
@@ -14388,7 +14395,7 @@ def pan_os_delete_profile_exception_command(args: dict) -> CommandResults:
     Returns:
         A confirmation for deleting the exception. 
     """
-    raw_response, exception_id, exception_name = profile_exception_crud_commands(args, DELETE_EXCEPTION_COMMAND_TYPE)
+    raw_response, exception_id, exception_name = profile_exception_crud_commands(args, ExceptionCommandType.DELETE.value)
     return CommandResults(
         raw_response=raw_response,
         readable_output=f'Successfully deleted Exception: "{exception_name}" with ID {exception_id}.',
@@ -14405,7 +14412,7 @@ def pan_os_list_profile_exception_command(args: dict) -> CommandResults:
     Returns:
         A confirmation for deleting the exception.
     """
-    raw_response, _, _ = profile_exception_crud_commands(args, LIST_EXCEPTION_COMMAND_TYPE)
+    raw_response, _, _ = profile_exception_crud_commands(args, ExceptionCommandType.LIST.value)
 
     exceptions_response_list = raw_response['response']['result']['threat-exception']['entry']
     if not isinstance(exceptions_response_list, list):
