@@ -14100,15 +14100,18 @@ def get_all_profile_names_from_profile_type(profile_type: str, device_group: str
     Returns:
         A list of profile names associated with the specified profile type.
     """
-    
-    #if device_group was provided as a command argument, it will override the configured one
+    # if device_group was provided as a command argument, it will override the configured one
     if device_group:
-        if device_group == 'shared':
-            xpath= "/config/shared/"
+        if device_group == "shared":
+            xpath = "/config/shared/"
         else:
-            xpath = "/config/devices/entry/device-group/entry[@name=\'" + device_group + "\']/"
+            xpath = (
+                "/config/devices/entry/device-group/entry[@name='"
+                + device_group
+                + "']/"
+            )
     else:
-        xpath = "/config/devices/entry/vsys/entry[@name=\'" + VSYS + "\']/" 
+        xpath = "/config/devices/entry/vsys/entry[@name='" + VSYS + "']/"
     xpath += f"profiles/{profile_type}"
 
     raw_response = get_security_profile(xpath)
