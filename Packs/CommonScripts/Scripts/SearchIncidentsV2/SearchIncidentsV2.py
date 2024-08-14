@@ -8,6 +8,11 @@ DEFAULT_PAGE_SIZE = 100
 STARTING_PAGE_NUMBER = 1
 
 
+
+INCLUDEINFORMATIONAL_SUPPORT_VERSION = '8.6.0'
+INCLUDEINFORMATIONAL_SUPPORT_NUMBER = '992980'
+ENABLE_INCLUDEINFORMATIONAL_ARG = is_xsiam() and is_demisto_version_ge(version=INCLUDEINFORMATIONAL_SUPPORT_VERSION,
+                                                             build_number=INCLUDEINFORMATIONAL_SUPPORT_NUMBER) and not is_using_engine()
 class AlertSeverity(Enum):
     UNKNOWN = 0
     INFO = 0.5
@@ -143,8 +148,8 @@ def search_incidents(args: Dict):  # pragma: no cover
             args.pop('trimevents')
 
     if args.get('includeinformational'):
-        if platform == 'xsoar' or platform == 'xsoar_hosted':
-            raise ValueError('The includeinformational argument is not supported in XSOAR.')
+        if not ENABLE_INCLUDEINFORMATIONAL_ARG:
+            raise ValueError('The includeinformational argument supported only in XSIAM from version x.x.x.')
         args['includeinformational'] = argToBoolean(args.get('includeinformational', False))
 
     # handle list of ids
