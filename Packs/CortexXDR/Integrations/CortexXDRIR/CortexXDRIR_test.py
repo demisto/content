@@ -1612,18 +1612,23 @@ def test_get_modified_remote_data_xdr_delay(mocker):
     get_incidents_list_response = load_test_data('./test_data/get_incidents_list.json')
     mocker.patch.object(demisto,
                         'getIntegrationContext',
-                        return_value={'mirroring_last_update': '2020-11-18T13:16:52.005381+02:00'}
                         )
     mocker.patch.object(BaseClient, "_http_request", return_value=empty_res)
     client = Client(
         base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False)
-    incidents_response, last_time_stamp = get_modified_remote_data_command(client, args)
+    incidents_response, last_time_stamp = get_modified_remote_data_command(client,
+                                                                           args,
+                                                                           '2020-11-18T13:16:52.005381+02:00',
+                                                                           )
 
     assert not incidents_response.modified_incident_ids
     assert last_time_stamp == '2020-11-18 11:16:52.006+02:00'
 
     mocker.patch.object(BaseClient, "_http_request", return_value=get_incidents_list_response)
-    incidents_response, last_time_stamp = get_modified_remote_data_command(client, args, xdr_delay=5)
+    incidents_response, last_time_stamp = get_modified_remote_data_command(client,
+                                                                           args,
+                                                                           '2020-11-18T13:16:52.005381+02:00',
+                                                                           xdr_delay=5)
 
     assert last_time_stamp == '2020-11-18 11:12:52.006+02:00'
     assert incidents_response.modified_incident_ids == ['1', '2']
