@@ -87,3 +87,49 @@ class TestPrevalenceCommands:
                                         {'key_name': 'some key', 'value_name': 'some value'})
         assert res.outputs[0].get('value') is True
         assert res.outputs[0].get('key_name') == 'some key'
+
+    def test_blocklist_files_command(self, mocker):
+        """
+            Given:
+                - An hash list and incident ID.
+            When:
+                - Calling blocklist_files_command.
+            Then:
+                - Verify response is as expected.
+        """
+        from CortexCoreIR import blocklist_files_command, Client
+        mock_client = Client(base_url=f'{Core_URL}/xsiam/', headers={})
+        args = {'incident_id': '1', 'hash_list': ['hash']}
+
+        error_message = '[/api/webapp/public_api/v1/hash_exceptions/blocklist/] failed client execute - error:' \
+            'request to [/api/webapp/public_api/v1/hash_exceptions/blocklist/] returned non-whitelisted status [500] body: ' \
+            '{"reply": {"err_code": 500, "err_msg": "An error occurred while processing XDR public API", "err_extra": ' \
+            '"All hashes have already been added to the allow or block list"}}\n'
+        mocker.patch.object(mock_client, '_http_request', side_effect=Exception(error_message))
+        mocker.patch('CoreIRApiModule.validate_sha256_hashes', return_value='')
+
+        res = blocklist_files_command(mock_client, args)
+        assert res.readable_output == 'All hashes have already been added to the block list.'
+
+    def test_allowlist_files_command(self, mocker):
+        """
+            Given:
+                - An hash list and incident ID.
+            When:
+                - Calling allowlist_files_command.
+            Then:
+                - Verify response is as expected.
+        """
+        from CortexCoreIR import allowlist_files_command, Client
+        mock_client = Client(base_url=f'{Core_URL}/xsiam/', headers={})
+        args = {'incident_id': '1', 'hash_list': ['hash']}
+
+        error_message = '[/api/webapp/public_api/v1/hash_exceptions/blocklist/] failed client execute - error:' \
+            'request to [/api/webapp/public_api/v1/hash_exceptions/blocklist/] returned non-whitelisted status [500] body: ' \
+            '{"reply": {"err_code": 500, "err_msg": "An error occurred while processing XDR public API", "err_extra": ' \
+            '"All hashes have already been added to the allow or block list"}}\n'
+        mocker.patch.object(mock_client, '_http_request', side_effect=Exception(error_message))
+        mocker.patch('CoreIRApiModule.validate_sha256_hashes', return_value='')
+
+        res = allowlist_files_command(mock_client, args)
+        assert res.readable_output == 'All hashes have already been added to the allow list.'

@@ -159,7 +159,7 @@ def get_concat_logo_single_image(logo_list):
     y_offset = 0
     new_size = (width_new, height_new)
     for im in images:
-        im = im.resize(new_size)
+        im = im.resize(new_size)  # type:ignore[assignment]
         if number_image_x >= number_of_image_per_row:
             x_offset = 0
             y_offset += height_new

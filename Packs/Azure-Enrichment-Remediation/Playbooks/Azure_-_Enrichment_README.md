@@ -1,4 +1,4 @@
-Given the IP address, this playbook enriches Azure Compute, IAM, and User information.
+Given the IP address, this playbook enriches Azure Compute, Azure asset hierarchy path, IAM, and User information.
 
 ## Dependencies
 
@@ -10,9 +10,10 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-* Azure Compute v2
 * Azure Active Directory Identity And Access
 * Azure Active Directory Users
+* Azure Compute v2
+* Azure Resource Graph
 
 ### Scripts
 
@@ -20,6 +21,7 @@ This playbook does not use any scripts.
 
 ### Commands
 
+* azure-rg-query 
 * azure-vm-get-public-ip-details
 * azure-vm-get-nic-details
 * azure-vm-get-instance-details
@@ -45,6 +47,7 @@ This playbook does not use any scripts.
 | MSGraphIdentity.Role | Microsoft Graph Role object that contains role ID and user IDs | unknown |
 | Account | Microsoft Graph User account objects for found user IDs. | unknown |
 | MSGraphUser | Microsoft Graph User objects for found user IDs. | unknown |
+| AzureAssetHierarchy | Azure Compute Hierarchy Path. | unknown |
 
 ## Playbook Image
 
