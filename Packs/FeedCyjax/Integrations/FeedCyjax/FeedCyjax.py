@@ -166,7 +166,7 @@ def get_indicators_last_fetch_date() -> datetime:
         else:
             raise ValueError('Invalid first_fetch date config param')
 
-    date = datetime.utcfromtimestamp(int(last_fetch_timestamp)).replace(tzinfo=timezone.utc) # noqa: UP017
+    date = datetime.utcfromtimestamp(int(last_fetch_timestamp)).replace(tzinfo=timezone.utc)  # noqa: UP017
 
     return date
 
