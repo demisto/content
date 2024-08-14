@@ -32,7 +32,7 @@ script:
       required: true
     - auto: PREDEFINED
       defaultValue: 'True'
-      description: if "True", strip off prefixes, such as "{urn:.*}" and "{http://.*}", from each dictionary Key name.
+      description: If "True", strip off prefixes, such as "{urn:.*}" and "{http://.*}", from each dictionary key name.
       name: simple_view
       predefined:
       - 'True'
