@@ -2177,7 +2177,7 @@ script:
         description: The name of the access key.
         type: String
       - contextPath: PrismaCloud.AccessKeys.role
-        description: User role.
+        description: Access key user role.
         type: Object
       - contextPath: PrismaCloud.AccessKeys.roleType
         description: User role permission type.
