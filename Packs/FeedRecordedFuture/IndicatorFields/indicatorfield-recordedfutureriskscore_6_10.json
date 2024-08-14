@@ -6,7 +6,7 @@
     "ownerOnly": false,
     "description": "Recorded Future Risk Score",
     "cliName": "recordedfutureriskscore",
-    "type": "shortText",
+    "type": "Number",
     "closeForm": false,
     "editForm": true,
     "required": false,
@@ -34,6 +34,5 @@
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,
-    "fromVersion": "6.0.0",
-    "toVersion": "6.5.0"
+    "fromVersion": "6.10.0"
 }
