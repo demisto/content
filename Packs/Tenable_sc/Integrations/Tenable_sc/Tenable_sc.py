@@ -2342,7 +2342,7 @@ def get_organization_command(client: Client, args: Dict[str, Any]):
         
     return CommandResults(
         outputs=createContext(response, removeNull=True),
-        outputs_prefix='TenableSC.Organizations',
+        outputs_prefix='TenableSC.Organization',
         raw_response=res,
         outputs_key_field='ID',
         readable_output=tableToMarkdown('Tenable.sc Orgnization',res_output, removeNull=True)
