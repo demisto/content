@@ -2242,7 +2242,7 @@ script:
       - 'true'
       - 'false'
       defaultValue: 'true'
-    - description: Create a rollover scan scheduled to launch the next day at the same start time as the just completed scan. template-Create a rollover scan as a template for users to launch manually This field is required if the timeout_action is set to rollover.
+    - description: Create a rollover scan scheduled to launch the next day at the same start time as the just completed scan. template-Create a rollover scan as a template for users to launch manually. This field is required if the timeout_action is set to rollover.
       name: rollover_type
       defaultValue: nextDay
     description: Creates a remediation scan. Requires security manager role. This command is a prerequisite for creating remediation scan.
