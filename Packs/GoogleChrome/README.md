@@ -51,14 +51,14 @@ Preventing password reuse protect the organization from compromised accounts.
 2. __Websites Access Management and File Downloading:__
 Monitor and block accesses to malicious/ suspicious websites and control of harmful/ unwanted files downloading.
 
-3. __Browser Extensions Managment:__
+3. __Browser Extensions Management:__
 Extensions management allows IT administrators to test and evaluate extension for the organization,  allow/ block certain extensions and force installed extensions. 
 
 
 
 
 
-## Configure Google Worksapce
+## Configure Google Workspace
  
 To configure ingestion of data from Google Workspace follow the procedure below:
 [Ingest Logs and Data from Google Workspace](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Ingest-Logs-and-Data-from-Google-Workspace)
