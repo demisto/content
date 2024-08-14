@@ -21,8 +21,7 @@ Must be enabled on at least 1 Azure subscription.
 - Security Alerts
 
 ### Supported Timestamp Formats:
-- YYYY-MM-DDTHH:MM:SS.S* (UTC)
-- YYYY-MM-DDTH:M:S.S* (UTC)
+- MMM DD YYYY HH:MM:SS (UTC)
 
 ***
 
