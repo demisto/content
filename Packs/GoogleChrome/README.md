@@ -6,6 +6,7 @@ This pack includes Cortex XSIAM content.
  
 
 ## Overview
+
 Google Workspace integration allows you to ingest logs and data from Google Workspace into Cortex XSIAM.
 
 This integration supports the following data:
@@ -37,6 +38,7 @@ This integration supports the following data:
 
 
 ## What does this pack do?
+
 This pack provides various browser events monitoring and management such as user logins, passwords usages and websites access.
 
  
