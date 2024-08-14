@@ -655,7 +655,7 @@ class Client(BaseClient):
         return parts, upload_url_suffix
 
     def commit_file(self, file_path: str, as_user: Optional[str], parts: List[Dict],
-                    upload_url_suffix: str) -> Response:
+                    upload_url_suffix: str) -> requests.Response:
         """
         Once a file has been uploaded, the file must be committed. This request requires the SHA1
         digest of the entire file to be sent in the header. We reread the file to ensure the SHA is
@@ -1534,9 +1534,9 @@ def upload_file_command(args: Dict[str, Any], client: Client) -> PollResult:
     else:
         if not (parts := argToList(args.get('parts'))) or not (upload_url_suffix := args.get('upload_url_suffix')):
             parts, upload_url_suffix = client.chunk_upload(file_name, file_size, file_path, folder_id, as_user)
-        response: Response = client.commit_file(file_path, as_user, parts, upload_url_suffix)
+        response: requests.Response = client.commit_file(file_path, as_user, parts, upload_url_suffix)
 
-        if response.status_code == 202:  # The response
+        if response.status_code == 202:
             retry_after = response.headers['retry-after'] or 30
             readable_message = (f'File chunks have been uploaded but have not yet been processed. '
                                 f'Commit will attempt within {retry_after} seconds')
