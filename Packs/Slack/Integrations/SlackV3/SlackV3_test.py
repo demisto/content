@@ -5256,7 +5256,5 @@ def test_send_file_deprecated_endpoint(mocker, requests_mock):
                         {'name': "test", 'path': 'path'},
                         demisto.getIntegrationContext(),
                         '1'
-        )
+                        )
     assert str(e.value) == 'Command slack-send-file isn\'t available for newly created apps (from May 8, 2024).'
-
-   
