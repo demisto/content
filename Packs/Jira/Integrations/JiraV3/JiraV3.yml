@@ -1477,14 +1477,17 @@ script:
       description: Questions for the form.
       type: Unknown
   - arguments:
-    - description: The user's key (also called ID).
+    - description: The user's key (On Prem only).
       name: key
       required: false
-    - description: The user's username.
+    - description: The user's username (On Prem only).
       name: username
       required: false
+    - description: The user's accountId (Cloud only).
+      name: accountId
+      required: false
     description: Get's information about the specified user.
-    name: jira-get-user
+    name: jira-get-user-info
     outputs:
     - contextPath: Jira.Users.Key
       description: The user's key or ID.

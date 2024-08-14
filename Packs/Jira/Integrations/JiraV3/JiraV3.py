@@ -804,36 +804,33 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
             List[Dict[str, Any]]: The results of the API, which will hold the users that match the attribute.
         """
 
-    def get_user_info(self) -> Dict[str, Any]:
-        """This method is in charge of returning the user info of the current user.
-
-        Returns:
-            Dict[str, Any]: The results of the API, which will hold the current user info.
-        """
-        return self.http_request(
-            method='GET',
-            url_suffix=f'rest/api/{self.api_version}/myself'
-        )
-
-    def get_user(self, identifier: str) -> Dict[str, Any]:
-        """Gets the user from Jira via API
+    def get_user_info(self, identifier = '') -> Dict[str, Any]:
+        """Gets the user from Jira via API, if no identifier is supplied
+        it returns information for the user the API credentials belong to
 
         :param identifier: The URL parameter used to identify the user,
-                           i.e. `f'key={key}'` or `f'username={username}'`
+                           i.e. `f'key={key}'`, `f'username={username}'` or `f'accountId={accountId}'`
         :type identifier: str
         :return: The user's information as returned by the API
         :rtype: Dict[str, Any]
         """
-        response = self.http_request(
-            method='GET',
-            url_suffix=f'rest/api/{self.api_version}/user?{identifier}',
-            ok_codes=[200, 404],
-            resp_type='response'
-        )
-        if response.status_code == 404:
-            return {}
+
+        if identifier:
+            response = self.http_request(
+                method='GET',
+                url_suffix=f'rest/api/{self.api_version}/user?{identifier}',
+                ok_codes=[200, 404],
+                resp_type='response'
+            )
+            if response.status_code == 404:
+                return {}
+            else:
+                return response.json()
         else:
-            return response.json()
+            return self.http_request(
+                method='GET',
+                url_suffix=f'rest/api/{self.api_version}/myself'
+            )
 
 
 class JiraCloudClient(JiraBaseClient):
@@ -4013,7 +4010,7 @@ def issue_get_forms_command(client: JiraBaseClient, args: Dict[str, Any]) -> Lis
     return results
 
 
-def get_user_command(client: JiraBaseClient, args: Dict[str, Any]) -> CommandResults:
+def get_user_info_command(client: JiraBaseClient, args: Dict[str, Any]) -> CommandResults:
     """Gets a user's information from Jira
 
     :param client: The Jira client for calling the API
@@ -4021,33 +4018,47 @@ def get_user_command(client: JiraBaseClient, args: Dict[str, Any]) -> CommandRes
     :param args: Generic arguments dict which has the argument `username` or `key` for finding
                  the user
     :type args: Dict[str, Any]
-    :raises ValueError: When no key or username is provided to the command
+    :raises ValueError: When no key, username or accountId is provided to the command
     :return: The CommandResults object with the data returned by the API
     :rtype: CommandResults
     """
-    key = args.get('key', '')
-    username = args.get('username', '')
-    if key:
-        identifier = f'key={key}'
-    elif username:
-        identifier = f'username={username}'
+    if isinstance(client, JiraOnPremClient):
+        demisto.debug("On prem check")
+        # On prem allows key or username
+        key = args.get('key', '')
+        username = args.get('username', '')
+        if key:
+            identifier = f'key={key}'
+        elif username:
+            identifier = f'username={username}'
+        else:
+            raise ValueError('No key or username specified for jira-get-user-info')
     else:
-        raise ValueError('No key or username specified for jira-get-user')
+        # Jira Cloud requires using accountId
+        demisto.debug("Cloud check")
+        accountId = args.get('accountId', '')
+        if not accountId:
+            raise ValueError('No accountId specified for jira-get-user-info')
+        identifier = f'accountId={accountId}'
 
-    response = client.get_user(identifier)
+    response = client.get_user_info(identifier)
     if not response:
         return CommandResults(readable_output="No users found")
 
     output = {
-        'Key': response.get('key'),
-        'Name': response.get('name'),
-        'Email': response.get('emailAddress'),
-        'Display Name': response.get('displayName'),
-        'Active': response.get('active'),
-        'Deleted': response.get('deleted'),
-        'Timezone': response.get('timeZone'),
-        'Locale': response.get('locale'),
+        'Key': response.get('key', ''),
+        'Name': response.get('name', ''),
+        'Email': response.get('emailAddress', ''),
+        'Display Name': response.get('displayName', ''),
+        'Active': response.get('active', ''),
+        'Deleted': response.get('deleted', ''),
+        'Timezone': response.get('timeZone', ''),
+        'Locale': response.get('locale', ''),
+        'Account ID': response.get('accountId', ''), # Cloud only
+        'Account Type': response.get('accountType', ''), # Cloud only
     }
+
+    remove_nulls_from_dictionary(output)
 
     return CommandResults(
         outputs_prefix='Jira.Users',
@@ -4303,7 +4314,7 @@ def main():  # pragma: no cover
         'jira-issue-to-issue-link': link_issue_to_issue_command,
         'jira-issue-delete-file': delete_attachment_file_command,
         'jira-issue-get-forms': issue_get_forms_command,
-        'jira-get-user': get_user_command,
+        'jira-get-user-info': get_user_info_command,
     }
     try:
         client: JiraBaseClient
