@@ -540,7 +540,7 @@ def test_eml_contains_empty_htm_not_containing_file_data(mocker):
     assert results[0]['EntryContext']['Email']['AttachmentsData'][0]['FileData'] is None
 
 
-def test_chinese_email(mocker):
+def test_smime_without_to_from_subject(mocker):
     """
     Given:
         multipart/signed p7m file without "To"/"From"/"Subject" fields contains an eml attachment
@@ -549,14 +549,38 @@ def test_chinese_email(mocker):
     Then:
         The attachment files are saved to the war-room
     """
+    save_file = mocker.patch('ParseEmailFilesV2.save_file', return_value='mocked_file_path')
     mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
     mocker.patch.object(demisto, 'executeCommand',
-                        side_effect=exec_command_for_file('chinese_email_test.eml', info="ascii text"))
-    mocker.patch.object(demisto, 'context')
-    mocker.patch.object(demisto, 'dt', return_value=['ascii text'])
+                        side_effect=exec_command_for_file('smime_without_fields.p7m',
+                                                          info="ascii text",
+                                                          file_type='multipart/signed; '
+                                                                    'protocol="application/pkcs7-signature";, ASCII text'))
     mocker.patch.object(demisto, 'results')
+    expected_email_content = ('Return-Path: <testing@gmail.com>\n'
+                              'Received: from [172.31.255.255] ([172.31.255.255])\n'
+                              '        by smtp.gmail.com with ESMTPSA id t6sm46056484wmb.29.2019.07.23.05.38.26\n'
+                              '        for <testing@gmail.com>\n'
+                              '        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);\n'
+                              '        Tue, 23 Jul 2019 05:38:26 -0700 (PDT)\n'
+                              'To: testing@gmail.com\n'
+                              'From: test ing <testing@gmail.com>\n'
+                              'Subject: Testing Email Attachment\n'
+                              'Message-ID: <a853a1b0-1ffe-4e37-d9a9-a27c6bc0bd5b@gmail.com>\n'
+                              'Date: Tue, 23 Jul 2019 15:38:25 +0300\n'
+                              'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)\n'
+                              ' Gecko/20100101 Thunderbird/60.8.0\n'
+                              'MIME-Version: 1.0\n'
+                              'Content-Type: text/plain; charset=utf-8; format=flowed\n'
+                              'Content-Transfer-Encoding: 7bit\n'
+                              'Content-Language: en-US\n'
+                              '\n'
+                              'This is the body of the attachment.')
+
     main()
+
+    # Assert that save_file was called with the expected arguments
+    save_file.assert_called_once_with('Attachment.eml', expected_email_content)
     results = demisto.results.call_args[0]
     assert len(results) == 1
-    assert results[0]['Type'] == entryTypes['note']
-    assert results[0]['EntryContext']['Email']['Subject'] == 'No content type'
+    assert results[0]['EntryContext']['Email']['FileName'] == 'Attachment.eml'

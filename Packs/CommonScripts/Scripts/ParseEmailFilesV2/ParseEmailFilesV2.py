@@ -126,7 +126,6 @@ def parse_nesting_level(nesting_level_to_return, output):
 
 
 def main():
-    #  "utf-8" GB18030
     args = demisto.args()
     entry_id = args.get('entryid')
     max_depth = arg_to_number(args.get('max_depth', '3'))
