@@ -42,15 +42,14 @@ class Client(BaseClient):
 
 
 def check_args_for_query(args: dict) -> tuple[bool, str | None]:
-    """Checks that the args given are valid.
-       Valid args are: Exactly one field to search by (one of these:
-       'search_term', 'id', 'hash', 'tag', 'malware')
+    """Validates that exactly one of these fields is provided:
+        'search_term', 'id', 'hash', 'tag', or 'malware'.
     Args:
         args: dict
     Returns:
         Boolean: True if params are valid and False otherwise.
         Str: The query type (one of these: 'search_term', 'id', 'hash', 'tag', 'malware').
-            If args are not good than it will be None.
+            If args are not valid than it will be None.
     """
     args_lst = list(args.keys())
     if 'limit' in args_lst:
@@ -335,11 +334,11 @@ def threatfox_get_indicators_command(client: Client, args: dict[str, Any]) -> Co
 def fetch_indicators_command(client: Client, with_ports: bool, confidence_threshold: int,
                              create_relationship: bool, interval: int, tlp_color: str, last_run: dict):
 
-    now = datetime.now(pytz.utc)
+    now = datetime.now(timezone.utc)
     days_for_query = int(interval / 1440)  # The interval is validated already in the main
 
     if last_run:
-        last_successful_run = datetime.strptime(last_run["last_successful_run"], '%Y-%m-%dT%H:%M:%SZ').replace(tzinfo=pytz.utc)
+        last_successful_run = dateparser.parse(last_run["last_successful_run"], settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': True})
         time_delta = now - last_successful_run
         days_for_query = time_delta.days + 1
 
