@@ -5230,3 +5230,33 @@ class TestGetWarRoomURL:
         expected_war_room_url = \
             "https://example.com/incidents/alerts_and_insights?caseId=1234&action:openAlertDetails=1234-warRoom"
         assert get_war_room_url(url) == expected_war_room_url
+
+
+def test_send_file_deprecated_endpoint(mocker, requests_mock):
+    """
+    Given:
+        - Slack client of newaly created app (May 8,2024).
+    When:
+        - calling the slack_send_file
+    Then:
+        - assert readable exception is raised.
+    """
+    from SlackV3 import slack_send_file
+    # Set
+    mocker.patch.object(demisto, 'args', return_value={})
+    mocker.patch.object(demisto, 'investigation', return_value={'id': '999'})
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
+    mocker.patch('SlackV3.slack_send_request', side_effect=SlackApiError('The request to the Slack API failed. (url: https://slack.com/api/files.upload)',
+                                                                         {'ok': False, 'error': 'method_deprecated'}))
+
+    # Check that function_A raises DemistoException
+    with pytest.raises(DemistoException) as e:
+        slack_send_file(['channel'],
+                        {'name': "test", 'path': 'path'},
+                        demisto.getIntegrationContext(),
+                        '1'
+        )
+    assert str(e.value) == 'Command slack-send-file isn\'t available for newly created apps (from May 8, 2024).'
+
+   

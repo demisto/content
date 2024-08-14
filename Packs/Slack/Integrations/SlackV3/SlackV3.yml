@@ -308,7 +308,7 @@ script:
       name: threadID
     - description: A comment to add to the file.
       name: comment
-    description: Sends a file to a user, channel, or group. If not specified, the file is sent to the mirrored investigation channel (if the channel exists).
+    description: 'Sends a file to a user, channel, or group. If not specified, the file is sent to the mirrored investigation channel (if the channel exists). Due changes from Slack api side, "slack_send_file", newly created apps from beginning May 8, 2024 will be unable to use "slack_send_file" .'
     name: slack-send-file
   - arguments:
     - description: The channel name. If not specified, the topic of the mirrored investigation channel is set (if the channel exists).
