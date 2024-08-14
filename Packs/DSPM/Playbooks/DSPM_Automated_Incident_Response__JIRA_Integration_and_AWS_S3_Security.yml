@@ -91,8 +91,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -770,
-          "y": 825
+          "x": -470,
+          "y": 715
         }
       }
     note: false
@@ -140,10 +140,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: e7f2a212-1ba9-4e37-8a64-991a86fe8dbb
+    taskid: 50b5afcf-547b-493d-8654-78e385da6cca
     type: regular
     task:
-      id: e7f2a212-1ba9-4e37-8a64-991a86fe8dbb
+      id: 50b5afcf-547b-493d-8654-78e385da6cca
       version: -1
       name: Closed current  Incident playbook
       description: commands.local.cmd.close.inv
@@ -152,8 +152,6 @@ tasks:
       iscommand: true
       brand: Builtin
     scriptarguments:
-      closeNotes:
-        simple: ${incident.details}
       closeReason:
         simple: Resolved
       id:
@@ -273,8 +271,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -770,
-          "y": 640
+          "x": -470,
+          "y": 520
         }
       }
     note: false
@@ -286,10 +284,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: b05fb3a7-2daf-4335-81e8-9e964f22af7c
+    taskid: 3b97e7aa-3d39-4932-8996-d0883e1125c0
     type: regular
     task:
-      id: b05fb3a7-2daf-4335-81e8-9e964f22af7c
+      id: 3b97e7aa-3d39-4932-8996-d0883e1125c0
       version: -1
       name: SlackBlockBuilder
       description: SlackBlockBuilder will format a given Slack block into a format
@@ -308,7 +306,7 @@ tasks:
       list_name:
         simple: ${block_list_name}
       user:
-        simple: Sachin Indoriya
+        simple: manas
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -327,10 +325,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: e3b6a288-eaeb-4eb0-8b53-bfd0eba3c0ef
+    taskid: 82bb923d-e6c8-4b51-81a4-d8206b3b8ae8
     type: regular
     task:
-      id: e3b6a288-eaeb-4eb0-8b53-bfd0eba3c0ef
+      id: 82bb923d-e6c8-4b51-81a4-d8206b3b8ae8
       version: -1
       name: GetSlackBlockBuilderResponse
       description: GetSlackBlockBuilderResponse will format a SlackBlockBuilder response
@@ -341,12 +339,12 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "39"
+      - "21"
     scriptarguments:
       retry-count:
-        simple: "3"
+        simple: "2"
       retry-interval:
-        simple: "30"
+        simple: "60"
     separatecontext: false
     continueonerror: true
     continueonerrortype: ""
@@ -582,10 +580,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: 063e85f4-f94e-4bb1-8826-b8ad8de39de0
+    taskid: 3111a3e8-60ab-4856-895f-e84358c25301
     type: regular
     task:
-      id: 063e85f4-f94e-4bb1-8826-b8ad8de39de0
+      id: 3111a3e8-60ab-4856-895f-e84358c25301
       version: -1
       name: SlackBlockBuilder
       description: SlackBlockBuilder will format a given Slack block into a format
@@ -604,7 +602,7 @@ tasks:
       list_name:
         simple: ${block_list_name}
       user:
-        simple: Sachin Indoriya
+        simple: manas
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -665,10 +663,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 518af08e-18c5-45cb-8187-7d52fd69cf00
+    taskid: b6033e88-b637-463d-8093-ecc5af5770f4
     type: regular
     task:
-      id: 518af08e-18c5-45cb-8187-7d52fd69cf00
+      id: b6033e88-b637-463d-8093-ecc5af5770f4
       version: -1
       name: SlackBlockBuilder
       description: SlackBlockBuilder will format a given Slack block into a format
@@ -687,7 +685,7 @@ tasks:
       list_name:
         simple: ${block_list_name}
       user:
-        simple: Sachin Indoriya
+        simple: manas
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -842,45 +840,6 @@ tasks:
         "position": {
           "x": 330,
           "y": 80
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "39":
-    id: "39"
-    taskid: 86442225-ef8e-4371-8a82-bfd086da8f06
-    type: condition
-    task:
-      id: 86442225-ef8e-4371-8a82-bfd086da8f06
-      version: -1
-      name: Was There an Error in User Response?
-      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
-        to check the previous task entries. If array is provided, will return yes
-        if one of the entries returned an error.
-      scriptName: isError
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "no":
-      - "21"
-      "yes":
-      - "29"
-    scriptarguments:
-      entryId:
-        simple: ${lastCompletedTaskEntries}
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -470,
-          "y": 450
         }
       }
     note: false
