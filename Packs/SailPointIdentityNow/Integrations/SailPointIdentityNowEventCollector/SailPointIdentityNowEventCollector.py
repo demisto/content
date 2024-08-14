@@ -16,7 +16,7 @@ CURRENT_TIME_STR = datetime.now().strftime(DATE_FORMAT)
 
 ''' CLIENT CLASS '''
 
-##nothing...
+##nothing....
 class Client(BaseClient):
     """Client class to interact with the service API
     """
