@@ -51,8 +51,8 @@ filter _collector_type = "Azure Event Hub"
         ResourceIdentifiers = ResourceIdentifiers -> []
 // Entities values
 | alter
-        Entities_account_usernameIdentifier = arraystring(arraymap(Entities, if(json_extract_scalar("@element", "$.Type") = "account" and json_extract_scalar("@element", "$.Name") not in ("", null), json_extract_scalar("@element", "$.Name"), json_extract_scalar("@element", "$.Type") = "account" and json_extract_scalar("@element", "$.Name") in ("", null), "-", null)), ", "),
-        Entities_usernameIdentifier = arraystring(arraymap(Entities, if(json_extract_scalar("@element", "$.Type") = "account" and json_extract_scalar("@element", "$.Sid") not in ("", null), json_extract_scalar("@element", "$.Sid"), json_extract_scalar("@element", "$.Type") = "account" and json_extract_scalar("@element", "$.AadUserId") not in ("", null), json_extract_scalar("@element", "$.AadUserId"), json_extract_scalar("@element", "$.Type") = "account" and json_extract_scalar("@element", "$.Id") not in ("", null), json_extract_scalar("@element", "$.Id"), json_extract_scalar("@element", "$.Type") = "account" and json_extract_scalar("@element", "$.Sid") in ("", null) and json_extract_scalar("@element", "$.Id") in ("", null) and json_extract_scalar("@element", "$.AadUserId") in ("", null), "-", null)), ", "),
+        Entities_account_username = arraystring(arraymap(Entities, if(json_extract_scalar("@element", "$.Type") = "account" and json_extract_scalar("@element", "$.Name") not in ("", null), json_extract_scalar("@element", "$.Name"), json_extract_scalar("@element", "$.Type") = "account" and json_extract_scalar("@element", "$.Name") in ("", null), "-", null)), ", "),
+        Entities_account_Identifier = arraystring(arraymap(Entities, if(json_extract_scalar("@element", "$.Type") = "account" and json_extract_scalar("@element", "$.Sid") not in ("", null), json_extract_scalar("@element", "$.Sid"), json_extract_scalar("@element", "$.Type") = "account" and json_extract_scalar("@element", "$.AadUserId") not in ("", null), json_extract_scalar("@element", "$.AadUserId"), json_extract_scalar("@element", "$.Type") = "account" and json_extract_scalar("@element", "$.Id") not in ("", null), json_extract_scalar("@element", "$.Id"), json_extract_scalar("@element", "$.Type") = "account" and json_extract_scalar("@element", "$.Sid") in ("", null) and json_extract_scalar("@element", "$.Id") in ("", null) and json_extract_scalar("@element", "$.AadUserId") in ("", null), "-", null)), ", "),
         Entities_account_LogonId = arraystring(arraymap(Entities, if(json_extract_scalar("@element", "$.Type") = "account" and json_extract_scalar("@element", "$.LogonId") not in ("", null), json_extract_scalar("@element", "$.LogonId"), json_extract_scalar("@element", "$.Type") = "account" and json_extract_scalar("@element", "$.LogonId") in ("", null), "-", null)), ", "),
         Entities_host_HostName = arraystring(arraymap(Entities, if(json_extract_scalar("@element", "$.Type") = "host" and json_extract_scalar("@element", "$.HostName") not in ("", null), json_extract_scalar("@element", "$.HostName"), json_extract_scalar("@element", "$.Type") = "host" and json_extract_scalar("@element", "$.HostName") in ("", null), "-", null)), ", "),
         Entities_host_OS = arraystring(arraymap(Entities, if(json_extract_scalar("@element", "$.Type") = "host" and json_extract_scalar("@element", "$.OSFamily") not in ("", null) and json_extract_scalar("@element", "$.OSVersion") not in ("", null), concat(json_extract_scalar("@element", "$.OSFamily"), " ", json_extract_scalar("@element", "$.OSVersion")), json_extract_scalar("@element", "$.Type") = "host" and json_extract_scalar("@element", "$.OSFamily") not in ("", null), json_extract_scalar("@element", "$.OSFamily"), json_extract_scalar("@element", "$.Type") = "host" and json_extract_scalar("@element", "$.OSFamily") in ("", null), "-", null)), ", "),
@@ -75,7 +75,7 @@ filter _collector_type = "Azure Event Hub"
 // Remove empty entities fields values
 | alter
         Entities_account_username = if(Entities_account_username ~= "^[\,\s\-]+$" or Entities_account_username = "", null, Entities_account_username),
-        Entities_account_usernameIdentifier = if(Entities_account_usernameIdentifier ~= "^[\,\s\-]+$" or Entities_account_usernameIdentifier = "", null, Entities_account_usernameIdentifier),
+        Entities_account_Identifier = if(Entities_account_Identifier ~= "^[\,\s\-]+$" or Entities_account_Identifier = "", null, Entities_account_Identifier),
         Entities_account_LogonId = if(Entities_account_LogonId ~= "^[\,\s\-]+$" or Entities_account_LogonId = "", null, Entities_account_LogonId),
         Entities_host_HostName = if(Entities_host_HostName ~= "^[\,\s\-]+$" or Entities_host_HostName = "", null, Entities_host_HostName),
         Entities_host_OS = if(Entities_host_OS ~= "^[\,\s\-]+$" or Entities_host_OS = "", null, Entities_host_OS),
@@ -148,7 +148,7 @@ filter _collector_type = "Azure Event Hub"
         xdm.source.cloud.source_type = arraystring(arraymap(ResourceIdentifiers, if(json_extract_scalar("@element", "$.Type") != null, json_extract_scalar("@element", "$.Type"), "-")), ", "),
         xdm.source.cloud.project_id = arraystring(arraymap(ResourceIdentifiers, if(json_extract_scalar("@element", "$.AzureResourceTenantId") != null, json_extract_scalar("@element", "$.AzureResourceTenantId"), json_extract_scalar("@element", "$.AadTenantId") != null, json_extract_scalar("@element", "$.AadTenantId"), json_extract_scalar("@element", "$.workspaceId") != null, json_extract_scalar("@element", "$.workspaceId"), "-")), ", "),
         // Entities and Extended Properties fields
-        xdm.source.user.identifier = coalesce (ExtendedProperties_AAD_user_id, Entities_account_usernameIdentifier),
+        xdm.source.user.identifier = coalesce (ExtendedProperties_AAD_user_id, Entities_account_Identifier),
         xdm.logon.logon_guid = coalesce(ExtendedProperties_Account_Session_Id, Entities_account_LogonId),
         xdm.event.operation_sub_type = ExtendedProperties_Activity_type,
         xdm.source.application.name = coalesce(ExtendedProperties_Application, ExtendedProperties_Application_name, ExtendedProperties_Client_Application),
@@ -161,6 +161,8 @@ filter _collector_type = "Azure Event Hub"
         xdm.source.user.username = coalesce(ExtendedProperties_Client_Principal_Name, ExtendedProperties_User_Name, Entities_account_username),
         xdm.source.process.command_line = coalesce(ExtendedProperties_Command, ExtendedProperties_Suspicious_Command_Line, Entities_process_commandline),
         xdm.target.resource.name = coalesce(ExtendedProperties_CompromisedEntity, ExtendedProperties_Resource_name),
+        xdm.target.resource.type = ExtendedProperties_Resource_Type,
+        xdm.target.resource.id = ExtendedProperties_ResourceId,
         xdm.database.name = coalesce(ExtendedProperties_Database, ExtendedProperties_Database_name),
         xdm.target.file.filename = coalesce(ExtendedProperties_file, Entities_file_Name),
         xdm.target.host.image = ExtendedProperties_Image_Name,
@@ -182,7 +184,8 @@ filter _collector_type = "Azure Event Hub"
         //xdm.target.host.ipv6_public_addresses = Entities_ip_address_public_v6,
         xdm.target.host.ipv6_addresses = Entities_ip_address_v6,
         xdm.source.process.executable.directory = Entities_process_image_directory,
-        xdm.source.process.executable.filename = Entities_file_Name;
+        xdm.source.process.executable.filename = Entities_process_image_filename,
+        xdm.target.host.os = Entities_host_OS;
 
 
 
