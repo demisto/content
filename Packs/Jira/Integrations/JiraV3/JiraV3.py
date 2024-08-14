@@ -824,16 +824,16 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         :return: The user's information as returned by the API
         :rtype: Dict[str, Any]
         """
-        j_res = self.http_request(
+        response = self.http_request(
             method='GET',
             url_suffix=f'rest/api/{self.api_version}/user?{identifier}',
             ok_codes=[200, 404],
             resp_type='response'
         )
-        if j_res.status_code == 404:
+        if response.status_code == 404:
             return {}
         else:
-            return j_res.json()
+            return response.json()
 
 
 class JiraCloudClient(JiraBaseClient):
@@ -1151,16 +1151,16 @@ class JiraOnPremClient(JiraBaseClient):
         :return: The raw response and a cleaned up response
         :rtype: tuple[List, List]
         """
-        j_res = self.http_request(
+        response = self.http_request(
             method='GET',
             url_suffix=f'rest/proforma/api/{self.api_version}/issues/{issue_id}/forms',
             ok_codes=[200, 404],
             resp_type='response'
         )
-        if j_res.status_code == 404:
+        if response.status_code == 404:
             return []
         else:
-            return j_res.json()
+            return response.json()
 
 
 class JiraIssueFieldsParser:
@@ -1850,10 +1850,10 @@ def get_issue_forms(client: JiraBaseClient, issue_id: str) -> tuple[List, List]:
     :return: The raw JSON response and the formatted outputs
     :rtype: tuple[List, List]
     """
-    j_res = client.issue_get_forms(issue_id=issue_id)
-    demisto.debug(f'Response from Jira API rest/proforma/api/2/issues/{issue_id}/forms: {json.dumps(j_res)}')
+    response = client.issue_get_forms(issue_id=issue_id)
+    demisto.debug(f'Response from Jira API rest/proforma/api/2/issues/{issue_id}/forms: {json.dumps(response)}')
     outputs = []
-    for form in j_res:
+    for form in response:
         questions = []
         for q_id, q_data in form.get('design', {}).get('questions').items():
             answer = form.get('state', {}).get('answers', {}).get(q_id)
@@ -1887,7 +1887,7 @@ def get_issue_forms(client: JiraBaseClient, issue_id: str) -> tuple[List, List]:
             'Issue': issue_id,
             'Questions': questions
         })
-    return j_res, outputs
+    return response, outputs
 
 
 # Issues Commands
@@ -4034,26 +4034,26 @@ def get_user_command(client: JiraBaseClient, args: Dict[str, Any]) -> CommandRes
     else:
         raise ValueError('No key or username specified for jira-get-user')
 
-    j_res = client.get_user(identifier)
-    if not j_res:
+    response = client.get_user(identifier)
+    if not response:
         return CommandResults(readable_output="No users found")
 
     output = {
-        'Key': j_res.get('key'),
-        'Name': j_res.get('name'),
-        'Email': j_res.get('emailAddress'),
-        'Display Name': j_res.get('displayName'),
-        'Active': j_res.get('active'),
-        'Deleted': j_res.get('deleted'),
-        'Timezone': j_res.get('timeZone'),
-        'Locale': j_res.get('locale'),
+        'Key': response.get('key'),
+        'Name': response.get('name'),
+        'Email': response.get('emailAddress'),
+        'Display Name': response.get('displayName'),
+        'Active': response.get('active'),
+        'Deleted': response.get('deleted'),
+        'Timezone': response.get('timeZone'),
+        'Locale': response.get('locale'),
     }
 
     return CommandResults(
         outputs_prefix='Jira.Users',
         outputs_key_field='Key',
         outputs=output,
-        raw_response=j_res
+        raw_response=response
     )
 
 
