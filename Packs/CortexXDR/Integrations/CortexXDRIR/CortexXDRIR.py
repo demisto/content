@@ -884,9 +884,9 @@ def get_mapping_fields_command():
     return mapping_response
 
 
-def get_modified_remote_data_command(client, args, mirroring_last_run: Dict[str, Any] = {}, xdr_delay: int = 1):
+def get_modified_remote_data_command(client, args, mirroring_last_update: str|None, xdr_delay: int = 1):
     remote_args = GetModifiedRemoteDataArgs(args)
-    last_update: str = mirroring_last_run.get('mirroring_last_update', remote_args.last_update)
+    last_update: str = mirroring_last_update or remote_args.last_update
     last_update_utc = dateparser.parse(last_update,
                                        settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': False})   # convert to utc format
 
@@ -1301,7 +1301,6 @@ def main():  # pragma: no cover
     """
     Executes an integration command
     """
-    demisto.debug('MAIN')
     command = demisto.command()
     params = demisto.params()
     LOG(f'Command being called is {command}')
@@ -1570,16 +1569,16 @@ def main():  # pragma: no cover
             return_results(action_status_get_command(client, args))
 
         elif command == 'get-modified-remote-data':
-            demisto.debug(f'MIRRORING MAIMORAG main get-modified-remote-data {time.strftime=}')
+            last_run_mirroring: Dict[str, Any] = demisto.getLastRun().get('mirroring', {})
+            
             modified_incidents, next_run = get_modified_remote_data_command(
                 client=client,
-                mirroring_last_run=demisto.getLastRun().get('mirroring', {}) or {},
+                mirroring_last_update=last_run_mirroring.get('mirroring_last_update', None),
                 args=demisto.args(),
                 xdr_delay=xdr_delay,
             )
-            last_run_obj = demisto.getLastRun()
-            last_run_obj['mirroring'] = {'next_run_mirroring': next_run}
-            demisto.setLastRun(last_run_obj)
+            last_run_mirroring['mirroring'] = {'next_run_mirroring': next_run}
+            demisto.setLastRun(last_run_mirroring)
             return_results(modified_incidents)
 
         elif command == 'xdr-script-run':  # used with polling = true always
