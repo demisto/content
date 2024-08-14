@@ -164,7 +164,7 @@ def get_campaign_from_sub_reports(report_object, id_to_object):
     return report_relationships, object_ref_to_return
 
 
-def get_relationships_from_sub_reports(client, report_object, id_to_object, report_relationships):
+def get_relationships_from_sub_reports(client, report_object, id_to_object):
     """Parse the Reports objects retrieved from the feed.
 
     Args:
@@ -200,8 +200,7 @@ def get_relationships_from_sub_reports(client, report_object, id_to_object, repo
                                 entity_b=entity_b_value,
                                 entity_b_type=entity_b_obj_type
                             ).to_indicator()
-                            if relationship not in report_relationships:
-                                relationships.append(relationship)
+                            relationships.append(relationship)
     if obj_refs_excluding_relationships_prefix:
         object_ref_to_return.extend([{'objectstixid': object} for object in obj_refs_excluding_relationships_prefix])
     return relationships, object_ref_to_return
@@ -309,14 +308,14 @@ def parse_reports_and_report_relationships(client: Client, report_objects: list,
             'unit42_description': report_object.get('description'),
             'unit42_object_refs': report_object.get('object_refs')
         }
-        campaign_report_relationships, object_ref_campaign = get_campaign_from_sub_reports(report_object, id_to_object)
-        report['relationships'].extend(campaign_report_relationships)
-        extend_obj_refs(report, object_ref_campaign)
         if is_main_report:
-            report_relationships, obj_refs_output = get_relationships_from_sub_reports(client, report_object, id_to_object,
-                                                                                       report['relationships'])
+            report_relationships, obj_refs_output = get_relationships_from_sub_reports(client, report_object, id_to_object)
             extend_obj_refs(report, obj_refs_output)
             report['relationships'].extend(report_relationships)
+        else:
+            campaign_report_relationships, object_ref_campaign = get_campaign_from_sub_reports(report_object, id_to_object)
+            extend_obj_refs(report, object_ref_campaign)
+            report['relationships'].extend(campaign_report_relationships)
         reports.append(report)
 
     return reports
