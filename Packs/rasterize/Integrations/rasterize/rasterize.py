@@ -33,7 +33,7 @@ os.environ['no_proxy'] = 'localhost,127.0.0.1'
 os.environ['HOME'] = tempfile.gettempdir()
 
 CHROME_EXE = os.getenv('CHROME_EXE', '/opt/google/chrome/google-chrome')
-USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0" \
+USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0" \
              " Safari/537.36"
 CHROME_OPTIONS = ["--headless",
                   "--disable-gpu",
