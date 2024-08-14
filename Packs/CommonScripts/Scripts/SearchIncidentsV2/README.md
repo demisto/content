@@ -84,6 +84,7 @@ Spring Core and Cloud Function SpEL RCEs
 | sort               | Sort in format of field.asc,field.desc,...                                                                                                                                                                                                           |
 | searchresultslabel | If provided, the value of this argument will be set under the searchResultsLabel context key for each incident found.                                                                                                                                |
 | summarizedversion  | If enabled runs a summarized version of this script. Disables auto-extract, sets fromDate to 30 days, and minimizes the context output. You can add sepcific fields to context using the add_fields_to_summarize_context argument. Default is false. |
+| includeinformational | If enabled, “Info” severity alerts are received alongside alerts of other severities. Default is false. |
 | limit              | The maximum number of incidents to be returned. Default is 100.                                                                                                                                                                                      |
 
 ## Outputs
