@@ -35,7 +35,8 @@ Cortex XSIAM supports two methods to fetch alerts from Microsoft Defender for Cl
 
 This collection method is more relevant in cases where the number of subscriptions is low, as each integration's instance refers to one subscription.
 
-For more information on how to configure this integration, please refer to the integration's docs:
+For more information on how to configure this integration, refer to the integration's docs:
+
 1. Navigate to **settings** &rarr; **Automation & Feed Integrations**.
 
 2. Search for **Microsoft Defender for Cloud**.
