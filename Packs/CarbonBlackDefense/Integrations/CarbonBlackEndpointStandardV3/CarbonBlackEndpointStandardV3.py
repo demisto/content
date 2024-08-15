@@ -436,15 +436,11 @@ def fetch_incidents(client: Client, params: dict):
 
     last_run = demisto.getLastRun()
     last_fetched_alert_create_time = last_run.get('last_fetched_alert_create_time')
-    last_fetched_alert_id = last_run.get('last_fetched_alert_id', '')
+    last_fetched_alert_ids = last_run.get('last_fetched_alert_id', [])
     if not last_fetched_alert_create_time:
         last_fetched_alert_create_time = arg_to_datetime(fetch_time).strftime('%Y-%m-%dT%H:%M:%S.000Z')  # type: ignore
     else:
         fetch_limit += 1  # We skip the first alert
-    alert_create_date = last_fetched_alert_create_time
-    alert_id = last_fetched_alert_id
-
-    incidents = []
 
     demisto.debug("Starting to fetch.")
     demisto.debug(f"Last run value before starting: {last_fetched_alert_create_time}.")
@@ -477,12 +473,24 @@ def fetch_incidents(client: Client, params: dict):
     alerts = response.get('results', [])
     demisto.debug(f"Number of incidents before filtering: {len(alerts)}")
 
+    incidents = []
+    new_last_fetched_alert_ids = last_fetched_alert_ids
+
     for alert in alerts:
-        if alert_id == alert.get('id'):
-            demisto.debug(f"Incident with ID: {alert_id} filtered out. reason: duplicate from the last fetch, skipping")
-            continue
         alert_create_date = alert.get('backend_timestamp')
         alert_id = alert.get('id')
+
+        if alert_id in last_fetched_alert_ids:
+            demisto.debug(f"Incident with ID: {alert_id} filtered out. Reason: duplicate from the last fetch, skipping")
+            continue
+
+        # Compare time and replace the list if the new alert time is later, else add it to the list.
+        if alert_create_date == last_fetched_alert_create_time:
+            new_last_fetched_alert_ids.append(alert_id)  # type: ignore
+        else:
+            new_last_fetched_alert_ids = [alert_id]
+
+        last_fetched_alert_create_time = alert_create_date
 
         incident = {
             'type': 'Carbon Black Endpoint Standard',
@@ -495,11 +503,14 @@ def fetch_incidents(client: Client, params: dict):
 
     demisto.debug(f"Number of Incidents after filtering: {len(incidents)}")
 
-    new_last_run = {'last_fetched_alert_create_time': alert_create_date, 'last_fetched_alert_id': alert_id}
-    demisto.debug(f"New lest run: {new_last_run}")
+    next_run = {'last_fetched_alert_create_time': last_fetched_alert_create_time,
+                'last_fetched_alert_id': new_last_fetched_alert_ids}
+    demisto.debug(f"New last run: {next_run}")
 
     demisto.incidents(incidents)
-    demisto.setLastRun(new_last_run)
+    demisto.setLastRun(next_run)
+
+    return next_run, incidents
 
 
 def get_alert_details_command(client: Client, args: dict):
