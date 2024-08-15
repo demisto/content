@@ -12,7 +12,7 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [],
+    "keywords": ["security center", "azure"],
     "marketplaces": [
         "xsoar",
         "marketplacev2"
