@@ -14433,8 +14433,8 @@ def pan_os_list_profile_exception_command(args: dict) -> CommandResults:
         readable_output=tableToMarkdown(
             name='Profile Exceptions',
             t=hr,
-            headers=['Name', 'Actions', 'Exempt IP', 'Packet Capture']
-            removeNull=True
+            headers=['Name', 'Actions', 'Exempt IP', 'Packet Capture'],
+            removeNull=True,
         ),
         outputs_prefix='Panorama.ProfileException'
     )
