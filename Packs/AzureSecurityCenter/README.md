@@ -59,7 +59,7 @@ Refer to the following links for detailed instructions:
 - At the [subscription level](https://learn.microsoft.com/en-us/azure/defender-for-cloud/continuous-export). 
 - At the [tenant level](https://learn.microsoft.com/en-us/azure/defender-for-cloud/continuous-export-azure-policy).
 
-More information can be found [here](https://learn.microsoft.com/en-us/azure/defender-for-cloud/export-to-siem).
+More information can be found [here](https://learn.microsoft.com/en-us/azure/defender-for-cloud/export-to-siem#stream-alerts-with-continuous-export).
 
 ### Cortex XSIAM side
 To connect Cortex XSIAM to the Azure Event Hub, follow the below steps.
