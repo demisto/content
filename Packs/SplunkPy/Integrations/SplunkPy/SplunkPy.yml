@@ -691,6 +691,4 @@ tests:
 - SplunkPy_KV_commands_requests_handler
 - SplunkPy-Test-V2_requests_handler
 - SplunkPySearch_Test_requests_handler
-- SplunkPy_KV_commands
-- playbook-SplunkPySearch_Test
 fromversion: 5.0.0
