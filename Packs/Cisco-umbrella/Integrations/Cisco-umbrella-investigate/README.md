@@ -1061,11 +1061,10 @@ Get WHOIS information for the nameserver. A nameserver can potentially register 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| nameserver | The nameserver's domain name or comma-separated list of nameservers. For example ns1.google.com or ns1.google.com,ns2.google.com. List of nameservers are support when is_list = True. | Required |
-| is_list | Whether nameserver contains a list of comma-separated nameservers. Possible values are: true, false. Default is false. | Optional |
+| nameserver | The nameserver's domain name or comma-separated list of nameservers. For example ns1.google.com or ns1.google.com,ns2.google.com. | Required |
 | sort | Sort the results by. Possible values are: Created, Updated, Expires, Domain name. | Optional |
-| page | The optional 0 based index of the page to retrieve. Must be an integer greater than or equal to 0. Relevant when is_list=false. Default is 0. | Optional |
-| page_size | The optional size of the page to retrieve. Must be an integer greater than 0 or less than or equal to 1000. Relevant when is_list=false. | Optional |
+| page | The optional 0 based index of the page to retrieve. Must be an integer greater than or equal to 0. | Optional |
+| page_size | The optional size of the page to retrieve. Must be an integer greater than 0 or less than or equal to 1000. | Optional |
 | limit | The maximum number of records to retrieve. Default is 50. | Optional |
 
 #### Context Output

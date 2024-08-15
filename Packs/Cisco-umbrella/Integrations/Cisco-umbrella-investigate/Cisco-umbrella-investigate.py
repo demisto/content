@@ -1392,7 +1392,7 @@ def get_nameserver_who_is_command(
         page_size=args.get("page_size"),
         limit=args.get("limit") or DEFAULT_LIMIT,
     )
-    is_list = argToBoolean(args.get("is_list")) or False
+    is_list = len(argToList(nameserver)) > 1
     res = client.get_nameserver_who_is(
         nameserver=nameserver,
         limit=limit,

@@ -945,16 +945,9 @@ script:
       execution: false
     - arguments:
         - default: true
-          description: The nameserver's domain name or comma-separated list of nameservers. For example ns1.google.com or ns1.google.com,ns2.google.com. List of nameservers are support when is_list = True.
+          description: The nameserver's domain name or comma-separated list of nameservers. For example ns1.google.com or ns1.google.com,ns2.google.com.
           name: nameserver
           required: true
-        - auto: PREDEFINED
-          description: Whether nameserver contains a list of comma-separated nameservers.
-          name: is_list
-          predefined:
-            - "true"
-            - "false"
-          defaultValue: "false"
         - auto: PREDEFINED
           description: Sort the results by.
           name: sort
@@ -964,9 +957,9 @@ script:
             - Expires
             - Domain name
         - defaultValue: "0"
-          description: The optional 0 based index of the page to retrieve. Must be an integer greater than or equal to 0. Relevant when is_list=false.
+          description: The optional 0 based index of the page to retrieve. Must be an integer greater than or equal to 0.
           name: page
-        - description: The optional size of the page to retrieve. Must be an integer greater than 0 or less than or equal to 1000. Relevant when is_list=false.
+        - description: The optional size of the page to retrieve. Must be an integer greater than 0 or less than or equal to 1000.
           name: page_size
         - defaultValue: "50"
           description: The maximum number of records to retrieve.

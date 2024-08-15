@@ -709,7 +709,7 @@ def test_get_nameserver_who_is_command(
     requests_mock.get(url=url, json=json_response, status_code=HTTPStatus.OK)
     result = module.get_nameserver_who_is_command(
         mock_client,
-        {"nameserver": "test.com", "page": "0", "limit": "50", "is_list": "false"},
+        {"nameserver": "test.com", "page": "0", "limit": "50"},
     )
     assert result.outputs_prefix == "Umbrella.WHOIS.Nameserver"
     assert result.outputs_key_field == "name"
