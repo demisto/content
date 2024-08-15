@@ -1,4 +1,3 @@
-from pydoc import cli
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from keepercommander import api
@@ -21,7 +20,10 @@ REGISTRATION_FLOW_MESSAGE = (
     " A code will be sent to your email, copy it and paste that value in the command"
     " `!ksm-event-collector-register-complete` as an argument to finish the process."
 )
-
+DEVICE_ALREADY_REGISTERED = (
+    "Device is already registered, try running the 'ksm-event-collector-register-complete'"
+    " command without supplying a code argument."
+)
 """ Fetch Events Classes"""
 LAST_RUN = "Last Run"
 
@@ -230,7 +232,7 @@ class Client:
         Returns:
             APIRequest_pb2.LoginResponse: The response that holds data about the API call.
         """
-        resp: APIRequest_pb2.LoginResponse = LoginV3API.startLoginMessage(
+        resp: APIRequest_pb2.LoginResponse = LoginV3API.startLoginMessage(  # type: ignore
             self.keeper_params, encrypted_device_token, cloneCode=None, loginType="NORMAL"
         )
         append_to_integration_context(
@@ -270,10 +272,7 @@ class Client:
                 resp.encryptedLoginToken,  # type: ignore
             )
         elif resp.loginState == APIRequest_pb2.REQUIRES_AUTH_HASH:  # type: ignore
-            raise DemistoException(
-                "Device is already registered, try running the 'ksm-event-collector-register-complete'"
-                " command without supplying a code argument."
-            )
+            raise DemistoException(DEVICE_ALREADY_REGISTERED)
         else:
             raise DemistoException(f"Unknown login state {resp.loginState}")  # type: ignore
 
@@ -334,7 +333,7 @@ class Client:
             encrypted_login_token=encrypted_login_token,
         )
 
-    def start_login(self):
+    def start_registration(self):
         device_approval = self.DeviceApproval()
         try:
             self.start_registering_device(device_approval)
@@ -353,7 +352,7 @@ class Client:
             }
         )
 
-    def complete_login(self, code: str):
+    def complete_registration(self, code: str):
         device_approval = self.DeviceApproval()
         integration_context = get_integration_context()
         encrypted_login_token = utils.base64_url_decode(integration_context["login_token"])
@@ -376,7 +375,6 @@ class Client:
         return api.communicate(self.keeper_params, request_query)
 
     def test_registration(self) -> None:
-        demisto.debug(f"{type(self.keeper_params.session_token)}=")
         if not self.keeper_params.session_token:
             demisto.debug("No session token configured")
             raise DemistoException(REGISTRATION_FLOW_MESSAGE)
@@ -467,13 +465,13 @@ def fetch_events(client: Client, last_run: dict[str, Any], max_fetch_limit: int)
     return audit_log
 
 
-def start_login_command(client: Client):
-    client.start_login()
+def start_registration_command(client: Client):
+    client.start_registration()
     return CommandResults(readable_output="Code was sent successfully to the user's email")
 
 
-def complete_login_command(client: Client, code: str):
-    client.complete_login(code=code)
+def complete_registration_command(client: Client, code: str):
+    client.complete_registration(code=code)
     return CommandResults(readable_output="Login completed")
 
 
@@ -513,9 +511,9 @@ def main() -> None:
         if command == "test-module":
             return_results(test_module())
         elif command == "ksm-event-collector-register-start":
-            return_results(start_login_command(client=client))
+            return_results(start_registration_command(client=client))
         elif command == "ksm-event-collector-register-complete":
-            return_results(complete_login_command(client=client, code=args.get("code", "")))
+            return_results(complete_registration_command(client=client, code=args.get("code", "")))
         elif command == "ksm-event-collector-register-test":
             return_results(test_authorization(client=client))
         elif command == "fetch-events":
