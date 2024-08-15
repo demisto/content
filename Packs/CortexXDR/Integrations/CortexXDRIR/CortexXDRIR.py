@@ -1163,7 +1163,6 @@ def fetch_incidents(client, first_fetch_time, integration_instance, exclude_arti
 
     next_run['time'] = last_fetch + 1
 
-
     return next_run, incidents
 
 
