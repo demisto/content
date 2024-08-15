@@ -51,7 +51,8 @@ Nevertheless, it supports alerts streaming at the subscription level as well.
 
 #### Stream alerts with Continuous Export to Event Hub
 
-Refer to the below links for detailed instructions:
+Refer to the following links for detailed instructions:
+
 - At the [subscription level](https://learn.microsoft.com/en-us/azure/defender-for-cloud/continuous-export). 
 - At the [tenant level](https://learn.microsoft.com/en-us/azure/defender-for-cloud/continuous-export-azure-policy).
 
