@@ -577,7 +577,7 @@ def update_last_run(cases: list, end_time: str) -> dict:
     return last_run
 
 
-def create_incidents(cases: list[dict]) -> list[dict]:
+def format_incidents(cases: list[dict]) -> list[dict]:
     """
     Converts a list of cases into a list of incidents with formatted timestamps.
 
@@ -830,8 +830,8 @@ def fetch_incidents(client: Client, params: dict[str, str], last_run) -> tuple[l
             "limit": limit, "include_related_rules": True}
 
     cases = case_search_command(client, args).outputs
-    if not isinstance(cases, list):
-        raise DemistoException("The response did not contain a list of cases.")
+    # if not isinstance(cases, list):
+    #     raise DemistoException("The response did not contain a list of cases.")
     demisto.debug(f"Response contain {len(cases)} cases")
 
     ids_exists = last_run.get("last_ids", [])
@@ -840,7 +840,7 @@ def fetch_incidents(client: Client, params: dict[str, str], last_run) -> tuple[l
     last_run = update_last_run(cases, end_time)
     demisto.debug(f"Last run after the fetch run: {last_run}")
 
-    incidents = create_incidents(cases)
+    incidents = format_incidents(cases)
     demisto.debug(f"After the fetch incidents count: {len(incidents)}")
     return incidents, last_run
 
