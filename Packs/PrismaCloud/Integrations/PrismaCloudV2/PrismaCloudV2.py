@@ -2274,7 +2274,7 @@ def main() -> None:
             if hasattr(e.res, 'status_code') and e.res.status_code == 401:  # type: ignore[attr-defined]
                 error_msg = 'Authentication failed. ' \
                             'Check that the Server URL parameter is correct and validate your credentials.\n' + error_msg
-        return_error(error_msg, error=e)
+        return_error(error_msg, error=e) 
 
 
 ''' ENTRY POINT '''
