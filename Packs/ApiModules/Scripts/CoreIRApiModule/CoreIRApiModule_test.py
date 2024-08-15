@@ -2290,9 +2290,17 @@ def test_get_endpoint_properties(endpoint, expected_status, expected_ip):
     Given:
         - Endpoint data
     When
-        - The status of the enndpoint is 'Connected' with a capital C.
+        - Case a: The status of the endpoint is 'Connected' with a capital C and ip is 1.1.1.1.
+        - Case b: When no status is not given and ip is 1.1.1.1.
+        - Case c: The status of the endpoint is offline and ip is 1.1.1.1.
+        - Case d: The status of the endpoint is 'Connected' with a capital C ip is empty but public_ip is 1.1.1.1.
+        - Case d: The status of the endpoint is 'Connected' with a capital C and both ip and public_ip are empty.
     Then
-        - The status of the endpointn is determined to be 'Online'
+        - Case a: The status of the endpoint is determined to be 'Online' and the ip is set to 1.1.1.1.
+        - Case b: The status of the endpoint is determined to be 'Offline' and the ip is set to 1.1.1.1.
+        - Case c: The status of the endpoint is determined to be 'Offline' and the ip is set to 1.1.1.1.
+        - Case d: The status of the endpoint is determined to be 'Online' and the ip is set to 1.1.1.1.
+        - Case d: The status of the endpoint is determined to be 'Online' and the ip is set to empty.
     """
     from CoreIRApiModule import get_endpoint_properties
 
