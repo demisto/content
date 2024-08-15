@@ -1992,7 +1992,7 @@ def get_endpoint_properties(single_endpoint):
     is_isolated = 'No' if 'unisolated' in single_endpoint.get('is_isolated', '').lower() else 'Yes'
     hostname = single_endpoint['host_name'] if single_endpoint.get('host_name') else single_endpoint.get(
         'endpoint_name')
-    ip = single_endpoint.get('ip')
+    ip = single_endpoint.get('ip') or single_endpoint.get('public_ip') or ''
     return status, is_isolated, hostname, ip
 
 
@@ -2016,7 +2016,7 @@ def generate_endpoint_by_contex_standard(endpoints, ip_as_string, integration_na
         status, is_isolated, hostname, ip = get_endpoint_properties(single_endpoint)
         # in the `-get-endpoints` command the ip is returned as list, in order not to break bc we will keep it
         # in the `endpoint` command we use the standard
-        if ip_as_string and isinstance(ip, list):
+        if ip_as_string and ip and isinstance(ip, list):
             ip = ip[0]
         os_type = convert_os_to_standard(single_endpoint.get('os_type', ''))
         endpoint = Common.Endpoint(
