@@ -19,7 +19,7 @@ This integration was integrated and tested with Splunk Enterprise v9.0.4 and Ent
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Host - IP (x.x.x.x) |  | True |
+    | Server URL |  | True |
     | Username |  | True |
     | Password |  | True |
     | Port | The port in Splunk server which is open to the REST API calls. | True |

@@ -1,0 +1,24 @@
+[
+    {
+        "mac": "00:00:00:00:00:00",
+        "serial": "0000-0000-0000",
+        "name": "My AP",
+        "model": "MR34",
+        "networkId": "N_24329156",
+        "orderNumber": "4C1234567",
+        "claimedAt": "2018-02-11T00:00:00.090210Z",
+        "licenseExpirationDate": "2020-05-02T10:52:44.012345Z",
+        "tags": [
+            "tag1",
+            "tag2"
+        ],
+        "productType": "wireless",
+        "countryCode": "US",
+        "details": [
+            {
+                "name": "Catalyst serial",
+                "value": "FOC2234432B"
+            }
+        ]
+    }
+]

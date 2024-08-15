@@ -41,6 +41,8 @@ repos:
     - --config=nightly_ruff.toml
     args:ci:
     - --config=nightly_ruff.toml
+    args:docker_autoupdate:
+    - --config=nightly_ruff.toml
 - repo: https://github.com/hhatto/autopep8
   rev: v2.3.1
   hooks:
@@ -180,7 +182,6 @@ repos:
   - id: validate-deleted-files
     name: validate-deleted-files
     entry: validate-deleted-files
-    skip:docker_autoupdate: true
     language: system
     require_serial: true
     pass_filenames: false
@@ -192,7 +193,6 @@ repos:
 
   - id: validate-content-paths
     name: validate-content-paths
-    skip:docker_autoupdate: true
     entry: validate-content-path
     language: system
     require_serial: true
@@ -203,14 +203,12 @@ repos:
     -  --skip-markdown
     -  --skip-suffix
 
-
   - id: validate-conf-json
     name: validate-conf-json
     description: validate conf.json
     files: Tests/conf.json
     skip:commit: true
     skip:nightly: true
-    skip:docker_autoupdate: true
     entry: validate-conf-json
     pass_filenames: false
     language: system

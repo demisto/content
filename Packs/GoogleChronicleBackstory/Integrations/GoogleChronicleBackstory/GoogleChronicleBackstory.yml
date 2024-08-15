@@ -3366,6 +3366,14 @@ script:
         Delimiter by which the content of the list is seperated.
         Eg:  " , " , " : ", " ; ".
       name: delimiter
+    - auto: PREDEFINED
+      defaultValue: PLAIN_TEXT
+      description: Select the content type for reference list. 
+      name: content_type
+      predefined:
+      - PLAIN_TEXT
+      - CIDR
+      - REGEX
     description: Create a new reference list.
     name: gcb-create-reference-list
     outputs:
@@ -3381,6 +3389,9 @@ script:
     - contextPath: GoogleChronicleBackstory.ReferenceList.createTime
       description: Time when the list was created.
       type: Date
+    - contextPath: GoogleChronicleBackstory.ReferenceList.contentType
+      description: Content type of the reference list.
+      type: String
   - arguments:
     - default: true
       defaultValue: '100'
@@ -3410,6 +3421,9 @@ script:
     - contextPath: GoogleChronicleBackstory.ReferenceLists.lines
       description: List of line items.
       type: String
+    - contextPath: GoogleChronicleBackstory.ReferenceLists.contentType
+      description: Content type of the reference list.
+      type: String
   - arguments:
     - description: Provide a unique name of the list to retrieve the result.
       name: name
@@ -3437,6 +3451,9 @@ script:
     - contextPath: GoogleChronicleBackstory.ReferenceList.lines
       description: List of line items.
       type: String
+    - contextPath: GoogleChronicleBackstory.ReferenceList.contentType
+      description: Content type of the reference list.
+      type: String
   - arguments:
     - description: Provide a unique name of the list to update.
       name: name
@@ -3455,6 +3472,13 @@ script:
         Delimiter by which the content of the list is seperated.
         Eg:  " , " , " : ", " ; ".
       name: delimiter
+    - auto: PREDEFINED
+      description: Select the content type for reference list.
+      name: content_type
+      predefined:
+      - PLAIN_TEXT
+      - CIDR
+      - REGEX
     description: Updates an existing reference list.
     name: gcb-update-reference-list
     outputs:
@@ -3470,6 +3494,41 @@ script:
     - contextPath: GoogleChronicleBackstory.ReferenceList.createTime
       description: Time when the list was created.
       type: Date
+    - contextPath: GoogleChronicleBackstory.ReferenceList.contentType
+      description: Content type of the reference list.
+      type: String
+  - arguments:
+    - description: "Enter the content to be validated in the reference list.\nFormat accepted is: 'Line 1, Line 2, Line 3'."
+      name: lines
+      required: true
+    - auto: PREDEFINED
+      defaultValue: PLAIN_TEXT
+      description: Select the content type for reference list. 
+      name: content_type
+      predefined:
+      - PLAIN_TEXT
+      - CIDR
+      - REGEX
+    - defaultValue: ','
+      description: |-
+        Delimiter by which the content of the list is seperated.
+        Eg:  " , " , " : ", " ; ".
+      name: delimiter
+    description: Validates list content and returns any errors found for each line.
+    name: gcb-verify-reference-list
+    outputs:
+    - contextPath: GoogleChronicleBackstory.VerifyReferenceList.success
+      description: Whether lines content are valid or not.
+      type: Boolean
+    - contextPath: GoogleChronicleBackstory.VerifyReferenceList.errors.linenumber
+      description: The line number where the error occurred.
+      type: Number
+    - contextPath: GoogleChronicleBackstory.VerifyReferenceList.errors.errorMessage
+      description: The error message describing the invalid pattern.
+      type: String
+    - contextPath: GoogleChronicleBackstory.VerifyReferenceList.command_name
+      description: The name of the command.
+      type: String
   - arguments:
     - description: Rule text in YARA-L 2.0 format for the rule to stream.
       name: rule_text
@@ -6698,7 +6757,7 @@ script:
     - contextPath: GoogleChronicleBackstory.Events.securityResult.urlBackToProduct
       description: URL to direct you to the source product console for this security event.
       type: String
-  dockerimage: demisto/googleapi-python3:1.0.0.100240
+  dockerimage: demisto/googleapi-python3:1.0.0.103995
   isfetch: true
   runonce: false
   script: '-'
