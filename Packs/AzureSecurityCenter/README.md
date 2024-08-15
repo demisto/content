@@ -38,7 +38,8 @@ This collection method is more relevant in cases where the number of subscriptio
 For more information on how to configure this integration, please refer to the integration's docs:
 1. navigate to **settings** &rarr; **Automation & Feed Integrations**.
 2. Search for **Microsoft Defender for Cloud**.
-3. Click on **+ Add instance**.
+3. Click **+ Add instance**.
+
 
 ### Azure Event Hub 
 This collection method is more relevant in cases where the number of subscriptions is high, and you want to stream alerts at the tenant level.
