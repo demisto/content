@@ -1,5 +1,6 @@
 Exchange Web Services (EWS) provides the functionality to enable client applications to communicate with the Exchange server. EWS provides access to much of the same data that is made available through Microsoft Office Outlook.
 
+
 ## What does this pack do?
 
 - Monitor a specific email account and create incidents from incoming emails to the defined folder.
