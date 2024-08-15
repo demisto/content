@@ -1,0 +1,41 @@
+{
+    "Account(val.Email.Address && val.Email.Address == obj.Email.Address)": [
+        {
+            "Email": {
+                "Address": "dummy@dummy.com"
+            },
+            "Description": "Found in malicious indicators dataset"
+        }
+    ],
+    "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [
+        {
+            "Indicator": "dummy@dummy.com",
+            "Reliability": "B - Usually reliable",
+            "Type": "email",
+            "Vendor": "Ignite",
+            "Score": 3
+        }
+    ],
+    "Ignite.Email.Event(val.Fpid && val.Fpid == obj.Fpid)": [
+        {
+            "EventDetails": {
+                "Tags": [
+                    "sample_tags"
+                ],
+                "event_uuid": "dummy_uuid",
+                "fpid": "dummy_fpid",
+                "href": "https://mock_dummy.com/technical-intelligence/v1/event/00000001",
+                "info": "sample info",
+                "timestamp": "00001"
+            },
+            "Category": "sample_category",
+            "Fpid": "dummy_fpid",
+            "Href": "https://mock_dummy.com/technical-intelligence/v1/attribute/0000001",
+            "Timestamp": "00001",
+            "Type": "email",
+            "Uuid": "dummy_uuid",
+            "Comment": "sample comment",
+            "Email": "dummy@dummy.com"
+        }
+    ]
+}
