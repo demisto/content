@@ -24,9 +24,9 @@ configuration:
   required: false
   section: Collect
   options:
+  - Malicious
   - Benign
   - Suspicious
-  - Malicious
   additionalinfo: Indicators from this integration instance will be marked with this
     reputation.
 - additionalinfo: Reliability of the source providing the intelligence data.

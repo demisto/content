@@ -15,7 +15,7 @@ urllib3.disable_warnings()
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 LOG_LINE = "THREAT FOX-"
-LIMIT_SUPPORTED_QUERIES = ['tags', 'malware']
+LIMIT_SUPPORTED_QUERIES = ['tag', 'malware']
 
 
 class Client(BaseClient):
