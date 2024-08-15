@@ -1642,4 +1642,4 @@ fromversion: 5.0.0
 tests:
 - servicenow_test_v2
 - ServiceNow_OAuth_Test
-- ServiceNow Fetch Incidents Test
+- ServiceNow_Fetch_Incidents_Test
