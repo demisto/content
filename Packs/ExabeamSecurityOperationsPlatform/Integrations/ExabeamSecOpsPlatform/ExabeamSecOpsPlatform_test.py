@@ -358,20 +358,11 @@ def test_get_new_token(mocker, expected_response, expected_token):
                 "queue": "Tier 1 Analyst",
                 "rules": [{"ruleSource": "CR"}],
             },
-            {
-                "caseId": "123",
-                "alertId": "456",
-                "riskScore": 75,
-                "groupedbyKey": "Src Ip",
-                "srcIps": ["1.1.1.1"],
-                "priority": "LOW",
-                "stage": "NEW",
-                "queue": "Tier 1 Analyst",
-                "rules": [{"ruleSource": "CR"}],
-            },
-            "### Case\n|Alert ID|Case ID|Grouped by Key|Priority|Queue|Risk Score|Src IPs|Stage|\n"
-            "|---|---|---|---|---|---|---|---|\n"
-            "| 456 | 123 | Src Ip | LOW | Tier 1 Analyst | 75 | 1.1.1.1 | NEW |\n",
+            [{'caseId': '123', 'alertId': '456', 'riskScore': 75, 'groupedbyKey': 'Src Ip',
+                'srcIps': ["1.1.1.1"], 'priority': 'LOW', 'stage': 'NEW', 'queue': 'Tier 1 Analyst'}],
+            "### Case\n"
+            "|Grouped by Key|Priority|Queue|Risk Score|Rules|Stage|\n"
+            "|---|---|---|---|---|---|\n| Src Ip | LOW | Tier 1 Analyst | 75 | 1 | NEW |\n"
         ),
         (
             {"limit": "1"},
@@ -403,9 +394,10 @@ def test_get_new_token(mocker, expected_response, expected_token):
                     "queue": "Tier 1 Analyst",
                 }
             ],
-            "### Cases\n|Alert ID|Case ID|Grouped by Key|Priority|Queue|Risk Score|Src IPs|Stage|\n"
-            "|---|---|---|---|---|---|---|---|\n"
-            "| 456 | 123 | Src Ip | LOW | Tier 1 Analyst | 75 | 1.1.1.1 | NEW |\n",
+            "### Cases\n"
+            "|Grouped by Key|Priority|Queue|Risk Score|Rules|Stage|\n"
+            "|---|---|---|---|---|---|\n"
+            "| Src Ip | LOW | Tier 1 Analyst | 75 | 1 | NEW |\n",
         ),
     ],
 )
@@ -416,7 +408,6 @@ def test_case_search_command(mocker, args, mock_response, expected_outputs, expe
 
     result = case_search_command(client, args)
 
-    assert isinstance(result, CommandResults)
     assert result.outputs_prefix == "ExabeamPlatform.Case"
     assert result.outputs == expected_outputs
     assert result.readable_output == expected_readable_output
@@ -537,23 +528,23 @@ def test_table_record_list_command(mocker, args, mock_response, expected_output)
         (
             {"case_id": "123"},
             "case",
-            {"id": "123", "name": "Test Case"},
-            {"id": "123", "name": "Test Case"},
+            {"id": "123", "name": "Test Case", "riskScore": "80"},
+            {"id": "123", "name": "Test Case", "riskScore": "80"},
             "ExabeamPlatform.Case",
         ),
         (
             {"alert_id": "456"},
             "alert",
-            {"id": "456", "name": "Test Alert"},
-            {"id": "456", "name": "Test Alert"},
+            {"id": "456", "name": "Test Alert", "riskScore": "80"},
+            {"id": "456", "name": "Test Alert", "riskScore": "80"},
             "ExabeamPlatform.Alert",
         ),
         #  without item_id
         (
             {},
             "case",
-            {"rows": [{"id": "123", "name": "Test Case"}]},
-            [{"id": "123", "name": "Test Case"}],
+            {"rows": [{"id": "123", "name": "Test Case", "riskScore": "80"}]},
+            [{"id": "123", "name": "Test Case", "riskScore": "80"}],
             "ExabeamPlatform.Case",
         ),
     ],

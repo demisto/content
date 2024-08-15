@@ -296,14 +296,22 @@ def process_string(input_str: str) -> str:
     return ' '.join(transformed_parts)
 
 
-def _parse_entry(entry: dict):
+def _parse_entry(entry: dict, fields_to_filter: list[str] = None):  # type: ignore
     """
-    Parse a single entry from the API response to a dictionary.
+    Parse a single entry from the API response into a dictionary, optionally filtering specific fields.
+
     Args:
-        entry: The entry from the API response.
+        entry (dict): The entry from the API response.
+        fields_to_filter (list[str], optional): A list of field names to include in the returned dictionary.
+            If None, all fields are included.
+
     Returns:
-        dict: The parsed entry dictionary.
+        dict: The parsed entry dictionary, filtered by fields_to_filter if provided, or all fields if not.
     """
+
+    if fields_to_filter:
+        entry = {key: value for key, value in entry.items() if key in fields_to_filter}
+
     parsed = {
         "Id": entry.get("id"),
         "Raw Log Ids": entry.get("rawLogIds"),
@@ -326,11 +334,8 @@ def _parse_entry(entry: dict):
         "Case Creation Timestamp": entry.get("caseCreationTimestamp"),
         "Priority": entry.get("priority"),
         "Last Modified Timestamp": entry.get("lastModifiedTimestamp"),
-        "Users": entry.get("users"),
         "Tags": entry.get("tags"),
-        "Use Cases": entry.get("useCases"),
         "Stage": entry.get("stage"),
-        "Mitres": entry.get("mitres"),
         "Dest IPs": entry.get("destIps"),
         "Queue": entry.get("queue"),
         "Name": entry.get("name"),
@@ -339,7 +344,12 @@ def _parse_entry(entry: dict):
         "# Items": entry.get("totalItems"),
         "Status": entry.get("status"),
         "Last Updated": entry.get("lastUpdated"),
+        "Rules": len(entry.get("rules", [])) if isinstance(entry.get("rules"), list) else None,
+        "Mitre Ttps": len(entry.get("mitres", [])) if isinstance(entry.get("mitres"), list) else None,
+        "Use Cases": len(entry.get("useCases", [])) if isinstance(entry.get("useCases"), list) else None,
+        "users": len(entry.get("users", [])) if isinstance(entry.get("users"), list) else None,
     }
+
     final = remove_empty_elements(parsed)
     return final if final else None
 
@@ -402,11 +412,9 @@ def generic_search_command(client: Client, args: dict, item_type: str) -> Comman
     """
     if item_id := args.get(f"{item_type}_id"):
         if item_type == "case":
-            data_response = client.get_case_request(item_id)
+            data_response = [client.get_case_request(item_id)]
         elif item_type == "alert":
-            data_response = client.get_alert_request(item_id)
-
-        human_readable = _parse_entry(data_response)
+            data_response = [client.get_alert_request(item_id)]
         table_name = f"{item_type.capitalize()}"
     else:
         start_time = get_date(args.get('start_time', '7 days ago'), "start_time")
@@ -430,15 +438,16 @@ def generic_search_command(client: Client, args: dict, item_type: str) -> Comman
         elif item_type == "alert":
             response = client.alert_search_request(kwargs)
         data_response = response.get("rows", [])
-        include_related_rules = argToBoolean(args.get("include_related_rules", False))
-        human_readable = []
-        for row in data_response:
-            if parsed_row := _parse_entry(row):
-                human_readable.append(parsed_row)
-            if not include_related_rules:
-                row.pop("rules", None)
-
         table_name = f"{item_type.capitalize()}s"
+
+    fields_to_human_readable = ["riskScore", "priority", "groupedbyValue", "groupedbyKey",
+                                "rules", "mitres", "useCases", "users", "stage", "queue"]
+    human_readable = [_parse_entry(row, fields_to_human_readable)for row in data_response]
+
+    include_related_rules = argToBoolean(args.get("include_related_rules", False))
+    if not include_related_rules:
+        for row in data_response:
+            row.pop("rules", None)
 
     return CommandResults(
         outputs_prefix=f"ExabeamPlatform.{item_type.capitalize()}",
@@ -513,18 +522,17 @@ def convert_all_timestamp_to_datestring(incident: dict) -> dict:
     return incident
 
 
-def filter_existing_cases(cases, last_run):
+def filter_existing_cases(cases: list[dict], ids_exists: list[str]) -> list:
     """
-    Filters out cases that already exist in the last run.
+    Filters out cases that already exist in the provided list of existing IDs.
 
     Args:
-        cases (list[dict]): List of cases to filter.
-        last_run (dict): Dictionary containing the last run information, including existing case IDs.
+        cases (list[dict]): A list of case dictionaries to be filtered. Each dictionary should contain at least a "caseId" key.
+        ids_exists (list[str]): A list of existing case IDs to check against.
 
     Returns:
-        list[dict]: Filtered list of cases.
+        list[dict]: A list of case dictionaries that do not have IDs present in the `ids_exists` list.
     """
-    ids_exists = last_run.get("last_ids", [])
     if ids_exists:
         demisto.debug(f"Existing IDs in last_run: {ids_exists}")
 
@@ -541,7 +549,7 @@ def filter_existing_cases(cases, last_run):
     return filtered_cases
 
 
-def update_last_run(cases, end_time):
+def update_last_run(cases: list, end_time: str) -> dict:
     """
     Updates the last run time and list of case IDs based on the provided cases.
 
@@ -569,7 +577,7 @@ def update_last_run(cases, end_time):
     return last_run
 
 
-def create_incidents(cases):
+def create_incidents(cases: list[dict]) -> list[dict]:
     """
     Converts a list of cases into a list of incidents with formatted timestamps.
 
@@ -810,7 +818,7 @@ def fetch_incidents(client: Client, params: dict[str, str], last_run) -> tuple[l
     """
     demisto.debug(f"Last run before the fetch run: {last_run}")
 
-    filter_query = process_string(params.get("fetch_query") or "")
+    filter_query = params.get("fetch_query")
     limit = arg_to_number(params.get("max_fetch"))
     demisto.debug(f"Fetching incidents with limit={limit}")
 
@@ -826,7 +834,8 @@ def fetch_incidents(client: Client, params: dict[str, str], last_run) -> tuple[l
         raise DemistoException("The response did not contain a list of cases.")
     demisto.debug(f"Response contain {len(cases)} cases")
 
-    cases = filter_existing_cases(cases, last_run)
+    ids_exists = last_run.get("last_ids", [])
+    cases = filter_existing_cases(cases, ids_exists)
 
     last_run = update_last_run(cases, end_time)
     demisto.debug(f"Last run after the fetch run: {last_run}")

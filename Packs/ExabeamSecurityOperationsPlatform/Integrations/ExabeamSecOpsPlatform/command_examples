@@ -10,6 +10,6 @@
 !exabeam-platform-context-table-list table_id=123
 
 !exabeam-platform-table-record-list table_id=123 limit=2
-!exabeam-platform-table-record-create table_id=123 attributes=`{"value":["51","52"]}` interval_in_seconds=2
+!exabeam-platform-table-record-create table_id=123 attributes=`{"attributeName":["val1","val2"]}` interval_in_seconds=2
 
 !exabeam-platform-context-table-delete table_id=123

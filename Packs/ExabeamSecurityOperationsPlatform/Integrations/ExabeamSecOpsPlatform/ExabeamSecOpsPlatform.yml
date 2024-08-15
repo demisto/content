@@ -39,6 +39,7 @@ configuration:
   type: 0
   section: Collect
   advanced: true
+  additionalinfo: For example key:value
 - display: Fetch incidents
   name: isFetch
   type: 8
@@ -115,19 +116,19 @@ script:
       defaultValue: 50
       description: Limit the number of results returned from the search request.
     - name: all_results
-      defaultValue: No
+      defaultValue: False
       auto: PREDEFINED
       predefined:
-      - Yes
-      - No
-      description: If set to 'Yes', retrieves all available results, ignoring the limit parameter.
+      - True
+      - False
+      description: If set to 'True', retrieves all available results, ignoring the limit parameter.
     - name: include_related_rules
-      defaultValue: No
+      defaultValue: False
       auto: PREDEFINED
       predefined:
-      - Yes
-      - No
-      description: If set to 'Yes', filters the context to include the "rules" array related to the cases in the results.
+      - True
+      - False
+      description: If set to 'True', filters the context to include the "rules" array related to the cases in the results.
     outputs:
     - contextPath: ExabeamPlatform.Case.alertId
       description: Unique identifier for the alert associated with the case.
@@ -277,19 +278,19 @@ script:
       defaultValue: 50
       description: Limit the number of results returned from the search request.
     - name: all_results
-      defaultValue: No
+      defaultValue: False
       auto: PREDEFINED
       predefined:
-      - Yes
-      - No
-      description: If set to 'Yes', retrieves all available results, ignoring the limit parameter.
+      - True
+      - False
+      description: If set to 'True', retrieves all available results, ignoring the limit parameter.
     - name: include_related_rules
-      defaultValue: No
+      defaultValue: False
       auto: PREDEFINED
       predefined:
-      - Yes
-      - No
-      description: If set to 'Yes', filters the context to include the "rules" array related to the cases in the results.
+      - True
+      - False
+      description: If set to 'True', filters the context to include the "rules" array related to the cases in the results.
     outputs:
     - contextPath: ExabeamPlatform.Alert.alertDescriptionRt
       description: The description of the alert in real-time.
@@ -411,12 +412,12 @@ script:
       defaultValue: 50
       description: Limit the number of results returned from the request.
     - name: include_attributes
-      description: If set to 'Yes', filters the context to include the "attributes" array related to the cases in the results.
-      defaultValue: No
+      description: If set to 'True', filters the context to include the "attributes" array related to the cases in the results.
+      defaultValue: False
       auto: PREDEFINED
       predefined:
-      - Yes
-      - No
+      - True
+      - False
     outputs:
     - contextPath: ExabeamPlatform.ContextTable.attributeMapping
       description: The attribute mapping of the context table.
@@ -462,11 +463,11 @@ script:
       required: true
     - name: delete_unused_custom_attributes
       description: Delete any custom attributes in this table that are not used in another context table.
-      defaultValue: No
+      defaultValue: False
       auto: PREDEFINED
       predefined:
-      - Yes
-      - No
+      - True
+      - False
   - name: exabeam-platform-table-record-list
     description: Retrieve the records for a specific context table.
     arguments:
@@ -483,7 +484,7 @@ script:
       description: ID of the table. Obtain this value by running `exabeam-platform-context-table-list`.
       required: true
     - name: attributes
-      description: A key-value map of record attributes.
+      description: A dictionary mapping attribute names to their values, For example:`{"attributeName":["val1", "val2"]}`.
       required: true
     - name: operation
       description: Options for how data should be uploaded to an existing table.
