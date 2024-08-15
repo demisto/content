@@ -1571,6 +1571,11 @@ def get_domain_volume_command(
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     domain = args["domain"]
+    limit = (
+        None
+        if argToBoolean(args["all_results"])
+        else arg_to_number(args.get("limit") or DEFAULT_LIMIT)
+    )
     res = client.get_domain_volume(
         domain=domain,
         start=get_unix_time(args["start"]),
@@ -1580,6 +1585,8 @@ def get_domain_volume_command(
     data = res
     dates = data.get("dates", [])
     start_time = dates[0] if isinstance(dates, list) and len(dates) > 0 else None
+
+    queries = data.get("queries", [])[:limit] if limit else data.get("queries", [])
 
     outputs = {
         "name": domain,
@@ -1594,7 +1601,7 @@ def get_domain_volume_command(
                     "QueryHour": (start_time + HOUR_IN_MS * index if start_time else None),
                     "Queries": query_number,
                 }
-                for (index, query_number) in enumerate(data.get("queries", []))
+                for (index, query_number) in enumerate(queries)
             ]
             if start_time
             else None

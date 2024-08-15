@@ -1615,6 +1615,8 @@ List the query volume for a domain over the last 30 days. If there is no informa
 | start | Filter for data that appears after this time (within the last 30 days). You can specify a verbal time or time in ISO 8061 format. For example, 2024-03-26T11:03:18Z or 1 day ago. Default is 1 week ago. | Optional |
 | stop | Filter for data that appears before this time (within the last 30 days). You can specify a verbal time or time in ISO 8061 format. For example, 2024-03-26T11:03:18Z or 1 day ago. Default is now. | Optional |
 | match | The type of the query volume for the domain. Possible values are: exact, component, all. Default is all. | Optional |
+| all_results | Whether to retrieve all results by overriding the default limit. Possible values are: true, false. | Optional |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
 
 #### Context Output
 

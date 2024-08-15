@@ -523,7 +523,7 @@ def test_get_domain_volume_command(
     requests_mock.get(url=url, json=json_response, status_code=HTTPStatus.OK)
     result = module.get_domain_volume_command(
         mock_client,
-        {"domain": "test.com", "start": "2024-03-26T11:03:18Z", "stop": "2024-03-26T11:03:18Z"},
+        {"domain": "test.com", "start": "2024-03-26T11:03:18Z", "stop": "2024-03-26T11:03:18Z", "all_results": "true"},
     )
     assert result.outputs_prefix == "Umbrella.QueryVolume"
     assert result.outputs_key_field == "name"

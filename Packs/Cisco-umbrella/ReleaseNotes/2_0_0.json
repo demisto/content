@@ -1,4 +1,4 @@
 {
     "breakingChanges": true,
-    "breakingChangesNotes": "Removed 2 outputs from umbrella-domain-categorization, removed 3 commadns, added 12 new commands."
+    "breakingChangesNotes": "Removed 2 outputs from umbrella-domain-categorization, removed 8 commadns, added 12 new commands."
 }
