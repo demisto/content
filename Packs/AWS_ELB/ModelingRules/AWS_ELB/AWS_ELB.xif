@@ -82,3 +82,4 @@ alter // initialize util constants
     xdm.event.outcome = if(arrayindex(field_list,24) = NIL,XDM_CONST.OUTCOME_SUCCESS, XDM_CONST.OUTCOME_FAILED),
     xdm.alert.severity = if(arrayindex(field_list,27) = NIL,null, arrayindex(field_list,27)),
     xdm.alert.name = if(arrayindex(field_list,28)=NIL, null,arrayindex(field_list,28));
+// FIXME don't commit this
