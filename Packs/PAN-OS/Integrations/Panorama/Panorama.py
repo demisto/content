@@ -14307,6 +14307,7 @@ def profile_exception_crud_commands(args: dict, action_type: str):
     ip_track_by = EXCEPTIONS_IP_TRACK_BY_TYPES_MAP.get(args.get('ip_track_by', ''), '')
     ip_duration_sec = args.get('ip_duration_sec', '')
     exception_id = ""
+    exception_name = ""
 
     if xpath_action == BLOCK_IP and (not ip_track_by or not ip_duration_sec):
         raise DemistoException(

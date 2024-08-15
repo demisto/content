@@ -9513,14 +9513,14 @@ script:
     - description: "The requested threat name/CVE/ID to add."
       name: threat_name
       required: true
-    - description: "Can be: Vulnerability Protection or Anti Spyware."
+    - description: "The profile type. Can be: Vulnerability Protection or Anti Spyware."
       name: profile_type
       required: false
       auto: PREDEFINED
       predefined:
       - Vulnerability Protection Profile
       - Anti Spyware Profile
-    - description: "Can be: Alert, Allow, Block IP, Drop, Reset Both, Reset Client or Reset Server."
+    - description: "The action type of the exception. Can be: Alert, Allow, Block IP, Drop, Reset Both, Reset Client or Reset Server."
       name: action
       auto: PREDEFINED
       required: false
@@ -9532,7 +9532,7 @@ script:
       - Reset Both
       - Reset Client
       - Reset Server
-    - description: "Can be: Disable, Single Packet or Extended Capture."
+    - description: "To configure the firewall to take a packet capture when it detects a threat. Can be: Disable, Single Packet or Extended Capture."
       name: packet_capture
       required: false
       auto: PREDEFINED
@@ -9567,14 +9567,14 @@ script:
     - description: "The requested threat name/CVE/ID to edit."
       name: threat_name
       required: true
-    - description: "Can be: Vulnerability Protection or Anti Spyware."
+    - description: "The profile type. Can be: Vulnerability Protection or Anti Spyware."
       name: profile_type
       required: false
       auto: PREDEFINED
       predefined:
       - Vulnerability Protection Profile
       - Anti Spyware Profile
-    - description: "Can be: Alert, Allow, Block IP, Drop, Reset Both, Reset Client or Reset Server."
+    - description: "The action type of the exception. Can be: Alert, Allow, Block IP, Drop, Reset Both, Reset Client or Reset Server."
       name: action
       required: false
       auto: PREDEFINED
@@ -9586,7 +9586,7 @@ script:
       - Reset Both
       - Reset Client
       - Reset Server
-    - description: "Can be: Disable, Single Packet or Extended Capture."
+    - description: "To configure the firewall to take a packet capture when it detects a threat. Can be: Disable, Single Packet or Extended Capture."
       name: packet_capture
       required: false
       auto: PREDEFINED
@@ -9621,7 +9621,7 @@ script:
     - description: "The requested threat name/CVE/ID to delete."
       name: threat_name
       required: true
-    - description: "Can be: Vulnerability Protection or Anti Spyware."
+    - description: "The profile type. Can be: Vulnerability Protection or Anti Spyware."
       name: profile_type
       required: false
       auto: PREDEFINED
@@ -9634,7 +9634,7 @@ script:
     - description: The profile name.
       name: profile_name
       required: true
-    - description: "Can be: Vulnerability Protection or Anti Spyware."
+    - description: "The profile type. Can be: Vulnerability Protection or Anti Spyware."
       name: profile_type
       required: false
       auto: PREDEFINED
