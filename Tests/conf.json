@@ -1829,6 +1829,17 @@
             "playbookID": "EWS V2 Send Mail Test 3"
         },
         {
+            "integrations": [
+                "SMIME Messaging",
+                "EWS v2"
+            ],
+            "instance_names": [
+                "SMIME Messaging",
+                "ews_mail_sender_labdemisto"
+            ],
+            "playbookID": "SMIME_Messaging-Test"
+        },
+        {
             "playbookID": "decodemimeheader_-_test"
         },
         {
@@ -2942,7 +2953,6 @@
             "playbookID": "Endpoint Enrichment - Generic v2.1 - Test",
             "integrations": [
                 "Cylance Protect v2",
-                "carbonblack-v2",
                 "McAfee ePO v2",
                 "Active Directory Query v2",
                 "VMware Carbon Black EDR v2"
@@ -5986,7 +5996,8 @@
         "Test XDR Playbook general commands": "CIAC-11274",
         "Test XDR Playbook": "CIAC-11274",
         "Account Enrichment - Generic v2.1 - Test": "CIAC-11274",
-        "Test_XFE_v2": "CRTX-112127"
+        "Test_XFE_v2": "CRTX-112127",
+        "Microsoft Advanced Threat Analytics - Test": "CIAC-11499"
     },
     "skipped_integrations": {
         "AWS - Lambda": "No instance - wrong creds, issue CRTX-110456",
