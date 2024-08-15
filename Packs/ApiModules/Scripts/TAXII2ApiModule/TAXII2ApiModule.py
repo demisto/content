@@ -102,6 +102,11 @@ STIX_2_TYPES_TO_CORTEX_TYPES = {       # pragma: no cover
     "x509-certificate": FeedIndicatorType.X509,
 }
 
+STIX_NOT_SUPPORTED_TYPES = {
+    "file:name": True
+}
+
+
 MITRE_CHAIN_PHASES_TO_DEMISTO_FIELDS = {       # pragma: no cover
     'build-capabilities': ThreatIntel.KillChainPhases.BUILD_CAPABILITIES,
     'privilege-escalation': ThreatIntel.KillChainPhases.PRIVILEGE_ESCALATION,
@@ -985,6 +990,9 @@ class STIX2XSOARParser(BaseClient):
                 if id_to_object.get(related_obj):
                     entity_b_obj_type, entity_b_value = STIX2XSOARParser.get_entity_b_type_and_value(related_obj, id_to_object,
                                                                                                      is_unit42_report)
+                    if not entity_b_obj_type:
+                        demisto.debug(f"Could not find the type of {related_obj} skipping.")
+                        continue
                     relationships.append(
                         EntityRelationship(
                             name='related-to',
@@ -1012,10 +1020,23 @@ class STIX2XSOARParser(BaseClient):
         indicator_obj = id_to_object.get(indicator, {})
         pattern = indicator_obj.get('pattern', '')
         for stix_type in STIX_2_TYPES_TO_CORTEX_TYPES:
-            if pattern.startswith(f'[{stix_type}'):
+            if pattern.startswith(f'[{stix_type}') and (not STIX2XSOARParser.is_not_supported_iocs_type(pattern)):
                 ioc_type = STIX_2_TYPES_TO_CORTEX_TYPES.get(stix_type)  # type: ignore
                 break
         return ioc_type
+
+    @staticmethod
+    def is_not_supported_iocs_type(pattern: str):
+        """
+        Get pattern and check if the type is not supported by XSOAR.
+
+        Args:
+            pattern: the indicator pattern.
+
+        Returns:
+            bool.
+        """
+        return any(pattern.startswith(f"[{key}") for key in STIX_NOT_SUPPORTED_TYPES)
 
     @staticmethod
     def get_tlp(indicator_json: dict) -> str:

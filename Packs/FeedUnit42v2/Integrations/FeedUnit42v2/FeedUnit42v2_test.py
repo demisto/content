@@ -208,7 +208,7 @@ def test_parse_indicators_ioc_in_pattern():
     assert file_indicator['fields']['associatedfilenames'] == 'Jrdhtjydhjf.exe'
 
 
-def test_parse_reports():
+def test_parse_reports(mocker):
     """
     Given
     - list of reports in STIX format.
@@ -219,6 +219,7 @@ def test_parse_reports():
     Validate The reports list extracted successfully.
     """
     client = Client(api_key='1234', verify=False)
+    mocker.patch.object(client, 'get_report_object', return_value=REPORTS_DATA[1])
     result = parse_reports_and_report_relationships(client, REPORTS_DATA, [], '')
     assert len(result) == 2
     assert result == REPORTS_INDICATORS

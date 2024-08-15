@@ -8,6 +8,7 @@ import urllib3
 # disable insecure warnings
 urllib3.disable_warnings()
 
+INTEGRATION_NAME = "Unit42v2 Feed"
 UNIT42_TYPES_TO_DEMISTO_TYPES = {
     'ipv4-addr': FeedIndicatorType.IP,
     'ipv6-addr': FeedIndicatorType.IPv6,
@@ -79,6 +80,26 @@ class Client(STIX2XSOARParser):
             return data
         self.objects_data[kwargs.get('type')] = data
         return None
+
+    def get_report_object(self, obj_id: str):
+        """Get specific report object by id.
+
+        Args:
+        obj_id: The object ID.
+        id_to_object: a dict in the form of - id: stix_object.
+
+        Returns:
+            A sub report object.
+        """
+        sub_report_obj = self.id_to_object.get(obj_id, {})
+        if not sub_report_obj:
+            if report_from_api := self.fetch_stix_objects_from_api(type="report", id=obj_id):
+                sub_report_obj = (report_from_api[0] if len(report_from_api) == 1 else None)
+                if not sub_report_obj:
+                    demisto.debug(f"{INTEGRATION_NAME}: Found more then one object for report object {obj_id} skipping")
+            else:
+                demisto.debug(f"{INTEGRATION_NAME}: Could not find report object {obj_id}")
+        return sub_report_obj
 
 
 def extract_ioc_value(value: str):
@@ -182,7 +203,7 @@ def get_relationships_from_sub_reports(client, report_object, id_to_object):
     obj_refs_excluding_relationships_prefix = []
     for obj in object_refs:
         if obj.startswith('report--'):
-            sub_report_obj = id_to_object.get(obj, {})
+            sub_report_obj = client.get_report_object(obj)
             if sub_report_obj:
                 sub_report_obj_object_refs = sub_report_obj.get('object_refs', [])
                 for related_obj in sub_report_obj_object_refs:
