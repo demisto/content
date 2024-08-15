@@ -339,8 +339,11 @@ def fetch_indicators_command(client: Client, with_ports: bool, confidence_thresh
 
     if last_run:
         last_successful_run = dateparser.parse(last_run["last_successful_run"], settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': True})
-        time_delta = now - last_successful_run
-        days_for_query = time_delta.days + 1
+        if last_successful_run:
+            time_delta = now - last_successful_run
+            days_for_query = time_delta.days + 1
+        else:
+            raise DemistoException('failed to fetch indicators')  # not supposed to happen
 
     # handling case of more than 7 days history, as the API fail longer-fetching queries.
     if days_for_query > 7:  # api can get up to 7 days
