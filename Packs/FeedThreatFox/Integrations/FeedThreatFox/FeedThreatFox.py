@@ -308,10 +308,9 @@ def threatfox_get_indicators_command(client: Client, args: dict[str, Any]) -> Co
     demisto.debug(f'{LOG_LINE} calling api with {query=}')
     try:
         result = client.get_indicators_request(query)
-    except Exception:
-        if 'malware' in query:  # if illegal malware is provided an 502 error response returns
-            demisto.error('Make sure the malware you entered in valid')
-        raise
+    except DemistoException as e:
+        if 'malware' in query and '502' in str(e):  # if illegal malware is provided an 502 error response returns
+            raise DemistoException('Error in API call [502] - Bad Gateway. Make sure the malware you entered in valid')
 
     query_status = result.get('query_status')
     query_data = result.get('data')
