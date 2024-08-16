@@ -807,3 +807,8 @@ script:
 fromversion: 5.0.0
 tests:
 - Active Directory Test
+- Active Directory - manual pagination check
+- Active Directory - automatic pagination check
+- active directory search user with parentheses test
+- Active Directory - ad-get-user limit check
+- Active Directory Query V2 configuration with port
