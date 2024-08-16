@@ -1457,5 +1457,7 @@ script:
   type: python
 tests:
 - whois_test
+- Sanity Test - Playbook with Unmockable Whois Integration
+- Whois A new layout implemented with python-whois service
 fromversion: 5.0.0
 defaultEnabled: false
