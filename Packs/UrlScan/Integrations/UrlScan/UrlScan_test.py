@@ -213,7 +213,7 @@ def test_format_results_check_lists(mocker):
 
 
 def test_ipv_classification():
-    from UrlScan import to_ip_feed_indicator_type
+    from UrlScan import FeedIndicatorType, to_ip_feed_indicator_type
     
     assert to_ip_feed_indicator_type("123.123.123.123") == FeedIndicatorType.IP
     
