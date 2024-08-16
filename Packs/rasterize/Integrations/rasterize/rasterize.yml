@@ -342,4 +342,6 @@ script:
 defaultEnabled: true
 tests:
 - Rasterize Test
+- RasterizeImageTest
+- Process Email - Generic for Rasterize
 fromversion: 5.0.0
