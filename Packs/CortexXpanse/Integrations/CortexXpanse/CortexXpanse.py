@@ -1626,6 +1626,19 @@ def domain_command(client: Client, args: dict[str, Any]) -> list[CommandResults]
     return command_results
 
 
+def reset_last_run_command() -> str:
+    """
+    Puts the reset flag inside integration context.
+    Returns:
+        (str): 'fetch-incidents was reset successfully'.
+    """
+    try:
+        demisto.setLastRun([])
+        return 'fetch-incidents was reset successfully.'
+    except DemistoException as e:
+        raise DemistoException(f'Error: fetch-incidents was not reset. Reason: {e}')
+
+
 def fetch_incidents(client: Client, max_fetch: int, last_run: dict[str, int],
                     first_fetch_time: Optional[int], severity: Optional[list],
                     status: Optional[list], tags: Optional[str], look_back: int = 0
@@ -1839,7 +1852,7 @@ def main() -> None:
 
         if command == 'test-module':
             test_module(client, params, first_fetch_timestamp)
-        if command == 'fetch-incidents':
+        elif command == 'fetch-incidents':
             incidents = fetch_incidents(
                 client=client,
                 max_fetch=max_fetch,
@@ -1851,6 +1864,8 @@ def main() -> None:
                 look_back=look_back
             )
             demisto.incidents(incidents)
+        elif command == 'asm-reset-last-run':
+            return_results(reset_last_run_command())
         elif command in commands:
             return_results(commands[command](client, args))
         else:

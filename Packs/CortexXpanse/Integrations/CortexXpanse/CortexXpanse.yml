@@ -965,6 +965,9 @@ script:
     - contextPath: ASM.ExternalWebsite
       description: A list of the websites results assets.
     description: Get external websites assets.
+  - name: asm-reset-last-run
+    arguments: []
+    description: Resets the fetch incidents last run value, which resets the fetch to its initial fetch state.
   dockerimage: demisto/python3:3.10.14.99474
   isFetchSamples: true
   isfetch: true
