@@ -210,3 +210,16 @@ def test_format_results_check_lists(mocker):
         "http://capitalne.com/about",
         "https://urlscan.io/"
     ]
+
+
+def test_ipv_classification():
+    from UrlScan import to_ip_feed_indicator_type
+    
+    assert to_ip_feed_indicator_type("123.123.123.123") == FeedIndicatorType.IP
+    
+    assert to_ip_feed_indicator_type("2001:db8:3333:4444:CCCC:DDDD:EEEE:FFFF") == FeedIndicatorType.IPv6
+    assert to_ip_feed_indicator_type("2001:db8::") == FeedIndicatorType.IPv6
+    assert to_ip_feed_indicator_type("::1234:5678") == FeedIndicatorType.IPv6
+    assert to_ip_feed_indicator_type("2001:db8::1234:5678") == FeedIndicatorType.IPv6
+
+    # function under test assumes input to be valid ipv4 or v6 input, garbage would also lead to an ipv6 output
