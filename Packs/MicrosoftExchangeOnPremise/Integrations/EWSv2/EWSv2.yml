@@ -1041,6 +1041,8 @@ tests:
 - EWS V2 Send Mail Test
 - EWS V2 Send Mail Test 2
 - EWS Public Folders Test
+- EWSv2_empty_attachment_test
+- Send Email To Recipients
 defaultmapperin: EWS v2-mapper
 defaultclassifier: EWS v2
 fromversion: 5.0.0
