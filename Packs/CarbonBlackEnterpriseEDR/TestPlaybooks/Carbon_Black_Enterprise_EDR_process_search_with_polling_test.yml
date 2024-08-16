@@ -1,6 +1,6 @@
-id: Carbon Black Enterprise EDR process search with polling test
+id: Carbon Black Enterprise EDR process search with polling Test
 version: -1
-name: Carbon Black Enterprise EDR process search with polling test
+name: Carbon Black Enterprise EDR process search with polling Test
 starttaskid: "0"
 tasks:
   "0":
@@ -13,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -80,6 +81,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -112,4 +114,4 @@ inputs: []
 outputs: []
 quiet: true
 fromversion: 6.10.0
-description: "Test playbook for testing 'cb-eedr-process-search' command with polling: true"
+description: "Test playbook for testing 'cb-eedr-process-search' command with polling: true."

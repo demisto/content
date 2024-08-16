@@ -2,7 +2,7 @@ import copy
 import re
 from collections.abc import Callable
 from dataclasses import dataclass
-from enum import Enum
+from enum import Enum, StrEnum
 from functools import partial
 from http import HTTPStatus
 from typing import Any
@@ -77,14 +77,14 @@ class PrefixToResponse(AddToOutput):
     id_key: str
 
 
-class RequestAction(str, Enum):
+class RequestAction(StrEnum):
     GET = "GET"
     PUT = "PUT"
     POST = "POST"
     DELETE = "DELETE"
 
 
-class ReadableOutputs(str, Enum):
+class ReadableOutputs(StrEnum):
     VULNERABILITY = "Vulnerability"
     SCAN = "Scan"
     SCAN_ACTION = "Scan action"
@@ -141,7 +141,7 @@ class Headers(list, Enum):
     ]
 
 
-class UrlPrefix(str, Enum):
+class UrlPrefix(StrEnum):
     VULNERABILITY = "vulnerabilities"
     MODULE = "modules"
     SCAN = "scans"
@@ -152,7 +152,7 @@ class UrlPrefix(str, Enum):
     ENGINE = "engines"
 
 
-class OutputPrefix(str, Enum):
+class OutputPrefix(StrEnum):
     VULNERABILITY = "Vulnerability"
     VULNERABILITY_HISTORY = "VulnerabilityHistory"
     VULNERABILITY_COMMENT = "VulnerabilityComment"
@@ -170,7 +170,7 @@ class OutputPrefix(str, Enum):
     ENGINE = "Engine"
 
 
-class XsoarArgKey(str, Enum):
+class XsoarArgKey(StrEnum):
     VULNERABILITY = "vulnerability_id"
     SCAN = "scan_id"
     COMMENT = "comment_id"

@@ -1,0 +1,11 @@
+[file:pack_metadata.json]
+ignore=PA125,BA111
+
+[file:Impartner.yml]
+ignore=BA111
+
+[file:Impartner_image.png]
+ignore=IM111
+
+[file:Author_image.png]
+ignore=IM111

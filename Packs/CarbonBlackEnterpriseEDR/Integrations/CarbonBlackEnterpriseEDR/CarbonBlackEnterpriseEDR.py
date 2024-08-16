@@ -1,10 +1,8 @@
+from typing import Any
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-from typing import Any
-import dateparser
-import requests
 import urllib3
 from more_itertools import map_reduce
 
@@ -61,7 +59,6 @@ class Client(BaseClient):
                 device_name=device_name,
                 process_name=process_name
             ),
-            'time_range': create_time,
             'sort': [
                 {
                     'field': sort_field,
@@ -71,6 +68,9 @@ class Client(BaseClient):
             'rows': limit,
             'start': 1
         }
+
+        if create_time:
+            body['time_range'] = create_time
 
         return self._http_request('POST', suffix_url, json_data=body)
 
@@ -100,17 +100,16 @@ class Client(BaseClient):
         return response
 
     def devices_list_request(self, device_id: None | list = None, status: None | list = None, device_os: None | list = None,
-                             last_contact_time: None | dict[str, Any | None] = None, ad_group_id: None | list = None,
+                             last_contact_time: dict[str, str | None] | None = None, ad_group_id: None | list = None,
                              policy_id: None | list = None, target_priority: None | list = None, limit: None | int = None,
                              sort_field: None | str = None, sort_order: None | str = None) -> dict:
         suffix_url = f'/appservices/v6/orgs/{self.cb_org_key}/devices/_search'
 
-        body = {
+        body: dict[str, Any] = {
             'criteria': {
                 'id': device_id,
                 'status': status,
                 'os': device_os,
-                'last_contact_time': last_contact_time,
                 'ad_group_id': ad_group_id,
                 'policy_id': policy_id,
                 'target_priority': target_priority
@@ -124,6 +123,9 @@ class Client(BaseClient):
                 }
             ]
         }
+        # Ensure that last_contact_time is a dictionary with the expected structure
+        if isinstance(last_contact_time, dict) and last_contact_time.get('start'):
+            body['criteria'].update({'last_contact_time': last_contact_time})
 
         return self._http_request('POST', suffix_url, json_data=body)
 
@@ -373,13 +375,17 @@ class Client(BaseClient):
         body = assign_params(criteria=assign_params(
             process_hash=process_hash_list,
             process_name=process_name_list,
-            event_id=event_id,
+            event_id=[event_id]
         ),
             query=query,
             rows=limit,
             start=start,
 
         )
+
+        if not event_id:
+            del body['criteria']['event_id']
+
         timestamp_format = '%Y-%m-%dT%H:%M:%S.%fZ'
         start_iso = parse_date_range(start_time, date_format=timestamp_format)[0]
         if end_time:
@@ -461,6 +467,23 @@ class Client(BaseClient):
         suffix_url = f'api/alerts/v7/orgs/{self.cb_org_key}/threats/{threat_id}/tags'
 
         return self._http_request('GET', suffix_url)
+
+
+def check_get_last_run(last_run: dict) -> dict:
+    """
+    Checks if the 'last_run' format is outdated and updates it to the latest version format if necessary.
+    (version 1.1.34 vs 1.1.35 and later).
+
+    Args:
+        last_run (dict): The last run dictionary to check and potentially update.
+
+    Returns:
+        dict: An updated 'last_run' dictionary that conforms to the latest version format.
+    """
+    if 'last_fetched_alert_id' in last_run:
+        demisto.info("Changing last_run format to the most updated version.")
+        last_run['last_fetched_alerts_ids'] = [last_run.pop('last_fetched_alert_id')]
+    return last_run
 
 
 def test_module(client):
@@ -663,7 +686,7 @@ def list_devices_command(client: Client, args: dict) -> CommandResults | str:
     policy_id = argToList(args.get('policy_id'))
     target_priority = argToList(args.get('target_priority'))
     limit = args.get('limit')
-    sort_field = args.get('sort_field', '')
+    sort_field = args.get('sort_field', 'last_contact_time')
     sort_order = args.get('sort_order')
     contents = []
     headers = ['ID', 'Name', 'OS', 'PolicyName', 'Quarantined', 'status', 'TargetPriority', 'LastInternalIpAddress',
@@ -1292,8 +1315,19 @@ def get_file_path_command(client: Client, args: dict) -> CommandResults:
     return results
 
 
-def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run: dict) -> tuple[list, dict]:
+def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run: Dict) -> tuple[List[Dict], Dict]:
+    """
+    Fetch incidents from the client based on the given fetch time and limit.
 
+    Args:
+        client (Client): The client to fetch incidents from.
+        fetch_time (str): The time range to fetch incidents from.
+        fetch_limit (str): The maximum number of incidents to fetch.
+        last_run (Dict): The dictionary containing the last run information.
+
+    Returns:
+        Tuple[List[Dict], Dict]: A tuple containing the list of incidents and the updated last run dictionary.
+    """
     if not (int_fetch_limit := arg_to_number(fetch_limit)):
         raise ValueError("limit cannot be empty.")
 
@@ -1307,6 +1341,7 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run:
     last_fetched_alerts_ids = last_run.get('last_fetched_alerts_ids', [])
     if not last_fetched_alert_create_time:
         last_fetched_alert_create_time, _ = parse_date_range(fetch_time, date_format='%Y-%m-%dT%H:%M:%S.000Z')
+        demisto.debug(f'No last_fetched_alert_create_time, setting it to {last_fetched_alert_create_time}')
 
     incidents = []
 
@@ -1324,13 +1359,6 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run:
     demisto.debug(f'{LOG_INIT} got {len(alerts)} alerts from server')
 
     if alerts:
-        # Alerts may be created with the same backend_timestamp.
-        # Therefore, we deduplicate alerts that have the same backend_timestamp as the last alert we saved in the previous run.
-        alert_ids_grouped_by_backend_timestamp = map_reduce(response['results'], lambda x: x['backend_timestamp'])
-        last_fetched_alert_timestamp = response['results'][-1]['backend_timestamp']
-        # All IDs of alerts that share the same timestamp as the last one.
-        alerts_ids_to_save = [alert['id'] for alert in alert_ids_grouped_by_backend_timestamp[last_fetched_alert_timestamp]]
-
         for alert in alerts:
             alert_id = alert.get('id')
 
@@ -1346,10 +1374,22 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run:
                 'rawJSON': json.dumps(alert)
             }
             incidents.append(incident)
-            parsed_date = dateparser.parse(alert_create_date)
-            assert parsed_date is not None, f'failed parsing {alert_create_date}'
 
-        last_run = {'last_fetched_alert_create_time': alert_create_date, 'last_fetched_alerts_ids': alerts_ids_to_save}
+            parsed_date = dateparser.parse(alert_create_date)
+            assert parsed_date is not None, f'Failed parsing {alert_create_date}'
+
+        # Group alerts by their backend_timestamp to handle deduplication
+        alert_ids_grouped_by_backend_timestamp = map_reduce(alerts, lambda x: x['backend_timestamp'])
+        last_fetched_alert_create_time = alerts[-1]['backend_timestamp']
+        # All IDs of alerts that share the same timestamp as the last one.
+        last_fetched_alerts_ids = [
+            alert['id'] for alert in alert_ids_grouped_by_backend_timestamp[last_fetched_alert_create_time]
+        ]
+
+    last_run = {
+        'last_fetched_alert_create_time': last_fetched_alert_create_time,
+        'last_fetched_alerts_ids': last_fetched_alerts_ids
+    }
 
     demisto.debug(f'{LOG_INIT} sending {len(incidents)} incidents')
 
@@ -1632,7 +1672,8 @@ def main():
             fetch_time = demisto.params().get('fetch_time', '3 days')
             fetch_limit = demisto.params().get('fetch_limit', '50')
             # Set and define the fetch incidents command to run after activated via integration settings.
-            incidents, last_run = fetch_incidents(client, fetch_time, fetch_limit, last_run=demisto.getLastRun())
+            incidents, last_run = fetch_incidents(client, fetch_time, fetch_limit,
+                                                  last_run=check_get_last_run(demisto.getLastRun()))
             demisto.incidents(incidents)
             demisto.setLastRun(last_run)
 
