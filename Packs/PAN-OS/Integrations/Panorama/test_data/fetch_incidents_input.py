@@ -180,7 +180,6 @@ one_incident_result = (
             "name": "testing_device1 00000000001",
             "occurred": utc_time_twelve.isoformat() + "Z",
             "rawJSON": '{"seqno": "00000000001", "type": "X_log_type", "time_generated": "2022/01/01 12:00:00", "device_name": "testing_device1"}',
-            "type": "X_log_type",
         }
     ],
 )
@@ -208,13 +207,11 @@ two_incidents_result = (
             "name": "testing_device2 00000000001",
             "occurred": utc_time_eleven.isoformat() + "Z",
             "rawJSON": '{"seqno": "00000000001", "type": "X_log_type", "time_generated": "2022/01/01 11:00:00", "device_name": "testing_device2"}',
-            "type": "X_log_type",
         },
         {
             "name": "testing_device3 00000000002",
             "occurred": utc_time_twelve.isoformat() + "Z",
             "rawJSON": '{"seqno": "00000000002", "type": "X_log_type", "time_generated": "2022/01/01 12:00:00", "device_name": "testing_device3"}',
-            "type": "X_log_type",
         },
     ],
 )
@@ -250,7 +247,6 @@ case_valid_input = (
                 '{"seqno": "00000000001", "type": "X_log_type", "time_generated":'
                 ' "2022/01/01 12:00:00", "device_name": "testing_device1"}'
             ),
-            "type": "X_log_type",
         }
     ],
 )
