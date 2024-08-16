@@ -214,9 +214,9 @@ def test_format_results_check_lists(mocker):
 
 def test_ipv_classification():
     from UrlScan import FeedIndicatorType, to_ip_feed_indicator_type
-    
+
     assert to_ip_feed_indicator_type("123.123.123.123") == FeedIndicatorType.IP
-    
+
     assert to_ip_feed_indicator_type("2001:db8:3333:4444:CCCC:DDDD:EEEE:FFFF") == FeedIndicatorType.IPv6
     assert to_ip_feed_indicator_type("2001:db8::") == FeedIndicatorType.IPv6
     assert to_ip_feed_indicator_type("::1234:5678") == FeedIndicatorType.IPv6
