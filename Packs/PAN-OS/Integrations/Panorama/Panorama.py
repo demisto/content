@@ -11124,7 +11124,7 @@ class UniversalCommand:
         """
         result_data = []
         for device in topology.all(filter_string=device_filter_str, target=target):
-            command =  UniversalCommand.SHOW_JOBS_ID_PREFIX.format(id) if id else UniversalCommand.SHOW_JOBS_COMMAND
+            command = UniversalCommand.SHOW_JOBS_ID_PREFIX.format(id) if id else UniversalCommand.SHOW_JOBS_COMMAND
             response = run_op_command(device, command)
 
             for job in response.findall("./result/job"):
