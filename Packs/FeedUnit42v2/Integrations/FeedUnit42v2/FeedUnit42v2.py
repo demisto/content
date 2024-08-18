@@ -585,7 +585,7 @@ def fetch_indicators(client: Client, feed_tags: Optional[list] = None, tlp_color
     if intrusion_sets:
         demisto.debug(f'Feed Unit42 v2: {len(intrusion_sets)} Intrusion Sets Indicators were created.')
     if malware:
-        demisto.debug(f'Feed Unit42 v2: {len(malware)} malware Indicators were created.')
+        demisto.debug(f'Feed Unit42 v2: {len(malware)} Malware Indicators were created.')
     return ioc_indicators + reports + campaigns + attack_patterns + course_of_actions + intrusion_sets + malware
 
 
