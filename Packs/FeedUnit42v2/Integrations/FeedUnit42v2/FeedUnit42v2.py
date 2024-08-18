@@ -111,7 +111,7 @@ def parse_indicators(indicator_objects: list, feed_tags: Optional[list] = None,
             raw_name = indicator_object.get('name', '')
             pattern = indicator_object.get('pattern') or ''
 
-            for key in UNIT42_TYPES_TO_DEMISTO_TYPES.keys():
+            for key in UNIT42_TYPES_TO_DEMISTO_TYPES:
                 if pattern.startswith(f'[{key}'):  # retrieve only Demisto indicator types
                     indicator_obj = {
                         "value": raw_name,
@@ -140,6 +140,27 @@ def parse_indicators(indicator_objects: list, feed_tags: Optional[list] = None,
                     indicators.append(indicator_obj)
 
     return indicators
+
+
+def parse_malware(client, malware_objects: list, feed_tags: Optional[list] = None,
+                  tlp_color: Optional[str] = None) -> list:
+    """Parse the IOC objects retrieved from the feed.
+    Args:
+      malware_objects: a list of objects containing the instances of malware.
+    Returns:
+        A list of processed malware.
+    """
+    if not feed_tags:
+        feed_tags = []
+    malware_list = []
+    if malware_objects:
+        for malware_object in malware_objects:
+            malware_object = STIX2XSOARParser.parse_malware(client, malware_object)[0]
+            malware_object["fields"]["tags"] = list(feed_tags)
+            if tlp_color:
+                malware_object['fields']['trafficlightprotocol'] = tlp_color
+            malware_list.append(malware_object)
+    return malware_list
 
 
 def get_campaign_from_sub_reports(report_object, id_to_object):
@@ -517,6 +538,7 @@ def fetch_indicators(client: Client, feed_tags: Optional[list] = None, tlp_color
 
     item_types_to_fetch_from_api = ['report', 'indicator', 'malware', 'campaign', 'attack-pattern', 'relationship',
                                     'course-of-action', 'intrusion-set']
+    # tlp = STIX2XSOARParser.get_tlp(indicator_json)
     client.get_stix_objects(items_types=item_types_to_fetch_from_api)
 
     for type_, objects in client.objects_data.items():
@@ -532,6 +554,7 @@ def fetch_indicators(client: Client, feed_tags: Optional[list] = None, tlp_color
     ioc_indicators = parse_indicators(client.objects_data['indicator'], feed_tags, tlp_color)
     reports = parse_reports_and_report_relationships(client, client.objects_data['report'], feed_tags, tlp_color, id_to_object)
     campaigns = parse_campaigns(client, client.objects_data['campaign'], feed_tags, tlp_color)
+    malware = parse_malware(client, client.objects_data['malware'], feed_tags, tlp_color)
     attack_patterns = create_attack_pattern_indicator(client, client.objects_data['attack-pattern'],
                                                       feed_tags, tlp_color)
     intrusion_sets = create_intrusion_sets(client, client.objects_data['intrusion-set'], feed_tags, tlp_color)
@@ -562,8 +585,9 @@ def fetch_indicators(client: Client, feed_tags: Optional[list] = None, tlp_color
         demisto.debug(f'Feed Unit42 v2: {len(course_of_actions)} Course of Actions Indicators were created.')
     if intrusion_sets:
         demisto.debug(f'Feed Unit42 v2: {len(intrusion_sets)} Intrusion Sets Indicators were created.')
-
-    return ioc_indicators + reports + campaigns + attack_patterns + course_of_actions + intrusion_sets
+    if malware:
+        demisto.debug(f'Feed Unit42 v2: {len(malware)} malware Indicators were created.')
+    return ioc_indicators + reports + campaigns + attack_patterns + course_of_actions + intrusion_sets + malware
 
 
 def get_indicators_command(client: Client, args: Dict[str, str], feed_tags: Optional[list] = None,

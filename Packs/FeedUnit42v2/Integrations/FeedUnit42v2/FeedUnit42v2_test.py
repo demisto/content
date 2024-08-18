@@ -3,7 +3,7 @@ import pytest
 from FeedUnit42v2 import Client, fetch_indicators, get_indicators_command, handle_multiple_dates_in_one_field, \
     get_attack_id_and_value_from_name, parse_indicators, parse_campaigns, \
     parse_reports_and_report_relationships, create_attack_pattern_indicator, create_course_of_action_indicators, \
-    get_ioc_type, get_ioc_value, create_list_relationships, extract_ioc_value, DemistoException
+    get_ioc_type, get_ioc_value, create_list_relationships, extract_ioc_value, DemistoException, demisto
 
 from test_data.feed_data import INDICATORS_DATA, ATTACK_PATTERN_DATA, MALWARE_DATA, RELATIONSHIP_DATA, REPORTS_DATA, \
     REPORTS_INDICATORS, ID_TO_OBJECT, INDICATORS_RESULT, CAMPAIGN_RESPONSE, CAMPAIGN_INDICATOR, COURSE_OF_ACTION_DATA, \
@@ -106,7 +106,7 @@ def test_fetch_indicators_command(mocker):
     mocker.patch.object(client, 'fetch_stix_objects_from_api', side_effect=mock_get_stix_objects)
 
     indicators = fetch_indicators(client, create_relationships=True)
-    assert len(indicators) == 18
+    assert len(indicators) == 23
     assert DUMMY_INDICATOR_WITH_RELATIONSHIP_LIST in indicators
     assert indicators == FETCH_RESULTS
 
@@ -384,7 +384,7 @@ def test_fetch_indicators_command_with_relationship(mocker):
     mocker.patch.object(client, 'fetch_stix_objects_from_api', side_effect=mock_get_stix_objects)
 
     indicators = fetch_indicators(client, create_relationships=True)
-    assert len(indicators) == 18
+    assert len(indicators) == 23
     assert DUMMY_INDICATOR_WITH_RELATIONSHIP_LIST in indicators
     assert REPORTS_INDICATORS_WITH_RELATIONSHIPS in indicators
 
@@ -406,3 +406,28 @@ def test_create_course_of_action_indicators_with_tlp():
         create_course_of_action_indicators(client, COURSE_OF_ACTION_DATA, [], "WHITE")
         == COURSE_OF_ACTION_INDICATORS_WITH_TLP
     )
+
+
+def test_fetch_indicators_malware(mocker):
+    """
+    Given
+    - fetch indicator command.
+    - mock Client.
+    When
+    - call the fetch_indicators method
+    Then
+    - run the fetch_indicators method.
+    - Validate that the malware objects created correctly.
+    """
+    def mock_get_stix_objects(test, **kwargs):
+        type_ = kwargs.get('type')
+        client.objects_data[type_] = TYPE_TO_RESPONSE_FETCH[type_]
+
+    client = Client(api_key='1234', verify=False)
+    mocker.patch.object(client, 'fetch_stix_objects_from_api', side_effect=mock_get_stix_objects)
+    debug_logs = mocker.patch.object(demisto, "debug")
+    indicators = fetch_indicators(client, create_relationships=True)
+    for i in range(18, 23):
+        assert indicators[i]['type'] == 'Malware'
+    assert len(indicators) == 23
+    assert debug_logs.call_args_list[6][0][0] == 'Feed Unit42 v2: 5 malware Indicators were created.'
