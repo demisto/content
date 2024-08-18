@@ -14118,6 +14118,9 @@ def get_all_profile_names_from_profile_type(profile_type: str, device_group: str
     raw_response = get_security_profile(xpath)
     profiles = raw_response["response"]["result"][f"{profile_type}"]["entry"]
 
+    if not isinstance(profiles, list):
+        profiles = [profiles]
+
     profile_names = []
     for entry in profiles:
         profile_name = entry.get("@name")
@@ -14299,7 +14302,7 @@ def profile_exception_crud_commands(args: dict, action_type: str):
     """
     profile_name = args.get('profile_name', "")
     profile_type = args.get('profile_type', '')
-    threat_name = args.get('threat_name', '')
+    threat = args.get('threat', '')
     xpath_action = XPATH_EXCEPTIONS_ACTIONS_TYPES_MAP[args.get('action', 'default')]
     packet_capture = EXCEPTIONS_PACKET_CAPTURE_TYPES_MAP.get(args.get('packet_capture', ''), '')
     exempt_ip = args.get('exempt_ip', '')
@@ -14318,7 +14321,7 @@ def profile_exception_crud_commands(args: dict, action_type: str):
         profile_type = check_profile_type_by_given_profile_name(profile_name, device_group)
 
     if action_type != ExceptionCommandType.LIST.value:
-        exception_id, exception_name = get_threat_id_from_predefined_threates(threat_name)
+        exception_id, exception_name = get_threat_id_from_predefined_threates(threat)
 
     xpath = build_xpath_for_profile_exception_commands(profile_name, profile_type, device_group, action_type, exception_id)
 
@@ -14406,6 +14409,7 @@ def pan_os_list_profile_exception_command(args: dict) -> CommandResults:
     Returns:
         A confirmation for deleting the exception.
     """
+    profile_name = args.get('profile_name')
     raw_response, _, _ = profile_exception_crud_commands(args, ExceptionCommandType.LIST.value)
 
     exceptions_response_list = raw_response['response']['result']['threat-exception']
@@ -14416,27 +14420,48 @@ def pan_os_list_profile_exception_command(args: dict) -> CommandResults:
     #     parse_pan_os_un_committed_data(exception, ['@admin', '@dirtyId', '@time'])
     #     exception["name"] = exception.pop("@name", "")
 
-    output = []
+    context_exceptions_list = []
     hr = []
-    for exception in exceptions_response_list:
-        parse_pan_os_un_committed_data(exception, ['@admin', '@dirtyId', '@time'])
-        exception = exception.get('entry')
-        output.append(exception)
-        hr.append({'Name': exception['@name'],
-                   'Actions': exception['action'],
-                   'Exempt IP': exception.get('exempt-ip', ''),
-                   'Packet Capture': exception.get('packet-capture', '')
-                   })
+    for exceptions in exceptions_response_list:
+        parse_pan_os_un_committed_data(exceptions, ['@admin', '@dirtyId', '@time'])
+        exceptions = exceptions.get('entry')
+        if not isinstance(exceptions, list):
+            exceptions = [exceptions]
+        for entry in exceptions:
+            exception_name =  entry['@name']
+            exception_actions = ", ".join(entry['action'].keys())
+            exception_packet_capture = entry.get('packet-capture')
+            exception_exempt_id = entry.get('exempt-ip', {}).get('entry', {}).get('@name')
+            
+            excpetion_context = {'profile_name': profile_name,
+                                 'name': exception_name,
+                                 'action': exception_actions,
+                                 'packet-capture': exception_packet_capture,
+                                 'exempt-ip': exception_exempt_id
+                                 }
+            
+            cleaned_excpetion_context = {k: v for k, v in excpetion_context.items() if v is not None}
+            context_exceptions_list.append(cleaned_excpetion_context)
+            
+            hr.append({'Name': exception_name,
+                    'Action': exception_actions,
+                    'Packet Capture': exception_packet_capture,
+                    'Exempt IP': exception_exempt_id,
+                    })
 
+    
     return CommandResults(
-        outputs=output,
+        raw_response=raw_response,
+        outputs=context_exceptions_list,
         readable_output=tableToMarkdown(
             name='Profile Exceptions',
             t=hr,
             headers=['Name', 'Actions', 'Exempt IP', 'Packet Capture'],
             removeNull=True,
         ),
-        outputs_prefix='Panorama.ProfileException'
+        outputs_prefix='Panorama.ProfileException',
+        # replace_existing=True
+        outputs_key_field=['name', 'profile_name']
     )
 
 
