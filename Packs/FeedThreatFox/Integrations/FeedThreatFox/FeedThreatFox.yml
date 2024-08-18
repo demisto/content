@@ -88,7 +88,7 @@ configuration:
   section: Collect
   advanced: true
   type: 19
-  additionalinfo: Must be 1-7 days.
+  additionalinfo: Must be whole day. Min is 1. Max is 7.
 - display: Return IOCs with Ports
   name: with_ports
   required: false
