@@ -136,7 +136,7 @@ script:
       - Vulnerabilities
       - Licenses
       - Secrets
-    - description:
+    - description: later
       isArray: true
       name: iac_categories
       auto: PREDEFINED
@@ -150,14 +150,14 @@ script:
       - Public
       - Drift
       - Compute
-    - description:
+    - description: later
       name: iac_labels
       isArray: true
       auto: PREDEFINED
       predefined:
       - CustomPolicy
       - HasFix
-    - description:
+    - description: later
       name: file_types
       isArray: true
       auto: PREDEFINED
@@ -192,10 +192,10 @@ script:
     - description: Whether to retrieve only fixable issues. Recommended to use this argument with another argument code_categories ,for example.
       name: fixable_only
       type: Boolean
-    - description:
+    - description: later
       name: repositories
       isArray: true
-    - description:
+    - description: later
       name: secrets_risk_factors
       isArray: true
       auto: PREDEFINED
@@ -208,7 +208,7 @@ script:
       - Invalid
       - Unknown
       - FoundInHistory
-    - description:
+    - description: later
       name: scopes
       isArray: true
       auto: PREDEFINED
@@ -220,7 +220,7 @@ script:
       - Vulnerabilities
       - Licenses
       - Secrets
-    - description:
+    - description: later
       name: severities
       isArray: true
       auto: PREDEFINED
@@ -230,7 +230,7 @@ script:
       - MEDIUM
       - HIGH
       - CRITICAL
-    - description:
+    - description: later
       name: vulnerability_risk_factors
       isArray: true
       auto: PREDEFINED
@@ -243,17 +243,17 @@ script:
       - ExploitInTheWild
       - ExploitPOC
       - IsUsed
-    - description:
+    - description: later
       name: term
       isArray: false
       required: true
     - description: Relevant only to- IacMisconfiguration,Vulnerabilities.
       name: iac_tags
       isArray: false
-    - description:
+    - description: later
       name: license_type
       isArray: true
-    - description:
+    - description: later
       name: check_status
       isArray: false
       auto: PREDEFINED
@@ -265,68 +265,68 @@ script:
     - description: The limit of issues to retrieve.
       name: limit
       default: 50
-    description:
+    description: later
     name: 'prisma-cloud-code-issues-list'
     outputs:
     - contextPath: PrismaCloud.CodeIssue.firstDetected
-      description:
+      description: later
       type: String
     - contextPath: PrismaCloud.CodeIssue.labels
-      description:
+      description: later
       type: String
     - contextPath: PrismaCloud.CodeIssue.labels.label
-      description:
+      description: later
       type: String
     - contextPath: PrismaCloud.CodeIssue.labels.metadata.imageName
-      description:
+      description: later
       type: String
     - contextPath: PrismaCloud.CodeIssue.policy
-      description:
+      description: later
       type: String
     - contextPath: PrismaCloud.CodeIssue.repository
-      description:
+      description: later
       type: String
     - contextPath: PrismaCloud.CodeIssue.resourceName
-      description:
+      description: later
       type: String
     - contextPath: PrismaCloud.CodeIssue.resourceScanType
-      description:
+      description: later
       type: String
     - contextPath: PrismaCloud.CodeIssue.resourceUuid
-      description:
+      description: later
       type: String
     - contextPath: PrismaCloud.CodeIssue.severity
-      description:
+      description: later
       type: String
     - contextPath: PrismaCloud.CodeIssue.violationId
-      description:
+      description: later
       type: String
     - contextPath: PrismaCloud.CodeIssue.causePackageId
-      description:
+      description: later
       type: String
     - contextPath: PrismaCloud.CodeIssue.causePackageName
-      description:
+      description: later
       type: String
     - contextPath: PrismaCloud.CodeIssue.cveUuid
-      description:
+      description: later
       type: String
     - contextPath: PrismaCloud.CodeIssue.cvss
-      description:
+      description: later
       type: String
     - contextPath: PrismaCloud.CodeIssue.fixVersion
-      description:
+      description: later
       type: String
     - contextPath: PrismaCloud.CodeIssue.pr
-      description:
+      description: later
       type: String
     - contextPath: PrismaCloud.CodeIssue.resourceId
-      description:
+      description: later
       type: String
     - contextPath: PrismaCloud.CodeIssue.riskFactors
-      description:
+      description: later
       type: String
     - contextPath: PrismaCloud.CodeIssue.isIndirectPackage
-      description:
+      description: later
       type: String
   - arguments:
     - description: Comma-separated list of alert IDs to be dismissed.
