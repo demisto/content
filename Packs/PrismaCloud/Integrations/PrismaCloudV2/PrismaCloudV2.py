@@ -2255,6 +2255,17 @@ def validate_code_issues_list_args(args):
     if not args:
         raise DemistoException("At least one filtering argument is required, excluding `scopes` and `term`.")
 
+
+def get_labels(labels)->List:
+    res = []
+    for label in labels:
+        if type(label) is str:
+            res.append(label)
+        else:
+            res.append(label.get('label'))
+    return res
+
+
 def code_issues_list_command(client, args):
     
     validate_code_issues_list_args(args)
@@ -2303,7 +2314,7 @@ def code_issues_list_command(client, args):
                 'First Detected': issue['firstDetected'],
                 'Policy': issue['policy'],
                 'Severity': issue['severity'],
-                'Labels': issue['labels'].get('label') if issue['labels'].get('label') else issue['labels']  # response changes
+                'Labels': get_labels(issue['labels'])# issue['labels'].get('label') if issue['labels'].get('label') else issue['labels']  # response changes
             })
                 
         has_next = response['hasNext']
