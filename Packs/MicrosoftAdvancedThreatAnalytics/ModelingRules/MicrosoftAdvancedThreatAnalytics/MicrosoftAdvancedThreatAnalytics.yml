@@ -4,3 +4,5 @@ name: Microsoft Advanced Threat Analytics
 rules: ''
 schema: ''
 tags: ''
+deprecated: true
+comment: Deprecated. No available replacement.
