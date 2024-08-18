@@ -401,13 +401,22 @@
 								"sectionItemType": "field",
 								"startCol": 2
 							},
+                            {
+								"endCol": 4,
+								"fieldId": "darktraceasmriskurl",
+								"height": 53,
+								"id": "fca882b0-397a-11ef-9193-6999443ce3ba",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 2
+							},
 							{
 								"dropEffect": "move",
 								"endCol": 4,
 								"fieldId": "darktraceasmrisktype",
 								"height": 53,
 								"id": "e6cd4540-bfa7-11ee-8d09-e1ab63b33f26",
-								"index": 1,
+								"index": 2,
 								"listId": "caseinfoid-c76012f0-bfa7-11ee-8d09-e1ab63b33f26",
 								"sectionItemType": "field",
 								"startCol": 2
@@ -458,12 +467,21 @@
 								"sectionItemType": "field",
 								"startCol": 0
 							},
+                            {
+								"endCol": 2,
+								"fieldId": "darktraceasmasseturl",
+								"height": 53,
+								"id": "f3648820-397a-11ef-9193-6999443ce3ba",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
 							{
 								"endCol": 2,
 								"fieldId": "darktraceasmassetsecurityrating",
 								"height": 53,
 								"id": "b8004df0-bfa9-11ee-8d09-e1ab63b33f26",
-								"index": 1,
+								"index": 2,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -472,7 +490,7 @@
 								"fieldId": "darktraceasmassetbrand",
 								"height": 53,
 								"id": "5cb315d0-bfaa-11ee-8d09-e1ab63b33f26",
-								"index": 2,
+								"index": 3,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -481,7 +499,7 @@
 								"fieldId": "darktraceasmassetismalicious",
 								"height": 53,
 								"id": "c81c3a20-d668-11ee-ac49-b5c578bfaa5e",
-								"index": 3,
+								"index": 4,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -490,7 +508,7 @@
 								"fieldId": "darktraceasmassetstate",
 								"height": 53,
 								"id": "cd4b48b0-d668-11ee-ac49-b5c578bfaa5e",
-								"index": 4,
+								"index": 5,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -500,7 +518,7 @@
 								"fieldId": "darktraceasmassetcreationtime",
 								"height": 53,
 								"id": "d158e1b0-d668-11ee-ac49-b5c578bfaa5e",
-								"index": 5,
+								"index": 6,
 								"listId": "caseinfoid-6c947170-bfa9-11ee-8d09-e1ab63b33f26",
 								"sectionItemType": "field",
 								"startCol": 0
@@ -510,7 +528,7 @@
 								"fieldId": "darktraceasmassetupdatedtime",
 								"height": 53,
 								"id": "d9a97b90-d668-11ee-ac49-b5c578bfaa5e",
-								"index": 6,
+								"index": 7,
 								"sectionItemType": "field",
 								"startCol": 0
 							}
