@@ -7467,7 +7467,7 @@ def test_pan_os_add_profile_exception(mocker):
                                                                           "profile_type": "Vulnerability Protection Profile",
                                                                           "device_group": 'device_group'})
     assert command_results.raw_response == {'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
-    assert command_results.readable_output == 'Successfully created Exception: "threatname" with ID 1000.'
+    assert command_results.readable_output == 'Successfully created Exception: "threatname" with threat ID 1000.'
 
 
 def test_pan_os_edit_profile_exception(mocker):
@@ -7487,7 +7487,7 @@ def test_pan_os_edit_profile_exception(mocker):
                                                                            "profile_type": "Vulnerability Protection Profile",
                                                                            "device_group": 'device_group'})
     assert command_results.raw_response == {'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
-    assert command_results.readable_output == 'Successfully edited Exception: "threatname" with ID 1000.'
+    assert command_results.readable_output == 'Successfully edited Exception: "threatname" with threat ID 1000.'
 
 
 def test_pan_os_delete_profile_exception(mocker):
@@ -7505,7 +7505,7 @@ def test_pan_os_delete_profile_exception(mocker):
                                                                              "profile_type": "Vulnerability Protection Profile",
                                                                              "device_group": 'device_group'})
     assert command_results.raw_response == {'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
-    assert command_results.readable_output == 'Successfully deleted Exception: "threatname" with ID 1000.'
+    assert command_results.readable_output == 'Successfully deleted Exception: "threatname" with threat ID 1000.'
 
 
 def test_pan_os_list_profile_exception(mocker):
