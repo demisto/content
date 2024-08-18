@@ -170,8 +170,8 @@ indicator_data = [
       'reporter': 'bla6', 'tags': ['bla7', 'bla8']},
      [{'ID': '123', 'Value': '1.1.1.1', 'Description': 'bla1', 'MalwareFamilyTags': 'bla3',  # expected
       'AliasesTags': 'bla4', 'FirstSeenBySource': '2024-08-04 07:31:49 UTC', 'LastSeenBySource': '2024-07-03T05:11:35Z UTC',
-       'ReportedBy': 'bla6', 'Tags': ['bla3', 'bla4', 'bla7', 'bla8', 'port: 80'], 'Confidence': '100',
-       'Publications': [{'link': 'bla5', 'title': 'bla3', 'source': 'ThreatFox'}]}], ['bla3', 'bla4', 'bla7', 'bla8', 'port: 80']
+      'ReportedBy': 'bla6', 'Tags': ['bla3', 'bla4', 'bla7', 'bla8', 'port: 80'], 'Confidence': '100',
+      'Publications': [{'link': 'bla5', 'title': 'bla3', 'source': 'ThreatFox'}]}], ['bla3', 'bla4', 'bla7', 'bla8', 'port: 80']
      ),
     ([{'id': '456', 'ioc': 'habdvhbkj',  # case no tags and no reporter
        'threat_type_desc': 'bla1', 'ioc_type': 'sha1_hash', 'malware': 'bla2', 'malware_printable': 'bla3',
@@ -179,7 +179,7 @@ indicator_data = [
        'last_seen': '2024-07-03T05:11:35Z UTC'}],
      [{'ID': '456', 'Value': 'habdvhbkj', 'Description': 'bla1', 'MalwareFamilyTags': 'bla3',  # expected
       'AliasesTags': 'bla4', 'FirstSeenBySource': '2024-08-04 07:31:49 UTC', 'LastSeenBySource': '2024-07-03T05:11:35Z UTC',
-       'Tags': ['bla3', 'bla4'], 'Confidence': '100'}], ['bla3', 'bla4'])
+      'Tags': ['bla3', 'bla4'], 'Confidence': '100'}], ['bla3', 'bla4'])
 ]
 
 
@@ -372,9 +372,9 @@ parse_fetch_data = [
       'reportedby': 'bla9', 'Tags': ['bla6', 'bla1', 'bla10'], 'publications': [{'link': 'bla8',
       'title': 'Malware', 'source': 'ThreatFox'}], 'confidence': 100, 'trafficlightprotocol': 'CLEAR'},
       'rawJSON': {'id': '123', 'ioc': 'www...', 'threat_type': 'bla1', 'threat_type_desc': 'bla2', 'ioc_type': 'url',
-                  'ioc_type_desc': 'bla3', 'malware': 'bla4', 'malware_printable': 'Unknown malware', 'malware_alias': 'bla6',
-                  'malware_malpedia': 'bla7', 'confidence_level': 100, 'first_seen': '2024-08-04 01:50:15 UTC',
-                  'last_seen': '2024-08-05 01:50:15 UTC', 'reference': 'bla8', 'reporter': 'bla9', 'tags': ['bla10']}},
+      'ioc_type_desc': 'bla3', 'malware': 'bla4', 'malware_printable': 'Unknown malware', 'malware_alias': 'bla6',
+      'malware_malpedia': 'bla7', 'confidence_level': 100, 'first_seen': '2024-08-04 01:50:15 UTC',
+      'last_seen': '2024-08-05 01:50:15 UTC', 'reference': 'bla8', 'reporter': 'bla9', 'tags': ['bla10']}},
      ['bla6', 'bla1', 'bla10']),
     ({'id': '123', 'ioc': 'www...', 'threat_type': 'bla1',  # case with relationships and there is malware_printable
       'threat_type_desc': 'bla2', 'ioc_type': 'url', 'ioc_type_desc': 'bla3', 'malware': 'bla4',
