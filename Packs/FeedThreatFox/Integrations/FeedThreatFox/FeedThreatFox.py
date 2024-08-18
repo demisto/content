@@ -401,8 +401,10 @@ def main() -> None:
             return_results(threatfox_get_indicators_command(client, demisto.args()))
 
         elif command == 'fetch-indicators':
-            next_run, res = fetch_indicators_command(client=client, with_ports=with_ports, confidence_threshold=confidence_threshold,
-                                                     create_relationship=create_relationship, interval=interval, tlp_color=tlp_color, last_run=demisto.getLastRun())
+            next_run, res = fetch_indicators_command(client=client, with_ports=with_ports,
+                                                     confidence_threshold=confidence_threshold,
+                                                     create_relationship=create_relationship, interval=interval,
+                                                     tlp_color=tlp_color, last_run=demisto.getLastRun())
             for iter_ in batch(res, batch_size=2000):
                 demisto.debug(f"{LOG_LINE} {iter_=}")
                 demisto.createIndicators(iter_)
