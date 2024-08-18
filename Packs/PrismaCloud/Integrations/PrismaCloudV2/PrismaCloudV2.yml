@@ -264,7 +264,7 @@ script:
       - FixPendin
     - description: The limit of issues to retrieve.
       name: limit
-      default: 50
+      defaultValue: 50
     description: later
     name: 'prisma-cloud-code-issues-list'
     outputs:
