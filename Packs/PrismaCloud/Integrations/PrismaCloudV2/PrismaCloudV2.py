@@ -328,6 +328,62 @@ class Client(BaseClient):
 
         return self._http_request('POST', 'code/api/v1/errors/files', json_data=data, headers=headers)
 
+    def access_key_creation(self, args: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Create an access key using the provided arguments.
+
+        Args:
+        - args (Dict[str, Any]): A dictionary containing the required parameters for key creation.
+            - name (str): required
+            - expires-on (str): optional
+        Returns:
+        - Dict[str, Any]: A dictionary containing the response from the API request to create the access key.
+        """
+        payload = {"name": args.get('name')}
+        if args.get('expires-on'):
+            dateparser_datetime_object = dateparser.parse(args.get('expires-on', ''),
+                                                          settings={'PREFER_DATES_FROM': 'future'})
+            if isinstance(dateparser_datetime_object, datetime):
+                payload['expiresOn'] = dateparser_datetime_object.strftime('%s') + '000'  # API require milliseconds timestamp
+        return self._http_request(
+            method='POST',
+            url_suffix='/access_keys',
+            data=json.dumps(payload)
+        )
+
+    def get_access_key_by_id(self, args: Dict[str, Any]) -> Dict[str, Any]:
+        return self._http_request(
+            method='GET',
+            url_suffix=f"/access_keys/{args.get('access-key')}"
+        )
+
+    def get_access_keys_list(self) -> List[Dict[str, Any]]:
+        return self._http_request(
+            method='GET',
+            url_suffix='/access_keys'
+        )
+
+    def patch_access_key_disable(self, access_key: str) -> Dict[str, Any]:
+        return self._http_request(
+            method='PATCH',
+            url_suffix=f'/access_keys/{access_key}/status/false',
+            resp_type='content'
+        )
+
+    def patch_access_key_enable(self, access_key: str) -> Dict[str, Any]:
+        return self._http_request(
+            method='PATCH',
+            url_suffix=f'/access_keys/{access_key}/status/true',
+            resp_type='content'
+        )
+
+    def access_key_deletion(self, access_key: str) -> Dict[str, Any]:
+        return self._http_request(
+            method='DELETE',
+            url_suffix=f'/access_keys/{access_key}',
+            resp_type='content'
+        )
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -1999,6 +2055,160 @@ def fetch_incidents(client: Client, last_run: Dict[str, Any], params: Dict[str, 
     return incidents, ids_to_insert, updated_last_run_time
 
 
+def access_key_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Perform an API request to create an access key using the provided client.
+
+    Args:
+    - client (Client): An instance of the client used to make the API request.
+    - args (Dict[str, Any]): A dictionary containing any additional arguments required for the API request.
+
+    Returns:
+    - CommandResults: An object containing the raw response and table representation of the access key.
+    """
+    access_key = client.access_key_creation(args)
+    markdown_table = tableToMarkdown('PrismaCloud Access Key Creation', access_key, headers=['id', 'secretKey'],
+                                     headerTransform=pascalToSpace)
+    return CommandResults(
+        outputs_prefix="PrismaCloud.AccessKeys",
+        outputs_key_field='id',
+        outputs=access_key,
+        raw_response=access_key,
+        readable_output=markdown_table,
+    )
+
+
+def get_access_keys_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Get information about specific access key or a list of all access keys.
+
+    Args:
+    - client (Client): An instance of the client used to make the API request.
+    - args (Dict[str, Any]): A dictionary that may contain access-key ID argument for specific access-key
+
+    Returns:
+    - CommandResults: An object containing the response and table representation of the access key(s).
+    """
+    return get_access_key_by_id(client, args) if args.get('access-key') else get_access_keys_list(client, args)
+
+
+def get_access_key_by_id(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Get specific information about an access key using the provided client.
+
+    Args:
+    - client (Client): An instance of the client used to make the API request.
+    - args (Dict[str, Any]): A dictionary containing access-key ID arguments required for the API request.
+
+    Returns:
+    - CommandResults: An object containing the raw response and table representation of the access key information.
+    """
+    access_key = client.get_access_key_by_id(args)
+    if access_key.get('expiresOn'):
+        access_key['expiresOn'] = timestamp_to_datestring(access_key.get('expiresOn'), DATE_FORMAT)
+
+    markdown_table = tableToMarkdown('PrismaCloud Access Key', access_key, headers=['id', 'name', 'expiresOn'],
+                                     headerTransform=pascalToSpace)
+    return CommandResults(
+        outputs_prefix="PrismaCloud.AccessKeys",
+        outputs_key_field='id',
+        outputs=access_key,
+        raw_response=access_key,
+        readable_output=markdown_table,
+    )
+
+
+def get_access_keys_list(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Get a list of access keys using the provided client.
+
+    Args:
+    - client (Client): An instance of the client used to make the API request.
+    - args (Dict[str, Any]): A dictionary containing any additional arguments required for the API request, including an optional
+     'limit' to restrict the number of access keys returned.
+
+    Returns:
+    - CommandResults: An object containing the raw response and table representation of the access key list.
+    """
+    access_keys = client.get_access_keys_list()
+    limit = int(args.get('limit', DEFAULT_LIMIT))
+    limited_access_keys_list = access_keys[:limit]
+    for access_key in limited_access_keys_list:
+        access_key['createdTs'] = timestamp_to_datestring(access_key.get('createdTs'), DATE_FORMAT)
+        access_key['lastUsedTime'] = timestamp_to_datestring(access_key.get('lastUsedTime'), DATE_FORMAT)
+        access_key['expiresOn'] = timestamp_to_datestring(access_key.get('expiresOn'), DATE_FORMAT) if access_key.get(
+            'expiresOn') != 0 else ''
+        access_key['roleId'] = access_key.get('role', {}).get('id', '')
+        access_key['roleName'] = access_key.get('role', {}).get('name', '')
+
+    markdown_table = tableToMarkdown('PrismaCloud Access Keys', limited_access_keys_list,
+                                     headers=['id', 'name', 'createdBy', 'createdTs', 'lastUsedTime', 'status',
+                                              'expiresOn', 'roleId', 'roleName', 'roleType', 'username'],
+                                     headerTransform=pascalToSpace)
+
+    return CommandResults(
+        outputs_prefix="PrismaCloud.AccessKeys",
+        outputs_key_field='id',
+        outputs=access_keys,
+        raw_response=access_keys,
+        readable_output=markdown_table,
+    )
+
+
+def access_key_disable_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Disable an access key using the provided client.
+
+    Args:
+    - client (Client): An instance of the client used to make the API request.
+    - args (Dict[str, Any]): A dictionary containing the 'access-key' ID for disabling the access key.
+
+    Returns:
+    - CommandResults: An object containing the readable output to announce that the access key has been disabled.
+    """
+    access_key = args.get('access-key', '')
+    client.patch_access_key_disable(access_key)
+    return CommandResults(
+        readable_output=f'Access key {access_key} was disabled successfully',
+    )
+
+
+def access_key_enable_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Enable an access key using the provided client.
+
+    Args:
+    - client (Client): An instance of the client used to make the API request.
+    - args (Dict[str, Any]): A dictionary containing the 'access-key' ID for enabling the access key.
+
+    Returns:
+    - CommandResults: An object containing the readable output to announce that the access key has been enabled.
+    """
+    access_key = args.get('access-key', '')
+    client.patch_access_key_enable(access_key)
+    return CommandResults(
+        readable_output=f'Access key {access_key} was enabled successfully',
+    )
+
+
+def access_key_delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Delete an access key using the provided client.
+
+    Args:
+    - client (Client): An instance of the client used to make the API request.
+    - args (Dict[str, Any]): A dictionary containing the 'access-key' ID for deleting the access key.
+
+    Returns:
+    - CommandResults: An object containing the readable output to announce that the access key has been deleted.
+    """
+    access_key = args.get('access-key', '')
+    client.access_key_deletion(access_key)
+    return CommandResults(
+        readable_output=f'Access key {access_key} was successfully deleted successfully',
+    )
+
+
 ''' MIRRORING COMMANDS '''
 
 
@@ -2232,6 +2442,11 @@ def main() -> None:
 
             'get-remote-data': get_remote_data_command,
             'update-remote-system': update_remote_system_command,
+            'prisma-cloud-access-key-create': access_key_create_command,
+            'prisma-cloud-access-keys-list': get_access_keys_command,
+            'prisma-cloud-access-key-disable': access_key_disable_command,
+            'prisma-cloud-access-key-enable': access_key_enable_command,
+            'prisma-cloud-access-key-delete': access_key_delete_command,
         }
         commands_v1 = {
             'redlock-search-alerts': alert_search_v1_command,

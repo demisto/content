@@ -90,7 +90,7 @@ List all Portfolios
 > Your SecurityScorecard Portfolios (first 3)
 >|id|name|privacy|
 >|---|---|---|
->| 60c78cc2d63162001a68c2b8 | username@domain.com | private |
+>| 60c78cc2d63162001a68c2b8 | <username@domain.com> | private |
 >| 60b7e8ea8242c000b8000000 | Paloaltonetworks App | shared |
 >| 60c8c5f9139e40001908c6a4 | test_portfolio | private |
 
@@ -102,6 +102,7 @@ Lists all companies in Portfolio.
 #### Base Command
 
 `securityscorecard-portfolio-list-companies`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -111,7 +112,7 @@ Lists all companies in Portfolio.
 | industry | Industry filter. To filter multiple industries, comma-separate them, e.g. education,financial_services. Possible values are: education, financial_services, food, government, healthcare, information_services, manufacturing, retail, technology. | Optional |
 | vulnerability | Vulnerability filter. | Optional |
 | issue_type | Comma-separated list of issue types. Possible values are: adware_installation_trail, adware_installation, alleged_breach_incident, chatter, anonymous_proxy, service_cassandra, service_couchdb, attack_detected, attack_feed, new_booter_shell, spa_browser, cdn_hosting, tlscert_expired, tlscert_revoked, tlscert_self_signed, tlscert_excessive_expiration, tlscert_weak_signature, tlscert_no_revocation, service_cloud_provider, csp_no_policy_v2, csp_unsafe_policy_v2, csp_too_broad_v2, marketing_site, cookie_missing_secure_attribute, short_term_lending_site, leaked_credentials, leaked_credentials_info, service_dns, new_defacement, ransomware_victim, domain_uses_hsts_preloading, service_elasticsearch, employee_satisfaction, service_end_of_life, service_end_of_service, exposed_personal_information, exposed_personal_information_info, admin_subdomain_v2, tlscert_extended_validation, service_ftp, patching_cadence_high, web_vuln_host_high, service_vuln_host_high, service_imap, iot_camera, industrial_control_device, insecure_https_redirect_pattern_v2, service_ldap, service_ldap_anonymous, social_network_issues, patching_cadence_low, web_vuln_host_low, service_vuln_host_low, spf_record_malformed, malware_controller, malware_1_day, malware_30_day, malware_365_day, malware_infection, malware_infection_trail, patching_cadence_medium, web_vuln_host_medium, service_vuln_host_medium, service_microsoft_sql, minecraft_server, service_mongodb, no_browser_policy, service_mysql, service_neo4j, service_networking, object_storage_bucket_with_risky_acl, open_resolver, exposed_ports, service_open_vpn, service_oracle_db, outdated_os, outdated_browser, non_malware_events_last_month, service_pop3, service_pptp, phishing, typosquat, service_postgresql, exploited_product, public_text_credit_cards, public_text_database_dump, public_text_hashes, public_text_mention, public_text_password_dump, service_pulse_vpn, service_rdp, ransomware_association, redirect_chain_contains_http_v2, service_redis, remote_access, service_smb, mail_server_unusual_port, service_soap, spf_record_wildcard, spf_record_softfail, spf_record_missing, ssh_weak_protocol, ssh_weak_cipher, ssh_weak_mac, tls_weak_protocol, github_information_leak_disclosure, google_information_leak_disclosure, cookie_missing_http_only, domain_missing_https_v2, suspicious_traffic, tls_ocsp_stapling, tls_weak_cipher, telephony, service_telnet, tor_node_events_last_month, upnp_accessible, unsafe_sri_v2, uce, service_vnc, dnssec_detected, waf_detected_v2, hsts_incorrect_v2, hosted_on_object_storage_v2, references_object_storage_v2, x_content_type_options_incorrect_v2, x_frame_options_incorrect_v2, x_xss_protection_incorrect_v2, service_rsync. | Optional | 
-| had_breach_within_last_days | Domains with breaches in the last X days. Possible values are numbers, e.g. 1000. | Optional
+| had_breach_within_last_days | Domains with breaches in the last X days. Possible values are numbers, e.g. 1000. | Optional |
 
 #### Context Output
 
@@ -170,6 +171,7 @@ Retrieve company overall score.
 #### Base Command
 
 `securityscorecard-company-score-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -220,17 +222,20 @@ Retrieve company overall score.
 #### Human Readable Output
 
 >### Domain somecompany.com Scorecard
+>
 >|name|grade|score|industry|last30day_score_change|size|
 >|---|---|---|---|---|---|
 >| Google | C | 74 | technology | 0 | size_more_than_10000 |
 
 ### securityscorecard-company-factor-score-get
+
 ***
 Retrieve company factor score.
 
 #### Base Command
 
 `securityscorecard-company-factor-score-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -495,6 +500,7 @@ Retrieve company factor score.
 #### Human Readable Output
 
 >### Domain somecompany.com Scorecard
+>
 >|name|grade|score|issues|
 >|---|---|---|---|
 >| application_security | F | 24 | 12 |
@@ -509,12 +515,14 @@ Retrieve company factor score.
 >| social_engineering | A | 100 | 1 |
 
 ### securityscorecard-company-history-score-get
+
 ***
 Retrieve company historical scores
 
 #### Base Command
 
 `securityscorecard-company-history-score-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -577,6 +585,7 @@ Retrieve company historical scores
 #### Human Readable Output
 
 >### Historical Scores for Domain `somecompany.com`
+>
 >|date|score|
 >|---|---|
 >| 2021-06-05T00:00:00.000Z | 76 |
@@ -593,6 +602,7 @@ Retrieve company historical factor scores
 #### Base Command
 
 `securityscorecard-company-history-factor-score-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -861,6 +871,7 @@ Retrieve company historical factor scores
 #### Human Readable Output
 
 >### Historical Factor Scores for Domain somecompany.com)
+>
 >|date|factors|
 >|---|---|
 >| 2021-06-05 | Endpoint Security: 100<br/>Application Security: 32<br/>Hacker Chatter: 100<br/>Leaked Information: 100<br/>Network Security: 88<br/>Dns Health: 100<br/>Social Engineering: 100<br/>Ip Reputation: 100<br/>Patching Cadence: 100<br/>Cubit Score: 80<br/> |
@@ -877,6 +888,7 @@ Create alert based on grade
 #### Base Command
 
 `securityscorecard-alert-grade-change-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -913,12 +925,14 @@ Create alert based on grade
 >Alert **39f82660-1486-11ec-96c5-6991d4f42be9** created
 
 ### securityscorecard-alert-score-threshold-create
+
 ***
 Create alert based threshold met
 
 #### Base Command
 
 `securityscorecard-alert-score-threshold-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -956,12 +970,14 @@ Create alert based threshold met
 >Alert **3cede6c0-1486-11ec-92bd-ff2223ac2147** created
 
 ### securityscorecard-alert-delete
+
 ***
 Delete an alert
 
 #### Base Command
 
 `securityscorecard-alert-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -974,6 +990,7 @@ Delete an alert
 There is no context output for this command.
 
 #### Command Example
+
 ```securityscorecard-alert-delete alert_id=3cede6c0-1486-11ec-92bd-ff2223ac2147 alert_type=score```
 
 #### Human Readable Output
@@ -1091,6 +1108,7 @@ List alerts triggered in the last week
 #### Human Readable Output
 
 >### Latest Alerts for user username@domain.com
+>
 >|Alert ID|Company|Creation Time|Details|Domain|
 >|---|---|---|---|---|
 >| c2f4d398-6e3a-5c2b-a8ad-285427caf9eb | Shijigroup | 2021-09-10T01:04:24.064Z | **Patching Cadence** **drops** by -3 to 88 (B)<br/> | shijigroup.com |
@@ -1111,6 +1129,7 @@ Retrieve the service providers of a domain
 #### Base Command
 
 `securityscorecard-company-services-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
