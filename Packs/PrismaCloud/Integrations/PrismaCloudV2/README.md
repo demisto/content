@@ -2833,6 +2833,162 @@ Get permission list. You must provide either "query" or "next_token".
 >### Next Page Token:
 >token2
 
+### Access Keys
+
+***
+Access keys are a secure way to enable programmatic access to the Prisma Cloud API. By default, only the System Admin has API access and can enable API access for other administrators. If you have API access, you can create up to two access keys.
+
+A service account is a special Prisma Cloud identity used to access Prisma Cloud programmatically via API.
+
+To create a service account, see [Add Service Accounts On Prisma Cloud
+](https://docs.prismacloud.io/en/enterprise-edition/content-collections/administration/add-service-account-prisma-cloud)
+#### Base Command
+
+`prisma-cloud-access-key-create`
+
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+|-------------------| --- | --- |
+| name              | Access key name. | Required | 
+| expires-on             | Timestamp in milliseconds when access key expires. Default:0. | Optional | 
+
+#### Context Output
+
+| **Path**                  | **Type** | **Description**       |
+|---------------------------| --- |-----------------------|
+| PrismaCloud.AccessKeys.id  | String | Access key ID.        | 
+| PrismaCloud.AccessKeys.secretKey | String | Access key secret. |
+
+#### Command example
+```!prisma-cloud-access-key-create name=MyNewKey```
+#### Context Example
+```json
+{
+    "PrismaCloud": {
+        "AccessKeys": [
+            {
+                "Id": "Id",
+                "Secret Key": "Secret Key"
+            }
+        ]
+    }
+}
+```
+
+`prisma-cloud-access-keys-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+|-------------------| --- | --- |
+| access-key             | Returns the metadata of the access key that has the specified ID. | Optional | 
+| limit           | Maximum number of entries to return. | Optional | 
+
+#### Context Output
+
+| **Path**                           | **Type** | **Description**             |
+|------------------------------------|----------|-----------------------------|
+| PrismaCloud.AccessKeys.id          | String   | Access key ID.               | 
+| PrismaCloud.AccessKeys.name        | String   | The name of the access key.                        |
+| PrismaCloud.AccessKeys.createdBy   | String   | The user who created the access key.                  | 
+| PrismaCloud.AccessKeys.createdTs   | String   | Time access key was created. |
+| PrismaCloud.AccessKeys.expiresOn   | String   | The time the access key expires.       |
+| PrismaCloud.AccessKeys.lastUsedTime | String   | The last time the access key was used.        | 
+| PrismaCloud.AccessKeys.status      | String   | Access key status.           |
+| PrismaCloud.AccessKeys.role.id     | String   | User role ID.       | 
+| PrismaCloud.AccessKeys.role.name   | String   | User role name.              |
+| PrismaCloud.AccessKeys.roleType    | String   | User role permission type.   | 
+| PrismaCloud.AccessKeys.username    | String   | Access key user name.        |
+
+#### Command example
+```!prisma-cloud-access-keys-list limit=2```
+#### Context Example
+```json
+{
+    "PrismaCloud": {
+        "AccessKeys": [
+            {
+                "id": "string",
+                "name": "string",
+                "createdBy": "string",
+                "createdTs": "number",
+                "lastUsedTime": "number",
+                "status": "string",
+                "expiresOn": "number",
+                "role": {
+                    "id": "string",
+                    "name": "string"
+                },
+                "roleType": "string",
+                "username": "string"
+            },
+            {
+                "id": "string",
+                "name": "string",
+                "createdBy": "string",
+                "createdTs": "number",
+                "lastUsedTime": "number",
+                "status": "string",
+                "expiresOn": "number",
+                "role": {
+                    "id": "string",
+                    "name": "string"
+                },
+                "roleType": "string",
+                "username": "string"
+            }
+        ]
+    }
+}
+```
+
+`prisma-cloud-access-key-disable`
+
+#### Input
+
+| **Argument Name** | **Description**                                              | **Required** |
+|-------------------|--------------------------------------------------------------| --- |
+| access-key              | Access key ID.                                                | Required | 
+
+#### Command example
+```!prisma-cloud-access-key-disable access-key=id```
+
+#### Human Readable Output
+
+> Access key mockmock-mock-mock-mock-mockmockmock was disabled successfully
+
+`prisma-cloud-access-key-enable`
+
+#### Input
+
+| **Argument Name** | **Description**                                              | **Required** |
+|-------------------|--------------------------------------------------------------| --- |
+| access-key              | Access key ID.                                                | Required |
+
+#### Command example
+```!prisma-cloud-access-key-enable access-key=id```
+
+#### Human Readable Output
+
+> Access key mockmock-mock-mock-mock-mockmockmock was enabled successfully
+
+`prisma-cloud-access-key-delete`
+
+#### Input
+
+| **Argument Name** | **Description**                                              | **Required** |
+|-------------------|--------------------------------------------------------------| --- |
+| access-key              | Access key ID.                                                | Required | 
+
+#### Command example
+```!prisma-cloud-access-key-delete access-key=id```
+
+#### Human Readable Output
+
+> Access key mockmock-mock-mock-mock-mockmockmock was successfully deleted successfully
+
 ## Breaking changes from the previous version of this integration - Prisma Cloud v2
 The following sections list the changes in this version.
 
