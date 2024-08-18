@@ -121,7 +121,8 @@ filter source_log_event = "alert"
 	type_cloud = lowercase(if(traffic_type = "CloudApp", site, null)),
 	type_web = lowercase(if(traffic_type ~= "[w|W]eb", site, null)),
 	lower_b = lowercase(action),
-	lower_c = lowercase(device)
+	lower_c = lowercase(device),
+	src_username = arrayindex((regexctract(ur_normalized, "\S+)\@"), 0)
 | alter
 	xdm.event.duration = session_duration,
 	xdm.source.sent_packets = total_packets,
@@ -166,7 +167,7 @@ filter source_log_event = "alert"
 	xdm.source.user.identifier = account_id,
 	xdm.source.user.ou = organization_unit,
 	xdm.auth.privilege_level = if(activity_type ~= "[A|a]dmin", "ADMIN", activity_type ~= "[U|u]ser", "USER", "UNKNOWN"),
-	xdm.source.user.username = coalesce(user, user_id, ur_normalized),
+	xdm.source.user.username = coalesce(user, user_id, src_username, ur_normalized),
 	xdm.source.user_agent = useragent,
 	xdm.target.file.file_type = object_type,
 	xdm.target.file.filename = object,
@@ -181,10 +182,17 @@ filter source_log_event = "alert"
 	xdm.target.location.region = dst_region,
 	xdm.target.location.timezone = dst_timezone,
 	xdm.target.port = to_integer(dstport),
-	xdm.source.port = to_integer(srcport),	
+	xdm.source.port = to_integer(srcport),
 	xdm.target.sent_bytes = server_bytes,
 	xdm.target.url = coalesce(page, web_url),
-	xdm.target.user.identifier = userkey;
+	xdm.target.user.identifier = userkey,
+	// DLP Alert fields
+	xdm.source.process.executable.size = file_size,
+	xdm.source.user.upn = coalesce(from_user, ur_normalized),
+	xdm.email.mime = mime_type,
+	xdm.source.process.executable.sha256 = sha256,
+	xdm.target.user.upn = to_user,
+	xdm.network.rule = if(dlp_rule = "",null, dlp_rule);
 // Audit Logs
 filter source_log_event = "audit" or type = "admin_audit_logs"
 | alter

@@ -343,6 +343,26 @@
         "site": {
           "type": "string",
           "is_array": false
-    }
+    },
+      "file_size": {
+          "type": "int",
+          "is_array": false
+    },
+      "from_user": {
+          "type": "string",
+          "is_array": false
+      },
+      "mime_type": {
+          "type": "string",
+          "is_array": false
+      },
+      "to_user": {
+          "type": "string",
+          "is_array": false
+      },
+      "dlp_rule": {
+          "type": "string",
+          "is_array": false
+      }
   }
 }
