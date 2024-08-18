@@ -430,4 +430,4 @@ def test_fetch_indicators_malware(mocker):
     for i in range(18, 23):
         assert indicators[i]['type'] == 'Malware'
     assert len(indicators) == 23
-    assert debug_logs.call_args_list[6][0][0] == 'Feed Unit42 v2: 5 malware Indicators were created.'
+    assert debug_logs.call_args_list[6][0][0] == 'Feed Unit42 v2: 5 Malware Indicators were created.'
