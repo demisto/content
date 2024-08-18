@@ -2240,7 +2240,25 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
     return remote_incident_id
 
 
+def validate_code_issues_list_args(args):
+    license_type = args.get('license_type')
+    if license_type not in LICENSE_TYPES and license_type:
+        raise DemistoException('invalid license type')
+    
+    if args.get('limit'):
+        del args['limit']
+    if args.get('scopes'):
+        del args['scopes']
+    if args.get('term'):
+        del args['term']
+        
+    if not args:
+        raise DemistoException("At least one filtering argument is required, excluding `scopes` and `term`.")
+
 def code_issues_list_command(client, args):
+    
+    validate_code_issues_list_args(args)
+    
     fixable_only = argToBoolean(args.get('fixable_only', False))
     scopes = argToList(args.get('scopes'))
     term = args.get('term')
@@ -2259,8 +2277,6 @@ def code_issues_list_command(client, args):
     code_categories = argToList(args.get('code_categories'))
     limit = arg_to_number(args.get('limit')) or 50
     
-    if license_type not in LICENSE_TYPES:
-        raise DemistoException('invalid license type')
     
     limit_for_request = limit
     if limit>1000:
@@ -2279,7 +2295,7 @@ def code_issues_list_command(client, args):
                                                    vulnerability_risk_factors=vulnerability_risk_factors, iac_tags=iac_tags,
                                                    license_type=license_type, code_categories=code_categories,
                                                    limit=limit_for_request, offset=offset)
-        res_issues.extend([response])
+        res_issues.extend([response['data']])
         
         for issue in response['data']:
             issues_for_readable_output.append({
@@ -2296,10 +2312,10 @@ def code_issues_list_command(client, args):
     headers = ['Repository', 'First Detected', 'Policy', 'Severity', 'Labels']
     readable_output = tableToMarkdown('Issues list:', issues_for_readable_output, headers, removeNull=True)
     return CommandResults(outputs_prefix='PrismaCloud.CodeIssue',
-                          outputs_key_field='need to check this out',  #TODO
-                          outputs=res_issues,  #TODO
+                          #outputs_key_field='need to check this out',  #TODO
+                          outputs=res_issues,
                           readable_output=readable_output,
-                          raw_response=  [] #TODO
+                          raw_response=res_issues
                           )
 
 
