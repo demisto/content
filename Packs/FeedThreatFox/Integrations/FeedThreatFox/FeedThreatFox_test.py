@@ -41,8 +41,8 @@ test_check_params_good_arguments_data = [
     ),  # expected
     (
         {"hash": "2151c4b970eff0071948dbbc19066aa4"},  # case hash
-        ("hash"),
-    ),  # expected
+        ("hash"), # expected
+    ),  
     (
         {"tag": "Magecart", "limit": 10},  # case tag with limit
         ("tag"), # expected
