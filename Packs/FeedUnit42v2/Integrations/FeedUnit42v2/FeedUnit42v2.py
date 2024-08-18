@@ -538,7 +538,6 @@ def fetch_indicators(client: Client, feed_tags: Optional[list] = None, tlp_color
 
     item_types_to_fetch_from_api = ['report', 'indicator', 'malware', 'campaign', 'attack-pattern', 'relationship',
                                     'course-of-action', 'intrusion-set']
-    # tlp = STIX2XSOARParser.get_tlp(indicator_json)
     client.get_stix_objects(items_types=item_types_to_fetch_from_api)
 
     for type_, objects in client.objects_data.items():
