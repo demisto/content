@@ -132,14 +132,14 @@ def main() -> None:  # pragma: no cover
     args = demisto.args()
     command = demisto.command()
     api_key = params.get('apikey', {}).get('password')
-    base_url = urljoin(params.get('url'), '/api/v1')
+    base_url = urljoin(params.get('url'), '/v1.0')
     verify_certificate = not params.get('insecure', False)
 
     # How much time before the first fetch to retrieve events
     first_fetch_time = datetime.now().isoformat()
     proxy = params.get('proxy', False)
     alert_status = params.get('alert_status', None)
-    max_events_per_fetch = params.get('max_events_per_fetch', 1000)
+    max_events_per_fetch = params.get('max_events_per_fetch', 10000)
 
     demisto.debug(f'Command being called is {command}')
     try:

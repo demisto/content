@@ -44,7 +44,7 @@ def test_test_module_command():
     Then:
     - Test module passed
     """
-    from HelloWorldEventCollector import test_module
+    from IBMSecurityVerifyEventCollector import test_module
     first_fetch_str = '2022-12-21T03:42:05Z'
     base_url = 'https://server_url/'
     client = Client(
