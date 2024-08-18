@@ -12,7 +12,7 @@ urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 
-LOG_LINE = "THREAT FOX-"
+LOG_LINE = "THREAT FOX -"
 LIMIT_SUPPORTED_QUERIES = ['tag', 'malware']
 
 
