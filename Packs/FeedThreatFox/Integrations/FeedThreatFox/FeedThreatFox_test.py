@@ -1,4 +1,3 @@
-from CommonServerPython import FeedIndicatorType
 from CommonServerPython import DemistoException, FeedIndicatorType
 import json
 from freezegun import freeze_time
