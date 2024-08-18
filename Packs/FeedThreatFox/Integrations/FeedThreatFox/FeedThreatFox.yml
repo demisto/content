@@ -147,7 +147,7 @@ script:
     - description: Malware to search by. For available malware options, please refer to the API documentation- https://threatfox.abuse.ch/api/.
       name: malware
       required: false
-    - description: Maximum indicators to search for. Available only when searching by 'malware' or 'tag'.
+    - description: Maximum indicators to search for. Available only when searching by 'malware' or 'tag'. Max is 1000.
       name: limit
       required: false
       defaultValue: '50'
