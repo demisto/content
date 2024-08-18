@@ -206,7 +206,8 @@ def to_date(date) -> Optional[str]:
     """
     if date:
         parsed_date = arg_to_datetime(date, required=False)
-        return parsed_date.strftime('%Y-%m-%dT%H:%M:%SZ')
+        if parsed_date:
+            return parsed_date.strftime('%Y-%m-%dT%H:%M:%SZ')
     return None
 
 
