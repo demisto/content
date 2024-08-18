@@ -19,7 +19,7 @@ configuration:
   section: Connect
 - display: Indicator Reputation
   name: feedReputation
-  defaultvalue: Malicious
+  defaultvalue: Bad
   type: 18
   required: false
   section: Collect
