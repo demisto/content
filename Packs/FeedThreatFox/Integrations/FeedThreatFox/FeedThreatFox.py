@@ -1,4 +1,3 @@
-import pytz
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -319,9 +318,9 @@ def threatfox_get_indicators_command(client: Client, args: dict[str, Any]) -> Co
         raise DemistoException(f'failed to run command, {query_status=}, {query_data=}')
 
     parsed_indicators = parse_indicators_for_get_command(result.get('data') or result)
-    
+
     demisto.debug(f'{LOG_LINE} got {len(parsed_indicators)} indicators')
-    
+
     human_readable = tableToMarkdown(name='Indicators', t=parsed_indicators,
                                      headers=['ID', 'Value', 'Description', 'MalwareFamilyTags',
                                               'AliasesTags', 'FirstSeenBySource', 'LastSeenBySource', 'ReportedBy',
@@ -337,7 +336,8 @@ def fetch_indicators_command(client: Client, with_ports: bool, confidence_thresh
     days_for_query = int(interval / 1440)  # The interval is validated already in the main
 
     if last_run:
-        last_successful_run = dateparser.parse(last_run["last_successful_run"], settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': True})
+        last_successful_run = dateparser.parse(last_run["last_successful_run"], settings={
+                                               'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': True})
         if last_successful_run:
             time_delta = now - last_successful_run
             days_for_query = time_delta.days + 1
@@ -352,7 +352,6 @@ def fetch_indicators_command(client: Client, with_ports: bool, confidence_thresh
 
     if response.get('query_status') != 'ok':
         raise DemistoException(f"couldn't fetch, {response.get('query_status')}")
-
 
     indicators = response['data']
     demisto.debug(f'{LOG_LINE} got {len(indicators)}')
