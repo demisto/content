@@ -2361,7 +2361,7 @@ def test_module(client: Client, params: Dict[str, Any]) -> str:
 
 def main() -> None:
     params: Dict[str, Any] = demisto.params()
-    args={'scopes': ['Secrets', 'Licenses'], 'offset': 10, 'term': 'bla'}#: Dict[str, Any] = demisto.args()
+    args: Dict[str, Any] = demisto.args()
     url = format_url(str(params.get('url')))
     verify_certificate: bool = not params.get('insecure', False)
     proxy = params.get('proxy', False)
@@ -2375,7 +2375,7 @@ def main() -> None:
 
     return_v1_output = params.get('output_old_format', False)
 
-    command = 'prisma-cloud-code-issues-list'#demisto.command()
+    command = demisto.command()
     demisto.debug(f'Command being called is {command}')
     is_test_module: bool = (command == 'test-module')
 
