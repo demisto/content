@@ -1,39 +1,26 @@
-[INGEST:vendor="msft", product="o365_general", target_dataset="msft_o365_general_raw", no_hit=keep]
-filter to_string(CreationTime) ~= "UTC|:\d{2}(?:[\.\d]+)?Z"
+[RULE: O365_timestamp_parsing]
+filter to_string(CreationTime) ~= "UTC"
 | alter
-    tmp_string_CreationTime = to_string(CreationTime)
-| alter
-    tmp_check_format = if(tmp_string_CreationTime ~= "UTC", parse_timestamp("%Y-%m-%d %H:%M:%E*S %Z", tmp_string_CreationTime), tmp_string_CreationTime ~= ":\d{2}(?:[\.\d]+)?Z", parse_timestamp("%Y-%m-%dT%H:%M:%E*SZ", tmp_string_CreationTime))
-| alter
-    _time = tmp_check_format
-| fields -tmp*;
+    // Supports 2024-07-18 12:12:12 UTC OR 2024-07-18 12:12:12.123 UTC
+    _time = parse_timestamp("%Y-%m-%d %H:%M:%E*S %Z", to_string(CreationTime));
 
-[INGEST:vendor="msft", product="o365_exchange_online", target_dataset="msft_o365_exchange_online_raw", no_hit=keep]
-filter to_string(CreationTime) ~= "UTC|:\d{2}(?:[\.\d]+)?Z"
-| alter
-    tmp_string_CreationTime = to_string(CreationTime)
-| alter
-    tmp_check_format = if(tmp_string_CreationTime ~= "UTC", parse_timestamp("%Y-%m-%d %H:%M:%E*S %Z", tmp_string_CreationTime), tmp_string_CreationTime ~= ":\d{2}(?:[\.\d]+)?Z", parse_timestamp("%Y-%m-%dT%H:%M:%E*SZ", tmp_string_CreationTime))
-| alter
-    _time = tmp_check_format
-| fields -tmp*;
+filter to_string(CreationTime) ~= ":\d{2}(?:[\.\d]+)?Z"
+    // Supports 2024-07-18T12:12:12Z OR 2024-07-18T12:12:12.123Z
+    _time = parse_timestamp("%Y-%m-%dT%H:%M:%E*SZ", to_string(CreationTime));
 
-[INGEST:vendor="msft", product="o365_sharepoint_online", target_dataset="msft_o365_sharepoint_online_raw", no_hit=keep]
-filter to_string(CreationTime) ~= "UTC|:\d{2}(?:[\.\d]+)?Z"
-| alter
-    tmp_string_CreationTime = to_string(CreationTime)
-| alter
-    tmp_check_format = if(tmp_string_CreationTime ~= "UTC", parse_timestamp("%Y-%m-%d %H:%M:%E*S %Z", tmp_string_CreationTime), tmp_string_CreationTime ~= ":\d{2}(?:[\.\d]+)?Z", parse_timestamp("%Y-%m-%dT%H:%M:%E*SZ", tmp_string_CreationTime))
-| alter
-    _time = tmp_check_format
-| fields -tmp*;
+filter to_string(CreationTime) ~= ":\d{2}(?:[\.\d]+)?$"
+    // Supports 2024-07-03T07:32:24 OR 2024-07-03T07:32:24.123
+    _time = parse_timestamp("%Y-%m-%dT%H:%M:%E*S", to_string(CreationTime));
 
-[INGEST:vendor="msft", product="o365_dlp", target_dataset="msft_o365_dlp_raw", no_hit=keep]
-filter to_string(CreationTime) ~= "UTC|:\d{2}(?:[\.\d]+)?Z"
-| alter
-    tmp_string_CreationTime = to_string(CreationTime)
-| alter
-    tmp_check_format = if(tmp_string_CreationTime ~= "UTC", parse_timestamp("%Y-%m-%d %H:%M:%E*S %Z", tmp_string_CreationTime), tmp_string_CreationTime ~= ":\d{2}(?:[\.\d]+)?Z", parse_timestamp("%Y-%m-%dT%H:%M:%E*SZ", tmp_string_CreationTime))
-| alter
-    _time = tmp_check_format
-| fields -tmp*;
+
+[INGEST:vendor="msft", product="O365 General", target_dataset="msft_o365_general_raw", no_hit=keep]
+call O365_timestamp_parsing;
+
+[INGEST:vendor="msft", product="O365 Exchange Online", target_dataset="msft_o365_exchange_online_raw", no_hit=keep]
+call O365_timestamp_parsing;
+
+[INGEST:vendor="msft", product="O365 Sharepoint Online", target_dataset="msft_o365_sharepoint_online_raw", no_hit=keep]
+call O365_timestamp_parsing;
+
+[INGEST:vendor="msft", product="O365 DLP", target_dataset="msft_o365_dlp_raw", no_hit=keep]
+call O365_timestamp_parsing;
