@@ -5,6 +5,8 @@ from bs4 import BeautifulSoup
 from itertools import chain
 from collections.abc import Callable
 
+# TODO: Delete this maybe? Not yet
+
 
 """ CONSTANTS """
 

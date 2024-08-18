@@ -2,6 +2,8 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from traceback import format_exc
 
+# TODO: Delete this maybe? Not yet
+
 
 def arr_to_csv_command(array: list[str] | str) -> str:
     csv = ','.join(array)

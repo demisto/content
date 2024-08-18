@@ -8,6 +8,8 @@ import urllib3
 import requests
 import ipaddress
 
+# TODO: Delete this maybe? Not yet
+
 # disable insecure warnings
 urllib3.disable_warnings()
 

@@ -4,6 +4,8 @@ import dateparser
 import urllib3
 from MicrosoftApiModule import *
 
+# TODO: Delete this maybe? Not yet
+
 urllib3.disable_warnings()
 
 ''' GLOBAL VARS '''
