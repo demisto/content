@@ -326,8 +326,8 @@ def test_value(indicator, expected_value):
         Then:
             - The value of the indicator is given, when the value is an ip and port then the port is dumped.
     """
-    from FeedThreatFox import value
-    value = value(indicator)
+    from FeedThreatFox import get_value
+    value = get_value(indicator)
     assert value == expected_value
 
 
