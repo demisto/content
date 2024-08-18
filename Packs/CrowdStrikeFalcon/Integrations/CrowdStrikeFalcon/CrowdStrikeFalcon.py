@@ -5943,11 +5943,14 @@ def list_quarantined_file_command(args: dict) -> CommandResults:
     if isinstance(files, list):
         for file in files:
             if isinstance(file, dict) and 'composite_ids' in file:
-                file['detect_ids'] = file['composite_ids']
-                file.pop('composite_ids')
+                file['detect_ids'] = file.pop('composite_ids')
 
-    human_readable = tableToMarkdown('CrowdStrike Falcon Quarantined File', files, headers=QUARANTINE_FILES_OUTPUT_HEADERS,
-                                     is_auto_json_transform=True, headerTransform=underscoreToCamelCase, sort_headers=False,
+    human_readable = tableToMarkdown('CrowdStrike Falcon Quarantined File',
+                                     t=files,
+                                     headers=QUARANTINE_FILES_OUTPUT_HEADERS,
+                                     is_auto_json_transform=True,
+                                     headerTransform=underscoreToCamelCase,
+                                     sort_headers=False,
                                      removeNull=True)
 
     return CommandResults(
