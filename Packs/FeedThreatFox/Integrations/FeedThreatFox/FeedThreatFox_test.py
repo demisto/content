@@ -37,8 +37,8 @@ test_check_params_good_arguments_data = [
     ),  # expected
     (
         {"search_term": "1.1.1.1"},  # case search_term
-        ("search_term"),
-    ),  # expected
+        ("search_term"), # expected
+    ), 
     (
         {"hash": "2151c4b970eff0071948dbbc19066aa4"},  # case hash
         ("hash"), # expected
