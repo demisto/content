@@ -1293,6 +1293,8 @@ script:
       required: true
     - description: The email address of the sender.
       name: from
+    - description: The sender Name that appears on the receiver side
+      name: senderDisplayName
     - description: The content (body) of the email to be sent in plain text.
       name: body
     - description: The subject for the email to be sent.
