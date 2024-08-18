@@ -13,7 +13,7 @@ This integration was integrated and tested with version 6.0.3 of ThreatFox Feed.
     | Use system proxy settings |  | False |
     | Trust any certificate (not secure) |  | False |
     | Fetch indicators |  | False |
-    | Source Reliability | Reliability of the source providing the intelligence data. | False |
+    | Source Reliability | Reliability of the source providing the intelligence data. | True |
     | Indicator Reputation | Indicators from this integration instance will be marked with this reputation. | False |
     | Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed. | False |
     | Indicator Expiration Method | The method to be used to expire indicators from this feed. Default: indicatorType | False |
