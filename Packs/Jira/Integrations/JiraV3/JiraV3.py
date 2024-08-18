@@ -5,7 +5,6 @@ from abc import ABCMeta
 from collections.abc import Callable
 from collections import defaultdict
 from bs4 import BeautifulSoup
-from datetime import timezone
 import hashlib
 from copy import deepcopy
 from mimetypes import guess_type
@@ -3648,7 +3647,7 @@ def get_system_timezone() -> Any:
     """Returns the system's timezone.
     This will also print to the debug console the system timezone.
     """
-    system_timezone = datetime.now(timezone.utc).astimezone().tzinfo
+    system_timezone = datetime.utcnow().astimezone().tzinfo
     demisto.debug(f'Timezone of the system: {system_timezone}')
     return system_timezone
 
