@@ -1,0 +1,85 @@
+{
+    "alerts_flows": {
+      "count": 2,
+      "data": {
+        "Probe_01": {
+          "2919": [
+            {
+              "protocol": "TLS",
+              "flow_id": 3977941930273493,
+              "Rule_id": 6568,
+              "probe_name": "Probe_01",
+              "port": 0,
+              "src_ip": "29",
+              "src_port": 708,
+              "dest_ip": "18",
+              "dest_port": 265
+            }
+          ],
+          "9248": [
+            {
+              "protocol": "SMTP",
+              "flow_id": 1019894248824468,
+              "Rule_id": 72283,
+              "probe_name": "Probe_01",
+              "port": 0,
+              "src_ip": "92",
+              "src_port": 989,
+              "dest_ip": "58",
+              "dest_port": 863
+            }
+          ]
+        }
+        
+      },
+      "total": {
+        "total": 297
+      }
+    },
+    "alerts_files": {
+      "count": 1,
+      "data": {
+        "Probe_02": {
+          "1543": [
+            {
+              "protocol": "TLS",
+              "flow_id": 1436546297219159,
+              "Rule_id": 34416,
+              "probe_name": "Probe_02",
+              "port": 0,
+              "src_ip": "15",
+              "src_port": 147,
+              "dest_ip": "96",
+              "dest_port": 439
+            }
+          ]
+        }
+      },
+      "total": {
+        "total": 200000
+      }
+    },
+    "alerts_usecase": {
+      "count": 1,
+      "data": {
+        "Probe_02": {
+        "1138": [
+          {
+            "protocol": "HTTPS",
+            "flow_id": 1732394911099593,
+            "Rule_id": 8542,
+            "probe_name": "Probe_02",
+            "port": 0,
+            "src_ip": "11",
+            "src_port": 98,
+            "dest_ip": "18",
+            "dest_port": 118
+          }
+        ]
+      }
+      },
+      "total": {
+        "total": 298
+      }
+    }
+  }

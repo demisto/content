@@ -1,0 +1,72 @@
+[
+    {
+        "EntityA": "0.0.0.1",
+        "EntityAType": "IP",
+        "EntityB": "0.0.0.2",
+        "EntityBType": "IP",
+        "Relationship": "communicated-with"
+    },
+    {
+        "EntityA": "0.0.0.1",
+        "EntityAType": "IP",
+        "EntityB": "0.0.0.3",
+        "EntityBType": "IP",
+        "Relationship": "communicated-with"
+    },
+    {
+        "EntityA": "0.0.0.1",
+        "EntityAType": "IP",
+        "EntityB": "0.0.0.4",
+        "EntityBType": "IP",
+        "Relationship": "communicated-with"
+    },
+    {
+        "EntityA": "0.0.0.1",
+        "EntityAType": "IP",
+        "EntityB": "0.0.0.5",
+        "EntityBType": "IP",
+        "Relationship": "communicated-with"
+    },
+    {
+        "EntityA": "0.0.0.1",
+        "EntityAType": "IP",
+        "EntityB": "0.0.0.6",
+        "EntityBType": "IP",
+        "Relationship": "communicated-with"
+    },
+    {
+        "EntityA": "0.0.0.1",
+        "EntityAType": "IP",
+        "EntityB": "test1.aaa",
+        "EntityBType": "Domain",
+        "Relationship": "resolves-to"
+    },
+    {
+        "EntityA": "0.0.0.1",
+        "EntityAType": "IP",
+        "EntityB": "test2.bb",
+        "EntityBType": "Domain",
+        "Relationship": "resolves-to"
+    },
+    {
+        "EntityA": "0.0.0.1",
+        "EntityAType": "IP",
+        "EntityB": "test3.as",
+        "EntityBType": "Domain",
+        "Relationship": "resolves-to"
+    },
+    {
+        "EntityA": "0.0.0.1",
+        "EntityAType": "IP",
+        "EntityB": "test4.com",
+        "EntityBType": "Domain",
+        "Relationship": "resolves-to"
+    },
+    {
+        "EntityA": "0.0.0.1",
+        "EntityAType": "IP",
+        "EntityB": "test5.ovh",
+        "EntityBType": "Domain",
+        "Relationship": "resolves-to"
+    }
+]
