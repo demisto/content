@@ -72,7 +72,6 @@ configuration:
   - never
   - interval
   - indicatorType
-  - suddenDeath
   required: false
   type: 17
 - defaultvalue: '60'
@@ -148,7 +147,7 @@ script:
     - contextPath: CVE.Description
       description: The description of the CVE.
       type: String
-  dockerimage: demisto/python3:3.10.14.92207
+  dockerimage: demisto/python3:3.11.9.106403
   feed: true
   runonce: false
   script: ''
