@@ -89,6 +89,7 @@ def create_query(query_arg, id: str | None = None, search_term: str | None = Non
     if query_arg in LIMIT_SUPPORTED_QUERIES:
         q_limit = arg_to_number(limit) or 50
         if q_limit > 1000:
+            demisto.debug("Limit higher than 1000. Getting first 1000 indicators.")
             q_limit = 1000
         query['limit'] = q_limit
 
