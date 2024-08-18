@@ -49,8 +49,8 @@ test_check_params_good_arguments_data = [
     ),  # expected
     (
         {"malware": "Cobalt Strike", "limit": 10},  # case malware without limit (limit is needed, there is a default value)
-        ("malware"),
-    ),  # expected
+        ("malware"), # expected
+    ),
 ]
 
 
