@@ -1,7 +1,6 @@
 {
-    "name": "Microsoft Advanced Threat Analytics (Deprecated)",
-    "description": "Deprecated. No available replacement.",
-    "hidden": true,
+    "name": "Microsoft Advanced Threat Analytics",
+    "description": "Manage suspicious activities, monitoring alerts and entities on Microsoft ATA.",
     "support": "xsoar",
     "currentVersion": "1.0.18",
     "author": "Cortex XSOAR",
