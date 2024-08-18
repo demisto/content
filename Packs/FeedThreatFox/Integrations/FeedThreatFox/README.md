@@ -46,8 +46,8 @@ Retrieves indicators from the ThreatFox API.
 | search_term | Indicator value to search for | Optional | 
 | id | Indicator ID to search for. | Optional | 
 | hash | Hash to search for. | Optional | 
-| tag | Tag to search for. | Optional | 
-| malware | Malware to search for. | Optional | 
+| tag | Tag to search by. For available tag options, please refer to the API documentation- https://threatfox.abuse.ch/api/. | Optional | 
+| malware | Malware to search by. For available malware options, please refer to the API documentation- https://threatfox.abuse.ch/api/. | Optional | 
 | limit | Maximum indicators to search for. Available only when searching by 'malware' or 'tag'. Default is 50. | Optional | 
 
 #### Context Output

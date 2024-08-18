@@ -139,10 +139,10 @@ script:
     - description: Hash to search by.
       name: hash
       required: false
-    - description: Tag to search by.
+    - description: Tag to search by. For available tag options, please refer to the API documentation- https://threatfox.abuse.ch/api/.
       name: tag
       required: false
-    - description: Malware to search by. For example, 'Cobalt Strike'.
+    - description: Malware to search by. For available malware options, please refer to the API documentation- https://threatfox.abuse.ch/api/.
       name: malware
       required: false
     - description: Maximum indicators to search for. Available only when searching by 'malware' or 'tag'.
