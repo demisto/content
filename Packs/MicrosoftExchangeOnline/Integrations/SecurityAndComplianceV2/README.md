@@ -17,6 +17,65 @@ This integration was integrated and tested with [Security & Compliance Center](h
 
 ## Permissions in the Security & Compliance Center
 
+### Overview
+In response to Microsoft's deprecation of the App ID, the following changes to existing app registration in Azure are required:
+1. Add the `Exchange.ManageAsApp` application permissions.
+2. Enable "Allow public client flows" in the authentication section.
+3. Add an app secret to the app registration.
+
+### Step-by-Step Instructions
+
+#### 1. Add Exchange.Manage Delegated Permissions
+
+1. **Navigate to Azure Portal:**
+   Go to the [Azure Portal](https://portal.azure.com/) and sign in with your administrator account.
+
+2. **Access App Registrations:**
+   In the left-hand navigation pane, select **Azure Active Directory**. Then, under **Manage**, select **App registrations**.
+
+3. **Select Your App:**
+   Find and select the app registration you are working on.
+
+4. **Add Permissions:**
+   - Under **Manage**, select **API permissions**.
+   - Click on **Add a permission**.
+   - Select **APIs my organization uses**.
+   - Type "Office" in the search bar and select **Office 365 Exchange Online**.
+   - Choose **Application permissions**.
+   - Search for `Exchange.ManageAsApp` and check the corresponding box.
+   - Click on **Add permissions**.
+   - Ensure the permissions are granted for your organization by selecting **Grant admin consent for [Your Organization]** and confirming the action.
+
+#### 2. Enable "Allow Public Client Flows"
+
+1. **Navigate to Authentication Settings:**
+   From your app registration, under **Manage**, select **Authentication**.
+
+2. **Enable Public Client Flows:**
+   - Scroll down to the **Advanced settings** section.
+   - Locate the setting **Allow public client flows** and set it to **Yes**.
+   - Click **Save** at the top to apply the changes.
+
+#### 3. Add an App Secret
+
+1. **Navigate to Certificates & Secrets:**
+   From your app registration, under **Manage**, select **Certificates & secrets**.
+
+2. **Add a Client Secret:**
+   - Click on **New client secret**.
+   - Provide a description for the client secret.
+   - Choose an expiration period that meets your organization's security policy.
+   - Click **Add**.
+   - After the secret is created, copy the value immediately as it will not be displayed again. Store this secret securely, as it will be used in your application to authenticate.
+
+
+### Additional Resources
+- [Azure Active Directory App Registrations](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app)
+- [API Permissions in Microsoft Graph](https://docs.microsoft.com/en-us/graph/permissions-reference)
+- [Configure Authentication in Azure AD](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-auth-code-flow)
+- [Add a Client Secret](https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-create-service-principal-portal#option-2-create-a-new-application-secret)
+
+
 ### Authentication
 
 To access the Security & Compliance Center, the user who is configuring the account which will be used in O365 S&C, 
