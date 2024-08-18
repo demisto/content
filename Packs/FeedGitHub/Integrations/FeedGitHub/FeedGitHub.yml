@@ -156,7 +156,7 @@ script:
       name: limit
     description: Gets indicators from the feed within a specified date range and up to a maximum limit..
     name: github-get-indicators
-  dockerimage: demisto/taxii2:1.0.0.105766
+  dockerimage: demisto/taxii2:1.0.0.107875
   feed: true
   isfetch: false
   longRunning: false
