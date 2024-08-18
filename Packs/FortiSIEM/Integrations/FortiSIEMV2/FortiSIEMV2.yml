@@ -34,7 +34,7 @@ configuration:
   - System Cleared
   type: 16
   required: false
-- additionalinfo: In some cases, performance might be impacted by using 'Fetch With Events' mode.
+- additionalinfo: Fetch With Events mode is available for FortiSiem versions up to 6.6 only. In some cases, performance might be impacted by using 'Fetch With Events' mode.
   defaultvalue: Fetch Without Events
   display: Fetch Mode
   name: fetch_mode
@@ -330,7 +330,7 @@ script:
     - defaultValue: '1'
       description: The page number of the results to retrieve. Minimum value is 1.
       name: page
-    description: List events by the specified incident ID.
+    description: List events by the specified incident ID. Available for versions up to 6.6 FortiSiem only.
     name: fortisiem-event-list-by-incident
     outputs:
     - contextPath: FortiSIEM.Event.eventType
