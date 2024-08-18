@@ -217,7 +217,7 @@ def test_module_command(client: Client, username: str, password: str, *_) -> tup
         DemistoException: If test failed.
     """
     results = client.test_module(username=username, password=password)
-    if results.status_code == 200:
+    if results.status_code == 200:  # type: ignore
         return None, None, 'ok'
     raise DemistoException(f'Test module failed, {results}')
 
