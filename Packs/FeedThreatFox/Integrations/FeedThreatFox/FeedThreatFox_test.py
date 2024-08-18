@@ -370,8 +370,8 @@ parse_fetch_data = [
       'reference': 'bla8', 'reporter': 'bla9', 'tags': ['bla10']}, True, False, 'CLEAR',
      {'value': 'www...', 'type': 'URL', 'fields': {'indicatoridentification': '123', 'description': 'bla2',  # expected
       'aliases': 'bla6', 'firstseenbysource': '2024-08-04T01:50:15Z', 'lastseenbysource': '2024-08-05T01:50:15Z',
-                                                   'reportedby': 'bla9', 'Tags': ['bla6', 'bla1', 'bla10'], 'publications': [{'link': 'bla8',
-                                                                                                                              'title': 'Malware', 'source': 'ThreatFox'}], 'confidence': 100, 'trafficlightprotocol': 'CLEAR'},
+      'reportedby': 'bla9', 'Tags': ['bla6', 'bla1', 'bla10'], 'publications': [{'link': 'bla8',
+      'title': 'Malware', 'source': 'ThreatFox'}], 'confidence': 100, 'trafficlightprotocol': 'CLEAR'},
       'rawJSON': {'id': '123', 'ioc': 'www...', 'threat_type': 'bla1', 'threat_type_desc': 'bla2', 'ioc_type': 'url',
                   'ioc_type_desc': 'bla3', 'malware': 'bla4', 'malware_printable': 'Unknown malware', 'malware_alias': 'bla6',
                   'malware_malpedia': 'bla7', 'confidence_level': 100, 'first_seen': '2024-08-04 01:50:15 UTC',
@@ -384,16 +384,16 @@ parse_fetch_data = [
       'reference': 'bla8', 'reporter': 'bla9', 'tags': ['bla10']}, True, True, 'CLEAR',
      {'value': 'www...', 'type': 'URL', 'fields': {'indicatoridentification': '123', 'description': 'bla2',  # expected
       'malwarefamily': 'bla11', 'aliases': 'bla6', 'firstseenbysource': '2024-08-04T01:50:15Z',
-                                                   'lastseenbysource': '2024-08-05T01:50:15Z', 'reportedby': 'bla9', 'Tags': ['bla11', 'bla6', 'bla1', 'bla10'],
-                                                   'publications': [{'link': 'bla8', 'title': 'bla11', 'source': 'ThreatFox'}], 'confidence': 100,
-                                                   'trafficlightprotocol': 'CLEAR'}, 'relationships': [{'name': 'communicated-by',
-                                                                                                        'reverseName': 'communicated-with', 'type': 'IndicatorToIndicator', 'entityA': 'www...',
-                                                                                                        'entityAFamily': 'Indicator', 'entityAType': 'URL', 'entityB': 'bla11',
-                                                                                                        'entityBFamily': 'Indicator', 'entityBType': 'Malware', 'fields': {}}], 'rawJSON': {'id': '123',
+      'lastseenbysource': '2024-08-05T01:50:15Z', 'reportedby': 'bla9', 'Tags': ['bla11', 'bla6', 'bla1', 'bla10'],
+      'publications': [{'link': 'bla8', 'title': 'bla11', 'source': 'ThreatFox'}], 'confidence': 100,
+      'trafficlightprotocol': 'CLEAR'}, 'relationships': [{'name': 'communicated-by',
+      'reverseName': 'communicated-with', 'type': 'IndicatorToIndicator', 'entityA': 'www...',
+      'entityAFamily': 'Indicator', 'entityAType': 'URL', 'entityB': 'bla11',
+      'entityBFamily': 'Indicator', 'entityBType': 'Malware', 'fields': {}}], 'rawJSON': {'id': '123',
       'ioc': 'www...', 'threat_type': 'bla1', 'threat_type_desc': 'bla2', 'ioc_type': 'url',
-                                                                                                                                                                                            'ioc_type_desc': 'bla3', 'malware': 'bla4', 'malware_printable': 'bla11', 'malware_alias': 'bla6',
-                                                                                                                                                                                            'malware_malpedia': 'bla7', 'confidence_level': 100, 'first_seen': '2024-08-04 01:50:15 UTC',
-                                                                                                                                                                                            'last_seen': '2024-08-05 01:50:15 UTC', 'reference': 'bla8', 'reporter': 'bla9', 'tags': ['bla10']}},
+      'ioc_type_desc': 'bla3', 'malware': 'bla4', 'malware_printable': 'bla11', 'malware_alias': 'bla6',
+      'malware_malpedia': 'bla7', 'confidence_level': 100, 'first_seen': '2024-08-04 01:50:15 UTC',
+      'last_seen': '2024-08-05 01:50:15 UTC', 'reference': 'bla8', 'reporter': 'bla9', 'tags': ['bla10']}},
      ['bla11', 'bla6', 'bla1', 'bla10'])
 ]
 
@@ -424,8 +424,10 @@ first_run_data = [
 ]
 
 
-@pytest.mark.parametrize('with_ports, confidence_threshold, create_relationship, interval, tlp_color, last_run, expected', first_run_data)
-def test_fetch_indicators_command__first_run(mocker, with_ports, confidence_threshold, create_relationship, interval, tlp_color, last_run, expected):
+@pytest.mark.parametrize('with_ports, confidence_threshold, create_relationship, interval, tlp_color, last_run, expected',
+                         first_run_data)
+def test_fetch_indicators_command__first_run(mocker, with_ports, confidence_threshold, create_relationship, interval, tlp_color,
+                                             last_run, expected):
     """
         Given:
             - An arguments with no last_run
@@ -451,8 +453,10 @@ second_run_data = [
 
 
 @freeze_time("2024-07-10T15:21:13Z")
-@pytest.mark.parametrize('with_ports, confidence_threshold, create_relationship, interval, tlp_color, last_run, expected', second_run_data)
-def test_fetch_indicators_command__second_run(mocker, with_ports, confidence_threshold, create_relationship, interval, tlp_color, last_run, expected):
+@pytest.mark.parametrize('with_ports, confidence_threshold, create_relationship, interval, tlp_color, last_run, expected',
+                         second_run_data)
+def test_fetch_indicators_command__second_run(mocker, with_ports, confidence_threshold, create_relationship, interval, tlp_color,
+                                              last_run, expected):
     """
         Given:
             - An indicator, with_ports, create_relationship, tlp_color arguments
