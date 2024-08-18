@@ -86,6 +86,5 @@ scripttarget: 0
 subtype: python3
 dockerimage: demisto/rakyll-hey:1.0.0.103237
 runas: DBotWeakRole
-deprecated: true
 tests:
 - No test
