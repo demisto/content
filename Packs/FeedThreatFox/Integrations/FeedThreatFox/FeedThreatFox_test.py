@@ -45,8 +45,8 @@ test_check_params_good_arguments_data = [
     ),  # expected
     (
         {"tag": "Magecart", "limit": 10},  # case tag with limit
-        ("tag"),
-    ),  # expected
+        ("tag"), # expected
+    ), 
     (
         {"malware": "Cobalt Strike", "limit": 10},  # case malware without limit (limit is needed, there is a default value)
         ("malware"), # expected
