@@ -491,8 +491,8 @@ script:
       defaultValue: append
       auto: PREDEFINED
       predefined:
-      - append
-      - replace
+      - Append
+      - Replace
     - name: interval_in_seconds
       description: The interval in seconds between each poll.
       defaultValue: 30

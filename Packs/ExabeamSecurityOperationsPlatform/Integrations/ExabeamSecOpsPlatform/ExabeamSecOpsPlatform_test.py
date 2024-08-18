@@ -529,14 +529,14 @@ def test_table_record_list_command(mocker, args, mock_response, expected_output)
             {"case_id": "123"},
             "case",
             {"id": "123", "name": "Test Case", "riskScore": "80"},
-            {"id": "123", "name": "Test Case", "riskScore": "80"},
+            [{"id": "123", "name": "Test Case", "riskScore": "80"}],
             "ExabeamPlatform.Case",
         ),
         (
             {"alert_id": "456"},
             "alert",
             {"id": "456", "name": "Test Alert", "riskScore": "80"},
-            {"id": "456", "name": "Test Alert", "riskScore": "80"},
+            [{"id": "456", "name": "Test Alert", "riskScore": "80"}],
             "ExabeamPlatform.Alert",
         ),
         #  without item_id

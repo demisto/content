@@ -16,7 +16,7 @@
         "xsoar",
         "marketplacev2"
     ],
-        "itemPrefix": [
+    "itemPrefix": [
         "Exabeam"
     ]
 }

@@ -420,7 +420,7 @@ def generic_search_command(client: Client, args: dict, item_type: str) -> Comman
         start_time = get_date(args.get('start_time', '7 days ago'), "start_time")
         end_time = get_date(args.get('end_time', 'today'), "end_time")
         if start_time > end_time:
-            raise DemistoException("Start time must be before end time.")
+            raise DemistoException("The start time argument must be earlier than the end time.")
         kwargs = {
             'filter': process_string(args.get('query') or ""),
             'fields': argToList(args.get('fields', '*')),
@@ -830,8 +830,8 @@ def fetch_incidents(client: Client, params: dict[str, str], last_run) -> tuple[l
             "limit": limit, "include_related_rules": True}
 
     cases = case_search_command(client, args).outputs
-    # if not isinstance(cases, list):
-    #     raise DemistoException("The response did not contain a list of cases.")
+    if not isinstance(cases, list):
+        raise DemistoException("The response did not contain a list of cases.")
     demisto.debug(f"Response contain {len(cases)} cases")
 
     ids_exists = last_run.get("last_ids", [])
