@@ -297,6 +297,11 @@ HOST_STATUS_DICT = {
 }
 
 
+QUARANTINE_FILES_OUTPUT_HEADERS = ['id', 'aid', 'cid', 'sha256', 'paths', 'state', 'detect_ids', 'alert_ids', 'hostname',
+                                   'username', 'date_updated', 'date_created', 'extracted',
+                                   'release_path_for_removable_media', 'primary_module', 'is_on_removable_disk',
+                                   'sandbox_report_id', 'sandbox_report_state']
+
 CPU_UTILITY_INT_TO_STR_KEY_MAP = {
     1: 'Lowest',
     2: 'Low',
@@ -5935,8 +5940,15 @@ def list_quarantined_file_command(args: dict) -> CommandResults:
         )
 
     files = list_quarantined_files(ids).get('resources')
-    human_readable = tableToMarkdown('CrowdStrike Falcon Quarantined File', files, is_auto_json_transform=True,
-                                     headerTransform=underscoreToCamelCase, sort_headers=False, removeNull=True)
+    if isinstance(files, list):
+        for file in files:
+            if isinstance(file, dict) and 'composite_ids' in file:
+                file['detect_ids'] = file['composite_ids']
+                file.pop('composite_ids')
+
+    human_readable = tableToMarkdown('CrowdStrike Falcon Quarantined File', files, headers=QUARANTINE_FILES_OUTPUT_HEADERS,
+                                     is_auto_json_transform=True, headerTransform=underscoreToCamelCase, sort_headers=False,
+                                     removeNull=True)
 
     return CommandResults(
         outputs_prefix='CrowdStrike.QuarantinedFile',
