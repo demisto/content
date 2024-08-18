@@ -2,10 +2,10 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: PrismaCloud v2
+  id: PrismaCloud v2 dev
   version: -1
-name: PrismaCloud v2
-display: Prisma Cloud v2
+name: PrismaCloud v2 dev
+display: Prisma Cloud v2 dev
 category: Network Security
 description: Prisma Cloud secures infrastructure, workloads and applications, across the entire cloud-native technology stack.
 configuration:

@@ -2297,6 +2297,7 @@ def code_issues_list_command(client, args):
     readable_output = tableToMarkdown('Issues list:', issues_for_readable_output, headers, removeNull=True)
     return CommandResults(outputs_prefix='PrismaCloud.CodeIssue',
                           outputs_key_field='need to check this out',  #TODO
+                          outputs=res_issues,  #TODO
                           readable_output=readable_output,
                           raw_response=  [] #TODO
                           )
