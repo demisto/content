@@ -1,0 +1,18 @@
+commonfields:
+  id: enrich_exclude_button
+  version: -1
+name: enrich_exclude_button
+script: ''
+type: python
+tags:
+- indicator-action-button
+enabled: true
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.11.9.106403
+runas: DBotWeakRole
+engineinfo: {}
+tests:
+- No tests (auto formatted)
+fromversion: 8.8.0
