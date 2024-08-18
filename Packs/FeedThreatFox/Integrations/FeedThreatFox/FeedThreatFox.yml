@@ -28,8 +28,7 @@ configuration:
   - Good
   - Suspicious
   - Bad
-  additionalinfo: Indicators from this integration instance will be marked with this
-    reputation.
+  additionalinfo: Indicators from this integration instance will be marked with this reputation.
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: C - Fairly reliable
   display: Source Reliability
@@ -43,7 +42,7 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: false
+  required: true
 - display: Confidence Threshold
   name: confidence_threshold
   required: false
@@ -59,9 +58,9 @@ configuration:
   - RED
   - AMBER
   - GREEN
-  - CLEAR
+  - WHITE
   type: 15
-  defaultvalue: CLEAR
+  defaultvalue: WHITE
   required: false
   section: Collect
   advanced: true
@@ -82,7 +81,7 @@ configuration:
   type: 1
   required: false
   section: Collect
-- display: Feed Fetch Interval (in whole days)
+- display: Feed Fetch Interval
   name: feedFetchInterval
   required: false
   defaultvalue: 1440
@@ -93,7 +92,7 @@ configuration:
 - display: Return IOCs with Ports
   name: with_ports
   required: false
-  defaultvalue: false
+  defaultvalue: 'false'
   section: Collect
   advanced: true
   type: 8
@@ -101,20 +100,18 @@ configuration:
 - display: Create relationship
   name: create_relationship
   required: false
-  defaultvalue: false
+  defaultvalue: 'false'
   section: Collect
   advanced: true
   type: 8
   additionalinfo: If selected, indicators will be created with relationships.
 - display: Bypass exclusion list
   name: feedBypassExclusionList
-  defaultvalue: false
+  defaultvalue: 'false'
   type: 8
   required: false
   section: Collect
-  additionalinfo: When selected, the exclusion list is ignored for indicators from
-    this feed. This means that if an indicator from this feed is on the exclusion
-    list, the indicator might still be added to the system.
+  additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
 - display: Use system proxy settings
   name: proxy
   type: 8
@@ -125,6 +122,10 @@ configuration:
   type: 8
   required: false
   section: Connect
+- name: feedTags
+  display: Tags
+  type: 0
+  additionalinfo: Supports CSV values.
 description: ThreatFox is a free platform from abuse.ch with the goal of sharing indicators of compromise (IOCs) associated with malware. Use the ThreatFox Feed integration to fetch indicators from the feed.
 display: ThreatFox Feed
 name: ThreatFox Feed
