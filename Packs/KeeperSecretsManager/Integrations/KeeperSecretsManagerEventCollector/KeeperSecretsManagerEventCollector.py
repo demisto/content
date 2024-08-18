@@ -387,12 +387,12 @@ def load_json(path: str):
 
 
 def get_audit_logs(
-    client: Client, start_event_time: int, max_fetch_limit: int, last_fetched_ids: set[str]
+    client: Client, last_latest_event_time: int, max_fetch_limit: int, last_fetched_ids: set[str]
 ) -> list[dict[str, Any]]:
     continue_fetching = True
     events_to_return: list[dict[str, Any]] = []
-    # start_event_time -> UNIX epoch time in seconds
-    start_time_to_fetch = start_event_time
+    # last_latest_event_time -> UNIX epoch time in seconds
+    start_time_to_fetch = last_latest_event_time
     fetched_ids = last_fetched_ids
     res_count = 0
     while continue_fetching and res_count < max_fetch_limit:
@@ -421,7 +421,7 @@ def get_audit_logs(
                 }
                 # Last run of pagination, avoiding endless loop if all page has the same time.
                 # We do not have other eay to handle this case.
-                if start_event_time == start_time_to_fetch:
+                if last_latest_event_time == start_time_to_fetch:
                     demisto.debug("Got equal start and end time, this was the last page.")
                     continue_fetching = False
             else:
@@ -453,12 +453,12 @@ def fetch_events(client: Client, last_run: dict[str, Any], max_fetch_limit: int)
     last_fetch_epoch_time: int = int(last_run.get("last_fetch_epoch_time", "0"))
 
     # (if 0) returns False
-    # last_fetch_epoch_time = last_fetch_epoch_time if last_fetch_epoch_time else int(datetime.now().timestamp())
+    last_fetch_epoch_time = last_fetch_epoch_time if last_fetch_epoch_time else int(datetime.now().timestamp())
     # last_fetch_epoch_time = 0
     last_fetched_ids: set[str] = set(last_run.get("last_fetch_ids", []))
     audit_log = get_audit_logs(
         client=client,
-        start_event_time=last_fetch_epoch_time,
+        last_latest_event_time=last_fetch_epoch_time,
         max_fetch_limit=max_fetch_limit,
         last_fetched_ids=last_fetched_ids,
     )
@@ -488,7 +488,7 @@ def test_module() -> str:
     raise DemistoException(REGISTRATION_FLOW_MESSAGE)
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     """main function, parses params and runs command functions
 
     :return:
