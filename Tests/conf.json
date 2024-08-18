@@ -2953,7 +2953,6 @@
             "playbookID": "Endpoint Enrichment - Generic v2.1 - Test",
             "integrations": [
                 "Cylance Protect v2",
-                "carbonblack-v2",
                 "McAfee ePO v2",
                 "Active Directory Query v2",
                 "VMware Carbon Black EDR v2"
@@ -4175,7 +4174,7 @@
                 "ServiceNow v2",
                 "Core REST API"
             ],
-            "playbookID": "ServiceNow Fetch Incidents Test",
+            "playbookID": "ServiceNow_Fetch_Incidents_Test",
             "instance_names": "snow_basic_auth",
             "fromversion": "6.8.0",
             "is_mockable": false,
