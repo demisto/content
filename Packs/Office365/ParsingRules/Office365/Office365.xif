@@ -14,7 +14,7 @@ filter to_string(CreationTime) ~= ":\d{2}(?:[\.\d]+)?Z"
 filter to_string(CreationTime) ~= ":\d{2}(?:[\.\d]+)?$"
 | alter
     // Supports 2024-07-03T07:32:24 OR 2024-07-03T07:32:24.123
-    _time = parse_timestamp("%Y-%m-%dT%H:%M:%E*S", to_string(CreationTime));
+    _time = parse_timestamp("%Y-%m-%dT%H:%M:%E*S", to_string(CreationTime), "+00:00");
 
 
 [INGEST:vendor="msft", product="O365 General", target_dataset="msft_o365_general_raw", no_hit=keep]
