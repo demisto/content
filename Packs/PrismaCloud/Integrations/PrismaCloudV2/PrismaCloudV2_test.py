@@ -1578,10 +1578,75 @@ def test_code_issues_list_request(mocker, prisma_cloud_v2_client, args, expected
         Given
             args for code-issues-list command
         When
-            - Running code_issues_list_request func.
+            Running code_issues_list_request func.
         Then
             The http request is called with the right json body.
     """
     http_request = mocker.patch.object(prisma_cloud_v2_client, '_http_request', return_value={})
     prisma_cloud_v2_client.code_issues_list_request(**args)
     assert http_request.call_args.kwargs['json_data'] == expected
+    
+
+labels_data = [
+    ([{'metadata': {'imageName': 'weaveworksdemos/front-end:0.3.12'}, 'label': 'Image Referencer'}],  # case one dict
+     ['Image Referencer']),  # expected
+    ([{'label': 'Breaking Change Fix'}, {'metadata': {'imageName': 'weaveworksdemos/front-end:0.3.12'}, 'label': 'Image Referencer'}],  # case two dicts
+     ['Breaking Change Fix', 'Image Referencer']),  # expected
+    (['CustomPolicy'],  # case list
+     ['CustomPolicy']),  # expected
+    ([],  # case empty list
+     [])  # expected
+]
+@pytest.mark.parametrize('labels, expected', labels_data)
+def test_get_labels(labels, expected):
+    """
+        Given
+            labels from raw response
+        When
+            Running get_labels func.
+        Then
+            The func returns a list of correct labels
+    """
+    from PrismaCloudV2 import get_labels
+    res = get_labels(labels)
+    assert res == expected
+    
+    
+valid_args = [
+    ({'license_type': 'type1', 'some_filter': 'value1', 'scopes': 'scope1', 'term': 'term1'}),
+    ({'license_type': 'type2', 'some_filter': 'value1', 'scopes': 'scope1', 'limit': 20, 'term': 'term1'}),
+]
+
+invalid_args = [
+    ({'license_type': 'invalid_type', 'some_filter': 'value1'}, DemistoException, 'Invalid license type.'),
+    ({'scopes': 'scope1', 'term': 'term1', 'limit': 10}, DemistoException, "At least one filtering argument is required, excluding `scopes`, `term`, and `limit`."),
+    ({}, DemistoException, "At least one filtering argument is required, excluding `scopes`, `term`, and `limit`."),
+]
+
+@pytest.mark.parametrize('given', valid_args)
+def test_valid_cases(given):
+    """
+    Given
+        Valid filtering arguments including license type
+    When
+        Running validate_code_issues_list_args function with these arguments
+    Then
+        The function should not raise any exceptions
+    """
+    from PrismaCloudV2 import validate_code_issues_list_args
+    validate_code_issues_list_args(given)
+
+@pytest.mark.parametrize('given, expected_exception, expected_message', invalid_args)
+def test_invalid_cases(given, expected_exception, expected_message):
+    """
+    Given
+        Invalid filtering arguments or missing required filters
+    When
+        Running validate_code_issues_list_args function with these arguments
+    Then
+        The function should raise the expected exception with the correct message
+    """
+    from PrismaCloudV2 import validate_code_issues_list_args
+    with pytest.raises(expected_exception) as exc_info:
+        validate_code_issues_list_args(given)
+    assert str(exc_info.value) == expected_message

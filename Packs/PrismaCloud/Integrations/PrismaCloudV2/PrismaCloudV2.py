@@ -2242,18 +2242,20 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
 
 def validate_code_issues_list_args(args):
     license_type = args.get('license_type')
-    if license_type not in LICENSE_TYPES and license_type:
-        raise DemistoException('invalid license type')
-    
-    if args.get('limit'):
-        del args['limit']
-    if args.get('scopes'):
-        del args['scopes']
-    if args.get('term'):
-        del args['term']
-        
-    if not args:
-        raise DemistoException("At least one filtering argument is required, excluding `scopes` and `term`.")
+    if license_type and license_type not in LICENSE_TYPES:
+        raise DemistoException('Invalid license type.')
+
+    # Create a copy of the dictionary excluding `limit`, `scopes`, and `term`
+    filtered_args = {
+        key: value for key, value in args.items() 
+        if key not in ['limit', 'scopes', 'term']
+    }
+
+    # Ensure there is at least one valid filtering argument
+    if not filtered_args:
+        raise DemistoException(
+            "At least one filtering argument is required, excluding `scopes`, `term`, and `limit`."
+        )
 
 
 def get_labels(labels)->List:
