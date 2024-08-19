@@ -3,39 +3,50 @@ Case management that enables visibility across your tools for continual IR impro
 ## Configure IBM Resilient Systems on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for IBM Resilient Systems.
+2. Search for IBM Security QRadar SOAR.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Server URL (e.g. 192.168.0.1) | True |
-    | Credentials | False |
-    | Password | False |
-    | Organization name | True |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
-    | Fetch incidents | False |
-    | Incident type | False |
-    | First fetch timestamp (YYYY-MM-DDTHH:MM:SSZ). For example: 2020-02-02T19:00:00Z | False |
-    | API key ID | False |
-    | API key secret | False |
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | Server URL (e.g. 192.168.0.1) |  | True |
+    | Organization name |  | True |
+    | API key ID |  | False |
+    | API key secret |  | False |
+    | API key ID |  | True |
+    | API key secret |  | True |
+    | Credentials (Deprecated - use API Key authentication instead) |  | False |
+    | Password |  | False |
+    | Trust any certificate (not secure) |  | False |
+    | Use system proxy settings |  | False |
+    | Incident type |  | False |
+    | Fetch incidents |  | False |
+    | First fetch timestamp (YYYY-MM-DDTHH:MM:SSZ). For example: 2020-02-02T19:00:00Z |  | False |
+    | Maximum incidents to fetch. | Maximum number of incidents per fetch. The maximum is 1000. | False |
+    | Incident Mirroring Direction |  | False |
+    | Close Mirrored XSOAR Incidents | When selected, closing the IBM Resilient incident with a 'Closed' status, will close the Cortex XSOAR incident. | False |
+    | Close Mirrored IBM Resilient Incidents | When selected, closing the Cortex XSOAR incident will close the incident in IBM Resilient | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### rs-search-incidents
+
 ***
 Query for incidents
-
 
 #### Base Command
 
 `rs-search-incidents`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
+| page | Indicates the starting point for the first record in the dataset. Starting from 1. | Optional | 
+| page_size | The maximum number of records to return in the response. Null or less than 1 to return all records, up to the server-configured maximum limit. When greater than 0. An error will be thrown if the length is greater than the server-configured maximum limit. | Optional | 
+| limit | Maximum number of incidents to retrieve. Default is 1000. | Optional | 
 | severity | Comma-separated list of incident severity, e.g., Low,Medium,High. | Optional | 
 | date-created-before | Created date of the incident before the given date in the formatYYYY-MM-DDTHH:MM:SSZ, e.g., 2018-05-07T10:59:07Z. | Optional | 
 | date-created-after | Created date of the incident after the given date in the format YYYY-MM-DDTHH:MM:SSZ, e.g., 2018-05-07T10:59:07Z. | Optional | 
@@ -48,7 +59,7 @@ Query for incidents
 | nist | NIST Attack Vectors. Possible values: "Attrition", "E-mail", "External/RemovableMedia", "Impersonation", "ImproperUsage", "Loss/TheftOfEquipment", "Other", "Web". Possible values are: Attrition, E-mail, External/RemovableMedia, Impersonation, ImproperUsage, Loss/TheftOfEquipment, Other, Web. | Optional | 
 | status | Incident status. Possible values: "Active" and "Closed". Possible values are: Active, Closed. | Optional | 
 | due-in | Due date of the incident in given time frame (days/hours/minutes). Should be given a number, along with the timeframe argument. | Optional | 
-
+| return_level | The incident data structure returned ("partial", "normal", "full").'. Possible values are: partial, normal, full. | Optional | 
 
 #### Context Output
 
@@ -61,47 +72,6 @@ Query for incidents
 | Resilient.Incidents.Phase | string | Incident Phase. | 
 | Resilient.Incidents.Severity | string | Incident severity. | 
 | Resilient.Incidents.Description | string | Incident description. | 
-
-
-#### Command Example
-```!rs-search-incidents```
-
-#### Context Example
-```json
-{
-    "Resilient": {
-        "Incidents": [
-            {
-                "CreatedDate": "2000-01-01T00:00:00Z",
-                "DiscoveredDate": "1970-01-01T00:00:00Z",
-                "Id": "1234",
-                "Name": "example",
-                "Owner": "example example",
-                "Phase": "Respond",
-                "SequenceCode": "E123-45"
-            },
-            {
-                "CreatedDate": "2000-01-01T00:00:00Z",
-                "DiscoveredDate": "1970-01-01T00:00:00Z",
-                "Id": "5678",
-                "Name": "example",
-                "Owner": "example example",
-                "Phase": "Respond",
-                "SequenceCode": "E678-90"
-            }
-        ]
-    }
-}
-```
-
-#### Human Readable Output
-
->### Resilient Systems Incidents
->|Id|Name|CreatedDate|DiscoveredDate|Owner|Phase|
->|---|---|---|---|---|---|
->| 1234 | example | 2000-01-01T00:00:00Z | 1970-01-01T00:00:00Z | example example | Respond |
->| 5678 | example | 2000-01-01T00:00:00Z | 1970-01-01T00:00:00Z | example example | Respond |
-
 
 ### rs-update-incident
 ***
@@ -928,3 +898,218 @@ Add an artifact to an incident.
 #### Human Readable Output
 
 >The artifact was added successfully to incident 1234
+### rs-upload-incident-attachment
+
+***
+Upload an attachment for an incident.
+
+#### Base Command
+
+`rs-upload-incident-attachment`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| incident_id | Incident ID to update. | Required | 
+| entry_id | EntryID of the file to upload. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### rs-delete-tasks
+
+***
+Deletes a specified list of tasks. Note that only custom tasks can be deleted.
+
+#### Base Command
+
+`rs-delete-tasks`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| task_ids | A comma-separated list of task IDs to be deleted. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### rs-update-incident-note
+
+***
+Updates an incident's comment (“notes” in the UI).
+
+#### Base Command
+
+`rs-update-incident-note`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| incident_id | Incident ID to update its note. | Required | 
+| note_id | Note ID to update. | Required | 
+| note | Text of the note. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### rs-list-task-instructions
+
+***
+Get the task's instructions.
+
+#### Base Command
+
+`rs-list-task-instructions`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| task_id | ID of the task to list its instructions. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Resilient.Task | Dictionary | Task instructions. | 
+
+### rs-get-task-members
+
+***
+Get the members of a task. Private tasks will have the returned "members" property set. Non-private tasks will have a null "members" property.
+
+#### Base Command
+
+`rs-get-task-members`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| task_id | A comma-separated list of task IDs to be deleted. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Resilient.Task | Dictionary | Task members. | 
+
+### rs-list-incident-notes
+
+***
+Gets all of the top-level comments for an incident.
+
+#### Base Command
+
+`rs-list-incident-notes`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| incident_id | Incident ID to update. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Resilient.IncidentNotes | Dictionary | Top-level comments for incident. | 
+
+### rs-delete-task-members
+
+***
+Delete a task's member. This effectively changes the task from a "private" task to a non-private task (to one where any incident member can operate on it).
+
+#### Base Command
+
+`rs-delete-task-members`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| task_id | ID of the task to delete its members. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### rs-delete-incidents
+
+***
+Delete multiple incidents.
+
+#### Base Command
+
+`rs-delete-incidents`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| incident_ids | A comma-separated list of incident IDs to be deleted. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### rs-add-custom-incident-task
+
+***
+Add a custom task to the incident.
+
+#### Base Command
+
+`rs-add-custom-incident-task`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| incident_id | Incident ID to add a custom task to. | Required | 
+| Instructions | Task instructions text. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### rs-list-scripts
+
+***
+Get list of available scripts.
+
+#### Base Command
+
+`rs-list-scripts`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| script_id | Internal ID/name of the script. Leave empty to list all available scripts. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Resilient.Script | Dictionary | Retrieved script or list of scripts with metadata. | 
+
+### rs-list-tasks
+
+***
+Gets an array of open tasks to which the current user is assigned.
+
+#### Base Command
+
+`rs-list-tasks`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Resilient.Tasks | Dictionary | List of open tasks. | 
+
