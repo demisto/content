@@ -148,16 +148,58 @@ class Client(BaseClient):
 
         raise DemistoException(err_msg)
 
-    def search_events(self, limit: int, start_index: int = None, start_date: str = None) -> Dict:
+    def search_events(self, limit: int, start_date: str = None, end_date: str = None, next_link: str = None) -> Dict:
         return super()._http_request(
             method='GET',
-            url_suffix=URL_SUFFIX['EVENTS'],
-            params={'limit': limit, 'start': start_index, 'startDate': start_date}
+            url_suffix=URL_SUFFIX['EVENTS'] + (next_link if next_link else ''),
+            params=None if next_link else {'limit': limit, 'startDate': start_date, end_date}
         )
 
 
 ''' HELPER FUNCTIONS '''
 
+def dedup(curr_events: list[dict[str, Any]], last_events_hashes: dict[int, int] | None):
+    """
+    Deduplicates a list of current events based on their occurrence in a previous set of event hashes.
+
+    This function takes a list of current events and a dictionary of event hashes from previous events.
+    It returns a list of new events that are either not present in the previous set of event hashes or
+    appear more frequently than they did previously.
+
+    Parameters:
+    curr_events (list): A list of current events to be processed.
+    last_events_hashes (dict): A dictionary where keys are hashes of previously seen events and values are their counts.
+
+    Returns:
+    list: A list of new events that are considered deduplicated based on their occurrence.
+    """
+    if not last_events_hashes:
+        return curr_events
+
+    occurrence_dict = {}
+    new_events = []
+
+    for event in curr_events:
+        event_hash = hash(json.dumps(event, sort_keys=True))
+        occurrence_dict[event_hash] = occurrence_dict.get(event_hash, 0) + 1
+        hash_count = last_events_hashes.get(event_hash)
+
+        if hash_count is None or occurrence_dict[event_hash] > hash_count:
+            new_events.append(event)
+
+    return new_events
+
+def build_hash_counter(events: List[Dict[str, Any]], last_run: Dict[str, Any]):
+    events_hashes = [
+        hash(json.dumps(event, sort_keys=True)) for event in events if event['creationDate'] == last_run['last_timestamp']
+    ]
+    hash_counter = {}
+    for event_hash in events_hashes:
+        if event_hash in hash_counter:
+            hash_counter[event_hash] += 1
+        else:
+            hash_counter[event_hash] = 0
+    return hash_counter
 
 def add_time_to_events(events: List[Dict] | None):
     """
@@ -1360,25 +1402,25 @@ def confluence_cloud_group_list_command(client: Client, args: Dict[str, str]) ->
 
 
 def fetch_events(client: Client, last_run: dict[str, Any], limit: int) -> tuple[Dict, List[Dict]]:
-    last_index = last_run.get('last_index')
+    end_date = (time.time()-5)*1000
+    start_date = last_run.get('start_date', end_date-60000)
+    next_link = last_run.get('next_url', None)
+    total_events_count = 0
+    events = [{}]
 
-    if last_index:
-        start_index = last_index + 1
-        response = client.search_events(start_index=start_index, limit=limit)
-        events = response.get('results')
+    while total_events_count < limit and events:
+        if not next_link:
+            response = client.search_events(limit=limit, start_date=str(start_date), end_date=str(end_date))
+            events = dedup(response['results'], last_run.get('last_events', None))
 
-    else:
-        start_date = str(round((time.time() - 60) * 1000))
-        response = client.search_events(start_date=start_date, limit=limit)
-        events = response.get('results')
+        else:
+            response = client.search_events(limit=limit, next_link=next_link)
+            events = response['results']
 
-    last_index = response.get('start') + len(events) - 1
-    demisto.debug(f'Fetched event with id: {last_index}.')
-
-    # Save the next_run as a dict with the last_fetch key to be stored
-    next_run = {'last_index': last_index}
-    demisto.debug(f'Setting next run {next_run}.')
-    return next_run, events
+        next_link = response['results'].get('next', None)
+        last_timestamp = events[0]['creationDate'] if events else None
+        total_events_count += response['size']
+        yield events, next_link, last_timestamp
 
 
 def get_events(client: Client, args: dict) -> tuple[list[Dict], CommandResults]:
@@ -1458,7 +1500,7 @@ def main() -> None:
         args = demisto.args()
         strip_args(args)
         remove_nulls_from_dictionary(args)
-        max_events_per_fetch = params.get('max_events_per_fetch', 10000)
+        limit = params.get('max_events_per_fetch', 10000)
 
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
@@ -1468,10 +1510,16 @@ def main() -> None:
 
         elif command == 'fetch-events':
             last_run = demisto.getLastRun()
-            next_run, events = fetch_events(client, last_run, max_events_per_fetch)
-            add_time_to_events(events)
-            send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
-            demisto.setLastRun(next_run)
+            for events, next_url, last_timestamp in fetch_events(client, last_run, limit):
+                if events:
+                    add_time_to_events(events)
+                    send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+                    demisto.setLastRun({
+                        'next_url': next_url,
+                        'last_timestamp': last_timestamp,
+                        'last_events': build_hash_counter(events, last_run)
+                    })
+
 
         elif command == 'confluence-cloud-get-events':
             should_push_events = argToBoolean(args.get('should_push_events', False))
