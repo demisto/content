@@ -1267,21 +1267,6 @@ FETCH_RESULTS = [
         "type": "Report",
         "value": "[Unit42 ATOM] Main Report",
         "score": 3,
-        "rawJSON": {
-            "unit42_id": "report--a",
-            "unit42_labels": [
-                "intrusion-set"
-            ],
-            "unit42_published": "1994-08-12T11:00:00.000Z",
-            "unit42_created_date": "1993-06-17T11:00:00.000Z",
-            "unit42_modified_date": "1993-06-17T11:00:00.000Z",
-            "unit42_description": "A description of the report",
-            "unit42_object_refs": [
-                "intrusion-set--a",
-                "report--ab"
-            ]
-        },
-        "relationships": [],
         "fields": {
             "stixid": "report--a",
             "firstseenbysource": "1993-06-17T11:00:00.000Z",
