@@ -62,3 +62,5 @@ alter // pre-modeling extractions
     xdm.target.resource.id = attackData -> apiId, // For attacks on API services, this is a unique identifier under which the API is protected. It corresponds to the apiEndPointId value in the API Endpoint Definition API.
     xdm.target.sent_bytes = to_integer(httpMessage -> bytes), // The number of bytes served in the response.
     xdm.target.url = url;
+
+    

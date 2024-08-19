@@ -252,3 +252,5 @@ call o365_common_fields
 	xdm.target.resource.name = if(ObjectId = null, null, ObjectId ~= "^\s*$", null, ObjectId),
 	xdm.alert.description = to_string(AppAccessContext),	
 	xdm.network.rule = to_string(PolicyDetails);
+
+    

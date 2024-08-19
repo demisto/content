@@ -46,3 +46,4 @@ filter _raw_log ~= "httpd"
 | alter XDM.Auth.Client.user.groups = arraycreate(coalesce(Client_user_groups, ""))
 | alter XDM.Auth.application_protocol  = application_protocols;
 
+
