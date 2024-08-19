@@ -753,9 +753,9 @@ def fetch_indicators(client: Client, auto_sync: bool = False):
         demisto.debug("fetching IOCs: running sync with is_first_stage_sync=True")
         # this will happen on the first time we run
         xdr_iocs_sync_command(client=client, is_first_stage_sync=is_first_stage_sync)
-        search_after = integration_context.get('search_after',[])[0]
+        search_after = integration_context.get('search_after')
         demisto.debug(f"{search_after=}")
-        if search_after and search_after > integration_context.get('ts'):
+        if search_after and search_after[0] > integration_context.get('ts'):
             set_sync_time_with_str_time(search_after)
     else:
         # This will happen every fetch time interval as defined in the integration configuration
