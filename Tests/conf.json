@@ -5793,10 +5793,6 @@
         },
         {
             "playbookID": "DBotTrainClustering-test"
-        },
-        {
-            "integrations": "ThreatFox Feed",
-            "playbookID": "Threat Fox Feed Test"
         }
     ],
     "skipped_tests": {

@@ -161,4 +161,4 @@ script:
   dockerimage: demisto/python3:3.11.9.107902
 fromversion: 6.10.0
 tests:
-- Threat Fox Feed Test
+- No tests (auto formatted)
