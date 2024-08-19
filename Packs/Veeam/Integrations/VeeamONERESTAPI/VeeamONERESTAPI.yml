@@ -106,15 +106,18 @@ script:
       description: ""
       type: Number
   - arguments:
-    - name: triggeredAlarmIds
+    - description: 'List of IDs assigned to triggered alarms that you want to resolve.'
+      name: triggeredAlarmIds
       required: true
-    - name: comment
+    - description: 'Additional information.'
+      name: comment
       required: true
-    - name: resolveType
+    - description: 'Type of alarm resolution.'
+      name: resolveType
       required: true
     description: 'Resolve Triggered Alarms.'
     name: veeam-vone-resolve-triggered-alarms
-  dockerimage: demisto/python3:3.10.14.95956
+  dockerimage: demisto/python3:3.11.9.107902
   isFetchSamples: true
   isfetch: true
   runonce: false

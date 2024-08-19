@@ -235,6 +235,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: Use Antivirus Scan?
       id: 965c5d31-ab81-446c-8fe0-34e4b98f31ac
       iscommand: false
       name: Use Antivirus Scan?
@@ -368,6 +369,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: Check Restore Point Existence
       id: 7e82a364-a1d5-412e-835b-03cfbde96a99
       iscommand: false
       name: Check Restore Point Existence
@@ -414,6 +416,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: Check Session State
       id: 79ab3655-f099-46ee-8603-8e423f54ed62
       iscommand: false
       name: Check Session State
@@ -492,6 +495,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: Failed
       id: f41b21b5-50ca-45de-8204-901246cba53d
       iscommand: false
       name: Failed
@@ -584,6 +588,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: Check Folder Availability
       id: c1e79d26-c7a4-4e8f-8c4a-f9d2a9334045
       iscommand: false
       name: Check Folder Availability
@@ -628,6 +633,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: Check Host Availability
       id: 61cc1a28-bfbd-4758-83f3-81627b518338
       iscommand: false
       name: Check Host Availability
@@ -663,6 +669,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: Get Folder Name
       id: f7d93bc3-ab7c-4c6d-819f-32028273c99f
       iscommand: false
       name: Get Folder Name
@@ -699,6 +706,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: Get Host Name
       id: 33218482-06e4-4abe-8dda-8009207e4459
       iscommand: false
       name: Get Host Name
@@ -750,6 +758,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: Start Instant VM Recovery Manually?
       id: 8a470a55-c5aa-4d8c-8b1c-e21be96f3e99
       iscommand: false
       name: Start Instant VM Recovery Manually?
@@ -797,6 +806,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: Finish Migration
       id: fee24af0-9c82-43ef-8d90-101a26411688
       iscommand: false
       name: Finish Migration
@@ -912,6 +922,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: No Clean Restore Points Found
       id: 100b2818-b1e7-4886-8f4a-91be215bec53
       iscommand: false
       name: No Clean Restore Points Found
@@ -1135,6 +1146,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: Get Restored VM Name
       id: 69daebd1-71c0-40f4-8a19-07dec7a9a669
       iscommand: false
       name: Get Restored VM Name

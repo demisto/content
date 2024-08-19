@@ -14,7 +14,6 @@
                 "Cache": null,
                 "cacheVersn": 0,
                 "category": "",
-                "commitMessage": "",
                 "created": "2024-04-11T14:30:10.325064348Z",
                 "dataType": "incidents",
                 "dateRange": {
@@ -51,10 +50,8 @@
                     "all"
                 ],
                 "query": "-category:job and -status:archived and -status:closed and (sourceBrand:\"VBR REST API\" or sourceBrand:\"Veeam ONE REST API\")",
-                "shouldCommit": false,
                 "sizeInBytes": 0,
                 "toServerVersion": "",
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "version": 1,
                 "widgetType": "pie"
@@ -73,7 +70,6 @@
                 "Cache": null,
                 "cacheVersn": 0,
                 "category": "",
-                "commitMessage": "",
                 "created": "2024-04-11T14:30:10.325064348Z",
                 "dataType": "incidents",
                 "dateRange": {
@@ -110,10 +106,8 @@
                     "all"
                 ],
                 "query": "-category:job and -status:archived and -status:closed and (sourceBrand:\"VBR REST API\" or sourceBrand:\"Veeam ONE REST API\")",
-                "shouldCommit": false,
                 "sizeInBytes": 0,
                 "toServerVersion": "",
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "version": 1,
                 "widgetType": "pie"
@@ -132,7 +126,6 @@
                 "Cache": null,
                 "cacheVersn": 0,
                 "category": "",
-                "commitMessage": "",
                 "created": "2024-04-11T14:30:10.325064348Z",
                 "dataType": "incidents",
                 "dateRange": {
@@ -171,10 +164,8 @@
                     "all"
                 ],
                 "query": "(sourceBrand:\"VBR REST API\" or sourceBrand:\"Veeam ONE REST API\")",
-                "shouldCommit": false,
                 "sizeInBytes": 0,
                 "toServerVersion": "",
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "version": 1,
                 "widgetType": "line"
@@ -193,7 +184,6 @@
                 "Cache": null,
                 "cacheVersn": 0,
                 "category": "",
-                "commitMessage": "",
                 "created": "2024-04-11T14:30:10.325064348Z",
                 "dataType": "incidents",
                 "dateRange": {
@@ -232,10 +222,8 @@
                     "all"
                 ],
                 "query": "-category:job and -status:archived and -status:closed and sourceBrand:\"VBR REST API\"",
-                "shouldCommit": false,
                 "sizeInBytes": 0,
                 "toServerVersion": "",
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "version": 1,
                 "widgetType": "line"
@@ -254,7 +242,6 @@
                 "Cache": null,
                 "cacheVersn": 0,
                 "category": "",
-                "commitMessage": "",
                 "created": "2024-04-11T14:30:10.325064348Z",
                 "dataType": "incidents",
                 "sort": [
@@ -344,10 +331,8 @@
                     "all"
                 ],
                 "query": "-status:closed -category:job and sourceBrand:\"VBR REST API\"",
-                "shouldCommit": false,
                 "sizeInBytes": 0,
                 "toServerVersion": "",
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "version": 1,
                 "widgetType": "table"
@@ -366,7 +351,6 @@
                 "Cache": null,
                 "cacheVersn": 0,
                 "category": "",
-                "commitMessage": "",
                 "created": "0001-01-01T00:00:00Z",
                 "dataType": "metrics",
                 "dateRange": {
@@ -407,10 +391,8 @@
                     "all"
                 ],
                 "query": "type:integration command:\"veeam-vbr-create-malware-event\" or command:\"veeam-vbr-start-instant-recovery\" or command:\"veeam-vbr-start-configuration-backup\" or command:\"veeam-vbr-start-instant-recovery-customized\" or command:\"veeam-vone-resolve-triggered-alarms\"",
-                "shouldCommit": false,
                 "sizeInBytes": 0,
                 "toServerVersion": "",
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "version": 0,
                 "widgetType": "line"
@@ -429,7 +411,6 @@
                 "Cache": null,
                 "cacheVersn": 0,
                 "category": "",
-                "commitMessage": "",
                 "created": "2024-03-22T10:49:34.157014641Z",
                 "dataType": "metrics",
                 "dateRange": {
@@ -511,11 +492,9 @@
                 "prevName": "Command execution errors",
                 "propagationLabels": [],
                 "query": "type:integration and name:\"VBR REST API\" or name:\"Veeam ONE REST API\"",
-                "shouldCommit": false,
                 "size": 5,
                 "sizeInBytes": 0,
                 "toServerVersion": "",
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "version": 0,
                 "widgetType": "pie"
@@ -534,7 +513,6 @@
                 "Cache": null,
                 "cacheVersn": 0,
                 "category": "",
-                "commitMessage": "",
                 "created": "2024-03-22T10:49:34.162302083Z",
                 "dataType": "metrics",
                 "dateRange": {
@@ -614,11 +592,9 @@
                 "prevName": "Command execution errors per Instance",
                 "propagationLabels": [],
                 "query": "type:integration and name:\"VBR REST API\" or name:\"Veeam ONE REST API\"",
-                "shouldCommit": false,
                 "size": 5,
                 "sizeInBytes": 0,
                 "toServerVersion": "",
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "version": 0,
                 "widgetType": "pie"
@@ -637,7 +613,6 @@
                 "Cache": null,
                 "cacheVersn": 0,
                 "category": "",
-                "commitMessage": "",
                 "created": "2024-04-11T14:30:10.325064348Z",
                 "dataType": "incidents",
                 "dateRange": {
@@ -676,10 +651,8 @@
                     "all"
                 ],
                 "query": "-category:job and -status:archived and -status:closed and sourceBrand:\"Veeam ONE REST API\"",
-                "shouldCommit": false,
                 "sizeInBytes": 0,
                 "toServerVersion": "",
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "version": 1,
                 "widgetType": "line"
@@ -698,7 +671,6 @@
                 "Cache": null,
                 "cacheVersn": 0,
                 "category": "",
-                "commitMessage": "",
                 "created": "2024-04-11T14:30:10.325064348Z",
                 "dataType": "incidents",
                 "sort": [
@@ -788,10 +760,8 @@
                     "all"
                 ],
                 "query": "-status:closed -category:job and sourceBrand:\"Veeam ONE REST API\"",
-                "shouldCommit": false,
                 "sizeInBytes": 0,
                 "toServerVersion": "",
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "version": 1,
                 "widgetType": "table"

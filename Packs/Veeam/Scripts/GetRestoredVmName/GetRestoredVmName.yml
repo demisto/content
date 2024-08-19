@@ -1,16 +1,18 @@
 args:
-- name: VmName
+- description: 'VM name.'
+  name: VmName
   required: true
 commonfields:
   id: 'GetRestoredVmName'
   version: -1
-dockerimage: demisto/python3:3.10.14.99144
+dockerimage: demisto/python3:3.11.9.107902
 fromversion: 6.10.0
 enabled: true
 engineinfo: {}
 name: GetRestoredVmName
 outputs:
 - contextPath: Veeam.VMNAME.restored_vm_name
+  description: "Restored VM name."
 runas: DBotWeakRole
 runonce: false
 script: ''

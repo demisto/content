@@ -175,6 +175,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: Select Alarm Resolution Type
       id: 6b80abd1-dd5a-47cd-8c7e-4adf6d7f1a6e
       iscommand: false
       name: Select Alarm Resolution Type

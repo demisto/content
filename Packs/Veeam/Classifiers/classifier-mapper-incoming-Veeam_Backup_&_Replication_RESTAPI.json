@@ -9,7 +9,7 @@
                 "Veeam Backup Repository ID": {
                     "simple": "backupRepositoryId"
                 },
-                "Backup Scheduling": {
+                "Veeam Backup Scheduling": {
                     "complex": {
                         "filters": [],
                         "root": "schedule",

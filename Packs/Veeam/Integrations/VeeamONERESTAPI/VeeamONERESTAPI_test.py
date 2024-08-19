@@ -6,7 +6,8 @@ from datetime import datetime
 from CommonServerPython import *
 from VeeamONERESTAPI import DATE_FORMAT, Client, FilterBuilder, Operation, \
     fetch_incidents, search_with_paging, overwrite_last_fetch_time, try_cast_to_int, process_command, \
-    handle_command_with_token_refresh, convert_triggered_alarms_to_incidents, process_error, check_version
+    handle_command_with_token_refresh, convert_triggered_alarms_to_incidents, process_error, check_version, \
+    fetch_converted_incidents, convert_to_list, get_triggered_alarms_command, update_token
 
 SERVER_URL = 'https://test_url.com'
 REQUEST_TIMEOUT = 120
@@ -131,6 +132,24 @@ def test_try_cast_to_int_with_exception(arg):
 
 
 @pytest.mark.parametrize(
+    "string, expected_result",
+    [
+        ("[1, 2, 3]", [1, 2, 3]),
+        ("[4, 5, 6]", [4, 5, 6]),
+        ("[]", [])
+    ]
+)
+def test_convert_to_list(string, expected_result):
+    assert convert_to_list(string) == expected_result
+
+
+def test_convert_to_list_invalid_string():
+    string = "abc"
+    with pytest.raises(Exception):
+        convert_to_list(string)
+
+
+@pytest.mark.parametrize(
     'version, expected_result',
     [
         ('12.1.0.1', 'Exception'),
@@ -146,6 +165,59 @@ def test_check_version(version, expected_result):
             check_version(version)
     else:
         check_version(version)
+
+
+def test_update_token(client, mocker):
+    expected_token = 'token'
+    mocker.patch(
+        'VeeamONERESTAPI.Client.authentication_create_token_request',
+        return_value={'access_token': 'token'}
+    )
+
+    token = update_token(client, 'username', 'password')
+
+    assert token == expected_token
+
+
+@pytest.mark.parametrize(
+    "response, expected_command_results",
+    [
+        (
+            {
+                'items': [
+                    {'id': 1, 'name': 'Alarm 1', 'severity': 3},
+                    {'id': 2, 'name': 'Alarm 2', 'severity': 2},
+                    {'id': 3, 'name': 'Alarm 3', 'severity': 1}
+                ]
+            },
+            {
+                'outputs_prefix': 'Veeam.VONE.TriggeredAlarmInfoPage',
+                'outputs_key_field': '',
+                'outputs': [
+                    {'id': 1, 'name': 'Alarm 1', 'severity': 3},
+                    {'id': 2, 'name': 'Alarm 2', 'severity': 2},
+                    {'id': 3, 'name': 'Alarm 3', 'severity': 1}
+                ],
+                'raw_response': [
+                    {'id': 1, 'name': 'Alarm 1', 'severity': 3},
+                    {'id': 2, 'name': 'Alarm 2', 'severity': 2},
+                    {'id': 3, 'name': 'Alarm 3', 'severity': 1}
+                ]
+            }
+        )
+    ]
+)
+def test_get_triggered_alarms_command(client, mocker, response, expected_command_results):
+    mocker.patch('VeeamONERESTAPI.Client.get_triggered_alarms_request', return_value=response)
+    mocker.patch('VeeamONERESTAPI.try_cast_to_int')
+
+    args = {}
+    command_results = get_triggered_alarms_command(client, args)
+
+    assert command_results.outputs_prefix == expected_command_results['outputs_prefix']
+    assert command_results.outputs_key_field == expected_command_results['outputs_key_field']
+    assert command_results.outputs == expected_command_results['outputs']
+    assert command_results.raw_response == expected_command_results['raw_response']
 
 
 TRIGGERED_ALARMS = util_load_json('test_data/get_triggered_alarms.json')
@@ -210,6 +282,57 @@ def test_convert_triggered_alarms_to_incidents(
     assert mock_search_with_paging.call_count == 2
     assert len(incidents) == 0
     assert alarmsIds == expected_results[2]
+
+
+@pytest.mark.parametrize(
+    'last_run, last_fetch, max_results, errors_by_command, expected_result',
+    [
+        (
+            {'alarms_ids': [1, 2, 3]}, '2022-01-01T00:00:00Z', 10, {'error_in_triggered_alarms': 0},
+            ([], set(), '2022-01-01T00:00:00Z')
+        ),
+    ]
+)
+def test_fetch_converted_incidents(
+    client, mocker, last_run, last_fetch, max_results, errors_by_command, expected_result
+):
+    mock_handle_command_with_token_refresh = mocker.patch('VeeamONERESTAPI.handle_command_with_token_refresh')
+    mock_handle_command_with_token_refresh.return_value = ([], set(), '2022-01-01T00:00:00Z')
+
+    incidents, alarms_ids, last_fetch_time = fetch_converted_incidents(
+        client, last_run, last_fetch, max_results, errors_by_command
+    )
+
+    mock_handle_command_with_token_refresh.assert_called_once()
+    assert incidents == expected_result[0]
+    assert alarms_ids == expected_result[1]
+    assert last_fetch_time == expected_result[2]
+
+
+@pytest.mark.parametrize(
+    'last_run, last_fetch, max_results, errors_by_command, expected_result',
+    [
+        (
+            {'alarms_ids': [1, 2, 3]}, '2022-01-01T00:00:00Z', 10, {'error_in_triggered_alarms': 1},
+            ([{'type': 'incident_on_error'}], set([1, 2, 3]), '2022-01-01T00:00:00Z')
+        ),
+    ]
+)
+def test_fetch_converted_incidents_with_exception(
+    client, mocker, last_run, last_fetch, max_results, errors_by_command, expected_result
+):
+    mocker.patch('VeeamONERESTAPI.handle_command_with_token_refresh')
+    mock_process_error = mocker.patch('VeeamONERESTAPI.process_error')
+    mock_process_error.return_value = ({'type': 'incident_on_error'}, {'error_in_triggered_alarms': 2})
+
+    incidents, alarms_ids, last_fetch_time = fetch_converted_incidents(
+        client, last_run, last_fetch, max_results, errors_by_command
+    )
+
+    mock_process_error.assert_called_once()
+    assert incidents == expected_result[0]
+    assert alarms_ids == expected_result[1]
+    assert last_fetch_time == expected_result[2]
 
 
 @pytest.mark.parametrize(

@@ -75,9 +75,9 @@ Resolve Triggered Alarms
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| triggeredAlarmIds | No description provided. | Required | 
-| comment | No description provided. | Required | 
-| resolveType | No description provided. | Required | 
+| triggeredAlarmIds | List of IDs assigned to triggered alarms that you want to resolve. | Required | 
+| comment | Additional information. | Required | 
+| resolveType | Type of alarm resolution. | Required | 
 
 #### Context Output
 

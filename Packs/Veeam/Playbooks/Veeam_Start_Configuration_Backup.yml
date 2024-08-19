@@ -122,6 +122,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: Check Session State
       id: 777d555e-7ebd-4eb5-80f5-ab9179d95ddb
       iscommand: false
       name: Check Session State
@@ -260,6 +261,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: Failed
       id: ed30eaf6-38ae-4e36-868a-486fa160d879
       iscommand: false
       name: Failed
