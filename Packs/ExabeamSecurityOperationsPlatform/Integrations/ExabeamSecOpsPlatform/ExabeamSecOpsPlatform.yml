@@ -486,7 +486,7 @@ script:
     - name: attributes
       description: A dictionary mapping attribute names to their values, For example:`{"attributeName":["val1", "val2"]}`.
       required: true
-      # type: keyValue
+      type: keyValue
     - name: operation
       description: Options for how data should be uploaded to an existing table.
       defaultValue: Append

@@ -8,8 +8,6 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 TOKEN_EXPIRY_BUFFER = timedelta(seconds=10)
 DEFAULT_LIMIT = 50
 MAX_LIMIT = 3000
-# print(f"{demisto.params()=}")
-# print(f"{demisto.args()=}")
 
 
 ''' CLIENT CLASS '''
@@ -431,23 +429,6 @@ def transform_dicts(input_dict: Dict[str, List[str]]) -> List[Dict[str, str]]:
     return result
 
 
-def process_attributes(attributes: str) -> Dict[str, List[str]]:
-    """
-    Parses a string representation of attributes into a dictionary.
-
-    Args:
-        attributes (str): A JSON-like string representing attributes.
-
-    Returns:
-        Dict[str, List[str]]: Parsed dictionary of attributes.
-    """
-    if not (attributes.startswith("{") and attributes.endswith("}")):
-        attributes = "{" + attributes + "}"
-
-    attributes_dict = json.loads(attributes)
-    return attributes_dict
-
-
 def convert_all_timestamp_to_datestring(incident: dict) -> dict:
     """
     Converts specified timestamp fields in an incident dictionary to date strings.
@@ -790,8 +771,7 @@ def table_record_create_command(args: dict, client: Client) -> PollResult:
     if not (tracker_id := args.get("tracker_id")):
         table_id = args.get("table_id")
         attributes = args.get("attributes", "")
-        attributes_dict = process_attributes(attributes)
-        list_of_dict_attributes = transform_dicts(attributes_dict)
+        list_of_dict_attributes = transform_dicts(attributes)
         operation = args.get("operation")
         payload = {
             "operation": operation,
