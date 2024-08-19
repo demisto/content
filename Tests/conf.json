@@ -22,6 +22,14 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Carbon Black Enterprise EDR",
+            "playbookID": "Carbon Black Enterprise EDR process search with polling Test"
+        },
+        {
+            "integrations": "Carbon Black Enterprise EDR",
+            "playbookID": "Carbon Black Enterprise EDR alert-workflow-update Test"
+        },
+        {
             "integrations": "CipherTrust",
             "playbookID": "Thales CipherTrust Test Playbook - Access Management",
             "fromversion": "6.10.0"
@@ -1821,6 +1829,17 @@
             "playbookID": "EWS V2 Send Mail Test 3"
         },
         {
+            "integrations": [
+                "SMIME Messaging",
+                "EWS v2"
+            ],
+            "instance_names": [
+                "SMIME Messaging",
+                "ews_mail_sender_labdemisto"
+            ],
+            "playbookID": "SMIME_Messaging-Test"
+        },
+        {
             "playbookID": "decodemimeheader_-_test"
         },
         {
@@ -2934,7 +2953,6 @@
             "playbookID": "Endpoint Enrichment - Generic v2.1 - Test",
             "integrations": [
                 "Cylance Protect v2",
-                "carbonblack-v2",
                 "McAfee ePO v2",
                 "Active Directory Query v2",
                 "VMware Carbon Black EDR v2"
@@ -4155,7 +4173,7 @@
                 "ServiceNow v2",
                 "Core REST API"
             ],
-            "playbookID": "ServiceNow Fetch Incidents Test",
+            "playbookID": "ServiceNow_Fetch_Incidents_Test",
             "instance_names": "snow_basic_auth",
             "fromversion": "6.8.0",
             "is_mockable": false,
@@ -4401,13 +4419,6 @@
             "fromversion": "6.0.0",
             "integrations": [
                 "AnsibleAlibabaCloud"
-            ]
-        },
-        {
-            "playbookID": "Carbon Black Enterprise EDR Process Search Test",
-            "fromversion": "5.0.0",
-            "integrations": [
-                "Carbon Black Enterprise EDR"
             ]
         },
         {
@@ -4862,12 +4873,14 @@
             "timeout": 7000,
             "integrations": [
                 "EWSO365",
+                "EWS v2",
                 "Core REST API",
                 "CreateIncidents",
                 "Rasterize"
             ],
             "instance_names": [
                 "ewso365_dev_team",
+                "ewv2_regular",
                 "Create Test Incidents - Phishing Mock"
             ],
             "external_playbook_config": {
@@ -5777,6 +5790,9 @@
             "scripts": [
                 "MattermostAskUser"
             ]
+        },
+        {
+            "playbookID": "DBotTrainClustering-test"
         }
     ],
     "skipped_tests": {
@@ -5978,7 +5994,10 @@
         "Test Playbook - Cortex XDR Malware - Incident Enrichment" : "CIAC-11274",
         "Test XDR Playbook execute script commands": "CIAC-11274",
         "Test XDR Playbook general commands": "CIAC-11274",
-        "Test XDR Playbook": "CIAC-11274"
+        "Test XDR Playbook": "CIAC-11274",
+        "Account Enrichment - Generic v2.1 - Test": "CIAC-11274",
+        "Test_XFE_v2": "CRTX-112127",
+        "Microsoft Advanced Threat Analytics - Test": "CIAC-11499"
     },
     "skipped_integrations": {
         "AWS - Lambda": "No instance - wrong creds, issue CRTX-110456",

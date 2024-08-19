@@ -126,7 +126,6 @@ configuration:
   - never
   - interval
   - indicatorType
-  - suddenDeath
 - display: ''
   name: feedExpirationInterval
   type: 1
