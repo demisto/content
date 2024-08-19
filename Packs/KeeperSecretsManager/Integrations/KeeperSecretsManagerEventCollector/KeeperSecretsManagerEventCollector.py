@@ -479,7 +479,7 @@ def test_authorization(
     client: Client,
 ) -> CommandResults:
     client.test_registration()
-    return CommandResults(readable_output="Successful connection.")
+    return CommandResults(readable_output="Successful connection")
 
 
 def test_module() -> str:
