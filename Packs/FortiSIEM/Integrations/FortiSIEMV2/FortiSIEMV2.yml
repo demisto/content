@@ -34,7 +34,7 @@ configuration:
   - System Cleared
   type: 16
   required: false
-- additionalinfo: Fetch With Events mode is available for FortiSiem version 6.6 and earlier. Note that using Fetch With Events mode may affect performance.
+- additionalinfo: Fetch With Events mode is currently available only for FortiSiem version 6.6 and earlier. Note that using Fetch With Events mode may affect performance.  
   defaultvalue: Fetch Without Events
   display: Fetch Mode
   name: fetch_mode

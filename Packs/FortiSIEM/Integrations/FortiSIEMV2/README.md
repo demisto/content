@@ -20,14 +20,14 @@ If you are upgrading from a previous of this integration, see [Breaking Changes]
     | Maximum incidents per fetch. | Default is 20. Maximum is 200. Setting a value greater than 20 may harm performance, if used with 'Fetch With Events' mode. | False |
     | First fetch timestamp (number, time unit. e.g., 12 hours, 7 days). |  | False |
     | Filter incidents by status. |  | False |
-    | Fetch Mode | Fetch With Events mode is available for FortiSiem version 6.6 and earlier. Note that using Fetch With Events mode may affect performance. | False |
+    | Fetch Mode | Fetch With Events mode is currently available only for FortiSiem version 6.6 and earlier. Note that using Fetch With Events mode may affect performance. | False |
     | Maximum events to fetch per incident. | Default is 20. Maximum is 50. | False |
     | Use system proxy settings |  | False |
     | Trust any certificate (not secure) |  | False |
     | Incident type |  | False |
     | Fetch incidents |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
+1. Click **Test** to validate the URLs, token, and connection.
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
