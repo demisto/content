@@ -156,9 +156,10 @@ configuration:
   name: fetch_job_polling_max_num_attempts
   additionalinfo: "The maximum number of attempts to try and pull results for each log type from a job that was created by its query. Each attempt takes around 1 second. Increasing this value is useful in case there are many logs to pull from a given log type.\nNote: When increasing this number, in case fetching more than 4 logs types together, it is recommended to split different log types for different integration instances"
   type: 0
-  defaultvalue: 10
+  defaultvalue: '10'
   advanced: true
   section: Collect
+  required: false
 - display: Traffic Log Type Query
   name: traffic_query
   additionalinfo: "Traffic Log Type query example: (addr.src in {source}) and (addr.dst in {destination}) and (action eq {action}).\nIn case of multiple devices, for the sake of speed it is recommended to narrow the query to a specific device. \nFor example:(device_name eq dummy_device)"
@@ -220,6 +221,12 @@ configuration:
   type: 13
   section: Connect
   required: false
+- defaultvalue: '1'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  section: Collect
+  type: 19
 description: Manage Palo Alto Networks Firewall and Panorama. Use this pack to manage Prisma Access through Panorama. For more information, see the Panorama documentation.
 display: Palo Alto Networks PAN-OS
 name: Panorama
@@ -881,8 +888,8 @@ script:
       isArray: true
       name: tags
     description: >
-     Creates a service.
-     Note: overrides the service if it already exists.
+      Creates a service.
+      Note: overrides the service if it already exists.
     deprecated: true
     name: panorama-create-service
     outputs:
@@ -8440,6 +8447,8 @@ script:
       required: true
     - description: Name of the file for the state file to be saved. Default will use the hostname as the filename.
       name: filename
+    - description: The IP Address of a Panorama managed firewall. Default will use Panorama-supplied IP Address.
+      name: ip_address
     description: Get the device state from the provided device. Note; This will attempt to connect directly to the provided target to get the device state. If the IP address as reported in "show system info" is unreachable, this command will fail.
     name: pan-os-platform-get-device-state
     outputs:
@@ -9495,7 +9504,7 @@ script:
     - contextPath: Panorama.AuditComment.rule_type
       description: The rule type.
       type: String
-  dockerimage: demisto/pan-os-python:1.0.0.99653
+  dockerimage: demisto/pan-os-python:1.0.0.107786
   isfetch: true
   runonce: false
   script: ''
