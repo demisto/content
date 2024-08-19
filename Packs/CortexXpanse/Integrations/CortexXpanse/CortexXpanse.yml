@@ -115,7 +115,7 @@ configuration:
   type: 0
   section: Collect
 - defaultvalue: 0
-  display: 'Advanced: Minutes to look back when fetching'
+  display: 'Advanced: Minutes to look back when fetching (Warning: exceeding 720 could lead to issues with fetching)'
   additionalinfo: Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created.
   name: look_back
   type: 0
