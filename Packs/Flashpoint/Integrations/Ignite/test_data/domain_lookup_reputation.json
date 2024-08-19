@@ -1,0 +1,34 @@
+[
+    {
+        "Attribute": {
+            "Event": {
+                "RelatedEvent": [],
+                "Tags": [
+                    "actor:APT",
+                    "actor:Lazarus",
+                    "event:observation",
+                    "source:osint"
+                ],
+                "attack_ids": [
+                    "T1001"
+                ],
+                "event_uuid": "00000000-0000-0000-0000-000000000001",
+                "fpid": "0000000000000000000001",
+                "href": "https://api.flashpoint.io/technical-intelligence/v1/event/0000000000000000000001",
+                "info": "Observation: APT Lazarus Reported IOCs [2021-07-28 21:10:34]",
+                "reports": [],
+                "timestamp": "1627527286"
+            },
+            "category": "Network activity",
+            "fpid": "0000000000000000000001",
+            "href": "https://api.flashpoint.io/technical-intelligence/v1/attribute/0000000000000000000001",
+            "timestamp": "1627526875",
+            "type": "domain",
+            "uuid": "00000000-0000-0000-0000-000000000001",
+            "value": {
+                "comment": "",
+                "domain": "dummy.com"
+            }
+        }
+    }
+]
