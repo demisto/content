@@ -387,8 +387,8 @@ class Client(CoreClient):
         return reply.get('reply', {})
 
     def get_multiple_incidents_extra_data(self, exclude_artifacts, incident_id_list=[], gte_creation_time_milliseconds=0,
-                                          status=None, starred=None, starred_incidents_fetch_window=None,
-                                          page_number=0, limit=100):
+                                          statuses=None, starred=None, starred_incidents_fetch_window=None,
+                                          page_number=0, limit=100, offset=0):
         """
         Returns incident by id
         :param incident_id_list: The list ids of incidents
@@ -396,16 +396,22 @@ class Client(CoreClient):
         Maximum number alerts to get in Maximum number alerts to get in "get_multiple_incidents_extra_data" is 50, not sorted
         """
         global ALERTS_LIMIT_PER_INCIDENTS
-        request_data = {}
+        request_data = {
+            'search_from': offset,
+            'sort': {
+                'field': 'creation_time',
+                'keyword': 'asc'
+            }
+        }
         filters: List[Any] = []
         if incident_id_list:
-            incident_id_list = argToList(incident_id_list, transform=lambda x: str(x))
+            incident_id_list = argToList(incident_id_list, transform=str)
             filters.append({"field": "incident_id_list", "operator": "in", "value": incident_id_list})
-        if status:
+        if statuses:
             filters.append({
                 'field': 'status',
-                'operator': 'eq',
-                'value': status
+                'operator': 'in',
+                'value': statuses
             })
         if exclude_artifacts:
             request_data['fields_to_exclude'] = FIELDS_TO_EXCLUDE  # type: ignore
@@ -1069,15 +1075,14 @@ def update_related_alerts(client: Client, args: dict):
 
 
 def fetch_incidents(client: Client, first_fetch_time, integration_instance, exclude_artifacts: bool, last_run: dict,
-                    max_fetch: int = 10, statuses: List = [], starred: Optional[bool] = None,
+                    max_fetch: int = 10, statuses: list = [], starred: Optional[bool] = None,
                     starred_incidents_fetch_window: str = None):
     global ALERTS_LIMIT_PER_INCIDENTS
     # Get the last fetch time, if exists
     last_fetch = last_run.get('time')
     incidents_from_previous_run = last_run.get('incidents_from_previous_run', [])
 
-    incidents_at_last_timestamp = set(last_run.get('incidents_at_last_timestamp', []))
-    new_incidents_at_last_timestamp = []
+    offset: int = last_run.get('offset', 0)  # TODO: ask about integer misses
 
     # Handle first time fetch, fetch incidents retroactively
     if last_fetch is None:
@@ -1086,43 +1091,27 @@ def fetch_incidents(client: Client, first_fetch_time, integration_instance, excl
     if starred:
         starred_incidents_fetch_window, _ = parse_date_range(starred_incidents_fetch_window, to_timestamp=True)
 
-    incidents = []
     if incidents_from_previous_run:
         raw_incidents = incidents_from_previous_run
         ALERTS_LIMIT_PER_INCIDENTS = last_run.get('alerts_limit_per_incident', -1)
     else:
-        if statuses:
-            raw_incidents = []
-            for status in statuses:
-                raw_incident_status = client.get_multiple_incidents_extra_data(
-                    gte_creation_time_milliseconds=last_fetch,
-                    status=status,
-                    limit=max_fetch, starred=starred,
-                    starred_incidents_fetch_window=starred_incidents_fetch_window,
-                    exclude_artifacts=exclude_artifacts)
-                raw_incidents.extend(raw_incident_status)
-            raw_incidents = sorted(raw_incidents, key=lambda inc: inc.get('incident', {}).get('creation_time'))
-        else:
-            raw_incidents = client.get_multiple_incidents_extra_data(
-                gte_creation_time_milliseconds=last_fetch, limit=max_fetch,
-                starred=starred,
-                starred_incidents_fetch_window=starred_incidents_fetch_window,
-                exclude_artifacts=exclude_artifacts)
+        raw_incidents = client.get_multiple_incidents_extra_data(
+            gte_creation_time_milliseconds=last_fetch,
+            statuses=statuses, limit=max_fetch, starred=starred,
+            starred_incidents_fetch_window=starred_incidents_fetch_window,
+            exclude_artifacts=exclude_artifacts, offset=offset
+        )
 
     # save the last 100 modified incidents to the integration context - for mirroring purposes
     client.save_modified_incidents_to_integration_context()
 
     # maintain a list of non created incidents in a case of a rate limit exception
     non_created_incidents: list = raw_incidents.copy()
-    next_run = {}
     try:
+        incidents = []
         for raw_incident in raw_incidents[:max_fetch]:
             incident_data: dict[str, Any] = sort_incident_data(raw_incident) if raw_incident.get('incident') else raw_incident
             incident_id = incident_data.get('incident_id')
-            if incident_id in incidents_at_last_timestamp:  # remove duplicates
-                demisto.debug(f'incident {incident_id!r} is a duplicate, skipping.')
-                non_created_incidents.remove(raw_incident)
-                continue
             alert_count = arg_to_number(incident_data.get('alert_count')) or 0
             if alert_count > ALERTS_LIMIT_PER_INCIDENTS:
                 demisto.debug(f'for incident:{incident_id} using the old call since alert_count:{alert_count} >" \
@@ -1130,9 +1119,11 @@ def fetch_incidents(client: Client, first_fetch_time, integration_instance, excl
                 raw_incident_ = client.get_incident_extra_data(incident_id=incident_id)
                 incident_data = sort_incident_data(raw_incident_)
             sort_all_list_incident_fields(incident_data)
-            incident_data['mirror_direction'] = MIRROR_DIRECTION.get(demisto.params().get('mirror_direction', 'None'))
-            incident_data['mirror_instance'] = integration_instance
-            incident_data['last_mirrored_in'] = int(datetime.now().timestamp() * 1000)
+            incident_data |= {
+                'mirror_direction': MIRROR_DIRECTION.get(demisto.params().get('mirror_direction', 'None')),
+                'mirror_instance': integration_instance,
+                'last_mirrored_in': int(datetime.now().timestamp() * 1000),
+            }
             description = incident_data.get('description')
             occurred = timestamp_to_datestring(incident_data['creation_time'], TIME_FORMAT + 'Z')
             incident: dict[str, Any] = {
@@ -1145,9 +1136,9 @@ def fetch_incidents(client: Client, first_fetch_time, integration_instance, excl
             # Update last run and add incident if the incident is newer than last fetch
             if incident_data.get('creation_time', 0) > last_fetch:
                 last_fetch = incident_data['creation_time']
-                new_incidents_at_last_timestamp = [incident_id]
+                offset = 1
             elif incident_data.get('creation_time') == last_fetch:
-                new_incidents_at_last_timestamp.append(incident_id)
+                offset += 1
 
             incidents.append(incident)
             non_created_incidents.remove(raw_incident)
@@ -1159,12 +1150,14 @@ def fetch_incidents(client: Client, first_fetch_time, integration_instance, excl
         else:
             raise
 
+    next_run = {
+        'incidents_from_previous_run': non_created_incidents,
+        'time': last_fetch,
+        'offset': offset,
+    }
+
     if non_created_incidents:
         next_run['alerts_limit_per_incident'] = ALERTS_LIMIT_PER_INCIDENTS  # type: ignore[assignment]
-    next_run['incidents_from_previous_run'] = non_created_incidents
-    # stay on same timestamp if there are new incidents fetched because there might be more created in the same instant.
-    next_run['time'] = last_fetch + (0 if new_incidents_at_last_timestamp else 1)
-    next_run['incidents_at_last_timestamp'] = new_incidents_at_last_timestamp
 
     return next_run, incidents
 
