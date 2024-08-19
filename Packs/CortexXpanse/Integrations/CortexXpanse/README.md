@@ -7,20 +7,22 @@ This integration was integrated and tested with version 2.0 of Cortex Expander.
 2. Search for Cortex Xpanse.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description**                                                                                                                                                                                                                                     | **Required** |
-    | --- |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
-    | Server URL | The web UI with \`api-\` appended to front \(e.g., https://api-xsiam.paloaltonetworks.com\). For more information, see https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis. | True |
-    | API Key ID | For more information, see https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis.                                                                                              | True |
-    | API Key | **Only standard API key type is supported**.                                                                                                                                                                                                        | True |
-    | Trust any certificate (not secure) |                                                                                                                                                                                                                                                     | False |
-    | Use system proxy settings |                                                                                                                                                                                                                                                     | False |
-    | Fetch incidents |                                                                                                                                                                                                                                                     | False |
-    | Incidents Fetch Interval |                                                                                                                                                                                                                                                     | False |
-    | Incident type |                                                                                                                                                                                                                                                     | False |
-    | Maximum number of alerts per fetch | The maximum number of alerts per fetch. Cannot exceed 100.                                                                                                                                                                                          | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |                                                                                                                                                                                                                                                     | False |
-    | Alert Severities to Fetch | The severity of the alerts that will be fetched. If no severity is provided then alerts of all the severities will be fetched. Note: An alert whose status was changed to a filtered status after its creation time will not be fetched.            | False |
-    | Source Reliability | Reliability of the source providing the intelligence data. Used for !ip and !domain commands.                                                                                                                                                       | False |
+| **Parameter**                                                                    | **Description**                                                                                                                                                                                                                                         | **Required** |
+|----------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
+| Server URL                                                                       | The web UI with \`api-\` appended to front \(e.g., <https://api-xsiam.paloaltonetworks.com\>). For more information, see <https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis>. | True         |
+| API Key ID                                                                       | For more information, see <https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis>.                                                                                                | True         |
+| API Key                                                                          | **Only standard API key type is supported**.                                                                                                                                                                                                            | True         |
+| Trust any certificate (not secure)                                               |                                                                                                                                                                                                                                                         | False        |
+| Use system proxy settings                                                        |                                                                                                                                                                                                                                                         | False        |
+| Fetch incidents                                                                  |                                                                                                                                                                                                                                                         | False        |
+| Incidents Fetch Interval                                                         |                                                                                                                                                                                                                                                         | False        |
+| Incident type                                                                    |                                                                                                                                                                                                                                                         | False        |
+| Maximum number of alerts per fetch                                               | The maximum number of alerts per fetch. Cannot exceed 100.                                                                                                                                                                                              | False        |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |                                                                                                                                                                                                                                                         | False        |
+| Alert Severities to Fetch                                                        | The severity of the alerts that will be fetched. If no severity is provided then alerts of all the severities will be fetched. Note: An alert whose status was changed to a filtered status after its creation time will not be fetched.                | False        |
+| Source Reliability                                                               | Reliability of the source providing the intelligence data. Used for !ip and !domain commands.                                                                                                                                                           | False        |
+| Look Back (Minutes to look back when fetching) | Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created. | False        |
+
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -2950,3 +2952,22 @@ Get a list of all your external websites filtered by authentication type. Maximu
 >| succeeded |
 
 
+### asm-reset-last-run
+
+***
+Resets the fetch incidents last run value, which resets the fetch to its initial fetch state.
+
+
+#### Base Command
+
+`asm-reset-last-run`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+
+#### Context Output
+
+There is no context output for this command.
