@@ -867,119 +867,6 @@ INTRUSION_SET_DATA = [
      "name": "[Endor] Maze Ransomware"}
 ]
 
-INDICATOR_WITH_RELATIONSHIP = {
-    "type": "Report",
-    "value": "[Unit42 ATOM] name",
-    "score": 3,
-    "rawJSON": {
-        "unit42_id": "report--0f86dccd-29bd-46c6-83fd-e79ba040bf0",
-        "unit42_labels": ["intrusion-set"],
-        "unit42_published": "2020-07-30T16:55:31.554Z",
-        "unit42_created_date": "2019-05-21T18:21:23.421Z",
-        "unit42_modified_date": "2021-09-29T15:55:04.815Z",
-        "unit42_description": "description",
-        "unit42_object_refs": ["report--0f86dccd-29bd-46c6-83fd-e79ba040bf1"],
-    },
-    "relationships": [
-        {
-            "name": "related-to",
-            "reverseName": "related-to",
-            "type": "IndicatorToIndicator",
-            "entityA": "[Unit42 ATOM] name",
-            "entityAFamily": "Indicator",
-            "entityAType": "Report",
-            "entityB": "Campaign 1 - [Endor] Maze Ransomware",
-            "entityBFamily": "Indicator",
-            "entityBType": "Campaign",
-            "fields": {},
-        }
-    ],
-    "fields": {
-        "stixid": "report--0f86dccd-29bd-46c6-83fd-e79ba040bf0",
-        "firstseenbysource": "2019-05-21T18:21:23.421Z",
-        "modified": "2021-09-29T15:55:04.815Z",
-        "description": "description",
-        "published": "2020-07-30T16:55:31.554Z",
-        "report_types": [],
-        "tags": ["intrusion-set"],
-        "Report Object References": [
-            {"objectstixid": "report--0f86dccd-29bd-46c6-83fd-e79ba040bf1"}
-        ],
-        "reportedby": "Unit42",
-    },
-}
-
-FETCH_MOCK_RESPONSE = [
-    {
-        "created": "2019-05-21T18:21:23.421Z",
-        "description": "description",
-        "id": "report--0f86dccd-29bd-46c6-83fd-e79ba040bf0",
-        "labels": [
-            "intrusion-set"
-        ],
-        "modified": "2021-09-29T15:55:04.815Z",
-        "name": "name",
-                "object_refs": [
-                    "report--0f86dccd-29bd-46c6-83fd-e79ba040bf1"
-        ],
-        "published": "2020-07-30T16:55:31.554Z",
-        "type": "report"
-    },
-    {
-        "created": "2019-05-21T18:21:23.550Z",
-        "id": "report--0f86dccd-29bd-46c6-83fd-e79ba040bf1",
-        "labels": [
-            "campaign"
-        ],
-        "modified": "2021-09-29T15:55:04.815Z",
-        "name": "name",
-        "object_refs": [
-                "campaign--f69de074-6abd-45a1-909f-51ef8fce808a"
-        ],
-        "published": "2019-10-11T15:26:10.706Z",
-        "type": "report"
-    }
-
-]
-
-REPORTS_INDICATORS_WITH_RELATIONSHIPS = {
-    "type": "Report",
-    "value": "[Unit42 ATOM] name",
-    "score": 3,
-    "rawJSON": {
-            "unit42_id": "report--0f86dccd-29bd-46c6-83fd-e79ba040bf0",
-            "unit42_labels": ["intrusion-set"],
-            "unit42_published": "2020-07-30T16:55:31.554Z",
-            "unit42_created_date": "2019-05-21T18:21:23.421Z",
-            "unit42_modified_date": "2021-09-29T15:55:04.815Z",
-            "unit42_description": "description",
-            "unit42_object_refs": ["report--0f86dccd-29bd-46c6-83fd-e79ba040bf1"],
-    },
-    "relationships": [
-        {
-            "name": "related-to",
-            "reverseName": "related-to",
-            "type": "IndicatorToIndicator",
-            "entityA": "[Unit42 ATOM] name",
-            "entityAFamily": "Indicator",
-            "entityAType": "Report",
-            "entityB": "Campaign 1 - [Endor] Maze Ransomware",
-            "entityBFamily": "Indicator",
-            "entityBType": "Campaign",
-            "fields": {},
-        },
-    ],
-    "fields": {
-        "stixid": "report--0f86dccd-29bd-46c6-83fd-e79ba040bf0",
-        "firstseenbysource": "2019-05-21T18:21:23.421Z",
-        "modified": "2021-09-29T15:55:04.815Z",
-        "description": "description",
-        "published": "2020-07-30T16:55:31.554Z",
-        "report_types": [],
-        "tags": ["intrusion-set"],
-        "reportedby": "Unit42",
-    },
-}
 
 FETCH_RESULTS = [
     {
@@ -1714,3 +1601,117 @@ FETCH_RESULTS = [
         }
     }
 ]
+
+INDICATOR_WITH_RELATIONSHIP = {
+    "type": "Report",
+    "value": "[Unit42 ATOM] name",
+    "score": 3,
+    "rawJSON": {
+        "unit42_id": "report--0f86dccd-29bd-46c6-83fd-e79ba040bf0",
+        "unit42_labels": ["intrusion-set"],
+        "unit42_published": "2020-07-30T16:55:31.554Z",
+        "unit42_created_date": "2019-05-21T18:21:23.421Z",
+        "unit42_modified_date": "2021-09-29T15:55:04.815Z",
+        "unit42_description": "description",
+        "unit42_object_refs": ["report--0f86dccd-29bd-46c6-83fd-e79ba040bf1"],
+    },
+    "relationships": [
+        {
+            "name": "related-to",
+            "reverseName": "related-to",
+            "type": "IndicatorToIndicator",
+            "entityA": "[Unit42 ATOM] name",
+            "entityAFamily": "Indicator",
+            "entityAType": "Report",
+            "entityB": "Campaign 1 - [Endor] Maze Ransomware",
+            "entityBFamily": "Indicator",
+            "entityBType": "Campaign",
+            "fields": {},
+        }
+    ],
+    "fields": {
+        "stixid": "report--0f86dccd-29bd-46c6-83fd-e79ba040bf0",
+        "firstseenbysource": "2019-05-21T18:21:23.421Z",
+        "modified": "2021-09-29T15:55:04.815Z",
+        "description": "description",
+        "published": "2020-07-30T16:55:31.554Z",
+        "report_types": [],
+        "tags": ["intrusion-set"],
+        "Report Object References": [
+            {"objectstixid": "report--0f86dccd-29bd-46c6-83fd-e79ba040bf1"}
+        ],
+        "reportedby": "Unit42",
+    },
+}
+
+FETCH_MOCK_RESPONSE = [
+    {
+        "created": "2019-05-21T18:21:23.421Z",
+        "description": "description",
+        "id": "report--0f86dccd-29bd-46c6-83fd-e79ba040bf0",
+        "labels": [
+            "intrusion-set"
+        ],
+        "modified": "2021-09-29T15:55:04.815Z",
+        "name": "name",
+                "object_refs": [
+                    "report--0f86dccd-29bd-46c6-83fd-e79ba040bf1"
+        ],
+        "published": "2020-07-30T16:55:31.554Z",
+        "type": "report"
+    },
+    {
+        "created": "2019-05-21T18:21:23.550Z",
+        "id": "report--0f86dccd-29bd-46c6-83fd-e79ba040bf1",
+        "labels": [
+            "campaign"
+        ],
+        "modified": "2021-09-29T15:55:04.815Z",
+        "name": "name",
+        "object_refs": [
+                "campaign--f69de074-6abd-45a1-909f-51ef8fce808a"
+        ],
+        "published": "2019-10-11T15:26:10.706Z",
+        "type": "report"
+    }
+
+]
+
+REPORTS_INDICATORS_WITH_RELATIONSHIPS = {
+    "type": "Report",
+    "value": "[Unit42 ATOM] name",
+    "score": 3,
+    "rawJSON": {
+            "unit42_id": "report--0f86dccd-29bd-46c6-83fd-e79ba040bf0",
+            "unit42_labels": ["intrusion-set"],
+            "unit42_published": "2020-07-30T16:55:31.554Z",
+            "unit42_created_date": "2019-05-21T18:21:23.421Z",
+            "unit42_modified_date": "2021-09-29T15:55:04.815Z",
+            "unit42_description": "description",
+            "unit42_object_refs": ["report--0f86dccd-29bd-46c6-83fd-e79ba040bf1"],
+    },
+    "relationships": [
+        {
+            "name": "related-to",
+            "reverseName": "related-to",
+            "type": "IndicatorToIndicator",
+            "entityA": "[Unit42 ATOM] name",
+            "entityAFamily": "Indicator",
+            "entityAType": "Report",
+            "entityB": "Campaign 1 - [Endor] Maze Ransomware",
+            "entityBFamily": "Indicator",
+            "entityBType": "Campaign",
+            "fields": {},
+        },
+    ],
+    "fields": {
+        "stixid": "report--0f86dccd-29bd-46c6-83fd-e79ba040bf0",
+        "firstseenbysource": "2019-05-21T18:21:23.421Z",
+        "modified": "2021-09-29T15:55:04.815Z",
+        "description": "description",
+        "published": "2020-07-30T16:55:31.554Z",
+        "report_types": [],
+        "tags": ["intrusion-set"],
+        "reportedby": "Unit42",
+    },
+}

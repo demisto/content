@@ -142,7 +142,7 @@ def parse_indicators(indicator_objects: list, feed_tags: Optional[list] = None,
     return indicators
 
 
-def parse_malware(client, malware_objects: list, feed_tags: Optional[list] = None,
+def parse_malware(client, malware_objects: list = [], feed_tags: list = [],
                   tlp_color: Optional[str] = None) -> list:
     """Parse the IOC objects retrieved from the feed.
     Args:
@@ -150,16 +150,14 @@ def parse_malware(client, malware_objects: list, feed_tags: Optional[list] = Non
     Returns:
         A list of processed malware.
     """
-    if not feed_tags:
-        feed_tags = []
+
     malware_list = []
-    if malware_objects:
-        for malware_object in malware_objects:
-            malware_object = STIX2XSOARParser.parse_malware(client, malware_object)[0]
-            malware_object["fields"]["tags"] = list(feed_tags)
-            if tlp_color:
-                malware_object['fields']['trafficlightprotocol'] = tlp_color
-            malware_list.append(malware_object)
+    for malware_object in malware_objects:
+        malware_object = STIX2XSOARParser.parse_malware(client, malware_object)[0]
+        malware_object["fields"]["tags"] = list(feed_tags)
+        if tlp_color:
+            malware_object['fields']['trafficlightprotocol'] = tlp_color
+        malware_list.append(malware_object)
     return malware_list
 
 
