@@ -12,37 +12,40 @@ from sigma.backends.elasticsearch import LuceneBackend
 
 import json
 
-siems = {
-    "xql": CortexXDRBackend(),
-    "splunk": SplunkBackend(),
-    "sentinel_one": SentinelOneBackend(),
-    "qradar": QradarBackend(),
-    "microsoft_defender": Microsoft365DefenderBackend(),
-    "carbon_black": CarbonBlackBackend(),
-    "elastic": LuceneBackend()
-}
 
-indicator = demisto.callingContext['args']['indicator']
+def main():
+    siems = {
+        "xql": CortexXDRBackend(),
+        "splunk": SplunkBackend(),
+        "sentinel_one": SentinelOneBackend(),
+        "qradar": QradarBackend(),
+        "microsoft_defender": Microsoft365DefenderBackend(),
+        "carbon_black": CarbonBlackBackend(),
+        "elastic": LuceneBackend(),
+    }
 
-try:
-    siem = siems[demisto.callingContext['args']['SIEM'].lower()]
+    indicator = demisto.callingContext["args"]["indicator"]
 
-except KeyError:
-    return_error(f"Unknown SIEM - \"{demisto.callingContext['args']['SIEM']}\"")
+    try:
+        siem = siems[demisto.callingContext["args"]["SIEM"].lower()]
 
-rule_dict = json.loads(indicator['CustomFields']['sigmaruleraw'])
-rule = SigmaRule.from_dict(rule_dict)
+    except KeyError:
+        return_error(f"Unknown SIEM - \"{demisto.callingContext['args']['SIEM']}\"")
 
-# Set the context
-try:
-    query = siem.convert_rule(rule)[0]
+    rule_dict = json.loads(indicator["CustomFields"]["sigmaruleraw"])
+    rule = SigmaRule.from_dict(rule_dict)
 
-except exceptions.SigmaTransformationError as e:
-    query = f"ERROR:\n{e}"
+    # Set the context
+    try:
+        query = siem.convert_rule(rule)[0]
 
-demisto.executeCommand("setIndicator", {
-    "sigmaconvertedquery": f"{query}",
-    "value": indicator["value"]
-})
+    except exceptions.SigmaTransformationError as e:
+        query = f"ERROR:\n{e}"
 
-return_results(CommandResults(readable_output=f"{demisto.callingContext['args']['SIEM']} output created"))
+    demisto.executeCommand("setIndicator", {"sigmaconvertedquery": f"{query}", "value": indicator["value"]})
+
+    return_results(CommandResults(readable_output=f"{demisto.callingContext['args']['SIEM']} output created"))
+
+
+if __name__ in ["__main__", "__builtin__", "builtins"]:
+    main()

@@ -158,7 +158,7 @@ def parse_tags(tags: list) -> tuple[list[str], list[str], list[str]]:
     return techniques, cves, tags
 
 
-def parse_and_create_indicator(rule_dict: dict) -> None:
+def parse_and_create_indicator(rule_dict: dict) -> dict[str, Any]:
     """
     Parses the Sigma rule dictionary and creates an indicator in XSOAR.
 
@@ -182,15 +182,14 @@ def parse_and_create_indicator(rule_dict: dict) -> None:
         "definition": rule_dict.get("logsource", {}).get("definition", ""),
         "sigmaruleraw": json.dumps(rule_dict),
         "sigmacondition": [{"condition": rule_dict.get("detection",{}).get("condition", "")}],
-        "tags": rule_dict["tags"],
         "sigmadetection": parse_detection_field(rule_dict.get("detection", {})),
         "sigmafalsepositives": [{"reason": fp} for fp in rule_dict.get("falsepositives", [])],
     }
 
     # Create publications grid field
     publications = []
-    if "reference" in rule_dict:
-        for ref in rule_dict["reference"]:
+    if "references" in rule_dict:
+        for ref in rule_dict["references"]:
             publications.append({
                 "link": ref,
                 "source": "sigma rule",
@@ -202,19 +201,23 @@ def parse_and_create_indicator(rule_dict: dict) -> None:
     techniques, cves, tags = parse_tags(rule_dict["tags"])
     indicator["tags"] = tags
     
-    # Create the indicator in XSOAR
-    demisto.executeCommand("createNewIndicator", indicator)
-    create_indicator_relationships(indicator["value"], indicator["product"], techniques, cves)
+    if indicator["sigmarulelevel"] in ("high","critical"):
+        indicator["verdict"] = "Malicious"
+    
+    return {"indicator": indicator, "techniques": techniques, "cves": cves}
 
 
 def main() -> None:
     """
     Main function that handles the Sigma rule import process and creates indicators and relationships in XSOAR.
     """
+    indicators = []
+    
     try:
         # Get the arguments
         sigma_rule_str = demisto.args().get("sigma_rule_str", "")
         entry_id = demisto.args().get("entry_id", "")
+        create_indicators = argToBoolean(demisto.args().get("create_indicators", ""))
 
         # Check if both arguments are empty
         if not sigma_rule_str and not entry_id:
@@ -239,7 +242,19 @@ def main() -> None:
 
         for rule in sigma_collection.rules:
             rule_dict = rule.to_dict()
-            parse_and_create_indicator(rule_dict)
+            indicators.append(parse_and_create_indicator(rule_dict))
+        
+        if create_indicators:
+            for indicator in indicators:
+                xsoar_indicator = indicator["indicator"]
+                demisto.executeCommand("createNewIndicator", xsoar_indicator)
+                create_indicator_relationships(xsoar_indicator["value"],
+                                               xsoar_indicator["product"],
+                                               indicator["techniques"],
+                                               indicator["cves"])
+        
+        else:
+            return_results(json.dumps(indicators))
 
     except Exception as e:
         return_error(f"Failed to import Sigma rule: {str(e)}")

@@ -11,6 +11,14 @@ args:
   description: A string containing the Sigma rule in its original format.
 - name: entry_id
   description: The entry ID of the file that contains the Sigma rule. The script will read the Sigma rule from this file if provided.
+- name: create_indicators
+  default: true
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  defaultValue: "true"
+  description: Creates the indicators, if False returns a JSON of them (True by default).
 scripttarget: 0
 subtype: python3
 runonce: false

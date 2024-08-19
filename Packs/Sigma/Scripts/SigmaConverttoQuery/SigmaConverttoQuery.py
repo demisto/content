@@ -87,7 +87,9 @@ def main() -> None:
     except exceptions.SigmaTransformationError as e:
         query = f'ERROR:\n{e}'
 
-    return_results(query)
+    return_results(CommandResults(outputs_prefix="Sigma",
+                                  outputs={"query": query, "name": rule.title},
+                                  readable_output=query))
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
