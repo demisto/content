@@ -131,9 +131,8 @@ class TestClient(unittest.TestCase):
             category_list = ['category1']
             client = Client(urls_list, category_list)
             result = client.build_iterator()
-            self.assertEqual(result, [
-                {'ips': ['1.1.1.1'], 'category': 'category1', 'Region': 'Region1', 'Service': 'Service1',
-                 'FeedURL': 'http://example.com'}])
+            assert result == [{'ips': ['1.1.1.1'], 'category': 'category1',
+                               'Region': 'Region1', 'Service': 'Service1', 'FeedURL': 'http://example.com'}]
 
     def test_build_iterator_connection_error(self):
         # Mock the requests library to raise a ConnectionError

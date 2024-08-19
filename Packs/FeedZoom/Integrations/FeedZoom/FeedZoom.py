@@ -1,6 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
-from typing import Dict, List, Callable, Optional, Union
+from collections.abc import Callable
 
 import urllib3
 
@@ -49,7 +49,7 @@ class Client(BaseClient):
                 indicators.add(ip)
         return indicators
 
-    def build_iterator(self) -> List:
+    def build_iterator(self) -> list:
         """Retrieves all entries from the feed.
         Returns:
             A list of objects, containing the indicators.
@@ -98,8 +98,8 @@ def test_module(client: Client, *_) -> str:
     return "ok"
 
 
-def fetch_indicators(client: Client, feed_tags: List = [], tlp_color: Optional[str] = None,
-                     limit: int = -1) -> List[Dict]:
+def fetch_indicators(client: Client, feed_tags: list = [], tlp_color: str | None = None,
+                     limit: int = -1) -> list[dict]:
     """Retrieves indicators from the feed
     Args:
         client (Client): Client object with request
@@ -139,7 +139,7 @@ def fetch_indicators(client: Client, feed_tags: List = [], tlp_color: Optional[s
 
 
 def get_indicators_command(
-        client: Client, params: Dict[str, str], args: Dict[str, str]
+        client: Client, params: dict[str, str], args: dict[str, str]
 ) -> CommandResults:
     """Wrapper for retrieving indicators from the feed to the war-room.
     Args:
@@ -165,7 +165,7 @@ def get_indicators_command(
                           raw_response=indicators)
 
 
-def fetch_indicators_command(client: Client, params: Dict[str, str]) -> List[Dict]:
+def fetch_indicators_command(client: Client, params: dict[str, str]) -> list[dict]:
     """Wrapper for fetching indicators from the feed to the Indicators tab.
     Args:
         client: Client object with request
@@ -193,8 +193,8 @@ def main():
     try:
         client = Client(base_url=ZOOM_DOCS_IP_RANGES_URL, verify=insecure, proxy=proxy)
 
-        commands: Dict[
-            str, Callable[[Client, Dict[str, str], Dict[str, str]], Union[str, CommandResults]]
+        commands: dict[
+            str, Callable[[Client, dict[str, str], dict[str, str]], str | CommandResults]
         ] = {"test-module": test_module, "zoom-get-indicators": get_indicators_command}
         if command in commands:
             return_results(commands[command](client, demisto.params(), demisto.args()))

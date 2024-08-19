@@ -3,7 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 ''' IMPORTS '''
 
-from typing import Dict, List, Tuple, Any
+from typing import Any
 from netaddr import IPAddress
 import urllib3
 
@@ -24,7 +24,7 @@ class Client:
         self.Tags = [] if tags is None else tags
         self.Tlp_color = tlp_color
 
-    def build_iterator(self) -> List:
+    def build_iterator(self) -> list:
         """Retrieves all entries from the feed.
         Returns:
             A list of objects, containing the indicators.
@@ -54,7 +54,7 @@ class Client:
         return indicators
 
 
-def test_module(client: Client) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
+def test_module(client: Client) -> tuple[str, dict[Any, Any], dict[Any, Any]]:
     """Builds the iterator to check that the feed is accessible.
     Args:
         client: Client object.
@@ -65,7 +65,7 @@ def test_module(client: Client) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
     return 'ok', {}, {}
 
 
-def fetch_indicators(client: Client, limit: int = -1) -> List[Dict]:
+def fetch_indicators(client: Client, limit: int = -1) -> list[dict]:
     """Retrieves indicators from the feed
     Args:
         client: Client object with request
@@ -101,7 +101,7 @@ def fetch_indicators(client: Client, limit: int = -1) -> List[Dict]:
     return indicators
 
 
-def get_indicators_command(client: Client) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
+def get_indicators_command(client: Client) -> tuple[str, dict[Any, Any], dict[Any, Any]]:
     """Wrapper for retrieving indicators from the feed to the war-room.
     Args:
         client: Client object with request
@@ -117,7 +117,7 @@ def get_indicators_command(client: Client) -> Tuple[str, Dict[Any, Any], Dict[An
     return human_readable, {'Indicator': indicators}, {'raw_response': indicators}
 
 
-def fetch_indicators_command(client: Client) -> List[Dict]:
+def fetch_indicators_command(client: Client) -> list[dict]:
     """Wrapper for fetching indicators from the feed to the Indicators tab.
     Args:
         client: Client object with request
@@ -139,7 +139,7 @@ def main():
 
     try:
         client = Client(url, tags, tlp_color, use_ssl)
-        commands: Dict = {
+        commands: dict = {
             'test-module': test_module,
             'public-dns-get-indicators': get_indicators_command
         }

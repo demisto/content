@@ -1,6 +1,5 @@
 import re
 import urllib3
-from typing import Dict, List, Tuple, Optional
 
 from CommonServerPython import *
 
@@ -36,7 +35,7 @@ class Client(BaseClient):
         self._polling_timeout = polling_timeout
 
     @staticmethod
-    def build_ip_indicator(azure_ip_address, **indicator_metadata) -> Dict:
+    def build_ip_indicator(azure_ip_address, **indicator_metadata) -> dict:
         """Creates an IP data dict.
 
         Args:
@@ -96,7 +95,7 @@ class Client(BaseClient):
 
         return download_link
 
-    def get_download_file_content_values(self, download_link: str) -> Dict:
+    def get_download_file_content_values(self, download_link: str) -> dict:
         """Create a request to receive file content from link.
 
         Args:
@@ -116,7 +115,7 @@ class Client(BaseClient):
         return file_download_response.get('values')
 
     @staticmethod
-    def extract_metadata_of_indicators_group(indicators_group_data: Dict) -> Dict:
+    def extract_metadata_of_indicators_group(indicators_group_data: dict) -> dict:
         """Extracts metadata of an indicators group.
 
         Args:
@@ -125,7 +124,7 @@ class Client(BaseClient):
         Returns:
             Dict. Indicators group metadata.
         """
-        indicator_metadata = dict()
+        indicator_metadata = {}
 
         indicator_metadata['id'] = indicators_group_data.get('id')
         indicator_metadata['name'] = indicators_group_data.get('name')
@@ -147,7 +146,7 @@ class Client(BaseClient):
         return indicator_metadata
 
     @staticmethod
-    def filter_and_aggregate_values(address_list: List) -> List:
+    def filter_and_aggregate_values(address_list: list) -> list:
         """For each indicator value from the given list we aggregate the all the different keys found.
 
         Args:
@@ -165,9 +164,9 @@ class Client(BaseClient):
             else:
                 indicator_objects[current_value] = item_to_search
 
-        return [value for value in indicator_objects.values()]
+        return list(indicator_objects.values())
 
-    def extract_indicators_from_values_dict(self, values_from_file: Dict) -> List:
+    def extract_indicators_from_values_dict(self, values_from_file: dict) -> list:
         """Builds a list of all IP indicators in the input dict.
 
         Args:
@@ -208,7 +207,7 @@ class Client(BaseClient):
                 )
         return self.filter_and_aggregate_values(results)
 
-    def build_iterator(self) -> List:
+    def build_iterator(self) -> list:
         """Retrieves all entries from the feed.
         Returns:
             A list of objects, containing the indicators.
@@ -233,7 +232,7 @@ class Client(BaseClient):
             raise ValueError(f'Could not parse returned data to Json. \n\nError massage: {err}')
 
 
-def test_module(client: Client) -> Tuple[str, Dict, Dict]:
+def test_module(client: Client) -> tuple[str, dict, dict]:
     """Test the ability to fetch Azure file.
     Args:
         client: Client object.
@@ -259,7 +258,7 @@ def test_module(client: Client) -> Tuple[str, Dict, Dict]:
     return 'ok', {}, {}
 
 
-def get_indicators_command(client: Client, feedTags: list, tlp_color: Optional[str]) -> Tuple[str, Dict, Dict]:
+def get_indicators_command(client: Client, feedTags: list, tlp_color: str | None) -> tuple[str, dict, dict]:
     """Retrieves indicators from the feed to the war-room.
 
     Args:
@@ -281,8 +280,8 @@ def get_indicators_command(client: Client, feedTags: list, tlp_color: Optional[s
     return human_readable, {}, {'raw_response': raw_response}
 
 
-def fetch_indicators_command(client: Client, feedTags: list, tlp_color: Optional[str], limit: int = -1) \
-        -> Tuple[List[Dict], List]:
+def fetch_indicators_command(client: Client, feedTags: list, tlp_color: str | None, limit: int = -1) \
+        -> tuple[list[dict], list]:
     """Fetches indicators from the feed to the indicators tab.
     Args:
         client (Client): Client object configured according to instance arguments.
