@@ -162,68 +162,81 @@ def parse_indicators(indicator_objects: list, feed_tags: Optional[list] = None,
     return indicators
 
 
-def get_campaign_from_sub_reports(report_object, id_to_object):
-    report_relationships = []
-    obj_refs_excluding_relationships_prefix = []
-    object_refs = report_object.get('object_refs', [])
-    object_ref_to_return = []
-    for obj in object_refs:
-        if obj.startswith('report--'):
-            sub_report_obj = id_to_object.get(obj, {})
-            for sub_report_obj_ref in sub_report_obj.get('object_refs', []):
-                if sub_report_obj_ref.startswith('campaign--'):
-                    related_campaign = id_to_object.get(sub_report_obj_ref)
-                    if related_campaign:
-                        obj_refs_excluding_relationships_prefix.append(related_campaign)
-                        entity_relation = EntityRelationship(name='related-to',
-                                                             entity_a=f"[Unit42 ATOM] {report_object.get('name')}",
-                                                             entity_a_type='Report',
-                                                             entity_b=related_campaign.get('name'),
-                                                             entity_b_type='Campaign')
-                        report_relationships.append(entity_relation.to_indicator())
-    object_ref_to_return.extend([{'objectstixid': object.get("id")} for object in obj_refs_excluding_relationships_prefix])
-    return report_relationships, object_ref_to_return
+def create_relationship_entity(entity_a: str, entity_b: str, entity_b_type: str):
+    """Creates relationship entity object.
+
+    Args:
+      entity_a: the indictor name of entity_a.
+      entity_b: the indictor name of entity_b.
+      entity_b_type: the the indictor type of entity_b.
+
+    Returns:
+        A EntityRelationship object.
+    """
+    entity_relation = EntityRelationship(
+        name="related-to",
+        entity_a=f"[Unit42 ATOM] {entity_a}",
+        entity_a_type=ThreatIntel.ObjectsNames.REPORT,
+        entity_b=entity_b,
+        entity_b_type=entity_b_type,
+    )
+    return entity_relation.to_indicator()
 
 
-def get_relationships_from_sub_reports(client, report_object, id_to_object):
+def get_relationships_from_sub_reports(
+    client, report_object, id_to_object, campaign_only
+):
     """Parse the Reports objects retrieved from the feed.
 
     Args:
       report_objects: a list of report objects containing the reports.
-      feed_tags: feed tags.
-      tlp_color: Traffic Light Protocol color.
       id_to_object: a dict in the form of - id: stix_object.
+      campaign_only: bool indicates whether to add only campaign indicators.
 
     Returns:
-        A list of processed reports.
+        A list of relationships and a list of obj_refs_excluding_relationships_prefix.
     """
     object_ref_to_return = []
-    object_refs = report_object.get('object_refs', [])
+    object_refs = report_object.get("object_refs", [])
     relationships: list[dict[str, Any]] = []
     obj_refs_excluding_relationships_prefix = []
     for obj in object_refs:
-        if obj.startswith('report--'):
+        if obj.startswith("report--"):
             sub_report_obj = client.get_report_object(obj)
             if sub_report_obj:
-                sub_report_obj_object_refs = sub_report_obj.get('object_refs', [])
+                sub_report_obj_object_refs = sub_report_obj.get("object_refs", [])
                 for related_obj in sub_report_obj_object_refs:
                     # relationship-- objects ref handled in parse_relationships
-                    if not related_obj.startswith('relationship--'):
+                    if not related_obj.startswith("relationship--"):
                         obj_refs_excluding_relationships_prefix.append(related_obj)
                         if id_to_object.get(related_obj):
-                            entity_b_obj_type, entity_b_value = STIX2XSOARParser.get_entity_b_type_and_value(related_obj,
-                                                                                                             id_to_object,
-                                                                                                             True)
-                            relationship = EntityRelationship(
-                                name='related-to',
-                                entity_a=f"[Unit42 ATOM] {report_object.get('name')}",
-                                entity_a_type=ThreatIntel.ObjectsNames.REPORT,
-                                entity_b=entity_b_value,
-                                entity_b_type=entity_b_obj_type
-                            ).to_indicator()
-                            relationships.append(relationship)
+                            entity_b_obj_type, entity_b_value = (
+                                STIX2XSOARParser.get_entity_b_type_and_value(
+                                    related_obj, id_to_object, True
+                                )
+                            )
+                            if not entity_b_obj_type:
+                                demisto.debug(f"{INTEGRATION_NAME}: Could not find the type of {related_obj} skipping.")
+                                continue
+                            if campaign_only:
+                                if related_obj.startswith("campaign--"):
+                                    relationship_entity = (
+                                        create_relationship_entity(
+                                            report_object.get("name"),
+                                            entity_b_value,
+                                            entity_b_obj_type,
+                                        )
+                                    )
+                                    relationships.append(relationship_entity)
+                            else:
+                                relationship_entity = create_relationship_entity(
+                                    report_object.get("name"),
+                                    entity_b_value,
+                                    entity_b_obj_type,
+                                )
+                                relationships.append(relationship_entity)
     if obj_refs_excluding_relationships_prefix:
-        object_ref_to_return.extend([{'objectstixid': object} for object in obj_refs_excluding_relationships_prefix])
+        object_ref_to_return = client.create_obj_refs_list(obj_refs_excluding_relationships_prefix)
     return relationships, object_ref_to_return
 
 
@@ -269,20 +282,7 @@ def is_atom42_sub_report(report_obj):
     for obj_ref in obj_refs:
         if not obj_ref.startswith(('report--', 'intrusion-set--')):
             only_reports_and_intrusion_set &= False
-    return (not is_report_description) and (not only_reports_and_intrusion_set)
-
-
-def extend_obj_refs(report: dict, obj_refs_list: list):
-    """Extends the object ref list.
-
-    Args:
-      report: the report object.
-      obj_refs_list: the obj_ref list.
-    """
-    if not report['fields'].get('Report Object References'):
-        report['fields']['Report Object References'] = obj_refs_list
-    else:
-        report['fields']['Report Object References'].extend(obj_refs_list)
+    return not (is_report_description or only_reports_and_intrusion_set)
 
 
 def parse_reports_and_report_relationships(client: Client, report_objects: list, feed_tags: Optional[list] = None,
@@ -308,6 +308,7 @@ def parse_reports_and_report_relationships(client: Client, report_objects: list,
 
     for report_object in report_objects:
         if is_atom42_sub_report(report_object):
+            demisto.debug(f"{INTEGRATION_NAME}: skipping {report_object.get('id')} is a sub report")
             continue
         is_main_report = is_atom42_main_report(report_object)
         report_list = client.parse_report(report_object, '[Unit42 ATOM] ', ignore_reports_relationships=is_main_report,
@@ -329,14 +330,12 @@ def parse_reports_and_report_relationships(client: Client, report_objects: list,
             'unit42_description': report_object.get('description'),
             'unit42_object_refs': report_object.get('object_refs')
         }
-        if is_main_report:
-            report_relationships, obj_refs_output = get_relationships_from_sub_reports(client, report_object, id_to_object)
-            extend_obj_refs(report, obj_refs_output)
-            report['relationships'].extend(report_relationships)
-        else:
-            campaign_report_relationships, object_ref_campaign = get_campaign_from_sub_reports(report_object, id_to_object)
-            extend_obj_refs(report, object_ref_campaign)
-            report['relationships'].extend(campaign_report_relationships)
+        report_relationships, obj_refs_output = get_relationships_from_sub_reports(client, report_object, id_to_object,
+                                                                                   (not is_main_report))
+        if obj_refs_output:
+            report['fields'].setdefault('Report Object References', []).extend(obj_refs_output)
+        report['relationships'].extend(report_relationships)
+
         reports.append(report)
 
     return reports

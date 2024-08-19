@@ -1567,7 +1567,7 @@ INDICATOR_WITH_RELATIONSHIP = {
         "unit42_created_date": "2019-05-21T18:21:23.421Z",
         "unit42_modified_date": "2021-09-29T15:55:04.815Z",
         "unit42_description": "description",
-        "unit42_object_refs": ["report--0f86dccd-29bd-46c6-83fd-e79ba040bf1", ],
+        "unit42_object_refs": ["report--0f86dccd-29bd-46c6-83fd-e79ba040bf1"],
     },
     "relationships": [
         {

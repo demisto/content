@@ -1163,6 +1163,22 @@ class STIX2XSOARParser(BaseClient):
 
         return [attack_pattern]
 
+    def create_obj_refs_list(self, obj_refs_list: list):
+        """
+        Creates obj refs list
+        :param obj_refs_list: A list of obj refs
+        :return: A list
+        """
+        # remove duplicates
+        obj_refs_list_result = []
+        obj_refs_list_without_dup = list(dict.fromkeys(obj_refs_list))
+        omitted_object_number = len(obj_refs_list) - len(obj_refs_list_without_dup)
+        demisto.debug(f"Omitting {omitted_object_number} object ref form the report")
+        if obj_refs_list:
+            obj_refs_list_result.extend([{'objectstixid': object} for object in obj_refs_list_without_dup])
+            return obj_refs_list_result
+        return obj_refs_list_result
+
     def parse_report(self, report_obj: dict[str, Any],
                      relationships_prefix: str = '',
                      ignore_reports_relationships: bool = False,
@@ -1200,7 +1216,7 @@ class STIX2XSOARParser(BaseClient):
                                                                                                  is_unit42_report)
         report['relationships'] = relationships
         if obj_refs_excluding_relationships_prefix:
-            fields['Report Object References'] = [{'objectstixid': object} for object in obj_refs_excluding_relationships_prefix]
+            fields['Report Object References'] = self.create_obj_refs_list(obj_refs_excluding_relationships_prefix)
         report["fields"] = fields
         return [report]
 
