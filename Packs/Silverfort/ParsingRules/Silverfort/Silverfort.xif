@@ -1,0 +1,13 @@
+[INGEST:vendor="silverfort", product="admin_console", target_dataset="silverfort_admin_console_raw", no_hit=keep]
+filter to_string(rt) ~= "\d{10}|\d{13}|\d{16}|\d{19}"
+| alter tmp_epoch_string = to_string(rt)
+| alter tmp_epoch_int = to_integer(tmp_epoch_string)
+| alter tmp_len = to_integer(len(tmp_epoch_string))
+| alter tmp_time = if( // convert epoch representation to a datetime type timestamp
+     // in_case of nanoseconds, we convert them to microseconds since to_timestamp does not support nanoseconds
+     tmp_len = 10, to_timestamp(tmp_epoch_int, "SECONDS"),
+     tmp_len = 13, to_timestamp(tmp_epoch_int, "MILLIS"),
+     tmp_len = 16, to_timestamp(tmp_epoch_int, "MICROS"),
+     tmp_len = 19, to_timestamp(divide(tmp_epoch_int, 1000), "MICROS"))
+| alter _time = tmp_time
+| fields - tmp*;

@@ -575,7 +575,7 @@ tasks:
       gridfield:
         simple: xpansecertificateasset
       keys:
-        simple: name,type,date_added,explainers,subject,subject_alerternative_names,issuer,issuer_email,expires,algorithm
+        simple: name,type,date_added,tags,explainers,subject,subject_alerternative_names,issuer,issuer_email,expires,algorithm
       val1:
         complex:
           accessor: name
@@ -632,6 +632,25 @@ tasks:
           - operator: TimeStampToDate
       val4:
         complex:
+          accessor: tags
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ASM.AssetInternetExposure.type
+              operator: isEqualString
+              right:
+                value:
+                  simple: Certificate
+          root: ASM.AssetInternetExposure
+          transformers:
+          - args:
+              separator:
+                value:
+                  simple: ', '
+            operator: join
+      val5:
+        complex:
           accessor: explainers
           filters:
           - - left:
@@ -647,9 +666,9 @@ tasks:
           - args:
               separator:
                 value:
-                  simple: ','
+                  simple: ', '
             operator: join
-      val5:
+      val6:
         complex:
           accessor: details.certificateDetails.subject
           filters:
@@ -669,7 +688,7 @@ tasks:
                 value:
                   simple: n/a
             operator: SetIfEmpty
-      val6:
+      val7:
         complex:
           accessor: details.certificateDetails.subjectAlternativeNames
           filters:
@@ -689,7 +708,7 @@ tasks:
                 value:
                   simple: n/a
             operator: SetIfEmpty
-      val7:
+      val8:
         complex:
           accessor: certificate_issuer
           filters:
@@ -709,7 +728,7 @@ tasks:
                 value:
                   simple: n/a
             operator: SetIfEmpty
-      val8:
+      val9:
         complex:
           accessor: details.certificateDetails.issuerEmail
           filters:
@@ -723,13 +742,13 @@ tasks:
                   simple: Certificate
           root: ASM.AssetInternetExposure
           transformers:
-          - args:
+          - operator: SetIfEmpty
+            args:
               applyIfEmpty: {}
               defaultValue:
                 value:
                   simple: n/a
-            operator: SetIfEmpty
-      val9:
+      val10:
         complex:
           accessor: details.certificateDetails.validNotAfter
           filters:
@@ -744,7 +763,7 @@ tasks:
           root: ASM.AssetInternetExposure
           transformers:
           - operator: TimeStampToDate
-      val10:
+      val11:
         complex:
           accessor: certificate_algorithm
           filters:
@@ -848,7 +867,7 @@ tasks:
       gridfield:
         simple: xpanseresponsiveipasset
       keys:
-        simple: name,type,date_added,explainers,ip_version,range,asn_number,asn_country
+        simple: name,type,date_added,tags,explainers,ip_version,range,asn_number,asn_country
       val1:
         complex:
           accessor: name
@@ -905,7 +924,7 @@ tasks:
           - operator: TimeStampToDate
       val4:
         complex:
-          accessor: explainers
+          accessor: tags
           filters:
           - - left:
                 iscontext: true
@@ -920,20 +939,39 @@ tasks:
           - args:
               separator:
                 value:
-                  simple: ','
+                  simple: ', '
             operator: join
       val5:
+        complex:
+          accessor: explainers
+          root: ASM.AssetInternetExposure
+          transformers:
+          - args:
+              separator:
+                value:
+                  simple: ', '
+            operator: join
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ASM.AssetInternetExposure.type
+              operator: isEqualString
+              right:
+                value:
+                  simple: ResponsiveIP
+      val6:
         complex:
           accessor: IP_VERSION
           root: range_info
           transformers:
-          - args:
+          - operator: SetIfEmpty
+            args:
               applyIfEmpty: {}
               defaultValue:
                 value:
                   simple: n/a
-            operator: SetIfEmpty
-      val6:
+      val7:
         complex:
           accessor: handle
           root: range_info.DETAILS.networkRecords
@@ -942,9 +980,9 @@ tasks:
           - args:
               separator:
                 value:
-                  simple: ','
+                  simple: ', '
             operator: join
-      val7:
+      val8:
         complex:
           accessor: ASN_HANDLES
           root: range_info
@@ -952,9 +990,9 @@ tasks:
           - args:
               separator:
                 value:
-                  simple: ','
+                  simple: ', '
             operator: join
-      val8:
+      val9:
         complex:
           accessor: ASN_COUNTRIES
           root: range_info
@@ -1492,7 +1530,7 @@ tasks:
       gridfield:
         simple: xpansecertificateasset
       keys:
-        simple: name,type,date_added,explainers,subject,subject_alerternative_names,issuer,issuer_email,expires,algorithm
+        simple: name,type,date_added,tags,explainers,subject,subject_alerternative_names,issuer,issuer_email,expires,algorithm
       val1:
         complex:
           accessor: name
@@ -1549,6 +1587,25 @@ tasks:
           - operator: TimeStampToDate
       val4:
         complex:
+          accessor: tags
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ASM.AssetInternetExposure.type
+              operator: isEqualString
+              right:
+                value:
+                  simple: Certificate
+          root: ASM.AssetInternetExposure
+          transformers:
+          - args:
+              separator:
+                value:
+                  simple: ', '
+            operator: join
+      val5:
+        complex:
           accessor: explainers
           filters:
           - - left:
@@ -1564,9 +1621,9 @@ tasks:
           - args:
               separator:
                 value:
-                  simple: ','
+                  simple: ', '
             operator: join
-      val5:
+      val6:
         complex:
           accessor: details.certificateDetails.subject
           filters:
@@ -1586,7 +1643,7 @@ tasks:
                 value:
                   simple: n/a
             operator: SetIfEmpty
-      val6:
+      val7:
         complex:
           accessor: details.certificateDetails.subjectAlternativeNames
           filters:
@@ -1606,7 +1663,7 @@ tasks:
                 value:
                   simple: n/a
             operator: SetIfEmpty
-      val7:
+      val8:
         complex:
           accessor: certificate_issuer
           filters:
@@ -1626,7 +1683,7 @@ tasks:
                 value:
                   simple: n/a
             operator: SetIfEmpty
-      val8:
+      val9:
         complex:
           accessor: details.certificateDetails.issuerEmail
           filters:
@@ -1646,9 +1703,9 @@ tasks:
                 value:
                   simple: n/a
             operator: SetIfEmpty
-      val9:
-        simple: n/a
       val10:
+        simple: n/a
+      val11:
         complex:
           accessor: certificate_algorithm
           filters:
@@ -1706,7 +1763,7 @@ tasks:
       gridfield:
         simple: xpansedomainasset
       keys:
-        simple: name,type,date_added,explainers,registrar_name,registry_expiration,domain_status,registrant_name,registrant_org,registrant_email
+        simple: name,type,date_added,tags,explainers,registrar_name,registry_expiration,domain_status,registrant_name,registrant_org,registrant_email
       val1:
         complex:
           accessor: name
@@ -1763,6 +1820,25 @@ tasks:
           - operator: TimeStampToDate
       val4:
         complex:
+          accessor: tags
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ASM.AssetInternetExposure.type
+              operator: isEqualString
+              right:
+                value:
+                  simple: Domain
+          root: ASM.AssetInternetExposure
+          transformers:
+          - args:
+              separator:
+                value:
+                  simple: ', '
+            operator: join
+      val5:
+        complex:
           accessor: explainers
           filters:
           - - left:
@@ -1778,9 +1854,9 @@ tasks:
           - args:
               separator:
                 value:
-                  simple: ','
+                  simple: ', '
             operator: join
-      val5:
+      val6:
         complex:
           accessor: details.domainDetails.registrar.name
           filters:
@@ -1794,13 +1870,13 @@ tasks:
                   simple: Domain
           root: ASM.AssetInternetExposure
           transformers:
-          - args:
+          - operator: SetIfEmpty
+            args:
               applyIfEmpty: {}
               defaultValue:
                 value:
                   simple: n/a
-            operator: SetIfEmpty
-      val6:
+      val7:
         complex:
           accessor: details.domainDetails.registryExpiryDate
           filters:
@@ -1815,7 +1891,7 @@ tasks:
           root: ASM.AssetInternetExposure
           transformers:
           - operator: TimeStampToDate
-      val7:
+      val8:
         complex:
           accessor: details.domainDetails.domainStatuses
           filters:
@@ -1832,9 +1908,9 @@ tasks:
           - args:
               separator:
                 value:
-                  simple: ','
+                  simple: ', '
             operator: join
-      val8:
+      val9:
         complex:
           accessor: details.domainDetails.registrant.name
           filters:
@@ -1854,7 +1930,7 @@ tasks:
                 value:
                   simple: n/a
             operator: SetIfEmpty
-      val9:
+      val10:
         complex:
           accessor: details.domainDetails.registrant.organization
           filters:
@@ -1874,7 +1950,7 @@ tasks:
                 value:
                   simple: n/a
             operator: SetIfEmpty
-      val10:
+      val11:
         complex:
           accessor: details.domainDetails.registrant.emailAddress
           filters:
@@ -1932,7 +2008,7 @@ tasks:
       gridfield:
         simple: xpansecloudasset
       keys:
-        simple: name,type,date_added,explainers,externally_detected_providers,ips,domain
+        simple: name,type,date_added,tags,explainers,externally_detected_providers,ips,domain
       val1:
         complex:
           accessor: name
@@ -1989,6 +2065,25 @@ tasks:
           - operator: TimeStampToDate
       val4:
         complex:
+          accessor: tags
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ASM.AssetInternetExposure.type
+              operator: isEqualString
+              right:
+                value:
+                  simple: CloudIntegration
+          root: ASM.AssetInternetExposure
+          transformers:
+          - args:
+              separator:
+                value:
+                  simple: ', '
+            operator: join
+      val5:
+        complex:
           accessor: explainers
           filters:
           - - left:
@@ -2004,9 +2099,9 @@ tasks:
           - args:
               separator:
                 value:
-                  simple: ','
+                  simple: ', '
             operator: join
-      val5:
+      val6:
         complex:
           accessor: externally_detected_providers
           filters:
@@ -2023,9 +2118,9 @@ tasks:
           - args:
               separator:
                 value:
-                  simple: ','
+                  simple: ', '
             operator: join
-      val6:
+      val7:
         complex:
           accessor: ips
           filters:
@@ -2042,9 +2137,9 @@ tasks:
           - args:
               separator:
                 value:
-                  simple: ','
+                  simple: ', '
             operator: join
-      val7:
+      val8:
         complex:
           accessor: domain
           filters:
@@ -2156,7 +2251,7 @@ tasks:
       gridfield:
         simple: xpansedomainasset
       keys:
-        simple: name,type,date_added,explainers,registrar_name,registry_expiration,domain_status,registrant_name,registrant_org,registrant_email
+        simple: name,type,date_added,tags,explainers,registrar_name,registry_expiration,domain_status,registrant_name,registrant_org,registrant_email
       val1:
         complex:
           accessor: name
@@ -2213,6 +2308,25 @@ tasks:
           - operator: TimeStampToDate
       val4:
         complex:
+          accessor: tags
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ASM.AssetInternetExposure.type
+              operator: isEqualString
+              right:
+                value:
+                  simple: Domain
+          root: ASM.AssetInternetExposure
+          transformers:
+          - args:
+              separator:
+                value:
+                  simple: ', '
+            operator: join
+      val5:
+        complex:
           accessor: explainers
           filters:
           - - left:
@@ -2228,9 +2342,9 @@ tasks:
           - args:
               separator:
                 value:
-                  simple: ','
+                  simple: ', '
             operator: join
-      val5:
+      val6:
         complex:
           accessor: details.domainDetails.registrar.name
           filters:
@@ -2250,9 +2364,9 @@ tasks:
                 value:
                   simple: n/a
             operator: SetIfEmpty
-      val6:
-        simple: n/a
       val7:
+        simple: n/a
+      val8:
         complex:
           accessor: details.domainDetails.domainStatuses
           filters:
@@ -2269,9 +2383,9 @@ tasks:
           - args:
               separator:
                 value:
-                  simple: ','
+                  simple: ', '
             operator: join
-      val8:
+      val9:
         complex:
           accessor: details.domainDetails.registrant.name
           filters:
@@ -2291,7 +2405,7 @@ tasks:
                 value:
                   simple: n/a
             operator: SetIfEmpty
-      val9:
+      val10:
         complex:
           accessor: details.domainDetails.registrant.organization
           filters:
@@ -2311,7 +2425,7 @@ tasks:
                 value:
                   simple: n/a
             operator: SetIfEmpty
-      val10:
+      val11:
         complex:
           accessor: details.domainDetails.registrant.emailAddress
           filters:
@@ -2520,7 +2634,7 @@ tasks:
       gridfield:
         simple: xpanseresponsiveipasset
       keys:
-        simple: name,type,date_added,explainers,ip_version,range,asn_number,asn_country
+        simple: name,type,date_added,tags,explainers,ip_version,range,asn_number,asn_country
       val1:
         complex:
           accessor: name
@@ -2577,6 +2691,25 @@ tasks:
           - operator: TimeStampToDate
       val4:
         complex:
+          accessor: tags
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ASM.AssetInternetExposure.type
+              operator: isEqualString
+              right:
+                value:
+                  simple: ResponsiveIP
+          root: ASM.AssetInternetExposure
+          transformers:
+          - args:
+              separator:
+                value:
+                  simple: ', '
+            operator: join
+      val5:
+        complex:
           accessor: explainers
           filters:
           - - left:
@@ -2592,15 +2725,15 @@ tasks:
           - args:
               separator:
                 value:
-                  simple: ','
+                  simple: ', '
             operator: join
-      val5:
-        simple: n/a
       val6:
         simple: n/a
       val7:
         simple: n/a
       val8:
+        simple: n/a
+      val9:
         simple: n/a
     separatecontext: false
     skipunavailable: false

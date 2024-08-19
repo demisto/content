@@ -1,3 +1,4 @@
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *
 
@@ -21,8 +22,11 @@ urllib3.disable_warnings()
 INTEGRATION_NAME = 'CrowdStrike Falcon'
 IDP_DETECTION = "IDP detection"
 MOBILE_DETECTION = "MOBILE detection"
+ENDPOINT_DETECTION = 'detection'
 IDP_DETECTION_FETCH_TYPE = "IDP Detection"
 MOBILE_DETECTION_FETCH_TYPE = "Mobile Detection"
+ON_DEMAND_SCANS_DETECTION_TYPE = "On-Demand Scans Detection"
+ON_DEMAND_SCANS_DETECTION = "On-Demand Scans detection"
 PARAMS = demisto.params()
 CLIENT_ID = PARAMS.get('credentials', {}).get('identifier') or PARAMS.get('client_id')
 SECRET = PARAMS.get('credentials', {}).get('password') or PARAMS.get('secret')
@@ -46,10 +50,11 @@ INCIDENTS_PER_FETCH = int(PARAMS.get('incidents_per_fetch', 15))
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 DETECTION_DATE_FORMAT = IOM_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 DEFAULT_TIMEOUT = 30
+LEGACY_VERSION = PARAMS.get('legacy_version', False)
 
 ''' KEY DICTIONARY '''
 
-DETECTIONS_BASE_KEY_MAP = {
+LEGACY_DETECTIONS_BASE_KEY_MAP = {
     'device.hostname': 'System',
     'device.cid': 'CustomerID',
     'hostinfo.domain': 'MachineDomain',
@@ -61,6 +66,18 @@ DETECTIONS_BASE_KEY_MAP = {
     'first_behavior': 'FirstBehavior',
     'last_behavior': 'LastBehavior',
     'max_confidence': 'MaxConfidence',
+}
+
+DETECTIONS_BASE_KEY_MAP = {
+    'device.hostname': 'System',
+    'device.cid': 'CustomerID',
+    'device.hostinfo.domain': 'MachineDomain',
+    'composite_id': 'ID',
+    'created_timestamp': 'ProcessStartTime',
+    'severity': 'MaxSeverity',
+    'show_in_ui': 'ShowInUi',
+    'status': 'Status',
+    'confidence': 'MaxConfidence',
 }
 
 DETECTIONS_BEHAVIORS_KEY_MAP = {
@@ -193,7 +210,7 @@ ENDPOINT_KEY_MAP = {
         'Index': Split Array Index
     }
 """
-DETECTIONS_BEHAVIORS_SPLIT_KEY_MAP = [
+LEGACY_DETECTIONS_BEHAVIORS_SPLIT_KEY_MAP = [
     {
         'Path': 'parent_details.parent_process_graph_id',
         'NewKey': 'SensorID',
@@ -202,6 +219,27 @@ DETECTIONS_BEHAVIORS_SPLIT_KEY_MAP = [
     },
     {
         'Path': 'parent_details.parent_process_graph_id',
+        'NewKey': 'ParentProcessID',
+        'Delim': ':',
+        'Index': 2
+    },
+    {
+        'Path': 'triggering_process_graph_id',
+        'NewKey': 'ProcessID',
+        'Delim': ':',
+        'Index': 2
+    },
+]
+
+DETECTIONS_BEHAVIORS_SPLIT_KEY_MAP = [
+    {
+        'Path': 'parent_details.process_graph_id',
+        'NewKey': 'SensorID',
+        'Delim': ':',
+        'Index': 1
+    },
+    {
+        'Path': 'parent_details.process_graph_id',
         'NewKey': 'ParentProcessID',
         'Delim': ':',
         'Index': 2
@@ -238,9 +276,10 @@ CS_FALCON_DETECTION_OUTGOING_ARGS = {'status': f'Updated detection status, one o
 CS_FALCON_INCIDENT_OUTGOING_ARGS = {'tag': 'A tag that have been added or removed from the incident',
                                     'status': f'Updated incident status, one of {"/".join(STATUS_TEXT_TO_NUM.keys())}'}
 
-CS_FALCON_DETECTION_INCOMING_ARGS = ['status', 'severity', 'behaviors.tactic', 'behaviors.scenario', 'behaviors.objective',
-                                     'behaviors.technique', 'device.hostname', 'detection_id', 'behaviors.display_name']
-
+LEGACY_CS_FALCON_DETECTION_INCOMING_ARGS = ['status', 'severity', 'behaviors.tactic', 'behaviors.scenario', 'behaviors.objective',
+                                            'behaviors.technique', 'device.hostname', 'detection_id', 'behaviors.display_name']
+CS_FALCON_DETECTION_INCOMING_ARGS = ['status', 'severity', 'tactic', 'scenario', 'objective',
+                                     'technique', 'device.hostname', "composite_id", 'display_name']
 CS_FALCON_INCIDENT_INCOMING_ARGS = ['state', 'fine_score', 'status', 'tactics', 'techniques', 'objectives',
                                     'tags', 'hosts.hostname', 'incident_id']
 
@@ -281,10 +320,11 @@ SCHEDULE_INTERVAL_STR_TO_INT = {
 
 class IncidentType(Enum):
     INCIDENT = 'inc'
-    DETECTION = 'ldt'
-    IDP_OR_MOBILE_DETECTION = ':ind:'
+    LEGACY_ENDPOINT_DETECTION = 'ldt'
+    ENDPOINT_OR_IDP_OR_MOBILE_DETECTION = ':ind:'
     IOM_CONFIGURATIONS = 'iom_configurations'
     IOA_EVENTS = 'ioa_events'
+    ON_DEMAND = 'ods'
 
 
 MIRROR_DIRECTION = MIRROR_DIRECTION_DICT.get(demisto.params().get('mirror_direction'))
@@ -292,6 +332,41 @@ INTEGRATION_INSTANCE = demisto.integrationInstance()
 
 
 ''' HELPER FUNCTIONS '''
+
+
+def truncate_long_time_str(detections: List[Dict], time_key: str) -> List[Dict]:
+    """
+    Truncates the time string in each detection to a maximum of 26 characters, to prevent an error when parsing the time.
+
+    Args:
+        detections (List[Dict]): The list of detections, each represented as a dictionary.
+        time_key (str): The key in each detection dictionary that corresponds to the time string.
+
+    Returns:
+        List[Dict]: The list of detections with the time string truncated.
+    """
+    for event in detections:
+        long_time_str = event.get(time_key)
+        if long_time_str and len(long_time_str) > 26:
+            event[time_key] = long_time_str[:26] + "Z"
+    return detections
+
+
+def modify_detection_outputs(detection):
+    """
+    Modifies the detection outputs in the newer version (raptor release) to be in the same format as the legacy version.
+    Args:
+        detection: The detection to modify.
+    Returns:
+        The nested modified detection.
+    """
+    behavior = {key: detection.pop(key, None) for key in DETECTIONS_BEHAVIORS_KEY_MAP}
+    behavior.update({
+        "parent_details": detection.pop("parent_details", None),
+        "triggering_process_graph_id": detection.pop("triggering_process_graph_id", None)
+    })
+    detection["behaviors"] = [behavior]
+    return detection
 
 
 def error_handler(res):
@@ -317,7 +392,7 @@ def error_handler(res):
     raise DemistoException(f'Error in API call to CrowdStrike Falcon: code: {res.status_code} - reason: {reason}')
 
 
-def http_request(method, url_suffix, params=None, data=None, files=None, headers=HEADERS, safe=False,
+def http_request(method, url_suffix, params=None, data=None, files=None, headers=HEADERS,
                  get_token_flag=True, no_json=False, json=None, status_code=None, timeout=None):
     """
         A wrapper for requests lib to send our requests and handle requests and responses better.
@@ -340,9 +415,6 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
         :type headers: ``dict``
         :param headers: Request headers
 
-        :type safe: ``bool``
-        :param safe: If set to true will return None in case of http error
-
         :type get_token_flag: ``bool``
         :param get_token_flag: If set to True will call get_token()
 
@@ -362,12 +434,24 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
     if get_token_flag:
         token = get_token()
         headers['Authorization'] = f'Bearer {token}'
+        retries = 0
+        status_list_to_retry = []
+        # in case of 401,403,429 status codes we want to return the response, generate a new token and try again with retries.
+        valid_status_codes = [200, 201, 202, 204, 401, 403, 429]
+    else:
+        # get_token_flag=False means that get_token_request() called http_request() with /oauth2/token, and we want to retry
+        # to create the token in case of 429 in the first call to generic_http_request and not in the second call to avoid a
+        # loop of calls to get_token_request().
+        retries = 5
+        # error code 401 - isn't relevant for requesting a token.
+        # error code 403 - The IP is missing from the IP allowlist, no need to retry.
+        status_list_to_retry = [429]
+        valid_status_codes = [200, 201, 202, 204]
+        demisto.debug(f'In http_request {get_token_flag=} updated retries, status_list_to_retry, valid_status_codes')
 
     headers['User-Agent'] = 'PANW-XSOAR'
     int_timeout = int(timeout) if timeout else 10  # 10 is the default in generic_http_request
 
-    # in case of 401,403,429 status codes we want to return the response, generate a new token and try again with retries.
-    valid_status_codes = [200, 201, 202, 204, 401, 403, 429]
     # Handling a case when we want to return an entry for 404 status code.
     if status_code:
         # To cover the condition when status_code is a list of status codes
@@ -391,16 +475,20 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
             error_handler=error_handler,
             json_data=json,
             timeout=int_timeout,
-            ok_codes=valid_status_codes
+            ok_codes=valid_status_codes,
+            retries=retries,
+            status_list_to_retry=status_list_to_retry
         )
+        demisto.debug(f'In http_request after the first call to generic_http_request {res=} {res.status_code=}')
     except requests.exceptions.RequestException as e:
         return_error(f'Error in connection to the server. Please make sure you entered the URL correctly.'
                      f' Exception is {str(e)}.')
     try:
-        # removing 401,403,429 status codes, now we want to generate a new token and try again
-        valid_status_codes.remove(401)
-        valid_status_codes.remove(403)
-        valid_status_codes.remove(429)
+        if get_token_flag:
+            # removing 401,403,429 status codes, now we want to generate a new token and try again
+            valid_status_codes.remove(401)
+            valid_status_codes.remove(403)
+            valid_status_codes.remove(429)
         if res.status_code not in valid_status_codes:
             # try to create a new token
             if res.status_code in (401, 403, 429) and get_token_flag:
@@ -425,9 +513,12 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
                     timeout=int_timeout,
                     ok_codes=valid_status_codes
                 )
+                demisto.debug(f'In http_request after the second call to generic_http_request {res=} {res.status_code=}')
                 return res if no_json else res.json()
-            elif safe:
-                return None
+            else:
+                demisto.debug(f'In invalid status code and {get_token_flag=}')
+                error_handler(res)
+        demisto.debug('In http_request end')
         return res if no_json else res.json()
     except ValueError as exception:
         raise ValueError(
@@ -504,6 +595,63 @@ def build_query_params(query_params: dict) -> str:
     return query
 
 
+def modify_detection_summaries_outputs(detection: dict):
+    """
+    Modifies the detection summaries outputs in the new version (raptor release) to be in the same format as the legacy version.
+
+    Args:
+        detection: The detection to modify.
+    Returns:
+        The modified detection.
+    """
+    keys_to_move = [
+        "pattern_disposition_details",
+        "timestamp",
+        "device_id",
+        "filename",
+        "alleged_filetype",
+        "cmdline",
+        "scenario",
+        "objective",
+        "tactic",
+        "technique",
+        "severity",
+        "confidence",
+        "ioc_type",
+        "ioc_value",
+        "user_name",
+        "user_id",
+        "control_graph_id",
+        "triggering_process_graph_id",
+        "sha256",
+        "pattern_disposition",
+        "parent_details",
+        "md5",
+        "filepath"
+    ]
+
+   # rename before adding to a nested dict
+    parent_details = detection.get("parent_details", {})
+    parent_keys = ["sha256", "cmdline", "md5", "process_graph_id"]
+    for key in parent_keys:
+        if key in parent_details:
+            new_key = f"parent_{key}"
+            parent_details[new_key] = parent_details.pop(key)
+
+    # change from a flat dict to nested dict
+    nested_dict = {key: detection.pop(key, None) for key in keys_to_move if key in detection}
+    nested_dict["device_id"] = detection.get("device", {}).get("device_id")
+    detection["behaviors"] = nested_dict
+
+    # change from nested to flat
+    detection["hostinfo"] = detection.get("device", {}).get("hostinfo")
+
+    # rename without moving to a nested dict
+    detection["detection_id"] = detection.pop("composite_id", None)
+
+    return detection
+
+
 ''' API FUNCTIONS '''
 
 
@@ -553,12 +701,14 @@ def detection_to_incident(detection):
         :rtype ``dict``
     """
     add_mirroring_fields(detection)
-
+    # detection_id and severity key names change between the legacy and the new version
+    detection_id = detection.get('detection_id') or detection.get('composite_id')
+    severity = detection.get('max_severity_displayname') or detection.get('severity_name')
     incident = {
-        'name': 'Detection ID: ' + str(detection.get('detection_id')),
+        'name': 'Detection ID: ' + str(detection_id),
         'occurred': str(detection.get('created_timestamp')),
         'rawJSON': json.dumps(detection),
-        'severity': severity_string_to_int(detection.get('max_severity_displayname'))
+        'severity': severity_string_to_int(severity),
     }
     return incident
 
@@ -588,7 +738,7 @@ def incident_to_incident_context(incident):
 
 def detection_to_incident_context(detection, detection_type, start_time_key: str = 'start_time'):
     """
-        Creates an incident context of an IDP/Mobile detection.
+        Creates an incident context of an IDP/Mobile/ODS detection.
 
         :type detection: ``dict``
         :param detection: Single detection object.
@@ -602,7 +752,7 @@ def detection_to_incident_context(detection, detection_type, start_time_key: str
         'occurred': detection.get(start_time_key),
         'rawJSON': json.dumps(detection)
     }
-    if detection_type == IDP_DETECTION_FETCH_TYPE:
+    if detection_type in (IDP_DETECTION_FETCH_TYPE, ON_DEMAND_SCANS_DETECTION_TYPE):
         incident_context['name'] = f'{detection_type} ID: {detection.get("composite_id")}'
         incident_context['last_updated'] = detection.get('updated_timestamp')
     elif detection_type == MOBILE_DETECTION_FETCH_TYPE:
@@ -1288,8 +1438,8 @@ def get_token_request():
     headers = {
         'Content-Type': 'application/x-www-form-urlencoded'
     }
-    token_res = http_request('POST', '/oauth2/token', data=body, headers=headers, safe=True,
-                             get_token_flag=False)
+    token_res = http_request('POST', '/oauth2/token', data=body, headers=headers, get_token_flag=False)
+    demisto.debug(f'In get_token_request, token_res is not None {token_res is not None}')
     if not token_res:
         err_msg = 'Authorization Error: User has no authorization to create a token. Please make sure you entered the' \
                   ' credentials correctly.'
@@ -1340,7 +1490,6 @@ def get_detections(last_behavior_time=None, behavior_id=None, filter_arg=None):
         :param filter_arg: 1st priority. The result will be filtered using this argument.
         :return: Response json of the get detection endpoint (IDs of the detections)
     """
-    endpoint_url = '/detects/queries/detects/v1'
     params = {
         'sort': 'first_behavior.asc'
     }
@@ -1351,8 +1500,19 @@ def get_detections(last_behavior_time=None, behavior_id=None, filter_arg=None):
     elif last_behavior_time:
         params['filter'] = f"first_behavior:>'{last_behavior_time}'"
 
-    response = http_request('GET', endpoint_url, params)
-    return response
+    if not LEGACY_VERSION:
+        endpoint_url = "alerts/queries/alerts/v2?filter=product"
+        text_to_encode = ":'epp'+type:'ldt'"
+        # in the new version we send only the filter_arg argument as encoded string without the params
+        if filter_arg:
+            text_to_encode += f"+{filter_arg}"
+        endpoint_url += urllib.parse.quote_plus(text_to_encode)
+        demisto.debug(f"In get_detections: {LEGACY_VERSION =} and {endpoint_url=}")
+        return http_request('GET', endpoint_url)
+    else:
+        endpoint_url = '/detects/queries/detects/v1'
+        demisto.debug(f"In get_detections: {LEGACY_VERSION =} and {endpoint_url=} and {params=}")
+        return http_request('GET', endpoint_url, params)
 
 
 def get_fetch_detections(last_created_timestamp=None, filter_arg=None, offset: int = 0, last_updated_timestamp=None,
@@ -1364,7 +1524,6 @@ def get_fetch_detections(last_created_timestamp=None, filter_arg=None, offset: i
     Returns:
         Response json of the get detection endpoint (IDs of the detections)
     """
-    endpoint_url = '/detects/queries/detects/v1'
     params = {
         'sort': 'first_behavior.asc',
         'offset': offset,
@@ -1377,10 +1536,19 @@ def get_fetch_detections(last_created_timestamp=None, filter_arg=None, offset: i
     elif last_created_timestamp:
         params['filter'] = f"created_timestamp:>'{last_created_timestamp}'"
     elif last_updated_timestamp:
-        params['filter'] = f"date_updated:>'{last_updated_timestamp}'"
+        timestamp_key = 'date_updated' if LEGACY_VERSION else 'updated_timestamp'
+        params['filter'] = f"{timestamp_key}:>'{last_updated_timestamp}'"
 
+    endpoint_url = '/detects/queries/detects/v1' if LEGACY_VERSION else "/alerts/queries/alerts/v2?filter=product"
+
+    if not LEGACY_VERSION:
+        if params.get('filter'):
+            endpoint_url += urllib.parse.quote_plus(f":'epp'+type:'ldt'+{params.pop('filter')}")
+        else:
+            endpoint_url += urllib.parse.quote_plus(":'epp'+type:'ldt'")
+    demisto.debug(f"In get_fetch_detections: {LEGACY_VERSION =}, {endpoint_url=}, {params=}")
     response = http_request('GET', endpoint_url, params)
-    demisto.debug(f"CrowdStrikeFalconMsg: Getting detections from {endpoint_url} with {params=}. {response=}")
+
     return response
 
 
@@ -1390,11 +1558,13 @@ def get_detections_entities(detections_ids: list):
         :param detections_ids: IDs of the requested detections.
         :return: Response json of the get detection entities endpoint (detection objects)
     """
-    ids_json = {'ids': detections_ids}
+    ids_json = {'ids': detections_ids} if LEGACY_VERSION else {"composite_ids": detections_ids}
+    url = '/detects/entities/summaries/GET/v1' if LEGACY_VERSION else '/alerts/entities/alerts/v2'
+    demisto.debug(f"Getting detections entities from {url} with {ids_json=}. {LEGACY_VERSION=}")
     if detections_ids:
         response = http_request(
             'POST',
-            '/detects/entities/summaries/GET/v1',
+            url,
             data=json.dumps(ids_json)
         )
         return response
@@ -1425,14 +1595,14 @@ def get_incidents_ids(last_created_timestamp=None, filter_arg=None, offset: int 
 
 def get_detections_ids(filter_arg=None, offset: int = 0, limit=INCIDENTS_PER_FETCH, product_type='idp'):
     """
-        Send a request to retrieve IDP detections IDs.
+        Send a request to retrieve IDP/ODS detections IDs.
 
         :type filter_arg: ``str``
         :param filter_arg: The filter to add to the query.
         :type offset: ``int``
         :param offset: The offset for the query.
         :type limit: ``int``
-        :param limit: limit of idp detections to retrieve each request.
+        :param limit: limit of idp/ods detections to retrieve each request.
 
         :return: The response.
         :rtype ``dict``
@@ -1444,9 +1614,16 @@ def get_detections_ids(filter_arg=None, offset: int = 0, limit=INCIDENTS_PER_FET
     }
     if limit:
         params['limit'] = limit
-    endpoint_url = "/alerts/queries/alerts/v1"
+    endpoint_url = "/alerts/queries/alerts/v1" if LEGACY_VERSION else \
+        "/alerts/queries/alerts/v2?filter="
+    # in the new version we need to add the product type to the filter to the url as encoded string
+    if not LEGACY_VERSION and params.get('filter'):
+        endpoint_url += urllib.parse.quote_plus(params.pop('filter'))
+
     response = http_request('GET', endpoint_url, params)
-    demisto.debug(f"CrowdStrikeFalconMsg: Getting {product_type} detections from {endpoint_url} with {params=}. {response=}")
+
+    demisto.debug(f"CrowdStrikeFalconMsg: Getting {product_type} detections from {endpoint_url} with {params=}. {response=}.\
+        {LEGACY_VERSION=}")
 
     return response
 
@@ -1463,7 +1640,7 @@ def get_incidents_entities(incidents_ids: list):
 
 def get_detection_entities(incidents_ids: list):
     """
-        Send a request to retrieve IDP and mobile detection entities.
+        Send a request to retrieve IDP/ODS and mobile detection entities.
 
         :type incidents_ids: ``list``
         :param incidents_ids: The list of ids to search their entities.
@@ -1471,10 +1648,14 @@ def get_detection_entities(incidents_ids: list):
         :return: The response.
         :rtype ``dict``
     """
+    url_endpoint_version = 'v1' if LEGACY_VERSION else 'v2'
+    ids_json = {'ids': incidents_ids} if LEGACY_VERSION else {"composite_ids": incidents_ids}
+    demisto.debug(f"In get_detection_entities: Getting detection entities from\
+        {url_endpoint_version} with {ids_json=}. {LEGACY_VERSION=}")
     return http_request(
         'POST',
-        '/alerts/entities/alerts/v1',
-        data=json.dumps({'ids': incidents_ids})
+        f'/alerts/entities/alerts/{url_endpoint_version}',
+        data=json.dumps(ids_json)
     )
 
 
@@ -1818,7 +1999,7 @@ def search_device(filter_operator='AND'):
     if not device_ids:
         return None
     demisto.debug(f"number of devices returned from the api call is: {len(device_ids)}")
-    return http_request('GET', '/devices/entities/devices/v2', params={'ids': device_ids})
+    return http_request('POST', '/devices/entities/devices/v2', json={'ids': device_ids})
 
 
 def behavior_to_entry_context(behavior):
@@ -1828,7 +2009,8 @@ def behavior_to_entry_context(behavior):
         :return: Behavior in entry context representation
     """
     raw_entry = get_trasnformed_dict(behavior, DETECTIONS_BEHAVIORS_KEY_MAP)
-    raw_entry.update(extract_transformed_dict_with_split(behavior, DETECTIONS_BEHAVIORS_SPLIT_KEY_MAP))
+    split_key_map = LEGACY_DETECTIONS_BEHAVIORS_SPLIT_KEY_MAP if LEGACY_VERSION else DETECTIONS_BEHAVIORS_SPLIT_KEY_MAP
+    raw_entry.update(extract_transformed_dict_with_split(behavior, split_key_map))
     return raw_entry
 
 
@@ -1845,14 +2027,15 @@ def get_username_uuid(username: str):
     return resources[0]
 
 
-def resolve_detection(ids, status, assigned_to_uuid, show_in_ui, comment):
+def resolve_detection(ids, status, assigned_to_uuid, show_in_ui, comment, tag):
     """
         Sends a resolve detection request
-        :param ids: Single or multiple ids in an array string format
-        :param status: New status of the detection
-        :param assigned_to_uuid: uuid to assign the detection to
-        :param show_in_ui: Boolean flag in string format (true/false)
-        :param comment: Optional comment to add to the detection
+        :param ids: Single or multiple ids in an array string format.
+        :param status: New status of the detection.
+        :param assigned_to_uuid: uuid to assign the detection to.
+        :param show_in_ui: Boolean flag in string format (true/false).
+        :param comment: Optional comment to add to the detection.
+        :param The tag to add.
         :return: Resolve detection response json
     """
     payload = {
@@ -1866,10 +2049,23 @@ def resolve_detection(ids, status, assigned_to_uuid, show_in_ui, comment):
         payload['show_in_ui'] = show_in_ui
     if comment:
         payload['comment'] = comment
-    # We do this so show_in_ui value won't contain ""
-    data = json.dumps(payload).replace('"show_in_ui": "false"', '"show_in_ui": false').replace('"show_in_ui": "true"',
-                                                                                               '"show_in_ui": true')
-    return http_request('PATCH', '/detects/entities/detects/v2', data=data)
+    if not LEGACY_VERSION:
+        demisto.debug(f"in resolve_detection: {LEGACY_VERSION =} and {payload=}")
+        # modify the payload to match the Raptor API
+        ids = payload.pop('ids')
+        payload["assign_to_uuid"] = payload.pop("assigned_to_uuid") if "assigned_to_uuid" in payload else None
+        payload["update_status"] = payload.pop("status") if "status" in payload else None
+        payload["append_comment"] = payload.pop("comment") if "comment" in payload else None
+        if tag:
+            payload["add_tag"] = tag
+
+        data = json.dumps(resolve_detections_prepare_body_request(ids, payload))
+    else:
+        # We do this so show_in_ui value won't contain ""
+        data = json.dumps(payload).replace('"show_in_ui": "false"', '"show_in_ui": false').replace('"show_in_ui": "true"',
+                                                                                                   '"show_in_ui": true')
+    url = "/alerts/entities/alerts/v3" if not LEGACY_VERSION else "/detects/entities/detects/v2"
+    return http_request('PATCH', url, data=data)
 
 
 def resolve_idp_or_mobile_detection(ids, status):
@@ -2021,7 +2217,7 @@ def update_detection_request(ids: list[str], status: str) -> dict:
     if status not in DETECTION_STATUS:
         raise DemistoException(f'CrowdStrike Falcon Error: '
                                f'Status given is {status} and it is not in {DETECTION_STATUS}')
-    return resolve_detection(ids=ids, status=status, assigned_to_uuid=None, show_in_ui=None, comment=None)
+    return resolve_detection(ids=ids, status=status, assigned_to_uuid=None, show_in_ui=None, comment=None, tag=None)
 
 
 def update_idp_or_mobile_detection_request(ids: list[str], status: str) -> dict:
@@ -2207,6 +2403,8 @@ def get_remote_data_command(args: dict[str, Any]):
     """
     remote_args = GetRemoteDataArgs(args)
     remote_incident_id = remote_args.remote_incident_id
+    reopen_statuses_list = argToList(demisto.params().get('reopen_statuses', ''))
+    demisto.debug(f'In get_remote_data_command {reopen_statuses_list=}')
 
     mirrored_data = {}
     entries: list = []
@@ -2214,24 +2412,30 @@ def get_remote_data_command(args: dict[str, Any]):
         demisto.debug(f'Performing get-remote-data command with incident or detection id: {remote_incident_id} '
                       f'and last_update: {remote_args.last_update}')
         incident_type = find_incident_type(remote_incident_id)
+        demisto.debug(f'Successfully identified incident type: {incident_type} for remote incident id: {remote_incident_id}')
         if incident_type == IncidentType.INCIDENT:
             mirrored_data, updated_object = get_remote_incident_data(remote_incident_id)
             if updated_object:
                 demisto.debug(f'Update incident {remote_incident_id} with fields: {updated_object}')
-                set_xsoar_incident_entries(updated_object, entries, remote_incident_id)  # sets in place
-
-        elif incident_type == IncidentType.DETECTION:
+                set_xsoar_incident_entries(updated_object, entries, remote_incident_id, reopen_statuses_list)  # sets in place
+        # for legacy endpoint detections
+        elif incident_type == IncidentType.LEGACY_ENDPOINT_DETECTION:
             mirrored_data, updated_object = get_remote_detection_data(remote_incident_id)
             if updated_object:
                 demisto.debug(f'Update detection {remote_incident_id} with fields: {updated_object}')
-                set_xsoar_detection_entries(updated_object, entries, remote_incident_id)  # sets in place
-
-        elif incident_type == IncidentType.IDP_OR_MOBILE_DETECTION:
-            mirrored_data, updated_object, detection_type = get_remote_idp_or_mobile_detection_data(remote_incident_id)
+                set_xsoar_detection_entries(updated_object, entries, remote_incident_id, reopen_statuses_list)  # sets in place
+        # for endpoint (in the new version) ,idp and mobile detections
+        elif incident_type == IncidentType.ENDPOINT_OR_IDP_OR_MOBILE_DETECTION:
+            mirrored_data, updated_object, detection_type = get_remote_epp_or_idp_or_mobile_detection_data(remote_incident_id)
             if updated_object:
                 demisto.debug(f'Update {detection_type} detection {remote_incident_id} with fields: {updated_object}')
                 set_xsoar_idp_or_mobile_detection_entries(
-                    updated_object, entries, remote_incident_id, detection_type)  # sets in place
+                    updated_object, entries, remote_incident_id, detection_type, reopen_statuses_list)  # sets in place
+        elif incident_type == IncidentType.ON_DEMAND:
+            mirrored_data, updated_object = get_remote_detection_data(remote_incident_id)
+            if updated_object:
+                demisto.debug(f'Update on-demand detection {remote_incident_id} with fields: {updated_object}')
+                set_xsoar_detection_entries(updated_object, entries, remote_incident_id, reopen_statuses_list)
 
         else:
             # this is here as prints can disrupt mirroring
@@ -2253,12 +2457,15 @@ def get_remote_data_command(args: dict[str, Any]):
 
 
 def find_incident_type(remote_incident_id: str):
-    if remote_incident_id[0:3] == IncidentType.INCIDENT.value:
+    if IncidentType.INCIDENT.value in remote_incident_id:
         return IncidentType.INCIDENT
-    if remote_incident_id[0:3] == IncidentType.DETECTION.value:
-        return IncidentType.DETECTION
-    if IncidentType.IDP_OR_MOBILE_DETECTION.value in remote_incident_id:
-        return IncidentType.IDP_OR_MOBILE_DETECTION
+    if IncidentType.LEGACY_ENDPOINT_DETECTION.value in remote_incident_id:
+        return IncidentType.LEGACY_ENDPOINT_DETECTION
+    if IncidentType.ENDPOINT_OR_IDP_OR_MOBILE_DETECTION.value in remote_incident_id:
+        return IncidentType.ENDPOINT_OR_IDP_OR_MOBILE_DETECTION
+    if IncidentType.ON_DEMAND.value in remote_incident_id:
+        return IncidentType.ON_DEMAND
+    demisto.debug(f"Unable to determine incident type for remote incident id: {remote_incident_id}")
     return None
 
 
@@ -2287,62 +2494,85 @@ def get_remote_detection_data(remote_incident_id: str):
     """
     mirrored_data_list = get_detections_entities([remote_incident_id]).get('resources', [])  # a list with one dict in it
     mirrored_data = mirrored_data_list[0]
-
-    mirrored_data['severity'] = severity_string_to_int(mirrored_data.get('max_severity_displayname'))
+    # severity key name is different in the raptor version
+    severity = mirrored_data.get('max_severity_displayname') if LEGACY_VERSION else mirrored_data.get('severity_name')
+    mirrored_data['severity'] = severity_string_to_int(severity)
     demisto.debug(f'In get_remote_detection_data {remote_incident_id=} {mirrored_data=}')
 
+    incoming_args = LEGACY_CS_FALCON_DETECTION_INCOMING_ARGS if LEGACY_VERSION else CS_FALCON_DETECTION_INCOMING_ARGS
     updated_object: dict[str, Any] = {'incident_type': 'detection'}
-    set_updated_object(updated_object, mirrored_data, CS_FALCON_DETECTION_INCOMING_ARGS)
+    set_updated_object(updated_object, mirrored_data, incoming_args)
     demisto.debug(f'After set_updated_object {updated_object=}')
     return mirrored_data, updated_object
 
 
-def get_remote_idp_or_mobile_detection_data(remote_incident_id):
+def get_remote_epp_or_idp_or_mobile_detection_data(remote_incident_id):
     """
-        Gets the relevant IDP or Mobile detection entity from the remote system (CrowdStrike Falcon).
+        Gets the relevant Endpoint or IDP or Mobile detection entity from the remote system (CrowdStrike Falcon).
 
         :type remote_incident_id: ``str``
         :param remote_incident_id: The incident id to return its information.
 
-        :return: The IDP or Mobile detection entity.
+        :return: The Endpoint or IDP or Mobile detection entity.
         :rtype ``dict``
         :return: The object with the updated fields.
         :rtype ``dict``
-        :return: The detection type (idp or mobile).
+        :return: The detection type (endpoint or idp or mobile).
         :rtype ``str``
     """
     mirrored_data_list = get_detection_entities([remote_incident_id]).get('resources', [])  # a list with one dict in it
     mirrored_data = mirrored_data_list[0]
+    demisto.debug(f'in get_remote_epp_or_idp_or_mobile_detection_data {mirrored_data=}')
     detection_type = ''
+    mirroring_fields = ['status']
     updated_object: dict[str, Any] = {}
     if 'idp' in mirrored_data['product']:
         updated_object = {'incident_type': IDP_DETECTION}
         detection_type = 'IDP'
+        mirroring_fields.append('id')
     if 'mobile' in mirrored_data['product']:
         updated_object = {'incident_type': MOBILE_DETECTION}
         detection_type = 'Mobile'
-    set_updated_object(updated_object, mirrored_data, ['status'])
+        mirroring_fields.append('mobile_detection_id')
+    if 'epp' in mirrored_data['product']:
+        updated_object = {'incident_type': ENDPOINT_DETECTION}
+        detection_type = 'Detection'
+        mirroring_fields = CS_FALCON_DETECTION_INCOMING_ARGS
+    set_updated_object(updated_object, mirrored_data, mirroring_fields)
+    demisto.debug(f'in get_remote_epp_or_idp_or_mobile_detection_data {mirroring_fields=} {updated_object=}')
     return mirrored_data, updated_object, detection_type
 
 
-def set_xsoar_incident_entries(updated_object: dict[str, Any], entries: list, remote_incident_id: str):
+def set_xsoar_incident_entries(updated_object: dict[str, Any], entries: list, remote_incident_id: str,
+                               reopen_statuses_list: list):
+    reopen_statuses_set = {str(status).strip() for status in reopen_statuses_list}
+    demisto.debug(f'In set_xsoar_incident_entries {reopen_statuses_set=} {remote_incident_id=}')
     if demisto.params().get('close_incident'):
         if updated_object.get('status') == 'Closed':
             close_in_xsoar(entries, remote_incident_id, 'Incident')
-        elif updated_object.get('status') in (set(STATUS_TEXT_TO_NUM.keys()) - {'Closed'}):
+        elif updated_object.get('status', '') in reopen_statuses_set:
             reopen_in_xsoar(entries, remote_incident_id, 'Incident')
+        else:
+            demisto.debug(f"In set_xsoar_incident_entries not closing and not reopening {remote_incident_id=} since "
+                          f"{updated_object.get('status')=} and {reopen_statuses_set=}.")
 
 
-def set_xsoar_detection_entries(updated_object: dict[str, Any], entries: list, remote_detection_id: str):
+def set_xsoar_detection_entries(updated_object: dict[str, Any], entries: list, remote_detection_id: str,
+                                reopen_statuses_list: list):
+    reopen_statuses_set = {str(status).lower().strip().replace(' ', '_') for status in reopen_statuses_list}
+    demisto.debug(f'In set_xsoar_detection_entries {reopen_statuses_set=} {remote_detection_id=}')
     if demisto.params().get('close_incident'):
         if updated_object.get('status') == 'closed':
             close_in_xsoar(entries, remote_detection_id, 'Detection')
-        elif updated_object.get('status') in (set(DETECTION_STATUS) - {'closed'}):
+        elif updated_object.get('status') in reopen_statuses_set:
             reopen_in_xsoar(entries, remote_detection_id, 'Detection')
+        else:
+            demisto.debug(f"In set_xsoar_detection_entries not closing and not reopening {remote_detection_id=} "
+                          f"since {updated_object.get('status')=} and {reopen_statuses_set=}.")
 
 
-def set_xsoar_idp_or_mobile_detection_entries(updated_object: dict[str, Any], entries: list,
-                                              remote_idp_detection_id: str, incident_type_name: str):
+def set_xsoar_idp_or_mobile_detection_entries(updated_object: dict[str, Any], entries: list, remote_idp_detection_id: str,
+                                              incident_type_name: str, reopen_statuses_list: list):
     """
         Send the updated object to the relevant status handler
 
@@ -2352,15 +2582,22 @@ def set_xsoar_idp_or_mobile_detection_entries(updated_object: dict[str, Any], en
         :param entries: The list of entries to add the new entry into.
         :type remote_idp_detection_id: ``str``
         :param remote_idp_detection_id: the remote idp detection id
+        :type reopen_statuses_list: ``list``
+        :param reopen_statuses_list: the set of statuses that should reopen an incident in XSOAR.
 
         :return: The response.
         :rtype ``dict``
     """
+    reopen_statuses_set = {str(status).lower().strip().replace(' ', '_') for status in reopen_statuses_list}
+    demisto.debug(f'In set_xsoar_idp_or_mobile_detection_entries {reopen_statuses_set=} {remote_idp_detection_id=}')
     if demisto.params().get('close_incident'):
         if updated_object.get('status') == 'closed':
             close_in_xsoar(entries, remote_idp_detection_id, incident_type_name)
-        elif updated_object.get('status') in (set(IDP_AND_MOBILE_DETECTION_STATUS) - {'closed'}):
+        elif updated_object.get('status') in reopen_statuses_set:
             reopen_in_xsoar(entries, remote_idp_detection_id, incident_type_name)
+        else:
+            demisto.debug(f"In set_xsoar_idp_or_mobile_detection_entries not closing and not reopening {remote_idp_detection_id=}"
+                          f" since {updated_object.get('status')=} and {reopen_statuses_set=}.")
 
 
 def close_in_xsoar(entries: list, remote_incident_id: str, incident_type_name: str):
@@ -2453,6 +2690,11 @@ def get_modified_remote_data_command(args: dict[str, Any]):
         raw_ids += get_detections_ids(
             filter_arg=f"updated_timestamp:>'{last_update_utc.strftime(DETECTION_DATE_FORMAT)}'+product:'mobile'"
         ).get('resources', [])
+    if ON_DEMAND_SCANS_DETECTION_TYPE in fetch_types:
+        raw_ids += get_detections_ids(
+            filter_arg=f"updated_timestamp:>'{last_update_utc.strftime(DETECTION_DATE_FORMAT)}'+type:'ods'"
+
+        ).get('resources', [])
 
     modified_ids_to_mirror = list(map(str, raw_ids))
     demisto.debug(f'All ids to mirror in are: {modified_ids_to_mirror}')
@@ -2478,18 +2720,19 @@ def update_remote_system_command(args: dict[str, Any]) -> str:
 
     try:
         incident_type = find_incident_type(remote_incident_id)
+        demisto.debug(f'Successfully identified incident type: {incident_type} for remote incident id: {remote_incident_id}')
         if parsed_args.incident_changed:
             if incident_type == IncidentType.INCIDENT:
                 result = update_remote_incident(delta, parsed_args.inc_status, remote_incident_id)
                 if result:
                     demisto.debug(f'Incident updated successfully. Result: {result}')
 
-            elif incident_type == IncidentType.DETECTION:
+            elif incident_type in (IncidentType.LEGACY_ENDPOINT_DETECTION, IncidentType.ON_DEMAND):
                 result = update_remote_detection(delta, parsed_args.inc_status, remote_incident_id)
                 if result:
                     demisto.debug(f'Detection updated successfully. Result: {result}')
 
-            elif incident_type == IncidentType.IDP_OR_MOBILE_DETECTION:
+            elif incident_type == IncidentType.ENDPOINT_OR_IDP_OR_MOBILE_DETECTION:
                 result = update_remote_idp_or_mobile_detection(delta, parsed_args.inc_status, remote_incident_id)
                 if result:
                     demisto.debug(f'IDP/Mobile Detection updated successfully. Result: {result}')
@@ -2662,10 +2905,11 @@ def fetch_incidents():
     iom_incidents: list[dict[str, Any]] = []
     ioa_incidents: list[dict[str, Any]] = []
     mobile_detections: list[dict[str, Any]] = []
+    on_demand_detections: list[dict[str, Any]] = []
     last_run = demisto.getLastRun()
     demisto.debug(f'CrowdStrikeFalconMsg: Current last run object is {last_run}')
     if not last_run:
-        last_run = [{}, {}, {}, {}, {}, {}]
+        last_run = [{}, {}, {}, {}, {}, {}, {}]
     last_run = migrate_last_run(last_run)
     current_fetch_info_detections: dict = last_run[0]
     current_fetch_info_incidents: dict = last_run[1]
@@ -2673,6 +2917,7 @@ def fetch_incidents():
     iom_last_run: dict = {} if len(last_run) < 4 else last_run[3]
     ioa_last_run: dict = {} if len(last_run) < 5 else last_run[4]
     current_fetch_info_mobile_detections: dict = {} if len(last_run) < 6 else last_run[5]
+    current_fetch_on_demand_detections: dict = {} if len(last_run) < 7 else last_run[6]
     params = demisto.params()
     fetch_incidents_or_detections = params.get('fetch_incidents_or_detections', "")
     look_back = int(params.get('look_back') or 1)
@@ -2706,8 +2951,10 @@ def fetch_incidents():
 
             for detection in full_detections:
                 detection['incident_type'] = incident_type
+                # detection_id is for the old version of the API, composite_id is for the new version (Raptor)
+                detection_id = detection.get('detection_id') if LEGACY_VERSION else detection.get('composite_id')
                 demisto.debug(
-                    f"CrowdStrikeFalconMsg: Detection {detection['detection_id']} "
+                    f"CrowdStrikeFalconMsg: Detection {detection_id} "
                     f"was fetched which was created in {detection['created_timestamp']}")
                 incident = detection_to_incident(detection)
 
@@ -2786,7 +3033,7 @@ def fetch_incidents():
         demisto.debug(f"CrowdstrikeFalconMsg: Ending fetch Incidents. Fetched {len(incidents)}")
 
     if IDP_DETECTION_FETCH_TYPE in fetch_incidents_or_detections:
-        idp_detections, current_fetch_info_idp_detections = fetch_idp_and_mobile_detections(
+        idp_detections, current_fetch_info_idp_detections = fetch_detections_by_product_type(
             current_fetch_info_idp_detections,
             look_back=look_back,
             fetch_query=params.get(
@@ -2797,7 +3044,7 @@ def fetch_incidents():
             start_time_key='start_time')
 
     if MOBILE_DETECTION_FETCH_TYPE in fetch_incidents_or_detections:
-        mobile_detections, current_fetch_info_mobile_detections = fetch_idp_and_mobile_detections(
+        mobile_detections, current_fetch_info_mobile_detections = fetch_detections_by_product_type(
             current_fetch_info_mobile_detections,
             look_back=look_back,
             fetch_query=params.get(
@@ -2873,15 +3120,31 @@ def fetch_incidents():
 
         ioa_last_run = {'ioa_next_token': ioa_new_next_token, 'last_date_time_since': new_date_time_since,
                         'last_fetch_query': ioa_fetch_query, 'last_event_ids': ioa_event_ids or last_fetch_event_ids}
+
+    if ON_DEMAND_SCANS_DETECTION_TYPE in fetch_incidents_or_detections:
+        if LEGACY_VERSION:
+            raise DemistoException('On-Demand Scans Detection is not supported in legacy version.')
+        demisto.debug('Fetching On-Demand Scans Detection incidents')
+        demisto.debug(f'on_demand_detections_last_run= {current_fetch_on_demand_detections}')
+
+        on_demand_detections, current_fetch_on_demand_detections = fetch_detections_by_product_type(
+            current_fetch_on_demand_detections,
+            look_back=look_back,
+            fetch_query=params.get('on_demand_fetch_query', ''),
+            detections_type=ON_DEMAND_SCANS_DETECTION,
+            product_type='ods',
+            detection_name_prefix=ON_DEMAND_SCANS_DETECTION_TYPE,
+            start_time_key='created_timestamp')
+
     demisto.setLastRun([current_fetch_info_detections, current_fetch_info_incidents, current_fetch_info_idp_detections,
-                        iom_last_run, ioa_last_run, current_fetch_info_mobile_detections])
-    return incidents + detections + idp_detections + iom_incidents + ioa_incidents + mobile_detections
+                        iom_last_run, ioa_last_run, current_fetch_info_mobile_detections, current_fetch_on_demand_detections])
+    return incidents + detections + idp_detections + iom_incidents + ioa_incidents + mobile_detections + on_demand_detections
 
 
-def fetch_idp_and_mobile_detections(current_fetch_info: dict, look_back: int, product_type: str,
-                                    fetch_query: str, detections_type: str, detection_name_prefix: str,
-                                    start_time_key: str) -> tuple[List, dict]:
-    """The fetch logic for idp and mobile detections.
+def fetch_detections_by_product_type(current_fetch_info: dict, look_back: int, product_type: str,
+                                     fetch_query: str, detections_type: str, detection_name_prefix: str,
+                                     start_time_key: str) -> tuple[List, dict]:
+    """The fetch logic for idp, ods and mobile detections.
 
     Args:
         current_fetch_info (dict): The last run object.
@@ -2897,13 +3160,14 @@ def fetch_idp_and_mobile_detections(current_fetch_info: dict, look_back: int, pr
     """
     detections: List = []
     offset: int = current_fetch_info.get('offset') or 0
-
     start_fetch_time, end_fetch_time = get_fetch_run_time_range(last_run=current_fetch_info,
                                                                 first_fetch=FETCH_TIME,
                                                                 look_back=look_back,
                                                                 date_format=DETECTION_DATE_FORMAT)
     fetch_limit = current_fetch_info.get('limit') or INCIDENTS_PER_FETCH
     filter = f"product:'{product_type}'+created_timestamp:>'{start_fetch_time}'"
+    if product_type == 'ods':
+        filter = filter.replace('product:', 'type:')
 
     if fetch_query:
         filter += f"+{fetch_query}"
@@ -2922,7 +3186,7 @@ def fetch_idp_and_mobile_detections(current_fetch_info: dict, look_back: int, pr
                 detection['incident_type'] = detections_type
                 detection_to_context = detection_to_incident_context(detection, detection_name_prefix, start_time_key)
                 detections.append(detection_to_context)
-
+        detections = truncate_long_time_str(detections, 'occurred') if product_type == 'ods' else detections
         detections = filter_incidents_by_duplicates_and_limit(incidents_res=detections,
                                                               last_run=current_fetch_info,
                                                               fetch_limit=INCIDENTS_PER_FETCH, id_field='name')
@@ -3726,24 +3990,18 @@ def search_device_command():
         :return: EntryObject of search device command
     """
     raw_res = search_device()
+    device_ids = []
     if not raw_res:
         return create_entry_object(hr='Could not find any devices.')
     devices = raw_res.get('resources')
     extended_data = argToBoolean(demisto.args().get('extended_data', False))
+    for device in devices:
+        device_id = device.get("device_id")
+        device_ids.append(device_id)
+    state_data = get_status(device_ids)
     command_results = []
     for single_device in devices:
-        # demisto.debug(f"single device info: {single_device}")
-        # status, is_isolated = generate_status_fields(single_device.get('status'), single_device.get("device_id"))
-        endpoint = Common.Endpoint(
-            id=single_device.get('device_id'),
-            hostname=single_device.get('hostname'),
-            ip_address=single_device.get('local_ip'),
-            os=single_device.get('platform_name'),
-            os_version=single_device.get('os_version'),
-            status=get_status(single_device.get("device_id")),
-            is_isolated=get_isolation_status(single_device.get('status')),
-            mac_address=single_device.get('mac_address'),
-            vendor=INTEGRATION_NAME)
+        endpoint = generate_endpoint_by_contex_standard(single_device, state_data)
         if not extended_data:
             entry = get_trasnformed_dict(single_device, SEARCH_DEVICE_KEY_MAP)
             headers = ['ID', 'Hostname', 'OS', 'MacAddress', 'LocalIP', 'ExternalIP', 'FirstSeen', 'LastSeen', 'Status']
@@ -3793,13 +4051,29 @@ def enrich_groups(all_group_ids) -> dict[str, Any]:
     return result
 
 
-def get_status(device_id):
-    raw_res = http_request('GET', '/devices/entities/online-state/v1', params={'ids': device_id})
-    state = raw_res.get('resources')[0].get('state', '')
-    if state == 'unknown':
-        demisto.debug(f"Device with id: {device_id} returned an unknown state, which indicates that the host has not"
-                      f" been seen recently and we are not confident about its current state")
-    return HOST_STATUS_DICT[state]
+def get_status(device_ids):
+    """
+    Get the online status for one or more hosts by specifying each host’s unique ID (up to 100 max).
+    The status can be online, offline, or unknown.
+    Args:
+        device_ids: list of device ids.
+
+    Returns: dictionary contains the id:state
+
+    """
+    state_data = {}
+    batch_size = 100
+    for i in range(0, len(device_ids), batch_size):
+        batch = device_ids[i:i + batch_size]
+        raw_res = http_request('GET', '/devices/entities/online-state/v1', params={'ids': batch})
+        for res in raw_res.get('resources'):
+            state = res.get('state', '')
+            device_id = res.get('id', '')
+            if state == 'unknown':
+                demisto.debug(f"Device with id: {device_id} returned an unknown state, which indicates that the host has not"
+                              f" been seen recently and we are not confident about its current state")
+            state_data[device_id] = HOST_STATUS_DICT[state]
+    return state_data
 
 
 def get_isolation_status(endpoint_status):
@@ -3816,22 +4090,19 @@ def get_isolation_status(endpoint_status):
     return is_isolated
 
 
-def generate_endpoint_by_contex_standard(devices):
-    standard_endpoints = []
-    for single_device in devices:
-        # status, is_isolated = generate_status_fields(single_device.get('status'), single_device.get("device_id"))
-        endpoint = Common.Endpoint(
-            id=single_device.get('device_id'),
-            hostname=single_device.get('hostname'),
-            ip_address=single_device.get('local_ip'),
-            os=single_device.get('platform_name'),
-            os_version=single_device.get('os_version'),
-            status=get_status(single_device.get("device_id")),
-            is_isolated=get_isolation_status(single_device.get('status')),
-            mac_address=single_device.get('mac_address'),
-            vendor=INTEGRATION_NAME)
-        standard_endpoints.append(endpoint)
-    return standard_endpoints
+def generate_endpoint_by_contex_standard(single_device, state_data):
+    device_id = single_device.get('device_id')
+    endpoint = Common.Endpoint(
+        id=device_id,
+        hostname=single_device.get('hostname'),
+        ip_address=single_device.get('local_ip'),
+        os=single_device.get('platform_name'),
+        os_version=single_device.get('os_version'),
+        status=state_data.get(device_id),
+        is_isolated=get_isolation_status(single_device.get('status')),
+        mac_address=single_device.get('mac_address'),
+        vendor=INTEGRATION_NAME)
+    return endpoint
 
 
 def get_endpoint_command():
@@ -3849,13 +4120,20 @@ def get_endpoint_command():
     if not raw_res:
         return create_entry_object(hr='Could not find any devices.')
     devices = raw_res.get('resources')
+    device_ids = []
+    for device in devices:
+        device_id = device.get("device_id")
+        device_ids.append(device_id)
+    state_data = get_status(device_ids)
 
     # filter hostnames that will match the exact hostnames including case-sensitive
     if hostnames := argToList(args.get('hostname')):
         lowercase_hostnames = {hostname.lower() for hostname in hostnames}
         devices = [device for device in devices if (device.get('hostname') or '').lower() in lowercase_hostnames]
 
-    standard_endpoints = generate_endpoint_by_contex_standard(devices)
+    standard_endpoints = []
+    for single_device in devices:
+        standard_endpoints.append(generate_endpoint_by_contex_standard(single_device, state_data))
 
     command_results = []
     for endpoint in standard_endpoints:
@@ -3909,7 +4187,11 @@ def search_detections_command():
         for detection in demisto.get(raw_res, "resources"):
             detection_entry = {}
 
-            for path, new_key in DETECTIONS_BASE_KEY_MAP.items():
+            if not LEGACY_VERSION:
+                detection = modify_detection_outputs(detection)
+
+            for path, new_key in (LEGACY_DETECTIONS_BASE_KEY_MAP.items() if LEGACY_VERSION else
+                                  DETECTIONS_BASE_KEY_MAP.items()):
                 detection_entry[new_key] = demisto.get(detection, path)
             behaviors = []
 
@@ -3919,7 +4201,8 @@ def search_detections_command():
 
             if extended_data:
                 detection_entry['Device'] = demisto.get(detection, 'device')
-                detection_entry['BehaviorsProcessed'] = demisto.get(detection, 'behaviors_processed')
+                if LEGACY_VERSION:  # The new version (raptor) does not have the 'behaviors_processed' key
+                    detection_entry['BehaviorsProcessed'] = demisto.get(detection, 'behaviors_processed')
 
             entries.append(detection_entry)
 
@@ -3948,10 +4231,13 @@ def resolve_detection_command():
         assigned_to_uuid = get_username_uuid(username)
 
     status = args.get('status')
+    tag = args.get('tag')
     show_in_ui = args.get('show_in_ui')
-    if not (username or assigned_to_uuid or comment or status or show_in_ui):
+    if not (username or assigned_to_uuid or comment or status or show_in_ui or tag):
         raise DemistoException("Please provide at least one argument to resolve the detection with.")
-    raw_res = resolve_detection(ids, status, assigned_to_uuid, show_in_ui, comment)
+    if LEGACY_VERSION and tag:
+        raise DemistoException("tag argument is only relevant when running with API V3.")
+    raw_res = resolve_detection(ids, status, assigned_to_uuid, show_in_ui, comment, tag)
     args.pop('ids')
     hr = f"Detection {str(ids)[1:-1]} updated\n"
     hr += 'With the following values:\n'
@@ -4649,7 +4935,8 @@ def detections_to_human_readable(detections):
     detections_readable_outputs = []
     for detection in detections:
         readable_output = assign_params(status=detection.get('status'),
-                                        max_severity=detection.get('max_severity_displayname'),
+                                        max_severity=detection.get('max_severity_displayname') if LEGACY_VERSION else
+                                        detection.get('severity_name'),
                                         detection_id=detection.get('detection_id'),
                                         created_time=detection.get('created_timestamp'))
         detections_readable_outputs.append(readable_output)
@@ -4672,6 +4959,9 @@ def list_detection_summaries_command():
         detections_ids = demisto.get(get_fetch_detections(), 'resources')
     detections_response_data = get_detections_entities(detections_ids)
     detections = list(detections_response_data.get('resources')) if detections_response_data else []
+    if not LEGACY_VERSION:
+        # modify the new version (raptor) outputs to match the old format for backward compatibility
+        detections = [modify_detection_summaries_outputs(detection) for detection in detections]
     detections_human_readable = detections_to_human_readable(detections)
 
     return CommandResults(
@@ -6512,7 +6802,8 @@ def resolve_detections_prepare_body_request(ids: list[str],
         if value:
             param = {"name": key, "value": value}
             action_params.append(param)
-    return {'action_parameters': action_params, 'ids': ids}
+    ids_request_key = 'composite_ids' if not LEGACY_VERSION else 'ids'
+    return {'action_parameters': action_params, ids_request_key: ids}
 
 
 def resolve_detections_request(ids: list[str], **kwargs) -> dict[str, Any]:
@@ -6524,8 +6815,10 @@ def resolve_detections_request(ids: list[str], **kwargs) -> dict[str, Any]:
     Returns:
         dict[str, Any]: The raw response of the API.
     """
+    url_suffix = '/alerts/entities/alerts/v3' if not LEGACY_VERSION else '/alerts/entities/alerts/v2'
     body_payload = resolve_detections_prepare_body_request(ids=ids, action_params_values=kwargs)
-    return http_request(method='PATCH', url_suffix='/alerts/entities/alerts/v2', json=body_payload)
+    demisto.debug(f"In resolve_detections: {LEGACY_VERSION=}, {url_suffix=}, {body_payload=} ")
+    return http_request(method='PATCH', url_suffix=url_suffix, json=body_payload)
 
 
 def cs_falcon_resolve_identity_detection(args: dict[str, Any]) -> CommandResults:

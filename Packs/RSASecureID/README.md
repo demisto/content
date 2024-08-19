@@ -1,10 +1,10 @@
-# RSA SecureID
+# RSA SecurID
 <~XSIAM>
  
 This pack includes Cortex XSIAM content.
  
 ## Configuration on Server Side
-You need to configure RSA SecureID to forward Syslog messages.
+You need to configure RSA SecurID to forward Syslog messages.
  
 In RSA Authentication Manager 8.4 there is rsyslog instead of syslog-ng.
 In the configuration file in /etc/rsyslog.d/remote.conf you define the syslog server(s) to which you want to connect.
@@ -52,6 +52,6 @@ You can configure the specific vendor and product for this instance.
    | Parameter     | Value   
    | :---          | :---        
    | `Vendor`      | Enter **RSA**.
-   | `Product`     | Enter **SecureID**.
+   | `Product`     | Enter **SecurID**.
  
 </~XSIAM>

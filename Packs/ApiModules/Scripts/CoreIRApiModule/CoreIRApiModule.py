@@ -6,6 +6,7 @@ import re
 from operator import itemgetter
 import json
 from typing import Tuple, Callable
+import base64
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -142,10 +143,16 @@ ALERT_EVENT_AZURE_FIELDS = {
     "resourceType",
     "tenantId",
 }
+
 RBAC_VALIDATIONS_VERSION = '8.6.0'
 RBAC_VALIDATIONS_BUILD_NUMBER = '992980'
 FORWARD_USER_RUN_RBAC = is_xsiam() and is_demisto_version_ge(version=RBAC_VALIDATIONS_VERSION,
-                                                             build_number=RBAC_VALIDATIONS_BUILD_NUMBER)
+                                                             build_number=RBAC_VALIDATIONS_BUILD_NUMBER) and not is_using_engine()
+
+ALLOW_BIN_CONTENT_RESPONSE_BUILD_NUM = '1230614'
+ALLOW_BIN_CONTENT_RESPONSE_SERVER_VERSION = '8.7.0'
+ALLOW_RESPONSE_AS_BINARY = is_demisto_version_ge(version=ALLOW_BIN_CONTENT_RESPONSE_SERVER_VERSION,
+                                                 build_number=ALLOW_BIN_CONTENT_RESPONSE_BUILD_NUM)
 
 
 class CoreClient(BaseClient):
@@ -153,6 +160,7 @@ class CoreClient(BaseClient):
     def __init__(self, base_url: str, headers: dict, timeout: int = 120, proxy: bool = False, verify: bool = False):
         super().__init__(base_url=base_url, headers=headers, proxy=proxy, verify=verify)
         self.timeout = timeout
+        # For Xpanse tenants requiring direct use of the base client HTTP request instead of the _apiCall,
 
     def _http_request(self, method, url_suffix='', full_url=None, headers=None, json_data=None,
                       params=None, data=None, timeout=None, raise_on_status=False, ok_codes=None,
@@ -216,21 +224,35 @@ class CoreClient(BaseClient):
         headers = headers if headers else self._headers
         data = json.dumps(json_data) if json_data else data
         address = full_url if full_url else urljoin(self._base_url, url_suffix)
-        response = demisto._apiCall(
+        response_data_type = "bin" if resp_type == 'content' and ALLOW_RESPONSE_AS_BINARY else None
+        if resp_type == 'content' and not ALLOW_RESPONSE_AS_BINARY:
+            allowed_version = f'{ALLOW_BIN_CONTENT_RESPONSE_SERVER_VERSION}-{ALLOW_BIN_CONTENT_RESPONSE_BUILD_NUM}'
+            raise DemistoException('getting binary data from server is allowed from '
+                                   f'version: {allowed_version} and above')
+        params = assign_params(
             method=method,
             path=address,
             data=data,
             headers=headers,
-            timeout=timeout
+            timeout=timeout,
+            response_data_type=response_data_type
         )
+        response = demisto._apiCall(**params)
         if ok_codes and response.get('status') not in ok_codes:
             self._handle_error(error_handler, response, with_metrics)
-        return json.loads(response['data'])
+        try:
+            decoder = base64.b64decode if response_data_type == "bin" else json.loads
+            demisto.debug(f'{response_data_type=}, {decoder.__name__=}')
+            return decoder(response['data'])   # type: ignore[operator]
+        except json.JSONDecodeError:
+            demisto.debug(f"Converting data to json was failed. Return it as is. The data's type is {type(response['data'])}")
+            return response['data']
 
     def get_incidents(self, incident_id_list=None, lte_modification_time=None, gte_modification_time=None,
                       lte_creation_time=None, gte_creation_time=None, status=None, starred=None,
                       starred_incidents_fetch_window=None, sort_by_modification_time=None, sort_by_creation_time=None,
-                      page_number=0, limit=100, gte_creation_time_milliseconds=0):
+                      page_number=0, limit=100, gte_creation_time_milliseconds=0,
+                      gte_modification_time_milliseconds=None, lte_modification_time_milliseconds=None):
         """
         Filters and returns incidents
 
@@ -247,6 +269,8 @@ class CoreClient(BaseClient):
         :param page_number: page number
         :param limit: maximum number of incidents to return per page
         :param gte_creation_time_milliseconds: greater than time in milliseconds
+        :param gte_modification_time_milliseconds: greater than modification time in milliseconds
+        :param lte_modification_time_milliseconds: greater than modification time in milliseconds
         :return:
         """
         search_from = page_number * limit
@@ -331,6 +355,14 @@ class CoreClient(BaseClient):
                 'value': starred_incidents_fetch_window
             })
 
+        if lte_modification_time and lte_modification_time_milliseconds:
+            raise ValueError('Either lte_modification_time or '
+                             'lte_modification_time_milliseconds should be provided . Can\'t provide both')
+
+        if gte_modification_time and gte_modification_time_milliseconds:
+            raise ValueError('Either gte_modification_time or '
+                             'gte_modification_time_milliseconds should be provide. Can\'t provide both')
+
         if lte_modification_time:
             filters.append({
                 'field': 'modification_time',
@@ -345,16 +377,29 @@ class CoreClient(BaseClient):
                 'value': date_to_timestamp(gte_modification_time, TIME_FORMAT)
             })
 
-        if gte_creation_time_milliseconds > 0:
+        if gte_creation_time_milliseconds:
             filters.append({
                 'field': 'creation_time',
                 'operator': 'gte',
-                'value': gte_creation_time_milliseconds
+                'value': date_to_timestamp(gte_creation_time_milliseconds)
+            })
+
+        if gte_modification_time_milliseconds:
+            filters.append({
+                'field': 'modification_time',
+                'operator': 'gte',
+                'value': date_to_timestamp(gte_modification_time_milliseconds)
+            })
+
+        if lte_modification_time_milliseconds:
+            filters.append({
+                'field': 'modification_time',
+                'operator': 'lte',
+                'value': date_to_timestamp(lte_modification_time_milliseconds)
             })
 
         if len(filters) > 0:
             request_data['filters'] = filters
-
         res = self._http_request(
             method='POST',
             url_suffix='/incidents/get_incidents/',
@@ -1971,7 +2016,7 @@ def get_endpoint_properties(single_endpoint):
     is_isolated = 'No' if 'unisolated' in single_endpoint.get('is_isolated', '').lower() else 'Yes'
     hostname = single_endpoint['host_name'] if single_endpoint.get('host_name') else single_endpoint.get(
         'endpoint_name')
-    ip = single_endpoint.get('ip')
+    ip = single_endpoint.get('ip') or single_endpoint.get('public_ip') or ''
     return status, is_isolated, hostname, ip
 
 
@@ -1995,7 +2040,7 @@ def generate_endpoint_by_contex_standard(endpoints, ip_as_string, integration_na
         status, is_isolated, hostname, ip = get_endpoint_properties(single_endpoint)
         # in the `-get-endpoints` command the ip is returned as list, in order not to break bc we will keep it
         # in the `endpoint` command we use the standard
-        if ip_as_string and isinstance(ip, list):
+        if ip_as_string and ip and isinstance(ip, list):
             ip = ip[0]
         os_type = convert_os_to_standard(single_endpoint.get('os_type', ''))
         endpoint = Common.Endpoint(
@@ -2402,11 +2447,17 @@ def blocklist_files_command(client, args):
     comment = args.get('comment')
     incident_id = arg_to_number(args.get('incident_id'))
     detailed_response = argToBoolean(args.get('detailed_response', False))
-
-    res = client.blocklist_files(hash_list=hash_list,
-                                 comment=comment,
-                                 incident_id=incident_id,
-                                 detailed_response=detailed_response)
+    try:
+        res = client.blocklist_files(hash_list=hash_list,
+                                     comment=comment,
+                                     incident_id=incident_id,
+                                     detailed_response=detailed_response)
+    except Exception as e:
+        if 'All hashes have already been added to the allow or block list' in str(e):
+            return CommandResults(
+                readable_output='All hashes have already been added to the block list.'
+            )
+        raise e
 
     if detailed_response:
         return CommandResults(
@@ -2454,11 +2505,18 @@ def allowlist_files_command(client, args):
     comment = args.get('comment')
     incident_id = arg_to_number(args.get('incident_id'))
     detailed_response = argToBoolean(args.get('detailed_response', False))
+    try:
+        res = client.allowlist_files(hash_list=hash_list,
+                                     comment=comment,
+                                     incident_id=incident_id,
+                                     detailed_response=detailed_response)
+    except Exception as e:
+        if 'All hashes have already been added to the allow or block list' in str(e):
+            return CommandResults(
+                readable_output='All hashes have already been added to the allow list.'
+            )
+        raise e
 
-    res = client.allowlist_files(hash_list=hash_list,
-                                 comment=comment,
-                                 incident_id=incident_id,
-                                 detailed_response=detailed_response)
     if detailed_response:
         return CommandResults(
             readable_output=tableToMarkdown('Allowlist Files', res),
@@ -2963,6 +3021,7 @@ def resolve_xdr_close_reason(xsoar_close_reason: str) -> str:
     """
     # Initially setting the close reason according to the default mapping.
     xdr_close_reason = XSOAR_RESOLVED_STATUS_TO_XDR.get(xsoar_close_reason, 'resolved_other')
+
     # Reading custom XSOAR->XDR close-reason mapping.
     custom_xsoar_to_xdr_close_reason_mapping = comma_separated_mapping_to_dict(
         demisto.params().get("custom_xsoar_to_xdr_close_reason_mapping")
@@ -2970,16 +3029,15 @@ def resolve_xdr_close_reason(xsoar_close_reason: str) -> str:
 
     # Overriding default close-reason mapping if there exists a custom one.
     if xsoar_close_reason in custom_xsoar_to_xdr_close_reason_mapping:
-        xdr_close_reason_candidate = custom_xsoar_to_xdr_close_reason_mapping[xsoar_close_reason]
+        xdr_close_reason_candidate = custom_xsoar_to_xdr_close_reason_mapping.get(xsoar_close_reason)
         # Transforming resolved close-reason into snake_case format with known prefix to match XDR status format.
-        demisto.debug(
-            f"resolve_xdr_close_reason XSOAR->XDR custom close-reason exists, using {xsoar_close_reason}={xdr_close_reason}")
         xdr_close_reason_candidate = "resolved_" + "_".join(xdr_close_reason_candidate.lower().split(" "))
-
         if xdr_close_reason_candidate not in XDR_RESOLVED_STATUS_TO_XSOAR:
             demisto.debug("Warning: Provided XDR close-reason does not exist. Using default XDR close-reason mapping. ")
         else:
             xdr_close_reason = xdr_close_reason_candidate
+            demisto.debug(
+                f"resolve_xdr_close_reason XSOAR->XDR custom close-reason exists, using {xsoar_close_reason}={xdr_close_reason}")
     else:
         demisto.debug(f"resolve_xdr_close_reason using default mapping {xsoar_close_reason}={xdr_close_reason}")
 
@@ -3301,6 +3359,10 @@ def script_run_polling_command(args: dict, client: CoreClient) -> PollResult:
             response=None,  # since polling defaults to true, no need to deliver response here
             continue_to_poll=True,  # if an error is raised from the api, an exception will be raised
             partial_result=CommandResults(
+                outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.ScriptRun',
+                outputs_key_field='action_id',
+                outputs=reply,
+                raw_response=response,
                 readable_output=f'Waiting for the script to finish running '
                                 f'on the following endpoints: {endpoint_ids}...'
             ),

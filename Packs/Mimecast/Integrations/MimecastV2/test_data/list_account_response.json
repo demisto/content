@@ -1,0 +1,43 @@
+[
+    {
+        "meta": {
+            "status": 200
+        },
+        "data": [
+            {
+                "region": "us",
+                "archive": false,
+                "gateway": true,
+                "passphrase": "",
+                "supportCode": "6747",
+                "maxRetention": 30,
+                "maxRetentionConfirmed": true,
+                "minRetentionEnabled": false,
+                "automatedSegmentPurge": true,
+                "type": "full",
+                "policyInheritance": false,
+                "databaseCode": "usterm13",
+                "searchReason": false,
+                "contentAdministratorDefaultView": "Metadata",
+                "adminSessionTimeout": 60,
+                "exportApi": false,
+                "exgestAllowQuery": false,
+                "exgestAllowExtraction": true,
+                "expressAccount": false,
+                "cybergraphV2Enabled": false,
+                "accountCode": "ABC123",
+                "accountName": "API Alliance - Palo Alto Networks",
+                "adminEmail": "",
+                "contactEmail": "example@test.com",
+                "domain": "",
+                "userCount": 10,
+                "mimecastId": "01-0102-00236",
+                "contactName": "Adnan Kharuf",
+                "telephone": "4088307584",
+                "packages": ["Journal Services [1053]", "Desktop Apps - Outlook (Pro) [1016]"
+            ]
+        }
+    ],
+    "fail": []
+}
+]

@@ -206,7 +206,9 @@ def test_no_iocs_returned_from_search_indicators(mocker):
                                                  ('', ''),
                                                  ('\t\r\n', '\\t\\r\\n'),
                                                  ('([', '\(\['),
-                                                 ('^ASDF:', '\^ASDF\:')])
+                                                 ('^ASDF:', '\^ASDF\:'),
+                                                 ('aaa\gg123:', r'aaa\\gg123\:'),
+                                                 ('"', '\\"')])
 def test_escape_special_characters(input, expected_res):
     """
     Given:

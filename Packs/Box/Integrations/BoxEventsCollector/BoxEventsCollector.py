@@ -8,7 +8,7 @@ import urllib3
 from cryptography import exceptions
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.serialization import load_pem_private_key
-from pydantic import Field, parse_obj_as
+from pydantic import ConfigDict, Field, parse_obj_as
 
 from SiemApiModule import *  # noqa: E402
 
@@ -34,9 +34,7 @@ class BoxAppSettings(BaseModel):
     clientID: str
     clientSecret: str
     appAuth: AppAuth
-
-    class Config:
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
 
 class BoxCredentials(BaseModel):
@@ -69,9 +67,7 @@ class BoxEventsParams(BaseModel):
     _normalize_after = validator('created_after', pre=True, allow_reuse=True)(
         get_box_events_timestamp_format
     )
-
-    class Config:
-        validate_assignment = True
+    model_config = ConfigDict(validate_assignment=True)
 
 
 def not_gate(v):

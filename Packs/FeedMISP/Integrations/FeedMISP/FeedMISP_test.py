@@ -141,7 +141,8 @@ def test_parsing_user_query_remove_timestamp():
     Then
         - Return query without the timestamp parameter
     """
-    good_query = '{"returnFormat": "json", "type": {"OR": ["md5"]}, "tags": {"OR": ["tlp:%"]}, "page": 1, "limit": 2000}'
+    good_query = ('{"returnFormat": "json", "type": {"OR": ["md5"]}, "tags": {"OR": ["tlp:%"]}, "page": 1, "limit": 2000,'
+                  ' "attribute_timestamp": "1617875568"}')
     querystr = '{"returnFormat": "json", "timestamp": "1617875568", "type": {"OR": ["md5"]}, "tags": {"OR": ["tlp:%"]}}'
     params = parsing_user_query(querystr, limit=2)
     assert good_query == json.dumps(params)
@@ -350,3 +351,21 @@ def test_search_query_indicators_pagination_bad_case(mocker):
     with pytest.raises(DemistoException) as e:
         fetch_attributes_command(client, params_dict)
     assert str(e.value) == expected_result
+
+
+def test_parsing_user_query_timestamp_deprecated():
+    """
+        Given:
+            - No input
+        When:
+            - The parsing_user_query function runs
+        Then:
+            - Ensure the parsing_user_query function correctly parses the user query JSON string,
+              replacing the 'timestamp' key with 'attribute_timestamp' since timestamp deprecated.
+        """
+    good_query = ('{"returnFormat": "json", "type": {"OR": ["md5"]}, "tags": {"OR": ["tlp:%"]}, "page": 1,'
+                  ' "limit": 2000, "attribute_timestamp": "1617875568"}')
+    query_str = ('{"returnFormat": "json", "timestamp": "1617875568", "type": {"OR": ["md5"]},'
+                 ' "tags": {"OR": ["tlp:%"]}}')
+    params = parsing_user_query(query_str, limit=2)
+    assert good_query == json.dumps(params)

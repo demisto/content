@@ -3,7 +3,7 @@ import pytest
 from stix2 import TAXIICollectionSource, parse
 import demistomock as demisto  # noqa: F401
 from test_data.mitre_test_data import ATTACK_PATTERN, COURSE_OF_ACTION, INTRUSION_SET, MALWARE, TOOL, ID_TO_NAME, \
-    RELATION, STIX_TOOL, STIX_MALWARE, STIX_ATTACK_PATTERN, MALWARE_LIST_WITHOUT_PREFIX, MALWARE_LIST_WITH_PREFIX, \
+    RELATION, MALWARE_LIST_WITHOUT_PREFIX, MALWARE_LIST_WITH_PREFIX, \
     INDICATORS_LIST, NEW_INDICATORS_LIST, MITRE_ID_TO_MITRE_NAME, OLD_ID_TO_NAME, NEW_ID_TO_NAME, RELATIONSHIP_ENTITY, \
     CAMPAIGN, ATTACK_PATTERNS
 
@@ -118,9 +118,6 @@ def test_is_indicator_deprecated_or_revoked(indicator, expected_result):
     ('Intrusion Set', INTRUSION_SET.get('response'), INTRUSION_SET.get('map_result')),
     ('Malware', MALWARE.get('response'), MALWARE.get('map_result')),
     ('Tool', TOOL.get('response'), TOOL.get('map_result')),
-    ('STIX Tool', STIX_TOOL.get('response'), STIX_TOOL.get('map_result')),
-    ('STIX Malware', STIX_MALWARE.get('response'), STIX_MALWARE.get('map_result')),
-    ('STIX Attack Pattern', STIX_ATTACK_PATTERN.get('response'), STIX_ATTACK_PATTERN.get('map_result')),
     ('Campaign', CAMPAIGN.get('response'), CAMPAIGN.get('map_result')),
 ])
 def test_map_fields_by_type(indicator_type, indicator_json, expected_result):

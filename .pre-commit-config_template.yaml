@@ -41,15 +41,17 @@ repos:
     - --config=nightly_ruff.toml
     args:ci:
     - --config=nightly_ruff.toml
-    skip:docker_autoupdate: true
-- repo: https://github.com/pre-commit/mirrors-autopep8
-  rev: v2.0.4
+    args:docker_autoupdate:
+    - --config=nightly_ruff.toml
+- repo: https://github.com/hhatto/autopep8
+  rev: v2.3.1
   hooks:
   - id: autopep8
     exclude_support_level:ci:
     - community
     exclude_support_level:nightly:
     - community
+    skip:nightly: true
 - repo: https://github.com/pre-commit/mirrors-mypy
   rev: v0.982
   hooks:
@@ -61,7 +63,7 @@ repos:
     - --show-error-codes
     - --follow-imports=silent
     - --allow-redefinition
-    exclude: test_data|tests_data|.venv|.*_test.py$|infrastructure_tests|.vulture_whitelist.py|demistomock.py|Templates|conftest.py
+    exclude: test_data|tests_data|.venv|.*_test.py$|infrastructure_tests|.vulture_whitelist.py|demistomock.py|Templates|conftest.py|Utils/download_packs_and_docker_images.py
     language: system
     entry: mypy
 
@@ -174,14 +176,12 @@ repos:
     - Tests/scripts/dev_envs/pytest/conftest.py
     skip:commit: true
     run_isolated: true
-    skip:docker_autoupdate: true
     pass_docker_extra_args:ci: --rm=false
     pass_docker_extra_args:nightly: --rm=false
 
   - id: validate-deleted-files
     name: validate-deleted-files
     entry: validate-deleted-files
-    skip:docker_autoupdate: true
     language: system
     require_serial: true
     pass_filenames: false
@@ -193,18 +193,15 @@ repos:
 
   - id: validate-content-paths
     name: validate-content-paths
-    skip:docker_autoupdate: true
     entry: validate-content-path
     language: system
     require_serial: true
     args:
     -  validate
-    -  --skip-depth-one-file
     -  --skip-depth-one-folder
     -  --skip-integration-script-file-name
     -  --skip-markdown
     -  --skip-suffix
-
 
   - id: validate-conf-json
     name: validate-conf-json
@@ -212,7 +209,6 @@ repos:
     files: Tests/conf.json
     skip:commit: true
     skip:nightly: true
-    skip:docker_autoupdate: true
     entry: validate-conf-json
     pass_filenames: false
     language: system

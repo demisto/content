@@ -189,7 +189,7 @@ tasks:
           left:
             value:
               complex:
-                root: VirusTotal.SearchResults.attributes.last_analysis_stats
+                root: VirusTotal.File.attributes.last_analysis_stats
                 accessor: malicious
             iscontext: true
           right:
