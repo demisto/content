@@ -398,4 +398,4 @@ script:
   dockerimage: demisto/python3:3.10.14.95956
 fromversion: 5.0.0
 tests:
-- No tests (auto formatted)
+- PaloAltoNetworks_IoT-Test
