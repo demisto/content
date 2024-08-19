@@ -46,13 +46,13 @@ Create Malware Event
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| detectiontimeutc | No description provided. | Required | 
+| detectiontimeutc | 'Detection date and time, in UTC.' | Required | 
 | machine_fqdn | Machine FQDN. | Optional | 
 | machine_ipv4 | Machine IPv4 address. | Optional | 
 | machine_ipv6 | Machine IPv6 address. | Optional | 
 | machine_uuid | Machine BIOS UUID in the 8-4-4-4-12 format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx. | Optional | 
-| details | No description provided. | Required | 
-| engine | No description provided. | Required | 
+| details | 'Event description.' | Required | 
+| engine | 'Detection engine.' | Required | 
 
 #### Context Output
 
@@ -201,7 +201,7 @@ Get Backup Object
 | Veeam.VBR.backup_object.id | String | Object ID. | 
 | Veeam.VBR.backup_object.name | String | Object name. | 
 | Veeam.VBR.backup_object.type | String | Object type. | 
-| Veeam.VBR.backup_object.vcenter_name | string |  | 
+| Veeam.VBR.backup_object.vcenter_name | string | Name of the vCenter Server. | 
 
 ### veeam-vbr-get-configuration-backup
 
@@ -224,9 +224,9 @@ Get Configuration Backup
 | Veeam.VBR.get_configuration_backup.isEnabled | String | If \`true\`, configuration backup is enabled. | 
 | Veeam.VBR.get_configuration_backup.backupRepositoryId | String | ID of the backup repository on which the configuration backup is stored. | 
 | Veeam.VBR.get_configuration_backup.restorePointsToKeep | number | Number of restore points to keep in the backup repository. | 
-| Veeam.VBR.get_configuration_backup.Schedule | unknown |  | 
-| Veeam.VBR.get_configuration_backup.Encryption | unknown |  | 
-| Veeam.VBR.get_configuration_backup.LastSuccessfulBackup | unknown |  | 
+| Veeam.VBR.get_configuration_backup.Schedule | Scheduling settings. |  | 
+| Veeam.VBR.get_configuration_backup.Encryption | Encryption settings. |  | 
+| Veeam.VBR.get_configuration_backup.LastSuccessfulBackup | Last successful backup. |  | 
 
 ### veeam-vbr-get-inventory-objects
 

@@ -8,7 +8,9 @@ from VBRRESTAPI import DATE_FORMAT, MAX_INT, Client, \
     fetch_incidents, search_with_paging, get_malware_incidents, overwrite_last_fetch_time, get_configuration_backup_incident, \
     get_repository_space_incidents, validate_ipv4, validate_ipv6, validate_time, validate_uuid, try_cast_to_bool, \
     try_cast_to_int, try_cast_to_double, process_command, handle_command_with_token_refresh, validate_filter_parameter, \
-    convert_to_json, get_vcentername, process_error
+    convert_to_json, get_vcentername, process_error, fetch_repository_space_incidents, get_inventory_objects_command, \
+    get_backup_object_command, get_all_repository_states_command, get_all_malware_events_command, \
+    get_all_restore_points_command, get_session_command, update_token
 
 SERVER_URL = 'https://test_url.com'
 REQUEST_TIMEOUT = 120
@@ -247,6 +249,242 @@ def test_try_cast_to_double(arg):
 def test_try_cast_to_double_with_exception(arg):
     with pytest.raises(ValueError):
         try_cast_to_double(arg)
+
+
+def test_update_token(client, mocker):
+    expected_token = 'token'
+    mocker.patch('VBRRESTAPI.Client.get_access_token_request', return_value={'access_token': 'token'})
+
+    token = update_token(client, 'username', 'password')
+
+    assert token == expected_token
+
+
+@pytest.mark.parametrize(
+    "response, expected_command_results",
+    [
+        (
+            {
+                'data': [
+                    {'id': 1, 'name': 'repository 1'},
+                    {'id': 2, 'name': 'repository 2'}
+                ]
+            },
+            {
+                'outputs_prefix': 'Veeam.VBR.get_repository_states.data',
+                'outputs_key_field': '',
+                'outputs': [
+                    {'id': 1, 'name': 'repository 1'},
+                    {'id': 2, 'name': 'repository 2'}
+                ],
+                'raw_response': [
+                    {'id': 1, 'name': 'repository 1'},
+                    {'id': 2, 'name': 'repository 2'}
+                ]
+            }
+        )
+    ]
+)
+def test_get_all_repository_states_command(client, mocker, response, expected_command_results):
+    mocker.patch('VBRRESTAPI.Client.get_all_repository_states_request', return_value=response)
+    mocker.patch('VBRRESTAPI.validate_uuid')
+    mocker.patch('VBRRESTAPI.try_cast_to_int')
+    mocker.patch('VBRRESTAPI.try_cast_to_bool')
+    mocker.patch('VBRRESTAPI.try_cast_to_double')
+
+    args = {}
+    command_results = get_all_repository_states_command(client, args)
+
+    assert command_results.outputs_prefix == expected_command_results['outputs_prefix']
+    assert command_results.outputs_key_field == expected_command_results['outputs_key_field']
+    assert command_results.outputs == expected_command_results['outputs']
+    assert command_results.raw_response == expected_command_results['raw_response']
+
+
+@pytest.mark.parametrize(
+    "response, expected_command_results",
+    [
+        (
+            {
+                'data': [
+                    {'id': 1, 'name': 'event 1'},
+                    {'id': 2, 'name': 'event 2'}
+                ]
+            },
+            {
+                'outputs_prefix': 'Veeam.VBR.get_malware_events.data',
+                'outputs_key_field': '',
+                'outputs': [
+                    {'id': 1, 'name': 'event 1'},
+                    {'id': 2, 'name': 'event 2'}
+                ],
+                'raw_response': [
+                    {'id': 1, 'name': 'event 1'},
+                    {'id': 2, 'name': 'event 2'}
+                ]
+            }
+        )
+    ]
+)
+def test_get_all_malware_events_command(client, mocker, response, expected_command_results):
+    mocker.patch('VBRRESTAPI.Client.get_all_malware_events_request', return_value=response)
+    mocker.patch('VBRRESTAPI.validate_uuid')
+    mocker.patch('VBRRESTAPI.try_cast_to_int')
+    mocker.patch('VBRRESTAPI.try_cast_to_bool')
+    mocker.patch('VBRRESTAPI.validate_time')
+
+    args = {}
+    command_results = get_all_malware_events_command(client, args)
+
+    assert command_results.outputs_prefix == expected_command_results['outputs_prefix']
+    assert command_results.outputs_key_field == expected_command_results['outputs_key_field']
+    assert command_results.outputs == expected_command_results['outputs']
+    assert command_results.raw_response == expected_command_results['raw_response']
+
+
+@pytest.mark.parametrize(
+    "response, expected_command_results",
+    [
+        (
+            {
+                'data': [
+                    {'id': 1, 'name': 'restore point 1'},
+                    {'id': 2, 'name': 'restore point 2'}
+                ]
+            },
+            {
+                'outputs_prefix': 'Veeam.VBR.get_restore_points.data',
+                'outputs_key_field': '',
+                'outputs': [
+                    {'id': 1, 'name': 'restore point 1'},
+                    {'id': 2, 'name': 'restore point 2'}
+                ],
+                'raw_response': [
+                    {'id': 1, 'name': 'restore point 1'},
+                    {'id': 2, 'name': 'restore point 2'}
+                ]
+            }
+        )
+    ]
+)
+def test_get_all_restore_points_command(client, mocker, response, expected_command_results):
+    mocker.patch('VBRRESTAPI.Client.get_all_restore_points_request', return_value=response)
+    mocker.patch('VBRRESTAPI.validate_uuid')
+    mocker.patch('VBRRESTAPI.try_cast_to_int')
+    mocker.patch('VBRRESTAPI.try_cast_to_bool')
+    mocker.patch('VBRRESTAPI.validate_time')
+
+    args = {}
+    command_results = get_all_restore_points_command(client, args)
+
+    assert command_results.outputs_prefix == expected_command_results['outputs_prefix']
+    assert command_results.outputs_key_field == expected_command_results['outputs_key_field']
+    assert command_results.outputs == expected_command_results['outputs']
+    assert command_results.raw_response == expected_command_results['raw_response']
+
+
+@pytest.mark.parametrize(
+    "response, expected_command_results",
+    [
+        (
+            {
+                'data': [
+                    {'id': 1, 'name': 'object 1'},
+                    {'id': 2, 'name': 'object 2'}
+                ]
+            },
+            {
+                'outputs_prefix': 'Veeam.VBR.get_inventory_objects.data',
+                'outputs_key_field': '',
+                'outputs': [
+                    {'id': 1, 'name': 'object 1'},
+                    {'id': 2, 'name': 'object 2'}
+                ],
+                'raw_response': [
+                    {'id': 1, 'name': 'object 1'},
+                    {'id': 2, 'name': 'object 2'}
+                ]
+            }
+        )
+    ]
+)
+def test_get_inventory_objects_command(client, mocker, response, expected_command_results):
+    mocker.patch('VBRRESTAPI.Client.get_inventory_objects_request', return_value=response)
+    mocker.patch('VBRRESTAPI.convert_to_json', return_value={})
+    mocker.patch('VBRRESTAPI.try_cast_to_int')
+    mocker.patch('VBRRESTAPI.try_cast_to_bool')
+
+    args = {}
+    command_results = get_inventory_objects_command(client, args)
+
+    assert command_results.outputs_prefix == expected_command_results['outputs_prefix']
+    assert command_results.outputs_key_field == expected_command_results['outputs_key_field']
+    assert command_results.outputs == expected_command_results['outputs']
+    assert command_results.raw_response == expected_command_results['raw_response']
+
+
+@pytest.mark.parametrize(
+    "response, expected_command_results",
+    [
+        (
+            {
+                'id': 1,
+                'name': 'object 1',
+                'path': 'vcentername/path'
+            },
+            {
+                'outputs_prefix': 'Veeam.VBR.backup_object',
+                'outputs_key_field': '',
+                'outputs': {'id': 1, 'name': 'object 1', 'path': 'vcentername/path', 'vcenter_name': 'vcentername/path'},
+                'raw_response': {'id': 1, 'name': 'object 1', 'path': 'vcentername/path', 'vcenter_name': 'vcentername/path'}
+            }
+        )
+    ]
+)
+def test_get_backup_object_command(client, mocker, response, expected_command_results):
+    mocker.patch('VBRRESTAPI.Client.get_backup_object_request', return_value=response)
+    mocker.patch('VBRRESTAPI.get_vcentername', return_value=response['path'])
+    mocker.patch('VBRRESTAPI.validate_uuid')
+
+    args = {}
+    command_results = get_backup_object_command(client, args)
+
+    assert command_results.outputs_prefix == expected_command_results['outputs_prefix']
+    assert command_results.outputs_key_field == expected_command_results['outputs_key_field']
+    assert command_results.outputs == expected_command_results['outputs']
+    assert command_results.raw_response == expected_command_results['raw_response']
+
+
+@pytest.mark.parametrize(
+    "response, expected_command_results",
+    [
+        (
+            {
+                'id': 1,
+                'name': 'session 1'
+            },
+            {
+                'outputs_prefix': 'Veeam.VBR.get_session',
+                'outputs_key_field': '',
+                'outputs': {'id': 1, 'name': 'session 1'},
+                'raw_response': {'id': 1, 'name': 'session 1'},
+                'replace_existing': True
+            }
+        )
+    ]
+)
+def test_get_session_command(client, mocker, response, expected_command_results):
+    mocker.patch('VBRRESTAPI.Client.get_session_request', return_value=response)
+    mocker.patch('VBRRESTAPI.validate_uuid')
+
+    args = {}
+    command_results = get_session_command(client, args)
+
+    assert command_results.outputs_prefix == expected_command_results['outputs_prefix']
+    assert command_results.outputs_key_field == expected_command_results['outputs_key_field']
+    assert command_results.outputs == expected_command_results['outputs']
+    assert command_results.raw_response == expected_command_results['raw_response']
+    assert command_results.replace_existing == expected_command_results['replace_existing']
 
 
 MALWARE_EVENTS_WITH_NEEDED_TYPE = util_load_json('test_data/get_malware_events.json')
@@ -524,6 +762,57 @@ def test_get_repository_space_incidents(
     assert mock_search_with_paging.call_count == 2
     assert len(free_space_incidents) == 0
     assert repositoryIds == expected_results[1]
+
+
+@pytest.mark.parametrize(
+    'last_run, max_results, errors_by_command, expected_result',
+    [
+        (
+            {'repository_ids': [1, 2, 3]}, 10, {'error_count_in_free_space_incidents': 0},
+            ([], set())
+        ),
+    ]
+)
+def test_fetch_repository_space_incidents(
+    client, mocker, last_run, max_results, errors_by_command, expected_result
+):
+    mock_handle_command_with_token_refresh = mocker.patch('VBRRESTAPI.handle_command_with_token_refresh')
+    mock_handle_command_with_token_refresh.return_value = ([], set())
+
+    free_space_less_then = 200
+    incidents, repository_ids = fetch_repository_space_incidents(
+        client, last_run, max_results, free_space_less_then, errors_by_command
+    )
+
+    mock_handle_command_with_token_refresh.assert_called_once()
+    assert incidents == expected_result[0]
+    assert repository_ids == expected_result[1]
+
+
+@pytest.mark.parametrize(
+    'last_run, max_results, errors_by_command, expected_result',
+    [
+        (
+            {'repository_ids': [1, 2, 3]}, 10, {'error_count_in_free_space_incidents': 1},
+            ([{'type': 'incident_on_error'}], set([1, 2, 3]))
+        ),
+    ]
+)
+def test_fetch_repository_space_incidents_with_exception(
+    client, mocker, last_run, max_results, errors_by_command, expected_result
+):
+    mocker.patch('VBRRESTAPI.handle_command_with_token_refresh')
+    mock_process_error = mocker.patch('VBRRESTAPI.process_error')
+    mock_process_error.return_value = ({'type': 'incident_on_error'}, {'error_in_triggered_alarms': 2})
+
+    free_space_less_then = 200
+    incidents, repository_ids = fetch_repository_space_incidents(
+        client, last_run, max_results, free_space_less_then, errors_by_command
+    )
+
+    mock_process_error.assert_called_once()
+    assert incidents == expected_result[0]
+    assert repository_ids == expected_result[1]
 
 
 FETCH_ERROR_INCIDENT = {

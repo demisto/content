@@ -91,7 +91,8 @@ name: VBR REST API
 script:
   commands:
   - arguments:
-    - name: detectiontimeutc
+    - description: 'Detection date and time, in UTC.'
+      name: detectiontimeutc
       required: true
     - description: 'Machine FQDN.'
       name: machine_fqdn
@@ -101,9 +102,11 @@ script:
       name: machine_ipv6
     - description: 'Machine BIOS UUID in the 8-4-4-4-12 format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx.'
       name: machine_uuid
-    - name: details
+    - description: 'Event description.'
+      name: details
       required: true
-    - name: engine
+    - description: 'Detection engine.'
+      name: engine
       required: true
     description: 'Create Malware Event.'
     name: veeam-vbr-create-malware-event
@@ -296,6 +299,7 @@ script:
       description: "Object type."
       type: String
     - contextPath: Veeam.VBR.backup_object.vcenter_name
+      description: "Name of the vCenter Server."
       type: string
   - arguments: []
     description: 'Get Configuration Backup.'
@@ -311,8 +315,11 @@ script:
       description: "Number of restore points to keep in the backup repository."
       type: number
     - contextPath: Veeam.VBR.get_configuration_backup.Schedule
+      description: "Scheduling settings."
     - contextPath: Veeam.VBR.get_configuration_backup.Encryption
+      description: "Encryption settings."
     - contextPath: Veeam.VBR.get_configuration_backup.LastSuccessfulBackup
+      description: "Last successful backup."
   - arguments:
     - description: 'If `true`, the cache will be reset for this request. Resetting the cache slows down request processing but allows you to get up-to-date data.'
       name: resetCache
@@ -559,7 +566,7 @@ script:
     - contextPath: Veeam.VBR.start_recovery.usn
       description: "Update sequence number."
       type: string
-  dockerimage: demisto/python3:3.10.14.92207
+  dockerimage: demisto/python3:3.11.9.107902
   isFetchSamples: true
   isfetch: true
   runonce: false
