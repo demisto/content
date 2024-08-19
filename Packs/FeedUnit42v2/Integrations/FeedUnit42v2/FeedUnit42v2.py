@@ -1,4 +1,3 @@
-
 from taxii2client.common import TokenAuth
 from taxii2client.v20 import Server, as_pages
 
@@ -182,22 +181,26 @@ def parse_malware(client, malware_objects: list = [], feed_tags: list = [],
 
 
 def get_report_object(self, obj_id: str):
-        """Get specific report object by id.
-        Args:
-        obj_id: The object ID.
-        id_to_object: a dict in the form of - id: stix_object.
-        Returns:
-            A sub report object.
-        """
-        sub_report_obj = self.id_to_object.get(obj_id, {})
-        if not sub_report_obj:
-            if report_from_api := self.fetch_stix_objects_from_api(type="report", id=obj_id):
-                sub_report_obj = (report_from_api[0] if len(report_from_api) == 1 else None)
-                if not sub_report_obj:
-                    demisto.debug(f"{INTEGRATION_NAME}: Found more then one object for report object {obj_id} skipping")
-            else:
-                demisto.debug(f"{INTEGRATION_NAME}: Could not find report object {obj_id}")
-        return sub_report_obj
+    """Get specific report object by id.
+    Args:
+    obj_id: The object ID.
+    id_to_object: a dict in the form of - id: stix_object.
+    Returns:
+        A sub report object.
+    """
+    sub_report_obj = self.id_to_object.get(obj_id, {})
+    if not sub_report_obj:
+        if report_from_api := self.fetch_stix_objects_from_api(
+            type="report", id=obj_id
+        ):
+            sub_report_obj = report_from_api[0] if len(report_from_api) == 1 else None
+            if not sub_report_obj:
+                demisto.debug(
+                    f"{INTEGRATION_NAME}: Found more then one object for report object {obj_id} skipping"
+                )
+        else:
+            demisto.debug(f"{INTEGRATION_NAME}: Could not find report object {obj_id}")
+    return sub_report_obj
 
 
 def is_atom42_main_report(report_obj):
