@@ -50,7 +50,7 @@ XSOAR endpoint URL-
 3. Enter the **App Name**.
 4. Click **Create**.
 
-![enter image description here](../../doc_files/create-team-chat-app.gif)
+
 ### Configure App Settings
 Enter your Cortex XSOAR endpoint URL in all Redirect URLS.
 
@@ -61,7 +61,7 @@ In the Team Chat Subscription section under BOT endpoint URL add:
    - For Cortex XSOAR 8.x / XSAIM you need to run using extrnal engine: `https://<Engine Url>:<port>`. For example, https://my-engine-url:7001. 
 
 
-![enter image description here](../../doc_files/bot_endpoint_url.gif)
+
 
 1. Click **Scopes** > **+ Add Scopes** to add the following scope permissions.
 
@@ -74,7 +74,7 @@ In the Team Chat Subscription section under BOT endpoint URL add:
 ![enter image description here](../../doc_files/scope-premissions.png)
 
 1. Click **Local Test** >**Add** to test your app and authorize your Cortex XSOAR app.
- ![enter image description here](../../doc_files/test-zoom-app.gif)
+
 
  1. **If mirroring is enabled in the integration configuration or using ZoomAsk**:
 **Endpoint URL Requirements-**
@@ -100,7 +100,7 @@ In the Team Chat Subscription section under BOT endpoint URL add:
          - Event notification endpoint URL: Enter the Cortex XSOAR URL of your server (`CORTEX-XSOAR-URL`/instance/execute/`INTEGRATION-INSTANCE-NAME`) where you want to receive event notifications. This URL should handle incoming event data from Zoom. Make sure it's publicly accessible.
          - Validate the URL: Just after setting up/configuration of the Cortex XSOAR side you can validate the URL.
          - Add Events: Click **+Add Events**. Under Event types, select **Chat Message** and then select **Chat message sent**.
-![enter image description here](../../doc_files/add-event.gif)
+
 
 
 ## Commands
