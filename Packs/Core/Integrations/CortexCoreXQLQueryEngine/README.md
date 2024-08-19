@@ -1,21 +1,13 @@
-Cortex Core - XQL Query Engine enables you to run XQL queries on your data sources.
-This integration was integrated and tested with version 3.0 of Cortex Core - XQL Query Engine
-
-## Configure Cortex Core - XQL Query Engine on Cortex XSOAR
-
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Cortex Core - XQL Query Engine.
-3. Click **Add instance** to create and configure a new integration instance.
-4. Click **Test** to validate the URLs, token, and connection.
-
-## Troubleshooting
-
-1. To use this integration, the machine must be an XSIAM machine with version 8.7.0-1247804 or higher.
+XQL Query Engine enables you to run XQL queries on your data sources.
 
 ## Commands
 
-You can execute these commands from the Cortex XSIAM CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
+## Important Information
+
+Running commands via the XQL Query Engine integration will consume compute units.
 
 ### xdr-xql-generic-query
 
