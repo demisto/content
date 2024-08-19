@@ -8,6 +8,8 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 TOKEN_EXPIRY_BUFFER = timedelta(seconds=10)
 DEFAULT_LIMIT = 50
 MAX_LIMIT = 3000
+# print(f"{demisto.params()=}")
+# print(f"{demisto.args()=}")
 
 
 ''' CLIENT CLASS '''
@@ -398,64 +400,6 @@ def error_fixes(error: str):
     return new_error
 
 
-def generic_search_command(client: Client, args: dict, item_type: str) -> CommandResults:
-    """
-    Searches for and retrieves items based on the provided item type and arguments.
-
-    Args:
-        client (Client): API client instance.
-        args (dict): Search and filter parameters, including optional item IDs.
-        item_type (str): Type of item to search for ('case' or 'alert').
-
-    Returns:
-        CommandResults: Contains search results and a Markdown table of the results.
-    """
-    if item_id := args.get(f"{item_type}_id"):
-        if item_type == "case":
-            data_response = [client.get_case_request(item_id)]
-        elif item_type == "alert":
-            data_response = [client.get_alert_request(item_id)]
-        table_name = f"{item_type.capitalize()}"
-    else:
-        start_time = get_date(args.get('start_time', '7 days ago'), "start_time")
-        end_time = get_date(args.get('end_time', 'today'), "end_time")
-        if start_time > end_time:
-            raise DemistoException("The start time argument must be earlier than the end time.")
-        kwargs = {
-            'filter': process_string(args.get('query') or ""),
-            'fields': argToList(args.get('fields', '*')),
-            'startTime': start_time,
-            'endTime': end_time,
-        }
-        all_results = argToBoolean(args.get("all_results", False))
-        if not all_results:
-            kwargs['limit'] = get_limit(args)
-        if order_by := args.get("order_by", ""):
-            kwargs["orderBy"] = argToList(order_by)
-
-        if item_type == "case":
-            response = client.case_search_request(kwargs)
-        elif item_type == "alert":
-            response = client.alert_search_request(kwargs)
-        data_response = response.get("rows", [])
-        table_name = f"{item_type.capitalize()}s"
-
-    fields_to_human_readable = ["riskScore", "priority", "groupedbyValue", "groupedbyKey",
-                                "rules", "mitres", "useCases", "users", "stage", "queue"]
-    human_readable = [_parse_entry(row, fields_to_human_readable)for row in data_response]
-
-    include_related_rules = argToBoolean(args.get("include_related_rules", False))
-    if not include_related_rules:
-        for row in data_response:
-            row.pop("rules", None)
-
-    return CommandResults(
-        outputs_prefix=f"ExabeamPlatform.{item_type.capitalize()}",
-        outputs=data_response,
-        readable_output=tableToMarkdown(name=table_name, t=human_readable)
-    )
-
-
 def transform_dicts(input_dict: Dict[str, List[str]]) -> List[Dict[str, str]]:
     """
     Transforms a dictionary of lists into a list of dictionaries.
@@ -600,6 +544,17 @@ def format_incidents(cases: list[dict]) -> list[dict]:
     return incidents
 
 
+def format_record_keys(dict_list):
+    new_list = []
+    for input_dict in dict_list:
+        new_dict = {}
+        for key, value in input_dict.items():
+            new_key = key.replace('_', ' ').title()
+            new_dict[new_key] = value
+        new_list.append(new_dict)
+    return new_list
+
+
 ''' COMMAND FUNCTIONS '''
 
 
@@ -659,6 +614,64 @@ def case_search_command(client: Client, args: dict) -> CommandResults:
 
 def alert_search_command(client: Client, args: dict) -> CommandResults:
     return generic_search_command(client, args, "alert")
+
+
+def generic_search_command(client: Client, args: dict, item_type: str) -> CommandResults:
+    """
+    Searches for and retrieves items based on the provided item type and arguments.
+
+    Args:
+        client (Client): API client instance.
+        args (dict): Search and filter parameters, including optional item IDs.
+        item_type (str): Type of item to search for ('case' or 'alert').
+
+    Returns:
+        CommandResults: Contains search results and a Markdown table of the results.
+    """
+    if item_id := args.get(f"{item_type}_id"):
+        if item_type == "case":
+            data_response = [client.get_case_request(item_id)]
+        elif item_type == "alert":
+            data_response = [client.get_alert_request(item_id)]
+        table_name = f"{item_type.capitalize()}"
+    else:
+        start_time = get_date(args.get('start_time', '7 days ago'), "start_time")
+        end_time = get_date(args.get('end_time', 'today'), "end_time")
+        if start_time > end_time:
+            raise DemistoException("The start time argument must be earlier than the end time.")
+        kwargs = {
+            'filter': process_string(args.get('query') or ""),
+            'fields': argToList(args.get('fields', '*')),
+            'startTime': start_time,
+            'endTime': end_time,
+        }
+        all_results = argToBoolean(args.get("all_results", False))
+        if not all_results:
+            kwargs['limit'] = get_limit(args)
+        if order_by := args.get("order_by", ""):
+            kwargs["orderBy"] = argToList(order_by)
+
+        if item_type == "case":
+            response = client.case_search_request(kwargs)
+        elif item_type == "alert":
+            response = client.alert_search_request(kwargs)
+        data_response = response.get("rows", [])
+        table_name = f"{item_type.capitalize()}s"
+
+    fields_to_human_readable = ["caseId", "alertId", "riskScore", "priority", "groupedbyValue", "groupedbyKey",
+                                "rules", "mitres", "useCases", "users", "stage", "queue"]
+    human_readable = [_parse_entry(row, fields_to_human_readable)for row in data_response]
+
+    include_related_rules = argToBoolean(args.get("include_related_rules", False))
+    if not include_related_rules:
+        for row in data_response:
+            row.pop("rules", None)
+
+    return CommandResults(
+        outputs_prefix=f"ExabeamPlatform.{item_type.capitalize()}",
+        outputs=data_response,
+        readable_output=tableToMarkdown(name=table_name, t=human_readable)
+    )
 
 
 def context_table_list_command(client: Client, args: dict) -> CommandResults:
@@ -744,11 +757,12 @@ def table_record_list_command(client: Client, args: dict) -> CommandResults:
 
     response = client.get_table_record_list(table_id, params)
     records = response.get("records", [])
+    readable_output = format_record_keys(records)
 
     return CommandResults(
         outputs_prefix="ExabeamPlatform.Record",
         outputs=records,
-        readable_output=tableToMarkdown(name=f"Records of table id: {table_id}", t=records)
+        readable_output=tableToMarkdown(name=f"Records of table id: {table_id}", t=readable_output)
     )
 
 

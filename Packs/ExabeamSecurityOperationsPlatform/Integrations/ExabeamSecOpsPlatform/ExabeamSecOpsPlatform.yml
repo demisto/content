@@ -103,7 +103,7 @@ script:
       description: Timestamp to end the search.
       defaultValue: today
     - name: query
-      description: Query, using Lucene syntax, filters log data for precise analysis.
+      description: Query, using Lucene syntax, filters log data for precise analysis. For example 'priority:LOW'.
       defaultValue: ""
     - name: fields
       description: List of fields to be returned from the search.
@@ -265,7 +265,7 @@ script:
       description: Timestamp to end the search.
       defaultValue: today
     - name: query
-      description: Query, using Lucene syntax, filters log data for precise analysis.
+      description: Query, using Lucene syntax, filters log data for precise analysis. For example 'priority:LOW'.
       defaultValue: ""
     - name: fields
       description: List of fields to be returned from the search.
@@ -486,9 +486,10 @@ script:
     - name: attributes
       description: A dictionary mapping attribute names to their values, For example:`{"attributeName":["val1", "val2"]}`.
       required: true
+      # type: keyValue
     - name: operation
       description: Options for how data should be uploaded to an existing table.
-      defaultValue: append
+      defaultValue: Append
       auto: PREDEFINED
       predefined:
       - Append

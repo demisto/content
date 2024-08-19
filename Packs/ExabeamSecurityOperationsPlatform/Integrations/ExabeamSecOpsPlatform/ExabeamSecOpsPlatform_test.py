@@ -361,8 +361,9 @@ def test_get_new_token(mocker, expected_response, expected_token):
             [{'caseId': '123', 'alertId': '456', 'riskScore': 75, 'groupedbyKey': 'Src Ip',
                 'srcIps': ["1.1.1.1"], 'priority': 'LOW', 'stage': 'NEW', 'queue': 'Tier 1 Analyst'}],
             "### Case\n"
-            "|Grouped by Key|Priority|Queue|Risk Score|Rules|Stage|\n"
-            "|---|---|---|---|---|---|\n| Src Ip | LOW | Tier 1 Analyst | 75 | 1 | NEW |\n"
+            "|Alert ID|Case ID|Grouped by Key|Priority|Queue|Risk Score|Rules|Stage|\n"
+            "|---|---|---|---|---|---|---|---|\n"
+            "| 456 | 123 | Src Ip | LOW | Tier 1 Analyst | 75 | 1 | NEW |\n"
         ),
         (
             {"limit": "1"},
@@ -395,9 +396,9 @@ def test_get_new_token(mocker, expected_response, expected_token):
                 }
             ],
             "### Cases\n"
-            "|Grouped by Key|Priority|Queue|Risk Score|Rules|Stage|\n"
-            "|---|---|---|---|---|---|\n"
-            "| Src Ip | LOW | Tier 1 Analyst | 75 | 1 | NEW |\n",
+            "|Alert ID|Case ID|Grouped by Key|Priority|Queue|Risk Score|Rules|Stage|\n"
+            "|---|---|---|---|---|---|---|---|\n"
+            "| 456 | 123 | Src Ip | LOW | Tier 1 Analyst | 75 | 1 | NEW |\n",
         ),
     ],
 )
