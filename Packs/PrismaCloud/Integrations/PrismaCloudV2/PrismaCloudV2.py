@@ -2314,7 +2314,7 @@ def code_issues_list_command(client, args):
                 'First Detected': issue['firstDetected'],
                 'Policy': issue['policy'],
                 'Severity': issue['severity'],
-                'Labels': get_labels(issue['labels'])# issue['labels'].get('label') if issue['labels'].get('label') else issue['labels']  # response changes
+                'Labels': get_labels(issue['labels'])
             })
                 
         has_next = response['hasNext']
