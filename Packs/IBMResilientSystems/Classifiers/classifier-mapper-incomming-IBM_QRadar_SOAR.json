@@ -1,170 +1,133 @@
 {
-	"brands": null,
-	"cacheVersn": 0,
-	"defaultIncidentType": "",
-	"definitionId": "",
-	"description": "",
-	"feed": false,
-	"fromServerVersion": "",
-	"id": "c0d876fa-f2d3-4ae8-8548-3bdbd2ed0e71",
-	"incidentSamples": null,
-	"indicatorSamples": null,
-	"instanceIds": null,
-	"itemVersion": "",
-	"keyTypeMap": {},
-	"locked": false,
-	"logicalVersion": 2,
-	"mapping": {
-		"IBM QRadar SOAR Incident": {
-			"dontMapEventToLabels": true,
-			"internalMapping": {
-				"Breach Confirmation": {
-					"simple": "confirmed"
-				},
-				"City": {
-					"simple": "city"
-				},
-				"Department": {
-					"simple": "exposure_dept_id"
-				},
-				"Description": {
-					"simple": "description"
-				},
-				"Display Name": {
-					"simple": "creator.display_name"
-				},
-				"Email": {
-					"simple": "creator.email"
-				},
-				"IBM QRadar Criminal Activity": {
-					"complex": {
-						"filters": [],
-						"root": "crimestatus_id",
-						"transformers": [
-							{
-								"args": {
-									"input_values": {
-										"isContext": false,
-										"value": {
-											"simple": "1,2,3,4,5"
-										}
-									},
-									"mapped_values": {
-										"isContext": false,
-										"value": {
-											"simple": "No,Yes,Yes - Freeze Tasks,Completed,Unknown"
-										}
-									}
-								},
-								"operator": "MapValuesTransformer"
-							}
-						]
-					}
-				},
-				"IBM QRadar Discovered Date": {
-					"simple": "discovered_date"
-				},
-				"IBM QRadar Exposure Type": {
-					"complex": {
-						"filters": [],
-						"root": "exposure_type_id",
-						"transformers": [
-							{
-								"args": {
-									"input_values": {
-										"isContext": false,
-										"value": {
-											"simple": "1,2,3"
-										}
-									},
-									"mapped_values": {
-										"isContext": false,
-										"value": {
-											"simple": "Unknown,Individual,External Party"
-										}
-									}
-								},
-								"operator": "MapValuesTransformer"
-							}
-						]
-					}
-				},
-				"IBM QRadar NIST Attack Vectors": {
-					"complex": {
-						"filters": [],
-						"root": "nist_attack_vectors",
-						"transformers": [
-							{
-								"args": {
-									"input_values": {
-										"isContext": false,
-										"value": {
-											"simple": "1,2,3,4,5,6,7,8"
-										}
-									},
-									"mapped_values": {
-										"isContext": false,
-										"value": {
-											"simple": "External/RemovableMedia, Attrition, Web, Email, Impersonation, ImproperUsage, Loss/TheftOfEquipment, Other"
-										}
-									}
-								},
-								"operator": "MapValuesTransformer"
-							}
-						]
-					}
-				},
-				"IBM QRadar Negative PR": {
-					"simple": "negative_pr_likely"
-				},
-				"IBM QRadar Reporter Name": {
-					"simple": "reporter"
-				},
-				"IBM QRadar Resolution": {
-					"complex": {
-						"filters": [],
-						"root": "resolution_id",
-						"transformers": [
-							{
-								"args": {
-									"input_values": {
-										"isContext": false,
-										"value": {
-											"simple": "7,8,9,10"
-										}
-									},
-									"mapped_values": {
-										"isContext": false,
-										"value": {
-											"simple": "Unresolved, Duplicate, Not an Issue, Resolved"
-										}
-									}
-								},
-								"operator": "MapValuesTransformer"
-							}
-						]
-					}
-				},
-				"IBM QRadar Resolution Summary": {
-					"simple": "resolution_summary"
-				},
-				"Last Modified On": {
-					"simple": "inc_last_modified_date"
-				},
-				"Mobile Phone": {
-					"simple": "creator.cell"
-				},
-				"Phone Number": {
-					"simple": "artifacts.[0].creator.phone"
-				},
-				"Street Address": {
-					"simple": "addr"
-				},
-				"Zip Code": {
-					"simple": "zip"
-				},
-				"severity": {
-                    "complex":{
+    "description": "",
+    "feed": false,
+    "id": "IBM QRadar SOAR Incoming Mapper",
+    "mapping": {
+        "IBM QRadar SOAR Incident": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Breach Confirmation": {
+                    "simple": "confirmed"
+                },
+                "City": {
+                    "simple": "city"
+                },
+                "Department": {
+                    "simple": "exposure_dept_id"
+                },
+                "Description": {
+                    "simple": "description"
+                },
+                "Display Name": {
+                    "simple": "creator.display_name"
+                },
+                "Email": {
+                    "simple": "creator.email"
+                },
+                "IBM QRadar Discovered Date": {
+                    "simple": "discovered_date"
+                },
+                "IBM QRadar Exposure Type": {
+                    "complex": {
+                        "filters": [],
+                        "root": "exposure_type_id",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "1,2,3"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "Unknown,Individual,External Party"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    }
+                },
+                "IBM QRadar NIST Attack Vectors": {
+                    "complex": {
+                        "filters": [],
+                        "root": "nist_attack_vectors",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "1,2,3,4,5,6,7,8"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "External/RemovableMedia, Attrition, Web, Email, Impersonation, ImproperUsage, Loss/TheftOfEquipment, Other"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    }
+                },
+                "IBM QRadar Negative PR": {
+                    "simple": "negative_pr_likely"
+                },
+                "IBM QRadar Reporter Name": {
+                    "simple": "reporter"
+                },
+                "IBM QRadar Resolution": {
+                    "complex": {
+                        "filters": [],
+                        "root": "resolution_id",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "7,8,9,10"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "Unresolved, Duplicate, Not an Issue, Resolved"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    }
+                },
+                "IBM QRadar Resolution Summary": {
+                    "simple": "resolution_summary"
+                },
+                "Last Modified On": {
+                    "simple": "inc_last_modified_date"
+                },
+                "Mobile Phone": {
+                    "simple": "creator.cell"
+                },
+                "Phone Number": {
+                    "simple": "artifacts.[0].creator.phone"
+                },
+                "Street Address": {
+                    "simple": "addr"
+                },
+                "Zip Code": {
+                    "simple": "zip"
+                },
+                "severity": {
+                    "complex": {
                         "root": "severity_code",
                         "transformers": [
                             {
@@ -180,7 +143,7 @@
                                         "isContext": false,
                                         "value": {
                                             "complex": null,
-                                            "simple": "Low,Medium,High"
+                                            "simple": "1,2,3"
                                         }
                                     }
                                 },
@@ -190,32 +153,22 @@
                     }
                 },
                 "dbotMirrorDirection": {
-                    "complex": null,
                     "simple": "mirror_direction"
                 },
                 "dbotMirrorId": {
-                    "complex": null,
                     "simple": "incident_id"
                 },
                 "dbotMirrorInstance": {
-                    "complex": null,
                     "simple": "mirror_instance"
+                },
+                "dbotMirrorTags": {
+                    "simple": "mirror_tags"
                 }
             }
-		}
-	},
-	"name": "IBM QRadar SOAR Incoming Mapper",
-	"nameRaw": "IBM QRadar SOAR Incoming Mapper",
-	"packID": "",
-	"packName": "",
-	"propagationLabels": [
-		"all"
-	],
-	"sourceClassifierId": "",
-	"system": false,
-	"toServerVersion": "",
-	"transformer": {},
-	"type": "mapping-incoming",
-	"unclassifiedCases": null,
-	"version": -1
+        }
+    },
+    "name": "IBM QRadar SOAR Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.10.0"
 }
