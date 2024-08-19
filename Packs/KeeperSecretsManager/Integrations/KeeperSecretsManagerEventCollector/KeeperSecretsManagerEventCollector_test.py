@@ -4,7 +4,6 @@ from pytest_mock import MockerFixture
 from CommonServerPython import DemistoException
 from KeeperSecretsManagerEventCollector import DEFAULT_MAX_FETCH, Client, KeeperParams
 from freezegun import freeze_time
-from datetime import datetime
 import demistomock as demisto
 
 
@@ -301,7 +300,8 @@ def test_validate_device_registration_unknown_login_state_after_verify_password(
     When
         - Running the validate_device_registration method.
     Then
-        - The function should raise a DemistoException with a message indicating an unknown login state after password verification.
+        - The function should raise a DemistoException with a message indicating an unknown login state after
+        password verification.
     """
     from KeeperSecretsManagerEventCollector import APIRequest_pb2
 
@@ -568,7 +568,8 @@ def test_save_session_token(mocker: MockerFixture, client_class: Client):
     When
         - Running the save_session_token method.
     Then
-        - The append_to_integration_context function should be called with the correct session token, clone code, and calculated valid_until time.
+        - The append_to_integration_context function should be called with the correct session token, clone code, and calculated
+        valid_until time.
     """
     from KeeperSecretsManagerEventCollector import get_current_time_in_seconds
 
@@ -724,22 +725,24 @@ def test_refresh_session_token_if_needed_no_refresh_needed(mocker: MockerFixture
     "last_run, expected_last_latest_event_time, expected_last_fetched_ids",
     [
         (
-            {"last_fetch_epoch_time": "1704067200", "last_fetch_ids": ["id1", "id2"]},
-            1704067200,  # 2024-01-01 00:00 UTC
+            {"last_fetch_epoch_time": "1672524000", "last_fetch_ids": ["id1", "id2"]},
+            1672524000,  # 2023-01-01 00:00 UTC
             {"id1", "id2"},
         ),
         (
             {},  # No last_run data
-            int(datetime.now().timestamp()),  # Current timestamp
+            1704067200,  # Expected frozen timestamp for 2024-01-01 00:00:00 UTC
             set(),
         ),
     ],
 )
+@freeze_time("2024-01-01 00:00:00")
 def test_fetch_events(mocker: MockerFixture, last_run, expected_last_latest_event_time, expected_last_fetched_ids):
     """
     Given
         - A mock client to fetch audit logs.
         - A last_run dictionary with different configurations for previous fetch times and fetched IDs.
+        - A frozen time of 2024-01-01 00:00:00 UTC to ensure consistent timestamp handling.
     When
         - Running the fetch_events function.
     Then

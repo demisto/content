@@ -1,3 +1,4 @@
+import urllib3
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from keepercommander import api
@@ -27,7 +28,6 @@ DEVICE_ALREADY_REGISTERED = (
 """ Fetch Events Classes"""
 LAST_RUN = "Last Run"
 
-import urllib3
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -174,7 +174,9 @@ class Client:
             pass
 
         def verify_password(self, params: KeeperParams, encryptedLoginToken: bytes) -> APIRequest_pb2.LoginResponse:
-            params.auth_verifier = crypto.derive_keyhash_v1(params.password, self.salt_bytes, self.salt_iterations)  # type: ignore
+            params.auth_verifier = crypto.derive_keyhash_v1(  # type: ignore
+                params.password, self.salt_bytes, self.salt_iterations
+            )
             return LoginV3API.validateAuthHashMessage(params, encryptedLoginToken)
 
         def verify_biometric_key(self, biometric_key):
@@ -264,7 +266,8 @@ class Client:
         resp = self.save_device_tokens(
             encrypted_device_token=encryptedDeviceToken,
         )
-        if resp.loginState == APIRequest_pb2.DEVICE_APPROVAL_REQUIRED:  # type: ignore # client goes to “standard device approval”.
+        if resp.loginState == APIRequest_pb2.DEVICE_APPROVAL_REQUIRED:  # type: ignore
+            # client goes to “standard device approval”
             device_approval.send_push(
                 self.keeper_params,
                 DeviceApprovalChannel.Email,
@@ -411,10 +414,10 @@ def get_audit_logs(
                 res_count += dedupped_events_count
                 events_to_return.extend(dedupped_audit_events)
                 # Getting last events's creation date, assuming asc order
-                start_time_to_fetch: int = int(dedupped_audit_events[-1]["created"])
+                start_time_to_fetch = int(dedupped_audit_events[-1]["created"])
                 # We get the event IDs that have the same creation time as the latest event in the response
                 # We use them to dedup in the next run
-                fetched_ids: set[str] = {
+                fetched_ids = {
                     str(audit_event["id"])
                     for audit_event in dedupped_audit_events
                     if int(audit_event["created"]) == start_time_to_fetch
