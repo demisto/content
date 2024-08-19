@@ -96,13 +96,13 @@ configuration:
   type: 15
   options:
     - None
-    - Incoming
-    - Outgoing
+    - In
+    - Out
     - Both
   defaultvalue: None
 
 - display: Close Mirrored XSOAR Incidents
-  name: close_incident
+  name: close_xsoar_incident
   type: 8
   section: Collect
   advanced: true
@@ -110,7 +110,7 @@ configuration:
   additionalinfo: When selected, closing the IBM Resilient incident with a 'Closed' status, will close the Cortex XSOAR incident.
 
 - display: Close Mirrored IBM Resilient Incidents
-  name: close_incident
+  name: close_ibm_incident
   type: 8
   section: Collect
   advanced: true
@@ -971,6 +971,7 @@ script:
   type: python
 
 fromversion: 5.0.0
+defaultclassifier: IBM QRadar SOAR - Classifier
 defaultmapperin: IBM QRadar SOAR Incoming Mapper
 tests:
 - No tests (auto formatted)

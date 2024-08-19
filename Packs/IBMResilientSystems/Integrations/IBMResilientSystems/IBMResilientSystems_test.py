@@ -362,4 +362,136 @@ def test_list_scripts(mocker, script_id):
     assert request_headers['content-type'] == 'application/json'
     assert request_data == ('{"filters": [{"conditions": [{"field_name": "create_date", "method": "gte", "value": '
                             '1577865600000}]}], "length": 10, "start": 0}')
+class TestGetMappingFieldsCommand:
+    def test_get_mapping_fields_command(self):
+        response = get_mapping_fields_command()
+        assert isinstance(response, GetMappingFieldsResponse)
+        assert len(response.scheme_types) == 1
+        assert response.scheme_types[0].type_name == IBM_QRADAR_SOAR_INCIDENT_SCHEMA_NAME
+        assert response.scheme_types[0].fields == IBM_QRADAR_INCIDENT_FIELDS
 
+class TestValidateFetchTime:
+    @pytest.mark.parametrize("fetch_time, expected", [
+        ("2021-01-01T00:00:00", "2021-01-01T00:00:00Z"),
+        ("2021-01-01T00:00:00Z", "2021-01-01T00:00:00Z"),
+        ("", ""),
+        (None, None),
+    ])
+    def test_validate_fetch_time(self, fetch_time, expected):
+        assert validate_fetch_time(fetch_time) == expected
+
+class TestNormalizeTimestamp:
+    @pytest.mark.parametrize("timestamp, expected", [
+        (1609459200000, "2021-01-01T00:00:00Z"),
+        (1609459200001, "2021-01-01T00:00:00Z"),
+        (0, "1970-01-01T00:00:00Z"),
+    ])
+    def test_normalize_timestamp(self, timestamp, expected):
+        assert normalize_timestamp(timestamp) == expected
+
+class TestPrettifyIncidentNotes:
+    def test_prettify_incident_notes(self):
+        notes = [
+            {"id": 1, "text": "<p>Test note</p>", "create_date": 1609459200000},
+            {"id": 2, "text": "<div>Another note</div>", "create_date": 1609545600000},
+        ]
+        expected = [
+            {"id": 2, "text": "Another note", "create_date": "2021-01-02T00:00:00Z"},
+            {"id": 1, "text": "Test note", "create_date": "2021-01-01T00:00:00Z"},
+        ]
+        assert prettify_incident_notes(notes) == expected
+
+class TestPrepareSearchQueryData:
+    @pytest.mark.parametrize("args, expected", [
+        (
+            {"severity": "Low,Medium", "date-created-after": "2021-01-01T00:00:00Z"},
+            {
+                "filters": [{
+                    "conditions": [
+                        {"field_name": "severity_code", "method": "in", "value": [50, 51]},
+                        {"field_name": "create_date", "method": "gte", "value": 1609459200000}
+                    ]
+                }],
+                "length": 1000
+            }
+        ),
+        (
+            {"incident-type": "Malware", "nist": "Web", "status": "Active"},
+            {
+                "filters": [{
+                    "conditions": [
+                        {"field_name": "incident_type_ids", "method": "contains", "value": [19]},
+                        {"field_name": "nist_attack_vectors", "method": "contains", "value": [3]},
+                        {"field_name": "plan_status", "method": "in", "value": ["A"]}
+                    ]
+                }],
+                "length": 1000
+            }
+        ),
+    ])
+    def test_prepare_search_query_data(self, args, expected):
+        result = prepare_search_query_data(args)
+        assert result == expected
+
+class TestGetMirroringData:
+    def test_get_mirroring_data(self, mocker):
+        mocker.patch.object(demisto, 'params', return_value={'mirror_direction': 'Incoming'})
+        mocker.patch.object(demisto, 'integrationInstance', return_value='test_instance')
+        expected = {
+            'mirror_direction': 'Incoming',
+            'mirror_instance': 'test_instance',
+            'mirror_tags': []
+        }
+        assert get_mirroring_data() == expected
+
+class TestGetClient:
+    @pytest.mark.parametrize("api_key_id, api_key_secret, username, password, expected_auth", [
+        ("test_id", "test_secret", None, None, {"api_key_id": "test_id", "api_key_secret": "test_secret"}),
+        (None, None, "test_user", "test_pass", {"email": "test_user", "password": "test_pass"}),
+        (None, None, None, None, None),
+    ])
+    def test_get_client(self, mocker, api_key_id, api_key_secret, username, password, expected_auth):
+        mocker.patch.object(resilient, 'get_client', return_value=mocker.Mock())
+        mocker.patch.dict(os.environ, {"SSL_CERT_FILE": "test_cert"})
+        mocker.patch('builtins.globals', return_value={
+            'SERVER': 'test_server',
+            'PORT': '443',
+            'USE_SSL': True,
+            'ORG_NAME': 'test_org',
+            'API_KEY_ID': api_key_id,
+            'API_KEY_SECRET': api_key_secret,
+            'USERNAME': username,
+            'PASSWORD': password,
+        })
+
+        if expected_auth is None:
+            with pytest.raises(SystemExit):
+                get_client()
+        else:
+            client = get_client()
+            expected_opts = {
+                'host': 'test_server',
+                'port': '443',
+                'cafile': 'test_cert',
+                'org': 'test_org',
+                **expected_auth
+            }
+            resilient.get_client.assert_called_once_with(opts=expected_opts)
+            assert client.request_max_retries == DEFAULT_RETRIES
+
+class TestTestModule:
+    def test_test_module_success(self, mocker):
+        mock_client = mocker.Mock()
+        mock_client.get.return_value = {}
+        assert test_module(mock_client, "2021-01-01T00:00:00Z") == "ok"
+
+    def test_test_module_invalid_fetch_time(self, mocker):
+        mock_client = mocker.Mock()
+        with pytest.raises(DemistoException, match="Invalid first fetch timestamp format"):
+            test_module(mock_client, "invalid_time_format")
+
+    def test_test_module_client_error(self, mocker):
+        mock_client = mocker.Mock()
+        mock_client.get.side_effect = Exception("Connection error")
+        with pytest.raises(Exception, match="Connection error"):
+            test_module(mock_client, "2021-01-01T00:00:00Z")

@@ -414,11 +414,14 @@ def get_mirroring_data() -> dict:
         dict: A dictionary containing the mirroring configuration parameters.
     """
     params = demisto.params()
+
     mirror_direction = params.get('mirror_direction')
-    mirror_tags = ''  # TODO - Utilize this
+    demisto.debug(f"get_mirroring_data {mirror_direction=} | {params=} ")
+    mirror_tags = []  # TODO - Utilize this
     return {
         'mirror_direction': mirror_direction,
-        'mirror_instance': demisto.integrationInstance()
+        'mirror_instance': demisto.integrationInstance(),
+        'mirror_tags': mirror_tags
     }
 
 
@@ -1202,12 +1205,11 @@ def fetch_incidents(client, fetch_time: str):
 
                 incident['discovered_date'] = normalize_timestamp(incident.get('discovered_date'))
                 incident['create_date'] = normalize_timestamp(incident_creation_time)
+                incident.update(get_mirroring_data())
 
                 demisto_incident = dict()  # type: dict
-
-                demisto_incident['name'] = 'IBM QRadar SOAR incident ID ' + str(incident['id'])
+                demisto_incident['name'] = f'IBM QRadar SOAR incident ID {str(incident["id"])} - {incident.get("name", "")}'
                 demisto_incident['occurred'] = incident['create_date']
-                demisto_incident.update(get_mirroring_data())
                 demisto_incident['rawJSON'] = json.dumps(incident)
                 demisto.debug(f'fetch_incidents {demisto_incident=}')
                 incidents.append(demisto_incident)

@@ -109,8 +109,39 @@
                     }
                 },
                 "IBM QRadar Resolution Summary": {
-                    "simple": "resolution_summary"
-                },
+					"complex": {
+						"filters": [],
+						"root": "resolution_summary",
+						"transformers": [
+							{
+								"args": {
+									"action_dt": {
+										"isContext": false
+									},
+									"ignore_case": {
+										"isContext": false
+									},
+									"multi_line": {
+										"isContext": false
+									},
+									"output_format": {
+										"isContext": false
+									},
+									"period_matches_newline": {
+										"isContext": false
+									},
+									"regex": {
+										"isContext": false,
+										"value": {
+											"simple": "<.*?>"
+										}
+									}
+								},
+								"operator": "RegexReplace"
+							}
+						]
+					}
+				},
                 "Last Modified On": {
                     "simple": "inc_last_modified_date"
                 },
@@ -156,7 +187,7 @@
                     "simple": "mirror_direction"
                 },
                 "dbotMirrorId": {
-                    "simple": "incident_id"
+                    "simple": "id"
                 },
                 "dbotMirrorInstance": {
                     "simple": "mirror_instance"
