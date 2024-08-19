@@ -18,21 +18,21 @@ filter to_string(CreationTime) ~= ":\d{2}(?:[\.\d]+)?$"
 
 
 [INGEST:vendor="msft", product="O365 General", target_dataset="msft_o365_general_raw", no_hit=keep]
-call O365_timestamp_parsing_UTC_string
-| call O365_timestamp_parsing_T_Z
-| call O365_timestamp_parsing_T_noZ;
+call O365_timestamp_parsing_UTC_string;
+call O365_timestamp_parsing_T_Z;
+call O365_timestamp_parsing_T_noZ;
 
 [INGEST:vendor="msft", product="O365 Exchange Online", target_dataset="msft_o365_exchange_online_raw", no_hit=keep]
-call O365_timestamp_parsing_UTC_string
-| call O365_timestamp_parsing_T_Z
-| call O365_timestamp_parsing_T_noZ;
+call O365_timestamp_parsing_UTC_string;
+call O365_timestamp_parsing_T_Z;
+call O365_timestamp_parsing_T_noZ;
 
 [INGEST:vendor="msft", product="O365 Sharepoint Online", target_dataset="msft_o365_sharepoint_online_raw", no_hit=keep]
-call O365_timestamp_parsing_UTC_string
-| call O365_timestamp_parsing_T_Z
-| call O365_timestamp_parsing_T_noZ;
+call O365_timestamp_parsing_UTC_string;
+call O365_timestamp_parsing_T_Z;
+call O365_timestamp_parsing_T_noZ;
 
 [INGEST:vendor="msft", product="O365 DLP", target_dataset="msft_o365_dlp_raw", no_hit=keep]
-call O365_timestamp_parsing_UTC_string
-| call O365_timestamp_parsing_T_Z
-| call O365_timestamp_parsing_T_noZ;
+call O365_timestamp_parsing_UTC_string;
+call O365_timestamp_parsing_T_Z;
+call O365_timestamp_parsing_T_noZ;
