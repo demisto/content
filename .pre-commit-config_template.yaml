@@ -331,11 +331,11 @@ repos:
     - --ignore-missing-imports
     - --check-untyped-defs
     - --show-error-codes
-    - --follow-imports=silent
+    # - --follow-imports=silent
     - --allow-redefinition
     - --install-types
     - --non-interactive
-    - --implicit-optional
+    - --implicit-optional  # TODO
     pass_docker_extra_args:ci: --rm=false
     pass_docker_extra_args:nightly: --rm=false
 
