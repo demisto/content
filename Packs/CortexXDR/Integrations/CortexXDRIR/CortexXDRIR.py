@@ -1116,13 +1116,12 @@ def fetch_incidents(client: Client, first_fetch_time, integration_instance, excl
     non_created_incidents: list = raw_incidents.copy()
     next_run = {}
     try:
-        count_incidents = 0
-
-        for raw_incident in raw_incidents:
+        for raw_incident in raw_incidents[:max_fetch]:
             incident_data: dict[str, Any] = sort_incident_data(raw_incident) if raw_incident.get('incident') else raw_incident
             incident_id = incident_data.get('incident_id')
             if incident_id in incidents_at_last_timestamp:  # remove duplicates
-                demisto.debug(f'incident {incident_id!r} is a duplicate, skipping. {incident_data=}')
+                demisto.debug(f'incident {incident_id!r} is a duplicate, skipping.')
+                non_created_incidents.remove(raw_incident)
                 continue
             alert_count = arg_to_number(incident_data.get('alert_count')) or 0
             if alert_count > ALERTS_LIMIT_PER_INCIDENTS:
@@ -1149,31 +1148,23 @@ def fetch_incidents(client: Client, first_fetch_time, integration_instance, excl
                 new_incidents_at_last_timestamp = [incident_id]
             elif incident_data.get('creation_time') == last_fetch:
                 new_incidents_at_last_timestamp.append(incident_id)
+
             incidents.append(incident)
             non_created_incidents.remove(raw_incident)
-
-            count_incidents += 1
-            if count_incidents == max_fetch:
-                break
 
     except Exception as e:
         if "Rate limit exceeded" in str(e):
             demisto.info(f"Cortex XDR - rate limit exceeded, number of non created incidents is: "
-                         f"'{len(non_created_incidents)}'.\n The incidents will be created in the next fetch")
+                         f"{len(non_created_incidents)!r}.\n The incidents will be created in the next fetch")
         else:
             raise
 
     if non_created_incidents:
-        next_run['incidents_from_previous_run'] = non_created_incidents
         next_run['alerts_limit_per_incident'] = ALERTS_LIMIT_PER_INCIDENTS  # type: ignore[assignment]
-    else:
-        next_run['incidents_from_previous_run'] = []
-
-    next_run['time'] = last_fetch
-    next_run['incidents_at_last_timestamp'] = (
-        new_incidents_at_last_timestamp
-        or last_run.get('incidents_at_last_timestamp', [])
-    )
+    next_run['incidents_from_previous_run'] = non_created_incidents
+    # stay on same timestamp if there are new incidents fetched because there might be more created in the same instant.
+    next_run['time'] = last_fetch + (0 if new_incidents_at_last_timestamp else 1)
+    next_run['incidents_at_last_timestamp'] = new_incidents_at_last_timestamp
 
     return next_run, incidents
 
