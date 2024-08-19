@@ -51,7 +51,7 @@ class Client(BaseClient):
                     continue
                 published_iso = published.strftime('%Y-%m-%dT%H:%M:%S')
                 publications.append({
-                    'timestamp': indicator.get('published'),
+                    'timestamp': published_iso,
                     'link': indicator.get('link'),
                     'source': self._base_url,
                     'title': indicator.get('title')
@@ -82,8 +82,13 @@ class Client(BaseClient):
     def get_url_content(self, link: str) -> str:
         """Returns the link content only from the relevant tags (listed on HTML_TAGS). For better performance - if the
          extracted content is bigger than "content_max_size" we trim him"""
-
-        response_url = self._http_request(method='GET', full_url=link, resp_type='str', timeout=self.read_timeout)
+        demisto.debug(f"Getting url content for {link=}")
+        try:
+            response_url = self._http_request(method='GET', full_url=link, resp_type='str', timeout=self.read_timeout)
+            demisto.debug(f"Got response {response_url=}")
+        except DemistoException as e:
+            demisto.error(f"Failed to get content for {link=}\nError:\n{e}")
+            return ""
         report_content = 'This is a dumped content of the article. Use the link under Publications field to read ' \
                          'the full article. \n\n'
         soup = BeautifulSoup(response_url.content, "html.parser")
