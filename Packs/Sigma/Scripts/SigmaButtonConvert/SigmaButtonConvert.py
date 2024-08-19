@@ -24,13 +24,15 @@ def main():
         "elastic": LuceneBackend(),
     }
 
-    indicator = demisto.callingContext["args"]["indicator"]
+    args = demisto.callingContext["args"]
+    
+    indicator = args["indicator"]
 
     try:
-        siem = siems[demisto.callingContext["args"]["SIEM"].lower()]
+        siem = siems[args["SIEM"].lower()]
 
     except KeyError:
-        return_error(f"Unknown SIEM - \"{demisto.callingContext['args']['SIEM']}\"")
+        return_error(f"Unknown SIEM - \"{args['SIEM']}\"")
 
     rule_dict = json.loads(indicator["CustomFields"]["sigmaruleraw"])
     rule = SigmaRule.from_dict(rule_dict)
@@ -44,7 +46,7 @@ def main():
 
     demisto.executeCommand("setIndicator", {"sigmaconvertedquery": f"{query}", "value": indicator["value"]})
 
-    return_results(CommandResults(readable_output=f"{demisto.callingContext['args']['SIEM']} output created"))
+    return_results(CommandResults(readable_output=f"{args['SIEM']} output created"))
 
 
 if __name__ in ["__main__", "__builtin__", "builtins"]:
