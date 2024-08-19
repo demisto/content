@@ -38,10 +38,10 @@ configuration:
   - Bad
   required: false
   type: 18
-- additionalinfo: Reliability of the source providing the intelligence data.
+- name: feedReliability
+  additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: F - Reliability cannot be judged
   display: Source Reliability
-  name: feedReliability
   options:
   - A - Completely reliable
   - B - Usually reliable
@@ -51,15 +51,10 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- defaultvalue: indicatorType
-  name: feedExpirationPolicy
-  options:
-  - never
-  - interval
-  - indicatorType
-  - suddenDeath
+- name: feedExpirationPolicy
+  defaultvalue: ''
   required: false
-  type: 17
+  type: 1
 - defaultvalue: '20160'
   name: feedExpirationInterval
   required: false
