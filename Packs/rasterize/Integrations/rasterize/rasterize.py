@@ -255,7 +255,6 @@ def count_running_chromes(port):
 
 
 def get_chrome_browser(port: str) -> pychrome.Browser | None:
-    demisto.debug('get_chrome_browser')
     browser_url = f"http://{LOCAL_CHROME_HOST}:{port}"
     for i in range(DEFAULT_RETRIES_COUNT):
         try:
