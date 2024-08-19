@@ -51,14 +51,17 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- name: feedExpirationPolicy
-  defaultvalue: ''
-  required: false
+- display: ''
+  type: 17
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+  name: feedExpirationPolicy
+- display: ''
   type: 1
-- defaultvalue: '20160'
   name: feedExpirationInterval
-  required: false
-  type: 1
 - defaultvalue: '240'
   display: Feed Fetch Interval
   name: feedFetchInterval
