@@ -1629,7 +1629,7 @@ Run a remote script that was uploaded to the SentinelOne Script Library.
 ### sentinelone-get-remote-script-task-status
 
 ***
-Get remote scripts tasks using a variety of filters. Accessible via API only parent_task_id query parameter is mandatory
+Get remote scripts tasks using a variety of filters.
 
 #### Base Command
 
@@ -1660,7 +1660,7 @@ Get remote scripts tasks using a variety of filters. Accessible via API only par
 | status | Status in. Example: 'created'. | Optional |
 | tenant | Indicates a tenant scope request | Optional |
 | updatedAt__gt | Updated at greater than. Example: '2018-02-27T04:49:26.257525Z'. | Optional |
-|  updatedAt__gte | Updated at greater or equal than. Example: '2018-02-27T04:49:26.257525Z'. | Optional |
+| updatedAt__gte | Updated at greater or equal than. Example: '2018-02-27T04:49:26.257525Z'. | Optional |
 | updatedAt__lt | Updated at lesser than. Example: '2018-02-27T04:49:26.257525Z'.  | Optional |
 | updatedAt__lte | Updated at lesser or equal than. Example: '2018-02-27T04:49:26.257525Z'. | Optional |
 | uuid__contains | Free-text filter by agent UUID (supports multiple values) | Optional |
@@ -1698,7 +1698,7 @@ Get remote scripts tasks using a variety of filters. Accessible via API only par
 ### sentinelone-get-remote-script-task-results
 
 ***
-Get scripts results URLs. Accessible via API only
+Get scripts results URLs.
 
 #### Base Command
 
@@ -1718,8 +1718,7 @@ Get scripts results URLs. Accessible via API only
 | --- | --- | --- |
 | SentinelOne.RemoteScriptResults.taskId | string | ID of the Task. | 
 | SentinelOne.RemoteScriptResults.fileName | string | File name. | 
-| SentinelOne.RemoteScriptResults.downloadUrl | string | Download Url. | 
-| SentinelOne.RemoteScriptResults.ZippedFile | string | Details of the zipped folder. |
+| SentinelOne.RemoteScriptResults.downloadUrl | string | Download Url. |
 
 
 ### sentinelone-remote-script-automate-results

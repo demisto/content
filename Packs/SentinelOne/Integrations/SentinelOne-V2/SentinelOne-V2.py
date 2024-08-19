@@ -3248,18 +3248,17 @@ def get_remote_script_results(client: Client, args: dict) -> list[CommandResults
     computer_names = argToList(args.get("computerNames"))
     task_ids = argToList(args.get("taskIds"))
     results = client.get_remote_script_results_request(computer_names, task_ids)
-    files = []
+    file_results = []
     for result in results:
         if result.get("downloadUrl", ""):
             response = requests.get(url=result.get("downloadUrl"))
             zip_file_data = response.content
-            files.append(fileResult(filename=result.get('fileName', ''), data=zip_file_data, file_type=EntryType.ENTRY_INFO_FILE))
-            zipped_file = fileResult(filename=result.get('fileName', ''), data=zip_file_data, file_type=EntryType.ENTRY_INFO_FILE)
+            file_results.append(fileResult(filename=result.get('fileName', ''),
+                                data=zip_file_data, file_type=EntryType.ENTRY_INFO_FILE))
             context_entries.append({
                 'taskId': result.get("taskId"),
                 'fileName': result.get("fileName"),
-                'downloadUrl': result.get("downloadUrl"),
-                'ZippedFile': zipped_file
+                'downloadUrl': result.get("downloadUrl")
             })
     return [CommandResults(
         readable_output=tableToMarkdown("SentinelOne - Get Remote Scripts Results", results, headers=headers, removeNull=True),
@@ -3267,7 +3266,7 @@ def get_remote_script_results(client: Client, args: dict) -> list[CommandResults
         outputs_key_field='taskId',
         outputs=context_entries,
         raw_response=results),
-        *files
+        *file_results
     ]
 
 
@@ -3289,28 +3288,28 @@ def run_polling_command(client: Client, cmd: str, args: Dict[str, Any]):
         command_results = run_remote_script_command(client, args)
         output = command_results.raw_response
         if isinstance(output, dict):
-            parentTaskId = output.get("parentTaskId")
-            args['parentTaskId'] = parentTaskId
+            parent_task_id = output.get("parentTaskId")
+            args['parentTaskId'] = parent_task_id
         scheduled_command = schedule_command(interval, timeout, cmd, args)
         command_results.scheduled_command = scheduled_command
         return command_results
 
-    parentTaskId = args.get('parentTaskId')
-    status_args = {"parentTaskId": parentTaskId}
+    parent_task_id = args.get('parentTaskId')
+    status_args = {"parentTaskId": parent_task_id}
     status_check_command_results = get_remote_script_status(client, status_args)
     status_outputs = status_check_command_results.raw_response
     script_executed = False
-    taskIds = []
+    task_ids = []
     if status_outputs and isinstance(status_outputs, list):
         for output in status_outputs:
             if isinstance(output, dict):
                 if output.get("status") != "completed":
                     script_executed = False
                     break
-                taskIds.append(output.get("id"))
+                task_ids.append(output.get("id"))
                 script_executed = True
     if script_executed:
-        results_args = {"taskIds": taskIds}
+        results_args = {"taskIds": task_ids}
         final_command_results = get_remote_script_results(client, results_args)
         return final_command_results
     else:

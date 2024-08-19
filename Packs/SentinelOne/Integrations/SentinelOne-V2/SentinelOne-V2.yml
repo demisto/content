@@ -2413,7 +2413,7 @@ script:
     - contextPath: SentinelOne.GetRemoteScript.updateAt
       description: Remote script upated at.
       type: string
-    description: Get remote scripts tasks using a variety of filters. Accessible via API only parent_task_id query parameter is mandatory
+    description: Get remote scripts tasks using a variety of filters.
     name: sentinelone-get-remote-script-task-status
   - arguments:
     - name: computerNames
@@ -2433,10 +2433,7 @@ script:
     - contextPath: SentinelOne.RemoteScriptResults.downloadUrl
       description: Download Url.
       type: string
-    - contextPath: SentinelOne.RemoteScriptResults.ZippedFile
-      description: Details of the zipped folder.
-      type: string
-    description: Get scripts results URLs. Accessible via API only
+    description: Get scripts results URLs.
     name: sentinelone-get-remote-script-task-results
   - arguments:
     - name: account_ids
