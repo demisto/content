@@ -162,6 +162,89 @@ def parse_indicators(indicator_objects: list, feed_tags: Optional[list] = None,
     return indicators
 
 
+def parse_malware(client, malware_objects: list = [], feed_tags: list = [],
+                  tlp_color: Optional[str] = None) -> list:
+    """Parse the IOC objects retrieved from the feed.
+    Args:
+      malware_objects: a list of objects containing the instances of malware.
+    Returns:
+        A list of processed malware.
+    """
+
+    malware_list = []
+    for malware_object in malware_objects:
+        malware_object = STIX2XSOARParser.parse_malware(client, malware_object)[0]
+        malware_object["fields"]["tags"] = list(feed_tags)
+        if tlp_color:
+            malware_object['fields']['trafficlightprotocol'] = tlp_color
+        malware_list.append(malware_object)
+    return malware_list
+
+
+def get_report_object(self, obj_id: str):
+        """Get specific report object by id.
+        Args:
+        obj_id: The object ID.
+        id_to_object: a dict in the form of - id: stix_object.
+        Returns:
+            A sub report object.
+        """
+        sub_report_obj = self.id_to_object.get(obj_id, {})
+        if not sub_report_obj:
+            if report_from_api := self.fetch_stix_objects_from_api(type="report", id=obj_id):
+                sub_report_obj = (report_from_api[0] if len(report_from_api) == 1 else None)
+                if not sub_report_obj:
+                    demisto.debug(f"{INTEGRATION_NAME}: Found more then one object for report object {obj_id} skipping")
+            else:
+                demisto.debug(f"{INTEGRATION_NAME}: Could not find report object {obj_id}")
+        return sub_report_obj
+
+
+def is_atom42_main_report(report_obj):
+    """ Our definition for main report is a report with 'object_refs'
+    list that contains only objects of the type not a report and a report with
+    description.
+
+    Args:
+      report_obj: The report object.
+    Returns:
+        A boolean.
+    """
+    obj_refs = report_obj.get('object_refs', [])
+    contain_report = False
+    contain_intrusion_set = False
+    if report_obj.get('name') == 'ATOM Campaign Report':
+        return False
+    for obj_ref in obj_refs:
+        if not obj_ref.startswith(('report--', 'intrusion-set--')):
+            return False
+        if obj_ref.startswith('intrusion-set--'):
+            contain_intrusion_set = True
+        if obj_ref.startswith('report--'):
+            contain_report = True
+    return contain_intrusion_set and contain_report
+
+
+def is_atom42_sub_report(report_obj):
+    """ Our definition for sub report is a report with 'object_refs'
+    list that contains only objects not for type intrusion-set or report.
+
+    Args:
+      report_obj: The report object.
+    Returns:
+        A boolean.
+    """
+    obj_refs = report_obj.get('object_refs', [])
+    is_report_description = report_obj.get('description') is not None
+    only_reports_and_intrusion_set = True
+    if report_obj.get('name') == 'ATOM Campaign Report':
+        return True
+    for obj_ref in obj_refs:
+        if not obj_ref.startswith(('report--', 'intrusion-set--')):
+            only_reports_and_intrusion_set &= False
+    return not (is_report_description or only_reports_and_intrusion_set)
+
+
 def create_relationship_entity(entity_a: str, entity_b: str, entity_b_type: str):
     """Creates relationship entity object.
 
@@ -238,51 +321,6 @@ def get_relationships_from_sub_reports(
     if obj_refs_excluding_relationships_prefix:
         object_ref_to_return = client.create_obj_refs_list(obj_refs_excluding_relationships_prefix)
     return relationships, object_ref_to_return
-
-
-def is_atom42_main_report(report_obj):
-    """ Our definition for main report is a report with 'object_refs'
-    list that contains only objects of the type not a report and a report with
-    description.
-
-    Args:
-      report_obj: The report object.
-    Returns:
-        A boolean.
-    """
-    obj_refs = report_obj.get('object_refs', [])
-    contain_report = False
-    contain_intrusion_set = False
-    if report_obj.get('name') == 'ATOM Campaign Report':
-        return False
-    for obj_ref in obj_refs:
-        if not obj_ref.startswith(('report--', 'intrusion-set--')):
-            return False
-        if obj_ref.startswith('intrusion-set--'):
-            contain_intrusion_set = True
-        if obj_ref.startswith('report--'):
-            contain_report = True
-    return contain_intrusion_set and contain_report
-
-
-def is_atom42_sub_report(report_obj):
-    """ Our definition for sub report is a report with 'object_refs'
-    list that contains only objects not for type intrusion-set or report.
-
-    Args:
-      report_obj: The report object.
-    Returns:
-        A boolean.
-    """
-    obj_refs = report_obj.get('object_refs', [])
-    is_report_description = report_obj.get('description') is not None
-    only_reports_and_intrusion_set = True
-    if report_obj.get('name') == 'ATOM Campaign Report':
-        return True
-    for obj_ref in obj_refs:
-        if not obj_ref.startswith(('report--', 'intrusion-set--')):
-            only_reports_and_intrusion_set &= False
-    return not (is_report_description or only_reports_and_intrusion_set)
 
 
 def parse_reports_and_report_relationships(client: Client, report_objects: list, feed_tags: Optional[list] = None,
@@ -635,6 +673,7 @@ def fetch_indicators(client: Client, feed_tags: Optional[list] = None, tlp_color
     ioc_indicators = parse_indicators(client.objects_data['indicator'], feed_tags, tlp_color)
     reports = parse_reports_and_report_relationships(client, client.objects_data['report'], feed_tags, tlp_color, id_to_object)
     campaigns = parse_campaigns(client, client.objects_data['campaign'], feed_tags, tlp_color)
+    malware = parse_malware(client, client.objects_data['malware'], feed_tags, tlp_color)
     attack_patterns = create_attack_pattern_indicator(client, client.objects_data['attack-pattern'],
                                                       feed_tags, tlp_color)
     intrusion_sets = create_intrusion_sets(client, client.objects_data['intrusion-set'], feed_tags, tlp_color)
@@ -665,8 +704,9 @@ def fetch_indicators(client: Client, feed_tags: Optional[list] = None, tlp_color
         demisto.debug(f'Feed Unit42 v2: {len(course_of_actions)} Course of Actions Indicators were created.')
     if intrusion_sets:
         demisto.debug(f'Feed Unit42 v2: {len(intrusion_sets)} Intrusion Sets Indicators were created.')
-
-    return ioc_indicators + reports + campaigns + attack_patterns + course_of_actions + intrusion_sets
+    if malware:
+        demisto.debug(f'Feed Unit42 v2: {len(malware)} Malware Indicators were created.')
+    return ioc_indicators + reports + campaigns + attack_patterns + course_of_actions + intrusion_sets + malware
 
 
 def get_indicators_command(client: Client, args: Dict[str, str], feed_tags: Optional[list] = None,
