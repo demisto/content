@@ -14,6 +14,7 @@ import zipfile
 
 disable_warnings()
 DEMISTO_TIME_FORMAT: str = '%Y-%m-%dT%H:%M:%SZ'
+MAX_INDICATORS_TO_SYNC: int = 50000
 xdr_types_to_demisto: dict = {
     "DOMAIN_NAME": 'Domain',
     "HASH": 'File',
@@ -197,16 +198,89 @@ def create_file_sync(file_path, batch_size: int = 200):
         else:
             demisto.info("created sync file without any indicators")
 
+def add_end_limit_to_query_first_stage_sync_is_true(query: str):
+    integration_context = get_integration_context()
+    last_sync_date = integration_context.get('time')
+    return f'modified:<={last_sync_date} and ({query})'
 
-def get_iocs_generator(size=200, query=None) -> Iterable:
+
+def search_indicators_corresponding_modification_time(query: str,from_date: str, to_date: str):
+    query = f'modified:>={from_date} and modified:<{to_date} and ({query})'
+    demisto.debug(f"{query=}")
+    send_all_same_modify = True
+    ioc_count = 0
+    while send_all_same_modify:
+        try:
+            for batch in IndicatorsSearcher(size=5000, query=query,filter_fields=
+                                                'value,indicator_type,score,expiration,modified,aggregatedReliability,moduleToFeedMap,comments,id,CustomFields'):
+                for ioc in batch.get('iocs', []):
+                    ioc_count += 1
+                    yield ioc
+                # TODO move this to main function - and send to API after every 50,000 indicators.
+                # if ioc_count >= MAX_INDICATORS_TO_SYNC:
+                #     raise StopIteration
+        except StopIteration:
+            pass
+        except Exception as e:
+            raise e
+
+def convert_timestamp_to_datetime_string(timestamp_in_milliseconds: int) -> str:
+    timestamp_seconds = timestamp_in_milliseconds // 1_000
+    milliseconds = timestamp_in_milliseconds % 1_000
+    nanoseconds = milliseconds * 1_000_000
+    utc_time = datetime(1970, 1, 1) + timedelta(seconds=timestamp_seconds)
+    formatted_time = utc_time.strftime('%Y-%m-%dT%H:%M:%S')
+    formatted_time += f'.{nanoseconds:09d}Z'
+    return formatted_time
+
+def increment_timestamp_by_one_millisecond(timestamp_str: str) -> str:
+    timestamp_format = "%Y-%m-%dT%H:%M:%S.%f000Z"
+    base_time = datetime.strptime(timestamp_str, timestamp_format)
+    incremented_time = base_time + timedelta(milliseconds=1)
+    incremented_timestamp_str = incremented_time.strftime("%Y-%m-%dT%H:%M:%S.%f000Z")
+    return incremented_timestamp_str
+    
+    
+def get_iocs_generator(size=200, query=None, is_first_stage_sync= False) -> Iterable:
     query = query or Client.query
     query = f'expirationStatus:active AND ({query})'
+    if is_first_stage_sync:
+        query_with_end_time = add_end_limit_to_query_first_stage_sync_is_true(query)
+    demisto.debug(f"{query_with_end_time=}")
+    ioc_count = 0
     try:
-        for iocs in (batch.get('iocs', []) for batch in IndicatorsSearcher(size=size, query=query)):
-            for ioc in iocs:
+        search_after = get_integration_context().get('search_after')
+        demisto.debug(f"{search_after=}")
+        for batch in IndicatorsSearcher(size=size,
+                                        query=query_with_end_time,
+                                        search_after=search_after,
+                                        sort=[{"field": "modified", "asc": True}],
+                                        filter_fields=
+                                        'value,indicator_type,score,expiration,modified,aggregatedReliability,moduleToFeedMap,comments,id,CustomFields'):
+            demisto.debug(f"{ioc_count=}")
+            for ioc in batch.get('iocs', []):
+                # if ioc.get('value') not in already_sent_indicators:
+                # if ioc.get('modified') > get_integration_context().get('time'):
+                #     raise StopIteration
+                ioc_count += 1
                 yield ioc
+                if ioc_count >= MAX_INDICATORS_TO_SYNC:
+                    search_after_array = batch.get('searchAfter', [])
+                    search_after = arg_to_number(search_after_array[0])
+                    demisto.debug(f"{search_after_array[0]=}")
+                    demisto.debug(f"{search_after=}")
+                    demisto.debug(f"{ioc.get('modified')=}")
+                    from_date = convert_timestamp_to_datetime_string(search_after)
+                    demisto.debug(f"{from_date=}")
+                    set_search_after(search_after_array)
+                    to_date = increment_timestamp_by_one_millisecond(from_date)
+                    demisto.debug(f"{to_date=}")
+                    search_indicators_corresponding_modification_time(query,from_date, to_date)
+                    raise StopIteration
     except StopIteration:
         pass
+    except Exception as e:
+        raise e
 
 
 def demisto_expiration_to_xdr(expiration) -> int:
@@ -328,7 +402,8 @@ def demisto_ioc_to_xdr(ioc: dict) -> dict:
             'severity': Client.severity,  # default, may be overwritten, see below
             'type': demisto_types_to_xdr(str(ioc['indicator_type'])),
             'reputation': demisto_score_to_xdr.get(ioc.get('score', 0), 'UNKNOWN'),
-            'expiration_date': demisto_expiration_to_xdr(ioc.get('expiration'))
+            'expiration_date': demisto_expiration_to_xdr(ioc.get('expiration')),
+            'modified': ioc.get('modified')
         }
         if aggregated_reliability := ioc.get('aggregatedReliability'):
             xdr_ioc['reliability'] = aggregated_reliability[0]
@@ -369,6 +444,29 @@ def get_temp_file() -> str:
     temp_file = tempfile.mkstemp()
     return temp_file[1]
 
+def set_search_after(modified_date: int):
+    demisto.info(f"setting search after value to integration context: {modified_date}")
+    integration_context = get_integration_context()
+    integration_context['search_after'] = modified_date
+    set_integration_context(integration_context)
+    demisto.debug(f"this_is_the_context {get_integration_context()}")
+
+
+def set_sync_time_with_str_time(date_string: str):
+    parsed_time = datetime.strptime(date_string, DEMISTO_TIME_FORMAT)
+    parsed_time = parsed_time.replace(tzinfo=timezone.utc)
+    value = {
+        "ts": int(parsed_time.timestamp()) * 1000,
+        "time": date_string,
+    }
+    demisto.info(f"setting sync time to integration context: {value}")
+    if integration_context := get_integration_context():
+        integration_context['ts'] = int(parsed_time.timestamp()) * 1000
+        integration_context['time'] = date_string
+        set_integration_context(integration_context)
+    else:
+        set_integration_context(value)
+
 
 def set_sync_time(timestamp: datetime) -> None:
     value = {
@@ -376,28 +474,47 @@ def set_sync_time(timestamp: datetime) -> None:
         "time": timestamp.strftime(DEMISTO_TIME_FORMAT),
     }
     demisto.info(f"setting sync time to integration context: {value}")
-    set_integration_context(get_integration_context() | value)  # latter value matters when updating a dict
+    if integration_context := get_integration_context():
+        integration_context['ts'] = int(timestamp.timestamp()) * 1000
+        integration_context['time'] = timestamp.strftime(DEMISTO_TIME_FORMAT)
+        set_integration_context(integration_context)
+    else:
+        set_integration_context(value)
 
 
-def sync(client: Client):
+def sync(client: Client, batch_size: int = 200, is_first_stage_sync: bool = False):
     """
-    Sync command is supposed to run only in first run or the integration context is empty.
-    Creates the initial sync between xdr and xsoar iocs.
+    Sync command runs in batches of 200 with total of 50,000 indicators in each sync.
+    Syncs the data in xsoar to xdr.
     """
     demisto.info("executing sync")
-    temp_file_path: str = get_temp_file()
+    request_data : List[Any] = []
     try:
-        sync_time = datetime.now(timezone.utc)
-        create_file_sync(temp_file_path)  # may end up empty
-        requests_kwargs: dict = get_requests_kwargs(file_path=temp_file_path)
-        path: str = 'sync_tim_iocs'
-        client.http_request(path, requests_kwargs)
-    finally:
-        os.remove(temp_file_path)
-
-    set_sync_time(sync_time)
-    set_new_iocs_to_keep_time()
-    return_outputs("sync with XDR completed.")
+        # sync_time = datetime.now(timezone.utc)
+        demisto.debug(f"time_before_query_is {datetime.now(timezone.utc).strftime(DEMISTO_TIME_FORMAT)}")
+        request_data = list(map(demisto_ioc_to_xdr, get_iocs_generator(size=batch_size, is_first_stage_sync=is_first_stage_sync)))
+        indicator_dict = {}
+        for item in request_data:
+            indicator_dict[item.get('indicator')] = item
+        request_data = list(indicator_dict.values())
+        if request_data:
+            demisto.debug(f"time_after_query_is {datetime.now(timezone.utc).strftime(DEMISTO_TIME_FORMAT)}")
+            demisto.debug(f"sending {len(request_data)} indicators to xdr. last_modified_that_was_synced {request_data[-1].get('modified')}, {request_data[-1].get('indicator')}")
+            # requests_kwargs: dict = get_requests_kwargs(_json=request_data, validate=True)
+            # path: str = 'tim_insert_jsons'
+            # response = client.http_request(path, requests_kwargs)
+            # if not response.get('reply', {}).get('success') == 'true':
+            #     raise DemistoException("Response status was not success")
+            # if validation_errors := response.get('reply', {}).get('validation_errors'):
+            #     errors = create_validation_errors_response(validation_errors)
+            #     demisto.debug('pushing IOCs to XDR:' + errors.replace('\n', '. '))
+            #     return_warning(errors)
+            demisto.debug(f"Fetched from xsoar {len(request_data)} IOCs to send to XDR. Last indicator modified time is"
+                        f" {get_integration_context().get('search_after')}")
+        else:
+            demisto.debug("request_data is empty")
+    except Exception as e:
+        raise DemistoException(f"Failed to sync indicators with error {e}")
 
 
 def iocs_to_keep(client: Client):
@@ -624,31 +741,44 @@ def module_test(client: Client):
 
 def fetch_indicators(client: Client, auto_sync: bool = False):
     demisto.debug("fetching IOCs: starting")
-    if not get_integration_context() and auto_sync:
-        demisto.debug("fetching IOCs: running sync with first_time=True")
+    integration_context = get_integration_context()
+    demisto.debug(f"The integration last sync time is {integration_context.get('ts')}")
+    demisto.debug(f"The last search after is {integration_context.get('search_after')}")
+    if (((not integration_context) or (integration_context.get('ts') > int(integration_context.get('search_after',[])[0])))
+        and auto_sync):
+        if not integration_context:
+            sync_time = datetime.now(timezone.utc)
+            set_sync_time(sync_time)
+        is_first_stage_sync = True
+        demisto.debug("fetching IOCs: running sync with is_first_stage_sync=True")
         # this will happen on the first time we run
-        xdr_iocs_sync_command(client, first_time=True)
+        xdr_iocs_sync_command(client=client, is_first_stage_sync=is_first_stage_sync)
+        search_after = integration_context.get('search_after',[])[0]
+        demisto.debug(f"{search_after=}")
+        if search_after and search_after > integration_context.get('ts'):
+            set_sync_time_with_str_time(search_after)
     else:
         # This will happen every fetch time interval as defined in the integration configuration
         demisto.debug("fetching IOCs: running get_changes")
-        get_changes(client)
-        if auto_sync:
-            demisto.debug("fetching IOCs: auto_sync is on")
-            tim_insert_jsons(client)
-            demisto.debug("checking if iocs_to_keep should run")
-            if is_iocs_to_keep_time():
-                # first_time=False will call iocs_to_keep
-                demisto.debug("running sync with first_time=False")
-                xdr_iocs_sync_command(client)
+        # get_changes(client)
+        # if auto_sync:
+        #     demisto.debug("fetching IOCs: auto_sync is on")
+        #     tim_insert_jsons(client)
+        #     demisto.debug("checking if iocs_to_keep should run")
+        #     if is_iocs_to_keep_time():
+        #         # first_time=False will call iocs_to_keep
+        #         demisto.debug("running sync with first_time=False")
+        #         xdr_iocs_sync_command(client)
 
 
-def xdr_iocs_sync_command(client: Client, first_time: bool = False):
-    if first_time or not get_integration_context():
+def xdr_iocs_sync_command(client: Client, first_time: bool = False, is_first_stage_sync: bool = False):
+    if first_time or not get_integration_context() or is_first_stage_sync:
         demisto.debug("first time, running sync")
         # the sync is the large operation including the data and the get_integration_context is fill in the sync
-        sync(client)
+        sync(client, batch_size=5000, is_first_stage_sync=True)
     else:
-        iocs_to_keep(client)
+        pass
+        # iocs_to_keep(client)
 
 
 def set_new_iocs_to_keep_time():
@@ -815,7 +945,7 @@ def main():  # pragma: no cover
         elif command in commands:
             commands[command](client)
         elif command == 'xdr-iocs-sync':
-            xdr_iocs_sync_command(client, args.get('firstTime') == 'true')
+            xdr_iocs_sync_command(client=client, first_time=args.get('firstTime') == 'true')
         else:
             raise NotImplementedError(command)
     except Exception as error:
