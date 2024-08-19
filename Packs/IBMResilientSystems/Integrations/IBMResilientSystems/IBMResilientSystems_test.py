@@ -5,8 +5,21 @@ from pytest import raises
 
 import demistomock as demisto
 from CommonServerPython import DemistoException
+import requests
+from io import BytesIO
 
 DEFAULT_MAX_FETCH = 1000
+
+
+def dict_to_response(data, status=200):
+    response = requests.Response()
+    response.status_code = status
+    # Convert dictionary to bytes and set as content
+    response.raw = BytesIO(json.dumps(data).encode('utf-8'))
+
+    response.headers['Content-Type'] = 'application/json'
+    return response
+
 
 def load_test_data(json_path):
     with open(json_path) as f:
@@ -295,7 +308,6 @@ def test_prettify_incident_notes(mocker, input_notes, expected_output):
     assert prettify_incident_notes(input_notes) == expected_output
 
 
-# TODO - Complete this
 @pytest.mark.parametrize(
     "args", [
         (
@@ -310,13 +322,44 @@ def test_search_incidents(mocker, args):
     from requests import Session
     from co3 import SimpleClient
     from IBMResilientSystems import search_incidents, DEFAULT_RETURN_LEVEL
-    request = mocker.patch.object(Session, "post", return_value=load_test_data('./test_data/test_response.json'))
-    # TODO - fix
-    search_incidents(client=SimpleClient(), args=args)
-    request.assert_called_with(
-        method="POST",
-        url_suffix=f"/rest/orgs/201/incidents/query_paged?return_level={args.get('return_level', DEFAULT_RETURN_LEVEL)}",
-        headers='HEADERS',
-        return_empty_response=False,
-        json_data={}
-    )
+    test_dict_response = load_test_data('./test_data/test_response.json')
+    test_response = dict_to_response(test_dict_response)
+    request = mocker.patch.object(Session, "post", return_value=test_response)
+    client = SimpleClient()
+    client.org_id = 0
+    search_incidents(client=client, args=args)
+
+    request_url = request.call_args.args[0]
+    request_headers = request.call_args.kwargs['headers']
+    request_data = request.call_args.kwargs['data']
+    assert request_url.endswith(
+        f"/rest/orgs/0/incidents/query_paged?return_level={args.get('return_level', DEFAULT_RETURN_LEVEL)}")
+    assert request_headers['content-type'] == 'application/json'
+    assert request_data == ('{"filters": [{"conditions": [{"field_name": "create_date", "method": "gte", "value": '
+                            '1577865600000}]}], "length": 10, "start": 0}')
+
+@pytest.mark.parametrize("script_id", ['100', '', 'INVALID_SCRIPT'])
+def test_list_scripts(mocker, script_id):
+    mocker.patch.object(demisto, 'params', return_value={
+        'server': 'example.com:80', 'org': 'example', 'proxy': True, 'max_fetch': DEFAULT_MAX_FETCH
+    })
+    from requests import Session
+    from co3 import SimpleClient
+    from IBMResilientSystems import list_scripts_command, DEFAULT_RETURN_LEVEL
+
+    test_dict_response = load_test_data('./test_data/test_response.json')
+    test_response = dict_to_response(test_dict_response)
+    request = mocker.patch.object(Session, "post", return_value=test_response)
+    client = SimpleClient()
+    client.org_id = 0
+    list_scripts_command(client=client, args=args)
+
+    request_url = request.call_args.args[0]
+    request_headers = request.call_args.kwargs['headers']
+    request_data = request.call_args.kwargs['data']
+    assert request_url.endswith(
+        f"/rest/orgs/0/incidents/query_paged?return_level={args.get('return_level', DEFAULT_RETURN_LEVEL)}")
+    assert request_headers['content-type'] == 'application/json'
+    assert request_data == ('{"filters": [{"conditions": [{"field_name": "create_date", "method": "gte", "value": '
+                            '1577865600000}]}], "length": 10, "start": 0}')
+

@@ -1226,6 +1226,7 @@ def list_scripts_command(client: SimpleClient, args: dict) -> CommandResults:
     """
     human_readable = ''
     script_id = args.get("script_id", "")
+
     try:
         response = client.get(f'/scripts/{script_id}')
 
@@ -1449,7 +1450,6 @@ def delete_task_members_command(client: SimpleClient, args: dict) -> CommandResu
     """
     Deletes the members for a given task.
     """
-
     task_id = args.get('task_id')
     try:
         response = client.delete(f'/tasks/{task_id}/members')
