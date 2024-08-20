@@ -1,0 +1,109 @@
+commonfields:
+  id: aadc3939-f702-4b98-8276-42bdaa3faa05
+  version: 24
+vcShouldKeepItemLegacyProdMachine: false
+name: BlockPublicAccessOnAzureContainer
+script: |-
+  register_module_line('BlockPublicAccessOnAzureContainer', 'start', __line__())
+  ### pack version: 3.4.14
+
+  import requests
+  import hashlib
+  import hmac
+  import base64
+  from datetime import datetime
+
+
+
+
+  def block_public_access_on_azure_container():
+      # fetch creds from the DSPM Instance
+      result = demisto.executeCommand("dspm-get-integration-cofig", {})
+      integration_conf = result[0].get("Contents",{}).get('integration_config',{})
+
+      # Extract Azure's storage account name and shared key
+      account_name = integration_conf.get('azureStorageName')
+      account_key = integration_conf.get('azureSharedKey')
+
+      container_name = demisto.args().get("container_name")
+      api_version = '2024-11-04'
+      request_date = datetime.utcnow().strftime('%a, %d %b %Y %H:%M:%S GMT')
+
+      request_url = f"https://{account_name}.blob.core.windows.net/{container_name}?restype=container&comp=acl"
+
+      # string for API signature
+      string_to_sign = (
+          f"PUT\n"  # HTTP Verb
+          f"\n"  # Content-Encoding
+          f"\n"  # Content-Language
+          f"\n"  # Content-Length
+          f"\n"  # Content-MD5
+          f"\n"  # Content-Type
+          f"\n"  # Date
+          f"\n"  # If-Modified-Since
+          f"\n"  # If-Match
+          f"\n"  # If-None-Match
+          f"\n"  # If-Unmodified-Since
+          f"\n"  # Range
+          f"x-ms-date:{request_date}\n"
+          f"x-ms-version:{api_version}\n"
+          f"/{account_name}/{container_name}\n"
+          "comp:acl\n"
+          "restype:container"
+      )
+
+      # Create signature token
+      decoded_key = base64.b64decode(account_key)
+      signature = hmac.new(decoded_key, string_to_sign.encode('utf-8'), hashlib.sha256).digest()
+      encoded_signature = base64.b64encode(signature).decode('utf-8')
+
+      authorization_header = f"SharedKey {account_name}:{encoded_signature}"
+      headers = {
+          'x-ms-date': request_date,
+          'x-ms-version': api_version,
+          'Authorization': authorization_header
+      }
+
+      response = requests.put(request_url, headers=headers)
+
+      if response.status_code == 200:
+          return_results(f"Public access to container '{container_name}' has been successfully blocked")
+      else:
+          return_error(f"Failed to block public access, Status code: {response.status_code}")
+          return_error(f"Error: {response.text}")
+
+
+
+
+
+  ''' MAIN FUNCTION '''
+
+
+  def main():  # pragma: no cover
+      try:
+          block_public_access_on_azure_container()
+
+      except Exception as excep:
+          demisto.error(traceback.format_exc())  # print the traceback
+          return_error(f'Failed to execute BlockPublicAccessOnAzureContainer. Error: {str(excep)}')
+
+
+  ''' ENTRY POINT '''
+
+  if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
+      main()
+
+  register_module_line('BlockPublicAccessOnAzureContainer', 'end', __line__())
+type: python
+tags: []
+enabled: true
+args:
+- name: container_name
+scripttarget: 0
+subtype: python3
+pswd: ""
+runonce: false
+dockerimage: demisto/python3:3.11.9.107421
+runas: DBotWeakRole
+engineinfo: {}
+mainengineinfo: {}

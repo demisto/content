@@ -1,6 +1,6 @@
 commonfields:
   id: d93ce82d-4704-4d9a-887e-c8b59d472d74
-  version: 11
+  version: 162
 vcShouldKeepItemLegacyProdMachine: false
 name: ParseSlackBlockBuilderResponse
 script: |
@@ -13,7 +13,7 @@ script: |
   CREATE_JIRA_TICKET = "Create a Jira ticket"
   REMEDIATE_RISK = "Remediate a Risk"
 
-  def get_jira_issue_type_id(issue_type_name) -> str:
+  def get_jira_issue_type_id_and_project_name(issue_type_name, project_id) -> str:
       try:
           result = demisto.executeCommand("dspm-get-integration-cofig", {})
           integration_conf = result[0].get("Contents", {}).get("integration_config", {})
@@ -23,19 +23,22 @@ script: |
           api_key = integration_conf.get('jiraApiToken')
           jiraEmail = integration_conf.get('jiraEmail')
 
-          url = f"https://{jira_url}/rest/api/2/project/DIG"
+          url = f"https://{jira_url}/rest/api/2/project/{project_id}"
           auth = HTTPBasicAuth(jiraEmail, api_key)
           headers = {
               "Accept": "application/json",
           }
 
           response = requests.request("GET", url, headers=headers, auth=auth)
+          print("get_jira_issue_type_id res: ",response.text)
+          res = response.json()
+          project_name = res.get("name")
           if response.status_code == 200:
-              issue_types = response.json()['issueTypes']
+              issue_types = res['issueTypes']
               for issue_type in issue_types:
                   if issue_type['name'] == issue_type_name:
                       issue_type_id = issue_type['id']
-                      return str(issue_type_id)
+                      return str(issue_type_id), str(project_name)
 
       except Exception as e:
           return_error(f"Error while fetching Jira Issue Type: {str(e)}")
@@ -45,6 +48,9 @@ script: |
           context_data = demisto.get(demisto.context(), 'SlackBlockState')
           if context_data is None:
               raise TypeError("SlackBlockState is None")
+          
+          if isinstance(context_data, list):
+              context_data = context_data[0]
 
           user_input_data = context_data.get("values")
           if user_input_data is None:
@@ -60,10 +66,11 @@ script: |
 
           if action_name == CREATE_JIRA_TICKET:
               user_email = user_input_data.get("plain_text_input_3", {}).get("plain_text_input-action", {}).get("value")
-              project_name = user_input_data.get("static_select_1", {}).get("static_select-action", {}).get("selected_option", {}).get("value")
+              project_key = user_input_data.get("static_select_1", {}).get("static_select-action", {}).get("selected_option", {}).get("value")
               ticket_type = user_input_data.get("static_select_2", {}).get("static_select-action", {}).get("selected_option", {}).get("value")
 
-              ticket_type_id = get_jira_issue_type_id(ticket_type)
+              ticket_type_id, project_name = get_jira_issue_type_id_and_project_name(ticket_type, project_key)
+              print("ticket_type_id: ",ticket_type_id)
 
               demisto.setContext("User.Action", "jira")
               demisto.setContext("User.Email", user_email)
@@ -80,7 +87,7 @@ script: |
           print("User response is not found in slackBlockState.")
           demisto.setContext("User.Action", 'no_response')
       except Exception as ex:
-          demisto.error(traceback.format_exc())  # log the traceback
+          print(traceback.format_exc())  # log the traceback
           return_error(f'Failed to parse Slack block builder response: {str(ex)}')
 
   ''' MAIN FUNCTION '''
