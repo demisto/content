@@ -2277,52 +2277,52 @@ script:
     description: Run a remote script that was uploaded to the SentinelOne Script Library.
     name: sentinelone-run-remote-script
   - arguments:
-    - name: accountIds
+    - name: account_ids
       isArray: true 
       description: "A comma-separated list of account IDs. Example: '225494730938493804,225494730938493915'."
-    - name: computerName__contains
+    - name: computer_name_contains
       description: Free-text filter by agent computer name (supports multiple values).
-    - name: countOnly
+    - name: count_only
       auto: PREDEFINED
       predefined:
       - "false"
       - "true"
       description: If true, only total number of items will be returned, without any of the actual objects.
-    - name: createdAt__gt
+    - name: created_at_gt
       description: "Created at greater than. Example: '2018-02-27T04:49:26.257525Z'."
-    - name: createdAt__gte
+    - name: created_at_gte
       description: "Created at greater or equal than. Example: '2018-02-27T04:49:26.257525Z'."
-    - name: createdAt__lt
+    - name: created_at_lt
       description: "Created at lesser than. Example: '2018-02-27T04:49:26.257525Z'."
-    - name: createdAt__lte
+    - name: created_at_lte
       description: "Created at lesser or equal than. Example: '2018-02-27T04:49:26.257525Z'."
     - name: cursor
       description: "Cursor position returned by the last request. Use to iterate over more than 1000 items. Example: 'YWdlbnRfaWQ6NTgwMjkzODE='."
-    - name: description__contains
+    - name: description_contains
       description: Only include tasks with specific description.
-    - name: detailedStatus__contains
+    - name: detailed_status_contains
       isArray: true 
       description: Only include tasks with specific detailed status.
-    - name: groupIds
+    - name: group_ids
       isArray: true 
       description: "List of Group IDs to filter by. Example: '225494730938493804,225494730938493915'."
     - name: ids
       isArray: true 
       description: "List of IDs to filter by. Example: '225494730938493804,225494730938493915'."
-    - name: initiatedBy__contains
+    - name: initiated_by_contains
       isArray: true 
       description: Only include tasks from specific initiating user.
     - name: limit
       description: "Limit number of returned items (1-1000). Example: '10'."
-    - name: parentTaskId
+    - name: parent_task_id
       required: true
       description: "parent task id to fetch the status by. Example: '225494730938493804'."
-    - name: parentTaskId__in
+    - name: parent_task_id_in
       isArray: true 
       description: List of IDs to filter by.
     - name: query
       description: Query.
-    - name: siteIds
+    - name: site_ids
       isArray: true 
       description: "List of Site IDs to filter by. Example: '225494730938493804,225494730938493915'."
     - name: status
@@ -2333,15 +2333,15 @@ script:
       - "false"
       - "true"
       description: Indicates a tenant scope request.
-    - name: updatedAt__gt
+    - name: updated_at_gt
       description: "Updated at greater than. Example: '2018-02-27T04:49:26.257525Z'."
-    - name: updatedAt__gte
+    - name: updated_at_gte
       description: "Updated at greater or equal than. Example: '2018-02-27T04:49:26.257525Z'."
-    - name: updatedAt__lt
+    - name: updated_at_lt
       description: "Updated at lesser than. Example: '2018-02-27T04:49:26.257525Z'."
-    - name: updatedAt__lte
+    - name: updated_at_lte
       description: "Updated at lesser or equal than. Example: '2018-02-27T04:49:26.257525Z'."
-    - name: uuid__contains
+    - name: uuid_contains
       description: Free-text filter by agent UUID (supports multiple values).
     outputs:
     - contextPath: SentinelOne.GetRemoteScript.id
@@ -2416,10 +2416,10 @@ script:
     description: Get remote scripts tasks using a variety of filters.
     name: sentinelone-get-remote-script-task-status
   - arguments:
-    - name: computerNames
+    - name: computer_names
       isArray: true
       description: A list of partial or whole computer names, which ran scripts, to get a download link for.
-    - name: taskIds
+    - name: task_ids
       isArray: true
       required: true
       description: A list of task ids to get a download link for.
@@ -2487,10 +2487,19 @@ script:
       description: Indicates the time in seconds until the polling sequence timeouts. Default is 600.
       name: timeout
     - description: "parent task id to fetch the status by. Example: '225494730938493804'."
-      name: parentTaskId
-    description: The polling command will continuously poll the task results until the status of each task is completed, and return the results.
+      name: parent_task_id
+    description: Automate a remote script's execution cycle and return the script's results.
     name: sentinelone-remote-script-automate-results
-    outputs: []
+    outputs:
+    - contextPath: SentinelOne.RemoteScriptResults.taskId
+      description: ID of the Task.
+      type: string
+    - contextPath: SentinelOne.RemoteScriptResults.fileName
+      description: File name.
+      type: string
+    - contextPath: SentinelOne.RemoteScriptResults.downloadUrl
+      description: Download Url.
+      type: string
     polling: true
   - arguments: []
     description: Returns the list of fields for an incident type.

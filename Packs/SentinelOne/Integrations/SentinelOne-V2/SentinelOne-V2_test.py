@@ -651,7 +651,7 @@ def test_get_remote_script_status(mocker, requests_mock):
                                                          'api_version': '2.1'})
     mocker.patch.object(demisto, 'command', return_value='sentinelone-get-remote-script-task-status')
     mocker.patch.object(demisto, 'args', return_value={
-        'parentTaskId': '123456789'
+        'parent_task_id': '123456789'
     })
     mocker.patch.object(sentinelone_v2, "return_results")
     main()
@@ -692,7 +692,7 @@ def test_remote_script_results(mocker, requests_mock):
                                                          'fetch_threat_rank': '4'})
     mocker.patch.object(demisto, 'command', return_value='sentinelone-get-remote-script-task-results')
     mocker.patch.object(demisto, 'args', return_value={
-        'taskIds': task_ids,
+        'task_ids': task_ids,
     })
     mocker.patch.object(sentinelone_v2, "return_results")
     main()

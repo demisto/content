@@ -954,41 +954,41 @@ class Client(BaseClient):
         response = self._http_request(method='POST', url_suffix=endpoint_url, json_data=payload)
         return response.get('data', {})
 
-    def get_remote_script_status_request(self, accountIds: str = None, computerName__contains: str = None,
-                                         countOnly: str = None, createdAt__gt: str = None, createdAt__gte: str = None,
-                                         createdAt__lt: str = None, createdAt__lte: str = None, cursor: str = None,
-                                         description__contains: str = None, detailedStatus__contains: str = None,
-                                         groupIds: str = None, ids: str = None, initiatedBy__contains: str = None,
-                                         limit: str = '50', parentTaskId: str = None, parentTaskId__in: str = None,
-                                         query: str = None, siteIds: str = None, status: str = None,
-                                         tenant: str = None, updatedAt__gt: str = None, updatedAt__gte: str = None,
-                                         updatedAt__lt: str = None, updatedAt__lte: str = None, uuid__contains: str = None):
+    def get_remote_script_status_request(self, account_ids: str = None, computer_name_contains: str = None,
+                                         count_only: str = None, created_at_gt: str = None, created_at_gte: str = None,
+                                         created_at_lt: str = None, created_at_lte: str = None, cursor: str = None,
+                                         description_contains: str = None, detailed_status_contains: str = None,
+                                         group_ids: str = None, ids: str = None, initiated_by_contains: str = None,
+                                         limit: str = '50', parent_task_id: str = None, parent_task_id_in: str = None,
+                                         query: str = None, site_ids: str = None, status: str = None,
+                                         tenant: str = None, updated_at_gt: str = None, updated_at_gte: str = None,
+                                         updated_at_lt: str = None, updated_at_lte: str = None, uuid_contains: str = None):
         params = assign_params(
-            accountIds=argToList(accountIds),
-            computerName__contains=computerName__contains,
-            countOnly=countOnly,
-            createdAt__gt=createdAt__gt,
-            createdAt__gte=createdAt__gte,
-            createdAt__lt=createdAt__lt,
-            createdAt__lte=createdAt__lte,
+            accountIds=argToList(account_ids),
+            computerName__contains=computer_name_contains,
+            countOnly=count_only,
+            createdAt__gt=created_at_gt,
+            createdAt__gte=created_at_gte,
+            createdAt__lt=created_at_lt,
+            createdAt__lte=created_at_lte,
             cursor=cursor,
-            description__contains=description__contains,
-            detailedStatus__contains=argToList(detailedStatus__contains),
-            groupIds=argToList(groupIds),
+            description__contains=description_contains,
+            detailedStatus__contains=argToList(detailed_status_contains),
+            groupIds=argToList(group_ids),
             ids=argToList(ids),
-            initiatedBy__contains=argToList(initiatedBy__contains),
+            initiatedBy__contains=argToList(initiated_by_contains),
             limit=int(limit),
-            parentTaskId=parentTaskId,
-            parentTaskId__in=argToList(parentTaskId__in),
+            parentTaskId=parent_task_id,
+            parentTaskId__in=argToList(parent_task_id_in),
             query=query,
-            siteIds=argToList(siteIds),
+            siteIds=argToList(site_ids),
             status=status,
             tenant=tenant,
-            updatedAt__gt=updatedAt__gt,
-            updatedAt__gte=updatedAt__gte,
-            updatedAt__lt=updatedAt__lt,
-            updatedAt__lte=updatedAt__lte,
-            uuid__contains=uuid__contains,
+            updatedAt__gt=updated_at_gt,
+            updatedAt__gte=updated_at_gte,
+            updatedAt__lt=updated_at_lt,
+            updatedAt__lte=updated_at_lte,
+            uuid__contains=uuid_contains,
         )
         response = self._http_request(method='GET', url_suffix='remote-scripts/status', params=params)
         return response.get('data', {})
@@ -3224,7 +3224,7 @@ def run_remote_script_command(client: Client, args: dict) -> CommandResults:
 
 def get_remote_script_status(client: Client, args: dict) -> CommandResults:
     """
-    Get the Satus of the Remote Script Tasks
+    Get the status of a remote script's tasks.
     """
     headers = ["id", "createdAt", "description", "statusDescription", "parentTaskId", "accountId",
                "accountName", "agentId", "agentIsActive", "agentOsType", "initiatedBy", "initiatedById"]
@@ -3245,8 +3245,8 @@ def get_remote_script_results(client: Client, args: dict) -> list[CommandResults
     context_entries = []
     headers = ["taskId", "fileName"]
     # Get arguments
-    computer_names = argToList(args.get("computerNames"))
-    task_ids = argToList(args.get("taskIds"))
+    computer_names = argToList(args.get("computer_names"))
+    task_ids = argToList(args.get("task_ids"))
     results = client.get_remote_script_results_request(computer_names, task_ids)
     file_results = []
     for result in results:
@@ -3285,59 +3285,42 @@ def run_polling_command(client: Client, cmd: str, args: Dict[str, Any]):
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     ScheduledCommand.raise_error_if_not_supported()
-    interval = arg_to_number(args.get('interval', 60))
-    timeout = arg_to_number(args.get('timeout', 600))
-    if 'parentTaskId' not in args:
+    interval = int(args.get('interval', 60))
+    timeout = int(args.get('timeout', 600))
+    if 'parent_task_id' not in args:
         command_results = run_remote_script_command(client, args)
         output = command_results.raw_response
         if isinstance(output, dict):
             parent_task_id = output.get("parentTaskId")
-            args['parentTaskId'] = parent_task_id
-        scheduled_command = schedule_command(interval, timeout, cmd, args)
+            args['parent_task_id'] = parent_task_id
+        scheduled_command = ScheduledCommand(command=cmd, next_run_in_seconds=interval, args=args, timeout_in_seconds=timeout)
         command_results.scheduled_command = scheduled_command
         return command_results
 
-    parent_task_id = args.get('parentTaskId')
-    status_args = {"parentTaskId": parent_task_id}
+    parent_task_id = args.get('parent_task_id')
+    status_args = {"parent_task_id": parent_task_id}
     status_check_command_results = get_remote_script_status(client, status_args)
     status_outputs = status_check_command_results.raw_response
     script_completed = False
     task_ids = []
     if status_outputs and isinstance(status_outputs, list):
         for output in status_outputs:
-            if isinstance(output, dict):
-                if output.get("status") != "completed":
-                    script_completed = False
-                    break
+            # Check if the script status is completed, and continue the loop
+            if isinstance(output, dict) and output.get("status") in ["completed"]:
                 task_ids.append(output.get("id"))
                 script_completed = True
+            # Check if the script status is not completed, if not completed will break loop an schedule the command
+            if isinstance(output, dict) and output.get("status") not in ["completed"]:
+                script_completed = False
+                break
     if script_completed:
-        results_args = {"taskIds": task_ids}
+        results_args = {"task_ids": task_ids}
         final_command_results = get_remote_script_results(client, results_args)
         return final_command_results
     else:
-        scheduled_command = schedule_command(interval, timeout, cmd, args)
+        scheduled_command = ScheduledCommand(command=cmd, next_run_in_seconds=interval, args=args, timeout_in_seconds=timeout)
         command_results = CommandResults(scheduled_command=scheduled_command)
         return command_results
-
-
-def schedule_command(interval: Optional[int], timeout: Optional[int], cmd: str,
-                     args: Dict[str, Any]) -> ScheduledCommand:
-    """ Build scheduled command if operation status is not completed.
-
-    Args:
-        cmd (Callable): The command name to execute.
-        args (Dict[str, Any]): Command arguments from XSOAR.
-
-    Returns:
-        ScheduledCommand: Command, args, timeout and interval for CommandResults.
-    """
-    scheduled_command = ScheduledCommand(
-        command=cmd,
-        next_run_in_seconds=interval,  # type: ignore
-        args=args,
-        timeout_in_seconds=timeout)
-    return scheduled_command
 
 
 def remote_script_automate_results(client: Client, args: dict):

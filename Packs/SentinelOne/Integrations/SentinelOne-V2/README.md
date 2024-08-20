@@ -1639,31 +1639,31 @@ Get remote scripts tasks using a variety of filters.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| accountIds | A comma-separated list of account IDs. Example: '225494730938493804,225494730938493915'. | Optional | 
-| computerName__contains | Free-text filter by agent computer name (supports multiple values). | Optional | 
-| countOnly | If true, only total number of items will be returned, without any of the actual objects. | Optional | 
-| createdAt__gt | Created at greater than. Example: '2018-02-27T04:49:26.257525Z'. | Optional | 
-| createdAt__gte | Created at greater or equal than. Example: '2018-02-27T04:49:26.257525Z'. | Optional | 
-| createdAt__lt | Created at lesser than. Example: '2018-02-27T04:49:26.257525Z'. | Optional | 
-| createdAt__lte | Created at lesser or equal than. Example: '2018-02-27T04:49:26.257525Z'. | Optional |
+| account_ids | A comma-separated list of account IDs. Example: '225494730938493804,225494730938493915'. | Optional | 
+| computer_name_contains | Free-text filter by agent computer name (supports multiple values). | Optional | 
+| count_only | If true, only total number of items will be returned, without any of the actual objects. | Optional | 
+| created_at_gt | Created at greater than. Example: '2018-02-27T04:49:26.257525Z'. | Optional | 
+| created_at_gte | Created at greater or equal than. Example: '2018-02-27T04:49:26.257525Z'. | Optional | 
+| created_at_lt | Created at lesser than. Example: '2018-02-27T04:49:26.257525Z'. | Optional | 
+| created_at_lte | Created at lesser or equal than. Example: '2018-02-27T04:49:26.257525Z'. | Optional |
 | cursor | Cursor position returned by the last request. Use to iterate over more than 1000 items. Example: 'YWdlbnRfaWQ6NTgwMjkzODE='. | Optional |
-| description__contains | Only include tasks with specific description. | Optional |
-| detailedStatus__contains | Only include tasks with specific detailed status. | Optional |
-| groupIds | List of Group IDs to filter by. Example: '225494730938493804,225494730938493915'. | Optional |
+| description_contains | Only include tasks with specific description. | Optional |
+| detailed_status_contains | Only include tasks with specific detailed status. | Optional |
+| group_ids | List of Group IDs to filter by. Example: '225494730938493804,225494730938493915'. | Optional |
 | ids | List of IDs to filter by. Example: '225494730938493804,225494730938493915'. | Optional |
-| initiatedBy__contains | Only include tasks from specific initiating user. | Optional |
+| initiated_by_contains | Only include tasks from specific initiating user. | Optional |
 | limit | Limit number of returned items (1-1000). Example: '10'. | Optional |
-| parentTaskId | parent task id to fetch the status by. Example: '225494730938493804'. | Required |
-| parentTaskId__in | List of IDs to filter by. | Optional |
+| parent_task_id | parent task id to fetch the status by. Example: '225494730938493804'. | Required |
+| parent_task_id_in | List of IDs to filter by. | Optional |
 | query | Query. | Optional |
-| siteIds | List of Site IDs to filter by. Example: '225494730938493804,225494730938493915'. | Optional |
+| site_ids | List of Site IDs to filter by. Example: '225494730938493804,225494730938493915'. | Optional |
 | status | Status in. Example: 'created'. | Optional |
 | tenant | Indicates a tenant scope request. | Optional |
-| updatedAt__gt | Updated at greater than. Example: '2018-02-27T04:49:26.257525Z'. | Optional |
-| updatedAt__gte | Updated at greater or equal than. Example: '2018-02-27T04:49:26.257525Z'. | Optional |
-| updatedAt__lt | Updated at lesser than. Example: '2018-02-27T04:49:26.257525Z'.  | Optional |
-| updatedAt__lte | Updated at lesser or equal than. Example: '2018-02-27T04:49:26.257525Z'. | Optional |
-| uuid__contains | Free-text filter by agent UUID (supports multiple values). | Optional |
+| updated_at_gt | Updated at greater than. Example: '2018-02-27T04:49:26.257525Z'. | Optional |
+| updated_at_gte | Updated at greater or equal than. Example: '2018-02-27T04:49:26.257525Z'. | Optional |
+| updated_at_lt | Updated at lesser than. Example: '2018-02-27T04:49:26.257525Z'.  | Optional |
+| updated_at_lte | Updated at lesser or equal than. Example: '2018-02-27T04:49:26.257525Z'. | Optional |
+| uuid_contains | Free-text filter by agent UUID (supports multiple values). | Optional |
 
 
 #### Context Output
@@ -1708,8 +1708,8 @@ Get scripts results URLs.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| computerNames | A list of partial or whole computer names, which ran scripts. | Optional | 
-| taskIds | A list of task ids to get a download link for. | Required | 
+| computer_names | A list of partial or whole computer names, which ran scripts. | Optional | 
+| task_ids | A list of task ids to get a download link for. | Required | 
 
 
 #### Context Output
@@ -1724,7 +1724,7 @@ Get scripts results URLs.
 ### sentinelone-remote-script-automate-results
 
 ***
-The polling command will continuously poll the task results until the status of each task is completed, and return the results.
+Automate a remote script's execution cycle and return the script's results.
 
 #### Base Command
 
@@ -1749,12 +1749,16 @@ The polling command will continuously poll the task results until the status of 
 | requires_approval | If set to true, execution will require approval. | Optional |
 | interval | Indicates how long to wait between command execution (in seconds) when 'polling' argument is true. Minimum value is 10 seconds. Default is 60. | Optional |
 | timeout | Indicates the time in seconds until the polling sequence timeouts. Default is 600. | Optional |
-| parentTaskId | parent task id to fetch the status by. Example: '225494730938493804'. | Optional |
+| parent_task_id | parent task id to fetch the status by. Example: '225494730938493804'. | Optional |
 
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.RemoteScriptResults.taskId | string | ID of the Task. | 
+| SentinelOne.RemoteScriptResults.fileName | string | File name. | 
+| SentinelOne.RemoteScriptResults.downloadUrl | string | Download Url. |
 
 
 
