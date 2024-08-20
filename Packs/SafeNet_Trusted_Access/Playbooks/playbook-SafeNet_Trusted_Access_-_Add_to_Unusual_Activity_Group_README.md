@@ -42,4 +42,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![SafeNet Trusted Access - Add to Unusual Activity Group](./doc_files/SafeNet_Trusted_Access_Add_to_Unusual_Activity_Group.png)
+![SafeNet Trusted Access - Add to Unusual Activity Group](../doc_files/SafeNet_Trusted_Access_Add_to_Unusual_Activity_Group.png)

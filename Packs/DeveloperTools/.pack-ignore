@@ -33,3 +33,5 @@ ignore=BA124
 [file:VerifyEnoughIncidents.yml]
 ignore=BA124
 
+[file:Hey.yml]
+ignore=SC101

@@ -64,7 +64,7 @@ configuration:
   name: feedBypassExclusionList
   type: 8
   required: false
-- display: Discovery Service URL (e.g. https://example.net/taxii)
+- display: Discovery Service URL (e.g. https://example.net/taxii2)
   name: url
   required: true
   type: 0
@@ -228,7 +228,7 @@ script:
   - deprecated: true
     description: 'WARNING: This command will reset your fetch history.'
     name: taxii2-reset-fetch-indicators
-  dockerimage: demisto/taxii2:1.0.0.90938
+  dockerimage: demisto/taxii2:1.0.0.105766
   feed: true
   runonce: false
   script: '-'

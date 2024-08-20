@@ -30,4 +30,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Hurukai - Get Session List](./doc_files/Hurukai_-_Get_Session_List.png)
+![Hurukai - Get Session List](../doc_files/Hurukai_-_Get_Session_List.png)

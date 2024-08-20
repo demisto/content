@@ -49,6 +49,7 @@ switch (command) {
         var lockTimeout = args.timeout || params.timeout || 600;
         var lockInfo = 'Locked by incident #' + incidents[0].id + '.';
         lockInfo += (args.info) ? ' Additional info: ' + args.info : '';
+        var pollingInterval = args.polling_interval || '20';
 
         var guid = args.guid || guid();
         var time = 0;
@@ -88,8 +89,8 @@ switch (command) {
                     Type: entryTypes.note,
                     Contents: 'Lock was not acquired, Polling.',
                     PollingCommand: 'demisto-lock-get',
-                    NextRun: '20',
-                    PollingArgs: { name: lockName, info: args.info, timeout: args.timeout, guid: guid, timeout_err_msg: timeout_err_msg },
+                    NextRun: pollingInterval,
+                    PollingArgs: { name: lockName, info: args.info, timeout: args.timeout, polling_interval: pollingInterval ,guid: guid, timeout_err_msg: timeout_err_msg },
                     Timeout: String(lockTimeout)
                 }
             }

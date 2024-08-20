@@ -15,8 +15,8 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* Set
 * GridFieldSetup
+* Set
 
 ### Commands
 

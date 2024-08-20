@@ -1,3 +1,6 @@
+[file:PrintToIncident.yml]
+ignore=SC105
+
 [file:GetDuplicatesMlv2.yml]
 ignore=SC100
 
