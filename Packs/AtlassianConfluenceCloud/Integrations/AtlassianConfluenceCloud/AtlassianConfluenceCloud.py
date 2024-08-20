@@ -29,7 +29,8 @@ URL_SUFFIX = {
     "USER": "/wiki/rest/api/search/user?cql=type=user",
     "SPACE": "/wiki/rest/api/space",
     "PRIVATE_SPACE": "/wiki/rest/api/space/_private",
-    "EVENTS": "/wiki/rest/api/audit/"
+    "EVENTS": "/wiki/rest/api/audit/",
+    "BASE": "/wiki",
 }
 
 MESSAGES = {
@@ -151,12 +152,13 @@ class Client(BaseClient):
     def search_events(self, limit: int, start_date: str = None, end_date: str = None, next_link: str = None) -> Dict:
         return super()._http_request(
             method='GET',
-            url_suffix=URL_SUFFIX['EVENTS'] + (next_link if next_link else ''),
-            params=None if next_link else {'limit': limit, 'startDate': start_date, end_date}
+            url_suffix=URL_SUFFIX['BASE'] + next_link if next_link else URL_SUFFIX['EVENTS'],
+            params=None if next_link else {'limit': limit, 'startDate': start_date, 'end_date': end_date}
         )
 
 
 ''' HELPER FUNCTIONS '''
+
 
 def dedup(curr_events: list[dict[str, Any]], last_events_hashes: dict[int, int] | None):
     """
@@ -173,7 +175,9 @@ def dedup(curr_events: list[dict[str, Any]], last_events_hashes: dict[int, int] 
     Returns:
     list: A list of new events that are considered deduplicated based on their occurrence.
     """
+    demisto.info('dedup start')
     if not last_events_hashes:
+        demisto.info('No previous event hashes found, returning all current events')
         return curr_events
 
     occurrence_dict = {}
@@ -186,8 +190,11 @@ def dedup(curr_events: list[dict[str, Any]], last_events_hashes: dict[int, int] 
 
         if hash_count is None or occurrence_dict[event_hash] > hash_count:
             new_events.append(event)
-
+        else:
+            demisto.info('duplicate found! {}'.format(event))
+    demisto.info('returning deduplicated events: {}'.format(new_events))
     return new_events
+
 
 def build_hash_counter(events: List[Dict[str, Any]], last_run: Dict[str, Any]):
     events_hashes = [
@@ -200,6 +207,7 @@ def build_hash_counter(events: List[Dict[str, Any]], last_run: Dict[str, Any]):
         else:
             hash_counter[event_hash] = 0
     return hash_counter
+
 
 def add_time_to_events(events: List[Dict] | None):
     """
@@ -420,7 +428,7 @@ def prepare_group_args(args: Dict[str, str]) -> Dict[str, str]:
 
 def prepare_hr_for_groups(groups: List[Dict[str, Any]]) -> str:
     """
-       Prepare human readable for list groups command.
+       Prepare human-readable for list groups command.
 
        :type groups: ``List[Dict[str, Any]]``
        :param groups:The group data.
@@ -519,7 +527,7 @@ def validate_create_content_args(args: Dict[str, str], is_update: bool = False):
 
 def prepare_hr_for_content_create(content: Dict[str, Any], content_type: str) -> str:
     """
-       Prepare human readable for content create, comment create and content update command.
+       Prepare human-readable for content create, comment create and content update command.
 
        :type content: ``Dict[str, Any]``
        :param content:The content data.
@@ -549,7 +557,7 @@ def prepare_hr_for_content_create(content: Dict[str, Any], content_type: str) ->
 
 def prepare_hr_for_content_search(contents: list, url_prefix: str) -> str:
     """
-    Prepare human readable for content search and content list command.
+    Prepare human-readable for content search and content list command.
 
     :type contents: ``list``
     :param contents: List of content.
@@ -665,7 +673,7 @@ def validate_comment_args(args: Dict[str, str]):
 
 def prepare_hr_for_users(users: List[Dict[str, Any]]) -> str:
     """
-    Prepare human readable for list users command.
+    Prepare human-readable for list users command.
 
     :type users: ``List[Dict[str, Any]]``
     :param users: The user data.
@@ -909,7 +917,7 @@ def prepare_create_space_args(args: Dict[str, str]) -> Tuple[dict, Union[bool, s
 
 def prepare_hr_for_space_create(space: Dict[str, Any]) -> str:
     """
-    Prepare human readable for create space command.
+    Prepare human-readable for create space command.
 
     :type space: ``List[Dict[str, Any]]``
     :param space: The space data.
@@ -977,7 +985,7 @@ def prepare_list_space_args(args: Dict[str, str]) -> Dict[str, Any]:
 
 def prepare_hr_for_space_list(spaces: List[Dict[str, Any]], url_prefix: str) -> str:
     """
-    Prepare human readable for list space command.
+    Prepare human-readable for list space command.
 
     :param url_prefix:
     :type spaces: ``List[Dict[str, Any]]``
@@ -1402,8 +1410,8 @@ def confluence_cloud_group_list_command(client: Client, args: Dict[str, str]) ->
 
 
 def fetch_events(client: Client, last_run: dict[str, Any], limit: int) -> tuple[Dict, List[Dict]]:
-    end_date = (time.time()-5)*1000
-    start_date = last_run.get('start_date', end_date-60000)
+    end_date = (time.time() - 5) * 1000
+    start_date = last_run.get('start_date', end_date - 60000)
     next_link = last_run.get('next_url', None)
     total_events_count = 0
     events = [{}]
@@ -1424,27 +1432,35 @@ def fetch_events(client: Client, last_run: dict[str, Any], limit: int) -> tuple[
 
 
 def get_events(client: Client, args: dict) -> tuple[list[Dict], CommandResults]:
-    start_index = args.get('start')
-    start_date = args.get('start_date')
-    # if start_index and start_date:
-    #     raise ValueError('Please provide either start_index or start_date, not both.')
+    end_date = args.get('end_date', int((time.time() - 5) * 1000))
+    start_date = arg_to_number(args.get('start_date', end_date - 60000))
+    fetch_limit = arg_to_number(args.get('limit', 50))
+    page_size = 500
+    next_link = ''
+    events = []
+    last_events = None
 
-    limit = int(args.get('limit', 50))
-    kwargs = {'limit': limit}
+    while len(events) < fetch_limit:
+        if not next_link:
+            # there is no next link, but we already have events in the list. That means the lack of next link is due to the end
+            # of the data, not the start of it. Therefore, we can return
+            if events:
+                break
 
-    if not start_index and not start_date:
-        kwargs['start_index'] = 0
+            demisto.info('searching events with start date: {}, end date: {} and page size: {}'.format(start_date, end_date, page_size))
+            response = client.search_events(limit=page_size, start_date=str(start_date), end_date=str(end_date))
+            demisto.info(f'Found {response["size"]} events between {start_date} and {end_date}')
+            demisto.info(json.dumps(response, indent=4))
+            results = dedup(response['results'], last_events)
+        else:
+            response = client.search_events(limit=page_size, next_link=next_link)
+            results = response['results']
+            demisto.info(f'Found {response["size"]} events between {start_date} and {end_date}')
+            demisto.info(json.dumps(response, indent=4))
 
-    if start_index:
-        kwargs['start_index'] = start_index
+        next_link = response['_links'].get('next', None)
+        events.append(results)
 
-    if start_date:
-        kwargs['start_date'] = start_date
-
-    demisto.debug(f'Calling search_events with {kwargs}.')
-    response = client.search_events(**kwargs)
-    events = response.get('results')
-    demisto.debug(f'API Response: {response}.')
     return events, CommandResults(readable_output=tableToMarkdown('Events', events, removeNull=True))
 
 
@@ -1500,7 +1516,7 @@ def main() -> None:
         args = demisto.args()
         strip_args(args)
         remove_nulls_from_dictionary(args)
-        limit = params.get('max_events_per_fetch', 10000)
+        limit = arg_to_number(params.get('max_events_per_fetch', 10000))
 
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
@@ -1520,11 +1536,11 @@ def main() -> None:
                         'last_events': build_hash_counter(events, last_run)
                     })
 
-
         elif command == 'confluence-cloud-get-events':
+            demisto.info(f'Fetching Confluence Cloud events with the following parameters: {args}')
             should_push_events = argToBoolean(args.get('should_push_events', False))
-            events, results = get_events(client, args)
-            return_results(results)
+            events, command_results = get_events(client, args)
+            return_results(command_results)
             if should_push_events:
                 send_events_to_xsiam(
                     events,
