@@ -2,20 +2,25 @@
 
 ## Configuration on Microsoft IIS
 
-Follow the steps bellow to configure logging on IIS at the [site level](https://learn.microsoft.com/en-us/iis/manage/provisioning-and-managing-iis/configure-logging-in-iis#configure-logging-at-the-site-level) using the UI. For configuring logging [Per-site](https://learn.microsoft.com/en-us/iis/manage/provisioning-and-managing-iis/configure-logging-in-iis#configure-per-site-logging-at-the-server-level) or [Per-server](https://learn.microsoft.com/en-us/iis/manage/provisioning-and-managing-iis/configure-logging-in-iis#configure-per-server-logging-at-the-server-level) at the server level, refer to the Microsoft [Configure Logging in IIS](https://learn.microsoft.com/en-us/iis/manage/provisioning-and-managing-iis/configure-logging-in-iis) docs. 
+Follow the steps bellow on Microsoft IIS to configure IIS logging at the [*site level*](https://learn.microsoft.com/en-us/iis/manage/provisioning-and-managing-iis/configure-logging-in-iis#configure-logging-at-the-site-level) using the UI.   
+For configuring logging [*Per-site*](https://learn.microsoft.com/en-us/iis/manage/provisioning-and-managing-iis/configure-logging-in-iis#configure-per-site-logging-at-the-server-level) or [*Per-server*](https://learn.microsoft.com/en-us/iis/manage/provisioning-and-managing-iis/configure-logging-in-iis#configure-per-server-logging-at-the-server-level) at the server level, refer to the Microsoft [*Configure Logging in IIS*](https://learn.microsoft.com/en-us/iis/manage/provisioning-and-managing-iis/configure-logging-in-iis) docs. 
 
-1. Open the IIS Manager.
+1. Open the IIS Manager:
 ![Server Screenshot](https://raw.githubusercontent.com/demisto/content/b33523bbb3666eb18c779b09d38fbf14e4764075/Packs/MicrosoftIISWebServer/doc_imgs/IISManager.png)
-2. Select the requested website for logging under the **Connections** tree view on the left.
-3. Click **Logging** in **Features View**:
-   ![Server Screenshot](https://raw.githubusercontent.com/demisto/content/b33523bbb3666eb18c779b09d38fbf14e4764075/Packs/MicrosoftIISWebServer/doc_imgs/IISWebsites.png)
-4. In the **Log File** section under **Format**, select *W3C*:
-   ![Server Screenshot](https://raw.githubusercontent.com/demisto/content/b33523bbb3666eb18c779b09d38fbf14e4764075/Packs/MicrosoftIISWebServer/doc_imgs/IISW3C.png)
-5. Click **Select Fields** and ensure all the standard fields are selected:
-![Server Screenshot](https://raw.githubusercontent.com/demisto/content/b33523bbb3666eb18c779b09d38fbf14e4764075/Packs/MicrosoftIISWebServer/doc_imgs/IISLogging.png).
 
-### Supported Formats
-XDM Normalization is supported only for the *W3C* format for logs with the following field list structures: 
+1. Under the **Connections** tree view on the left, select the requested website for logging.
+
+2. In **Features View**, click **Logging**:
+   ![Server Screenshot](https://raw.githubusercontent.com/demisto/content/b33523bbb3666eb18c779b09d38fbf14e4764075/Packs/MicrosoftIISWebServer/doc_imgs/IISWebsites.png)
+
+3. In the **Log File** section under **Format**, select *W3C*:
+   ![Server Screenshot](https://raw.githubusercontent.com/demisto/content/b33523bbb3666eb18c779b09d38fbf14e4764075/Packs/MicrosoftIISWebServer/doc_imgs/IISW3C.png)
+
+4. Click **Select Fields** and ensure all the standard fields are selected:
+![Server Screenshot](https://raw.githubusercontent.com/demisto/content/b33523bbb3666eb18c779b09d38fbf14e4764075/Packs/MicrosoftIISWebServer/doc_imgs/IISLogging.png)
+
+### Supported Log Formats
+The XDM normalization included in this pack is supported only for the *W3C* format, for logs with the following field list structures: 
 
 ####  Access Log 
 ``` bash
@@ -42,7 +47,7 @@ XDM Normalization is supported only for the *W3C* format for logs with the follo
 
 You will need to use the information described [here](https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-pro-admin/cortex-xdr-collectors/xdr-collector-datasets#id7f0fcd4d-b019-4959-a43a-40b03db8a8b2) for Filebeat.
 
-When configuring the *Filebeat Configuration File* (inside the relevant profile under the *XDR Collectors Profiles*) for the IIS collector instance, you can either use the sample configuration file below or select the predefined IIS template, and update it as necessary.  
+When configuring the *Filebeat Configuration File* (inside the relevant profile under the *XDR Collectors Profiles*) for the IIS collector instance, you can either use the sample configuration file below or select the predefined *IIS* template, and update it as necessary.  
 
 #### IIS Filebeat Configuration File Sample
 
