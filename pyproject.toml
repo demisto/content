@@ -25,7 +25,7 @@ sendgrid = "^6.11"
 slack_sdk = "^3.31.0"
 
 [tool.poetry.group.dev.dependencies]
-demisto-sdk = "1.31.5"
+demisto-sdk = "1.31.7"
 pytest = ">=7.1.2"
 requests-mock = ">=1.9.3"
 pytest-mock = ">=3.7.0"
@@ -33,6 +33,25 @@ freezegun = ">=1.1.0"
 dateparser = ">=1.2.0"
 ruff = "*"  # See `.pre-commit-config-template` for version used in pre-commit. Version here doesn't matter.
 
+[tool.poetry.group.typing.dependencies]
+types-tqdm = "^4.66.0.2"
+types-requests = "2.28.11"
+types-mock = "^4.0.15"
+types-setuptools = "^69.2.0.20240317"
+types-ujson = "^5.6.0.0"
+types-decorator = "^5.1.8"
+types-toml = "^0.10.8.7"
+types-tabulate = "^0.9.0.20240106"
+types-pytz = ">=2021.3.6,<2023.0.0"
+types-dateparser = "^1.1.4.20240106"
+types-python-dateutil = "^2.9.0.20240316"
+types-protobuf = "^4.24.0.4"
+types-six = "^1.16.21.20240513"
+types-paramiko = "2.12.0"
+types-PyMySQL = "1.1.0.20240425"
+types-markdown = "3.6.0.20240316"
+types-PyYAML = "6.0.12.20240311"
+types-emoji = "2.1.0.3"
 
 [tool.ruff]
 select = [
