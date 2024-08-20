@@ -140,7 +140,7 @@ class CoreClient(BaseClient):
 # =========================================== Built-In Queries Helpers ===========================================#
 
 
-def wrap_list_items_in_double_quotes(string_of_argument: str):
+def wrap_list_items_in_double_quotes(string_of_argument: str = ''):
     """receive a string of arguments and return a string with each argument wrapped in double quotes.
     example:
         string_of_argument: '12345678, 87654321'
@@ -154,9 +154,7 @@ def wrap_list_items_in_double_quotes(string_of_argument: str):
     Returns:
         str: The new formatted string
     """
-    if not string_of_argument:
-        string_of_argument = ''
-    list_of_args = argToList(string_of_argument) if string_of_argument != '' else ['']
+    list_of_args = argToList(string_of_argument) if string_of_argument else ['']
     return ','.join(f'"{item}"' for item in list_of_args)
 
 
