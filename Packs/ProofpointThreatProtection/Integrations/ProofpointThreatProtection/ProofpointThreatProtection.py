@@ -78,7 +78,7 @@ class Client(BaseClient):
             params={'clusterId': cluster_id}
         )
 
-    def safelist_add_delete(self, cluster_id, args):
+    def safelist_add_delete(self, cluster_id, args, action):
         import json
         self._headers.update({'Content-Type': 'application/json'})
         return self._http_request(
@@ -88,7 +88,7 @@ class Client(BaseClient):
             headers=self._headers,
             params={'clusterId': cluster_id},
             data=json.dumps({
-                'action': args.get('action'),
+                'action': action,
                 'attribute': args.get('attribute'),
                 'operator': args.get('operator'),
                 'value': args.get('value'),
@@ -104,7 +104,7 @@ class Client(BaseClient):
             params={'clusterId': cluster_id}
         )
 
-    def blocklist_add_delete(self, cluster_id, args):
+    def blocklist_add_delete(self, cluster_id, args, action):
         import json
         self._headers.update({'Content-Type': 'application/json'})
         return self._http_request(
@@ -114,7 +114,7 @@ class Client(BaseClient):
             headers=self._headers,
             params={'clusterId': cluster_id},
             data=json.dumps({
-                'action': args.get('action'),
+                'action': action,
                 'attribute': args.get('attribute'),
                 'operator': args.get('operator'),
                 'value': args.get('value'),
@@ -123,11 +123,13 @@ class Client(BaseClient):
         )
 
 
+
 ''' HELPER FUNCTIONS '''
 
 
-def make_return_command_results(readable_op: str, op: dict) -> CommandResults:
-    return_cr = CommandResults(readable_output=readable_op, outputs_prefix=CTX_PREFIX, outputs=op)
+def make_return_command_results(header_str: str, listname: str, op: dict) -> CommandResults:
+    readable_op=tableToMarkdown(header_str, op, headers={} if not isinstance(op, str) else ['Outcome'], removeNull=True)
+    return_cr = CommandResults(readable_output=readable_op, outputs_prefix=CTX_PREFIX, outputs={listname : op})
 
     return return_cr
 
@@ -140,28 +142,41 @@ def module_test_command(client: Client, cluster_id) -> str:
     return 'ok'
 
 
-def safelist_get_command(client: Client, cluster_id) -> CommandResults:
+def safelist_list_command(client: Client, cluster_id) -> CommandResults:
     res = client.get_safelist(cluster_id)
-    res_rc = make_return_command_results(OSL_HEADER, {'Safelist': res.get('entries')})
+    res_rc = make_return_command_results(OSL_HEADER, 'Safelist', res.get('entries'))
     return res_rc
 
 
-def safelist_add_delete_command(client: Client, cluster_id) -> CommandResults:
-    res = client.safelist_add_delete(cluster_id, client.get_args())
-    res_rc = make_return_command_results(OSL_HEADER, {'Safelist': res})
+def safelist_add_command(client: Client, cluster_id) -> CommandResults:
+    res = client.safelist_add_delete(cluster_id, client.get_args(), 'add')
+    res_rc = make_return_command_results(OSL_HEADER, 'Safelist Entry Added', 'Success')
     return res_rc
 
 
-def blocklist_get_command(client: Client, cluster_id) -> CommandResults:
+def safelist_delete_command(client: Client, cluster_id) -> CommandResults:
+    res = client.safelist_add_delete(cluster_id, client.get_args(), 'delete')
+    res_rc = make_return_command_results(OSL_HEADER, 'Safelist Entry Deleted', 'Success')
+    return res_rc
+
+
+def blocklist_list_command(client: Client, cluster_id) -> CommandResults:
     res = client.get_blocklist(cluster_id)
-    res_rc = make_return_command_results(OBL_HEADER, {'Blocklist': res.get('entries')})
+    res_rc = make_return_command_results(OBL_HEADER, 'Blocklist', res.get('entries'))
     return res_rc
 
 
-def blocklist_add_delete_command(client: Client, cluster_id) -> CommandResults:
-    res = client.blocklist_add_delete(cluster_id, client.get_args())
-    res_rc = make_return_command_results(OBL_HEADER, {"Blocklist": res})
+def blocklist_add_command(client: Client, cluster_id) -> CommandResults:
+    res = client.blocklist_add_delete(cluster_id, client.get_args(), 'add')
+    res_rc = make_return_command_results(OBL_HEADER, 'Blocklist Entry Added', 'Success')
     return res_rc
+
+
+def blocklist_delete_command(client: Client, cluster_id) -> CommandResults:
+    res = client.blocklist_add_delete(cluster_id, client.get_args(), 'delete')
+    res_rc = make_return_command_results(OBL_HEADER, 'Blocklist Entry Deleted', 'Success')
+    return res_rc
+
 
 
 '''         UPDATE COMMAND MAPPINGS
@@ -169,10 +184,12 @@ def blocklist_add_delete_command(client: Client, cluster_id) -> CommandResults:
 
 COMMANDS = {
     'test-module': module_test_command,
-    'proofpoint-tp-safelist-get': safelist_get_command,
-    'proofpoint-tp-blocklist-get': blocklist_get_command,
-    'proofpoint-tp-safelist-add-or-delete-entry': safelist_add_delete_command,
-    'proofpoint-tp-blocklist-add-or-delete-entry': blocklist_add_delete_command
+    'proofpoint-tp-safelist-list': safelist_list_command,
+    'proofpoint-tp-safelist-add-entry': safelist_add_command,
+    'proofpoint-tp-safelist-delete-entry': safelist_delete_command,
+    'proofpoint-tp-blocklist-list': blocklist_list_command,
+    'proofpoint-tp-blocklist-add-entry': blocklist_add_command,
+    'proofpoint-tp-blocklist-delete-entry': blocklist_delete_command
 }
 
 
@@ -217,3 +234,4 @@ def main() -> None:
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
     main()
+

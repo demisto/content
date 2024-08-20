@@ -38,18 +38,11 @@ script:
   commands:
   - arguments: []
     description: Get all entries in the Organizational Block List.
-    name: proofpoint-tp-blocklist-get
+    name: proofpoint-tp-blocklist-list
     outputs:
     - contextPath: ProofpointThreatProtection.Blocklist
       description: A list of entries in the blocklist.
   - arguments:
-    - auto: PREDEFINED
-      name: action
-      predefined:
-      - add
-      - delete
-      required: true
-      description: The action to perform.
     - auto: PREDEFINED
       name: attribute
       predefined:
@@ -70,30 +63,54 @@ script:
       - not_contain
       required: true
       description: Supported operators for the Organizational Block List.
-    - description: The entry that the action is to be performed upon in the Organizational Block List.
+    - description: The entry that is to be added to the Organizational Block List.
       name: value
       required: true
-    - description: A short comment about the entry (max 150 chars). "comment" is ignored for the "delete" action.
+    - description: An optional short comment about the added entry (max 150 chars).
       name: comment
-    description: Add/Delete entry from the Organizational Block List.
-    name: proofpoint-tp-blocklist-add-or-delete-entry
+    description: Add an entry to the Organizational Block List.
+    name: proofpoint-tp-blocklist-add-entry
+    outputs:
+    - contextPath: ProofpointThreatProtection.Blocklist
+      description: Standard HTTP response with status code 200.
+  - arguments:
+    - auto: PREDEFINED
+      name: attribute
+      predefined:
+      - '$from'
+      - '$hfrom'
+      - '$ip'
+      - '$host'
+      - '$helo'
+      - '$rcpt'
+      required: true
+      description: Supported attributes for the Organizational Block List.
+    - auto: PREDEFINED
+      name: operator
+      predefined:
+      - equal
+      - not_equal
+      - contain
+      - not_contain
+      required: true
+      description: Supported operators for the Organizational Block List.
+    - description: The entry that is to be deleted from the Organizational Block List.
+      name: value
+      required: true
+    - description: The short comment associated with the blockilst entry.
+      name: comment
+    description: Delete an entry from the Organizational Block List.
+    name: proofpoint-tp-blocklist-delete-entry
     outputs:
     - contextPath: ProofpointThreatProtection.Blocklist
       description: Standard HTTP response with status code 200.
   - arguments: []
     description: Get all entries in the Organizational Safe List.
-    name: proofpoint-tp-safelist-get
+    name: proofpoint-tp-safelist-list
     outputs:
     - contextPath: ProofpointThreatProtection.Safelist
       description: A list of entries in the Organizational Safe List.
   - arguments:
-    - auto: PREDEFINED
-      name: action
-      predefined:
-      - add
-      - delete
-      required: true
-      description: The action to perform.
     - auto: PREDEFINED
       name: attribute
       predefined:
@@ -114,13 +131,42 @@ script:
       - not_contain
       required: true
       description: Supported operators for the Organizational Safe List.
-    - description: The entry that the action is to be performed upon in the Organizational Safe List.
+    - description: The entry to be added to the Organizational Safe List.
       name: value
       required: true
-    - description: A short comment about the entry (max 150 chars). "comment" is optional for "add" action and ignored for the "delete" action.
+    - description: An optional short comment about the added entry (max 150 chars).
       name: comment
-    description: Add To/Delete From the Organizational Safe List.
-    name: proofpoint-tp-safelist-add-or-delete-entry
+    description: Add an entry to the Organizational Safe List.
+    name: proofpoint-tp-safelist-add-entry
+    outputs:
+    - contextPath: ProofpointThreatProtection.Safelist
+      description: Standard HTTP response with status code 200.
+  - arguments:
+    - auto: PREDEFINED
+      name: attribute
+      predefined:
+      - '$from'
+      - '$hfrom'
+      - '$ip'
+      - '$host'
+      - '$helo'
+      - '$rcpt'
+      required: true
+      description: Supported attributes for the Organizational Safe List.
+    - auto: PREDEFINED
+      name: operator
+      predefined:
+      - equal
+      - not_equal
+      - contain
+      - not_contain
+      required: true
+      description: Supported operators for the Organizational Safe List.
+    - description: The entry to be deleted from the Organizational Safe List.
+      name: value
+      required: true
+    description: Delete an entry from the Organizational Safe List.
+    name: proofpoint-tp-safelist-delete-entry
     outputs:
     - contextPath: ProofpointThreatProtection.Safelist
       description: Standard HTTP response with status code 200.
