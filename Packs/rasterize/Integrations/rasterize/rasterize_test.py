@@ -729,3 +729,47 @@ def test_is_mailto_urls(mocker: MockerFixture):
     res = screenshot_image(None, None, 'url', None, None)
 
     assert res == (None, 'URLs that start with "mailto:" cannot be rasterized.\nURL: url')
+
+
+def test_terminate_chrome_after_passing_max_rasterizations_count():
+    """
+    Given   instance id exist and chrome options exist in the chrome instances file
+    When    chrome instances file is not empty and instance id has different chrome options
+    Then    make sure code running manage to terminate chrome and manage to open new instance
+    """
+    from rasterize import chrome_manager
+
+    instance_id = "22222222-2222-2222-2222-222222222222"  # exist
+    chrome_options = "chrome_options_that_does_not_exist"
+
+    mock_context = {
+        'context': {
+            'IntegrationInstanceID': instance_id
+        }
+    }
+
+    params = {
+        'chrome_options': chrome_options
+    }
+
+    mock_file_content = util_read_tsv("test_data/info.tsv")
+    mock_file_content_edited = mock_file_content.replace('\\t', '\t')
+    instance_id_to_chrome_options, instance_id_to_port, instances_id, chromes_options = \
+        get_chrome_instances_contents_dictionaries(mock_file_content_edited)
+    mocker.patch.object(demisto, 'callingContext', mock_context)
+    mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(rasterize, 'read_file', return_value=mock_file_content_edited)
+    mocker.patch.object(rasterize, 'get_chrome_instances_contents_dictionaries',
+                        return_value=[instance_id_to_chrome_options, instance_id_to_port, instances_id, chromes_options])
+    mocker.patch.object(rasterize, 'get_chrome_browser', return_value=None)
+    terminate_chrome_mocker = mocker.patch.object(rasterize, 'terminate_chrome', return_value=None)
+    mocker.patch.object(rasterize, 'delete_row_with_old_chrome_configurations_from_chrome_instances_file', return_value=None)
+    generate_new_chrome_instance_mocker = mocker.patch.object(rasterize, 'generate_new_chrome_instance',
+                                                              return_value=["browser_object", "chrome_port"])
+    browser, chrome_port = chrome_manager()
+
+    assert terminate_chrome_mocker.call_count == 1
+    assert generate_new_chrome_instance_mocker.call_count == 1
+    assert generate_new_chrome_instance_mocker.called_with(instance_id, chrome_options)
+    assert browser == "browser_object"
+    assert chrome_port == "chrome_port"
