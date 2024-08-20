@@ -1772,7 +1772,7 @@ def test_module(client: Client, params: dict[str, Any], first_fetch_time: Option
             tags = params.get('tags')
             look_back = int(params.get('look_back', 0))
             max_fetch = int(params.get('max_fetch', 10))
-            
+
             if look_back > 720:
                 raise DemistoException('Look back value is too high please set at or 720 minutes')
             fetch_incidents(
