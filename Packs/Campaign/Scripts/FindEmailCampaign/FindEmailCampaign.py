@@ -300,7 +300,7 @@ def calculate_campaign_details_table(incidents_df, fields_to_display):
         if field in incidents_df.columns:
             field_values = get_non_na_empty_values(incidents_df, field)
             if len(field_values) > 0:
-                if field in RECIPIENTS_COLUMNS or isinstance(field_values[0], list):
+                if field in RECIPIENTS_COLUMNS:
                     field_values = [item for sublist in field_values for item in sublist]
                 elif any(isinstance(field_value, list) for field_value in field_values):
                     flattened_list = []
