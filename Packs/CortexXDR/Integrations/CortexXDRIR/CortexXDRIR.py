@@ -1082,7 +1082,7 @@ def fetch_incidents(client: Client, first_fetch_time, integration_instance, excl
     last_fetch = last_run.get('time')
     incidents_from_previous_run = last_run.get('incidents_from_previous_run', [])
 
-    offset: int = last_run.get('offset', 0)  # TODO: ask about integer misses
+    offset = int(last_run.get('offset', 0))
 
     # Handle first time fetch, fetch incidents retroactively
     if last_fetch is None:
@@ -1153,7 +1153,7 @@ def fetch_incidents(client: Client, first_fetch_time, integration_instance, excl
     next_run = {
         'incidents_from_previous_run': non_created_incidents,
         'time': last_fetch,
-        'offset': offset,
+        'offset': str(offset),
     }
 
     if non_created_incidents:

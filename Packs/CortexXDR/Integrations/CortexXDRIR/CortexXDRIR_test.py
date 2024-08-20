@@ -1625,7 +1625,7 @@ def test_fetch_incidents_dedup():
     assert len(result_1) == 2
     assert 'XDR Incident 1' in result_1[0]['name']
     assert 'XDR Incident 2' in result_1[1]['name']
-    assert last_run['offset'] == 1
+    assert last_run['offset'] == '1'
 
     last_run, result_2 = fetch_incidents(
         client=mock_client,
@@ -1639,7 +1639,7 @@ def test_fetch_incidents_dedup():
     assert len(result_2) == 2
     assert 'XDR Incident 3' in result_2[0]['name']
     assert 'XDR Incident 4' in result_2[1]['name']
-    assert last_run['offset'] == 3
+    assert last_run['offset'] == '3'
 
     last_run, result_3 = fetch_incidents(
         client=mock_client,
@@ -1653,10 +1653,10 @@ def test_fetch_incidents_dedup():
     assert len(result_3) == 2
     assert 'XDR Incident 5' in result_3[0]['name']
     assert 'XDR Incident 6' in result_3[1]['name']
-    assert last_run['offset'] == 1
+    assert last_run['offset'] == '1'
 
     # run empty test and assert last_run['offset'] stays the same
-    last_run['offset'] = 10
+    last_run['offset'] = '10'
 
     last_run, empty_result = fetch_incidents(
         client=mock_client,
@@ -1668,4 +1668,4 @@ def test_fetch_incidents_dedup():
     )
 
     assert not empty_result
-    assert last_run['offset'] == 10
+    assert last_run['offset'] == '10'
