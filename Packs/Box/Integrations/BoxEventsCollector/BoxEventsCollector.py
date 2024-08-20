@@ -4,15 +4,12 @@
 import dateparser
 import secrets
 import jwt
-import urllib3
 from cryptography import exceptions
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.serialization import load_pem_private_key
 from pydantic import ConfigDict, Field, parse_obj_as
 
 from SiemApiModule import *  # noqa: E402
-
-urllib3.disable_warnings()
 
 
 class Claims(BaseModel):
@@ -66,7 +63,7 @@ class BoxEventsParams(BaseModel):
     # validators
     _normalize_after = validator('created_after', pre=True, allow_reuse=True)(
         get_box_events_timestamp_format
-    )
+    )  # type: ignore[type-var]
     model_config = ConfigDict(validate_assignment=True)
 
 
@@ -87,10 +84,10 @@ class BoxEventsRequestConfig(IntegrationHTTPRequest):
     # Endpoint: https://developer.box.com/reference/get-events/
     method: Method = Method.GET
     params: BoxEventsParams   # type: ignore[assignment]
-    verify: Optional[bool] = Field(True, alias='insecure')  # type: ignore[assignment]
+    verify: bool = Field(True, alias='insecure')  # type: ignore[assignment]
 
     # validators
-    _oppsite_verify = validator('verify', allow_reuse=True)(not_gate)
+    _oppsite_verify = validator('verify', allow_reuse=True)(not_gate)  # type: ignore[type-var]
 
 
 class BoxIntegrationOptions(IntegrationOptions):
