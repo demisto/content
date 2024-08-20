@@ -544,6 +544,8 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]):
             demisto.createIndicators(iter_)
         params_dict['page'] += 1
         last_run = search_query_per_page['response']['Attribute'][-1]['timestamp']
+        # Note: The limit is applied after indicators are created,
+        # so the total number of indicators may slightly exceed the limit due to page size constraints.
         if fetch_limit <= len(indicators):
             demisto.debug(f"Reached the limit of indicators to fetch. The number of indicators fetched is: {len(indicators)}")
             break
