@@ -2281,7 +2281,7 @@ script:
       isArray: true 
       description: "A comma-separated list of account IDs. Example: '225494730938493804,225494730938493915'."
     - name: computerName__contains
-      description: Free-text filter by agent computer name (supports multiple values)
+      description: Free-text filter by agent computer name (supports multiple values).
     - name: countOnly
       auto: PREDEFINED
       predefined:
@@ -2299,10 +2299,10 @@ script:
     - name: cursor
       description: "Cursor position returned by the last request. Use to iterate over more than 1000 items. Example: 'YWdlbnRfaWQ6NTgwMjkzODE='."
     - name: description__contains
-      description: Only include tasks with specific description
+      description: Only include tasks with specific description.
     - name: detailedStatus__contains
       isArray: true 
-      description: Only include tasks with specific detailed status
+      description: Only include tasks with specific detailed status.
     - name: groupIds
       isArray: true 
       description: "List of Group IDs to filter by. Example: '225494730938493804,225494730938493915'."
@@ -2311,7 +2311,7 @@ script:
       description: "List of IDs to filter by. Example: '225494730938493804,225494730938493915'."
     - name: initiatedBy__contains
       isArray: true 
-      description: Only include tasks from specific initiating user
+      description: Only include tasks from specific initiating user.
     - name: limit
       description: "Limit number of returned items (1-1000). Example: '10'."
     - name: parentTaskId
@@ -2319,9 +2319,9 @@ script:
       description: "parent task id to fetch the status by. Example: '225494730938493804'."
     - name: parentTaskId__in
       isArray: true 
-      description: List of IDs to filter by
+      description: List of IDs to filter by.
     - name: query
-      description: Query
+      description: Query.
     - name: siteIds
       isArray: true 
       description: "List of Site IDs to filter by. Example: '225494730938493804,225494730938493915'."
@@ -2332,7 +2332,7 @@ script:
       predefined:
       - "false"
       - "true"
-      description: Indicates a tenant scope request
+      description: Indicates a tenant scope request.
     - name: updatedAt__gt
       description: "Updated at greater than. Example: '2018-02-27T04:49:26.257525Z'."
     - name: updatedAt__gte
@@ -2342,7 +2342,7 @@ script:
     - name: updatedAt__lte
       description: "Updated at lesser or equal than. Example: '2018-02-27T04:49:26.257525Z'."
     - name: uuid__contains
-      description: Free-text filter by agent UUID (supports multiple values)
+      description: Free-text filter by agent UUID (supports multiple values).
     outputs:
     - contextPath: SentinelOne.GetRemoteScript.id
       description: ID of the Task.
@@ -2418,11 +2418,11 @@ script:
   - arguments:
     - name: computerNames
       isArray: true
-      description: A list of partial or whole computer names, which ran scripts, to get a download link for
+      description: A list of partial or whole computer names, which ran scripts, to get a download link for.
     - name: taskIds
       isArray: true
       required: true
-      description: A list of task ids to get a download link for
+      description: A list of task ids to get a download link for.
     outputs:
     - contextPath: SentinelOne.RemoteScriptResults.taskId
       description: ID of the Task.
