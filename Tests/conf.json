@@ -4173,7 +4173,7 @@
                 "ServiceNow v2",
                 "Core REST API"
             ],
-            "playbookID": "ServiceNow Fetch Incidents Test",
+            "playbookID": "ServiceNow_Fetch_Incidents_Test",
             "instance_names": "snow_basic_auth",
             "fromversion": "6.8.0",
             "is_mockable": false,
