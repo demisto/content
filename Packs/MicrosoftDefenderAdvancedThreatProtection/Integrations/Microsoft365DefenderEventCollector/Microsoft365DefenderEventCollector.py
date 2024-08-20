@@ -14,12 +14,14 @@ from enum import Enum
 from pydantic import BaseConfig, BaseModel, AnyUrl, validator  # type: ignore[E0611, E0611, E0611]
 from requests.auth import HTTPBasicAuth
 import requests
-import urllib3.util
 
-from MicrosoftApiModule import *
 
-# Disable insecure warnings
-urllib3.disable_warnings()  # pylint: disable=no-member
+from MicrosoftApiModule import (
+    MicrosoftClient,
+    MICROSOFT_DEFENDER_FOR_ENDPOINT_APT_SERVICE_ENDPOINTS,
+    microsoft_defender_for_endpoint_get_base_url,
+    reset_auth,
+)
 
 ''' CONSTANTS '''
 MAX_ALERTS_PAGE_SIZE = 1000
@@ -72,7 +74,7 @@ class IntegrationHTTPRequest(BaseModel):
 
     _normalize_headers = validator('headers', pre=True, allow_reuse=True)(
         load_json
-    )
+    )  # type: ignore[type-var]
 
 
 class Credentials(BaseModel):
@@ -240,7 +242,7 @@ class DefenderHTTPRequest(IntegrationHTTPRequest):
 
     _normalize_url = validator('url', pre=True, allow_reuse=True)(
         lambda base_url: f'{base_url}/api/alerts'
-    )
+    )  # type: ignore[type-var]
 
 
 class DefenderClient(IntegrationEventsClient):
