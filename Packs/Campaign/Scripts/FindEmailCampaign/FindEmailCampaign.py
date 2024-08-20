@@ -302,6 +302,14 @@ def calculate_campaign_details_table(incidents_df, fields_to_display):
             if len(field_values) > 0:
                 if field in RECIPIENTS_COLUMNS or isinstance(field_values[0], list):
                     field_values = [item for sublist in field_values for item in sublist]
+                elif any(isinstance(field_value, list) for field_value in field_values):
+                    flattened_list = []
+                    for item in field_values:
+                        if isinstance(item, list):
+                            flattened_list.extend(item)
+                        else:
+                            flattened_list.append(item)
+                    field_values = flattened_list
                 field_values_counter = Counter(field_values).most_common()  # type: ignore
                 field_value_str = get_str_representation_top_n_values(field_values, field_values_counter, top_n)
                 headers.append(field)
