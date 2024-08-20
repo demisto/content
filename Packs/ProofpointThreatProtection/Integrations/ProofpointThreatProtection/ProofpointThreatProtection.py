@@ -39,6 +39,7 @@ class Client(BaseClient):
         # Check if there is an existing valid access token
         integration_context = self.get_shared_integration_context()
         if integration_context.get('access_token') and integration_context.get('expiry_time') > date_to_timestamp(datetime.now()):
+            self._headers = {'Authorization' : f'Bearer {integration_context.get("access_token")}', 'Accept' : 'application/json'}
             return integration_context.get('access_token')
         else:
             try:
@@ -52,15 +53,16 @@ class Client(BaseClient):
                         'client_secret': client_secret
                     }
                 )
-                if res.get('access_token'):
+                access_token = res.get('access_token', None)
+                if access_token is not None:
                     expiry_time = date_to_timestamp(datetime.now(), date_format='%Y-%m-%dT%H:%M:%S')
                     expiry_time += res.get('expires_in', 0) * 1000 - 10
                     context = {
-                        'access_token': res.get('access_token'),
+                        'access_token': access_token,
                         'expiry_time': expiry_time
                     }
                     self.set_shared_integration_context(context)
-                    self._headers['Authorization'] = f'Bearer {res.get("access_token")}'
+                    self._headers = {'Authorization' : f'Bearer {access_token}', 'Accept' : 'application/json'}
                     return res.get('access_token')
 
             except Exception as e:
@@ -72,15 +74,18 @@ class Client(BaseClient):
         return self._http_request(
             'GET',
             url_suffix=URL_SUFFIX_SAFELIST,
+            headers=self._headers,
             params={'clusterId': cluster_id}
         )
 
     def safelist_add_delete(self, cluster_id, args):
         import json
+        self._headers.update({'Content-Type': 'application/json'})
         return self._http_request(
             'POST',
+            resp_type='response',
             url_suffix=URL_SUFFIX_SAFELIST,
-            headers={'Content-Type': 'application/json'},
+            headers=self._headers,
             params={'clusterId': cluster_id},
             data=json.dumps({
                 'action': args.get('action'),
@@ -95,15 +100,18 @@ class Client(BaseClient):
         return self._http_request(
             'GET',
             url_suffix=URL_SUFFIX_BLOCKLIST,
+            headers=self._headers,
             params={'clusterId': cluster_id}
         )
 
     def blocklist_add_delete(self, cluster_id, args):
         import json
+        self._headers.update({'Content-Type': 'application/json'})
         return self._http_request(
             'POST',
+            resp_type='response',
             url_suffix=URL_SUFFIX_BLOCKLIST,
-            headers={'Content-Type': 'application/json'},
+            headers=self._headers,
             params={'clusterId': cluster_id},
             data=json.dumps({
                 'action': args.get('action'),
@@ -172,7 +180,7 @@ COMMANDS = {
 
 
 def parse_params(params: dict):
-    client_id = params.get('credentials', {}).get('username')
+    client_id = params.get('credentials', {}).get('username', params.get('credentials', {}).get('identifier'))
     client_secret = params.get('credentials', {}).get('password')
     base_url = params.get('url')
     cluster_id = params.get('cluster_id')
