@@ -3272,7 +3272,7 @@ def get_remote_script_results(client: Client, args: dict) -> list[CommandResults
 
 def run_polling_command(client: Client, cmd: str, args: Dict[str, Any]):
     """ 
-    This command combines the **Run Remote Script**, **Remote Script Status Check**, and **Remote Script Results** commands.
+    This command is combination of the **Run Remote Script**, **Remote Script Status Check**, and **Remote Script Results** commands.
     The polling command continuously polls the data until the status of the executed remote script is marked as complete,
     and then it returns the results of that remote script.
     Args:
