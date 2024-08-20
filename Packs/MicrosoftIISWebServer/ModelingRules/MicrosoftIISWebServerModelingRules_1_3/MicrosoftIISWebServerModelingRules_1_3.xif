@@ -41,6 +41,7 @@ alter // extract pre-parsed fields from the parsed_fields JSON object
     streamid = if(streamid != "-", streamid), // clean empty values
     s_siteid = if(s_siteid != "-", s_siteid), // clean empty values
     sc_status = if(sc_status != "-", sc_status), // clean empty values
+    target_resource = arrayindex(regextract(arrayindex(split(coalesce(cs_uri,cs_uri_stem), "?"), 0), "\/([^\/]+)"), -1),
     target_uri = if(
         cs_uri != null and cs_uri != "-", cs_uri, // error logs 
         cs_uri_query != null and cs_uri_query != "-", concat(cs_uri_stem, "?", cs_uri_query), cs_uri_stem), // access logs
@@ -60,6 +61,7 @@ alter // extract pre-parsed fields from the parsed_fields JSON object
         sc_win32_status_int > 0 and sc_status_int < 400, XDM_CONST.OUTCOME_PARTIAL),
     xdm.event.outcome_reason = if(not is_successful, arraystring(arraycreate(coalesce(full_status_code, sc_status), sc_win32_status_reason, sc_status_reason, s_reason), "; ")),
     xdm.event.type = log_type, 
+    xdm.observer.name = s_computername,
     xdm.network.application_protocol = if(cs_version != "-", cs_version),
     xdm.network.http.http_header.header = if(cs_cookie != null and cs_cookie != "-", "Cookie"),
     xdm.network.http.http_header.value = if(cs_cookie != "-", cs_cookie),
@@ -85,5 +87,6 @@ alter // extract pre-parsed fields from the parsed_fields JSON object
     xdm.target.ipv4 = s_ipv4,
     xdm.target.ipv6 = s_ipv6,
     xdm.target.port = to_integer(s_port),
+    xdm.target.resource.name = target_resource,
     xdm.target.sent_bytes = to_integer(sc_bytes),
     xdm.target.url = target_uri;
