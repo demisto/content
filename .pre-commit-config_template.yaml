@@ -333,6 +333,7 @@ repos:
     - --show-error-codes
     # - --follow-imports=silent
     - --allow-redefinition
+    - --cache-dir=/tmp/.mypy_cache  #TODO add comment
     - --install-types
     - --non-interactive
     - --implicit-optional  # TODO add comment
