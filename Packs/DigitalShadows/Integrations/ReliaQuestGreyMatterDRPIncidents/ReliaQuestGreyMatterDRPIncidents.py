@@ -811,7 +811,7 @@ class SearchLightTriagePoller:
         if not events:
             LOG("No events were fetched. Event num start: {}, Event created after: {}, Limit:"
                 " {}, risk_level: {}, alert_risk_types: {}".format(
-                event_num_start, event_created_after, limit, risk_level, alert_risk_types))
+                    event_num_start, event_created_after, limit, risk_level, alert_risk_types))
             return RQPollResult(max_event_num, [])
 
         triage_item_ids = [e[TRIAGE_ITEM_ID] for e in events]

@@ -1,193 +1,150 @@
 {
-	"brands": null,
-	"cacheVersn": 0,
-	"defaultIncidentType": "",
-	"definitionId": "",
-	"description": "",
-	"feed": false,
-    "fromVersion": "6.0.0",
-	"id": "Reliaquest GreyMatter DRP Incidents Mapper",
-	"incidentSamples": null,
-	"indicatorSamples": null,
-	"instanceIds": null,
-	"itemVersion": "",
-	"keyTypeMap": {},
-	"locked": false,
-	"logicalVersion": 19,
-	"mapping": {
-		"DS EXPOSED_CREDENTIAL": {
-			"dontMapEventToLabels": false,
-			"internalMapping": {
-				"Digital Shadows Risk Type": {
-					"simple": "triage_item.risk-level"
-				},
-				"State": {
-					"simple": "triage_item.state"
-				}
-			}
-		},
-		"dbot_classification_incident_type_all": {
-			"dontMapEventToLabels": true,
-			"internalMapping": {
-				"Alert Name": {
-					"simple": "alert.title"
-				},
-				"Classification": {
-					"simple": "triage_item.classification"
-				},
-				"Comment": {
-					"complex": {
-						"filters": [],
-						"root": "comments",
-						"transformers": [
-							{
-								"operator": "ArrayToCSV"
-							}
-						]
-					}
-				},
-				"DS Alert Description": {
-					"simple": "alert.description"
-				},
-				"DS Alert Email": {
-					"simple": "alert.email"
-				},
-				"Alert ID": {
-					"simple": "alert.id"
-				},
-				"DS Alert Password": {
-					"simple": "alert.password"
-				},
-				"DS Alert Risk Factors": {
-					"simple": "alert.risk-factors"
-				},
-				"DS Alert Validation": {
-					"complex": {
-						"accessor": "validation",
-						"filters": [],
-						"root": "alert",
-						"transformers": [
-							{
-								"operator": "ArrayToCSV"
-							}
-						]
-					}
-				},
-				"DS Assets": {
-					"complex": {
-						"accessor": "[0]",
-						"filters": [],
-						"root": "assets",
-						"transformers": [
-							{
-								"operator": "ArrayToCSV"
-							}
-						]
-					}
-				},
+    "description": "",
+    "feed": false,
+    "fromVersion": "6.10.0",
+    "id": "Reliaquest GreyMatter DRP Incidents Mapper",
+    "mapping": {
+        "DS EXPOSED_CREDENTIAL": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
                 "State": {
-					"simple": "triage_item.state"
-				},
-				"DS Auto Closed": {
-					"simple": "auto-closed"
-				},
-				"DS Event Action": {
-					"simple": "event.event-action"
-				},
-				"DS Event Number": {
-					"simple": "event.event-num"
-				},
-				"DS Impact Description": {
-					"simple": "incident.impact-description"
-				},
-				"DS Incident Description": {
-					"simple": "incident.description"
-				},
-				"DS Incident ID": {
-					"simple": "incident.id"
-				},
-				"DS Incident Mitigation": {
-					"simple": "incident.impact-description"
-				},
-				"DS Incident Raised Date": {
-					"simple": "incident.raised"
-				},
-				"DS Incident Updated Date": {
-					"simple": "incident.updated"
-				},
-				"DS Mitre Mapping": {
-					"complex": {
-						"accessor": "mitre-attack-mapping",
-						"filters": [],
-						"root": "incident",
-						"transformers": [
-							{
-								"operator": "StringToArray"
-							}
-						]
-					}
-				},
-				"DS Risk Factors ": {
-					"complex": {
-						"accessor": "risk-factors",
-						"filters": [],
-						"root": "incident",
-						"transformers": [
-							{
-								"operator": "ArrayToCSV"
-							},
-							{
-								"args": {
-									"item": {},
-									"raw": {}
-								},
-								"operator": "AppendIfNotEmpty"
-							}
-						]
-					}
-				},
-				"DS Risk Level": {
-					"simple": "triage_item.risk-level"
-				},
-				"DS Severity": {
-					"simple": "triage_item.risk-level"
-				},
-				"DS Triage Item ID": {
-					"simple": "triage_item.id"
-				},
-				"DS Triage Title": {
-					"simple": "triage_item.title"
-				},
-				"Event Type": {
-					"simple": "triage_item.risk-type"
-				},
-				"Source Create time": {
-					"simple": "triage_item.raised"
-				},
-				"dbotMirrorDirection": {
-					"simple": "Both"
-				},
-				"dbotMirrorId": {
-					"simple": "triage_item.id"
-				},
-				"dbotMirrorInstance": {
-					"simple": "Digital Shadows V2_instance_1"
-				},
-				"dbotMirrorTags": {
-					"simple": "comments"
-				}
-			}
-		}
-	},
-	"name": "Reliaquest GreyMatter DRP Incidents Mapper",
-	"nameRaw": "Reliaquest GreyMatter DRP Incidents Mapper",
-	"packID": "",
-	"packName": "",
-	"sourceClassifierId": "",
-	"system": false,
-	"toServerVersion": "",
-	"transformer": {},
-	"type": "mapping-incoming",
-	"unclassifiedCases": null,
-	"version": -1
+                    "simple": "triage_item.state"
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Alert Name": {
+                    "simple": "alert.title"
+                },
+                "Classification": {
+                    "simple": "triage_item.classification"
+                },
+                "Comment": {
+                    "complex": {
+                        "filters": [],
+                        "root": "comments",
+                        "transformers": [
+                            {
+                                "operator": "ArrayToCSV"
+                            }
+                        ]
+                    }
+                },
+                "DS Alert Description": {
+                    "simple": "alert.description"
+                },
+                "DS Alert Email": {
+                    "simple": "alert.email"
+                },
+                "Alert ID": {
+                    "simple": "alert.id"
+                },
+                "DS Alert Password": {
+                    "simple": "alert.password"
+                },
+                "DS Assets": {
+                    "complex": {
+                        "accessor": "[0]",
+                        "filters": [],
+                        "root": "assets",
+                        "transformers": [
+                            {
+                                "operator": "ArrayToCSV"
+                            }
+                        ]
+                    }
+                },
+                "State": {
+                    "simple": "triage_item.state"
+                },
+                "DS Event Action": {
+                    "simple": "event.event-action"
+                },
+                "DS Event Number": {
+                    "simple": "event.event-num"
+                },
+                "DS Impact Description": {
+                    "simple": "incident.impact-description"
+                },
+                "DS Incident Description": {
+                    "simple": "incident.description"
+                },
+                "DS Incident ID": {
+                    "simple": "incident.id"
+                },
+                "DS Incident Raised Date": {
+                    "simple": "incident.raised"
+                },
+                "DS Incident Updated Date": {
+                    "simple": "incident.updated"
+                },
+                "DS Mitre Mapping": {
+                    "complex": {
+                        "accessor": "mitre-attack-mapping",
+                        "filters": [],
+                        "root": "incident",
+                        "transformers": [
+                            {
+                                "operator": "StringToArray"
+                            }
+                        ]
+                    }
+                },
+                "DS Risk Factors ": {
+                    "complex": {
+                        "accessor": "risk-factors",
+                        "filters": [],
+                        "root": "incident",
+                        "transformers": [
+                            {
+                                "operator": "ArrayToCSV"
+                            },
+                            {
+                                "args": {
+                                    "item": {},
+                                    "raw": {}
+                                },
+                                "operator": "AppendIfNotEmpty"
+                            }
+                        ]
+                    }
+                },
+                "DS Risk Level": {
+                    "simple": "triage_item.risk-level"
+                },
+                "DS Severity": {
+                    "simple": "triage_item.risk-level"
+                },
+                "DS Triage Item ID": {
+                    "simple": "triage_item.id"
+                },
+                "DS Triage Title": {
+                    "simple": "triage_item.title"
+                },
+                "Event Type": {
+                    "simple": "triage_item.risk-type"
+                },
+                "Source Create time": {
+                    "simple": "triage_item.raised"
+                },
+                "dbotMirrorDirection": {
+                    "simple": "Both"
+                },
+                "dbotMirrorId": {
+                    "simple": "triage_item.id"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "Digital Shadows V2_instance_1"
+                },
+                "dbotMirrorTags": {
+                    "simple": "comments"
+                }
+            }
+        }
+    },
+    "name": "Reliaquest GreyMatter DRP Incidents Mapper",
+    "type": "mapping-incoming",
+    "version": -1
 }
