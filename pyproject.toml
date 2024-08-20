@@ -12,26 +12,27 @@ url = "https://pypi.org/simple/"
 
 [tool.poetry.dependencies]
 python = "^3.8,<3.11"
-defusedxml = "^0.7.1"
+
+[tool.poetry.group.github-actions.dependencies]
+packaging = "^24"
+pytest = "^7.4.4"
+requests = "^2.32.3"
+urllib3 = "^2.2.2"
+blessings = "^1.7"
+PyGithub = "^1.59"
+gitpython = "^3.1.43"
+sendgrid = "^6.11"
+slack_sdk = "^3.31.0"
 
 [tool.poetry.group.dev.dependencies]
-demisto-sdk = "1.31.4"
-requests = "^2.22.0"
-pre-commit = "^3.5.0"
-dateparser = "^1.1.8"
+demisto-sdk = "1.31.7"
+pytest = ">=7.1.2"
+requests-mock = ">=1.9.3"
+pytest-mock = ">=3.7.0"
+freezegun = ">=1.1.0"
+dateparser = ">=1.2.0"
+ruff = "*"  # See `.pre-commit-config-template` for version used in pre-commit. Version here doesn't matter.
 
-[tool.poetry.group.linters.dependencies]
-mypy = "^0.982"
-ruff = "^0.0.264"
-
-[tool.poetry.group.testing.dependencies]
-pytest = "^7.1.2"
-requests-mock = "^1.9.3"
-pytest-mock = "^3.7.0"
-freezegun = "^1.1.0"
-mock-open = "^1.4.0"
-
-# If mypy requires for a `types-*` package, add it here with `poetry add --group typing <package>`
 [tool.poetry.group.typing.dependencies]
 types-tqdm = "^4.66.0.2"
 types-requests = "2.28.11"
@@ -39,7 +40,6 @@ types-mock = "^4.0.15"
 types-setuptools = "^69.2.0.20240317"
 types-ujson = "^5.6.0.0"
 types-decorator = "^5.1.8"
-types-pkg-resources = "^0.1.3"
 types-toml = "^0.10.8.7"
 types-tabulate = "^0.9.0.20240106"
 types-pytz = ">=2021.3.6,<2023.0.0"
@@ -52,43 +52,6 @@ types-PyMySQL = "1.1.0.20240425"
 types-markdown = "3.6.0.20240316"
 types-PyYAML = "6.0.12.20240311"
 types-emoji = "2.1.0.3"
-
-[tool.poetry.group.ci]
-optional = true
-
-[tool.poetry.group.ci.dependencies]
-google-cloud-bigquery = "^3.2.0"
-google-cloud-secret-manager = "^2.13.0"
-google-cloud-compute = "^1.19.1"
-google-cloud-firestore = "^2.3.4"
-blessings = "^1.7"
-coloredlogs = "^15.0.1"
-pandas = "^1.3.3"
-prettytable = "^3.2.0"
-pyspellchecker = "^0.6.2"
-sendgrid = "^6.6.0"
-slack_sdk = "^3.31.0"
-timeout_decorator = "^0.5.0"
-ujson = "^5.1.0"
-yamlordereddictloader = "^0.4.0"
-parinx = { git = "https://github.com/npsolve/parinx.git", rev = "6493798ceba8089345d970f71be4a896eb6b081d" }
-python-gitlab = "^3.0.0"
-PyGithub = "^1.54.1"
-ansible-runner = "^2.2.0"
-paramiko = "^2.11.0"
-scp = "^0.14.5"
-humanize = "^4.7.0"
-jsonschema = "^4.6.0"
-db-dtypes = "^1.0.1"
-json5 = "^0.9.10"
-tqdm = "^4.66.1"
-tabulate = ">=0.8.9,<0.10.0"
-jira = "^3.8.0"
-junitparser = "^3.1.0"
-tenacity = "^8.2.3"
-pendulum = "^2.1.2"
-retry = "^0.9.2"
-Faker = "^15.3.4"
 
 [tool.ruff]
 select = [

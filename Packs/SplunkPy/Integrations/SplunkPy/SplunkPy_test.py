@@ -102,9 +102,9 @@ SAMPLE_RESPONSE = [
         '_cd': '668:17198',
         '_indextime': '1596545116',
         '_raw': '1596545116, search_name="Endpoint - Recurring Malware Infection - Rule", count="17", '
-        'day_count="8", dest="ACME-workstation-012", info_max_time="1596545100.000000000", '
-        'info_min_time="1595939700.000000000", info_search_time="1596545113.965466000", '
-        'signature="Trojan.Gen.2"',
+                'day_count="8", dest="ACME-workstation-012", info_max_time="1596545100.000000000", '
+                'info_min_time="1595939700.000000000", info_search_time="1596545113.965466000", '
+                'signature="Trojan.Gen.2"',
         '_serial': '50',
         '_si': ['ip-172-31-44-193', 'notable'],
         '_sourcetype': 'stash',
@@ -217,6 +217,7 @@ class Jobs:
     def create(self, query, **kwargs):
         job = client.Job(sid='123456', service=self.service, **kwargs)
         job.resultCount = 0
+        job._state = self.state
         return job
 
 
@@ -350,6 +351,7 @@ def test_splunk_submit_event_hec_command(mocker):
     class MockRes:
         def __init__(self, text):
             self.text = text
+
     mocker.patch.object(splunk, "splunk_submit_event_hec", return_value=MockRes(text))
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
     splunk.splunk_submit_event_hec_command(params={"hec_url": "mock_url"}, args={})
@@ -496,7 +498,6 @@ data_test_check_error = [
 
 @pytest.mark.parametrize('args, out_error', data_test_check_error)
 def test_check_error(args, out_error):
-
     class Service:
         def __init__(self):
             self.apps = APPS
@@ -591,7 +592,6 @@ data_test_get_keys_and_types = [
 
 @pytest.mark.parametrize('raw_keys, expected_keys', data_test_get_keys_and_types)
 def test_get_keys_and_types(raw_keys, expected_keys):
-
     class KVMock:
         def __init__(self):
             pass
@@ -630,7 +630,6 @@ def test_get_kv_store_config(fields, expected_output, mocker):
 
 
 class TestFetchRemovingIrrelevantIncidents:
-
     notable1 = {'status': '5', 'event_id': '3'}
     notable2 = {'status': '6', 'event_id': '4'}
 
@@ -891,7 +890,7 @@ def test_fetch_notables(mocker):
     mocker.patch.object(splunk.client.Job, 'is_done', return_value=True)
     mocker.patch.object(splunk.client.Job, 'results', return_value=None)
     mocker.patch.object(splunk, 'ENABLED_ENRICHMENTS', [splunk.ASSET_ENRICHMENT,
-                        splunk.DRILLDOWN_ENRICHMENT, splunk.IDENTITY_ENRICHMENT])
+                                                        splunk.DRILLDOWN_ENRICHMENT, splunk.IDENTITY_ENRICHMENT])
     mocker.patch.object(demisto, 'incidents')
     mocker.patch.object(demisto, 'setLastRun')
     mock_last_run = {'time': '2018-10-24T14:13:20'}
@@ -1112,7 +1111,10 @@ def test_get_notable_field_and_value(raw_field, notable_data, expected_field, ex
     ({'user': 'test\crusher'}, 'index="test" | where user = $user|s$', {}, False,
      'index="test" | where user = "test\\\\crusher"'),
     ({'user': 'test\crusher'}, 'index="test" | where user = "$user|s$"', {}, False,
-     'index="test" | where user = "test\\\\crusher"')
+     'index="test" | where user = "test\\\\crusher"'),
+    ({'countryNameA': '"test\country"', 'countryNameB': '""'},
+     'search countryA="$countryNameA|s$" countryB=$countryNameB|s$', {}, False,
+     'search countryA="test\country" countryB=""'),
 ], ids=[
     "search query fields in notables data and raw data",
     "search query fields in notable data more than one value",
@@ -1121,7 +1123,9 @@ def test_get_notable_field_and_value(raw_field, notable_data, expected_field, ex
     "query name fields in raw data",
     "query name without fields to replace",
     "search query with a user field that contains a backslash",
-    "search query with a user field that is surrounded by quotation marks and contains a backslash"
+    "search query with a user field that is surrounded by quotation marks and contains a backslash",
+    "search query fields in notable data more than one value, with one empty value"
+
 ])
 def test_build_drilldown_search(notable_data, search, raw, is_query_name, expected_search, mocker):
     """
@@ -1185,8 +1189,8 @@ def test_get_fields_query_part(notable_data, prefix, fields, query_part):
       splunk.Enrichment(splunk.ASSET_ENRICHMENT, enrichment_id='2'),
       splunk.Enrichment(splunk.IDENTITY_ENRICHMENT, enrichment_id='3')], 1),
     ([splunk.Enrichment(splunk.ASSET_ENRICHMENT, enrichment_id='1'),
-        splunk.Enrichment(splunk.ASSET_ENRICHMENT, enrichment_id='2'),
-        splunk.Enrichment(splunk.IDENTITY_ENRICHMENT, enrichment_id='3')], 0)
+      splunk.Enrichment(splunk.ASSET_ENRICHMENT, enrichment_id='2'),
+      splunk.Enrichment(splunk.IDENTITY_ENRICHMENT, enrichment_id='3')], 0)
 ], ids=[
     "A Notable with 3 drilldown enrichments",
     "A Notable with 1 drilldown enrichment, 1 asset enrichment and 1 identity enrichment",
@@ -1312,8 +1316,8 @@ def test_to_incident_notable_enrichments_data(enrichments, expected_data):
      ),
     ([splunk.Enrichment(splunk.DRILLDOWN_ENRICHMENT, enrichment_id='1', status=splunk.Enrichment.FAILED,
                         data=[{'result1': 'a'}, {'result2': 'b'}]),
-        splunk.Enrichment(splunk.DRILLDOWN_ENRICHMENT, enrichment_id='1', status=splunk.Enrichment.SUCCESSFUL,
-                          data=[{'result1': 'a'}, {'result2': 'b'}])], splunk.DRILLDOWN_ENRICHMENT, True
+      splunk.Enrichment(splunk.DRILLDOWN_ENRICHMENT, enrichment_id='1', status=splunk.Enrichment.SUCCESSFUL,
+                        data=[{'result1': 'a'}, {'result2': 'b'}])], splunk.DRILLDOWN_ENRICHMENT, True
      ),
     ([splunk.Enrichment(splunk.DRILLDOWN_ENRICHMENT, enrichment_id='1', status=splunk.Enrichment.FAILED,
                         data=[{'result1': 'a'}, {'result2': 'b'}]),
@@ -1420,7 +1424,7 @@ def test_parse_drilldown_searches():
          },
         {'name': "View related '$category$' events for $signature$",
          'search': '| from datamodel:"Malware"."Malware_Attacks" \n|  fields category, dest, signature | search dest=$dest|s$ '
-         'signature=$signature|s$',
+                   'signature=$signature|s$',
          'earliest': 1714563300,
          'latest': 1715168700
          }
@@ -1470,7 +1474,7 @@ def test_drilldown_enrichment_main_condition(mocker, notable_data, expected_call
     ({'event_id': 'test_id',
       'drilldown_searches':
           ["{\"name\":\"View related '$signature$' events for $dest$\",\"search\":\"| from datamodel:\\\"Malware\\\".\\\"Malwa"
-              "re_Attacks\\\" | search dest=$dest|s$ signature=$signature|s$\",\"earliest\":1714563300,\"latest\":1715168700}",
+           "re_Attacks\\\" | search dest=$dest|s$ signature=$signature|s$\",\"earliest\":1714563300,\"latest\":1715168700}",
            "{\"name\":\"View related '$category$' events for $signature$\",\"search\":\"| from datamodel:\\\"Malware\\\".\\\"M"
            "alware_Attacks\\\" \\n|  fields category, dest, signature | search dest=$dest|s$ signature=$signature|s$\",\"ear"
            "liest\":1714563300,\"latest\":1715168700}"
@@ -1513,7 +1517,8 @@ def test_drilldown_enrichment_get_timeframe(mocker, notable_data, expected_call_
     ({'event_id': 'test_id', 'drilldown_name': 'View all login attempts by system $src$',
       'drilldown_search': "| from datamodel:\"Authentication\".\"Authentication\" | search src=$src|s$",
       'drilldown_searches': "{\"name\":\"View all login attempts by system $src$\",\"search\":\"| from datamodel:\\\"Authent"
-      "ication\\\".\\\"Authentication\\\" | search src=$src|s$\",\"earliest\":1715040000,\"latest\":1715126400}",
+                            "ication\\\".\\\"Authentication\\\" | search src=$src|s$\",\"earliest\":1715040000,"
+                            "\"latest\":1715126400}",
       '_raw': "src=\'test_src\'", "drilldown_latest": "1715126400.000000000", "drilldown_earliest": "1715040000.000000000"},
      [
          ("View all login attempts by system 'test_src'",
@@ -1521,8 +1526,8 @@ def test_drilldown_enrichment_get_timeframe(mocker, notable_data, expected_call_
 
     ({'event_id': 'test_id2', 'drilldown_searches':
         ["{\"name\":\"View all login attempts by system $src$\",\"search\":\"| from datamodel:\\\"Authentication\\\".\\\"Authe"
-            "ntication\\\" | search src=$src|s$\",\"earliest\":1715040000,\"latest\":1715126400}",
-            "{\"name\":\"View all test involving user=\\\"$user$\\\"\",\"search\":\"index=\\\"test\\\"\\n| where "
+         "ntication\\\" | search src=$src|s$\",\"earliest\":1715040000,\"latest\":1715126400}",
+         "{\"name\":\"View all test involving user=\\\"$user$\\\"\",\"search\":\"index=\\\"test\\\"\\n| where "
          "user = $user|s$\",\"earliest\":1716955500,\"latest\":1716959400}"],
       '_raw': "src=\'test_src\', user='test_user'"},
      [("View all login attempts by system 'test_src'",
@@ -1531,8 +1536,8 @@ def test_drilldown_enrichment_get_timeframe(mocker, notable_data, expected_call_
        'search index="test"\n| where user = "\'test_user\'"')]),
     ({'event_id': 'test_id3', 'drilldown_searches':
         ["{\"name\":\"View all login attempts by system $src$\",\"search\":\"| from datamodel:\\\"Authentication\\\".\\\"Authe"
-            "ntication\\\" | search src=$src|s$\",\"earliest_offset\":1715040000,\"latest_offset\":1715126400}",
-            "{\"name\":\"View all test involving user=\\\"$user$\\\"\",\"search\":\"index=\\\"test\\\"\\n| where "
+         "ntication\\\" | search src=$src|s$\",\"earliest_offset\":1715040000,\"latest_offset\":1715126400}",
+         "{\"name\":\"View all test involving user=\\\"$user$\\\"\",\"search\":\"index=\\\"test\\\"\\n| where "
          "user = $user|s$\",\"earliest_offset\":1716955500,\"latest_offset\":1716959400}"],
       '_raw': "src=\'test_src\', user='test_user'"},
      [("View all login attempts by system 'test_src'",
@@ -1588,16 +1593,16 @@ def test_drilldown_enrichment(notable_data, expected_result):
           "{\"name\":\"View all login attempts by system $src$\",\"search\":\"| from datamodel:\\\"Authentica"
           "tion\\\".\\\"Authentication\\\" | search src=$src|s$\",\"earliest\":\"\",\"latest\":\"\"}",
           "{\"name\":\"View all test involving user=\\\"$user$\\\"\",\"search\":\"index=\\\"test\\\"\\n| where user ="
-                  "$user|s$\",\"earliest\":\"\",\"latest\":\"\"}"],
+          "$user|s$\",\"earliest\":\"\",\"latest\":\"\"}"],
       '_raw': "src=\'test_src\', user='test_user'"},
      'Failed getting the drilldown timeframe for notable test_id'),
 
     ({'event_id': 'test_id',
       'drilldown_searches':
           ["{\"name\":\"View all login attempts by system $src$\",\"search\":\"| from datamodel:\\\"Authentic"
-              "ation\\\".\\\"Authentication\\\" | search src=$src|s$\",\"earliest\":\"\",\"latest\":\"\"}",
-              "{\"name\":\"View all test involving user=\\\"$user$\\\"\",\"search\":\"index=\\\"test\\\"\\n| where user ="
-                  "$user|s$\",\"earliest\":\"\",\"latest\":\"\"}"], '_raw': ""},
+           "ation\\\".\\\"Authentication\\\" | search src=$src|s$\",\"earliest\":\"\",\"latest\":\"\"}",
+           "{\"name\":\"View all test involving user=\\\"$user$\\\"\",\"search\":\"index=\\\"test\\\"\\n| where user ="
+           "$user|s$\",\"earliest\":\"\",\"latest\":\"\"}"], '_raw': ""},
      "Couldn't build search query for notable test_id with the following drilldown search"),
 ], ids=[
     "A notable data without drilldown enrichment data",
@@ -1833,6 +1838,7 @@ def test_get_remote_data_command_with_message(mocker):
     Returns:
         None
     """
+
     class Jobs:
         def oneshot(self, _, output_mode: str):
             assert output_mode == splunk.OUTPUT_MODE_JSON
@@ -1900,6 +1906,7 @@ def test_get_remote_data_command_add_comment(mocker, notable_data: dict,
         - ensure the event was updated
 
     """
+
     class Jobs:
         def oneshot(self, _, output_mode: str):
             assert output_mode == splunk.OUTPUT_MODE_JSON
@@ -1998,7 +2005,6 @@ def test_edit_notable_event__failed_to_update(mocker, requests_mock):
      5, True)
 ])
 def test_update_remote_system(args, params, call_count, success, mocker, requests_mock):
-
     class Service:
         def __init__(self):
             self.token = 'fake_token'
@@ -2305,6 +2311,34 @@ def test_splunk_search_command(mocker, polling, status):
                                                 'sid: 123456\n**No entries.**\n'
 
 
+@pytest.mark.parametrize('messages,expected_msg', [
+    ({'fatal': ['fatal msg']}, 'fatal msg'),
+    ({'error': ['error msg']}, 'error msg')
+])
+def test_err_in_splunk_search(mocker, messages, expected_msg):
+    """
+    Given:
+        A wrong search query.
+
+    When:
+        Running the splunk_search_command.
+
+    Then:
+        Ensure the result as expected in polling and in regular search.
+    """
+    mock_args = {
+        "query": "wrong search query",
+        "earliest_time": "2021-11-23T10:10:10",
+        "latest_time": "2020-10-20T10:10:20",
+        "fast_mode": "false",
+    }
+    service = Service(status="FAILED")
+    service.jobs.state.content['messages'] = messages
+    with pytest.raises(DemistoException) as e:
+        splunk.splunk_search_command(service, mock_args)
+    assert f'Failed to run the search in Splunk: {expected_msg}' in str(e)
+
+
 @pytest.mark.parametrize(
     argnames='credentials',
     argvalues=[{'username': 'test', 'password': 'test'}, {'splunkToken': 'token', 'password': 'test'}]
@@ -2347,6 +2381,7 @@ def test_module__exception_raised(mocker, credentials):
     Then:
         - Validate the expected message was returned
     """
+
     # prepare
     def exception_raiser():
         raise AuthenticationError
@@ -2515,6 +2550,7 @@ def test_owner_mapping_mechanism_xsoar_to_splunk(mocker, xsoar_name, expected_sp
     Then:
         - validates the splunk user is correct
     """
+
     def mocked_get_record(col, value_to_search):
         return filter(lambda x: x[col] == value_to_search, OWNER_MAPPING[:-1])
 
@@ -2554,6 +2590,7 @@ def test_owner_mapping_mechanism_splunk_to_xsoar(mocker, splunk_name, expected_x
     Then:
         - validates the splunk user is correct
     """
+
     def mocked_get_record(col, value_to_search):
         return filter(lambda x: x[col] == value_to_search, OWNER_MAPPING)
 
@@ -2599,6 +2636,7 @@ def test_get_splunk_user_by_xsoar_command(mocker, xsoar_names, expected_outputs)
     When: trying to get splunk matching users
     Then: validates correctness of list
     """
+
     def mocked_get_record(col, value_to_search):
         return filter(lambda x: x[col] == value_to_search, OWNER_MAPPING[:-1])
 
@@ -2741,3 +2779,15 @@ def test_get_drilldown_searches(drilldown_data, expected):
     """
 
     assert splunk.get_drilldown_searches(drilldown_data) == expected
+
+
+def test_remove_double_quotes():
+    """
+        Given: string with double quotes
+        When: replacing a var in a query
+        Then: make sure no double double quotes are returned.
+    """
+    from SplunkPy import remove_double_quotes
+
+    assert remove_double_quotes('this is a ""test""') == 'this is a "test"'
+    assert remove_double_quotes('no ""double quotes"" here, and here: ""') == 'no "double quotes" here, and here: ""'
