@@ -22,7 +22,7 @@ def load_test_data(json_path):
 
 def get_incident_by_status(incident_id_list=None, lte_modification_time=None, gte_modification_time=None,
                            lte_creation_time=None, gte_creation_time=None, starred=None,
-                           starred_incidents_fetch_window=None, status=None, sort_by_modification_time=None,
+                           starred_incidents_fetch_window=None, statuses=None, sort_by_modification_time=None,
                            sort_by_creation_time=None, page_number=0, limit=100, gte_creation_time_milliseconds=0):
     """
         The function simulate the client.get_incidents method for the test_fetch_incidents_filtered_by_status
@@ -31,7 +31,7 @@ def get_incident_by_status(incident_id_list=None, lte_modification_time=None, gt
         that are in the given status.
     """
     incidents_list = load_test_data('./test_data/get_incidents_list.json')['reply']['incidents']
-    return [incident for incident in incidents_list if incident['status'] == status]
+    return [incident for incident in incidents_list if incident['status'] in statuses]
 
 
 def get_incident_extra_data_by_status(incident_id, alerts_limit):
@@ -95,11 +95,11 @@ def test_fetch_incidents_filtered_by_status(requests_mock, mocker):
 
     client = Client(
         base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False)
-    incident_extra_data_under_investigation = load_test_data('./test_data/get_incident_extra_data_host_id_array.json') \
-        .get('reply', {}).get('incidents')
-    incident_extra_data_new = load_test_data('./test_data/get_incident_extra_data_new_status.json').get('reply').get('incidents')
-    mocker.patch.object(Client, 'get_multiple_incidents_extra_data', side_effect=[incident_extra_data_under_investigation,
-                                                                                  incident_extra_data_new])
+    incident_extra_data_under_investigation = load_test_data(
+        './test_data/get_incident_extra_data_host_id_array.json')['reply']['incidents']
+    incident_extra_data_new = load_test_data('./test_data/get_incident_extra_data_new_status.json')['reply']['incidents']
+    mocker.patch.object(Client, 'get_multiple_incidents_extra_data', return_value=(
+        incident_extra_data_under_investigation + incident_extra_data_new))
     mocker.patch("CortexXDRIR.ALERTS_LIMIT_PER_INCIDENTS", new=50)
     mocker.patch.object(Client, 'save_modified_incidents_to_integration_context')
     statuses_to_fetch = ['under_investigation', 'new']
@@ -1242,7 +1242,7 @@ class TestGetIncidents():
         client = Client(
             base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=10, proxy=False)
         outputs = Client.get_multiple_incidents_extra_data(client,
-                                                           status=['new'],
+                                                           statuses=['new'],
                                                            starred=True,
                                                            starred_incidents_fetch_window=1575806909185,
                                                            incident_id_list=['1', '2'],
@@ -1597,7 +1597,7 @@ def test_fetch_incidents_dedup():
     """
     from CortexXDRIR import fetch_incidents
 
-    last_run = {}
+    last_run = {'time': 0}
 
     class MockClient:
 
@@ -1605,11 +1605,11 @@ def test_fetch_incidents_dedup():
 
         def save_modified_incidents_to_integration_context(self): ...
 
-        def get_multiple_incidents_extra_data(self, gte_creation_time_milliseconds=0, limit=100, **_):
+        def get_multiple_incidents_extra_data(self, gte_creation_time_milliseconds=0, limit=100, offset=0, **_):
             return [
                 inc for inc in self.incidents
                 if inc['creation_time'] >= gte_creation_time_milliseconds
-            ][:limit]
+            ][offset:offset + limit]
 
     mock_client = MockClient()
 
@@ -1622,9 +1622,10 @@ def test_fetch_incidents_dedup():
         max_fetch=2,
     )
 
+    assert len(result_1) == 2
     assert 'XDR Incident 1' in result_1[0]['name']
     assert 'XDR Incident 2' in result_1[1]['name']
-    assert last_run['incidents_at_last_timestamp'] == ['2']
+    assert last_run['offset'] == 1
 
     last_run, result_2 = fetch_incidents(
         client=mock_client,
@@ -1632,21 +1633,39 @@ def test_fetch_incidents_dedup():
         integration_instance={},
         exclude_artifacts=True,
         last_run=last_run,
-        max_fetch=3,
+        max_fetch=2,
     )
 
+    assert len(result_2) == 2
     assert 'XDR Incident 3' in result_2[0]['name']
     assert 'XDR Incident 4' in result_2[1]['name']
-    assert last_run['incidents_at_last_timestamp'] == ['4']
+    assert last_run['offset'] == 3
 
-    # run empty test and assert last_run['incidents_at_last_timestamp'] stays the same
-    last_run, result_2 = fetch_incidents(
+    last_run, result_3 = fetch_incidents(
         client=mock_client,
         first_fetch_time='3 days',
         integration_instance={},
         exclude_artifacts=True,
         last_run=last_run,
-        max_fetch=0,
+        max_fetch=2,
     )
 
-    assert last_run['incidents_at_last_timestamp'] == ['4']
+    assert len(result_3) == 2
+    assert 'XDR Incident 5' in result_3[0]['name']
+    assert 'XDR Incident 6' in result_3[1]['name']
+    assert last_run['offset'] == 1
+
+    # run empty test and assert last_run['offset'] stays the same
+    last_run['offset'] = 10
+
+    last_run, empty_result = fetch_incidents(
+        client=mock_client,
+        first_fetch_time='3 days',
+        integration_instance={},
+        exclude_artifacts=True,
+        last_run=last_run,
+        max_fetch=2,
+    )
+
+    assert not empty_result
+    assert last_run['offset'] == 10
