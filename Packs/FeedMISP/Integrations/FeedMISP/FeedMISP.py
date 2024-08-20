@@ -118,7 +118,7 @@ LIMIT: int = 2000
 
 class Client(BaseClient):
 
-    def __init__(self, base_url: str, authorization: str, timeout: float, verify: bool, proxy: bool):
+    def __init__(self, base_url: str, authorization: str, timeout: float, verify: bool, proxy: bool, performance: bool):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self.timeout = timeout
 
@@ -127,6 +127,7 @@ class Client(BaseClient):
             'Accept': 'application/json',
             'Content-Type': 'application/json',
         }
+        self.performance = performance
 
     def search_query(self, body: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -320,7 +321,7 @@ def build_indicator(value_: str, type_: str, raw_data: Dict[str, Any], reputatio
     return indicator_obj
 
 
-def build_indicators(response: Dict[str, Any],
+def build_indicators(client: Client, response: Dict[str, Any],
                      attribute_type: List[str],
                      tlp_color: Optional[str],
                      url: Optional[str],
@@ -338,7 +339,8 @@ def build_indicators(response: Dict[str, Any],
         update_indicator_fields(indicator_obj, tlp_color, raw_type, feed_tags)
         galaxy_indicators = build_indicators_from_galaxies(indicator_obj, reputation)
         create_and_add_relationships(indicator_obj, galaxy_indicators)
-        indicator_obj.pop("rawJSON")
+        if client.performance:
+            indicator_obj.pop("rawJSON")
         indicators.append(indicator_obj)
     return indicators
 
@@ -489,7 +491,7 @@ def get_attributes_command(client: Client, args: Dict[str, str], params: Dict[st
     response = client.search_query(params_dict)
     if error_message := response.get('Error'):
         raise DemistoException(error_message)
-    indicators = build_indicators(response, attribute_type, tlp_color, params.get('url'), reputation, feed_tags)
+    indicators = build_indicators(client, response, attribute_type, tlp_color, params.get('url'), reputation, feed_tags)
     hr_indicators = []
     for indicator in indicators:
         hr_indicators.append({
@@ -532,7 +534,7 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]):
     while len(search_query_per_page.get("response", {}).get("Attribute", [])):
         demisto.debug(f'search_query_per_page number of attributes:\
                       {len(search_query_per_page.get("response", {}).get("Attribute", []))} page: {params_dict["page"]}')
-        indicators = build_indicators(search_query_per_page, attribute_types, tlp_color, params.get('url'), reputation, feed_tags)
+        indicators = build_indicators(client, search_query_per_page, attribute_types, tlp_color, params.get('url'), reputation, feed_tags)
         for iter_ in batch(indicators, batch_size=2000):
             demisto.createIndicators(iter_)
         params_dict['page'] += 1
@@ -552,6 +554,7 @@ def main():
     timeout = arg_to_number(params.get('timeout')) or 60
     insecure = not params.get('insecure', False)
     proxy = params.get('proxy', False)
+    performance = argToBoolean(params.get('performance') or False)
     command = demisto.command()
     args = demisto.args()
     if params.get('feedExpirationPolicy') == 'suddenDeath':
@@ -563,7 +566,8 @@ def main():
             authorization=params['credentials']['password'],
             verify=insecure,
             proxy=proxy,
-            timeout=timeout
+            timeout=timeout,
+            performance=performance
         )
 
         if command == 'test-module':

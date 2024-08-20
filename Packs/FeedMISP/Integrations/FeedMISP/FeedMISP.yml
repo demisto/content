@@ -48,6 +48,12 @@ configuration:
   - Bad
   additionalinfo: Indicators from this integration instance will be marked with this reputation.
   required: false
+- additionalinfo: 'Improve the feed performance by removing the rawJSON from the indicators. Note: A loss of data may occur if selecting this checkbox.'
+  display: Remove rawJSON from indicators
+  name: performance
+  defaultvalue: "false"
+  type: 8
+  required: false
 - display: Source Reliability
   name: feedReliability
   defaultvalue: F - Reliability cannot be judged
