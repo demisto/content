@@ -2,7 +2,7 @@ Exchange Web Services (EWS) provides the functionality to enable client applicat
 
 The EWS O365 integration implants EWS leading services. The integration allows getting information on emails and activities in a target mailbox, and some active operations on the mailbox such as deleting emails and attachments or moving emails from folder to folder.
 
-## Use cases
+## Use Cases
 
 The EWS integration can be used for the following use cases.
 
@@ -62,7 +62,7 @@ For more information on this permission, visit [the Microsoft documentation](htt
 
 To limit the application's permissions to only specific mailboxes, follow the [Microsoft documentation](https://docs.microsoft.com/en-us/graph/auth-limit-mailbox-access). Note that it may take about an hour for permissions changes to take effect.
 
-## Configure Integration on XSOAR (Parameters)
+## Configure Integration on Cortex
 
 | **Parameter** | **Description** |**Required**|
 | --- | --- | --- |
