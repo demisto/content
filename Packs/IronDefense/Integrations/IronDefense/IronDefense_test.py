@@ -1,4 +1,3 @@
-# type: ignore
 import json
 import unittest
 import demistomock as demisto
@@ -7,7 +6,6 @@ from IronDefense import IronDefense, LOG_PREFIX
 from unittest import TestCase, mock
 from unittest.mock import Mock, call
 import requests
-from typing import Dict
 from http.client import HTTPException
 
 requests.packages.urllib3.disable_warnings()
@@ -53,17 +51,16 @@ class IronDefenseTest(TestCase):
         test_context = {
             'JWT': test_jwt
         }
-        self.assertEqual(test_jwt, self.class_under_test._get_jwt(test_context), 'Unexpected result')
-        self.assertEqual(None, self.class_under_test._get_jwt(None), 'None context should return None')
-        self.assertEqual(None, self.class_under_test._get_jwt({'bogus': 'context'}),
-                         'Missing jwt in context should return None')
+        assert test_jwt == self.class_under_test._get_jwt(test_context), 'Unexpected result'
+        assert None is self.class_under_test._get_jwt(None), 'None context should return None'
+        assert None is self.class_under_test._get_jwt({'bogus': 'context'}), 'Missing jwt in context should return None'
 
     def test_configure_session_auth(self):
         self.mock_session.headers = {}
 
         # test no jwt token
         self.class_under_test._configure_session_auth({})
-        self.assertIsNone(self.mock_session.headers.get('authentication', None))
+        assert self.mock_session.headers.get('authentication', None) is None
 
         # test loading jwt token
         test_jwt = 'jwt token'
@@ -71,19 +68,19 @@ class IronDefenseTest(TestCase):
             'JWT': test_jwt
         }
         self.class_under_test._configure_session_auth(test_context)
-        self.assertEqual('Bearer ' + test_jwt, self.mock_session.headers.get('Authorization'))
+        assert 'Bearer ' + test_jwt == self.mock_session.headers.get('Authorization')
 
     @mock.patch('requests.Response', autospec=True)
     def test_http_request(self, MockResponse):
         MockResponse.return_value.headers = {}
         method = 'GET'
         uri = '/something'
-        headers: Dict[str, str] = {}
+        headers: dict[str, str] = {}
         data = '{}'
-        params: Dict[str, str] = {}
+        params: dict[str, str] = {}
         files = None
         mock_jwt_value = 'jwt token'
-        expected_uri = 'https://{}:{}{}{}'.format(self.host, self.port, self.url_prefix, uri)
+        expected_uri = f'https://{self.host}:{self.port}{self.url_prefix}{uri}'
 
         '''Test successful response'''
         mock_response = MockResponse()
@@ -94,7 +91,7 @@ class IronDefenseTest(TestCase):
         self.mock_session.request.assert_called_with(method, expected_uri, headers=headers, data=data, params=params,
                                                      files=files, timeout=self.class_under_test.request_timeout,
                                                      auth=None, verify=False)
-        self.assertEqual(test_response, mock_response)
+        assert test_response == mock_response
 
         '''Test incorrect creds'''
         mock_response = MockResponse()
@@ -107,7 +104,7 @@ class IronDefenseTest(TestCase):
                                                      auth=(
                                                          self.credentials['identifier'], self.credentials['password']),
                                                      verify=False)
-        self.assertEqual(test_response, mock_response)
+        assert test_response == mock_response
 
         '''Test expired jwt'''
         self.mock_session.request.reset_mock()
@@ -142,10 +139,9 @@ class IronDefenseTest(TestCase):
                       auth=(self.credentials['identifier'], self.credentials['password']), verify=False)
         ])
         # check to see if the jwt was stored
-        self.assertDictEqual({'JWT': mock_jwt_value}, demisto.getIntegrationContext(), 'JWT value should be the same '
-                                                                                       'as the stored value.')
-        self.assertEqual(200, test_response.status_code, 'Unexpected status code')
-        self.assertEqual(2, self.mock_session.request.call_count, '_http_request should have made 2 calls')
+        assert {'JWT': mock_jwt_value} == demisto.getIntegrationContext()
+        assert test_response.status_code == 200, 'Unexpected status code'
+        assert self.mock_session.request.call_count == 2, '_http_request should have made 2 calls'
 
         '''Test 5xx response'''
         self.mock_session.request.reset_mock()
@@ -160,7 +156,7 @@ class IronDefenseTest(TestCase):
         self.mock_session.request.assert_called_with(method, expected_uri, headers=headers, data=data, params=params,
                                                      files=files, timeout=self.class_under_test.request_timeout,
                                                      auth=None, verify=False)
-        self.assertEqual(test_response, mock_response)
+        assert test_response == mock_response
 
     @mock.patch('requests.Response', autospec=True)
     def test_test_module(self, MockResponse):
@@ -178,7 +174,7 @@ class IronDefenseTest(TestCase):
                                                      auth=(self.credentials['identifier'], self.credentials[
                                                          'password']),
                                                      verify=False)
-        self.assertEqual('ok', result, 'Result should be "ok"')
+        assert result == 'ok', 'Result should be "ok"'
 
         # test failed response
         error_json = {
@@ -197,7 +193,7 @@ class IronDefenseTest(TestCase):
                                                      auth=(self.credentials['identifier'], self.credentials[
                                                          'password']),
                                                      verify=False)
-        self.assertNotEqual('ok', result, 'Result should have an error message')
+        assert result != 'ok', 'Result should have an error message'
 
     @mock.patch('requests.Response', autospec=True)
     def test_update_analyst_ratings(self, MockResponse):
@@ -765,7 +761,7 @@ class IronDefenseTest(TestCase):
         result = [init_result[0]["rawJSON"], init_result[1]["rawJSON"], init_result[2]["rawJSON"],
                   init_result[3]["rawJSON"]]
 
-        self.assertEqual(expected_resp_data, result)
+        assert expected_resp_data == result
 
     # Test default filtering on Alert Notifications
     @mock.patch('requests.Response', autospec=True)
@@ -814,7 +810,7 @@ class IronDefenseTest(TestCase):
                   init_result[3]["rawJSON"], init_result[4]["rawJSON"], init_result[5]["rawJSON"],
                   init_result[6]["rawJSON"]]
 
-        self.assertEqual(expected_resp_data, result)
+        assert expected_resp_data == result
 
     # Mock Json Data for fetch_event_incidents()
     def mock_fetch_event_incidents_data(self):
@@ -985,7 +981,7 @@ class IronDefenseTest(TestCase):
         result = [init_result[0]["rawJSON"], init_result[1]["rawJSON"], init_result[2]["rawJSON"],
                   init_result[3]["rawJSON"]]
 
-        self.assertEqual(expected_resp_data, result)
+        assert expected_resp_data == result
 
     # Test default filtering on Event Notifications
     @mock.patch('requests.Response', autospec=True)
@@ -1034,7 +1030,7 @@ class IronDefenseTest(TestCase):
                   init_result[3]["rawJSON"], init_result[4]["rawJSON"], init_result[5]["rawJSON"],
                   init_result[6]["rawJSON"]]
 
-        self.assertEqual(expected_resp_data, result)
+        assert expected_resp_data == result
 
     @mock.patch('requests.Response', autospec=True)
     def test_get_alert_irondome_information(self, MockResponse):
@@ -1084,12 +1080,12 @@ class IronDefenseTest(TestCase):
 
         mock_response.json.return_value = error_json
         error_msg = self.class_under_test._get_error_msg_from_response(mock_response)
-        self.assertEqual(expected_error_msg, error_msg, 'Error message was not properly extracted')
+        assert expected_error_msg == error_msg, 'Error message was not properly extracted'
 
         mock_response.json.return_value = {}
         mock_response.text = expected_error_msg
         error_msg = self.class_under_test._get_error_msg_from_response(mock_response)
-        self.assertEqual(expected_error_msg, error_msg, 'Error message was not properly extracted')
+        assert expected_error_msg == error_msg, 'Error message was not properly extracted'
 
     @mock.patch('IronDefense.demisto')
     def test_test_module_command(self, mock_demisto):
@@ -1125,6 +1121,7 @@ class IronDefenseTest(TestCase):
                 return expected_severity
             if arg == 'expectation':
                 return expected_expectation
+            return None
 
         mock_demisto.getArg.side_effect = getArg_side_effect
 
@@ -1153,6 +1150,7 @@ class IronDefenseTest(TestCase):
                 return expected_comment
             if arg == 'share_comment_with_irondome':
                 return 'true'
+            return None
 
         mock_demisto.getArg.side_effect = getArg_side_effect
 
@@ -1182,6 +1180,7 @@ class IronDefenseTest(TestCase):
                 return 'true'
             if arg == 'status':
                 return expected_status
+            return None
 
         mock_demisto.getArg.side_effect = getArg_side_effect
 
@@ -1219,6 +1218,7 @@ class IronDefenseTest(TestCase):
                 return expected_activity_start_time
             if arg == 'activity_end_time':
                 return expected_activity_end_time
+            return None
 
         mock_demisto.getArg.side_effect = getArg_side_effect
 
@@ -1356,6 +1356,7 @@ class IronDefenseTest(TestCase):
         def getArg_side_effect(arg):
             if arg == 'event_id':
                 return expected_event_id
+            return None
 
         def event_context_table_contains_multi_columns_side_effect(table):
             return table.get('name') == 'enterprise_ips'
@@ -1771,7 +1772,7 @@ class IronDefenseTest(TestCase):
             actual_dict_table_list = self.class_under_test.event_context_table_to_dict_list(event_context_table)
 
         # Assert results
-        self.assertEqual(expected_dict_table_list, actual_dict_table_list)
+        assert expected_dict_table_list == actual_dict_table_list
 
     def test_event_context_to_dict(self):
         # Expectations
@@ -1789,7 +1790,7 @@ class IronDefenseTest(TestCase):
             actual_dict_table = self.class_under_test.event_context_table_to_dict(event_context_table)
 
         # Assert results
-        self.assertEqual(expected_dict_table, actual_dict_table)
+        assert expected_dict_table == actual_dict_table
 
     def test_event_context_table_contains_multi_columns(self):
         # Execute test
@@ -1797,13 +1798,13 @@ class IronDefenseTest(TestCase):
             json_data = event_context_table_file.read()
             event_context_table = json.loads(json_data)
             result = self.class_under_test.event_context_table_contains_multi_columns(event_context_table)
-            self.assertTrue(result)
+            assert result
 
         with open('./test-data/event-context-key-value-table.json') as event_context_table_file:
             json_data = event_context_table_file.read()
             event_context_table = json.loads(json_data)
             result = self.class_under_test.event_context_table_contains_multi_columns(event_context_table)
-            self.assertFalse(result)
+            assert not result
 
     def test_create_markdown_link(self):
         # Expectations
@@ -1815,7 +1816,7 @@ class IronDefenseTest(TestCase):
         actual_markdown_link = self.class_under_test.create_markdown_link(link_text, url)
 
         # Assert
-        self.assertEqual(expected_markdown_link, actual_markdown_link)
+        assert expected_markdown_link == actual_markdown_link
 
     def test_create_dome_markdown_link(self):
         # Expectations
@@ -1828,7 +1829,7 @@ class IronDefenseTest(TestCase):
         actual_markdown_link = self.class_under_test.create_dome_markdown_link(link_text, alert_id)
 
         # Assert
-        self.assertEqual(expected_markdown_link, actual_markdown_link)
+        assert expected_markdown_link == actual_markdown_link
 
 
 if __name__ == '__main__':
