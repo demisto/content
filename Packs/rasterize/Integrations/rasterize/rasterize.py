@@ -458,7 +458,7 @@ def chrome_manager() -> tuple[Any | None, str | None]:
             demisto.debug(f"Should Chrome be terminated?, {total_rasterizations_count=},"
                           f" {MAX_RASTERIZATIONS_COUNT=}")
             if total_rasterizations_count == MAX_RASTERIZATIONS_COUNT:
-                demisto.info(f"Terminating Chrome after {total_rasterizations_count} rasterizations")
+                demisto.info(f"Max resterizations count achieved with {total_rasterizations_count=}, terminating Chrome.")
                 terminate_chrome(killall=True)
                 write_file(CHROME_INSTANCES_FILE_PATH, "", overwrite=True)
                 write_file(RASTERIZATIONS_COUNTER_FILE_PATH, "0", overwrite=True)
