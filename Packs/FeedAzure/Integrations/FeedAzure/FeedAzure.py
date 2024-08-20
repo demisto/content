@@ -258,7 +258,10 @@ def test_module(client: Client) -> tuple[str, dict, dict]:
     return 'ok', {}, {}
 
 
-def get_indicators_command(client: Client, feedTags: list, tlp_color: str | None) -> tuple[str, dict, dict]:
+def get_indicators_command(client: Client,
+                           feedTags: list,
+                           tlp_color: str | None,
+                           enrichment_excluded: bool = False) -> tuple[str, dict, dict]:
     """Retrieves indicators from the feed to the war-room.
 
     Args:
@@ -272,7 +275,7 @@ def get_indicators_command(client: Client, feedTags: list, tlp_color: str | None
             Dict. The raw data of the indicators.
     """
     limit = int(demisto.args().get('limit')) if 'limit' in demisto.args() else 10
-    indicators, raw_response = fetch_indicators_command(client, feedTags, tlp_color, limit)
+    indicators, raw_response = fetch_indicators_command(client, feedTags, tlp_color, limit, enrichment_excluded)
 
     human_readable = tableToMarkdown('Indicators from Azure Feed:', indicators,
                                      headers=['value', 'type'], removeNull=True)
@@ -280,8 +283,11 @@ def get_indicators_command(client: Client, feedTags: list, tlp_color: str | None
     return human_readable, {}, {'raw_response': raw_response}
 
 
-def fetch_indicators_command(client: Client, feedTags: list, tlp_color: str | None, limit: int = -1) \
-        -> tuple[list[dict], list]:
+def fetch_indicators_command(client: Client,
+                             feedTags: list,
+                             tlp_color: str | None,
+                             limit: int = -1,
+                             enrichment_excluded: bool = False) -> tuple[list[dict], list]:
     """Fetches indicators from the feed to the indicators tab.
     Args:
         client (Client): Client object configured according to instance arguments.
@@ -310,7 +316,8 @@ def fetch_indicators_command(client: Client, feedTags: list, tlp_color: str | No
                 'service': indicator.get('azure_system_service'),
                 'tags': feedTags,
             },
-            'rawJSON': indicator
+            'rawJSON': indicator,
+            'enrichmentExcluded': enrichment_excluded,
         }
 
         if tlp_color:
@@ -336,6 +343,7 @@ def main():
 
     feedTags = argToList(demisto.params().get('feedTags'))
     tlp_color = demisto.params().get('tlp_color')
+    enrichment_excluded = demisto.params().get('enrichmentExcluded', False)
 
     polling_arg = demisto.params().get('polling_timeout', '')
     polling_timeout = int(polling_arg) if polling_arg.isdigit() else 20
@@ -354,7 +362,7 @@ def main():
                 feedTags['tags'] = feedTags
             return_outputs(*get_indicators_command(client, feedTags, tlp_color))
         elif command == 'fetch-indicators':
-            indicators, _ = fetch_indicators_command(client, feedTags, tlp_color)
+            indicators, _ = fetch_indicators_command(client, feedTags, tlp_color, enrichment_excluded=enrichment_excluded)
             for single_batch in batch(indicators, batch_size=2000):
                 demisto.createIndicators(single_batch)
 

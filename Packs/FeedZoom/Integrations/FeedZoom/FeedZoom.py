@@ -99,7 +99,7 @@ def test_module(client: Client, *_) -> str:
 
 
 def fetch_indicators(client: Client, feed_tags: list = [], tlp_color: str | None = None,
-                     limit: int = -1) -> list[dict]:
+                     limit: int = -1, enrichment_excluded: bool = False) -> list[dict]:
     """Retrieves indicators from the feed
     Args:
         client (Client): Client object with request
@@ -127,7 +127,8 @@ def fetch_indicators(client: Client, feed_tags: list = [], tlp_color: str | None
             "type": type_,
             "service": "Zoom Feed",
             "rawJSON": raw_data,
-            'fields': {}
+            'fields': {},
+            'enrichmentExcluded': enrichment_excluded,
         }
         if feed_tags:
             indicator_obj["fields"]['tags'] = feed_tags
@@ -139,7 +140,7 @@ def fetch_indicators(client: Client, feed_tags: list = [], tlp_color: str | None
 
 
 def get_indicators_command(
-        client: Client, params: dict[str, str], args: dict[str, str]
+        client: Client, params: dict, args: dict[str, str]
 ) -> CommandResults:
     """Wrapper for retrieving indicators from the feed to the war-room.
     Args:
@@ -152,7 +153,8 @@ def get_indicators_command(
     feed_tags = argToList(params.get("feedTags", ""))
     tlp_color = params.get('tlp_color')
     limit = arg_to_number(args.get('limit')) or 10
-    indicators = fetch_indicators(client, feed_tags, tlp_color, limit)
+    enrichment_excluded = params.get('enrichmentExcluded', False)
+    indicators = fetch_indicators(client, feed_tags, tlp_color, limit, enrichment_excluded)
 
     if indicators:
         human_readable = tableToMarkdown(
@@ -165,7 +167,7 @@ def get_indicators_command(
                           raw_response=indicators)
 
 
-def fetch_indicators_command(client: Client, params: dict[str, str]) -> list[dict]:
+def fetch_indicators_command(client: Client, params: dict) -> list[dict]:
     """Wrapper for fetching indicators from the feed to the Indicators tab.
     Args:
         client: Client object with request
@@ -175,7 +177,8 @@ def fetch_indicators_command(client: Client, params: dict[str, str]) -> list[dic
     """
     feed_tags = argToList(params.get("feedTags", ""))
     tlp_color = params.get('tlp_color')
-    indicators = fetch_indicators(client, feed_tags, tlp_color)
+    enrichment_excluded = params.get('enrichmentExcluded', False)
+    indicators = fetch_indicators(client, feed_tags, tlp_color, enrichment_excluded)
     return indicators
 
 

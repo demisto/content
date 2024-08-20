@@ -171,7 +171,7 @@ def test_module(client: Client, *_) -> tuple[str, dict[Any, Any], dict[Any, Any]
     return 'ok', {}, {}
 
 
-def fetch_indicators(client: Client, indicator_type_lower: str, limit: int = -1) -> list[dict]:
+def fetch_indicators(client: Client, indicator_type_lower: str, limit: int = -1, enrichment_excluded: bool = False) -> list[dict]:
     """Retrieves indicators from the feed
 
     Args:
@@ -227,13 +227,16 @@ def fetch_indicators(client: Client, indicator_type_lower: str, limit: int = -1)
                     'value': value,
                     'type': type_,
                     'rawJSON': raw_data,
-                    'fields': indicator_mapping_fields
+                    'fields': indicator_mapping_fields,
+                    'enrichmentExcluded': enrichment_excluded,
                 })
 
     return indicators
 
 
-def get_indicators_command(client: Client, args: dict[str, str]) -> tuple[str, dict[Any, Any], dict[Any, Any]]:
+def get_indicators_command(client: Client,
+                           args: dict[str, str],
+                           enrichment_excluded: bool = False) -> tuple[str, dict[Any, Any], dict[Any, Any]]:
     """Wrapper for retrieving indicators from the feed to the war-room.
 
     Args:
@@ -246,14 +249,14 @@ def get_indicators_command(client: Client, args: dict[str, str]) -> tuple[str, d
     indicator_type = str(args.get('indicator_type'))
     indicator_type_lower = indicator_type.lower()
     limit = int(demisto.args().get('limit')) if 'limit' in demisto.args() else 10
-    indicators = fetch_indicators(client, indicator_type_lower, limit)
+    indicators = fetch_indicators(client, indicator_type_lower, limit, enrichment_excluded)
     human_readable = tableToMarkdown('Indicators from Office 365 Feed:', indicators,
                                      headers=['value', 'type'], removeNull=True)
 
     return human_readable, {}, {'raw_response': indicators}
 
 
-def fetch_indicators_command(client: Client) -> list[dict]:
+def fetch_indicators_command(client: Client, enrichment_excluded: bool = False) -> list[dict]:
     """Wrapper for fetching indicators from the feed to the Indicators tab.
 
     Args:
@@ -262,7 +265,7 @@ def fetch_indicators_command(client: Client) -> list[dict]:
     Returns:
         Indicators.
     """
-    indicators = fetch_indicators(client, 'both')
+    indicators = fetch_indicators(client, 'both', enrichment_excluded=enrichment_excluded)
     return indicators
 
 
@@ -280,6 +283,7 @@ def main():
     use_ssl = not params.get('insecure', False)
     tags = argToList(params.get('feedTags'))
     tlp_color = params.get('tlp_color')
+    enrichment_excluded = demisto.params().get('enrichmentExcluded', False)
 
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
@@ -294,7 +298,7 @@ def main():
             return_outputs(*commands[command](client, demisto.args()))
 
         elif command == 'fetch-indicators':
-            indicators = fetch_indicators_command(client)
+            indicators = fetch_indicators_command(client, enrichment_excluded)
             for iter_ in batch(indicators, batch_size=2000):
                 demisto.createIndicators(iter_)
 

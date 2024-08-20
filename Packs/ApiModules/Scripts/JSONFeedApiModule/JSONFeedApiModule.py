@@ -240,7 +240,7 @@ def test_module(client: Client, limit) -> str:  # pragma: no cover
 
 def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list, auto_detect: bool,
                              create_relationships: bool = False, limit: int = 0, remove_ports: bool = False,
-                             **kwargs) -> Tuple[List[dict], bool]:
+                             enrichment_excluded: bool = False, **kwargs) -> Tuple[List[dict], bool]:
     """
     Fetches the indicators from client.
     :param client: Client of a JSON Feed
@@ -296,7 +296,7 @@ def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list
             indicators.extend(
                 handle_indicator_function(client, item, feed_config, service_name, indicator_type, indicator_field,
                                           use_prefix_flat, feedTags, auto_detect, mapping_function,
-                                          create_relationships, create_relationships_function, remove_ports))
+                                          create_relationships, create_relationships_function, remove_ports, enrichment_excluded))
 
             if limit and len(indicators) >= limit:  # We have a limitation only when get-indicators command is
                 # called, and then we return for each service_name "limit" of indicators
@@ -320,8 +320,9 @@ def indicator_mapping(mapping: Dict, indicator: Dict, attributes: Dict):
 def handle_indicator(client: Client, item: Dict, feed_config: Dict, service_name: str,
                      indicator_type: str, indicator_field: str, use_prefix_flat: bool,
                      feedTags: list, auto_detect: bool, mapping_function: Callable = indicator_mapping,
-                     create_relationships: bool = False, relationships_func: Callable = None,
-                     remove_ports: bool = False) -> List[dict]:
+                     create_relationships: bool = False, relationships_func: Callable | None = None,
+                     remove_ports: bool = False,
+                     enrichment_excluded: bool = False) -> List[dict]:
     indicator_list = []
     mapping = feed_config.get('mapping')
     take_value_from_flatten = False
@@ -366,6 +367,7 @@ def handle_indicator(client: Client, item: Dict, feed_config: Dict, service_name
         indicator['value'] = indicator['value'].split(':')[0]
 
     indicator['rawJSON'] = item
+    indicator['excludeEnrichment'] = enrichment_excluded
 
     indicator_list.append(indicator)
 
@@ -436,6 +438,7 @@ def feed_main(params, feed_name, prefix):  # pragma: no cover
     auto_detect = params.get('auto_detect_type')
     feedTags = argToList(params.get('feedTags'))
     limit = int(demisto.args().get('limit', 10))
+    enrichment_excluded = params.get('enrichmentExcluded', False)
     command = demisto.command()
     if prefix and not prefix.endswith('-'):
         prefix += '-'
@@ -448,8 +451,13 @@ def feed_main(params, feed_name, prefix):  # pragma: no cover
         elif command == 'fetch-indicators':
             remove_ports = argToBoolean(params.get('remove_ports', False))
             create_relationships = params.get('create_relationships')
-            indicators, no_update = fetch_indicators_command(client, indicator_type, feedTags, auto_detect,
-                                                             create_relationships, remove_ports=remove_ports)
+            indicators, no_update = fetch_indicators_command(client,
+                                                             indicator_type,
+                                                             feedTags,
+                                                             auto_detect,
+                                                             create_relationships,
+                                                             remove_ports=remove_ports,
+                                                             enrichment_excluded=enrichment_excluded)
 
             # check if the version is higher than 6.5.0 so we can use noUpdate parameter
             if is_demisto_version_ge('6.5.0'):
