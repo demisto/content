@@ -3309,7 +3309,8 @@ def run_polling_command(client: Client, cmd: str, args: Dict[str, Any]):
             if isinstance(output, dict) and output.get("status") in ["completed"]:
                 task_ids.append(output.get("id"))
                 script_completed = True
-            # Check if the script status is not completed, if not completed will break loop an schedule the command
+            # Check if the script status is not completed, if not completed will break loop.
+            # And mark the script_completed flag to False, so that the command rescheduled.
             if isinstance(output, dict) and output.get("status") not in ["completed"]:
                 script_completed = False
                 break
