@@ -14,10 +14,10 @@ filter _raw_log ~= "^\d{4}\-\d{2}\-\d{2}\s+\d{2}:\d{2}:\d{2}\s+"
 
 // determine log format according to log type and field list length, and extract the log fields accordingly into parsed_fields 
 | alter parsed_fields = if( 
-        tmp_log_type = "Access Log", 
+        tmp_log_type = "Access Log", // Schema: https://learn.microsoft.com/en-us/windows/win32/http/w3c-logging
             // format: date time s-sitename s-computername s-ip cs-method cs-uri-stem cs-uri-query s-port cs-username c-ip cs-version cs(User-Agent) cs(Cookie) cs(Referer) cs-host sc-status sc-substatus sc-win32-status sc-bytes cs-bytes time-taken
             regexcapture(_raw_log, "^(?P<date>\S+)\s+(?P<time>\S+)\s+(?P<s_sitename>\S+)\s+(?P<s_computername>\S+)\s+(?P<s_ip>\S+)\s+(?P<cs_method>\S+)\s+(?P<cs_uri_stem>\S+)\s+(?P<cs_uri_query>\S+)\s+(?P<s_port>\S+)\s+(?P<cs_username>\S+)\s+(?P<c_ip>\S+)\s+(?P<cs_version>\S+)\s+(?P<cs_user_agent>\S+)\s+(?P<cs_cookie>\S+)\s+(?P<cs_referer>\S+)\s+(?P<cs_host>\S+)\s+(?P<sc_status>\S+)\s+(?P<sc_substatus>\S+)\s+(?P<sc_win32_status>\S+)\s+(?P<sc_bytes>\S+)\s+(?P<cs_bytes>\S+)\s+(?P<time_taken>\S+)"),
-        tmp_num_of_fields = 13, // Error Log 
+        tmp_num_of_fields = 13, // Error Log (Schema: https://learn.microsoft.com/en-us/windows/win32/http/format-of-the-http-server-api-error-logs)
             // format: date time c-ip c-port s-ip s-port cs-version cs-method cs-uri sc-status s-siteid s-reason s-queuename
             regexcapture(_raw_log, "(?P<date>\S+)\s+(?P<time>\S+)\s+(?P<c_ip>\S+)\s+(?P<c_port>\S+)\s+(?P<s_ip>\S+)\s+(?P<s_port>\S+)\s+(?P<cs_version>\S+)\s+(?P<cs_method>\S+)\s+(?P<cs_uri>\S+)\s+(?P<sc_status>\S+)\s+(?P<s_siteid>\S+)\s+(?P<s_reason>\S+)\s+(?P<s_queuename>\S+)"),
         tmp_num_of_fields = 14, // Error Log 
