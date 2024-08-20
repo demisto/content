@@ -743,8 +743,9 @@ def fetch_indicators(client: Client, auto_sync: bool = False):
     demisto.debug("fetching IOCs: starting")
     integration_context = get_integration_context()
     demisto.debug(f"The integration last sync time is {integration_context.get('ts')}")
-    demisto.debug(f"The last search after is {integration_context.get('search_after')}")
-    if (((not integration_context) or (integration_context.get('ts') > int(integration_context.get('search_after',[])[0])))
+    search_after_number = arg_to_number(integration_context.get('search_after',[''])[0])
+    demisto.debug(f"The last search after is {search_after_number=}")
+    if (((not integration_context) or (integration_context.get('ts') > search_after_number))
         and auto_sync):
         if not integration_context:
             sync_time = datetime.now(timezone.utc)
@@ -753,9 +754,9 @@ def fetch_indicators(client: Client, auto_sync: bool = False):
         demisto.debug("fetching IOCs: running sync with is_first_stage_sync=True")
         # this will happen on the first time we run
         xdr_iocs_sync_command(client=client, is_first_stage_sync=is_first_stage_sync)
-        search_after = integration_context.get('search_after')
+        search_after = integration_context.get('search_after',[''])[0]
         demisto.debug(f"{search_after=}")
-        if search_after and search_after[0] > integration_context.get('ts'):
+        if search_after and arg_to_number(search_after) > integration_context.get('ts'):
             set_sync_time_with_str_time(search_after)
     else:
         # This will happen every fetch time interval as defined in the integration configuration
