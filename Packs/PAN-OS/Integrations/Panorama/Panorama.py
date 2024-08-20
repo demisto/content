@@ -7076,7 +7076,7 @@ def get_security_profile(xpath: str) -> Dict:
     return result
 
 
-def get_security_profiles_command(security_profile: str | None = None):
+def get_security_profiles(security_profile: str | None = None):
     """
     Get information about profiles.
     """
@@ -7250,7 +7250,7 @@ def get_security_profiles_command(security_profile: str | None = None):
         human_readable += tableToMarkdown('WildFire Profiles', wildfire_analysis_content)
         context.update({"Panorama.WildFire(val.Name == obj.Name)": wildfire_analysis_content})
 
-    return_results({
+    return ({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': result,
@@ -7258,6 +7258,10 @@ def get_security_profiles_command(security_profile: str | None = None):
         'HumanReadable': human_readable,
         'EntryContext': context
     })
+    
+def get_security_profiles_command(security_profile: str | None = None):
+    results = get_security_profiles(security_profile)
+    return_results(results)
 
 
 @logger
@@ -14345,7 +14349,12 @@ def profile_exception_crud_commands(args: dict, action_type: str):
         }
 
     raw_response = http_request(URL, 'GET', params=params)
-    return raw_response, exception_id, exception_name
+    return ({
+        'raw_response': raw_response,
+        'exception_id': exception_id,
+        'exception_name': exception_name, 
+        'profile_type': profile_type
+        })
 
 
 def pan_os_add_profile_exception_command(args: dict) -> CommandResults:
@@ -14358,7 +14367,10 @@ def pan_os_add_profile_exception_command(args: dict) -> CommandResults:
     Returns:
         A confirmation for adding the exception.
     """
-    raw_response, exception_id, exception_name = profile_exception_crud_commands(args, ExceptionCommandType.ADD.value)
+    results = profile_exception_crud_commands(args, ExceptionCommandType.ADD.value)
+    raw_response = results.get('raw_response')
+    exception_id = results.get('exception_id')
+    exception_name = results.get('exception_name')
     return CommandResults(
         raw_response=raw_response,
         readable_output=f'Successfully created Exception: "{exception_name}" with threat ID {exception_id}.',
@@ -14375,7 +14387,10 @@ def pan_os_edit_profile_exception_command(args: dict) -> CommandResults:
     Returns:
         A confirmation for editing the exception.
     """
-    raw_response, exception_id, exception_name = profile_exception_crud_commands(args, ExceptionCommandType.EDIT.value)
+    results = profile_exception_crud_commands(args, ExceptionCommandType.EDIT.value)
+    raw_response = results.get('raw_response')
+    exception_id = results.get('exception_id')
+    exception_name = results.get('exception_name')
     return CommandResults(
         raw_response=raw_response,
         readable_output=f'Successfully edited Exception: "{exception_name}" with threat ID {exception_id}.',
@@ -14392,7 +14407,10 @@ def pan_os_delete_profile_exception_command(args: dict) -> CommandResults:
     Returns:
         A confirmation for deleting the exception. 
     """
-    raw_response, exception_id, exception_name = profile_exception_crud_commands(args, ExceptionCommandType.DELETE.value)
+    results = profile_exception_crud_commands(args, ExceptionCommandType.DELETE.value)
+    raw_response = results.get('raw_response')
+    exception_id = results.get('exception_id')
+    exception_name = results.get('exception_name')
     return CommandResults(
         raw_response=raw_response,
         readable_output=f'Successfully deleted Exception: "{exception_name}" with threat ID {exception_id}.',
@@ -14408,17 +14426,30 @@ def pan_os_list_profile_exception_command(args: dict) -> CommandResults:
 
     Returns:
         A confirmation for deleting the exception.
-    """
+    """    
     profile_name = args.get('profile_name')
-    raw_response, _, _ = profile_exception_crud_commands(args, ExceptionCommandType.LIST.value)
+    
+    results = profile_exception_crud_commands(args, ExceptionCommandType.LIST.value)
+    raw_response = results.get('raw_response')
+    profile_type = results.get('profile_type')
+    
+    if profile_type == 'Vulnerability Protection Profile':
+        profile_type_context = get_security_profiles('vulnerability').get('EntryContext')
+        profile_type_context = profile_type_context.get("Panorama.Vulnerability(val.Name == obj.Name)")
+        profile_type = 'Vulnerability'
+    else:
+        profile_type_context = get_security_profiles('spyware').get('EntryContext')
+        profile_type_context = profile_type_context.get("Panorama.Spyware(val.Name == obj.Name)")
+        profile_type = 'Spyware'
 
+    profile_context = {}
+    for entry in profile_type_context:
+        if entry["Name"] == profile_name:
+            profile_context = entry
+    
     exceptions_response_list = raw_response['response']['result']['threat-exception']
     if not isinstance(exceptions_response_list, list):
         exceptions_response_list = [exceptions_response_list]
-
-    # for exception in exceptions_response_list:
-    #     parse_pan_os_un_committed_data(exception, ['@admin', '@dirtyId', '@time'])
-    #     exception["name"] = exception.pop("@name", "")
 
     context_exceptions_list = []
     hr = []
@@ -14428,12 +14459,13 @@ def pan_os_list_profile_exception_command(args: dict) -> CommandResults:
         if not isinstance(exceptions, list):
             exceptions = [exceptions]
         for entry in exceptions:
-            exception_name =  entry['@name']
+            exception_id =  entry['@name']
             exception_actions = ", ".join(entry['action'].keys())
             exception_packet_capture = entry.get('packet-capture')
             exception_exempt_id = entry.get('exempt-ip', {}).get('entry', {}).get('@name')
-            
-            excpetion_context = {'profile_name': profile_name,
+            _, exception_name = get_threat_id_from_predefined_threates(exception_id)
+            excpetion_context = {
+                                 'id': exception_id,
                                  'name': exception_name,
                                  'action': exception_actions,
                                  'packet-capture': exception_packet_capture,
@@ -14441,27 +14473,29 @@ def pan_os_list_profile_exception_command(args: dict) -> CommandResults:
                                  }
             
             cleaned_excpetion_context = {k: v for k, v in excpetion_context.items() if v is not None}
+            
             context_exceptions_list.append(cleaned_excpetion_context)
             
-            hr.append({'Name': exception_name,
+            hr.append({'ID': exception_id,
+                    'Name': exception_name,
                     'Action': exception_actions,
-                    'Packet Capture': exception_packet_capture,
                     'Exempt IP': exception_exempt_id,
+                    'Packet Capture': exception_packet_capture,
                     })
 
-    
+    profile_context['Exception'] = context_exceptions_list
+    context_path = f'Panorama.{profile_type}'
     return CommandResults(
         raw_response=raw_response,
-        outputs=context_exceptions_list,
+        outputs=profile_context,
         readable_output=tableToMarkdown(
             name='Profile Exceptions',
             t=hr,
-            headers=['Name', 'Actions', 'Exempt IP', 'Packet Capture'],
+            headers=['ID', 'Name', 'Action', 'Exempt IP', 'Packet Capture'],
             removeNull=True,
         ),
-        outputs_prefix='Panorama.ProfileException',
-        # replace_existing=True
-        outputs_key_field=['name', 'profile_name']
+        outputs_prefix=context_path,
+        outputs_key_field='Name'
     )
 
 
