@@ -451,6 +451,18 @@ def chrome_manager() -> tuple[Any | None, str | None]:
         get_chrome_instances_contents_dictionaries(chrome_instances_contents)
 
     if not chrome_instances_contents or instance_id not in instances_id:
+        # the file is empty or the conf doesn't exists or this is a new instane
+        previous_rasterizations_counter_from_file = read_file(RASTERIZATIONS_COUNTER_FILE_PATH)
+        if previous_rasterizations_counter_from_file:
+            total_rasterizations_count = int(previous_rasterizations_counter_from_file)
+            demisto.debug(f"Should Chrome be terminated?, {total_rasterizations_count=},"
+                          f" {MAX_RASTERIZATIONS_COUNT=}")
+            if total_rasterizations_count == MAX_RASTERIZATIONS_COUNT:
+                demisto.info(f"Terminating Chrome after {total_rasterizations_count} rasterizations")
+                terminate_chrome(killall=True)
+                write_file(CHROME_INSTANCES_FILE_PATH, "", overwrite=True)
+                write_file(RASTERIZATIONS_COUNTER_FILE_PATH, "0", overwrite=True)
+                demisto.debug('chrome_manager COND previous_rasterizations_counter_from_file succeeded')
         return generate_new_chrome_instance(instance_id, chrome_options)
 
     elif chrome_options != instance_id_to_chrome_options.get(instance_id):
@@ -461,6 +473,7 @@ def chrome_manager() -> tuple[Any | None, str | None]:
 
     chrome_port = instance_id_to_port.get(instance_id, '')
     browser = get_chrome_browser(chrome_port)
+    demisto.debug(f'chrome_manager {chrome_port=}')
     return browser, chrome_port
 
 
@@ -791,15 +804,6 @@ def perform_rasterize(path: str | list[str],
     :param width: window width
     :param height: window height
     """
-    previous_rasterizations_counter_from_file = read_file(RASTERIZATIONS_COUNTER_FILE_PATH)
-    if previous_rasterizations_counter_from_file:
-        total_rasterizations_count = int(previous_rasterizations_counter_from_file)
-        if total_rasterizations_count == MAX_RASTERIZATIONS_COUNT:
-            demisto.info(f"Terminating Chrome after {total_rasterizations_count} rasterizations")
-            terminate_chrome(killall=True)
-            write_file(CHROME_INSTANCES_FILE_PATH, "", overwrite=True)
-            write_file(RASTERIZATIONS_COUNTER_FILE_PATH, "0", overwrite=True)
-            previous_rasterizations_counter_from_file=0
     demisto.debug(f"rasterize, {path=}, {rasterize_type=}")
     browser, chrome_port = chrome_manager()
     if browser:
@@ -829,20 +833,11 @@ def perform_rasterize(path: str | list[str],
             demisto.info(
                 f"Finished {len(rasterization_threads)} rasterize operations, active tabs len: {len(browser.list_tab())}")
 
-            #previous_rasterizations_counter_from_file = read_file(RASTERIZATIONS_COUNTER_FILE_PATH)
+            previous_rasterizations_counter_from_file = read_file(RASTERIZATIONS_COUNTER_FILE_PATH)
             if previous_rasterizations_counter_from_file:
                 total_rasterizations_count = int(previous_rasterizations_counter_from_file) + len(rasterization_threads)
             else:
                 total_rasterizations_count = len(rasterization_threads)
-            demisto.debug(f"Should Chrome be terminated?, {total_rasterizations_count=},"
-                          f" {MAX_RASTERIZATIONS_COUNT=}, {len(browser.list_tab())=}")
-            # if total_rasterizations_count > MAX_RASTERIZATIONS_COUNT:
-            #     demisto.info(f"Terminating Chrome after {total_rasterizations_count} rasterizations")
-            #     terminate_chrome(killall=True)
-            #     write_file(CHROME_INSTANCES_FILE_PATH, "", overwrite=True)
-            #     demisto.info(f"Terminated Chrome after {total_rasterizations_count} rasterizations")
-            #     write_file(RASTERIZATIONS_COUNTER_FILE_PATH, "0", overwrite=True)
-            # else:
             write_file(RASTERIZATIONS_COUNTER_FILE_PATH, str(total_rasterizations_count), overwrite=True)
 
             # Get the results
@@ -862,6 +857,7 @@ def perform_rasterize(path: str | list[str],
         demisto.error(message)
         return_error(message)
         return None
+
 
 
 def return_err_or_warn(msg):  # pragma: no cover
