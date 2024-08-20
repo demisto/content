@@ -87,7 +87,7 @@ class Client(BaseClient):
             response_url = self._http_request(method='GET', full_url=link, resp_type='str', timeout=self.read_timeout)
             demisto.debug(f"Got response {response_url=}")
         except DemistoException as e:
-            demisto.error(f"Failed to get content for {link=}\nError:\n{e}")
+            demisto.debug(f"Failed to get content for {link=} - Skipping\nError:\n{e}")
             return ""
         report_content = 'This is a dumped content of the article. Use the link under Publications field to read ' \
                          'the full article. \n\n'
