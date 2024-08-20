@@ -328,10 +328,8 @@ repos:
     exclude: test_data|tests_data|.venv|.*_test.py$|infrastructure_tests|.vulture_whitelist.py|demistomock.py|Templates|conftest.py|Utils/download_packs_and_docker_images.py
     min_py_version: '3.7'
     args:
-    - --ignore-missing-imports
     - --check-untyped-defs
     - --show-error-codes
-    # - --follow-imports=silent
     - --allow-redefinition
     - --cache-dir=/tmp/.mypy_cache  #TODO add comment
     - --install-types
