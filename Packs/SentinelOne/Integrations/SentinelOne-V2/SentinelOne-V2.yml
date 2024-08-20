@@ -2433,7 +2433,7 @@ script:
     - contextPath: SentinelOne.RemoteScriptResults.downloadUrl
       description: Download Url.
       type: string
-    description: Get scripts results URLs.
+    description: Get a script's result download URL.
     name: sentinelone-get-remote-script-task-results
   - arguments:
     - name: account_ids

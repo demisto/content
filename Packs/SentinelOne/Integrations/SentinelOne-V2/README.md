@@ -1698,7 +1698,7 @@ Get remote scripts tasks using a variety of filters.
 ### sentinelone-get-remote-script-task-results
 
 ***
-Get scripts results URLs.
+Get a script's result download URL.
 
 #### Base Command
 
