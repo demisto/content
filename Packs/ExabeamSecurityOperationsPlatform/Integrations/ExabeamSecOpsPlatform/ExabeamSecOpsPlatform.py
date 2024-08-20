@@ -383,7 +383,7 @@ def get_limit(args: dict) -> int:
         int: The limit value if specified and less than or equal to 3000; otherwise, returns 3000 as the maximum limit.
         If the 'limit' argument is not present in the dictionary or is None, returns 50 as the default limit.
     """
-    if limit := args.get('limit'):
+    if limit := arg_to_number(args.get('limit')):
         return min(int(limit), MAX_LIMIT)
 
     return DEFAULT_LIMIT
@@ -725,19 +725,46 @@ def context_table_delete_command(client: Client, args: dict) -> CommandResults:
 
 def table_record_list_command(client: Client, args: dict) -> CommandResults:
     """
-    Retrieves and returns records from a specified table.
+    Retrieves records from a specified table, with support for pagination.
 
     Args:
         client (Client): The client instance used for API requests.
         args (dict): A dictionary of arguments, including:
-            - 'table_id': ID of the table from which to retrieve records.
-            - 'limit': Maximum number of records to retrieve.
-    """
+            - 'table_id' (str): ID of the table from which to retrieve records.
+            - 'limit' (int, optional): Maximum number of records to retrieve. Defaults to a predefined limit.
+            - 'page' (int, optional): The page number to retrieve. Defaults to 1 if 'page_size' is provided.
+            - 'page_size' (int, optional): Number of records per page. Defaults to a predefined limit if 'page' is provided.
+        """
     table_id = args.get("table_id")
-    params = {'limit': get_limit(args)}
+    limit = arg_to_number(args.get("limit"))
+    page = arg_to_number(args.get("page"))
+    page_size = arg_to_number(args.get("page_size"))
+    records: list = []
+    offset = 0
 
-    response = client.get_table_record_list(table_id, params)
-    records = response.get("records", [])
+    if page or page_size:
+        page = page or 1
+        page_size = page_size or DEFAULT_LIMIT
+
+        limit = page_size
+        offset = (page - 1) * page_size
+
+    else:
+        limit = limit or DEFAULT_LIMIT
+    while len(records) < limit:
+        params = {
+            'limit': min(limit - len(records), MAX_LIMIT),
+            'offset': offset
+        }
+
+        response = client.get_table_record_list(table_id, params)
+        fetched_records = response.get("records", [])
+        if not fetched_records:
+            break
+
+        records.extend(fetched_records)
+        offset = len(records)
+
     readable_output = format_record_keys(records)
 
     return CommandResults(

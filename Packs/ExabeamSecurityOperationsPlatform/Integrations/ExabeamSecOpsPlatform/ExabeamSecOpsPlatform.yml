@@ -475,8 +475,11 @@ script:
       description: ID of the table. Obtain this value by running `exabeam-platform-context-table-list`.
       required: true
     - name: limit
-      description: The number of records to return.
-      defaultValue: 50
+      description: The number of records to return. Default value is '50'.
+    - name: page
+      description: The page number to retrieve.
+    - name: page_size
+      description: The number of records per page. Default value is '50'.
   - name: exabeam-platform-table-record-create
     description: Add one or more context records directly to an existing table.
     arguments:

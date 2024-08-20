@@ -17,7 +17,6 @@ from ExabeamSecOpsPlatform import (
     table_record_list_command,
     generic_search_command,
     transform_dicts,
-    process_attributes,
     convert_all_timestamp_to_datestring,
     fetch_incidents,
 )
@@ -519,7 +518,7 @@ def test_table_record_list_command(mocker, args, mock_response, expected_output)
     result = table_record_list_command(client, args)
 
     assert result.outputs == expected_output
-    mock_get.assert_called_once_with("12345", {"limit": 2})
+    mock_get.assert_called_once_with("12345", {"limit": 2, 'offset': 0})
 
 
 @pytest.mark.parametrize(
@@ -589,32 +588,6 @@ def test_generic_search_command(mocker, args, item_type, mock_response, expected
 def test_transform_dicts(dict_input, dict_expected):
     result = transform_dicts(dict_input)
     assert result == dict_expected
-
-
-@pytest.mark.parametrize(
-    "attributes_input, expected_output",
-    [
-        (
-            '{"name": ["Alice", "Bob"], "age": ["25", "30"], "city": ["New York", "Los Angeles"]}',
-            {
-                "name": ["Alice", "Bob"],
-                "age": ["25", "30"],
-                "city": ["New York", "Los Angeles"]
-            }
-        ),
-        (
-            '{"name": ["Charlie"], "age": ["35"], "city": ["city_test"]}',
-            {
-                "name": ["Charlie"],
-                "age": ["35"],
-                "city": ["city_test"]
-            }
-        ),
-    ]
-)
-def test_process_attributes(attributes_input, expected_output):
-    result = process_attributes(attributes_input)
-    assert result == expected_output
 
 
 @pytest.mark.parametrize(

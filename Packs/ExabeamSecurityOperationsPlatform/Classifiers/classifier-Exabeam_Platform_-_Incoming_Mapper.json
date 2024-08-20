@@ -18,7 +18,7 @@
                 "Destination IPs": {
                     "simple": "destIps"
                 },
-                "Event ID": {
+                "External ID": {
                     "simple": "caseId"
                 },
                 "Exabeam Destination Hosts": {

@@ -44,7 +44,7 @@
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 4
+                        "y": 5
                     },
                     {
                         "displayType": "CARD",
@@ -163,7 +163,7 @@
                     },
                     {
                         "displayType": "ROW",
-                        "h": 1,
+                        "h": 2,
                         "hideName": false,
                         "i": "caseinfoid-867352f0-533d-11ef-b3a2-6d2c4e3b6981",
                         "items": [
@@ -182,6 +182,42 @@
                                 "height": 22,
                                 "id": "a174edc0-533d-11ef-b3a2-6d2c4e3b6981",
                                 "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "type",
+                                "height": 22,
+                                "id": "826f9710-5f48-11ef-bb8a-a1954de009a6",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "severity",
+                                "height": 22,
+                                "id": "8943a310-5f48-11ef-bb8a-a1954de009a6",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourcebrand",
+                                "height": 22,
+                                "id": "8d346540-5f48-11ef-bb8a-a1954de009a6",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourceinstance",
+                                "height": 22,
+                                "id": "90ef9880-5f48-11ef-bb8a-a1954de009a6",
+                                "index": 5,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
@@ -245,7 +281,7 @@
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 2
+                        "y": 3
                     },
                     {
                         "displayType": "CARD",
@@ -270,7 +306,7 @@
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 1
+                        "y": 2
                     }
                 ],
                 "type": "custom"
