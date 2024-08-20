@@ -3300,17 +3300,17 @@ def run_polling_command(client: Client, cmd: str, args: Dict[str, Any]):
     status_args = {"parentTaskId": parent_task_id}
     status_check_command_results = get_remote_script_status(client, status_args)
     status_outputs = status_check_command_results.raw_response
-    script_executed = False
+    script_completed = False
     task_ids = []
     if status_outputs and isinstance(status_outputs, list):
         for output in status_outputs:
             if isinstance(output, dict):
                 if output.get("status") != "completed":
-                    script_executed = False
+                    script_completed = False
                     break
                 task_ids.append(output.get("id"))
-                script_executed = True
-    if script_executed:
+                script_completed = True
+    if script_completed:
         results_args = {"taskIds": task_ids}
         final_command_results = get_remote_script_results(client, results_args)
         return final_command_results
