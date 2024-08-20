@@ -251,6 +251,11 @@ EXCEPTIONS_IP_TRACK_BY_TYPES_MAP = {
     'Source And Destination': 'source-and-destination'
 }
 
+EXCEPTION_PROFILE_TYPES_MAP = {
+    'Vulnerability Protection Profile': 'vulnerability',
+    'Anti Spyware Profile': 'spyware'
+}
+
 VULNERABILITY_PROTECTION_DEVICE_GROUP_PATH = "/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='{device_group}']/profiles/vulnerability/entry[@name='{profile_name}']/threat-exception"
 VULNERABILITY_PROTECTION_VSYS_PATH = "/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name='{VSYS}']/profiles/vulnerability/entry[@name='{profile_name}']/threat-exception"
 ANTI_SPYWARE_DEVICE_GROUP_PATH = "/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='{device_group}']/profiles/spyware/entry[@name='{profile_name}']/threat-exception"
@@ -14292,6 +14297,14 @@ def build_element_for_profile_exception_commands(extracted_id: str, action: str,
     """
     return element
 
+def get_profile_context_by_profile_name_and_type(profile_name, profile_type) -> dict:
+    profile_type_context = get_security_profiles(profile_type).get('EntryContext')
+    profile_type_context = profile_type_context.get(f"Panorama.{profile_type.capitalize()}(val.Name == obj.Name)")
+
+    for entry in profile_type_context:
+        if entry["Name"] == profile_name:
+            return entry
+
 
 def profile_exception_crud_commands(args: dict, action_type: str):
     """
@@ -14348,13 +14361,17 @@ def profile_exception_crud_commands(args: dict, action_type: str):
             'key': API_KEY,
         }
 
-    raw_response = http_request(URL, 'GET', params=params)
-    return ({
-        'raw_response': raw_response,
-        'exception_id': exception_id,
-        'exception_name': exception_name, 
-        'profile_type': profile_type
-        })
+
+    try:
+        raw_response = http_request(URL, 'GET', params=params)
+        return ({
+            'raw_response': raw_response,
+            'exception_id': exception_id,
+            'exception_name': exception_name, 
+            'profile_type': profile_type
+            })
+    except Exception as e: 
+        return_error("Exception was not founds")
 
 
 def pan_os_add_profile_exception_command(args: dict) -> CommandResults:
@@ -14431,21 +14448,9 @@ def pan_os_list_profile_exception_command(args: dict) -> CommandResults:
     
     results = profile_exception_crud_commands(args, ExceptionCommandType.LIST.value)
     raw_response = results.get('raw_response')
-    profile_type = results.get('profile_type')
+    profile_type = EXCEPTION_PROFILE_TYPES_MAP.get(results.get('profile_type'))
     
-    if profile_type == 'Vulnerability Protection Profile':
-        profile_type_context = get_security_profiles('vulnerability').get('EntryContext')
-        profile_type_context = profile_type_context.get("Panorama.Vulnerability(val.Name == obj.Name)")
-        profile_type = 'Vulnerability'
-    else:
-        profile_type_context = get_security_profiles('spyware').get('EntryContext')
-        profile_type_context = profile_type_context.get("Panorama.Spyware(val.Name == obj.Name)")
-        profile_type = 'Spyware'
-
-    profile_context = {}
-    for entry in profile_type_context:
-        if entry["Name"] == profile_name:
-            profile_context = entry
+    # profile_context = get_profile_context_by_profile_name_and_type(profile_name, profile_type)
     
     exceptions_response_list = raw_response['response']['result']['threat-exception']
     if not isinstance(exceptions_response_list, list):
@@ -14456,6 +14461,8 @@ def pan_os_list_profile_exception_command(args: dict) -> CommandResults:
     for exceptions in exceptions_response_list:
         parse_pan_os_un_committed_data(exceptions, ['@admin', '@dirtyId', '@time'])
         exceptions = exceptions.get('entry')
+        if not exceptions:
+            break
         if not isinstance(exceptions, list):
             exceptions = [exceptions]
         for entry in exceptions:
@@ -14464,6 +14471,7 @@ def pan_os_list_profile_exception_command(args: dict) -> CommandResults:
             exception_packet_capture = entry.get('packet-capture')
             exception_exempt_id = entry.get('exempt-ip', {}).get('entry', {}).get('@name')
             _, exception_name = get_threat_id_from_predefined_threates(exception_id)
+            
             excpetion_context = {
                                  'id': exception_id,
                                  'name': exception_name,
@@ -14483,11 +14491,16 @@ def pan_os_list_profile_exception_command(args: dict) -> CommandResults:
                     'Packet Capture': exception_packet_capture,
                     })
 
-    profile_context['Exception'] = context_exceptions_list
-    context_path = f'Panorama.{profile_type}'
+    # profile_context.pop('Name')
+    # profile_context.update({'Exception' : context_exceptions_list})
+    outputs = {
+        'Exception': context_exceptions_list,
+        'ProfileName': profile_name,
+    }
+    context_path = f'Panorama.{profile_type.capitalize()}'
     return CommandResults(
         raw_response=raw_response,
-        outputs=profile_context,
+        outputs=outputs,
         readable_output=tableToMarkdown(
             name='Profile Exceptions',
             t=hr,
@@ -14495,7 +14508,7 @@ def pan_os_list_profile_exception_command(args: dict) -> CommandResults:
             removeNull=True,
         ),
         outputs_prefix=context_path,
-        outputs_key_field='Name'
+        outputs_key_field='ProfileName'
     )
 
 
