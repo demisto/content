@@ -118,7 +118,8 @@ LIMIT: int = 2000
 
 class Client(BaseClient):
 
-    def __init__(self, base_url: str, authorization: str, timeout: float, verify: bool, proxy: bool, performance: bool):
+    def __init__(self, base_url: str, authorization: str, timeout: float, verify: bool, proxy: bool,
+                 performance: bool, max_indicator_to_fetch: int):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self.timeout = timeout
 
@@ -128,6 +129,7 @@ class Client(BaseClient):
             'Content-Type': 'application/json',
         }
         self.performance = performance
+        self.max_indicator_to_fetch = max_indicator_to_fetch
 
     def search_query(self, body: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -525,6 +527,8 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]):
     tags = argToList(params.get('attribute_tags', ''))
     feed_tags = argToList(params.get("feedTags", []))
     attribute_types = argToList(params.get('attribute_types', ''))
+    fetch_limit = client.max_indicator_to_fetch
+
     query = params.get('query', None)
     last_run = demisto.getLastRun().get('timestamp') or ""
     params_dict = parsing_user_query(query, LIMIT, from_timestamp=last_run) if query else\
@@ -534,13 +538,14 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]):
     while len(search_query_per_page.get("response", {}).get("Attribute", [])):
         demisto.debug(f'search_query_per_page number of attributes:\
                       {len(search_query_per_page.get("response", {}).get("Attribute", []))} page: {params_dict["page"]}')
-        indicators = build_indicators(client, search_query_per_page, attribute_types, tlp_color, params.get('url'), reputation, feed_tags)
+        indicators = build_indicators(client, search_query_per_page, attribute_types,
+                                      tlp_color, params.get('url'), reputation, feed_tags)
         for iter_ in batch(indicators, batch_size=2000):
             demisto.createIndicators(iter_)
         params_dict['page'] += 1
         last_run = search_query_per_page['response']['Attribute'][-1]['timestamp']
-        if (limit_str := params.get('max_indicator_to_fetch')) and (limit_num := arg_to_number(limit_str)) and limit_num <= len(
-                indicators):
+        if fetch_limit <= len(indicators):
+            demisto.debug(f"Reached the limit of indicators to fetch. The number of indicators fetched is: {len(indicators)}")
             break
         search_query_per_page = client.search_query(params_dict)
     if error_message := search_query_per_page.get('Error'):
@@ -555,6 +560,7 @@ def main():
     insecure = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     performance = argToBoolean(params.get('performance') or False)
+    max_indicator_to_fetch = arg_to_number(params.get('max_indicator_to_fetch')) or LIMIT
     command = demisto.command()
     args = demisto.args()
     if params.get('feedExpirationPolicy') == 'suddenDeath':
@@ -567,7 +573,8 @@ def main():
             verify=insecure,
             proxy=proxy,
             timeout=timeout,
-            performance=performance
+            performance=performance,
+            max_indicator_to_fetch=max_indicator_to_fetch
         )
 
         if command == 'test-module':
