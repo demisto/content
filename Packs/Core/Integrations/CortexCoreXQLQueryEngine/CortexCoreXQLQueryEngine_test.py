@@ -1079,7 +1079,7 @@ def test_get_xql_quota_is_core_available_false(mock_http_request):
                                       ' "eval_quota": 0.0}}'}
     with pytest.raises(DemistoException) as e:
         CLIENT.get_xql_quota({})
-    assert e.value.message == 'Using the XQL Query Engine from the core Pack is available only from version 8.7.0-1241866.'
+    assert e.value.message == 'Using the XQL Query Engine from the core Pack is available only from version 8.7.0-1247804.'
 
 
 @patch('CoreXQLApiModule.IS_CORE_AVAILABLE', False)
@@ -1101,7 +1101,7 @@ def test_start_xql_query_is_core_available_false(mock_api_call):
                                   'data': '{"reply": "aaa"}'}
     with pytest.raises(DemistoException) as e:
         CLIENT.start_xql_query({})
-    assert e.value.message == 'Using the XQL Query Engine from the core Pack is available only from version 8.7.0-1241866.'
+    assert e.value.message == 'Using the XQL Query Engine from the core Pack is available only from version 8.7.0-1247804.'
 
 
 @patch('CoreXQLApiModule.IS_CORE_AVAILABLE', False)
@@ -1123,7 +1123,7 @@ def test_get_xql_query_results_is_core_available_false(mock_api_call):
                                   'data': '{"reply": "aaa"}'}
     with pytest.raises(DemistoException) as e:
         CLIENT.get_xql_query_results({})
-    assert e.value.message == 'Using the XQL Query Engine from the core Pack is available only from version 8.7.0-1241866.'
+    assert e.value.message == 'Using the XQL Query Engine from the core Pack is available only from version 8.7.0-1247804.'
 
 
 @patch('CoreXQLApiModule.demisto.debug')
