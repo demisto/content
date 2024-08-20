@@ -86,13 +86,7 @@ DS_BASE_URL = 'https://portal-digitalshadows.com'
 
 
 @dataclass(frozen=True)
-class IndicatorsResult:
-    max_event_number: int
-    data: Any
-
-
-@dataclass(frozen=True)
-class PollResult:
+class RQPollResult:
     max_event_number: int
     triage_data: Any
 
@@ -181,8 +175,7 @@ def parse_date(since):
     Args:
         since: input date string
 
-    Returns: datetime in %Y-%m-%dT%H:%M:%S.%fZ format
-
+    Returns: datetime in %Y-%m-%dT%H:%M:%S.%fZ or %Y-%m-%dT%H:%M:%SZ format
     """
     SINCE_DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
     SINCE_DATE_FORMAT_WITH_MILLISECONDS = "%Y-%m-%dT%H:%M:%S.%fZ"
@@ -276,10 +269,9 @@ class RateLimiter:
 
 
 class Client(BaseClient):
-
-    def __init__(self, base_url, account_id, access_key, secret_key, verify=False, user_agent='unknown', proxies=None, **kwargs):
+    def __init__(self, base_url, account_id, access_key, secret_key, verify, proxy, user_agent='unknown', **kwargs):
         headers = {'Accept': 'application/json', 'searchlight-account-id': account_id, 'User-Agent': user_agent}
-        super().__init__(base_url, auth=(access_key, secret_key), verify=verify, proxy=proxies, headers=headers, **kwargs)
+        super().__init__(base_url, auth=(access_key, secret_key), verify=verify, proxy=proxy, headers=headers, **kwargs)
         self.ratelimiter = RateLimiter(**kwargs)
 
     def get(self, url, headers={}, params={}, **kwargs):
@@ -310,21 +302,6 @@ class Client(BaseClient):
 
         """
         r = self._http_request("POST", url_suffix=url, resp_type='response', json_data=data, headers=headers, **kwargs)
-        return self.rate_limit_response(r)
-
-    def put(self, url, headers={}, data=None, **kwargs):
-        """
-        Http post call
-        Args:
-            url: url for put api
-            headers: dict
-            data: dict
-            **kwargs: dict
-
-        Returns: response object
-
-        """
-        r = self._http_request("PUT", url_suffix=url, resp_type='response', json_data=data, headers=headers, **kwargs)
         return self.rate_limit_response(r)
 
     def rate_limit_response(self, response):
@@ -413,8 +390,8 @@ def get_assets(request_handler: Client, asset_ids=[], **kwargs) -> list:
 '''Triage'''
 
 
-def get_triage_item_events(request_handler: Client, event_num_after=0,
-                           event_created_after: datetime = None, risk_types=[], limit=100, **kwargs) -> list:
+def get_triage_item_events(request_handler: Client, event_created_after: datetime, risk_types, event_num_after=0, limit=100,
+                           **kwargs) -> list:
     """Retrieve a batch of triage item events
 
     Args:
@@ -424,7 +401,7 @@ def get_triage_item_events(request_handler: Client, event_num_after=0,
         event_created_after (datetime): only return events created after this value
         limit (int): return up to this number of events, default 100
     """
-    params = {'event-num-after': event_num_after, 'limit': limit}
+    params: dict[str, Any] = {'event-num-after': event_num_after, 'limit': limit}
     if event_created_after is not None:
         utc_datetime = event_created_after.astimezone(utc_tzinfo)
         params['event-created-after'] = utc_datetime.strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -435,7 +412,7 @@ def get_triage_item_events(request_handler: Client, event_num_after=0,
     return r.json()
 
 
-def get_triage_items(request_handler: Client, triage_item_ids=[], **kwargs) -> list:
+def get_triage_items(request_handler: Client, triage_item_ids, **kwargs) -> list:
     """
     Fetch triage items
     Args:
@@ -768,12 +745,13 @@ class SearchLightTriagePoller:
                 incident = incident_map[triage_item[SOURCE][INCIDENT_ID]]
                 data_item[INCIDENT] = incident
                 alert_or_incident = incident
-            # merge assets on (where available)
-            for asset_id_holder in alert_or_incident[ASSETS]:
-                # assets can be missing if deleted
-                asset = asset_map.get(asset_id_holder[ID], None)
-                if asset:
-                    data_item[ASSETS].append(json.dumps(asset))
+            if alert_or_incident:
+                # merge assets on (where available)
+                for asset_id_holder in alert_or_incident[ASSETS]:
+                    # assets can be missing if deleted
+                    asset = asset_map.get(asset_id_holder[ID], None)
+                    if asset:
+                        data_item[ASSETS].append(json.dumps(asset))
             # a new boolean field “auto-closed”, is added → where the triage-event indicates that the triage item is\
             # auto-rejected, this is set to true. Otherwise, it is false
             # based on event-action="create" and status="rejected" on the triage item event
@@ -793,7 +771,7 @@ class SearchLightTriagePoller:
             alert.update({'validation': json.dumps(alert.get('validation'))})
         return alert
 
-    def poll_triage(self, event_num_start=0, limit=100, event_created_after=None, alert_risk_types=[RISK_TYPE_ALL],
+    def poll_triage(self, event_created_after, event_num_start=0, limit=100, alert_risk_types=[RISK_TYPE_ALL],
                     risk_level=[RISK_LEVEL_ALL], should_ingest_closed=True):
         """
         A single poll of the triage API for new events, fully populating any new events found.
@@ -813,8 +791,10 @@ class SearchLightTriagePoller:
         if RISK_TYPE_ALL not in alert_risk_types and len(alert_risk_types) > 0:
             risk_types_filter = alert_risk_types
 
-        events = get_triage_item_events(self.request_handler, event_num_after=event_num_start, limit=limit,
-                                        event_created_after=event_created_after, risk_types=risk_types_filter)
+        events = get_triage_item_events(self.request_handler, event_created_after=event_created_after,
+                                        risk_types=risk_types_filter, event_num_after=event_num_start, limit=limit)
+        if events:
+            max_event_num = max([e['event-num'] for e in events])
         # Only ingesting events with create action event
         if events:
             events = [event for event in events if event[EVENT_ACTION].lower() == EVENT_ACTION_CREATE]
@@ -824,10 +804,6 @@ class SearchLightTriagePoller:
         if RISK_LEVEL_ALL not in risk_level and len(risk_level) > 0:
             risk_level_filter = risk_level
 
-        if events:
-            max_event_num = max([e['event-num'] for e in events])
-        else:
-            max_event_num = int(event_num_start) + int(limit)
         # filtering events by risk level
         if risk_level_filter:
             events = [event for event in events if event[RISK_LEVEL] in risk_level_filter]
@@ -836,7 +812,7 @@ class SearchLightTriagePoller:
             LOG("No events were fetched. Event num start: {}, Event created after: {}, Limit:"
                 " {}, risk_level: {}, alert_risk_types: {}".format(
                 event_num_start, event_created_after, limit, risk_level, alert_risk_types))
-            return PollResult(max_event_num, [])
+            return RQPollResult(max_event_num, [])
 
         triage_item_ids = [e[TRIAGE_ITEM_ID] for e in events]
         triage_items = get_triage_items(self.request_handler, triage_item_ids)
@@ -847,7 +823,7 @@ class SearchLightTriagePoller:
             LOG("No triage items were fetched. Event num start: {}, Event created after: {}, Limit: {},  "
                 "risk_level: {}, alert_risk_types: {}"
                 .format(event_num_start, event_created_after, limit, risk_level, alert_risk_types))
-            return PollResult(max_event_num, [])
+            return RQPollResult(max_event_num, [])
 
         triage_item_comments = get_triage_item_comments(self.request_handler, triage_item_ids=triage_item_ids)
 
@@ -868,35 +844,7 @@ class SearchLightTriagePoller:
         assets = get_assets(self.request_handler, asset_ids=asset_ids)
 
         triage_data = self.merge_data(events, triage_items, triage_item_comments, alerts, incidents, assets, should_ingest_closed)
-        return PollResult(max_event_num, triage_data)
-
-    def get_triage_details(self, triage_item_ids):
-        triage_items = get_triage_items(self.request_handler, triage_item_ids)
-
-        if not triage_items:
-            # if a triage item is deleted it is not returned to the list - outside chance that all could be deleted
-            # so validate before proceeding
-            LOG(f"No triage items were fetched. Event id:{triage_item_ids}")
-            return []
-
-        triage_item_comments = get_triage_item_comments(self.request_handler, triage_item_ids=triage_item_ids)
-
-        alert_triage_items = [ti for ti in triage_items if ALERT_ID in ti[SOURCE] and ti[SOURCE][ALERT_ID]]
-
-        # get summary details of alerts and incidents.
-        # note that this is a simplified example. For certain classifications we have more-detailed endpoints that give
-        # a greater granularity of information, such as the credential-exposure endpoint which contains the actual
-        # credential we have found exposed in a specific field on the model
-        alerts = self.get_alerts(alert_triage_items=alert_triage_items)
-
-        incident_ids = {ti[SOURCE][INCIDENT_ID] for ti in triage_items if
-                        INCIDENT_ID in ti[SOURCE] and ti[SOURCE][INCIDENT_ID]}
-        incidents = get_incidents(self.request_handler, incident_ids=incident_ids)
-
-        asset_ids = {
-            asset[ID] for alert_or_incident in [*alerts, *incidents] for asset in alert_or_incident[ASSETS]}
-        assets = get_assets(self.request_handler, asset_ids=asset_ids)
-        return self.merge_data([], triage_items, triage_item_comments, alerts, incidents, assets, True)
+        return RQPollResult(max_event_num, triage_data)
 
 
 ''' FETCH INCIDENT '''
@@ -917,9 +865,8 @@ def fetch_incidents(fetchLimit, last_run, ingestClosed, riskLevel, riskTypes, se
     last_event_num = last_run.get('incidents', {}).get('last_fetch', 0)
     LOG(f"fetch_incidents last run: {last_event_num}")
     search_list_triage_poller = SearchLightTriagePoller(search_light_request_handler)
-    poll_result = search_list_triage_poller.poll_triage(event_num_start=last_event_num, limit=fetchLimit,
-                                                        event_created_after=sinceDate,
-                                                        alert_risk_types=riskTypes, risk_level=riskLevel,
+    poll_result = search_list_triage_poller.poll_triage(event_created_after=sinceDate, event_num_start=last_event_num,
+                                                        limit=fetchLimit, alert_risk_types=riskTypes, risk_level=riskLevel,
                                                         should_ingest_closed=ingestClosed)
     data = poll_result.triage_data
     last_polled_number = poll_result.max_event_number
@@ -971,7 +918,7 @@ def main() -> None:
     if RISK_LEVEL_ALL in riskLevel:
         riskLevel = [RISK_LEVEL_ALL]
     verify_certificate = not demisto.params().get('insecure', False)
-    fetchLimit = arg_to_number(demisto.params()['fetchLimit'], "fetchLimit", True)
+    fetchLimit: int = arg_to_number(demisto.params()['fetchLimit'], "fetchLimit", True)  # type:ignore
     if fetchLimit > 100:
         raise DemistoException("fetch limit must be less than 100")
     if fetchLimit < 0:
@@ -979,7 +926,7 @@ def main() -> None:
     sinceDate = parse_date(demisto.params()['sinceDate'])
     if sinceDate > datetime.now():
         raise DemistoException("Since date should not be greate than current date")
-    demisto.params().get('proxy', False)
+    proxy = demisto.params().get('proxy', False)
     LOG(f'Command being called is {demisto.command()}')
     try:
         base_url = get_base_url(demisto.command())
@@ -988,7 +935,8 @@ def main() -> None:
             account_id=accountId,
             access_key=accessKey,
             secret_key=secretKey,
-            verify=verify_certificate
+            verify=verify_certificate,
+            proxy=proxy
         )
 
         if demisto.command() == 'test-module':
