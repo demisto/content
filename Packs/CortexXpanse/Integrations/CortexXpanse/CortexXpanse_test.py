@@ -174,7 +174,7 @@ def test_get_external_ip_address_range_command(requests_mock):
     ({"has_bu_overrides": "false"}),
     ({"business_units": ["Acme"]}),
     ({"mac_address": ["00:11:22:33:44:55"]}),
-    ({"ipv6_address": "e02d:4d87:6f9e:6eac:562f:8d00:6270:ed99"}),
+    ({"ipv6_address": "1111:2222:33333:4444:5555:6666:7777:8888"}),
     ({"asm_id_list": ["3c176460-8735-333c-b618-8262e2fb660c"]}),
     ({"has_active_external_services": "test"}),
     ({"type": "IP"}),
