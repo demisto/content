@@ -2108,8 +2108,8 @@ def attachment_handler(message, attachments):
             message.attach(msg_base)
 
 
-def send_mail(emailto, emailfrom, sender_display_name, subject, body, entry_ids, cc, bcc, htmlBody, replyTo, file_names, attach_cid,
-              transientFile, transientFileContent, transientFileCID, manualAttachObj, additional_headers,
+def send_mail(emailto, emailfrom, sender_display_name, subject, body, entry_ids, cc, bcc, htmlBody, replyTo, file_names,
+              attach_cid, transientFile, transientFileContent, transientFileCID, manualAttachObj, additional_headers,
               templateParams, inReplyTo=None, references=None, force_handle_htmlBody=False):
     if templateParams:
         templateParams = template_params(templateParams)
@@ -2227,9 +2227,9 @@ def mail_command(args, subject_prefix='', in_reply_to=None, references=None):
     render_body = argToBoolean(args.get('renderBody', False))
     body_type = args.get('bodyType', 'Text').lower()
     sender_display_name = args.get('senderDisplayName')
-    
-    result = send_mail(email_to, email_from, sender_display_name, subject, body, entry_ids, cc, bcc, html_body, reply_to, attach_names,
-                       attach_cids, transient_file, transient_file_content, transient_file_cid, manual_attach_obj,
+
+    result = send_mail(email_to, email_from, sender_display_name, subject, body, entry_ids, cc, bcc, html_body, reply_to,
+                       attach_names, attach_cids, transient_file, transient_file_content, transient_file_cid, manual_attach_obj,
                        additional_headers, template_param, in_reply_to, references, force_handle_htmlBody)
     rendering_body = html_body if body_type == "html" else body
 
