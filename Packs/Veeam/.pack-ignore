@@ -1,0 +1,11 @@
+[file:Veeam_Resolve_Triggered_Alarms.yml]
+ignore=PB106
+
+[file:Veeam_Start_Configuration_Backup.yml]
+ignore=PB106
+
+[file:Veeam_Start_Instant_VM_Recovery_Automatically.yml]
+ignore=PB106
+
+[file:Veeam_Start_Instant_VM_Recovery_Manually.yml]
+ignore=PB106

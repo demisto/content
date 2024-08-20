@@ -19,7 +19,8 @@ urllib3.disable_warnings()
 REPOSITORY_STATE_INCIDENT_TYPE = 'Repository Capacity'
 CONFIGURATION_BACKUP_INCIDENT_TYPE = 'Configuration Backup'
 MAX_ATTEMPTS = 3
-MAX_EVENTS_FOR_FETCH = 30
+MAX_EVENTS_FOR_FETCH = 160
+MAX_REPOSITORIES_FOR_FETCH = 39
 GRANT_TYPE = 'password'
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 MAX_INT = 2147483647
@@ -1386,7 +1387,7 @@ def process_command(command: Any, client: Client, first_fetch_time: datetime,
 
     elif command == 'fetch-incidents':
         max_malware_events_for_fetch = int(params.get('malware_events_per_request', MAX_EVENTS_FOR_FETCH))
-        max_repos_space_events_for_fetch = int(params.get('backup_repository_events_per_request', MAX_EVENTS_FOR_FETCH))
+        max_repos_space_events_for_fetch = int(params.get('backup_repository_events_per_request', MAX_REPOSITORIES_FOR_FETCH))
 
         backup_older_then_days = int(params.get('days_since_last_configuration_backup', CONFIGURATION_BACKUP_OLDER_THEN_DAYS))
         validate_filter_parameter(backup_older_then_days)

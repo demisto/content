@@ -85,6 +85,10 @@ configuration:
   name: incidentType
   required: false
   type: 13
+- name: max_fetch
+  type: 0
+  defaultvalue: "200"
+  hidden: true
 description: 'Veeam Backup & Replication REST API allows you to query information about Veeam Backup & Replication entities and perform operations with these entities using HTTP requests and standard HTTP methods.'
 display: 'Veeam Backup & Replication REST API'
 name: VBR REST API
