@@ -1572,7 +1572,7 @@ inputs:
   required: false
   description: |-
     Whether to automatically close the current incident when it's added to a campaign. Can be True or False.
-    Note: This will only close the current incident. When a campaign   is detected, the first few incident/s will remain open, because they do not see themselves as part of the campaign (only newer incidents find the older ones). That number of incidents is the number that you specified in the "minIncidentsForCampaign" playbook input.
+    Note: This will only close the current incident. When a campaign is detected, the first few incident/s will remain open, because they do not see themselves as part of the campaign (only newer incidents find the older ones). That number of incidents is the number that you specified in the "minIncidentsForCampaign" playbook input.
   playbookInputQuery:
 - key: BehaviorForClosedCampaign
   value:
