@@ -86,7 +86,6 @@ def test_get_url_content_invalid_link(mocker):
     article_content_res = Response()
     article_content_res.status_code = 403
     mocker.patch.object(Client, '_http_request', side_effect=DemistoException(article_content_res))
-    mocker.patch.object(demisto, 'error')
     assert client.get_url_content('test-link.com') == ""
 
 
