@@ -1642,10 +1642,10 @@ Get remote script tasks using a variety of filters.
 | account_ids | A comma-separated list of account IDs. Example: '225494730938493804,225494730938493915'. | Optional | 
 | computer_name_contains | Free-text filter by agent computer name (supports multiple values). | Optional | 
 | count_only | If true, only total number of items will be returned, without any of the actual objects. | Optional | 
-| created_at_gt | Created at greater than. Example: '2018-02-27T04:49:26.257525Z'. | Optional | 
-| created_at_gte | Created at greater or equal than. Example: '2018-02-27T04:49:26.257525Z'. | Optional | 
-| created_at_lt | Created at lesser than. Example: '2018-02-27T04:49:26.257525Z'. | Optional | 
-| created_at_lte | Created at lesser or equal than. Example: '2018-02-27T04:49:26.257525Z'. | Optional |
+| created_at_gt | Created at greater than datetime. Example: '2018-02-27T04:49:26.257525Z'. | Optional | 
+| created_at_gte | Created at greater or equal than datetime. Example: '2018-02-27T04:49:26.257525Z'. | Optional | 
+| created_at_lt | Created at lesser than datetime. Example: '2018-02-27T04:49:26.257525Z'. | Optional | 
+| created_at_lte | Created at lesser or equal than datetime. Example: '2018-02-27T04:49:26.257525Z'. | Optional |
 | cursor | Cursor position returned by the last request. Use to iterate over more than 1000 items. Example: 'YWdlbnRfaWQ6NTgwMjkzODE='. | Optional |
 | description_contains | Only include tasks with specific description. | Optional |
 | detailed_status_contains | Only include tasks with specific detailed status. | Optional |
