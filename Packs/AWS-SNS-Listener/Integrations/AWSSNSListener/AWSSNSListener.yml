@@ -56,12 +56,12 @@ configuration:
   section: Connect
   advanced: true
   required: false
-description: 'Amazon Simple Notification Service (SNS) is a managed service that provides message delivery from publishers to subscribers.'
+description: 'Amazon Simple Notification Service (SNS) is a managed service that provides message delivery from publishers to subscribers.dlfkjhdsl'
 display: AWS-SNS-Listener
 name: AWS-SNS-Listener
 script:
   commands: []
-  dockerimage: demisto/fastapi:0.110.3.93571
+  dockerimage: demisto/fastapi:1.0.0.90533
   longRunning: true
   longRunningPort: true
   script: '-'
