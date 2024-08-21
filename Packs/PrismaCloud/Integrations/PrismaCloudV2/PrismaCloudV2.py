@@ -2317,7 +2317,7 @@ def code_issues_list_command(client, args):
                                                    vulnerability_risk_factors=vulnerability_risk_factors, iac_tags=iac_tags,
                                                    license_type=license_type, code_categories=code_categories,
                                                    limit=limit, offset=offset)
-        res_issues.extend([response['data']])
+        res_issues.extend(response['data'])
         
         for issue in response['data']:
             issues_for_readable_output.append({

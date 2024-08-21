@@ -192,6 +192,10 @@ script:
     - description: Whether to retrieve only fixable issues. Recommended to use this argument with another argument code_categories ,for example.
       name: fixable_only
       type: Boolean
+      auto: PREDEFINED
+      predefined:
+      - true
+      - false
     - description: later
       name: repositories
       isArray: true
@@ -268,7 +272,46 @@ script:
     description: later
     name: 'prisma-cloud-code-issues-list'
     outputs:
+    - contextPath: PrismaCloud.CodeIssue.modifiedOn
+      description: later
+      type: String
+    - contextPath: PrismaCloud.CodeIssue.isPublic
+      description: later
+      type: String
+    - contextPath: PrismaCloud.CodeIssue.fileType
+      description: later
+      type: String
+    - contextPath: PrismaCloud.CodeIssue.secretCommitRemove
+      description: later
+      type: String
+    - contextPath: PrismaCloud.CodeIssue.secretCommitAdd
+      description: later
+      type: String
+    - contextPath: PrismaCloud.CodeIssue.gitUser
+      description: later
+      type: String
+    - contextPath: PrismaCloud.CodeIssue.codePath
+      description: later
+      type: String
+    - contextPath: PrismaCloud.CodeIssue.codeCategory
+      description: later
+      type: String
+    - contextPath: PrismaCloud.CodeIssue.author
+      description: later
+      type: String
+    - contextPath: PrismaCloud.CodeIssue.repositoryUuid
+      description: later
+      type: String
+    - contextPath: PrismaCloud.CodeIssue.path
+      description: later
+      type: String
+    - contextPath: PrismaCloud.CodeIssue.repositorySource
+      description: later
+      type: String
     - contextPath: PrismaCloud.CodeIssue.firstDetected
+      description: later
+      type: String
+    - contextPath: PrismaCloud.CodeIssue.codeIssueLine
       description: later
       type: String
     - contextPath: PrismaCloud.CodeIssue.labels
