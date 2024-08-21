@@ -119,7 +119,7 @@ LIMIT: int = 2000
 class Client(BaseClient):
 
     def __init__(self, base_url: str, authorization: str, timeout: float, verify: bool, proxy: bool,
-                 performance: bool, max_indicator_to_fetch: int):
+                 performance: bool, max_indicator_to_fetch: Optional[int]):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self.timeout = timeout
 
@@ -546,7 +546,7 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]):
         last_run = search_query_per_page['response']['Attribute'][-1]['timestamp']
         # Note: The limit is applied after indicators are created,
         # so the total number of indicators may slightly exceed the limit due to page size constraints.
-        if fetch_limit <= len(indicators):
+        if fetch_limit and fetch_limit <= len(indicators):
             demisto.debug(f"Reached the limit of indicators to fetch. The number of indicators fetched is: {len(indicators)}")
             break
         search_query_per_page = client.search_query(params_dict)
@@ -562,7 +562,7 @@ def main():
     insecure = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     performance = argToBoolean(params.get('performance') or False)
-    max_indicator_to_fetch = arg_to_number(params.get('max_indicator_to_fetch')) or LIMIT
+    max_indicator_to_fetch = arg_to_number(x) if (x := params.get('max_indicator_to_fetch')) else None
     command = demisto.command()
     args = demisto.args()
     if params.get('feedExpirationPolicy') == 'suddenDeath':
