@@ -377,7 +377,7 @@ def test_general_query(es):
 
     except NotFoundError as e:
         return_error("Failed executing general search command - please check the Server URL and port number "
-                     "and the supplied credentials.\nError message: {}.".format(str(e)))
+                     f"and the supplied credentials.\nError message: {str(e)}.")
 
 
 def test_time_field_query(es):
@@ -478,7 +478,7 @@ def test_connectivity_auth(proxies):
                 if HTTP_ERRORS.get(res.status_code) is not None:
                     # if it is a known http error - get the message form the preset messages
                     return_error("Failed to connect. "
-                                 "The following error occurred: {}".format(HTTP_ERRORS.get(res.status_code)))
+                                 f"The following error occurred: {HTTP_ERRORS.get(res.status_code)}")
 
                 else:
                     # if it is unknown error - get the message from the error itself
