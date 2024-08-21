@@ -223,13 +223,17 @@ def fetch_indicators(client: Client, indicator_type_lower: str, limit: int = -1,
                 if client.tlp_color:
                     indicator_mapping_fields['trafficlightprotocol'] = client.tlp_color
 
-                indicators.append({
+                indicator_obj = {
                     'value': value,
                     'type': type_,
                     'rawJSON': raw_data,
                     'fields': indicator_mapping_fields,
-                    'enrichmentExcluded': enrichment_excluded,
-                })
+                }
+
+                if enrichment_excluded:
+                    indicator_obj['enrichmentExcluded'] = enrichment_excluded
+
+                indicators.append(indicator_obj)
 
     return indicators
 

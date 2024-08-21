@@ -447,8 +447,10 @@ def fetch_indicators_command(client,
                         'value': value,
                         'type': indicator_type,
                         'rawJSON': attributes,
-                        'enrichmentExcluded': enrichment_excluded,
                     }
+                    if enrichment_excluded:
+                        indicator_data['enrichmentExcluded'] = enrichment_excluded
+
                     if (create_relationships
                             and client.feed_url_to_config.get(url, {}).get('relationship_name')
                             and attributes.get('relationship_entity_b')

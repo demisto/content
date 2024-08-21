@@ -317,11 +317,13 @@ def fetch_indicators_command(client: Client,
                 'tags': feedTags,
             },
             'rawJSON': indicator,
-            'enrichmentExcluded': enrichment_excluded,
         }
 
         if tlp_color:
             indicator_obj['fields']['trafficlightprotocol'] = tlp_color
+
+        if enrichment_excluded:
+            indicator_obj['enrichmentExcluded'] = enrichment_excluded
 
         indicators.append(indicator_obj)
         raw_response.append(indicator)

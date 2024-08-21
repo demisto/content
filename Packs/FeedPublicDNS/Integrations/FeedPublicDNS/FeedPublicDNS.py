@@ -91,8 +91,10 @@ def fetch_indicators(client: Client, limit: int = -1, enrichment_excluded: bool 
             'type': type_,
             'rawJSON': {'value': item, 'type': type_},
             'fields': {'tags': client.Tags},
-            'enrichmentExcluded': enrichment_excluded,
         }
+
+        if enrichment_excluded:
+            indicator_obj['enrichmentExcluded'] = enrichment_excluded
 
         if client.Tlp_color:
             indicator_obj['fields']['trafficlightprotocol'] = client.Tlp_color

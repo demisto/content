@@ -367,7 +367,8 @@ def handle_indicator(client: Client, item: Dict, feed_config: Dict, service_name
         indicator['value'] = indicator['value'].split(':')[0]
 
     indicator['rawJSON'] = item
-    indicator['excludeEnrichment'] = enrichment_excluded
+    if enrichment_excluded:
+        indicator['enrichmentExcluded'] = enrichment_excluded
 
     indicator_list.append(indicator)
 

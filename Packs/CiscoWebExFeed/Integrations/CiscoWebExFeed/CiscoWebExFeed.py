@@ -207,12 +207,17 @@ def fetch_indicators_command(client: Client,
     results = []
     indicator_mapping_fields = {'tags': tags, 'trafficlightprotocol': tlp_color}
     for indicator in clean_res[CIDR] + clean_res[DOMAIN]:
-        results.append({
+        indicator_obj: dict[str, Any] = {
             'value': indicator,
             'type': check_indicator_type(indicator),
             'fields': indicator_mapping_fields,
-            'enrichmentExcluded': enrichment_excluded,
-        })
+        }
+
+        if enrichment_excluded:
+            indicator_obj['enrichmentExcluded'] = enrichment_excluded
+
+        results.append(indicator_obj)
+
     return results
 
 

@@ -128,12 +128,16 @@ def fetch_indicators(client: Client, feed_tags: list = [], tlp_color: str | None
             "service": "Zoom Feed",
             "rawJSON": raw_data,
             'fields': {},
-            'enrichmentExcluded': enrichment_excluded,
         }
+
         if feed_tags:
             indicator_obj["fields"]['tags'] = feed_tags
+
         if tlp_color:
             indicator_obj["fields"]['trafficlightprotocol'] = tlp_color
+
+        if enrichment_excluded:
+            indicator_obj['enrichmentExcluded'] = enrichment_excluded
 
         indicators.append(indicator_obj)
     return indicators
