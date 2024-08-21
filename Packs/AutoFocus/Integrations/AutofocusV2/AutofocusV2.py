@@ -314,6 +314,7 @@ def rerun_command_if_required(api_res: dict, retry_on_rate_limit: bool):
 
 def save_api_metrics(res_obj: dict):
     if bucket_info := res_obj.get('bucket_info'):
+        demisto.debug(f'save_api_metrics: {bucket_info=}')
         API_POINTS_TABLE.readable_output = tableToMarkdown(
             'Autofocus API Points',
             {
@@ -324,6 +325,8 @@ def save_api_metrics(res_obj: dict):
             }
         ).format(**(DEFAULT_BUCKET_INFO | bucket_info))
         API_POINTS_TABLE.outputs = bucket_info
+    else:
+        demisto.debug('save_api_metrics: no bucket_info')
 
 
 def run_polling_command(args: dict, cmd: str, search_function: Callable, results_function: Callable):
@@ -406,6 +409,7 @@ def http_request(url_suffix, method='POST', data={}, err_operation=None):
     # A wrapper for requests lib to send our requests and handle requests and responses better
     data.update({'apiKey': API_KEY})
     try:
+        demisto.debug('http_request: before the request')
         res = requests.request(
             method=method,
             url=BASE_URL + url_suffix,
@@ -413,8 +417,10 @@ def http_request(url_suffix, method='POST', data={}, err_operation=None):
             data=json.dumps(data),
             headers=HEADERS
         )
+        demisto.debug(f'http_request: {res=}')
     # Handle with connection error
     except requests.exceptions.ConnectionError as err:
+        demisto.debug('http_request in requests.exceptions.ConnectionError')
         EXECUTION_METRICS.connection_error += 1
         raise DemistoException(f'Error connecting to server. Check your URL/Proxy/Certificate settings: {err}')
 
@@ -475,6 +481,7 @@ def do_search(search_object: str, query: dict, scope: Optional[str], size: Optio
         data.update({'type': 'scan'})
     # Remove nulls
     data = createContext(data, removeNull=True)
+    demisto.debug(f'do_search: {path=} {data=} {err_operation=}')
     result = http_request(path, data=data, err_operation=err_operation)
     return result
 
@@ -1000,6 +1007,8 @@ def search_indicator(indicator_type, indicator_value):
         'includeTags': 'true',
     }
 
+    demisto.debug(f'search_indicator {indicator_value=}')
+
     try:
         result = requests.request(
             method='GET',
@@ -1008,11 +1017,14 @@ def search_indicator(indicator_type, indicator_value):
             headers=headers,
             params=params
         )
+        demisto.debug(f'search_indicator: {result.status_code=}')
 
         result_json = result.json()
+        demisto.debug(f'search_indicator {result_json=}')
 
         save_api_metrics(result_json)
         if result.status_code == 503:
+            demisto.debug('search_indicator: result.status_code == 503')
             EXECUTION_METRICS.quota_error += 1
             raise RateLimitExceededError(result_json)
 
@@ -1021,11 +1033,13 @@ def search_indicator(indicator_type, indicator_value):
 
     # Handle with connection error
     except requests.exceptions.ConnectionError as err:
+        demisto.debug('search_indicator: in requests.exceptions.ConnectionError')
         EXECUTION_METRICS.connection_error += 1
         raise DemistoException(f'Error connecting to server. Check your URL/Proxy/Certificate settings: {err}')
 
     # Unexpected errors (where no json object was received)
     except Exception as err:
+        demisto.debug(f'search_indicator: Unexpected errors {err}')
         EXECUTION_METRICS.general_error += 1
         try:
             if demisto.params().get('handle_error', True) and result.status_code == 404:
@@ -1228,6 +1242,7 @@ def test_module():
             }
         ]
     }
+    demisto.debug('test-module')
     do_search('samples', query=query, scope='Public', err_operation='Test module failed')
 
 
