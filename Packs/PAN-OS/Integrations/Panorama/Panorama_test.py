@@ -7516,7 +7516,7 @@ def test_pan_os_list_profile_exception(mocker):
     Panorama.DEVICE_GROUP = 'device_group'
     mocker.patch.object(
         Panorama,
-        'profile_exception_crud_commands',
+        'profile_exception_crud_requests',
         return_value=({'raw_response': {
             'response': {
                 'result': {

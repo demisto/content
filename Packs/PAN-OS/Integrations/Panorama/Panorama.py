@@ -14460,7 +14460,7 @@ def pan_os_list_profile_exception_command(args: dict) -> CommandResults:
                 'exempt-ip': exception_exempt_id
             }
 
-            cleaned_excpetion_context = {k: v for k, v in excpetion_context.items() if v is not None}
+            cleaned_excpetion_context = {k: v for k, v in excpetion_context.items() if v}
 
             context_exceptions_list.append(cleaned_excpetion_context)
 
