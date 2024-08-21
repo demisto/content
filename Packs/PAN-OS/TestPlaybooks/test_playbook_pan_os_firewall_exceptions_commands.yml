@@ -1,5 +1,5 @@
 id: test_playbook_pan_os_firewall_exceptions_commands
-version: 12
+version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: test_playbook_pan_os_firewall_exceptions_commands
 starttaskid: "0"

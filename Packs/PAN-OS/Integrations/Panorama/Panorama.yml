@@ -9520,7 +9520,7 @@ script:
       predefined:
       - Vulnerability Protection Profile
       - Anti Spyware Profile
-    - description: "The action type of the exception. Can be: Alert, Allow, Block IP, Drop, Reset Both, Reset Client or Reset Server."
+    - description: "The action type of the exception. Default value is 'default'. Can be: Alert, Allow, Block IP, Drop, Reset Both, Reset Client or Reset Server."
       name: action
       auto: PREDEFINED
       required: false
@@ -9574,7 +9574,7 @@ script:
       predefined:
       - Vulnerability Protection Profile
       - Anti Spyware Profile
-    - description: "The action type of the exception. Can be: Alert, Allow, Block IP, Drop, Reset Both, Reset Client or Reset Server."
+    - description: "The action type of the exception. Default value is 'default'. Can be: Alert, Allow, Block IP, Drop, Reset Both, Reset Client or Reset Server."
       name: action
       required: false
       auto: PREDEFINED
@@ -9648,7 +9648,7 @@ script:
     - contextPath: Panorama.Vulnerability.Exception.id
       description: The exception id.
       type: String
-    - contextPath: Panorama.Vulnerability.Exception.cve
+    - contextPath: Panorama.Vulnerability.Exception.CVE
       description: The exception cve if exist.
       type: String
     - contextPath: Panorama.Vulnerability.Exception.action

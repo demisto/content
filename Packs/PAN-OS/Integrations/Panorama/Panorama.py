@@ -14129,16 +14129,12 @@ def get_all_profile_names_from_profile_type(profile_type: str, device_group: str
     xpath += f"profiles/{profile_type}"
 
     raw_response = get_security_profile(xpath)
-    profiles = raw_response["response"]["result"][f"{profile_type}"]["entry"]
+    profiles = raw_response.get("response", {}).get("result", {}).get(f"{profile_type}", {}). get("entry", [])
 
     if not isinstance(profiles, list):
         profiles = [profiles]
 
-    profile_names = []
-    for entry in profiles:
-        profile_name = entry.get("@name")
-        if profile_name:
-            profile_names.append(profile_name)
+    profile_names = [entry.get("@name") for entry in profiles if entry.get("@name")]
 
     return profile_names
 
@@ -14215,12 +14211,12 @@ def get_predefined_threats_list() -> list:
         The list of threats.
     """
     result = panorama_get_predefined_threats_list()
-    predefined_threats = result['response']['result']['threats']["phone-home"]['entry']
-    predefined_threats += result['response']['result']['threats']["vulnerability"]['entry']
+    predefined_threats = result.get('response', {}).get('result', {}).get('threats', {}).get("phone-home", {}).get('entry', [])
+    predefined_threats += result.get('response', {}).get('result',{}).get('threats', {}).get("vulnerability", {}).get('entry', [])
     return predefined_threats
 
 
-def get_threat_id_from_predefined_threates(threat_name: str) -> tuple[str, str, list]:
+def get_threat_id_from_predefined_threates(threat: str) -> tuple[str, str, list]:
     """
     Search the threat id in the threats list by using the threat_name argument.
 
@@ -14246,7 +14242,7 @@ def get_threat_id_from_predefined_threates(threat_name: str) -> tuple[str, str, 
         for cve in cves:
             search_keys.append(cve.lower())
 
-        if threat_name.lower() in search_keys:
+        if threat.lower() in search_keys:
             return extracted_id, exception_name, cves
 
     raise DemistoException("Invalid threat_name was provided.")
@@ -14302,7 +14298,7 @@ def build_element_for_profile_exception_commands(extracted_id: str, action: str,
     return element
 
 
-def profile_exception_crud_commands(args: dict, action_type: str) -> dict:
+def profile_exception_crud_requests(args: dict, action_type: str) -> dict:
     """
     Build the element for the api that the profile exception commands use.
 
@@ -14313,6 +14309,9 @@ def profile_exception_crud_commands(args: dict, action_type: str) -> dict:
     Returns:
         results: A dict for raw_response, exception_id, exception_name, profile_type
     """
+    
+    
+    
     profile_name = args.get('profile_name', "")
     profile_type = args.get('profile_type', '')
     threat = args.get('threat', '')
@@ -14379,7 +14378,7 @@ def pan_os_add_profile_exception_command(args: dict) -> CommandResults:
     Returns:
         A confirmation for adding the exception.
     """
-    results = profile_exception_crud_commands(args, ExceptionCommandType.ADD.value)
+    results = profile_exception_crud_requests(args, ExceptionCommandType.ADD.value)
     raw_response = results.get('raw_response')
     exception_id = results.get('exception_id')
     exception_name = results.get('exception_name')
@@ -14399,7 +14398,7 @@ def pan_os_edit_profile_exception_command(args: dict) -> CommandResults:
     Returns:
         A confirmation for editing the exception.
     """
-    results = profile_exception_crud_commands(args, ExceptionCommandType.EDIT.value)
+    results = profile_exception_crud_requests(args, ExceptionCommandType.EDIT.value)
     raw_response = results.get('raw_response')
     exception_id = results.get('exception_id')
     exception_name = results.get('exception_name')
@@ -14419,7 +14418,7 @@ def pan_os_delete_profile_exception_command(args: dict) -> CommandResults:
     Returns:
         A confirmation for deleting the exception. 
     """
-    results = profile_exception_crud_commands(args, ExceptionCommandType.DELETE.value)
+    results = profile_exception_crud_requests(args, ExceptionCommandType.DELETE.value)
     raw_response = results.get('raw_response')
     exception_id = results.get('exception_id')
     exception_name = results.get('exception_name')
@@ -14441,11 +14440,11 @@ def pan_os_list_profile_exception_command(args: dict) -> CommandResults:
     """
     profile_name = args.get('profile_name')
 
-    results = profile_exception_crud_commands(args, ExceptionCommandType.LIST.value)
+    results = profile_exception_crud_requests(args, ExceptionCommandType.LIST.value)
     raw_response = results.get('raw_response', {})
     profile_type = EXCEPTION_PROFILE_TYPES_MAP.get(results.get('profile_type', ''))
 
-    exceptions_response_list = raw_response['response']['result']['threat-exception']
+    exceptions_response_list = raw_response.get('response', {}).get('result', {}).get('threat-exception', [])
     if not isinstance(exceptions_response_list, list):
         exceptions_response_list = [exceptions_response_list]
 
