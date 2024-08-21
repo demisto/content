@@ -1595,7 +1595,7 @@ labels_data = [
     (['CustomPolicy'],  # case list
      ['CustomPolicy']),  # expected
     ([],  # case empty list
-     [])  # expected
+     None)  # expected
 ]
 @pytest.mark.parametrize('labels, expected', labels_data)
 def test_get_labels(labels, expected):
