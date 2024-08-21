@@ -33,8 +33,8 @@ configuration:
   name: apiSecret
   required: true
   type: 9
-- defaultvalue: 'true'
-  additionalinfo: Verify certificate
+- additionalinfo: Verify certificate
+  defaultvalue: 'true'
   display: Trust any certificate (not secure)
   name: insecure
   required: false
