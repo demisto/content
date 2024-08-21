@@ -1,0 +1,21 @@
+{
+    "name": "Hoxhunt",
+    "description": "Integration with Hoxhunt response product. Enables fetching incidents from Hoxhunt and managing them from XSOAR. \n\nPack Contributors:\n- Sam Chan",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Harri Ruuttila & Sam Chan",
+    "url": "",
+    "email": "",
+    "created": "2024-08-21T11:34:04Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "Hruuttila"
+    ]
+}
