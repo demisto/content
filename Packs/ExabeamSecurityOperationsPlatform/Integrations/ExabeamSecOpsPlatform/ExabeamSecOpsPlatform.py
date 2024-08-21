@@ -734,23 +734,21 @@ def table_record_list_command(client: Client, args: dict) -> CommandResults:
             - 'limit' (int, optional): Maximum number of records to retrieve. Defaults to a predefined limit.
             - 'page' (int, optional): The page number to retrieve. Defaults to 1 if 'page_size' is provided.
             - 'page_size' (int, optional): Number of records per page. Defaults to a predefined limit if 'page' is provided.
-        """
+
+    Returns:
+        CommandResults: The results of the command, including the records retrieved.
+    """
     table_id = args.get("table_id")
-    limit = arg_to_number(args.get("limit"))
+    limit = arg_to_number(args.get("limit")) or DEFAULT_LIMIT
     page = arg_to_number(args.get("page"))
     page_size = arg_to_number(args.get("page_size"))
-    records: list = []
+    records = []
     offset = 0
 
-    if page or page_size:
-        page = page or 1
-        page_size = page_size or DEFAULT_LIMIT
+    if page:
+        limit = min(page_size or DEFAULT_LIMIT, MAX_LIMIT)
+        offset = (page - 1) * limit
 
-        limit = page_size
-        offset = (page - 1) * page_size
-
-    else:
-        limit = limit or DEFAULT_LIMIT
     while len(records) < limit:
         params = {
             'limit': min(limit - len(records), MAX_LIMIT),
