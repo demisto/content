@@ -27,7 +27,7 @@ The EWS integration can be used for the following use cases.
 
 ## Architecture
 
-This integration is based on the `exchangelib` python module. For more information about the module check the [documentation](https://ecederstrand.github.io/exchangelib/).
+This integration is based on the `exchangelib` python module. For more information about the module, check the [documentation](https://ecederstrand.github.io/exchangelib/).
 
 
 ## Set up the Third Party System
