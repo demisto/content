@@ -7423,6 +7423,14 @@ def test_pan_os_delete_security_profile_group_command(mocker):
 
 
 def test_pan_os_xpath_creation_for_exception_crud():
+    """
+    Given:
+        - A profile name, profile type, device group name, action, and threat ID.
+    When:
+        - Running build_xpath_for_profile_exception_commands function to generate the XPath.
+    Then:
+        - Ensure the returned XPath is correctly constructed for both Vulnerability Protection and Anti Spyware profiles.
+    """
     import Panorama
 
     results = Panorama.build_xpath_for_profile_exception_commands(
@@ -7453,6 +7461,14 @@ def test_pan_os_xpath_creation_for_exception_crud():
 
 
 def test_pan_os_add_profile_exception(mocker):
+    """
+    Given:
+        - A profile name, profile type, threat name, and device group.
+    When:
+        - Running the `pan_os_add_profile_exception_command` to add an exception to a security profile.
+    Then:
+        - Ensure the returned response indicates the successful creation of the exception with the correct threat name and ID.
+    """
     import Panorama
     import requests
 
@@ -7471,6 +7487,14 @@ def test_pan_os_add_profile_exception(mocker):
 
 
 def test_pan_os_edit_profile_exception(mocker):
+    """
+    Given:
+        - A profile name, profile type, threat name, and device group.
+    When:
+        - Running the `pan_os_edit_profile_exception_command` to edit an exception in a security profile.
+    Then:
+        - Ensure the returned response indicates the successful editing of the exception with the correct threat name and ID.
+    """
     import Panorama
     import requests
     Panorama.URL = 'https://1.1.1.1:443/'
@@ -7491,6 +7515,14 @@ def test_pan_os_edit_profile_exception(mocker):
 
 
 def test_pan_os_delete_profile_exception(mocker):
+    """
+    Given:
+        - A profile name, profile type, threat name, and device group.
+    When:
+        - Running the `pan_os_delete_profile_exception_command` to delete an exception from a security profile.
+    Then:
+        - Ensure the returned response indicates the successful deletion of the exception with the correct threat name and ID.
+    """
     import Panorama
     import requests
 
@@ -7509,6 +7541,15 @@ def test_pan_os_delete_profile_exception(mocker):
 
 
 def test_pan_os_list_profile_exception(mocker):
+     """
+    Given:
+        - A profile name and profile type.
+    When:
+        - Running the `pan_os_list_profile_exception_command` to list exceptions in a security profile.
+    Then:
+        - Ensure the returned response is of type `CommandResults` and the readable output lists the correct profile exceptions.
+    """
+    
     import Panorama
 
     Panorama.URL = 'https://1.1.1.1:443/'
