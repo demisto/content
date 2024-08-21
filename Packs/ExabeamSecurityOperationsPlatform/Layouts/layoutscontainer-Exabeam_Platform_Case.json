@@ -178,9 +178,9 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "eventid",
+                                "fieldId": "externalid",
                                 "height": 22,
-                                "id": "a174edc0-533d-11ef-b3a2-6d2c4e3b6981",
+                                "id": "9855d2c0-5f92-11ef-803f-07549a0c14ce",
                                 "index": 1,
                                 "sectionItemType": "field",
                                 "startCol": 0
