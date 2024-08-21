@@ -1,4 +1,4 @@
-id: 35bdcf08-13bb-4ca4-8fb6-364db883a51c
+id: test_playbook_pan_os_firewall_exceptions_commands
 version: 12
 vcShouldKeepItemLegacyProdMachine: false
 name: test_playbook_pan_os_firewall_exceptions_commands
