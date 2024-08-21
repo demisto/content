@@ -21,7 +21,7 @@ This integration was integrated and tested with version 2.0 of Cortex Expander.
 | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |                                                                                                                                                                                                                                                         | False        |
 | Alert Severities to Fetch                                                        | The severity of the alerts that will be fetched. If no severity is provided then alerts of all the severities will be fetched. Note: An alert whose status was changed to a filtered status after its creation time will not be fetched.                | False        |
 | Source Reliability                                                               | Reliability of the source providing the intelligence data. Used for !ip and !domain commands.                                                                                                                                                           | False        |
-| Look Back (Minutes to look back when fetching) | Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created. | False        |
+| Look Back (Minutes to look back when fetching) | Use this parameter to determine how far back in time to look in the search for incidents that were created before the last run time and did not match the query when they were created. | False        |
 
 
 4. Click **Test** to validate the URLs, token, and connection.
