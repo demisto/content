@@ -1631,6 +1631,6 @@ There is no context output for this command.
 <details><summary><h3 style={{display: 'inline'}}> General </h3></summary> 
 
 * ews-get-searchable-mailboxes:   
-When using UPN parameter, the command ews-get-searchable-mailboxes would work after assigning RBAC roles requested in the management role header as explained in the [Microsoft Documentation](https://learn.microsoft.com/en-us/Exchange/policy-and-compliance/ediscovery/assign-permissions?redirectedfrom=MSDN&view=exchserver-2019).
+When using the UPN parameter, the command ews-get-searchable-mailboxes runs correctly after assigning RBAC roles requested in the management role header as explained in the [Microsoft Documentation](https://learn.microsoft.com/en-us/Exchange/policy-and-compliance/ediscovery/assign-permissions?redirectedfrom=MSDN&view=exchserver-2019).
 
 </details>
