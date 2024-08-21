@@ -2481,7 +2481,7 @@ script:
       - "false"
       - "true"
     - defaultValue: '60'
-      description: Indicates how long to wait between command execution (in seconds) when 'polling' argument is true. Minimum value is 10 seconds. Default is 60.
+      description: Indicates how long to wait between command execution (in seconds) when 'polling' argument is true. Minimum value is 10 seconds. 
       name: interval
     - defaultValue: '600'
       description: Indicates the time in seconds until the polling sequence timeouts. 
