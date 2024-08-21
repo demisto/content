@@ -124,7 +124,7 @@ script:
     - description: A branch name.
       isArray: false
       name: branch
-    - description: Code category filter, is also available as a search criteria (scopes) 
+    - description: Code category filter, is also available as a search criteria (search_scopes) 
       isArray: true
       name: code_categories
       auto: PREDEFINED
@@ -208,8 +208,8 @@ script:
       - Invalid
       - Unknown
       - FoundInHistory
-    - description: later
-      name: scopes
+    - description: When specifying `search_scopes`, `search_term` argument is required.
+      name: search_scopes
       isArray: true
       auto: PREDEFINED
       predefined:
@@ -244,9 +244,9 @@ script:
       - ExploitPOC
       - IsUsed
     - description: later
-      name: term
+      name: search_term
       isArray: false
-      required: true
+      required: false
     - description: Relevant only to- IacMisconfiguration,Vulnerabilities.
       name: iac_tags
       isArray: false

@@ -192,7 +192,7 @@ class Client(BaseClient):
         self._headers[REQUEST_CSPM_AUTH_HEADER] = token
 
     
-    def code_issues_list_request(self, fixable_only:Optional[bool]=None, scopes:Optional[List[str]]=[], term:Optional[str]=None,
+    def code_issues_list_request(self, fixable_only:Optional[bool]=None, search_scopes:Optional[List[str]]=[], search_term:Optional[str]=None,
                                  branch:Optional[str]=None, check_status:Optional[str]=None, git_users:Optional[List[str]]=[],
                                  iac_categories:Optional[List[str]]=[], iac_labels:Optional[List[str]]=[],
                                  file_types:Optional[List[str]]=[],  repositories:Optional[List[str]]=[],
@@ -218,8 +218,8 @@ class Client(BaseClient):
             vulnerabilityRiskFactors=vulnerability_risk_factors
         ),
         search=assign_params(
-            scopes=scopes,
-            term=term),
+            scopes=search_scopes,
+            term=search_term),
         limit=limit,
         offset=offset
         )
@@ -2242,30 +2242,38 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
 
 def validate_code_issues_list_args(args):
     license_type = args.get('license_type')
+    search_scopes = args.get('search_scopes')
+    search_term = args.get('search_term')
+    
     if license_type and license_type not in LICENSE_TYPES:
         raise DemistoException('Invalid license type.')
+    
+    if search_scopes and not search_term:
+        raise DemistoException('The `search_term` argument is required when specifying `search_scopes`.')
 
     # Create a copy of the dictionary excluding `limit`, `scopes`, and `term`
     filtered_args = {
-        key: value for key, value in args.items() 
-        if key not in ['limit', 'scopes', 'term']
+        key: value for key, value in args.items()
+        if key not in ['limit', 'search_scopes', 'search_term']
     }
 
     # Ensure there is at least one valid filtering argument
     if not filtered_args:
         raise DemistoException(
-            "At least one filtering argument is required, excluding `scopes`, `term`, and `limit`."
+            "At least one filtering argument is required, excluding `search_scopes`, `search_term`, and `limit`."
         )
 
 
-def get_labels(labels)->List:
-    res = []
-    for label in labels:
-        if type(label) is str:
-            res.append(label)
-        else:
-            res.append(label.get('label'))
-    return res
+def get_labels(labels)->Optional[List]:
+    if labels:
+        res = []
+        for label in labels:
+            if type(label) is str:
+                res.append(label)
+            else:
+                res.append(label.get('label'))
+        return res
+    return None
 
 
 def code_issues_list_command(client, args):
@@ -2273,8 +2281,8 @@ def code_issues_list_command(client, args):
     validate_code_issues_list_args(args)
     
     fixable_only = argToBoolean(args.get('fixable_only', False))
-    scopes = argToList(args.get('scopes'))
-    term = args.get('term')
+    search_scopes = argToList(args.get('search_scopes'))
+    search_term = args.get('search_term')
     branch = args.get('branch')
     check_status = args.get('check_status')
     git_users = argToList(args.get('git_users'))
@@ -2291,9 +2299,9 @@ def code_issues_list_command(client, args):
     limit = arg_to_number(args.get('limit')) or 50
     
     
-    limit_for_request = limit
     if limit>1000:
-        limit_for_request = 1000
+        limit = 1000
+        
     has_next = True
     offset = 0
     
@@ -2301,13 +2309,14 @@ def code_issues_list_command(client, args):
     issues_for_readable_output = []
     while len(res_issues)<limit and has_next:
         
-        response = client.code_issues_list_request(fixable_only=fixable_only, scopes=scopes, term=term, branch=branch,
-                                                   check_status=check_status, git_users=git_users, iac_categories=iac_categories,
-                                                   iac_labels=iac_labels, file_types=file_types, repositories=repositories,
+        response = client.code_issues_list_request(fixable_only=fixable_only, search_scopes=search_scopes,
+                                                   search_term=search_term, branch=branch, check_status=check_status,
+                                                   git_users=git_users, iac_categories=iac_categories, iac_labels=iac_labels,
+                                                   file_types=file_types, repositories=repositories,
                                                    secrets_risk_factors=secrets_risk_factors, severities=severities,
                                                    vulnerability_risk_factors=vulnerability_risk_factors, iac_tags=iac_tags,
                                                    license_type=license_type, code_categories=code_categories,
-                                                   limit=limit_for_request, offset=offset)
+                                                   limit=limit, offset=offset)
         res_issues.extend([response['data']])
         
         for issue in response['data']:
@@ -2316,16 +2325,19 @@ def code_issues_list_command(client, args):
                 'First Detected': issue['firstDetected'],
                 'Policy': issue['policy'],
                 'Severity': issue['severity'],
-                'Labels': get_labels(issue['labels'])
+                'Labels': get_labels(issue.get('labels')),
+                'Repository Source': issue.get('repositorySource')
             })
                 
         has_next = response['hasNext']
         offset = len(res_issues)
-        
-    headers = ['Repository', 'First Detected', 'Policy', 'Severity', 'Labels']
+    
+    res_issues = res_issues[0:limit]
+    issues_for_readable_output = issues_for_readable_output[0:limit]
+      
+    headers = ['Repository', 'First Detected', 'Policy', 'Severity', 'Labels', 'Repository Source']
     readable_output = tableToMarkdown('Issues list:', issues_for_readable_output, headers, removeNull=True)
     return CommandResults(outputs_prefix='PrismaCloud.CodeIssue',
-                          #outputs_key_field='need to check this out',  #TODO
                           outputs=res_issues,
                           readable_output=readable_output,
                           raw_response=res_issues
@@ -2397,7 +2409,6 @@ def main() -> None:
         client: Client = Client(url, verify_certificate, proxy, headers=HEADERS, username=username, password=password,
                                 mirror_direction=mirror_direction, close_incident=close_incident, close_alert=close_alert,
                                 is_test_module=is_test_module)
-        #res = client.code_issues_list_request(**args)
         commands_without_args = {
             'prisma-cloud-alert-filter-list': alert_filter_list_command,
 

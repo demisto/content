@@ -1613,14 +1613,17 @@ def test_get_labels(labels, expected):
     
     
 valid_args = [
-    ({'license_type': 'type1', 'some_filter': 'value1', 'scopes': 'scope1', 'term': 'term1'}),
-    ({'license_type': 'type2', 'some_filter': 'value1', 'scopes': 'scope1', 'limit': 20, 'term': 'term1'}),
+    ({'license_type': 'OSI_APACHE', 'some_filter': 'value1', 'search_scopes': 'scope1', 'search_term': 'term1'}),
+    ({'license_type': 'OSI_APACHE', 'some_filter': 'value1', 'search_scopes': 'scope1', 'limit': 20, 'search_term': 'term1'}),
 ]
 
 invalid_args = [
     ({'license_type': 'invalid_type', 'some_filter': 'value1'}, DemistoException, 'Invalid license type.'),
-    ({'scopes': 'scope1', 'term': 'term1', 'limit': 10}, DemistoException, "At least one filtering argument is required, excluding `scopes`, `term`, and `limit`."),
-    ({}, DemistoException, "At least one filtering argument is required, excluding `scopes`, `term`, and `limit`."),
+    ({'search_scopes': 'scope1', 'search_term': 'term1', 'limit': 10}, DemistoException,
+     "At least one filtering argument is required, excluding `search_scopes`, `search_term`, and `limit`."),
+    ({}, DemistoException, "At least one filtering argument is required, excluding `search_scopes`, `search_term`, and `limit`."),
+    ({'search_scopes': 'scope1', 'some_filter': 'value1'}, DemistoException,
+     'The `search_term` argument is required when specifying `search_scopes`.')
 ]
 
 @pytest.mark.parametrize('given', valid_args)
@@ -1650,3 +1653,161 @@ def test_invalid_cases(given, expected_exception, expected_message):
     with pytest.raises(expected_exception) as exc_info:
         validate_code_issues_list_args(given)
     assert str(exc_info.value) == expected_message
+    
+
+def test_code_issues_list_command__has_next(mocker, prisma_cloud_v2_client):
+    """
+    Given
+        has_next feild from api response.
+    When
+        Running code_issues_list_command function.
+    Then
+        The api is called in the right amount of times.
+    """
+    from PrismaCloudV2 import code_issues_list_command
+    m = mocker.patch.object(prisma_cloud_v2_client, '_http_request',
+                            side_effect=[{'data': [{'firstDetected':'some_date', 'policy': 'policy1', 'severity': 'severity1',
+                                                    'labels': ['label1']}], 'hasNext': True},
+                                         {'data': [{'firstDetected':'some_date', 'policy': 'policy1', 'severity': 'severity1',
+                                                    'labels': ['label1']}], 'hasNext': False}])
+    code_issues_list_command(prisma_cloud_v2_client, {'check_status': 'Passed'})
+    assert m.call_count == 2
+    
+
+limit_reached_data = [
+        {
+            'data': [
+                {'repository': 'repo1', 'firstDetected': '2024-01-01', 'policy': 'policy1',
+                 'severity': 'high', 'labels': [], 'repositorySource': 'source1'},
+                {'repository': 'repo2', 'firstDetected': '2024-01-02', 'policy': 'policy2',
+                 'severity': 'medium', 'labels': [], 'repositorySource': 'source2'}
+            ],
+            'hasNext': True
+        },
+        {
+            'data': [
+                {'repository': 'repo3', 'firstDetected': '2024-01-03', 'policy': 'policy3',
+                 'severity': 'low', 'labels': [], 'repositorySource': 'source3'},
+                {'repository': 'repo4', 'firstDetected': '2024-01-04', 'policy': 'policy4',
+                 'severity': 'critical', 'labels': [], 'repositorySource': 'source4'}
+            ],
+            'hasNext': False
+        }
+    ]
+def test_code_issues_list_command_pagination_limit_reached(mocker, prisma_cloud_v2_client):
+    """
+    Given
+        A limit.
+    When
+        Running code_issues_list_command function and there are more issues then the given limit.
+    Then
+        The number of issues returned is not more then the limit.
+    """
+    from PrismaCloudV2 import code_issues_list_command
+    mocker.patch.object(prisma_cloud_v2_client, '_http_request', side_effect=limit_reached_data)
+    result = code_issues_list_command(prisma_cloud_v2_client, {'limit': 3, 'fixable_only': True})
+    assert isinstance(result.outputs, list)
+    assert len(result.outputs) == 3  # 3 results in total
+    assert 'repo1' in result.readable_output
+    assert 'repo2' in result.readable_output
+    assert 'repo3' in result.readable_output
+    assert 'repo4' not in result.readable_output  # This item should not be included
+
+lower_limit_data = {
+        'data': [
+            {'repository': 'repo1', 'firstDetected': '2024-01-01', 'policy': 'policy1',
+             'severity': 'high', 'labels': [], 'repositorySource': 'source1'}],
+        'hasNext': False
+    }
+def test_code_issues_list_command_single_page_no_pagination(mocker, prisma_cloud_v2_client):
+    """
+    Given
+        A limit.
+    When
+        Running code_issues_list_command function and there are less issues then the given limit.
+    Then
+        The number of issues returned is exactly the number of issues that exist.
+    """
+    from PrismaCloudV2 import code_issues_list_command
+    mocker.patch.object(prisma_cloud_v2_client, '_http_request', return_value=lower_limit_data)
+    result = code_issues_list_command(prisma_cloud_v2_client, {'limit': 5, 'fixable_only': True})
+    assert isinstance(result.outputs, list)
+    assert len(result.outputs) == 1  # Only one result returned
+    assert 'repo1' in result.readable_output
+    
+    
+code_issues_list_request_data = [
+    # Test case with some filters set and default values
+    (
+        {
+            'fixable_only': True,
+            'branch': 'main',
+            'check_status': 'open',
+            'severities': ['high', 'critical'],
+        },
+        {
+            'filters': {
+                'branch': 'main',
+                'checkStatus': 'open',
+                'fixableOnly': True,
+                'severities': ['high', 'critical']
+            },
+            'limit': 50,
+            'offset': 0
+        }
+    ),
+    # Test case with search filters and different limit/offset
+    (
+        {
+            'fixable_only': True,
+            'search_scopes': ['scope1', 'scope2'],
+            'search_term': 'vulnerability',
+            'limit': 10,
+            'offset': 5
+        },
+        {
+            'filters': {
+                'fixableOnly': True},
+            'search': {
+                'scopes': ['scope1', 'scope2'],
+                'term': 'vulnerability'
+            },
+            'limit': 10,
+            'offset': 5
+        }
+    ),
+    # Test case with multiple filter options
+    (
+        {
+            'git_users': ['user1', 'user2'],
+            'iac_categories': ['category1'],
+            'vulnerability_risk_factors': ['risk1', 'risk2'],
+        },
+        {
+            'filters': {
+                'gitUsers': ['user1', 'user2'],
+                'iacCategories': ['category1'],
+                'vulnerabilityRiskFactors': ['risk1', 'risk2']
+            },
+            'limit': 50,
+            'offset': 0
+        }
+    ),
+]
+@pytest.mark.parametrize("given_params, expected_body", code_issues_list_request_data)
+def test_code_issues_list_request(mocker, given_params, expected_body, prisma_cloud_v2_client):
+    """
+    Given
+        Arguments.
+    When
+        Running code_issues_list_request function with these arguments.
+    Then
+        The http request is called once with the right body.
+    """
+    m = mocker.patch.object(prisma_cloud_v2_client, '_http_request')
+    prisma_cloud_v2_client.code_issues_list_request(**given_params)
+    m.assert_called_once_with(
+        'POST',
+        '/code/api/v2/code-issues/branch_scan',
+        json_data=expected_body
+    )
