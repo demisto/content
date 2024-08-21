@@ -13,7 +13,7 @@ The EWS integration can be used for the following use cases.
     This can be achieved in the following ways:
 
     Use the `ews-search-mailbox` command to search for all emails in a specific folder within the target mailbox.  
-        Use the query argument to narrow the search for emails sent from a specific account and more.
+     Use the query argument to narrow the search for emails sent from a specific account and more.
     This command retrieves the _ItemID_ field for each email item listed in the results. The `ItemID` value can be used in the `ews-get-items` command in order to get more information about the email item itself.
 
 * Get email attachment information.  
