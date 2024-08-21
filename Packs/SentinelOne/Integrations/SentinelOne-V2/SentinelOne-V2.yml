@@ -2462,13 +2462,13 @@ script:
       description: A comma-separated list of agent IDs on which the script should run.
       isArray: true
     - name: singularity_xdr_Keyword
-      description: Singularityxdr keyword.
+      description: Singularity XDR keyword.
     - name: singularity_xdr_Url
-      description: Singularityxdr url.
+      description: Singularity XDR URL.
     - name: api_key
-      description: Api key.
+      description: API key.
     - name: input_params
-      description: Input params.
+      description: Input parameters.
     - name: password
       description: Password.
     - name: script_runtime_timeout_seconds
