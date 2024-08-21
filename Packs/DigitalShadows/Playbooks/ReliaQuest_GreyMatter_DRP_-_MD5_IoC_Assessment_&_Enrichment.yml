@@ -120,6 +120,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       "no":
       - "56"

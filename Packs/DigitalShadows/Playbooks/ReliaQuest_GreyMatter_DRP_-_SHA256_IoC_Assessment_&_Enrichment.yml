@@ -1,18 +1,10 @@
 id: ReliaQuest GreyMatter DRP - SHA256_IoC Assessment & Enrichment
-version: 259
+version: -1
 contentitemexportablefields:
-  contentitemfields:
-    packID: ""
-    packName: Digital Shadows SearchLight
-    itemVersion: 1.0.9
-    fromServerVersion: 6.0.0
-    toServerVersion: ""
-    definitionid: ""
-vcShouldKeepItemLegacyProdMachine: false
-fromversion: 5.0.0
+  contentitemfields: {}
+fromversion: 6.10.0
 name: ReliaQuest GreyMatter DRP - SHA256_IoC Assessment & Enrichment
-description: Enrichment of SHA256 IOC types - sub-playbook for IOC Assessment & Enrichment
-  playbook
+description: Enrichment of SHA256 IOC types - sub-playbook for IOC Assessment & Enrichment playbook.
 starttaskid: "0"
 tasks:
   "0":
@@ -25,6 +17,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "54"
@@ -55,6 +48,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -79,8 +73,7 @@ tasks:
       id: 441e54a5-3612-4648-83c2-0595618432f5
       version: -1
       name: ds-search - THREAT FEEDS
-      description: Perform a general search against incidents, threats closed sources,
-        etc.
+      description: Perform a general search against incidents, threats closed sources, etc.
       script: ReliaQuest GreyMatter DRP Incidents|||ds-search
       type: regular
       iscommand: true
@@ -120,6 +113,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       "no":
       - "56"
@@ -164,8 +158,7 @@ tasks:
       id: 8cbeba8f-d765-4330-8b75-20f4da6c2326
       version: -1
       name: ds-search - INTEL UPDATES
-      description: Perform a general search against incidents, threats closed sources,
-        etc.
+      description: Perform a general search against incidents, threats closed sources, etc.
       script: ReliaQuest GreyMatter DRP Incidents|||ds-search
       type: regular
       iscommand: true
@@ -238,8 +231,7 @@ tasks:
       id: 35cf04a8-1242-4dc7-8a27-094bc0f48429
       version: -1
       name: ds-search - PROFILE INTELLIGENCE
-      description: Perform a general search against incidents, threats closed sources,
-        etc.
+      description: Perform a general search against incidents, threats closed sources, etc.
       script: ReliaQuest GreyMatter DRP Incidents|||ds-search
       type: regular
       iscommand: true
@@ -312,8 +304,7 @@ tasks:
       id: 91c4d694-5c95-47bc-897f-1373d8266095
       version: -1
       name: ds-search - MITRE TECHNIQUES
-      description: Perform a general search against incidents, threats closed sources,
-        etc.
+      description: Perform a general search against incidents, threats closed sources, etc.
       script: ReliaQuest GreyMatter DRP Incidents|||ds-search
       type: regular
       iscommand: true
@@ -386,8 +377,7 @@ tasks:
       id: d8b04056-3ecf-415d-8f1d-a1f29330ca3d
       version: -1
       name: ds-search - CONFIRMED ACTIVITY
-      description: Perform a general search against incidents, threats closed sources,
-        etc.
+      description: Perform a general search against incidents, threats closed sources, etc.
       script: ReliaQuest GreyMatter DRP Incidents|||ds-search
       type: regular
       iscommand: true
@@ -646,12 +636,13 @@ inputs:
       - operator: uniq
   required: false
   description: A Digital Shadows ShadowSearch query containing SHA256 hashes
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: DBotScore.Indicator
-  description: Indicator Value
+  description: Indicator Value.
   type: string
 - contextPath: DBotScore.Type
-  description: Indicator Type
+  description: Indicator Type.
   type: string
-sourceplaybookid: Digital Shadows - SHA256_IoC Assessment & Enrichment
+tests:
+- No tests (auto formatted)

@@ -1,5 +1,5 @@
 id: ReliaQuest GreyMatter DRP - SHA1_IoC Assessment & Enrichment
-version: 259
+version: -1
 contentitemexportablefields:
   contentitemfields:
     packID: ""
@@ -120,6 +120,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       "no":
       - "56"
