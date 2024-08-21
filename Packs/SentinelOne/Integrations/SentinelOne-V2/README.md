@@ -1649,8 +1649,8 @@ Get remote script tasks using a variety of filters.
 | cursor | Cursor position returned by the last request. Use to iterate over more than 1000 items. Example: 'YWdlbnRfaWQ6NTgwMjkzODE='. | Optional |
 | description_contains | Only include tasks with specific description. | Optional |
 | detailed_status_contains | Only include tasks with specific detailed status. | Optional |
-| group_ids | List of Group IDs to filter by. Example: '225494730938493804,225494730938493915'. | Optional |
-| ids | List of IDs to filter by. Example: '225494730938493804,225494730938493915'. | Optional |
+| group_ids | Comma-separated list of Group IDs to filter by. Example: '225494730938493804,225494730938493915'. | Optional |
+| ids | Comma-separated list of IDs to filter by. Example: '225494730938493804,225494730938493915'. | Optional |
 | initiated_by_contains | Only include tasks from specific initiating user. | Optional |
 | limit | Limit number of returned items (1-1000). Example: '10'. | Optional |
 | parent_task_id | Parent task ID to fetch the status by. Example: '225494730938493804'. | Required |
