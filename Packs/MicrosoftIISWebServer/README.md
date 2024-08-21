@@ -16,7 +16,7 @@ For configuring logging [Per-site](https://learn.microsoft.com/en-us/iis/manage/
 3. In the *Log File* section under *Format*, select **W3C**.
    ![Server Screenshot](https://raw.githubusercontent.com/demisto/content/b33523bbb3666eb18c779b09d38fbf14e4764075/Packs/MicrosoftIISWebServer/doc_imgs/IISW3C.png)
 
-4. Click **Select Fields** and ensure all the standard fields are selected:
+4. Click **Select Fields** and ensure all the standard fields are selected.
 ![Server Screenshot](https://raw.githubusercontent.com/demisto/content/b33523bbb3666eb18c779b09d38fbf14e4764075/Packs/MicrosoftIISWebServer/doc_imgs/IISLogging.png)
 
 ### Supported Log Formats
