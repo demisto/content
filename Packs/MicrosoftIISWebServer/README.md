@@ -10,7 +10,7 @@ For configuring logging [Per-site](https://learn.microsoft.com/en-us/iis/manage/
 
 1. Under the **Connections** tree view on the left, select the requested website for logging.
 
-2. In **Features View**, click **Logging**:
+2. In *Features View*, click **Logging**.
    ![Server Screenshot](https://raw.githubusercontent.com/demisto/content/b33523bbb3666eb18c779b09d38fbf14e4764075/Packs/MicrosoftIISWebServer/doc_imgs/IISWebsites.png)
 
 3. In the **Log File** section under **Format**, select *W3C*:
