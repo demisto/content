@@ -296,7 +296,9 @@ def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list
             indicators.extend(
                 handle_indicator_function(client, item, feed_config, service_name, indicator_type, indicator_field,
                                           use_prefix_flat, feedTags, auto_detect, mapping_function,
-                                          create_relationships, create_relationships_function, remove_ports, enrichment_excluded))
+                                          create_relationships, create_relationships_function, remove_ports,
+                                          enrichment_excluded=enrichment_excluded,
+                                          ))
 
             if limit and len(indicators) >= limit:  # We have a limitation only when get-indicators command is
                 # called, and then we return for each service_name "limit" of indicators
@@ -367,6 +369,7 @@ def handle_indicator(client: Client, item: Dict, feed_config: Dict, service_name
         indicator['value'] = indicator['value'].split(':')[0]
 
     indicator['rawJSON'] = item
+
     if enrichment_excluded:
         indicator['enrichmentExcluded'] = enrichment_excluded
 

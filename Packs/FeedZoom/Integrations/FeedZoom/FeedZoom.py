@@ -122,6 +122,7 @@ def fetch_indicators(client: Client, feed_tags: list = [], tlp_color: str | None
         }
         for key, val in item.items():
             raw_data.update({key: val})
+
         indicator_obj = {
             "value": value,
             "type": type_,
@@ -182,7 +183,7 @@ def fetch_indicators_command(client: Client, params: dict) -> list[dict]:
     feed_tags = argToList(params.get("feedTags", ""))
     tlp_color = params.get('tlp_color')
     enrichment_excluded = params.get('enrichmentExcluded', False)
-    indicators = fetch_indicators(client, feed_tags, tlp_color, enrichment_excluded)
+    indicators = fetch_indicators(client, feed_tags, tlp_color, enrichment_excluded=enrichment_excluded)
     return indicators
 
 
