@@ -297,8 +297,7 @@ class GetEvents:
                               f"{mid=}")
                 high = mid - 1
         demisto.debug(f'events_in_window end, return events {mid=}')
-        events = events[:mid + 1]
-        return events[:mid], True
+        return events[:mid + 1], True
 
     def _iter_events(self) -> Generator:
         """
