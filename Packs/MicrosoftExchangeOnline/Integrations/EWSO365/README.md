@@ -7,14 +7,13 @@ The EWS O365 integration implants EWS leading services. The integration allows g
 The EWS integration can be used for the following use cases.
 
 * Monitor a specific email account and create incidents from incoming emails to the defined folder.  
-    Follow the instructions in the [Fetched Incidents Data section](https://xsoar.pan.dev/docs/reference/integrations/ewso365#fetch-data).
+    Follow the instructions in the [Fetched Incidents Data section](https://xsoar.pan.dev/docs/reference/integrations/ewso365#fetched-incidents-data).
 
 * Search for an email message across mailboxes and folders.  
-    This can be achieved in the following ways:
 
-    1. Use the `ews-search-mailbox` command to search for all emails in a specific folder within the target mailbox.  
-        Use the query argument to narrow the search for emails sent from a specific account and more.
-    2. This command retrieves the _ItemID_ field for each email item listed in the results. The `ItemID` value can be used in the `ews-get-items` command in order to get more information about the email item itself.
+    Use the `ews-search-mailbox` command to search for all emails in a specific folder within the target mailbox.  
+     Use the query argument to narrow the search for emails sent from a specific account and more.
+    This command retrieves the _ItemID_ field for each email item listed in the results. The `ItemID` value can be used in the `ews-get-items` command in order to get more information about the email item itself.
 
 * Get email attachment information.  
     Use the `ews-get-attachment` command to retrieve information on one attachment or all attachments of a message at once. It supports both file attachments and item attachments (e.g., email messages).
@@ -27,7 +26,7 @@ The EWS integration can be used for the following use cases.
 
 ## Architecture
 
-This integration is based on the `exchangelib` python module. For more information about the module check the [documentation](https://ecederstrand.github.io/exchangelib/).
+This integration is based on the `exchangelib` python module. For more information about the module, check the [documentation](https://ecederstrand.github.io/exchangelib/).
 
 
 ## Set up the Third Party System
@@ -38,27 +37,29 @@ Follow your preferred method's guide on how to use the admin consent flow in ord
 * [Cortex XSOAR Application](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#cortex-xsoar-application)
 * [Self-Deployed Application](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#self-deployed-application) - Client Credential Flow.
 
+## Authentication
+
 For more details about the authentication used in this integration, see [Microsoft Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication).
 
 ## Permissions
 
 In order to function as expected, the service account should have:
 
-**Impersonation rights** - In order to perform actions on the target mailbox of other users, the _service account_ must be part of the `ApplicationImpersonation` role. For more information and guide on how to set up the permission, follow the [Microsoft Documentation](https://learn.microsoft.com/en-us/exchange/client-developer/exchange-web-services/impersonation-and-ews-in-exchange).
-Most command require this permission to function correctly. This permission is specified in each relevant command's Permission section. For more information follow the [Microsoft Documentation](https://learn.microsoft.com/en-us/exchange/client-developer/exchange-web-services/impersonation-and-ews-in-exchange). 
+**Impersonation rights** - In order to perform actions on the target mailbox of other users, the _service account_ must be part of the `ApplicationImpersonation` role. For more information and instructions on how to set up the permission, see [Microsoft Documentation](https://learn.microsoft.com/en-us/exchange/client-developer/exchange-web-services/impersonation-and-ews-in-exchange).
+Most command require this permission to function correctly. This permission is specified in each relevant command's Permission section. For more information, see [Microsoft Documentation](https://learn.microsoft.com/en-us/exchange/client-developer/exchange-web-services/impersonation-and-ews-in-exchange). 
 
-**eDiscovery** permissions to the Exchange Server. For Users to be able to use Exchange Server In-Place eDiscovery, they must be added to the Discovery Management role group. Members of the Discovery Management role group have Full Access mailbox permissions to the default discovery mailbox, which is called Discovery Search Mailbox, including access to sensitive message content. For more information see the [Microsoft documentation](https://technet.microsoft.com/en-us/library/dd298059(v=exchg.160).aspx).
+**eDiscovery** permissions to the Exchange Server. For users to be able to use Exchange Server In-Place eDiscovery, they must be added to the Discovery Management role group. Members of the Discovery Management role group have Full Access mailbox permissions to the default discovery mailbox, which is called Discovery Search Mailbox, including access to sensitive message content. For more information, see the [Microsoft documentation](https://technet.microsoft.com/en-us/library/dd298059(v=exchg.160).aspx).
 The need for this permission is specified in each relevant command's Permission section.
 
 **full_access_as_app** - The _application used for authentication_ requires this permission to gain access to the Exchange Web Services.
 To set this permission follow these steps:
 
 1. Navigate to **Home** > **App registrations**.
-2. Search for your app under ‘all applications’.
+2. Search for your app under *all applications*.
 3. Click **API permissions** > **Add permission**.
 4. Search for `Office 365 Exchange Online` API > `Application Permission`> `full_access_as_app` permission. 
 
-For more information on this permission, visit [the Microsoft documentation](https://docs.microsoft.com/en-us/exchange/client-developer/exchange-web-services/how-to-authenticate-an-ews-application-by-using-oauth#configure-for-app-only-authentication).
+For more information on this permission, see [the Microsoft documentation](https://docs.microsoft.com/en-us/exchange/client-developer/exchange-web-services/how-to-authenticate-an-ews-application-by-using-oauth#configure-for-app-only-authentication).
 
 To limit the application's permissions to only specific mailboxes, follow the [Microsoft documentation](https://docs.microsoft.com/en-us/graph/auth-limit-mailbox-access). Note that it may take about an hour for permissions changes to take effect.
 
@@ -69,7 +70,7 @@ To limit the application's permissions to only specific mailboxes, follow the [M
 | ID / Application ID | ID can be received after following the System Integration Setup (Device side steps). | False |
 | Token / Tenant ID | Token can be received after following the System Integration Setup (Device side steps). | False |
 | Key / Application Secret | Key can be received after following the System Integration Setup (Device side steps). | False |
-| Azure Cloud | Azure Cloud environment. Options are: _Worldwide_ (The publicly accessible Azure Cloud), _US GCC_ (Azure cloud for the USA Government Cloud Community), _US GCC-High_ (Azure cloud for the USA Government Cloud Community High), _DoD_ (Azure cloud for the USA Department of Defense), _Germany_ (Azure cloud for the German Government) | False|
+| Azure Cloud | Azure Cloud environment. Options are: _Worldwide_ (The publicly accessible Azure Cloud), _US GCC_ (Azure cloud for the USA Government Cloud Community), _US GCC-High_ (Azure cloud for the USA Government Cloud Community High), _DoD_ (Azure cloud for the USA Department of Defense), _Germany_ (Azure cloud for the German Government), _China_ (Azure cloud for the Chinese Government ) | False|
 | Email Address | Mailbox to run commands on and to fetch incidents from. To use this functionality, your account must have impersonation rights or delegation for the account specified. For more information, see https://xsoar.pan.dev/docs/reference/integrations/ewso365/#additional-information | True |
 | UPN Address | When provided, the target mailbox if it's different from the Email Address. Otherwise, the Email Address is used. | False |
 | Name of the folder from which to fetch incidents | Supports Exchange Folder ID and sub-folders, e.g., Inbox/Phishing. | True |
@@ -84,7 +85,7 @@ To limit the application's permissions to only specific mailboxes, follow the [M
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
 | Run as a separate process (protects against memory depletion) |  | False |
-| Use a self deployed Azure Application | Select this checkbox if you are using a self-deployed Azure application. | False |
+| Use a self-deployed Azure Application | Select this checkbox if you are using a self-deployed Azure application. | False |
 | Incidents Fetch Interval |  | False |
 | What time field should we filter incidents by? | Default is to filter by received-time, which works well if the folder is an "Inbox". But for a folder emails are dragged into for attention, if we filter by received-time, out-of-order processing of emails means some are ignored. Filtering by modified-time works better for such a scenario. This works best if any modifications \(such as tagging\) happens before moving the email into the folder, such that the move into the folder is the last modification, and triggers Cortex XSOAR to fetch it as an incident. | False |
 
@@ -1623,14 +1624,14 @@ There is no context output for this command.
 
 <details><summary><h3 style={{display: 'inline'}}> Fetch command </h3></summary>
 
-* If incidents are not being fetched, verify no `pre-process` rule is configured that might filter some incidents out.
-* "address parts cannot contain CR or LF" error message in the logs means an corrupted email might have failed the process. In order to solve, you might need to remove the email from the folder being fetched. Contact Support Team if you believe the email is not corrupted. 
+* If incidents are not being fetched, verify that no `pre-process` rule is configured that might filter some incidents out.
+* "address parts cannot contain CR or LF" error message in the logs means a corrupted email might have failed the process. In order to resolve this, you might need to remove the email from the folder being fetched. Contact Support Team if you believe the email is not corrupted. 
 
 </details>
 
 <details><summary><h3 style={{display: 'inline'}}> General </h3></summary> 
 
 * ews-get-searchable-mailboxes:   
-When using UPN parameter, the command ews-get-searchable-mailboxes would work after assigning RBAC roles requested in the management role header as explained in the [Microsoft Documentation](https://learn.microsoft.com/en-us/Exchange/policy-and-compliance/ediscovery/assign-permissions?redirectedfrom=MSDN&view=exchserver-2019).
+When using the UPN parameter, the command ews-get-searchable-mailboxes runs correctly after assigning RBAC roles requested in the management role header as explained in the [Microsoft Documentation](https://learn.microsoft.com/en-us/Exchange/policy-and-compliance/ediscovery/assign-permissions?redirectedfrom=MSDN&view=exchserver-2019).
 
 </details>

@@ -6528,7 +6528,6 @@ class TestFetchIncidentsHelperFunctions:
                 'name': 'dummy_device 1',
                 'occurred': occured.strftime(DATE_FORMAT),
                 'rawJSON': json.dumps(raw_entry),
-                'type': 'TYPE'
             }
         assert incident_entry_to_incident_context(raw_entry) == context_entry
 
@@ -6619,12 +6618,12 @@ class TestFetchIncidentsFlows:
 
         mocker.patch('Panorama.get_query_entries', return_value={})
 
-        last_fetch_dict, last_id_dict, incident_entries_list = fetch_incidents(
+        new_last_run, incident_entries_list = fetch_incidents(
             last_run, first_fetch, queries_dict, max_fetch, 5)
 
         assert incident_entries_list == []
-        assert last_fetch_dict == {'X_log_type': ''}
-        assert last_id_dict == {}
+        assert new_last_run['last_fetch_dict'] == {'X_log_type': ''}
+        assert new_last_run['last_id_dict'] == {}
 
     def test_first_fetch_with_one_incident_flow(self, mocker):
         """
@@ -6649,18 +6648,18 @@ class TestFetchIncidentsFlows:
         raw_entries = {'seqno': '000000001', 'type': 'X_log_type', 'time_generated': '2022/1/1 12:00:00',
                        'device_name': 'device_for_test'}
         expected_parsed_incident_entries = {'name': 'device_for_test 000000001', 'occurred': '2022-01-01T12:00:00Z',
-                                            'rawJSON': json.dumps(raw_entries), 'type': 'X_log_type'}
+                                            'rawJSON': json.dumps(raw_entries)}
         fetch_start_datetime_dict = {'X_log_type': dateparser.parse('2022/1/1 11:00:00', settings={'TIMEZONE': 'UTC'})}
 
         mocker.patch('Panorama.get_query_entries', return_value=[raw_entries])
         mocker.patch('Panorama.get_fetch_start_datetime_dict', return_value=fetch_start_datetime_dict)
 
-        last_fetch_dict, last_id_dict, incident_entries_dict = fetch_incidents(
+        new_last_run, incident_entries_dict = fetch_incidents(
             last_run, first_fetch, queries_dict, max_fetch, 5)
 
         assert incident_entries_dict[0] == expected_parsed_incident_entries
-        assert last_fetch_dict.get('X_log_type', '') == '2022-01-01 12:00:00'
-        assert last_id_dict.get('X_log_type', '') == {'device_for_test': '000000001'}
+        assert new_last_run['last_fetch_dict'].get('X_log_type', '') == '2022-01-01 12:00:00'
+        assert new_last_run['last_id_dict'].get('X_log_type', '') == {'device_for_test': '000000001'}
 
     def test_second_fetch_with_no_incidents_flow(self, mocker):
         """
@@ -6691,12 +6690,12 @@ class TestFetchIncidentsFlows:
         mocker.patch('Panorama.get_query_entries', return_value=raw_entries)
         mocker.patch('Panorama.get_fetch_start_datetime_dict', return_value=fetch_start_datetime_dict)
 
-        last_fetch_dict, last_id_dict, incident_entries_dict = fetch_incidents(
+        new_last_run, incident_entries_dict = fetch_incidents(
             last_run, first_fetch, queries_dict, max_fetch, 5)
 
         assert incident_entries_dict == expected_parsed_incident_entries
-        assert last_fetch_dict.get('X_log_type', '') == '2022-01-01T12:00:00'
-        assert last_id_dict.get('X_log_type', '') == '000000001'
+        assert new_last_run['last_fetch_dict'].get('X_log_type', '') == '2022-01-01T12:00:00'
+        assert new_last_run['last_id_dict'].get('X_log_type', '') == '000000001'
 
     def test_second_fetch_with_two_incidents_with_same_log_type_flow(self, mocker):
         """
@@ -6724,18 +6723,18 @@ class TestFetchIncidentsFlows:
                         'device_name': 'dummy_device'}]
 
         expected_parsed_incident_entries = [{'name': 'dummy_device 000000002', 'occurred': '2022-01-01T13:00:00Z',
-                                             'rawJSON': json.dumps(raw_entries[0]), 'type': 'X_log_type'}]
+                                             'rawJSON': json.dumps(raw_entries[0])}]
         fetch_start_datetime_dict = {'X_log_type': dateparser.parse('2022/1/1 12:00:00', settings={'TIMEZONE': 'UTC'})}
 
         mocker.patch('Panorama.get_query_entries', return_value=raw_entries)
         mocker.patch('Panorama.get_fetch_start_datetime_dict', return_value=fetch_start_datetime_dict)
 
-        last_fetch_dict, last_id_dict, incident_entries_dict = fetch_incidents(
+        new_last_run, incident_entries_dict = fetch_incidents(
             last_run, first_fetch, queries_dict, max_fetch, 5)
 
         assert incident_entries_dict == expected_parsed_incident_entries
-        assert last_fetch_dict.get('X_log_type', '') == '2022-01-01 13:00:00'
-        assert last_id_dict.get('X_log_type', '') == {'dummy_device': '000000002'}
+        assert new_last_run['last_fetch_dict'].get('X_log_type', '') == '2022-01-01 13:00:00'
+        assert new_last_run['last_id_dict'].get('X_log_type', '') == {'dummy_device': '000000002'}
 
     def test_second_fetch_with_two_incidents_with_different_log_types_flow(self, mocker):
         """
@@ -6771,9 +6770,9 @@ class TestFetchIncidentsFlows:
         fetch_incidents_request_result = {'X_log_type': [raw_entries[0]], 'Y_log_type': [raw_entries[1]]}
 
         expected_parsed_incident_entries = [{'name': 'dummy_device1 000000002', 'occurred': '2022-01-01T13:00:00Z',
-                                             'rawJSON': json.dumps(raw_entries[0]), 'type': 'X_log_type'},
+                                             'rawJSON': json.dumps(raw_entries[0])},
                                             {'name': 'dummy_device2 000000001', 'occurred': '2022-01-01T13:00:00Z',
-                                             'rawJSON': json.dumps(raw_entries[1]), 'type': 'Y_log_type'}]
+                                             'rawJSON': json.dumps(raw_entries[1])}]
         fetch_start_datetime_dict = {'X_log_type': dateparser.parse(
             '2022/1/1 11:00:00', settings={'TIMEZONE': 'UTC'}),
             'Y_log_type': dateparser.parse(
@@ -6782,14 +6781,14 @@ class TestFetchIncidentsFlows:
         mocker.patch('Panorama.fetch_incidents_request', return_value=fetch_incidents_request_result)
         mocker.patch('Panorama.get_fetch_start_datetime_dict', return_value=fetch_start_datetime_dict)
 
-        last_fetch_dict, last_id_dict, incident_entries_dict = fetch_incidents(
+        new_last_run, incident_entries_dict = fetch_incidents(
             last_run, first_fetch, queries_dict, max_fetch, 5)
 
         assert incident_entries_dict == expected_parsed_incident_entries
-        assert last_fetch_dict.get('X_log_type', '') == '2022-01-01 13:00:00'
-        assert last_id_dict.get('X_log_type', '') == {'dummy_device1': '000000002'}
-        assert last_fetch_dict.get('Y_log_type', '') == '2022-01-01 13:00:00'
-        assert last_id_dict.get('Y_log_type', '') == {'dummy_device2': '000000001'}
+        assert new_last_run['last_fetch_dict'].get('X_log_type', '') == '2022-01-01 13:00:00'
+        assert new_last_run['last_id_dict'].get('X_log_type', '') == {'dummy_device1': '000000002'}
+        assert new_last_run['last_fetch_dict'].get('Y_log_type', '') == '2022-01-01 13:00:00'
+        assert new_last_run['last_id_dict'].get('Y_log_type', '') == {'dummy_device2': '000000001'}
 
     def test_second_fetch_with_two_incidents_with_different_log_types_and_different_last_fetch_flow(self, mocker):
         """
@@ -6824,43 +6823,50 @@ class TestFetchIncidentsFlows:
         fetch_incidents_request_result = {'X_log_type': X_log_type_raw_entries, 'Y_log_type': Y_log_type_raw_entries}
 
         expected_parsed_incident_entries = [{'name': 'dummy_device1 000000002', 'occurred': '2022-01-01T13:00:00Z',
-                                             'rawJSON': json.dumps(X_log_type_raw_entries[0]), 'type': 'X_log_type'},
+                                             'rawJSON': json.dumps(X_log_type_raw_entries[0])},
                                             {'name': 'dummy_device2 000000003', 'occurred': '2022-01-01T13:00:00Z',
-                                             'rawJSON': json.dumps(Y_log_type_raw_entries[0]), 'type': 'Y_log_type'}]
+                                             'rawJSON': json.dumps(Y_log_type_raw_entries[0])}]
         fetch_start_datetime_dict = {'X_log_type': dateparser.parse('2022/1/1 11:00:00', settings={'TIMEZONE': 'UTC'}),
                                      'Y_log_type': dateparser.parse('2022/1/1 11:00:00', settings={'TIMEZONE': 'UTC'})}
 
         mocker.patch('Panorama.fetch_incidents_request', return_value=fetch_incidents_request_result)
         mocker.patch('Panorama.get_fetch_start_datetime_dict', return_value=fetch_start_datetime_dict)
 
-        last_fetch_dict, last_id_dict, incident_entries_dict = fetch_incidents(
+        new_last_run, incident_entries_dict = fetch_incidents(
             last_run, first_fetch, queries_dict, max_fetch, 5)
 
         assert incident_entries_dict == expected_parsed_incident_entries
-        assert last_fetch_dict.get('X_log_type', '') == '2022-01-01 13:00:00'
-        assert last_id_dict.get('X_log_type', '') == {'dummy_device1': '000000002'}
-        assert last_fetch_dict.get('Y_log_type', '') == '2022-01-01 13:00:00'
-        assert last_id_dict.get('Y_log_type', '') == {'dummy_device2': '000000003'}
+        assert new_last_run['last_fetch_dict'].get('X_log_type', '') == '2022-01-01 13:00:00'
+        assert new_last_run['last_id_dict'].get('X_log_type', '') == {'dummy_device1': '000000002'}
+        assert new_last_run['last_fetch_dict'].get('Y_log_type', '') == '2022-01-01 13:00:00'
+        assert new_last_run['last_id_dict'].get('Y_log_type', '') == {'dummy_device2': '000000003'}
 
 
-def test_update_max_fetch_dict(mocker):
+@pytest.mark.parametrize('new_incident_entries, expected_res',
+                         [
+                             ({}, {}),
+                             ({'log_type1': [{'test_data': 1}]}, {'log_type1': 15})
+                         ])
+def test_update_max_fetch_dict(mocker, new_incident_entries, expected_res):
     """
     Given:
-    - configured_max_fetch - maximum number of incidents the client configured to fetch.
+    - new_incident_entries - the fateched enties or empty dict
     - max_fetch_dict - dictionary with the maximum number of incidents to fetch per log type.
     - last_fetch_dict - dictionary with the last fetch time per log type.
     When:
         - update_max_fetch_dict is called.
         - max_fetch_dict has a log type that is not in last_fetch_dict.
     Then:
-        - The max_fetch_dict is updated with the maximum number of incidents to fetch per log type.
+        - The max_fetch_dict is updated with the maximum number of incidents to fetch per log type, only if new incident fetched.
     """
     from Panorama import update_max_fetch_dict
+    mocker.patch('demistomock.params', return_value={'max_fetch': 5})
     mocker.patch('demistomock.getLastRun',
                  return_value={"last_fetch_dict": {"log_type1": "2023-05-01 07:22:08", "log_type2": "2023-05-01 07:22:00"}})
-    res = update_max_fetch_dict(configured_max_fetch=5, max_fetch_dict={"log_type1": 10, "log_type2": 15},
-                                last_fetch_dict={"log_type1": "2023-05-01 07:22:08", "log_type2": "2023-05-01 07:22:08"})
-    assert res == {'log_type1': 15}
+    res = update_max_fetch_dict(max_fetch_dict={"log_type1": 10, "log_type2": 15},
+                                last_fetch_dict={"log_type1": "2023-05-01 07:22:08", "log_type2": "2023-05-01 07:22:08"},
+                                new_incident_entries=new_incident_entries)
+    assert res == expected_res
 
 
 def test_find_largest_id_per_device(mocker):
@@ -7441,12 +7447,12 @@ def test_fetch_incidents_correlation(mocker: MockerFixture):
     # assert duplicates are removed:
 
     mock_get_query_entries.return_value = corr_logs[:5]
-    _, _, entries = fetch_incidents(
+    _, entries = fetch_incidents(
         last_run, '2024/04/08 07:22:54', QueryMap(Correlation='query'), max_fetch_dict, 1
     )
 
     assert entries[0]["name"] == "Correlation 1"
-    assert entries[0]["type"] == "CORRELATION"
+    assert "CORRELATION" in entries[0]["rawJSON"]
     assert mock_get_query_entries.call_args_list[0].args == (
         "Correlation", "query and (match_time geq '2024/04/08 07:22:54')", 10, 1
     )  # asserting that "match_time" is used instead of "time_generated".
@@ -7458,7 +7464,7 @@ def test_fetch_incidents_correlation(mocker: MockerFixture):
 
     last_id_dict['Correlation'] = cast(int, {})
 
-    _, _, entries = fetch_incidents(
+    _, entries = fetch_incidents(
         last_run, '2024/04/08 07:22:54', QueryMap(Correlation='query'), max_fetch_dict, 1
     )
     assert entries[0]["name"] == "Correlation 1"

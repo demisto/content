@@ -10,8 +10,8 @@ def cyren_feed_relationship(args) -> CommandResults:
     if not indicator:
         raise ValueError("Please provide 'indicator' argument!")
 
-    result = demisto.executeCommand("CyrenThreatInDepthRenderRelated", dict(indicator=json.dumps(indicator),
-                                                                            columns="Indicator Type,Value"))
+    result = demisto.executeCommand("CyrenThreatInDepthRenderRelated", {"indicator": json.dumps(indicator),
+                                                                        "columns": "Indicator Type,Value"})
     if is_error(result[0]):
         raise ValueError(f"Failed to render related: {str(get_error(result))}")
 
