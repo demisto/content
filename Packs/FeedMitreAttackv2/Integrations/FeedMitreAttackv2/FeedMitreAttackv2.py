@@ -526,7 +526,8 @@ def attack_pattern_reputation_command(client, args):
     mitre_data = get_mitre_data_by_filter(client, filter_by_type)
     
     mitre_names = argToList(args.get('attack_pattern'))
-    
+    demisto.debug(f"MA: {mitre_names=}")
+    demisto.debug(f"MA: {mitre_data[0]=}")
     value = ''
     for name in mitre_names:
         demisto.debug(f'MA: Getting info on {name}')
@@ -578,7 +579,7 @@ def attack_pattern_reputation_command(client, args):
             attack_pattern = attack_pattern[0]
             value = f'{parent_name}: {attack_pattern.get("name")}'
             demisto.debug(f'MA: Got {value=}')
-        
+        demisto.debug(f'MA: Got {value=} at the end')
         if not value:
             return CommandResults(readable_output="Did not find wanted attack patterns in the Enterprise collection.")
 
@@ -588,6 +589,9 @@ def attack_pattern_reputation_command(client, args):
         md = f"## MITRE ATTACK \n ## Name: {value} - ID: " \
              f"{attack_obj.get('mitreid')} \n {custom_fields.get('description', '')}"
         command_results.append(build_command_result(value, score, md, attack_obj))
+        demisto.debug(f'MA: Got {value=} at the end')
+    if not command_results:
+        return CommandResults(readable_output="Did not find the attack patterns in the Enterprise collection.")
 
     return command_results
 

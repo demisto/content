@@ -2,7 +2,7 @@ import json
 import pytest
 from stix2 import TAXIICollectionSource, parse
 import demistomock as demisto  # noqa: F401
-from test_data.mitre_test_data import ATTACK_PATTERN, COURSE_OF_ACTION, INTRUSION_SET, MALWARE, TOOL, ID_TO_NAME, \
+from Packs.FeedMitreAttackv2.Integrations.FeedMitreAttackv2.test_data.mitre_test_data import ATTACK_PATTERN, COURSE_OF_ACTION, INTRUSION_SET, MALWARE, TOOL, ID_TO_NAME, \
     RELATION, MALWARE_LIST_WITHOUT_PREFIX, MALWARE_LIST_WITH_PREFIX, \
     INDICATORS_LIST, NEW_INDICATORS_LIST, MITRE_ID_TO_MITRE_NAME, OLD_ID_TO_NAME, NEW_ID_TO_NAME, RELATIONSHIP_ENTITY, \
     CAMPAIGN, ATTACK_PATTERNS
@@ -267,6 +267,28 @@ def test_attack_pattern_reputation_command(mocker):
 
     assert command_results[0].indicator.value == 'Abuse Elevation Control Mechanism'
     assert command_results[1].indicator.value == 'Active Scanning: Wordlist Scanning'
+
+def test_attack_pattern_reputation_without_answer_command(mocker):
+    """
+    Given:
+        One attach patter to retrive data on, that is not found in the collection
+
+    When:
+        Running attack-pattern reputation command
+
+    Then:
+        Ensures the command_results is not empty and readable_output is as expected
+    """
+    from FeedMitreAttackv2 import attack_pattern_reputation_command
+
+    stix_objs = [parse(stix_obj_dict, allow_custom=True) for stix_obj_dict in ATTACK_PATTERNS]
+    mocker.patch('FeedMitreAttackv2.get_mitre_data_by_filter', return_value=stix_objs)
+
+    args = {'attack_pattern': 'dummy attack pattern'}
+    command_results = attack_pattern_reputation_command('', args)
+
+    assert command_results
+    assert command_results.readable_output == 'Did not find the attack patterns in the Enterprise collection.'
 
 
 @pytest.mark.parametrize('description, expected_result', [
