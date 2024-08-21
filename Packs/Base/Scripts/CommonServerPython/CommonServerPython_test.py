@@ -4751,6 +4751,36 @@ def test_integration_return_results_execution_metrics_command_results(mocker):
     assert demisto_results_mock.call_count == 3
 
 
+def test_dynamic_section_script_return_results_execution_metrics_command_results(mocker):
+    """
+    Given:
+      - List of CommandResult and dicts that contains an execution metrics entry
+      - The command currently running is a dynamic-section script
+    When:
+      - Calling return_results()
+    Then:
+      - demisto.results() is called 1 time (without the execution metrics entry)
+    """
+    from CommonServerPython import CommandResults, return_results
+    mocker.patch.object(demisto, 'callingContext', {'context': {'ScriptName': 'some_script_name'}})
+    demisto_results_mock = mocker.patch.object(demisto, 'results')
+    mock_command_results = [
+        CommandResults(outputs_prefix='Mock', outputs={'MockContext': 0}, entry_type=19),
+        CommandResults(outputs_prefix='Mock', outputs={'MockContext': 1}),
+        {'MockContext': 1, "Type": 19},
+        {'MockContext': 1, "Type": 1},
+    ]
+    return_results(mock_command_results)
+    for call_args in demisto_results_mock.call_args_list:
+        for args in call_args.args:
+            if isinstance(args, list):
+                for arg in args:
+                    assert arg["Type"] != 19
+            else:
+                assert args["Type"] != 19
+    assert demisto_results_mock.call_count == 2
+
+
 def test_return_results_multiple_command_results(mocker):
     """
     Given:
