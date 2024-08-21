@@ -1413,21 +1413,29 @@ def fetch_events(client: Client, last_run: dict[str, Any], limit: int) -> tuple[
     end_date = (time.time() - 5) * 1000
     start_date = last_run.get('start_date', end_date - 60000)
     next_link = last_run.get('next_url', None)
-    total_events_count = 0
-    events = [{}]
+    page_size = 500
+    events = []
 
-    while total_events_count < limit and events:
+    while len(events) < limit:
         if not next_link:
-            response = client.search_events(limit=limit, start_date=str(start_date), end_date=str(end_date))
+            # there is no next link, but we already have events in the list. That means the lack of next link is due to the end
+            # of the data, not the start of it. Therefore, we can return
+            if events:
+                break
+
+            demisto.info(f'searching events with start date: {start_date}, end date: {end_date} and page size: {page_size}')
+            response = client.search_events(limit=page_size, start_date=str(start_date), end_date=str(end_date))
+            demisto.info(f'Found {response["size"]} events between {start_date} and {end_date}')
+            demisto.info(json.dumps(response, indent=4))
             events = dedup(response['results'], last_run.get('last_events', None))
 
         else:
+            demisto.info(f'searching events with start date: {start_date}, end date: {end_date} and page size: {page_size}')
             response = client.search_events(limit=limit, next_link=next_link)
-            events = response['results']
+            events = dedup(response['results'], last_run.get('last_events', None))
 
         next_link = response['results'].get('next', None)
         last_timestamp = events[0]['creationDate'] if events else None
-        total_events_count += response['size']
         yield events, next_link, last_timestamp
 
 
@@ -1435,7 +1443,7 @@ def get_events(client: Client, args: dict) -> tuple[list[Dict], CommandResults]:
     end_date = args.get('end_date', int((time.time() - 5) * 1000))
     start_date = arg_to_number(args.get('start_date', end_date - 60000))
     fetch_limit = arg_to_number(args.get('limit', 50))
-    page_size = 500
+    page_size = 1000
     next_link = ''
     events = []
     last_events = None
@@ -1447,7 +1455,7 @@ def get_events(client: Client, args: dict) -> tuple[list[Dict], CommandResults]:
             if events:
                 break
 
-            demisto.info('searching events with start date: {}, end date: {} and page size: {}'.format(start_date, end_date, page_size))
+            demisto.info(f'searching events with start date: {start_date}, end date: {end_date} and page size: {page_size}')
             response = client.search_events(limit=page_size, start_date=str(start_date), end_date=str(end_date))
             demisto.info(f'Found {response["size"]} events between {start_date} and {end_date}')
             demisto.info(json.dumps(response, indent=4))
