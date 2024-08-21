@@ -32,4 +32,4 @@ This playbook does not use any sub-playbooks.
 
 ## Playbook Image
 ---
-![Armorblox Needs Review](doc_files/Armorblox_Needs_Review.png)
+![Armorblox Needs Review](../doc_files/Armorblox_Needs_Review.png)

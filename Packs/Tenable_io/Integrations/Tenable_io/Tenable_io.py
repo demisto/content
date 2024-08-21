@@ -279,10 +279,11 @@ class Client(BaseClient):
 
         """
         res = self._http_request(method='GET', url_suffix=f'/vulns/export/{export_uuid}/status',
-                                 headers=self._headers)
-        status = res.get('status')
-        chunks_available = res.get('chunks_available', [])
-        return status, chunks_available
+                                 headers=self._headers, ok_codes=(200, 404))
+        if isinstance(res, dict) and (res.get("status") == 404 or res.get('error')):
+            return 'ERROR', []
+
+        return res.get('status'), res.get('chunks_available') or []
 
     def download_vulnerabilities_chunk(self, export_uuid: str, chunk_id: int):
         """
@@ -331,7 +332,10 @@ class Client(BaseClient):
         Returns: The assets' chunk id.
 
         """
-        res = self._http_request(method='GET', url_suffix=f'assets/export/{export_uuid}/status', headers=self._headers)
+        res = self._http_request(method='GET', url_suffix=f'assets/export/{export_uuid}/status', headers=self._headers,
+                                 ok_codes=(200, 404))
+        if isinstance(res, dict) and (res.get("status") == 404 or res.get('error')):
+            return 'ERROR', []
         return res.get('status'), res.get('chunks_available')
 
     def download_assets_chunk(self, export_uuid: str, chunk_id: int):
