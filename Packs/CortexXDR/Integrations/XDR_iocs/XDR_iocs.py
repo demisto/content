@@ -6,7 +6,7 @@ import hashlib
 import secrets
 import string
 import tempfile
-from datetime import timezone
+from datetime import timezone, datetime
 from collections.abc import Sequence, Iterable
 from dateparser import parse
 from urllib3 import disable_warnings
@@ -211,10 +211,12 @@ def search_indicators_corresponding_modification_time(query: str,from_date: str,
     ioc_count = 0
     while send_all_same_modify:
         try:
-            for batch in IndicatorsSearcher(size=5000, query=query,filter_fields=
+            for batch in IndicatorsSearcher(size=5000, query=query, sort=[{"field": "modified", "asc": True},
+                                              {"field": "value", "asc": True}], filter_fields=
                                                 'value,indicator_type,score,expiration,modified,aggregatedReliability,moduleToFeedMap,comments,id,CustomFields'):
                 for ioc in batch.get('iocs', []):
                     ioc_count += 1
+                    demisto.debug("here")
                     yield ioc
                 # TODO move this to main function - and send to API after every 50,000 indicators.
                 # if ioc_count >= MAX_INDICATORS_TO_SYNC:
@@ -225,21 +227,15 @@ def search_indicators_corresponding_modification_time(query: str,from_date: str,
             raise e
 
 def convert_timestamp_to_datetime_string(timestamp_in_milliseconds: int) -> str:
-    timestamp_seconds = timestamp_in_milliseconds // 1_000
-    milliseconds = timestamp_in_milliseconds % 1_000
-    nanoseconds = milliseconds * 1_000_000
-    utc_time = datetime(1970, 1, 1) + timedelta(seconds=timestamp_seconds)
-    formatted_time = utc_time.strftime('%Y-%m-%dT%H:%M:%S')
-    formatted_time += f'.{nanoseconds:09d}Z'
-    return formatted_time
+    timestamp_in_seconds = timestamp_in_milliseconds / 1000.0
+    utc_dt = datetime.utcfromtimestamp(timestamp_in_seconds)
+    return utc_dt.isoformat() + 'Z'
 
 def increment_timestamp_by_one_millisecond(timestamp_str: str) -> str:
-    timestamp_format = "%Y-%m-%dT%H:%M:%S.%f000Z"
-    base_time = datetime.strptime(timestamp_str, timestamp_format)
-    incremented_time = base_time + timedelta(milliseconds=1)
-    incremented_timestamp_str = incremented_time.strftime("%Y-%m-%dT%H:%M:%S.%f000Z")
-    return incremented_timestamp_str
-    
+    datetime_obj = datetime.fromisoformat(timestamp_str.replace('Z', '+00:00'))
+    new_datetime_obj = datetime_obj + timedelta(milliseconds=1)
+    new_datetime_str = new_datetime_obj.strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + 'Z'
+    return new_datetime_str
     
 def get_iocs_generator(size=200, query=None, is_first_stage_sync= False) -> Iterable:
     query = query or Client.query
@@ -250,14 +246,13 @@ def get_iocs_generator(size=200, query=None, is_first_stage_sync= False) -> Iter
     ioc_count = 0
     try:
         search_after = get_integration_context().get('search_after')
-        demisto.debug(f"{search_after=}")
         for batch in IndicatorsSearcher(size=size,
                                         query=query_with_end_time,
                                         search_after=search_after,
-                                        sort=[{"field": "modified", "asc": True}],
+                                        sort=[{"field": "modified", "asc": True},
+                                              {"field": "value", "asc": True}],
                                         filter_fields=
                                         'value,indicator_type,score,expiration,modified,aggregatedReliability,moduleToFeedMap,comments,id,CustomFields'):
-            demisto.debug(f"{ioc_count=}")
             for ioc in batch.get('iocs', []):
                 # if ioc.get('value') not in already_sent_indicators:
                 # if ioc.get('modified') > get_integration_context().get('time'):
@@ -266,16 +261,8 @@ def get_iocs_generator(size=200, query=None, is_first_stage_sync= False) -> Iter
                 yield ioc
                 if ioc_count >= MAX_INDICATORS_TO_SYNC:
                     search_after_array = batch.get('searchAfter', [])
-                    search_after = arg_to_number(search_after_array[0])
-                    demisto.debug(f"{search_after_array[0]=}")
-                    demisto.debug(f"{search_after=}")
-                    demisto.debug(f"{ioc.get('modified')=}")
-                    from_date = convert_timestamp_to_datetime_string(search_after)
-                    demisto.debug(f"{from_date=}")
+                    demisto.debug(f"{search_after_array=}")
                     set_search_after(search_after_array)
-                    to_date = increment_timestamp_by_one_millisecond(from_date)
-                    demisto.debug(f"{to_date=}")
-                    search_indicators_corresponding_modification_time(query,from_date, to_date)
                     raise StopIteration
     except StopIteration:
         pass
@@ -493,13 +480,26 @@ def sync(client: Client, batch_size: int = 200, is_first_stage_sync: bool = Fals
         # sync_time = datetime.now(timezone.utc)
         demisto.debug(f"time_before_query_is {datetime.now(timezone.utc).strftime(DEMISTO_TIME_FORMAT)}")
         request_data = list(map(demisto_ioc_to_xdr, get_iocs_generator(size=batch_size, is_first_stage_sync=is_first_stage_sync)))
-        indicator_dict = {}
-        for item in request_data:
-            indicator_dict[item.get('indicator')] = item
-        request_data = list(indicator_dict.values())
+        # query = Client.query
+        # query = f'expirationStatus:active AND ({query})'
+        # search_after = arg_to_number(get_integration_context().get('search_after',[''])[0])
+        # from_date = convert_timestamp_to_datetime_string(search_after)
+        # to_date = increment_timestamp_by_one_millisecond(from_date)
+        # all_indicators_in_last_modified_time = list(map(demisto_ioc_to_xdr, search_indicators_corresponding_modification_time(query, from_date, to_date)))
+        # demisto.debug(f"{len(all_indicators_in_last_modified_time)=}")
+        # indicator_dict = {}
+        # for item in request_data:
+        #     indicator_dict[item.get('indicator')] = item
+        # for item in all_indicators_in_last_modified_time:
+        #     indicator_dict[item.get('indicator')] = item
+        # request_data = list(indicator_dict.values())
         if request_data:
             demisto.debug(f"time_after_query_is {datetime.now(timezone.utc).strftime(DEMISTO_TIME_FORMAT)}")
-            demisto.debug(f"sending {len(request_data)} indicators to xdr. last_modified_that_was_synced {request_data[-1].get('modified')}, {request_data[-1].get('indicator')}")
+            demisto.debug(f"sending {len(request_data)} indicators to xdr. last_modified_that_was_synced "
+                          f"{request_data[-1].get('modified')}, {request_data[-1].get('indicator')}, search_after {get_integration_context().get('search_after')}")
+            if len(request_data) < MAX_INDICATORS_TO_SYNC:
+                pass
+            # TODO
             # requests_kwargs: dict = get_requests_kwargs(_json=request_data, validate=True)
             # path: str = 'tim_insert_jsons'
             # response = client.http_request(path, requests_kwargs)
@@ -509,8 +509,8 @@ def sync(client: Client, batch_size: int = 200, is_first_stage_sync: bool = Fals
             #     errors = create_validation_errors_response(validation_errors)
             #     demisto.debug('pushing IOCs to XDR:' + errors.replace('\n', '. '))
             #     return_warning(errors)
-            demisto.debug(f"Fetched from xsoar {len(request_data)} IOCs to send to XDR. Last indicator modified time is"
-                        f" {get_integration_context().get('search_after')}")
+            # demisto.debug(f"Fetched from xsoar {len(request_data)} IOCs to send to XDR. Last indicator modified time is"
+            #             f" {get_integration_context().get('search_after')}")
         else:
             demisto.debug("request_data is empty")
     except Exception as e:
@@ -745,7 +745,7 @@ def fetch_indicators(client: Client, auto_sync: bool = False):
     demisto.debug(f"The integration last sync time is {integration_context.get('ts')}")
     search_after_number = arg_to_number(integration_context.get('search_after',[''])[0])
     demisto.debug(f"The last search after is {search_after_number=}")
-    if (((not integration_context) or (integration_context.get('ts') > search_after_number))
+    if (((not integration_context) or (search_after_number and integration_context.get('ts') > search_after_number))
         and auto_sync):
         if not integration_context:
             sync_time = datetime.now(timezone.utc)
