@@ -229,39 +229,6 @@ RULE_TYPES_MAP = {
     "PBF Rule": "pbf"
 }
 
-XPATH_EXCEPTIONS_ACTIONS_TYPES_MAP = {
-    'Alert': 'alert',
-    'Allow': 'allow',
-    'Block IP': 'block-ip',
-    'Drop': 'drop',
-    'Reset Both': 'reset-both',
-    'Reset Client': 'reset-client',
-    'Reset Server': 'reset-server',
-    'default': 'default'
-}
-
-EXCEPTIONS_PACKET_CAPTURE_TYPES_MAP = {
-    'Disable': 'disable',
-    'Single Packet': 'single-packet',
-    'Extended Capture': 'extended-capture'
-}
-
-EXCEPTIONS_IP_TRACK_BY_TYPES_MAP = {
-    'Source': 'source',
-    'Source And Destination': 'source-and-destination'
-}
-
-EXCEPTION_PROFILE_TYPES_MAP = {
-    'Vulnerability Protection Profile': 'vulnerability',
-    'Anti Spyware Profile': 'spyware'
-}
-
-VULNERABILITY_PROTECTION_DEVICE_GROUP_PATH = "/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='{device_group}']/profiles/vulnerability/entry[@name='{profile_name}']/threat-exception"
-VULNERABILITY_PROTECTION_VSYS_PATH = "/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name='{VSYS}']/profiles/vulnerability/entry[@name='{profile_name}']/threat-exception"
-ANTI_SPYWARE_DEVICE_GROUP_PATH = "/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='{device_group}']/profiles/spyware/entry[@name='{profile_name}']/threat-exception"
-ANTI_SPYWARE_VSYS_PATH = "/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name='{VSYS}']/profiles/spyware/entry[@name='{profile_name}']/threat-exception"
-
-
 class ExceptionCommandType(enum.Enum):
     ADD = 'set'
     EDIT = 'edit'
@@ -7082,7 +7049,7 @@ def get_security_profile(xpath: str) -> Dict:
     return result
 
 
-def get_security_profiles(security_profile: str | None = None):
+def get_security_profiles_command(security_profile: str | None = None):
     """
     Get information about profiles.
     """
@@ -7256,7 +7223,7 @@ def get_security_profiles(security_profile: str | None = None):
         human_readable += tableToMarkdown('WildFire Profiles', wildfire_analysis_content)
         context.update({"Panorama.WildFire(val.Name == obj.Name)": wildfire_analysis_content})
 
-    return ({
+    return_results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': result,
@@ -7264,11 +7231,6 @@ def get_security_profiles(security_profile: str | None = None):
         'HumanReadable': human_readable,
         'EntryContext': context
     })
-
-
-def get_security_profiles_command(security_profile: str | None = None):
-    results = get_security_profiles(security_profile)
-    return_results(results)
 
 
 @logger
@@ -14183,16 +14145,16 @@ def build_xpath_for_profile_exception_commands(profile_name: str, profile_type: 
     """
 
     if profile_type == VULNERABILITY_PROTECTION and device_group:
-        xpath = VULNERABILITY_PROTECTION_DEVICE_GROUP_PATH.format(device_group=device_group, profile_name=profile_name)
+        xpath = f"/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='{device_group}']/profiles/vulnerability/entry[@name='{profile_name}']/threat-exception"
 
     elif profile_type == VULNERABILITY_PROTECTION and VSYS:
-        xpath = VULNERABILITY_PROTECTION_VSYS_PATH.format(VSYS=VSYS, profile_name=profile_name)
+        xpath = f"/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name='{VSYS}']/profiles/vulnerability/entry[@name='{profile_name}']/threat-exception"
 
     elif profile_type == ANTI_SPYWARE and device_group:
-        xpath = ANTI_SPYWARE_DEVICE_GROUP_PATH.format(device_group=device_group, profile_name=profile_name)
+        xpath = f"/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='{device_group}']/profiles/spyware/entry[@name='{profile_name}']/threat-exception"
 
     elif profile_type == ANTI_SPYWARE and VSYS:
-        xpath = ANTI_SPYWARE_VSYS_PATH.format(VSYS=VSYS, profile_name=profile_name)
+        xpath = f"/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name='{VSYS}']/profiles/spyware/entry[@name='{profile_name}']/threat-exception"
 
     else:
         raise DemistoException("Invalid profile_type was provided. Can be Vulnerability Protection or Anti Spyware.")
@@ -14309,17 +14271,36 @@ def profile_exception_crud_requests(args: dict, action_type: str) -> dict:
     Returns:
         results: A dict for raw_response, exception_id, exception_name, profile_type
     """
+    xpath_exceptions_actions_types_map = {
+    'Alert': 'alert',
+    'Allow': 'allow',
+    'Block IP': 'block-ip',
+    'Drop': 'drop',
+    'Reset Both': 'reset-both',
+    'Reset Client': 'reset-client',
+    'Reset Server': 'reset-server',
+    'default': 'default'
+    }
     
+    exceptions_packet_capture_types_map = {
+    'Disable': 'disable',
+    'Single Packet': 'single-packet',
+    'Extended Capture': 'extended-capture'
+    }
     
+    exceptions_ip_track_by_types_map = {
+    'Source': 'source',
+    'Source And Destination': 'source-and-destination'
+    }
     
     profile_name = args.get('profile_name', "")
     profile_type = args.get('profile_type', '')
     threat = args.get('threat', '')
-    xpath_action = XPATH_EXCEPTIONS_ACTIONS_TYPES_MAP[args.get('action', 'default')]
-    packet_capture = EXCEPTIONS_PACKET_CAPTURE_TYPES_MAP.get(args.get('packet_capture', ''), '')
+    xpath_action = xpath_exceptions_actions_types_map[args.get('action', 'default')]
+    packet_capture = exceptions_packet_capture_types_map.get(args.get('packet_capture', ''), '')
     exempt_ip = args.get('exempt_ip', '')
     device_group = args.get('device_group', DEVICE_GROUP)
-    ip_track_by = EXCEPTIONS_IP_TRACK_BY_TYPES_MAP.get(args.get('ip_track_by', ''), '')
+    ip_track_by = exceptions_ip_track_by_types_map.get(args.get('ip_track_by', ''), '')
     ip_duration_sec = args.get('ip_duration_sec', '')
     exception_id = ""
     exception_name = ""
@@ -14438,11 +14419,17 @@ def pan_os_list_profile_exception_command(args: dict) -> CommandResults:
     Returns:
         A confirmation for deleting the exception.
     """
+    
+    exception_profile_types_map = {
+    'Vulnerability Protection Profile': 'vulnerability',
+    'Anti Spyware Profile': 'spyware'
+    }
+    
     profile_name = args.get('profile_name')
 
     results = profile_exception_crud_requests(args, ExceptionCommandType.LIST.value)
     raw_response = results.get('raw_response', {})
-    profile_type = EXCEPTION_PROFILE_TYPES_MAP.get(results.get('profile_type', ''))
+    profile_type = exception_profile_types_map.get(results.get('profile_type', ''))
 
     exceptions_response_list = raw_response.get('response', {}).get('result', {}).get('threat-exception', [])
     if not isinstance(exceptions_response_list, list):
