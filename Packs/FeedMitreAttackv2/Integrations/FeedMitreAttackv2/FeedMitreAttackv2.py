@@ -90,6 +90,7 @@ class Client:
 
     def get_collections(self):
         self.collections = list(self.api_root.collections)  # type: ignore[attr-defined]
+        demisto.debug(f'MA: got collections: {self.collections}')
 
     def initialise(self):
         self.get_server()
@@ -467,14 +468,26 @@ def show_feeds_command(client):
 
 
 def get_mitre_data_by_filter(client, mitre_filter):
+    mitre_data = []
     for collection in client.collections:
-
+        
+        # fetch only enterprise data
+        if collection.id != ENTERPRISE_COLLECTION_ID:
+            continue
+        
         collection_url = urljoin(client.base_url, f'stix/collections/{collection.id}/')
+        demisto.debug(f'MA: Trying to get mitre data from {collection_url} with filter {mitre_filter}')
         collection_data = Collection(collection_url, verify=client.verify, proxies=client.proxies)
-
+        demisto.debug('MA: Getting collection source')
         tc_source = TAXIICollectionSource(collection_data)
-        if mitre_data := tc_source.query(mitre_filter):
-            return mitre_data
+        demisto.debug('MA: Querying the tc source')
+        mitre_data += tc_source.query(mitre_filter)
+
+    if mitre_data:
+        demisto.debug('MA: Found mitre data')
+        return mitre_data
+
+    demisto.debug(f'MA: Did not found mitre data for {mitre_filter}')
     return {}
 
 
@@ -511,14 +524,17 @@ def attack_pattern_reputation_command(client, args):
 
     filter_by_type = [Filter('type', '=', 'attack-pattern')]
     mitre_data = get_mitre_data_by_filter(client, filter_by_type)
-
+    
     mitre_names = argToList(args.get('attack_pattern'))
+    
+    value = ''
     for name in mitre_names:
+        demisto.debug(f'MA: Getting info on {name}')
         if ':' not in name:  # not sub-technique
             attack_pattern = get_attack_pattern_by_name(mitre_data, name=name)
+            demisto.debug(f'MA: Got {attack_pattern=}')
             if not attack_pattern:
                 continue
-
             value = attack_pattern.get('name')
 
         else:
@@ -529,6 +545,7 @@ def attack_pattern_reputation_command(client, args):
 
             # get parent MITRE ID
             attack_pattern = get_attack_pattern_by_name(mitre_data, name=parent)
+            demisto.debug(f'MA: Got {attack_pattern=}')
             if not attack_pattern:
                 continue
             indicator_json = json.loads(str(attack_pattern))
@@ -540,6 +557,7 @@ def attack_pattern_reputation_command(client, args):
 
             # get sub MITRE ID
             attack_pattern = get_attack_pattern_by_name(mitre_data, name=sub)
+            demisto.debug(f'MA: Got {attack_pattern=} for {sub=}')
             if not attack_pattern:
                 continue
             indicator_json = json.loads(str(attack_pattern))
@@ -553,11 +571,16 @@ def attack_pattern_reputation_command(client, args):
             attack_pattern = list(filter(lambda attack_pattern_obj:
                                          filter_attack_pattern_object_by_attack_id(mitre_id, attack_pattern_obj),
                                          mitre_data))
+            demisto.debug(f'MA: Got {attack_pattern=} for {mitre_id=}')
             if not attack_pattern:
                 continue
 
             attack_pattern = attack_pattern[0]
             value = f'{parent_name}: {attack_pattern.get("name")}'
+            demisto.debug(f'MA: Got {value=}')
+        
+        if not value:
+            return CommandResults(readable_output="Did not find wanted attack patterns in the Enterprise collection.")
 
         attack_obj = map_fields_by_type('Attack Pattern', json.loads(str(attack_pattern)))
         custom_fields = attack_obj or {}
