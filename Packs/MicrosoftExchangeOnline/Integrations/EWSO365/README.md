@@ -84,7 +84,7 @@ To limit the application's permissions to only specific mailboxes, follow the [M
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
 | Run as a separate process (protects against memory depletion) |  | False |
-| Use a self deployed Azure Application | Select this checkbox if you are using a self-deployed Azure application. | False |
+| Use a self-deployed Azure Application | Select this checkbox if you are using a self-deployed Azure application. | False |
 | Incidents Fetch Interval |  | False |
 | What time field should we filter incidents by? | Default is to filter by received-time, which works well if the folder is an "Inbox". But for a folder emails are dragged into for attention, if we filter by received-time, out-of-order processing of emails means some are ignored. Filtering by modified-time works better for such a scenario. This works best if any modifications \(such as tagging\) happens before moving the email into the folder, such that the move into the folder is the last modification, and triggers Cortex XSOAR to fetch it as an incident. | False |
 
