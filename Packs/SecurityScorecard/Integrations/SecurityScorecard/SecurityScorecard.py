@@ -657,12 +657,11 @@ def company_history_score_get_command(client: SecurityScorecardClient, args: Dic
 
     """Retrieve company historical scores
 
-    See https://securityscorecard.readme.io/reference#get_companies-scorecard-identifier-history-score
+    See https://securityscorecard.readme.io/reference/get_companies-scorecard-identifier-history-score
 
     Args:
         ``client`` (``SecurityScorecardClient``): SecurityScorecard client.
         ``args`` (``Dict[str, str]``): Domain, start date, end date, timing.
-
 
     Returns:
         ``CommandResults``: The results of the command.
@@ -704,7 +703,7 @@ def company_events_get_command(
 
     Args:
         ``client`` (``SecurityScorecardClient``): SecurityScorecard client
-        ``args`` (``Dict[str, Any]``): The domain and severity filter TODO!!!!!!
+        ``args`` (``Dict[str, Any]``): The domain, the initial date and the end (date_from, date_to)
 
     Returns:
         ``CommandResults``: The results of the command.
@@ -755,13 +754,13 @@ def company_event_findings_get_command(
     client: SecurityScorecardClient,
     args: Dict[str, Any]
 ) -> CommandResults:
-    """Retrieve company events
+    """Get an issue_type's historical findings in a scorecard
 
-    See https://securityscorecard.readme.io/reference/get_companies-...
+    See (example issue_type): https://securityscorecard.readme.io/reference/get_companies-scorecard-identifier-history-events-effective-date-issues-active-cve-exploitation-attempted-1
 
     Args:
         ``client`` (``SecurityScorecardClient``): SecurityScorecard client
-        ``args`` (``Dict[str, Any]``): The domain and severity filter TODO !!!!
+        ``args`` (``Dict[str, Any]``): domain, date, issue_type, status
 
     Returns:
         ``CommandResults``: The results of the command.
@@ -822,13 +821,12 @@ def company_event_findings_get_command(
             "first_seen_time": entry.get("first_seen_time"),
             "last_seen_time": entry.get("last_seen_time"),
             # the following details may or may not be populated
-            "port": entry.get("port",""),
+            "port": port,
             "domain_name": domain,
             "ip_address": ip,
             "protocol": protocol,
             "observations": entry.get("observations"),
             "issue_type": issue_type
-
         }
 
         events.append(event)
@@ -912,7 +910,7 @@ def issue_metadata_get_command(client: SecurityScorecardClient, args: Dict[str, 
 
     Args:
         ``client`` (``SecurityScorecardClient``): SecurityScorecard client
-        ``args`` (``Dict[str, str]``): The domain to get the score for.
+        ``args`` (``Dict[str, str]``): The issue type to retrieve metadata for.
 
     Returns:
         ``CommandResults``: The results of the command.
@@ -1312,7 +1310,7 @@ def main() -> None:
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
 
-        headers: Dict = {"Authorization": f"Token {api_key}", "X-SSC-Application-Name": "Cortex XSOAR", "X-SSC-Application-Version": "1.1.0"}
+        headers: Dict = {"Authorization": f"Token {api_key}", "X-SSC-Application-Name": "Cortex XSOAR", "X-SSC-Application-Version": "1.1.0"}  # noqa: E501
 
         client = SecurityScorecardClient(
             base_url=base_url,

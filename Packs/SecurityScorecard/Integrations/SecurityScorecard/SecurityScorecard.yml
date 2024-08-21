@@ -229,7 +229,7 @@ script:
     - name: from
       description: Initial date for historical data. Value should be in format `YYYY-MM-DD`.
     - name: to
-      description: Initial date for historical data. Value should be in format `YYYY-MM-DD`.
+      description: End date for historical data. Value should be in format `YYYY-MM-DD`.
     - name: timing
       description: Timing granularity.
       auto: PREDEFINED
@@ -255,7 +255,7 @@ script:
     - name: from
       description: Initial date for historical data. Value should be in format 'YYYY-MM-DD'.
     - name: to
-      description: Initial date for historical data. Value should be in format 'YYYY-MM-DD'.
+      description: End date for historical data. Value should be in format 'YYYY-MM-DD'.
     - name: timing
       description: Timing granularity. or "monthly".
       auto: PREDEFINED
@@ -393,12 +393,17 @@ script:
       description: Vendor service provider, e.g. mail_provider, nameserver_provider.
       type: array
   - name: securityscorecard-company-events-get
+    description: Retrieve a company's historical events.
     arguments:
     - name: domain
+      description: Company domain, e.g. google.com
       required: true
-      type: textArea
     - name: date_from
+      type: datetime
+      description: Initial date for historical data. Value should be in format `2020-01-30T00:00:00.000Z`.
     - name: date_to
+      type: datetime
+      description: End date for historical data. Value should be in format `2020-01-30T00:00:00.000Z`.
     outputs:
     - contextPath: SecurityScorecard.Events.Event.ssc_event_id
       type: string
@@ -418,15 +423,22 @@ script:
     - contextPath: SecurityScorecard.Events.Event.ssc_detail_url
       type: string
   - name: securityscorecard-company-findings-get
+    description: Retrieve an issue_type's historical findings in a scorecard.
     arguments:
     - name: domain
+      description: Retrieve the service providers of a domain.
       required: true
     - name: date
+      type: date
+      description: The effective_date for historical data. Value should be in format 'YYYY-MM-DD'.
       required: true
     - name: issue_type
+      description: Key representing issue type, e.g. api_key_exposed.
       required: true
     - name: status
+      description: "group_status filter. Comma-separated list of the following values: 'active', 'inactive', 'all'."
   - name: securityscorecard-issue-metadata
+    description: Retrieve metadata for an issue type, including description and recommendation.
     arguments:
     - name: issue_type
       required: true
@@ -446,5 +458,4 @@ script:
       type: string
     - contextPath: SecurityScorecard.Metadata.Issues.recommendation
       type: string
-    description: Retrieve metadata for an issue type, including description and recommendation.
   runonce: false
