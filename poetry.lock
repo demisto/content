@@ -4060,13 +4060,13 @@ reference = "pypi-public"
 
 [[package]]
 name = "types-setuptools"
-version = "69.5.0.20240522"
+version = "72.2.0.20240821"
 description = "Typing stubs for setuptools"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "types-setuptools-69.5.0.20240522.tar.gz", hash = "sha256:c5a97601b2d040d3b9fcd0633730f0a8c86ebef208552525c97301427f261549"},
-    {file = "types_setuptools-69.5.0.20240522-py3-none-any.whl", hash = "sha256:e27231cbc80648cfaee4921d2f1150107fdf8d33666958abf2aba0191a82688b"},
+    {file = "types-setuptools-72.2.0.20240821.tar.gz", hash = "sha256:e349b8015608879939f27ee370672f801287c46f5caa2d188d416336172c4965"},
+    {file = "types_setuptools-72.2.0.20240821-py3-none-any.whl", hash = "sha256:260e89d6d3b42cc35f9f0f382d030713b7b547344a664c05c9175e6ba124fac7"},
 ]
 
 [package.source]
@@ -4599,4 +4599,4 @@ reference = "pypi-public"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8,<3.11"
-content-hash = "f289ddf337fdd1a64477fef4bc9650de6d6adaca63b85e8d04cdd36650879f4e"
+content-hash = "6319327bad6c96e92d6ee17d58118dfb2674115985ca42fd4aa3b5de4ffec81d"
