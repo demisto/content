@@ -45,7 +45,7 @@ The XDM normalization included in this pack is supported only for the *W3C* form
 
 ### XDRC (XDR Collector) Filebeat Configuration
 
-You will need to use the information described [here](https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-pro-admin/cortex-xdr-collectors/xdr-collector-datasets#id7f0fcd4d-b019-4959-a43a-40b03db8a8b2) for Filebeat.
+You will need to use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Documentation/XDR-Collector-datasets) for Filebeat.
 
 When configuring the *Filebeat Configuration File* (inside the relevant profile under the *XDR Collectors Profiles*) for the IIS collector instance, you can either use the sample configuration file below or select the predefined *IIS* template, and update it as necessary.  
 
