@@ -10,7 +10,6 @@ The EWS integration can be used for the following use cases.
     Follow the instructions in the [Fetched Incidents Data section](https://xsoar.pan.dev/docs/reference/integrations/ewso365#fetched-incidents-data).
 
 * Search for an email message across mailboxes and folders.  
-    This can be achieved in the following ways:
 
     Use the `ews-search-mailbox` command to search for all emails in a specific folder within the target mailbox.  
      Use the query argument to narrow the search for emails sent from a specific account and more.
@@ -45,20 +44,20 @@ For more details about the authentication used in this integration, see [Microso
 In order to function as expected, the service account should have:
 
 **Impersonation rights** - In order to perform actions on the target mailbox of other users, the _service account_ must be part of the `ApplicationImpersonation` role. For more information and instructions on how to set up the permission, see [Microsoft Documentation](https://learn.microsoft.com/en-us/exchange/client-developer/exchange-web-services/impersonation-and-ews-in-exchange).
-Most command require this permission to function correctly. This permission is specified in each relevant command's Permission section. For more information follow the [Microsoft Documentation](https://learn.microsoft.com/en-us/exchange/client-developer/exchange-web-services/impersonation-and-ews-in-exchange). 
+Most command require this permission to function correctly. This permission is specified in each relevant command's Permission section. For more information, see [Microsoft Documentation](https://learn.microsoft.com/en-us/exchange/client-developer/exchange-web-services/impersonation-and-ews-in-exchange). 
 
-**eDiscovery** permissions to the Exchange Server. For Users to be able to use Exchange Server In-Place eDiscovery, they must be added to the Discovery Management role group. Members of the Discovery Management role group have Full Access mailbox permissions to the default discovery mailbox, which is called Discovery Search Mailbox, including access to sensitive message content. For more information see the [Microsoft documentation](https://technet.microsoft.com/en-us/library/dd298059(v=exchg.160).aspx).
+**eDiscovery** permissions to the Exchange Server. For users to be able to use Exchange Server In-Place eDiscovery, they must be added to the Discovery Management role group. Members of the Discovery Management role group have Full Access mailbox permissions to the default discovery mailbox, which is called Discovery Search Mailbox, including access to sensitive message content. For more information, see the [Microsoft documentation](https://technet.microsoft.com/en-us/library/dd298059(v=exchg.160).aspx).
 The need for this permission is specified in each relevant command's Permission section.
 
 **full_access_as_app** - The _application used for authentication_ requires this permission to gain access to the Exchange Web Services.
 To set this permission follow these steps:
 
 1. Navigate to **Home** > **App registrations**.
-2. Search for your app under ‘all applications’.
+2. Search for your app under *all applications*.
 3. Click **API permissions** > **Add permission**.
 4. Search for `Office 365 Exchange Online` API > `Application Permission`> `full_access_as_app` permission. 
 
-For more information on this permission, visit [the Microsoft documentation](https://docs.microsoft.com/en-us/exchange/client-developer/exchange-web-services/how-to-authenticate-an-ews-application-by-using-oauth#configure-for-app-only-authentication).
+For more information on this permission, see [the Microsoft documentation](https://docs.microsoft.com/en-us/exchange/client-developer/exchange-web-services/how-to-authenticate-an-ews-application-by-using-oauth#configure-for-app-only-authentication).
 
 To limit the application's permissions to only specific mailboxes, follow the [Microsoft documentation](https://docs.microsoft.com/en-us/graph/auth-limit-mailbox-access). Note that it may take about an hour for permissions changes to take effect.
 
