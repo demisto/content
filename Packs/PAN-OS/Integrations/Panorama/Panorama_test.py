@@ -7460,7 +7460,7 @@ def test_pan_os_add_profile_exception(mocker):
 
     mock_response = MockedResponse(text=expected_text_response, status_code=200)
     mocker.patch.object(requests, 'request', return_value=mock_response)
-    mocker.patch.object(Panorama, 'get_threat_id_from_predefined_threates', return_value=('1000', 'threatname'))
+    mocker.patch.object(Panorama, 'get_threat_id_from_predefined_threates', return_value=('1000', 'threatname', 'cve'))
 
     command_results = Panorama.pan_os_add_profile_exception_command(args={"profile_name": "test_spg",
                                                                           "threat_name": '1000',
@@ -7481,7 +7481,7 @@ def test_pan_os_edit_profile_exception(mocker):
 
     mock_response = MockedResponse(text=expected_text_response, status_code=200)
     mocker.patch.object(requests, 'request', return_value=mock_response)
-    mocker.patch.object(Panorama, 'get_threat_id_from_predefined_threates', return_value=('1000', 'threatname'))
+    mocker.patch.object(Panorama, 'get_threat_id_from_predefined_threates', return_value=('1000', 'threatname', 'cve'))
     command_results = Panorama.pan_os_edit_profile_exception_command(args={"profile_name": "test_spg",
                                                                            "threat_name": '1000',
                                                                            "profile_type": "Vulnerability Protection Profile",
@@ -7498,7 +7498,7 @@ def test_pan_os_delete_profile_exception(mocker):
 
     mock_response = MockedResponse(text=expected_text_response, status_code=200)
     mocker.patch.object(requests, 'request', return_value=mock_response)
-    mocker.patch.object(Panorama, 'get_threat_id_from_predefined_threates', return_value=('1000', 'threatname'))
+    mocker.patch.object(Panorama, 'get_threat_id_from_predefined_threates', return_value=('1000', 'threatname', 'cve'))
 
     command_results = Panorama.pan_os_delete_profile_exception_command(args={"profile_name": "test_spg",
                                                                              "threat_name": '1000',

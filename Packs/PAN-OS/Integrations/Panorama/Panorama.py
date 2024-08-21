@@ -14240,7 +14240,7 @@ def get_threat_id_from_predefined_threates(threat_name: str) -> tuple[str, str, 
         extracted_id = entry["@name"]
         search_keys.append(extracted_id)
 
-        cves = entry.get("cve", {}).get("member", "")
+        cves = entry.get("cve", {}).get("member", [])
         if not isinstance(cves, list):
             cves = [cves]
         for cve in cves:
