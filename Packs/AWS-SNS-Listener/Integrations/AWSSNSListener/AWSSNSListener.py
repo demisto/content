@@ -215,7 +215,7 @@ async def handle_post(request: Request,
         subscribe_url = payload['SubscribeURL']
         try:
             response = handle_subscription_confirmation(subscribe_url=subscribe_url)
-            response.raise_for_status()
+            response.raise_for_status()  # type: ignore[attr-defined]
         except Exception as e:
             demisto.error(f'Failed handling SubscriptionConfirmation: {e}')
             return 'Failed handling SubscriptionConfirmation'
@@ -300,7 +300,8 @@ def main():  # pragma: no cover
                 if not server_config:
                     raise DemistoException('Failed to configure server.')
                 try:
-                    uvicorn.run(app, host='0.0.0.0', port=port, log_config=server_config.log_config, **server_config.ssl_args)
+                    uvicorn.run(app, host='0.0.0.0', port=port, log_config=server_config.log_config,  # type: ignore[arg-type]
+                                **server_config.ssl_args)
                 except Exception as e:
                     demisto.error(f'An error occurred in the long running loop: {str(e)} - {format_exc()}')
                     demisto.updateModuleHealth(f'An error occurred: {str(e)}')
