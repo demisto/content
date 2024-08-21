@@ -11013,6 +11013,7 @@ class UniversalCommand:
     """Command list for commands that are consistent between PANORAMA and NGFW"""
     SYSTEM_INFO_COMMAND = "show system info"
     SHOW_JOBS_COMMAND = "show jobs all"
+    SHOW_JOBS_ID_PREFIX = "show jobs id \"{}\""
 
     @staticmethod
     def get_system_info(
@@ -11170,7 +11171,9 @@ class UniversalCommand:
         """
         result_data = []
         for device in topology.all(filter_string=device_filter_str, target=target):
-            response = run_op_command(device, UniversalCommand.SHOW_JOBS_COMMAND)
+            command = UniversalCommand.SHOW_JOBS_ID_PREFIX.format(id) if id else UniversalCommand.SHOW_JOBS_COMMAND
+            response = run_op_command(device, command)
+
             for job in response.findall("./result/job"):
                 result_data_obj: ShowJobsAllResultData = dataclass_from_element(device, ShowJobsAllResultData,
                                                                                 job)
@@ -11180,7 +11183,6 @@ class UniversalCommand:
                 # Filter the result data
                 result_data = [x for x in result_data if x.status == status or not status]
                 result_data = [x for x in result_data if x.type == job_type or not job_type]
-                result_data = [x for x in result_data if x.id == id or not id]
 
         # The below is very important for XSOAR to de-duplicate the returned key. If there is only one obj
         # being returned, return it as a dict instead of a list.
