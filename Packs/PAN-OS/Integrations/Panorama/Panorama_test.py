@@ -7549,7 +7549,7 @@ def test_pan_os_list_profile_exception(mocker):
             'profile_type': 'Vulnerability Protection Profile'})
     )
 
-    mocker.patch.object(Panorama, 'get_threat_id_from_predefined_threates', return_value=('test', 'threatname'))
+    mocker.patch.object(Panorama, 'get_threat_id_from_predefined_threates', return_value=('test', 'threatname', 'cve'))
 
     args = {"profile_name": "test_profile", "profile_type": "Vulnerability Protection Profile"}
     result = Panorama.pan_os_list_profile_exception_command(args)
@@ -7560,6 +7560,7 @@ def test_pan_os_list_profile_exception(mocker):
         {
             "ID": "10003",
             "Name": 'threatname',
+            "CVE": 'cve',
             "Action": "block",
             "Exempt IP": "192.168.1.1",
             "Packet Capture": "yes",
@@ -7567,6 +7568,7 @@ def test_pan_os_list_profile_exception(mocker):
         {
             "ID": "10002",
             "Name": 'threatname',
+            "CVE": 'cve',
             "Action": "allow",
             "Exempt IP": "",
             "Packet Capture": "no",

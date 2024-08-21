@@ -14487,8 +14487,8 @@ def pan_os_list_profile_exception_command(args: dict) -> CommandResults:
                        })
 
     outputs = {
-        'Exception': context_exceptions_list,
         'ProfileName': profile_name,
+        'Exception': context_exceptions_list,
     }
     context_path = f'Panorama.{profile_type.capitalize()}'  # type: ignore
     return CommandResults(

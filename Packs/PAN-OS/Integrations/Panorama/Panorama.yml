@@ -9660,6 +9660,9 @@ script:
     - contextPath: Panorama.Vulnerability.Exception.packet-capture
       description: The exception packet-capture.
       type: String
+    - contextPath: Panorama.Spyware.ProfileName
+      description: The Profile name
+      type: String
     - contextPath: Panorama.Spyware.Exception.name
       description: The exception name.
       type: String
