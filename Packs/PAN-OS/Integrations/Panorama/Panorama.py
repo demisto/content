@@ -14315,7 +14315,7 @@ def profile_exception_crud_commands(args: dict, action_type: str):
         action_type: The action type, can be: set, edit, delete, get.
 
     Returns:
-        Raw response from api request.
+        results: A dict for raw_response, exception_id, exception_name, profile_type
     """
     profile_name = args.get('profile_name', "")
     profile_type = args.get('profile_type', '')
