@@ -2492,7 +2492,7 @@ script:
     name: sentinelone-remote-script-automate-results
     outputs:
     - contextPath: SentinelOne.RemoteScriptResults.taskId
-      description: ID of the Task.
+      description: ID of the task.
       type: string
     - contextPath: SentinelOne.RemoteScriptResults.fileName
       description: File name.
