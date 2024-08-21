@@ -81,13 +81,13 @@ configuration:
   name: feedBypassExclusionList
   type: 8
   required: false
-- defaultvalue: 'false'
-  display: Exclude Enrichment
+- display: Exclude Enrichment
   name: enrichmentExcluded
   type: 8
-  hidden:
-    - xsoar_on_prem
   required: false
+  defaultvalue: 'false'
+  hidden:
+  - xsoar_on_prem
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -107,7 +107,7 @@ script:
       defaultValue: "10"
     description: Gets indicators from the feed.
     name: google-ip-ranges-get-indicators
-  dockerimage: demisto/py3-tools:1.0.0.86612
+  dockerimage: demisto/py3-tools:1.0.0.108552
   feed: true
   runonce: false
   script: '-'

@@ -71,10 +71,10 @@ configuration:
 - defaultvalue: 'false'
   display: Exclude Enrichment
   name: enrichmentExcluded
+  required: false
   type: 8
   hidden:
-    - xsoar_on_prem
-  required: false
+  - xsoar_on_prem
 - defaultvalue: All
   display: Regions
   name: regions
@@ -127,9 +127,11 @@ configuration:
   - westus2
   required: true
   type: 16
-- defaultvalue: All
-  display: Services
+- display: Services
   name: services
+  type: 16
+  required: true
+  defaultvalue: All
   options:
   - All
   - ActionGroup
@@ -200,13 +202,11 @@ configuration:
   - StorageSyncService
   - WindowsAdminCenter
   - WindowsVirtualDesktop
-  required: true
-  type: 16
-- additionalinfo: Supports CSV values.
-  display: Tags
+- display: Tags
   name: feedTags
   type: 0
   required: false
+  additionalinfo: Supports CSV values.
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -231,7 +231,7 @@ script:
       name: limit
     description: Gets indicators from the feed.
     name: azure-get-indicators
-  dockerimage: demisto/python3:3.10.13.86272
+  dockerimage: demisto/python3:3.11.9.107902
   feed: true
   runonce: false
   script: '-'

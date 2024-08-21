@@ -67,23 +67,23 @@ configuration:
   name: feedBypassExclusionList
   type: 8
   required: false
-- defaultvalue: 'false'
-  display: Exclude Enrichment
+- display: Exclude Enrichment
   name: enrichmentExcluded
   type: 8
-  hidden:
-    - xsoar_on_prem
   required: false
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
-  display: Traffic Light Protocol Color
+  defaultvalue: 'false'
+  hidden:
+  - xsoar_on_prem
+- display: Traffic Light Protocol Color
   name: tlp_color
+  type: 15
+  required: false
+  additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
   options:
   - RED
   - AMBER
   - GREEN
   - WHITE
-  type: 15
-  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -103,7 +103,7 @@ script:
       name: limit
     description: Gets indicators from the feed.
     name: public-dns-get-indicators
-  dockerimage: demisto/netutils:1.0.0.86390
+  dockerimage: demisto/netutils:1.0.0.108034
   feed: true
   runonce: false
   script: '-'

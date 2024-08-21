@@ -79,20 +79,20 @@ configuration:
   display: Exclude Enrichment
   name: enrichmentExcluded
   type: 8
-  hidden:
-    - xsoar_on_prem
   required: false
+  hidden:
+  - xsoar_on_prem
 - additionalinfo: Timeout of the polling request in seconds.
-  defaultvalue: '20'
   display: Request Timeout
   name: polling_timeout
   type: 0
   required: false
-- additionalinfo: Supports CSV values.
-  display: Tags
+  defaultvalue: '20'
+- display: Tags
   name: feedTags
   type: 0
   required: false
+  additionalinfo: Supports CSV values.
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -112,7 +112,7 @@ script:
       name: limit
     description: Gets the feed indicators.
     name: cloudflare-get-indicators
-  dockerimage: demisto/python3:3.10.13.74666
+  dockerimage: demisto/python3:3.11.9.107902
   feed: true
   runonce: false
   script: '-'

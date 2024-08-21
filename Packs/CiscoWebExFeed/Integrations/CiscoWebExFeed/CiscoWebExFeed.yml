@@ -74,13 +74,13 @@ configuration:
   name: feedBypassExclusionList
   type: 8
   required: false
-- defaultvalue: 'false'
-  display: Exclude Enrichment
+- display: Exclude Enrichment
   name: enrichmentExcluded
   type: 8
-  hidden:
-    - xsoar_on_prem
   required: false
+  defaultvalue: 'false'
+  hidden:
+  - xsoar_on_prem
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -108,7 +108,7 @@ script:
       - Both
     description: Gets indicators from the feed.
     name: webex-get-indicators
-  dockerimage: demisto/btfl-soup:1.0.1.87353
+  dockerimage: demisto/btfl-soup:1.0.1.107991
   feed: true
   script: ''
   subtype: python3

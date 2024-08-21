@@ -68,18 +68,18 @@ configuration:
   type: 8
   defaultvalue: "true"
   required: false
-- defaultvalue: 'false'
-  display: Exclude Enrichment
+- display: Exclude Enrichment
   name: enrichmentExcluded
   type: 8
-  hidden:
-    - xsoar_on_prem
   required: false
-- additionalinfo: Supports CSV values.
-  display: Tags
+  defaultvalue: 'false'
+  hidden:
+  - xsoar_on_prem
+- display: Tags
   name: feedTags
   type: 0
   required: false
+  additionalinfo: Supports CSV values.
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -95,14 +95,16 @@ script:
   commands:
   - arguments:
     - defaultValue: '50'
-      description: limits the number of context indicators to output
+      description: limits the number of context indicators to output.
       name: limit
     description: Fetches indicators from the feed.
     name: fastly-get-indicators
-  dockerimage: demisto/py3-tools:1.0.0.91504
+  dockerimage: demisto/py3-tools:1.0.0.108552
   feed: true
   runonce: false
   script: '-'
   subtype: python3
   type: python
 fromversion: 5.5.0
+tests:
+- No tests (auto formatted)
