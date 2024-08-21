@@ -1624,7 +1624,7 @@ There is no context output for this command.
 <details><summary><h3 style={{display: 'inline'}}> Fetch command </h3></summary>
 
 * If incidents are not being fetched, verify no `pre-process` rule is configured that might filter some incidents out.
-* "address parts cannot contain CR or LF" error message in the logs means an corrupted email might have failed the process. In order to solve, you might need to remove the email from the folder being fetched. Contact Support Team if you believe the email is not corrupted. 
+* "address parts cannot contain CR or LF" error message in the logs means a corrupted email might have failed the process. In order to resolve this, you might need to remove the email from the folder being fetched. Contact Support Team if you believe the email is not corrupted. 
 
 </details>
 
