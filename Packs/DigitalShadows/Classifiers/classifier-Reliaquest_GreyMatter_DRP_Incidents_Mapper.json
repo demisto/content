@@ -59,6 +59,9 @@
                 "State": {
                     "simple": "triage_item.state"
                 },
+                "DS Auto Closed": {
+					"simple": "auto-closed"
+				},
                 "DS Event Action": {
                     "simple": "event.event-action"
                 },

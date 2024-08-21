@@ -5,7 +5,7 @@ contentitemexportablefields:
 name: ReliaQuest GreyMatter DRP - MD5_IoC Assessment & Enrichment
 description: Enrichment of MD5 IOC types - sub-playbook for IOC Assessment & Enrichment playbook.
 starttaskid: "0"
-fromversion: 5.0.0
+fromversion: 6.10.0
 tasks:
   "0":
     id: "0"
