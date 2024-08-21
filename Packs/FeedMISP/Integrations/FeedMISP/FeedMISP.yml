@@ -16,7 +16,7 @@ configuration:
 - display: Max. indicators per fetch
   name: max_indicator_to_fetch
   type: 0
-  additionalinfo: In case of performance issues (Timeouts), you can limit the number of indicators fetched per fetch.
+  additionalinfo: In case of performance issues leading to timeouts, try limiting the number of indicators retrieved in a fetch run.```
   required: false
   advanced: true
 - display: Timeout
@@ -48,7 +48,7 @@ configuration:
   - Bad
   additionalinfo: Indicators from this integration instance will be marked with this reputation.
   required: false
-- additionalinfo: 'Improve the feed performance by removing the rawJSON from the indicators. Note: A loss of data may occur if selecting this checkbox.'
+- additionalinfo: 'Should be used in case of performance issues leading to timeouts. Note: When selecting this checkbox, indicator mapping cannot be performed.'
   display: Remove rawJSON from indicators
   name: performance
   defaultvalue: "false"
