@@ -14463,11 +14463,12 @@ def pan_os_list_profile_exception_command(args: dict) -> CommandResults:
             exception_actions = ", ".join(entry['action'].keys())
             exception_packet_capture = entry.get('packet-capture')
             exception_exempt_id = entry.get('exempt-ip', {}).get('entry', {}).get('@name')
-            _, exception_name, cves = get_threat_id_from_predefined_threates(exception_id)
+            _, exception_name, cve = get_threat_id_from_predefined_threates(exception_id)
 
             excpetion_context = {
                 'id': exception_id,
                 'name': exception_name,
+                'CVE': cve,
                 'action': exception_actions,
                 'packet-capture': exception_packet_capture,
                 'exempt-ip': exception_exempt_id
@@ -14479,7 +14480,7 @@ def pan_os_list_profile_exception_command(args: dict) -> CommandResults:
 
             hr.append({'ID': exception_id,
                        'Name': exception_name,
-                       'CVE': cves,
+                       'CVE': cve,
                        'Action': exception_actions,
                        'Exempt IP': exception_exempt_id,
                        'Packet Capture': exception_packet_capture,

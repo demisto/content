@@ -9648,6 +9648,9 @@ script:
     - contextPath: Panorama.Vulnerability.Exception.id
       description: The exception id.
       type: String
+    - contextPath: Panorama.Vulnerability.Exception.cve
+      description: The exception cve if exist.
+      type: String
     - contextPath: Panorama.Vulnerability.Exception.action
       description: The exception action.
       type: String
@@ -9662,6 +9665,9 @@ script:
       type: String
     - contextPath: Panorama.Spyware.Exception.id
       description: The exception id.
+      type: String
+    - contextPath: Panorama.Spyware.Exception.CVE
+      description: The exception cve if exist.
       type: String
     - contextPath: Panorama.Spyware.Exception.action
       description: The exception action.
