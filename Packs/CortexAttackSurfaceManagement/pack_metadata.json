@@ -2,7 +2,7 @@
     "name": "Cortex Attack Surface Management",
     "description": "Content for working with Attack Surface Management (ASM).",
     "support": "xsoar",
-    "currentVersion": "1.7.41",
+    "currentVersion": "1.7.47",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -28,6 +28,10 @@
         "Active_Directory_Query": {
             "mandatory": false,
             "display_name": "Active Directory Query"
+        },
+        "CSCDomainManager": {
+            "mandatory": false,
+            "display_name": "CSCDomainManager"
         },
         "qualys": {
             "mandatory": false,
@@ -103,6 +107,7 @@
     ],
     "displayedImages": [
         "Active_Directory_Query",
+        "CSCDomainManager",
         "qualys",
         "Rapid7_Nexpose",
         "GCP-Enrichment-Remediation",

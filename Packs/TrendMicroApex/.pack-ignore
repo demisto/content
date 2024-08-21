@@ -1,5 +1,2 @@
 [file:README.md]
 ignore=RM104
-
-[file:TrendMicroApex.yml]
-ignore=IN124

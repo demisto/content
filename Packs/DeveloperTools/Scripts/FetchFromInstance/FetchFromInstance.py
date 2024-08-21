@@ -30,22 +30,22 @@ def main():
 
     instance_name = get_instance_name(args)
     instance_name = instance_name.replace(" ", "_")
-    command = '!{0}-fetch'.format(instance_name)
+    command = f'!{instance_name}-fetch'
 
     response = demisto.executeCommand(command, {})
 
     try:
         if not response and expect_data:
-            raise Exception("Error occurred while fetching incidents from {}".format(instance_name))
+            raise Exception(f"Error occurred while fetching incidents from {instance_name}")
 
         for inc in response:
             contents = inc.get('Contents', '')
             error_msg_in_incident = demisto.args().get('error_msg_in_incident')
             if error_msg_in_incident and error_msg_in_incident in str(contents):
-                return_error("Error message '{0}' encountered while fetching incidents from {1}: {2}".format(
+                return_error("Error message '{}' encountered while fetching incidents from {}: {}".format(
                     error_msg_in_incident, instance_name, str(contents)))
             if re.match("invalid character \'[a-zA-Z]\' looking for beginning of value", str(contents), re.IGNORECASE):
-                return_error("Error occurred while fetching incidents from {0}: {1}".format(instance_name, str(contents)))
+                return_error(f"Error occurred while fetching incidents from {instance_name}: {str(contents)}")
             if add_to_context:
                 try:
                     for entry in contents:

@@ -44,7 +44,16 @@ def get_query_window():
         return '60 days'
 
 
-def create_email_html(email_html='', entry_id_list=None):
+def remove_html_conversation_history(email_html):
+    # Removing the conversation's history
+    for marker in QUOTE_MARKERS:
+        index = email_html.find(marker)
+        if index != -1:
+            email_html = f'{email_html[:index]}</body></html>'
+    return email_html
+
+
+def create_email_html(email_html='', entry_id_list=[]):
     """Modify the email's html body to use entry IDs instead of CIDs and remove the original message body if exists.
     Args:
         email_html (str): The attachments of the email.
@@ -52,16 +61,15 @@ def create_email_html(email_html='', entry_id_list=None):
     Returns:
         str. Email Html.
     """
-
-    # Removing the conversation's history
-    for marker in QUOTE_MARKERS:
-        index = email_html.find(marker)
-        if index != -1:
-            email_html = f'{email_html[:index]}</body></html>'
-
+    content_id = "None"
     # Replacing the images' sources
     for image_name, image_entry_id in entry_id_list:
-        if re.search(f'src="[^>]+"(?=[^>]+alt="{image_name}")', email_html):
+        if '-attachmentName-' in image_name:
+            content_id = image_name.split('-attachmentName-', 1)[0]
+        if re.search(rf'(src="cid:{content_id}")', email_html):
+            email_html = re.sub(f'src="cid:{content_id}"', f'src=entry/download/{image_entry_id}',
+                                email_html)
+        elif re.search(f'src="[^>]+"(?=[^>]+alt="{image_name}")', email_html):
             email_html = re.sub(f'src="[^>]+"(?=[^>]+alt="{image_name}")', f'src=entry/download/{image_entry_id}',
                                 email_html)
         # Handling inline attachments from Outlook mailboxes
@@ -72,24 +80,35 @@ def create_email_html(email_html='', entry_id_list=None):
     return email_html
 
 
-def get_entry_id_list(attachments, files):
+def get_entry_id_list(attachments, files, email_html):
     """Get the entry ids for the email attachments from the email's related incident's files entry.
     Args:
         attachments (list): The attachments of the email.
         files (list): The uploaded files in the context of the related incident.
+        email_html: The most recent message in html format
     Returns:
         list of tuples. (attachment_name, file_entry_id).
     """
     if not (attachments and files):
         return []
 
+    matches = re.findall(r'src="cid:([^"]+)"', email_html) or []
     entry_id_list = []
     files = [files] if not isinstance(files, list) else files
+    legacy_name = not any('-attachmentName-' in attachment.get('name') for attachment in attachments)
     for attachment in attachments:
         attachment_name = attachment.get('name', '')
-        for file in files:
-            if attachment_name == file.get('Name') and attachment.get('description', '') != FileAttachmentType.ATTACHED:
-                entry_id_list.append((attachment_name, file.get('EntryID')))
+        if not legacy_name:
+            if '-attachmentName-' in attachment_name:
+                identifier_id = attachment_name.split('-attachmentName-', 1)[0]
+                for file in files:
+                    file_name = file.get('Name')
+                    if attachment_name == file_name and identifier_id in matches:
+                        entry_id_list.append((attachment_name, file.get('EntryID')))
+        else:
+            for file in files:
+                if attachment_name == file.get('Name') and attachment.get('description', '') != FileAttachmentType.ATTACHED:
+                    entry_id_list.append((attachment_name, file.get('EntryID')))
 
     return entry_id_list
 
@@ -185,7 +204,7 @@ def check_incident_status(incident_details, email_related_incident):
             raise DemistoException(ERROR_TEMPLATE.format(f'Reopen incident {email_related_incident}', res['Contents']))
 
 
-def get_attachments_using_instance(email_related_incident, labels, email_to):
+def get_attachments_using_instance(email_related_incident, labels, email_to, identifier_ids=""):
     """Use the instance from which the email was received to fetch the attachments.
         Only supported with: EWS V2, Gmail
 
@@ -219,8 +238,7 @@ def get_attachments_using_instance(email_related_incident, labels, email_to):
     elif integration_name in ['MicrosoftGraphMail', 'Microsoft Graph Mail Single User']:
         demisto.executeCommand("executeCommandAt",
                                {'command': 'msgraph-mail-get-attachment', 'incidents': email_related_incident,
-                                'arguments': {'user_id': email_to, 'message_id': str(message_id),
-                                              'using': instance_name}})
+                                'arguments': {'user_id': email_to, 'message_id': str(message_id), 'using': instance_name}})
 
     else:
         demisto.debug('Attachments could only be retrieved from EWS v2 or Gmail')
@@ -410,12 +428,15 @@ def main():
         incident_details = get_incident_by_query(query)[0]
 
         check_incident_status(incident_details, email_related_incident)
+
+        email_html = remove_html_conversation_history(email_html)
+
         get_attachments_using_instance(email_related_incident, incident.get('labels'), email_to)
 
         # Adding a 5 seconds sleep in order to wait for all the attachments to get uploaded to the server.
         time.sleep(5)
         files = get_incident_related_files(email_related_incident)
-        entry_id_list = get_entry_id_list(attachments, files)
+        entry_id_list = get_entry_id_list(attachments, files, email_html)
         html_body = create_email_html(email_html, entry_id_list)
 
         if incident_details['type'] == 'Email Communication':

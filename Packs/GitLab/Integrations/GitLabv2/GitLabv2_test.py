@@ -262,17 +262,17 @@ def test_get_project_list_command(mocker):
 ARGS_BRANCHES = [
     ({'branch_name': '1-test', 'limit': '1'},  # args single branch
      'get_branches_single',  # result from json
-     '### Branch details\n' \
-     '|Title|CommitShortId|CommitTitle|CreatedAt|IsMerge|IsProtected|\n' \
-     '|---|---|---|---|---|---|\n' \
+     '### Branch details\n'
+     '|Title|CommitShortId|CommitTitle|CreatedAt|IsMerge|IsProtected|\n'
+     '|---|---|---|---|---|---|\n'
      '| 1-test | f9d0bf17 | test1 | 2022-07-27T13:09:50.000+00:00 | false | false |\n'
      ),
     ({'limit': '2'},  # args list
      'get_branches',
-     '### List Branches\n' \
-     '|Title|CommitShortId|CommitTitle|CreatedAt|IsMerge|IsProtected|\n' \
-     '|---|---|---|---|---|---|\n' \
-     '| 1-test | f9d0bf17 | test1 | 2022-07-27T13:09:50.000+00:00 | false | false |\n' \
+     '### List Branches\n'
+     '|Title|CommitShortId|CommitTitle|CreatedAt|IsMerge|IsProtected|\n'
+     '|---|---|---|---|---|---|\n'
+     '| 1-test | f9d0bf17 | test1 | 2022-07-27T13:09:50.000+00:00 | false | false |\n'
      '| 2-test | d9177263 | test2 | 2022-07-18T12:19:47.000+00:00 | false | false |\n'
      )
 ]
@@ -304,18 +304,18 @@ ARGS_COMMITS = [
     ({'commit_id': 'a1', 'limit': '1'},  # args single branch
      'commit_single_request',
      'get_commit_single',  # result from json
-     '### Commit details\n' \
-     '|Title|Message|ShortId|Author|CreatedAt|\n' \
-     '|---|---|---|---|---|\n' \
-     '| commit1 | message1 | a1 | demo1 | 2022-07-26T11:28:03.000+00:00 |\n' \
+     '### Commit details\n'
+     '|Title|Message|ShortId|Author|CreatedAt|\n'
+     '|---|---|---|---|---|\n'
+     '| commit1 | message1 | a1 | demo1 | 2022-07-26T11:28:03.000+00:00 |\n'
      ),
     ({'limit': '2'},  # args list
      'commit_list_request',
      'get_commits',
-     '### List Commits\n' \
-     '|Title|Message|ShortId|Author|CreatedAt|\n' \
-     '|---|---|---|---|---|\n' \
-     '| commit1 | message1 | a1 | demo1 | 2022-07-26T11:28:03.000+00:00 |\n' \
+     '### List Commits\n'
+     '|Title|Message|ShortId|Author|CreatedAt|\n'
+     '|---|---|---|---|---|\n'
+     '| commit1 | message1 | a1 | demo1 | 2022-07-26T11:28:03.000+00:00 |\n'
      '| commit2 | message2 | b2 | demo2 | 2022-07-26T11:28:03.000+00:00 |\n'
      '| commit3 | message3 | c3 | demo3 | 2022-07-26T11:28:03.000+00:00 |\n'
      )

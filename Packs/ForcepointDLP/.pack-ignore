@@ -1,9 +1,6 @@
 [file:ForcepointDLP_1_4.yml]
 ignore=MR108
 
-[file:ForcepointEventCollector.yml]
-ignore=IN124
-
 [known_words]
 DLP
 Forcepoint
