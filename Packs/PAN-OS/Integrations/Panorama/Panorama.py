@@ -12,6 +12,7 @@ import html
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from typing import TypedDict, NotRequired  # type: ignore[attr-defined]
+    from _typeshed import DataclassInstance
 else:
     TypedDict = type('TypedDict', (), {'__new__': lambda cls, **kw: kw})
     NotRequired = list
@@ -34,7 +35,7 @@ import shutil
 
 ''' IMPORTS '''
 import uuid
-from typing import Any, Dict, List, Optional, Tuple, Union, Callable, ValuesView, Iterator
+from typing import Any, Dict, List, Optional, Tuple, Union, ValuesView, Iterator
 from urllib.parse import urlparse
 
 
@@ -9886,7 +9887,7 @@ class PanosObjectReference(ResultData):
     _title = "PAN-OS Objects"
 
 
-def dataclass_from_dict(device: Union[Panorama, Firewall], object_dict: dict, class_type: Callable):
+def dataclass_from_dict(device: Union[Panorama, Firewall], object_dict: dict, class_type: type["DataclassInstance"]):
     """
     Given a dictionary and a datacalass, converts the dictionary into the dataclass type.
     :param device: The PAnDevice instance that this result data belongs to
@@ -9908,7 +9909,7 @@ def dataclass_from_dict(device: Union[Panorama, Firewall], object_dict: dict, cl
     return class_type(**result_dict)
 
 
-def flatten_xml_to_dict(element, object_dict: dict, class_type: Callable):
+def flatten_xml_to_dict(element, object_dict: dict, class_type: type["DataclassInstance"]):
     """
     Given an XML element, a dictionary, and a class, flattens the XML into the class.
     This is a recursive function that will resolve child elements.
@@ -9931,7 +9932,7 @@ def flatten_xml_to_dict(element, object_dict: dict, class_type: Callable):
     return object_dict
 
 
-def dataclass_from_element(device: Union[Panorama, Firewall], class_type: Callable, element):
+def dataclass_from_element(device: Union[Panorama, Firewall], class_type: type["DataclassInstance"], element):
     """
     Turns an XML `Element` Object into an instance of the provided dataclass. Dataclass parameters must match
     element: Optional[Element]
@@ -14334,7 +14335,7 @@ def get_fetch_start_datetime_dict(last_fetch_dict: LastFetchTimes,
 
     # add new log types to last_fetch_dict
     if queries_dict:
-        last_fetch_dict |= {  # type: ignore[assignment]
+        last_fetch_dict |= {  # type: ignore[assignment, typeddict-item]
             log_type: ''
             for log_type in queries_dict
             if log_type not in last_fetch_dict
@@ -14511,7 +14512,8 @@ def main():  # pragma: no cover
             configured_max_fetch = arg_to_number(params['max_fetch'])
             queries = log_types_queries_to_dict(params)
             fetch_max_attempts = arg_to_number(params['fetch_job_polling_max_num_attempts'])
-            max_fetch = cast(MaxFetch, dict.fromkeys(queries, configured_max_fetch) | last_run.get('max_fetch_dict', {}))
+            max_fetch = cast(MaxFetch, dict.fromkeys(queries, configured_max_fetch)
+                             | last_run.get('max_fetch_dict', {}))  # type: ignore[arg-type, operator]
 
             new_last_run, incident_entries = fetch_incidents(
                 last_run, first_fetch, queries, max_fetch, fetch_max_attempts)  # type: ignore[arg-type]
