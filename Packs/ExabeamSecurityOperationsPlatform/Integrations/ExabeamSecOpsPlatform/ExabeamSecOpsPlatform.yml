@@ -116,18 +116,18 @@ script:
       defaultValue: 50
       description: Limit the number of results returned from the search request.
     - name: all_results
-      defaultValue: False
+      defaultValue: 'False'
       auto: PREDEFINED
       predefined:
-      - True
-      - False
+      - 'True'
+      - 'False'
       description: If set to 'True', retrieves all available results, ignoring the limit parameter.
     - name: include_related_rules
-      defaultValue: False
+      defaultValue: 'False'
       auto: PREDEFINED
       predefined:
-      - True
-      - False
+      - 'True'
+      - 'False'
       description: If set to 'True', filters the context to include the "rules" array related to the cases in the results.
     outputs:
     - contextPath: ExabeamPlatform.Case.alertId
@@ -278,18 +278,18 @@ script:
       defaultValue: 50
       description: Limit the number of results returned from the search request.
     - name: all_results
-      defaultValue: False
+      defaultValue: 'False'
       auto: PREDEFINED
       predefined:
-      - True
-      - False
+      - 'True'
+      - 'False'
       description: If set to 'True', retrieves all available results, ignoring the limit parameter.
     - name: include_related_rules
-      defaultValue: False
+      defaultValue: 'False'
       auto: PREDEFINED
       predefined:
-      - True
-      - False
+      - 'True'
+      - 'False'
       description: If set to 'True', filters the context to include the "rules" array related to the cases in the results.
     outputs:
     - contextPath: ExabeamPlatform.Alert.alertDescriptionRt
@@ -413,11 +413,11 @@ script:
       description: Limit the number of results returned from the request.
     - name: include_attributes
       description: If set to 'True', filters the context to include the "attributes" array related to the cases in the results.
-      defaultValue: False
+      defaultValue: 'False'
       auto: PREDEFINED
       predefined:
-      - True
-      - False
+      - 'True'
+      - 'False'
     outputs:
     - contextPath: ExabeamPlatform.ContextTable.attributeMapping
       description: The attribute mapping of the context table.
@@ -463,11 +463,11 @@ script:
       required: true
     - name: delete_unused_custom_attributes
       description: Delete any custom attributes in this table that are not used in another context table.
-      defaultValue: False
+      defaultValue: 'False'
       auto: PREDEFINED
       predefined:
-      - True
-      - False
+      - 'True'
+      - 'False'
   - name: exabeam-platform-table-record-list
     description: Retrieve the records for a specific context table.
     arguments:
