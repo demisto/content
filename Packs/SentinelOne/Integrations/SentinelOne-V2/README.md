@@ -1653,7 +1653,7 @@ Get remote scripts tasks using a variety of filters.
 | ids | List of IDs to filter by. Example: '225494730938493804,225494730938493915'. | Optional |
 | initiated_by_contains | Only include tasks from specific initiating user. | Optional |
 | limit | Limit number of returned items (1-1000). Example: '10'. | Optional |
-| parent_task_id | parent task id to fetch the status by. Example: '225494730938493804'. | Required |
+| parent_task_id | Parent task ID to fetch the status by. Example: '225494730938493804'. | Required |
 | parent_task_id_in | List of IDs to filter by. | Optional |
 | query | Query. | Optional |
 | site_ids | List of Site IDs to filter by. Example: '225494730938493804,225494730938493915'. | Optional |
