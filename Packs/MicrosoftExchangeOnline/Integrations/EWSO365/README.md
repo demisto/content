@@ -7,7 +7,7 @@ The EWS O365 integration implants EWS leading services. The integration allows g
 The EWS integration can be used for the following use cases.
 
 * Monitor a specific email account and create incidents from incoming emails to the defined folder.  
-    Follow the instructions in the [Fetched Incidents Data section](https://xsoar.pan.dev/docs/reference/integrations/ewso365#fetch-data).
+    Follow the instructions in the [Fetched Incidents Data section](https://xsoar.pan.dev/docs/reference/integrations/ewso365#fetched-incidents-data).
 
 * Search for an email message across mailboxes and folders.  
     This can be achieved in the following ways:
