@@ -2289,13 +2289,13 @@ script:
       - "true"
       description: If true, only total number of items will be returned, without any of the actual objects.
     - name: created_at_gt
-      description: "Created at greater than. Example: '2018-02-27T04:49:26.257525Z'."
+      description: "Created at greater than timedate. Example: '2018-02-27T04:49:26.257525Z'."
     - name: created_at_gte
-      description: "Created at greater or equal than. Example: '2018-02-27T04:49:26.257525Z'."
+      description: "Created at greater or equal than timedate. Example: '2018-02-27T04:49:26.257525Z'."
     - name: created_at_lt
-      description: "Created at lesser than. Example: '2018-02-27T04:49:26.257525Z'."
+      description: "Created at lesser than timedate. Example: '2018-02-27T04:49:26.257525Z'."
     - name: created_at_lte
-      description: "Created at lesser or equal than. Example: '2018-02-27T04:49:26.257525Z'."
+      description: "Created at lesser or equal than timedate. Example: '2018-02-27T04:49:26.257525Z'."
     - name: cursor
       description: "Cursor position returned by the last request. Use to iterate over more than 1000 items. Example: 'YWdlbnRfaWQ6NTgwMjkzODE='."
     - name: description_contains
@@ -2305,10 +2305,10 @@ script:
       description: Only include tasks with specific detailed status.
     - name: group_ids
       isArray: true 
-      description: "List of Group IDs to filter by. Example: '225494730938493804,225494730938493915'."
+      description: "Comma-separated list of Group IDs to filter by. Example: '225494730938493804,225494730938493915'."
     - name: ids
       isArray: true 
-      description: "List of IDs to filter by. Example: '225494730938493804,225494730938493915'."
+      description: "Comma-separated list of IDs to filter by. Example: '225494730938493804,225494730938493915'."
     - name: initiated_by_contains
       isArray: true 
       description: Only include tasks from specific initiating user.
@@ -2316,7 +2316,7 @@ script:
       description: "Limit number of returned items (1-1000). Example: '10'."
     - name: parent_task_id
       required: true
-      description: "parent task id to fetch the status by. Example: '225494730938493804'."
+      description: "Parent task ID to fetch the status by. Example: '225494730938493804'."
     - name: parent_task_id_in
       isArray: true 
       description: List of IDs to filter by.
@@ -2324,9 +2324,9 @@ script:
       description: Query.
     - name: site_ids
       isArray: true 
-      description: "List of Site IDs to filter by. Example: '225494730938493804,225494730938493915'."
+      description: "List of site IDs to filter by. Example: '225494730938493804,225494730938493915'."
     - name: status
-      description: "Status in. Example: 'created'."
+      description: "Status of the script task. Example: 'created'."
     - name: tenant
       auto: PREDEFINED
       predefined:
@@ -2334,54 +2334,54 @@ script:
       - "true"
       description: Indicates a tenant scope request.
     - name: updated_at_gt
-      description: "Updated at greater than. Example: '2018-02-27T04:49:26.257525Z'."
+      description: "Updated at greater than datetime. Example: '2018-02-27T04:49:26.257525Z'."
     - name: updated_at_gte
-      description: "Updated at greater or equal than. Example: '2018-02-27T04:49:26.257525Z'."
+      description: "Updated at greater or equal than datetime. Example: '2018-02-27T04:49:26.257525Z'."
     - name: updated_at_lt
-      description: "Updated at lesser than. Example: '2018-02-27T04:49:26.257525Z'."
+      description: "Updated at lesser than datetime. Example: '2018-02-27T04:49:26.257525Z'."
     - name: updated_at_lte
-      description: "Updated at lesser or equal than. Example: '2018-02-27T04:49:26.257525Z'."
+      description: "Updated at lesser or equal than datetime. Example: '2018-02-27T04:49:26.257525Z'."
     - name: uuid_contains
       description: Free-text filter by agent UUID (supports multiple values).
     outputs:
     - contextPath: SentinelOne.GetRemoteScript.id
-      description: ID of the Task.
+      description: ID of the task.
       type: string
     - contextPath: SentinelOne.GetRemoteScript.accountId
-      description: Account ID where this Script is executed.
+      description: Account ID where this script is executed.
       type: string
     - contextPath: SentinelOne.GetRemoteScript.accountName
-      description: Account Name where this Script is executed.
+      description: Account name where this script is executed.
       type: string
     - contextPath: SentinelOne.GetRemoteScript.agentId
-      description: Agent ID where this Script is executed.
+      description: Agent ID where this script is executed.
       type: string
     - contextPath: SentinelOne.GetRemoteScript.agentIsActive
-      description: The status of the Agent.
+      description: The status of the agent.
       type: boolean
     - contextPath: SentinelOne.GetRemoteScript.agentMachineType
-      description: Agent Machine Type.
+      description: Agent machine yype.
       type: string
     - contextPath: SentinelOne.GetRemoteScript.agentOsType
-      description: Agent OS type.
+      description: Agent operating system type.
       type: string
     - contextPath: SentinelOne.GetRemoteScript.agentUuid
-      description: Agent Uuid.
+      description: Agent UUID.
       type: string
     - contextPath: SentinelOne.GetRemoteScript.createdAt
       description: The script created At datetime.
       type: string
     - contextPath: SentinelOne.GetRemoteScript.description
-      description: The description of the Remote script.
+      description: The description of the remote script.
       type: string
     - contextPath: SentinelOne.GetRemoteScript.detailedStatus
       description: The detailed status of the remote script.
       type: string
     - contextPath: SentinelOne.GetRemoteScript.groupId
-      description: Group ID where this Script is executed.
+      description: Group ID where this script is executed.
       type: string
     - contextPath: SentinelOne.GetRemoteScript.groupName
-      description: Group Name where this Script is executed.
+      description: Group Name where this script is executed.
       type: string
     - contextPath: SentinelOne.GetRemoteScript.initiatedBy
       description: Remote script initiate by.
@@ -2390,22 +2390,22 @@ script:
       description: ID of the remote script initiator.
       type: string
     - contextPath: SentinelOne.GetRemoteScript.parentTaskId
-      description: Parent task Id of remote script.
+      description: Parent task ID of the remote script.
       type: string
     - contextPath: SentinelOne.GetRemoteScript.siteId
-      description: Site ID where this Script is executed.
+      description: Site ID where this script is executed.
       type: string
     - contextPath: SentinelOne.GetRemoteScript.siteName
-      description: Site name where this Script is executed.
+      description: Site name where this script is executed.
       type: string
     - contextPath: SentinelOne.GetRemoteScript.status
-      description: Status of remote script.
+      description: Status of the remote script.
       type: string
     - contextPath: SentinelOne.GetRemoteScript.statusCode
-      description: Status code of remote script.
+      description: Status code of the remote script.
       type: string
     - contextPath: SentinelOne.GetRemoteScript.statusDescription
-      description: Status description of remote script.
+      description: Status description of the remote script.
       type: string
     - contextPath: SentinelOne.GetRemoteScript.type
       description: Type of remote script.
@@ -2418,20 +2418,20 @@ script:
   - arguments:
     - name: computer_names
       isArray: true
-      description: A list of partial or whole computer names, which ran scripts, to get a download link for.
+      description: A comma-separated list of partial or whole computer names, which ran scripts, to get a download link for.
     - name: task_ids
       isArray: true
       required: true
-      description: A list of task ids to get a download link for.
+      description: A comma-separated list of task IDs to get a download link for.
     outputs:
     - contextPath: SentinelOne.RemoteScriptResults.taskId
-      description: ID of the Task.
+      description: ID of the task.
       type: string
     - contextPath: SentinelOne.RemoteScriptResults.fileName
       description: File name.
       type: string
     - contextPath: SentinelOne.RemoteScriptResults.downloadUrl
-      description: Download Url.
+      description: Download URL.
       type: string
     description: Get a script's result download URL.
     name: sentinelone-get-remote-script-task-results
@@ -2448,7 +2448,7 @@ script:
       - Local
       - None
       - SentinelCloud
-      description: 'Output destination. Possible values: DataSetCloud/Local/None/SentinelCloud.'
+      description: Output destination.
     - name: task_description
       required: true
       description: Task description.
