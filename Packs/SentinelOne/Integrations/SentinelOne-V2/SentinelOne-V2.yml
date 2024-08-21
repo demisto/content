@@ -2486,7 +2486,7 @@ script:
     - defaultValue: '600'
       description: Indicates the time in seconds until the polling sequence timeouts. Default is 600.
       name: timeout
-    - description: "parent task id to fetch the status by. Example: '225494730938493804'."
+    - description: "Parent task ID to fetch the status by. Example: '225494730938493804'."
       name: parent_task_id
     description: Automate a remote script's execution cycle and return the script's results.
     name: sentinelone-remote-script-automate-results
