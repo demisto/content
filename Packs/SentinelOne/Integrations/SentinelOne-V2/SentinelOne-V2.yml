@@ -2498,7 +2498,7 @@ script:
       description: File name.
       type: string
     - contextPath: SentinelOne.RemoteScriptResults.downloadUrl
-      description: Download Url.
+      description: Download URL.
       type: string
     polling: true
   - arguments: []
