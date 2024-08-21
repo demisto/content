@@ -7517,23 +7517,23 @@ def test_pan_os_list_profile_exception(mocker):
     mocker.patch.object(
         Panorama,
         'profile_exception_crud_commands',
-        return_value=({
+        return_value=({'raw_response' : {
             'response': {
                 'result': {
                     'threat-exception': {
                         'entry': [
                             {
-                                '@name': 'Test Exception 1',
-                                'action': 'block',
-                                'exempt-ip': '192.168.1.1',
+                                '@name': '10003',
+                                'action': {'block': {}},
+                                'exempt-ip': {'entry': {'@name': '192.168.1.1'}},
                                 'packet-capture': 'yes',
                                 '@admin': 'admin1',
                                 '@dirtyId': 'dirty1',
                                 '@time': '2024-08-14T12:00:00'
                             },
                             {
-                                '@name': 'Test Exception 2',
-                                'action': 'allow',
+                                '@name': '10002',
+                                'action': {'allow': {}},
                                 'packet-capture': 'no',
                                 '@admin': 'admin2',
                                 '@dirtyId': 'dirty2',
@@ -7543,25 +7543,31 @@ def test_pan_os_list_profile_exception(mocker):
                     }
                 }
             },
-        }, 'id', 'name')
+        },
+            'exception_id': 'id',
+            'exception_name': 'name',
+            'profile_type': 'Vulnerability Protection Profile'})
     )
 
-    args = {"profile_name": "test_profile", "profile_type": "vulnerability"}
+    mocker.patch.object(Panorama, 'get_threat_id_from_predefined_threates', return_value=('test', 'threatname'))
+
+    args = {"profile_name": "test_profile", "profile_type": "Vulnerability Protection Profile"}
     result = Panorama.pan_os_list_profile_exception_command(args)
 
     assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == "Panorama.ProfileException"
 
     expected_hr = [
         {
-            "Name": "Test Exception 1",
-            "Actions": "block",
+            "ID": "10003",
+            "Name": 'threatname',
+            "Action": "block",
             "Exempt IP": "192.168.1.1",
             "Packet Capture": "yes",
         },
         {
-            "Name": "Test Exception 2",
-            "Actions": "allow",
+            "ID": "10002",
+            "Name": 'threatname',
+            "Action": "allow",
             "Exempt IP": "",
             "Packet Capture": "no",
         },

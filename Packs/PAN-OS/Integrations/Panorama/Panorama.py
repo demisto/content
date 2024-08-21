@@ -266,7 +266,8 @@ class ExceptionCommandType(enum.Enum):
     ADD = 'set'
     EDIT = 'edit'
     DELETE = 'delete'
-    LIST = 'get'
+    LIST = "get"
+
 
 class QueryMap(TypedDict):
     '''dict[str, str]
@@ -7263,7 +7264,8 @@ def get_security_profiles(security_profile: str | None = None):
         'HumanReadable': human_readable,
         'EntryContext': context
     })
-    
+
+
 def get_security_profiles_command(security_profile: str | None = None):
     results = get_security_profiles(security_profile)
     return_results(results)
@@ -14297,6 +14299,7 @@ def build_element_for_profile_exception_commands(extracted_id: str, action: str,
     """
     return element
 
+
 def get_profile_context_by_profile_name_and_type(profile_name, profile_type) -> dict:
     profile_type_context = get_security_profiles(profile_type).get('EntryContext')
     profile_type_context = profile_type_context.get(f"Panorama.{profile_type.capitalize()}(val.Name == obj.Name)")
@@ -14306,7 +14309,7 @@ def get_profile_context_by_profile_name_and_type(profile_name, profile_type) -> 
             return entry
 
 
-def profile_exception_crud_commands(args: dict, action_type: str):
+def profile_exception_crud_commands(args: dict, action_type: str) -> dict:
     """
     Build the element for the api that the profile exception commands use.
 
@@ -14361,17 +14364,16 @@ def profile_exception_crud_commands(args: dict, action_type: str):
             'key': API_KEY,
         }
 
-
     try:
         raw_response = http_request(URL, 'GET', params=params)
-        return ({
+        return {
             'raw_response': raw_response,
             'exception_id': exception_id,
-            'exception_name': exception_name, 
+            'exception_name': exception_name,
             'profile_type': profile_type
-            })
-    except Exception as e: 
-        return_error("Exception was not founds")
+        }
+    except Exception as e:
+        raise DemistoException("Exception was not founds in Exceptions list.")
 
 
 def pan_os_add_profile_exception_command(args: dict) -> CommandResults:
@@ -14443,15 +14445,15 @@ def pan_os_list_profile_exception_command(args: dict) -> CommandResults:
 
     Returns:
         A confirmation for deleting the exception.
-    """    
+    """
     profile_name = args.get('profile_name')
-    
+
     results = profile_exception_crud_commands(args, ExceptionCommandType.LIST.value)
-    raw_response = results.get('raw_response')
-    profile_type = EXCEPTION_PROFILE_TYPES_MAP.get(results.get('profile_type'))
-    
+    raw_response = results.get('raw_response', {})
+    profile_type = EXCEPTION_PROFILE_TYPES_MAP.get(results.get('profile_type', ''))
+
     # profile_context = get_profile_context_by_profile_name_and_type(profile_name, profile_type)
-    
+
     exceptions_response_list = raw_response['response']['result']['threat-exception']
     if not isinstance(exceptions_response_list, list):
         exceptions_response_list = [exceptions_response_list]
@@ -14466,30 +14468,30 @@ def pan_os_list_profile_exception_command(args: dict) -> CommandResults:
         if not isinstance(exceptions, list):
             exceptions = [exceptions]
         for entry in exceptions:
-            exception_id =  entry['@name']
+            exception_id = entry['@name']
             exception_actions = ", ".join(entry['action'].keys())
             exception_packet_capture = entry.get('packet-capture')
             exception_exempt_id = entry.get('exempt-ip', {}).get('entry', {}).get('@name')
             _, exception_name = get_threat_id_from_predefined_threates(exception_id)
-            
+
             excpetion_context = {
-                                 'id': exception_id,
-                                 'name': exception_name,
-                                 'action': exception_actions,
-                                 'packet-capture': exception_packet_capture,
-                                 'exempt-ip': exception_exempt_id
-                                 }
-            
+                'id': exception_id,
+                'name': exception_name,
+                'action': exception_actions,
+                'packet-capture': exception_packet_capture,
+                'exempt-ip': exception_exempt_id
+            }
+
             cleaned_excpetion_context = {k: v for k, v in excpetion_context.items() if v is not None}
-            
+
             context_exceptions_list.append(cleaned_excpetion_context)
-            
+
             hr.append({'ID': exception_id,
-                    'Name': exception_name,
-                    'Action': exception_actions,
-                    'Exempt IP': exception_exempt_id,
-                    'Packet Capture': exception_packet_capture,
-                    })
+                       'Name': exception_name,
+                       'Action': exception_actions,
+                       'Exempt IP': exception_exempt_id,
+                       'Packet Capture': exception_packet_capture,
+                       })
 
     # profile_context.pop('Name')
     # profile_context.update({'Exception' : context_exceptions_list})
@@ -14497,7 +14499,7 @@ def pan_os_list_profile_exception_command(args: dict) -> CommandResults:
         'Exception': context_exceptions_list,
         'ProfileName': profile_name,
     }
-    context_path = f'Panorama.{profile_type.capitalize()}'
+    context_path = f'Panorama.{profile_type.capitalize()}'  # type: ignore
     return CommandResults(
         raw_response=raw_response,
         outputs=outputs,
