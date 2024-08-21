@@ -65,7 +65,7 @@ script:
       - 'True'
       - 'False'
       required: true
-    - defaultvalue: 'AUTHENTICATION'
+    - defaultValue: 'AUTHENTICATION'
       description: The wanted log type. The default value is AUTHENTICATION. Enter one log type for each command execution.
       name: logs_type_array
       required: false
@@ -74,11 +74,11 @@ script:
         - "AUTHENTICATION"
         - "ADMINISTRATION"
         - "TELEPHONY"
-    - defaultvalue: 1 day
+    - defaultValue: 1 day
       description: Date from which to get events (e.g. <number> <time unit>, for example, 12 hours, 7 days, 3 months, 1 year or 2023-13-30T03:11:29Z).
       name: after
       required: false
-    - defaultvalue: 1000
+    - defaultValue: 1000
       description: Maximum results to return.
       isArray: false
       name: limit
