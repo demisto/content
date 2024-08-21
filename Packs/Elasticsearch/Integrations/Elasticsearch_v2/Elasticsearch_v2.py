@@ -22,7 +22,7 @@ if ELASTIC_SEARCH_CLIENT == 'OpenSearch':
     from opensearch_dsl import Search
     from opensearch_dsl.query import QueryString
 else:
-    from elasticsearch import Elasticsearch, RequestsHttpConnection, NotFoundError
+    from elasticsearch import Elasticsearch, RequestsHttpConnection, NotFoundError  # type ignore[assignment]
     from elasticsearch_dsl import Search
     from elasticsearch_dsl.query import QueryString
 
@@ -160,7 +160,8 @@ def elasticsearch_builder(proxies):
     es = Elasticsearch(**connection_args)
     # this should be passed as api_key via Elasticsearch init, but this code ensures it'll be set correctly
     if API_KEY_ID and hasattr(es, 'transport'):
-        es.transport.get_connection().session.headers['authorization'] = get_api_key_header_val(API_KEY)
+        es.transport.get_connection().session.headers['authorization'] = get_api_key_header_val(
+            API_KEY)  # type ignore[attr-defined]
 
     return es
 
