@@ -1,19 +1,11 @@
 id: ReliaQuest GreyMatter DRP - IoC Assessment & Enrichment
 version: -1
 contentitemexportablefields:
-  contentitemfields:
-    packID: ""
-    packName: Digital Shadows SearchLight
-    itemVersion: 1.0.9
-    fromServerVersion: 6.0.0
-    toServerVersion: ""
-    definitionid: ""
-vcShouldKeepItemLegacyProdMachine: false
+  contentitemfields: {}
 name: ReliaQuest GreyMatter DRP - IoC Assessment & Enrichment
-description: Enrich indicators by providing intelligence and more associated indicators
-  based on confirmed reporting in Digital Shadows SearchLight.
+description: Enrich indicators by providing intelligence and more associated indicators based on confirmed reporting in Digital Shadows SearchLight.
 starttaskid: "0"
-fromversion: 5.0.0
+fromversion: 6.10.0
 tasks:
   "0":
     id: "0"
@@ -25,6 +17,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "16"
@@ -55,6 +48,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -82,6 +76,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       "no":
       - "30"
@@ -129,6 +124,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       "no":
       - "13"
@@ -176,6 +172,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       "no":
       - "43"
@@ -223,6 +220,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       "no":
       - "44"
@@ -270,6 +268,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       "no":
       - "45"
@@ -317,6 +316,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       "no":
       - "46"
@@ -364,6 +364,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       "no":
       - "17"
@@ -408,8 +409,7 @@ tasks:
       id: 2848f8d7-c874-48b6-8a1c-78604963787f
       version: -1
       name: ReliaQuest GreyMatter DRP - IP_IoC Assessment & Enrichment
-      description: Enrichment of IP IOC types - sub-playbook for IOC Assessment &
-        Enrichment playbook
+      description: Enrichment of IP IOC types - sub-playbook for IOC Assessment & Enrichment playbook
       playbookName: ReliaQuest GreyMatter DRP - IP_IoC Assessment & Enrichment
       type: playbook
       iscommand: false
@@ -462,8 +462,7 @@ tasks:
       id: a39ca8dd-f698-4422-80ca-ade8ed8b32e2
       version: -1
       name: ReliaQuest GreyMatter DRP - Domain_IoC Assessment & Enrichment
-      description: Enrichment of Domain IOC types - sub-playbook for IOC Assessment
-        & Enrichment playbook
+      description: Enrichment of Domain IOC types - sub-playbook for IOC Assessment & Enrichment playbook
       playbookName: ReliaQuest GreyMatter DRP - Domain_IoC Assessment & Enrichment
       type: playbook
       iscommand: false
@@ -515,8 +514,7 @@ tasks:
       id: 47064a4f-0817-43e9-855e-5f696d054c6f
       version: -1
       name: ReliaQuest GreyMatter DRP - URL_IoC Assessment & Enrichment_url
-      description: Enrichment of URL IOC types - sub-playbook for IOC Assessment &
-        Enrichment playbook
+      description: Enrichment of URL IOC types - sub-playbook for IOC Assessment & Enrichment playbook
       playbookName: ReliaQuest GreyMatter DRP - URL_IoC Assessment & Enrichment_url
       type: playbook
       iscommand: false
@@ -569,8 +567,7 @@ tasks:
       id: b8b1d308-c705-4a4a-8a17-e78a5a957174
       version: -1
       name: ReliaQuest GreyMatter DRP - MD5_IoC Assessment & Enrichment
-      description: Enrichment of MD5 IOC types - sub-playbook for IOC Assessment &
-        Enrichment playbook
+      description: Enrichment of MD5 IOC types - sub-playbook for IOC Assessment & Enrichment playbook
       playbookName: ReliaQuest GreyMatter DRP - MD5_IoC Assessment & Enrichment
       type: playbook
       iscommand: false
@@ -614,8 +611,7 @@ tasks:
       id: 14389425-f78e-4a5f-83a1-05eeda9a22e1
       version: -1
       name: ReliaQuest GreyMatter DRP - SHA256_IoC Assessment & Enrichment
-      description: Enrichment of SHA256 IOC types - sub-playbook for IOC Assessment
-        & Enrichment playbook
+      description: Enrichment of SHA256 IOC types - sub-playbook for IOC Assessment & Enrichment playbook
       playbookName: ReliaQuest GreyMatter DRP - SHA256_IoC Assessment & Enrichment
       type: playbook
       iscommand: false
@@ -659,8 +655,7 @@ tasks:
       id: 90cbde73-a011-48b8-88ec-0c8a6416f207
       version: -1
       name: ReliaQuest GreyMatter DRP - SHA1_IoC Assessment & Enrichment
-      description: Enrichment of SHA1 IOC types - sub-playbook for IOC Assessment
-        & Enrichment playbook
+      description: Enrichment of SHA1 IOC types - sub-playbook for IOC Assessment & Enrichment playbook
       playbookName: ReliaQuest GreyMatter DRP - SHA1_IoC Assessment & Enrichment
       type: playbook
       iscommand: false
@@ -704,8 +699,7 @@ tasks:
       id: 6c704150-1c64-45e3-82f6-d542237f4023
       version: -1
       name: ReliaQuest GreyMatter DRP - CVE_IoC Assessment & Enrichment
-      description: Enrichment of CVE IOC types - sub-playbook for IOC Assessment &
-        Enrichment playbook
+      description: Enrichment of CVE IOC types - sub-playbook for IOC Assessment & Enrichment playbook
       playbookName: ReliaQuest GreyMatter DRP - CVE_IoC Assessment & Enrichment
       type: playbook
       iscommand: false
@@ -768,7 +762,7 @@ inputs:
       - operator: uniq
   required: false
   description: An IP address for assessment and enrichment
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: IoC_CVE
   value:
     complex:
@@ -778,7 +772,7 @@ inputs:
       - operator: uniq
   required: false
   description: A CVE for assessment and enrichment
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: IoC_Domain
   value:
     complex:
@@ -796,7 +790,7 @@ inputs:
       - operator: uniq
   required: false
   description: A domain for assessment and enrichment
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: IoC_URL
   value:
     complex:
@@ -814,7 +808,7 @@ inputs:
       - operator: uniq
   required: false
   description: A URL for assessment and enrichment
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: IoC_MD5
   value:
     complex:
@@ -824,7 +818,7 @@ inputs:
       - operator: uniq
   required: false
   description: A MD5 hash for assessment and enrichment
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: IoC_SHA256
   value:
     complex:
@@ -834,7 +828,7 @@ inputs:
       - operator: uniq
   required: false
   description: A SHA256 hash for assessment and enrichment
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: IoC_SHA1
   value:
     complex:
@@ -844,12 +838,13 @@ inputs:
       - operator: uniq
   required: false
   description: A SHA1 hash for assessment and enrichment
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: DBotScore.Indicator
-  description: Indicator Value
+  description: Indicator Value.
   type: string
 - contextPath: DBotScore.Type
-  description: Indicator Type
+  description: Indicator Type.
   type: string
-sourceplaybookid: Digital Shadows - IoC Assessment & Enrichment
+tests:
+- No tests (auto formatted)

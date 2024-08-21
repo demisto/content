@@ -131,6 +131,7 @@ script:
   - arguments:
     - name: query
       required: true
+      description: Query string to search
     description: Perform a general search against incidents, threats closed sources, etc.
     name: ds-search
   dockerimage: demisto/python3:3.10.13.74666

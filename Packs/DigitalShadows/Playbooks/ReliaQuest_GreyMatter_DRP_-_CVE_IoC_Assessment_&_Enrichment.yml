@@ -1,17 +1,9 @@
 id: ReliaQuest GreyMatter DRP - CVE_IoC Assessment & Enrichment
 version: -1
 contentitemexportablefields:
-  contentitemfields:
-    packID: ""
-    packName: Digital Shadows SearchLight
-    itemVersion: 1.0.9
-    fromServerVersion: 6.0.0
-    toServerVersion: ""
-    definitionid: ""
-vcShouldKeepItemLegacyProdMachine: false
+  contentitemfields: {}
 name: ReliaQuest GreyMatter DRP - CVE_IoC Assessment & Enrichment
-description: Enrichment of CVE IOC types - sub-playbook for IOC Assessment & Enrichment
-  playbook
+description: Enrichment of CVE IOC types - sub-playbook for IOC Assessment & Enrichment playbook.
 starttaskid: "0"
 tasks:
   "0":
@@ -24,6 +16,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "18"
@@ -54,6 +47,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -78,8 +72,7 @@ tasks:
       id: c52bbc2c-ed1f-4d1b-854b-3db522ff75dc
       version: -1
       name: ds-search - CONFIRMED ACTIVITY
-      description: Perform a general search against incidents, threats closed sources,
-        etc.
+      description: Perform a general search against incidents, threats closed sources, etc.
       script: ReliaQuest GreyMatter DRP Incidents|||ds-search
       type: regular
       iscommand: true
@@ -152,8 +145,7 @@ tasks:
       id: 9074af8c-19d3-449f-8425-6a0beaa7c8f4
       version: -1
       name: ds-search - MITRE TECHNIQUES
-      description: Perform a general search against incidents, threats closed sources,
-        etc.
+      description: Perform a general search against incidents, threats closed sources, etc.
       script: ReliaQuest GreyMatter DRP Incidents|||ds-search
       type: regular
       iscommand: true
@@ -226,8 +218,7 @@ tasks:
       id: 0a490609-9fb9-493a-8fb2-d47b99468283
       version: -1
       name: ds-search - PROFILE INTELLIGENCE
-      description: Perform a general search against incidents, threats closed sources,
-        etc.
+      description: Perform a general search against incidents, threats closed sources, etc.
       script: ReliaQuest GreyMatter DRP Incidents|||ds-search
       type: regular
       iscommand: true
@@ -300,8 +291,7 @@ tasks:
       id: 476e4b9b-a3d9-4f13-8fc7-b2b1adde2157
       version: -1
       name: ds-search - INTEL UPDATES
-      description: Perform a general search against incidents, threats closed sources,
-        etc.
+      description: Perform a general search against incidents, threats closed sources, etc.
       script: ReliaQuest GreyMatter DRP Incidents|||ds-search
       type: regular
       iscommand: true
@@ -374,8 +364,7 @@ tasks:
       id: c83975b0-c78c-46bf-82d4-f8519005a3f4
       version: -1
       name: ds-search - THREAT FEEDS
-      description: Perform a general search against incidents, threats closed sources,
-        etc.
+      description: Perform a general search against incidents, threats closed sources, etc.
       script: ReliaQuest GreyMatter DRP Incidents|||ds-search
       type: regular
       iscommand: true
@@ -415,6 +404,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       "no":
       - "30"
@@ -645,13 +635,14 @@ inputs:
       - operator: uniq
   required: false
   description: A Digital Shadows ShadowSearch query containing CVE IDs
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: DBotScore.Indicator
-  description: Indicator Value
+  description: Indicator Value.
   type: string
 - contextPath: DBotScore.Type
-  description: Indicator Type
+  description: Indicator Type.
   type: string
-sourceplaybookid: Digital Shadows - CVE_IoC Assessment & Enrichment
-fromversion: 5.0.0
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

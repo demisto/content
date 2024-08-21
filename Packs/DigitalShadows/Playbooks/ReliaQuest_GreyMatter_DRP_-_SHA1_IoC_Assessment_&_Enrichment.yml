@@ -1,18 +1,10 @@
 id: ReliaQuest GreyMatter DRP - SHA1_IoC Assessment & Enrichment
 version: -1
 contentitemexportablefields:
-  contentitemfields:
-    packID: ""
-    packName: Digital Shadows SearchLight
-    itemVersion: 1.0.9
-    fromServerVersion: 6.0.0
-    toServerVersion: ""
-    definitionid: ""
-vcShouldKeepItemLegacyProdMachine: false
-fromversion: 5.0.0
+  contentitemfields: {}
+fromversion: 6.10.0
 name: ReliaQuest GreyMatter DRP - SHA1_IoC Assessment & Enrichment
-description: Enrichment of SHA1 IOC types - sub-playbook for IOC Assessment & Enrichment
-  playbook
+description: Enrichment of SHA1 IOC types - sub-playbook for IOC Assessment & Enrichment playbook.
 starttaskid: "0"
 tasks:
   "0":
@@ -25,6 +17,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "54"
@@ -55,6 +48,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -79,8 +73,7 @@ tasks:
       id: 507cb454-536f-4c96-8bc0-54530cbd07a3
       version: -1
       name: ds-search - THREAT FEEDS
-      description: Perform a general search against incidents, threats closed sources,
-        etc.
+      description: Perform a general search against incidents, threats closed sources, etc.
       script: ReliaQuest GreyMatter DRP Incidents|||ds-search
       type: regular
       iscommand: true
@@ -165,8 +158,7 @@ tasks:
       id: b7431f35-0831-4551-8073-4aedbd32749b
       version: -1
       name: ds-search - INTEL UPDATES
-      description: Perform a general search against incidents, threats closed sources,
-        etc.
+      description: Perform a general search against incidents, threats closed sources, etc.
       script: ReliaQuest GreyMatter DRP Incidents|||ds-search
       type: regular
       iscommand: true
@@ -239,8 +231,7 @@ tasks:
       id: f41b24fe-3798-4d54-8d75-bf134335c15d
       version: -1
       name: ds-search - PROFILE INTELLIGENCE
-      description: Perform a general search against incidents, threats closed sources,
-        etc.
+      description: Perform a general search against incidents, threats closed sources, etc.
       script: ReliaQuest GreyMatter DRP Incidents|||ds-search
       type: regular
       iscommand: true
@@ -313,8 +304,7 @@ tasks:
       id: 185dcdfe-7c7a-48f8-82c8-6c1313baf5d9
       version: -1
       name: ds-search - MITRE TECHNIQUES
-      description: Perform a general search against incidents, threats closed sources,
-        etc.
+      description: Perform a general search against incidents, threats closed sources, etc.
       script: ReliaQuest GreyMatter DRP Incidents|||ds-search
       type: regular
       iscommand: true
@@ -387,8 +377,7 @@ tasks:
       id: 0d5452e1-8157-497b-8380-2cf58da178fc
       version: -1
       name: ds-search - CONFIRMED ACTIVITY
-      description: Perform a general search against incidents, threats closed sources,
-        etc.
+      description: Perform a general search against incidents, threats closed sources, etc.
       script: ReliaQuest GreyMatter DRP Incidents|||ds-search
       type: regular
       iscommand: true
@@ -426,9 +415,7 @@ tasks:
       id: 6c378cbb-cafa-4b33-8d4c-0c621f58bf35
       version: -1
       name: AddEvidence - CONFIRMED ACTIVITY
-      description: Adds provided entries to the incident Evidence Board. In playbook,
-        can be positioned after a task to add the previous task's entries to Evidence
-        Board automatically (with no need to provide arguments)
+      description: Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)
       scriptName: AddEvidence
       type: regular
       iscommand: false
@@ -648,12 +635,13 @@ inputs:
       - operator: uniq
   required: false
   description: A Digital Shadows ShadowSearch query containing SHA1 hashes
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: DBotScore.Indicator
-  description: Indicator Value
+  description: Indicator Value.
   type: string
 - contextPath: DBotScore.Type
-  description: Indicator Type
+  description: Indicator Type.
   type: string
-sourceplaybookid: Digital Shadows - SHA1_IoC Assessment & Enrichment
+tests:
+- No tests (auto formatted)
