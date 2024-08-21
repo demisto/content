@@ -118,13 +118,13 @@ script:
   isremotesyncout: true
   commands:
   - arguments:
-    - description: Names of git users.
+    - description: Names of git users. Supports comma separated values.
       isArray: true
       name: git_users
     - description: A branch name.
       isArray: false
       name: branch
-    - description: Code category filter, is also available as a search criteria (search_scopes) 
+    - description: Filters by code issue category. Is also available as a search criteria (search_scopes). Supports comma separated values.
       isArray: true
       name: code_categories
       auto: PREDEFINED
@@ -136,7 +136,7 @@ script:
       - Vulnerabilities
       - Licenses
       - Secrets
-    - description: later
+    - description: Different categories related to Infrastructure-as-Code (IaC) issues to filter by. Supports comma separated values.
       isArray: true
       name: iac_categories
       auto: PREDEFINED
@@ -150,14 +150,14 @@ script:
       - Public
       - Drift
       - Compute
-    - description: later
+    - description: labels associated with Infrastructure-as-Code (IaC). Supports comma separated values.
       name: iac_labels
       isArray: true
       auto: PREDEFINED
       predefined:
       - CustomPolicy
       - HasFix
-    - description: later
+    - description: File types to filter by. Supports comma separated values.
       name: file_types
       isArray: true
       auto: PREDEFINED
@@ -196,10 +196,10 @@ script:
       predefined:
       - true
       - false
-    - description: later
+    - description: Specifies the repository names to filter results from. Supports comma separated values.
       name: repositories
       isArray: true
-    - description: later
+    - description: Filters based on risk factors related to secrets. Supports comma separated values.
       name: secrets_risk_factors
       isArray: true
       auto: PREDEFINED
@@ -212,7 +212,7 @@ script:
       - Invalid
       - Unknown
       - FoundInHistory
-    - description: When specifying `search_scopes`, `search_term` argument is required.
+    - description: Defines specific areas or categories within which to search. Supports comma separated values. When specifying `search_scopes`, `search_term` argument is required.
       name: search_scopes
       isArray: true
       auto: PREDEFINED
@@ -224,7 +224,7 @@ script:
       - Vulnerabilities
       - Licenses
       - Secrets
-    - description: later
+    - description: The criticality of issues. Supports comma separated values.
       name: severities
       isArray: true
       auto: PREDEFINED
@@ -234,7 +234,7 @@ script:
       - MEDIUM
       - HIGH
       - CRITICAL
-    - description: later
+    - description: Filters results based on risk factors for vulnerabilities. Supports comma separated values.
       name: vulnerability_risk_factors
       isArray: true
       auto: PREDEFINED
@@ -247,17 +247,17 @@ script:
       - ExploitInTheWild
       - ExploitPOC
       - IsUsed
-    - description: later
+    - description: A keyword or phrase used to narrow down results within specific scopes (like a particular vulnerability). It's needed if you are filtering results by search_scopes.
       name: search_term
       isArray: false
       required: false
     - description: Relevant only to- IacMisconfiguration,Vulnerabilities.
       name: iac_tags
       isArray: false
-    - description: later
+    - description: License types to filter by. Supports comma separated values.
       name: license_type
       isArray: true
-    - description: later
+    - description: Filters by the status of checks.
       name: check_status
       isArray: false
       auto: PREDEFINED
