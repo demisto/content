@@ -14300,15 +14300,6 @@ def build_element_for_profile_exception_commands(extracted_id: str, action: str,
     return element
 
 
-def get_profile_context_by_profile_name_and_type(profile_name, profile_type) -> dict:
-    profile_type_context = get_security_profiles(profile_type).get('EntryContext')
-    profile_type_context = profile_type_context.get(f"Panorama.{profile_type.capitalize()}(val.Name == obj.Name)")
-
-    for entry in profile_type_context:
-        if entry["Name"] == profile_name:
-            return entry
-
-
 def profile_exception_crud_commands(args: dict, action_type: str) -> dict:
     """
     Build the element for the api that the profile exception commands use.
@@ -14451,8 +14442,6 @@ def pan_os_list_profile_exception_command(args: dict) -> CommandResults:
     results = profile_exception_crud_commands(args, ExceptionCommandType.LIST.value)
     raw_response = results.get('raw_response', {})
     profile_type = EXCEPTION_PROFILE_TYPES_MAP.get(results.get('profile_type', ''))
-
-    # profile_context = get_profile_context_by_profile_name_and_type(profile_name, profile_type)
 
     exceptions_response_list = raw_response['response']['result']['threat-exception']
     if not isinstance(exceptions_response_list, list):

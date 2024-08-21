@@ -7517,7 +7517,7 @@ def test_pan_os_list_profile_exception(mocker):
     mocker.patch.object(
         Panorama,
         'profile_exception_crud_commands',
-        return_value=({'raw_response' : {
+        return_value=({'raw_response': {
             'response': {
                 'result': {
                     'threat-exception': {
