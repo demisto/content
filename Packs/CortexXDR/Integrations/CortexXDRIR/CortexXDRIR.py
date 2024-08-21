@@ -387,7 +387,7 @@ class Client(CoreClient):
         return reply.get('reply', {})
 
     def get_multiple_incidents_extra_data(self, exclude_artifacts, incident_id_list=[], gte_creation_time_milliseconds=0,
-                                          statuses=None, starred=None, starred_incidents_fetch_window=None,
+                                          statuses=[], starred=None, starred_incidents_fetch_window=None,
                                           page_number=0, limit=100, offset=0):
         """
         Returns incident by id
