@@ -1655,7 +1655,7 @@ Get remote script tasks using a variety of filters.
 | limit | Limit number of returned items (1-1000). Example: '10'. | Optional |
 | parent_task_id | Parent task ID to fetch the status by. Example: '225494730938493804'. | Required |
 | parent_task_id_in | Comma-separated list of IDs to filter by. | Optional |
-| query | Query. | Optional |
+| query | A free-text search term that will match applicable attributes (sub-string match). | Optional |
 | site_ids | Comma-separated list of Site IDs to filter by. Example: '225494730938493804,225494730938493915'. | Optional |
 | status | Status of the script task. Example: 'created'. | Optional |
 | tenant | A tenant scope request. | Optional |
