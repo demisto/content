@@ -742,7 +742,7 @@ def table_record_list_command(client: Client, args: dict) -> CommandResults:
     limit = arg_to_number(args.get("limit")) or DEFAULT_LIMIT
     page = arg_to_number(args.get("page"))
     page_size = arg_to_number(args.get("page_size"))
-    records = []
+    records: list = []
     offset = 0
 
     if page:
