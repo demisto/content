@@ -9642,41 +9642,35 @@ script:
       - Vulnerability Protection Profile
       - Anti Spyware Profile
     outputs:
-    # - contextPath: Panorama.Vulnerability.Exception
-    #   description: The Profile's exceptions list when profile type is vulnerability
-    #   type: String
     - contextPath: Panorama.Vulnerability.Exception.name
-      description: The exception name
+      description: The exception name.
       type: String
     - contextPath: Panorama.Vulnerability.Exception.id
-      description: The exception id
+      description: The exception id.
       type: String
     - contextPath: Panorama.Vulnerability.Exception.action
-      description: The exception action
+      description: The exception action.
       type: String
     - contextPath: Panorama.Vulnerability.Exception.exempt-id
-      description: The exception exempt-id
+      description: The exception exempt-id.
       type: String
     - contextPath: Panorama.Vulnerability.Exception.packet-capture
-      description: The exception packet-capture
+      description: The exception packet-capture.
       type: String
-    # - contextPath: Panorama.Vulnerability.Exception
-    #   description: The Profile's exceptions list when profile type is vulnerability
-    #   type: String
     - contextPath: Panorama.Spyware.Exception.name
-      description: The exception name
+      description: The exception name.
       type: String
     - contextPath: Panorama.Spyware.Exception.id
-      description: The exception id
+      description: The exception id.
       type: String
     - contextPath: Panorama.Spyware.Exception.action
-      description: The exception action
+      description: The exception action.
       type: String
     - contextPath: Panorama.Spyware.Exception.exempt-id
-      description: The exception exempt-id
+      description: The exception exempt-id.
       type: String
     - contextPath: Panorama.Spyware.Exception.packet-capture
-      description: The exception packet-capture
+      description: The exception packet-capture.
       type: String
   dockerimage: demisto/pan-os-python:1.0.0.107786
   isfetch: true
