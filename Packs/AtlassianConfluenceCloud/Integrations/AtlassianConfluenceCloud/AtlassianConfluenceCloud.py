@@ -160,6 +160,31 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
+def run_fetch_mechanism(client: Client, next_link: str | None, events: list[dict[str, Any]], start_date: int, end_date: int,
+                        page_size: int, limit: int, last_run: [dict[str, Any]]) -> list[dict[str, any]]:
+
+    if not next_link:
+        # there is no next link, but we already have events in the list. That means the lack of next link is due to the end
+        # of the data, not the start of it. Therefore, we can return
+        if events:
+            return events, None, events[0]['creationDate']
+
+        demisto.info(f'searching events with start date: {start_date}, end date: {end_date} and page size: {page_size}')
+        response = client.search_events(limit=page_size, start_date=str(start_date), end_date=str(end_date))
+        demisto.info(f'Found {response["size"]} events between {start_date} and {end_date}')
+        demisto.info(json.dumps(response, indent=4))
+        events = dedup(response['results'], last_run.get('last_events', None))
+
+    else:
+        demisto.info(f'searching events with start date: {start_date}, end date: {end_date} and page size: {page_size}')
+        response = client.search_events(limit=limit, next_link=next_link)
+        events = dedup(response['results'], last_run.get('last_events', None))
+
+    next_link = response['_links'].get('next', None)
+    last_timestamp = events[0]['creationDate'] if events else None
+    return events, next_link, last_timestamp
+
+
 def dedup(curr_events: list[dict[str, Any]], last_events_hashes: dict[int, int] | None):
     """
     Deduplicates a list of current events based on their occurrence in a previous set of event hashes.
@@ -1410,33 +1435,15 @@ def confluence_cloud_group_list_command(client: Client, args: Dict[str, str]) ->
 
 
 def fetch_events(client: Client, last_run: dict[str, Any], limit: int) -> tuple[Dict, List[Dict]]:
-    end_date = (time.time() - 5) * 1000
+    end_date = int((time.time() - 5) * 1000)
     start_date = last_run.get('start_date', end_date - 60000)
     next_link = last_run.get('next_url', None)
-    page_size = 500
-    events = []
+    page_size = 1000
 
-    while len(events) < limit:
-        if not next_link:
-            # there is no next link, but we already have events in the list. That means the lack of next link is due to the end
-            # of the data, not the start of it. Therefore, we can return
-            if events:
-                break
-
-            demisto.info(f'searching events with start date: {start_date}, end date: {end_date} and page size: {page_size}')
-            response = client.search_events(limit=page_size, start_date=str(start_date), end_date=str(end_date))
-            demisto.info(f'Found {response["size"]} events between {start_date} and {end_date}')
-            demisto.info(json.dumps(response, indent=4))
-            events = dedup(response['results'], last_run.get('last_events', None))
-
-        else:
-            demisto.info(f'searching events with start date: {start_date}, end date: {end_date} and page size: {page_size}')
-            response = client.search_events(limit=limit, next_link=next_link)
-            events = dedup(response['results'], last_run.get('last_events', None))
-
-        next_link = response['results'].get('next', None)
-        last_timestamp = events[0]['creationDate'] if events else None
-        yield events, next_link, last_timestamp
+    events, next_link, last_timestamp = run_fetch_mechanism(client, next_link, [], start_date, end_date, page_size, limit, last_run)
+    while events and len(events) < limit:
+        yield run_fetch_mechanism(client, next_link, events, start_date, end_date, page_size, limit, last_run)
+    yield events, next_link, last_timestamp
 
 
 def get_events(client: Client, args: dict) -> tuple[list[Dict], CommandResults]:
@@ -1479,7 +1486,6 @@ def main() -> None:
     """
     main function, parses params and runs command functions
     """
-
     params = demisto.params()
 
     # get the service API url
@@ -1535,6 +1541,7 @@ def main() -> None:
         elif command == 'fetch-events':
             last_run = demisto.getLastRun()
             for events, next_url, last_timestamp in fetch_events(client, last_run, limit):
+                demisto.info('events returned from fetch-events: ' + str(len(events)))
                 if events:
                     add_time_to_events(events)
                     send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
