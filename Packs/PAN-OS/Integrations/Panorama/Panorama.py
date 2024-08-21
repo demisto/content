@@ -14220,7 +14220,7 @@ def get_predefined_threats_list() -> list:
     return predefined_threats
 
 
-def get_threat_id_from_predefined_threates(threat_name: str) -> tuple[str, str]:
+def get_threat_id_from_predefined_threates(threat_name: str) -> tuple[str, str, list]:
     """
     Search the threat id in the threats list by using the threat_name argument.
 
@@ -14247,7 +14247,7 @@ def get_threat_id_from_predefined_threates(threat_name: str) -> tuple[str, str]:
             search_keys.append(cve.lower())
 
         if threat_name.lower() in search_keys:
-            return extracted_id, exception_name
+            return extracted_id, exception_name, cves
 
     raise DemistoException("Invalid threat_name was provided.")
 
@@ -14334,7 +14334,7 @@ def profile_exception_crud_commands(args: dict, action_type: str) -> dict:
         profile_type = check_profile_type_by_given_profile_name(profile_name, device_group)
 
     if action_type != ExceptionCommandType.LIST.value:
-        exception_id, exception_name = get_threat_id_from_predefined_threates(threat)
+        exception_id, exception_name, _ = get_threat_id_from_predefined_threates(threat)
 
     xpath = build_xpath_for_profile_exception_commands(profile_name, profile_type, device_group, action_type, exception_id)
 
@@ -14463,7 +14463,7 @@ def pan_os_list_profile_exception_command(args: dict) -> CommandResults:
             exception_actions = ", ".join(entry['action'].keys())
             exception_packet_capture = entry.get('packet-capture')
             exception_exempt_id = entry.get('exempt-ip', {}).get('entry', {}).get('@name')
-            _, exception_name = get_threat_id_from_predefined_threates(exception_id)
+            _, exception_name, cves = get_threat_id_from_predefined_threates(exception_id)
 
             excpetion_context = {
                 'id': exception_id,
@@ -14479,13 +14479,12 @@ def pan_os_list_profile_exception_command(args: dict) -> CommandResults:
 
             hr.append({'ID': exception_id,
                        'Name': exception_name,
+                       'CVE': cves,
                        'Action': exception_actions,
                        'Exempt IP': exception_exempt_id,
                        'Packet Capture': exception_packet_capture,
                        })
 
-    # profile_context.pop('Name')
-    # profile_context.update({'Exception' : context_exceptions_list})
     outputs = {
         'Exception': context_exceptions_list,
         'ProfileName': profile_name,
@@ -14497,7 +14496,7 @@ def pan_os_list_profile_exception_command(args: dict) -> CommandResults:
         readable_output=tableToMarkdown(
             name='Profile Exceptions',
             t=hr,
-            headers=['ID', 'Name', 'Action', 'Exempt IP', 'Packet Capture'],
+            headers=['ID', 'Name', 'CVE', 'Action', 'Exempt IP', 'Packet Capture'],
             removeNull=True,
         ),
         outputs_prefix=context_path,
