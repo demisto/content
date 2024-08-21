@@ -1629,7 +1629,7 @@ Run a remote script that was uploaded to the SentinelOne Script Library.
 ### sentinelone-get-remote-script-task-status
 
 ***
-Get remote scripts tasks using a variety of filters.
+Get remote script tasks using a variety of filters.
 
 #### Base Command
 
