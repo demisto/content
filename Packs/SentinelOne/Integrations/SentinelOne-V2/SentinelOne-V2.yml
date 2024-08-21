@@ -2484,7 +2484,7 @@ script:
       description: Indicates how long to wait between command execution (in seconds) when 'polling' argument is true. Minimum value is 10 seconds. Default is 60.
       name: interval
     - defaultValue: '600'
-      description: Indicates the time in seconds until the polling sequence timeouts. Default is 600.
+      description: Indicates the time in seconds until the polling sequence timeouts. 
       name: timeout
     - description: "Parent task ID to fetch the status by. Example: '225494730938493804'."
       name: parent_task_id
