@@ -33,7 +33,7 @@ def test_send_teams_message_command(requests_mock):
     assert res.readable_output == 'message sent successfully'
 
 
-def test_send_teams_message_command(requests_mock):
+def test_send_teams_message_command_with_adaptivecards(requests_mock):
     requests_mock.post(WEBHOOK, status_code=200, json={})
     res = send_teams_message_command(fake_client, MESSAGE, TITLE, SERVERURLS["investigation"], True)
     assert res.readable_output == 'message sent successfully'
