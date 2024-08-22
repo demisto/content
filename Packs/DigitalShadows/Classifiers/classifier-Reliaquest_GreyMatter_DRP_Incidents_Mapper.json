@@ -4,14 +4,6 @@
     "fromVersion": "6.10.0",
     "id": "Reliaquest GreyMatter DRP Incidents Mapper",
     "mapping": {
-        "DS EXPOSED_CREDENTIAL": {
-            "dontMapEventToLabels": false,
-            "internalMapping": {
-                "State": {
-                    "simple": "triage_item.state"
-                }
-            }
-        },
         "dbot_classification_incident_type_all": {
             "dontMapEventToLabels": true,
             "internalMapping": {
@@ -60,8 +52,8 @@
                     "simple": "triage_item.state"
                 },
                 "DS Auto Closed": {
-					"simple": "auto-closed"
-				},
+                    "simple": "auto-closed"
+                },
                 "DS Event Action": {
                     "simple": "event.event-action"
                 },
@@ -95,7 +87,7 @@
                         ]
                     }
                 },
-                "DS Risk Factors ": {
+                "DS Risk Factors": {
                     "complex": {
                         "accessor": "risk-factors",
                         "filters": [],

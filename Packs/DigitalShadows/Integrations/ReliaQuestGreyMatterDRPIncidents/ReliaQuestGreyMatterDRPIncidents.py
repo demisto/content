@@ -918,7 +918,7 @@ def main() -> None:
     if RISK_LEVEL_ALL in riskLevel:
         riskLevel = [RISK_LEVEL_ALL]
     verify_certificate = not demisto.params().get('insecure', False)
-    fetchLimit: int = arg_to_number(demisto.params()['fetchLimit'], "fetchLimit", True)  # type:ignore
+    fetchLimit: int = arg_to_number(demisto.params()['max_fetch'], "max_fetch", True)  # type:ignore
     if fetchLimit > 100:
         raise DemistoException("fetch limit must be less than 100")
     if fetchLimit < 0:
