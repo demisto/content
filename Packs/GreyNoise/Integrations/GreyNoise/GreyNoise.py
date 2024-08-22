@@ -1134,6 +1134,7 @@ def cve_command(client: Client, args: dict, reliability: str) -> CommandResults:
     response = client.cve(cve_arg)
     cve_raw_response = copy.deepcopy(response)
     response = remove_empty_elements(response)
+    reliability = args.get("reliability", "")
     if response.get("id"):
         cvss = response["details"].get("cve_cvss_score", "N\\A")
         description = response["details"].get("vulnerability_description", "")
@@ -1227,12 +1228,19 @@ def cve_command(client: Client, args: dict, reliability: str) -> CommandResults:
             removeNull=False
         )
 
+    dbot_score = Common.DBotScore(
+        indicator=cve_arg,
+        indicator_type=DBotScoreType.CVE,
+        score=Common.DBotScore.NONE,
+        integration_name="GreyNoise",
+    )
     cve = Common.CVE(
         id=cve_arg,
         cvss=cvss,
         description=description,
         published=published,
-        modified=modified
+        modified=modified,
+        dbot_score=dbot_score
     )
 
     return CommandResults(
