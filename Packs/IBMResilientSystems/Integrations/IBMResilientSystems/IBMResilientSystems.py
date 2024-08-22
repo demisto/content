@@ -121,6 +121,13 @@ RESOLUTION_TO_ID_DICT = {
     'Resolved': 10
 }
 
+MIRROR_STATUS_DICT = {
+    'Unresolved': 'Other',
+    'Duplicate': 'Duplicate',
+    'Not an Issue': 'False Positive',
+    'Resolved': 'Resolved',
+}
+
 EXP_TYPE_ID_DICT = {
     1: 'Unknown',
     2: 'ExternalParty',
@@ -425,6 +432,25 @@ def get_mirroring_data() -> dict:
     }
 
 
+def replace_html_tags(raw_value: str) -> str:
+    # Regex pattern to match <div> tags and their content, handling nested divs
+    pattern = r'<div.*?>.*?</div>'
+
+    def replace_nested(match):
+        """
+            Function to count nested divs and replace appropriately.
+        """
+        # Count opening divs
+        content = match.group(0)
+        open_divs = content.count('<div')
+        # Replace all nested divs with newline equal to the number of opening tags
+        return '\n' * open_divs
+
+    # Substitute using the replace_nested function for each match
+    result = re.sub(pattern, replace_nested, raw_value, flags=re.DOTALL)
+    return result
+
+
 ''' COMMAND FUNCTIONS '''
 
 
@@ -687,6 +713,7 @@ def get_incident(client, incident_id, content_format=False):
     if content_format:
         url += '?text_content_output_format=objects_convert_html'
     response = client.get(url)
+
     return response
 
 
@@ -1168,19 +1195,18 @@ def date_to_timestamp(date_str_or_dt, date_format='%Y-%m-%dT%H:%M:%SZ'):
       :rtype: ``int``
     """
     if isinstance(date_str_or_dt, STRING_OBJ_TYPES):
-        # return_error(f"[1] - {date_str_or_dt=} | {type(date_str_or_dt)=} | {date_format=}")
         return int(time.mktime(time.strptime(date_str_or_dt, date_format)) * 1000)
 
-    return_error(f"[2] - {date_str_or_dt=} | {type(date_str_or_dt)=} | {date_format=}")
     # otherwise datetime.datetime
     return int(time.mktime(date_str_or_dt.timetuple()) * 1000)
 
 
-def fetch_incidents(client, fetch_time: str):
+def fetch_incidents(client, first_fetch_time: str):
     last_run_time = demisto.getLastRun() and demisto.getLastRun().get('time')
+    demisto.debug(f'fetch_incidents {last_run_time=}')
     if not last_run_time:
-        last_run_time = date_to_timestamp(fetch_time)
-        args = {'date-created-after': fetch_time}
+        last_run_time = date_to_timestamp(first_fetch_time)
+        args = {'date-created-after': first_fetch_time}
     else:
         args = {'date-created-after': normalize_timestamp(last_run_time)}
 
@@ -1188,12 +1214,14 @@ def fetch_incidents(client, fetch_time: str):
     incidents = []
 
     if resilient_incidents:
-        last_incident_creation_time = resilient_incidents[0].get('create_date')  # the first incident's creation time
+        last_incident_creation_time = resilient_incidents[0].get('create_date')  # the first incident's creation time in UTC
 
         for incident in resilient_incidents:
             demisto.debug(f'fetch_incidents {incident=}')
             incident_creation_time = incident.get('create_date')
             if incident_creation_time > last_run_time:  # timestamp in milliseconds
+                # TODO - process_raw_incident()
+
                 artifacts = incident_artifacts(client, str(incident.get('id', '')))
                 if artifacts:
                     incident['artifacts'] = artifacts
@@ -1208,16 +1236,18 @@ def fetch_incidents(client, fetch_time: str):
                 incident.update(get_mirroring_data())
 
                 demisto_incident = dict()  # type: dict
-                demisto_incident['name'] = f'IBM QRadar SOAR incident ID {str(incident["id"])} - {incident.get("name", "")}'
+                # demisto_incident['name'] = f'IBM QRadar SOAR incident ID {str(incident["id"])} - {incident.get("name", "")}'
+                demisto_incident['name'] = f'IBM QRadar SOAR incident ID {str(incident["id"])}'
                 demisto_incident['occurred'] = incident['create_date']
-                demisto_incident['rawJSON'] = json.dumps(incident)
+                demisto_incident['rawJSON'] = replace_html_tags(json.dumps(incident))
                 demisto.debug(f'fetch_incidents {demisto_incident=}')
                 incidents.append(demisto_incident)
 
                 # updating last creation time if needed
                 if incident_creation_time > last_incident_creation_time:
                     last_incident_creation_time = incident_creation_time
-    demisto.setLastRun({'time': last_incident_creation_time})
+    # Increasing by one millisecond in order not to fetch the same incident in the next run.
+    demisto.setLastRun({'time': last_incident_creation_time + 1})
     demisto.incidents(incidents)
 
 
@@ -1488,19 +1518,37 @@ def list_task_instructions_command(client: SimpleClient, args: dict) -> CommandR
 
 def get_modified_remote_data_command(client: SimpleClient, args: dict) -> GetModifiedRemoteDataResponse:
     remote_args = GetModifiedRemoteDataArgs(args)
-    last_update = remote_args.last_update  # In the first run, this value will be set to 1 minute earlier
+    last_update = remote_args.last_update   # In the first run, this value will be set to 1 minute earlier
+    last_update = last_update.split('.')[0] + 'Z'    # Truncate milliseconds to match the format expected by the API.
     demisto.debug(f'get-modified-remote-data command {last_update=}')
 
     incidents = search_incidents(client, args={'last-modified-after': last_update})
-    modified_incident_ids = [incident.get('id') for incident in incidents]
+    # Casting the incident ID to match the format expected by the server.
+    modified_incident_ids = [str(incident.get('id')) for incident in incidents]
     demisto.debug(f'get-modified-remote-data command {modified_incident_ids=}')
     return GetModifiedRemoteDataResponse(modified_incident_ids)
 
 
+def handle_incoming_incident_resolution(incident_id: str, resolution_id: int, resolution_summary: str) -> dict:
+    """
+    TODO - Complete
+    """
+    resolution_status = RESOLUTION_DICT.get(resolution_id, 'Resolved')
+    demisto.debug(f'handle_incoming_incident_resolution {incident_id=} | {resolution_status=} | {resolution_summary=}')
+    closing_entry = {
+        'Type': EntryType.NOTE,
+        'Contents': {
+            'dbotIncidentClose': True,
+            'closeReason': MIRROR_STATUS_DICT.get(resolution_status, 'Resolved'),
+            'closeNotes': f'{resolution_summary}\nClosed on IBM QRadar SOAR'.strip()
+        },
+        'ContentsFormat': EntryFormat.JSON
+    }
+    return closing_entry
+
+
 def get_remote_data_command(client: SimpleClient, args: dict) -> GetRemoteDataResponse:
-    """ Mirror-in data to incident from IBM QRadar SOAR into an XSOAR incident.
-
-
+    """
     Args:
         client (SimpleClient): The IBM Resillient client.
         # TODO - Complete
@@ -1521,9 +1569,27 @@ def get_remote_data_command(client: SimpleClient, args: dict) -> GetRemoteDataRe
     demisto.debug(f'get-remote-data {incident_id=}')
 
     incident = get_incident(client, incident_id)
+    demisto.debug(f'get-remote-data {incident=}')
+    entries = []
+
+    # Handling remote incident resolution.
+    if resolution_id := incident.get('resolution_id', '') in RESOLUTION_DICT:
+        closing_entry = handle_incoming_incident_resolution(incident_id=incident_id,
+                                                            resolution_id=resolution_id,
+                                                            resolution_summary=incident.get('resolution_summary', '')
+                                                            )
+        entries.append(closing_entry)
+
+    # Handling remote incident re-opening.
+
+    mirrored_data = dict()
+    mirrored_data['rawJSON'] = replace_html_tags(json.dumps(incident))
+
+
     # TODO - Handle incoming closing incident
+    # TODO - Add entries if closing the incident
     # TODO - Handle tags for attachments, tasks, notes
-    return GetRemoteDataResponse(mirrored_object=incident, entries=[])
+    return GetRemoteDataResponse(mirrored_object=incident, entries=entries)
 
 
 def update_remote_system_command(client: SimpleClient, args: dict) -> str:
@@ -1691,10 +1757,10 @@ def main():
             return_results(delete_task_members_command(client, args))
         elif command == 'rs-list-task-instructions':
             return_results(list_task_instructions_command(client, args))
-        elif command == 'get-remote-data':
-            return_results(get_remote_data_command(client, args))
         elif command == 'get-modified-remote-data':
             return_results(get_modified_remote_data_command(client, args))
+        elif command == 'get-remote-data':
+            return_results(get_remote_data_command(client, args))
         elif command == 'update-remote-system':
             return_results(update_remote_system_command(client, args))
         elif command == 'get-mapping-fields':

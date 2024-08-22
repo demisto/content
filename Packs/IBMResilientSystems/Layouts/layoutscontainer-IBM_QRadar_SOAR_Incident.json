@@ -438,6 +438,21 @@
 						"w": 1,
 						"x": 0,
 						"y": 2
+					},
+                    {
+						"h": 2,
+						"i": "caseinfoid-c374f3c0-5fd1-11ef-b6aa-d188fb64f8da",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "To-Do Tasks",
+						"query": null,
+						"static": false,
+						"type": "todoTasks",
+						"w": 1,
+						"x": 1,
+						"y": 4
 					}
 				],
 				"type": "custom"
