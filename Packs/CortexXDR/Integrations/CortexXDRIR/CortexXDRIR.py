@@ -439,7 +439,7 @@ class Client(CoreClient):
             })
         if len(filters) > 0:
             request_data['filters'] = filters
-
+        demisto.debug(f'{request_data=}')
         reply = self._http_request(
             method='POST',
             url_suffix='/incidents/get_multiple_incidents_extra_data/',
@@ -1134,10 +1134,14 @@ def fetch_incidents(client: Client, first_fetch_time, integration_instance, excl
                 incident['owner'] = demisto.findUser(email=incident_data['assigned_user_mail']).get('username')
             # Update last run and add incident if the incident is newer than last fetch
             if incident_data.get('creation_time', 0) > last_fetch:
+                demisto.debug(f'updating last_fetch, setting offset = 1; {incident_id=}')
                 last_fetch = incident_data['creation_time']
                 offset = 1
             elif incident_data.get('creation_time') == last_fetch:
+                demisto.debug(f'updating offset += 1; {incident_id=}')
                 offset += 1
+            else:
+                demisto.debug(f"{incident_data['creation_time']=} < last_fetch; {incident_id=}")
 
             incidents.append(incident)
             non_created_incidents.remove(raw_incident)
