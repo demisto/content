@@ -11,7 +11,8 @@ OBL_HEADER = 'Organizational Block List'
 URL_SUFFIX_SAFELIST = '/emailProtection/modules/spam/orgSafeList'
 URL_SUFFIX_BLOCKLIST = '/emailProtection/modules/spam/orgBlockList'
 AUTH_HOST_BASE_URL = 'https://auth.proofpoint.com/v1'
-
+LIMIT_DEFAULT = 25
+LIMIT_MAXIMUM = 100
 
 ''' INTEGRATION API CLIENT '''
 
@@ -134,46 +135,59 @@ def make_return_command_results(header_str: str, listname: str, op: dict) -> Com
     return return_cr
 
 
+def get_limit_args(client: Client):
+    args = client.get_args()
+    limit = args.get('limit', str(LIMIT_DEFAULT))
+    limit = int(limit) if limit.isnumeric() else LIMIT_DEFAULT
+    limit = limit if limit < LIMIT_MAXIMUM else LIMIT_MAXIMUM
+    all_results = args.get('all_results', 'false')
+    all_results = True if all_results.lower()=='true' else False
+
+    return limit, all_results
+
+
 ''' COMMAND FUNCTIONS '''
 
 
-def module_test_command(client: Client, cluster_id) -> str:
+def module_test_command(client: Client, cluster_id: str) -> str:
     client.get_blocklist(cluster_id)
     return 'ok'
 
 
-def safelist_list_command(client: Client, cluster_id) -> CommandResults:
+def safelist_list_command(client: Client, cluster_id: str) -> CommandResults:
+    limit, all_results = get_limit_args(client)
     res = client.get_safelist(cluster_id)
-    res_rc = make_return_command_results(OSL_HEADER, 'Safelist', res.get('entries'))
+    res_rc = make_return_command_results(OSL_HEADER, 'Safelist', res.get('entries') if all_results else res.get('entries')[-limit:])
     return res_rc
 
 
-def safelist_add_command(client: Client, cluster_id) -> CommandResults:
-    res = client.safelist_add_delete(cluster_id, client.get_args(), 'add')
+def safelist_add_command(client: Client, cluster_id: str) -> CommandResults:
+    client.safelist_add_delete(cluster_id, client.get_args(), 'add')
     res_rc = make_return_command_results(OSL_HEADER, 'Safelist Entry Added', 'Success')
     return res_rc
 
 
-def safelist_delete_command(client: Client, cluster_id) -> CommandResults:
-    res = client.safelist_add_delete(cluster_id, client.get_args(), 'delete')
+def safelist_delete_command(client: Client, cluster_id: str) -> CommandResults:
+    client.safelist_add_delete(cluster_id, client.get_args(), 'delete')
     res_rc = make_return_command_results(OSL_HEADER, 'Safelist Entry Deleted', 'Success')
     return res_rc
 
 
-def blocklist_list_command(client: Client, cluster_id) -> CommandResults:
+def blocklist_list_command(client: Client, cluster_id: str) -> CommandResults:
+    limit, all_results = get_limit_args(client)
     res = client.get_blocklist(cluster_id)
-    res_rc = make_return_command_results(OBL_HEADER, 'Blocklist', res.get('entries'))
+    res_rc = make_return_command_results(OBL_HEADER, 'Blocklist', res.get('entries') if all_results else res.get('entries')[-limit:])
     return res_rc
 
 
-def blocklist_add_command(client: Client, cluster_id) -> CommandResults:
-    res = client.blocklist_add_delete(cluster_id, client.get_args(), 'add')
+def blocklist_add_command(client: Client, cluster_id: str) -> CommandResults:
+    client.blocklist_add_delete(cluster_id, client.get_args(), 'add')
     res_rc = make_return_command_results(OBL_HEADER, 'Blocklist Entry Added', 'Success')
     return res_rc
 
 
-def blocklist_delete_command(client: Client, cluster_id) -> CommandResults:
-    res = client.blocklist_add_delete(cluster_id, client.get_args(), 'delete')
+def blocklist_delete_command(client: Client, cluster_id: str) -> CommandResults:
+    client.blocklist_add_delete(cluster_id, client.get_args(), 'delete')
     res_rc = make_return_command_results(OBL_HEADER, 'Blocklist Entry Deleted', 'Success')
     return res_rc
 
