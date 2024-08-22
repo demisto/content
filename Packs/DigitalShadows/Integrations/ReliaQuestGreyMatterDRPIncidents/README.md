@@ -1,5 +1,5 @@
 ReliaQuest GreyMatter DR monitors and manages an organization's digital risk across the widest range of data sources within the open, deep, and dark web.
-This integration was integrated and tested with version xx of ReliaQuest GreyMatter DRP Incidents.
+This integration was integrated and tested with version v1 of ReliaQuest GreyMatter DRP Incidents.
 
 This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
 

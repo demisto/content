@@ -33,7 +33,7 @@ configuration:
   required: false
   type: 8
 - additionalinfo: First fetch
-  defaultvalue: 7 days
+  defaultvalue: 0 hours
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
   required: false

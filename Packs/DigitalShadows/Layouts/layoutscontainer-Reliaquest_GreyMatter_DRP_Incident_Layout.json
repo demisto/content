@@ -659,10 +659,6 @@
                     {
                         "fieldId": "incident_attachment",
                         "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_sendtoreliaquestgreymatter",
-                        "isVisible": true
                     }
                 ],
                 "isVisible": true,
@@ -980,7 +976,7 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_dsalerttitle",
+                        "fieldId": "incident_alerttitle",
                         "isVisible": true
                     },
                     {
@@ -1448,10 +1444,6 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_reliaquestforward",
-                        "isVisible": true
-                    },
-                    {
                         "fieldId": "incident_renderedhtml",
                         "isVisible": true
                     },
@@ -1849,10 +1841,6 @@
                     {
                         "fieldId": "incident_roles",
                         "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_sendtoreliaquestgreymatter",
-                        "isVisible": true
                     }
                 ],
                 "isVisible": true,
@@ -2178,7 +2166,7 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_dsalerttitle",
+                        "fieldId": "incident_alerttitle",
                         "isVisible": true
                     },
                     {
@@ -2647,10 +2635,6 @@
                     },
                     {
                         "fieldId": "incident_relatedreport",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_reliaquestforward",
                         "isVisible": true
                     },
                     {
