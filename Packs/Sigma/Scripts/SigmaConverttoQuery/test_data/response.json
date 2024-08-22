@@ -1,0 +1,249 @@
+[
+    {
+      "APIExecutionMetrics": null,
+      "Brand": "",
+      "Category": "",
+      "Contents": [
+        {
+          "CustomFields": {
+            "author": "pH-T (Nextron Systems)",
+            "category": "dns_query",
+            "description": "Detects DNS queries for \"anonfiles.com\", which is an anonymous file upload platform often used for malicious purposes",
+            "product": "windows",
+            "publications": [
+              {
+                "date": "2022-07-15",
+                "link": "https://www.trendmicro.com/vinfo/us/security/news/ransomware-spotlight/ransomware-spotlight-blackbyte",
+                "source": "sigma rule",
+                "title": "DNS Query for Anonfiles.com Domain - Sysmon"
+              }
+            ],
+            "service": "",
+            "sigmacondition": [
+              {
+                "condition": "selection"
+              }
+            ],
+            "sigmaconvertedquery": "ObjectType = \"DNS\" AND (EndpointOS = \"windows\" AND DnsRequest containsCIS \".anonfiles.com\")",
+            "sigmadetection": [
+              {
+                "key": "QueryName",
+                "modifiers": "contains",
+                "selection": "selection",
+                "values": "(1) .anonfiles.com"
+              }
+            ],
+            "sigmafalsepositives": [
+              {
+                "reason": "Rare legitimate access to anonfiles.com"
+              }
+            ],
+            "sigmaruleid": "065cceea-77ec-4030-9052-fc0affea7110",
+            "sigmarulelevel": "high",
+            "sigmarulelicense": "",
+            "sigmaruleraw": "{\"title\": \"DNS Query for Anonfiles.com Domain - Sysmon\", \"logsource\": {\"category\": \"dns_query\", \"product\": \"windows\"}, \"detection\": {\"selection\": {\"QueryName|contains\": \".anonfiles.com\"}, \"condition\": \"selection\"}, \"id\": \"065cceea-77ec-4030-9052-fc0affea7110\", \"status\": \"test\", \"level\": \"high\", \"author\": \"pH-T (Nextron Systems)\", \"description\": \"Detects DNS queries for \\\"anonfiles.com\\\", which is an anonymous file upload platform often used for malicious purposes\", \"references\": [\"https://www.trendmicro.com/vinfo/us/security/news/ransomware-spotlight/ransomware-spotlight-blackbyte\"], \"falsepositives\": [\"Rare legitimate access to anonfiles.com\"], \"tags\": [\"attack.exfiltration\", \"attack.t1567.002\"], \"date\": \"2022-07-15\"}",
+            "sigmarulestatus": "test",
+            "tags": [
+              "Exfiltration",
+              "T1567.002 - Exfiltration Over Web Service: Exfiltration to Cloud Storage"
+            ]
+          },
+          "cacheVersn": 0,
+          "calculatedTime": "2024-08-14T13:03:52.336815536Z",
+          "comments": [
+            {
+              "cacheVersn": 0,
+              "category": "Sighting",
+              "content": "Created",
+              "created": "2024-08-14T13:03:52.333199206Z",
+              "entryId": "",
+              "id": "a9ec6644-8ca3-4f13-8ba6-02fb835ce7b2",
+              "modified": "0001-01-01T00:00:00Z",
+              "sizeInBytes": 0,
+              "source": "DBot",
+              "type": "IndicatorCommentTimeLine",
+              "user": "DBot",
+              "version": 0
+            },
+            {
+              "cacheVersn": 0,
+              "category": "Indicator Update",
+              "content": "The value of field Publications has changed",
+              "created": "2024-08-20T12:53:46.509317376Z",
+              "entryId": "",
+              "id": "5d022fcf-36df-4430-8ac5-a4841af8e42a",
+              "modified": "0001-01-01T00:00:00Z",
+              "sizeInBytes": 0,
+              "source": "davrahami@paloaltonetworks.com",
+              "type": "IndicatorCommentTimeLine",
+              "user": "davrahami@paloaltonetworks.com",
+              "version": 0
+            },
+            {
+              "cacheVersn": 0,
+              "category": "Indicator Update",
+              "content": "The value of field Sigma Condition has changed",
+              "created": "2024-08-20T12:53:46.509606883Z",
+              "entryId": "",
+              "id": "d4723e8c-820d-46c4-8961-9a1814f534e2",
+              "modified": "0001-01-01T00:00:00Z",
+              "sizeInBytes": 0,
+              "source": "davrahami@paloaltonetworks.com",
+              "type": "IndicatorCommentTimeLine",
+              "user": "davrahami@paloaltonetworks.com",
+              "version": 0
+            },
+            {
+              "cacheVersn": 0,
+              "category": "Indicator Update",
+              "content": "The value of field Sigma Converted Query changed to ObjectType = \"DNS\" AND (EndpointOS = \"windows\" AND DnsRequest containsCIS \".anonfiles.com\")",
+              "created": "2024-08-20T12:53:46.509672118Z",
+              "entryId": "",
+              "id": "96beebee-9770-47b6-8e04-0a671b7b2250",
+              "modified": "0001-01-01T00:00:00Z",
+              "sizeInBytes": 0,
+              "source": "davrahami@paloaltonetworks.com",
+              "type": "IndicatorCommentTimeLine",
+              "user": "davrahami@paloaltonetworks.com",
+              "version": 0
+            },
+            {
+              "cacheVersn": 0,
+              "category": "Indicator Update",
+              "content": "The value of field Sigma Detection has changed",
+              "created": "2024-08-20T12:53:46.509770197Z",
+              "entryId": "",
+              "id": "f99d0c58-76aa-40a2-8b70-bcabc02e1dc1",
+              "modified": "0001-01-01T00:00:00Z",
+              "sizeInBytes": 0,
+              "source": "davrahami@paloaltonetworks.com",
+              "type": "IndicatorCommentTimeLine",
+              "user": "davrahami@paloaltonetworks.com",
+              "version": 0
+            },
+            {
+              "cacheVersn": 0,
+              "category": "Indicator Update",
+              "content": "The value of field Sigma False Positives has changed",
+              "created": "2024-08-20T12:53:46.509848198Z",
+              "entryId": "",
+              "id": "54f1a71f-03ff-433c-8e63-1ffdb87f286f",
+              "modified": "0001-01-01T00:00:00Z",
+              "sizeInBytes": 0,
+              "source": "davrahami@paloaltonetworks.com",
+              "type": "IndicatorCommentTimeLine",
+              "user": "davrahami@paloaltonetworks.com",
+              "version": 0
+            }
+          ],
+          "expirationSource": {
+            "brand": "",
+            "expirationInterval": 0,
+            "expirationPolicy": "never",
+            "instance": "",
+            "moduleId": "",
+            "setTime": "2024-08-14T13:03:52.3332216Z",
+            "source": "indicatorType",
+            "user": ""
+          },
+          "expirationStatus": "active",
+          "firstSeen": "0001-01-01T00:00:00Z",
+          "firstSeenEntryID": "595c52c3-4126-4b62-84e4-9b5564c6ea28@62a4a17c-b51b-44de-8785-e28be1f61144",
+          "id": "279afb8a48df5f1352dfe3c5c0f44a14",
+          "indicator_type": "Sigma Rule",
+          "isDetectable": false,
+          "isPreventable": false,
+          "lastSeen": "0001-01-01T00:00:00Z",
+          "lastSeenEntryID": "595c52c3-4126-4b62-84e4-9b5564c6ea28@62a4a17c-b51b-44de-8785-e28be1f61144",
+          "modified": "2024-08-20T12:53:46.510505661Z",
+          "primaryTerm": 1,
+          "score": 3,
+          "sequenceNumber": 136025,
+          "sizeInBytes": 5575,
+          "sortValues": [
+            "1723640632336",
+            "279afb8a48df5f1352dfe3c5c0f44a14"
+          ],
+          "source": "DBot",
+          "timestamp": "2024-08-14T13:03:52.336815536Z",
+          "value": "DNS Query for Anonfiles.com Domain - Sysmon",
+          "version": 2
+        }
+      ],
+      "ContentsFormat": "json",
+      "EntryContext": null,
+      "Evidence": false,
+      "EvidenceID": "",
+      "File": "",
+      "FileID": "",
+      "FileMetadata": null,
+      "HumanReadable": "## Found indicators\nID | IndicatorType | InvestigationIDs | Score | Source | Value\n-|-|-|-|-|-\n279afb8a48df5f1352dfe3c5c0f44a14 | Sigma Rule |  | 3 | DBot | DNS Query for Anonfiles.com Domain - Sysmon\n",
+      "ID": "",
+      "IgnoreAutoExtract": false,
+      "ImportantEntryContext": null,
+      "IndicatorTimeline": null,
+      "Metadata": {
+        "IndicatorTimeline": null,
+        "InstanceID": "InternalModule",
+        "Relationships": null,
+        "brand": "Builtin",
+        "cacheVersn": 0,
+        "category": "",
+        "contents": "",
+        "contentsSize": 0,
+        "created": "2024-08-22T11:44:02.206494131Z",
+        "cronView": false,
+        "endingDate": "0001-01-01T00:00:00Z",
+        "entryTask": null,
+        "errorSource": "",
+        "file": "",
+        "fileID": "",
+        "fileMetadata": null,
+        "format": "json",
+        "id": "",
+        "incidentCreationTime": "0001-01-01T00:00:00Z",
+        "instance": "Builtin",
+        "investigationCreationTime": "0001-01-01T00:00:00Z",
+        "investigationId": "62a4a17c-b51b-44de-8785-e28be1f61144",
+        "isTodo": false,
+        "mirrored": false,
+        "modified": "0001-01-01T00:00:00Z",
+        "note": false,
+        "parentContent": "!py script=`return_results(CommandResults(readable_output=demisto.executeCommand(\"findIndicators\", {\"value\": \"DNS Query for Anonfiles.com Domain - Sysmon\"})))`",
+        "parentEntryTruncated": false,
+        "parentId": "45087e23-ffb7-4bfe-8c28-5fe7d07b404a@62a4a17c-b51b-44de-8785-e28be1f61144",
+        "pinned": false,
+        "playbookId": "",
+        "recurrent": false,
+        "reputationSize": 0,
+        "reputations": null,
+        "retryTime": "0001-01-01T00:00:00Z",
+        "scheduled": false,
+        "scheduledEntryGuid": "",
+        "sizeInBytes": 0,
+        "startDate": "0001-01-01T00:00:00Z",
+        "system": "",
+        "tags": null,
+        "tagsRaw": null,
+        "taskId": "",
+        "times": 0,
+        "timezoneOffset": 0,
+        "type": 1,
+        "user": "",
+        "version": 0
+      },
+      "ModuleName": "",
+      "NextRun": "",
+      "Note": false,
+      "PollingArgs": null,
+      "PollingCommand": "",
+      "PollingItemsRemaining": 0,
+      "ReadableContentsFormat": "",
+      "Relationships": null,
+      "System": "",
+      "Tags": null,
+      "Timeout": "",
+      "Type": 1,
+      "Version": 0
+    }
+  ]
