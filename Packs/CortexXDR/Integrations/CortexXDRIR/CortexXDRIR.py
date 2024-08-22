@@ -1338,7 +1338,7 @@ def main():  # pragma: no cover
                                                   first_fetch_time=first_fetch_time,
                                                   integration_instance=integration_instance,
                                                   exclude_artifacts=exclude_artifacts,
-                                                  last_run=demisto.getLastRun().get('next_run', {})
+                                                  last_run=demisto.getLastRun().get('next_run', {}),
                                                   max_fetch=max_fetch,
                                                   statuses=statuses,
                                                   starred=starred,
