@@ -9513,14 +9513,14 @@ script:
     - description: "The requested threat name/CVE/ID to add."
       name: threat
       required: true
-    - description: "The profile type. Can be: Vulnerability Protection or Anti Spyware."
+    - description: The profile type.
       name: profile_type
       required: false
       auto: PREDEFINED
       predefined:
       - Vulnerability Protection Profile
       - Anti Spyware Profile
-    - description: "The action type of the exception. Default value is 'default'. Can be: Alert, Allow, Block IP, Drop, Reset Both, Reset Client or Reset Server."
+    - description: The action type of the exception. Default value is 'default'. 
       name: action
       auto: PREDEFINED
       required: false
@@ -9532,7 +9532,7 @@ script:
       - Reset Both
       - Reset Client
       - Reset Server
-    - description: "To configure the firewall to take a packet capture when it detects a threat. Can be: Disable, Single Packet or Extended Capture."
+    - description: To configure the firewall to take a packet capture when it detects a threat.
       name: packet_capture
       required: false
       auto: PREDEFINED
@@ -9540,7 +9540,7 @@ script:
       - Disable
       - Single Packet
       - Extended Capture
-    - description: Specifies IP address. Configure an exempt IP address to enforce a threat exception only when the associated
+    - description: An IP address. Configure an exempt IP address to enforce a threat exception only when the associated
         session has either a matching source or destination IP address; for all other sessions, the threat
         is enforced based on the default signature action.
       name: exempt_ip
@@ -9555,7 +9555,7 @@ script:
       predefined:
       - Source
       - Source And Destination
-    - description: Specify the Time period (in seconds) after which to trigger the action. If action = Block IP , this argument is mandatory.
+    - description: Specify the time period (in seconds) after which to trigger the action. If action = Block IP , this argument is mandatory.
       name: ip_duration_sec
       required: false
   - name: pan-os-edit-profile-exception
@@ -9567,14 +9567,14 @@ script:
     - description: "The requested threat name/CVE/ID to edit."
       name: threat
       required: true
-    - description: "The profile type. Can be: Vulnerability Protection or Anti Spyware."
+    - description: The profile type.
       name: profile_type
       required: false
       auto: PREDEFINED
       predefined:
       - Vulnerability Protection Profile
       - Anti Spyware Profile
-    - description: "The action type of the exception. Default value is 'default'. Can be: Alert, Allow, Block IP, Drop, Reset Both, Reset Client or Reset Server."
+    - description: The action type of the exception. Default value is 'default'. 
       name: action
       required: false
       auto: PREDEFINED
@@ -9586,7 +9586,7 @@ script:
       - Reset Both
       - Reset Client
       - Reset Server
-    - description: "To configure the firewall to take a packet capture when it detects a threat. Can be: Disable, Single Packet or Extended Capture."
+    - description: To configure the firewall to take a packet capture when it detects a threat.
       name: packet_capture
       required: false
       auto: PREDEFINED
@@ -9594,7 +9594,7 @@ script:
       - Disable
       - Single Packet
       - Extended Capture
-    - description: Specifies IP address. Configure an exempt IP address to enforce a threat exception only when the associated
+    - description: An IP address. Configure an exempt IP address to enforce a threat exception only when the associated
         session has either a matching source or destination IP address; for all other sessions, the threat
         is enforced based on the default signature action.
       name: exempt_ip
@@ -9609,7 +9609,7 @@ script:
       predefined:
       - Source
       - Source And Destination
-    - description: Specify the Time period (in seconds) after which to trigger the action. If action = Block IP , this argument is mandatory.
+    - description: Specify the time period (in seconds) after which to trigger the action. If action = Block IP , this argument is mandatory.
       name: ip_duration_sec
       required: false
   - name: pan-os-delete-profile-exception
@@ -9621,7 +9621,7 @@ script:
     - description: "The requested threat name/CVE/ID to delete."
       name: threat
       required: true
-    - description: "The profile type. Can be: Vulnerability Protection or Anti Spyware."
+    - description: The profile type.
       name: profile_type
       required: false
       auto: PREDEFINED
@@ -9634,7 +9634,7 @@ script:
     - description: The profile name.
       name: profile_name
       required: true
-    - description: "The profile type. Can be: Vulnerability Protection or Anti Spyware."
+    - description: The profile type.
       name: profile_type
       required: false
       auto: PREDEFINED
@@ -9646,40 +9646,40 @@ script:
       description: The exception name.
       type: String
     - contextPath: Panorama.Vulnerability.Exception.id
-      description: The exception id.
+      description: The exception ID.
       type: String
     - contextPath: Panorama.Vulnerability.Exception.CVE
-      description: The exception cve if exist.
+      description: The exception CVE if exist.
       type: String
     - contextPath: Panorama.Vulnerability.Exception.action
       description: The exception action.
       type: String
     - contextPath: Panorama.Vulnerability.Exception.exempt-id
-      description: The exception exempt-id.
+      description: The exception exempt ID.
       type: String
     - contextPath: Panorama.Vulnerability.Exception.packet-capture
-      description: The exception packet-capture.
+      description: The exception packet capture.
       type: String
     - contextPath: Panorama.Spyware.ProfileName
-      description: The Profile name.
+      description: The profile name.
       type: String
     - contextPath: Panorama.Spyware.Exception.name
       description: The exception name.
       type: String
     - contextPath: Panorama.Spyware.Exception.id
-      description: The exception id.
+      description: The exception ID.
       type: String
     - contextPath: Panorama.Spyware.Exception.CVE
-      description: The exception cve if exist.
+      description: The exception CVE if exist.
       type: String
     - contextPath: Panorama.Spyware.Exception.action
       description: The exception action.
       type: String
     - contextPath: Panorama.Spyware.Exception.exempt-id
-      description: The exception exempt-id.
+      description: The exception exempt ID.
       type: String
     - contextPath: Panorama.Spyware.Exception.packet-capture
-      description: The exception packet-capture.
+      description: The exception packet capture.
       type: String
   dockerimage: demisto/pan-os-python:1.0.0.107786
   isfetch: true

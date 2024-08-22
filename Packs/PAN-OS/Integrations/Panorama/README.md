@@ -9222,34 +9222,6 @@ Gets the audit comment of a rule.
 >|Comment|Rule Name|Rule Type|
 >|---|---|---|
 >| some comment | test | Security Rule |
-
-### pan-os-add-profile-exception
-
-
-***
-Add an exception to a Vulnerability Protection profile or Anti Spyware profile.
-
-#### Base Command
-
-`pan-os-add-profile-exception`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| profile_name | The profile name. | Required | 
-| threat | The requested threat name/CVE/ID to add. | Required | 
-| profile_type | The profile type. Can be: Vulnerability Protection or Anti Spyware. Possible values are: Vulnerability Protection Profile, Anti Spyware Profile. | Optional | 
-| action | The action type of the exception. Default value is 'default'. Can be: Alert, Allow, Block IP, Drop, Reset Both, Reset Client or Reset Server. Possible values are: Alert, Allow, Block IP, Drop, Reset Both, Reset Client, Reset Server. | Optional | 
-| packet_capture | To configure the firewall to take a packet capture when it detects a threat. Can be: Disable, Single Packet or Extended Capture. Possible values are: Disable, Single Packet, Extended Capture. | Optional | 
-| exempt_ip | Specifies IP address. Configure an exempt IP address to enforce a threat exception only when the associated session has either a matching source or destination IP address; for all other sessions, the threat is enforced based on the default signature action. | Optional | 
-| device_group | Device group. This will override any configured device group or vsys. | Optional | 
-| ip_track_by | Specify whether to Track By and block the IP address using the IP source or the IP source and destination. If action = Block IP , this argument is mandatory. Possible values are: Source, Source And Destination. | Optional | 
-| ip_duration_sec | Specify the Time period (in seconds) after which to trigger the action. If action = Block IP , this argument is mandatory. | Optional | 
-
-#### Context Output
-
-There is no context output for this command.
 ### pan-os-delete-profile-exception
 
 ***
@@ -9265,7 +9237,33 @@ Delete an exception to a Vulnerability Protection profile or Anti Spyware profil
 | --- | --- | --- |
 | profile_name | The profile name. | Required | 
 | threat | The requested threat name/CVE/ID to delete. | Required | 
-| profile_type | The profile type. Can be: Vulnerability Protection or Anti Spyware. Possible values are: Vulnerability Protection Profile, Anti Spyware Profile. | Optional | 
+| profile_type | The profile type. Possible values are: Vulnerability Protection Profile, Anti Spyware Profile. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+### pan-os-edit-profile-exception
+
+***
+Edit an exception to a Vulnerability Protection profile or Anti Spyware profile.
+
+#### Base Command
+
+`pan-os-edit-profile-exception`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| profile_name | The profile name. | Required | 
+| threat | The requested threat name/CVE/ID to edit. | Required | 
+| profile_type | The profile type. Possible values are: Vulnerability Protection Profile, Anti Spyware Profile. | Optional | 
+| action | The action type of the exception. Default value is 'default'. Possible values are: Alert, Allow, Block IP, Drop, Reset Both, Reset Client, Reset Server. | Optional | 
+| packet_capture | To configure the firewall to take a packet capture when it detects a threat. Possible values are: Disable, Single Packet, Extended Capture. | Optional | 
+| exempt_ip | An IP address. Configure an exempt IP address to enforce a threat exception only when the associated session has either a matching source or destination IP address; for all other sessions, the threat is enforced based on the default signature action. | Optional | 
+| device_group | Device group. This will override any configured device group or vsys. | Optional | 
+| ip_track_by | Specify whether to Track By and block the IP address using the IP source or the IP source and destination. If action = Block IP , this argument is mandatory. Possible values are: Source, Source And Destination. | Optional | 
+| ip_duration_sec | Specify the time period (in seconds) after which to trigger the action. If action = Block IP , this argument is mandatory. | Optional | 
 
 #### Context Output
 
@@ -9284,48 +9282,48 @@ List the exceptions in a Vulnerability Protection profile or Anti Spyware profil
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | profile_name | The profile name. | Required | 
-| profile_type | The profile type. Can be: Vulnerability Protection or Anti Spyware. Possible values are: Vulnerability Protection Profile, Anti Spyware Profile. | Optional | 
+| profile_type | The profile type. Possible values are: Vulnerability Protection Profile, Anti Spyware Profile. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Panorama.Vulnerability.Exception.name | String | The exception name. | 
-| Panorama.Vulnerability.Exception.id | String | The exception id. | 
-| Panorama.Vulnerability.Exception.CVE | String | The exception cve if exist. | 
+| Panorama.Vulnerability.Exception.id | String | The exception ID. | 
+| Panorama.Vulnerability.Exception.CVE | String | The exception CVE if exist. | 
 | Panorama.Vulnerability.Exception.action | String | The exception action. | 
-| Panorama.Vulnerability.Exception.exempt-id | String | The exception exempt-id. | 
-| Panorama.Vulnerability.Exception.packet-capture | String | The exception packet-capture. | 
-| Panorama.Spyware.ProfileName | String | The Profile name. | 
+| Panorama.Vulnerability.Exception.exempt-id | String | The exception exempt ID. | 
+| Panorama.Vulnerability.Exception.packet-capture | String | The exception packet capture. | 
+| Panorama.Spyware.ProfileName | String | The profile name. | 
 | Panorama.Spyware.Exception.name | String | The exception name. | 
-| Panorama.Spyware.Exception.id | String | The exception id. | 
-| Panorama.Spyware.Exception.CVE | String | The exception cve if exist. | 
+| Panorama.Spyware.Exception.id | String | The exception ID. | 
+| Panorama.Spyware.Exception.CVE | String | The exception CVE if exist. | 
 | Panorama.Spyware.Exception.action | String | The exception action. | 
-| Panorama.Spyware.Exception.exempt-id | String | The exception exempt-id. | 
-| Panorama.Spyware.Exception.packet-capture | String | The exception packet-capture. | 
+| Panorama.Spyware.Exception.exempt-id | String | The exception exempt ID. | 
+| Panorama.Spyware.Exception.packet-capture | String | The exception packet capture. | 
 
-### pan-os-edit-profile-exception
+### pan-os-add-profile-exception
 
 ***
-Edit an exception to a Vulnerability Protection profile or Anti Spyware profile.
+Add an exception to a Vulnerability Protection profile or Anti Spyware profile.
 
 #### Base Command
 
-`pan-os-edit-profile-exception`
+`pan-os-add-profile-exception`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | profile_name | The profile name. | Required | 
-| threat | The requested threat name/CVE/ID to edit. | Required | 
-| profile_type | The profile type. Can be: Vulnerability Protection or Anti Spyware. Possible values are: Vulnerability Protection Profile, Anti Spyware Profile. | Optional | 
-| action | The action type of the exception. Default value is 'default'. Can be: Alert, Allow, Block IP, Drop, Reset Both, Reset Client or Reset Server. Possible values are: Alert, Allow, Block IP, Drop, Reset Both, Reset Client, Reset Server. | Optional | 
-| packet_capture | To configure the firewall to take a packet capture when it detects a threat. Can be: Disable, Single Packet or Extended Capture. Possible values are: Disable, Single Packet, Extended Capture. | Optional | 
-| exempt_ip | Specifies IP address. Configure an exempt IP address to enforce a threat exception only when the associated session has either a matching source or destination IP address; for all other sessions, the threat is enforced based on the default signature action. | Optional | 
+| threat | The requested threat name/CVE/ID to add. | Required | 
+| profile_type | The profile type. Possible values are: Vulnerability Protection Profile, Anti Spyware Profile. | Optional | 
+| action | The action type of the exception. Default value is 'default'. Possible values are: Alert, Allow, Block IP, Drop, Reset Both, Reset Client, Reset Server. | Optional | 
+| packet_capture | To configure the firewall to take a packet capture when it detects a threat. Possible values are: Disable, Single Packet, Extended Capture. | Optional | 
+| exempt_ip | An IP address. Configure an exempt IP address to enforce a threat exception only when the associated session has either a matching source or destination IP address; for all other sessions, the threat is enforced based on the default signature action. | Optional | 
 | device_group | Device group. This will override any configured device group or vsys. | Optional | 
 | ip_track_by | Specify whether to Track By and block the IP address using the IP source or the IP source and destination. If action = Block IP , this argument is mandatory. Possible values are: Source, Source And Destination. | Optional | 
-| ip_duration_sec | Specify the Time period (in seconds) after which to trigger the action. If action = Block IP , this argument is mandatory. | Optional | 
+| ip_duration_sec | Specify the time period (in seconds) after which to trigger the action. If action = Block IP , this argument is mandatory. | Optional | 
 
 #### Context Output
 
