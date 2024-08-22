@@ -396,9 +396,10 @@ class Client(CoreClient):
         global ALERTS_LIMIT_PER_INCIDENTS
         request_data = {
             'search_from': offset,
+            'search_to': offset + limit,
             'sort': {
                 'field': 'creation_time',
-                'keyword': 'asc'
+                'keyword': 'asc',
             }
         }
         filters: List[Any] = []
@@ -1328,17 +1329,17 @@ def main():  # pragma: no cover
 
         elif command == 'fetch-incidents':
             integration_instance = demisto.integrationInstance()
+            last_run_obj = demisto.getLastRun()
             next_run, incidents = fetch_incidents(client=client,
                                                   first_fetch_time=first_fetch_time,
                                                   integration_instance=integration_instance,
                                                   exclude_artifacts=exclude_artifacts,
-                                                  last_run=demisto.getLastRun().get('next_run') or {},
+                                                  last_run=last_run_obj.get('next_run') or {},
                                                   max_fetch=max_fetch,
                                                   statuses=statuses,
                                                   starred=starred,
                                                   starred_incidents_fetch_window=starred_incidents_fetch_window,
                                                   )
-            last_run_obj = demisto.getLastRun()
             last_run_obj['next_run'] = next_run
             demisto.setLastRun(last_run_obj)
             demisto.incidents(incidents)
