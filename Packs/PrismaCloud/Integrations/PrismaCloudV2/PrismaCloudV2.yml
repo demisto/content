@@ -269,107 +269,107 @@ script:
     - description: The limit of issues to retrieve.
       name: limit
       defaultValue: 50
-    description: later
+    description: Retrieves the code errors detected by Application Security during periodic scans.
     name: 'prisma-cloud-code-issues-list'
     outputs:
     - contextPath: PrismaCloud.CodeIssue.modifiedOn
-      description: later
+      description: The date and time when the code issue was last modified.
       type: String
     - contextPath: PrismaCloud.CodeIssue.isPublic
-      description: later
+      description: Indicates whether the repository or resource is publicly accessible (true/false).
       type: String
     - contextPath: PrismaCloud.CodeIssue.fileType
-      description: later
+      description: The type of file where the issue was detected (e.g., `.js`, `.py`).
       type: String
     - contextPath: PrismaCloud.CodeIssue.secretCommitRemove
-      description: later
+      description: The commit identifier where a secret was removed.
       type: String
     - contextPath: PrismaCloud.CodeIssue.secretCommitAdd
-      description: later
+      description: The commit identifier where a secret was added.
       type: String
     - contextPath: PrismaCloud.CodeIssue.gitUser
-      description: later
+      description: The username of the person who made the commit associated with the code issue.
       type: String
     - contextPath: PrismaCloud.CodeIssue.codePath
-      description: later
+      description: The path to the code file where the issue was detected.
       type: String
     - contextPath: PrismaCloud.CodeIssue.codeCategory
-      description: later
+      description: The category or classification of the detected issue (e.g., security, compliance).
       type: String
     - contextPath: PrismaCloud.CodeIssue.author
-      description: later
+      description: The original author of the code where the issue was detected.
       type: String
     - contextPath: PrismaCloud.CodeIssue.repositoryUuid
-      description: later
+      description: The unique identifier of the repository where the issue was found.
       type: String
     - contextPath: PrismaCloud.CodeIssue.path
-      description: later
+      description: The path in the repository where the issue was detected.
       type: String
     - contextPath: PrismaCloud.CodeIssue.repositorySource
-      description: later
+      description: The source of the repository (e.g., GitHub, Bitbucket).
       type: String
     - contextPath: PrismaCloud.CodeIssue.firstDetected
-      description: later
+      description: The date and time when the code issue was first detected.
       type: String
     - contextPath: PrismaCloud.CodeIssue.codeIssueLine
-      description: later
+      description: The line number in the code where the issue was detected.
       type: String
     - contextPath: PrismaCloud.CodeIssue.labels
-      description: later
+      description: Labels associated with the code issue for classification or categorization.
       type: String
     - contextPath: PrismaCloud.CodeIssue.labels.label
-      description: later
+      description: A specific label related to the code issue.
       type: String
     - contextPath: PrismaCloud.CodeIssue.labels.metadata.imageName
-      description: later
+      description: The name of the image associated with the label metadata.
       type: String
     - contextPath: PrismaCloud.CodeIssue.policy
-      description: later
+      description: The policy that was violated by the detected issue.
       type: String
     - contextPath: PrismaCloud.CodeIssue.repository
-      description: later
+      description: The name of the repository where the issue was found.
       type: String
     - contextPath: PrismaCloud.CodeIssue.resourceName
-      description: later
+      description: The name of the resource associated with the code issue.
       type: String
     - contextPath: PrismaCloud.CodeIssue.resourceScanType
-      description: later
+      description: The type of scan that detected the issue (e.g., static analysis, secret detection).
       type: String
     - contextPath: PrismaCloud.CodeIssue.resourceUuid
-      description: later
+      description: The unique identifier of the resource associated with the code issue.
       type: String
     - contextPath: PrismaCloud.CodeIssue.severity
-      description: later
+      description: The severity level of the detected issue (e.g., High, Medium, Low).
       type: String
     - contextPath: PrismaCloud.CodeIssue.violationId
-      description: later
+      description: The unique identifier for the policy violation related to the code issue.
       type: String
     - contextPath: PrismaCloud.CodeIssue.causePackageId
-      description: later
+      description: The ID of the package that caused the issue.
       type: String
     - contextPath: PrismaCloud.CodeIssue.causePackageName
-      description: later
+      description: The name of the package that caused the issue.
       type: String
     - contextPath: PrismaCloud.CodeIssue.cveUuid
-      description: later
+      description: The unique identifier of the Common Vulnerabilities and Exposures (CVE) related to the issue.
       type: String
     - contextPath: PrismaCloud.CodeIssue.cvss
-      description: later
+      description: The Common Vulnerability Scoring System (CVSS) score for the detected issue.
       type: String
     - contextPath: PrismaCloud.CodeIssue.fixVersion
-      description: later
+      description: The version of the code or package that contains the fix for the issue.
       type: String
     - contextPath: PrismaCloud.CodeIssue.pr
-      description: later
+      description: The pull request (PR) associated with resolving the code issue.
       type: String
     - contextPath: PrismaCloud.CodeIssue.resourceId
-      description: later
+      description: The identifier of the resource related to the code issue.
       type: String
     - contextPath: PrismaCloud.CodeIssue.riskFactors
-      description: later
+      description: Risk factors associated with the code issue, such as high-impact areas or sensitive data.
       type: String
     - contextPath: PrismaCloud.CodeIssue.isIndirectPackage
-      description: later
+      description: Indicates whether the issue is from an indirect package (true/false).
       type: String
   - arguments:
     - description: Comma-separated list of alert IDs to be dismissed.
@@ -1124,8 +1124,9 @@ script:
       predefined:
       - 'true'
       - 'false'
-    description: Lists scanned files that contain errors. In order to use this command, the "Code Security" module needs to be enabled and accessible in the Prisma Cloud UI.
+    description: This command is deprecated. Use prisma-cloud-code-issues-list instead.
     name: prisma-cloud-error-file-list
+    deprecated: true
     outputs:
     - contextPath: PrismaCloud.ErrorFile.filePath
       description: Error file path.
