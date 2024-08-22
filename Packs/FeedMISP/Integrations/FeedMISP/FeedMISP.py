@@ -555,7 +555,7 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]):
     demisto.setLastRun({'timestamp': last_run})
 
 
-def main():
+def main():  # pragma: no cover
     params = demisto.params()
     base_url = params.get('url').rstrip('/')
     timeout = arg_to_number(params.get('timeout')) or 60
