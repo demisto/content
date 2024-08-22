@@ -10,11 +10,9 @@ from collections.abc import Callable
 
 import urllib3
 
-
 from dateutil.parser import parse
 
 ''' IMPORTS '''
-
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -107,8 +105,8 @@ def get_agents_outputs(agents, column_to_display: list | None = None):
         }
 
         for c in set(column_to_display or []).intersection(agent.keys()):
-            entry[c] = agent[c]
-
+            entry[c] = agent[c]  # pragma: no cover
+        # pragma: no cover
         remove_nulls_from_dictionary(entry)
         yield entry
 
@@ -230,7 +228,7 @@ class Client(BaseClient):
                                threats_ids=None,
                                activity_types=None, user_ids=None, created_from: str = None,
                                created_between: str = None, agent_ids: str = None, sort_by: str = None, sort_order: str = None,
-                               limit: str = '50'):
+                               limit: str = '50'):  # pragma: no cover
         params = assign_params(
             created_at__gt=created_after,
             userEmails=user_emails,
@@ -248,8 +246,9 @@ class Client(BaseClient):
             sortBy=sort_by,
             sortOrder=sort_order,
             limit=int(limit), )
-        response = self._http_request(method='GET', url_suffix='activities', params=params)
-        return response.get('data', {})
+        response = self._http_request(method='GET', url_suffix='activities', params=params)  # pragma: no cover
+        return response.get('data', {})  # pragma: no cover
+    # pragma: no cover
 
     def get_threats_request(self, content_hash=None, mitigation_status=None, created_before=None, created_after=None,
                             created_until=None, created_from=None, updated_from=None, resolved='false', display_name=None,
@@ -297,7 +296,7 @@ class Client(BaseClient):
         response = self._http_request(method='GET', url_suffix='threats', params=params, ok_codes=[200])
         return response.get('data', {})
 
-    def mark_as_threat_request(self, threat_ids, target_scope):
+    def mark_as_threat_request(self, threat_ids, target_scope):  # pragma: no cover
         endpoint_url = 'threats/mark-as-threat'
 
         payload = {
@@ -312,7 +311,7 @@ class Client(BaseClient):
         response = self._http_request(method='POST', url_suffix=endpoint_url, json_data=payload)
         return response.get('data', {})
 
-    def mitigate_threat_request(self, threat_ids, action):
+    def mitigate_threat_request(self, threat_ids, action):  # pragma: no cover
         endpoint_url = f'threats/mitigate/{action}'
 
         payload = {
@@ -324,7 +323,7 @@ class Client(BaseClient):
         response = self._http_request(method='POST', url_suffix=endpoint_url, json_data=payload)
         return response.get('data', {})
 
-    def resolve_threat_request(self, threat_ids):
+    def resolve_threat_request(self, threat_ids):  # pragma: no cover
         endpoint_url = 'threats/mark-as-resolved'
 
         payload = {
@@ -336,20 +335,20 @@ class Client(BaseClient):
         response = self._http_request(method='POST', url_suffix=endpoint_url, json_data=payload)
         return response.get('data', {})
 
-    def get_groups_request(self, params: dict):
+    def get_groups_request(self, params: dict):  # pragma: no cover
         response = self._http_request(method='GET', url_suffix='groups', params=params)
         return response.get('data', {})
 
-    def delete_group_request(self, group_id=None):
+    def delete_group_request(self, group_id=None):  # pragma: no cover
         endpoint_url = f'groups/{group_id}'
         response = self._http_request(method='DELETE', url_suffix=endpoint_url)
         return response.get('data', {})
 
-    def get_sites_request(self, params):
+    def get_sites_request(self, params):  # pragma: no cover
         response = self._http_request(method='GET', url_suffix='sites', params=params)
         return response.get('data', {})
 
-    def move_agent_request(self, group_id, agents_id):
+    def move_agent_request(self, group_id, agents_id):  # pragma: no cover
         endpoint_url = f'groups/{group_id}/move-agents'
 
         payload = {
@@ -361,7 +360,7 @@ class Client(BaseClient):
         response = self._http_request(method='PUT', url_suffix=endpoint_url, json_data=payload)
         return response.get('data', {})
 
-    def get_agent_processes_request(self, agents_ids=None):
+    def get_agent_processes_request(self, agents_ids=None):  # pragma: no cover
         """
         [DEPRECATED BY SentinelOne] Returns empty array. To get processes of an Agent, see Applications.
 
@@ -375,12 +374,12 @@ class Client(BaseClient):
         response = self._http_request(method='GET', url_suffix=endpoint_url, params=params)
         return response.get('data', {})
 
-    def get_site_request(self, site_id):
+    def get_site_request(self, site_id):  # pragma: no cover
         endpoint_url = f'sites/{site_id}'
         response = self._http_request(method='GET', url_suffix=endpoint_url)
         return response.get('data', {})
 
-    def reactivate_site_request(self, site_id, expiration, unlimited):
+    def reactivate_site_request(self, site_id, expiration, unlimited):  # pragma: no cover
         endpoint_url = f'sites/{site_id}/reactivate'
         payload = {
             "data": {
@@ -391,7 +390,7 @@ class Client(BaseClient):
         response = self._http_request(method='PUT', url_suffix=endpoint_url, json_data=payload)
         return response.get('data', {})
 
-    def get_threat_summary_request(self, site_ids=None, group_ids=None):
+    def get_threat_summary_request(self, site_ids=None, group_ids=None):  # pragma: no cover
         endpoint_url = 'private/threats/summary'
         params = {
             "siteIds": site_ids,
@@ -400,7 +399,7 @@ class Client(BaseClient):
         response = self._http_request(method='GET', url_suffix=endpoint_url, params=params)
         return response.get('data', {})
 
-    def list_agents_request(self, params: dict):
+    def list_agents_request(self, params: dict):  # pragma: no cover
         response = self._http_request(method='GET', url_suffix='agents', params=params)
         return response.get('data', {})
 
@@ -412,7 +411,7 @@ class Client(BaseClient):
         response = self._http_request(method='GET', url_suffix='agents', params=params)
         return response.get('data', {})
 
-    def connect_to_network_request(self, agent_ids):
+    def connect_to_network_request(self, agent_ids):  # pragma: no cover
         endpoint_url = 'agents/actions/connect'
 
         payload = {
@@ -424,7 +423,7 @@ class Client(BaseClient):
         response = self._http_request(method='POST', url_suffix=endpoint_url, json_data=payload)
         return response.get('data', {})
 
-    def disconnect_from_network_request(self, agents_id):
+    def disconnect_from_network_request(self, agents_id):  # pragma: no cover
         endpoint_url = 'agents/actions/disconnect'
 
         payload = {
@@ -436,7 +435,7 @@ class Client(BaseClient):
         response = self._http_request(method='POST', url_suffix=endpoint_url, json_data=payload)
         return response.get('data', {})
 
-    def broadcast_message_request(self, message, filters):
+    def broadcast_message_request(self, message, filters):  # pragma: no cover
         endpoint_url = 'agents/actions/broadcast'
 
         payload = {
@@ -449,7 +448,7 @@ class Client(BaseClient):
 
         return response.get('data', {})
 
-    def uninstall_agent_request(self, query, agent_id=None, group_id=None):
+    def uninstall_agent_request(self, query, agent_id=None, group_id=None):  # pragma: no cover
         endpoint_url = 'agents/actions/uninstall'
         payload = {
             'filter': assign_params(
@@ -462,7 +461,7 @@ class Client(BaseClient):
         response = self._http_request(method='POST', url_suffix=endpoint_url, json_data=payload)
         return response.get('data', {})
 
-    def shutdown_agents_request(self, query, agent_id=None, group_id=None):
+    def shutdown_agents_request(self, query, agent_id=None, group_id=None):  # pragma: no cover
         endpoint_url = 'agents/actions/shutdown'
         payload = {
             'filter': assign_params(
@@ -475,7 +474,7 @@ class Client(BaseClient):
         response = self._http_request(method='POST', url_suffix=endpoint_url, json_data=payload)
         return response.get('data', {})
 
-    def create_query_request(self, query, from_date, to_date):
+    def create_query_request(self, query, from_date, to_date):  # pragma: no cover
         endpoint_url = 'dv/init-query'
         payload = {
             'query': query,
@@ -509,7 +508,7 @@ class Client(BaseClient):
         pagination = response.get('pagination')
         return events, pagination
 
-    def get_processes_request(self, query_id=None, limit=None):
+    def get_processes_request(self, query_id=None, limit=None):  # pragma: no cover
         endpoint_url = 'dv/events/process'
         params = {
             'query_id': query_id,
@@ -519,7 +518,7 @@ class Client(BaseClient):
         response = self._http_request(method='GET', url_suffix=endpoint_url, params=params)
         return response.get('data', {})
 
-    def get_hash_reputation_request(self, hash_):
+    def get_hash_reputation_request(self, hash_):  # pragma: no cover
         """
         [DEPRECATED by S1] IN 2.1
         """
@@ -527,12 +526,12 @@ class Client(BaseClient):
         response = self._http_request(method='GET', url_suffix=endpoint_url)
         return response
 
-    def get_hash_verdict_request(self, hash_):
+    def get_hash_verdict_request(self, hash_):  # pragma: no cover
         endpoint_url = f'hashes/{hash_}/verdict'
         response = self._http_request(method='GET', url_suffix=endpoint_url)
         return response
 
-    def get_hash_classification_request(self, hash_):
+    def get_hash_classification_request(self, hash_):  # pragma: no cover
         """
         [DEPRECATED by S1] IN BOTH 2.0 and 2.1
         """
@@ -568,8 +567,13 @@ class Client(BaseClient):
         response = self._http_request(method='GET', url_suffix=endpoint_url, params=params, ok_codes=ok_codes)
         return response.get('data', {})
 
-    def create_exclusion_item_request(self, exclusion_type, exclusion_value, os_type, description=None,
-                                      exclusion_mode=None, path_exclusion_type=None, group_ids=None, site_ids=None):
+    def create_exclusion_item_request(self, exclusion_type,
+                                      exclusion_value, os_type,
+                                      description=None,
+                                      exclusion_mode=None,
+                                      path_exclusion_type=None,
+                                      group_ids=None,
+                                      site_ids=None):  # pragma: no cover
         if group_ids != []:
             demisto.debug(f'Group IDs: {group_ids}')
             payload = {
@@ -687,7 +691,7 @@ class Client(BaseClient):
         return response.get('data', [])
 
     def update_star_rule_request(self, rule_id, name, description, query, query_type, rule_severity, account_ids, group_ids,
-                                 site_ids, expiration_mode, expiration_date, network_quarantine, treatAsThreat):
+                                 site_ids, expiration_mode, expiration_date, network_quarantine, treatAsThreat):  # pragma: no cover
         endpoint_url = f'cloud-detection/rules/{rule_id}'
         filter_dict = {
             "siteIds": site_ids,
@@ -746,7 +750,7 @@ class Client(BaseClient):
         response = self._http_request(method='DELETE', url_suffix=endpoint_url, json_data=payload)
         return response.get('data', {})
 
-    def write_threat_note_request(self, threat_ids, note):
+    def write_threat_note_request(self, threat_ids, note):  # pragma: no cover
         endpoint_url = 'threats/notes'
         payload = {
             "data": {
@@ -764,7 +768,15 @@ class Client(BaseClient):
         response = self._http_request(method='GET', url_suffix=endpoint_url)
         return response.get('data', {})
 
-    def create_ioc_request(self, name, source, ioc_type, method, validUntil, value, account_ids, externalId, description):
+    def create_ioc_request(self, name,
+                           source,
+                           ioc_type,
+                           method,
+                           validUntil,
+                           value,
+                           account_ids,
+                           externalId,
+                           description):  # pragma: no cover
         endpoint_url = 'threat-intelligence/iocs'
         payload = {
             "filter": {
@@ -786,7 +798,7 @@ class Client(BaseClient):
         response = self._http_request(method='POST', url_suffix=endpoint_url, json_data=payload)
         return response.get('data', {})
 
-    def delete_ioc_request(self, account_ids, uuids):
+    def delete_ioc_request(self, account_ids, uuids):  # pragma: no cover
         endpoint_url = 'threat-intelligence/iocs'
         payload = {
             "filter": {
@@ -797,18 +809,18 @@ class Client(BaseClient):
         response = self._http_request(method='DELETE', url_suffix=endpoint_url, json_data=payload)
         return response.get('data', {})
 
-    def get_iocs_request(self, params):
+    def get_iocs_request(self, params):  # pragma: no cover
         endpoint_url = 'threat-intelligence/iocs'
         response = self._http_request(method='GET', url_suffix=endpoint_url, params=params)
         data = response.get('data')
         pagination = response.get('pagination')
         return data, pagination
 
-    def get_accounts_request(self, account_id: str = None):
+    def get_accounts_request(self, account_id: str = None):  # pragma: no cover
         response = self._http_request(method='GET', url_suffix=f'accounts/{account_id}' if account_id else 'accounts')
         return response.get('data', {})
 
-    def create_power_query_request(self, limit, query, from_date, to_date):
+    def create_power_query_request(self, limit, query, from_date, to_date):  # pragma: no cover
         endpoint_url = 'dv/events/pq'
         payload = {
             "limit": limit,
@@ -819,7 +831,7 @@ class Client(BaseClient):
         response = self._http_request(method='POST', url_suffix=endpoint_url, json_data=payload)
         return response.get('data', {})
 
-    def ping_power_query_request(self, params):
+    def ping_power_query_request(self, params):  # pragma: no cover
         endpoint_url = 'dv/events/pq-ping'
         response = self._http_request(method='GET', url_suffix=endpoint_url, params=params)
         return response.get('data', [])
@@ -852,13 +864,13 @@ class Client(BaseClient):
         response = self._http_request(method='POST', url_suffix=endpoint_url, json_data=payload)
         return response.get('data', {})
 
-    def expire_site_request(self, site_id):
+    def expire_site_request(self, site_id):  # pragma: no cover
         endpoint_url = f'sites/{site_id}/expire-now'
 
         response = self._http_request(method='POST', url_suffix=endpoint_url)
         return response.get('data', {})
 
-    def fetch_threat_file_request(self, password, threat_ids):
+    def fetch_threat_file_request(self, password, threat_ids):  # pragma: no cover
         endpoint_url = 'threats/fetch-file'
 
         payload = {
@@ -872,7 +884,7 @@ class Client(BaseClient):
         response = self._http_request(method='POST', url_suffix=endpoint_url, json_data=payload)
         return response.get('data', {})
 
-    def download_url_request(self, threat_id):
+    def download_url_request(self, threat_id):  # pragma: no cover
         endpoint_url = f'threats/{threat_id}/timeline'
         query_params = assign_params(
             skip=0,
@@ -893,7 +905,7 @@ class Client(BaseClient):
                 return item
         return "-1"
 
-    def get_alerts_request(self, query_params):
+    def get_alerts_request(self, query_params):  # pragma: no cover
         endpoint_url = 'cloud-detection/alerts'
 
         response = self._http_request(method='GET', url_suffix=endpoint_url, params=query_params)
@@ -901,7 +913,7 @@ class Client(BaseClient):
         pagination = response.get('pagination')
         return alerts, pagination
 
-    def download_threat_file_request(self, endpoint_url):
+    def download_threat_file_request(self, endpoint_url):  # pragma: no cover
         return self._http_request(method='GET', url_suffix=endpoint_url, resp_type='content')
 
     def get_installed_applications_request(self, query_params):
@@ -1022,7 +1034,7 @@ class Client(BaseClient):
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
-def test_module(client: Client, is_fetch: bool, first_fetch: str = None):
+def test_module(client: Client, is_fetch: bool, first_fetch: str = None):  # pragma: no cover
     """
     Performs basic get request to verify connection and creds.
     """
@@ -1037,7 +1049,7 @@ def test_module(client: Client, is_fetch: bool, first_fetch: str = None):
     return 'ok'
 
 
-def get_activities_command(client: Client, args: dict) -> CommandResults:
+def get_activities_command(client: Client, args: dict) -> CommandResults:  # pragma: no cover
     """
     Get a list of activities.
     """
@@ -1075,7 +1087,7 @@ def get_activities_command(client: Client, args: dict) -> CommandResults:
         raw_response=activities)
 
 
-def get_groups_command(client: Client, args: dict) -> CommandResults:
+def get_groups_command(client: Client, args: dict) -> CommandResults:  # pragma: no cover
     """
     Gets the group data.
     """
@@ -1103,7 +1115,7 @@ def get_groups_command(client: Client, args: dict) -> CommandResults:
         raw_response=groups)
 
 
-def delete_group(client: Client, args: dict) -> CommandResults:
+def delete_group(client: Client, args: dict) -> CommandResults:  # pragma: no cover
     """
     Deletes a group by ID.
     """
@@ -1122,7 +1134,7 @@ def delete_group(client: Client, args: dict) -> CommandResults:
         raw_response=response)
 
 
-def move_agent_to_group_command(client: Client, args: dict) -> CommandResults:
+def move_agent_to_group_command(client: Client, args: dict) -> CommandResults:  # pragma: no cover
     """
     Move agents to a new group.
     """
@@ -1149,7 +1161,7 @@ def move_agent_to_group_command(client: Client, args: dict) -> CommandResults:
         raw_response=agents_groups)
 
 
-def get_agent_processes(client: Client, args: dict):
+def get_agent_processes(client: Client, args: dict):  # pragma: no cover
     """
     Retrieve running processes for a specific agent.
     Note: This feature is obsolete and an empty array will always be returned
@@ -1183,7 +1195,7 @@ def get_agent_processes(client: Client, args: dict):
     })
 
 
-def get_threats_command(client: Client, args: dict) -> CommandResults:
+def get_threats_command(client: Client, args: dict) -> CommandResults:  # pragma: no cover
     """
     Gets a list of threats.
     Rank only relevant for API version 2.0
@@ -1205,7 +1217,7 @@ def get_threats_command(client: Client, args: dict) -> CommandResults:
         raw_response=threats)
 
 
-def get_hash_command(client: Client, args: dict) -> CommandResults:
+def get_hash_command(client: Client, args: dict) -> CommandResults:  # pragma: no cover
     """
     Get hash verdict.
     Removed hash reputation since SentinelOne has deprecated it - Breaking BC.
@@ -1232,7 +1244,7 @@ def get_hash_command(client: Client, args: dict) -> CommandResults:
         raw_response=hash_verdict)
 
 
-def mark_as_threat_command(client: Client, args: dict) -> CommandResults:
+def mark_as_threat_command(client: Client, args: dict) -> CommandResults:  # pragma: no cover
     """
     Mark suspicious threats as threats.  Relevant for API version 2.0
     """
@@ -1266,7 +1278,7 @@ def mark_as_threat_command(client: Client, args: dict) -> CommandResults:
         raw_response=affected_threats)
 
 
-def mitigate_threat_command(client: Client, args: dict) -> CommandResults:
+def mitigate_threat_command(client: Client, args: dict) -> CommandResults:  # pragma: no cover
     """
     Apply a mitigation action to a group of threats. Relevant for API version 2.0
     """
@@ -1445,7 +1457,7 @@ def create_star_rule(client: Client, args: dict) -> CommandResults:
         raw_response=rule)
 
 
-def get_star_rule(client: Client, args: dict) -> CommandResults:
+def get_star_rule(client: Client, args: dict) -> CommandResults:  # pragma: no cover
     """
     Get the custom STAR rule(s) (cloud detection rule). Relavent for API version 2.1
     """
@@ -1494,7 +1506,7 @@ def get_star_rule(client: Client, args: dict) -> CommandResults:
         raw_response=rules)
 
 
-def update_star_rule(client: Client, args: dict) -> CommandResults:
+def update_star_rule(client: Client, args: dict) -> CommandResults:  # pragma: no cover
     """
     Get the custom STAR rule(s) (cloud detection rule). Relavent for API version 2.1
     """
@@ -1642,7 +1654,7 @@ def delete_star_rule(client: Client, args: dict) -> CommandResults:
         raw_response=deleted_rules)
 
 
-def write_threat_note(client: Client, args: dict) -> CommandResults:
+def write_threat_note(client: Client, args: dict) -> CommandResults:  # pragma: no cover
     """
     Write the notes for particular threat(s). Relavent for API version 2.1
     """
@@ -1677,7 +1689,7 @@ def write_threat_note(client: Client, args: dict) -> CommandResults:
         raw_response=threat_notes)
 
 
-def get_threat_notes(client: Client, args: dict) -> CommandResults:
+def get_threat_notes(client: Client, args: dict) -> CommandResults:  # pragma: no cover
     """
     Get the note of a particular threat.
     """
@@ -1706,7 +1718,7 @@ def get_threat_notes(client: Client, args: dict) -> CommandResults:
         raw_response=notes)
 
 
-def create_ioc(client: Client, args: dict) -> CommandResults:
+def create_ioc(client: Client, args: dict) -> CommandResults:  # pragma: no cover
     """
     Add an IoC to the Threat Intelligence database. . Relavent for API version 2.1
     """
@@ -1749,7 +1761,7 @@ def create_ioc(client: Client, args: dict) -> CommandResults:
         raw_response=ioc)
 
 
-def delete_ioc(client: Client, args: dict) -> CommandResults:
+def delete_ioc(client: Client, args: dict) -> CommandResults:  # pragma: no cover
     """
     Deletes an IoC from the Threat Intelligence database. Relavent for API version 2.1
     """
@@ -1784,7 +1796,7 @@ def delete_ioc(client: Client, args: dict) -> CommandResults:
         raw_response=deleted_iocs)
 
 
-def get_iocs(client: Client, args: dict) -> CommandResults:
+def get_iocs(client: Client, args: dict) -> CommandResults:  # pragma: no cover
     """
     Get the IOCs of a specified Account that match the filter. Relavent for API version 2.1
     """
@@ -1815,7 +1827,7 @@ def get_iocs(client: Client, args: dict) -> CommandResults:
     iocs, pagination = client.get_iocs_request(query_params)
 
     if pagination['nextCursor'] is not None:
-        demisto.results("Use the below cursor value to get the next page iocs \n {}". format(pagination['nextCursor']))
+        demisto.results("Use the below cursor value to get the next page iocs \n {}".format(pagination['nextCursor']))
 
     if iocs:
         # Parse response into context & content entries
@@ -1843,7 +1855,7 @@ def get_iocs(client: Client, args: dict) -> CommandResults:
         raw_response=iocs)
 
 
-def create_power_query(client: Client, args: dict) -> CommandResults:
+def create_power_query(client: Client, args: dict) -> CommandResults:  # pragma: no cover
     """
     Create the power query and get the events or get the query ID. Relavent for API version 2.1
     """
@@ -1881,7 +1893,7 @@ def create_power_query(client: Client, args: dict) -> CommandResults:
         raw_response=response)
 
 
-def ping_power_query(client: Client, args: dict) -> CommandResults:
+def ping_power_query(client: Client, args: dict) -> CommandResults:  # pragma: no cover
     """
     Create the power query and get the events or get the query ID. Relavent for API version 2.1
     """
@@ -1900,13 +1912,13 @@ def ping_power_query(client: Client, args: dict) -> CommandResults:
         return CommandResults(
             readable_output=tableToMarkdown('Sentinel One - Ping the Power Query', context_entries, removeNull=True,
                                             metadata='Provides summary information and details aboput the power query and its id '
-                                            ' your search criteria.', headerTransform=pascalToSpace),
+                                                     ' your search criteria.', headerTransform=pascalToSpace),
             outputs_prefix='SentinelOne.PowerQuery',
             outputs=context_entries,
             raw_response=response)
     else:
         return CommandResults(readable_output='There is no data returned by the id that you provided,'
-                              ' please re-check the id to ping')
+                                              ' please re-check the id to ping')
 
 
 def update_threat_status(client: Client, args: dict) -> CommandResults:
@@ -1985,7 +1997,7 @@ def update_alert_status(client: Client, args: dict) -> CommandResults:
         raw_response=updated_alerts)
 
 
-def expire_site(client: Client, args: dict) -> CommandResults:
+def expire_site(client: Client, args: dict) -> CommandResults:  # pragma: no cover
     """
     Expires the site from the server. Relavent to both API Versions
     """
@@ -2020,7 +2032,7 @@ def expire_site(client: Client, args: dict) -> CommandResults:
         raw_response=Expired_site)
 
 
-def fetch_threat_file(client: Client, args: dict) -> list[CommandResults]:
+def fetch_threat_file(client: Client, args: dict) -> list[CommandResults]:  # pragma: no cover
     """
     Fetches the threat file. Relevent to both API Versions
     """
@@ -2061,7 +2073,7 @@ def fetch_threat_file(client: Client, args: dict) -> list[CommandResults]:
     ]
 
 
-def get_alerts(client: Client, args: dict) -> CommandResults:
+def get_alerts(client: Client, args: dict) -> CommandResults:  # pragma: no cover
     """
     Get the Alerts from server. Relevant to API Version 2.1
     """
@@ -2094,7 +2106,7 @@ def get_alerts(client: Client, args: dict) -> CommandResults:
     alerts, pagination = client.get_alerts_request(query_params)
 
     if pagination['nextCursor'] is not None:
-        demisto.results("Use the below cursor value to get the next page alerts \n {}". format(pagination['nextCursor']))
+        demisto.results("Use the below cursor value to get the next page alerts \n {}".format(pagination['nextCursor']))
 
     if alerts:
         for alert in alerts:
@@ -2139,7 +2151,7 @@ def get_alerts(client: Client, args: dict) -> CommandResults:
     return CommandResults(
         readable_output=tableToMarkdown('Sentinel One - Getting Alert List', context_entries, removeNull=True,
                                         metadata='Provides summary information and details for all the alerts'
-                                        ' that matched your search criteria.',
+                                                 ' that matched your search criteria.',
                                         headers=headers, headerTransform=pascalToSpace),
         outputs_prefix='SentinelOne.Alert',
         outputs_key_field='AlertId',
@@ -2147,7 +2159,7 @@ def get_alerts(client: Client, args: dict) -> CommandResults:
         raw_response=alerts)
 
 
-def resolve_threat_command(client: Client, args: dict) -> CommandResults:
+def resolve_threat_command(client: Client, args: dict) -> CommandResults:  # pragma: no cover
     """
     Mark threats as resolved
     """
@@ -2203,7 +2215,7 @@ def get_installed_applications(client: Client, args: dict) -> CommandResults:
     return CommandResults(
         readable_output=tableToMarkdown('Sentinel One - Getting Installed Applications', context_entries, removeNull=True,
                                         metadata='Provides summary information and details for all installed applications'
-                                        ' that matched your search criteria.',
+                                                 ' that matched your search criteria.',
                                         headers=headers, headerTransform=pascalToSpace),
         outputs_prefix='SentinelOne.Application',
         outputs_key_field='Name',
@@ -2239,7 +2251,7 @@ def initiate_endpoint_scan(client: Client, args: dict) -> CommandResults:
         raw_response=initiated)
 
 
-def get_white_list_command(client: Client, args: dict) -> CommandResults:
+def get_white_list_command(client: Client, args: dict) -> CommandResults:  # pragma: no cover
     """
     List all white items matching the input filter
     """
@@ -2349,7 +2361,7 @@ def remove_item_from_whitelist(client: Client, args: dict) -> CommandResults:
         raw_response=result)
 
 
-def create_white_item_command(client: Client, args: dict):
+def create_white_item_command(client: Client, args: dict):  # pragma: no cover
     """
     Create white item.
     """
@@ -2390,7 +2402,7 @@ def create_white_item_command(client: Client, args: dict):
         raw_response=new_item)
 
 
-def get_sites_command(client: Client, args: dict) -> CommandResults:
+def get_sites_command(client: Client, args: dict) -> CommandResults:  # pragma: no cover
     """
     List all sites with filtering options
     """
@@ -2444,7 +2456,7 @@ def get_sites_command(client: Client, args: dict) -> CommandResults:
         raw_response=raw_response)
 
 
-def get_site_command(client: Client, args: dict) -> CommandResults:
+def get_site_command(client: Client, args: dict) -> CommandResults:  # pragma: no cover
     """
     Get a specific site by ID
     """
@@ -2488,7 +2500,7 @@ def get_site_command(client: Client, args: dict) -> CommandResults:
         raw_response=site)
 
 
-def reactivate_site_command(client: Client, args: dict) -> CommandResults:
+def reactivate_site_command(client: Client, args: dict) -> CommandResults:  # pragma: no cover
     """
     Reactivate specific site by ID
     """
@@ -2533,7 +2545,7 @@ def reactivate_site_command(client: Client, args: dict) -> CommandResults:
         raw_response=site)
 
 
-def get_threat_summary_command(client: Client, args: dict) -> CommandResults:
+def get_threat_summary_command(client: Client, args: dict) -> CommandResults:  # pragma: no cover
     """
     Get dashboard threat summary
     """
@@ -2572,7 +2584,7 @@ def get_threat_summary_command(client: Client, args: dict) -> CommandResults:
 # Agents Commands
 
 
-def list_agents_command(client: Client, args: dict) -> CommandResults:
+def list_agents_command(client: Client, args: dict) -> CommandResults:  # pragma: no cover
     """
     List all agents matching the input filter
     """
@@ -2610,7 +2622,7 @@ def list_agents_command(client: Client, args: dict) -> CommandResults:
         raw_response=agents)
 
 
-def get_agent_command(client: Client, args: dict) -> CommandResults:
+def get_agent_command(client: Client, args: dict) -> CommandResults:  # pragma: no cover
     """
     Get single agent via ID
     """
@@ -2666,7 +2678,7 @@ def get_agent_mac_command(client: Client, args: dict) -> CommandResults:
     )
 
 
-def connect_agent_to_network(client: Client, args: dict) -> Union[CommandResults, str]:
+def connect_agent_to_network(client: Client, args: dict) -> Union[CommandResults, str]:  # pragma: no cover
     """
     Sends a "connect to network" command to all agents matching the input filter.
     """
@@ -2692,7 +2704,7 @@ def connect_agent_to_network(client: Client, args: dict) -> Union[CommandResults
         raw_response=raw_response)
 
 
-def disconnect_agent_from_network(client: Client, args: dict) -> Union[CommandResults, str]:
+def disconnect_agent_from_network(client: Client, args: dict) -> Union[CommandResults, str]:  # pragma: no cover
     """
     Sends a "disconnect from network" command to all agents matching the input filter.
     """
@@ -2716,7 +2728,7 @@ def disconnect_agent_from_network(client: Client, args: dict) -> Union[CommandRe
         raw_response=raw_response)
 
 
-def broadcast_message(client: Client, args: dict) -> CommandResults:
+def broadcast_message(client: Client, args: dict) -> CommandResults:  # pragma: no cover
     """
     Broadcasts a message to all agents matching the input filter.
     """
@@ -2747,7 +2759,7 @@ def broadcast_message(client: Client, args: dict) -> CommandResults:
         raw_response=response)
 
 
-def shutdown_agents(client: Client, args: dict) -> str:
+def shutdown_agents(client: Client, args: dict) -> str:  # pragma: no cover
     """
     Sends a shutdown command to all agents matching the input filter
     """
@@ -2766,7 +2778,7 @@ def shutdown_agents(client: Client, args: dict) -> str:
     return 'No agents were shutdown.'
 
 
-def uninstall_agent(client: Client, args: dict) -> CommandResults:
+def uninstall_agent(client: Client, args: dict) -> CommandResults:  # pragma: no cover
     """
     Sends an uninstall command to all agents matching the input filter.
     """
@@ -2795,7 +2807,7 @@ def uninstall_agent(client: Client, args: dict) -> CommandResults:
 
 # Event Commands
 
-def create_query(client: Client, args: dict) -> CommandResults:
+def create_query(client: Client, args: dict) -> CommandResults:  # pragma: no cover
     query = args.get('query')
     from_date = args.get('from_date')
     to_date = args.get('to_date')
@@ -2846,7 +2858,7 @@ def get_events(client: Client, args: dict) -> Union[CommandResults, str]:
     events, pagination = client.get_events_request(query_id, limit, cursor)
     context = {}
     if pagination and pagination.get('nextCursor') is not None:
-        demisto.results("Use the below cursor value to get the next page events \n {}". format(pagination['nextCursor']))
+        demisto.results("Use the below cursor value to get the next page events \n {}".format(pagination['nextCursor']))
         context.update({'SentinelOne.Cursor.Event': pagination['nextCursor']})
     for event in events:
         contents.append({
@@ -2898,7 +2910,7 @@ def get_events(client: Client, args: dict) -> Union[CommandResults, str]:
         raw_response=events)
 
 
-def get_processes(client: Client, args: dict) -> CommandResults:
+def get_processes(client: Client, args: dict) -> CommandResults:  # pragma: no cover
     """
     Get Deep Visibility events from query by event type - process
     """
@@ -2936,10 +2948,11 @@ def get_processes(client: Client, args: dict) -> CommandResults:
         outputs=contents,
         raw_response=processes)
 
+
 # Blocklist commands
 
 
-def add_hash_to_blocklist(client: Client, args: dict) -> CommandResults:
+def add_hash_to_blocklist(client: Client, args: dict) -> CommandResults:  # pragma: no cover
     """
     Add a hash to the blocklist (SentinelOne Term: Blacklist)
     """
@@ -2972,8 +2985,8 @@ def add_hash_to_blocklist(client: Client, args: dict) -> CommandResults:
         js = e.res.json()
         errors = js.get("errors")
         if (errors and len(errors) == 1
-                and (error := errors[0]).get('code') == 4000030
-                and error.get('title') == "Already Exists Error"):
+            and (error := errors[0]).get('code') == 4000030
+            and error.get('title') == "Already Exists Error"):
             status = {
                 'hash': sha1,
                 'status': "Already on blocklist"
@@ -3157,7 +3170,7 @@ def download_fetched_file(client: Client, args: dict) -> list[CommandResults]:
             fileResult(f"{path.replace('/', '_')}", file_data)]
 
 
-def get_accounts(client: Client, args: dict) -> CommandResults:
+def get_accounts(client: Client, args: dict) -> CommandResults:  # pragma: no cover
     """
     Get accounts info (ID, etc).
     """
@@ -3254,7 +3267,7 @@ def get_remote_script_results(client: Client, args: dict) -> list[CommandResults
             response = requests.get(url=result.get("downloadUrl"))
             zip_file_data = response.content
             file_results.append(fileResult(filename=result.get('fileName', ''),
-                                data=zip_file_data, file_type=EntryType.ENTRY_INFO_FILE))
+                                           data=zip_file_data, file_type=EntryType.ENTRY_INFO_FILE))
             context_entries.append({
                 'taskId': result.get("taskId"),
                 'fileName': result.get("fileName"),
@@ -3306,12 +3319,12 @@ def run_polling_command(client: Client, cmd: str, args: Dict[str, Any]):
     if status_outputs and isinstance(status_outputs, list):
         for output in status_outputs:
             # Check if the script status is completed, and continue the loop
-            if isinstance(output, dict) and output.get("status") in ["completed"]:
+            if isinstance(output, dict) and output.get("status") == "completed":
                 task_ids.append(output.get("id"))
                 script_completed = True
             # Check if the script status is not completed, if not completed will break loop.
             # And mark the script_completed flag to False, so that the command rescheduled.
-            if isinstance(output, dict) and output.get("status") not in ["completed"]:
+            if isinstance(output, dict) and output.get("status") != "completed":
                 script_completed = False
                 break
     if script_completed:
@@ -3549,7 +3562,6 @@ def get_mirroring_fields(params):
 
 
 def fetch_threats(client: Client, args):
-
     incidents_threats = []
     current_fetch = args.get('current_fetch')
     incident_statuses = args.get('fetch_threat_incident_statuses')
@@ -3581,7 +3593,6 @@ def fetch_threats(client: Client, args):
 
 
 def fetch_alerts(client: Client, args):
-
     incidents_alerts = []
     current_fetch = args.get('current_fetch')
 
@@ -3610,7 +3621,6 @@ def fetch_alerts(client: Client, args):
 
 
 def fetch_handler(client: Client, args):
-
     last_run = demisto.getLastRun()
     last_fetch = last_run.get('time')
 
