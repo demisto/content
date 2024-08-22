@@ -16,22 +16,33 @@ class Client(BaseClient):
             base_url (str): URL to access when doing a http request. Webhook url.
 
         """
+        self.base_url = base_url
         super().__init__(base_url=base_url, proxy=proxy, verify=verify)
 
-    def send_teams_message(self, messagecard: dict):
+    def send_teams_message(self, messagecard: dict, adaptive_cards_format: bool = False):
         """
         Sends the Teams Message to the provided webhook.
 
         Args:
             messagecard (dict): dict the adaptive card to send to Teams.
+            adaptive_cards_format (bool): Should the adaptive card url format be used?
         """
 
-        res = self._http_request(
-            method='POST',
-            json_data=messagecard,
-            raise_on_status=True,
-            resp_type='text'
-        )
+        if adaptive_cards_format:
+            res = self._http_request(
+                method='POST',
+                json_data=messagecard,
+                raise_on_status=True,
+                resp_type='text',
+                full_url=self.base_url
+            )
+        else:
+            res = self._http_request(
+                method='POST',
+                json_data=messagecard,
+                raise_on_status=True,
+                resp_type='text'
+            )
         demisto.info(f'completed post of message. response text: {res}')
 
 
@@ -150,7 +161,7 @@ def send_teams_message_command(
     """
 
     messagecard = create_teams_message(message, title, serverurls, adaptive_cards_format)
-    client.send_teams_message(messagecard)
+    client.send_teams_message(messagecard, adaptive_cards_format)
     return CommandResults(readable_output='message sent successfully')
 
 
