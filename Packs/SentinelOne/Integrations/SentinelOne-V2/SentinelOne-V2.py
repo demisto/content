@@ -691,7 +691,8 @@ class Client(BaseClient):
         return response.get('data', [])
 
     def update_star_rule_request(self, rule_id, name, description, query, query_type, rule_severity, account_ids, group_ids,
-                                 site_ids, expiration_mode, expiration_date, network_quarantine, treatAsThreat):  # pragma: no cover
+                                 site_ids, expiration_mode, expiration_date, network_quarantine,
+                                 treatAsThreat):  # pragma: no cover
         endpoint_url = f'cloud-detection/rules/{rule_id}'
         filter_dict = {
             "siteIds": site_ids,
@@ -2986,7 +2987,7 @@ def add_hash_to_blocklist(client: Client, args: dict) -> CommandResults:  # prag
         errors = js.get("errors")
         if (errors and len(errors) == 1
             and (error := errors[0]).get('code') == 4000030
-            and error.get('title') == "Already Exists Error"):
+                and error.get('title') == "Already Exists Error"):
             status = {
                 'hash': sha1,
                 'status': "Already on blocklist"
