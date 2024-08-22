@@ -221,7 +221,7 @@ def is_atom42_sub_report(report_obj):
         return True
     for obj_ref in obj_refs:
         if not obj_ref.startswith(('report--', 'intrusion-set--')):
-            only_reports_and_intrusion_set &= False
+            only_reports_and_intrusion_set = False
     return not (is_report_description or only_reports_and_intrusion_set)
 
 

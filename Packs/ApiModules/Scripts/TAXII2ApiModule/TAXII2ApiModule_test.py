@@ -591,6 +591,7 @@ class TestFetchingStixObjects:
         assert result == parsed_objects
         reports = [obj for obj in result if obj.get('type') == 'Report']
         report_with_relationship = [report for report in reports if report.get('relationships')]
+        assert len(result) == 16
         for report in report_with_relationship:
             for relationship in report.get('relationships'):
                 assert relationship.get('entityBType') in STIX_2_TYPES_TO_CORTEX_TYPES.values()

@@ -1167,7 +1167,7 @@ class STIX2XSOARParser(BaseClient):
         """
         Creates obj refs list
         :param obj_refs_list: A list of obj refs
-        :return: A list
+        :return: A list of dicts.
         """
         # remove duplicates
         obj_refs_list_result = []
@@ -1176,7 +1176,6 @@ class STIX2XSOARParser(BaseClient):
         demisto.debug(f"Omitting {omitted_object_number} object ref form the report")
         if obj_refs_list:
             obj_refs_list_result.extend([{'objectstixid': object} for object in obj_refs_list_without_dup])
-            return obj_refs_list_result
         return obj_refs_list_result
 
     def parse_report(self, report_obj: dict[str, Any],
