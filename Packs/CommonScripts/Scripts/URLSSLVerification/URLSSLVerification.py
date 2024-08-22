@@ -36,9 +36,21 @@ def mark_http_as_suspicious(set_http_as_suspicious):
     return set_http_as_suspicious != 'false'
 
 
+def unique_urls(urls):
+    """return a set of unique urls with the protocol://domain only
+
+    Args:
+        urls (list): the url list
+    """
+    pattern = r"(?<=[a-zA-Z0-9\.\_\#])(/|\?).*"
+    return {
+        re.sub(pattern, "", url) for url in urls
+    }
+
+
 def main():     # pragma: no cover
     url_arg = demisto.get(demisto.args(), "url")
-    urls = arg_to_list_with_regex(url_arg)
+    urls = unique_urls(arg_to_list_with_regex(url_arg))
 
     set_http_as_suspicious = demisto.args().get('set_http_as_suspicious')
 
