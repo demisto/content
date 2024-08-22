@@ -1134,7 +1134,6 @@ def cve_command(client: Client, args: dict, reliability: str) -> CommandResults:
     response = client.cve(cve_arg)
     cve_raw_response = copy.deepcopy(response)
     response = remove_empty_elements(response)
-    reliability = args.get("reliability", "")
     if response.get("id"):
         cvss = response["details"].get("cve_cvss_score", "N\\A")
         description = response["details"].get("vulnerability_description", "")
@@ -1188,7 +1187,8 @@ def cve_command(client: Client, args: dict, reliability: str) -> CommandResults:
             hr = {
                 "# of Available Exploits": response["exploitation_stats"].get("number_of_available_exploits", ""),
                 "# of Botnets Exploiting": response["exploitation_stats"].get("number_of_botnets_exploiting_vulnerability", ""),
-                "# of Threat Actors Exploiting": response["exploitation_stats"].get("number_of_threat_actors_exploiting_vulnerability", ""),
+                "# of Threat Actors Exploiting": response["exploitation_stats"].get(
+                    "number_of_threat_actors_exploiting_vulnerability", ""),
             }
             human_readable += tableToMarkdown(
                 name=name, t=hr, headers=["# of Available Exploits", "# of Botnets Exploiting", "# of Threat Actors Exploiting"],
