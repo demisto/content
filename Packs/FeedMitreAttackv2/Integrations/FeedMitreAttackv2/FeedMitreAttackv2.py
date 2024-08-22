@@ -526,8 +526,6 @@ def attack_pattern_reputation_command(client, args):
     mitre_data = get_mitre_data_by_filter(client, filter_by_type)
     
     mitre_names = argToList(args.get('attack_pattern'))
-    demisto.debug(f"MA: {mitre_names=}")
-    demisto.debug(f"MA: {mitre_data[0]=}")
     value = ''
     for name in mitre_names:
         demisto.debug(f'MA: Getting info on {name}')
@@ -535,6 +533,7 @@ def attack_pattern_reputation_command(client, args):
             attack_pattern = get_attack_pattern_by_name(mitre_data, name=name)
             demisto.debug(f'MA: Got {attack_pattern=}')
             if not attack_pattern:
+                demisto.debug(f'MA: Did not found attack pattern value for name {name}')
                 continue
             value = attack_pattern.get('name')
 
@@ -578,10 +577,7 @@ def attack_pattern_reputation_command(client, args):
 
             attack_pattern = attack_pattern[0]
             value = f'{parent_name}: {attack_pattern.get("name")}'
-            demisto.debug(f'MA: Got {value=}')
-        demisto.debug(f'MA: Got {value=} at the end')
-        if not value:
-            return CommandResults(readable_output="Did not find wanted attack patterns in the Enterprise collection.")
+
 
         attack_obj = map_fields_by_type('Attack Pattern', json.loads(str(attack_pattern)))
         custom_fields = attack_obj or {}
@@ -589,9 +585,11 @@ def attack_pattern_reputation_command(client, args):
         md = f"## MITRE ATTACK \n ## Name: {value} - ID: " \
              f"{attack_obj.get('mitreid')} \n {custom_fields.get('description', '')}"
         command_results.append(build_command_result(value, score, md, attack_obj))
-        demisto.debug(f'MA: Got {value=} at the end')
+
+
     if not command_results:
-        return CommandResults(readable_output="Did not find the attack patterns in the Enterprise collection.")
+        return CommandResults(readable_output=f'MITRE ATTACK Attack Patterns values: '
+                                              f'No Attack Patterns found for {mitre_names}.')
 
     return command_results
 
@@ -623,35 +621,31 @@ def get_mitre_value_from_id(client, args):
     attack_ids = argToList(args.get('attack_ids', []))
 
     attack_values = []
-    for attack_id in attack_ids:
-        collection_id = f"stix/collections/{ENTERPRISE_COLLECTION_ID}/"
-        collection_url = urljoin(client.base_url, collection_id)
-        collection_data = Collection(collection_url, verify=client.verify, proxies=client.proxies)
+    filter_by_type = [Filter('type', '=', 'attack-pattern')]
+    attack_pattern_objects = get_mitre_data_by_filter(client, filter_by_type)
 
-        tc_source = TAXIICollectionSource(collection_data)
-        attack_pattern_objects = tc_source.query(query=[
-            Filter("type", "=", "attack-pattern")
-        ])
-        if attack_pattern_objects:
+    if attack_pattern_objects:
+        for attack_id in attack_ids:
             attack_pattern = list(filter(lambda attack_pattern_obj:
-                                  filter_attack_pattern_object_by_attack_id(attack_id,
+                                filter_attack_pattern_object_by_attack_id(attack_id,
                                                                             attack_pattern_obj), attack_pattern_objects))
+            if not attack_pattern:
+                demisto.debug(f'MA: Did not found attack pattern value for ID {attack_id}')
+                continue
+
             attack_pattern_name = attack_pattern[0]['name']
 
-        if attack_pattern_name and len(attack_id) > 5:  # sub-technique
-            parent_objects = tc_source.query([
-                Filter("type", "=", "attack-pattern")
-            ])
-            sub_technique_attack_id = attack_id[:5]
-            parent_object = list(filter(lambda attack_pattern_obj:
-                                 filter_attack_pattern_object_by_attack_id(sub_technique_attack_id,
-                                                                           attack_pattern_obj), parent_objects))
-            parent_name = parent_object[0]['name']
+            if attack_pattern_name and len(attack_id) > 5:  # sub-technique
+                sub_technique_attack_id = attack_id[:5]
+                parent_object = list(filter(lambda attack_pattern_obj:
+                                    filter_attack_pattern_object_by_attack_id(sub_technique_attack_id,
+                                                                            attack_pattern_obj), attack_pattern_objects))
+                parent_name = parent_object[0]['name']
 
-            attack_pattern_name = f'{parent_name}: {attack_pattern_name}'
+                attack_pattern_name = f'{parent_name}: {attack_pattern_name}'
 
-        if attack_pattern_name:
-            attack_values.append({'id': attack_id, 'value': attack_pattern_name})
+            if attack_pattern_name:
+                attack_values.append({'id': attack_id, 'value': attack_pattern_name})
 
     if attack_values:
         return CommandResults(
