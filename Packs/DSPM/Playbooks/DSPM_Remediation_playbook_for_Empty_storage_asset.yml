@@ -1,0 +1,266 @@
+id: e0f37ddb-21de-40f7-89cf-58d51ac7f00f
+version: 5
+vcShouldKeepItemLegacyProdMachine: false
+name: DSPM Remediation playbook for Empty storage asset
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 94439e4a-f342-476c-8286-eb1545d51641
+    type: start
+    task:
+      id: 94439e4a-f342-476c-8286-eb1545d51641
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": -190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: e803945b-2627-45bf-8d15-f65c394396fb
+    type: regular
+    task:
+      id: e803945b-2627-45bf-8d15-f65c394396fb
+      version: -1
+      name: Slack block list overwritten with a success message
+      description: This automation script overwrites the value of a specified list
+        and sends a Slack notification to inform the user that they failed to respond
+        to an incident notification in a timely manner. The notification includes
+        a message indicating the end of the incident playbook and an invitation to
+        reopen the incident if necessary.
+      scriptName: OverwriteListAndNotify
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      list_name:
+        simple: ${block_list_name}
+      message:
+        simple: 'For XSOAR incident ID : ${incident.id} successfully applied public
+          access block to the ${incident_object.assetName} bucket.'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1270,
+          "y": 630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: b8356e5c-70be-4a42-8c82-ca9f65e11fc4
+    type: condition
+    task:
+      id: b8356e5c-70be-4a42-8c82-ca9f65e11fc4
+      version: -1
+      name: Check the Cloud Provider of asset
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Azure:
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: AWS
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${incident_object.cloudProvider}
+            iscontext: true
+          right:
+            value:
+              simple: AWS
+    - label: Azure
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${incident_object.cloudProvider}
+            iscontext: true
+          right:
+            value:
+              simple: AZURE
+    - label: GCP
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${incident_object.cloudProvider}
+            iscontext: true
+          right:
+            value:
+              simple: GCP
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 0
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 59b368c0-9fa9-4ddf-8d72-c7c72827a0cb
+    type: condition
+    task:
+      id: 59b368c0-9fa9-4ddf-8d72-c7c72827a0cb
+      version: -1
+      name: Has asset risk been effectively eliminated?
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If array is provided, will return yes
+        if one of the entries returned an error.
+      scriptName: isError
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "3"
+      "yes":
+      - "7"
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 3f8437fe-9d8d-4e0c-8a20-c2d460a16a0b
+    type: regular
+    task:
+      id: 3f8437fe-9d8d-4e0c-8a20-c2d460a16a0b
+      version: -1
+      name: Slack block list overwritten with a error message
+      description: This automation script overwrites the value of a specified list
+        and sends a Slack notification to inform the user that they failed to respond
+        to an incident notification in a timely manner. The notification includes
+        a message indicating the end of the incident playbook and an invitation to
+        reopen the incident if necessary.
+      scriptName: OverwriteListAndNotify
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      list_name:
+        simple: ${block_list_name}
+      message:
+        simple: 'For XSOAR incident ID : ${incident.id} got error while applying public
+          access block to the ${incident_object.assetName} bucket.'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 590,
+          "y": 630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 1f4255ed-ea73-45db-8015-0745ea39e39f
+    type: regular
+    task:
+      id: 1f4255ed-ea73-45db-8015-0745ea39e39f
+      version: -1
+      name: azure-storage-container-delete
+      description: Marks the specified Container for deletion. The Container and any
+        Blobs contained within it, will be deleted during garbage collection.
+      script: Azure Storage Container|||azure-storage-container-delete
+      type: regular
+      iscommand: true
+      brand: Azure Storage Container
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      container_name:
+        simple: my-dummy-bucket
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 915,
+        "width": 1060,
+        "x": 590,
+        "y": -190
+      }
+    }
+  }
+inputs: []
+outputs: []
+sourceplaybookid: c7f9a77b-18e3-45ca-8307-b39035938abe
