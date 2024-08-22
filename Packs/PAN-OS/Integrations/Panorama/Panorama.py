@@ -229,6 +229,7 @@ RULE_TYPES_MAP = {
     "PBF Rule": "pbf"
 }
 
+
 class ExceptionCommandType(enum.Enum):
     ADD = 'set'
     EDIT = 'edit'
@@ -14174,7 +14175,8 @@ def get_predefined_threats_list() -> list:
     """
     result = panorama_get_predefined_threats_list()
     predefined_threats = result.get('response', {}).get('result', {}).get('threats', {}).get("phone-home", {}).get('entry', [])
-    predefined_threats += result.get('response', {}).get('result',{}).get('threats', {}).get("vulnerability", {}).get('entry', [])
+    predefined_threats += result.get('response', {}).get('result', {}).get('threats',
+                                                                           {}).get("vulnerability", {}).get('entry', [])
     return predefined_threats
 
 
@@ -14260,7 +14262,7 @@ def build_element_for_profile_exception_commands(extracted_id: str, action: str,
     return element
 
 
-def profile_exception_crud_requests(args: dict, action_type: str) ->  Optional[Union[dict, CommandResults]]:
+def profile_exception_crud_requests(args: dict, action_type: str) -> Any:
     """
     Build the element for the api that the profile exception commands use.
 
@@ -14272,27 +14274,27 @@ def profile_exception_crud_requests(args: dict, action_type: str) ->  Optional[U
         results: A dict for raw_response, exception_id, exception_name, profile_type
     """
     xpath_exceptions_actions_types_map = {
-    'Alert': 'alert',
-    'Allow': 'allow',
-    'Block IP': 'block-ip',
-    'Drop': 'drop',
-    'Reset Both': 'reset-both',
-    'Reset Client': 'reset-client',
-    'Reset Server': 'reset-server',
-    'default': 'default'
+        'Alert': 'alert',
+        'Allow': 'allow',
+        'Block IP': 'block-ip',
+        'Drop': 'drop',
+        'Reset Both': 'reset-both',
+        'Reset Client': 'reset-client',
+        'Reset Server': 'reset-server',
+        'default': 'default'
     }
-    
+
     exceptions_packet_capture_types_map = {
-    'Disable': 'disable',
-    'Single Packet': 'single-packet',
-    'Extended Capture': 'extended-capture'
+        'Disable': 'disable',
+        'Single Packet': 'single-packet',
+        'Extended Capture': 'extended-capture'
     }
-    
+
     exceptions_ip_track_by_types_map = {
-    'Source': 'source',
-    'Source And Destination': 'source-and-destination'
+        'Source': 'source',
+        'Source And Destination': 'source-and-destination'
     }
-    
+
     profile_name = args.get('profile_name', "")
     profile_type = args.get('profile_type', '')
     threat = args.get('threat', '')
@@ -14424,17 +14426,17 @@ def pan_os_list_profile_exception_command(args: dict) -> CommandResults:
     Returns:
         A confirmation for deleting the exception.
     """
-    
+
     exception_profile_types_map = {
-    'Vulnerability Protection Profile': 'vulnerability',
-    'Anti Spyware Profile': 'spyware'
+        'Vulnerability Protection Profile': 'vulnerability',
+        'Anti Spyware Profile': 'spyware'
     }
-    
+
     profile_name = args.get('profile_name')
     results = profile_exception_crud_requests(args, ExceptionCommandType.LIST.value)
     if isinstance(results, CommandResults):
         return results
-    
+
     profile_type = exception_profile_types_map.get(results.get('profile_type', ''))
     raw_response = results.get('raw_response', {})
     exceptions_response_list = raw_response.get('response', {}).get('result', {}).get('threat-exception', [])

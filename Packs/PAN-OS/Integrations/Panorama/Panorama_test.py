@@ -7541,7 +7541,7 @@ def test_pan_os_delete_profile_exception(mocker):
 
 
 def test_pan_os_list_profile_exception(mocker):
-     """
+    """
     Given:
         - A profile name and profile type.
     When:
@@ -7549,9 +7549,7 @@ def test_pan_os_list_profile_exception(mocker):
     Then:
         - Ensure the returned response is of type `CommandResults` and the readable output lists the correct profile exceptions.
     """
-    
     import Panorama
-
     Panorama.URL = 'https://1.1.1.1:443/'
     Panorama.API_KEY = 'thisisabogusAPIKEY!'
     Panorama.DEVICE_GROUP = 'device_group'
