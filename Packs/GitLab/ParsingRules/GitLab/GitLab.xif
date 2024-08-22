@@ -2,3 +2,5 @@
 // Support only date time of format: YYYY-MM-DDTHH:MM:SS.E3Z. For example: "2022-11-23T11:11:09.556Z".
 filter created_at ~= "\d{4}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}\.\d{3}Z"
 | alter _time = created_at;
+
+

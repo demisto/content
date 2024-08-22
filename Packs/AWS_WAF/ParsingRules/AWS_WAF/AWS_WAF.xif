@@ -11,3 +11,4 @@ filter to_string(timestamp) ~= "\d{10}|\d{13}|\d{16}|\d{19}"
     tmp_len = 19, to_timestamp(divide(tmp_epoch_int, 1000), "MICROS")) 
 | alter _time = tmp_time
 | fields - tmp*;
+

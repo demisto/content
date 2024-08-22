@@ -98,3 +98,5 @@ filter _log_source_file_name in ("rcmctrl.log", "sinvproc.log", "sitectrl.log", 
 | alter XDM.Database.event_timestamp = parse_timestamp("%m-%d-%Y %H:%M:%S", timestamp)
 | alter XDM.Database.Observer.name = component
 | alter XDM.Database.original_event_description = msg;
+
+

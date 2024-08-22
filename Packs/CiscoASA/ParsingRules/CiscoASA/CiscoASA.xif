@@ -16,3 +16,4 @@ filter _raw_log ~= "[A-Za-z]{3}\s\d+\s\d+\:\d+\:\d+\sUTC"
 | alter tmp_full_timestamp = concat(tmp_timestamp_string2 , " ", tmp_year )
 | alter _time = parse_timestamp("%b %d %H:%M:%S UTC %Y", tmp_full_timestamp )
 | fields -tmp_full_timestamp , tmp_timestamp_string2 , tmp_year;
+

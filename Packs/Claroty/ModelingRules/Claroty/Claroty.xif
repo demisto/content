@@ -83,3 +83,5 @@ alter // Explicit extractions
     xdm.target.resource.sub_type = target_object_property,
     xdm.target.resource.type = coalesce(target_object_type, target_tag_type),
     xdm.target.zone = if(cs6Label = "DstZone", cs6);
+
+    

@@ -254,3 +254,4 @@ call o365_common_fields
 	xdm.network.rule = to_string(PolicyDetails);
 
     
+    

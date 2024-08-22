@@ -158,3 +158,4 @@ call f5_APM_General_Fields
 // Fallback Mapping for other log types
 call f5_APM_General_Fields
 | filter process_name not contains "tmm" and process_name not contains "tmsh" and process_name not contains "httpd" and process_name not contains "snmpd" and process_name not contains "apmd" and process_name not contains "websso";
+

@@ -45,3 +45,5 @@ alter
     xdm.event.log_level = if(log_prefix contains "info", XDM_CONST.LOG_LEVEL_INFORMATIONAL, log_prefix contains "debug", XDM_CONST.LOG_LEVEL_DEBUG, log_prefix contains "alert", XDM_CONST.LOG_LEVEL_ALERT, log_prefix contains "crit", XDM_CONST.LOG_LEVEL_CRITICAL, log_prefix contains "error", XDM_CONST.LOG_LEVEL_ERROR, log_prefix contains "warn", XDM_CONST.LOG_LEVEL_WARNING, log_prefix contains "notice", XDM_CONST.LOG_LEVEL_NOTICE, to_string(log_prefix)),
     xdm.source.user.domain = user_domain,
     xdm.source.user.username = user_name;
+
+    
