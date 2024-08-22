@@ -7467,6 +7467,7 @@ def test_pan_os_xpath_creation_for_exception_crud(profile_name, profile_type, de
     )
     assert result == expected_xpath
 
+
 def test_pan_os_check_profile_type_by_given_profile_name(mocker):
     """
     Given:
@@ -7477,7 +7478,7 @@ def test_pan_os_check_profile_type_by_given_profile_name(mocker):
         - Ensure the correct profile type is returned or an appropriate exception is raised.
     """
     import Panorama
-    
+
     mocker.patch('Panorama.get_all_profile_names_from_profile_type', side_effect=[
         ['profile_1', 'profile_2'],
         ['profile_3', 'profile_4'],
@@ -7488,19 +7489,20 @@ def test_pan_os_check_profile_type_by_given_profile_name(mocker):
         [],
         []
     ])
-    
+
     result = Panorama.check_profile_type_by_given_profile_name('profile_1', 'device_group')
     assert result == 'Vulnerability Protection Profile'
-    
+
     result = Panorama.check_profile_type_by_given_profile_name('profile_3', None)
     assert result == 'Anti Spyware Profile'
-    
+
     with pytest.raises(DemistoException, match="Profile name was found both in Vulnerability Protection Profiles and in Anti Spyware Profiles. Please specify profile_type."):
         Panorama.check_profile_type_by_given_profile_name('profile_5', 'device_group')
 
     with pytest.raises(DemistoException, match="Profile name was not found in Vulnerability Protection Profiles or in Anti Spyware Profiles."):
         Panorama.check_profile_type_by_given_profile_name('profile_6', 'device_group')
-    
+
+
 def test_pan_os_get_threat_id_from_predefined_threates(mocker):
     """
     Given:
@@ -7511,7 +7513,7 @@ def test_pan_os_get_threat_id_from_predefined_threates(mocker):
         - Ensure the correct threat ID, name, and CVEs are returned, or an appropriate exception is raised.
     """
     import Panorama
-    
+
     mock_predefined_threats = [
         {
             "@name": "10003",
