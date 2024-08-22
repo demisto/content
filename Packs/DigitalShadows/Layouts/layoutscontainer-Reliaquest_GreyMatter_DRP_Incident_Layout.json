@@ -952,11 +952,11 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_digitalshadowstriagerisktype",
+                        "fieldId": "incident_dsrisktype",
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_digitalshadowstriagetitle",
+                        "fieldId": "incident_dstriagetitle",
                         "isVisible": true
                     },
                     {
@@ -972,7 +972,7 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_dsalertid",
+                        "fieldId": "incident_alertid",
                         "isVisible": true
                     },
                     {
@@ -2150,11 +2150,11 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_digitalshadowstriagerisktype",
+                        "fieldId": "incident_dsrisktype",
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_digitalshadowstriagetitle",
+                        "fieldId": "incident_dstriagetitle",
                         "isVisible": true
                     },
                     {
@@ -2170,7 +2170,7 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_dsalertid",
+                        "fieldId": "incident_alertid",
                         "isVisible": true
                     },
                     {
