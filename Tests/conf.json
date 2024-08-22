@@ -1346,14 +1346,12 @@
         {
             "integrations": "Panorama",
             "instance_names": "palo_alto_panorama_9.0",
-            "playbookID": "test_playbook_pan_os_firewall_exceptions_commands",
-            "fromversion": "6.1.0"
+            "playbookID": "test_playbook_pan_os_firewall_exceptions_commands"
         },
         {
             "integrations": "Panorama",
             "instance_names": "panorama_instance_best_practice",
-            "playbookID": "Panorama Best Practise - Test",
-            "fromversion": "6.1.0"
+            "playbookID": "Panorama Best Practise - Test"
         },
         {
             "integrations": "Tenable.io",
