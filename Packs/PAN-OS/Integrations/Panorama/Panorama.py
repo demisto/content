@@ -14260,7 +14260,7 @@ def build_element_for_profile_exception_commands(extracted_id: str, action: str,
     return element
 
 
-def profile_exception_crud_requests(args: dict, action_type: str) -> dict:
+def profile_exception_crud_requests(args: dict, action_type: str) ->  Optional[Union[dict, CommandResults]]:
     """
     Build the element for the api that the profile exception commands use.
 
@@ -14346,7 +14346,12 @@ def profile_exception_crud_requests(args: dict, action_type: str) -> dict:
             'profile_type': profile_type
         }
     except Exception as e:
-        raise DemistoException("Exception was not founds in Exceptions list.")
+        if e.args and "Object not present" in e.args[0]:
+            return CommandResults(
+                readable_output=f'Exceptions list is empty',
+            )
+        else:
+            raise DemistoException("Exception was not founds in Exceptions list.")
 
 
 def pan_os_add_profile_exception_command(args: dict) -> CommandResults:
@@ -14426,11 +14431,12 @@ def pan_os_list_profile_exception_command(args: dict) -> CommandResults:
     }
     
     profile_name = args.get('profile_name')
-
     results = profile_exception_crud_requests(args, ExceptionCommandType.LIST.value)
-    raw_response = results.get('raw_response', {})
+    if isinstance(results, CommandResults):
+        return results
+    
     profile_type = exception_profile_types_map.get(results.get('profile_type', ''))
-
+    raw_response = results.get('raw_response', {})
     exceptions_response_list = raw_response.get('response', {}).get('result', {}).get('threat-exception', [])
     if not isinstance(exceptions_response_list, list):
         exceptions_response_list = [exceptions_response_list]
