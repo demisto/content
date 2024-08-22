@@ -7422,7 +7422,36 @@ def test_pan_os_delete_security_profile_group_command(mocker):
     assert command_results.readable_output == 'Successfully deleted Security Profile Group: "test_spg"'
 
 
-def test_pan_os_xpath_creation_for_exception_crud():
+@pytest.mark.parametrize(
+    "profile_name, profile_type, device_group, action, threat_id, expected_xpath",
+    [
+        (
+            'name',
+            'Vulnerability Protection Profile',
+            'device_group',
+            'drop',
+            '1000',
+            (
+                "/config/devices/entry[@name='localhost.localdomain']"
+                "/device-group/entry[@name='device_group']"
+                "/profiles/vulnerability/entry[@name='name']/threat-exception"
+            )
+        ),
+        (
+            'name',
+            'Anti Spyware Profile',
+            'device_group',
+            'default',
+            '1000',
+            (
+                "/config/devices/entry[@name='localhost.localdomain']"
+                "/device-group/entry[@name='device_group']"
+                "/profiles/spyware/entry[@name='name']/threat-exception"
+            )
+        ),
+    ]
+)
+def test_pan_os_xpath_creation_for_exception_crud(profile_name, profile_type, device_group, action, threat_id, expected_xpath):
     """
     Given:
         - A profile name, profile type, device group name, action, and threat ID.
@@ -7433,32 +7462,10 @@ def test_pan_os_xpath_creation_for_exception_crud():
     """
     import Panorama
 
-    results = Panorama.build_xpath_for_profile_exception_commands(
-        'name',
-        'Vulnerability Protection Profile',
-        'device_group',
-        'drop',
-        '1000'
+    result = Panorama.build_xpath_for_profile_exception_commands(
+        profile_name, profile_type, device_group, action, threat_id
     )
-    assert results == (
-        "/config/devices/entry[@name='localhost.localdomain']"
-        "/device-group/entry[@name='device_group']"
-        "/profiles/vulnerability/entry[@name='name']/threat-exception"
-    )
-
-    results = Panorama.build_xpath_for_profile_exception_commands(
-        'name',
-        'Anti Spyware Profile',
-        'device_group',
-        'default',
-        '1000'
-    )
-    assert results == (
-        "/config/devices/entry[@name='localhost.localdomain']"
-        "/device-group/entry[@name='device_group']"
-        "/profiles/spyware/entry[@name='name']/threat-exception"
-    )
-
+    assert result == expected_xpath
 
 def test_pan_os_check_profile_type_by_given_profile_name(mocker):
     """
