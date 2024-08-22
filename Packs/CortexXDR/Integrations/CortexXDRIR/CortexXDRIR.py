@@ -9,8 +9,6 @@ import pytz
 
 from CoreIRApiModule import *
 
-# Disable insecure warnings
-urllib3.disable_warnings()
 
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 NONCE_LENGTH = 64
