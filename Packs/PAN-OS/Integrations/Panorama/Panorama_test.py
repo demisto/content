@@ -7494,6 +7494,48 @@ def test_pan_os_check_profile_type_by_given_profile_name(mocker):
     with pytest.raises(DemistoException, match="Profile name was not found in Vulnerability Protection Profiles or in Anti Spyware Profiles."):
         Panorama.check_profile_type_by_given_profile_name('profile_6', 'device_group')
     
+def test_pan_os_get_threat_id_from_predefined_threates(mocker):
+    """
+    Given:
+        - A threat name that may match a threat name, ID, or CVE in the predefined threats list.
+    When:
+        - Searching for the threat ID using the provided threat name.
+    Then:
+        - Ensure the correct threat ID, name, and CVEs are returned, or an appropriate exception is raised.
+    """
+    import Panorama
+    
+    mock_predefined_threats = [
+        {
+            "@name": "10003",
+            "threatname": "Test Threat 1",
+            "cve": {"member": ["CVE-2023-1234"]}
+        },
+        {
+            "@name": "10004",
+            "threatname": "Test Threat 2",
+            "cve": {"member": ["CVE-2023-5678"]}
+        },
+        {
+            "@name": "10005",
+            "threatname": "Test Threat 3",
+            "cve": {"member": ["CVE-2023-9012"]}
+        }
+    ]
+
+    mocker.patch.object(Panorama, 'get_predefined_threats_list', return_value=mock_predefined_threats)
+
+    result = Panorama.get_threat_id_from_predefined_threates('Test Threat 1')
+    assert result == ("10003", "Test Threat 1", ["CVE-2023-1234"])
+
+    result = Panorama.get_threat_id_from_predefined_threates('10004')
+    assert result == ("10004", "Test Threat 2", ["CVE-2023-5678"])
+
+    result = Panorama.get_threat_id_from_predefined_threates('CVE-2023-9012')
+    assert result == ("10005", "Test Threat 3", ["CVE-2023-9012"])
+
+    with pytest.raises(DemistoException, match="Invalid threat_name was provided."):
+        Panorama.get_threat_id_from_predefined_threates('Nonexistent Threat')
 
 
 def test_pan_os_add_profile_exception(mocker):
