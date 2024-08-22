@@ -10,6 +10,7 @@ SERVERURLS = {
 
 fake_client = Client(base_url=WEBHOOK, verify=True, proxy=False)
 
+
 def test_create_teams_message_adaptive_cards():
     message = create_teams_message(MESSAGE, TITLE, SERVERURLS["investigation"], True)
     assert message
