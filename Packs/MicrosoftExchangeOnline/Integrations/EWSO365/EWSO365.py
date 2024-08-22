@@ -2064,14 +2064,12 @@ def get_item_as_eml(client: EWSClient, item_id, target_mailbox=None):  # pragma:
         email_content = cast_mime_item_to_message(item)
         if item.headers:
             # compare header keys case-insensitive
-            try:
-                attached_email_headers = [
-                    (h.lower(), " ".join(map(str.strip, v.split("\r\n"))))
-                    for (h, v) in list(email_content.items())
-                ]
-            except Exception as e:
-                demisto.debug(f"Couldn't get attached email headers list, reason: {e}")
-                attached_email_headers = []
+            demisto.info(f"[test]: got {item.headers=}")
+            demisto.info(f"[test]: got {email_content=}")
+            attached_email_headers = [
+                (h.lower(), " ".join(map(str.strip, v.split("\r\n"))))
+                for (h, v) in list(email_content.items())
+            ]
             for header in item.headers:
                 if (
                     header.name.lower(),
