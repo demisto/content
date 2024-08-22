@@ -194,8 +194,8 @@ script:
       type: Boolean
       auto: PREDEFINED
       predefined:
-      - true
-      - false
+      - 'true'
+      - 'false'
     - description: Specifies the repository names to filter results from. Supports comma separated values.
       name: repositories
       isArray: true

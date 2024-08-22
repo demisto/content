@@ -2858,3 +2858,73 @@ The following sections list the changes in this version.
 ## Additional Considerations for this version
 * "Risk detail" was removed from all commands because it is not supported by the API anymore.
 * Commands from the previous version were kept in order to make to transition from v1 to v2 easy for existing playbooks. We encourage to use the new version of each command.
+
+### prisma-cloud-code-issues-list
+
+***
+Retrieves the code errors detected by Application Security during periodic scans.
+
+#### Base Command
+
+`prisma-cloud-code-issues-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| git_users | Names of git users. Supports comma separated values. | Optional | 
+| branch | A branch name. | Optional | 
+| code_categories | Filters by code issue category. Is also available as a search criteria (search_scopes). Supports comma separated values. Possible values are: IacMisconfiguration, IacExternalModule, ImageReferencerVul, ImageReferencerLicenses, Vulnerabilities, Licenses, Secrets. | Optional | 
+| iac_categories | Different categories related to Infrastructure-as-Code (IaC) issues to filter by. Supports comma separated values. Possible values are: IAM, Monitoring, Networking, Kubernetes, General, Storage, Public, Drift, Compute. | Optional | 
+| iac_labels | labels associated with Infrastructure-as-Code (IaC). Supports comma separated values. Possible values are: CustomPolicy, HasFix. | Optional | 
+| file_types | File types to filter by. Supports comma separated values. Possible values are: yml, yaml, json, template, py, js, properties, pem, php, xml, ts, env, Dockerfile, java, rb, sum, mod, cs, txt, bicep, hcl, gradle, kts, lock, config, csproj, dependencies. | Optional | 
+| fixable_only | Whether to retrieve only fixable issues. Recommended to use this argument with another argument code_categories ,for example. Possible values are: true, false. | Optional | 
+| repositories | Specifies the repository names to filter results from. Supports comma separated values. | Optional | 
+| secrets_risk_factors | Filters based on risk factors related to secrets. Supports comma separated values. Possible values are: PublicRepository, PrivateRepository, User, Privileged, Valid, Invalid, Unknown, FoundInHistory. | Optional | 
+| search_scopes | Defines specific areas or categories within which to search. Supports comma separated values. When specifying `search_scopes`, `search_term` argument is required. Possible values are: IacMisconfiguration, IacExternalModule, ImageReferencerVul, ImageReferencerLicenses, Vulnerabilities, Licenses, Secrets. | Optional | 
+| severities | The criticality of issues. Supports comma separated values. Possible values are: INFO, LOW, MEDIUM, HIGH, CRITICAL. | Optional | 
+| vulnerability_risk_factors | Filters results based on risk factors for vulnerabilities. Supports comma separated values. Possible values are: AttackComplexity, AttackVector, DoS, HasFix, RemoteExecution, ExploitInTheWild, ExploitPOC, IsUsed. | Optional | 
+| search_term | A keyword or phrase used to narrow down results within specific scopes (like a particular vulnerability). It's needed if you are filtering results by search_scopes. | Optional | 
+| iac_tags | Relevant only to- IacMisconfiguration,Vulnerabilities. | Optional | 
+| license_type | License types to filter by. Supports comma separated values. | Optional | 
+| check_status | Filters by the status of checks. Possible values are: Error, Passed, Suppressed, FixPendin. | Optional | 
+| limit | The limit of issues to retrieve. Default is 50. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaCloud.CodeIssue.modifiedOn | String | The date and time when the code issue was last modified. | 
+| PrismaCloud.CodeIssue.isPublic | String | Indicates whether the repository or resource is publicly accessible \(true/false\). | 
+| PrismaCloud.CodeIssue.fileType | String | The type of file where the issue was detected \(e.g., \`.js\`, \`.py\`\). | 
+| PrismaCloud.CodeIssue.secretCommitRemove | String | The commit identifier where a secret was removed. | 
+| PrismaCloud.CodeIssue.secretCommitAdd | String | The commit identifier where a secret was added. | 
+| PrismaCloud.CodeIssue.gitUser | String | The username of the person who made the commit associated with the code issue. | 
+| PrismaCloud.CodeIssue.codePath | String | The path to the code file where the issue was detected. | 
+| PrismaCloud.CodeIssue.codeCategory | String | The category or classification of the detected issue \(e.g., security, compliance\). | 
+| PrismaCloud.CodeIssue.author | String | The original author of the code where the issue was detected. | 
+| PrismaCloud.CodeIssue.repositoryUuid | String | The unique identifier of the repository where the issue was found. | 
+| PrismaCloud.CodeIssue.path | String | The path in the repository where the issue was detected. | 
+| PrismaCloud.CodeIssue.repositorySource | String | The source of the repository \(e.g., GitHub, Bitbucket\). | 
+| PrismaCloud.CodeIssue.firstDetected | String | The date and time when the code issue was first detected. | 
+| PrismaCloud.CodeIssue.codeIssueLine | String | The line number in the code where the issue was detected. | 
+| PrismaCloud.CodeIssue.labels | String | Labels associated with the code issue for classification or categorization. | 
+| PrismaCloud.CodeIssue.labels.label | String | A specific label related to the code issue. | 
+| PrismaCloud.CodeIssue.labels.metadata.imageName | String | The name of the image associated with the label metadata. | 
+| PrismaCloud.CodeIssue.policy | String | The policy that was violated by the detected issue. | 
+| PrismaCloud.CodeIssue.repository | String | The name of the repository where the issue was found. | 
+| PrismaCloud.CodeIssue.resourceName | String | The name of the resource associated with the code issue. | 
+| PrismaCloud.CodeIssue.resourceScanType | String | The type of scan that detected the issue \(e.g., static analysis, secret detection\). | 
+| PrismaCloud.CodeIssue.resourceUuid | String | The unique identifier of the resource associated with the code issue. | 
+| PrismaCloud.CodeIssue.severity | String | The severity level of the detected issue \(e.g., High, Medium, Low\). | 
+| PrismaCloud.CodeIssue.violationId | String | The unique identifier for the policy violation related to the code issue. | 
+| PrismaCloud.CodeIssue.causePackageId | String | The ID of the package that caused the issue. | 
+| PrismaCloud.CodeIssue.causePackageName | String | The name of the package that caused the issue. | 
+| PrismaCloud.CodeIssue.cveUuid | String | The unique identifier of the Common Vulnerabilities and Exposures \(CVE\) related to the issue. | 
+| PrismaCloud.CodeIssue.cvss | String | The Common Vulnerability Scoring System \(CVSS\) score for the detected issue. | 
+| PrismaCloud.CodeIssue.fixVersion | String | The version of the code or package that contains the fix for the issue. | 
+| PrismaCloud.CodeIssue.pr | String | The pull request \(PR\) associated with resolving the code issue. | 
+| PrismaCloud.CodeIssue.resourceId | String | The identifier of the resource related to the code issue. | 
+| PrismaCloud.CodeIssue.riskFactors | String | Risk factors associated with the code issue, such as high-impact areas or sensitive data. | 
+| PrismaCloud.CodeIssue.isIndirectPackage | String | Indicates whether the issue is from an indirect package \(true/false\). | 
+
