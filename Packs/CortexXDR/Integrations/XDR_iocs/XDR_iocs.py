@@ -83,6 +83,7 @@ class Client:
         404: 'XDR Not found: The provided URL may not be of an active XDR server.',
         413: 'Request entity too large. Please reach out to the XDR support team.'
     }
+    # first_sync_phase: bool = False
 
     def __init__(self, params: dict):
         self._base_url: str = urljoin(params.get('url'), '/public_api/v1/indicators/')
@@ -205,36 +206,35 @@ def add_end_limit_to_query_first_stage_sync_is_true(query: str):
 
 
 def search_indicators_corresponding_modification_time(query: str,from_date: str, to_date: str):
-    query = f'modified:>={from_date} and modified:<{to_date} and ({query})'
-    demisto.debug(f"{query=}")
-    send_all_same_modify = True
+    updated_query = f'modified:>={from_date} and modified:<{to_date} and ({query})'
+    demisto.debug(f"{updated_query=}")
     ioc_count = 0
-    while send_all_same_modify:
-        try:
-            for batch in IndicatorsSearcher(size=5000, query=query, sort=[{"field": "modified", "asc": True},
-                                              {"field": "value", "asc": True}], filter_fields=
-                                                'value,indicator_type,score,expiration,modified,aggregatedReliability,moduleToFeedMap,comments,id,CustomFields'):
-                for ioc in batch.get('iocs', []):
-                    ioc_count += 1
-                    demisto.debug("here")
-                    yield ioc
-                # TODO move this to main function - and send to API after every 50,000 indicators.
-                # if ioc_count >= MAX_INDICATORS_TO_SYNC:
-                #     raise StopIteration
-        except StopIteration:
-            pass
-        except Exception as e:
-            raise e
+    try:
+        for batch in IndicatorsSearcher(size=5000, query=updated_query, sort=[{"field": "modified", "asc": True}], filter_fields=
+                                            'value,indicator_type,score,expiration,modified,aggregatedReliability,moduleToFeedMap,comments,id,CustomFields'):
+            for ioc in batch.get('iocs', []):
+                ioc_count += 1
+                demisto.debug(f"{ioc.get('modified')=}")
+                yield ioc
+            if ioc_count == 0:
+                raise StopIteration
+            # TODO move this to main function - and send to API after every 50,000 indicators.
+            # if ioc_count >= MAX_INDICATORS_TO_SYNC:
+            #     raise StopIteration
+    except StopIteration:
+        pass
+    except Exception as e:
+        raise e
 
 def convert_timestamp_to_datetime_string(timestamp_in_milliseconds: int) -> str:
     timestamp_in_seconds = timestamp_in_milliseconds / 1000.0
     utc_dt = datetime.utcfromtimestamp(timestamp_in_seconds)
-    return utc_dt.isoformat() + 'Z'
+    return utc_dt.isoformat() + '000Z'
 
 def increment_timestamp_by_one_millisecond(timestamp_str: str) -> str:
-    datetime_obj = datetime.fromisoformat(timestamp_str.replace('Z', '+00:00'))
+    datetime_obj = datetime.fromisoformat(timestamp_str.replace('000Z', '+00:00'))
     new_datetime_obj = datetime_obj + timedelta(milliseconds=1)
-    new_datetime_str = new_datetime_obj.strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + 'Z'
+    new_datetime_str = new_datetime_obj.strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + '000000Z'
     return new_datetime_str
     
 def get_iocs_generator(size=200, query=None, is_first_stage_sync= False) -> Iterable:
@@ -242,7 +242,7 @@ def get_iocs_generator(size=200, query=None, is_first_stage_sync= False) -> Iter
     query = f'expirationStatus:active AND ({query})'
     if is_first_stage_sync:
         query_with_end_time = add_end_limit_to_query_first_stage_sync_is_true(query)
-    demisto.debug(f"{query_with_end_time=}")
+    # demisto.debug(f"{query_with_end_time=}")
     ioc_count = 0
     try:
         search_after = get_integration_context().get('search_after')
@@ -250,18 +250,18 @@ def get_iocs_generator(size=200, query=None, is_first_stage_sync= False) -> Iter
                                         query=query_with_end_time,
                                         search_after=search_after,
                                         sort=[{"field": "modified", "asc": True},
-                                              {"field": "value", "asc": True}],
+                                              {"field": "id", "asc": True}],
                                         filter_fields=
                                         'value,indicator_type,score,expiration,modified,aggregatedReliability,moduleToFeedMap,comments,id,CustomFields'):
             for ioc in batch.get('iocs', []):
-                # if ioc.get('value') not in already_sent_indicators:
                 # if ioc.get('modified') > get_integration_context().get('time'):
                 #     raise StopIteration
+                # demisto.debug(f"{ioc.get('modified')=}, {ioc.get('id')}")
                 ioc_count += 1
                 yield ioc
                 if ioc_count >= MAX_INDICATORS_TO_SYNC:
                     search_after_array = batch.get('searchAfter', [])
-                    demisto.debug(f"{search_after_array=}")
+                    # demisto.debug(f"{search_after_array=}")
                     set_search_after(search_after_array)
                     raise StopIteration
     except StopIteration:
@@ -471,7 +471,7 @@ def set_sync_time(timestamp: datetime) -> None:
 
 def sync(client: Client, batch_size: int = 200, is_first_stage_sync: bool = False):
     """
-    Sync command runs in batches of 200 with total of 50,000 indicators in each sync.
+    Sync command runs in batches of 5,000 with total of 50,000 indicators in each sync.
     Syncs the data in xsoar to xdr.
     """
     demisto.info("executing sync")
@@ -750,6 +750,7 @@ def fetch_indicators(client: Client, auto_sync: bool = False):
         if not integration_context:
             sync_time = datetime.now(timezone.utc)
             set_sync_time(sync_time)
+            # client.first_sync_phase = True
         is_first_stage_sync = True
         demisto.debug("fetching IOCs: running sync with is_first_stage_sync=True")
         # this will happen on the first time we run
