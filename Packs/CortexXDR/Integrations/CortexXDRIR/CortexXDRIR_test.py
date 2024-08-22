@@ -214,7 +214,7 @@ class TestFetchStarredIncident:
         client = Client(
             base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False)
         next_run, incidents = fetch_incidents(client, '3 month', 'MyInstance', exclude_artifacts=False,
-                                              last_run=last_run_obj.get('next_run') or {},
+                                              last_run=last_run_obj.get('next_run', {})
                                               starred=True,
                                               starred_incidents_fetch_window='3 days')
         assert len(incidents) == 2

@@ -385,7 +385,7 @@ class Client(CoreClient):
         return reply.get('reply', {})
 
     def get_multiple_incidents_extra_data(self, exclude_artifacts, incident_id_list=[], gte_creation_time_milliseconds=0,
-                                          statuses=None, starred=None, starred_incidents_fetch_window=None,
+                                          statuses=[], starred=None, starred_incidents_fetch_window=None,
                                           page_number=0, limit=100, offset=0):
         """
         Returns incident by id
@@ -1338,7 +1338,7 @@ def main():  # pragma: no cover
                                                   first_fetch_time=first_fetch_time,
                                                   integration_instance=integration_instance,
                                                   exclude_artifacts=exclude_artifacts,
-                                                  last_run=last_run_obj.get('next_run') or {},
+                                                  last_run=demisto.getLastRun().get('next_run', {})
                                                   max_fetch=max_fetch,
                                                   statuses=statuses,
                                                   starred=starred,
