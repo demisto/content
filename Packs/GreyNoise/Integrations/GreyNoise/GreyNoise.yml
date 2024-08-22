@@ -137,52 +137,52 @@ script:
       description: 'When was the CVE information last updated.'
       type: Date
     - contextPath: GreyNoise.CVE.timeline.first_known_published_date
-      description: 'When first exploit associated with CVE was published'
+      description: 'When first exploit associated with CVE was published.'
       type: Date
     - contextPath: GreyNoise.CVE.timeline.cisa_kev_date_added
-      description: 'When the CVE was added to KEV'
+      description: 'When the CVE was added to KEV.'
       type: Date
     - contextPath: GreyNoise.CVE.exploitation_details.attack_vector
-      description: 'The attack vector category'
+      description: 'The attack vector category.'
       type: String
     - contextPath: GreyNoise.CVE.exploitation_details.exploit_found
-      description: 'Whether any known exploits are available'
+      description: 'Whether any known exploits are available.'
       type: Boolean
     - contextPath: GreyNoise.CVE.exploitation_details.exploitation_registered_in_kev
-      description: 'Whether exploitation has been registered in KEV database'
+      description: 'Whether exploitation has been registered in KEV database.'
       type: Boolean
     - contextPath: GreyNoise.CVE.exploitation_details.epss_score
-      description: 'EPSS Score associated with this exploitation (Exploit Prediction Scoring System)'
+      description: 'EPSS Score associated with this exploitation (Exploit Prediction Scoring System).'
       type: Number
     - contextPath: GreyNoise.CVE.exploitation_stats.number_of_available_exploits
-      description: 'The total number of exploits available (public + commercial)'
+      description: 'The total number of exploits available (public + commercial).'
       type: Number
     - contextPath: GreyNoise.CVE.exploitation_stats.number_of_threat_actors_exploiting_vulnerability
-      description: 'The total number of known threat actors'
+      description: 'The total number of known threat actors.'
       type: Number
     - contextPath: GreyNoise.CVE.exploitation_stats.number_of_botnets_exploiting_vulnerability
-      description: 'The total number of botnets'
+      description: 'The total number of botnets.'
       type: Number
     - contextPath: GreyNoise.CVE.exploitation_activity.activity_seen
-      description: 'Whether GreyNoise has seen activity'
+      description: 'Whether GreyNoise has seen activity.'
       type: Boolean
     - contextPath: GreyNoise.CVE.exploitation_activity.benign_ip_count_1d
-      description: 'The total number of benign IP GreyNoise has seen exercising (Scanning || Exploiting) this vulnerability in the last day'
+      description: 'The total number of benign IP GreyNoise has seen exercising (Scanning || Exploiting) this vulnerability in the last day.'
       type: Number
     - contextPath: GreyNoise.CVE.exploitation_activity.benign_ip_count_10d
-      description: 'The total number of benign IP GreyNoise has seen exercising (Scanning || Exploiting) this vulnerability in the last 10 days'
+      description: 'The total number of benign IP GreyNoise has seen exercising (Scanning || Exploiting) this vulnerability in the last 10 days.'
       type: Number
     - contextPath: GreyNoise.CVE.exploitation_activity.benign_ip_count_30d
-      description: 'The total number of benign IP GreyNoise has seen exercising (Scanning || Exploiting) this vulnerability in the last 30 days'
+      description: 'The total number of benign IP GreyNoise has seen exercising (Scanning || Exploiting) this vulnerability in the last 30 days.'
       type: Number
     - contextPath: GreyNoise.CVE.exploitation_activity.threat_ip_count_1d
-      description: 'The total number of threat IP GreyNoise has seen exercising (Scanning || Exploiting) this vulnerability in the last day'
+      description: 'The total number of threat IP GreyNoise has seen exercising (Scanning || Exploiting) this vulnerability in the last day.'
       type: Number
     - contextPath: GreyNoise.CVE.exploitation_activity.threat_ip_count_10d
-      description: 'The total number of threat IP GreyNoise has seen exercising (Scanning || Exploiting) this vulnerability in the last 10 days'
+      description: 'The total number of threat IP GreyNoise has seen exercising (Scanning || Exploiting) this vulnerability in the last 10 days.'
       type: Number
     - contextPath: GreyNoise.CVE.exploitation_activity.threat_ip_count_30d
-      description: 'The total number of threat IP GreyNoise has seen exercising (Scanning || Exploiting) this vulnerability in the last 30 days'
+      description: 'The total number of threat IP GreyNoise has seen exercising (Scanning || Exploiting) this vulnerability in the last 30 days.'
       type: Number
     - contextPath: DBotScore.Indicator
       description: 'The indicator that was tested.'
