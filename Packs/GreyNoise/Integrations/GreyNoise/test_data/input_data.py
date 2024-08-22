@@ -582,3 +582,8 @@ timeline_command_response_data = [
                                                                                        "'192.168.1.1'"),  # NOSONAR
     ({"ip": "abc"}, "negative", "forbidden", 404, "Invalid IP address: 'abc'"),  # NOSONAR
 ]
+
+cve_command_response_data = [
+    ({"cve": "CVE-1900-12345"}, "positive", {}, 200, {}),
+    ({"cve": "abce"}, "negative", {}, 400, "The provided ID does not match the format: CVE-XXXX-YYYYY")
+]
