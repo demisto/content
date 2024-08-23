@@ -291,7 +291,7 @@ def create_gcp_access_token(gcp_service_account_json):
     gcp_service_account_json = gcp_service_account_json.encode().decode('unicode_escape')
 
     # Parse the JSON string into a dictionary
-    service_account_info = json.loads(gcp_service_account_json)
+    service_account_info = json.loads(gcp_service_account_json, strict=False)
 
     # Create credentials from the JSON dictionary
     credentials = service_account.Credentials.from_service_account_info(service_account_info)

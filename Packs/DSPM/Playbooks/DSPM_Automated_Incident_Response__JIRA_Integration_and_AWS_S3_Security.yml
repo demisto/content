@@ -1,5 +1,5 @@
 id: da7fa1c4-11b7-4c6c-8afa-15d0e3e5f417
-version: 10
+version: 8
 vcShouldKeepItemLegacyProdMachine: false
 name: 'DSPM Automated Incident Response: JIRA Integration and AWS S3 Security'
 description: Automates incident response by integrating JIRA for issue tracking and
@@ -10,10 +10,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 86ab0316-4b98-4436-8987-285fef55723e
+    taskid: aaa1111e-eee0-4978-8d81-35f2fea034a1
     type: start
     task:
-      id: 86ab0316-4b98-4436-8987-285fef55723e
+      id: aaa1111e-eee0-4978-8d81-35f2fea034a1
       version: -1
       name: ""
       iscommand: false
@@ -39,10 +39,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: c4a4fe3b-7b73-43cb-8091-7a05619a5afd
+    taskid: 7db0861b-ff96-4a05-8d49-f0919405bbbf
     type: condition
     task:
-      id: c4a4fe3b-7b73-43cb-8091-7a05619a5afd
+      id: 7db0861b-ff96-4a05-8d49-f0919405bbbf
       version: -1
       name: Check if the Action is value
       type: condition
@@ -53,6 +53,8 @@ tasks:
       - "16"
       No Response from user:
       - "29"
+      Remediation action for Empty storage asset:
+      - "44"
       Remedition action (Sensitive asset open to world):
       - "40"
     separatecontext: false
@@ -77,6 +79,14 @@ tasks:
           right:
             value:
               simple: remediate
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.name
+            iscontext: true
+          right:
+            value:
+              simple: Sensitive asset open to world
     - label: No Response from user
       condition:
       - - operator: isEqualString
@@ -87,6 +97,24 @@ tasks:
           right:
             value:
               simple: no_response
+    - label: Remediation action for Empty storage asset
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: User.Action
+            iscontext: true
+          right:
+            value:
+              simple: remediate
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.name
+            iscontext: true
+          right:
+            value:
+              simple: Empty storage asset
     continueonerrortype: ""
     view: |-
       {
@@ -104,10 +132,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 29201364-6948-4322-8d69-a6a3498c40f7
+    taskid: feee228a-3dbd-48c1-8bed-333cfe73eb4e
     type: regular
     task:
-      id: 29201364-6948-4322-8d69-a6a3498c40f7
+      id: feee228a-3dbd-48c1-8bed-333cfe73eb4e
       version: -1
       name: Update Slack Incident with JIRA details
       description: commands.local.cmd.set.incident
@@ -127,8 +155,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1540,
-          "y": 1420
+          "x": -1930,
+          "y": 1380
         }
       }
     note: false
@@ -140,10 +168,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 01482557-43e3-4947-8d7a-3714a001f8c4
+    taskid: 63903a56-9b06-4082-898e-b673a915cafb
     type: regular
     task:
-      id: 01482557-43e3-4947-8d7a-3714a001f8c4
+      id: 63903a56-9b06-4082-898e-b673a915cafb
       version: -1
       name: Closed current  Incident playbook
       description: commands.local.cmd.close.inv
@@ -174,10 +202,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 89a17bdd-cf4f-43e1-8f8b-06631a5f6565
+    taskid: dd31aaa4-eb17-4278-8f71-31dcd686805e
     type: regular
     task:
-      id: 89a17bdd-cf4f-43e1-8f8b-06631a5f6565
+      id: dd31aaa4-eb17-4278-8f71-31dcd686805e
       version: -1
       name: Create Jira Issue with Assignee ID
       description: Creates a new issue in Jira.
@@ -211,8 +239,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1540,
-          "y": 1255
+          "x": -1930,
+          "y": 1210
         }
       }
     note: false
@@ -224,10 +252,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 0d6c3842-bb70-4329-810f-338fd0e3be18
+    taskid: f174014f-2d3f-4f7f-8dde-c680fed20e04
     type: regular
     task:
-      id: 0d6c3842-bb70-4329-810f-338fd0e3be18
+      id: f174014f-2d3f-4f7f-8dde-c680fed20e04
       version: -1
       name: Get Assignee ID from email
       scriptName: DSPM-Get-Jira-accountId
@@ -246,8 +274,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1230,
-          "y": 905
+          "x": -1590,
+          "y": 870
         }
       }
     note: false
@@ -259,10 +287,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 5abaff6a-7911-4c16-83ae-bcd722712340
+    taskid: 5e99fe81-2ac1-4066-817c-a370edfdf90c
     type: regular
     task:
-      id: 5abaff6a-7911-4c16-83ae-bcd722712340
+      id: 5e99fe81-2ac1-4066-817c-a370edfdf90c
       version: -1
       name: ParseSlackBlockBuilderResponse
       scriptName: ParseSlackBlockBuilderResponse
@@ -290,10 +318,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: afbf1b55-a53a-400c-86bf-d437cd049d3e
+    taskid: a89b057f-8826-41f5-840c-b8433d240696
     type: regular
     task:
-      id: afbf1b55-a53a-400c-86bf-d437cd049d3e
+      id: a89b057f-8826-41f5-840c-b8433d240696
       version: -1
       name: SlackBlockBuilder
       description: SlackBlockBuilder will format a given Slack block into a format
@@ -331,10 +359,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 2398d440-d7ec-4dfa-8230-bb55528db7e3
+    taskid: f5762807-23d6-4118-8fbb-500ea55d3bc4
     type: regular
     task:
-      id: 2398d440-d7ec-4dfa-8230-bb55528db7e3
+      id: f5762807-23d6-4118-8fbb-500ea55d3bc4
       version: -1
       name: GetSlackBlockBuilderResponse
       description: GetSlackBlockBuilderResponse will format a SlackBlockBuilder response
@@ -370,10 +398,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 4178d4c1-18a6-45be-8ee5-2b309c38c621
+    taskid: 2a121a73-c599-4f82-88ff-1ab404957f5b
     type: regular
     task:
-      id: 4178d4c1-18a6-45be-8ee5-2b309c38c621
+      id: 2a121a73-c599-4f82-88ff-1ab404957f5b
       version: -1
       name: DSPM_risk_status_update
       scriptName: DSPM_risk_status_update
@@ -404,10 +432,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 0f80fae6-5da5-431b-8321-e75ea936e19b
+    taskid: 1f5c33d7-7809-40bf-813e-bc8fe21d1d68
     type: regular
     task:
-      id: 0f80fae6-5da5-431b-8321-e75ea936e19b
+      id: 1f5c33d7-7809-40bf-813e-bc8fe21d1d68
       version: -1
       name: Extracts DSPM risk fields
       scriptName: DSPM_fetch_incident_details
@@ -438,10 +466,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: ef8f6f69-1fe4-4b73-8bd0-77d01b9cef35
+    taskid: 8f76ae98-8f80-4a41-8a87-6c66483697ba
     type: regular
     task:
-      id: ef8f6f69-1fe4-4b73-8bd0-77d01b9cef35
+      id: 8f76ae98-8f80-4a41-8a87-6c66483697ba
       version: -1
       name: Fetch list of Jira project
       scriptName: DSPM_fetch_list_of_jira_project
@@ -451,6 +479,8 @@ tasks:
     nexttasks:
       '#none#':
       - "35"
+    results:
+    - SlackMsgLifetime
     separatecontext: false
     continueonerror: true
     continueonerrortype: ""
@@ -470,10 +500,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: c7823796-420e-41b0-821b-9e955711577b
+    taskid: 37428631-402b-417e-8c8b-40f8a74a1d14
     type: regular
     task:
-      id: c7823796-420e-41b0-821b-9e955711577b
+      id: 37428631-402b-417e-8c8b-40f8a74a1d14
       version: -1
       name: CreateDSPMRiskSlackBlocks
       scriptName: CreateDSPMRiskSlackBlocks
@@ -507,10 +537,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: 30977d9e-2f59-4bbd-8a30-26da9c67aaf8
+    taskid: d23d10a7-cb0d-4a33-834e-0197cf942e75
     type: regular
     task:
-      id: 30977d9e-2f59-4bbd-8a30-26da9c67aaf8
+      id: d23d10a7-cb0d-4a33-834e-0197cf942e75
       version: -1
       name: RemoveSlackBlockList
       scriptName: RemoveSlackBlockList
@@ -541,10 +571,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 091289d8-86cf-48b5-8816-654d0a983b95
+    taskid: 4846aef9-4275-4a0c-8259-750229413358
     type: regular
     task:
-      id: 091289d8-86cf-48b5-8816-654d0a983b95
+      id: 4846aef9-4275-4a0c-8259-750229413358
       version: -1
       name: OverwriteListAndNotify
       description: This automation script overwrites the value of a specified list
@@ -586,10 +616,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: 44122fdc-147e-4640-8ff8-2e65a54dcf42
+    taskid: 3b0efd0f-c787-4281-8d1b-4f1cd1f6dae7
     type: regular
     task:
-      id: 44122fdc-147e-4640-8ff8-2e65a54dcf42
+      id: 3b0efd0f-c787-4281-8d1b-4f1cd1f6dae7
       version: -1
       name: SlackBlockBuilder
       description: SlackBlockBuilder will format a given Slack block into a format
@@ -627,10 +657,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: 432e339a-00d4-445e-8fa0-9d74a0cab042
+    taskid: 37f92aae-ff19-45e7-86b7-3e67ad53f685
     type: regular
     task:
-      id: 432e339a-00d4-445e-8fa0-9d74a0cab042
+      id: 37f92aae-ff19-45e7-86b7-3e67ad53f685
       version: -1
       name: OverwriteListAndNotify
       description: This automation script overwrites the value of a specified list
@@ -656,8 +686,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1230,
-          "y": 1650
+          "x": -1630,
+          "y": 1640
         }
       }
     note: false
@@ -669,10 +699,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 15c06e4e-d2c4-4811-8961-00fcee073760
+    taskid: 7bd2218a-06b0-4644-8124-2bfa37d8db57
     type: regular
     task:
-      id: 15c06e4e-d2c4-4811-8961-00fcee073760
+      id: 7bd2218a-06b0-4644-8124-2bfa37d8db57
       version: -1
       name: SlackBlockBuilder
       description: SlackBlockBuilder will format a given Slack block into a format
@@ -710,10 +740,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: d7ad94eb-6fb7-4a1c-8157-61ecd441ef1a
+    taskid: 9b43768d-b91c-4553-87bc-3759b62a9ba2
     type: condition
     task:
-      id: d7ad94eb-6fb7-4a1c-8157-61ecd441ef1a
+      id: 9b43768d-b91c-4553-87bc-3759b62a9ba2
       version: -1
       name: Errors occurred when retrieving the project ID list?
       description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
@@ -749,10 +779,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: 58bac670-2ea5-4c0f-8540-6d730fc23599
+    taskid: a329230c-77b2-4aed-816e-e20a16ab1070
     type: condition
     task:
-      id: 58bac670-2ea5-4c0f-8540-6d730fc23599
+      id: a329230c-77b2-4aed-816e-e20a16ab1070
       version: -1
       name: 'Errors occurred when generating the Slack block list for the incident
         ID : ${incident_object.id}'
@@ -789,10 +819,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: 7ec22c12-9862-4154-8519-b5d333929ef6
+    taskid: 1740be28-99f1-4d17-88ec-2ceda3b9f91f
     type: regular
     task:
-      id: 7ec22c12-9862-4154-8519-b5d333929ef6
+      id: 1740be28-99f1-4d17-88ec-2ceda3b9f91f
       version: -1
       name: closeInvestigation
       description: Close the current incident
@@ -823,10 +853,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: 317db8b8-7f8c-4cfc-85aa-5a8ca19de917
+    taskid: dfe57361-6a4e-45e8-82ed-cb7c32d3a5cc
     type: regular
     task:
-      id: 317db8b8-7f8c-4cfc-85aa-5a8ca19de917
+      id: dfe57361-6a4e-45e8-82ed-cb7c32d3a5cc
       version: -1
       name: closeInvestigation
       description: Close the current incident
@@ -857,10 +887,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: ad816816-352f-4a07-8b15-8036eb143bf7
+    taskid: 925c9760-f991-4824-87d9-a4464159460e
     type: playbook
     task:
-      id: ad816816-352f-4a07-8b15-8036eb143bf7
+      id: 925c9760-f991-4824-87d9-a4464159460e
       version: -1
       name: DSPM Remediation playbook for Sensitive asset open to world.
       playbookName: DSPM Remediation playbook for Sensitive asset open to world.
@@ -880,8 +910,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -470,
-          "y": 1050
+          "x": -990,
+          "y": 980
         }
       }
     note: false
@@ -893,10 +923,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: fd55d4a8-e1d3-4ffc-80e3-5945d75a3114
+    taskid: 22c328a2-8e83-47f9-8dfc-52a5a34d7411
     type: condition
     task:
-      id: fd55d4a8-e1d3-4ffc-80e3-5945d75a3114
+      id: 22c328a2-8e83-47f9-8dfc-52a5a34d7411
       version: -1
       name: Errors occurred while fetching assignee ID from email ?
       description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
@@ -919,8 +949,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1230,
-          "y": 1065
+          "x": -1630,
+          "y": 1030
         }
       }
     note: false
@@ -932,10 +962,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: 00c66e6a-6340-40b4-8a17-9098944b3424
+    taskid: 3bcc5aea-d227-4c50-84eb-92d55e0d22e8
     type: regular
     task:
-      id: 00c66e6a-6340-40b4-8a17-9098944b3424
+      id: 3bcc5aea-d227-4c50-84eb-92d55e0d22e8
       version: -1
       name: Create Jira Issue without Assignee ID
       description: Creates a new issue in Jira.
@@ -967,8 +997,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -940,
-          "y": 1255
+          "x": -1410,
+          "y": 1210
         }
       }
     note: false
@@ -980,10 +1010,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: 57491041-008c-4346-8394-8ecd109234d0
+    taskid: a7d6ffbf-08ad-40d2-890f-0127e9ba7fb7
     type: regular
     task:
-      id: 57491041-008c-4346-8394-8ecd109234d0
+      id: a7d6ffbf-08ad-40d2-890f-0127e9ba7fb7
       version: -1
       name: Update Slack Incident with JIRA details
       description: commands.local.cmd.set.incident
@@ -1005,8 +1035,39 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -940,
-          "y": 1410
+          "x": -1380,
+          "y": 1400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: 34c276a3-7e41-4744-8fce-47462f975ca2
+    type: playbook
+    task:
+      id: 34c276a3-7e41-4744-8fce-47462f975ca2
+      version: -1
+      name: DSPM Remediation playbook for Empty storage asset
+      playbookName: DSPM Remediation playbook for Empty storage asset
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    separatecontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -310,
+          "y": 1010
         }
       }
     note: false
@@ -1024,8 +1085,8 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 3005,
-        "width": 2480,
-        "x": -1540,
+        "width": 2870,
+        "x": -1930,
         "y": -970
       }
     }

@@ -1,5 +1,5 @@
 id: e0f37ddb-21de-40f7-89cf-58d51ac7f00f
-version: 5
+version: 7
 vcShouldKeepItemLegacyProdMachine: false
 name: DSPM Remediation playbook for Empty storage asset
 starttaskid: "0"
@@ -62,7 +62,7 @@ tasks:
       {
         "position": {
           "x": 1270,
-          "y": 630
+          "y": 690
         }
       }
     note: false
@@ -88,6 +88,8 @@ tasks:
     nexttasks:
       Azure:
       - "8"
+      GCP:
+      - "9"
     separatecontext: false
     conditions:
     - label: AWS
@@ -164,7 +166,7 @@ tasks:
       {
         "position": {
           "x": 930,
-          "y": 420
+          "y": 480
         }
       }
     note: false
@@ -202,8 +204,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 590,
-          "y": 630
+          "x": 580,
+          "y": 700
         }
       }
     note: false
@@ -249,14 +251,49 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 3afcba86-bb19-4c80-8c71-3ac0c994faad
+    type: regular
+    task:
+      id: 3afcba86-bb19-4c80-8c71-3ac0c994faad
+      version: -1
+      name: gcs-delete-bucket
+      description: Deletes a bucket.
+      script: Google Cloud Storage|||gcs-delete-bucket
+      type: regular
+      iscommand: true
+      brand: Google Cloud Storage
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      bucket_name:
+        simple: my-dummy-bucket-dspm
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1430,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 915,
-        "width": 1060,
-        "x": 590,
+        "height": 985,
+        "width": 1230,
+        "x": 580,
         "y": -190
       }
     }
