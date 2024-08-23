@@ -1,0 +1,106 @@
+commonfields:
+  id: f7db1bc3-6da1-4001-875c-0ae10a66d98a
+  version: 45
+vcShouldKeepItemLegacyProdMachine: false
+name: RerunDSPMIncidents
+script: |-
+  import json
+  import requests
+  import traceback
+
+  from datetime import datetime, timedelta
+
+  INCIDENT_LIST = "INCIDENT_LIST2"
+
+  def timeDifferenceInHours(given_timestamp):
+      """
+        Function will fetch the time difference and
+        if the difference is more than 48 hours then
+        we will re-open the investigation.
+      """
+      time_duration = demisto.args().get("time_duration", 48.00)
+      given_time = datetime.strptime(given_timestamp, "%Y-%m-%d %H:%M:%S.%f")
+      current_time = datetime.now()
+      difference = current_time - given_time
+      hours_difference = difference.total_seconds() / 3600
+      if hours_difference >= time_duration:
+          print("hours_difference", hours_difference)
+          print("We have to re-run the incident")
+          return True
+      return False
+
+  def reopenInvestigation(incidentId):
+      """
+        Function will re-open the investigation
+        and re-reun the same playbook.
+      """
+      resp = demisto.executeCommand("reopenInvestigation", {"id":incidentId})
+      demisto.info(f"Response from reopenInvestigation command:- {resp}")
+      if resp[0].get("Contents"):
+          rerun = demisto.executeCommand("setPlaybook", {"incidentId": incidentId, "name": ""})
+          demisto.info(f"Response from setPlaybook command:- {rerun}")
+          if rerun[0].get("Contents") == "done":
+              return True
+      return False
+
+  def reopenIncident():
+      """
+        Function will fetch the incident list and
+        get the count of total number of re-opened
+        incidents.
+      """
+      count, status = 0, ""
+      listData = demisto.executeCommand("getList", {"listName": INCIDENT_LIST})
+      demisto.info(f"Response from getList command:- {listData}")
+      incidentList = listData[0].get("Contents", None)
+      if incidentList == "null" or incidentList is None:
+          status = f"No {INCIDENT_LIST} is available."
+          return count, status
+      else:
+          incidentList = json.loads(incidentList)
+          for incident in incidentList:
+              differenceInHours = timeDifferenceInHours(incident.get("incident_created"))
+              if differenceInHours:
+                  result = reopenInvestigation(incident.get("incident_id"))
+                  if result:
+                      count += 1
+          if count == 0:
+              status = "No incidents were reopened."
+          status = f"Successfully reopened {count} incidents."
+          demisto.info(status)
+      return count, status
+
+  def main():
+      try:
+          count, status = reopenIncident()
+          reportSummary = {"Total Number of Reopened Incidents": count}
+          return_results(
+            CommandResults(
+                readable_output=tableToMarkdown("Report Summary:", reportSummary, removeNull=True),
+                outputs_prefix = "dspm",
+                outputs=status
+            )
+          )
+      except Exception as ex:
+          demisto.error(traceback.format_exc())
+          return_error(str(ex))
+
+
+  if __name__ == "__builtin__" or __name__ == "builtins":
+      main()
+
+  register_module_line('test-script', 'end', __line__())
+type: python
+tags: []
+enabled: true
+args:
+- name: time_duration
+  description: Time Duration under which we are going to re-run the incident
+scripttarget: 0
+subtype: python3
+pswd: ""
+runonce: false
+dockerimage: demisto/google-cloud-storage:1.0.0.76046
+runas: DBotWeakRole
+engineinfo: {}
+mainengineinfo: {}

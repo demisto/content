@@ -1,0 +1,109 @@
+id: a15685ad-bfab-427a-8b1d-22c4cdad063e
+version: 20
+vcShouldKeepItemLegacyProdMachine: false
+name: DSPM Re-run incident
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 5f0e103d-76bb-4c29-8a04-c3de5472ed4d
+    type: start
+    task:
+      id: 5f0e103d-76bb-4c29-8a04-c3de5472ed4d
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 15366e68-fd21-44d0-8191-8093326a3f67
+    type: regular
+    task:
+      id: 15366e68-fd21-44d0-8191-8093326a3f67
+      version: -1
+      name: closeInvestigation
+      description: Close the current incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: ffee9380-e8dc-48e6-8fc7-0b174fa30326
+    type: regular
+    task:
+      id: ffee9380-e8dc-48e6-8fc7-0b174fa30326
+      version: -1
+      name: RerunDSPMIncidents
+      scriptName: RerunDSPMIncidents
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 465,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

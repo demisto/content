@@ -1,0 +1,82 @@
+commonfields:
+  id: 74e2f486-22da-4b9b-8a8d-18c51d79d43c
+  version: 26
+vcShouldKeepItemLegacyProdMachine: false
+name: DSPMIncidentList
+script: |-
+  from typing import Dict, Any
+  import traceback
+
+
+  ''' STANDALONE FUNCTION '''
+
+
+  def create_incident_list(incident_object):
+      status = ""
+      incident_object = incident_object.get("incident_data")
+      if isinstance(incident_object, list):
+          incident_object = incident_object[0]
+      # incident_object = json.loads(incident_object)
+      incident_id = incident_object.get("incidentId")
+      incident_data = {
+          "incident_id": incident_id,
+          "incident_created": incident_object.get("incidentCreated"),
+      }
+      incident_list = demisto.executeCommand("getList", {"listName": "INCIDENT_LIST2"})
+      if (
+         incident_list[0].get("Contents") == "null"
+         or incident_list[0].get("Contents") is None
+         or 'Item not found' in incident_list[0].get("Contents")
+      ):
+          create_list = demisto.executeCommand("createList", {"listName": "INCIDENT_LIST2","listData":[incident_data]})
+          status = f"Successfully created incident list with incident id :- {incident_id}"
+      else:
+          # Check if the value exists in any dictionary
+          incident_list = json.loads(incident_list[0].get("Contents"))
+          exists = any(data.get("incident_id") == incident_id for data in incident_list)
+          if exists:
+              # Remove the incident_data with the incident_id
+              incident_list = [incident for incident in incident_list if incident["incident_id"] != incident_id]
+              delete_incident = demisto.executeCommand("setList", {"listName":"INCIDENT_LIST2","listData": incident_list})
+              status = f"Deleted incident data with incident id {incident_id} from the list."
+          else:
+              print("incident_data", incident_data)
+              incident_list.append(incident_data)
+              add_incident = demisto.executeCommand("setList", {"listName":"INCIDENT_LIST2","listData": incident_list})
+              print("add_incident", add_incident)
+              status = f"Successfully added incident data with incident id {incident_id} in the list."
+      incident_list = demisto.executeCommand("getList", {"listName": "INCIDENT_LIST2"})
+      return status
+
+  ''' MAIN FUNCTION '''
+
+
+  def main():
+      try:
+          return_results(create_incident_list(demisto.args()))
+      except Exception as ex:
+          demisto.error(traceback.format_exc())  # print the traceback
+          return_error(f'Failed to execute DSPMIncidentList. Error: {str(ex)}')
+
+
+  ''' ENTRY POINT '''
+
+
+  if __name__ in ('__main__', '__builtin__', 'builtins'):
+      main()
+type: python
+tags: []
+enabled: true
+args:
+- name: incident_data
+  required: true
+  isArray: true
+  type: unknown
+scripttarget: 0
+subtype: python3
+pswd: ""
+runonce: false
+dockerimage: demisto/python3:3.11.9.107902
+runas: DBotWeakRole
+engineinfo: {}
+mainengineinfo: {}

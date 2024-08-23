@@ -27,7 +27,7 @@ tasks:
       {
         "position": {
           "x": 240,
-          "y": -970
+          "y": -1510
         }
       }
     note: false
@@ -119,8 +119,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -470,
-          "y": 715
+          "x": -490,
+          "y": 565
         }
       }
     note: false
@@ -300,13 +300,16 @@ tasks:
     nexttasks:
       '#none#':
       - "3"
+    scriptarguments:
+      incident_data:
+        simple: ${incident_object}
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -470,
-          "y": 520
+          "x": -490,
+          "y": 375
         }
       }
     note: false
@@ -346,8 +349,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -470,
-          "y": 80
+          "x": -490,
+          "y": -370
         }
       }
     note: false
@@ -373,7 +376,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "21"
+      - "45"
     scriptarguments:
       retry-count:
         simple: "2"
@@ -385,8 +388,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -470,
-          "y": 270
+          "x": -490,
+          "y": -180
         }
       }
     note: false
@@ -454,7 +457,7 @@ tasks:
       {
         "position": {
           "x": 240,
-          "y": -830
+          "y": -1340
         }
       }
     note: false
@@ -488,7 +491,7 @@ tasks:
       {
         "position": {
           "x": 240,
-          "y": -650
+          "y": -1120
         }
       }
     note: false
@@ -524,8 +527,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -100,
-          "y": -290
+          "x": -210,
+          "y": -750
         }
       }
     note: false
@@ -767,7 +770,7 @@ tasks:
       {
         "position": {
           "x": 240,
-          "y": -460
+          "y": -920
         }
       }
     note: false
@@ -806,8 +809,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -100,
-          "y": -115
+          "x": -210,
+          "y": -555
         }
       }
     note: false
@@ -840,8 +843,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 560,
-          "y": -290
+          "x": 700,
+          "y": -750
         }
       }
     note: false
@@ -874,8 +877,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 330,
-          "y": 80
+          "x": 30,
+          "y": -370
         }
       }
     note: false
@@ -1077,6 +1080,80 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: 37dff728-5570-429c-8213-6d2607f0503b
+    type: condition
+    task:
+      id: 37dff728-5570-429c-8213-6d2607f0503b
+      version: -1
+      name: 'Errors occurred when generating the Slack block list for the incident
+        ID : ${incident_object.id}'
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If array is provided, will return yes
+        if one of the entries returned an error.
+      scriptName: isError
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "21"
+      "yes":
+      - "46"
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -490,
+          "y": 5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: 890f2cbf-e315-4ff3-8fa4-725ef972e534
+    type: regular
+    task:
+      id: 890f2cbf-e315-4ff3-8fa4-725ef972e534
+      version: -1
+      name: DSPM Incident Handler
+      scriptName: DSPMIncidentList
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      incident_data:
+        simple: ${incident_object}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -890,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -1084,10 +1161,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 3005,
-        "width": 2870,
+        "height": 3545,
+        "width": 3010,
         "x": -1930,
-        "y": -970
+        "y": -1510
       }
     }
   }
