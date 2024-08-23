@@ -15,7 +15,7 @@ python = "^3.8,<3.11"
 
 [tool.poetry.group.github-actions.dependencies]
 packaging = "^24"
-pytest = "^7.4.4"
+pytest = "^8.3.2"
 requests = "^2.32.3"
 urllib3 = "^2.2.2"
 blessings = "^1.7"
