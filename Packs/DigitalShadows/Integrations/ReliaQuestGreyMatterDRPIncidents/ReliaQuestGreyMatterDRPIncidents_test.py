@@ -1,5 +1,7 @@
 from __future__ import annotations
 import hashlib
+import random
+
 from Packs.DigitalShadows.Integrations.ReliaQuestGreyMatterDRPIncidents.ReliaQuestGreyMatterDRPIncidents import parse_date, \
     search_find
 
@@ -11,7 +13,7 @@ from ReliaQuestGreyMatterDRPIncidents import \
 
 TEST_URL = "https://test.com/api"
 
-
+RISK_TYPES = ['exposed-credential', 'impersonating-domain', 'impersonating-subdomain', 'unauthorized-code-commit', 'exposed-access-key']
 @pytest.fixture
 def client() -> Client:
     return Client(
@@ -24,12 +26,12 @@ def client() -> Client:
     )
 
 
-def create_exposed_credential_alerts(id):
+def create_alert_with_risk_type(id, risk_type):
     return [
         {
             "id": _id,
             "portal-id": "BFM9J",
-            "risk-type": "exposed-credential",
+            "risk-type": risk_type,
             "classification": "exposed-credential-alert",
             "risk-assessment": {
                 "risk-level": "low"
@@ -100,25 +102,20 @@ class ClientMock:
 
         elif url_suffix == "/v1/alerts":
             response = create_incidents_and_alerts_from_triaged_items(params["id"], item_type="alert-id", amount_of_assets=1)
-
         elif url_suffix == "/v1/incidents":
             response = create_incidents_and_alerts_from_triaged_items(params["id"], item_type="incident-id", amount_of_assets=1)
-
         elif url_suffix == "/v1/assets":
             response = create_assets(params["id"])
         elif url_suffix == '/v1/triage-item-comments':
             response = create_comments(params["id"])
-        elif url_suffix == '/v1/exposed-credential-alerts':
-            response = create_exposed_credential_alerts(params["id"])
+        elif url_suffix in ['/v1/exposed-credential-alerts', '/v1/impersonating-domain-alerts', '/v1/impersonating-subdomain-alerts', '/v1/unauthorized-code-commit-alerts', '/v1/exposed-access-key-alerts']:
+            response = create_alert_with_risk_type(params["id"], url_suffix.split('/')[-1])
         elif url_suffix == '/api/search/find':
             response = create_search_find_response()
         else:
             response = []
 
         return create_mocked_response(response)
-
-
-TEST_URL = "https://test.com/api"
 
 
 def create_mocked_response(response: List[Dict] | Dict, status_code: int = 200) -> requests.Response:
@@ -156,7 +153,7 @@ def create_triage_items_from_events(triage_item_ids: List[str], item_type: str) 
             "source": {
                 item_type: triage_item_id
             },
-            "risk-type": "exposed-credential"
+            "risk-type": random.choice(RISK_TYPES)
         } for triage_item_id in triage_item_ids
     ]
 
@@ -200,7 +197,6 @@ def create_comments(comment_ids):
             "triage-item-id": _id,
             "content": f"test content-{_id}",
             "updated": "2020-04-01T08:30:00Z"
-
         } for _id in comment_ids
     ]
 
