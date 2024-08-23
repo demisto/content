@@ -138,7 +138,7 @@ def is_valid_integration_credentials(credentials, request_headers, token):
 
 def handle_subscription_confirmation(subscribe_url) -> requests.Response:  # pragma: no cover
     demisto.debug('SubscriptionConfirmation request')
-    response: requests.models.Response =  client.get(full_url=subscribe_url, resp_type='response')
+    response: requests.models.Response = client.get(full_url=subscribe_url, resp_type='response')
     response.raise_for_status()
     return response
 
