@@ -804,7 +804,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
             List[Dict[str, Any]]: The results of the API, which will hold the users that match the attribute.
         """
 
-    def get_user_info(self, identifier = '') -> Dict[str, Any]:
+    def get_user_info(self, identifier='') -> Dict[str, Any]:
         """Gets the user from Jira via API, if no identifier is supplied
         it returns information for the user the API credentials belong to
 
@@ -4033,6 +4033,7 @@ def get_user_info_command(client: JiraBaseClient, args: Dict[str, Any]) -> Comma
             identifier = f'username={username}'
         else:
             raise ValueError('No key or username specified for jira-get-user-info')
+        key_field = "Key"
     else:
         # Jira Cloud requires using accountId
         demisto.debug("Cloud check")
@@ -4040,6 +4041,7 @@ def get_user_info_command(client: JiraBaseClient, args: Dict[str, Any]) -> Comma
         if not accountId:
             raise ValueError('No accountId specified for jira-get-user-info')
         identifier = f'accountId={accountId}'
+        key_field = "AccountID"
 
     response = client.get_user_info(identifier)
     if not response:
@@ -4049,20 +4051,20 @@ def get_user_info_command(client: JiraBaseClient, args: Dict[str, Any]) -> Comma
         'Key': response.get('key', ''),
         'Name': response.get('name', ''),
         'Email': response.get('emailAddress', ''),
-        'Display Name': response.get('displayName', ''),
+        'DisplayName': response.get('displayName', ''),
         'Active': response.get('active', ''),
         'Deleted': response.get('deleted', ''),
         'Timezone': response.get('timeZone', ''),
         'Locale': response.get('locale', ''),
-        'Account ID': response.get('accountId', ''), # Cloud only
-        'Account Type': response.get('accountType', ''), # Cloud only
+        'AccountID': response.get('accountId', ''),  # Cloud only
+        'AccountType': response.get('accountType', ''),  # Cloud only
     }
 
     remove_nulls_from_dictionary(output)
 
     return CommandResults(
         outputs_prefix='Jira.Users',
-        outputs_key_field='Key',
+        outputs_key_field=key_field,
         outputs=output,
         raw_response=response
     )

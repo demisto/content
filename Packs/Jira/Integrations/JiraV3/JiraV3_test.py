@@ -2668,3 +2668,45 @@ class TestJiraIssueAssign:
 
         with pytest.raises(DemistoException):
             update_issue_assignee_command(client=client, args=args)
+
+
+class TestJiraGetUserInfo:
+    @pytest.mark.parametrize(
+        'key, username, accountId, raw_response_path, parsed_result_path',
+        [
+            ("JIRAUSER10000", None, None, "test_data/get_user_info_test/onprem_raw_response.json",
+             "test_data/get_user_info_test/onprem_parsed_result.json"),
+            (None, "firstlast", None, "test_data/get_user_info_test/onprem_raw_response.json",
+             "test_data/get_user_info_test/onprem_parsed_result.json"),
+            (None, None, "user@example.com", "test_data/get_user_info_test/cloud_raw_response.json",
+             "test_data/get_user_info_test/cloud_parsed_result.json")
+        ]
+    )
+    def test_get_user_info_command(self, mocker, key, username, accountId, raw_response_path, parsed_result_path):
+        """
+        Given:
+            - key, username or accountId for cloud/server jira
+        When
+            - Running the get_user_info_command
+        Then
+            - Ensure the body request is ok for both cloud/server jira
+        """
+        from JiraV3 import get_user_info_command
+
+        args = {
+            'key': key,                 # For Jira OnPrem
+            'username': username,       # For Jira OnPrem
+            'accountId': accountId,     # For Jira Cloud
+        }
+        client: JiraBaseClient = jira_base_client_mock()
+        if accountId:
+            client = jira_cloud_client_mock()
+        else:
+            client = jira_onprem_client_mock()
+
+        get_user_info_response = util_load_json(raw_response_path)
+        expected_command_results_context = util_load_json(parsed_result_path)
+        mocker.patch.object(client, 'get_user_info', return_value=get_user_info_response)
+
+        command_results = get_user_info_command(client=client, args=args)
+        assert expected_command_results_context == command_results.to_context()
