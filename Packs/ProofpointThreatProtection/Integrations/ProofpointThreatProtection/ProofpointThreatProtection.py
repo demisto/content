@@ -40,7 +40,7 @@ class Client(BaseClient):
         # Check if there is an existing valid access token
         integration_context = self.get_shared_integration_context()
         if integration_context.get('access_token') and integration_context.get('expiry_time') > date_to_timestamp(datetime.now()):
-            self._headers = {'Authorization' : f'Bearer {integration_context.get("access_token")}', 'Accept' : 'application/json'}
+            self._headers = {'Authorization': f'Bearer {integration_context.get("access_token")}', 'Accept': 'application/json'}
             return integration_context.get('access_token')
         else:
             try:
@@ -63,7 +63,7 @@ class Client(BaseClient):
                         'expiry_time': expiry_time
                     }
                     self.set_shared_integration_context(context)
-                    self._headers = {'Authorization' : f'Bearer {access_token}', 'Accept' : 'application/json'}
+                    self._headers = {'Authorization': f'Bearer {access_token}', 'Accept': 'application/json'}
                     return res.get('access_token')
 
             except Exception as e:
@@ -124,13 +124,12 @@ class Client(BaseClient):
         )
 
 
-
 ''' HELPER FUNCTIONS '''
 
 
-def make_return_command_results(header_str: str, listname: str, op: dict) -> CommandResults:
-    readable_op=tableToMarkdown(header_str, op, headers={} if not isinstance(op, str) else ['Outcome'], removeNull=True)
-    return_cr = CommandResults(readable_output=readable_op, outputs_prefix=CTX_PREFIX, outputs={listname : op})
+def make_return_command_results(header_str: str, listname: str, op: str | dict) -> CommandResults:
+    readable_op = tableToMarkdown(header_str, op, headers={} if not isinstance(op, str) else ['Outcome'], removeNull=True)
+    return_cr = CommandResults(readable_output=readable_op, outputs_prefix=CTX_PREFIX, outputs={listname: op})
 
     return return_cr
 
@@ -141,7 +140,7 @@ def get_limit_args(client: Client):
     limit = int(limit) if limit.isnumeric() else LIMIT_DEFAULT
     limit = limit if limit < LIMIT_MAXIMUM else LIMIT_MAXIMUM
     all_results = args.get('all_results', 'false')
-    all_results = True if all_results.lower()=='true' else False
+    all_results = all_results.lower() == 'true'
 
     return limit, all_results
 
@@ -157,7 +156,8 @@ def module_test_command(client: Client, cluster_id: str) -> str:
 def safelist_list_command(client: Client, cluster_id: str) -> CommandResults:
     limit, all_results = get_limit_args(client)
     res = client.get_safelist(cluster_id)
-    res_rc = make_return_command_results(OSL_HEADER, 'Safelist', res.get('entries') if all_results else res.get('entries')[-limit:])
+    res_rc = make_return_command_results(OSL_HEADER, 'Safelist', res.get(
+        'entries') if all_results else res.get('entries')[-limit:])
     return res_rc
 
 
@@ -176,7 +176,8 @@ def safelist_delete_command(client: Client, cluster_id: str) -> CommandResults:
 def blocklist_list_command(client: Client, cluster_id: str) -> CommandResults:
     limit, all_results = get_limit_args(client)
     res = client.get_blocklist(cluster_id)
-    res_rc = make_return_command_results(OBL_HEADER, 'Blocklist', res.get('entries') if all_results else res.get('entries')[-limit:])
+    res_rc = make_return_command_results(OBL_HEADER, 'Blocklist', res.get('entries')
+                                         if all_results else res.get('entries')[-limit:])
     return res_rc
 
 
@@ -190,7 +191,6 @@ def blocklist_delete_command(client: Client, cluster_id: str) -> CommandResults:
     client.blocklist_add_delete(cluster_id, client.get_args(), 'delete')
     res_rc = make_return_command_results(OBL_HEADER, 'Blocklist Entry Deleted', 'Success')
     return res_rc
-
 
 
 '''         UPDATE COMMAND MAPPINGS
@@ -248,4 +248,3 @@ def main() -> None:
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
     main()
-

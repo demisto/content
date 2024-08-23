@@ -42,10 +42,8 @@ script:
       - 'True'
       - 'False'
       name: all_results
-      defaultvalue: 'False'
       description: A boolean argument to designate whether to send back all the list results. This argument takes precedence over the limit argument when set to true. Default is False.
     - name: limit
-      defaultvalue: '25'
       description: An integar argument to designate the amount of entries to return from the list results. Defualt is 25. Maximum is 100.
     description: Get entries from the Organizational Block List.
     name: proofpoint-tp-blocklist-list
@@ -120,10 +118,8 @@ script:
       - 'True'
       - 'False'
       name: all_results
-      defaultvalue: 'False'
       description: A boolean argument to designate whether to send back all the list results. This argument takes precedence over the limit argument when set to true. Default is False.
     - name: limit
-      defaultvalue: '25'
       description: An integar argument to designate the amount of entries to return from the list results. Defualt is 25. Maximum is 100.
     description: Get entries from the Organizational Safe List.
     name: proofpoint-tp-safelist-list

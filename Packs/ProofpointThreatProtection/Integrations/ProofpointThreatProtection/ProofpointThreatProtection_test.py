@@ -192,9 +192,9 @@ def test_bad_get_access_token_request(mocker):
                                             'Please check the instance configuration.') is True
 
 
-def test_get_safelist(mocker):
+def test_list_safelist(mocker):
     if TEST_WITH_FASTAPI_SERVER:
-        return_obj = mock_main(mocker, 'proofpoint-tp-safelist-get').outputs['Safelist']
+        return_obj = mock_main(mocker, 'proofpoint-tp-safelist-list').outputs['Safelist']
 
     else:
         c = Client(base_url=TEST_SERVER_BASE_URL, verify=False)
@@ -204,14 +204,14 @@ def test_get_safelist(mocker):
 
         c.get_access_token('CLID1', 'CLSECRET1')
 
-        return_obj = safelist_get_command(c, 'CLUSTERID').outputs['Safelist']
+        return_obj = safelist_list_command(c, 'CLUSTERID').outputs['Safelist']
 
     assert return_obj == MOCK_SAFEBLOCK_LIST_API_RETURN
 
 
-def test_get_blocklist(mocker):
+def test_list_blocklist(mocker):
     if TEST_WITH_FASTAPI_SERVER:
-        return_obj = mock_main(mocker, 'proofpoint-tp-blocklist-get').outputs['Blocklist']
+        return_obj = mock_main(mocker, 'proofpoint-tp-blocklist-list').outputs['Blocklist']
 
     else:
         c = Client(base_url=TEST_SERVER_BASE_URL, verify=False)
@@ -221,7 +221,7 @@ def test_get_blocklist(mocker):
 
         c.get_access_token('CLID1', 'CLSECRET1')
 
-        return_obj = blocklist_get_command(c, 'CLUSTERID').outputs['Blocklist']
+        return_obj = blocklist_list_command(c, 'CLUSTERID').outputs['Blocklist']
 
     assert return_obj == MOCK_SAFEBLOCK_LIST_API_RETURN
 
@@ -234,8 +234,8 @@ def test_add_to_safelist(mocker):
 
     if TEST_WITH_FASTAPI_SERVER:
         return_obj = mock_main(
-            mocker, 'proofpoint-tp-safelist-add-or-delete-entry',
-            args=MOCK_SAFEBLOCK_ADD_ENTRY).outputs['Safelist']
+            mocker, 'proofpoint-tp-safelist-add-entry',
+            args=MOCK_SAFEBLOCK_ADD_ENTRY)
 
     else:
         c = Client(base_url=TEST_SERVER_BASE_URL, verify=False)
@@ -245,9 +245,9 @@ def test_add_to_safelist(mocker):
 
         c.get_access_token('CLID1', 'CLSECRET1')
 
-        return_obj = safelist_add_delete_command(c, 'CLUSTERID').outputs['Safelist']
+        return_obj = safelist_add_command(c, 'CLUSTERID')
 
-    assert return_obj == test_return_obj
+    assert return_obj.outputs['Safelist Entry Added'] == 'Success'
 
 
 def test_add_to_blocklist(mocker):
@@ -258,8 +258,8 @@ def test_add_to_blocklist(mocker):
 
     if TEST_WITH_FASTAPI_SERVER:
         return_obj = mock_main(
-            mocker, 'proofpoint-tp-blocklist-add-or-delete-entry',
-            args=MOCK_SAFEBLOCK_ADD_ENTRY).outputs['Blocklist']
+            mocker, 'proofpoint-tp-blocklist-add-entry',
+            args=MOCK_SAFEBLOCK_ADD_ENTRY)
 
     else:
         c = Client(base_url=TEST_SERVER_BASE_URL, verify=False)
@@ -269,9 +269,57 @@ def test_add_to_blocklist(mocker):
 
         c.get_access_token('CLID1', 'CLSECRET1')
 
-        return_obj = blocklist_add_delete_command(c, 'CLUSTERID').outputs['Blocklist']
+        return_obj = blocklist_add_command(c, 'CLUSTERID')
 
-    assert return_obj == test_return_obj
+    assert return_obj.outputs['Blocklist Entry Added'] == 'Success'
+
+
+def test_delete_From_safelist(mocker):
+    from copy import copy
+
+    test_return_obj = copy(MOCK_SAFEBLOCK_ADD_ENTRY)
+    test_return_obj.pop('action')
+
+    if TEST_WITH_FASTAPI_SERVER:
+        return_obj = mock_main(
+            mocker, 'proofpoint-tp-safelist-delete-entry',
+            args=MOCK_SAFEBLOCK_ADD_ENTRY)
+
+    else:
+        c = Client(base_url=TEST_SERVER_BASE_URL, verify=False)
+
+        mocker.patch.object(c, 'get_shared_integration_context', return_value=GOOD_ACCESS_TOKEN)
+        mocker.patch.object(c, 'safelist_add_delete', return_value=test_return_obj)
+
+        c.get_access_token('CLID1', 'CLSECRET1')
+
+        return_obj = safelist_delete_command(c, 'CLUSTERID')
+
+    assert return_obj.outputs['Safelist Entry Deleted'] == 'Success'
+
+
+def test_delete_from_blocklist(mocker):
+    from copy import copy
+
+    test_return_obj = copy(MOCK_SAFEBLOCK_ADD_ENTRY)
+    test_return_obj.pop('action')
+
+    if TEST_WITH_FASTAPI_SERVER:
+        return_obj = mock_main(
+            mocker, 'proofpoint-tp-blocklist-delete-entry',
+            args=MOCK_SAFEBLOCK_ADD_ENTRY)
+
+    else:
+        c = Client(base_url=TEST_SERVER_BASE_URL, verify=False)
+
+        mocker.patch.object(c, 'get_shared_integration_context', return_value=GOOD_ACCESS_TOKEN)
+        mocker.patch.object(c, 'blocklist_add_delete', return_value=test_return_obj)
+
+        c.get_access_token('CLID1', 'CLSECRET1')
+
+        return_obj = blocklist_delete_command(c, 'CLUSTERID')
+
+    assert return_obj.outputs['Blocklist Entry Deleted'] == 'Success'
 
 
 def test_parse_params(mocker):
