@@ -3843,22 +3843,6 @@ url = "https://pypi.org/simple"
 reference = "pypi-public"
 
 [[package]]
-name = "types-cryptography"
-version = "3.3.23.2"
-description = "Typing stubs for cryptography"
-optional = false
-python-versions = "*"
-files = [
-    {file = "types-cryptography-3.3.23.2.tar.gz", hash = "sha256:09cc53f273dd4d8c29fa7ad11fefd9b734126d467960162397bc5e3e604dea75"},
-    {file = "types_cryptography-3.3.23.2-py3-none-any.whl", hash = "sha256:b965d548f148f8e87f353ccf2b7bd92719fdf6c845ff7cedf2abb393a0643e4f"},
-]
-
-[package.source]
-type = "legacy"
-url = "https://pypi.org/simple"
-reference = "pypi-public"
-
-[[package]]
 name = "types-dateparser"
 version = "1.2.0.20240420"
 description = "Typing stubs for dateparser"
@@ -3940,17 +3924,17 @@ reference = "pypi-public"
 
 [[package]]
 name = "types-paramiko"
-version = "2.12.0.0"
+version = "3.4.0.20240423"
 description = "Typing stubs for paramiko"
 optional = false
-python-versions = "*"
+python-versions = ">=3.8"
 files = [
-    {file = "types-paramiko-2.12.0.0.tar.gz", hash = "sha256:6359f4e8885bf0e2e478eddbfeb06d9b9599a2a8eb7815ee463800d365d20894"},
-    {file = "types_paramiko-2.12.0.0-py3-none-any.whl", hash = "sha256:49d7a323dda2d3e9b334e3828e4cb0c50deaa1b060fcfbd6634fc46c9eb28da1"},
+    {file = "types-paramiko-3.4.0.20240423.tar.gz", hash = "sha256:aaa98dda232c47886563d66743d3a8b66c432790c596bc3bdd3f17f91be2a8c1"},
+    {file = "types_paramiko-3.4.0.20240423-py3-none-any.whl", hash = "sha256:c56e0d43399a1b909901b1e0375e0ff6ee62e16cd6e00695024abc2e9fe02035"},
 ]
 
 [package.dependencies]
-types-cryptography = "*"
+cryptography = ">=37.0.0"
 
 [package.source]
 type = "legacy"
@@ -4597,4 +4581,4 @@ reference = "pypi-public"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8,<3.11"
-content-hash = "dc0f735b7d32b6c40e4317ffa142f216f7a6d934dbb81cac05fa5d838593f6c6"
+content-hash = "c8e763fddcdefb74e6fe3fbb98a28d9015c69322040b5dde55e4df9f4407a0c0"
