@@ -43,7 +43,7 @@ class Client(BaseClient):
         variables = {"incidentId": incident_id}
         return self.query(mutation, variables)
 
-    def send_incident_soc_feedback(self, incident_id: str, custom_message: str = None, 
+    def send_incident_soc_feedback(self, incident_id: str, custom_message: str = None,
                                    threat_feedback_reported_at_limit: str = None) -> Dict[str, Any]:
         mutation = '''
         mutation SendIncidentSocFeedback($incidentId: String!, $customMessage: String, $threatFeedbackReportedAtLimit: Date) {
@@ -178,17 +178,17 @@ def fetch_incidents(client: Client, fetch_time: str, queryfilter: str):
         start_time = last_run.get('start_time')
     else:
         start_time = timefrom
-    fields = '''_id, createdAt, updatedAt, humanReadableId, lastReportedAt, firstReportedAt, 
-                policyName, state, threats{_id, createdAt, updatedAt, severity, feedbackSentAt, 
-                ratedAt, state, userRequestedFeedback, reporterUser{_id, emails{address}}, organizationId, 
-                organization{_id, name}, email{to{address}, from{address}, subject}, 
-                enrichments{links{href, score}}, userModifiers{userActedOnThreat, repliedToEmail, downloadedFile, 
-                openedAttachment, visitedLink, enteredCredentials, userMarkedAsSpam, forwardedEmail, other}, 
-                threatRedirectId, prediction{mlopsIocEmailMaliciousnessProbability, 
-                mlopsIocEmailMaliciousFlags{flag}}, classification, isVipReport}, organization{_id, name}, 
-                organizationId, threatCount, globalThreatCount, notes{_id, user{emails{address}}, text, 
-                timestamp, editedAt, deletedAt}, severity, escalation{escalatedAt, creationThreshold}, 
-                classification, socClassification, hasSensitiveInformation, 
+    fields = '''_id, createdAt, updatedAt, humanReadableId, lastReportedAt, firstReportedAt,
+                policyName, state, threats{_id, createdAt, updatedAt, severity, feedbackSentAt,
+                ratedAt, state, userRequestedFeedback, reporterUser{_id, emails{address}}, organizationId,
+                organization{_id, name}, email{to{address}, from{address}, subject},
+                enrichments{links{href, score}}, userModifiers{userActedOnThreat, repliedToEmail, downloadedFile,
+                openedAttachment, visitedLink, enteredCredentials, userMarkedAsSpam, forwardedEmail, other},
+                threatRedirectId, prediction{mlopsIocEmailMaliciousnessProbability,
+                mlopsIocEmailMaliciousFlags{flag}}, classification, isVipReport}, organization{_id, name},
+                organizationId, threatCount, globalThreatCount, notes{_id, user{emails{address}}, text,
+                timestamp, editedAt, deletedAt}, severity, escalation{escalatedAt, creationThreshold},
+                classification, socClassification, hasSensitiveInformation,
                 ruleMatches{incidentRule{_id, name, priority}}'''
     if queryfilter:
         query = f'''
