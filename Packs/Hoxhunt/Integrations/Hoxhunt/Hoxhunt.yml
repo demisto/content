@@ -54,28 +54,28 @@ script:
     arguments: []
     outputs:
     - contextPath: HoxHunt.CurrentUser
-      description: Current User information from Hoxhunt
+      description: Current User information from Hoxhunt.
       type: string
-    description: Gets the current user information from Hoxhunt
+    description: Gets the current user information from Hoxhunt.
   - name: hoxhunt-get-incidents
     arguments:
     - name: filter
-      description: Input here the filter or other arguments
+      description: Input here the filter or other arguments.
       type: unknown
     outputs:
     - contextPath: Hoxhunt.Incidents
-      description: Incidents from Hoxhunt
+      description: Incidents from Hoxhunt.
       type: string
-    description: Gets incidents from Hoxhunt
+    description: Gets incidents from Hoxhunt.
   - name: hoxhunt-get-threats
     arguments:
     - name: filter
-      description: Input here the filter or other arguments
+      description: Input here the filter or other arguments.
     outputs:
     - contextPath: Hoxhunt.Threats
-      description: Threats from Hoxhunt
+      description: Threats from Hoxhunt.
       type: string
-    description: Gets threats from Hoxhunt
+    description: Gets threats from Hoxhunt.
   - name: hoxhunt-add-incident-note
     arguments:
     - name: incident_id
@@ -86,9 +86,9 @@ script:
       description: The content of the note to add to the incident.
     outputs:
     - contextPath: Hoxhunt.addIncidentNode
-      description: Add Incident note
+      description: Add Incident note.
       type: string
-    description: Add Incident note
+    description: Add Incident note.
   - name: hoxhunt-remove-incident-threats
     arguments:
     - name: incident_id
@@ -98,7 +98,7 @@ script:
     - contextPath: Hoxhunt.removeIncidentThreats
       description: Returns number of removed threats.
       type: number
-    description: Remove all threats that belong to an incident
+    description: Remove all threats that belong to an incident.
     execution: true
   - name: hoxhunt-send-incident-soc-feedback
     arguments:
@@ -131,18 +131,18 @@ script:
       predefined:
       - 'TRUE'
       - 'FALSE'
-      description: Bool
+      description: True or False Boolean.
       type: unknown
     outputs:
     - contextPath: Hoxhunt.setIncidentSensitive
-      description: Incident sensitivity information
+      description: Incident sensitivity information.
       type: string
-    description: Set incident to contain sensitive information
+    description: Set incident to contain sensitive information.
   - name: hoxhunt-set-incident-soc-classification
     arguments:
     - name: incident_id
       required: true
-      description: The ID of the incident to classify
+      description: The ID of the incident to classify.
     - name: classification
       required: true
       auto: PREDEFINED
@@ -153,9 +153,9 @@ script:
       description: The SOC classification to apply to the incident.
     outputs:
     - contextPath: Hoxhunt.setIncidentSocClassification
-      description: Incident SOC classification information
+      description: Incident SOC classification information.
       type: string
-    description: Set soc classification for an incident
+    description: Set soc classification for an incident.
   - name: hoxhunt-update-incident-state
     arguments:
     - name: incident_id
@@ -167,13 +167,13 @@ script:
       predefined:
       - OPEN
       - RESOLVED
-      description: ' The new state of the incident'
+      description: The new state of the incident.
     outputs:
     - contextPath: Hoxhunt.updateIncidentState
-      description: Incident state information
+      description: Incident state information.
       type: string
-    description: Updates Incident state
-  dockerimage: demisto/python3:3.10.14.91134
+    description: Updates Incident state.
+  dockerimage: demisto/python3:3.11.9.107902
   isfetch: true
   runonce: false
   subtype: python3

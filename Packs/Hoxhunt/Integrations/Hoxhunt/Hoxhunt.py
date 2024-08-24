@@ -43,7 +43,8 @@ class Client(BaseClient):
         variables = {"incidentId": incident_id}
         return self.query(mutation, variables)
 
-    def send_incident_soc_feedback(self, incident_id: str, custom_message: str = None, threat_feedback_reported_at_limit: str = None) -> Dict[str, Any]:
+    def send_incident_soc_feedback(self, incident_id: str, custom_message: str = None, 
+                                   threat_feedback_reported_at_limit: str = None) -> Dict[str, Any]:
         mutation = '''
         mutation SendIncidentSocFeedback($incidentId: String!, $customMessage: String, $threatFeedbackReportedAtLimit: Date) {
             sendIncidentSocFeedback(
@@ -177,7 +178,18 @@ def fetch_incidents(client: Client, fetch_time: str, queryfilter: str):
         start_time = last_run.get('start_time')
     else:
         start_time = timefrom
-    fields = '''_id, createdAt, updatedAt, humanReadableId, lastReportedAt, firstReportedAt, policyName, state, threats{_id, createdAt, updatedAt, severity, feedbackSentAt, ratedAt, state, userRequestedFeedback, reporterUser{_id, emails{address}}, organizationId, organization{_id, name}, email{to{address}, from{address}, subject}, enrichments{links{href, score}}, userModifiers{userActedOnThreat, repliedToEmail, downloadedFile, openedAttachment, visitedLink, enteredCredentials, userMarkedAsSpam, forwardedEmail, other}, threatRedirectId, prediction{mlopsIocEmailMaliciousnessProbability, mlopsIocEmailMaliciousFlags{flag}}, classification, isVipReport}, organization{_id, name}, organizationId, threatCount, globalThreatCount, notes{_id, user{emails{address}}, text, timestamp, editedAt, deletedAt}, severity, escalation{escalatedAt, creationThreshold}, classification, socClassification, hasSensitiveInformation, ruleMatches{incidentRule{_id, name, priority}}'''
+    fields = '''_id, createdAt, updatedAt, humanReadableId, lastReportedAt, firstReportedAt, 
+                policyName, state, threats{_id, createdAt, updatedAt, severity, feedbackSentAt, 
+                ratedAt, state, userRequestedFeedback, reporterUser{_id, emails{address}}, organizationId, 
+                organization{_id, name}, email{to{address}, from{address}, subject}, 
+                enrichments{links{href, score}}, userModifiers{userActedOnThreat, repliedToEmail, downloadedFile, 
+                openedAttachment, visitedLink, enteredCredentials, userMarkedAsSpam, forwardedEmail, other}, 
+                threatRedirectId, prediction{mlopsIocEmailMaliciousnessProbability, 
+                mlopsIocEmailMaliciousFlags{flag}}, classification, isVipReport}, organization{_id, name}, 
+                organizationId, threatCount, globalThreatCount, notes{_id, user{emails{address}}, text, 
+                timestamp, editedAt, deletedAt}, severity, escalation{escalatedAt, creationThreshold}, 
+                classification, socClassification, hasSensitiveInformation, 
+                ruleMatches{incidentRule{_id, name, priority}}'''
     if queryfilter:
         query = f'''
         {{
@@ -272,7 +284,8 @@ def main():
             if not response.get('errors'):
                 note_data = response.get('data', {}).get('addIncidentNote', {}).get('notes', [])
                 note = note_data[-1]
-                transformed_data = {'incident_id': incident_id, 'note_id': note.get('_id', ''), 'note': note.get('text', '')}
+                transformed_data = {'incident_id': incident_id, 'note_id': note.get('_id', ''), 
+                                    'note': note.get('text', '')}
                 return_results(create_output(transformed_data, 'IncidentNote', 'note_id'))
             else:
                 return_error(response.get('errors'))
@@ -299,7 +312,8 @@ def main():
             threat_feedback_reported_at_limit = args.get('threat_feedback_reported_at_limit')
             response = client.send_incident_soc_feedback(incident_id, custom_message, threat_feedback_reported_at_limit)
             if response.get('data'):
-                result_data = {'_id': incident_id, 'custom_message': custom_message, 'limit date': threat_feedback_reported_at_limit}
+                result_data = {'_id': incident_id, 'custom_message': custom_message, 
+                               'limit date': threat_feedback_reported_at_limit}
                 return_results(create_output(result_data, 'SendIncidentSocFeedback'))
             else:
                 return_error(response.get('errors'))
@@ -312,7 +326,8 @@ def main():
             is_sensitive_str = args.get('is_sensitive', 'false').lower()
             is_sensitive_bool = argToBoolean(is_sensitive_str)
             response = client.set_incident_sensitive(incident_id, is_sensitive_bool)
-            sensitive_data: Dict[str, str] = {'incident_id': str(response.get('_id', '')),'is_sensitive': str(response.get('hasSensitiveInformation', ''))}
+            sensitive_data: Dict[str, str] = {'incident_id': str(response.get('_id', '')),
+                                              'is_sensitive': str(response.get('hasSensitiveInformation', ''))}
             return_results(create_output(sensitive_data, 'SetIncidentSensitive', 'incident_id'))
         elif demisto.command() == 'hoxhunt-set-incident-soc-classification':
             # Set SOC classification for an incident
