@@ -2893,7 +2893,7 @@ def get_host_list_detections_events(client, since_datetime, next_page='', limit=
     Returns:
         Host list detections assets
     """
-    demisto.debug('Starting to fetch assets')
+    demisto.debug('Pulling host list detections')
     host_list_detections = client.get_host_list_detection(since_datetime=since_datetime, next_page=next_page, limit=limit)
     host_list_assets, next_url = handle_host_list_detection_result(host_list_detections) or []
 
@@ -2932,7 +2932,7 @@ def fetch_assets(client, assets_last_run):
         assets: assets to push to xsiam
         vulnerabilities: vulnerabilities to push to xsiam
     """
-    demisto.debug('Starting fetch for assets')
+    demisto.debug('Starting fetch process for assets')
     since_datetime = assets_last_run.get('since_datetime', '')
     next_page = assets_last_run.get('next_page', '')
     total_assets = assets_last_run.get('total_assets', 0)
@@ -2944,7 +2944,7 @@ def fetch_assets(client, assets_last_run):
     assets, next_run_page = get_host_list_detections_events(client, since_datetime, next_page)
     total_assets += len(assets)
     stage = 'assets' if next_run_page else 'vulnerabilities'
-    amount_to_send = 0 if next_run_page else str(total_assets)
+    amount_to_send = 0 if next_run_page else str(total_assets)  # We declare 0 as long as we have not finished pulling
 
     new_last_run = {'stage': stage, 'next_page': next_run_page, 'total_assets': total_assets,
                     'since_datetime': since_datetime, 'snapshot_id': snapshot_id,
@@ -3471,7 +3471,7 @@ def main():  # pragma: no cover
                 send_data_to_xsiam(data=vulnerabilities, vendor=VENDOR, product='vulnerabilities', data_type='assets')
                 demisto.setAssetsLastRun(last_run)
 
-            demisto.debug('finished fetch assets run')
+            demisto.debug(f'finished fetch assets run. lastrun object is: {last_run}')
         else:
             return_results(
                 qualys_command_flow_manager(client, demisto.args(), command, commands_methods[command])
