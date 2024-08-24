@@ -284,7 +284,7 @@ def main():
             if not response.get('errors'):
                 note_data = response.get('data', {}).get('addIncidentNote', {}).get('notes', [])
                 note = note_data[-1]
-                transformed_data = {'incident_id': incident_id, 'note_id': note.get('_id', ''), 
+                transformed_data = {'incident_id': incident_id, 'note_id': note.get('_id', ''),
                                     'note': note.get('text', '')}
                 return_results(create_output(transformed_data, 'IncidentNote', 'note_id'))
             else:
@@ -312,7 +312,7 @@ def main():
             threat_feedback_reported_at_limit = args.get('threat_feedback_reported_at_limit')
             response = client.send_incident_soc_feedback(incident_id, custom_message, threat_feedback_reported_at_limit)
             if response.get('data'):
-                result_data = {'_id': incident_id, 'custom_message': custom_message, 
+                result_data = {'_id': incident_id, 'custom_message': custom_message,
                                'limit date': threat_feedback_reported_at_limit}
                 return_results(create_output(result_data, 'SendIncidentSocFeedback'))
             else:
