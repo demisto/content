@@ -355,6 +355,15 @@
 						"hideName": false,
 						"i": "caseinfoid-d20220e0-4a62-11ef-a450-29f69179b85b",
 						"items": [
+                            {
+								"endCol": 2,
+								"fieldId": "ibmqradarreportername",
+								"height": 26,
+								"id": "b2202d90-62e9-11ef-9c1f-a7d53581a093",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
 							{
 								"endCol": 2,
 								"fieldId": "displayname",
