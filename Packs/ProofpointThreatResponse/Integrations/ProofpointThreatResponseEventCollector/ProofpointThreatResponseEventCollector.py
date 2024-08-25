@@ -375,7 +375,7 @@ def main():  # pragma: no cover
                                       date_format=TIME_FORMAT)
     fetch_limit = params.get('fetch_limit', '100')
     fetch_delta = params.get('fetch_delta', '6 hours')
-    incidents_states = params.get('states')
+    incidents_states = params.get('states', [])
 
     demisto.debug('Command being called is {}'.format(command))
 
@@ -395,10 +395,11 @@ def main():  # pragma: no cover
             return_results(test_module(client, first_fetch))
 
         elif command == 'proofpoint-trap-get-events':
+            should_push_events = args.pop('should_push_events')
             events, human_readable, raw_response = list_incidents_command(client, args)
             results = CommandResults(raw_response=raw_response, readable_output=human_readable)
             return_results(results)
-            if argToBoolean(args.pop('should_push_events')):
+            if argToBoolean(should_push_events):
                 send_events_to_xsiam(
                     events,
                     VENDOR,
