@@ -9696,5 +9696,6 @@ tests:
 - palo_alto_panorama_test_pb
 - PAN-OS-firewall-topology-test-pb
 - PAN-OS-panorama-topology-test-pb
+- test_playbook_pan_os_firewall_exceptions_commands
 defaultmapperin: Panorama Mapper
 defaultclassifier: Panorama Classifier
