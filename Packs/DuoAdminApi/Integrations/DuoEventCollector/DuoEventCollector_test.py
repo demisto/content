@@ -640,9 +640,9 @@ def test_check_window_before_call_v2_format():
 
     client = Client(Params(**params, mintime={}))
 
-    result_no_fetch = client.check_window_before_call(mintime=1666714066000/1000)  # October 25, 2022 4:07:46 PM
+    result_no_fetch = client.check_window_before_call(mintime=1666714066000 / 1000)  # October 25, 2022 4:07:46 PM
     assert not result_no_fetch
-    result_do_fetch = client.check_window_before_call(mintime=1666714065304/1000)  # October 25, 2022 4:07:45.304 PM
+    result_do_fetch = client.check_window_before_call(mintime=1666714065304 / 1000)  # October 25, 2022 4:07:45.304 PM
     assert result_do_fetch
 
 
