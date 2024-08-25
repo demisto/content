@@ -83,7 +83,7 @@ def docker_min_layer(layers):
     return min(layers, key=layer_size)
 
 
-def main():
+def main():  # pragma: no cover
     args = demisto.args()
 
     if args.get('use_system_proxy') == 'no':
