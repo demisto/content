@@ -14141,18 +14141,17 @@ def build_xpath_for_profile_exception_commands(profile_name: str, profile_type: 
     Returns:
         The xpath.
     """
+    exception_profile_types_map = {
+        'Vulnerability Protection Profile': 'vulnerability',
+        'Anti Spyware Profile': 'spyware'
+    }
+    converted_profile_type = exception_profile_types_map.get(profile_type)
 
-    if profile_type == 'Vulnerability Protection Profile' and device_group:
-        xpath = f"/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='{device_group}']/profiles/vulnerability/entry[@name='{profile_name}']/threat-exception"
+    if device_group:
+        xpath= f"/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='{device_group}']/profiles/{converted_profile_type}/entry[@name='{profile_name}']/threat-exception"
 
-    elif profile_type == 'Vulnerability Protection Profile' and VSYS:
-        xpath = f"/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name='{VSYS}']/profiles/vulnerability/entry[@name='{profile_name}']/threat-exception"
-
-    elif profile_type == 'Anti Spyware Profile' and device_group:
-        xpath = f"/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='{device_group}']/profiles/spyware/entry[@name='{profile_name}']/threat-exception"
-
-    elif profile_type == 'Anti Spyware Profile' and VSYS:
-        xpath = f"/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name='{VSYS}']/profiles/spyware/entry[@name='{profile_name}']/threat-exception"
+    elif VSYS:
+        xpath = f"/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name='{VSYS}']/profiles/{converted_profile_type}/entry[@name='{profile_name}']/threat-exception"
 
     else:
         raise DemistoException("Invalid profile_type was provided. Can be Vulnerability Protection or Anti Spyware.")
