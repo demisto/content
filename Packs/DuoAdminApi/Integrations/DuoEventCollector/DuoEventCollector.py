@@ -115,7 +115,7 @@ class Client:
 
         if not self.params.mintime[LogType.AUTHENTICATION].get('next_offset'):
             mintime = self.params.mintime[LogType.AUTHENTICATION].get('min_time')
-            if not self.check_window_before_call(int(mintime)/1000):
+            if not self.check_window_before_call(int(mintime) / 1000):
                 return [], {}
             demisto.debug(f'handle_authentication_logs, no next_offset {mintime=} {maxtime=}')
             response = self.admin_api.get_authentication_log(
@@ -125,7 +125,7 @@ class Client:
         else:
             next_offset = self.params.mintime[LogType.AUTHENTICATION].get('next_offset')
             mintime = next_offset[0]  # The mintime in the next_offset object is a string according to the API
-            if not self.check_window_before_call(int(mintime)/1000):
+            if not self.check_window_before_call(int(mintime) / 1000):
                 return [], {}
             demisto.debug(f'handle_authentication_logs {next_offset=} {maxtime=}')
             response = self.admin_api.get_authentication_log(
@@ -156,7 +156,7 @@ class Client:
 
         if not self.params.mintime[LogType.TELEPHONY].get('next_offset'):
             mintime = self.params.mintime[LogType.TELEPHONY].get('min_time')
-            if not self.check_window_before_call(int(mintime)/1000):
+            if not self.check_window_before_call(int(mintime) / 1000):
                 return [], {}
             demisto.debug(f'handle_telephony_logs_v2, no next_offset {mintime=} {maxtime=}')
             response = self.admin_api.get_telephony_log(
@@ -166,7 +166,7 @@ class Client:
         else:
             next_offset = self.params.mintime[LogType.TELEPHONY].get('next_offset', '')
             mintime = next_offset.split(',')[0]  # "next_offset": "1666714065304,5bf1a860-fe39-49e3-be29-217659663a74"
-            if not self.check_window_before_call(int(mintime)/1000):
+            if not self.check_window_before_call(int(mintime) / 1000):
                 return [], {}
             demisto.debug(f'handle_telephony_logs_v2 {next_offset=} {maxtime=}')
             response = self.admin_api.get_telephony_log(
