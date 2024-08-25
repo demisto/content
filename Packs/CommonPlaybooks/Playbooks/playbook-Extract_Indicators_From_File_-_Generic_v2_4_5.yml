@@ -464,7 +464,7 @@ tasks:
           accessor: EntryID
           transformers:
           - operator: uniq
-    reputationcalc: 1
+    reputationcalc: 2
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -600,7 +600,7 @@ tasks:
       maxImages:
         complex:
           root: inputs.MaxImagesFromPDF
-    reputationcalc: 1
+    reputationcalc: 2
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1035,7 +1035,7 @@ tasks:
           accessor: EntryID
           transformers:
           - operator: uniq
-    reputationcalc: 1
+    reputationcalc: 2
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1163,7 +1163,7 @@ tasks:
           accessor: EntryID
           transformers:
           - operator: uniq
-    reputationcalc: 1
+    reputationcalc: 2
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1467,7 +1467,7 @@ tasks:
           accessor: EntryID
           transformers:
           - operator: uniq
-    reputationcalc: 1
+    reputationcalc: 2
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1527,7 +1527,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    reputationcalc: 1
+    reputationcalc: 2
   "20":
     id: "20"
     taskid: 7f7c2617-8a16-46bc-8141-96f650642272
@@ -1719,7 +1719,7 @@ tasks:
           accessor: EntryID
           transformers:
           - operator: uniq
-    reputationcalc: 1
+    reputationcalc: 2
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1856,7 +1856,7 @@ tasks:
               remove_keys:
                 value:
                   simple: "true"
-    reputationcalc: 1
+    reputationcalc: 2
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2106,7 +2106,7 @@ tasks:
           accessor: EntryID
           transformers:
           - operator: uniq
-    reputationcalc: 1
+    reputationcalc: 2
     separatecontext: false
     continueonerrortype: ""
     view: |-
