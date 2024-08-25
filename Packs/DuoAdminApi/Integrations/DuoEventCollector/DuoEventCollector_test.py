@@ -3,7 +3,7 @@ import pytest
 import json
 import dateparser
 from freezegun import freeze_time
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 import demistomock as demisto
 from unittest.mock import MagicMock, patch
 from DuoEventCollector import (Client, GetEvents, LogType, Params, parse_events, main,
