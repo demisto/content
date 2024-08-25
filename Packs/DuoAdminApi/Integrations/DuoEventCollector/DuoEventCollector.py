@@ -265,36 +265,15 @@ class GetEvents:
             demisto.debug(f"events_in_window, no events are in the fetch window {events[0]['timestamp']=} >= "
                           f"{self.client.params.end_window.timestamp()=}")
             return [], True
-        low = 0
-        high = len(events) - 1
-        mid = 0
 
-        while low <= high:
-
-            mid = (high + low) // 2
-            # if 3
-            if events[mid]['timestamp'] < self.client.params.end_window.timestamp() <= events[mid + 1]['timestamp']:
-                # this is the last event in the window, return the events up to this event including the event.
-                demisto.debug(f"events_in_window, {events[mid]['timestamp']=} < {self.client.params.end_window.timestamp()=} "
-                              f"<= {events[mid + 1]['timestamp']=}, {mid=}")
-                return events[:mid + 1], True
-            # if 4
-            elif events[mid - 1]['timestamp'] < self.client.params.end_window.timestamp() <= events[mid]['timestamp']:
-                demisto.debug(f"events_in_window, {events[mid - 1]['timestamp']=} < "
-                              f"{self.client.params.end_window.timestamp()=} <= {events[mid]['timestamp']=}, {mid=}")
-                return events[:mid], True
-            # if 5
-            elif events[mid]['timestamp'] < self.client.params.end_window.timestamp():
-                demisto.debug(f"events_in_window, {events[mid]['timestamp']} < {self.client.params.end_window.timestamp()}, "
-                              f"{mid=}")
-                low = mid + 1
-            # if 6
-            else:  # events[mid]['timestamp'] > self.client.params.end_window.timestamp():
-                demisto.debug(f"events_in_window, {events[mid]['timestamp']} > {self.client.params.end_window.timestamp()}, "
-                              f"{mid=}")
-                high = mid - 1
-        demisto.debug(f'events_in_window end, return events {mid=}')
-        return events[:mid + 1], True
+        i = 0
+        for i in range(len(events)):
+            if datetime.fromtimestamp(events[i]['timestamp']) >= self.client.params.end_window:
+                demisto.debug(f'events_in_window, the {i} event occurred date is {events[i]["isotimestamp"]=}, after the end of '
+                              f'the fetch_window. Returning the events up to and include event {i-1} with occurred date of'
+                              f'{events[i-1]["isotimestamp"]=} {events[i-1]["timestamp"]=}.')
+                break
+        return events[:i], True
 
     def _iter_events(self) -> Generator:
         """
