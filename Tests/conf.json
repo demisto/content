@@ -519,12 +519,6 @@
             "timeout": 800
         },
         {
-            "integrations": "Microsoft Advanced Threat Analytics",
-            "playbookID": "Microsoft Advanced Threat Analytics - Test",
-            "fromversion": "5.0.0",
-            "is_mockable": false
-        },
-        {
             "integrations": "Zimperium",
             "playbookID": "Zimperium_Test",
             "fromversion": "5.0.0"
