@@ -212,7 +212,7 @@ def test_handle_authentication_logs(ret_fresh_client):
 
 
 @freeze_time("2024-01-24 17:00:00 UTC")
-def test_handle_v2_logs_no_events():
+def test_handle_v2_logs_no_events(mocker):
     """
     Given:
         A call is being send to get authentication and telephony logs from duo.
@@ -232,16 +232,9 @@ def test_handle_v2_logs_no_events():
         "end_window": datetime.strptime("2024-01-24 15:11:33", DATE_FORMAT),
         "fetch_delay": "5"
     }
-    error_message = "Received 400 Invalid request parameters ('maxtime' must be strictly greater than 'mintime')"
     client = Client(Params(**params, mintime={}))
     client.params.mintime[LogType.AUTHENTICATION] = {"min_time": '1706115540000'}
     client.params.mintime[LogType.TELEPHONY] = {"min_time": '1706115540000'}
-
-    with patch.object(client.admin_api, 'get_authentication_log', side_effect=Exception(error_message)):
-        events_auth, metadata_auth = client.handle_authentication_logs()
-
-    with patch.object(client.admin_api, 'get_telephony_log', side_effect=Exception(error_message)):
-        events_tel, metadata_tel = client.handle_telephony_logs_v2()
 
     events_auth, metadata_auth = client.handle_authentication_logs()
     events_tel, metadata_tel = client.handle_telephony_logs_v2()
@@ -261,7 +254,7 @@ def test_handle_v2_test_args(mocker):
     Then:
         Validate that the correct arguments are being sent.
     """
-    end_window: datetime = datetime.strptime("2024-01-24 15:11:33", DATE_FORMAT)
+    end_window: datetime = datetime.strptime("2024-01-24 16:55:00", DATE_FORMAT)
     params = {
         "after": "1 minute",
         "host": "api-host.duosecurity.com",
@@ -273,34 +266,34 @@ def test_handle_v2_test_args(mocker):
         "end_window": end_window,
         "fetch_delay": "5"
     }
-    error_message = "Received 400 Invalid request parameters ('maxtime' must be strictly greater than 'mintime')"
     client = Client(Params(**params, mintime={}))
-    client.params.mintime[LogType.AUTHENTICATION] = {"min_time": '1706115540000'}
-    client.params.mintime[LogType.TELEPHONY] = {"min_time": '1706115540000'}
-    maxtime = '1706109093000'
-    mintime = '1706115540000'
+    client.params.mintime[LogType.AUTHENTICATION] = {"min_time": '1706115240000'}
+    client.params.mintime[LogType.TELEPHONY] = {"min_time": '1706115240000'}
+    maxtime = '1706115300000'
+    mintime = '1706115240000'
 
     # authentication , no next_offset
-    request_1 = mocker.patch.object(client.admin_api, 'get_authentication_log', side_effect=Exception(error_message))
+    request_1 = mocker.patch.object(client.admin_api, 'get_authentication_log')
     client.handle_authentication_logs()
     request_1.assert_called_with(mintime=mintime, api_version=2, limit='10', sort='ts:asc', maxtime=maxtime)
     # telephony no next_offset
-    request_2 = mocker.patch.object(client.admin_api, 'get_telephony_log', side_effect=Exception(error_message))
+    request_2 = mocker.patch.object(client.admin_api, 'get_telephony_log')
     client.handle_telephony_logs_v2()
     request_2.assert_called_with(mintime=mintime, api_version=2, limit='10', sort='ts:asc', maxtime=maxtime)
 
-    next_offset = ["1706115540000", "af0ba235-0b33-23c8-bc23-a31aa0231de8"]
-    client.params.mintime[LogType.AUTHENTICATION] = {"min_time": '1706115540000', "next_offset": next_offset}
-    client.params.mintime[LogType.TELEPHONY] = {"min_time": '1706115540000', "next_offset": next_offset}
+    next_offset_auth = ["1706115240000", "af0ba235-0b33-23c8-bc23-a31aa0231de8"]
+    next_offset_tel = "1706115240000,af0ba235-0b33-23c8-bc23-a31aa0231de8"
+    client.params.mintime[LogType.AUTHENTICATION] = {"min_time": '1706115540000', "next_offset": next_offset_auth}
+    client.params.mintime[LogType.TELEPHONY] = {"min_time": '1706115540000', "next_offset": next_offset_tel}
     # authentication with next_offset
-    request_3 = mocker.patch.object(client.admin_api, 'get_authentication_log', side_effect=Exception(error_message))
+    request_3 = mocker.patch.object(client.admin_api, 'get_authentication_log')
     client.handle_authentication_logs()
-    request_3.assert_called_with(next_offset=next_offset, mintime=mintime, api_version=2,
+    request_3.assert_called_with(next_offset=next_offset_auth, mintime=mintime, api_version=2,
                                  limit='10', sort='ts:asc', maxtime=maxtime)
     # telephony with next_offset
-    request_4 = mocker.patch.object(client.admin_api, 'get_telephony_log', side_effect=Exception(error_message))
+    request_4 = mocker.patch.object(client.admin_api, 'get_telephony_log')
     client.handle_telephony_logs_v2()
-    request_4.assert_called_with(next_offset=next_offset, mintime=mintime, api_version=2,
+    request_4.assert_called_with(next_offset=next_offset_tel, mintime=mintime, api_version=2,
                                  limit='10', sort='ts:asc', maxtime=maxtime)
 
 
@@ -548,7 +541,7 @@ def test_calculate_window():
     When:
         calling events_in_window.
     Then:
-        Validate that all events are returned, because we don't want to apply a delay.
+        Validate that the correct end_window value is set.
     """
     params = {
         "after": "1 month",

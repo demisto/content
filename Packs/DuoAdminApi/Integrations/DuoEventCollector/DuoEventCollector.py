@@ -83,7 +83,7 @@ class Client:
 
     def check_window_before_call(self, mintime: int | float) -> bool:
         """ Check if the API call should be performed. If not return false, else return true.
-            If the fetch_delay != 0 (we want a delayed fetch) and end_window < mintime -> we don't want to perform the fetch
+            If the fetch_delay != 0 (we want a delayed fetch) and end_window <= mintime -> we don't want to perform the fetch
             at the moment.
 
         Args:
@@ -108,32 +108,29 @@ class Client:
         All other calls will be made with the next_offset parameter returned from the last fetch.
         get_authentication_log: If not provided takes mintime to 24 hours and maxtime to time.now - 2 min.
 
-        In case there is a fetch_delay, we want to perform the API call only in case that min_time is before the end of the
+        NOTE: In case there is a fetch_delay, we want to perform the API call only in case that min_time is before the end of the
         fetch window.
         """
         maxtime = str(int(self.params.end_window.timestamp() * 1000))
 
         if not self.params.mintime[LogType.AUTHENTICATION].get('next_offset'):
-            demisto.debug(f'handle_authentication_logs, no next_offset {maxtime=}')
-            try:
-                response = self.admin_api.get_authentication_log(
-                    mintime=self.params.mintime[LogType.AUTHENTICATION].get('min_time'),
-                    api_version=2, limit=str(min(int(self.params.limit), int('1000'))), sort='ts:asc', maxtime=maxtime)
-            except Exception as e:
-                demisto.debug(str(e))
+            mintime = self.params.mintime[LogType.AUTHENTICATION].get('min_time')
+            if not self.check_window_before_call(int(mintime)/1000):
                 return [], {}
+            demisto.debug(f'handle_authentication_logs, no next_offset {mintime=} {maxtime=}')
+            response = self.admin_api.get_authentication_log(
+                mintime=mintime, api_version=2, limit=str(min(int(self.params.limit), int('1000'))), sort='ts:asc',
+                maxtime=maxtime)
 
         else:
             next_offset = self.params.mintime[LogType.AUTHENTICATION].get('next_offset')
-            mintime = next_offset[0]
-            demisto.debug(f'handle_authentication_logs {next_offset=} {maxtime=}')
-            try:
-                response = self.admin_api.get_authentication_log(
-                    next_offset=self.params.mintime[LogType.AUTHENTICATION].get('next_offset'), mintime=mintime,
-                    api_version=2, limit=str(min(int(self.params.limit), int('1000'))), sort='ts:asc', maxtime=maxtime)
-            except Exception as e:
-                demisto.debug(str(e))
+            mintime = next_offset[0]  # The mintime in the next_offset object is a string according to the API
+            if not self.check_window_before_call(int(mintime)/1000):
                 return [], {}
+            demisto.debug(f'handle_authentication_logs {next_offset=} {maxtime=}')
+            response = self.admin_api.get_authentication_log(
+                next_offset=next_offset, mintime=mintime,
+                api_version=2, limit=str(min(int(self.params.limit), int('1000'))), sort='ts:asc', maxtime=maxtime)
 
         # The v2 API works with a metadata dictionary - (next token mechanism).
         response_metadata = response.get('metadata')
@@ -152,29 +149,29 @@ class Client:
         All other calls will be made with the next_offset parameter returned from the last fetch.
         get_telephony_log: If not provided takes mintime to 180 days and maxtime to time.now - 2 min.
 
-        In case there is a fetch_delay, we want to perform the API call only in case that min_time is before the end of the
+        NOTE: In case there is a fetch_delay, we want to perform the API call only in case that min_time is before the end of the
         fetch window.
         """
         maxtime = str(int(self.params.end_window.timestamp() * 1000))
 
         if not self.params.mintime[LogType.TELEPHONY].get('next_offset'):
-            try:
-                response = self.admin_api.get_telephony_log(
-                    mintime=self.params.mintime[LogType.TELEPHONY].get('min_time'),
-                    api_version=2, limit=str(min(int(self.params.limit), 1000)), sort='ts:asc', maxtime=maxtime)
-            except Exception as e:
-                demisto.debug(str(e))
+            mintime = self.params.mintime[LogType.TELEPHONY].get('min_time')
+            if not self.check_window_before_call(int(mintime)/1000):
                 return [], {}
+            demisto.debug(f'handle_telephony_logs_v2, no next_offset {mintime=} {maxtime=}')
+            response = self.admin_api.get_telephony_log(
+                mintime=mintime,
+                api_version=2, limit=str(min(int(self.params.limit), 1000)), sort='ts:asc', maxtime=maxtime)
+
         else:
-            next_offset = self.params.mintime[LogType.TELEPHONY].get('next_offset')
-            mintime = next_offset[0]
-            try:
-                response = self.admin_api.get_telephony_log(
-                    next_offset=next_offset, mintime=mintime,
-                    api_version=2, limit=str(min(int(self.params.limit), 1000)), sort='ts:asc', maxtime=maxtime)
-            except Exception as e:
-                demisto.debug(str(e))
+            next_offset = self.params.mintime[LogType.TELEPHONY].get('next_offset', '')
+            mintime = next_offset.split(',')[0]  # "next_offset": "1666714065304,5bf1a860-fe39-49e3-be29-217659663a74"
+            if not self.check_window_before_call(int(mintime)/1000):
                 return [], {}
+            demisto.debug(f'handle_telephony_logs_v2 {next_offset=} {maxtime=}')
+            response = self.admin_api.get_telephony_log(
+                next_offset=next_offset, mintime=mintime,
+                api_version=2, limit=str(min(int(self.params.limit), 1000)), sort='ts:asc', maxtime=maxtime)
 
         response_metadata = response.get('metadata', {})
         events = response.get('items')
@@ -473,7 +470,7 @@ def main():
             events = get_events.aggregated_results()
             if command == 'duo-get-events':
                 command_results = CommandResults(
-                    readable_output=tableToMarkdown(f'Duo Logs {len(events)}', events, headerTransform=pascalToSpace),
+                    readable_output=tableToMarkdown(f'Duo Logs - {len(events)} events', events, headerTransform=pascalToSpace),
                     raw_response=events,
                 )
                 return_results(command_results)
