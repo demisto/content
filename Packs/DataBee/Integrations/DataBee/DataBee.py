@@ -468,7 +468,7 @@ def search_command(
         headers=settings.headers,
         outputs=parse_response(
             type=settings.type,
-            data=response["results"],
+            data=response.get("results") or [],
             keys=settings.output_keys,
             additional_context=additional_context,
         ),
@@ -523,6 +523,110 @@ def get_endpoint_command(
             CommandResults(readable_output=hr, raw_response=raw_res, indicator=endpoint)
         )
     return command_results
+
+
+def test_module(client: Client) -> str:
+    """
+    Test module.
+
+    Args:
+        client (Client): DataBee client.
+        params (Dict): Integration parameters.
+
+    Raises:
+        ValueError: In case of wrong request.
+
+    Returns:
+        str: Output message.
+    """
+    try:
+        response = client.search(table=SearchTypes.USER, query="start_time is None", limit=1)
+        if response.status_code == HTTPStatus.OK:
+            return "ok"
+        else:
+            raise ValueError(response.status_code)
+    except Exception as error:
+        demisto.debug(str(error))
+        return f"Error: {error}"
+
+
+def fetch_incidents(
+    client: Client, args: dict[str, Any], params: dict[str, Any], current_time: datetime
+) -> tuple[dict[str, Any], list[dict]]:
+    """
+    Retrieves findings every interval (default is 1 minute).
+    By default it's invoked by XSOAR every minute.
+    It will use last_run to save the time of the last incident it processed and previous incident IDs.
+    If last_run is not provided, first_fetch_time will be used to determine when to start fetching the first time.
+    Args:
+        client (Client): DataBee client.
+        args (dict[str, Any]): Command arguments from XSOAR.
+        params (dict[str, Any]: Instance params from XSOAR.
+        end_time (str): The current time string formated.
+    Returns:
+        tuple[dict[str, Any], list[dict]]:
+            next_run: Contains information that will be used in the next run.
+            incidents: List of incidents that will be created in XSOAR.
+    """
+    end_time = current_time.strftime(DATE_FORMAT)
+    incidents = []
+    first_fetch = arg_to_datetime(params.get("first_fetch"))
+    if not first_fetch:
+        raise ValueError("First fetch time must be specified.")
+    max_fetch = arg_to_number(params["max_fetch"])
+    last_run = arg_to_datetime(demisto.getLastRun().get("time"))
+
+    demisto.debug(f"fetch: last_run is: {last_run}.")
+
+    start_date = last_run or first_fetch
+    start_time = start_date.strftime(DATE_FORMAT)
+    query = f"start_time between {start_time},{end_time} and metadata.product.name in databee"
+
+    if severity := params.get("severity"):
+        query = f"{query} and severity contains {severity}"
+    if impact := params.get("impact"):
+        query = f"{query} and impact contains {impact}"
+
+    demisto.debug(f"fetch: Start to fetch incidents, query: {query}.")
+
+    data = None
+    offset = 0
+    while data is None or len(data) > 0:
+        response = client.search(
+            table=SearchTypes.FINDING,
+            limit=(max_fetch or DEFAULT_LIMIT),
+            query=query,
+            offset=(offset or DEFAULT_OFFSET),
+        ).json()
+
+        count = response["count"]
+        data = response["results"]
+        offset += len(data)
+
+        demisto.debug(f"fetch: fetched status {offset}/{count}.")
+        next_run = start_date
+
+        for finding in data:
+            time = arg_to_datetime(finding["time"])
+
+            incidents.append(
+                {
+                    "name": str(finding["id"]),
+                    "occurred": time.strftime(XSOAR_DATE_FORMAT) if time else None,
+                    "rawJSON": json.dumps(finding),
+                }
+            )
+            if time and time > next_run:
+                next_run = time
+
+    new_last_run = (current_time).strftime(XSOAR_DATE_FORMAT)
+
+    demisto.debug(f"fetch: Update last run time to {new_last_run}.")
+    demisto.debug(f"fetch: Fetched {len(incidents)} incidents.")
+    return incidents, {"time": new_last_run}
+
+
+''' HELPER COMMANDS '''
 
 
 def normalize_finding(data: dict[str, Any], additional_context: list[AdditionalContext]):
@@ -680,109 +784,6 @@ def normalize_finding(data: dict[str, Any], additional_context: list[AdditionalC
         "User": data.get("user", {}),
     }
     return normalize_data
-
-
-def test_module(client: Client) -> str:
-    """
-    Test module.
-
-    Args:
-        client (Client): DataBee client.
-        params (Dict): Integration parameters.
-
-    Raises:
-        ValueError: In case of wrong request.
-
-    Returns:
-        str: Output message.
-    """
-    response = client.search(table=SearchTypes.USER, query="start_time is None", limit=1)
-    try:
-        if response.status_code == HTTPStatus.OK:
-            return "ok"
-        else:
-            raise ValueError(response.status_code)
-    except Exception as error:
-        demisto.debug(str(error))
-        return f"Error: {error}"
-
-
-def fetch_incidents(
-    client: Client, args: dict[str, Any], params: dict[str, Any], current_time: datetime
-) -> tuple[dict[str, Any], list[dict]]:
-    """
-    Retrieves findings every interval (default is 1 minute).
-    By default it's invoked by XSOAR every minute.
-    It will use last_run to save the time of the last incident it processed and previous incident IDs.
-    If last_run is not provided, first_fetch_time will be used to determine when to start fetching the first time.
-    Args:
-        client (Client): DataBee client.
-        args (dict[str, Any]): Command arguments from XSOAR.
-        params (dict[str, Any]: Instance params from XSOAR.
-        end_time (str): The current time string formated.
-    Returns:
-        tuple[dict[str, Any], list[dict]]:
-            next_run: Contains information that will be used in the next run.
-            incidents: List of incidents that will be created in XSOAR.
-    """
-    del args
-
-    end_time = current_time.strftime(DATE_FORMAT)
-    incidents = []
-    first_fetch = arg_to_datetime(params.get("first_fetch"))
-    if not first_fetch:
-        raise ValueError("First fetch time must be specified.")
-    max_fetch = arg_to_number(params["max_fetch"])
-    last_run = arg_to_datetime(demisto.getLastRun().get("time"))
-
-    demisto.debug(f"fetch: last_run is: {last_run}.")
-
-    start_date = last_run or first_fetch
-    start_time = start_date.strftime(DATE_FORMAT)
-    query = f"start_time between {start_time},{end_time} and metadata.product.name in databee"
-
-    if severity := params.get("severity"):
-        query = f"{query} and severity contains {severity}"
-    if impact := params.get("impact"):
-        query = f"{query} and impact contains {impact}"
-
-    demisto.debug(f"fetch: Start to fetch incidents, query: {query}.")
-
-    data = None
-    offset = 0
-    while data is None or len(data) > 0:
-        response = client.search(
-            table=SearchTypes.FINDING,
-            limit=(max_fetch or DEFAULT_LIMIT),
-            query=query,
-            offset=(offset or DEFAULT_OFFSET),
-        ).json()
-
-        count = response["count"]
-        data = response["results"]
-        offset += len(data)
-
-        demisto.debug(f"fetch: fetched status {offset}/{count}.")
-        next_run = start_date
-
-        for finding in data:
-            time = arg_to_datetime(finding["time"])
-
-            incidents.append(
-                {
-                    "name": str(finding["id"]),
-                    "occurred": time.strftime(XSOAR_DATE_FORMAT) if time else None,
-                    "rawJSON": json.dumps(finding),
-                }
-            )
-            if time and time > next_run:
-                next_run = time
-
-    new_last_run = (current_time).strftime(XSOAR_DATE_FORMAT)
-
-    demisto.debug(f"fetch: Update last run time to {new_last_run}.")
-    demisto.debug(f"fetch: Fetched {len(incidents)} incidents.")
-    return incidents, {"time": new_last_run}
 
 
 def main() -> None:
