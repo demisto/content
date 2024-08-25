@@ -670,6 +670,6 @@ def test_check_window_before_call_not_in_window():
 
     client = Client(Params(**params, mintime={}))
 
-    mintime = datetime.now(timezone.utc) - timedelta(minutes=1)
+    mintime = datetime.now() - timedelta(minutes=1)
     result = client.check_window_before_call(mintime=mintime.timestamp())
     assert not result
