@@ -258,6 +258,8 @@ def transform_string(input_str: str) -> str:
         transform_string("status:true") -> 'status:true'
         transform_string("message:Hello World") -> 'message:"Hello World"'
     """
+    if ':' not in input_str:
+        return input_str
     key, value = input_str.split(':', 1)
     if value.lower() in ['true', 'false']:
         return f'{key}:{value.lower()}'

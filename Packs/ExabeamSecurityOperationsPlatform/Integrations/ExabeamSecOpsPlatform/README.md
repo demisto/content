@@ -175,8 +175,8 @@ Search for alerts that match one or more search criteria.
 | fields | List of fields to be returned from the search. | Optional | 
 | order_by | Order results by a specified field in ASC or DESC order, such as "riskScore ASC" or "riskScore DESC". | Optional | 
 | limit | Limit the number of results returned from the search request. Default is 50. | Optional | 
-| all_results | If set to 'Yes', retrieves all available results, ignoring the limit parameter. Possible values are: Yes, No. Default is No. | Optional | 
-| include_related_rules | If set to 'Yes', filters the context to include the "rules" array related to the cases in the results. Possible values are: Yes, No. Default is No. | Optional | 
+| all_results | If set to 'True', retrieves all available results, ignoring the limit parameter. Possible values are: True, False. Default is False. | Optional | 
+| include_related_rules | If set to 'True', filters the context to include the "rules" array related to the cases in the results. Possible values are: True, False. Default is False. | Optional | 
 
 #### Context Output
 
@@ -234,7 +234,7 @@ Delete a specific context table, including records and attributes.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | table_id | Specify the ID of an existing context table. | Required | 
-| delete_unused_custom_attributes | Delete any custom attributes in this table that are not used in another context table. Possible values are: Yes, No. Default is No. | Optional | 
+| delete_unused_custom_attributes | Delete any custom attributes in this table that are not used in another context table. Possible values are: True, False. Default is False. | Optional | 
 
 #### Context Output
 
@@ -254,7 +254,7 @@ Retrieve metadata for all existing context tables, including source, operational
 | --- | --- | --- |
 | table_id | Specify the ID of an existing context table. | Optional | 
 | limit | Limit the number of results returned from the request. Default is 50. | Optional | 
-| include_attributes | If set to 'Yes', filters the context to include the "attributes" array related to the cases in the results. Possible values are: Yes, No. Default is No. | Optional | 
+| include_attributes | If set to 'True', filters the context to include the "attributes" array related to the cases in the results. Possible values are: True, False. Default is False. | Optional | 
 
 #### Context Output
 
@@ -293,8 +293,8 @@ Search for cases that match one or more search criteria. For example, you can se
 | fields | List of fields to be returned from the search. | Optional | 
 | order_by | Order results by a specified field in ASC or DESC order, such as "riskScore ASC" or "riskScore DESC". | Optional | 
 | limit | Limit the number of results returned from the search request. Default is 50. | Optional | 
-| all_results | If set to 'Yes', retrieves all available results, ignoring the limit parameter. Possible values are: Yes, No. Default is No. | Optional | 
-| include_related_rules | If set to 'Yes', filters the context to include the "rules" array related to the cases in the results. Possible values are: Yes, No. Default is No. | Optional | 
+| all_results | If set to 'True', retrieves all available results, ignoring the limit parameter. Possible values are: True, False. Default is False. | Optional | 
+| include_related_rules | If set to 'True', filters the context to include the "rules" array related to the cases in the results. Possible values are: True, False. Default is False. | Optional | 
 
 #### Context Output
 
