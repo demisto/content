@@ -41,7 +41,7 @@ tasks:
     task:
       id: 2b9ab613-8856-494b-8810-935cae5d9077
       version: -1
-      name: get_skyware_profiles_names
+      name: get_spyware_profiles_names
       description: Gets information for the specified security profile.
       script: '|||pan-os-get-security-profiles'
       type: regular

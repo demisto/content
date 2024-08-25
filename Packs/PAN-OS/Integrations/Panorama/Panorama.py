@@ -49,9 +49,6 @@ PRE_POST = ''
 OUTPUT_PREFIX = "PANOS."
 UNICODE_FAIL = u'\U0000274c'
 UNICODE_PASS = u'\U00002714\U0000FE0F'
-BLOCK_IP = 'block-ip'
-VULNERABILITY_PROTECTION = 'Vulnerability Protection Profile'
-ANTI_SPYWARE = 'Anti Spyware Profile'
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 QUERY_DATE_FORMAT = '%Y/%m/%d %H:%M:%S'
@@ -14121,10 +14118,10 @@ def check_profile_type_by_given_profile_name(profile_name: str, device_group: st
             "Profile name was found both in Vulnerability Protection Profiles and in Anti Spyware Profiles. Please specify profile_type.")
 
     elif profile_name in vulnerability_protection_profile_names:
-        return VULNERABILITY_PROTECTION
+        return 'Vulnerability Protection Profile'
 
     elif profile_name in anti_spyware_profile_names:
-        return ANTI_SPYWARE
+        return 'Anti Spyware Profile'
 
     else:
         raise DemistoException("Profile name was not found in Vulnerability Protection Profiles or in Anti Spyware Profiles.")
@@ -14145,16 +14142,16 @@ def build_xpath_for_profile_exception_commands(profile_name: str, profile_type: 
         The xpath.
     """
 
-    if profile_type == VULNERABILITY_PROTECTION and device_group:
+    if profile_type == 'Vulnerability Protection Profile' and device_group:
         xpath = f"/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='{device_group}']/profiles/vulnerability/entry[@name='{profile_name}']/threat-exception"
 
-    elif profile_type == VULNERABILITY_PROTECTION and VSYS:
+    elif profile_type == 'Vulnerability Protection Profile' and VSYS:
         xpath = f"/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name='{VSYS}']/profiles/vulnerability/entry[@name='{profile_name}']/threat-exception"
 
-    elif profile_type == ANTI_SPYWARE and device_group:
+    elif profile_type == 'Anti Spyware Profile' and device_group:
         xpath = f"/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='{device_group}']/profiles/spyware/entry[@name='{profile_name}']/threat-exception"
 
-    elif profile_type == ANTI_SPYWARE and VSYS:
+    elif profile_type == 'Anti Spyware Profile' and VSYS:
         xpath = f"/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name='{VSYS}']/profiles/spyware/entry[@name='{profile_name}']/threat-exception"
 
     else:
@@ -14180,7 +14177,7 @@ def get_predefined_threats_list() -> list:
     return predefined_threats
 
 
-def get_threat_id_from_predefined_threates(threat: str) -> tuple[str, str, list]:
+def get_threat_id_from_predefined_threats(threat: str) -> tuple[str, str, list]:
     """
     Search the threat id in the threats list by using the threat argument.
 
@@ -14217,12 +14214,12 @@ def build_element_for_profile_exception_commands(extracted_id: str, action: str,
     Build the element for the api that the profile exception commands use.
 
     Args:
-        extracted_id: Not a mandtatory field for building element.
+        extracted_id: Not a mandatory field for building element.
         action: A mandatory field for building element, default value: default.
         packet_capture: Not a mandtatory field for building element.
         exempt_ip: Not a mandtatory field for building element.
-        ip_track_by: Mandatory when action == BLOCK_IP
-        ip_duration_sec: Mandatory when action == BLOCK_IP
+        ip_track_by: Mandatory when action == 'block-ip'
+        ip_duration_sec: Mandatory when action == 'block-ip'
 
     Returns:
         The element for the api request
@@ -14231,7 +14228,7 @@ def build_element_for_profile_exception_commands(extracted_id: str, action: str,
     element = f"""
         <entry name="{extracted_id}">
         """
-    if action == BLOCK_IP:
+    if action == 'block-ip':
         element += f"""
             <action>
                 <block-ip>
@@ -14307,7 +14304,7 @@ def profile_exception_crud_requests(args: dict, action_type: str) -> Any:
     exception_id = ""
     exception_name = ""
 
-    if xpath_action == BLOCK_IP and (not ip_track_by or not ip_duration_sec):
+    if xpath_action == 'block-ip' and (not ip_track_by or not ip_duration_sec):
         raise DemistoException(
             "ip_track_by and ip_duration_sec are required when action is 'Block IP'."
         )
@@ -14316,7 +14313,7 @@ def profile_exception_crud_requests(args: dict, action_type: str) -> Any:
         profile_type = check_profile_type_by_given_profile_name(profile_name, device_group)
 
     if action_type != ExceptionCommandType.LIST.value:
-        exception_id, exception_name, _ = get_threat_id_from_predefined_threates(threat)
+        exception_id, exception_name, _ = get_threat_id_from_predefined_threats(threat)
 
     xpath = build_xpath_for_profile_exception_commands(profile_name, profile_type, device_group, action_type, exception_id)
 
@@ -14464,7 +14461,7 @@ def pan_os_list_profile_exception_command(args: dict) -> CommandResults:
             exception_actions = ", ".join(entry['action'].keys())
             exception_packet_capture = entry.get('packet-capture')
             exception_exempt_id = entry.get('exempt-ip', {}).get('entry', {}).get('@name')
-            _, exception_name, cve = get_threat_id_from_predefined_threates(exception_id)
+            _, exception_name, cve = get_threat_id_from_predefined_threats(exception_id)
 
             excpetion_context = {
                 'id': exception_id,

@@ -9642,6 +9642,9 @@ script:
       - Vulnerability Protection Profile
       - Anti Spyware Profile
     outputs:
+    - contextPath: Panorama.Vulnerability.Name
+      description: The profile name.
+      type: String
     - contextPath: Panorama.Vulnerability.Exception.name
       description: The exception name.
       type: String
@@ -9660,7 +9663,7 @@ script:
     - contextPath: Panorama.Vulnerability.Exception.packet-capture
       description: The exception packet capture.
       type: String
-    - contextPath: Panorama.Spyware.ProfileName
+    - contextPath: Panorama.Spyware.Name
       description: The profile name.
       type: String
     - contextPath: Panorama.Spyware.Exception.name

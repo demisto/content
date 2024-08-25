@@ -7505,7 +7505,7 @@ def test_pan_os_check_profile_type_by_given_profile_name(mocker):
         Panorama.check_profile_type_by_given_profile_name('profile_6', 'device_group')
 
 
-def test_pan_os_get_threat_id_from_predefined_threates(mocker):
+def test_pan_os_get_threat_id_from_predefined_threats(mocker):
     """
     Given:
         - A threat name that may match a threat name, ID, or CVE in the predefined threats list.
@@ -7536,17 +7536,17 @@ def test_pan_os_get_threat_id_from_predefined_threates(mocker):
 
     mocker.patch.object(Panorama, 'get_predefined_threats_list', return_value=mock_predefined_threats)
 
-    result = Panorama.get_threat_id_from_predefined_threates('Test Threat 1')
+    result = Panorama.get_threat_id_from_predefined_threats('Test Threat 1')
     assert result == ("10003", "Test Threat 1", ["CVE-2023-1234"])
 
-    result = Panorama.get_threat_id_from_predefined_threates('10004')
+    result = Panorama.get_threat_id_from_predefined_threats('10004')
     assert result == ("10004", "Test Threat 2", ["CVE-2023-5678"])
 
-    result = Panorama.get_threat_id_from_predefined_threates('CVE-2023-9012')
+    result = Panorama.get_threat_id_from_predefined_threats('CVE-2023-9012')
     assert result == ("10005", "Test Threat 3", ["CVE-2023-9012"])
 
     with pytest.raises(DemistoException, match="Threat was not found."):
-        Panorama.get_threat_id_from_predefined_threates('Nonexistent Threat')
+        Panorama.get_threat_id_from_predefined_threats('Nonexistent Threat')
 
 
 def test_pan_os_add_profile_exception(mocker):
@@ -7565,7 +7565,7 @@ def test_pan_os_add_profile_exception(mocker):
 
     mock_response = MockedResponse(text=expected_text_response, status_code=200)
     mocker.patch.object(requests, 'request', return_value=mock_response)
-    mocker.patch.object(Panorama, 'get_threat_id_from_predefined_threates', return_value=('1000', 'threatname', 'cve'))
+    mocker.patch.object(Panorama, 'get_threat_id_from_predefined_threats', return_value=('1000', 'threatname', 'cve'))
 
     command_results = Panorama.pan_os_add_profile_exception_command(args={"profile_name": "test_spg",
                                                                           "threat_name": '1000',
@@ -7597,7 +7597,7 @@ def test_pan_os_edit_profile_exception(mocker):
 
     mock_response = MockedResponse(text=expected_text_response, status_code=200)
     mocker.patch.object(requests, 'request', return_value=mock_response)
-    mocker.patch.object(Panorama, 'get_threat_id_from_predefined_threates', return_value=('1000', 'threatname', 'cve'))
+    mocker.patch.object(Panorama, 'get_threat_id_from_predefined_threats', return_value=('1000', 'threatname', 'cve'))
     command_results = Panorama.pan_os_edit_profile_exception_command(args={"profile_name": "test_spg",
                                                                            "threat_name": '1000',
                                                                            "profile_type": "Vulnerability Protection Profile",
@@ -7625,7 +7625,7 @@ def test_pan_os_delete_profile_exception(mocker):
 
     mock_response = MockedResponse(text=expected_text_response, status_code=200)
     mocker.patch.object(requests, 'request', return_value=mock_response)
-    mocker.patch.object(Panorama, 'get_threat_id_from_predefined_threates', return_value=('1000', 'threatname', 'cve'))
+    mocker.patch.object(Panorama, 'get_threat_id_from_predefined_threats', return_value=('1000', 'threatname', 'cve'))
 
     command_results = Panorama.pan_os_delete_profile_exception_command(args={"profile_name": "test_spg",
                                                                              "threat_name": '1000',
@@ -7686,7 +7686,7 @@ def test_pan_os_list_profile_exception(mocker):
             'profile_type': 'Vulnerability Protection Profile'})
     )
 
-    mocker.patch.object(Panorama, 'get_threat_id_from_predefined_threates', return_value=('test', 'threatname', 'cve'))
+    mocker.patch.object(Panorama, 'get_threat_id_from_predefined_threats', return_value=('test', 'threatname', 'cve'))
 
     args = {"profile_name": "test_profile", "profile_type": "Vulnerability Protection Profile"}
     result = Panorama.pan_os_list_profile_exception_command(args)
