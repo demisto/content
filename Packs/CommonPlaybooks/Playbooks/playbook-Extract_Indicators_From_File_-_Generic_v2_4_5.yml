@@ -1,15 +1,5 @@
 id: Extract Indicators From File - Generic v2
-version: 31
-contentitemexportablefields:
-  contentitemfields:
-    packID: ""
-    packName: Common Playbooks
-    itemVersion: 2.6.33
-    fromServerVersion: 5.0.0
-    toServerVersion: ""
-    definitionid: ""
-    prevname: ""
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: Extract Indicators From File - Generic v2
 description: |-
   This playbook extracts indicators from a file.
@@ -44,6 +34,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -118,6 +109,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -145,6 +137,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "5"
@@ -179,8 +172,7 @@ tasks:
       id: a8ed00fd-f07a-492a-8a9a-d2af590ab91d
       version: -1
       name: Is there a text-based file?
-      description: Checks if there is a text-based file in context. Skips MSG and
-        EML files.
+      description: Checks if there is a text-based file in context. Skips MSG and EML files.
       type: condition
       iscommand: false
       brand: ""
@@ -858,6 +850,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "19"
@@ -1067,8 +1060,7 @@ tasks:
       id: 61e4f247-0d0f-4a85-8f28-491314b03130
       version: -1
       name: Is Image OCR enabled?
-      description: Checks whether there is an active instance of the Image OCR integration.
-        enabled.
+      description: Checks whether there is an active instance of the Image OCR integration. enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -1119,8 +1111,7 @@ tasks:
       id: a81da43e-d75f-4860-8c79-d59851d1410c
       version: -1
       name: Extract text from images
-      description: Extracts text from PNG, JPEG, and GIF image files, and uses auto-extract
-        to get reputation for indicators.
+      description: Extracts text from PNG, JPEG, and GIF image files, and uses auto-extract to get reputation for indicators.
       script: '|||image-ocr-extract-text'
       type: regular
       iscommand: true
@@ -1326,9 +1317,9 @@ tasks:
                 transformers:
                 - operator: uniq
             iscontext: true
+          ignorecase: true
           right:
             value: {}
-          ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -1520,7 +1511,6 @@ tasks:
           accessor: Data
           transformers:
           - operator: uniq
-    reputationcalc: 1
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1537,6 +1527,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    reputationcalc: 1
   "20":
     id: "20"
     taskid: 7f7c2617-8a16-46bc-8141-96f650642272
@@ -1600,7 +1591,8 @@ tasks:
       id: 6bead496-6144-44a8-8973-6e43547abcf3
       version: -1
       name: Is there an image file?
-      description: Checks if the uploaded file is a valid image file.
+      description: |-
+        Checks if the uploaded file is a valid image file.
       type: condition
       iscommand: false
       brand: ""
@@ -1827,9 +1819,7 @@ tasks:
       id: 424f69f0-0339-42f1-8a9e-c73f4e171412
       version: -1
       name: Extract Text from QR Code
-      description: Extracts the text from a QR code. The output of this script includes
-        the output of the script "extractIndicators" run on the text extracted from
-        the QR code.
+      description: Extracts the text from a QR code. The output of this script includes the output of the script "extractIndicators" run on the text extracted from the QR code.
       scriptName: ReadQRCode
       type: regular
       iscommand: false
@@ -1937,7 +1927,6 @@ tasks:
               remove_keys:
                 value:
                   simple: "true"
-    reputationcalc: 1
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1954,6 +1943,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    reputationcalc: 1
   "26":
     id: "26"
     taskid: 4fb08fe7-5b0b-48ef-8d70-8cc00cb5c6c8
@@ -2055,8 +2045,7 @@ tasks:
       id: 213aae05-47d1-4361-8a40-a5f58b03d241
       version: -1
       name: Extract Hyper-Links from Office Files
-      description: 'Extracts hyperlinks from Office files. Supported file types are:
-        xlsx, docx, pptx.'
+      description: 'Extracts hyperlinks from Office files. Supported file types are: xlsx, docx, pptx.'
       scriptName: ExtractHyperlinksFromOfficeFiles
       type: regular
       iscommand: false
@@ -2134,7 +2123,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -2168,7 +2156,7 @@ inputs:
       root: File
   required: false
   description: The file to extract indicators from.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: ""
   value: {}
   required: false
@@ -2176,7 +2164,7 @@ inputs:
   playbookInputQuery:
     query: ""
     queryEntity: indicators
-    results: null
+    results:
     daterange:
       fromdate: 0001-01-01T00:00:00Z
       todate: 0001-01-01T00:00:00Z
@@ -2184,8 +2172,8 @@ inputs:
         by: ""
         byto: ""
         byfrom: ""
-        tovalue: null
-        fromvalue: null
+        tovalue:
+        fromvalue:
         field: ""
       fromdatelicenseval: 0001-01-01T00:00:00Z
     runFromLastJobTime: true
@@ -2196,7 +2184,7 @@ inputs:
   description: |-
     Available values: "True" or "False". Default is "False"
     When this is set to "True", in case a macro was found within the file (using oletools), it will output all the obfuscated strings with their decoded content (Hex, Base64, StrReverse, Dridex, VBA).
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: MaxImagesFromPDF
   value:
     simple: "10"
@@ -2205,7 +2193,7 @@ inputs:
     The maximum number of images that can be extracted from a PDF file.
     We recommend setting a low number if you don't need all images extracted from PDF files.
     If no value is specified, a default of 20 will be used.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: Domain.Name
   description: The extracted domains.
@@ -2259,9 +2247,7 @@ outputs:
   description: The list of URLs that were extracted from the file.
   type: string
 - contextPath: ExtractedURLsFromFiles
-  description: The list of URLs that were extracted from the file. This output is
-    a duplicate of the URL.Data output and it enables parent playbooks to identify
-    the URLs generated by this playbook.
+  description: The list of URLs that were extracted from the file. This output is a duplicate of the URL.Data output and it enables parent playbooks to identify the URLs generated by this playbook.
   type: String
 - contextPath: Oletools.Oleid.ole_command_result
   description: Indicator list from the oleid command.
@@ -2428,4 +2414,9 @@ outputs:
 - contextPath: ExtractedHyperLink.FileName
   description: The Office file from which the hyperlinks are extracted.
   type: String
-sourceplaybookid: Extract Indicators From File - Generic v2
+tests:
+- Extract Indicators From File - Generic v2 - Test
+fromversion: 5.0.0
+contentitemexportablefields:
+  contentitemfields: {}
+system: true

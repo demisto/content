@@ -33,14 +33,17 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* ReadPDFFileV2
-* ExtractIndicatorsFromWordFile
-* ExtractIndicatorsFromTextFile
 * SetAndHandleEmpty
+* ExtractHyperlinksFromOfficeFiles
+* ExtractIndicatorsFromTextFile
+* ExtractIndicatorsFromWordFile
+* ReadQRCode
+* ReadPDFFileV2
 * ConvertFile
 
 ### Commands
 
+* rasterize-pdf
 * image-ocr-extract-text
 
 ## Playbook Inputs
@@ -125,6 +128,14 @@ This playbook does not use any integrations.
 | DBotScore.Type | The indicator type. | string |
 | DBotScore.Vendor | The vendor used to calculate the score. | string |
 | DBotScore.Score | The actual score. | number |
+| QRCodeReader | The QR code reader primary key object. | unknown |
+| QRCodeReader.Text | The raw text extracted from the QR code image. | String |
+| QRCodeReader.Domain | The domains extracted from the QR code image if they are present. | String |
+| QRCodeReader.URL | The URLs extracted from the QR code image if they are present. | String |
+| QRCodeReader.IP | The IPs extracted from the QR code image if they are present. | String |
+| ExtractedHyperLink | Extracted hyperlinks from supported Office documents \(xlsx,docx,pptx\). | unknown |
+| ExtractedHyperLink.URL | The URL of the extracted hyperlink. | String |
+| ExtractedHyperLink.FileName | The Office file from which the hyperlinks are extracted. | String |
 
 ## Playbook Image
 
