@@ -11,32 +11,56 @@ you are implementing with your integration
 """
 
 import json
-import io
+import pytest
+from ZeroNetworksEventCollector import Client, process_events, fetch_events
+
+
+class MockClient(Client):
+    def __init__(self, server_url: str, proxy: bool, verify: bool, headers: dict):
+        pass
+
+    def search_command(self, limit, cursor) -> None:
+        return
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
-        return json.loads(f.read())
+    with open(path, encoding='utf-8') as f:
+        return json.load(f)
 
 
-# TODO: REMOVE the following dummy unit test function
-def test_baseintegration_dummy():
-    """Tests helloworld-say-hello command function.
+@pytest.mark.parametrize('inputs, expected_outputs', [
+    (test_case['inputs'], test_case['expected_outputs'])
+    for test_case in util_load_json('test_data/test_process_events_params.json')['test_cases']
+])
+def test_process_events(inputs, expected_outputs):
+    input_events, input_previous_ids, input_last_event_time, max_results, num_results = inputs
+    expected_events, expected_ids, expected_last_event_time, expected_num_results = expected_outputs
 
-    Checks the output of the command function with the expected output.
+    input_previous_ids = set(input_previous_ids)
+    expected_ids = set(expected_ids)
 
-    No mock is needed here because the say_hello_command does not call
-    any external API.
-    """
-    from BaseIntegration import Client, baseintegration_dummy_command
+    new_events, updated_ids, updated_last_event_time, num_results_ans = process_events(
+        input_events, input_previous_ids, input_last_event_time, max_results, num_results
+    )
 
-    client = Client(base_url='some_mock_url', verify=False)
-    args = {
-        'dummy': 'this is a dummy response'
-    }
-    response = baseintegration_dummy_command(client, args)
+    assert num_results_ans == expected_num_results
+    assert new_events == expected_events
+    assert updated_ids == expected_ids
+    assert updated_last_event_time == expected_last_event_time
 
-    mock_response = util_load_json('test_data/baseintegration-dummy.json')
 
-    assert response.outputs == mock_response
-# TODO: ADD HERE unit tests for every command
+@pytest.mark.parametrize('mock_return_value, inputs, expected_results', [
+    (test_case['mock_return_value'], test_case['inputs'], test_case['expected_results'])
+    for test_case in util_load_json('test_data/test_fetch_events_params.json')['test_cases']
+])
+def test_fetch_events(mocker, mock_return_value, inputs, expected_results):
+    client = MockClient("", False, False, {})
+    mocker.patch.object(client, 'search_events', return_value=mock_return_value)
+
+    new_last_run, new_events = fetch_events(client, inputs[0], inputs[1])
+    last_fetch = expected_results[0].get("last_fetch")
+    previous_ids = set(expected_results[0].get("previous_ids"))
+
+    assert new_last_run.get("last_fetch") == last_fetch
+    assert new_last_run.get("previous_ids") == previous_ids
+    assert new_events == expected_results[1]

@@ -1,7 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 import urllib3
-from typing import Dict, Any
+from typing import Any
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -22,16 +22,16 @@ LOG_TYPE = ['audit', 'network_activities']
 
 class Client(BaseClient):
     API_VERSION = "/api/v1"
-    def __init__(self, server_url: str, proxy: bool, verify: bool, headers: dict, api_key: str):
+
+    def __init__(self, server_url: str, proxy: bool, verify: bool, headers: dict):
         super().__init__(
             base_url=urljoin(server_url, self.API_VERSION),
             verify=verify,
             proxy=proxy,
-            auth=api_key,
             headers=headers
         )
-        
-    def search_events(self, limit, start_time, end_time, cursor=None) -> dict[str, Any]:
+
+    def search_events(self, limit, cursor) -> dict[str, Any]:
         """
         Get a list of events.
         Args:
@@ -44,7 +44,7 @@ class Client(BaseClient):
         Returns:
             Dict[str, Any]: A list of events.
         """
-        params = remove_empty_elements({"_limit": limit, "from": start_time, "to": end_time, "order": "asc", "_cursor": cursor})
+        params = remove_empty_elements({"_limit": limit, "order": "asc", "_cursor": cursor})
 
         return self._http_request(
             method="GET",
@@ -52,68 +52,82 @@ class Client(BaseClient):
             params=params,
         )
 
+
 ''' HELPER FUNCTIONS '''
 
-def process_events(events, previous_ids, last_event_time):
+
+def process_events(events: list, previous_ids: set, last_event_time: int, max_results: int, num_results: int):
     new_events = []
     for event in events:
-        if event not in previous_ids:
+        event_id = event.get('id')
+        if num_results == max_results:
+            break
+        
+        if event_id not in previous_ids:
             event['_TIME'] = timestamp_to_datestring(event.get('timestamp'), is_utc=True)
             event['source_log_type'] = 'audit'
-            previous_ids.add(event['id'])
             new_events.append(event)
-            event_timestamp = event.get('timestamp')
+            event_timestamp = event.get("timestamp")
+            num_results += 1
             if event_timestamp > last_event_time:
+                demisto.debug('updating the last run')
+                previous_ids = {event_id}
                 last_event_time = event_timestamp
-            
-    return new_events, previous_ids, last_event_time
+
+            # Adding the event ID when the event time is equal to the last received event
+            elif event_timestamp == last_event_time:
+                demisto.debug('adding id to the "new_previous_ids"')
+                previous_ids.add(event_id)
+
+    return new_events, previous_ids, last_event_time, num_results
+
 
 ''' COMMAND FUNCTIONS '''
+
 
 def fetch_events(client: Client, params: dict, last_run: dict):
     """
        Fetches audit logs from ZeroNetworks API.
     """
-    current_time = datetime.now().strftime(ISO_8601_FORMAT)
-    end_timestamp = date_to_timestamp(current_time, ISO_8601_FORMAT)    # type: ignore[union-attr]
-    start_date = last_run.get("last_fetch", FIRST_FETCH)
-    start_date = dateparser.parse(start_date).strftime(ISO_8601_FORMAT)   # type: ignore[union-attr]
-    start_timestamp = date_to_timestamp(start_date, ISO_8601_FORMAT)
+    start_timestamp = last_run.get("last_fetch")
+    if not start_timestamp:
+        start_date = dateparser.parse(FIRST_FETCH).strftime(ISO_8601_FORMAT)   # type: ignore[union-attr]
+        start_timestamp = date_to_timestamp(start_date, ISO_8601_FORMAT)
+
+    cursor = start_timestamp
     last_event_time = start_timestamp
-    cursor = None
-    collected_events = []
-    max_results = params.get('max_results') or MAX_LIMIT
+    collected_events: list = []
+    max_results: int = arg_to_number(params.get('max_results')) or MAX_LIMIT
     previous_ids = last_run.get('previous_ids', ())
-    
+    num_results = 0
     while len(collected_events) < max_results:
-        response = client.search_events(limit=min(max_results, MAX_LIMIT), start_time=start_timestamp, end_time=end_timestamp,
-                                        cursor=cursor)
-        
+        response = client.search_events(limit=min(max_results, MAX_LIMIT), cursor=cursor)
+
         if not response:
             break
-        
+
         events = response.get('items', [])
         cursor = response.get('scrollCursor')
-        
+
         if not events:
             break
-        
-        new_events, previous_ids, last_event_time = process_events(events, previous_ids, last_event_time)
-        collected_events.extend(new_events)
-        
-        if len(collected_events) >= max_results:
-            collected_events = collected_events[:max_results]
+
+        new_events, previous_ids, last_event_time, num_results = process_events(events, previous_ids, last_event_time,
+                                                                                max_results, num_results)
+
+        if not new_events:
             break
-        
+
+        collected_events.extend(new_events)
+
     last_run = {
-        "last_fetch": timestamp_to_datestring(last_event_time, is_utc=True),
+        "last_fetch": last_event_time,
         "previous_ids": previous_ids
     }
-    
-    return last_run, new_events
-    
-    
-    
+
+    return last_run, collected_events
+
+
 def test_module(client: Client, params) -> str:
     """
     Tests API connectivity and authentication'
@@ -144,12 +158,13 @@ def main() -> None:
     main function, parses params and runs command functions
     """
     params = demisto.params()
-    
+
     command = demisto.command()
     api_key = params.get('api_key', '')
     server_url = urljoin(params.get('url'))
     verify_certificate = not argToBoolean(params.get('insecure', False))
     proxy = params.get('proxy', False)
+    is_fetch_network = params.get('isFetchNetwork', False)
 
     demisto.debug(f'Command being called is {command}')
     try:
@@ -159,13 +174,12 @@ def main() -> None:
             server_url=server_url,
             proxy=proxy,
             verify=verify_certificate,
-            headers=headers,
-            api_key=api_key)
+            headers=headers)
 
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
             return_results(test_module(client, params))
-            
+
         # elif command == 'cisco-amp-get-events':
         #     events, results = get_events(client, args)  # type: ignore
         #     return_results(results)
@@ -173,11 +187,10 @@ def main() -> None:
         #         send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
 
         elif command == 'fetch-events':
-            last_run = demisto.getLastRun() or {}
+            last_run = demisto.getLastRun()
             next_run, events = fetch_events(client, params, last_run)
             demisto.setLastRun(next_run)
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
-
 
     # Log exceptions and return errors
     except Exception as e:

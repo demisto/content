@@ -1,0 +1,46 @@
+{
+    "test_cases": [
+      {
+        "mock_return_value": {
+          "items": [{"id": 1, "timestamp": 1000}],
+          "scrollCursor": "new_cursor"
+        },
+        "inputs": [
+          {"max_results": 10},
+          {"last_fetch": 900}
+        ],
+        "expected_results": [
+          {"last_fetch": 1000, "previous_ids": [1]},
+          [
+            {
+              "id": 1,
+              "timestamp": 1000,
+              "_TIME": "1970-01-01T00:00:01.000Z",
+              "source_log_type": "audit"
+            }
+          ]
+        ]
+      },
+      {
+        "mock_return_value": {
+          "items": [{"id": 1, "timestamp": 1000}],
+          "scrollCursor": "new_cursor"
+        },
+        "inputs": [
+          {"max_results": 10},
+          {"last_fetch": 900}
+        ],
+        "expected_results": [
+          {"last_fetch": 1000, "previous_ids": [1]},
+          [
+            {
+              "id": 1,
+              "timestamp": 1000,
+              "_TIME": "1970-01-01T00:00:01.000Z",
+              "source_log_type": "audit"
+            }
+          ]
+        ]
+      }
+    ]
+  }
