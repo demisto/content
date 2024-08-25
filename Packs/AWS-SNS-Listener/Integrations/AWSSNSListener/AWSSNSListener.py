@@ -5,7 +5,7 @@ from traceback import format_exc
 from collections import deque
 import uvicorn
 from secrets import compare_digest
-from fastapi import Depends, FastAPI, Response, Request, status
+from fastapi import Depends, FastAPI, Request, Response, status
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.security.api_key import APIKeyHeader
 from fastapi.openapi.models import APIKey
