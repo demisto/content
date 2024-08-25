@@ -225,11 +225,11 @@ def is_atom42_sub_report(report_obj):
     return not (is_report_description or only_reports_and_intrusion_set)
 
 
-def create_relationship_entity(entity_a: str, entity_b: str, entity_b_type: str):
+def create_relationship_entity(entity_a: Optional[str], entity_b: str, entity_b_type: str):
     """Creates relationship entity object.
 
     Args:
-      entity_a: the indictor name of entity_a.
+      entity_a: the indictor name of entity_a - report name is required.
       entity_b: the indictor name of entity_b.
       entity_b_type: the the indictor type of entity_b.
 
@@ -244,6 +244,55 @@ def create_relationship_entity(entity_a: str, entity_b: str, entity_b_type: str)
         entity_b_type=entity_b_type,
     )
     return entity_relation.to_indicator()
+
+
+def create_relationship_list(id_to_object, report_object: dict,
+                             sub_report_obj: dict, campaign_only: bool) -> tuple:
+    """Creates relationship list and obj refs list.
+
+    Args:
+      id_to_object: a dict in the form of - id: stix_object.
+      report_object: A report objects.
+      sub_report_obj: A sub-report objects.
+      campaign_only: bool indicates whether to add only campaign indicators.
+
+    Returns:
+        tuple of two lists the first list is a relationships list and the second list is an object ref list.
+    """
+    obj_refs_excluding_relationships_prefix = []
+    relationships = []
+    sub_report_obj_object_refs = sub_report_obj.get("object_refs", [])
+    for related_obj in sub_report_obj_object_refs:
+        # relationship-- objects ref handled in parse_relationships
+        if not related_obj.startswith("relationship--"):
+            obj_refs_excluding_relationships_prefix.append(related_obj)
+            if id_to_object.get(related_obj):
+                entity_b_obj_type, entity_b_value = (
+                    STIX2XSOARParser.get_entity_b_type_and_value(
+                        related_obj, id_to_object, True
+                    )
+                )
+                if (not entity_b_obj_type):
+                    demisto.debug(
+                        f"{INTEGRATION_NAME}: Could not find the type/name of {related_obj} skipping."
+                    )
+                    continue
+                if campaign_only:
+                    if related_obj.startswith("campaign--"):
+                        relationship_entity = create_relationship_entity(
+                            report_object.get("name"),
+                            entity_b_value,
+                            entity_b_obj_type,
+                        )
+                        relationships.append(relationship_entity)
+                else:
+                    relationship_entity = create_relationship_entity(
+                        report_object.get("name"),
+                        entity_b_value,
+                        entity_b_obj_type,
+                    )
+                    relationships.append(relationship_entity)
+    return relationships, obj_refs_excluding_relationships_prefix
 
 
 def get_relationships_from_sub_reports(
@@ -267,37 +316,10 @@ def get_relationships_from_sub_reports(
         if obj.startswith("report--"):
             sub_report_obj = client.get_report_object(obj)
             if sub_report_obj:
-                sub_report_obj_object_refs = sub_report_obj.get("object_refs", [])
-                for related_obj in sub_report_obj_object_refs:
-                    # relationship-- objects ref handled in parse_relationships
-                    if not related_obj.startswith("relationship--"):
-                        obj_refs_excluding_relationships_prefix.append(related_obj)
-                        if id_to_object.get(related_obj):
-                            entity_b_obj_type, entity_b_value = (
-                                STIX2XSOARParser.get_entity_b_type_and_value(
-                                    related_obj, id_to_object, True
-                                )
-                            )
-                            if not entity_b_obj_type:
-                                demisto.debug(f"{INTEGRATION_NAME}: Could not find the type of {related_obj} skipping.")
-                                continue
-                            if campaign_only:
-                                if related_obj.startswith("campaign--"):
-                                    relationship_entity = (
-                                        create_relationship_entity(
-                                            report_object.get("name"),
-                                            entity_b_value,
-                                            entity_b_obj_type,
-                                        )
-                                    )
-                                    relationships.append(relationship_entity)
-                            else:
-                                relationship_entity = create_relationship_entity(
-                                    report_object.get("name"),
-                                    entity_b_value,
-                                    entity_b_obj_type,
-                                )
-                                relationships.append(relationship_entity)
+                relationships_list, sub_report_obj_object_refs = create_relationship_list(
+                    id_to_object, report_object, sub_report_obj, campaign_only)
+                relationships.extend(relationships_list)
+                obj_refs_excluding_relationships_prefix.extend(sub_report_obj_object_refs)
     if obj_refs_excluding_relationships_prefix:
         object_ref_to_return = client.create_obj_refs_list(obj_refs_excluding_relationships_prefix)
     return relationships, object_ref_to_return

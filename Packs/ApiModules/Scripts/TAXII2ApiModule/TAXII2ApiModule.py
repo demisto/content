@@ -957,13 +957,13 @@ class STIX2XSOARParser(BaseClient):
         indicator value = 'Redundant Access'.
         """
         ind_name = attack_indicator.get('name')
-        separator = ':'
+        separator = ': '
         try:
-            idx = ind_name.index(separator)
+            partition_result = ind_name.partition(separator)
         except ValueError:
             raise DemistoException(f"Failed parsing attack indicator {ind_name}")
-        ind_id = ind_name[:idx]
-        value = ind_name[idx + 2:]
+        ind_id = partition_result[0]
+        value = partition_result[1]
 
         if attack_indicator.get('x_mitre_is_subtechnique'):
             value = attack_indicator.get('x_panw_parent_technique_subtechnique')
@@ -1020,15 +1020,17 @@ class STIX2XSOARParser(BaseClient):
         indicator_obj = id_to_object.get(indicator, {})
         pattern = indicator_obj.get('pattern', '')
         for stix_type in STIX_2_TYPES_TO_CORTEX_TYPES:
-            if pattern.startswith(f'[{stix_type}') and (not STIX2XSOARParser.is_not_supported_iocs_type(pattern)):
-                ioc_type = STIX_2_TYPES_TO_CORTEX_TYPES.get(stix_type)  # type: ignore
-                break
+            if pattern.startswith(f'[{stix_type}'):
+                if STIX2XSOARParser.is_supported_iocs_type(pattern):
+                    ioc_type = STIX_2_TYPES_TO_CORTEX_TYPES.get(stix_type, '')  # type: ignore
+                    break
+                demisto.debug(f"Indicator {indicator_obj.get('id')} is not supported indicator.")
         return ioc_type
 
     @staticmethod
-    def is_not_supported_iocs_type(pattern: str):
+    def is_supported_iocs_type(pattern: str):
         """
-        Get pattern and check if the type is not supported by XSOAR.
+        Get pattern and check if the type is supported by XSOAR.
 
         Args:
             pattern: the indicator pattern.
@@ -1036,7 +1038,7 @@ class STIX2XSOARParser(BaseClient):
         Returns:
             bool.
         """
-        return any(pattern.startswith(f"[{key}") for key in STIX_NOT_SUPPORTED_TYPES)
+        return all(not pattern.startswith(f"[{key}") for key in STIX_NOT_SUPPORTED_TYPES)
 
     @staticmethod
     def get_tlp(indicator_json: dict) -> str:
