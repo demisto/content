@@ -963,7 +963,7 @@ class STIX2XSOARParser(BaseClient):
         except ValueError:
             raise DemistoException(f"Failed parsing attack indicator {ind_name}")
         ind_id = partition_result[0]
-        value = partition_result[1]
+        value = partition_result[2]
 
         if attack_indicator.get('x_mitre_is_subtechnique'):
             value = attack_indicator.get('x_panw_parent_technique_subtechnique')
