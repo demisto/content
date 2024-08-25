@@ -249,7 +249,6 @@ class Client(BaseClient):
         response = self._http_request(method='GET', url_suffix='activities', params=params)
         return response.get('data', {})
 
-
     def get_threats_request(self, content_hash=None, mitigation_status=None, created_before=None, created_after=None,
                             created_until=None, created_from=None, updated_from=None, resolved='false', display_name=None,
                             query=None, threat_ids=None, limit=20, classifications=None, site_ids=None, rank=None,
