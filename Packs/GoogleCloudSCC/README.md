@@ -25,7 +25,8 @@ Findings show the issue that was detected, the resource that is affected by the 
 
 - __Audit__ - Google Cloud services write audit logs that record administrative activities and accesses within Google Cloud resources. 
 
-##### For Google Cloud audit logs follow the below steps:
+<details>
+<summary> For Google Cloud audit logs follow the below steps</summary>
 
 1. Go to marketplace and search for *Google Cloud Logging*.
 2. Install *Google Cloud Logging*.
@@ -40,11 +41,11 @@ Findings show the issue that was detected, the resource that is affected by the 
 
 [Ingest logs and data from a GCP Pub/Sub](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Ingest-logs-and-data-from-a-GCP-Pub/Sub?tocId=RyZP~~W~YWbOPGKAClIQHg)
 
-
+</details>
  
 ## Use Cases
 
-1. __Vulnerability findings - Public bucket ACL:__ When a cloud storage bucket is detected as publicly accessible (that means that anyone can read/ edit the content of the bucket) the user will notified about this event and will get a recommendation on how to act regarding this issue. usually for this type of event, you will need to remove users from the bucket' members list
+1. __Vulnerability findings - Public bucket ACL:__ When a cloud storage bucket is detected as publicly accessible (that means that anyone can read/ edit the content of the bucket) the user will notified about this event and will get a recommendation on how to act regarding this issue. usually for this type of event, you will need to remove users from the bucket's members list
 
 2. __Vulnerability findings - Open RDP Port:__ When a firewall configuration is set to have an open RDP port that allows connections from all IP addresses on TCP | UDP port 3389.
 The recommendation will be to restrict firewall rules.
