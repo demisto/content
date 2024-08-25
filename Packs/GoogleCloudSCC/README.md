@@ -61,10 +61,9 @@ The recommendation will be to restrict firewall rules.
 ## Configure Google Cloud Security Command Center
  
 To configure ingestion of data from Google Cloud Security Command Center follow the procedure below: <br>
-[Ingest Logs and Data from a GCP Pub/Sub](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Ingest-Logs-and-Data-from-a-GCP-Pub/Sub?tocId=q2ZnSo90ZmO~6aLgts8g5g) <br> <br>
+[Ingest Logs and Data from a GCP Pub/Sub](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Ingest-Logs-and-Data-from-a-GCP-Pub/Sub?tocId=q2ZnSo90ZmO~6aLgts8g5g) 
+<br> 
  
-
-<br>
 
 ## Configure Cortex XSIAM
 
@@ -77,7 +76,7 @@ To configure ingestion of data from Google Cloud Security Command Center follow 
 8. Select Log Format *JSON*
 8. Insert *Vendor = Google* and *Product = SCC*
 
-<br> <br> 
+<br> 
 
 #### Notes
 - To configure Google Cloud Security Command Center you must have user with the corresponding permissions. <br>
