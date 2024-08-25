@@ -8,7 +8,7 @@ subtype: python3
 tags:
 - url
 - Enrichment
-comment: Verify URL SSL certificate
+comment: Verify URL SSL certificate.
 system: true
 args:
 - name: url
