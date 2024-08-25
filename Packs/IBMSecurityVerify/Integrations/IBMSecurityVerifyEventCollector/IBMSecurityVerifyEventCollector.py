@@ -11,6 +11,7 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 VENDOR = 'ibm'
 PRODUCT = 'security verify'
 TOKEN_EXPIRY_BUFFER = timedelta(minutes=5)
+DEFAULT_TEST = 1_000
 DEFAULT_FETCH = 10_000
 MAX_FETCH = 50_000
 MIN_FETCH = 1
@@ -23,13 +24,12 @@ MIN_FETCH = 1
 
 
 class Client(BaseClient):
-    def __init__(self, base_url: str, client_id: str, client_secret: str, max_fetch: int, verify: bool, proxy: bool):
+    def __init__(self, base_url: str, client_id: str, client_secret: str, verify: bool, proxy: bool):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self.client_id = client_id
         self.client_secret = client_secret
         self.access_token = None
-        self.max_fetch = max_fetch
-        self._max_fetch_validation()
+        # self._max_fetch_validation()
 
         self._authenticate()
 
@@ -81,18 +81,20 @@ class Client(BaseClient):
         token_data = {"access_token": new_token, "expiry_time_utc": expiry_time_utc.isoformat()}
         return token_data
 
-    def search_events(self, last_id: str, last_time: int) -> Dict:
+    def search_events(self, limit: int, last_item: Optional[dict] = None) -> Dict:
         """
 
         """
         params = {
-            'size': self.max_fetch,
-            'after_time': last_time,
-            'after_id': last_id,
+            'size': limit,
             'range_type': 'indexed_at',
             'all_events': 'yes',
             'sort_order': 'asc',
         }
+        if last_item:
+            params["after_time"] = last_item["last_time"]
+            params["after_id"] = last_item["last_id"]
+
         headers = {
             "Authorization": f"Bearer {self.access_token}",
         }
@@ -116,7 +118,7 @@ def test_module(client: Client) -> str:
     """
 
     try:
-        get_events(client)
+        get_events(client, {})
 
     except Exception as e:
         if 'Forbidden' in str(e):
@@ -127,48 +129,40 @@ def test_module(client: Client) -> str:
     return 'ok'
 
 
-def get_events(client: Client) -> tuple[List[Dict], CommandResults]:
-    last_id = 'e5b0d500-bc39-471d-8174-119a2a166792'
-    last_time = 172035825954
+def get_events(client: Client, args: dict) -> tuple[List[Dict], CommandResults]:
+    last_id = args.get("last_id")
+    last_time = args.get("last_time")
+    last_item = {"last_id": last_id, "last_time": last_time}
+    limit = arg_to_number(args.get("limit")) or DEFAULT_TEST
 
-    response = client.search_events(last_id, last_time)
+    response = client.search_events(limit, last_item)
     events = response.get("response", {}).get("events", {}).get("events", [])
 
-    return events, events
-
-    # max_fetch = args.get("max_fetch")
-    # events = client.search_events(
-    #     prev_id=0,
-    #     alert_status=alert_status,
-    #     limit=limit,
-    #     from_date=from_date,
-    # )
-    # hr = tableToMarkdown(name='Test Event', t=events)
-    # return events, CommandResults(readable_output=hr)
+    return events
 
 
-def fetch_events(client: Client, last_run: dict[str, int],
-                 first_fetch_time, alert_status: str | None, max_events_per_fetch: int
-                 ) -> tuple[Dict, List[Dict]]:
-    """
-f events that will be created in XSIAM.
-    """
-    prev_id = last_run.get('prev_id', None)
-    if not prev_id:
-        prev_id = 0
+# def fetch_events(client: Client, last_run: dict[str, int],
+#                  first_fetch_time, alert_status: str | None, max_events_per_fetch: int
+#                  ) -> tuple[Dict, List[Dict]]:
+#     """
+# f events that will be created in XSIAM.
+#     """
+#     prev_id = last_run.get('prev_id', None)
+#     if not prev_id:
+#         prev_id = 0
 
-    events = client.search_events(
-        prev_id=prev_id,
-        alert_status=alert_status,
-        limit=max_events_per_fetch,
-        from_date=first_fetch_time,
-    )
-    demisto.debug(f'Fetched event with id: {prev_id + 1}.')
+#     events = client.search_events(
+#         prev_id=prev_id,
+#         alert_status=alert_status,
+#         limit=max_events_per_fetch,
+#         from_date=first_fetch_time,
+#     )
+#     demisto.debug(f'Fetched event with id: {prev_id + 1}.')
 
-    # Save the next_run as a dict with the last_fetch key to be stored
-    next_run = {'prev_id': prev_id + 1}
-    demisto.debug(f'Setting next run {next_run}.')
-    return next_run, events
+#     # Save the next_run as a dict with the last_fetch key to be stored
+#     next_run = {'prev_id': prev_id + 1}
+#     demisto.debug(f'Setting next run {next_run}.')
+#     return next_run, events
 
 
 ''' MAIN FUNCTION '''
@@ -198,7 +192,6 @@ def main() -> None:  # pragma: no cover
             base_url=base_url,
             client_id=client_id,
             client_secret=client_secret,
-            max_fetch=max_fetch,
             verify=verify_certificate,
             proxy=proxy)
 
@@ -206,12 +199,11 @@ def main() -> None:  # pragma: no cover
             return_results(test_module(client))
 
         elif command == 'ibm-security-verify-get-events':
-            events, results = get_events(client)
-            return_results(results)
+            events = get_events(client, args)
+            return_results(events)
 
             should_push_events = argToBoolean(args.get('should_push_events'))
             if should_push_events:
-                # add_time_to_events(events)
                 send_events_to_xsiam(
                     events,
                     vendor=VENDOR,
@@ -220,6 +212,7 @@ def main() -> None:  # pragma: no cover
 
         elif command == 'fetch-events':
             pass
+        # max_fetch
             # last_run = demisto.getLastRun()
             # next_run, events = fetch_events(
             #     client=client,
@@ -229,7 +222,6 @@ def main() -> None:  # pragma: no cover
             #     max_events_per_fetch=max_fetch,
             # )
 
-            # add_time_to_events(events)
             # send_events_to_xsiam(
             #     events,
             #     vendor=VENDOR,
