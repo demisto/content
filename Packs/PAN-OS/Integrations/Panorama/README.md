@@ -9245,6 +9245,9 @@ Add an exception to a Vulnerability Protection profile or Anti Spyware profile.
 | ip_track_by | Specify whether to Track By and block the IP address using the IP source or the IP source and destination. If action = Block IP , this argument is mandatory. Possible values are: Source, Source And Destination. | Optional | 
 | ip_duration_sec | Specify the time period (in seconds) after which to trigger the action. If action = Block IP , this argument is mandatory. | Optional | 
 
+#### Command example
+```!pan-os-add-profile-exception profile_name="test1" threat="10002" action="Drop"```
+
 #### Context Output
 
 There is no context output for this command.
@@ -9263,6 +9266,9 @@ List the exceptions in a Vulnerability Protection profile or Anti Spyware profil
 | --- | --- | --- |
 | profile_name | The profile name. | Required | 
 | profile_type | The profile type. Possible values are: Vulnerability Protection Profile, Anti Spyware Profile. | Optional | 
+
+#### Command example
+```!pan-os-list-profile-exception profile_name="test1" profile_type="Vulnerability Protection Profile"```
 
 #### Context Output
 
@@ -9300,6 +9306,9 @@ Delete an exception to a Vulnerability Protection profile or Anti Spyware profil
 | threat | The requested threat name/CVE/ID to delete. | Required | 
 | profile_type | The profile type. Possible values are: Vulnerability Protection Profile, Anti Spyware Profile. | Optional | 
 
+#### Command example
+```!pan-os-delete-profile-exception profile_name="test2" threat="10005" profile_type="Vulnerability Protection Profile"```
+
 #### Context Output
 
 There is no context output for this command.
@@ -9325,6 +9334,9 @@ Edit an exception to a Vulnerability Protection profile or Anti Spyware profile.
 | device_group | Device group. This will override any configured device group or vsys. | Optional | 
 | ip_track_by | Specify whether to Track By and block the IP address using the IP source or the IP source and destination. If action = Block IP , this argument is mandatory. Possible values are: Source, Source And Destination. | Optional | 
 | ip_duration_sec | Specify the time period (in seconds) after which to trigger the action. If action = Block IP , this argument is mandatory. | Optional | 
+
+#### Command example
+```!pan-os-edit-profile-exception profile_name="test1" threat="10002" action="Drop"```
 
 #### Context Output
 
