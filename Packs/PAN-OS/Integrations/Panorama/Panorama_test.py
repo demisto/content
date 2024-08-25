@@ -7572,7 +7572,10 @@ def test_pan_os_add_profile_exception(mocker):
                                                                           "profile_type": "Vulnerability Protection Profile",
                                                                           "device_group": 'device_group'})
     assert command_results.raw_response == {'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
-    assert command_results.readable_output == 'Successfully created exception "threatname" with threat ID 1000 in the "test_spg" profile of type "Vulnerability Protection Profile".'
+    assert command_results.readable_output == (
+        'Successfully created exception "threatname" with threat ID 1000 in the "test_spg" '
+        'profile of type "Vulnerability Protection Profile".'
+    )
 
 
 def test_pan_os_edit_profile_exception(mocker):
@@ -7600,8 +7603,10 @@ def test_pan_os_edit_profile_exception(mocker):
                                                                            "profile_type": "Vulnerability Protection Profile",
                                                                            "device_group": 'device_group'})
     assert command_results.raw_response == {'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
-    assert command_results.readable_output == 'Successfully edited exception "threatname" with threat ID 1000 in the '
-    '"test_spg" profile of type "Vulnerability Protection Profile".'
+    assert command_results.readable_output == (
+        'Successfully edited exception "threatname" with threat ID 1000 in the "test_spg" '
+        'profile of type "Vulnerability Protection Profile".'
+    )
 
 
 def test_pan_os_delete_profile_exception(mocker):
@@ -7627,8 +7632,10 @@ def test_pan_os_delete_profile_exception(mocker):
                                                                              "profile_type": "Vulnerability Protection Profile",
                                                                              "device_group": 'device_group'})
     assert command_results.raw_response == {'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
-    assert command_results.readable_output == 'Successfully deleted exception "threatname" with threat ID 1000 in the "test_spg" '
-    'profile of type "Vulnerability Protection Profile".'
+    assert command_results.readable_output == (
+        'Successfully deleted exception "threatname" with threat ID 1000 in the "test_spg" '
+        'profile of type "Vulnerability Protection Profile".'
+    )
 
 
 def test_pan_os_list_profile_exception(mocker):
