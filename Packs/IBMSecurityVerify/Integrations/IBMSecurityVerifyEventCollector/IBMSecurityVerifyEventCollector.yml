@@ -11,14 +11,15 @@ configuration:
   required: true
   type: 0
   section: Connect
+  additionalinfo: 'For example: https://{tenant_id}.verify.ibm.com'
 - display: Client ID
   name: credentials
   required: true
   section: Connect
   type: 9
   displaypassword: Client Secret
-- name: max_events_per_fetch
-  display: Max number of events per fetch
+- display: The maximum number of events per fetch
+  name: max_fetch
   additionalinfo: The maximum is 50,000.
   defaultvalue: 10000
   section: Collect
@@ -35,44 +36,24 @@ configuration:
   type: 8
   section: Connect
 description:
-display: IBM Security Verify
+display: IBM Security Verify Event Collector
 name: IBMSecurityVerifyEventCollector
 script:
   commands:
-  - arguments:
-    - auto: PREDEFINED
-      defaultValue: 'false'
-      description: If true, the command will create events, otherwise it will only display them.
-      isArray: false
-      name: should_push_events
-      predefined:
-      - 'true'
-      - 'false'
-      required: true
-    - auto: PREDEFINED
-      default: false
-      description: Filter by alert status.
-      isArray: false
-      name: status
-      predefined:
-      - ACTIVE
-      - CLOSED
-      required: false
-      secret: false
-    - default: false
-      description: Maximum number of results to return.
-      isArray: false
-      name: limit
-      required: true
-      secret: false
-    - default: false
-      description: Date from which to get events.
-      name: from_date
-      required: false
-    deprecated: false
+  - name: ibm-security-verify-get-events
     description: Gets events from IBM Security Verify.
-    execution: false
-    name: ibm-security-verify-get-events
+    arguments:
+    - name: should_push_events
+      description: If true, the command will create events, otherwise it will only display them.
+      defaultValue: 'False'
+      auto: PREDEFINED
+      isArray: false
+      predefined:
+      - 'True'
+      - 'False'
+    - name: limit
+      description: Maximum number of results to return.
+      defaultValue: 1000
   dockerimage: demisto/python3:3.10.13.87159
   isfetchevents: true
   runonce: false

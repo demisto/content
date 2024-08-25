@@ -1,8 +1,6 @@
-import uuid
 import demistomock as demisto
 from CommonServerPython import *
 import urllib3
-from typing import Any
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -12,53 +10,113 @@ urllib3.disable_warnings()
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 VENDOR = 'ibm'
 PRODUCT = 'security verify'
+TOKEN_EXPIRY_BUFFER = timedelta(minutes=5)
+DEFAULT_FETCH = 10_000
+MAX_FETCH = 50_000
+MIN_FETCH = 1
+
+# print(f"{demisto.params()=}")
+# print(f"{demisto.args()=}")
+
 
 ''' CLIENT CLASS '''
 
 
 class Client(BaseClient):
-    """Client class to interact with the service API
+    def __init__(self, base_url: str, client_id: str, client_secret: str, max_fetch: int, verify: bool, proxy: bool):
+        super().__init__(base_url=base_url, verify=verify, proxy=proxy)
+        self.client_id = client_id
+        self.client_secret = client_secret
+        self.access_token = None
+        self.max_fetch = max_fetch
+        self._max_fetch_validation()
 
+        self._authenticate()
 
-    """
+    def _authenticate(self):
+        """
+        """
+        token_data = demisto.getIntegrationContext()
 
-    def search_events(self, prev_id: int, alert_status: None | str, limit: int, from_date: str | None = None, default_Protocol: str = 'UDP') -> List[Dict]:  # noqa: E501
+        if not self._is_token_valid(token_data):
+            token_data = self._get_new_token()
+            demisto.setIntegrationContext(token_data)
+
+        self.access_token = token_data["access_token"]
+
+    def _is_token_valid(self, token_data):
+        """
+        Checks if the current token is valid and not expired with a security buffer.
+        """
+        access_token = token_data.get("access_token")
+        expiry_time_str = token_data.get("expiry_time_utc")
+        if not access_token or not expiry_time_str:
+            return False
+
+        current_time_utc = datetime.now(timezone.utc)
+        expiry_time_utc = datetime.fromisoformat(expiry_time_str)
+        return current_time_utc < (expiry_time_utc - TOKEN_EXPIRY_BUFFER)
+
+    def _get_new_token(self):
+        """
+        Fetches a new token from the Exabeam API and updates the integration context.
+        """
+        data = {
+            "client_id": self.client_id,
+            "client_secret": self.client_secret,
+            "grant_type": "client_credentials",
+        }
+
+        response = self._http_request(
+            method="POST",
+            url_suffix="/endpoint/default/token",
+            data=data,
+        )
+
+        new_token = response.get('access_token')
+        expires_in = response.get("expires_in")
+        current_time_utc = datetime.now(timezone.utc)
+        expiry_time_utc = current_time_utc + timedelta(seconds=expires_in)
+
+        token_data = {"access_token": new_token, "expiry_time_utc": expiry_time_utc.isoformat()}
+        return token_data
+
+    def search_events(self, last_id: str, last_time: int) -> Dict:
         """
 
         """
-        # use limit & from date arguments to query the API
-        return [{
-            'id': prev_id + 1,
-            'created_time': datetime.now().isoformat(),
-            'description': f'This is test description {prev_id + 1}',
-            'alert_status': alert_status,
-            'protocol': default_Protocol,
-            't_port': prev_id + 1,
-            'custom_details': {
-                'triggered_by_name': f'Name for id: {prev_id + 1}',
-                'triggered_by_uuid': str(uuid.uuid4()),
-                'type': 'customType',
-                'requested_limit': limit,
-                'requested_From_date': from_date
-            }
-        }]
+        params = {
+            'size': self.max_fetch,
+            'after_time': last_time,
+            'after_id': last_id,
+            'range_type': 'indexed_at',
+            'all_events': 'yes',
+            'sort_order': 'asc',
+        }
+        headers = {
+            "Authorization": f"Bearer {self.access_token}",
+        }
+
+        response = self._http_request(
+            method="GET",
+            url_suffix="events",
+            params=params,
+            headers=headers
+        )
+        return response
+
+    def _max_fetch_validation(self):
+        if self.max_fetch > MAX_FETCH or self.max_fetch < MIN_FETCH:
+            raise DemistoException(f"The maximum number of events per fetch should be between 1 - {MAX_FETCH}")
 
 
-def test_module(client: Client, params: dict[str, Any], first_fetch_time: str) -> str:
+def test_module(client: Client) -> str:
     """
-ok' if test passed, anything else will raise an exception and will fail the test.
+    ok' if test passed, anything else will raise an exception and will fail the test.
     """
 
     try:
-        alert_status = params.get('alert_status', None)
-
-        fetch_events(
-            client=client,
-            last_run={},
-            first_fetch_time=first_fetch_time,
-            alert_status=alert_status,
-            max_events_per_fetch=1,
-        )
+        get_events(client)
 
     except Exception as e:
         if 'Forbidden' in str(e):
@@ -69,17 +127,24 @@ ok' if test passed, anything else will raise an exception and will fail the test
     return 'ok'
 
 
-def get_events(client: Client, alert_status: str, args: dict) -> tuple[List[Dict], CommandResults]:
-    limit = args.get('limit', 50)
-    from_date = args.get('from_date')
-    events = client.search_events(
-        prev_id=0,
-        alert_status=alert_status,
-        limit=limit,
-        from_date=from_date,
-    )
-    hr = tableToMarkdown(name='Test Event', t=events)
-    return events, CommandResults(readable_output=hr)
+def get_events(client: Client) -> tuple[List[Dict], CommandResults]:
+    last_id = 'e5b0d500-bc39-471d-8174-119a2a166792'
+    last_time = 172035825954
+
+    response = client.search_events(last_id, last_time)
+    events = response.get("response", {}).get("events", {}).get("events", [])
+
+    return events, events
+
+    # max_fetch = args.get("max_fetch")
+    # events = client.search_events(
+    #     prev_id=0,
+    #     alert_status=alert_status,
+    #     limit=limit,
+    #     from_date=from_date,
+    # )
+    # hr = tableToMarkdown(name='Test Event', t=events)
+    # return events, CommandResults(readable_output=hr)
 
 
 def fetch_events(client: Client, last_run: dict[str, int],
@@ -109,20 +174,6 @@ f events that will be created in XSIAM.
 ''' MAIN FUNCTION '''
 
 
-def add_time_to_events(events: List[Dict] | None):
-    """
-    Adds the _time key to the events.
-    Args:
-        events: List[Dict] - list of events to add the _time key to.
-    Returns:
-        list: The events with the _time key.
-    """
-    if events:
-        for event in events:
-            create_time = arg_to_datetime(arg=event.get('created_time'))
-            event['_time'] = create_time.strftime(DATE_FORMAT) if create_time else None
-
-
 def main() -> None:  # pragma: no cover
     """
     main function, parses params and runs command functions
@@ -131,38 +182,36 @@ def main() -> None:  # pragma: no cover
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
-    api_key = params.get('apikey', {}).get('password')
-    base_url = urljoin(params.get('url'), '/v1.0')
-    verify_certificate = not params.get('insecure', False)
 
-    # How much time before the first fetch to retrieve events
-    first_fetch_time = datetime.now().isoformat()
+    base_url = urljoin(params.get('url'), '/v1.0')
+    credentials = params.get('credentials', {})
+    client_id = credentials.get('identifier')
+    client_secret = credentials.get('password')
+    max_fetch = arg_to_number(params.get('max_fetch')) or DEFAULT_FETCH
+    verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
-    alert_status = params.get('alert_status', None)
-    max_events_per_fetch = params.get('max_events_per_fetch', 10000)
+    # first_fetch_time = datetime.now().isoformat()
 
     demisto.debug(f'Command being called is {command}')
     try:
-        headers = {
-            'Authorization': f'Bearer {api_key}'
-        }
         client = Client(
             base_url=base_url,
+            client_id=client_id,
+            client_secret=client_secret,
+            max_fetch=max_fetch,
             verify=verify_certificate,
-            headers=headers,
             proxy=proxy)
 
         if command == 'test-module':
-            # This is the call made when pressing the integration Test button.
-            result = test_module(client, params, first_fetch_time)
-            return_results(result)
+            return_results(test_module(client))
 
         elif command == 'ibm-security-verify-get-events':
-            should_push_events = argToBoolean(args.pop('should_push_events'))
-            events, results = get_events(client, alert_status, demisto.args())
+            events, results = get_events(client)
             return_results(results)
+
+            should_push_events = argToBoolean(args.get('should_push_events'))
             if should_push_events:
-                add_time_to_events(events)
+                # add_time_to_events(events)
                 send_events_to_xsiam(
                     events,
                     vendor=VENDOR,
@@ -170,22 +219,23 @@ def main() -> None:  # pragma: no cover
                 )
 
         elif command == 'fetch-events':
-            last_run = demisto.getLastRun()
-            next_run, events = fetch_events(
-                client=client,
-                last_run=last_run,
-                first_fetch_time=first_fetch_time,
-                alert_status=alert_status,
-                max_events_per_fetch=max_events_per_fetch,
-            )
+            pass
+            # last_run = demisto.getLastRun()
+            # next_run, events = fetch_events(
+            #     client=client,
+            #     last_run=last_run,
+            #     first_fetch_time=first_fetch_time,
+            #     alert_status=alert_status,
+            #     max_events_per_fetch=max_fetch,
+            # )
 
-            add_time_to_events(events)
-            send_events_to_xsiam(
-                events,
-                vendor=VENDOR,
-                product=PRODUCT
-            )
-            demisto.setLastRun(next_run)
+            # add_time_to_events(events)
+            # send_events_to_xsiam(
+            #     events,
+            #     vendor=VENDOR,
+            #     product=PRODUCT
+            # )
+            # demisto.setLastRun( next_run)
 
     # Log exceptions and return errors
     except Exception as e:
