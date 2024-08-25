@@ -12,7 +12,13 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Google",
+        "Security Command Center",
+        "Command Center",
+        "Security Center",
+        "SCC"
+    ],
     "githubUser": [],
     "marketplaces": [
         "xsoar",
