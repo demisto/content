@@ -290,7 +290,7 @@ def test_attack_pattern_reputation_without_answer_command(mocker):
 
     assert command_results
     assert command_results.readable_output == "MITRE ATTACK Attack Patterns values: No Attack " \
-                                              "Patterns found for ['dummy attack pattern']."
+                                              "Patterns found for ['dummy attack pattern'] in the Enterprise collection."
 
 
 def test_get_mitre_value_from_id_without_answer_command(mocker):
@@ -314,7 +314,8 @@ def test_get_mitre_value_from_id_without_answer_command(mocker):
 
     assert command_results
     assert command_results.readable_output == "MITRE ATTACK Attack Patterns values: " \
-                                              "No Attack Patterns found for ['dummy attack pattern id']."
+                                              "No Attack Patterns found for ['dummy attack pattern id'] in the " \
+                                              "Enterprise collection."
 
 
 @pytest.mark.parametrize('description, expected_result', [
