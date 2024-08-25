@@ -93,6 +93,7 @@ LEGAL_DELETION_TYPES = {
 }
 VENDOR = "Atlassian"
 PRODUCT = "Confluence"
+PAGE_SIZE = 1000
 
 ''' CLIENT CLASS '''
 
@@ -161,7 +162,7 @@ class Client(BaseClient):
 
 
 def run_fetch_mechanism(client: Client, next_link: str | None, events: list[dict[str, Any]], start_date: int, end_date: int,
-                        page_size: int, limit: int, last_run: [dict[str, Any]]) -> list[dict[str, any]]:
+                        page_size: int, limit: int, last_run: [dict[str, Any]]) -> tuple[list[dict[str, Any]], str | None, int]:
 
     if not next_link:
         # there is no next link, but we already have events in the list. That means the lack of next link is due to the end
@@ -178,7 +179,7 @@ def run_fetch_mechanism(client: Client, next_link: str | None, events: list[dict
     else:
         demisto.info(f'searching events with start date: {start_date}, end date: {end_date} and page size: {page_size}')
         response = client.search_events(limit=limit, next_link=next_link)
-        events = dedup(response['results'], last_run.get('last_events', None))
+        events = response['results']
 
     next_link = response['_links'].get('next', None)
     last_timestamp = events[0]['creationDate'] if events else None
@@ -1437,13 +1438,37 @@ def confluence_cloud_group_list_command(client: Client, args: Dict[str, str]) ->
 def fetch_events(client: Client, last_run: dict[str, Any], limit: int) -> tuple[Dict, List[Dict]]:
     end_date = int((time.time() - 5) * 1000)
     start_date = last_run.get('start_date', end_date - 60000)
-    next_link = last_run.get('next_url', None)
-    page_size = 1000
+    next_link = last_run.get('next_url', None)  # maybe move to context, depends on load
 
-    events, next_link, last_timestamp = run_fetch_mechanism(client, next_link, [], start_date, end_date, page_size, limit, last_run)
+    events, next_link, last_timestamp = run_fetch_mechanism(client, next_link, [], start_date, end_date, PAGE_SIZE, limit, last_run)
     while events and len(events) < limit:
-        yield run_fetch_mechanism(client, next_link, events, start_date, end_date, page_size, limit, last_run)
+        yield run_fetch_mechanism(client, next_link, events, start_date, end_date, PAGE_SIZE, limit, last_run)
     yield events, next_link, last_timestamp
+
+
+def new_fetch_events(client: Client, last_run: dict[str, Any], limit: int) -> tuple[Dict, List[Dict]]:
+    end_date = int((time.time() - 5) * 1000)
+    last_end_date = last_run.get('end_date', 0)
+    start_date = last_end_date + 1 if last_end_date else end_date - 60000
+    next_link = True
+    events = []
+
+    while next_link:  # and len(events) < fetch_limit if so, save the next link in context for next run
+        if not events:  # start batch
+            demisto.info(f'searching events with start date: {start_date}, end date: {end_date} and page size: {PAGE_SIZE}')
+            response = client.search_events(limit=PAGE_SIZE, start_date=str(start_date), end_date=str(end_date))
+            demisto.info(f'Found {response["size"]} events between {start_date} and {end_date}')
+            demisto.info(json.dumps(response, indent=4))
+            events = response['results']
+
+        else:
+            demisto.info(f'searching events with next_link: {next_link} and page size: {PAGE_SIZE}')
+            response = client.search_events(limit=limit, next_link=next_link)
+            events = response['results']
+
+        next_link = response['_links'].get('next', None)
+        yield events, next_link, end_date
+    yield events, next_link, end_date
 
 
 def get_events(client: Client, args: dict) -> tuple[list[Dict], CommandResults]:
@@ -1545,11 +1570,14 @@ def main() -> None:
                 if events:
                     add_time_to_events(events)
                     send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
-                    demisto.setLastRun({
-                        'next_url': next_url,
-                        'last_timestamp': last_timestamp,
-                        'last_events': build_hash_counter(events, last_run)
-                    })
+
+                new_last_run_obj = {
+                    'next_url': next_url,
+                    'last_timestamp': last_timestamp,
+                    'last_events': build_hash_counter(events, last_run)
+                }
+                demisto.info(f'setting last run with: {new_last_run_obj}')
+                demisto.setLastRun(new_last_run_obj)
 
         elif command == 'confluence-cloud-get-events':
             demisto.info(f'Fetching Confluence Cloud events with the following parameters: {args}')
