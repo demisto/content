@@ -132,7 +132,7 @@ def fetch_indicators_command(client: Client, enrichment_excluded: bool = False) 
     return indicators
 
 
-def main():
+def main():  # pragma: no cover
     params = demisto.params()
     url = params.get('url', 'https://public-dns.info/nameservers-all.txt')
     tags = argToList(params.get('feedTags'))
