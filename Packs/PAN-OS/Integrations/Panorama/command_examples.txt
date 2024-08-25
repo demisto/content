@@ -155,3 +155,4 @@ not_running_this!panorama-get-ssl-decryption-rules
 !pan-os-list-profile-exception profile_name=test1 profile_type="Vulnerability Protection Profile"
 !pan-os-edit-profile-exception profile_name=test1 threat=10002 action=Drop
 !pan-os-delete-profile-exception profile_name=test1 threat=10002
+!pan-os-delete-profile-exception profile_name=test2 threat=10005 profile_type="Vulnerability Protection Profile"

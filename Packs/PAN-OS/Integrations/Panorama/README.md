@@ -9242,21 +9242,21 @@ Delete an exception to a Vulnerability Protection profile or Anti Spyware profil
 #### Context Output
 
 There is no context output for this command.
-### pan-os-edit-profile-exception
+### pan-os-add-profile-exception
 
 ***
-Edit an exception to a Vulnerability Protection profile or Anti Spyware profile.
+Add an exception to a Vulnerability Protection profile or Anti Spyware profile.
 
 #### Base Command
 
-`pan-os-edit-profile-exception`
+`pan-os-add-profile-exception`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | profile_name | The profile name. | Required | 
-| threat | The requested threat name/CVE/ID to edit. | Required | 
+| threat | The requested threat name/CVE/ID to add. | Required | 
 | profile_type | The profile type. Possible values are: Vulnerability Protection Profile, Anti Spyware Profile. | Optional | 
 | action | The action type of the exception. Default value is 'default'. Possible values are: Alert, Allow, Block IP, Drop, Reset Both, Reset Client, Reset Server. | Optional | 
 | packet_capture | To configure the firewall to take a packet capture when it detects a threat. Possible values are: Disable, Single Packet, Extended Capture. | Optional | 
@@ -9288,13 +9288,14 @@ List the exceptions in a Vulnerability Protection profile or Anti Spyware profil
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
+| Panorama.Vulnerability.Name | String | The profile name. | 
 | Panorama.Vulnerability.Exception.name | String | The exception name. | 
 | Panorama.Vulnerability.Exception.id | String | The exception ID. | 
 | Panorama.Vulnerability.Exception.CVE | String | The exception CVE if exist. | 
 | Panorama.Vulnerability.Exception.action | String | The exception action. | 
 | Panorama.Vulnerability.Exception.exempt-id | String | The exception exempt ID. | 
 | Panorama.Vulnerability.Exception.packet-capture | String | The exception packet capture. | 
-| Panorama.Spyware.ProfileName | String | The profile name. | 
+| Panorama.Spyware.Name | String | The profile name. | 
 | Panorama.Spyware.Exception.name | String | The exception name. | 
 | Panorama.Spyware.Exception.id | String | The exception ID. | 
 | Panorama.Spyware.Exception.CVE | String | The exception CVE if exist. | 
@@ -9302,21 +9303,21 @@ List the exceptions in a Vulnerability Protection profile or Anti Spyware profil
 | Panorama.Spyware.Exception.exempt-id | String | The exception exempt ID. | 
 | Panorama.Spyware.Exception.packet-capture | String | The exception packet capture. | 
 
-### pan-os-add-profile-exception
+### pan-os-edit-profile-exception
 
 ***
-Add an exception to a Vulnerability Protection profile or Anti Spyware profile.
+Edit an exception to a Vulnerability Protection profile or Anti Spyware profile.
 
 #### Base Command
 
-`pan-os-add-profile-exception`
+`pan-os-edit-profile-exception`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | profile_name | The profile name. | Required | 
-| threat | The requested threat name/CVE/ID to add. | Required | 
+| threat | The requested threat name/CVE/ID to edit. | Required | 
 | profile_type | The profile type. Possible values are: Vulnerability Protection Profile, Anti Spyware Profile. | Optional | 
 | action | The action type of the exception. Default value is 'default'. Possible values are: Alert, Allow, Block IP, Drop, Reset Both, Reset Client, Reset Server. | Optional | 
 | packet_capture | To configure the firewall to take a packet capture when it detects a threat. Possible values are: Disable, Single Packet, Extended Capture. | Optional | 
