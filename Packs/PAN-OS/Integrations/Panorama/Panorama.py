@@ -14182,13 +14182,13 @@ def get_predefined_threats_list() -> list:
 
 def get_threat_id_from_predefined_threates(threat: str) -> tuple[str, str, list]:
     """
-    Search the threat id in the threats list by using the threat_name argument.
+    Search the threat id in the threats list by using the threat argument.
 
     Args:
-        threat_name: The threat name, can be the CVE or the id.
+        threat: The threat name, can be the CVE or the id.
 
     Returns:
-        The id that fit to the threat_name
+        The id that fit to the threat
     """
     predefined_threats = get_predefined_threats_list()
 
@@ -14209,7 +14209,7 @@ def get_threat_id_from_predefined_threates(threat: str) -> tuple[str, str, list]
         if threat.lower() in search_keys:
             return extracted_id, exception_name, cves
 
-    raise DemistoException("Invalid threat_name was provided.")
+    raise DemistoException("Threat was not found.")
 
 
 def build_element_for_profile_exception_commands(extracted_id: str, action: str, packet_capture: str, exempt_ip: str, ip_track_by: str, ip_duration_sec: str) -> str:
@@ -14345,7 +14345,8 @@ def profile_exception_crud_requests(args: dict, action_type: str) -> Any:
             'raw_response': raw_response,
             'exception_id': exception_id,
             'exception_name': exception_name,
-            'profile_type': profile_type
+            'profile_type': profile_type,
+            'profile_name': profile_name
         }
     except Exception as e:
         if e.args and "Object not present" in e.args[0]:
@@ -14370,9 +14371,11 @@ def pan_os_add_profile_exception_command(args: dict) -> CommandResults:
     raw_response = results.get('raw_response')
     exception_id = results.get('exception_id')
     exception_name = results.get('exception_name')
+    profile_type = results.get('profile_type')
+    profile_name = results.get('profile_name')
     return CommandResults(
         raw_response=raw_response,
-        readable_output=f'Successfully created Exception: "{exception_name}" with threat ID {exception_id}.',
+        readable_output = f'Successfully created exception "{exception_name}" with threat ID "{exception_id}" in the "{profile_name}" profile of type "{profile_type}".'
     )
 
 
@@ -14390,9 +14393,11 @@ def pan_os_edit_profile_exception_command(args: dict) -> CommandResults:
     raw_response = results.get('raw_response')
     exception_id = results.get('exception_id')
     exception_name = results.get('exception_name')
+    profile_type = results.get('profile_type')
+    profile_name = results.get('profile_name')
     return CommandResults(
         raw_response=raw_response,
-        readable_output=f'Successfully edited Exception: "{exception_name}" with threat ID {exception_id}.',
+        readable_output = f'Successfully edited exception "{exception_name}" with threat ID "{exception_id}" in the "{profile_name}" profile of type "{profile_type}".'
     )
 
 
@@ -14410,9 +14415,11 @@ def pan_os_delete_profile_exception_command(args: dict) -> CommandResults:
     raw_response = results.get('raw_response')
     exception_id = results.get('exception_id')
     exception_name = results.get('exception_name')
+    profile_type = results.get('profile_type')
+    profile_name = results.get('profile_name')
     return CommandResults(
         raw_response=raw_response,
-        readable_output=f'Successfully deleted Exception: "{exception_name}" with threat ID {exception_id}.',
+        readable_output = f'Successfully deleted exception "{exception_name}" with threat ID "{exception_id}" in the "{profile_name}" profile of type "{profile_type}".'
     )
 
 
@@ -14481,7 +14488,7 @@ def pan_os_list_profile_exception_command(args: dict) -> CommandResults:
                        })
 
     outputs = {
-        'ProfileName': profile_name,
+        'Name': profile_name,
         'Exception': context_exceptions_list,
     }
     context_path = f'Panorama.{profile_type.capitalize()}'  # type: ignore
@@ -14495,7 +14502,7 @@ def pan_os_list_profile_exception_command(args: dict) -> CommandResults:
             removeNull=True,
         ),
         outputs_prefix=context_path,
-        outputs_key_field='ProfileName'
+        outputs_key_field='Name'
     )
 
 
