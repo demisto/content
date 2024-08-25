@@ -69,7 +69,7 @@ def main():     # pragma: no cover
 
     for unique_url, related_urls in urls.items():
         malicious = None
-        
+
         if SSL_PREFIX not in unique_url.lower() and mark_http_as_suspicious(set_http_as_suspicious):
             malicious = {
                 "Vendor": VENDOR,
