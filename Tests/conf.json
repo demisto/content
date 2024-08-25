@@ -1333,7 +1333,7 @@
         },
         {
             "integrations": "Panorama",
-            "instance_names": "palo_alto_firewall_9.0",
+            "instance_names": "palo_alto_firewall_9.1",
             "playbookID": "test_playbook_pan_os_firewall_exceptions_commands"
         },
         {
