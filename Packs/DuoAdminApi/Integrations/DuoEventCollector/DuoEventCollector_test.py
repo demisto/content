@@ -565,7 +565,7 @@ def test_check_window_before_call_no_delay():
     When:
         calling check_window_before_call.
     Then:
-        True is returned, the API call should be performed, we are in the time window..
+        True is returned, the API call should be performed, we are in the time window.
     """
     params = {
         "after": "1 day",
@@ -581,7 +581,7 @@ def test_check_window_before_call_no_delay():
 
     client = Client(Params(**params, mintime={}))
 
-    mintime = datetime.now(timezone.utc) - timedelta(days=1)
+    mintime = datetime.now() - timedelta(days=1)
     result = client.check_window_before_call(mintime=mintime.timestamp())
     assert result
 
@@ -610,9 +610,40 @@ def test_check_window_before_call_small_delay():
 
     client = Client(Params(**params, mintime={}))
 
-    mintime = datetime.now(timezone.utc) - timedelta(days=1)
+    mintime = datetime.now() - timedelta(days=1)
     result = client.check_window_before_call(mintime=mintime.timestamp())
     assert result
+
+
+@freeze_time("2022-10-25 16:16:45 UTC")
+def test_check_window_before_call_v2_format():
+    """
+    Given:
+        mintime - a timestamp represents the minimum time from which to get events in a v2 format (13 digits).
+    When:
+        calling check_window_before_call.
+    Then:
+        1. False is returned, no need to perform the API call.
+        2. True is returned, the API call should be performed, we are in the time window.
+    """
+    params = {
+        "after": "1 day",
+        "host": "api-host.duosecurity.com",
+        "integration_key": "XXXXXXXXXXXXXXXX",
+        "limit": "10",
+        "proxy": False,
+        "retries": "5",
+        "secret_key": {"password": "password", "passwordChanged": False},
+        "end_window": datetime.strptime("2022-10-25 16:07:46", DATE_FORMAT),
+        "fetch_delay": "9"
+    }
+
+    client = Client(Params(**params, mintime={}))
+
+    result_no_fetch = client.check_window_before_call(mintime=1666714066000/1000)  # October 25, 2022 4:07:46 PM
+    assert not result_no_fetch
+    result_do_fetch = client.check_window_before_call(mintime=1666714065304/1000)  # October 25, 2022 4:07:45.304 PM
+    assert result_do_fetch
 
 
 @freeze_time("2020-01-24 15:16:33 UTC")
@@ -623,7 +654,7 @@ def test_check_window_before_call_not_in_window():
     When:
         calling check_window_before_call.
     Then:
-        True is returned, the API call should be performed, we are in the time window..
+        True is returned, the API call should be performed, we are in the time window.
     """
     params = {
         "after": "1 minute",

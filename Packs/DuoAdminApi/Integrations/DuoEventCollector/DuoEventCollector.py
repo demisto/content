@@ -237,16 +237,7 @@ class GetEvents:
             cases:
             a. There is no need to run this function fetch_delay = 0 (if 1).
             b. No events are in the fetch_window (if 2).
-            c. Some of the events in the fetch window (if 3-6).
-            d. all events are in the fetch window (if 1)
-
-            ifs:
-            1.  There isn't a fetch delay or All the events are in the fetch window.
-            2.  The events in the response aren't in the fetch_window
-            3.  The mid event is in the window and the next isn't.
-            4.  The mid-1 event is in the window and the next isn't.
-            5.  The mid event is lower than the end of the window.
-            6.  The mid event is higher than the end of the window.
+            c. Some of the events in the fetch window.
 
             Args:
                 events (list[dict]): List of events from the current fetch response.
