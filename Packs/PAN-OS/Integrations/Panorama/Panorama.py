@@ -14188,7 +14188,7 @@ def get_threat_id_from_predefined_threates(threat: str) -> tuple[str, str, list]
         threat: The threat name, can be the CVE or the id.
 
     Returns:
-        The id that fit to the threat
+        The id of the threat
     """
     predefined_threats = get_predefined_threats_list()
 
@@ -14354,7 +14354,7 @@ def profile_exception_crud_requests(args: dict, action_type: str) -> Any:
                 readable_output=f'Exceptions list is empty',
             )
         else:
-            raise DemistoException("Exception was not founds in Exceptions list.")
+            raise DemistoException("Exception was not found in exceptions list.")
 
 
 def pan_os_add_profile_exception_command(args: dict) -> CommandResults:
@@ -14375,7 +14375,7 @@ def pan_os_add_profile_exception_command(args: dict) -> CommandResults:
     profile_name = results.get('profile_name')
     return CommandResults(
         raw_response=raw_response,
-        readable_output = f'Successfully created exception "{exception_name}" with threat ID "{exception_id}" in the "{profile_name}" profile of type "{profile_type}".'
+        readable_output=f'Successfully created exception "{exception_name}" with threat ID {exception_id} in the "{profile_name}" profile of type "{profile_type}".'
     )
 
 
@@ -14397,7 +14397,7 @@ def pan_os_edit_profile_exception_command(args: dict) -> CommandResults:
     profile_name = results.get('profile_name')
     return CommandResults(
         raw_response=raw_response,
-        readable_output = f'Successfully edited exception "{exception_name}" with threat ID "{exception_id}" in the "{profile_name}" profile of type "{profile_type}".'
+        readable_output=f'Successfully edited exception "{exception_name}" with threat ID {exception_id} in the "{profile_name}" profile of type "{profile_type}".'
     )
 
 
@@ -14419,7 +14419,7 @@ def pan_os_delete_profile_exception_command(args: dict) -> CommandResults:
     profile_name = results.get('profile_name')
     return CommandResults(
         raw_response=raw_response,
-        readable_output = f'Successfully deleted exception "{exception_name}" with threat ID "{exception_id}" in the "{profile_name}" profile of type "{profile_type}".'
+        readable_output=f'Successfully deleted exception "{exception_name}" with threat ID {exception_id} in the "{profile_name}" profile of type "{profile_type}".'
     )
 
 
