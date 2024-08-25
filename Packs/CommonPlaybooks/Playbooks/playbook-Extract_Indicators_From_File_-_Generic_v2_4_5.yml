@@ -1527,7 +1527,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    reputationcalc: 2
+    reputationcalc: 1
   "20":
     id: "20"
     taskid: 7f7c2617-8a16-46bc-8141-96f650642272
@@ -1943,7 +1943,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    reputationcalc: 1
   "26":
     id: "26"
     taskid: 4fb08fe7-5b0b-48ef-8d70-8cc00cb5c6c8
