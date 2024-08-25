@@ -859,7 +859,6 @@ def perform_rasterize(path: str | list[str],
         return None
 
 
-
 def return_err_or_warn(msg):  # pragma: no cover
     return_error(msg) if WITH_ERRORS else return_warning(msg, exit=True)
 
