@@ -793,10 +793,15 @@ class SearchLightTriagePoller:
 
         events = get_triage_item_events(self.request_handler, event_created_after=event_created_after,
                                         risk_types=risk_types_filter, event_num_after=event_num_start, limit=limit)
-        if events:
+        if not events:
+            LOG("No events were fetched. Event num start: {}, Event created after: {}, Limit:"
+                " {}, risk_level: {}, alert_risk_types: {}".format(
+                event_num_start, event_created_after, limit, risk_level, alert_risk_types))
+            return RQPollResult(event_num_start, [])
+
+        else:
             max_event_num = max([e['event-num'] for e in events])
-        # Only ingesting events with create action event
-        if events:
+            # Only ingesting events with create action event
             events = [event for event in events if event[EVENT_ACTION].lower() == EVENT_ACTION_CREATE]
 
         risk_level_filter = []
@@ -807,12 +812,6 @@ class SearchLightTriagePoller:
         # filtering events by risk level
         if risk_level_filter:
             events = [event for event in events if event[RISK_LEVEL] in risk_level_filter]
-
-        if not events:
-            LOG("No events were fetched. Event num start: {}, Event created after: {}, Limit:"
-                " {}, risk_level: {}, alert_risk_types: {}".format(
-                    event_num_start, event_created_after, limit, risk_level, alert_risk_types))
-            return RQPollResult(max_event_num, [])
 
         triage_item_ids = [e[TRIAGE_ITEM_ID] for e in events]
         triage_items = get_triage_items(self.request_handler, triage_item_ids)
@@ -870,6 +869,9 @@ def fetch_incidents(fetchLimit, last_run, ingestClosed, riskLevel, riskTypes, se
                                                         should_ingest_closed=ingestClosed)
     data = poll_result.triage_data
     last_polled_number = poll_result.max_event_number
+    if last_polled_number == last_event_num:
+        LOG(f"Polling done. last_event_num: {last_event_num}")
+        return {'incidents': {'last_fetch': last_event_num}}, []
 
     if data:
         incidents = [
