@@ -9222,26 +9222,6 @@ Gets the audit comment of a rule.
 >|Comment|Rule Name|Rule Type|
 >|---|---|---|
 >| some comment | test | Security Rule |
-### pan-os-delete-profile-exception
-
-***
-Delete an exception to a Vulnerability Protection profile or Anti Spyware profile.
-
-#### Base Command
-
-`pan-os-delete-profile-exception`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| profile_name | The profile name. | Required | 
-| threat | The requested threat name/CVE/ID to delete. | Required | 
-| profile_type | The profile type. Possible values are: Vulnerability Protection Profile, Anti Spyware Profile. | Optional | 
-
-#### Context Output
-
-There is no context output for this command.
 ### pan-os-add-profile-exception
 
 ***
@@ -9303,6 +9283,26 @@ List the exceptions in a Vulnerability Protection profile or Anti Spyware profil
 | Panorama.Spyware.Exception.exempt-id | String | The exception exempt ID. | 
 | Panorama.Spyware.Exception.packet-capture | String | The exception packet capture. | 
 
+### pan-os-delete-profile-exception
+
+***
+Delete an exception to a Vulnerability Protection profile or Anti Spyware profile.
+
+#### Base Command
+
+`pan-os-delete-profile-exception`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| profile_name | The profile name. | Required | 
+| threat | The requested threat name/CVE/ID to delete. | Required | 
+| profile_type | The profile type. Possible values are: Vulnerability Protection Profile, Anti Spyware Profile. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
 ### pan-os-edit-profile-exception
 
 ***
