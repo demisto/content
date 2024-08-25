@@ -1,6 +1,9 @@
 import pytest
-from URLSSLVerification import mark_http_as_suspicious, arg_to_list_with_regex, unique_urls
-
+import demistomock as demisto  # noqa: F401
+from URLSSLVerification import mark_http_as_suspicious, arg_to_list_with_regex, group_urls, main
+import requests_mock
+import re
+import requests
 
 @pytest.mark.parametrize('arg, expected_result', [
     ('false', False),
@@ -21,11 +24,40 @@ def test_arg_to_list_with_regex(arg, expected_result):
     assert arg_to_list_with_regex(arg) == expected_result
 
 
-def test_unique_urls():
+def test_group_urls(requests_mock):
     urls = [
         'https://some_url.com',
         'https://some_url.com/resource_1',
         'https://some_url.com/resource_2',
         'https://some_url.com?a=a'
     ]
-    assert unique_urls(urls) == {'https://some_url.com'}
+    requests_mock.get(re.compile('https://some_url.com.*'), exc=requests.exceptions.RequestException)
+    
+    assert group_urls(urls) == {'https://some_url.com': set(urls)}
+    
+
+def test_urls_of_same_domain(requests_mock, mocker):
+    """
+    Given: List of urls from the same malicious domain.
+    
+    When: Run the URLSSLVerification script.
+    
+    Then: Ensure that all urls marked as malicious.
+
+    """
+    urls = [
+        'https://some_url.com',
+        'https://some_url.com/resource_1',
+        'https://some_url.com/resource_2',
+        'https://some_url.com?a=a'
+    ]
+    mocker.patch.object(demisto, 'args', return_value={'url': urls})
+    mocker.patch.object(demisto, 'results')
+    requests_mock.get(re.compile('https://some_url.com.*'), exc=requests.exceptions.RequestException)
+
+    main()
+    
+    contents = demisto.results.call_args[0][0]['Contents']
+    assert len(contents) == len(urls)
+    assert all(item['Data'] in urls and item['Verified'] == False for item in contents)
+        

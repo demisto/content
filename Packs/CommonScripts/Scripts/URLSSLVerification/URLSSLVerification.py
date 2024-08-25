@@ -36,21 +36,27 @@ def mark_http_as_suspicious(set_http_as_suspicious):
     return set_http_as_suspicious != 'false'
 
 
-def unique_urls(urls):
-    """return a set of unique urls with the protocol://domain only
+def group_urls(urls):
+    """return a dict which maps the unique urls with the protocol://domain only
+    to a set of all the urls which are related to this domain
 
     Args:
         urls (list): the url list
     """
     pattern = r"(?<=[a-zA-Z0-9\.\_\#])(/|\?).*"
-    return {
-        re.sub(pattern, "", url) for url in urls
-    }
+    res: dict[str, set] = {}
+    for url in urls:
+        unique_url = re.sub(pattern, "", url)
+        if unique_url not in res:
+            res[unique_url] = set()
+        res[unique_url].add(url)
+    return res
 
 
 def main():     # pragma: no cover
     url_arg = demisto.get(demisto.args(), "url")
-    urls = unique_urls(arg_to_list_with_regex(url_arg))
+    origin_urls = arg_to_list_with_regex(url_arg)
+    urls = group_urls(origin_urls)
 
     set_http_as_suspicious = demisto.args().get('set_http_as_suspicious')
 
@@ -61,14 +67,10 @@ def main():     # pragma: no cover
         'DBotScore': []
     }  # type: dict
 
-    for url in urls:
-        url_obj = {
-            "Data": url
-        }
+    for unique_url, related_urls in urls.items():
         malicious = None
-
-        # Check if url is non SSL
-        if SSL_PREFIX not in url.lower() and mark_http_as_suspicious(set_http_as_suspicious):
+        
+        if SSL_PREFIX not in unique_url.lower() and mark_http_as_suspicious(set_http_as_suspicious):
             malicious = {
                 "Vendor": VENDOR,
                 "Description": "The URL is not secure under SSL"
@@ -76,7 +78,7 @@ def main():     # pragma: no cover
         # Check SSL signature
         else:
             try:
-                requests.get(url)
+                requests.get(unique_url)
             except requests.exceptions.SSLError:
                 malicious = {
                     "Vendor": VENDOR,
@@ -87,21 +89,23 @@ def main():     # pragma: no cover
                     "Vendor": VENDOR,
                     "Description": "Failed to establish a new connection with the URL"
                 }
+        for related_url in related_urls:
+            url_obj = {
+                "Data": related_url
+            }
+            if malicious:
+                ec["DBotScore"].append({
+                    "Indicator": related_url,
+                    "Type": "url",
+                    "Vendor": VENDOR,
+                    "Score": SUSPICIOUS_SCORE
+                })
+                url_obj["Verified"] = False
+                url_obj["Malicious"] = malicious
+            else:
+                url_obj["Verified"] = True
 
-        if malicious:
-            ec["DBotScore"].append({
-                "Indicator": url,
-                "Type": "url",
-                "Vendor": VENDOR,
-                "Score": SUSPICIOUS_SCORE
-            })
-
-            url_obj["Verified"] = False
-            url_obj["Malicious"] = malicious
-        else:
-            url_obj["Verified"] = True
-
-        url_list.append(url_obj)
+            url_list.append(url_obj)
 
     ec["URL(val.Data && val.Data === obj.Data)"] = url_list
 
