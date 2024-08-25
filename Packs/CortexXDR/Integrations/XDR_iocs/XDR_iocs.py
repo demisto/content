@@ -470,7 +470,7 @@ def set_sync_time(timestamp: datetime) -> None:
 
 def update_integration_context(update_sync_time_with_datetime: datetime|None = None,
                                update_sync_time_with_date_string: str|None = None,
-                               update_is_first_sync_phase: bool|None = None,
+                               update_is_first_sync_phase: str|None = None,
                                update_search_after_array: List[Any]|None = None):
     updated_integration_context = get_integration_context() or {}
     if update_sync_time_with_datetime:
@@ -483,7 +483,7 @@ def update_integration_context(update_sync_time_with_datetime: datetime|None = N
         updated_integration_context['ts'] = int(parsed_time.timestamp()) * 1000
         updated_integration_context['time'] = truncated_timestamp
     if update_is_first_sync_phase:
-        updated_integration_context['is_first_sync_phase'] = update_is_first_sync_phase
+        updated_integration_context['is_first_sync_phase'] = argToBoolean(update_is_first_sync_phase)
     if update_search_after_array:
         updated_integration_context['search_after'] = update_search_after_array
     set_integration_context(updated_integration_context)
@@ -507,7 +507,7 @@ def sync(client: Client, batch_size: int = 200, is_first_stage_sync: bool = Fals
             last_modified_time = request_data[-1].get('modified')
             first_sync_time_passed = integration_context.get('time') < last_modified_time
             if len(request_data) < MAX_INDICATORS_TO_SYNC or first_sync_time_passed:
-                update_integration_context(update_is_first_sync_phase=False,
+                update_integration_context(update_is_first_sync_phase='false',
                                            update_sync_time_with_date_string=
                                            last_modified_time if first_sync_time_passed else None)
             # TODO
@@ -524,7 +524,7 @@ def sync(client: Client, batch_size: int = 200, is_first_stage_sync: bool = Fals
             #             f" {get_integration_context().get('search_after')}")
         else:
             demisto.debug("request_data is empty, no indicators to sync")
-            update_integration_context(update_is_first_sync_phase=False)
+            update_integration_context(update_is_first_sync_phase='false')
     except Exception as e:
         raise DemistoException(f"Failed to sync indicators with error {e}")
 
@@ -759,7 +759,7 @@ def fetch_indicators(client: Client, auto_sync: bool = False):
         and auto_sync):
         if not integration_context:
             sync_time = datetime.now(timezone.utc)
-            update_integration_context(update_sync_time_with_datetime=sync_time, update_is_first_sync_phase=True)
+            update_integration_context(update_sync_time_with_datetime=sync_time, update_is_first_sync_phase='true')
         demisto.debug("fetching IOCs: running sync with is_first_stage_sync=True")
         xdr_iocs_sync_command(client=client, is_first_stage_sync=True)
     else:
