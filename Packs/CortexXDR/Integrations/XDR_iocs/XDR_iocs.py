@@ -1,3 +1,4 @@
+import math
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -11,6 +12,7 @@ from collections.abc import Sequence, Iterable
 from dateparser import parse
 from urllib3 import disable_warnings
 import zipfile
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 disable_warnings()
 DEMISTO_TIME_FORMAT: str = '%Y-%m-%dT%H:%M:%SZ'
@@ -199,13 +201,12 @@ def create_file_sync(file_path, batch_size: int = 200):
             demisto.info("created sync file without any indicators")
 
 
-def search_indicators_corresponding_modification_time(query: str,from_date: str, to_date: str):
+def search_indicators_corresponding_modification_time(query: str, from_date: str, to_date: str):
     updated_query = f'modified:>={from_date} and modified:<{to_date} and ({query})'
     demisto.debug(f"{updated_query=}")
     ioc_count = 0
     try:
-        for batch in IndicatorsSearcher(size=5000, query=updated_query, sort=[{"field": "modified", "asc": True}], filter_fields=
-                                            'value,indicator_type,score,expiration,modified,aggregatedReliability,moduleToFeedMap,comments,id,CustomFields'):
+        for batch in IndicatorsSearcher(size=5000, query=updated_query, sort=[{"field": "modified", "asc": True}], filter_fields='value,indicator_type,score,expiration,modified,aggregatedReliability,moduleToFeedMap,comments,id,CustomFields'):
             for ioc in batch.get('iocs', []):
                 ioc_count += 1
                 demisto.debug(f"{ioc.get('modified')=}")
@@ -220,18 +221,21 @@ def search_indicators_corresponding_modification_time(query: str,from_date: str,
     except Exception as e:
         raise e
 
+
 def convert_timestamp_to_datetime_string(timestamp_in_milliseconds: int) -> str:
     timestamp_in_seconds = timestamp_in_milliseconds / 1000.0
     utc_dt = datetime.utcfromtimestamp(timestamp_in_seconds)
     return utc_dt.isoformat() + '000Z'
+
 
 def increment_timestamp_by_one_millisecond(timestamp_str: str) -> str:
     datetime_obj = datetime.fromisoformat(timestamp_str.replace('000Z', '+00:00'))
     new_datetime_obj = datetime_obj + timedelta(milliseconds=1)
     new_datetime_str = new_datetime_obj.strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + '000000Z'
     return new_datetime_str
-    
-def get_iocs_generator(size=200, query=None, is_first_stage_sync= False) -> Iterable:
+
+
+def get_iocs_generator(size=200, query=None, is_first_stage_sync=False) -> Iterable:
     full_query = query or Client.query
     ioc_count = 0
     try:
@@ -241,8 +245,7 @@ def get_iocs_generator(size=200, query=None, is_first_stage_sync= False) -> Iter
                                         search_after=search_after,
                                         sort=[{"field": "modified", "asc": True},
                                               {"field": "id", "asc": True}],
-                                        filter_fields=
-                                        'value,indicator_type,score,expiration,modified,aggregatedReliability,moduleToFeedMap,comments,id,CustomFields'):
+                                        filter_fields='value,indicator_type,score,expiration,modified,aggregatedReliability,moduleToFeedMap,comments,id,CustomFields'):
             for ioc in batch.get('iocs', []):
                 ioc_count += 1
                 yield ioc
@@ -417,6 +420,7 @@ def get_temp_file() -> str:
     temp_file = tempfile.mkstemp()
     return temp_file[1]
 
+
 def set_search_after(modified_date: int):
     demisto.info(f"setting search after value to integration context: {modified_date}")
     integration_context = get_integration_context()
@@ -454,10 +458,11 @@ def set_sync_time(timestamp: datetime) -> None:
     else:
         set_integration_context(value)
 
-def update_integration_context(update_sync_time_with_datetime: datetime|None = None,
-                               update_sync_time_with_date_string: str|None = None,
-                               update_is_first_sync_phase: str|None = None,
-                               update_search_after_array: List[Any]|None = None):
+
+def update_integration_context(update_sync_time_with_datetime: datetime | None = None,
+                               update_sync_time_with_date_string: str | None = None,
+                               update_is_first_sync_phase: str | None = None,
+                               update_search_after_array: List[Any] | None = None):
     updated_integration_context = get_integration_context() or {}
     if update_sync_time_with_datetime:
         updated_integration_context['ts'] = int(update_sync_time_with_datetime.timestamp()) * 1000
@@ -474,13 +479,14 @@ def update_integration_context(update_sync_time_with_datetime: datetime|None = N
         updated_integration_context['search_after'] = update_search_after_array
     set_integration_context(updated_integration_context)
 
+
 def sync(client: Client, batch_size: int = 200, is_first_stage_sync: bool = False):
     """
     Sync command runs in batches of 5,000 with total of 50,000 indicators in each sync.
     Syncs the data in xsoar to xdr.
     """
     demisto.info("executing sync")
-    request_data : List[Any] = []
+    request_data: List[Any] = []
     try:
         # demisto.debug(f"time_before_query_is {datetime.now(timezone.utc).strftime(DEMISTO_TIME_FORMAT)}")
         if is_first_stage_sync:
@@ -499,8 +505,7 @@ def sync(client: Client, batch_size: int = 200, is_first_stage_sync: bool = Fals
             if len(request_data) < MAX_INDICATORS_TO_SYNC:
                 demisto.debug(f"{last_sync_time=}, {last_modified_time=}")
                 update_integration_context(update_is_first_sync_phase='false',
-                                           update_sync_time_with_date_string=
-                                           last_modified_time if last_modified_time <  last_sync_time else None)
+                                           update_sync_time_with_date_string=last_modified_time if last_modified_time < last_sync_time else None)
             # TODO
             # requests_kwargs: dict = get_requests_kwargs(_json=request_data, validate=True)
             # path: str = 'tim_insert_jsons'
@@ -554,7 +559,7 @@ def get_iocs_to_keep_file():
         os.remove(temp_file_path)
 
 
-def create_last_iocs_query(from_date: str, to_date:str):
+def create_last_iocs_query(from_date: str, to_date: str):
     return f'modified:>={from_date} and modified:<{to_date} and (expirationStatus:active AND ({Client.query}))'
 
 
@@ -610,17 +615,27 @@ def tim_insert_jsons(client: Client):
     else:
         demisto.info("pushing IOCs to XDR: did not get indicators, will use recently-modified IOCs")
         iocs = get_last_iocs(batch_size=5000)
-
-    validation_errors = []
+    validation_errors: list = []
     if iocs:
         path = 'tim_insert_jsons/'
         demisto.info(f"pushing IOCs to XDR: pushing {len(iocs)} IOCs to the {path} endpoint")
-        for i, single_batch_iocs in enumerate(batch_iocs(iocs, batch_size=5000)):
-            demisto.debug(f'pushing IOCs to XDR: batch #{i} with {len(single_batch_iocs)} IOCs')
-            requests_kwargs: dict = get_requests_kwargs(_json=list(
-                map(demisto_ioc_to_xdr, single_batch_iocs)), validate=True)
-            response = client.http_request(url_suffix=path, requests_kwargs=requests_kwargs)
-            validation_errors.extend(response.get('reply', {}).get('validation_errors'))
+        with ThreadPoolExecutor(max_workers=math.ceil(len(iocs) / MAX_INDICATORS_TO_SYNC)) as executor:
+            futures = {executor.submit(push_iocs_to_xdr, i, batch, client, path): i for i, batch in
+                       enumerate(batch_iocs(iocs))}
+
+            for future in as_completed(futures.keys()):
+                batch_index = futures[future]
+                try:
+                    errors = future.result()
+                    validation_errors.extend(errors)
+                except Exception as exc:
+                    demisto.error(f'Batch #{batch_index} generated an exception: {exc}')
+        # for i, single_batch_iocs in enumerate(batch_iocs(iocs, batch_size=5000)):
+        #    demisto.debug(f'pushing IOCs to XDR: batch #{i} with {len(single_batch_iocs)} IOCs')
+        #    requests_kwargs: dict = get_requests_kwargs(_json=list(
+        #        map(demisto_ioc_to_xdr, single_batch_iocs)), validate=True)
+        #    response = client.http_request(url_suffix=path, requests_kwargs=requests_kwargs)
+        #    validation_errors.extend(response.get('reply', {}).get('validation_errors'))
     else:
         demisto.info("pushing IOCs to XDR: found no matching IOCs")
     if validation_errors:
@@ -628,6 +643,14 @@ def tim_insert_jsons(client: Client):
         demisto.info('pushing IOCs to XDR:' + errors.replace('\n', '. '))
         return_warning(errors)
     return_outputs('pushing IOCs to XDR: complete.')
+
+
+def push_iocs_to_xdr(batch_index, iocs_batch, client, path):
+    demisto.debug(f'pushing IOCs to XDR: batch #{batch_index} with {len(iocs_batch)} IOCs')
+    requests_kwargs: dict = get_requests_kwargs(
+        _json=list(map(demisto_ioc_to_xdr, iocs_batch)), validate=True)
+    response = client.http_request(url_suffix=path, requests_kwargs=requests_kwargs)
+    return response.get('reply', {}).get('validation_errors', [])
 
 
 def iocs_command(client: Client):
@@ -754,7 +777,7 @@ def fetch_indicators(client: Client, auto_sync: bool = False):
     integration_context = get_integration_context()
     demisto.debug(f"The integration context is {integration_context=}")
     if (((not integration_context) or (integration_context.get('is_first_sync_phase')))
-        and auto_sync):
+            and auto_sync):
         if not integration_context:
             sync_time = datetime.now(timezone.utc)
             update_integration_context(update_sync_time_with_datetime=sync_time, update_is_first_sync_phase='true')
