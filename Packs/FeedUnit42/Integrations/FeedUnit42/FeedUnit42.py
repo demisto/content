@@ -568,7 +568,6 @@ def get_indicators_command(client: Client, args: Dict[str, str], feed_tags: list
     return command_results
 
 
-
 def main():
     """
     PARSE AND VALIDATE FEED PARAMS
