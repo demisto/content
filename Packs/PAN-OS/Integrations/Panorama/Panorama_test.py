@@ -7545,7 +7545,7 @@ def test_pan_os_get_threat_id_from_predefined_threates(mocker):
     result = Panorama.get_threat_id_from_predefined_threates('CVE-2023-9012')
     assert result == ("10005", "Test Threat 3", ["CVE-2023-9012"])
 
-    with pytest.raises(DemistoException, match="Invalid threat_name was provided."):
+    with pytest.raises(DemistoException, match="Threat was not found."):
         Panorama.get_threat_id_from_predefined_threates('Nonexistent Threat')
 
 
