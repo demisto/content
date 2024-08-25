@@ -2,7 +2,7 @@ import json
 import pytest
 from stix2 import TAXIICollectionSource, parse
 import demistomock as demisto  # noqa: F401
-from Packs.FeedMitreAttackv2.Integrations.FeedMitreAttackv2.test_data.mitre_test_data import ATTACK_PATTERN, COURSE_OF_ACTION, INTRUSION_SET, MALWARE, TOOL, ID_TO_NAME, \
+from test_data.mitre_test_data import ATTACK_PATTERN, COURSE_OF_ACTION, INTRUSION_SET, MALWARE, TOOL, ID_TO_NAME, \
     RELATION, MALWARE_LIST_WITHOUT_PREFIX, MALWARE_LIST_WITH_PREFIX, \
     INDICATORS_LIST, NEW_INDICATORS_LIST, MITRE_ID_TO_MITRE_NAME, OLD_ID_TO_NAME, NEW_ID_TO_NAME, RELATIONSHIP_ENTITY, \
     CAMPAIGN, ATTACK_PATTERNS
@@ -268,10 +268,11 @@ def test_attack_pattern_reputation_command(mocker):
     assert command_results[0].indicator.value == 'Abuse Elevation Control Mechanism'
     assert command_results[1].indicator.value == 'Active Scanning: Wordlist Scanning'
 
+
 def test_attack_pattern_reputation_without_answer_command(mocker):
     """
     Given:
-        One attach patter to retrive data on, that is not found in the collection
+        One attach pattern to retrive data on, that is not found in the collection
 
     When:
         Running attack-pattern reputation command
@@ -288,13 +289,14 @@ def test_attack_pattern_reputation_without_answer_command(mocker):
     command_results = attack_pattern_reputation_command('', args)
 
     assert command_results
-    assert command_results.readable_output == "MITRE ATTACK Attack Patterns values: No Attack Patterns found for ['dummy attack pattern']."
+    assert command_results.readable_output == "MITRE ATTACK Attack Patterns values: No Attack " \
+                                              "Patterns found for ['dummy attack pattern']."
 
 
 def test_get_mitre_value_from_id_without_answer_command(mocker):
     """
     Given:
-        One attach patter to retrive data on, that is not found in the collection
+        One attach pattern to retrive data on, that is not found in the collection
 
     When:
         Running attack-pattern reputation command
@@ -313,6 +315,7 @@ def test_get_mitre_value_from_id_without_answer_command(mocker):
     assert command_results
     assert command_results.readable_output == "MITRE ATTACK Attack Patterns values: " \
                                               "No Attack Patterns found for ['dummy attack pattern id']."
+
 
 @pytest.mark.parametrize('description, expected_result', [
     ("Waterbear is modular malware attributed to BlackTech ...(Citation: Trend Micro Waterbear December 2019)",

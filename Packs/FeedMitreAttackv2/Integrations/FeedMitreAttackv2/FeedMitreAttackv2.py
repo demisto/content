@@ -470,11 +470,11 @@ def show_feeds_command(client):
 def get_mitre_data_by_filter(client, mitre_filter):
     mitre_data = []
     for collection in client.collections:
-        
+
         # fetch only enterprise data
         if collection.id != ENTERPRISE_COLLECTION_ID:
             continue
-        
+
         collection_url = urljoin(client.base_url, f'stix/collections/{collection.id}/')
         demisto.debug(f'MA: Trying to get mitre data from {collection_url} with filter {mitre_filter}')
         collection_data = Collection(collection_url, verify=client.verify, proxies=client.proxies)
@@ -524,7 +524,7 @@ def attack_pattern_reputation_command(client, args):
 
     filter_by_type = [Filter('type', '=', 'attack-pattern')]
     mitre_data = get_mitre_data_by_filter(client, filter_by_type)
-    
+
     mitre_names = argToList(args.get('attack_pattern'))
     value = ''
     for name in mitre_names:
@@ -578,7 +578,6 @@ def attack_pattern_reputation_command(client, args):
             attack_pattern = attack_pattern[0]
             value = f'{parent_name}: {attack_pattern.get("name")}'
 
-
         attack_obj = map_fields_by_type('Attack Pattern', json.loads(str(attack_pattern)))
         custom_fields = attack_obj or {}
         score = INDICATOR_TYPE_TO_SCORE.get('Attack Pattern')
@@ -586,10 +585,9 @@ def attack_pattern_reputation_command(client, args):
              f"{attack_obj.get('mitreid')} \n {custom_fields.get('description', '')}"
         command_results.append(build_command_result(value, score, md, attack_obj))
 
-
     if not command_results:
         return CommandResults(readable_output=f'MITRE ATTACK Attack Patterns values: '
-                                              f'No Attack Patterns found for {mitre_names}.')
+                                              f'No Attack Patterns found for {mitre_names} in the Enterprise collection.')
 
     return command_results
 
@@ -627,8 +625,8 @@ def get_mitre_value_from_id(client, args):
     if attack_pattern_objects:
         for attack_id in attack_ids:
             attack_pattern = list(filter(lambda attack_pattern_obj:
-                                filter_attack_pattern_object_by_attack_id(attack_id,
-                                                                            attack_pattern_obj), attack_pattern_objects))
+                                         filter_attack_pattern_object_by_attack_id(attack_id,
+                                                                                   attack_pattern_obj), attack_pattern_objects))
             if not attack_pattern:
                 demisto.debug(f'MA: Did not found attack pattern value for ID {attack_id}')
                 continue
@@ -638,8 +636,8 @@ def get_mitre_value_from_id(client, args):
             if attack_pattern_name and len(attack_id) > 5:  # sub-technique
                 sub_technique_attack_id = attack_id[:5]
                 parent_object = list(filter(lambda attack_pattern_obj:
-                                    filter_attack_pattern_object_by_attack_id(sub_technique_attack_id,
-                                                                            attack_pattern_obj), attack_pattern_objects))
+                                            filter_attack_pattern_object_by_attack_id(sub_technique_attack_id,
+                                                                                      attack_pattern_obj), attack_pattern_objects))
                 parent_name = parent_object[0]['name']
 
                 attack_pattern_name = f'{parent_name}: {attack_pattern_name}'
@@ -656,7 +654,7 @@ def get_mitre_value_from_id(client, args):
         )
 
     return CommandResults(readable_output=f'MITRE ATTACK Attack Patterns values: '
-                                          f'No Attack Patterns found for {attack_ids}.')
+                                          f'No Attack Patterns found for {attack_ids} in the Enterprise collection.')
 
 
 def main():
