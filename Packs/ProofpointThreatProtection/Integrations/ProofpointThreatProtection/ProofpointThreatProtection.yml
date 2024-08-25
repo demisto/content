@@ -4,7 +4,7 @@ commonfields:
   version: -1
 configuration:
 - defaultvalue: https://threatprotection-api.proofpoint.com/api/v1
-  display: URL
+  display: Server URL
   name: url
   required: true
   section: Connect
