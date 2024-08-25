@@ -34,6 +34,15 @@
 							},
 							{
 								"endCol": 2,
+								"fieldId": "ibmqradarname",
+								"height": 26,
+								"id": "186cc5b0-6095-11ef-a00d-d3f5a8c866c7",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
 								"fieldId": "description",
 								"height": 26,
 								"id": "b30144f0-4a62-11ef-a450-29f69179b85b",
@@ -451,6 +460,33 @@
 						"static": false,
 						"type": "todoTasks",
 						"w": 1,
+						"x": 1,
+						"y": 4
+					},
+					{
+						"displayType": "CARD",
+						"h": 2,
+						"hideItemTitleOnlyOne": true,
+						"hideName": false,
+						"i": "caseinfoid-593d1d60-60d6-11ef-9663-11323c2c3548",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "incidentnotes",
+								"height": 26,
+								"id": "72d14580-60d6-11ef-9663-11323c2c3548",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Remote Incident Notes",
+						"static": false,
+						"w": 1,
+						"wrapLabels": false,
 						"x": 1,
 						"y": 4
 					}

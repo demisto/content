@@ -149,7 +149,6 @@ SCRIPT_ENTITIES = 'entities'
 DEFAULT_RETURN_LEVEL = 'full'
 DEFAULT_RETRIES = 1
 STATUS_NOT_FOUND = 404
-HTML_TAGS_PATTERN = re.compile(r'<[^>]+>')
 IBM_QRADAR_SOAR_INCIDENT_SCHEMA_NAME = 'IBM QRadar SOAR Incident Schema'
 DEFAULT_SEVERITY_CODE = 5
 ''' ENDPOINTS '''
@@ -172,6 +171,7 @@ def validate_fetch_time(fetch_time: str) -> str:
         return fetch_time if fetch_time.endswith('Z') else fetch_time + 'Z'
     else:
         return fetch_time
+
 def normalize_timestamp(timestamp):
     """
     Converts epoch timestamp to human readable timestamp.
@@ -185,7 +185,7 @@ def prettify_incidents(client, incidents):
     for incident in incidents:
         incident['id'] = str(incident['id'])
         if isinstance(incident['description'], str):
-            incident['description'] = HTML_TAGS_PATTERN.sub('', incident['description'])
+            incident['description'] = remove_html_div_tags(incident['description'])
         incident['discovered_date'] = normalize_timestamp(incident['discovered_date'])
         incident['created_date'] = normalize_timestamp(incident['create_date'])
         incident.pop('create_date', None)
@@ -236,8 +236,8 @@ def prettify_incident_notes(notes: list[dict]) -> list[dict]:
         note = notes_copy.pop()
         new_note_obj = {
             'id': note.get('id', ''),
-            # Removing HTML tags.
-            'text': re.sub(r'<[^>]+>', '', note.get('text', '')),
+            'text': remove_html_div_tags(note.get('text', '')),
+            'created_by': f"{note.get('user_fname', '')} {note.get('user_lname', '')}",
             'create_date': normalize_timestamp(note.get('create_date'))}
         formatted_notes.append(new_note_obj)
     return formatted_notes
@@ -274,7 +274,7 @@ def prepare_search_query_data(args: dict) -> dict:
             'value': value
         })
     elif 'date-created-after' in args:
-        value = date_to_timestamp(args['date-created-after'])
+        value = args['date-created-after']
         conditions.append({
             'field_name': 'create_date',
             'method': 'gte',
@@ -432,23 +432,67 @@ def get_mirroring_data() -> dict:
     }
 
 
-def replace_html_tags(raw_value: str) -> str:
-    # Regex pattern to match <div> tags and their content, handling nested divs
-    pattern = r'<div.*?>.*?</div>'
+def remove_html_div_tags(raw_value: str) -> str:
+    """
+    Remove HTML tags from a given string.
 
-    def replace_nested(match):
-        """
-            Function to count nested divs and replace appropriately.
-        """
-        # Count opening divs
-        content = match.group(0)
-        open_divs = content.count('<div')
-        # Replace all nested divs with newline equal to the number of opening tags
-        return '\n' * open_divs
+    Args:
+        raw_value (str): The string to remove HTML tags from.
+    Returns:
+        str: The string with HTML tags removed.
+    """
+    # Replace opening div tags with a newline character.
+    raw_value = re.sub(r'<div[^>]*>', '\n', raw_value)
+    # Remove closing div tags.
+    result = re.sub(r'</div>', '', raw_value)
+    return result.strip()
 
-    # Substitute using the replace_nested function for each match
-    result = re.sub(pattern, replace_nested, raw_value, flags=re.DOTALL)
-    return result
+
+def process_raw_incident(client: SimpleClient, incident: dict) -> dict:
+    """
+    Process a raw incident dictionary by fetching associated artifacts and attachments,
+     removing HTML div tags from the description and normalizing timestamps.
+
+     Args:
+         client (SimpleClient): The client instance to use for API calls.
+         incident (dict): The raw incident dictionary to process.
+    Returns:
+        dict: The processed incident dictionary.
+    """
+    incident_id = str(incident.get('id'))
+    artifacts = incident_artifacts(client, incident_id) # TODO Check types
+    if artifacts:
+        incident['artifacts'] = artifacts
+
+    attachments = incident_attachments(client, incident_id)
+    if attachments:
+        incident['attachments'] = attachments
+
+    if isinstance(incident.get('description'), str):
+        incident['description'] = remove_html_div_tags(incident['description'])
+
+    incident['discovered_date'] = normalize_timestamp(incident.get('discovered_date'))
+    incident['create_date'] = normalize_timestamp(incident.get('create_date'))
+
+    notes = get_incident_notes(client, incident_id)
+    for note in prettify_incident_notes(notes):
+        # TODO - Maintain notes.
+        if note:
+            pass
+            # return_outputs(
+            #     {
+            #         'ContentsFormat': EntryFormat.MARKDOWN,
+            #         'Type': EntryType.NOTE,
+            #         'Contents':
+            #             f"Added By: {note.get('created_by', '')}\n"
+            #             f"Added At: {note.get('created_at', '')}\n"
+            #             f"Note Content:{note.get('text', '')}\n"
+            #             f"ID:{note.get('id', '')}",
+            #         'Note': True
+            #     }
+            # )
+    incident.update(get_mirroring_data())
+    return incident
 
 
 ''' COMMAND FUNCTIONS '''
@@ -1071,6 +1115,10 @@ def incident_attachments(client, incident_id):
     return response
 
 
+def get_incident_notes(client: SimpleClient, incident_id: str) -> list:
+    response = client.get(f'/incidents/{incident_id}/comments')
+    return response
+
 def related_incidents_command(client, incident_id):
     response = related_incidents(client, incident_id)['incidents']
     if response:
@@ -1202,53 +1250,33 @@ def date_to_timestamp(date_str_or_dt, date_format='%Y-%m-%dT%H:%M:%SZ'):
 
 
 def fetch_incidents(client, first_fetch_time: str):
-    last_run_time = demisto.getLastRun() and demisto.getLastRun().get('time')
-    demisto.debug(f'fetch_incidents {last_run_time=}')
-    if not last_run_time:
-        last_run_time = date_to_timestamp(first_fetch_time)
-        args = {'date-created-after': first_fetch_time}
-    else:
-        args = {'date-created-after': normalize_timestamp(last_run_time)}
+    last_fetched_timestamp = demisto.getLastRun() and demisto.getLastRun().get('time')
+    demisto.debug(f'fetch_incidents {last_fetched_timestamp=}')
 
+    if not last_fetched_timestamp:
+        last_fetched_timestamp = date_to_timestamp(first_fetch_time)
+    args = {'date-created-after': last_fetched_timestamp}    # Fetch incident from the last fetched timestamp.
     resilient_incidents = search_incidents(client, args)
-    incidents = []
 
+    demisto_incidents = []
+    last_incident_creation_time = last_fetched_timestamp
     if resilient_incidents:
-        last_incident_creation_time = resilient_incidents[0].get('create_date')  # the first incident's creation time in UTC
-
+        #  Update last_run_time to the latest incident creation time (maximum in milliseconds).
+        last_incident_creation_time = max([_incident.get('create_date') for _incident in resilient_incidents])
         for incident in resilient_incidents:
-            demisto.debug(f'fetch_incidents {incident=}')
-            incident_creation_time = incident.get('create_date')
-            if incident_creation_time > last_run_time:  # timestamp in milliseconds
-                # TODO - process_raw_incident()
-
-                artifacts = incident_artifacts(client, str(incident.get('id', '')))
-                if artifacts:
-                    incident['artifacts'] = artifacts
-                attachments = incident_attachments(client, str(incident.get('id', '')))
-                if attachments:
-                    incident['attachments'] = attachments
-                if isinstance(incident.get('description'), str):
-                    incident['description'] = HTML_TAGS_PATTERN.sub('', incident['description'])
-
-                incident['discovered_date'] = normalize_timestamp(incident.get('discovered_date'))
-                incident['create_date'] = normalize_timestamp(incident_creation_time)
-                incident.update(get_mirroring_data())
-
-                demisto_incident = dict()  # type: dict
-                # demisto_incident['name'] = f'IBM QRadar SOAR incident ID {str(incident["id"])} - {incident.get("name", "")}'
+            # Only fetching non-resolved incidents.
+            if not incident.get('end_date') and incident.get('plan_status') == 'A':  # 'A' stands for 'Active'
+                demisto.debug(f'fetch_incidents {incident=}')
+                incident = process_raw_incident(client, incident)
+                demisto_incident = dict()
                 demisto_incident['name'] = f'IBM QRadar SOAR incident ID {str(incident["id"])}'
                 demisto_incident['occurred'] = incident['create_date']
-                demisto_incident['rawJSON'] = replace_html_tags(json.dumps(incident))
-                demisto.debug(f'fetch_incidents {demisto_incident=}')
-                incidents.append(demisto_incident)
+                demisto_incident['rawJSON'] = json.dumps(incident)
+                demisto_incidents.append(demisto_incident)
 
-                # updating last creation time if needed
-                if incident_creation_time > last_incident_creation_time:
-                    last_incident_creation_time = incident_creation_time
     # Increasing by one millisecond in order not to fetch the same incident in the next run.
     demisto.setLastRun({'time': last_incident_creation_time + 1})
-    demisto.incidents(incidents)
+    demisto.incidents(demisto_incidents)
 
 
 def list_scripts_command(client: SimpleClient, args: dict) -> CommandResults:
@@ -1546,6 +1574,20 @@ def handle_incoming_incident_resolution(incident_id: str, resolution_id: int, re
     }
     return closing_entry
 
+def handle_incident_reopening(incident_id: str) -> dict:
+    """
+    TODO - Complete
+    """
+    demisto.debug(f'handle_incident_reopening {incident_id=}')
+    # TODO - Check if should be re-opened or already open.
+    reopening_entry = {
+        'Type': EntryType.NOTE,
+        'Contents': {
+            'dbotIncidentReopen': True
+        },
+        'ContentsFormat': EntryFormat.JSON
+    }
+    return reopening_entry
 
 def get_remote_data_command(client: SimpleClient, args: dict) -> GetRemoteDataResponse:
     """
@@ -1569,25 +1611,28 @@ def get_remote_data_command(client: SimpleClient, args: dict) -> GetRemoteDataRe
     demisto.debug(f'get-remote-data {incident_id=}')
 
     incident = get_incident(client, incident_id)
+    incident = process_raw_incident(client, incident)
     demisto.debug(f'get-remote-data {incident=}')
     entries = []
 
     # Handling remote incident resolution.
-    if resolution_id := incident.get('resolution_id', '') in RESOLUTION_DICT:
+    if incident.get('end_date') and incident.get('plan_status') == 'C':     # 'C' stands for 'Closed'
+        resolution_id = incident.get('resolution_id')
         closing_entry = handle_incoming_incident_resolution(incident_id=incident_id,
                                                             resolution_id=resolution_id,
-                                                            resolution_summary=incident.get('resolution_summary', '')
+                                                            resolution_summary=remove_html_div_tags(
+                                                                incident.get('resolution_summary', ''))
                                                             )
         entries.append(closing_entry)
 
-    # Handling remote incident re-opening.
+    # Handling open and remote incident re-opening.
+    elif not incident.get('end_date') and incident.get('plan_status') == 'A':
+        reopening_entry = handle_incident_reopening(incident_id=incident_id)
+        entries.append(reopening_entry)
 
     mirrored_data = dict()
-    mirrored_data['rawJSON'] = replace_html_tags(json.dumps(incident))
+    mirrored_data['rawJSON'] = json.dumps(incident)
 
-
-    # TODO - Handle incoming closing incident
-    # TODO - Add entries if closing the incident
     # TODO - Handle tags for attachments, tasks, notes
     return GetRemoteDataResponse(mirrored_object=incident, entries=entries)
 

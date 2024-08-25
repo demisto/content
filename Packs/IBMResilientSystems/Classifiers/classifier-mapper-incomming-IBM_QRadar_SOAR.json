@@ -142,6 +142,9 @@
 						]
 					}
 				},
+				"IBM QRadar Name": {
+					"simple": "name"
+				},
                 "Last Modified On": {
                     "simple": "inc_last_modified_date"
                 },
@@ -183,6 +186,17 @@
                         ]
                     }
                 },
+				"Incident Notes": {
+					"complex": {
+						"filters": [],
+						"root": "notes",
+						"transformers": [
+							{
+								"operator": "ParseJSON"
+							}
+						]
+					}
+				},
                 "dbotMirrorDirection": {
                     "simple": "mirror_direction"
                 },

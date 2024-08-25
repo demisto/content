@@ -973,5 +973,6 @@ script:
 fromversion: 5.0.0
 defaultclassifier: IBM QRadar SOAR - Classifier
 defaultmapperin: IBM QRadar SOAR Incoming Mapper
+defaultmapperout: IBM QRadar SOAR Outgoing Mapper
 tests:
 - No tests (auto formatted)

@@ -1,0 +1,97 @@
+{
+	"brands": null,
+	"cacheVersn": 0,
+	"defaultIncidentType": "",
+	"definitionId": "",
+	"description": "",
+	"feed": false,
+	"fromServerVersion": "",
+	"id": "IBM QRadar SOAR Outgoing Mapper",
+	"incidentSamples": null,
+	"indicatorSamples": null,
+	"instanceIds": null,
+	"itemVersion": "",
+	"keyTypeMap": {},
+	"locked": false,
+	"logicalVersion": 1,
+	"mapping": {
+		"IBM QRadar SOAR Incident": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"description": {
+					"simple": "description"
+				},
+				"owner_id": {
+					"simple": "owner"
+				},
+				"resolution_id": {
+					"complex": {
+						"filters": [],
+						"root": "ibmqradarresolution",
+						"transformers": [
+							{
+								"args": {
+									"input_values": {
+										"isContext": false,
+										"value": {
+											"simple": "Unresolved,Duplicate,Not an Issue,Resolved"
+										}
+									},
+									"mapped_values": {
+										"isContext": false,
+										"value": {
+											"simple": "7,8,9,10"
+										}
+									}
+								},
+								"operator": "MapValuesTransformer"
+							}
+						]
+					}
+				},
+				"resolution_summary": {
+					"simple": "ibmqradarresolutionsummary"
+				},
+				"severity_code": {
+					"complex": {
+						"filters": [],
+						"root": "severity",
+						"transformers": [
+							{
+								"args": {
+									"input_values": {
+										"isContext": false,
+										"value": {
+											"simple": "1,2,3"
+										}
+									},
+									"mapped_values": {
+										"isContext": false,
+										"value": {
+											"simple": "4,5,6"
+										}
+									}
+								},
+								"operator": "MapValuesTransformer"
+							}
+						]
+					}
+				}
+			}
+		}
+	},
+	"name": "IBM QRadar SOAR Outgoing Mapper",
+	"nameRaw": "IBM QRadar SOAR Outgoing Mapper",
+	"packID": "",
+	"packName": "",
+	"propagationLabels": [
+		"all"
+	],
+	"sourceClassifierId": "",
+	"system": false,
+	"toServerVersion": "",
+	"transformer": {},
+	"type": "mapping-outgoing",
+	"unclassifiedCases": null,
+	"version": -1
+}
