@@ -1,5 +1,5 @@
 args:
-- description: Date value to check - Can be any non-timezone aware time format. ex. "2020-01-01T00:00:00".
+- description: Date value to check - Can be any time format. ex. "2020-01-01T00:00:00".
   name: left
   required: true
 - description: Relative time ex. "6 months ago".
