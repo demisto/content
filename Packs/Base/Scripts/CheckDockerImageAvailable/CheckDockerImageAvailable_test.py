@@ -1,4 +1,5 @@
-from CheckDockerImageAvailable import docker_min_layer, parse_www_auth
+from CheckDockerImageAvailable import docker_auth, main, docker_min_layer, parse_www_auth
+import demistomock as demisto
 import json
 import pytest
 import urllib3
@@ -8,11 +9,11 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 RETURN_ERROR_TARGET = 'CheckDockerImageAvailable.return_error'
 
 
-# NOTE: Should be fixed in future versions (related to CIAC-11614)
-# @pytest.mark.filterwarnings('ignore::urllib3.exceptions.InsecureRequestWarning')
-# def test_auth():
-#     token = docker_auth('demisto/python', verify_ssl=False)
-#     assert token is not None
+@pytest.mark.skip(reason="Should be fixed in future versions (related to CIAC-11614)")
+@pytest.mark.filterwarnings('ignore::urllib3.exceptions.InsecureRequestWarning')
+def test_auth():
+    token = docker_auth('demisto/python', verify_ssl=False)
+    assert token is not None
 
 
 def test_parse_www_auth():
@@ -56,44 +57,44 @@ def test_min_layer():
     assert min_layer['size'] == 233
 
 
-# NOTE: Should be fixed in future versions (related to CIAC-11614)
-# def test_valid_docker_image(mocker):
-#     import urllib3
-#     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-#     demisto_image = 'demisto/python:2.7.15.155'  # disable-secrets-detection
-#     args = {'input': demisto_image, 'trust_any_certificate': 'yes'}
-#     mocker.patch.object(demisto, 'args', return_value=args)
-#     mocker.patch.object(demisto, 'results')
+@pytest.mark.skip(reason="Should be fixed in future versions (related to CIAC-11614)")
+def test_valid_docker_image(mocker):
+    import urllib3
+    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+    demisto_image = 'demisto/python:2.7.15.155'  # disable-secrets-detection
+    args = {'input': demisto_image, 'trust_any_certificate': 'yes'}
+    mocker.patch.object(demisto, 'args', return_value=args)
+    mocker.patch.object(demisto, 'results')
 
-#     # validate our mocks are good
-#     assert demisto.args()['input'] == demisto_image
-#     main()
-#     assert demisto.results.call_count == 1
-#     # call_args is tuple (args list, kwargs). we only need the first one
-#     results = demisto.results.call_args[0]
-#     assert len(results) == 1
-#     assert results[0] == 'ok'
-#     demisto.results.reset_mock()
-#     gcr_image = 'gcr.io/google-containers/alpine-with-bash:1.0'  # disable-secrets-detection
-#     args['input'] = gcr_image
-#     assert demisto.args()['input'] == gcr_image
-#     main()
-#     results = demisto.results.call_args[0]
-#     assert len(results) == 1
-#     assert results[0] == 'ok'
+    # validate our mocks are good
+    assert demisto.args()['input'] == demisto_image
+    main()
+    assert demisto.results.call_count == 1
+    # call_args is tuple (args list, kwargs). we only need the first one
+    results = demisto.results.call_args[0]
+    assert len(results) == 1
+    assert results[0] == 'ok'
+    demisto.results.reset_mock()
+    gcr_image = 'gcr.io/google-containers/alpine-with-bash:1.0'  # disable-secrets-detection
+    args['input'] = gcr_image
+    assert demisto.args()['input'] == gcr_image
+    main()
+    results = demisto.results.call_args[0]
+    assert len(results) == 1
+    assert results[0] == 'ok'
 
 
-# NOTE: Should be fixed in future versions (related to CIAC-11614)
-# def test_invalid_docker_image(mocker):
-#     import urllib3
-#     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-#     image_name = 'demisto/python:bad_tag'
-#     mocker.patch.object(demisto, 'args', return_value={'input': image_name, 'trust_any_certificate': 'yes'})
-#     return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
-#     # validate our mocks are good
-#     assert demisto.args()['input'] == image_name
-#     main()
-#     assert return_error_mock.call_count == 1
-#     # call_args last call with a tuple of args list and kwargs
-#     err_msg = return_error_mock.call_args[0][0]
-#     assert err_msg is not None
+@pytest.mark.skip(reason="Should be fixed in future versions (related to CIAC-11614)")
+def test_invalid_docker_image(mocker):
+    import urllib3
+    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+    image_name = 'demisto/python:bad_tag'
+    mocker.patch.object(demisto, 'args', return_value={'input': image_name, 'trust_any_certificate': 'yes'})
+    return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
+    # validate our mocks are good
+    assert demisto.args()['input'] == image_name
+    main()
+    assert return_error_mock.call_count == 1
+    # call_args last call with a tuple of args list and kwargs
+    err_msg = return_error_mock.call_args[0][0]
+    assert err_msg is not None
