@@ -69,7 +69,8 @@ configuration:
   defaultvalue: "true"
   required: false
 - defaultvalue: 'false'
-  display: Exclude Enrichment
+  display: Enrichment Excluded
+  additionalinfo: Select this option to exclude the fetched indicators from the enrichment process
   name: enrichmentExcluded
   required: false
   type: 8
