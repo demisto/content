@@ -12,7 +12,6 @@ import html
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from typing import TypedDict, NotRequired  # type: ignore[attr-defined]
-    from _typeshed import DataclassInstance
 else:
     TypedDict = type('TypedDict', (), {'__new__': lambda cls, **kw: kw})
     NotRequired = list
@@ -35,7 +34,7 @@ import shutil
 
 ''' IMPORTS '''
 import uuid
-from typing import Any, Dict, List, Optional, Tuple, Union, ValuesView, Iterator
+from typing import Any, Dict, List, Optional, Tuple, Union, Callable, ValuesView, Iterator
 from urllib.parse import urlparse
 
 
@@ -9887,7 +9886,7 @@ class PanosObjectReference(ResultData):
     _title = "PAN-OS Objects"
 
 
-def dataclass_from_dict(device: Union[Panorama, Firewall], object_dict: dict, class_type: type["DataclassInstance"]):
+def dataclass_from_dict(device: Union[Panorama, Firewall], object_dict: dict, class_type: Callable):
     """
     Given a dictionary and a datacalass, converts the dictionary into the dataclass type.
     :param device: The PAnDevice instance that this result data belongs to
@@ -9902,14 +9901,14 @@ def dataclass_from_dict(device: Union[Panorama, Firewall], object_dict: dict, cl
     result_dict = {}
     for key, value in object_dict.items():
         d_key = key.replace("-", "_")
-        dataclass_field = next((x for x in fields(class_type) if x.name == d_key), None)
+        dataclass_field = next((x for x in fields(class_type) if x.name == d_key), None)  # type: ignore[arg-type]
         if dataclass_field:
             result_dict[d_key] = value
 
     return class_type(**result_dict)
 
 
-def flatten_xml_to_dict(element, object_dict: dict, class_type: type["DataclassInstance"]):
+def flatten_xml_to_dict(element, object_dict: dict, class_type: Callable):
     """
     Given an XML element, a dictionary, and a class, flattens the XML into the class.
     This is a recursive function that will resolve child elements.
@@ -9922,7 +9921,7 @@ def flatten_xml_to_dict(element, object_dict: dict, class_type: type["DataclassI
 
         # Replace hyphens in tags with underscores to match python attributes
         tag = tag.replace("-", "_")
-        dataclass_field = next((x for x in fields(class_type) if x.name == tag), None)
+        dataclass_field = next((x for x in fields(class_type) if x.name == tag), None)  # type: ignore[arg-type]
         if dataclass_field:
             object_dict[tag] = child_element.text
 
@@ -9932,7 +9931,7 @@ def flatten_xml_to_dict(element, object_dict: dict, class_type: type["DataclassI
     return object_dict
 
 
-def dataclass_from_element(device: Union[Panorama, Firewall], class_type: type["DataclassInstance"], element):
+def dataclass_from_element(device: Union[Panorama, Firewall], class_type: Callable, element):
     """
     Turns an XML `Element` Object into an instance of the provided dataclass. Dataclass parameters must match
     element: Optional[Element]
@@ -9952,7 +9951,7 @@ def dataclass_from_element(device: Union[Panorama, Firewall], class_type: type["
 
     # Handle the XML attributes, if any and if they match dataclass field
     for attr_name, attr_value in element.attrib.items():
-        dataclass_field = next((x for x in fields(class_type) if x.name == attr_name), None)
+        dataclass_field = next((x for x in fields(class_type) if x.name == attr_name), None)  # type: ignore[arg-type]
         if dataclass_field:
             object_dict[attr_name] = attr_value
 
