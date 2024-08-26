@@ -1974,16 +1974,21 @@ class TestJiraGetRemoteData:
             them.
         """
         from JiraV3 import (get_updated_remote_data, ATTACHMENT_MIRRORED_FROM_XSOAR)
-        attachments_entries = [{'File': 'dummy_file_name', 'FileID': 'id1'},
-                               {'File': f'dummy_file_name{ATTACHMENT_MIRRORED_FROM_XSOAR}', 'FileID': 'id2'}]
+        attachments_entries = [{'File': 'dummy_file_name_old', 'FileID': 'id1', 'created': '2024-01-01T00:00:00.000+0300'},
+                               {'File': 'dummy_file_name', 'FileID': 'id1', 'created': '2024-02-01T00:00:00.000+0300'},
+                               {'File': f'dummy_file_name{ATTACHMENT_MIRRORED_FROM_XSOAR}', 'FileID': 'id2',
+                                'created': '2024-02-01T00:00:00.000+0300'}]
+        create_file_mock_res = [{k: v for k, v in item.items() if k != 'created'} for item in attachments_entries[1:]]
         client = jira_base_client_mock()
-        mocker.patch('JiraV3.get_attachments_entries_for_fetched_incident', return_value=attachments_entries)
+        mocker.patch('JiraV3.create_file_info_from_attachment', side_effect=create_file_mock_res)
+        mocker.patch('demistomock.get', return_value=attachments_entries)
         mocker.patch('JiraV3.get_comments_entries_for_fetched_incident', return_value=[])
         updated_incident: Dict[str, Any] = {}
+        user_timezone = 'Asia/Jerusalem'
         parsed_entries = get_updated_remote_data(client=client, issue={}, updated_incident=updated_incident, issue_id='1234',
                                                  mirror_resolved_issue=False, attachment_tag_from_jira='attachment from jira',
-                                                 comment_tag_from_jira='', user_timezone_name='',
-                                                 incident_modified_date=None,
+                                                 comment_tag_from_jira='', user_timezone_name=user_timezone,
+                                                 incident_modified_date=arg_to_datetime('2024-01-01T00:00:00.000+0300'),
                                                  fetch_comments=False, fetch_attachments=True)
         expected_extracted_attachments = [{"path": "id1", "name": "dummy_file_name"},
                                           {"path": "id2", "name": "dummy_file_name_mirrored_from_xsoar"}]

@@ -1,5 +1,5 @@
 Use the premium API capabilities of VirusTotal to analyze retro hunts, read live hunt notifications, and download files from VirusTotal.
-The differences between VirusTotal's Public API and Premium API can be found [in the VirusTotal v3 API documentation](https://developers.virustotal.com/v3.0/reference#public-vs-premium-api).
+The differences between VirusTotal's Public API and Premium API can be found [in the VirusTotal v3 API documentation](https://docs.virustotal.com/reference/public-vs-premium-api).
 
 This integration was integrated and tested with VirusTotal - Premium (API v3)
 
@@ -306,7 +306,7 @@ Search for files.
 | --- | --- | --- |
 | query | Search query. | Required | 
 | limit | Maximum number of results. Default is 10. | Optional | 
-| order | The order value can be sorted depends on the query type. See documentation. https://developers.virustotal.com/v3.0/reference#intelligence-search. | Optional | 
+| order | The order value can be sorted depends on the query type. See documentation. https://docs.virustotal.com/reference/intelligence-search. | Optional | 
 | cursor | Continuation cursor. | Optional | 
 | descriptors_only | Whether to return full object information or just object descriptors. Possible values are: true, false. Default is false. | Optional | 
 | extended_data | Whether to return full data information. Possible values are: true, false. Default is false. | Optional | 

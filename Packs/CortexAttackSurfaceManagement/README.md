@@ -47,6 +47,7 @@ Automated remediation is only possible when the right conditions are met.  These
   - Unclaimed S3 Bucket*
 - Asset one of the following:
   - AWS EC2 Instance
+  - AWS Systems manager agent (active) on AWS EC2 Instance*
   - Azure Compute Instance
   - GCP Compute Engine (VM)
   - On-prem asset protected with a Palo Alto Networks Firewall
@@ -55,23 +56,26 @@ Automated remediation is only possible when the right conditions are met.  These
   - Active Directory
   - AWS IAM
   - Azure IAM
-  - Venafi
   - Cortex Endpoint (XSIAM/XDR)
+  - CSC Domain Manager
   - Email addresses found in tags
   - GCP IAM
   - Prisma Cloud
+  - Qualys
   - Rapid7 InsightVM (Nexpose)
   - Splunk
   - ServiceNow CMDB
   - ServiceNow ITSM
   - Tenable.io Assets
-  - Qualys
+  - Venafi
 - Indicators of a non-production host:
   - "dev" or related words found in environment-related tags associated with the asset (case insensitive)
   - Has an active "DevelopmentEnvironment" classification from processing of public data
   - Optional: this check can be disabled with the `BypassDevCheck` parent playbook input
 
 \* The `Unclaimed S3 Bucket` attack surface rule ID only requires `AWS-S3` integration to be enabled.
+
+\* Patching using AWS Systems manager requires agent to be installed on the EC2 instance and currently we only support InsecureOpenSSH and OS versions of Linux Ubuntu.
 
 ## What is included in this pack?
 
@@ -85,6 +89,7 @@ The main active response playbook is the `Cortex ASM - ASM Alert` playbook. This
   - [Cortex ASM - Certificate Enrichment](#cortex-asm---certificate-enrichment)
   - [Cortex ASM - Cortex Endpoint Enrichment](#cortex-asm---cortex-endpoint-enrichment)
   - [Cortex ASM - Cortex Endpoint Remediation](#cortex-asm---cortex-endpoint-remediation)
+  - [Cortex ASM - Domain Enrichment](#cortex-asm---domain-enrichment)
   - [Cortex ASM - Detect Service](#cortex-asm---detect-service)
   - [Cortex ASM - Email Notification](#cortex-asm---email-notification)
   - [Cortex ASM - Enrichment](#cortex-asm---enrichment)
@@ -160,6 +165,12 @@ This playbook is used to pull information from Cortex Endpoint (XSIAM/XDR) syste
 This playbook is used for remediating a single exposed Cortex Endpoint (XSIAM/XDR) by isolating the endpoint from the network using the "Isolate Endpoint" feature in XSIAM ([see XSIAM details](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Isolate-an-Endpoint)) and XDR ([see XDR details](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Isolate-an-Endpoint)). 
 
 ![Cortex ASM - Cortex Endpoint Remediation](https://github.com/demisto/content/raw/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Cortex_Endpoint_Remediation.png)
+
+#### Cortex ASM - Domain Enrichment
+
+This playbook is used for enriching domain information.
+
+![Cortex ASM - Domain Enrichment](https://raw.githubusercontent.com/demisto/content/2788e682627305ebde0e63cab15512e74c39cb70/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Domain_Enrichment.png)
 
 #### Cortex ASM - Detect Service
 

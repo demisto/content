@@ -1,7 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
 
-
 """ IMPORTS  """
 from dateparser import parse as parse_date
 from datetime import datetime
@@ -43,6 +42,39 @@ class ZFClient(BaseClient):
         self.only_escalated = only_escalated
         self.auth_token = ""
 
+    def raw_api_request(
+            self,
+        method: str,
+        url_suffix: str = "/",
+        full_url: str | None = None,
+        params: dict[str, str] | None = None,
+        data: dict[str, Any] | None = None,
+        ok_codes: tuple[int, ...] = None,
+        files: dict[str, Any] | None = None,
+        prefix: str | None = "1.0",
+        empty_response: bool = False,
+        error_handler: Callable[[Any], Any] | None = None,
+        **kwargs
+    ) -> Response:
+        pref_string = f"/{prefix}" if prefix else ""
+
+        headers = self.get_api_request_header()
+        return self._http_request(
+            method=method,
+            url_suffix=urljoin(pref_string, url_suffix),
+            full_url=full_url,
+            headers=headers,
+            params=params,
+            json_data=data,
+            ok_codes=ok_codes,
+            empty_valid_codes=(200, 201),
+            return_empty_response=empty_response,
+            error_handler=error_handler,
+            files=files,
+            resp_type="response",
+            **kwargs
+        )
+
     def api_request(
         self,
         method: str,
@@ -51,11 +83,12 @@ class ZFClient(BaseClient):
         headers_builder_type: str | None = 'api',
         params: dict[str, str] | None = None,
         data: dict[str, Any] | None = None,
-        retries: int = 0,
+        ok_codes: tuple[int, ...] = None,
         files: dict[str, Any] | None = None,
         prefix: str | None = "1.0",
         empty_response: bool = False,
         error_handler: Callable[[Any], Any] | None = None,
+        **kwargs
     ) -> dict[str, Any]:
         """
         :param method: HTTP request type
@@ -102,11 +135,12 @@ class ZFClient(BaseClient):
             headers=headers,
             params=params,
             json_data=data,
-            retries=retries,
+            ok_codes=ok_codes,
             empty_valid_codes=(200, 201),
             return_empty_response=empty_response,
             error_handler=error_handler,
             files=files,
+            **kwargs
         )
 
     def handle_auth_error(self, raw_response: Response):
@@ -488,6 +522,22 @@ class ZFClient(BaseClient):
             url_suffix,
         )
         return response_content
+
+    def get_compromised_credentials(self, alert_id: str) -> str:
+        """
+        :param alert_id: The ID of the alert.
+        :return: HTTP request content.
+        """
+        url_suffix = f"/alerts/{alert_id}/breach_csv/"
+        response_content: Response = self.raw_api_request(
+            "GET",
+            prefix="2.0",
+            ok_codes=(200, 404),
+            url_suffix=url_suffix,
+        )
+        if response_content.status_code == 404:
+            return ""
+        return response_content.text
 
     def get_cti_c2_domains(self, domain: str) -> dict[str, Any]:
         """
@@ -1760,6 +1810,19 @@ def get_alert_attachments_command(
     )
 
 
+def get_compromised_credentials_command(
+    client: ZFClient,
+    args: dict[str, Any]
+) -> CommandResults:
+    alert_id = args["alert_id"]
+    credentials = client.get_compromised_credentials(alert_id)
+    if credentials:
+        return fileResult(f"breach_{alert_id}.csv", credentials)
+    return CommandResults(
+        readable_output=f"No compromised credentials were found for {alert_id=}",
+    )
+
+
 def compromised_domain_command(
     client: ZFClient,
     args: dict[str, Any]
@@ -1933,6 +1996,7 @@ def main():
         "zerofox-submit-threat": submit_threat_command,
         "zerofox-send-alert-attachment": send_alert_attachment_command,
         "zerofox-get-alert-attachments": get_alert_attachments_command,
+        "zerofox-get-compromised-credentials": get_compromised_credentials_command,
 
         # ZeroFox CTI Feed
         "zerofox-search-compromised-domain": compromised_domain_command,

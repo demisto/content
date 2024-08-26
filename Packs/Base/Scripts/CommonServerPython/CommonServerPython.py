@@ -45,7 +45,7 @@ _MODULES_LINE_MAPPING = {
 }
 
 XSIAM_EVENT_CHUNK_SIZE = 2 ** 20  # 1 Mib
-XSIAM_EVENT_CHUNK_SIZE_LIMIT = 9 * (10 ** 6)  # 9 MB
+XSIAM_EVENT_CHUNK_SIZE_LIMIT = 4 * (10 ** 6)  # 4 MB
 ASSETS = "assets"
 EVENTS = "events"
 DATA_TYPES = [EVENTS, ASSETS]
@@ -1595,9 +1595,9 @@ def stringUnEscape(st):
 class IntegrationLogger(object):
     """
       a logger for python integrations:
-      use LOG(<message>) to add a record to the logger (message can be any object with __str__)
-      use LOG.print_log(verbose=True/False) to display all records in War-Room (if verbose) and server log.
-      use add_replace_strs to add sensitive strings that should be replaced before going to the log.
+      use `LOG(<message>)` to add a record to the logger (message can be any object with __str__)
+      use `LOG.print_log(verbose=True/False)` to display all records in War-Room (if verbose) and server log.
+      use `add_replace_strs` to add sensitive strings that should be replaced before going to the log.
 
       :type message: ``str``
       :param message: The message to be logged
@@ -1801,8 +1801,8 @@ class IntegrationLogger(object):
 
 """
 a logger for python integrations:
-use LOG(<message>) to add a record to the logger (message can be any object with __str__)
-use LOG.print_log() to display all records in War-Room and server log.
+use `LOG(<message>)` to add a record to the logger (message can be any object with __str__)
+use `LOG.print_log()` to display all records in War-Room and server log.
 """
 LOG = IntegrationLogger(debug_logging=is_debug_mode())
 
@@ -8266,7 +8266,7 @@ get_demisto_version = GetDemistoVersion()
 
 
 def get_demisto_version_as_str():
-    """Get the Demisto Server version as a string <version>-<build>. If unknown will return: 'Unknown'.
+    """Get the Demisto Server version as a string `<version>-<build>`. If unknown will return: 'Unknown'.
     Meant to be use in places where we want to display the version. If you want to perform logic based upon vesrion
     use: is_demisto_version_ge.
 
@@ -8389,6 +8389,14 @@ def is_xsiam():
     :rtype: ``bool``
     """
     return demisto.demistoVersion().get("platform") == "x2"
+
+
+def is_using_engine():
+    """Determines whether or not the platform is using engine.
+    :return: True iff the platform is using engine.
+    :rtype: ``bool``
+    """
+    return demisto.demistoVersion().get("engine")
 
 
 class DemistoHandler(logging.Handler):
@@ -11631,12 +11639,14 @@ def split_data_to_chunks(data, target_chunk_size):
         data = data.split('\n')
     for data_part in data:
         if chunk_size >= target_chunk_size:
+            demisto.debug("reached max chunk size, sending chunk with size: {size}".format(size=chunk_size))
             yield chunk
             chunk = []
             chunk_size = 0
         chunk.append(data_part)
         chunk_size += sys.getsizeof(data_part)
     if chunk_size != 0:
+        demisto.debug("sending the remaining chunk with size: {size}".format(size=chunk_size))
         yield chunk
 
 
@@ -11801,7 +11811,7 @@ def has_passed_time_threshold(timestamp_str, seconds_threshold):
 
 def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
                        chunk_size=XSIAM_EVENT_CHUNK_SIZE, data_type=EVENTS, should_update_health_module=True,
-                       add_proxy_to_request=False):
+                       add_proxy_to_request=False, snapshot_id='', items_count=None):
     """
     Send the supported fetched data types into the XDR data-collector private api.
 
@@ -11839,6 +11849,12 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
     :type add_proxy_to_request: ``bool``
     :param add_proxy_to_request: whether to add proxy to the send evnets request.
 
+    :type snapshot_id: ``str``
+    :param snapshot_id: the snapshot id.
+
+    :type items_count: ``str``
+    :param items_count: the asset snapshot items count.
+
     :return: None
     :rtype: ``None``
     """
@@ -11848,7 +11864,8 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
     calling_context = demisto.callingContext.get('context', {})
     instance_name = calling_context.get('IntegrationInstance', '')
     collector_name = calling_context.get('IntegrationBrand', '')
-    items_count = len(data) if isinstance(data, list) else 1
+    if not items_count:
+        items_count = len(data) if isinstance(data, list) else 1
     if data_type not in DATA_TYPES:
         demisto.debug("data type must be one of these values: {types}".format(types=DATA_TYPES))
         return
@@ -11889,7 +11906,9 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
         'collector-type': ASSETS if data_type == ASSETS else EVENTS
     }
     if data_type == ASSETS:
-        headers['snapshot-id'] = str(round(time.time() * 1000))
+        if not snapshot_id:
+            snapshot_id = str(round(time.time() * 1000))
+        headers['snapshot-id'] = instance_name + snapshot_id
         headers['total-items-count'] = str(items_count)
 
     header_msg = 'Error sending new {data_type} into XSIAM.\n'.format(data_type=data_type)
@@ -11931,7 +11950,7 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
         xsiam_api_call_with_retries(client=client, events_error_handler=data_error_handler,
                                     error_msg=header_msg, headers=headers,
                                     num_of_attempts=num_of_attempts, xsiam_url=xsiam_url,
-                                    zipped_data=zipped_data, is_json_response=True)
+                                    zipped_data=zipped_data, is_json_response=True, data_type=data_type)
 
     if should_update_health_module:
         demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type=data_type): data_size})
@@ -12009,6 +12028,37 @@ def is_time_sensitive():
         :rtype: ``bool``
     """
     return hasattr(demisto, 'isTimeSensitive') and demisto.isTimeSensitive()
+
+
+def parse_json_string(json_string):
+    """
+    Parse a JSON string into a Python dictionary.
+
+    :type json_string: ``str``
+    :param json_string: The JSON string to be parsed.
+
+    :rtype: ``dict``
+    :return: A Python dictionary representing the parsed JSON data.
+    """
+    try:
+        data = json.loads(json_string)
+        return data
+    except json.JSONDecodeError as error:  # type: ignore[attr-defined]
+        demisto.error("Error decoding JSON: {error}".format(error=error))
+        return {}
+
+
+def get_server_config():
+    """
+    Retrieves XSOAR server configuration.
+
+    :rtype: ``dict``
+    :return: The XSOAR server configuration.
+    """
+    response = demisto.internalHttpRequest(method='GET', uri='/system/config')
+    body = parse_json_string(response.get('body'))
+    server_config = body.get('sysConf', {})
+    return server_config
 
 
 from DemistoClassApiModule import *     # type:ignore [no-redef]  # noqa:E402
