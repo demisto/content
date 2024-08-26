@@ -526,7 +526,6 @@ def attack_pattern_reputation_command(client, args):
     mitre_data = get_mitre_data_by_filter(client, filter_by_type)
 
     mitre_names = argToList(args.get('attack_pattern'))
-    value = ''
     for name in mitre_names:
         demisto.debug(f'MA: Getting info on {name}')
         if ':' not in name:  # not sub-technique
