@@ -2701,12 +2701,18 @@ class TestJiraGetUserInfo:
         client: JiraBaseClient = jira_base_client_mock()
         if accountId:
             client = jira_cloud_client_mock()
+            identifier = f"accountId={accountId}"
         else:
             client = jira_onprem_client_mock()
+            if key:
+                identifier = f"key={key}"
+            else:
+                identifier = f"username={username}"
 
         get_user_info_response = util_load_json(raw_response_path)
         expected_command_results_context = util_load_json(parsed_result_path)
-        mocker.patch.object(client, 'get_user_info', return_value=get_user_info_response)
+        mock_request = mocker.patch.object(client, 'get_user_info', return_value=get_user_info_response)
 
         command_results = get_user_info_command(client=client, args=args)
         assert expected_command_results_context == command_results.to_context()
+        mock_request.assert_called_with(identifier)
