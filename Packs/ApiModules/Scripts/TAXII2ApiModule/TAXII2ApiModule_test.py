@@ -2276,11 +2276,10 @@ def test_create_x509_certificate_object():
 
 
 @pytest.mark.parametrize(
-    "pattern, value"
+    "pattern, value",
     [
         ("[domain-name:value = 'www.example.com']", 'www.example.com'),
-        ("[file:hashes.'SHA-256' = '3d4a43dfdea230383b5fa600036a9688d96a8b41925dc8d91c1d2b2b6e381c73']",
-        '3d4a43dfdea230383b5fa600036a9688d96a8b41925dc8d91c1d2b2b6e381c73'),
+        ("[file:hashes.'SHA-256' = 'xxxxxxxxxxxx']", 'xxxxxxxxxxxx'),
     ],
 )
 def test_get_single_pattern_value(pattern, value):

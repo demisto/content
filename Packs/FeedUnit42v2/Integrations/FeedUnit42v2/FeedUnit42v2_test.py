@@ -431,3 +431,21 @@ def test_fetch_indicators_malware(mocker):
         assert indicators[i]['type'] == 'Malware'
     assert len(indicators) == 23
     assert debug_logs.call_args_list[6][0][0] == 'Feed Unit42 v2: 5 Malware Indicators were created.'
+
+
+def test_parse_indicators_no_name():
+    """
+    Given
+    - An indicator without a name.
+    When
+    - Calling the fetch-indicators command.
+    Then
+    - Use value in the pattern.
+    """
+    indicators = [
+        {'pattern': "[domain-name:value = 'www.example.com']"}
+    ]
+
+    res = parse_indicators(indicators)
+
+    assert res[0]['value'] == 'www.example.com'

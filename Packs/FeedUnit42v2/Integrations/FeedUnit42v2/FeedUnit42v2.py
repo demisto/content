@@ -121,7 +121,7 @@ def parse_indicators(indicator_objects: list, feed_tags: Optional[list] = None,
                         "fields": {
                             "firstseenbysource": indicator_object.get('created'),
                             "indicatoridentification": indicator_object.get('id'),
-                            "tags": list((set(indicator_object.get('labels') or [])).union(set(feed_tags))),
+                            "tags": list(set(indicator_object.get('labels') or []).union(set(feed_tags))),
                             "modified": indicator_object.get('modified'),
                             "reportedby": 'Unit42',
                         }
