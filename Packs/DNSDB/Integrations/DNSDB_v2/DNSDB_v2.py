@@ -6,7 +6,7 @@ import urllib.parse
 
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 
-import datetime  # type: ignore[no-redef]
+import datetime  # type: ignore[assignment]
 import json
 import re
 
