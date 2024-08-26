@@ -19,4 +19,12 @@ Timestamp ingestion for Office 365 logs is currently available for the following
 * Exchange Online &rarr; `msft_o365_exchange_online_raw`
 * SharePoint Online &rarr; `msft_o365_sharepoint_online_raw`
 * DLP &rarr; `msft_o365_dlp_raw`
+
+The ingestion is made using the CreationTime field for UTC (+00:00) in the following formats:
+* yyyy-mm-ddThh:mm:ss
+* yyyy-mm-ddThh:mm:ss.ms
+* yyyy-mm-ddThh:mm:ssZ
+* yyyy-mm-ddThh:mm:ss.msZ
+* yyyy-mm-dd hh:mm:ss UTC
+* yyyy-mm-dd hh:mm:ss.ms UTC
 </~XSIAM>

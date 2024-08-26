@@ -2660,7 +2660,6 @@ def build_policy_outputs(raw_response: list | dict, name: str | None) -> list:
         list: The context outputs.
     """
     outputs: list = []
-    found_output = None
     # Handle VDOM == *
     responses = raw_response if isinstance(raw_response, list) else [raw_response]
 
@@ -2669,15 +2668,13 @@ def build_policy_outputs(raw_response: list | dict, name: str | None) -> list:
         response_vdom = response.get("vdom")
 
         for result in response_results:
+            if name and name != result.get("name"):
+                continue
+
             output = map_keys(result, POLICY_MAPPINGS) | build_security(result) | {"VDOM": response_vdom}
-
-            if name and name == result.get("name"):
-                found_output = [output]
-                break
-
             outputs.append(output)
 
-    return remove_empty_elements(found_output or outputs)
+    return remove_empty_elements(outputs)
 
 
 """ Mappings + Params with helpers """
