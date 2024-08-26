@@ -52,6 +52,7 @@ configuration:
   required: false
 - display: Fetch incident with specific states.
   name: states
+  defaultvalue: new,open,assigned,closed,ignored
   options:
   - new
   - open
