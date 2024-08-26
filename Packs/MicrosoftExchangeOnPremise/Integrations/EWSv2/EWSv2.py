@@ -77,7 +77,7 @@ VERSIONS = {
     '2016': EXCHANGE_2016,
     '2019': EXCHANGE_2019
 }
-
+INTEGRATION_NAME = "EWS v2"
 ATTACHMENT_ID = "attachmentId"
 ATTACHMENT_ORIGINAL_ITEM_ID = 'originalItemId'
 NEW_ITEM_ID = 'newItemId'
@@ -799,13 +799,18 @@ def get_searchable_mailboxes(protocol):  # pragma: no cover
 
 
 def search_mailboxes(protocol, filter, limit=100, mailbox_search_scope=None, email_addresses=None):  # pragma: no cover
+    demisto.debug(f"{INTEGRATION_NAME} DEBUG: We are at search_mailboxes method.")
     mailbox_ids = []
     limit = int(limit)
+    demisto.debug(f"{INTEGRATION_NAME} DEBUG: limit is {limit}")
     if mailbox_search_scope is not None and email_addresses is not None:
         raise Exception("Use one of the arguments - mailbox-search-scope or email-addresses, not both")
     if email_addresses:
+        demisto.debug(f"{INTEGRATION_NAME} DEBUG: email_addresses len is {len(email_addresses)}")
         email_addresses = email_addresses.split(",")
+        demisto.debug(f"{INTEGRATION_NAME} DEBUG: get_searchable_mailboxes")
         all_mailboxes = get_searchable_mailboxes(protocol)[ENTRY_CONTEXT]['EWS.Mailboxes']
+        demisto.debug(f"{INTEGRATION_NAME} DEBUG: get_searchable_mailboxes finished")
         for email_address in email_addresses:
             for mailbox in all_mailboxes:
                 if MAILBOX in mailbox and email_address.lower() == mailbox[MAILBOX].lower():
@@ -813,13 +818,22 @@ def search_mailboxes(protocol, filter, limit=100, mailbox_search_scope=None, ema
         if len(mailbox_ids) == 0:
             raise Exception("No searchable mailboxes were found for the provided email addresses.")
     elif mailbox_search_scope:
+        demisto.debug(f"{INTEGRATION_NAME} DEBUG: there is mailbox_search_scope")
         mailbox_ids = mailbox_search_scope if type(mailbox_search_scope) is list else [mailbox_search_scope]
+        demisto.debug(f"{INTEGRATION_NAME} DEBUG: mailbox_search_scope len is {len(mailbox_search_scope)}")
     else:
+        demisto.debug(f"{INTEGRATION_NAME} DEBUG: we are in the else case")
+        demisto.debug(f"{INTEGRATION_NAME} DEBUG: we get_searchable_mailboxes")
         entry = get_searchable_mailboxes(protocol)
+        demisto.debug(f"{INTEGRATION_NAME} DEBUG: get_searchable_mailboxes finished")
         mailboxes = [x for x in entry[ENTRY_CONTEXT]['EWS.Mailboxes'] if MAILBOX_ID in list(x.keys())]
+        demisto.debug(f"{INTEGRATION_NAME} DEBUG: mailboxes len is {len(mailboxes)}")
         mailbox_ids = [x[MAILBOX_ID] for x in mailboxes]  # type: ignore
+        demisto.debug(f"{INTEGRATION_NAME} DEBUG: mailboxes len is {len(mailbox_ids)}")
     try:
+        demisto.debug(f"{INTEGRATION_NAME} DEBUG: try SearchMailboxes for {len(mailbox_ids)}")
         search_results = SearchMailboxes(protocol=protocol).call(filter, mailbox_ids)
+        demisto.debug(f"{INTEGRATION_NAME} DEBUG: finished SearchMailboxes for {len(mailbox_ids)}")
         search_results = search_results[:limit]
     except TransportError as e:
         if "ItemCount>0<" in str(e):
