@@ -314,6 +314,9 @@ def get_relationships_from_sub_reports(
     obj_refs_excluding_relationships_prefix = []
     for obj in object_refs:
         if obj.startswith("report--"):
+            # if the report id in the object ref we will not create relationships
+            if obj == report_object.get("id"):
+                continue
             sub_report_obj = client.get_report_object(obj)
             if sub_report_obj:
                 relationships_list, sub_report_obj_object_refs = create_relationship_list(
