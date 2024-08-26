@@ -79,8 +79,9 @@ def get_command_string(ids, pollingCommand, pollingCommandArgName, playbookId, d
               pendingIds="{}" interval="{}" timeout="{}" tag="{}" additionalPollingCommandArgNames="{}" \
               additionalPollingCommandArgValues="{}"'''.format(ids.replace('"', r'\"'), pollingCommand,
                                                                pollingCommandArgName, playbookId,
-                                                               dt.replace('"', r'\"'), interval, timeout,
-                                                               tag, args_names, args_values)
+                                                               dt.replace('"', r'\"'), interval, timeout, tag,
+                                                               args_names.replace('"', r'\"'),
+                                                               args_values.replace('"', r'\"'),)
     if extract_mode:
         command_string += f" auto-extract={extract_mode} extractMode={extract_mode}"
 
