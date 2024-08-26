@@ -31,7 +31,7 @@ Click [here](https://developer.webex.com/my-apps) to create and manage the appli
 _Note:  The Admin client needs a fourth parameter: `organization ID`._\
 Run [this](https://developer.webex.com/docs/api/v1/organizations/list-organizations) HTTP request (login with admin credentials) to get the organization ID.
 
-![get_organization_id](../../doc_files/get_organization_id.png)
+![get_organization_id](https://github.com/demisto/content/blob/master/Packs/CiscoSpark/doc_files/get_organization_id.png)
 
 ### Authentication flow (Oauth)
 
