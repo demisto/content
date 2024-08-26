@@ -1,7 +1,6 @@
 commonfields:
   id: Hoxhunt
   version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: Hoxhunt
 display: Hoxhunt
 category: Email
@@ -37,17 +36,16 @@ configuration:
   name: incidentType
   type: 13
   required: false
-- display: ''
+- display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: fetch_time
   type: 0
   required: false
-- display: ''
+- display: Query Filter
   name: queryfilter
   type: 0
   required: false
   additionalinfo: Input a query filter for incidents to be fetched
 script:
-  script: ''
   type: python
   commands:
   - name: hoxhunt-get-current-user
@@ -180,4 +178,6 @@ script:
   isremotesyncin: true
   isremotesyncout: true
   isFetchSamples: true
-sourcemoduleid: CIRCLEHashlookup
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
