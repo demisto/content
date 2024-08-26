@@ -96,13 +96,13 @@ The username and password for the user you intend to use must be added to the **
 
       | **Parameter**   | **Description**                                                   | **Required** |
       | --------------- | ----------------------------------------------------------------- | ------------ |
-      | url             | Search and Compliance URL                                         | True         |
-      | App Secret      | The client secret created in Azure                                | True         |
+      | url             | Search and Compliance URL.                                         | True         |
+      | App Secret      | The client secret created in Azure.                                | True         |
       | App ID          | The application (client) ID from Azure                            | True         |
-      | Tenant ID       | The directory (tenant) ID from Azure                              | True         |
-      | Organization    | The organization name for the Security & Compliance Center        | True         |
-      | UPN/Email       | The email address (UPN) of the user account for the integration   | True         |
-      | Insecure        | Trust any certificate (not secure)                                | False        |
+      | Tenant ID       | The directory (tenant) ID from Azure.                              | True         |
+      | Organization    | The organization name for the Security & Compliance Center.        | True         |
+      | UPN/Email       | The email address (UPN) of the user account for the integration.   | True         |
+      | Insecure        | Trust any certificate (not secure).                                | False        |
 
    2. Open the War Room in the playground.
    3. Run the `!o365-sc-auth-start` command and follow the instructions.
@@ -121,39 +121,39 @@ The username and password for the user you intend to use must be added to the **
 
 ### Common Issues and Solutions
 
-#### 1. Error: `Response status code does not indicate success: 404 Not Found`
+#### `Response status code does not indicate success: 404 Not Found`
 
 **Scenario:** When running the `!o365-sc-auth-start` command, you may encounter the error message: "Response status code does not indicate success: 404 Not Found."
 
 **Solution:**
-- **Verify Required Parameters:** Ensure that all required parameters in the integration instance configuration are correctly filled out. This includes:
-  - **URL**: Ensure the correct URL is provided for the Security & Compliance Center.
-  - **App Secret**: The client secret created in Azure.
-  - **App ID**: The application (client) ID from Azure.
-  - **Tenant ID**: The directory (tenant) ID from Azure.
-  - **Organization**: The organization name for the Security & Compliance Center.
-  - **UPN/Email**: The email address (UPN) of the user account for the integration.
+**Verify Required Parameters:** Ensure that all required parameters in the integration instance configuration are correctly filled out. This includes:
+- **URL**: Ensure the correct URL is provided for the Security & Compliance Center.
+- **App Secret**: The client secret created in Azure.
+- **App ID**: The application (client) ID from Azure.
+- **Tenant ID**: The directory (tenant) ID from Azure.
+- **Organization**: The organization name for the Security & Compliance Center.
+- **UPN/Email**: The email address (UPN) of the user account for the integration.
   
-  Missing or incorrect values in these fields can cause a 404 error, as the integration might be attempting to connect to an incorrect or non-existent endpoint.
+Missing or incorrect values in these fields can cause a 404 error, as the integration might be attempting to connect to an incorrect or non-existent endpoint.
 
 **Additional Steps:**
 - **Check the ConnectionUri**: Verify that the `ConnectionUri` in your configuration matches the environment you are operating in (e.g., Microsoft 365, GCC High, DoD, etc.).
 - **Review Endpoint Configuration**: Ensure that the `AzureADAuthorizationEndpointUri` is correctly set according to your environment.
 
-#### 2. Error: `Response status code does not indicate success: 400 Bad Request`
+#### `Response status code does not indicate success: 400 Bad Request`
 
 **Scenario:** When running the `!o365-sc-auth-start` command, you may encounter the error message: "Response status code does not indicate success: 400 Bad Request."
 
 **Solution:**
-- **Check Parameters for Accuracy:** A 400 Bad Request error often indicates that there is a problem with the request sent to the server. Double-check the following:
-  - **App ID and Tenant ID**: Ensure these are correctly copied from your Azure app registration.
-  - **App Secret**: Verify that the secret has been correctly entered and has not expired.
-  - **UPN/Email**: Ensure that the email address is correctly formatted and belongs to a user with the necessary permissions.
+**Check Parameters for Accuracy:** A 400 Bad Request error often indicates that there is a problem with the request sent to the server. Double-check the following:
+- **App ID and Tenant ID**: Ensure these are correctly copied from your Azure app registration.
+- **App Secret**: Verify that the secret has been correctly entered and has not expired.
+- **UPN/Email**: Ensure that the email address is correctly formatted and belongs to a user with the necessary permissions.
 
 **Additional Steps:**
-- **Test with a Different Account**: If possible, try using a different user account to verify if the issue is related to specific user permissions.
+**Test with a Different Account**: If possible, try using a different user account to verify if the issue is related to specific user permissions.
 
-#### 3. Failed OAuth2.0 Authorization
+#### Failed OAuth2.0 Authorization
 
 **Scenario:** After running the `!o365-sc-auth-start` command, the authorization process fails, and the integration cannot authenticate with the Security & Compliance Center.
 
@@ -168,21 +168,21 @@ The username and password for the user you intend to use must be added to the **
 ### Testing the Integration
 
 1. **Test Basic Connectivity**:
-   - Use the `!o365-sc-auth-test` command to confirm that the integration can successfully authenticate with the Security & Compliance Center.
+   Use the `!o365-sc-auth-test` command to confirm that the integration can successfully authenticate with the Security & Compliance Center.
 
 2. **Run a Simple Search**:
-   - Execute the `!o365-sc-search` command with basic parameters to ensure the integration can perform a search operation. This helps verify that the configuration is correct and the integration can communicate with the Security & Compliance Center.
+   Execute the `!o365-sc-search` command with basic parameters to ensure the integration can perform a search operation. This helps verify that the configuration is correct and the integration can communicate with the Security & Compliance Center.
 
 3. **Check Logs and Outputs**:
-   - After running test commands, review the logs and command outputs in the War Room for any errors or warnings. This can provide additional insights into what might be going wrong.
+   After running test commands, review the logs and command outputs in the War Room for any errors or warnings. This can provide additional insights into what might be going wrong.
 
 4. **Review Azure Logs**:
-   - If issues persist, review the logs in Azure to identify any access issues or authentication errors. This can help diagnose problems related to Azure AD configuration.
+   If issues persist, review the logs in Azure to identify any access issues or authentication errors. This can help diagnose problems related to Azure AD configuration.
 
 ### Additional Resources
 
 - **Microsoft 365 Compliance Documentation**:
-  - [Troubleshoot content search issues](https://docs.microsoft.com/en-us/microsoft-365/compliance/content-search-troubleshoot)
+   [Troubleshoot content search issues](https://docs.microsoft.com/en-us/microsoft-365/compliance/content-search-troubleshoot)
 
 - **Azure AD Troubleshooting**:
   - [Azure AD Sign-in Logs](https://docs.microsoft.com/en-us/azure/active-directory/reports-monitoring/concept-sign-ins)
