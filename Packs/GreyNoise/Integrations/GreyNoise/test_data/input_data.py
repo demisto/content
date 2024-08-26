@@ -584,6 +584,76 @@ timeline_command_response_data = [
 ]
 
 cve_command_response_data = [
-    ({"cve": "CVE-1900-12345"}, "positive", {}, 200, {}),
+    ({"cve": "CVE-1900-12345"}, "positive", {
+        "id": "CVE-1900-12345",
+        "details": {
+            "vulnerability_name": "Test",
+            "vulnerability_description": "Test.",
+            "cve_cvss_score": 8.6,
+            "product": "Test",
+            "vendor": "test",
+            "published_to_nist_nvd": True
+        },
+        "timeline": {
+            "cve_published_date": "2024-05-28T19:15:10Z",
+            "cve_last_updated_date": "2024-05-31T16:04:09Z",
+            "first_known_published_date": "2024-05-27T00:00:00Z",
+            "cisa_kev_date_added": "2024-05-30T00:00:00Z"
+        },
+        "exploitation_details": {
+            "attack_vector": "NETWORK",
+            "exploit_found": True,
+            "exploitation_registered_in_kev": True,
+            "epss_score": 0.94237
+        },
+        "exploitation_stats": {
+            "number_of_available_exploits": 60,
+            "number_of_threat_actors_exploiting_vulnerability": 1,
+            "number_of_botnets_exploiting_vulnerability": 0
+        },
+        "exploitation_activity": {
+            "activity_seen": True,
+            "benign_ip_count_1d": 0,
+            "benign_ip_count_10d": 0,
+            "benign_ip_count_30d": 0,
+            "threat_ip_count_1d": 4,
+            "threat_ip_count_10d": 10,
+            "threat_ip_count_30d": 18
+        }}, 200, {
+         "id": "CVE-1900-12345",
+         "details": {
+             "vulnerability_name": "Test",
+             "vulnerability_description": "Test.",
+             "cve_cvss_score": 8.6,
+             "product": "Test",
+             "vendor": "test",
+             "published_to_nist_nvd": True
+         },
+         "timeline": {
+             "cve_published_date": "2024-05-28T19:15:10Z",
+             "cve_last_updated_date": "2024-05-31T16:04:09Z",
+             "first_known_published_date": "2024-05-27T00:00:00Z",
+             "cisa_kev_date_added": "2024-05-30T00:00:00Z"
+         },
+         "exploitation_details": {
+             "attack_vector": "NETWORK",
+             "exploit_found": True,
+             "exploitation_registered_in_kev": True,
+             "epss_score": 0.94237
+         },
+         "exploitation_stats": {
+             "number_of_available_exploits": 60,
+             "number_of_threat_actors_exploiting_vulnerability": 1,
+             "number_of_botnets_exploiting_vulnerability": 0
+         },
+         "exploitation_activity": {
+             "activity_seen": True,
+             "benign_ip_count_1d": 0,
+             "benign_ip_count_10d": 0,
+             "benign_ip_count_30d": 0,
+             "threat_ip_count_1d": 4,
+             "threat_ip_count_10d": 10,
+             "threat_ip_count_30d": 18
+         }}),
     ({"cve": "abce"}, "negative", {}, 400, "The provided ID does not match the format: CVE-XXXX-YYYYY")
 ]
