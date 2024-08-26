@@ -12,7 +12,7 @@ class Client(BaseClient):
             method='POST',
             json_data={'query': data, 'variables': variables})
 
-    def add_incident_note(self, incident_id: str, note_text: str) -> Dict[str, Any]:
+    def add_incident_note(self, incident_id: Optional[str], note_text: Optional[str]) -> Dict[str, Any]:
         mutation = '''
         mutation CreateIncidentNote($incidentId: ID!, $note: IncidentNoteInput!) {
             addIncidentNote(
@@ -34,7 +34,7 @@ class Client(BaseClient):
         }
         return self.query(mutation, variables)
 
-    def remove_incident_threats(self, incident_id: str) -> Dict[str, Any]:
+    def remove_incident_threats(self, incident_id: Optional[str]) -> Dict[str, Any]:
         mutation = '''
         mutation RemoveIncidentThreats($incidentId: String!) {
           removeIncidentThreats(incidentId: $incidentId)
@@ -43,8 +43,8 @@ class Client(BaseClient):
         variables = {"incidentId": incident_id}
         return self.query(mutation, variables)
 
-    def send_incident_soc_feedback(self, incident_id: str, custom_message: str = None,
-                                   threat_feedback_reported_at_limit: str = None) -> Dict[str, Any]:
+    def send_incident_soc_feedback(self, incident_id: Optional[str], custom_message: Optional[str] = None,
+                                   threat_feedback_reported_at_limit: Optional[str] = None) -> Dict[str, Any]:
         mutation = '''
         mutation SendIncidentSocFeedback($incidentId: String!, $customMessage: String, $threatFeedbackReportedAtLimit: Date) {
             sendIncidentSocFeedback(
@@ -61,7 +61,7 @@ class Client(BaseClient):
         }
         return self.query(mutation, variables)
 
-    def set_incident_sensitive(self, incident_id: str, is_sensitive: bool) -> Dict[str, Any]:
+    def set_incident_sensitive(self, incident_id: Optional[str], is_sensitive: bool) -> Dict[str, Any]:
         mutation = '''
         mutation SetIncidentSensitive($incidentId: String!, $isSensitive: Boolean!) {
             setIncidentSensitive(
@@ -88,7 +88,7 @@ class Client(BaseClient):
             'hasSensitiveInformation': data.get('hasSensitiveInformation'),
         }
 
-    def set_incident_soc_classification(self, incident_id: str, classification: str) -> Dict[str, Any]:
+    def set_incident_soc_classification(self, incident_id: Optional[str], classification: Optional[str]) -> Dict[str, Any]:
         mutation = '''
         mutation SetIncidentSocClassification($incidentId: String!, $classification: SocClassification!) {
             setIncidentSocClassification(
@@ -108,7 +108,7 @@ class Client(BaseClient):
         }
         return self.query(mutation, variables)
 
-    def update_incident_state(self, incident_id: str, state: str) -> Dict[str, Any]:
+    def update_incident_state(self, incident_id: Optional[str], state: Optional[str]) -> Dict[str, Any]:
         mutation = '''
         mutation UpdateIncidentState($incidentId: ID!, $state: IncidentState!) {
             updateIncidentState(
@@ -139,13 +139,12 @@ def test_module(client, query) -> str:
 
 def create_output(results: Dict[str, str], endpoint: str, keyfield: str = '') -> CommandResults:
     human_readable = tableToMarkdown('Hoxhunt results', results)
-    output = CommandResults(
+    return CommandResults(
         outputs_prefix=f'Hoxhunt.{endpoint}',
         outputs_key_field=keyfield,
         outputs=results,
         readable_output=human_readable
     )
-    return output
 
 
 def create_incident_from_log(incident: Dict[str, Any]) -> Dict[str, Any]:
@@ -207,11 +206,11 @@ def fetch_incidents(client: Client, fetch_time: str, queryfilter: str):
         }}
         '''
     results = client.query(query)
-    incidents = results.get('data').get('incidents')
+    incidents = results.get('data', {}).get('incidents')
     if incidents and len(incidents) > 0:
-        end_time = results.get('data').get('incidents')[0].get('createdAt')
+        end_time = results.get('data', {}).get('incidents', [{}])[0].get('createdAt')
         demisto.setLastRun({'start_time': end_time})
-        demisto.incidents(form_incindents(results.get('data').get('incidents')))
+        demisto.incidents(form_incindents(results.get('data', {}).get('incidents')))
     else:
         demisto.incidents([])
 
@@ -249,7 +248,7 @@ def main():
             # Get the current user’s emails, no arguments required
             query = '{currentUser {emails {address}}}'
             results = client.query(query)
-            return_results(create_output(results.get('data').get('currentUser').get('emails'), 'CurrentUser'))
+            return_results(create_output(results.get('data', {}).get('currentUser', {}).get('emails'), 'CurrentUser'))
         elif demisto.command() == 'hoxhunt-get-incidents':
             # Retrieve incidents from the Hoxhunt platform
             # Arguments:
