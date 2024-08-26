@@ -321,7 +321,7 @@ def build_generic_object(template_name: str, args: list[dict]) -> GenericObjectG
 def build_custom_object(template_name: str, args: list[dict]):
     obj = PYMISP.object_templates()
     for entry in obj:
-        if str(entry.get('ObjectTemplate').get('name')).lower() == template_name:
+        if str(entry.get('ObjectTemplate', {}).get('name')).lower() == template_name:
 
             custom_obj = PYMISP.get_raw_object_template(template_name)
 
@@ -540,7 +540,7 @@ def get_new_misp_event_object(args):
         raise DemistoException("Error: When setting distribution to be 'Sharing_group', you have to specify the "
                                "'sharing_group_id' argument.")
     if sharing_group_id:
-        event.sharing_group_id = arg_to_number(sharing_group_id)
+        event.sharing_group_id = arg_to_number(sharing_group_id)  # type: ignore[assignment]
 
     threat_level_id_arg = args.get('threat_level_id')
     if threat_level_id_arg:
@@ -561,7 +561,7 @@ def create_event_command(demisto_args: dict):
 
     if isinstance(new_event, dict) and new_event.get('errors'):
         raise DemistoException(new_event.get('errors'))
-
+    assert isinstance(new_event, MISPEvent), "The new event is not an instance of MISPEvent"
     event_id = new_event.id
     add_attribute(event_id=event_id, internal=True, new_event=new_event, demisto_args=demisto_args)
     event = PYMISP.search(eventid=event_id)
@@ -571,7 +571,7 @@ def create_event_command(demisto_args: dict):
         readable_output=human_readable,
         outputs_prefix='MISP.Event',
         outputs_key_field='ID',
-        outputs=build_events_search_response(event),
+        outputs=build_events_search_response(event),  # type: ignore[arg-type]
         raw_response=event
     )
 
@@ -583,7 +583,7 @@ def add_user_to_misp(demisto_args: dict = {}):
         demisto_args (dict): Demisto args
     """
     new_user = MISPUser()
-    new_user.email = demisto_args.get('email')
+    new_user.email = demisto_args['email']
     new_user.org_id = demisto_args.get('org_id')
     new_user.role_id = demisto_args.get('role_id')
     new_user.password = demisto_args.get('password')
@@ -679,8 +679,10 @@ def add_attribute(event_id: int = None, internal: bool = False, demisto_args: di
         if not response:
             raise DemistoException(
                 f"Error: An event with the given id: {event_id} was not found in MISP. please check it once again")
-        new_event = response[0]  # response[0] is MISP event
+        new_event = response[0]  # type: ignore[assignment]
+        # response[0] is MISP event
 
+    assert isinstance(new_event, MISPEvent), "The new event is not an instance of MISPEvent"
     new_event.add_attribute(**attributes_args)
     PYMISP.update_event(event=new_event)
     if internal:
@@ -693,7 +695,7 @@ def add_attribute(event_id: int = None, internal: bool = False, demisto_args: di
         readable_output=human_readable,
         outputs_prefix='MISP.Attribute',
         outputs_key_field='ID',
-        outputs=build_attributes_search_response(updated_event),
+        outputs=build_attributes_search_response(updated_event),  # type: ignore[arg-type]
         raw_response=updated_event
     )
 
@@ -754,7 +756,7 @@ def get_indicator_results(value, dbot_type, malicious_tag_ids, suspicious_tag_id
                                       include_decay_score=True, includeSightings=True, org=ALLOWED_ORGS)
 
     indicator_type = INDICATOR_TYPE_TO_DBOT_SCORE[dbot_type]
-    is_indicator_found = misp_response and misp_response.get('Attribute')
+    is_indicator_found = misp_response and misp_response.get('Attribute')  # type: ignore[union-attr]
     if is_indicator_found:
         outputs, score, found_tag, found_related_events = parse_response_reputation_command(misp_response,
                                                                                             malicious_tag_ids,
@@ -1092,12 +1094,12 @@ def search_attributes(demisto_args: dict) -> CommandResults:
             return search_attributes(demisto_args)
 
         if outputs_should_include_only_values:
-            response_for_context_list = build_attributes_search_response_return_only_values(response)
+            response_for_context_list = build_attributes_search_response_return_only_values(response)  # type: ignore[arg-type]
             number_of_results = len(response_for_context_list)
             md = tableToMarkdown(f"MISP search-attributes returned {number_of_results} attributes",
                                  response_for_context_list[:number_of_results], ["Value"])
         else:
-            response_for_context_dict = build_attributes_search_response(response, include_correlations)
+            response_for_context_dict = build_attributes_search_response(response, include_correlations)  # type: ignore[arg-type]
             attribute_highlights = attribute_response_to_markdown_table(response_for_context_dict)
 
             pagination_message = f"Current page size: {limit}\n"
@@ -1227,7 +1229,7 @@ def search_events(demisto_args: dict) -> CommandResults:
 
     response = PYMISP.search(**args)
     if response:
-        response_for_context = build_events_search_response(response, demisto_args)
+        response_for_context = build_events_search_response(response, demisto_args)  # type: ignore[arg-type]
         event_outputs_to_human_readable = event_to_human_readable(response_for_context)
 
         pagination_message = f"Current page size: {limit}\n"
@@ -1254,7 +1256,7 @@ def delete_event(demisto_args: dict):
     """
     Gets an event id and deletes it.
     """
-    event_id = demisto_args.get('event_id')
+    event_id = demisto_args['event_id']
     response = PYMISP.delete_event(event_id)
     if 'errors' in response:
         raise DemistoException(f'Event ID: {event_id} has not found in MISP: \nError message: {response}')
@@ -1268,8 +1270,8 @@ def add_tag(demisto_args: dict, is_attribute=False):
     Function will add tag to given UUID of event or attribute.
     is_attribute (bool): if the given UUID belongs to an attribute (True) or event (False).
     """
-    uuid = demisto_args.get('uuid')
-    tag = demisto_args.get('tag')
+    uuid = demisto_args['uuid']
+    tag = demisto_args['tag']
     is_local_tag = argToBoolean(demisto_args.get('is_local', False))
     disable_output = argToBoolean(demisto_args.get('disable_output', False))
     try:
@@ -1285,7 +1287,7 @@ def add_tag(demisto_args: dict, is_attribute=False):
                 readable_output=success_msg,
                 outputs_prefix='MISP.Attribute',
                 outputs_key_field='ID',
-                outputs=build_attributes_search_response(response),
+                outputs=build_attributes_search_response(response),  # type: ignore[arg-type]
                 raw_response=response
             )
         else:
@@ -1301,7 +1303,7 @@ def add_tag(demisto_args: dict, is_attribute=False):
         readable_output=human_readable,
         outputs_prefix='MISP.Event',
         outputs_key_field='ID',
-        outputs=build_events_search_response(response),
+        outputs=build_events_search_response(response),  # type: ignore[arg-type]
         raw_response=response
     )
 
@@ -1311,8 +1313,8 @@ def remove_tag(demisto_args: dict, is_attribute=False):
     Function will remove tag to given UUID of event or attribute.
     is_attribute (bool): if the given UUID is an attribute's one. Otherwise it's event's.
     """
-    uuid = demisto_args.get('uuid')
-    tag = demisto_args.get('tag')
+    uuid = demisto_args['uuid']
+    tag = demisto_args['tag']
     try:
         response = PYMISP.untag(uuid, tag)
         if response and response.get('errors'):
@@ -1321,7 +1323,7 @@ def remove_tag(demisto_args: dict, is_attribute=False):
         raise DemistoException("Removing the required tag was failed. Please make sure the UUID and tag exist.")
 
     if is_attribute:
-        response = PYMISP.search(uuid=uuid, controller='attributes')
+        response = PYMISP.search(uuid=uuid, controller='attributes')  # type: ignore[assignment]
         human_readable = f'Tag {tag} has been successfully removed from the attribute {uuid}'
         return CommandResults(
             readable_output=human_readable,
@@ -1331,7 +1333,7 @@ def remove_tag(demisto_args: dict, is_attribute=False):
             raw_response=response
         )
     # event's uuid
-    response = PYMISP.search(uuid=uuid)
+    response = PYMISP.search(uuid=uuid)  # type: ignore[assignment]
     human_readable = f'Tag {tag} has been successfully removed from the event {uuid}'
     return CommandResults(
         readable_output=human_readable,
@@ -1434,11 +1436,11 @@ def add_object(event_id: str, obj: MISPObject):
     if 'errors' in response:
         raise DemistoException(f'Error in `{demisto.command()}` command: {response}')
     for ref in obj.ObjectReference:
-        response = PYMISP.add_object_reference(ref)
+        response = PYMISP.add_object_reference(ref)  # type: ignore[assignment]
     for attribute in response.get('Object', {}).get('Attribute', []):
         convert_timestamp_to_readable(attribute, None)
     response['Object']['timestamp'] = misp_convert_timestamp_to_date_string(response.get('Object', {}).get('timestamp'))
-    formatted_response = replace_keys_from_misp_to_context_data(response)
+    formatted_response = replace_keys_from_misp_to_context_data(response)  # type: ignore[assignment, arg-type]
     if isinstance(formatted_response, str):
         formatted_response = f'{formatted_response} ID:{event_id}'
     elif isinstance(formatted_response, dict):
@@ -1648,7 +1650,7 @@ def update_attribute_command(demisto_args: dict) -> CommandResults:
     human_readable = f"## MISP update attribute\nAttribute: {attribute_uuid} was updated.\n"
     attribute = attribute_instance_response.get('Attribute')
     convert_timestamp_to_readable(attribute, None)
-    parsed_attribute_data = replace_keys_from_misp_to_context_data(attribute)
+    parsed_attribute_data = replace_keys_from_misp_to_context_data(attribute)  # type: ignore[arg-type]
 
     return CommandResults(
         readable_output=human_readable,
@@ -1662,7 +1664,7 @@ def delete_attribute_command(demisto_args: dict) -> CommandResults:
     """
     Gets an attribute id and deletes it.
     """
-    attribute_id = demisto_args.get('attribute_id')
+    attribute_id = demisto_args['attribute_id']
     response = PYMISP.delete_attribute(attribute_id)
     if 'errors' in response:
         raise DemistoException(f'Attribute ID: {attribute_id} has not found in MISP: \nError message: {response}')
@@ -1675,7 +1677,7 @@ def publish_event_command(demisto_args: dict) -> CommandResults:
     """
     Gets an event id and publishes it.
     """
-    event_id = demisto_args.get('event_id')
+    event_id = demisto_args['event_id']
     alert = argToBoolean(demisto_args.get('alert', False))
     response = PYMISP.publish(event_id, alert=alert)
     if 'errors' in response:
@@ -1690,7 +1692,7 @@ def set_event_attributes_command(demisto_args: dict) -> CommandResults:
     Set the attributes of an event according to given alert_data.
     """
     changed = False
-    event_id = demisto_args.get('event_id')
+    event_id = demisto_args['event_id']
     event = PYMISP.get_event(event_id, pythonify=True)
     if 'errors' in event:
         raise DemistoException(f'Event ID: {event_id} has not found in MISP: \nError message: {event}')
@@ -1698,6 +1700,7 @@ def set_event_attributes_command(demisto_args: dict) -> CommandResults:
         attribute_data = json.loads(demisto_args.get("attribute_data", ''))
     except Exception as e:
         raise DemistoException(f'Invalid attribute_data: \nError message: {str(e)}')
+    assert isinstance(event, MISPEvent), "The event is not an instance of MISPEvent"
     for event_attribute in event.attributes:
         if event_attribute["value"] not in [x["value"] for x in attribute_data]:
             event_attribute.delete()
