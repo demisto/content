@@ -519,12 +519,6 @@
             "timeout": 800
         },
         {
-            "integrations": "Microsoft Advanced Threat Analytics",
-            "playbookID": "Microsoft Advanced Threat Analytics - Test",
-            "fromversion": "5.0.0",
-            "is_mockable": false
-        },
-        {
             "integrations": "Zimperium",
             "playbookID": "Zimperium_Test",
             "fromversion": "5.0.0"
@@ -5795,6 +5789,10 @@
             "playbookID": "DBotTrainClustering-test"
         },
         {
+            "integrations": "Proofpoint Threat Protection",
+            "playbookID": "test-ProofpointThreatProtectionIntegration-Playbook"
+        },
+        {
             "integrations": "XQL Query Engine",
             "playbookID": "XQL Query Engine - Test"
         }
@@ -6000,7 +5998,7 @@
         "Test XDR Playbook": "CIAC-11274",
         "Account Enrichment - Generic v2.1 - Test": "CIAC-11274",
         "Test_XFE_v2": "CRTX-112127",
-        "Microsoft Advanced Threat Analytics - Test": "CIAC-11499"
+        "test-ProofpointThreatProtectionIntegration-Playbook": "No instance"
     },
     "skipped_integrations": {
         "AWS - Lambda": "No instance - wrong creds, issue CRTX-110456",
