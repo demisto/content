@@ -315,6 +315,12 @@
                     }
                 ],
                 "type": "custom"
+            },
+            {
+                "id": "canvas",
+                "name": "Canvas",
+                "type": "canvas",
+                "hidden": false
             }
         ]
     },
