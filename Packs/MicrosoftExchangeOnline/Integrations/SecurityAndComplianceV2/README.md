@@ -1,135 +1,83 @@
-This integration enables you to manage and interact with Microsoft security and compliance content search. You can manage the security of all your organization's emails, SharePoint sites, OneDrives, etc., by searching for text strings or queries based on attributes of a malicious email. However, you can only perform actions (preview and delete) on emails.
-This integration was integrated and tested with [Security & Compliance Center](https://docs.microsoft.com/en-us/powershell/module/exchange/?view=exchange-ps#policy-and-compliance-content-search). 
+# Microsoft Security & Compliance Center - Content Search Integration
 
-## Use Cases
+This integration allows you to manage and interact with Microsoft Security & Compliance Center's content search capabilities. You can perform comprehensive searches across your organization’s emails, SharePoint sites, OneDrive accounts, and more. Actions like previewing and deleting emails are supported, making it easier to manage potential security threats.
 
-* Create / Modify / Get / List / Remove / Trigger  a search in the Security & Compliance Center - Content search service.
-* Create / Get / List / Remove search actions in the Security & Compliance Center - Content search service. Supported actions for emails only are Purge (Delete) and Preview.
+This integration has been developed and tested with the [Security & Compliance Center](https://docs.microsoft.com/en-us/powershell/module/exchange/?view=exchange-ps#policy-and-compliance-content-search).
+
+## Key Features
+
+- **Content Search Management**: Create, modify, retrieve, list, remove, and trigger content searches within the Security & Compliance Center.
+- **Search Actions**: Perform actions such as previewing and purging (deleting) emails identified in content searches.
 
 ## Playbooks
 
-* O365 - Security And Compliance - Search And Delete: Creates and starts a compliance search in the Security and Compliance Center to identify emails with similar attributes of a malicious email. If configured, will preview or delete the emails that were located. This playbook uses the following playbooks as sub-playbooks in its workflow.
-* O365 - Security And Compliance - Search: Creates and starts a compliance search in the Security and Compliance Center to identify emails with attributes similar to a malicious email.
-* O365 - Security And Compliance - Search Action - Delete: Deletes emails located by the **O365 SecurityAndCompliance Search** sub-playbook.
-* O365 - Security And Compliance - Search Action - Preview: Provides a preview of the results of emails located by the **O365 SecurityAndCompliance Search** sub-playbook.
+- **O365 - Security and Compliance - Search and Delete**: Initiates a compliance search and, if configured, deletes or previews identified emails.
+- **O365 - Security and Compliance - Search**: Initiates a compliance search to locate emails with attributes matching those of a malicious email.
+- **O365 - Security and Compliance - Search Action - Delete**: Deletes emails found by the search.
+- **O365 - Security and Compliance - Search Action - Preview**: Provides a preview of emails identified by the search.
 
-
-
-## Permissions in the Security & Compliance Center
+## Permissions Setup in the Security & Compliance Center
 
 ### Overview
-In response to Microsoft's deprecation of the App ID, the following changes to existing app registration in Azure are required:
-1. Add the `Exchange.ManageAsApp` application permissions.
-2. Enable "Allow public client flows" in the authentication section.
-3. Add an app secret to the app registration.
+
+To set up the integration and register the application in Azure, follow these steps:
+
+1. **App Registration**: Register a new application in Azure Active Directory and configure necessary permissions.
+2. **Authentication Configuration**: Enable public client flows and create an app secret.
+3. **Role Setup**: Assign the required roles in the Security & Compliance Center for the integration to function correctly.
 
 ### Step-by-Step Instructions
 
-#### 1. Add Exchange.Manage Delegated Permissions
+#### 1. App Registration and Permission Configuration
 
-1. **Navigate to Azure Portal:**
-   Go to the [Azure Portal](https://portal.azure.com/) and sign in with your administrator account.
-
-2. **Access App Registrations:**
-   In the left-hand navigation pane, select **Azure Active Directory**. Then, under **Manage**, select **App registrations**.
-
-3. **Select Your App:**
-   Find and select the app registration you are working on.
-
-4. **Add Permissions:**
-   - Under **Manage**, select **API permissions**.
-   - Click on **Add a permission**.
+1. **Navigate to Azure Portal**: Go to the [Azure Portal](https://portal.azure.com/) and sign in with your administrator account.
+2. **Access App Registrations**: In the left-hand navigation pane, select **Azure Active Directory** > **App registrations**.
+3. **Register a New App**: Click **New registration**, provide a name, and register the app.
+4. **Add API Permissions**:
+   - Under **Manage**, select **API permissions** > **Add a permission**.
    - Select **APIs my organization uses**.
-   - Type "Office" in the search bar and select **Office 365 Exchange Online**.
-   - Choose **Application permissions**.
-   - Search for `Exchange.ManageAsApp` and check the corresponding box.
-   - Click on **Add permissions**.
-   - Ensure the permissions are granted for your organization by selecting **Grant admin consent for [Your Organization]** and confirming the action.
+   - Search for "Office 365 Exchange Online".
+   - Select **Application permissions** and search for `Exchange.ManageAsApp`.
+   - Check the box and click **Add permissions**.
+   - Ensure the permissions are granted by selecting **Grant admin consent for [Your Organization]**.
 
 #### 2. Enable "Allow Public Client Flows"
 
-1. **Navigate to Authentication Settings:**
-   From your app registration, under **Manage**, select **Authentication**.
-
-2. **Enable Public Client Flows:**
-   - Scroll down to the **Advanced settings** section.
-   - Locate the setting **Allow public client flows** and set it to **Yes**.
-   - Click **Save** at the top to apply the changes.
+1. **Navigate to Authentication Settings**: In your app registration, select **Authentication** under **Manage**.
+2. **Enable Public Client Flows**:
+   - Scroll to **Advanced settings**.
+   - Set **Allow public client flows** to **Yes**.
+   - Click **Save** to apply the changes.
 
 #### 3. Add an App Secret
 
-1. **Navigate to Certificates & Secrets:**
-   From your app registration, under **Manage**, select **Certificates & secrets**.
+1. **Navigate to Certificates & Secrets**: In your app registration, select **Certificates & secrets** under **Manage**.
+2. **Add a Client Secret**:
+   - Click **New client secret**.
+   - Provide a description and select an expiration period.
+   - Click **Add** and immediately copy the secret value for future use.
 
-2. **Add a Client Secret:**
-   - Click on **New client secret**.
-   - Provide a description for the client secret.
-   - Choose an expiration period that meets your organization's security policy.
-   - Click **Add**.
-   - After the secret is created, copy the value immediately as it will not be displayed again. Store this secret securely, as it will be used in your application to authenticate.
+### Authentication Requirements
 
+To access the Security & Compliance Center, the account used must either have global administrator permissions or the Role Management role, assigned within the Organization Management role group. This role allows users to view, create, and modify role groups. 
 
-### Additional Resources
-- [Azure Active Directory App Registrations](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app)
-- [API Permissions in Microsoft Graph](https://docs.microsoft.com/en-us/graph/permissions-reference)
-- [Configure Authentication in Azure AD](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-auth-code-flow)
-- [Add a Client Secret](https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-create-service-principal-portal#option-2-create-a-new-application-secret)
+**Note:** The account used by the integration does not require Global Administrator permissions.
 
+1. **Login to the [Compliance Center](https://compliance.microsoft.com/)**.
+2. **Set Up Roles**:
+   - Navigate to **Role & Scopes** > **Permissions** under **Microsoft Purview solutions** > **Roles**.
+   - Click **Create role group**.
+   - Provide a name and optional description.
+   - Click **Choose roles** and select the necessary roles (e.g., Case Management, Compliance Search, Search And Purge).
+   - Click **Choose users** to assign users to the role group.
+   - Click **Create**.
 
-### Authentication
+The username and password for the user you intend to use must be added to the **UPN/Email** and **Delegated Password** fields in the integration instance configuration.
 
-To access the Security & Compliance Center, the user who is configuring the account which will be used in O365 S&C, 
-needs to be a global administrator or needs to be assigned the Role Management role (a role is assigned only to the 
-Organization Management role group). The Role Management role allows users to view, create, and modify role groups.
-*Clarification:* The account which is used by the integration, does _not_ require Global Administrator permissions.
+**Important:** Ensure that the connection is secure, as disabling certificate verification is not supported.
 
-1. Login into the [Compliance Center](https://compliance.microsoft.com/):
+### Known Endpoints
 
-2. From the side menu navigate to **Role & Scopes** -> **Permissions** under **Microsoft Purview solutions** click on **Roles**.
-
-   ![SecAndComp-roles](../../doc_files/SecAndComp-roles.png)
-
-3. Click **Create role group**.
-    
-    ![SecAndComp-add-role](../../doc_files/SecAndComp-add-role.png)
-
-4. Give a name and description (optional). 
-
-   ![SecAndComp-role-name](../../doc_files/SecAndComp-role-name.png)
-
-5. Click **Choose roles**.
-
-   ![SecAndComp-choose-roles](../../doc_files/SecAndComp-choose-roles.png)
-
-6. Select the following roles:
-   * Case Management
-   * Communication
-   * Compliance Search
-   * Custodian
-   * Data Investigation Management
-   * Export
-   * Hold
-   * Preview
-   * Review
-   * RMS Decrypt
-   * Search And Purge
-
-7. Click **Choose users**.
-
-   ![SecAndComp-choose-users](../../doc_files/SecAndComp-choose-users.png)
-
-8. Select one or more users to add to the role group.
-
-9. Click **Create**.
-
-    ![SecAndComp-create-role](../../doc_files/SecAndComp-create-role.png)
-
-The username and password for the user which you intend to use for the investigation will need to be added to the *UPN/Email* and *Delegated Password* fields of the integration instance configuration.
-
-*Please Note:* Microsoft requires that this connection be made from a secure connection. Disabling certificate verification is not supported at this time.
-
-
-### Known ConnectionUri and AzureADAuthorizedEndpointURI Endpoints
 | Environment                        | ConnectionUri                                                         | AzureADAuthorizationEndpointUri   |
 |------------------------------------|-----------------------------------------------------------------------|-----------------------------------|
 | Microsoft 365 or Microsoft 365 GCC | https://ps.compliance.protection.outlook.com/powershell-liveid/       | https://login.microsoftonline.com |
@@ -137,36 +85,109 @@ The username and password for the user which you intend to use for the investiga
 | Microsoft 365 DoD                  | https://l5.ps.compliance.protection.office365.us/powershell-liveid/   | https://login.microsoftonline.us  |
 | Office 365 operated by 21Vianet    | https://ps.compliance.protection.partner.outlook.cn/powershell-liveid | https://login.chinacloudapi.cn    |
 
-[More information can be found here.](https://learn.microsoft.com/en-us/powershell/exchange/connect-to-scc-powershell?view=exchange-ps#step-2-connect-and-authenticate)
+[More information available here](https://learn.microsoft.com/en-us/powershell/exchange/connect-to-scc-powershell?view=exchange-ps#step-2-connect-and-authenticate).
 
 ## Configure SecurityAndComplianceV2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-
-2. Search for O365 - Security And Compliance - Content Search.
-
+2. Search for **O365 - Security and Compliance - Content Search**.
 3. Authentication / Authorization methods:
-
    1. Click **Add instance** to create and configure a new integration instance.
 
-            | **Parameter** | **Description**                                          | **Required** |
-            | ------------- | -------------------------------------------------------- | ------------ |
-            | url           | Search and Compliance URL                                | True         |
-            | credentials   | Fill **only** Email (aka UPN), Password should be empty. | False        |
-            | insecure      | Trust any certificate \(not secure\)                     | False        |
+      | **Parameter**   | **Description**                                                   | **Required** |
+      | --------------- | ----------------------------------------------------------------- | ------------ |
+      | url             | Search and Compliance URL                                         | True         |
+      | App Secret      | The client secret created in Azure                                | True         |
+      | App ID          | The application (client) ID from Azure                            | True         |
+      | Tenant ID       | The directory (tenant) ID from Azure                              | True         |
+      | Organization    | The organization name for the Security & Compliance Center        | True         |
+      | UPN/Email       | The email address (UPN) of the user account for the integration   | True         |
+      | Insecure        | Trust any certificate (not secure)                                | False        |
 
-   2. Open playground -  War-room:
+   2. Open the War Room in the playground.
+   3. Run the `!o365-sc-auth-start` command and follow the instructions.
 
-   3. Run the ***!o365-sc-auth-start*** command and follow the instructions. Expected output is:
+   **Expected Output:**
 
-    >    ## Security And Compliance - Authorize instructions
-    >
-    >    1. To sign in, use a web browser to open the page [https://microsoft.com/devicelogin](https://microsoft.com/devicelogin) and enter the code **XXXXXXX** to authenticate.~~~~
-    >    2. Run the command ***!o365-sc-auth-complete*** command in the War Room.
+   >    ## Security and Compliance - Authorize Instructions
+   >
+   >    1. To sign in, open [https://microsoft.com/devicelogin](https://microsoft.com/devicelogin) in a web browser and enter the code **XXXXXXX** to authenticate.
+   >    2. Run the `!o365-sc-auth-complete` command in the War Room.
 
-   4. Test - OAuth2.0 authorization, Run the ***!o365-sc-auth-test*** command. 
+   4. Test OAuth2.0 authorization by running the `!o365-sc-auth-test` command.
 
-   
+
+## Troubleshooting and Testing
+
+### Common Issues and Solutions
+
+#### 1. Error: `Response status code does not indicate success: 404 Not Found`
+
+**Scenario:** When running the `!o365-sc-auth-start` command, you may encounter the error message: "Response status code does not indicate success: 404 Not Found."
+
+**Solution:**
+- **Verify Required Parameters:** Ensure that all required parameters in the integration instance configuration are correctly filled out. This includes:
+  - **URL**: Ensure the correct URL is provided for the Security & Compliance Center.
+  - **App Secret**: The client secret created in Azure.
+  - **App ID**: The application (client) ID from Azure.
+  - **Tenant ID**: The directory (tenant) ID from Azure.
+  - **Organization**: The organization name for the Security & Compliance Center.
+  - **UPN/Email**: The email address (UPN) of the user account for the integration.
+  
+  Missing or incorrect values in these fields can cause a 404 error, as the integration might be attempting to connect to an incorrect or non-existent endpoint.
+
+**Additional Steps:**
+- **Check the ConnectionUri**: Verify that the `ConnectionUri` in your configuration matches the environment you are operating in (e.g., Microsoft 365, GCC High, DoD, etc.).
+- **Review Endpoint Configuration**: Ensure that the `AzureADAuthorizationEndpointUri` is correctly set according to your environment.
+
+#### 2. Error: `Response status code does not indicate success: 400 Bad Request`
+
+**Scenario:** When running the `!o365-sc-auth-start` command, you may encounter the error message: "Response status code does not indicate success: 400 Bad Request."
+
+**Solution:**
+- **Check Parameters for Accuracy:** A 400 Bad Request error often indicates that there is a problem with the request sent to the server. Double-check the following:
+  - **App ID and Tenant ID**: Ensure these are correctly copied from your Azure app registration.
+  - **App Secret**: Verify that the secret has been correctly entered and has not expired.
+  - **UPN/Email**: Ensure that the email address is correctly formatted and belongs to a user with the necessary permissions.
+
+**Additional Steps:**
+- **Test with a Different Account**: If possible, try using a different user account to verify if the issue is related to specific user permissions.
+
+#### 3. Failed OAuth2.0 Authorization
+
+**Scenario:** After running the `!o365-sc-auth-start` command, the authorization process fails, and the integration cannot authenticate with the Security & Compliance Center.
+
+**Solution:**
+- **Double-Check App Permissions**: Make sure that the app registration in Azure has the necessary permissions, specifically `Exchange.ManageAsApp`.
+- **Grant Admin Consent**: Ensure that admin consent has been granted for the required permissions. Without this, the application cannot function correctly.
+- **Review Authentication Setup**: Ensure that "Allow public client flows" is enabled in the Azure app registration settings under **Authentication**.
+
+**Additional Steps:**
+- **Use the `!o365-sc-auth-test` Command**: Run this command to verify if the integration can successfully authenticate. If this test fails, revisit the app registration settings and verify all configurations.
+
+### Testing the Integration
+
+1. **Test Basic Connectivity**:
+   - Use the `!o365-sc-auth-test` command to confirm that the integration can successfully authenticate with the Security & Compliance Center.
+
+2. **Run a Simple Search**:
+   - Execute the `!o365-sc-search` command with basic parameters to ensure the integration can perform a search operation. This helps verify that the configuration is correct and the integration can communicate with the Security & Compliance Center.
+
+3. **Check Logs and Outputs**:
+   - After running test commands, review the logs and command outputs in the War Room for any errors or warnings. This can provide additional insights into what might be going wrong.
+
+4. **Review Azure Logs**:
+   - If issues persist, review the logs in Azure to identify any access issues or authentication errors. This can help diagnose problems related to Azure AD configuration.
+
+### Additional Resources
+
+- **Microsoft 365 Compliance Documentation**:
+  - [Troubleshoot content search issues](https://docs.microsoft.com/en-us/microsoft-365/compliance/content-search-troubleshoot)
+
+- **Azure AD Troubleshooting**:
+  - [Azure AD Sign-in Logs](https://docs.microsoft.com/en-us/azure/active-directory/reports-monitoring/concept-sign-ins)
+  - [OAuth2.0 Authorization Troubleshooting](https://docs.microsoft.com/en-us/azure/active-directory/develop/troubleshoot-oauth2-authorization-code-grant-flow)
+
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
