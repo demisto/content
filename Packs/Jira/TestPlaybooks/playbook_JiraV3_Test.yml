@@ -4,7 +4,7 @@ vcShouldKeepItemLegacyProdMachine: false
 name: JiraV3 Test
 fromversion: 6.8.0
 description: This test playbook is used to test both Cloud, and on-prem instances
-  (currently we don't have a functioning on-prem instance) 
+  (currently we don't have a functioning on-prem instance)
 starttaskid: "0"
 tasks:
   "0":
