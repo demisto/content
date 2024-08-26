@@ -1163,6 +1163,7 @@ def get_attack_documentation_command(
         obj_id=args.get(XsoarArgKey.ATTACK),
         request_command=partial(
             client.get_attack_documentation, args.get(XsoarArgKey.MODULE)),  # type: ignore[arg-type]
+        obj_type=OutputPrefix.ATTACK_DOCUMENTATION,
         use_flatten_dict=False,
         add_to_output=AddToOutput(
             data_to_add={
