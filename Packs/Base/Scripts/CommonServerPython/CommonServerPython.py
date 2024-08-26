@@ -4933,7 +4933,8 @@ class Common(object):
                      domain=None, email_address=None, telephone_number=None, office=None, job_title=None,
                      department=None, country=None, state=None, city=None, street=None, is_enabled=None,
                      dbot_score=None, relationships=None, blocked=None, community_notes=None, creation_date=None,
-                     description=None, stix_id=None, tags=None, traffic_light_protocol=None, user_id=None):
+                     description=None, stix_id=None, tags=None, traffic_light_protocol=None, user_id=None,
+                     manager_email=None, manager_display_name=None):
 
             self.id = id
             self.type = type
@@ -4960,8 +4961,10 @@ class Common(object):
             self.traffic_light_protocol = traffic_light_protocol
             self.user_id = user_id
             self.relationships = relationships
+            self.manager_email_address = manager_email
+            self.manager_display_name = manager_display_name
 
-            if not isinstance(dbot_score, Common.DBotScore):
+            if dbot_score and not isinstance(dbot_score, Common.DBotScore):
                 raise ValueError('dbot_score must be of type DBotScore')
 
             self.dbot_score = dbot_score
@@ -4989,6 +4992,17 @@ class Common(object):
                         account_context['Email'] = {
                             'Address': self.email_address
                         }
+                    elif detail in ('manager_email_address'):
+                        account_context['Manager'] = {
+                            'Email': self.manager_email_address
+                        }
+                    elif detail == 'manager_display_name':
+                        if 'Manager' in account_context:
+                            account_context['Manager']['DisplayName'] = self.manager_display_name
+                        else:
+                            account_context['Manager'] = {
+                                'DisplayName': self.manager_display_name
+                            }
                     else:
                         Detail = camelize_string(detail, '_')
                         account_context[Detail] = self.__getattribute__(detail)
