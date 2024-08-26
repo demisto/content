@@ -108,8 +108,8 @@ def parse_indicators(indicator_objects: list, feed_tags: Optional[list] = None,
     indicators = []
     if indicator_objects:
         for indicator_object in indicator_objects:
-            raw_name = indicator_object.get('name', '')
             pattern = indicator_object.get('pattern') or ''
+            raw_name = indicator_object.get('name') or Client.get_single_pattern_value(pattern)
 
             for key in UNIT42_TYPES_TO_DEMISTO_TYPES:
                 if pattern.startswith(f'[{key}'):  # retrieve only Demisto indicator types
