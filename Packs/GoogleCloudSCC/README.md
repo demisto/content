@@ -1,96 +1,126 @@
-# Google Cloud Security Command Center
- 
- <~XSOAR>
- [Google Cloud Security Command Center XSOAR integration](https://xsoar.pan.dev/docs/reference/integrations/google-cloud-scc)
- </~XSOAR>
+<!DOCTYPE html>
+<html>
+<head>
+<title>Google Cloud Security Command Center</title>
+</head>
+<body>
+<p> 
+<~XSOAR>
+ <a href="https://xsoar.pan.dev/docs/reference/integrations/google-cloud-scc">Google Cloud Security Command Center XSOAR integration</a>
+</~XSOAR>
+</p>
 
-  
-## Overview
+<h2>
+Overview
+</h2>
 
-Google Cloud Security Command Center allows you to ingest logs and data from Google Cloud Security Command Center into Cortex XSIAM.
-
-Google Cloud Security Command Center is a platform that offers deep visibility into cloud infrastructure.<br>
+<p>
+Google Cloud Security Command Center is a platform that offers deep visibility into cloud infrastructure.
+<br>
 Google Cloud Security Command Center identifies security threats, and provides proactive measures to mitigate risks. 
+<br>
 It consolidates security-related data, offers real-time monitoring and alerts, enables continuous security assessment, and provides recommendations to improve cloud security posture.
-<br>
-<br>
+</p>
 
 <~XSIAM>
 
-## What does this pack do?
-
+<h2> What does this pack do?</h2>
+<p>
 Google Cloud Security Command Center pack help organizations to monitor, identify and prevent security events on Google Cloud Platform, detect vulnerabilities on Google Cloud environment and provides instructions and recommendations to improve cloud security.
+</p>
+<br>
 
+<h3> Logs normalization supports the following data:</h3>
 
-### This pack supports the following data:
-
-- __Finding__ — A record of a threat, vulnerability, or misconfiguration that a certain service has found in Google Cloud environment. 
+<strong>Finding</strong> — A record of a threat, vulnerability, or misconfiguration that a certain service has found in Google Cloud environment. 
 Findings show the issue that was detected, the resource that is affected by the issue, and guidance on how you can address the issue.
-
-- __Audit__ - Google Cloud services write audit logs that record administrative activities and accesses within Google Cloud resources. 
+<br>
+<br>
 
 <details>
-<summary> For Google Cloud audit logs follow this procedure</summary>
+<summary> For <a href="https://cloud.google.com/logging/docs/audit">Google Cloud audit logs</a> normalization follow this procedure</summary>
+<p>
 
-1. Go to marketplace and search for *Google Cloud Logging*.
-2. Install *Google Cloud Logging*.
-3. Go to *Data Sources* and *Add New Instance*
-4. Connect *Google Cloud Platform* data source
-5. Insert subscription name (Ingest logs and data from a GCP Pub/Sub section 3)
-6. Insert credentials file (Ingest logs and data from a GCP Pub/Sub section 4)
-7. Select *Flow or Audit Logs*
-8. Select the default values for *Vendor* and *Product*
-9. Go to Query builder and use the dataset - google_cloud_logging_raw
+1. Go to marketplace and search for <i><strong>Google Cloud Logging</i></strong>.<br>
+2. Install <i><strong>Google Cloud Logging</i></strong>.<br>
+3. Go to <i><strong>Data Sources</i></strong> and <i><strong>Add New Instance</i></strong><br>
+4. Connect <i><strong>Google Cloud Platform</i></strong> data source<br>
+5. Insert subscription name (Ingest logs and data from a GCP Pub/Sub section 3)<br>
+6. Insert credentials file (Ingest logs and data from a GCP Pub/Sub section 4)<br>
+7. Select <i><strong>Flow or Audit Logs</i></strong><br>
+8. Go to Query builder and use the dataset - google_cloud_logging_raw<br>
 
+</p>
+<h4> Note </h4>
+<p>
+To include audit logs related to Google Cloud Security Command Center only, you will need to add inclusion filter on the log router sink. <br>
+Add the filter <i><strong>protoPayload.serviceName="securitycenter.googleapis.com"</i></strong> <br>
+as describe in <a href="https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Ingest-logs-and-data-from-a-GCP-Pub/Sub?tocId=RyZP~~W~YWbOPGKAClIQHg">section 2.c</a>. <br>
+</p>
 
-[Ingest logs and data from a GCP Pub/Sub](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Ingest-logs-and-data-from-a-GCP-Pub/Sub?tocId=RyZP~~W~YWbOPGKAClIQHg)
-
+<a href="https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Ingest-logs-and-data-from-a-GCP-Pub/Sub?tocId=RyZP~~W~YWbOPGKAClIQHg">Ingest logs and data from a GCP Pub/Sub</a>
 </details>
+<br>
+
+<h2>Sample Use Cases</h2>
+<p>
+1. <strong>Vulnerability findings - Public bucket ACL:</strong> When a cloud storage bucket is detected as publicly accessible (that means that anyone can read/ edit the content of the bucket) the user will notified about this event and will get a recommendation on how to act regarding this issue. <br> 
+usually for this type of event, you will need to remove users from the bucket's members list
+</p>
+<p>
+2. <strong>Vulnerability findings - Open RDP Port:</strong> When a firewall configuration is set to have an open RDP port that allows connections from all IP addresses on TCP | UDP port 3389. <br>
+The recommendation will be to restrict firewall rules.
+</p>
+<br>
+
+
+<h2>Configure Google Cloud Security Command Center</h2>
+ <p>
+To configure ingestion of data from Google Cloud Security Command Center follow the procedure below: <br>
+<a href="https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Ingest-logs-and-data-from-a-GCP-Pub/Sub?tocId=RyZP~~W~YWbOPGKAClIQHg">Ingest logs and data from a GCP Pub/Sub</a>
+</p>
+<br> 
+ 
+
+<h2> Configure Cortex XSIAM </h2>
+<p>
+1. Go to marketplace and install Google Cloud SCC pack <br>
+2. Go to <i><strong>Data Sources</i></strong> and <i><strong>Add New Instance</i></strong> <br>
+3. Connect <i><strong>Google Cloud Platform</i></strong> data source<br>
+4. Insert subscription name (Ingest logs and data from a GCP Pub/Sub section 3)<br>
+5. Insert credentials file (Ingest logs and data from a GCP Pub/Sub section 4)<br>
+6. Select Log Type <i><strong>Generic</i></strong><br>
+7. Select Log Format <i><strong>JSON</i></strong><br>
+8. Insert <i><strong>Vendor = Google</i></strong> and <i><strong>Product = SCC</i></strong><br>
+</p>
+<br> 
+
+<h4> Notes </h4>
+<p>
+* To configure Google Cloud Security Command Center you must have user with the corresponding permissions. <br>
+* Create Continuous Exports - go to <i><strong>Security -> Settings -> CONTINUOUS EXPORTS -> CREATE PUB/ SUB EXPORT</i></strong> <br>
+After naming the <i><strong>continuous Exports</i></strong> and describing it (optional) select or create topic. <br>
+Default <i><strong>Finding</i></strong> query returning all finding in state <i><strong>active</i></strong> and that they are not <i><strong>muted</i></strong> (mute - hides finding from default view).<br>
+<a href="https://cloud.google.com/security-command-center/docs/how-to-build-findings-query-console">For more Finding Query information see this documentation</a> <br>
+* For general <i><strong>Google Cloud</i></strong> audit logs ingestion, you might need additional\ different configuration on Google Cloud Platform Pub/ Sub.
+
+</p>
+<br>
 
  <br>
  
-## Use Cases
 
-1. __Vulnerability findings - Public bucket ACL:__ When a cloud storage bucket is detected as publicly accessible (that means that anyone can read/ edit the content of the bucket) the user will notified about this event and will get a recommendation on how to act regarding this issue. <br> 
-usually for this type of event, you will need to remove users from the bucket's members list
+</body>
+</html>
+
+
+  
+
 
 <br>
-
-2. __Vulnerability findings - Open RDP Port:__ When a firewall configuration is set to have an open RDP port that allows connections from all IP addresses on TCP | UDP port 3389. <br>
-The recommendation will be to restrict firewall rules.
 <br>
 
-## Configure Google Cloud Security Command Center
- 
-To configure ingestion of data from Google Cloud Security Command Center follow the procedure below: <br>
-[Ingest Logs and Data from a GCP Pub/Sub](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Ingest-Logs-and-Data-from-a-GCP-Pub/Sub?tocId=q2ZnSo90ZmO~6aLgts8g5g) 
-<br> 
- 
 
-## Configure Cortex XSIAM
 
-1. Go to marketplace and install Google Cloud SCC pack
-2. Go to *Data Sources* and *Add New Instance*
-4. Connect *Google Cloud Platform* data source
-5. Insert subscription name (Ingest logs and data from a GCP Pub/Sub section 3)
-6. Insert credentials file (Ingest logs and data from a GCP Pub/Sub section 4)
-7. Select Log Type *Generic*
-8. Select Log Format *JSON*
-8. Insert *Vendor = Google* and *Product = SCC*
-
-<br> 
-
-#### Notes
-- To configure Google Cloud Security Command Center you must have user with the corresponding permissions. <br>
-- To add inclusion filter for *Google Cloud Security Command Center Pub/ Sub Service* go to *Logging -> Log Router -> Create Sink* <br>
-Add the filter ***protoPayload.serviceName="securitycenter.googleapis.com"*** <br>
-This filter will include only logs related to Security Command Center.
-(Ingest logs and data from a GCP Pub/Sub section 2). <br>
-- Create Continuous Exports - go to *Security -> Settings -> CONTINUOUS EXPORTS -> CREATE PUB/ SUB EXPORT* <br>
-After naming the *continuous Exports* and describing it (optional) select or create topic. <br>
-Default *Finding* query returning all finding in state *active* and that they are not *muted* (mute - hides finding from default view).<br>
-[For more Finding Query information see this documentation](https://cloud.google.com/security-command-center/docs/how-to-build-findings-query-console) <br>
-- For general *Google Cloud* audit logs ingestion, you might need additional\ different configuration on Google Cloud Platform Pub/ Sub.
-<br>
  
 </~XSIAM>
