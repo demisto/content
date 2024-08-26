@@ -162,10 +162,9 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def run_fetch_mechanism(client: Client, next_link: str | None, events: list[dict[str, Any]],
-                        start_date: int, end_date: int) -> dict[str, Any]:
+def run_fetch_mechanism(client: Client, next_link: str | None, start_date: int, end_date: int) -> dict[str, Any]:
 
-    if not events:  # start batch
+    if not next_link:
         demisto.info(f'searching events with start date: {start_date}, end date: {end_date} and page size: {PAGE_SIZE}')
         response = client.search_events(limit=PAGE_SIZE, start_date=str(start_date), end_date=str(end_date))
         demisto.debug(f'Found {response["size"]} events between {start_date} and {end_date}')
@@ -1433,12 +1432,11 @@ def fetch_events(client: Client, last_run: dict[str, Any], fetch_limit: int) -> 
     end_date = int((time.time() - 5) * 1000)
     last_end_date = last_run.get('end_date', 0)
     start_date = last_end_date + 1 if last_end_date else end_date - 60000
-    next_link = last_run.get('next_link', True)
-    events = []
+    next_link = last_run.get('next_link', None)
     total_length = 0
 
-    while next_link and total_length < fetch_limit:
-        response = run_fetch_mechanism(client, next_link, events, start_date, end_date)
+    while True:
+        response = run_fetch_mechanism(client, next_link, start_date, end_date)
         events = response['results']
         next_link = response['_links'].get('next', None)
         total_length += len(events)
@@ -1452,6 +1450,8 @@ def fetch_events(client: Client, last_run: dict[str, Any], fetch_limit: int) -> 
             correct_last_index = len(events) - diff
             next_link = urllib.parse.urlunparse(parsed_next_link._replace(query=urllib.parse.urlencode(query_params, doseq=True)))
             events = events[:correct_last_index]
+            yield events, next_link, end_date
+            break
 
         elif not next_link and total_length >= fetch_limit:
             # if we exceeded the limit mid-page and don't have a next page
@@ -1459,10 +1459,12 @@ def fetch_events(client: Client, last_run: dict[str, Any], fetch_limit: int) -> 
             correct_last_index = len(events) - diff
             next_link = URL_SUFFIX['NEXT_LINK_TEMPLATE'].format(end_date, PAGE_SIZE, fetch_limit, start_date)
             events = events[:correct_last_index]
+            yield events, next_link, end_date
+            break
 
-        elif not next_link and total_length < fetch_limit:
-            # if we didn't exceed the limit and don't have a next page
-            response = run_fetch_mechanism(client, next_link, events, start_date, end_date)
+        elif not next_link and total_length < fetch_limit and events:
+            # clean up the last batch
+            response = run_fetch_mechanism(client, next_link, start_date, end_date)
             events.extend(response['results'])
             next_link = response['_links'].get('next', None)
             total_length += len(events)
