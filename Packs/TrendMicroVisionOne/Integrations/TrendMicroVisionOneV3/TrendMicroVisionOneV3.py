@@ -7,7 +7,7 @@ from CommonServerUserPython import *  # noqa: F401
 
 import json
 import urllib3
-from datetime import datetime, timedelta, UTC
+from datetime import datetime, timedelta, UTC  # type: ignore[attr-defined]
 from typing import Any, TypeVar
 import pytmv1
 from pytmv1 import (
@@ -935,7 +935,7 @@ def get_endpoint_activity_data(
             message.append(activity.model_dump())
     else:
         # Make rest call
-        resp = v1_client.endpoint.list_activity(
+        resp = v1_client.endpoint.list_activity(  # type: ignore[assignment]
             start_time=start,
             end_time=end,
             top=top,
@@ -943,7 +943,7 @@ def get_endpoint_activity_data(
             op=query_op,
             **fields,
         )
-        resp_obj: pytmv1.ListEndpointActivityResp = unwrap(resp.response)
+        resp_obj: pytmv1.ListEndpointActivityResp = unwrap(resp.response)  # type: ignore[assignment]
         # Parse endpoint activity data to message list and send to war room
         for activity in resp_obj.items:
             message.append(activity.model_dump())
@@ -1068,7 +1068,7 @@ def get_email_activity_data(
             message.append(activity.model_dump())
     else:
         # Make rest call
-        resp = v1_client.email.list_activity(
+        resp = v1_client.email.list_activity(  # type: ignore[assignment]
             start_time=start,
             end_time=end,
             top=top,
@@ -1076,7 +1076,7 @@ def get_email_activity_data(
             op=query_op,
             **fields,
         )
-        resp_obj: pytmv1.ListEmailActivityResp = unwrap(resp.response)
+        resp_obj: pytmv1.ListEmailActivityResp = unwrap(resp.response)  # type: ignore[assignment]
         for activity in resp_obj.items:
             message.append(activity.model_dump())
 
