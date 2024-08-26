@@ -305,7 +305,7 @@ def test_cve_command(mocker, args, test_scenario, api_response, status_code, exp
     reliability = "B - Usually reliable"
     if test_scenario == "positive":
         response = GreyNoise.cve_command(client, args, reliability)
-        assert response.outputs == expected_output
+        assert response[0].outputs == expected_output
     else:
         mocker.patch("requests.Session.get", return_value=dummy_response)
         with pytest.raises(Exception) as err:

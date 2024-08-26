@@ -1185,12 +1185,14 @@ def cve_command(client: Client, args: dict, reliability: str) -> List[CommandRes
                 name = "Exploitation Stats"
                 hr = {
                     "# of Available Exploits": response["exploitation_stats"].get("number_of_available_exploits", ""),
-                    "# of Botnets Exploiting": response["exploitation_stats"].get("number_of_botnets_exploiting_vulnerability", ""),
+                    "# of Botnets Exploiting": response["exploitation_stats"].get("number_of_botnets_exploiting_vulnerability",
+                                                                                  ""),
                     "# of Threat Actors Exploiting": response["exploitation_stats"].get(
                         "number_of_threat_actors_exploiting_vulnerability", ""),
                 }
                 human_readable += tableToMarkdown(
-                    name=name, t=hr, headers=["# of Available Exploits", "# of Botnets Exploiting", "# of Threat Actors Exploiting"],
+                    name=name, t=hr,
+                    headers=["# of Available Exploits", "# of Botnets Exploiting", "# of Threat Actors Exploiting"],
                     removeNull=False
                 )
             if "exploitation_activity" in response:
