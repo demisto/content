@@ -5976,9 +5976,6 @@
         "MattermostAskUser_testplaybook": "Cannot run script in build machines, must be an open tenant",
         "CloudConvert-test": "CRTX-122593",
         "CiscoMerakiv2": "CIAC-11322",
-        "Test Playbook - Cortex XDR - Retrieve File by sha256" : "CIAC-11274",
-        "Test XDR Playbook quarantine file command": "CIAC-11274",
-        "Test XDR Playbook retrieve file command": "CIAC-11274",
         "Cortex XDR - IOC - Test without fetch" : "CIAC-11274",
         "Test_XFE_v2": "CRTX-112127"
     },
