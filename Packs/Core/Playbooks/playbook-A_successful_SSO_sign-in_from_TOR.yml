@@ -343,7 +343,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -496,7 +496,7 @@ tasks:
       version: -1
       name: Search for related alerts by name and MITRE Technique
       description: "This task searches for suspicious alerts related to incident by mitre techniques that may indicate a compromised user.\nFocus on identifying alerts associated with the following MITRE techniques:\n- T1566 - Phishing \n- T1621 - Multi-Factor Authentication Request Generation\n- T1110 - Brute Force\n- T1556 - Modify Authentication Process\n\nAnd the following alert:\n- \"SSO with an offensive user agent\"\n\n\n\n\n\n"
-      scriptName: SearchAlertsV2
+      scriptName: SearchIncidentsV2
       type: regular
       iscommand: false
       brand: ""
@@ -642,3 +642,5 @@ outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 6.10.0
+marketplaces:
+- marketplacev2
