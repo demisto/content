@@ -31,6 +31,7 @@ URL_SUFFIX = {
     "PRIVATE_SPACE": "/wiki/rest/api/space/_private",
     "EVENTS": "/wiki/rest/api/audit/",
     "BASE": "/wiki",
+    "NEXT_LINK_TEMPLATE": "/rest/api/audit/?end_date={}&next=true&limit={}&start={}&startDate={}"
 }
 
 MESSAGES = {
@@ -1432,13 +1433,40 @@ def fetch_events(client: Client, last_run: dict[str, Any], fetch_limit: int) -> 
     end_date = int((time.time() - 5) * 1000)
     last_end_date = last_run.get('end_date', 0)
     start_date = last_end_date + 1 if last_end_date else end_date - 60000
-    next_link = True
+    next_link = last_run.get('next_link', True)
     events = []
+    total_length = 0
 
-    while next_link and len(events) < fetch_limit:  # if so, save the next link in context for next run
+    while next_link and total_length < fetch_limit:
         response = run_fetch_mechanism(client, next_link, events, start_date, end_date)
         events = response['results']
         next_link = response['_links'].get('next', None)
+        total_length += len(events)
+
+        if next_link and total_length >= fetch_limit:
+            # if we exceeded the limit mid-page and have a next page
+            parsed_next_link = urllib.parse.urlparse(next_link)
+            query_params = urllib.parse.parse_qs(parsed_next_link.query)
+            query_params['start'] = [str(fetch_limit)]
+            diff = total_length - fetch_limit
+            correct_last_index = len(events) - diff
+            next_link = urllib.parse.urlunparse(parsed_next_link._replace(query=urllib.parse.urlencode(query_params, doseq=True)))
+            events = events[:correct_last_index]
+
+        elif not next_link and total_length >= fetch_limit:
+            # if we exceeded the limit mid-page and don't have a next page
+            diff = total_length - fetch_limit
+            correct_last_index = len(events) - diff
+            next_link = URL_SUFFIX['NEXT_LINK_TEMPLATE'].format(end_date, PAGE_SIZE, fetch_limit, start_date)
+            events = events[:correct_last_index]
+
+        elif not next_link and total_length < fetch_limit:
+            # if we didn't exceed the limit and don't have a next page
+            response = run_fetch_mechanism(client, next_link, events, start_date, end_date)
+            events.extend(response['results'])
+            next_link = response['_links'].get('next', None)
+            total_length += len(events)
+
         yield events, next_link, end_date
     yield [], next_link, end_date
 
@@ -1453,9 +1481,14 @@ def get_events(client: Client, args: dict) -> tuple[list[Dict], CommandResults]:
     while next_link and len(events) < fetch_limit:
         response = run_fetch_mechanism(client, next_link, events, start_date, end_date)
         next_link = response['_links'].get('next', None)
-        events.append(response['results'])
+        events.extend(response['results'])
 
-    return events, CommandResults(readable_output=tableToMarkdown('Events', events, removeNull=True))
+    if events:
+        demisto.debug('Type of a single event: {}'.format(type(events[0])))
+        demisto.debug('Finished paging, events: {}'.format(events))
+    if len(events) > fetch_limit:
+        events = events[:fetch_limit]
+    return events, CommandResults(readable_output=tableToMarkdown('Events', t=events, removeNull=True))
 
 
 ''' MAIN FUNCTION '''
