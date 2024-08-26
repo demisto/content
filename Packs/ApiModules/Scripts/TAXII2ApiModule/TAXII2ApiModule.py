@@ -1013,13 +1013,13 @@ class STIX2XSOARParser(BaseClient):
                 score = value.get('score', None)
                 break
         return custom_fields, score
-    
+
     @staticmethod
     def get_single_pattern_value(pattern: str) -> str:
         """
         Parses a pattern with a single single key & value pair.
         For Example:
-        
+
         >>> STIX2XSOARParser.get_single_pattern_value("[domain-name:value = 'www.example.com']")
         'www.example.com'
 
@@ -1028,7 +1028,7 @@ class STIX2XSOARParser(BaseClient):
 
         Returns:
             str. the value in the pattern.
-        
+
 
         """
         return pattern.partition('=')[2].strip(" ']")
