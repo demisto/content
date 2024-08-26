@@ -123,7 +123,7 @@ script: |
           # Check if the value exists in any dictionary
           incident_list = json.loads(incident_list[0].get("Contents"))
           exists = any(data.get("incident_id") == incident_id for data in incident_list)
-          differenceInHours = timeDifferenceInHours(incident_object.get("incident_created"))
+          differenceInHours = timeDifferenceInHours(incident_object.get("incidentCreated"))
           if exists and differenceInHours:
               # Remove the incident_data with the incident_id
               incident_list = [incident for incident in incident_list if incident["incident_id"] != incident_id]
