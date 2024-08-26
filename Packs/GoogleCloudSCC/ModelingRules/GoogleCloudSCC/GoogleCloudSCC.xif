@@ -67,5 +67,5 @@ alter finding_category = finding -> category,
         xdm.target.resource.name = resource_display_name ,
         xdm.target.resource.type = resource_type ,
         xdm.target.file.path = resource_resource_path_string,
-        xdm.target.user.groups = tmp_remove_chars,//tmp_remove_has ,
+        xdm.target.user.groups = tmp_remove_chars,
         xdm.alert.risks = finding_sp_risks;

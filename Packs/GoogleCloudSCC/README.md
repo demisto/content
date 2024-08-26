@@ -1,10 +1,10 @@
 # Google Cloud Security Command Center
  
-<~XSIAM>
- 
-This pack includes Cortex XSIAM content.
- 
+ <~XSOAR>
+ [Google Cloud Security Command Center XSOAR integration](https://xsoar.pan.dev/docs/reference/integrations/google-cloud-scc)
+ </~XSOAR>
 
+  
 ## Overview
 
 Google Cloud Security Command Center allows you to ingest logs and data from Google Cloud Security Command Center into Cortex XSIAM.
@@ -15,12 +15,14 @@ It consolidates security-related data, offers real-time monitoring and alerts, e
 <br>
 <br>
 
+<~XSIAM>
+
 ## What does this pack do?
 
 Google Cloud Security Command Center pack help organizations to monitor, identify and prevent security events on Google Cloud Platform, detect vulnerabilities on Google Cloud environment and provides instructions and recommendations to improve cloud security.
 
 
-### This integration supports the following data:
+### This pack supports the following data:
 
 - __Finding__ — A record of a threat, vulnerability, or misconfiguration that a certain service has found in Google Cloud environment. 
 Findings show the issue that was detected, the resource that is affected by the issue, and guidance on how you can address the issue.
