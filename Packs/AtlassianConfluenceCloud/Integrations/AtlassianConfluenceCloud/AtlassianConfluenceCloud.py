@@ -1432,7 +1432,8 @@ def fetch_events(client: Client, last_run: dict[str, Any], fetch_limit: int) -> 
     end_date = int((time.time() - 5) * 1000)
     last_end_date = last_run.get('end_date', 0)
     start_date = last_end_date + 1 if last_end_date else end_date - 60000
-    next_link = last_run.get('next_link', None)
+    next_link = last_run.get('next_link', '')
+    is_cleanup = bool(next_link)
     total_length = 0
 
     while True:
@@ -1462,7 +1463,7 @@ def fetch_events(client: Client, last_run: dict[str, Any], fetch_limit: int) -> 
             yield events, next_link, end_date
             break
 
-        elif not next_link and total_length < fetch_limit and events:
+        elif not next_link and total_length < fetch_limit and is_cleanup:
             # clean up the last batch
             response = run_fetch_mechanism(client, next_link, start_date, end_date)
             events.extend(response['results'])
