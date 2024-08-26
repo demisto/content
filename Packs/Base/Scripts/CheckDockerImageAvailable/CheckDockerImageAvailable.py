@@ -32,7 +32,7 @@ def parse_www_auth(www_auth):
     return match.group(1), match.group(2)
 
 
-def docker_auth(image_name, verify_ssl=True, registry=DEFAULT_REGISTRY):
+def docker_auth(image_name, verify_ssl=True, registry=DEFAULT_REGISTRY):  # pragma: no cover
     """
     Authenticate to the docker service. Return an authentication token if authentication is required.
     """
@@ -83,7 +83,7 @@ def docker_min_layer(layers):
     return min(layers, key=layer_size)
 
 
-def main():
+def main():  # pragma: no cover
     args = demisto.args()
 
     if args.get('use_system_proxy') == 'no':
