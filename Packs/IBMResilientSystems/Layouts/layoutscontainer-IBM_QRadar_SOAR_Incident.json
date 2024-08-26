@@ -19,7 +19,7 @@
 				"sections": [
 					{
 						"displayType": "ROW",
-						"h": 2,
+						"h": 3,
 						"i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
 						"isVisible": true,
 						"items": [
@@ -37,7 +37,7 @@
 								"fieldId": "ibmqradarname",
 								"height": 26,
 								"id": "186cc5b0-6095-11ef-a00d-d3f5a8c866c7",
-								"index": 0,
+								"index": 1,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -46,7 +46,7 @@
 								"fieldId": "description",
 								"height": 26,
 								"id": "b30144f0-4a62-11ef-a450-29f69179b85b",
-								"index": 1,
+								"index": 2,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -56,7 +56,7 @@
 								"fieldId": "breachconfirmation",
 								"height": 26,
 								"id": "bdbfd190-4a62-11ef-a450-29f69179b85b",
-								"index": 2,
+								"index": 3,
 								"listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
 								"sectionItemType": "field",
 								"startCol": 0
@@ -66,7 +66,7 @@
 								"fieldId": "phase",
 								"height": 26,
 								"id": "5809a6e0-4a63-11ef-a450-29f69179b85b",
-								"index": 3,
+								"index": 4,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -75,7 +75,16 @@
 								"fieldId": "severity",
 								"height": 26,
 								"id": "4e32bb20-4a63-11ef-a450-29f69179b85b",
-								"index": 4,
+								"index": 5,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "owner",
+								"height": 26,
+								"id": "dd227990-62ed-11ef-9c1f-a7d53581a093",
+								"index": 6,
 								"sectionItemType": "field",
 								"startCol": 0
 							}
@@ -103,33 +112,6 @@
 					{
 						"displayType": "ROW",
 						"h": 2,
-						"i": "caseinfoid-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
-						"isVisible": true,
-						"maxW": 3,
-						"moved": false,
-						"name": "Linked Incidents",
-						"static": false,
-						"type": "linkedIncidents",
-						"w": 2,
-						"x": 0,
-						"y": 8
-					},
-					{
-						"displayType": "ROW",
-						"h": 2,
-						"i": "caseinfoid-842632c0-98b1-11e9-97d7-ed26ef9e46c8",
-						"maxW": 3,
-						"moved": false,
-						"name": "Child Incidents",
-						"static": false,
-						"type": "childInv",
-						"w": 1,
-						"x": 2,
-						"y": 8
-					},
-					{
-						"displayType": "ROW",
-						"h": 2,
 						"i": "caseinfoid-4a31afa0-98ba-11e9-a519-93a53c759fe0",
 						"maxW": 3,
 						"moved": false,
@@ -137,8 +119,8 @@
 						"static": false,
 						"type": "evidence",
 						"w": 1,
-						"x": 1,
-						"y": 4
+						"x": 2,
+						"y": 6
 					},
 					{
 						"displayType": "ROW",
@@ -153,7 +135,7 @@
 						"type": "indicators",
 						"w": 3,
 						"x": 0,
-						"y": 6
+						"y": 8
 					},
 					{
 						"displayType": "CARD",
@@ -256,7 +238,7 @@
 						"static": false,
 						"w": 1,
 						"x": 0,
-						"y": 4
+						"y": 6
 					},
 					{
 						"displayType": "CARD",
@@ -351,11 +333,11 @@
 					},
 					{
 						"displayType": "ROW",
-						"h": 2,
+						"h": 3,
 						"hideName": false,
 						"i": "caseinfoid-d20220e0-4a62-11ef-a450-29f69179b85b",
 						"items": [
-                            {
+							{
 								"endCol": 2,
 								"fieldId": "ibmqradarreportername",
 								"height": 26,
@@ -455,9 +437,9 @@
 						"static": false,
 						"w": 1,
 						"x": 0,
-						"y": 2
+						"y": 3
 					},
-                    {
+					{
 						"h": 2,
 						"i": "caseinfoid-c374f3c0-5fd1-11ef-b6aa-d188fb64f8da",
 						"items": [],
@@ -470,7 +452,7 @@
 						"type": "todoTasks",
 						"w": 1,
 						"x": 1,
-						"y": 4
+						"y": 6
 					},
 					{
 						"displayType": "CARD",

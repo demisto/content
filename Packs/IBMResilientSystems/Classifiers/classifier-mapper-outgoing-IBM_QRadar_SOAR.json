@@ -52,6 +52,12 @@
 				"resolution_summary": {
 					"simple": "ibmqradarresolutionsummary"
 				},
+                "creator.display_name": {
+                    "simple": "displayname"
+                },
+                "reporter": {
+					"simple": "ibmqradarreportername"
+				},
 				"severity_code": {
 					"complex": {
 						"filters": [],

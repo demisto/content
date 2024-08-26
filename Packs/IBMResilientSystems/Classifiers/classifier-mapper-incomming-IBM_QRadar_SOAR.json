@@ -6,6 +6,9 @@
         "IBM QRadar SOAR Incident": {
             "dontMapEventToLabels": true,
             "internalMapping": {
+                "Alert Type ID": {
+                    "simple": "incident_type_ids"
+                },
                 "Breach Confirmation": {
                     "simple": "confirmed"
                 },

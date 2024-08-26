@@ -57,6 +57,7 @@ USE_SSL = not DEMISTO_PARAMS.get('insecure', False)
 TIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 MAX_FETCH = DEMISTO_PARAMS.get('max_fetch', '1000')
+
 INCIDENT_TYPE_DICT = {
     'CommunicationError': 17,
     'DenialOfService': 21,
@@ -102,9 +103,9 @@ NIST_ID_DICT = {
 }
 
 SEVERITY_CODE_DICT = {
-    4: 'Low',
-    5: 'Medium',
-    6: 'High'
+    'Low': 4,
+    'Medium': 5,
+    'High': 6
 }
 
 RESOLUTION_DICT = {
@@ -128,6 +129,13 @@ MIRROR_STATUS_DICT = {
     'Resolved': 'Resolved',
 }
 
+XSOAR_CLOSE_REASON_MAPPING = {
+    'Other': 'Unresolved',
+    'Duplicate': 'Duplicate',
+    'False Positive': 'Not an Issue',
+    'Resolved': 'Resolved'
+}
+
 EXP_TYPE_ID_DICT = {
     1: 'Unknown',
     2: 'ExternalParty',
@@ -135,14 +143,38 @@ EXP_TYPE_ID_DICT = {
 }
 
 IBM_QRADAR_INCIDENT_FIELDS = {
-    'description': 'Description of the incident.',
-    'incident_type_ids': 'The IDs of the incident types. ',
-    'resolution_id': '',
-    'resolution_summary': '',
-    'owner_id': 'The principal ID of the incident owner.',
-    'creator_principal': 'The principal that created this incident.',
-    'reporter': 'Who reported the incident.',
-    'severity_code': 'The incident\'s severity.'
+    'description': {
+        'xsoar_name': 'description',
+        'description': 'Description of the incident.'
+    },
+    'incident_type_ids': {
+        'xsoar_name': 'alerttypeid',
+        'description': 'The IDs of the incident types.'
+    },
+    'resolution_id': {
+        'xsoar_name': 'ibmqradarresolution',
+        'description': ''
+    },
+    'resolution_summary': {
+        'xsoar_name': 'ibmqradarresolutionsummary',
+        'description': ''
+    },
+    'owner_id': {
+        'xsoar_name': '',
+        'description': 'The principal ID of the incident owner.'
+    },
+    'reporter': {
+        'xsoar_name': 'ibmqradarreportername',
+        'description': 'Who reported the incident.'
+    },
+    'severity_code': {
+        'xsoar_name': 'severity',
+        'description': 'The severity of the incident. 4 = Low, 5 = Medium, 6 = High.'
+    },
+    'creator.display_name': {
+        'xsoar_name': 'displayname',
+        'description': 'The display name of the incident creator.'
+    }
 }
 ''' CONSTANTS '''
 SCRIPT_ENTITIES = 'entities'
@@ -495,96 +527,16 @@ def process_raw_incident(client: SimpleClient, incident: dict) -> dict:
     return incident
 
 
-''' COMMAND FUNCTIONS '''
-
-
-def search_incidents_command(client, args):
-    incidents = search_incidents(client, args)
-    if incidents:
-        pretty_incidents = prettify_incidents(client, incidents)
-        result_incidents = createContext(pretty_incidents, id=None, keyTransform=underscoreToCamelCase, removeNull=True)
-        ec = {
-            'Resilient.Incidents(val.Id && val.Id === obj.Id)': result_incidents
-        }
-        title = 'QRadar SOAR Incidents'
-        entry = {
-            'Type': entryTypes['note'],
-            'Contents': incidents,
-            'ContentsFormat': formats['json'],
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown(title, result_incidents,
-                                             headers=['Id', 'Name', 'CreatedDate', 'DiscoveredDate', 'Owner', 'Phase'],
-                                             removeNull=True),
-            'EntryContext': ec
-        }
-        return entry
-    else:
-        return 'No results found.'
-
-
-def search_incidents(client: SimpleClient, args: dict) -> list | dict:
+def prepare_incident_update_dto(client: SimpleClient, incident_id: str, args: dict) -> dict:
     """
-    Search and get IBM QRadar incidents according to filters and pagination parameters.
-    :return: List of IBM QRadar incidents matching the search query.
+    TODO - Complete
     """
-    search_query_data = prepare_search_query_data(args)
-
-    return_level = args.get('return_level', DEFAULT_RETURN_LEVEL)
-    endpoint = f'{SEARCH_INCIDENTS_ENDPOINT}?return_level={return_level}'
-
-    response = client.post(endpoint, search_query_data)
-    demisto.debug(f'search_incidents {response}')
-    return response['data']
-
-
-def extract_data_form_other_fields_argument(other_fields, incident, changes):
-    """Extracts the values from other-field argument and build a json object in ibm format to update an incident.
-
-    Args:
-        other_fields (str): Contains the field that should be changed and the new value ({"name": {"text": "The new name"}}).
-        incident (dict): Contains the old value of the field that should be changed ({"name": "The old name"}).
-        changes (list): Contains the fields that should be changed with the old and new values in IBM format
-            ([{'field': {'name': 'confirmed'}, 'old_value': {'boolean': 'false'}, 'new_value': {'boolean': 'true'},
-            {'field': {'name': 'name'}, 'old_value': {'text': 'The old name'}, 'new_value': {'text': 'The new name'}}]).
-
-    """
-
-    try:
-        other_fields_json = json.loads(other_fields)
-    except Exception as e:
-        raise Exception('The other_fields argument is not a valid json. ' + str(e))
-
-    for field_path, field_value in other_fields_json.items():
-        field_split = field_path.split(".")
-        old_value = dict_safe_get(dict_object=incident, keys=field_split, default_return_value="Not found")
-        if old_value == "Not found":
-            raise Exception('The other_fields argument is invalid. Check the name of the field whether it is the right path')
-        changes.append(
-            {
-                'field': {'name': field_split[-1]},
-                # The format should be {type: value}.
-                # Because the type is not returned from the API we take the type from the new value.
-                'old_value': {list(field_value.keys())[0]: old_value},
-                'new_value': field_value
-            }
-        )
-
-
-def update_incident_command(client, args):
-    if len(list(args.keys())) == 1:
-        raise Exception('No fields to update were given')
-    incident_id = args['incident-id']
     incident = get_incident(client, incident_id, True)
     changes = []
     if 'severity' in args:
         old_value = incident['severity_code']
         severity = args['severity']
-        if severity == 'Low':
-            new_value = 4
-        elif severity == 'Medium':
-            new_value = 5
-        elif severity == 'High':
-            new_value = 6
+        new_value = SEVERITY_CODE_DICT.get(severity)
         changes.append({
             'field': 'severity_code',
             'old_value': {
@@ -699,10 +651,214 @@ def update_incident_command(client, args):
         })
     if args.get('other-fields'):
         extract_data_form_other_fields_argument(args.get('other-fields'), incident, changes)
-    data = {
+
+    dto = {
         'changes': changes
     }
-    response = update_incident(client, incident_id, data)
+    return dto
+
+
+def prepare_incident_update_dto_for_mirror(client: SimpleClient, incident_id: str, delta: dict) -> dict:
+    """
+    Prepare an incident update DTO for mirroring data.
+    Args:
+        client (SimpleClient): The client object to interact with the API.
+        incident_id (str): The ID of the incident to be updated.
+        delta (dict): A dictionary containing the fields and their new values to be updated.
+    """
+    incident = get_incident(client, incident_id, content_format=True)
+    changes = []
+    for field, value in delta.items():
+        if field in ['closeNotes', 'closeReason']:
+            continue
+        old_value = incident.get(field)
+        # TODO - Complete this
+        # if isinstance(old_value, int):
+        #     changes.append({
+        #         'field': field,
+        #         'old_value': {
+        #             'id': old_value
+        #         },
+        #         'new_value': {
+        #             'id': value
+        #         }
+        #     })
+        # elif isinstance(old_value, list):
+        #     changes.append({
+        #         'field': field,
+        #         'old_value': {
+        #             'ids': old_value
+        #         },
+        #         'new_value': {
+        #             'ids': value
+        #         }
+        #     })
+        # elif isinstance(old_value, bool):
+        #     changes.append({
+        #         'field': field,
+        #         'old_value': {
+        #             'boolean': old_value
+        #         },
+        #         'new_value': {
+        #             'boolean': value
+        #         }
+        #     })
+        # elif isinstance(old_value, str):
+        #     changes.append({
+        #         'field': field,
+        #         'old_value': {
+        #             'text': old_value
+        #         },
+        #         'new_value': {
+        #             'text': value
+        #         }
+        #     })
+    # TODO - Fix this
+    # Incident closure handling.
+    if close_notes := delta.get('closeNotes'):
+        changes.append({
+            'field': 'resolution_summary',
+            'old_value': {
+                'textarea': incident['resolution_summary']
+            },
+            'new_value': {
+                'textarea': {
+                    'format': 'html',
+                    'content': close_notes
+                }
+            }
+        })
+    if close_reason := delta.get('closeReason'):
+        new_resolution_id = RESOLUTION_TO_ID_DICT[XSOAR_CLOSE_REASON_MAPPING[close_reason]]
+        changes.append({
+            'field': 'resolution_id',
+            'old_value': {
+                'id': incident['new_resolution_id']
+            },
+            'new_value': {
+                'id': int(new_resolution_id)
+            }
+        })
+        # Updating the `plan_status` field closes the incident on the remote system if it's not already closed.
+        if incident_status := incident['plan_status'] != 'C':
+            changes.append({
+                'field': 'plan_status',
+                'old_value': {
+                    'id': incident_status
+                },
+                'new_value': {
+                    'id': 'C'
+                }
+            })
+
+    dto = {
+        'changes': changes
+    }
+    demisto.debug(f'prepare_incident_update_dto_for_mirror {dto=}')
+    return dto
+def date_to_timestamp(date_str_or_dt, date_format='%Y-%m-%dT%H:%M:%SZ'):
+    """
+      Parses date_str_or_dt in the given format (default: %Y-%m-%dT%H:%M:%S) to milliseconds
+      Examples: ('2018-11-06T08:56:41', '2018-11-06T08:56:41', etc.)
+
+      :type date_str_or_dt: ``str`` or ``datetime.datetime``
+      :param date_str_or_dt: The date to be parsed. (required)
+
+      :type date_format: ``str``
+      :param date_format: The date format of the date string (will be ignored if date_str_or_dt is of type
+        datetime.datetime). (optional)
+
+      :return: The parsed timestamp.
+      :rtype: ``int``
+    """
+    if isinstance(date_str_or_dt, STRING_OBJ_TYPES):
+        return int(time.mktime(time.strptime(date_str_or_dt, date_format)) * 1000)
+
+    # otherwise datetime.datetime
+    return int(time.mktime(date_str_or_dt.timetuple()) * 1000)
+
+
+''' COMMAND FUNCTIONS '''
+
+
+def search_incidents_command(client, args):
+    incidents = search_incidents(client, args)
+    if incidents:
+        pretty_incidents = prettify_incidents(client, incidents)
+        result_incidents = createContext(pretty_incidents, id=None, keyTransform=underscoreToCamelCase, removeNull=True)
+        ec = {
+            'Resilient.Incidents(val.Id && val.Id === obj.Id)': result_incidents
+        }
+        title = 'QRadar SOAR Incidents'
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': incidents,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(title, result_incidents,
+                                             headers=['Id', 'Name', 'CreatedDate', 'DiscoveredDate', 'Owner', 'Phase'],
+                                             removeNull=True),
+            'EntryContext': ec
+        }
+        return entry
+    else:
+        return 'No results found.'
+
+
+def search_incidents(client: SimpleClient, args: dict) -> list | dict:
+    """
+    Search and get IBM QRadar incidents according to filters and pagination parameters.
+    :return: List of IBM QRadar incidents matching the search query.
+    """
+    search_query_data = prepare_search_query_data(args)
+
+    return_level = args.get('return_level', DEFAULT_RETURN_LEVEL)
+    endpoint = f'{SEARCH_INCIDENTS_ENDPOINT}?return_level={return_level}'
+
+    response = client.post(endpoint, search_query_data)
+    demisto.debug(f'search_incidents {response}')
+    return response['data']
+
+
+def extract_data_form_other_fields_argument(other_fields, incident, changes):
+    """Extracts the values from other-field argument and build a json object in ibm format to update an incident.
+
+    Args:
+        other_fields (str): Contains the field that should be changed and the new value ({"name": {"text": "The new name"}}).
+        incident (dict): Contains the old value of the field that should be changed ({"name": "The old name"}).
+        changes (list): Contains the fields that should be changed with the old and new values in IBM format
+            ([{'field': {'name': 'confirmed'}, 'old_value': {'boolean': 'false'}, 'new_value': {'boolean': 'true'},
+            {'field': {'name': 'name'}, 'old_value': {'text': 'The old name'}, 'new_value': {'text': 'The new name'}}]).
+
+    """
+
+    try:
+        other_fields_json = json.loads(other_fields)
+    except Exception as e:
+        raise Exception('The other_fields argument is not a valid json. ' + str(e))
+
+    for field_path, field_value in other_fields_json.items():
+        field_split = field_path.split(".")
+        old_value = dict_safe_get(dict_object=incident, keys=field_split, default_return_value="Not found")
+        if old_value == "Not found":
+            raise Exception('The other_fields argument is invalid. Check the name of the field whether it is the right path')
+        changes.append(
+            {
+                'field': {'name': field_split[-1]},
+                # The format should be {type: value}.
+                # Because the type is not returned from the API we take the type from the new value.
+                'old_value': {list(field_value.keys())[0]: old_value},
+                'new_value': field_value
+            }
+        )
+
+
+def update_incident_command(client, args):
+    if len(list(args.keys())) == 1:
+        raise Exception('No fields to update were given')
+    incident_id = args['incident-id']
+    update_dto = prepare_incident_update_dto(client, incident_id, args)
+    response = update_incident(client, incident_id, update_dto)
     if response.status_code == 200:
         return 'Incident ' + str(args['incident-id']) + ' was updated successfully.'
 
@@ -757,7 +913,6 @@ def get_incident(client, incident_id, content_format=False):
     if content_format:
         url += '?text_content_output_format=objects_convert_html'
     response = client.get(url)
-
     return response
 
 
@@ -1227,28 +1382,6 @@ def add_artifact_command(client, incident_id, artifact_type, artifact_value, art
     return entry
 
 
-def date_to_timestamp(date_str_or_dt, date_format='%Y-%m-%dT%H:%M:%SZ'):
-    """
-      Parses date_str_or_dt in the given format (default: %Y-%m-%dT%H:%M:%S) to milliseconds
-      Examples: ('2018-11-06T08:56:41', '2018-11-06T08:56:41', etc.)
-
-      :type date_str_or_dt: ``str`` or ``datetime.datetime``
-      :param date_str_or_dt: The date to be parsed. (required)
-
-      :type date_format: ``str``
-      :param date_format: The date format of the date string (will be ignored if date_str_or_dt is of type
-        datetime.datetime). (optional)
-
-      :return: The parsed timestamp.
-      :rtype: ``int``
-    """
-    if isinstance(date_str_or_dt, STRING_OBJ_TYPES):
-        return int(time.mktime(time.strptime(date_str_or_dt, date_format)) * 1000)
-
-    # otherwise datetime.datetime
-    return int(time.mktime(date_str_or_dt.timetuple()) * 1000)
-
-
 def fetch_incidents(client, first_fetch_time: str):
     last_fetched_timestamp = demisto.getLastRun() and demisto.getLastRun().get('time')
     demisto.debug(f'fetch_incidents {last_fetched_timestamp=}')
@@ -1574,6 +1707,7 @@ def handle_incoming_incident_resolution(incident_id: str, resolution_id: int, re
     }
     return closing_entry
 
+
 def handle_incident_reopening(incident_id: str) -> dict:
     """
     TODO - Complete
@@ -1588,6 +1722,7 @@ def handle_incident_reopening(incident_id: str) -> dict:
         'ContentsFormat': EntryFormat.JSON
     }
     return reopening_entry
+
 
 def get_remote_data_command(client: SimpleClient, args: dict) -> GetRemoteDataResponse:
     """
@@ -1640,48 +1775,23 @@ def get_remote_data_command(client: SimpleClient, args: dict) -> GetRemoteDataRe
 def update_remote_system_command(client: SimpleClient, args: dict) -> str:
     remote_args = UpdateRemoteSystemArgs(args)
     incident_id = remote_args.remote_incident_id
-    demisto.debug(f"update_remote_system_command {incident_id=} {remote_args=}")
-    if remote_args.delta:
-        demisto.debug(f'update_remote_system_command {str(list(remote_args.delta.keys()))=} {remote_args.remote_incident_id=}')
-
-    # try:
-    #     if remote_args.incident_changed:
-    #         demisto.debug(f"update_remote_system_command {incident_id=} {remote_args.incident_changed=}")
-    #         # TODO - Handle closing issue update_args = get_update_args(remote_args)
-    #         # update_incident_command()
-    #
-    #         # update_args['incident_id'] = remote_args.remote_incident_id
-    #         # demisto.debug(f'Sending incident with remote ID [{remote_args.remote_incident_id}]\n')
-    #         # demisto.debug(f"Before checking status {update_args=}")
-    #         # current_remote_status = remote_args.data.get('status') if remote_args.data else None
-    #         # is_closed = (update_args.get('close_reason') or update_args.get('closeReason') or update_args.get('closeNotes')
-    #         #              or update_args.get('resolve_comment') or update_args.get('closingUserId'))
-    #         # closed_without_status = not update_args.get('close_reason') and not update_args.get('closeReason')
-    #         # remote_is_already_closed = current_remote_status in XDR_RESOLVED_STATUS_TO_XSOAR
-    #         # demisto.debug(f"{remote_is_already_closed=}")
-    #         # if is_closed and closed_without_status and not remote_is_already_closed:
-    #         #     update_args['status'] = XSOAR_RESOLVED_STATUS_TO_XDR.get('Other')
-    #         # demisto.debug(f"After checking status {update_args=}")
-    #         # update_incident_command(client, update_args)
-    #     #     close_alerts_in_xdr = argToBoolean(client._params.get("close_alerts_in_xdr", False))
-    #     #     # Check all relevant fields for an incident being closed in XSOAR UI
-    #     #     demisto.debug(f"Defining whether to close related alerts by: {is_closed=} {close_alerts_in_xdr=}")
-    #     #     if is_closed and closed_without_status and remote_is_already_closed:
-    #     #         update_args['status'] = current_remote_status
-    #     #     if close_alerts_in_xdr and is_closed:
-    #     #         update_related_alerts(client, update_args)
-    #     #
-    #     # else:
-    #     #     demisto.debug(f'Skipping updating remote incident fields [{remote_args.remote_incident_id}] '
-    #     #                   f'as it is not new nor changed')
-    # except Exception as e:
-    #     demisto.error(f'update_remote_system_command {str(e)} | {remote_args.remote_incident_id=}')
-    return remote_args.remote_incident_id
+    demisto.debug(f"update_remote_system_command {incident_id=} | {remote_args.incident_changed=}"
+                  f" {remote_args.entries=} | {remote_args.delta=} | {remote_args.data=} | {remote_args.inc_status}")
+    if remote_args.incident_changed and remote_args.delta:
+        update_dto = prepare_incident_update_dto_for_mirror(client, incident_id, remote_args.delta)
+        update_incident(client, incident_id, update_dto)
+    else:
+        demisto.debug(f'Skipping updating remote incident fields [{remote_args.remote_incident_id}] as it is not new nor changed')
+    return incident_id
 
 
 def get_mapping_fields_command() -> GetMappingFieldsResponse:
     ibm_qradar_incident_type_scheme = SchemeTypeMapping(type_name=IBM_QRADAR_SOAR_INCIDENT_SCHEMA_NAME,
                                                         fields=IBM_QRADAR_INCIDENT_FIELDS)
+
+    for field in IBM_QRADAR_INCIDENT_FIELDS:
+        ibm_qradar_incident_type_scheme.add_field(name=IBM_QRADAR_INCIDENT_FIELDS[field].get('xsoar_name'),
+                                                  description=IBM_QRADAR_INCIDENT_FIELDS[field].get('description'))
     return GetMappingFieldsResponse([ibm_qradar_incident_type_scheme])
 
 
