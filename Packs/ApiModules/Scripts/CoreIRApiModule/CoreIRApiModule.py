@@ -3561,6 +3561,9 @@ def filter_general_fields(alert: dict, filter_fields: bool = True) -> dict:
         result = {k: v for k, v in alert.items() if k in ALERT_GENERAL_FIELDS}
     else:
         result = alert
+        
+    if events_from_decider := alert.get("stateful_raw_data", {}).get("events_from_decider", {}):
+        alert["stateful_raw_data"]["events_from_decider_list"] = list(events_from_decider.values())
 
     if not (event := alert.get('raw_abioc', {}).get('event', {})):
         return_warning('No XDR cloud analytics event.')
