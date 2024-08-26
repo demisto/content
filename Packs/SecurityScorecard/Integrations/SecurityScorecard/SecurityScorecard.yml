@@ -407,21 +407,30 @@ script:
     outputs:
     - contextPath: SecurityScorecard.Events.Event.ssc_event_id
       type: string
+      description: event id.
     - contextPath: SecurityScorecard.Events.Event.date
       type: date
+      description: event date.
     - contextPath: SecurityScorecard.Events.Event.status
+      description: event status.
     - contextPath: SecurityScorecard.Events.Event.issue_count
       type: number
+      description: event issue count.
     - contextPath: SecurityScorecard.Events.Event.score_impact
       type: number
+      description: event score impact.
     - contextPath: SecurityScorecard.Events.Event.issue_type
       type: string
+      description: event issue type.
     - contextPath: SecurityScorecard.Events.Event.severity
       type: string
+      description: event severity.
     - contextPath: SecurityScorecard.Events.Event.factor
       type: string
+      description: event factor.
     - contextPath: SecurityScorecard.Events.Event.ssc_detail_url
       type: string
+      description: event detail url.
   - name: securityscorecard-company-findings-get
     description: Retrieve an issue_type's historical findings in a scorecard.
     arguments:
@@ -446,16 +455,23 @@ script:
     outputs:
     - contextPath: SecurityScorecard.Metadata.Issues.key
       type: string
+      description: Key representing issue type, e.g. api_key_exposed.      
     - contextPath: SecurityScorecard.Metadata.Issues.severity
       type: string
+      description: issue severity.
     - contextPath: SecurityScorecard.Metadata.Issues.factor
       type: string
+      description: issue factor.
     - contextPath: SecurityScorecard.Metadata.Issues.title
       type: string
+      description: issue title.
     - contextPath: SecurityScorecard.Metadata.Issues.short_description
       type: string
+      description: issue short description.
     - contextPath: SecurityScorecard.Metadata.Issues.long_description
       type: string
+      description: issue long description.
     - contextPath: SecurityScorecard.Metadata.Issues.recommendation
       type: string
+      description: issue recommendation.
   runonce: false
