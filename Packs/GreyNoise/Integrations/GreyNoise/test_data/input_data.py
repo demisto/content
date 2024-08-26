@@ -424,11 +424,15 @@ valid_riot_response = {
         "last_updated": "2021-04-12T09:55:37Z",
         "reference": "https://developers.google.com/speed/public-dns/docs/isp#alternative",
     },
-    "readable": "### IP: 8.8.8.8 found with RIOT Reputation: Unknown\nBelongs to Common Business Service: Google Public DNS\n### GreyNoise RIOT IP Lookup\n|IP|Category|Name|Trust Level|Description|Last Updated|\n|---|---|---|---|---|---|\n| [8.8.8.8](https://viz.greynoise.io/ip/8.8.8.8) | public_dns | Google Public DNS |  | Google's global domain name system (DNS) resolution service. | 2021-04-12T09:55:37Z |\n"
+    "readable": "### IP: 8.8.8.8 found with RIOT Reputation: Unknown\nBelongs to Common Business Service: "
+                "Google Public DNS\n### GreyNoise RIOT IP Lookup\n|IP|Category|Name|Trust Level|Description|Last Updated|\n"
+                "|---|---|---|---|---|---|\n| [8.8.8.8](https://viz.greynoise.io/ip/8.8.8.8) | public_dns | Google Public DNS "
+                "|  | Google's global domain name system (DNS) resolution service. | 2021-04-12T09:55:37Z |\n"
 }
 
 valid_riot_response_2 = {"output": {"ip": "114.119.130.178", "riot": False},
-                         "readable": "### IP: 114.119.130.178 Not Associated with Common Business Service\n### GreyNoise RIOT IP Lookup\n|IP|RIOT|\n|---|---|\n| 114.119.130.178 | false |\n"}
+                         "readable": "### IP: 114.119.130.178 Not Associated with Common Business Service"
+                                     "\n### GreyNoise RIOT IP Lookup\n|IP|RIOT|\n|---|---|\n| 114.119.130.178 | false |\n"}
 invalid_riot_response = {
     "output": {"message": "IP provided is not a routable IPv4 address"},
     "error_message": "Invalid IP address: '{}'",
@@ -523,10 +527,10 @@ valid_timeline_response = {
             "country": "Netherlands",
             "country_code": "NL",
             "destinations": [
-                    {
-                        "country": "Albania",
-                        "country_code": "AL"
-                    }
+                {
+                    "country": "Albania",
+                    "country_code": "AL"
+                }
             ],
             "organization": "Alsycon B.V.",
             "protocols": [
@@ -540,12 +544,12 @@ valid_timeline_response = {
             "region": "North Holland",
             "spoofable": "true",
             "tags": [
-                    {
-                        "category": "tool",
-                        "description": "IP addresses with this tag have been observed using the ZMap Internet scanner.",
-                        "intention": "unknown",
-                        "name": "ZMap Client"
-                    }
+                {
+                    "category": "tool",
+                    "description": "IP addresses with this tag have been observed using the ZMap Internet scanner.",
+                    "intention": "unknown",
+                    "name": "ZMap Client"
+                }
             ],
             "timestamp": "2023-05-29T00:00:00Z",
             "tor": "false",
@@ -584,76 +588,83 @@ timeline_command_response_data = [
 ]
 
 cve_command_response_data = [
-    ({"cve": "CVE-1900-12345"}, "positive", {
-        "id": "CVE-1900-12345",
-        "details": {
-            "vulnerability_name": "Test",
-            "vulnerability_description": "Test.",
-            "cve_cvss_score": 8.6,
-            "product": "Test",
-            "vendor": "test",
-            "published_to_nist_nvd": True
+    (
+        {"cve": "CVE-1900-12345"},
+        "positive",
+        {
+            "id": "CVE-1900-12345",
+            "details": {
+                "vulnerability_name": "Test",
+                "vulnerability_description": "Test.",
+                "cve_cvss_score": 8.6,
+                "product": "Test",
+                "vendor": "test",
+                "published_to_nist_nvd": True
+            },
+            "timeline": {
+                "cve_published_date": "2024-05-28T19:15:10Z",
+                "cve_last_updated_date": "2024-05-31T16:04:09Z",
+                "first_known_published_date": "2024-05-27T00:00:00Z",
+                "cisa_kev_date_added": "2024-05-30T00:00:00Z"
+            },
+            "exploitation_details": {
+                "attack_vector": "NETWORK",
+                "exploit_found": True,
+                "exploitation_registered_in_kev": True,
+                "epss_score": 0.94237
+            },
+            "exploitation_stats": {
+                "number_of_available_exploits": 60,
+                "number_of_threat_actors_exploiting_vulnerability": 1,
+                "number_of_botnets_exploiting_vulnerability": 0
+            },
+            "exploitation_activity": {
+                "activity_seen": True,
+                "benign_ip_count_1d": 0,
+                "benign_ip_count_10d": 0,
+                "benign_ip_count_30d": 0,
+                "threat_ip_count_1d": 4,
+                "threat_ip_count_10d": 10,
+                "threat_ip_count_30d": 18
+            }
         },
-        "timeline": {
-            "cve_published_date": "2024-05-28T19:15:10Z",
-            "cve_last_updated_date": "2024-05-31T16:04:09Z",
-            "first_known_published_date": "2024-05-27T00:00:00Z",
-            "cisa_kev_date_added": "2024-05-30T00:00:00Z"
-        },
-        "exploitation_details": {
-            "attack_vector": "NETWORK",
-            "exploit_found": True,
-            "exploitation_registered_in_kev": True,
-            "epss_score": 0.94237
-        },
-        "exploitation_stats": {
-            "number_of_available_exploits": 60,
-            "number_of_threat_actors_exploiting_vulnerability": 1,
-            "number_of_botnets_exploiting_vulnerability": 0
-        },
-        "exploitation_activity": {
-            "activity_seen": True,
-            "benign_ip_count_1d": 0,
-            "benign_ip_count_10d": 0,
-            "benign_ip_count_30d": 0,
-            "threat_ip_count_1d": 4,
-            "threat_ip_count_10d": 10,
-            "threat_ip_count_30d": 18
-        }}, 200, {
-         "id": "CVE-1900-12345",
-         "details": {
-             "vulnerability_name": "Test",
-             "vulnerability_description": "Test.",
-             "cve_cvss_score": 8.6,
-             "product": "Test",
-             "vendor": "test",
-             "published_to_nist_nvd": True
-         },
-         "timeline": {
-             "cve_published_date": "2024-05-28T19:15:10Z",
-             "cve_last_updated_date": "2024-05-31T16:04:09Z",
-             "first_known_published_date": "2024-05-27T00:00:00Z",
-             "cisa_kev_date_added": "2024-05-30T00:00:00Z"
-         },
-         "exploitation_details": {
-             "attack_vector": "NETWORK",
-             "exploit_found": True,
-             "exploitation_registered_in_kev": True,
-             "epss_score": 0.94237
-         },
-         "exploitation_stats": {
-             "number_of_available_exploits": 60,
-             "number_of_threat_actors_exploiting_vulnerability": 1,
-             "number_of_botnets_exploiting_vulnerability": 0
-         },
-         "exploitation_activity": {
-             "activity_seen": True,
-             "benign_ip_count_1d": 0,
-             "benign_ip_count_10d": 0,
-             "benign_ip_count_30d": 0,
-             "threat_ip_count_1d": 4,
-             "threat_ip_count_10d": 10,
-             "threat_ip_count_30d": 18
-         }}),
+        200,
+        {
+            "id": "CVE-1900-12345",
+            "details": {
+                "vulnerability_name": "Test",
+                "vulnerability_description": "Test.",
+                "cve_cvss_score": 8.6,
+                "product": "Test",
+                "vendor": "test",
+                "published_to_nist_nvd": True
+            },
+            "timeline": {
+                "cve_published_date": "2024-05-28T19:15:10Z",
+                "cve_last_updated_date": "2024-05-31T16:04:09Z",
+                "first_known_published_date": "2024-05-27T00:00:00Z",
+                "cisa_kev_date_added": "2024-05-30T00:00:00Z"
+            },
+            "exploitation_details": {
+                "attack_vector": "NETWORK",
+                "exploit_found": True,
+                "exploitation_registered_in_kev": True,
+                "epss_score": 0.94237
+            },
+            "exploitation_stats": {
+                "number_of_available_exploits": 60,
+                "number_of_threat_actors_exploiting_vulnerability": 1,
+                "number_of_botnets_exploiting_vulnerability": 0
+            },
+            "exploitation_activity": {
+                "activity_seen": True,
+                "benign_ip_count_1d": 0,
+                "benign_ip_count_10d": 0,
+                "benign_ip_count_30d": 0,
+                "threat_ip_count_1d": 4,
+                "threat_ip_count_10d": 10,
+                "threat_ip_count_30d": 18
+            }
+        }),
     ({"cve": "abce"}, "negative", {}, 400, "The provided ID does not match the format: CVE-XXXX-YYYYY")
 ]
