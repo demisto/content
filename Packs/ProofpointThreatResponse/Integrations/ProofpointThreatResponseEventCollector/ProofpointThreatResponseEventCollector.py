@@ -5,6 +5,7 @@ from datetime import timedelta
 
 # Disable insecure warnings
 import urllib3
+
 urllib3.disable_warnings()
 
 TIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
@@ -256,7 +257,7 @@ def get_incidents_batch_by_time_request(client, params):
         demisto.debug(f"End of the current batch loop with {str(len(incidents_list))} events")
 
     # fetching the last batch when created_before is bigger then current time = fetching new events
-    if len(incidents_list) < fetch_limit:   # type: ignore[operator]
+    if len(incidents_list) < fetch_limit:  # type: ignore[operator]
         # fetching the last batch
         request_params['created_before'] = current_time.isoformat().split('.')[0] + 'Z'
         new_incidents = get_new_incidents(client, request_params, last_fetched_id)
@@ -375,7 +376,7 @@ def main():  # pragma: no cover
                                       date_format=TIME_FORMAT)
     fetch_limit = params.get('fetch_limit', '100')
     fetch_delta = params.get('fetch_delta', '6 hours')
-    incidents_states = argToList(params.get('states'))
+    incidents_states = argToList(params.get('states', ['new', 'open', 'assigned', 'closed', 'ignored']))
 
     demisto.debug('Command being called is {}'.format(command))
 
