@@ -29,14 +29,15 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Commands
 
+* gsuite-user-signout
+* core-get-cloud-original-alerts
 * msgraph-user-session-revoke
 * gsuite-user-update
-* gsuite-user-get
 * msgraph-user-account-disable
-* core-list-risky-users
+* aws-iam-delete-login-profile
 * closeInvestigation
+* core-list-risky-users
 * msgraph-user-list
-* core-get-cloud-original-alerts
 
 ## Playbook Inputs
 
