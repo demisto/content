@@ -19,5 +19,8 @@
     "marketplaces": [
         "xsoar",
         "marketplacev2"
+    ],
+    "githubUser": [
+        "hx0ar"
     ]
 }

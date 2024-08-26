@@ -18,8 +18,8 @@ This playbook does not use any scripts.
 
 ### Commands
 
-* securityscorecard-company-findings-get
 * createNewIncident
+* securityscorecard-company-findings-get
 
 ## Playbook Inputs
 
