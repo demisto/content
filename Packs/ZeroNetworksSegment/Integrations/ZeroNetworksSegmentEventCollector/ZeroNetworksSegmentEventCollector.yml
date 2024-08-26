@@ -3,7 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: ZeroNetworksEventCollector
+  id: ZeroNetworksSegmentEventCollector
   version: -1
 configuration:
 - display: Server URL
@@ -59,8 +59,8 @@ configuration:
   type: 8
   required: false
 description: This is the Zero Networks event collector integration for Cortex XSIAM.
-display: ZeroNetworksEventCollector
-name: ZeroNetworksEventCollector
+display: Zero Networks Segment Event Collector
+name: ZeroNetworksSegmentEventCollector
 script:
   commands:
   - arguments:

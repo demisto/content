@@ -2,6 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *
 import urllib3
 from typing import Any
+import urllib.parse
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -14,8 +15,12 @@ ISO_8601_FORMAT = "%Y-%m-%dT%H:%M:%S.000Z"
 VENDOR = 'ZeroNetworks'
 PRODUCT = 'Segment'
 FIRST_FETCH = 'one minute'
-MAX_LIMIT = 10000
-LOG_TYPE = ['audit', 'network_activities']
+MAX_RESULTS_FOR_LOG_TYPE = {'audit': 10000, 'network_activities': 2000}
+MAX_CALLS_FOR_LOG_TYPE = {'audit': 10000, 'network_activities': 400}
+URL = {'audit': '/audit', 'network_activities': 'activities/network'}
+MAX_FETCH_PARAM_NAME = {'audit': 'max_fetch_audit', 'network_activities': 'max_fetch_network'}
+AUDIT_TYPE = 'audit'
+NETWORK_ACTIVITIES_TYPE = 'network_activities'
 
 ''' CLIENT CLASS '''
 
@@ -31,7 +36,7 @@ class Client(BaseClient):
             headers=headers
         )
 
-    def search_events(self, limit, cursor) -> dict[str, Any]:
+    def search_events(self, limit, cursor, log_type, filters=None) -> dict[str, Any]:
         """
         Get a list of events.
         Args:
@@ -44,28 +49,33 @@ class Client(BaseClient):
         Returns:
             Dict[str, Any]: A list of events.
         """
-        params = remove_empty_elements({"_limit": limit, "order": "asc", "_cursor": cursor})
+
+        if log_type == NETWORK_ACTIVITIES_TYPE:
+            params = remove_empty_elements({"_limit": limit, "order": "asc", "_cursor": cursor, "_filters": filters})
+        else:
+            params = remove_empty_elements({"_limit": limit, "order": "asc", "_cursor": cursor})
 
         return self._http_request(
             method="GET",
-            url_suffix="/audit",
+            url_suffix=URL[log_type],
             params=params,
+            headers=self._headers
         )
 
 
 ''' HELPER FUNCTIONS '''
 
 
-def process_events(events: list, previous_ids: set, last_event_time: int, max_results: int, num_results: int):
+def process_events(events: list, previous_ids: set, last_event_time: int, max_results: int, num_results: int, log_type: str):
     new_events = []
     for event in events:
         event_id = event.get('id')
         if num_results == max_results:
             break
-        
+
         if event_id not in previous_ids:
             event['_TIME'] = timestamp_to_datestring(event.get('timestamp'), is_utc=True)
-            event['source_log_type'] = 'audit'
+            event['source_log_type'] = log_type
             new_events.append(event)
             event_timestamp = event.get("timestamp")
             num_results += 1
@@ -82,6 +92,44 @@ def process_events(events: list, previous_ids: set, last_event_time: int, max_re
     return new_events, previous_ids, last_event_time, num_results
 
 
+def get_log_types(params):
+    log_types = [AUDIT_TYPE]
+    is_fetch_network = argToBoolean(params.get("isFetchNetwork", False))
+    if is_fetch_network:
+        log_types.append(NETWORK_ACTIVITIES_TYPE)
+
+    return log_types
+
+
+def initialize_start_timestamp(last_run: dict[str, Any], log_type: str) -> int:
+    start_timestamp = last_run.get(log_type, {}).get("last_fetch")
+    if not start_timestamp:
+        start_date = dateparser.parse(FIRST_FETCH).strftime(ISO_8601_FORMAT)  # type: ignore[union-attr]
+        start_timestamp = date_to_timestamp(start_date, ISO_8601_FORMAT)
+    return start_timestamp
+
+
+def get_max_results_and_limit(params: dict[str, Any], log_type: str) -> tuple[int, int]:
+    max_results = arg_to_number(params.get(MAX_FETCH_PARAM_NAME[log_type])) or MAX_RESULTS_FOR_LOG_TYPE[log_type]
+    limit = min(max_results, MAX_CALLS_FOR_LOG_TYPE[log_type])
+    return max_results, limit
+
+
+def prepare_filters(params: dict[str, Any]) -> str:
+    filters = params.get("network_activity_filters", [])
+    url_encoded = urllib.parse.quote(filters)
+    url_encoded_str_with_quotes = url_encoded.replace('%22', '"')
+    return url_encoded_str_with_quotes
+
+
+def update_last_run(last_run: dict[str, Any], log_type: str, last_event_time: int, previous_ids: set):
+    last_run[log_type] = {
+        "last_fetch": last_event_time,
+        "previous_ids": previous_ids
+    }
+    return last_run
+
+
 ''' COMMAND FUNCTIONS '''
 
 
@@ -89,41 +137,40 @@ def fetch_events(client: Client, params: dict, last_run: dict):
     """
        Fetches audit logs from ZeroNetworks API.
     """
-    start_timestamp = last_run.get("last_fetch")
-    if not start_timestamp:
-        start_date = dateparser.parse(FIRST_FETCH).strftime(ISO_8601_FORMAT)   # type: ignore[union-attr]
-        start_timestamp = date_to_timestamp(start_date, ISO_8601_FORMAT)
+    log_types = get_log_types(params)
 
-    cursor = start_timestamp
-    last_event_time = start_timestamp
-    collected_events: list = []
-    max_results: int = arg_to_number(params.get('max_results')) or MAX_LIMIT
-    previous_ids = last_run.get('previous_ids', ())
-    num_results = 0
-    while len(collected_events) < max_results:
-        response = client.search_events(limit=min(max_results, MAX_LIMIT), cursor=cursor)
+    for log_type in log_types:
+        start_timestamp = initialize_start_timestamp(last_run, log_type)
+        cursor: int = start_timestamp
+        last_event_time = start_timestamp
+        collected_events: list = []
+        max_results, limit = get_max_results_and_limit(params, log_type)
+        previous_ids = last_run.get(log_type, {}).get("previous_ids", {})
+        num_results = 0
 
-        if not response:
-            break
+        filters = prepare_filters(params) if log_type == NETWORK_ACTIVITIES_TYPE else None
 
-        events = response.get('items', [])
-        cursor = response.get('scrollCursor')
+        while len(collected_events) < max_results:
+            response = client.search_events(limit, cursor=cursor, log_type=log_type, filters=filters)
 
-        if not events:
-            break
+            if not response:
+                break
 
-        new_events, previous_ids, last_event_time, num_results = process_events(events, previous_ids, last_event_time,
-                                                                                max_results, num_results)
+            events = response.get('items', [])
+            cursor = int(response.get('scrollCursor', ''))
 
-        if not new_events:
-            break
+            if not events:
+                break
 
-        collected_events.extend(new_events)
+            new_events, previous_ids, last_event_time, num_results = process_events(events, previous_ids, last_event_time,
+                                                                                    max_results, num_results, log_type)
 
-    last_run = {
-        "last_fetch": last_event_time,
-        "previous_ids": previous_ids
-    }
+            if not new_events:
+                break
+
+            collected_events.extend(new_events)
+
+        last_run = update_last_run(last_run, log_type, last_event_time, previous_ids)
 
     return last_run, collected_events
 
@@ -164,7 +211,6 @@ def main() -> None:
     server_url = urljoin(params.get('url'))
     verify_certificate = not argToBoolean(params.get('insecure', False))
     proxy = params.get('proxy', False)
-    is_fetch_network = params.get('isFetchNetwork', False)
 
     demisto.debug(f'Command being called is {command}')
     try:
@@ -180,7 +226,7 @@ def main() -> None:
             # This is the call made when pressing the integration Test button.
             return_results(test_module(client, params))
 
-        # elif command == 'cisco-amp-get-events':
+        # elif command == 'zero-networks-get-events':
         #     events, results = get_events(client, args)  # type: ignore
         #     return_results(results)
         #     if should_push_events:
