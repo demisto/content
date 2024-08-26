@@ -2534,8 +2534,8 @@ def test_filter_general_fields():
             'identity_sub_type': 'subtype',
         }
     }
-    
-    
+
+
 def test_filter_general_fields_with_stateful_raw_data():
     """
     Given:
@@ -2594,10 +2594,10 @@ def test_filter_general_fields_with_stateful_raw_data():
             }
         },
         'event': {
-                'event_type': 'type',
-                'event_id': 'id',
-                'identity_sub_type': 'subtype',
-            }
+            'event_type': 'type',
+            'event_id': 'id',
+            'identity_sub_type': 'subtype',
+        }
     }
     assert filter_general_fields(alert, False, True) == {
         'detection_modules': 'test1',
@@ -2612,18 +2612,18 @@ def test_filter_general_fields_with_stateful_raw_data():
         },
         'stateful_raw_data': {
             'events_from_decider': [{
-                    "story_id": "test_1",
-                    "additional_info": "this is a test."
-                },{
-                    "story_id": "test_2",
-                    "additional_info": "this is a test."
-                }]
+                "story_id": "test_1",
+                "additional_info": "this is a test."
+            }, {
+                "story_id": "test_2",
+                "additional_info": "this is a test."
+            }]
         },
         'event': {
-                'event_type': 'type',
-                'event_id': 'id',
-                'identity_sub_type': 'subtype',
-            }
+            'event_type': 'type',
+            'event_id': 'id',
+            'identity_sub_type': 'subtype',
+        }
     }
 
 
