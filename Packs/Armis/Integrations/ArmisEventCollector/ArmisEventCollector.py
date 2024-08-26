@@ -10,7 +10,7 @@ urllib3.disable_warnings()
 EVENT_TYPE_ALERTS = 'alerts'
 EVENT_TYPE_ACTIVITIES = 'activity'
 EVENT_TYPE_DEVICES = 'devices'
-
+#test
 
 class EVENT_TYPE:
     """
