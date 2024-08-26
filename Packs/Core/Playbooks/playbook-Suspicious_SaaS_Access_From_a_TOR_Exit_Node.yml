@@ -27,7 +27,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 80
+          "y": 240
         }
       }
     note: false
@@ -44,7 +44,7 @@ tasks:
     task:
       id: 34b46f03-e24e-463b-8df9-2743ae0df003
       version: -1
-      name: Fetch cloud alert extra data
+      name: Get User Identity
       description: Returns information about each alert ID.
       script: '|||core-get-cloud-original-alerts'
       type: regular
@@ -69,7 +69,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 210
+          "y": 370
         }
       }
     note: false
@@ -101,7 +101,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 370
+          "y": 530
         }
       }
     note: false
@@ -133,11 +133,12 @@ tasks:
       user:
         simple: ${MSGraphUser.ID}
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1330,
+          "x": 1150,
           "y": 1020
         }
       }
@@ -165,17 +166,18 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "14"
+      - "3"
     scriptarguments:
       filter:
         simple: mail eq '${Core.OriginalAlert.event.identity_name}'
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1140,
-          "y": 680
+          "x": 1150,
+          "y": 860
         }
       }
     note: false
@@ -232,6 +234,15 @@ tasks:
             value:
               simple: MSFT
           ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              simple: alert.cloudprovider.[0]
+            iscontext: true
+          right:
+            value:
+              simple: AZURE
+          ignorecase: true
     - label: Google Workspaces
       condition:
       - - operator: isEqualString
@@ -243,12 +254,32 @@ tasks:
             value:
               simple: GOOGLE
           ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              simple: alert.cloudprovider.[0]
+            iscontext: true
+          right:
+            value:
+              simple: GCP
+          ignorecase: true
+    - label: AWS
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: alert.cloudprovider.[0]
+            iscontext: true
+          right:
+            value:
+              simple: AWS
+          ignorecase: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 700,
-          "y": 510
+          "y": 670
         }
       }
     note: false
@@ -265,9 +296,9 @@ tasks:
     task:
       id: deb95ec9-2850-45c8-8a1c-1d2f2ccf07fe
       version: -1
-      name: Sign out User using G-Suite
-      description: Retrieve a user's details given a user key.
-      script: '|||gsuite-user-get'
+      name: Sign out User using G-Suite Admin
+      description: Signs a user out of all web and device sessions and reset their sign-in cookies.
+      script: '|||gsuite-user-signout'
       type: regular
       iscommand: true
       brand: ""
@@ -275,7 +306,7 @@ tasks:
       '#none#':
       - "7"
     scriptarguments:
-      user:
+      user_key:
         simple: ${Core.OriginalAlert.event.identity_name}
     separatecontext: false
     continueonerrortype: ""
@@ -491,6 +522,16 @@ tasks:
             value:
               simple: SuspiciousUserAgent
             iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GSuite.User.id
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: MSGraphUser.ID
+            iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -513,7 +554,7 @@ tasks:
     task:
       id: f8073e61-3193-43f2-819b-a8f4ea98e87a
       version: -1
-      name: Choose whether to remediate the user
+      name: Decide if you want to block the account
       type: collection
       iscommand: false
       brand: ""
@@ -566,52 +607,11 @@ tasks:
         placeholder: ""
         tooltip: ""
         readonly: false
-      title: Choose whether to remediate the user
-      description: You can block  the user that created the connection.
+      title: Decide if you want to block the account
+      description: You can block the user that created the connection.
       sender: ""
       expired: false
       totalanswers: 0
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "14":
-    id: "14"
-    taskid: 9a97f160-837c-4010-8886-7a802cb9bb96
-    type: condition
-    task:
-      id: 9a97f160-837c-4010-8886-7a802cb9bb96
-      version: -1
-      name: User ID Found?
-      type: condition
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#default#':
-      - "7"
-      "yes":
-      - "3"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: MSGraphUser.ID
-            iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1140,
-          "y": 845
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -687,6 +687,8 @@ tasks:
       - "18"
       Block Using MS-Graph:
       - "17"
+      Delete Login Profile Using AWS:
+      - "25"
     separatecontext: false
     conditions:
     - label: Block Using MS-Graph
@@ -694,7 +696,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: Choose whether to remediate the user.Answers.0
+              simple: Decide if you want to block the account.Answers.0
             iscontext: true
           right:
             value:
@@ -710,7 +712,7 @@ tasks:
       - - operator: containsString
           left:
             value:
-              simple: Choose whether to remediate the user.Answers.0
+              simple: Decide if you want to block the account.Answers.0
             iscontext: true
           right:
             value:
@@ -720,6 +722,42 @@ tasks:
           left:
             value:
               simple: GSuite.User.id
+            iscontext: true
+    - label: Delete Login Profile Using AWS
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Decide if you want to block the account.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+          ignorecase: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: AWS - IAM
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -743,7 +781,7 @@ tasks:
     task:
       id: e7c3404d-5ca2-4ed4-875e-100cb2900acd
       version: -1
-      name: Disable user with MS-Graph
+      name: Block user with MS-Graph
       description: |-
         Disables a user from all Office 365 applications, and prevents sign in. Note: This command disables user,
         but does not terminate an existing session. Supported only in a self deployed app flow with the
@@ -763,7 +801,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1090,
+          "x": 1080,
           "y": 2160
         }
       }
@@ -781,7 +819,7 @@ tasks:
     task:
       id: 19ca9654-14bf-486d-8832-2a5835b118f2
       version: -1
-      name: Suspend user with G-Suite
+      name: Block user with G-Suite
       description: Updates a user.
       script: '|||gsuite-user-update'
       type: regular
@@ -975,7 +1013,7 @@ tasks:
         readonly: false
       title: Choose whether to block TOR using PAN-OS
       description: |-
-        You can block the traffic from the TOR exit nodes IPs from Palo Alto built-in External Dynamic List. You can read more about the predefined EDLs here:
+        You can block traffic from TOR exit node IPs using Palo Alto's built-in External Dynamic List (EDL). For more information on predefined EDLs, visit:
 
         https://docs.paloaltonetworks.com/pan-os/9-1/pan-os-admin/policy/use-an-external-dynamic-list-in-policy/built-in-edls
       sender: ""
@@ -1071,7 +1109,7 @@ tasks:
       EDLName:
         simple: panw-torexit-ip-list
       RuleName:
-        simple: TOR application was Blocked by XSIAM
+        simple: TOR Exit nodes from predefined EDLs was Blocked by XSIAM
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -1089,7 +1127,42 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: true
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: e19e02a9-b241-4f18-8b4d-8f7754efbc19
+    type: regular
+    task:
+      id: e19e02a9-b241-4f18-8b4d-8f7754efbc19
+      version: -1
+      name: Delete Login Profile Using AWS
+      description: Deletes the password for the specified IAM user, which terminates the user's ability to access AWS services through the AWS Management Console.
+      script: '|||aws-iam-delete-login-profile'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      userName:
+        simple: ${Core.OriginalAlert.event.identity_name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1480,
+          "y": 2160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -1097,20 +1170,22 @@ view: |-
   {
     "linkLabelsPosition": {
       "12_21_#default#": 0.2,
-      "14_7_#default#": 0.17,
-      "16_17_Block Using MS-Graph": 0.58,
+      "16_17_Block Using MS-Graph": 0.7,
       "16_18_Block Using G-Suite": 0.62,
       "16_21_#default#": 0.4,
-      "23_22_Yes": 0.9,
-      "5_6_Google Workspaces": 0.17,
-      "5_7_#default#": 0.3
+      "19_10_#default#": 0.34,
+      "23_10_#default#": 0.14,
+      "23_22_Yes": 0.44,
+      "5_4_O365": 0.73,
+      "5_6_Google Workspaces": 0.7,
+      "5_7_#default#": 0.14
     },
     "paper": {
       "dimensions": {
-        "height": 3305,
-        "width": 1470,
+        "height": 3145,
+        "width": 1620,
         "x": 240,
-        "y": 80
+        "y": 240
       }
     }
   }
