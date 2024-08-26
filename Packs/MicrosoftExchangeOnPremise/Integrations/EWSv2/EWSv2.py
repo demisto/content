@@ -706,7 +706,9 @@ class SearchMailboxes(EWSService):
     def call(self, query, mailboxes):  # pragma: no cover
         if self.protocol.version.build < EXCHANGE_2013:
             raise NotImplementedError('%s is only supported for Exchange 2013 servers and later' % self.SERVICE_NAME)
+        demisto.debug(f"{INTEGRATION_NAME} DEBUG: call")
         elements = list(self._get_elements(payload=self.get_payload(query, mailboxes)))
+        demisto.debug(f"{INTEGRATION_NAME} DEBUG: _get_elements")
         return [self.parse_element(x) for x in elements]
 
     def get_payload(self, query, mailboxes):  # pragma: no cover
@@ -830,6 +832,9 @@ def search_mailboxes(protocol, filter, limit=100, mailbox_search_scope=None, ema
         demisto.debug(f"{INTEGRATION_NAME} DEBUG: mailboxes len is {len(mailboxes)}")
         mailbox_ids = [x[MAILBOX_ID] for x in mailboxes]  # type: ignore
         demisto.debug(f"{INTEGRATION_NAME} DEBUG: mailboxes len is {len(mailbox_ids)}")
+        if len(mailbox_ids) > 20000:
+            demisto.debug(f"{INTEGRATION_NAME} DEBUG: mailboxes len cutting")
+            mailbox_ids = mailbox_ids[:19998]
     try:
         demisto.debug(f"{INTEGRATION_NAME} DEBUG: try SearchMailboxes for {len(mailbox_ids)}")
         search_results = SearchMailboxes(protocol=protocol).call(filter, mailbox_ids)
