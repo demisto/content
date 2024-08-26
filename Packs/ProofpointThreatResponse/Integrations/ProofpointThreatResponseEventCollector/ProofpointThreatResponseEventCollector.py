@@ -375,7 +375,7 @@ def main():  # pragma: no cover
                                       date_format=TIME_FORMAT)
     fetch_limit = params.get('fetch_limit', '100')
     fetch_delta = params.get('fetch_delta', '6 hours')
-    incidents_states = params.get('states', [])
+    incidents_states = argToList(params.get('states'))
 
     demisto.debug('Command being called is {}'.format(command))
 
