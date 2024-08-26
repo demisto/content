@@ -215,19 +215,6 @@ def dedup(curr_events: list[dict[str, Any]], last_events_hashes: dict[int, int] 
     return new_events
 
 
-def build_hash_counter(events: List[Dict[str, Any]], last_run: Dict[str, Any]):
-    events_hashes = [
-        hash(json.dumps(event, sort_keys=True)) for event in events if event['creationDate'] == last_run['last_timestamp']
-    ]
-    hash_counter = {}
-    for event_hash in events_hashes:
-        if event_hash in hash_counter:
-            hash_counter[event_hash] += 1
-        else:
-            hash_counter[event_hash] = 0
-    return hash_counter
-
-
 def add_time_to_events(events: List[Dict] | None):
     """
     Adds the _time key to the events.
@@ -1442,28 +1429,31 @@ def fetch_events(client: Client, last_run: dict[str, Any], fetch_limit: int) -> 
         next_link = response['_links'].get('next', None)
         total_length += len(events)
 
-        if next_link and total_length >= fetch_limit:
-            # if we exceeded the limit mid-page and have a next page
-            parsed_next_link = urllib.parse.urlparse(next_link)
-            query_params = urllib.parse.parse_qs(parsed_next_link.query)
-            query_params['start'] = [str(fetch_limit)]
+        if total_length >= fetch_limit:
             diff = total_length - fetch_limit
             correct_last_index = len(events) - diff
-            next_link = urllib.parse.urlunparse(parsed_next_link._replace(query=urllib.parse.urlencode(query_params, doseq=True)))
             events = events[:correct_last_index]
+
+            if next_link:
+                parsed_next_link = urllib.parse.urlparse(next_link)
+                query_params = urllib.parse.parse_qs(parsed_next_link.query)
+                query_params['start'] = [str(fetch_limit)]
+                next_link = urllib.parse.urlunparse(
+                    parsed_next_link._replace(
+                        query=urllib.parse.urlencode(query_params, doseq=True)
+                    )
+                )
+            else:
+                next_link = URL_SUFFIX['NEXT_LINK_TEMPLATE'].format(end_date, PAGE_SIZE, fetch_limit, start_date)
+
             yield events, next_link, end_date
             break
 
-        elif not next_link and total_length >= fetch_limit:
-            # if we exceeded the limit mid-page and don't have a next page
-            diff = total_length - fetch_limit
-            correct_last_index = len(events) - diff
-            next_link = URL_SUFFIX['NEXT_LINK_TEMPLATE'].format(end_date, PAGE_SIZE, fetch_limit, start_date)
-            events = events[:correct_last_index]
-            yield events, next_link, end_date
-            break
+        if not next_link:
+            if not is_cleanup:
+                yield events, next_link, end_date
+                break
 
-        elif not next_link and total_length < fetch_limit and is_cleanup:
             # clean up the last batch
             response = run_fetch_mechanism(client, next_link, start_date, end_date)
             events.extend(response['results'])
@@ -1482,7 +1472,7 @@ def get_events(client: Client, args: dict) -> tuple[list[Dict], CommandResults]:
     events = []
 
     while next_link and len(events) < fetch_limit:
-        response = run_fetch_mechanism(client, next_link, events, start_date, end_date)
+        response = run_fetch_mechanism(client, next_link, start_date, end_date)
         next_link = response['_links'].get('next', None)
         events.extend(response['results'])
 
