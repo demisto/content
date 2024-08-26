@@ -1,7 +1,7 @@
 import json
 from freezegun import freeze_time
 import pytest
-from datetime import datetime
+from datetime import datetime, UTC
 from CommonServerPython import DemistoException, CommandResults
 from ExabeamSecOpsPlatform import (
     Client,
@@ -292,8 +292,8 @@ def test_parse_group_by():
     assert _parse_group_by(entry, titles) == expected_result
 
 
-valid_expiry_time = (datetime(2024, 7, 23, 13, 0, tzinfo=datetime.UTC)).isoformat()
-expired_expiry_time = (datetime(2024, 7, 23, 11, 0, tzinfo=datetime.UTC)).isoformat()
+valid_expiry_time = (datetime(2024, 7, 23, 13, 0, tzinfo=UTC)).isoformat()
+expired_expiry_time = (datetime(2024, 7, 23, 11, 0, tzinfo=UTC)).isoformat()
 
 
 @pytest.mark.parametrize(
