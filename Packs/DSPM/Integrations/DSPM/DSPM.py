@@ -746,13 +746,13 @@ def fetch_incidents(client: Client, mirror_direction):
 
     incidents = []
     page = 0
-    size = 50  # 50 is max size we can provide.
+    size = 1  # 50 is max size we can provide.
     findings = []
 
     while True:
-        response = client.fetch_risk_findings({'page': page, 'size': size, 'status.equals': 'OPEN'})
+        response = client.fetch_risk_findings({'page': page, 'size': size, 'ruleName.equals': 'Sensitive asset open to world'})
         new_findings = response
-        if not new_findings:
+        if not new_findings or page == 1:
             break
         findings.extend(new_findings)
         page += 1
@@ -1199,6 +1199,13 @@ def main() -> None:
                 page += 1
         elif demisto.command() == 'dspm-update-risk-finding-status':
             return_results(update_risk_finding_status_command(client, demisto.args()))
+        elif demisto.command() == 'dspm-get-lifetime-for-slack':
+            sleep_time = demisto.params().get("slackMsgLifetime", "")
+            in_seconds = int(sleep_time) * 3600
+            # time.sleep(int(in_seconds))
+            time.sleep(10)
+            # return_results(update_risk_finding_status_command(client, demisto.args()))
+            return_results(f"Sleep for {in_seconds} seconds")
         # elif demisto.command() == 'get-modified-remote-data':
         #     modified_incidents = get_modified_remote_data_command(client, demisto.args())
         #     return_results(modified_incidents)
