@@ -3630,7 +3630,8 @@ def get_original_alerts_command(client: CoreClient, args: Dict) -> CommandResult
         alert.update(alert.pop('original_alert_json', {}))
 
         # Process the alert (with without filetring fields)
-        processed_alerts.append(filter_general_fields(alert, filter_fields=False, alter_events_from_decider))
+        processed_alerts.append(filter_general_fields(alert, filter_fields=False,
+                                                      alter_events_from_decider=alter_events_from_decider))
 
         # Create a filtered version (used either for output when filter_fields is False, or for readable output)
         filtered_alert = filter_general_fields(alert, filter_fields=True)
