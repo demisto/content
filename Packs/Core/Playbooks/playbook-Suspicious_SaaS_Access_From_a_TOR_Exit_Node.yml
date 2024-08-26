@@ -263,17 +263,6 @@ tasks:
             value:
               simple: GCP
           ignorecase: true
-    - label: AWS
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: alert.cloudprovider.[0]
-            iscontext: true
-          right:
-            value:
-              simple: AWS
-          ignorecase: true
     continueonerrortype: ""
     view: |-
       {
