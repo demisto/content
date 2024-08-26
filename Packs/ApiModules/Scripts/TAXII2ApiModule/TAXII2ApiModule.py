@@ -960,7 +960,7 @@ class STIX2XSOARParser(BaseClient):
         separator = ': '
         try:
             partition_result = ind_name.partition(separator)
-            if len(partition_result) < 3:
+            if partition_result[1] != separator:
                 raise DemistoException(f"Failed parsing attack indicator {ind_name}")
         except ValueError:
             raise DemistoException(f"Failed parsing attack indicator {ind_name}")
