@@ -657,7 +657,7 @@ def add_attribute(
         event_id (int): Event ID to add attribute to
         internal (bool): if set to True, will not post results to Demisto
         demisto_args (dict): Demisto args
-        new_event (MISPEvent): When this function was called from create event command, the attrubite will be added to
+        new_event (MISPEvent): When this function was called from create event command, the attribute will be added to
         that existing event.
     """
     value = demisto_args.get('value')
@@ -739,8 +739,8 @@ def get_indicator_results(value, dbot_type, malicious_tag_ids, suspicious_tag_id
     Args:
         value (str): The indicator value (an IP address, email address, domain, url or file hash).
         dbot_type (str): Indicator type (file, url, domain, email or ip).
-        malicious_tag_ids (set): Tag ids should be recognised as malicious.
-        suspicious_tag_ids (set): Tag ids should be recognised as suspicious
+        malicious_tag_ids (set): Tag ids should be recognized as malicious.
+        suspicious_tag_ids (set): Tag ids should be recognized as suspicious
         reliability (DBotScoreReliability): integration reliability score.
         attributes_limit (int) : Limits the number of attributes that will be written to the context
 
