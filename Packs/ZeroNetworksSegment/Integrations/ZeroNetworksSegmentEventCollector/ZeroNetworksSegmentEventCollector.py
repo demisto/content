@@ -3,6 +3,7 @@ from CommonServerPython import *
 import urllib3
 from typing import Any
 import urllib.parse
+import hashlib
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -66,10 +67,25 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
+def create_id(event: dict, log_type: str):
+    timestamp = event.get("timestamp")
+    if log_type == AUDIT_TYPE:
+        reported_object_id = event.get("reportedObjectId", "")
+        performed_by_name = event.get("performed_by", {}).get("id", "")
+        combined_string = f"{timestamp}-{reported_object_id}-{performed_by_name}"
+    if log_type == NETWORK_ACTIVITIES_TYPE:
+        src_asset_id = event.get("src", {}).get("assetId", "")
+        dst_asset_id = event.get("dst", {}).get("assetId", "")
+        combined_string = f"{timestamp}-{src_asset_id}-{dst_asset_id}"
+
+    hash_object = hashlib.sha256(combined_string.encode())
+    return hash_object.hexdigest()
+
+
 def process_events(events: list, previous_ids: set, last_event_time: int, max_results: int, num_results: int, log_type: str):
     new_events = []
     for event in events:
-        event_id = event.get('id')
+        event_id = create_id(event, log_type)
         if num_results == max_results:
             break
 
@@ -89,7 +105,7 @@ def process_events(events: list, previous_ids: set, last_event_time: int, max_re
                 demisto.debug('adding id to the "new_previous_ids"')
                 previous_ids.add(event_id)
 
-    return new_events, previous_ids, last_event_time, num_results
+    return new_events, previous_ids, last_event_time
 
 
 def get_log_types(params):
@@ -101,7 +117,9 @@ def get_log_types(params):
     return log_types
 
 
-def initialize_start_timestamp(last_run: dict[str, Any], log_type: str) -> int:
+def initialize_start_timestamp(last_run: dict[str, Any], log_type: str, arg_from=None) -> int:
+    if arg_from:
+        return arg_from
     start_timestamp = last_run.get(log_type, {}).get("last_fetch")
     if not start_timestamp:
         start_date = dateparser.parse(FIRST_FETCH).strftime(ISO_8601_FORMAT)  # type: ignore[union-attr]
@@ -133,20 +151,19 @@ def update_last_run(last_run: dict[str, Any], log_type: str, last_event_time: in
 ''' COMMAND FUNCTIONS '''
 
 
-def fetch_events(client: Client, params: dict, last_run: dict):
+def fetch_events(client: Client, params: dict, last_run: dict, arg_from=None):
     """
        Fetches audit logs from ZeroNetworks API.
     """
     log_types = get_log_types(params)
 
     for log_type in log_types:
-        start_timestamp = initialize_start_timestamp(last_run, log_type)
-        cursor: int = start_timestamp
+        start_timestamp = initialize_start_timestamp(last_run, log_type, arg_from)
+        cursor = start_timestamp
         last_event_time = start_timestamp
         collected_events: list = []
         max_results, limit = get_max_results_and_limit(params, log_type)
         previous_ids = last_run.get(log_type, {}).get("previous_ids", {})
-        num_results = 0
 
         filters = prepare_filters(params) if log_type == NETWORK_ACTIVITIES_TYPE else None
 
@@ -157,13 +174,13 @@ def fetch_events(client: Client, params: dict, last_run: dict):
                 break
 
             events = response.get('items', [])
-            cursor = int(response.get('scrollCursor', ''))
+            cursor = int(response.get('scrollCursor', cursor))
 
             if not events:
                 break
 
-            new_events, previous_ids, last_event_time, num_results = process_events(events, previous_ids, last_event_time,
-                                                                                    max_results, num_results, log_type)
+            new_events, previous_ids, last_event_time = process_events(events, previous_ids, last_event_time, max_results,
+                                                                       len(collected_events), log_type)
 
             if not new_events:
                 break
@@ -173,6 +190,17 @@ def fetch_events(client: Client, params: dict, last_run: dict):
         last_run = update_last_run(last_run, log_type, last_event_time, previous_ids)
 
     return last_run, collected_events
+
+
+def get_events(client, args, last_run):
+    """
+       Gets events from Zero Networks Segment API.
+    """
+    if arg_from := args.get("from_date"):
+        arg_from = date_to_timestamp(arg_from, ISO_8601_FORMAT)
+    last_run, events = fetch_events(client=client, params=args, last_run=last_run, arg_from=arg_from)
+    hr = tableToMarkdown(name='Events', t=events)
+    return events, CommandResults(readable_output=hr)
 
 
 def test_module(client: Client, params) -> str:
@@ -205,12 +233,14 @@ def main() -> None:
     main function, parses params and runs command functions
     """
     params = demisto.params()
+    args = demisto.args()
 
     command = demisto.command()
     api_key = params.get('api_key', '')
     server_url = urljoin(params.get('url'))
     verify_certificate = not argToBoolean(params.get('insecure', False))
     proxy = params.get('proxy', False)
+    should_push_events = argToBoolean(args.get('should_push_events', False))
 
     demisto.debug(f'Command being called is {command}')
     try:
@@ -226,11 +256,12 @@ def main() -> None:
             # This is the call made when pressing the integration Test button.
             return_results(test_module(client, params))
 
-        # elif command == 'zero-networks-get-events':
-        #     events, results = get_events(client, args)  # type: ignore
-        #     return_results(results)
-        #     if should_push_events:
-        #         send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+        elif command == 'zero-networks-segment-get-events':
+            last_run = demisto.getLastRun()
+            events, results = get_events(client, args, last_run)  # type: ignore
+            return_results(results)
+            if should_push_events:
+                send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
 
         elif command == 'fetch-events':
             last_run = demisto.getLastRun()
