@@ -101,7 +101,7 @@ To configure ingestion of data from Google Cloud Security Command Center follow 
 * To create Continuous Exports, go to <i><strong>Security -> Settings -> CONTINUOUS EXPORTS -> CREATE PUB/ SUB EXPORT</i></strong> <br>
 After naming the <i><strong>continuous Exports</i></strong> and describing it (optional) select or create topic. <br>
 Default <i><strong>Finding</i></strong> query returning all finding in state <i><strong>active</i></strong> and that they are not <i><strong>muted</i></strong> (mute - hides finding from default view).<br>
-<a href="https://cloud.google.com/security-command-center/docs/how-to-build-findings-query-console">For more Finding Query information see this documentation</a> <br>
+<a href="https://cloud.google.com/security-command-center/docs/how-to-build-findings-query-console">For more Finding Query information, see this documentation</a> <br>
 * For general <i><strong>Google Cloud</i></strong> audit logs ingestion, you might need additional\ different configuration on Google Cloud Platform Pub/ Sub.
 
 </p>
