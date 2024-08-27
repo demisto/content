@@ -4,6 +4,7 @@ commonfields:
 name: Hoxhunt
 display: Hoxhunt
 category: Email
+description: "Use the Hoxhunt integration to send feedback to reporters of incidents, set incident sensitivity, and apply SOC classification to incidents."
 configuration:
 - display: Server URL (e.g. https://api.hoxhunt.com/graphql-external)
   name: url
@@ -46,6 +47,7 @@ configuration:
   required: false
   additionalinfo: Input a query filter for incidents to be fetched
 script:
+  script: ''
   type: python
   commands:
   - name: hoxhunt-get-current-user

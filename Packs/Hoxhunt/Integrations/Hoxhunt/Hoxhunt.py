@@ -128,13 +128,13 @@ class Client(BaseClient):
         }
         return self.query(mutation, variables)
 
+
 def test_module(client, query) -> str:
     result = client.query(query)
     if result:
         return 'ok'
     else:
         return 'Test failed: ' + str(result)
-
 
 
 def create_output(results: Dict[str, str], endpoint: str, keyfield: str = '') -> CommandResults:
@@ -163,15 +163,19 @@ def create_incident_from_log(incident: Dict[str, Any]) -> Dict[str, Any]:
         'occurred': occurred
     }
 
+
 def form_incindents(incidents: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     listofincidents = []
     for item in incidents:
         listofincidents.append(create_incident_from_log(item))
     return listofincidents
 
+
 def fetch_incidents(client: Client, fetch_time: str, queryfilter: str):
-    fetch_time = dateparser.parse(fetch_time)
-    timefrom = fetch_time.strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + 'Z'
+    fetch_time_parsed = dateparser.parse(fetch_time)
+    if fetch_time_parsed is None:
+        raise ValueError("Invalid fetch_time format")
+    timefrom = fetch_time_parsed.strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + 'Z'
     last_run = demisto.getLastRun()
     if last_run and 'start_time' in last_run:
         start_time = last_run.get('start_time')
