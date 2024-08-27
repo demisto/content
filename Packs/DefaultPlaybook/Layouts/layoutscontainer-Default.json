@@ -4190,9 +4190,7 @@
     "group": "incident",
     "id": "Default",
     "name": "Default",
-    "marketplaces": [
-        "xsoar"
-    ],
+    "marketplaces": ["xsoar"],
     "system": false,
     "version": -1,
     "fromVersion": "8.2.0",
