@@ -50,9 +50,6 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 - [AWS Lambda API Documentation](https://docs.aws.amazon.com/lambda/latest/dg/API_Reference.html)
 - [Cortex XSOAR AWS Lambda Integration](https://xsoar.pan.dev/docs/reference/integrations/aws---lambda)
 
-### Scripts
-
-Set
 
 ### Commands
 
