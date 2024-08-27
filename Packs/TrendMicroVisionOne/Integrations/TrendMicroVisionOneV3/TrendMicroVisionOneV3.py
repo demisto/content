@@ -7,7 +7,7 @@ from CommonServerUserPython import *  # noqa: F401
 
 import json
 import urllib3
-from datetime import datetime, timedelta, UTC  # type: ignore[attr-defined]
+from datetime import datetime, timedelta, UTC
 from typing import Any, TypeVar
 import pytmv1
 from pytmv1 import (
