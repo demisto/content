@@ -16,4 +16,4 @@ engineinfo: {}
 tests:
 - No tests (auto formatted)
 fromversion: 8.8.0
-comment: This script is only for the inaction of an indicator that is Enrich Excluded, it should not be used otherwise.
+comment: This script is only for meant to be used for the inaction of the button in an indicator that is Enrich Excluded, it should not be used otherwise.
