@@ -30,7 +30,7 @@ The Google Cloud Security Command Center content pack helps organizations to mon
 </p>
 <br>
 
-<h3> Logs normalization supports the following data:</h3>
+<h3> Log normalization supports the following data:</h3>
 
 <strong>Finding</strong> — A record of a threat, vulnerability, or misconfiguration that a certain service has found in Google Cloud environment. 
 Findings show the issue that was detected, the resource that is affected by the issue, and guidance on how you can address the issue.
