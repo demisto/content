@@ -22,8 +22,6 @@ Once the Lambda function execution is completed, the playbook deletes all of the
     - Workload Suspension: If the mining activity is widespread or poses a significant threat, the AWS Lambda function suspends the entire workload within the K8S environment.
 4. Cleanup: This action initiates the complete removal of all objects created for the Lambda execution for security and hardening purposes.
 
-### Required Integration
-
 #### AWS IAM (Identity and Access Management)
 - [AWS IAM API Documentation](https://docs.aws.amazon.com/IAM/latest/APIReference/Welcome.html)
 - [Cortex XSOAR AWS IAM Integration](https://cortex.marketplace.pan.dev/marketplace/details/AWSIAM/)
@@ -52,7 +50,21 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Integrations
 
-This playbook does not use any integrations.
+#### AWS IAM (Identity and Access Management)
+- [AWS IAM API Documentation](https://docs.aws.amazon.com/IAM/latest/APIReference/Welcome.html)
+- [Cortex XSOAR AWS IAM Integration](https://cortex.marketplace.pan.dev/marketplace/details/AWSIAM/)
+
+#### AWS EC2 (Elastic Compute Cloud)
+- [AWS EC2 API Documentation](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/Welcome.html)
+- [Cortex XSOAR AWS EC2 Integration](https://cortex.marketplace.pan.dev/marketplace/details/AWSEC2/)
+
+#### AWS EKS (Elastic Kubernetes Service)
+- [AWS EKS API Documentation](https://docs.aws.amazon.com/eks/latest/APIReference/Welcome.html)
+- [Cortex XSOAR AWS EKS Integration](https://cortex.marketplace.pan.dev/marketplace/details/AWSEKS/)
+
+#### AWS Lambda
+- [AWS Lambda API Documentation](https://docs.aws.amazon.com/lambda/latest/dg/API_Reference.html)
+- [Cortex XSOAR AWS Lambda Integration](https://cortex.marketplace.pan.dev/marketplace/details/AW
 
 ### Scripts
 
