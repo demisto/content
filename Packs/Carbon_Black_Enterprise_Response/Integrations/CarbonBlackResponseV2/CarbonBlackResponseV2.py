@@ -855,7 +855,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
         incident_created_time_ms = incident_created_time.timestamp()
 
         # to prevent duplicates, adding incidents with creation_time > last fetched incident
-        if last_fetch and incident_created_time_ms <= last_fetch.timestamp():
+        if last_fetch and (incident_created_time_ms <= last_fetch.timestamp()):
             demisto.debug(f'{INTEGRATION_NAME} - alert {str(alert)} was created at {incident_created_time_ms}.'
                           f' Skipping.')
             continue
