@@ -395,7 +395,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "vectrahostkeyassest",
+                                "fieldId": "vectrahostkeyasset",
                                 "height": 53,
                                 "id": "7c5adad0-4038-11ef-8aeb-832528bdc440",
                                 "index": 7,
@@ -868,7 +868,7 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_vectrahostkeyassest",
+                        "fieldId": "incident_vectrahostkeyasset",
                         "isVisible": true
                     },
                     {
