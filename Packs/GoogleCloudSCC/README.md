@@ -53,7 +53,7 @@ Findings show the issue that was detected, the resource that is affected by the 
 </p>
 <h4> Note </h4>
 <p>
-To include audit logs related to Google Cloud Security Command Center only, you will need to add inclusion filter on the log router sink. <br>
+To include audit logs related to Google Cloud Security Command Center only, you need to add an inclusion filter on the log router sink. <br>
 Add the filter <i><strong>protoPayload.serviceName="securitycenter.googleapis.com"</i></strong> <br>
 as describe in <a href="https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Ingest-logs-and-data-from-a-GCP-Pub/Sub?tocId=RyZP~~W~YWbOPGKAClIQHg">section 2.c</a>. <br>
 </p>
