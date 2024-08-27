@@ -240,6 +240,9 @@ script:
     - contextPath: Azure.Compute.UserData
       description: UserData for the VM.
       type: string
+    - contextPath: Azure.Compute.Tags
+      description: Tags associated with the VM.
+      type: string
   - arguments:
     - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
       name: subscription_id
