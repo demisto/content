@@ -616,9 +616,9 @@ def category_add(category_id, data, retaining_parent_category_data, data_type):
 
         added_data = "\n".join(f"- {item}" for item in data_list)
         hr = f"Added the following {data_type.upper()} addresses to category {category_id}:\n{added_data}\n"
-
-        retaining_data = "\n".join(f"- {item}" for item in retaining_parent_category_data_list)
-        hr += f"Added the following retaining-parent-category-{data_type} addresses to category {category_id}:\n{retaining_data}"
+        if retaining_parent_category_data_list:
+            retaining_data = "\n".join(f"- {item}" for item in retaining_parent_category_data_list)
+            hr += f"Added the following retaining-parent-category-{data_type} addresses to category {category_id}:\n{retaining_data}"
 
         entry = {
             "Type": entryTypes["note"],
@@ -758,7 +758,7 @@ def get_categories_command(args):
         if raw_category.get("urls"):
             category["URL"] = raw_category["urls"]
         if raw_category.get("dbCategorizedUrls"):
-            category["URLsRetainingParentCategory"] = raw_category["dbCategorizedUrls"]
+            category["RetainingParentCategory"] = raw_category["dbCategorizedUrls"]
         if "description" in raw_category:
             category["Description"] = raw_category["description"]
         if "configuredName" in raw_category:
@@ -766,7 +766,7 @@ def get_categories_command(args):
         categories.append(category)
     ec = {"Zscaler.Category(val.ID && val.ID === obj.ID)": categories}
     if display_urls and not ids_and_names_only:
-        headers = ["ID", "Description", "URL", "URLsRetainingParentCategory", "CustomCategory", "Name"]
+        headers = ["ID", "Description", "URL", "RetainingParentCategory", "CustomCategory", "Name"]
     else:
         headers = ["ID", "Description", "CustomCategory", "Name"]
     title = "Zscaler Categories"
