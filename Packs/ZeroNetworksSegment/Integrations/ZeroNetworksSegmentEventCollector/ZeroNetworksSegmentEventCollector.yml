@@ -10,7 +10,7 @@ configuration:
   name: url
   required: true
   type: 0
-  defaultvalue: "portal.zeronetworks.com"
+  defaultvalue: "https://portal.zeronetworks.com"
   section: Connect
 - displaypassword: API Key
   additionalinfo: The API Key to use for connection
@@ -19,23 +19,18 @@ configuration:
   hiddenusername: true
   type: 9
   section: Connect
-- defaultvalue: '[{"id":"dstRiskLevel","includeValues":["2"]}]'
-  display: Network Activity Filters
-  additionalinfo: Using filter is necessary to reduce amount of events
-  name: network_activity_filters
-  type: 0
-  required: false
-  section: Connect
 - display: Fetch network events
   name: isFetchNetwork
   required: false
   type: 8
-  section: Connect
-- display: Fetch events
-  name: isFetch
-  required: true
-  type: 8
-  section: Connect
+  section: Collect
+- defaultvalue: '[{"id":"dstRiskLevel","includeValues":["2"]}]'
+  display: Network Activity Filters
+  additionalinfo: Using filters is necessary to reduce amount of events
+  name: network_activity_filters
+  type: 0
+  required: false
+  section: Collect
 - additionalinfo: Maximum number of audit events per fetch. The default value is 10000.
   defaultvalue: '10000'
   display: Maximum audit events to fetch
