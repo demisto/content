@@ -85,7 +85,7 @@ def is_valid_sns_message(sns_payload):
     # Verify the signature
     decoded_signature = base64.b64decode(sns_payload["Signature"])
     try:
-        response = client.get(full_url=sns_payload["SigningCertURL"], resp_type='response')
+        response: requests.models.Response = client.get(full_url=sns_payload["SigningCertURL"], resp_type='response')
         response.raise_for_status()
         certificate = X509.load_cert_string(response.text)
     except Exception as e:
@@ -136,14 +136,11 @@ def is_valid_integration_credentials(credentials, request_headers, token):
         return True, header_name
 
 
-def handle_subscription_confirmation(subscribe_url) -> Response:  # pragma: no cover
+def handle_subscription_confirmation(subscribe_url) -> requests.Response:  # pragma: no cover
     demisto.debug('SubscriptionConfirmation request')
-    try:
-        return client.get(full_url=subscribe_url, resp_type='response')
-    except Exception as e:
-        demisto.error(f'Failed handling SubscriptionConfirmation: {e}')
-        return Response(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                        content='Failed handling SubscriptionConfirmation')
+    response: requests.models.Response = client.get(full_url=subscribe_url, resp_type='response')
+    response.raise_for_status()
+    return response
 
 
 def handle_notification(payload, raw_json):
@@ -215,7 +212,6 @@ async def handle_post(request: Request,
         subscribe_url = payload['SubscribeURL']
         try:
             response = handle_subscription_confirmation(subscribe_url=subscribe_url)
-            response.raise_for_status()
         except Exception as e:
             demisto.error(f'Failed handling SubscriptionConfirmation: {e}')
             return 'Failed handling SubscriptionConfirmation'
