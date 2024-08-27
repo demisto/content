@@ -810,6 +810,9 @@ def update_remote_system_command(client: Client, args: dict[str, Any], mirror_ta
             if 'xSOAR Customer Attachment' in entry.get('tags', []):
                 demisto.debug(
                     f'### update_remote_system_command entry {entry.get("id")} contains "xSOAR Customer Attachment" tag')
+            if 'xSOAR Customer Attachment' in entry.get('tags', []):
+                demisto.debug(
+                    f'### update_remote_system_command entry {entry.get("id")} contains "xSOAR Customer Attachment" tag')
             demisto.info(f"this is the tag {entry.get('tags', [])}")
             if mirror_tags.intersection(set(entry.get('tags', []))):
                 demisto.debug(f'Sending entry {entry.get("id")}')
