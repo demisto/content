@@ -117,6 +117,7 @@ class Client(BaseClient):
         )
 
     def add_incident_entry(self, incident_id: str | None, entry: dict[str, Any]):
+        demisto.debug('add_incident_entry ')
         if entry.get('type') == 3:
             path_res = demisto.getFilePath(entry.get('id'))
             full_file_name = path_res.get('name')
@@ -135,8 +136,8 @@ class Client(BaseClient):
                           f'{entry.get("contents")}')
             json_data = {
                 'contents': entry.get('contents', ""),
-                'format': entry.get('format'),
-                'investigationId': incident_id
+                'format': entry.get('format', ''),  # Provide a default value if format is not found
+                'investigationId': incident_id or ''  # Fallback to empty string if incident_id is None or empty
             }
             demisto.debug(f'add_incident_entry: the entry has inv_id {incident_id}  | {json_data=} | {entry=} ')
             try:
@@ -147,15 +148,14 @@ class Client(BaseClient):
                 )
             except Exception as e:
                 demisto.debug(str(e))
-            finally:
-                demisto.debug('got to finally section')
+                demisto.debug(f'got to finally section {incident_id=} | {entry=}')
                 json_data['format'] = 'json'
                 res = self._http_request(
                     method='POST',
                     url_suffix='/entry/formatted',
                     json_data=json.dumps(json_data)
                 )
-                demisto.debug(f'{res=}')
+                demisto.debug(f'Exception results {res=}')
         else:
             demisto.debug(f'the entry has inv_id {incident_id}\ndata {entry.get("date")}\n'
                           f'markdown {entry.get("markdown")}')
