@@ -11113,7 +11113,7 @@ class UniversalCommand:
         status=None,
         id: Optional[int] = None,
         target: Optional[str] = None
-    ) -> List[ShowJobsAllResultData]:
+    ) -> Union[list[ShowJobsAllResultData], ShowJobsAllResultData]:
         """
         Returns all jobs running on the system.
         :param topology: `Topology` instance.
@@ -11529,7 +11529,7 @@ def get_jobs(
     job_type: Optional[str] = None,
     id: Optional[str] = None,
     target: Optional[str] = None
-) -> List[ShowJobsAllResultData]:
+) -> Union[list[ShowJobsAllResultData], ShowJobsAllResultData]:
     """
     Get all the jobs from the devices in the environment, or a single job when ID is specified.
 
@@ -11955,7 +11955,7 @@ def get_topology() -> Topology:
 
 
 def dataclasses_to_command_results(
-    result: Any,
+    result: Union[list[ShowJobsAllResultData], ShowJobsAllResultData],
     empty_result_message: str = "No results.",
     override_table_name: Optional[str] = "",
     override_table_headers: Optional[List[str]] = None
