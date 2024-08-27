@@ -1,5 +1,5 @@
 import pytest
-
+import demistomock as demisto
 from FeedUnit42v2 import Client, fetch_indicators, get_indicators_command, handle_multiple_dates_in_one_field, \
     parse_indicators, parse_campaigns, \
     parse_reports_and_report_relationships, create_attack_pattern_indicator, create_course_of_action_indicators, \
@@ -484,3 +484,26 @@ def test_test_module(mocker):
     mocker.patch.object(client, 'fetch_stix_objects_from_api', side_effect=mock_get_stix_objects)
     from FeedUnit42v2 import test_module
     assert test_module(client) == "ok"
+
+
+def test_get_report_object(mocker):
+    """
+    Given
+    - A Client.
+    When
+    - call the fetch_stix_objects_from_api method
+    Then
+    - run the fetch_stix_objects_from_api method
+    - Validate the debug logs.
+    """
+    def mock_get_stix_objects(**kwargs):
+        type_ = kwargs.get('type')
+        client.objects_data[type_] = TYPE_TO_RESPONSE_FETCH[type_]
+        return TYPE_TO_RESPONSE_FETCH[type_]
+
+    client = Client(api_key='1234', verify=False)
+    mocker.patch.object(client, 'fetch_stix_objects_from_api', side_effect=mock_get_stix_objects)
+    debug_logs_mock = mocker.patch.object(demisto, 'debug')
+    client.get_report_object("object_id")
+    assert 'Unit42v2 Feed: Found more then one object for report object object_id skipping' in debug_logs_mock.call_args_list[
+        0][0]
