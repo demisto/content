@@ -7425,11 +7425,12 @@ def test_pan_os_delete_security_profile_group_command(mocker):
 @pytest.mark.parametrize(
     "profile_name, profile_type, device_group, action, threat_id, expected_xpath",
     [
+        # test cases for device_group
         (
             'name',
             'vulnerability',
             'device_group',
-            'drop',
+            'set',
             '1000',
             (
                 "/config/devices/entry[@name='localhost.localdomain']"
@@ -7441,12 +7442,104 @@ def test_pan_os_delete_security_profile_group_command(mocker):
             'name',
             'spyware',
             'device_group',
-            'default',
+            'set',
             '1000',
             (
                 "/config/devices/entry[@name='localhost.localdomain']"
                 "/device-group/entry[@name='device_group']"
                 "/profiles/spyware/entry[@name='name']/threat-exception"
+            )
+        ),
+        # test case for VSYS
+        (
+            'name',
+            'vulnerability',
+            None,
+            'set',
+            '1000',
+            (
+                "/config/devices/entry[@name='localhost.localdomain']"
+                "/vsys/entry[@name='vsys']"
+                "/profiles/vulnerability/entry[@name='name']/threat-exception"
+            )
+        ),
+        (
+            'name',
+            'spyware',
+            None,
+            'set',
+            '1000',
+            (
+                "/config/devices/entry[@name='localhost.localdomain']"
+                "/vsys/entry[@name='vsys']"
+                "/profiles/spyware/entry[@name='name']/threat-exception"
+            )
+        ),
+        # test case for EDIT action type
+        (
+            'name',
+            'spyware',
+            'device_group',
+            'edit',
+            '1000',
+            (
+                "/config/devices/entry[@name='localhost.localdomain']"
+                "/device-group/entry[@name='device_group']"
+                "/profiles/spyware/entry[@name='name']/threat-exception"
+                "/entry[@name='1000']"
+            )
+        ),
+        (
+            'name',
+            'vulnerability',
+            'device_group',
+            'edit',
+            '1000',
+            (
+                "/config/devices/entry[@name='localhost.localdomain']"
+                "/device-group/entry[@name='device_group']"
+                "/profiles/vulnerability/entry[@name='name']/threat-exception"
+                "/entry[@name='1000']"
+            )
+        ),
+        # test case for DELETE action type
+        (
+            'name',
+            'vulnerability',
+            'device_group',
+            'delete',
+            '1000',
+            (
+                "/config/devices/entry[@name='localhost.localdomain']"
+                "/device-group/entry[@name='device_group']"
+                "/profiles/vulnerability/entry[@name='name']/threat-exception"
+                "/entry[@name='1000']"
+            )
+        ),
+        (
+            'name',
+            'spyware',
+            'device_group',
+            'delete',
+            '1000',
+            (
+                "/config/devices/entry[@name='localhost.localdomain']"
+                "/device-group/entry[@name='device_group']"
+                "/profiles/spyware/entry[@name='name']/threat-exception"
+                "/entry[@name='1000']"
+            )
+        ),
+        (
+            'name',
+            'spyware',
+            None,
+            'delete',
+            '1000',
+            (
+                "/config/devices/entry[@name='localhost.localdomain']"
+                "/vsys/entry[@name='vsys']"
+                "/profiles/spyware/entry[@name='name']/threat-exception"
+                "/entry[@name='1000']"
             )
         ),
     ]
@@ -7461,6 +7554,7 @@ def test_pan_os_xpath_creation_for_exception_crud(profile_name, profile_type, de
         - Ensure the returned XPath is correctly constructed for both Vulnerability Protection and Anti Spyware profiles.
     """
     import Panorama
+    Panorama.VSYS = 'vsys'
 
     result = Panorama.build_xpath_for_profile_exception_commands(
         profile_name, profile_type, device_group, action, threat_id
