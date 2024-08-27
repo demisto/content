@@ -80,7 +80,7 @@ To limit the application's permissions to only specific mailboxes, follow the [M
 | Incident type |  | False |
 | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
 | Maximum number of incidents per fetch (up to 200). Performance might be affected by a value higher than 50. |  | False |
-| Mark fetched emails as read | Mark fetched emails as read. | False |
+| Mark fetched emails as read | | False |
 | Timeout (in seconds) for HTTP requests to Exchange Server |  | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
