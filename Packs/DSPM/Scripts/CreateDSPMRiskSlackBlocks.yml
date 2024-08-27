@@ -183,7 +183,7 @@ script: |
   def main():  # pragma: no cover
       rule_names_list = [
           "Sensitive asset open to world",
-          "Empty Storage asset"
+          "Empty storage asset"
       ]
       try:
           incident = demisto.args().get("dspm_incident")
