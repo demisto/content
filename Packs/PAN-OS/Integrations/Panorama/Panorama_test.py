@@ -7559,7 +7559,6 @@ def test_pan_os_add_profile_exception(mocker):
         - Ensure the returned response indicates the successful creation of the exception with the correct threat name and ID.
     """
     import Panorama
-    # import requests
 
     expected_text_response = '<response status="success" code="20"><msg>command succeeded</msg></response>'
 
@@ -7588,7 +7587,6 @@ def test_pan_os_edit_profile_exception(mocker):
         - Ensure the returned response indicates the successful editing of the exception with the correct threat name and ID.
     """
     import Panorama
-    import requests
     Panorama.URL = 'https://1.1.1.1:443/'
     Panorama.API_KEY = 'thisisabogusAPIKEY!'
     Panorama.DEVICE_GROUP = 'device_group'
@@ -7596,7 +7594,7 @@ def test_pan_os_edit_profile_exception(mocker):
     expected_text_response = '<response status="success" code="20"><msg>command succeeded</msg></response>'
 
     mock_response = MockedResponse(text=expected_text_response, status_code=200)
-    mocker.patch.object(requests, 'request', return_value=mock_response)
+    mocker.patch.object(Panorama, 'http_request', return_value=mock_response)
     mocker.patch.object(Panorama, 'get_threat_id_from_predefined_threats', return_value=('1000', 'threatname', 'cve'))
     command_results = Panorama.pan_os_edit_profile_exception_command(args={"profile_name": "test_spg",
                                                                            "threat_name": '1000',
@@ -7619,12 +7617,11 @@ def test_pan_os_delete_profile_exception(mocker):
         - Ensure the returned response indicates the successful deletion of the exception with the correct threat name and ID.
     """
     import Panorama
-    import requests
 
     expected_text_response = '<response status="success" code="20"><msg>command succeeded</msg></response>'
 
     mock_response = MockedResponse(text=expected_text_response, status_code=200)
-    mocker.patch.object(requests, 'request', return_value=mock_response)
+    mocker.patch.object(Panorama, 'http_request', return_value=mock_response)
     mocker.patch.object(Panorama, 'get_threat_id_from_predefined_threats', return_value=('1000', 'threatname', 'cve'))
 
     command_results = Panorama.pan_os_delete_profile_exception_command(args={"profile_name": "test_spg",
