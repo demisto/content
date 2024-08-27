@@ -559,9 +559,10 @@ def create_event_command(demisto_args: dict):
     new_event = get_new_misp_event_object(demisto_args)
     new_event = PYMISP.add_event(new_event, True)
 
-    if isinstance(new_event, dict) and new_event.get('errors'):
-        raise DemistoException(new_event.get('errors'))
-    assert isinstance(new_event, MISPEvent), "The new event is not an instance of MISPEvent"
+    if isinstance(new_event, dict):
+        if new_event.get('errors'):
+            raise DemistoException(new_event.get('errors'))
+        raise DemistoException("Unknown error occurred while creating event.")
     event_id = new_event.id
     add_attribute(event_id=event_id, internal=True, new_event=new_event, demisto_args=demisto_args)
     event = PYMISP.search(eventid=event_id)
@@ -645,7 +646,10 @@ def get_role_info():
     )
 
 
-def add_attribute(event_id: int = None, internal: bool = False, demisto_args: dict = {}, new_event: MISPEvent = None):
+def add_attribute(
+    event_id: int | None = None, internal: bool = False, demisto_args: dict = {},
+    new_event: MISPEvent | None = None
+):
     """Adding attribute to a given MISP event object
     This function can be called as an independence command or as part of another command (create event for example)
 
@@ -682,7 +686,8 @@ def add_attribute(event_id: int = None, internal: bool = False, demisto_args: di
         new_event = response[0]  # type: ignore[assignment]
         # response[0] is MISP event
 
-    assert isinstance(new_event, MISPEvent), "The new event is not an instance of MISPEvent"
+    if not isinstance(new_event, MISPEvent):
+        raise TypeError(f"Expected instance of MISPEvent, but got {type(new_event).__name__}: {new_event}")
     new_event.add_attribute(**attributes_args)
     PYMISP.update_event(event=new_event)
     if internal:
@@ -1700,7 +1705,9 @@ def set_event_attributes_command(demisto_args: dict) -> CommandResults:
         attribute_data = json.loads(demisto_args.get("attribute_data", ''))
     except Exception as e:
         raise DemistoException(f'Invalid attribute_data: \nError message: {str(e)}')
-    assert isinstance(event, MISPEvent), "The event is not an instance of MISPEvent"
+
+    if not isinstance(event, MISPEvent):
+        raise TypeError(f"Expected instance of MISPEvent, but got {type(event).__name__}: {event}")
     for event_attribute in event.attributes:
         if event_attribute["value"] not in [x["value"] for x in attribute_data]:
             event_attribute.delete()
