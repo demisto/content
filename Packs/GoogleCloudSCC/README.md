@@ -47,8 +47,8 @@ Findings show the issue that was detected, the resource that is affected by the 
 4. Connect the <i><strong>Google Cloud Platform</i></strong> data source.<br>
 5. Insert subscription name (Ingest logs and data from a GCP Pub/Sub section 3)<br>
 6. Insert credentials file (Ingest logs and data from a GCP Pub/Sub section 4)<br>
-7. Select <i><strong>Flow or Audit Logs</i></strong><br>
-8. Go to Query builder and use the dataset - google_cloud_logging_raw<br>
+7. Select <i><strong>Flow or Audit Logs</i></strong>.<br>
+8. Go to the Query builder and use the dataset - google_cloud_logging_raw.<br>
 
 </p>
 <h4> Note </h4>
