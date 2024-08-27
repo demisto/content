@@ -14140,11 +14140,6 @@ def build_xpath_for_profile_exception_commands(profile_name: str, profile_type: 
     Returns:
         The xpath.
     """
-    # exception_profile_types_map = {
-    #     'Vulnerability Protection Profile': 'vulnerability',
-    #     'Anti Spyware Profile': 'spyware'
-    # }
-    # converted_profile_type = exception_profile_types_map.get(profile_type)
     if not profile_type:
         raise DemistoException("Invalid profile_type was provided. Can be Vulnerability Protection or Anti Spyware.")
 
@@ -14188,18 +14183,14 @@ def get_threat_id_from_predefined_threats(threat: str) -> tuple[str, str, list]:
     predefined_threats = get_predefined_threats_list()
 
     for entry in predefined_threats:
-        search_keys = []
         exception_name = entry.get("threatname", "")
-        search_keys.append(exception_name.lower())
-
         extracted_id = entry["@name"]
-        search_keys.append(extracted_id)
-
         cves = entry.get("cve", {}).get("member", [])
+        
         if not isinstance(cves, list):
             cves = [cves]
-        for cve in cves:
-            search_keys.append(cve.lower())
+            
+        search_keys = [exception_name.lower(), extracted_id] + [cve.lower() for cve in cves]
 
         if threat.lower() in search_keys:
             return extracted_id, exception_name, cves
@@ -14433,12 +14424,6 @@ def pan_os_list_profile_exception_command(args: dict) -> CommandResults:
     Returns:
         A confirmation for deleting the exception.
     """
-
-    # exception_profile_types_map = {
-    #     'Vulnerability Protection Profile': 'vulnerability',
-    #     'Anti Spyware Profile': 'spyware'
-    # }
-
     profile_name = args.get('profile_name')
     results = profile_exception_crud_requests(args, ExceptionCommandType.LIST.value)
     if isinstance(results, CommandResults):
