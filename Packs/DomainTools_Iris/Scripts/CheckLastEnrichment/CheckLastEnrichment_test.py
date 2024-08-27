@@ -47,6 +47,7 @@ def test_check_last_enrichment_recent_date(mocker):
     assert results[0]["Contents"] == "no"
 
 
+@freeze_time("2024-01-01 14:00:00")
 def test_check_last_enrichment_none(mocker):
     mocker.patch.object(demisto, "args", return_value={"last_enrichment": None})
     mocker.patch.object(demisto, "results")
@@ -59,6 +60,7 @@ def test_check_last_enrichment_none(mocker):
     assert results[0]["Contents"] == "yes"
 
 
+@freeze_time("2024-01-01 14:00:00")
 def test_main_exception(mocker):
     mocker.patch.object(demisto, "args", return_value={"invalid_key": "invalid_value"})
     mocker.patch.object(demisto, "results")
