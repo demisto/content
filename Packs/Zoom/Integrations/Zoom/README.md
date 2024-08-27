@@ -1935,8 +1935,7 @@ Sends messages from your Marketplace Chatbot app on Zoom to either an individual
 | to |  The email address or user ID or member ID of the person to send a message.  | Required | 
 | channel_id |  The channel ID of the channel to send a message. | Optional | 
 | message | The message to be sent. Maximum of 1024 characters. | Required | 
-| visible_to_user | The UserID that allows a Chatbot to send a message to a group channel when it has only one designated person in that group channel to see the message. | Optional | 
-| zoom_ask | Whether to send the message as a JSON. | Optional | 
+| visible_to_user | The UserID that allows a Chatbot to send a message to a group channel when it has only one designated person in that group channel to see the message. | Optional |
 
 #### Context Output
 
