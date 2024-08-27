@@ -84,7 +84,7 @@ To configure ingestion of data from Google Cloud Security Command Center follow 
 
 <h2> Configure Cortex XSIAM </h2>
 <p>
-1. Go to marketplace and install Google Cloud SCC pack <br>
+1. Go to Marketplace and install the Google Cloud SCC pack.<br>
 2. Go to <i><strong>Data Sources</i></strong> and <i><strong>Add New Instance</i></strong> <br>
 3. Connect <i><strong>Google Cloud Platform</i></strong> data source<br>
 4. Insert subscription name (Ingest logs and data from a GCP Pub/Sub section 3)<br>
