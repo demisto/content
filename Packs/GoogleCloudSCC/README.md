@@ -17,7 +17,7 @@ Overview
 <p>
 Google Cloud Security Command Center is a platform that offers deep visibility into cloud infrastructure.
 <br>
-Google Cloud Security Command Center identifies security threats, and provides proactive measures to mitigate risks. 
+It identifies security threats, and provides proactive measures to mitigate risks. 
 <br>
 It consolidates security-related data, offers real-time monitoring and alerts, enables continuous security assessment, and provides recommendations to improve cloud security posture.
 </p>
