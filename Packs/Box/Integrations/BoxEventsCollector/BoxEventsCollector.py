@@ -84,7 +84,7 @@ class BoxEventsRequestConfig(IntegrationHTTPRequest):
     # Endpoint: https://developer.box.com/reference/get-events/
     method: Method = Method.GET
     params: BoxEventsParams   # type: ignore[assignment]
-    verify: bool = Field(True, alias='insecure')  # type: ignore[assignment]
+    verify: Optional[bool] = Field(True, alias='insecure')  # type: ignore[assignment]
 
     # validators
     _oppsite_verify = validator('verify', allow_reuse=True)(not_gate)  # type: ignore[type-var]
@@ -124,7 +124,7 @@ class BoxEventsClient(IntegrationEventsClient):
             method=Method.POST,
             url=self.authorization_url,
             data=self._create_authorization_body(),
-            verify=self.request.verify,
+            verify=self.request.verify,  # type: ignore[arg-type]
         )
 
         response = self.call(request)
