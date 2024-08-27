@@ -109,7 +109,7 @@ def parse_indicators(indicator_objects: list, feed_tags: Optional[list] = None,
     if indicator_objects:
         for indicator_object in indicator_objects:
             pattern = indicator_object.get('pattern') or ''
-            raw_name = indicator_object.get('name') or Client.get_single_pattern_value(pattern)
+            raw_name = Client.get_single_pattern_value(pattern)
 
             for key in UNIT42_TYPES_TO_DEMISTO_TYPES:
                 if pattern.startswith(f'[{key}'):  # retrieve only Demisto indicator types
@@ -121,7 +121,7 @@ def parse_indicators(indicator_objects: list, feed_tags: Optional[list] = None,
                         "fields": {
                             "firstseenbysource": indicator_object.get('created'),
                             "indicatoridentification": indicator_object.get('id'),
-                            "tags": list(set(indicator_object.get('labels') or []).union(set(feed_tags))),
+                            "tags": list(set(indicator_object.get('labels') or []).union(feed_tags)),
                             "modified": indicator_object.get('modified'),
                             "reportedby": 'Unit42',
                         }
