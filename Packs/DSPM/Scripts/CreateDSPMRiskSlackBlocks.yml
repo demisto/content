@@ -3,12 +3,11 @@ commonfields:
   version: 34
 vcShouldKeepItemLegacyProdMachine: false
 name: CreateDSPMRiskSlackBlocks
-script: |-
+script: |
   register_module_line('CreateDSPMRiskSlackBlocks', 'start', __line__())
   ### pack version: 3.4.14
 
-
-  def create_slack_block(incident, list_of_project, rule_names_dict):
+  def create_slack_block(incident, list_of_project, rule_names_list):
       # Create project options for the static_select element
       project_options = [
           {
@@ -23,7 +22,6 @@ script: |-
       ]
 
       rule_name = incident.get('ruleName')
-      remediation_details = rule_names_dict.get(rule_name, {})
 
       # Slack block structure
       block = {
@@ -63,8 +61,8 @@ script: |-
                   "type": "section",
                   "text": {
                       "type": "mrkdwn",
-                      "text": f"*remediation Description*: {incident.get('remediateDescription', 'No remediation details available.')}"
-                              f"*remediation Steps*: {incident.get('remediateSteps', 'No remediation details available.')}"
+                      "text": f"*Remediation Description*: {incident.get('remediateDescription', 'No remediation details available.')}"
+                              f"*Remediation Steps*: {incident.get('remediateSteps', 'No remediation details available.')}"
                   }
               },
               {
@@ -73,14 +71,6 @@ script: |-
                       {
                           "type": "radio_buttons",
                           "options": [
-                              # {
-                              #     "text": {
-                              #         "type": "plain_text",
-                              #         "text": "Remediate a Risk",
-                              #         "emoji": True
-                              #     },
-                              #     "value": "Remediate a Risk"
-                              # },
                               {
                                   "text": {
                                       "type": "plain_text",
@@ -155,26 +145,26 @@ script: |-
                       "emoji": True
                   }
               },
-                {
+              {
                   "type": "input",
                   "element": {
                       "type": "plain_text_input",
                       "action_id": "plain_text_input-action"
-              },
+                  },
                   "label": {
                       "type": "plain_text",
                       "text": "Jira Assignee Email",
                       "emoji": True
                   }
-               },
+              },
               {
                   "type": "divider"
               }
           ]
       }
 
-      # Add the "Remediate a Risk" radio button option if ruleName exists in rule_names_dict
-      if incident.get('ruleName') in rule_names_dict:
+      # Add the "Remediate a Risk" radio button option if ruleName exists in rule_names_list
+      if rule_name in rule_names_list:
           block['blocks'][4]['elements'][0]['options'].insert(0, {
               "text": {
                   "type": "plain_text",
@@ -191,20 +181,19 @@ script: |-
 
 
   def main():  # pragma: no cover
-      rule_names_dict = {
-          "Sensitive asset open to world": {
-              "description": "This rule identifies assets that have exposed sensitive data."
-          }
-      }
+      rule_names_list = [
+          "Sensitive asset open to world",
+          "Empty Storage asset"
+      ]
       try:
           incident = demisto.args().get("dspm_incident")
           list_of_project = demisto.args().get("list_of_project")
 
-          block = create_slack_block(incident, list_of_project,rule_names_dict)
+          block = create_slack_block(incident, list_of_project, rule_names_list)
           demisto.results(block)
 
           list_name = f"slack block of Incident ID : {incident['incidentId']}"
-          print("list name: ",list_name)
+          print("list name: ", list_name)
           demisto.executeCommand('createList', {'listName': list_name, 'listData': block})
 
           return_results(
@@ -227,6 +216,11 @@ script: |-
   register_module_line('CreateDSPMRiskSlackBlocks', 'end', __line__())
 type: python
 tags: []
+comment: This XSOAR automation script generates a Slack message block to notify users
+  of risks detected by a Data Security Posture Management (DSPM) tool. The Slack block
+  is dynamically constructed based on the details of the security incident and includes
+  options for users to take specific actions, such as creating a Jira ticket or remediating
+  the risk.
 enabled: true
 args:
 - name: dspm_incident
