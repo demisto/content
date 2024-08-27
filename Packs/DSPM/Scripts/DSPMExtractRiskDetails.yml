@@ -1,0 +1,70 @@
+commonfields:
+  id: 0b39d0d8-2c04-4a9c-8def-c7a0ccbe585d
+  version: 12
+vcShouldKeepItemLegacyProdMachine: false
+name: DSPMExtractRiskDetails
+script: |+
+  from typing import Dict, Any
+  import traceback
+
+
+  def get_incident_details_command(args):
+      incident_data = args.get("incident_object")
+      print(incident_data)
+
+
+      incident_object = {
+          "incidentId":incident_data.get('id', 'N/A'),
+          "ruleName": incident_data.get('riskName', 'N/A'),
+          "severity": incident_data.get('severity', 'N/A'),
+          "assetName": incident_data.get('assetName', 'N/A'),
+          "assetId": incident_data.get('assetId', 'N/A'),
+          "Status": incident_data.get('status', 'N/A'),
+          "projectId": incident_data.get('projectId', 'N/A'),
+          "cloudProvider": incident_data.get('cloud', 'N/A'),
+          "serviceType": incident_data.get('serviceType', 'N/A'),
+          "firstDetectedOn": incident_data.get('firstDetectedOn', 'N/A'),
+          "riskFindingId":incident_data.get('riskFindingId', 'N/A'),
+          "remediateInstruction": incident_data.get('remediateInstruction','N/A'),
+      }
+      return incident_object
+
+
+  ''' MAIN FUNCTION '''
+
+  def main():
+      try:
+          incident_details = get_incident_details_command(demisto.args())
+
+          return_results(
+                CommandResults(
+                    readable_output=tableToMarkdown("Incident Details : ", incident_details, removeNull=True),
+                    outputs_prefix="incident_object",
+                    outputs=incident_details
+                )
+              )
+      except Exception as e:
+          demisto.error(f"Error building incident object: {str(e)}")
+          return_error(f"Error building incident object: {str(e)}")
+
+
+  ''' ENTRY POINT '''
+
+
+  if __name__ in ('__main__', '__builtin__', 'builtins'):
+      main()
+
+type: python
+tags: []
+enabled: true
+args:
+- name: incident_object
+  required: true
+scripttarget: 0
+subtype: python3
+pswd: ""
+runonce: false
+dockerimage: demisto/python3:3.11.9.107902
+runas: DBotWeakRole
+engineinfo: {}
+mainengineinfo: {}
