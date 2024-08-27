@@ -2,6 +2,7 @@ from CheckLastEnrichment import main, time_check
 from CommonServerPython import *
 from freezegun import freeze_time
 
+
 @freeze_time("2024-01-01 14:00:00")
 def test_time_check_false():
     create_date = str(datetime.now().date())
