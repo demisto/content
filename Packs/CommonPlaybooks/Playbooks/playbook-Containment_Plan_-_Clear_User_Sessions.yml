@@ -412,7 +412,7 @@ tasks:
       version: -1
       name: MSGraph clear user sessions
       description: |-
-        Revoke a user session- Invalidates all the refresh tokens issued to applications for a user.
+        Revoke a user session - Invalidates all the refresh tokens issued to applications for a user.
         Permission: Directory.AccessAsUser.All(Delegated).
       script: '|||msgraph-user-session-revoke'
       type: regular
@@ -678,7 +678,7 @@ inputSections:
   - Username
   - IAMUserDomain
   name: General (Inputs group)
-  description: Generic group for inputs
+  description: Generic group for inputs.
 outputSections:
 - outputs: []
   name: General (Outputs group)

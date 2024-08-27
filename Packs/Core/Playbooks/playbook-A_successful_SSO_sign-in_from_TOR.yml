@@ -264,7 +264,7 @@ tasks:
         ## Containment Plan - Clear User Sessions
 
         This playbook is a sub-playbook within the containment plan playbook.
-        The playbook clears the users' sessions using Okta integration. (currently, the playbook supports only Okta)
+        The playbook clears the users' sessions using the Okta integration. (Currently, the playbook supports only Okta.)
       playbookName: Containment Plan - Clear User Sessions
       type: playbook
       iscommand: false
@@ -495,7 +495,7 @@ tasks:
       id: 721a81cb-bb5a-4a3d-8775-c5a03b5e52b3
       version: -1
       name: Search for related alerts by name and MITRE Technique
-      description: "This task searches for suspicious alerts related to incident by mitre techniques that may indicate a compromised user.\nFocus on identifying alerts associated with the following MITRE techniques:\n- T1566 - Phishing \n- T1621 - Multi-Factor Authentication Request Generation\n- T1110 - Brute Force\n- T1556 - Modify Authentication Process\n\nAnd the following alert:\n- \"SSO with an offensive user agent\"\n\n\n\n\n\n"
+      description: "This task searches for suspicious alerts related to incident by MITRE techniques that may indicate a compromised user.\nFocus on identifying alerts associated with the following MITRE techniques:\n- T1566 - Phishing \n- T1621 - Multi-Factor Authentication Request Generation\n- T1110 - Brute Force\n- T1556 - Modify Authentication Process\n\nAnd the following alert:\n- \"SSO with an offensive user agent\"\n\n\n\n\n\n"
       scriptName: SearchIncidentsV2
       type: regular
       iscommand: false
@@ -637,7 +637,7 @@ inputSections:
 outputSections:
 - outputs: []
   name: General (Outputs group)
-  description: Generic group for outputs
+  description: Generic group for outputs.
 outputs: []
 tests:
 - No tests (auto formatted)
