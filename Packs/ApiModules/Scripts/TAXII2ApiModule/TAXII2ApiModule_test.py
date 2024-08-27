@@ -2279,8 +2279,9 @@ def test_create_x509_certificate_object():
     "pattern, value",
     [
         ("[domain-name:value = 'www.example.com']", 'www.example.com'),
-        ("[file:hashes.'SHA-256' = 'xxxxxxxxxxxx']", 'xxxxxxxxxxxx'),
-        ("[file:hashes.'MD5' = 'xxx']", 'xxx')
+        ("[file:hashes.'SHA-256' = '0000000000000000000000000000000000000000000000000000000000000000']",
+         '0000000000000000000000000000000000000000000000000000000000000000'),
+        ("[file:hashes.'MD5' = '00000000000000000000000000000000']", '00000000000000000000000000000000')
     ],
 )
 def test_get_single_pattern_value(pattern, value):

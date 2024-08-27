@@ -1031,7 +1031,7 @@ class STIX2XSOARParser(BaseClient):
 
 
         """
-        return pattern.partition('=')[2].strip(" ']")
+        return pattern.partition(' = ')[2].strip(" ']")
 
     def parse_indicator(self, indicator_obj: dict[str, Any]) -> list[dict[str, Any]]:
         """
