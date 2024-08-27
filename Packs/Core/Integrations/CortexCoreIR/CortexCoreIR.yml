@@ -1978,13 +1978,13 @@ script:
       predefined:
         - 'true'
         - 'false'
-    - description: Whether to return Core.OriginalAlert.stateful_raw_data.events_from_decider context endpoint as a dictionary (the raw data) or as a list (improved for playbook automation) - relevant only when filter_alert_fields is set to False.
-      name: alter_events_from_decider
+    - description: Whether to return events_from_decider context output as a dictionary (the raw API response) or as a list (improved for playbook automation) - relevant only when filter_alert_fields is set to False.
+      name: events_from_decider_format
       auto: PREDEFINED
-      defaultValue: 'false'
+      defaultValue: 'dict'
       predefined:
-      - 'true'
-      - 'false'
+      - 'list'
+      - 'dict'
     description: Returns information about each alert ID.
     name: core-get-cloud-original-alerts
     outputs:

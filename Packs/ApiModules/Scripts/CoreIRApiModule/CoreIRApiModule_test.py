@@ -2541,7 +2541,7 @@ def test_filter_general_fields_with_stateful_raw_data():
     Given:
         - An alert dict with stateful_raw_data section
     When
-        - Running filter_general_fields command once with alter_events_from_decider as False and once as True.
+        - Running filter_general_fields command once with events_from_decider_as_list as False and once as True.
     Then
         - Verify expected output
     """
