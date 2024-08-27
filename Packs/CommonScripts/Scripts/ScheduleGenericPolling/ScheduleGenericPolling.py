@@ -106,10 +106,8 @@ def main():  # pragma: no cover
     if interval <= 0 or timeout <= 0:
         return_error("Interval and timeout must be positive numbers")
 
-    args_names = args.get('additionalPollingCommandArgNames').strip() \
-        if args.get('additionalPollingCommandArgNames') else None
-    args_values = args.get('additionalPollingCommandArgValues').strip() \
-        if args.get('additionalPollingCommandArgValues') else None
+    args_names = (args.get('additionalPollingCommandArgNames', '') or '').strip()
+    args_values = (args.get('additionalPollingCommandArgValues', '') or '').strip()
 
     # Verify correct dt path (does not verify condition!)
     if not demisto.dt(demisto.context(), dt):
