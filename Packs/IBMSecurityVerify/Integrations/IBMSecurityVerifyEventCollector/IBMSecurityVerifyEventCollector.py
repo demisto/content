@@ -145,7 +145,7 @@ def get_events(client: Client, args: dict) -> list[dict]:
 def fetch_events(client: Client, last_run: dict[str, str], limit: int) -> tuple[Dict, List[Dict]]:
     """
     Fetches events from the client starting from the last known event.
-    
+
     Args:
         client (Client): The client object used to communicate with the event source.
         last_run (dict): A dictionary containing the last run information, including 'last_time' and 'last_id'.
@@ -164,7 +164,7 @@ def fetch_events(client: Client, last_run: dict[str, str], limit: int) -> tuple[
         if not first_event:
             demisto.debug('No events found in the initial fetch.')
             return {}, []
-        
+
         last_run = {
             "last_time": first_event[0].get("indexed_at"),
             "last_id": first_event[0].get("id")
@@ -187,6 +187,18 @@ def fetch_events(client: Client, last_run: dict[str, str], limit: int) -> tuple[
 
 ''' MAIN FUNCTION '''
 
+def add_time_to_events(events: list[dict]):
+    """
+    Adds the _time key to the events.
+    Args:
+        events: list[dict] - list of events to add the _time key to.
+    Returns:
+        list: The events with the _time key.
+    """
+    if events:
+        for event in events:
+            create_time = arg_to_datetime(event["time"])
+            event["_time"] = create_time.strftime(DATE_FORMAT)  # type: ignore[union-attr]
 
 def main() -> None:  # pragma: no cover
     """
@@ -223,6 +235,7 @@ def main() -> None:  # pragma: no cover
 
             should_push_events = argToBoolean(args.get('should_push_events'))
             if should_push_events:
+                add_time_to_events(events)
                 send_events_to_xsiam(
                     events,
                     vendor=VENDOR,
@@ -238,6 +251,7 @@ def main() -> None:  # pragma: no cover
                 limit=limit,
             )
 
+            add_time_to_events(events)
             send_events_to_xsiam(
                 events=events,
                 vendor=VENDOR,
