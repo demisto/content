@@ -105,7 +105,10 @@ To configure ingestion of data from Google Cloud Security Command Center follow 
 
 <h4> Notes </h4>
 <p>
-* To configure Google Cloud Security Command Center you must be a user with the corresponding permissions. <br>
+* To configure Google Cloud Security Command Center you must be a user with the corresponding permissions, for example: <br>
+1. Pub/ Sub Admin.<br>
+2. Security Center Admin Viewer.<br>
+3. View Service Accounts.<br>
 * To create Continuous Exports, go to <i><strong>Security -> Settings -> CONTINUOUS EXPORTS -> CREATE PUB/ SUB EXPORT</i></strong> <br>
 After naming the <i><strong>continuous Exports</i></strong> and describing it (optional) select or create the topic. <br>
 The default <i><strong>Finding</i></strong> query returns all findings in the <i><strong>active</i></strong> state and that are not <i><strong>muted</i></strong> (mute - hides finding from default view).<br>
