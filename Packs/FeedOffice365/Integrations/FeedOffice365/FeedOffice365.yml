@@ -23,7 +23,6 @@ configuration:
   type: 16
   required: false
   section: Connect
-  advanced: true
 - defaultvalue: All
   display: Regions
   name: regions
@@ -37,14 +36,6 @@ configuration:
   required: true
   type: 16
   section: Connect
-- display: Allow Germany
-  additionalinfo: In some cases, the Germany endpoints can be unavailable for some users. By default, we exclude Germany to prevent the fetch indicators from failing.
-  name: allow_germany
-  defaultvalue: 'false'
-  type: 8
-  required: false
-  section: Connect
-  advanced: true
 - defaultvalue: All
   display: Services
   name: services
@@ -56,6 +47,13 @@ configuration:
   - All
   required: true
   type: 16
+  section: Connect
+- display: Allow Germany
+  additionalinfo: In some cases, the Germany endpoints can be unavailable for some users. By default, we exclude Germany to prevent the fetch indicators from failing.
+  name: allow_germany
+  defaultvalue: 'false'
+  type: 8
+  required: false
   section: Connect
 - additionalinfo: Indicators from this integration instance will be marked with this reputation
   defaultvalue: Good
