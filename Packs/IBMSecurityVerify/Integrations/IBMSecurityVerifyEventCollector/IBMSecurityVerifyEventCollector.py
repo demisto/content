@@ -11,11 +11,12 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 VENDOR = 'ibm'
 PRODUCT = 'security verify'
 TOKEN_EXPIRY_BUFFER = timedelta(minutes=5)
-DEFAULT_TEST = 1_000
-DEFAULT_FETCH = 10_000
-MAX_FETCH = 50_000
-MIN_FETCH = 1
+DEFAULT_LIMIT_COMMAND = 1_000
+DEFAULT_LIMIT_FETCH = 10_000
+MAX_LIMIT = 50_000
+MIN_LIMIT = 1
 
+# TODO: print
 # print(f"{demisto.params()=}")
 # print(f"{demisto.args()=}")
 
@@ -29,7 +30,6 @@ class Client(BaseClient):
         self.client_id = client_id
         self.client_secret = client_secret
         self.access_token = None
-        # self._max_fetch_validation()
 
         self._authenticate()
 
@@ -81,19 +81,19 @@ class Client(BaseClient):
         token_data = {"access_token": new_token, "expiry_time_utc": expiry_time_utc.isoformat()}
         return token_data
 
-    def search_events(self, limit: int, last_item: Optional[dict] = None) -> Dict:
+    def search_events(self, limit: int, sort_order: str, last_item: dict = {}) -> list:
         """
 
         """
+        self._max_limit_validation(limit)
         params = {
             'size': limit,
             'range_type': 'indexed_at',
             'all_events': 'yes',
-            'sort_order': 'asc',
+            'sort_order': sort_order,
+            'after_time': last_item.get("last_time"),
+            'after_id': last_item.get("last_id")
         }
-        if last_item:
-            params["after_time"] = last_item["last_time"]
-            params["after_id"] = last_item["last_id"]
 
         headers = {
             "Authorization": f"Bearer {self.access_token}",
@@ -105,11 +105,12 @@ class Client(BaseClient):
             params=params,
             headers=headers
         )
-        return response
+        events = response.get("response", {}).get("events", {}).get("events", [])
+        return events
 
-    def _max_fetch_validation(self):
-        if self.max_fetch > MAX_FETCH or self.max_fetch < MIN_FETCH:
-            raise DemistoException(f"The maximum number of events per fetch should be between 1 - {MAX_FETCH}")
+    def _max_limit_validation(self, limit):
+        if limit > MAX_LIMIT or limit < MIN_LIMIT:
+            raise DemistoException(f"The maximum number of events per fetch should be between 1 - {MAX_LIMIT}")
 
 
 def test_module(client: Client) -> str:
@@ -118,7 +119,8 @@ def test_module(client: Client) -> str:
     """
 
     try:
-        get_events(client, {})
+        args = {"limit": 1}
+        get_events(client, args)
 
     except Exception as e:
         if 'Forbidden' in str(e):
@@ -129,40 +131,58 @@ def test_module(client: Client) -> str:
     return 'ok'
 
 
-def get_events(client: Client, args: dict) -> tuple[List[Dict], CommandResults]:
+def get_events(client: Client, args: dict) -> list[dict]:
     last_id = args.get("last_id")
     last_time = args.get("last_time")
     last_item = {"last_id": last_id, "last_time": last_time}
-    limit = arg_to_number(args.get("limit")) or DEFAULT_TEST
+    limit = arg_to_number(args.get("limit")) or DEFAULT_LIMIT_COMMAND
+    sort_order = args.get("sort_order", "desc")
 
-    response = client.search_events(limit, last_item)
-    events = response.get("response", {}).get("events", {}).get("events", [])
-
+    events = client.search_events(limit, sort_order, last_item)
     return events
 
 
-# def fetch_events(client: Client, last_run: dict[str, int],
-#                  first_fetch_time, alert_status: str | None, max_events_per_fetch: int
-#                  ) -> tuple[Dict, List[Dict]]:
-#     """
-# f events that will be created in XSIAM.
-#     """
-#     prev_id = last_run.get('prev_id', None)
-#     if not prev_id:
-#         prev_id = 0
+def fetch_events(client: Client, last_run: dict[str, str], limit: int) -> tuple[Dict, List[Dict]]:
+    """
+    Fetches events from the client starting from the last known event.
+    
+    Args:
+        client (Client): The client object used to communicate with the event source.
+        last_run (dict): A dictionary containing the last run information, including 'last_time' and 'last_id'.
+        limit (int): The maximum number of events to fetch.
 
-#     events = client.search_events(
-#         prev_id=prev_id,
-#         alert_status=alert_status,
-#         limit=max_events_per_fetch,
-#         from_date=first_fetch_time,
-#     )
-#     demisto.debug(f'Fetched event with id: {prev_id + 1}.')
+    Returns:
+        tuple: A tuple containing the updated last run information and a list of events.
+    """
+    last_time = last_run.get("last_time")
+    last_id = last_run.get("last_id")
 
-#     # Save the next_run as a dict with the last_fetch key to be stored
-#     next_run = {'prev_id': prev_id + 1}
-#     demisto.debug(f'Setting next run {next_run}.')
-#     return next_run, events
+    if not last_time or not last_id:
+        demisto.debug('Last run data is missing. Fetching initial last_run.')
+
+        first_event = client.search_events(limit=1, sort_order="desc")
+        if not first_event:
+            demisto.debug('No events found in the initial fetch.')
+            return {}, []
+        
+        last_run = {
+            "last_time": first_event[0].get("indexed_at"),
+            "last_id": first_event[0].get("id")
+        }
+        demisto.debug(f'Initial last_run set to: {last_run}')
+
+    events = client.search_events(
+        limit=limit,
+        sort_order="asc",
+        last_item=last_run
+    )
+    demisto.debug(f'Fetched {len(events)} new events')
+    if events:
+        last_run = {
+            "last_time": events[-1].get("indexed_at"),
+            "last_id": events[-1].get("id")
+        }
+    return last_run, events
 
 
 ''' MAIN FUNCTION '''
@@ -181,10 +201,9 @@ def main() -> None:  # pragma: no cover
     credentials = params.get('credentials', {})
     client_id = credentials.get('identifier')
     client_secret = credentials.get('password')
-    max_fetch = arg_to_number(params.get('max_fetch')) or DEFAULT_FETCH
+    limit = arg_to_number(params.get('max_fetch')) or DEFAULT_LIMIT_FETCH
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
-    # first_fetch_time = datetime.now().isoformat()
 
     demisto.debug(f'Command being called is {command}')
     try:
@@ -200,7 +219,7 @@ def main() -> None:  # pragma: no cover
 
         elif command == 'ibm-security-verify-get-events':
             events = get_events(client, args)
-            return_results(events)
+            return_results(CommandResults(readable_output=tableToMarkdown(f"{VENDOR} Events:", events)))
 
             should_push_events = argToBoolean(args.get('should_push_events'))
             if should_push_events:
@@ -211,23 +230,21 @@ def main() -> None:  # pragma: no cover
                 )
 
         elif command == 'fetch-events':
-            pass
-        # max_fetch
-            # last_run = demisto.getLastRun()
-            # next_run, events = fetch_events(
-            #     client=client,
-            #     last_run=last_run,
-            #     first_fetch_time=first_fetch_time,
-            #     alert_status=alert_status,
-            #     max_events_per_fetch=max_fetch,
-            # )
+            last_run = demisto.getLastRun()
+            demisto.debug(f'Last_run before the fetch: {last_run}')
+            next_run, events = fetch_events(
+                client=client,
+                last_run=last_run,
+                limit=limit,
+            )
 
-            # send_events_to_xsiam(
-            #     events,
-            #     vendor=VENDOR,
-            #     product=PRODUCT
-            # )
-            # demisto.setLastRun( next_run)
+            send_events_to_xsiam(
+                events=events,
+                vendor=VENDOR,
+                product=PRODUCT
+            )
+            demisto.debug(f'last_run after the fetch {last_run}')
+            demisto.setLastRun(next_run)
 
     # Log exceptions and return errors
     except Exception as e:
