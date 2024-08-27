@@ -704,6 +704,35 @@ def test_remote_script_results(mocker, requests_mock):
     assert outputs[0].get("downloadUrl") == "https://url/1"
 
 
+def test_get_power_query_results(mocker, requests_mock):
+    """
+    Given
+        - required query, from_date and to_date arguments
+    When
+        - running sentinelone-get-power-query-results command
+    Then
+        - returns a table of result if data present
+    """
+    json_output = util_load_json('test_data/get_power_query_response.json')
+    requests_mock.get("https://usea1.sentinelone.net/web/api/v2.1/dv/events/pq-ping",
+                      json=json_output)
+    mocker.patch.object(demisto, 'params', return_value={'token': 'token',
+                                                         'url': 'https://usea1.sentinelone.net',
+                                                         'api_version': '2.1'})
+    mocker.patch.object(demisto, 'command', return_value='sentinelone-get-power-query-results')
+    mocker.patch.object(demisto, 'args', return_value={
+        'query_id': 'pq123456789',
+        'from_date': '2024-08-20T04:49:26.257525Z',
+        'to_date': '2024-08-21T04:49:26.257525Z',
+        'query': 'event.time = * | columns eventTime = event.time, agentUuid = agent.uuid, siteId = site.id'
+    })
+    mocker.patch.object(sentinelone_v2, "return_results")
+    main()
+    call = sentinelone_v2.return_results.call_args_list
+    command_results = call[0].args[0]
+    assert command_results.outputs is None
+
+
 def test_get_remote_data_command(mocker, requests_mock):
     """
     Given
