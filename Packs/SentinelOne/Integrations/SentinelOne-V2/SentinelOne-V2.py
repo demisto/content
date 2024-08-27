@@ -3376,7 +3376,7 @@ def get_power_query_output(cmd: str, interval: int, timeout: int, args: dict, qu
     This method checks if the status of the Power Query results is finished. If it is finished,
     it will return the results; otherwise, it will call the schedule command.
     """
-    if query_response.get("status") in ["FINISHED"] and query_response.get("progress") == 100:
+    if query_response.get("status") == "FINISHED" and query_response.get("progress") == 100:
         headers = get_columns_from_result(query_response.get("columns", []))
         context_entries = [dict(zip(headers, row)) for row in query_response.get("data", [])]
         readable_text = f"SentinelOne - Get Power Query Results - for ID {query_response.get('queryId', '')}"
