@@ -44,7 +44,7 @@ Findings show the issue that was detected, the resource that is affected by the 
 1. Go to Marketplace and search for <i><strong>Google Cloud Logging</i></strong>.<br>
 2. Install <i><strong>Google Cloud Logging</i></strong>.<br>
 3. Go to <i><strong>Data Sources</i></strong> and <i><strong>Add New Instance</i></strong><br>
-4. Connect <i><strong>Google Cloud Platform</i></strong> data source<br>
+4. Connect the <i><strong>Google Cloud Platform</i></strong> data source.<br>
 5. Insert subscription name (Ingest logs and data from a GCP Pub/Sub section 3)<br>
 6. Insert credentials file (Ingest logs and data from a GCP Pub/Sub section 4)<br>
 7. Select <i><strong>Flow or Audit Logs</i></strong><br>
