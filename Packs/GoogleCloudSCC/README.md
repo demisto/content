@@ -26,7 +26,7 @@ It consolidates security-related data, offers real-time monitoring and alerts, e
 
 <h2> What does this pack do?</h2>
 <p>
-Google Cloud Security Command Center pack help organizations to monitor, identify and prevent security events on Google Cloud Platform, detect vulnerabilities on Google Cloud environment and provides instructions and recommendations to improve cloud security.
+The Google Cloud Security Command Center content pack helps organizations to monitor, identify and prevent security events on Google Cloud Platform, detects vulnerabilities on Google Cloud environments and provides instructions and recommendations to improve cloud security.
 </p>
 <br>
 
