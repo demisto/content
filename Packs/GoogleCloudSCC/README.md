@@ -76,7 +76,7 @@ The recommendation will be to restrict firewall rules.
 
 <h2>Configure Google Cloud Security Command Center</h2>
  <p>
-To configure ingestion of data from Google Cloud Security Command Center follow the procedure below: <br>
+To configure ingestion of data from Google Cloud Security Command Center follow the procedure in: <br>
 <a href="https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Ingest-logs-and-data-from-a-GCP-Pub/Sub?tocId=RyZP~~W~YWbOPGKAClIQHg">Ingest logs and data from a GCP Pub/Sub</a>
 </p>
 <br> 
