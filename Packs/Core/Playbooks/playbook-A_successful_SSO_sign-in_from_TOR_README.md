@@ -47,7 +47,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| UserVerification | Specify if analyst verification is required to disable user accounts.<br/>Possible values:True/False. Default:True. | True | Optional |
+| UserVerification | Specify if analyst verification is required to disable user accounts.<br/>Possible values:True/False.  | True | Optional |
 
 ## Playbook Outputs
 
