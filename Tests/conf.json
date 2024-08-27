@@ -6139,7 +6139,6 @@
     "nightly_packs": [
         "CommonScripts",
         "CommonPlaybooks",
-        "CIRCL",
         "rasterize",
         "Phishing",
         "Base",
@@ -6166,7 +6165,6 @@
         "AlienVault_OTX",
         "MicrosoftGraphMail",
         "MISP",
-        "Threat_Crowd",
         "Slack",
         "CrowdStrikeFalconX",
         "FeedMitreAttackv2",
@@ -6176,17 +6174,17 @@
         "Shodan",
         "MailListener",
         "FeedOffice365",
-        "GenericSQL",
         "PANWComprehensiveInvestigation",
         "CortexDataLake",
         "PrismaCloud",
-        "FeedAWS",
         "AzureSecurityCenter",
         "PrismaCloudCompute",
-        "ExpanseV2",
+        "CortexXpanse",
         "PrismaSaasSecurity",
         "PaloAltoNetworks_IoT",
-        "PaloAltoNetworksAIOps"
+        "PaloAltoNetworksAIOps",
+        "Jira",
+        "Campaign"
     ],
     "unmockable_integrations": {
         "NetscoutArborSightline": "Uses timestamp",
