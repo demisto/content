@@ -6308,7 +6308,6 @@ def panorama_override_vulnerability(threatid: str, vulnerability_profile: str, d
     )
 
 
-@logger
 def panorama_get_predefined_threats_list(target: Optional[str] = None):
     """
     Get the entire list of predefined threats as a file in Demisto
@@ -14118,10 +14117,10 @@ def check_profile_type_by_given_profile_name(profile_name: str, device_group: st
             "Profile name was found both in Vulnerability Protection Profiles and in Anti Spyware Profiles. Please specify profile_type.")
 
     elif profile_name in vulnerability_protection_profile_names:
-        return 'Vulnerability Protection Profile'
+        return 'vulnerability'
 
     elif profile_name in anti_spyware_profile_names:
-        return 'Anti Spyware Profile'
+        return 'spyware'
 
     else:
         raise DemistoException("Profile name was not found in Vulnerability Protection Profiles or in Anti Spyware Profiles.")
@@ -14141,20 +14140,20 @@ def build_xpath_for_profile_exception_commands(profile_name: str, profile_type: 
     Returns:
         The xpath.
     """
-    exception_profile_types_map = {
-        'Vulnerability Protection Profile': 'vulnerability',
-        'Anti Spyware Profile': 'spyware'
-    }
-    converted_profile_type = exception_profile_types_map.get(profile_type)
-    if not converted_profile_type:
+    # exception_profile_types_map = {
+    #     'Vulnerability Protection Profile': 'vulnerability',
+    #     'Anti Spyware Profile': 'spyware'
+    # }
+    # converted_profile_type = exception_profile_types_map.get(profile_type)
+    if not profile_type:
         raise DemistoException("Invalid profile_type was provided. Can be Vulnerability Protection or Anti Spyware.")
 
     xpath = ''
     if device_group:
-        xpath = f"/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='{device_group}']/profiles/{converted_profile_type}/entry[@name='{profile_name}']/threat-exception"
+        xpath = f"/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='{device_group}']/profiles/{profile_type}/entry[@name='{profile_name}']/threat-exception"
 
     elif VSYS:
-        xpath = f"/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name='{VSYS}']/profiles/{converted_profile_type}/entry[@name='{profile_name}']/threat-exception"
+        xpath = f"/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name='{VSYS}']/profiles/{profile_type}/entry[@name='{profile_name}']/threat-exception"
 
     if action_type in [ExceptionCommandType.EDIT.value, ExceptionCommandType.DELETE.value]:
         xpath += f"/entry[@name='{extracted_id}']"
@@ -14291,8 +14290,13 @@ def profile_exception_crud_requests(args: dict, action_type: str) -> Any:
         'Source And Destination': 'source-and-destination'
     }
 
+    exception_profile_types_map = {
+        'Vulnerability Protection Profile': 'vulnerability',
+        'Anti Spyware Profile': 'spyware'
+    }
+
     profile_name = args.get('profile_name', "")
-    profile_type = args.get('profile_type', '')
+    profile_type = exception_profile_types_map.get(args.get('profile_type', ''), '')
     threat = args.get('threat', '')
     xpath_action = xpath_exceptions_actions_types_map[args.get('action', 'default')]
     packet_capture = exceptions_packet_capture_types_map.get(args.get('packet_capture', ''), '')
@@ -14430,17 +14434,17 @@ def pan_os_list_profile_exception_command(args: dict) -> CommandResults:
         A confirmation for deleting the exception.
     """
 
-    exception_profile_types_map = {
-        'Vulnerability Protection Profile': 'vulnerability',
-        'Anti Spyware Profile': 'spyware'
-    }
+    # exception_profile_types_map = {
+    #     'Vulnerability Protection Profile': 'vulnerability',
+    #     'Anti Spyware Profile': 'spyware'
+    # }
 
     profile_name = args.get('profile_name')
     results = profile_exception_crud_requests(args, ExceptionCommandType.LIST.value)
     if isinstance(results, CommandResults):
         return results
 
-    profile_type = exception_profile_types_map.get(results.get('profile_type', ''))
+    profile_type = results.get('profile_type', '')
     raw_response = results.get('raw_response', {})
     exceptions_response_list = raw_response.get('response', {}).get('result', {}).get('threat-exception', [])
     if not isinstance(exceptions_response_list, list):

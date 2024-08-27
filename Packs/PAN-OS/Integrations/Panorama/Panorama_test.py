@@ -7427,7 +7427,7 @@ def test_pan_os_delete_security_profile_group_command(mocker):
     [
         (
             'name',
-            'Vulnerability Protection Profile',
+            'vulnerability',
             'device_group',
             'drop',
             '1000',
@@ -7439,7 +7439,7 @@ def test_pan_os_delete_security_profile_group_command(mocker):
         ),
         (
             'name',
-            'Anti Spyware Profile',
+            'spyware',
             'device_group',
             'default',
             '1000',
@@ -7491,10 +7491,10 @@ def test_pan_os_check_profile_type_by_given_profile_name(mocker):
     ])
 
     result = Panorama.check_profile_type_by_given_profile_name('profile_1', 'device_group')
-    assert result == 'Vulnerability Protection Profile'
+    assert result == 'vulnerability'
 
     result = Panorama.check_profile_type_by_given_profile_name('profile_3', None)
-    assert result == 'Anti Spyware Profile'
+    assert result == 'spyware'
 
     with pytest.raises(DemistoException, match="Profile name was found both in Vulnerability Protection Profiles "
                        "and in Anti Spyware Profiles. Please specify profile_type."):
@@ -7574,7 +7574,7 @@ def test_pan_os_add_profile_exception(mocker):
     assert command_results.raw_response == {'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
     assert command_results.readable_output == (
         'Successfully created exception "threatname" with threat ID 1000 in the "test_spg" '
-        'profile of type "Vulnerability Protection Profile".'
+        'profile of type "vulnerability".'
     )
 
 
@@ -7605,7 +7605,7 @@ def test_pan_os_edit_profile_exception(mocker):
     assert command_results.raw_response == {'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
     assert command_results.readable_output == (
         'Successfully edited exception "threatname" with threat ID 1000 in the "test_spg" '
-        'profile of type "Vulnerability Protection Profile".'
+        'profile of type "vulnerability".'
     )
 
 
@@ -7634,7 +7634,7 @@ def test_pan_os_delete_profile_exception(mocker):
     assert command_results.raw_response == {'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
     assert command_results.readable_output == (
         'Successfully deleted exception "threatname" with threat ID 1000 in the "test_spg" '
-        'profile of type "Vulnerability Protection Profile".'
+        'profile of type "vulnerability".'
     )
 
 
@@ -7683,7 +7683,7 @@ def test_pan_os_list_profile_exception(mocker):
         },
             'exception_id': 'id',
             'exception_name': 'name',
-            'profile_type': 'Vulnerability Protection Profile'})
+            'profile_type': 'vulnerability'})
     )
 
     mocker.patch.object(Panorama, 'get_threat_id_from_predefined_threats', return_value=('test', 'threatname', 'cve'))
