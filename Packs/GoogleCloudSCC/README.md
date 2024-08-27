@@ -6,7 +6,7 @@
 <body>
 
 <~XSOAR>
- <a href="https://xsoar.pan.dev/docs/reference/integrations/google-cloud-scc">Google Cloud Security Command Center XSOAR integration</a>
+ <a href="https://xsoar.pan.dev/docs/reference/integrations/google-cloud-scc">Google Cloud SCC XSOAR integration</a>
 </~XSOAR>
 
 
@@ -41,12 +41,15 @@ Findings show the issue that was detected, the resource that is affected by the 
 <summary> For <a href="https://cloud.google.com/logging/docs/audit">Google Cloud audit logs normalization </a>, follow this procedure:</summary>
 <p>
 
+<a href="https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Ingest-logs-and-data-from-a-GCP-Pub/Sub?tocId=RyZP~~W~YWbOPGKAClIQHg">Ingest logs and data from a GCP Pub/Sub</a>
+<br><br>
+
 1. Go to Marketplace and search for <i><strong>Google Cloud Logging</i></strong>.<br>
 2. Install <i><strong>Google Cloud Logging</i></strong>.<br>
-3. Go to <i><strong>Data Sources</i></strong> and <i><strong>Add New Instance</i></strong><br>
+3. Go to <i><strong>Data Sources</i></strong> and <i><strong>Add New Instance</i></strong>.<br>
 4. Connect the <i><strong>Google Cloud Platform</i></strong> data source.<br>
-5. Insert subscription name (Ingest logs and data from a GCP Pub/Sub section 3)<br>
-6. Insert credentials file (Ingest logs and data from a GCP Pub/Sub section 4)<br>
+5. Insert subscription name.<br>
+6. Insert credentials file.<br>
 7. Select <i><strong>Flow or Audit Logs</i></strong>.<br>
 8. Go to the Query builder and use the dataset - google_cloud_logging_raw.<br>
 
@@ -57,12 +60,14 @@ To include audit logs related to Google Cloud Security Command Center only, you 
 Add the filter <i><strong>protoPayload.serviceName="securitycenter.googleapis.com"</i></strong> <br>
 as describe in <a href="https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Ingest-logs-and-data-from-a-GCP-Pub/Sub?tocId=RyZP~~W~YWbOPGKAClIQHg">section 2.c</a>. <br>
 </p>
-
-<a href="https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Ingest-logs-and-data-from-a-GCP-Pub/Sub?tocId=RyZP~~W~YWbOPGKAClIQHg">Ingest logs and data from a GCP Pub/Sub</a>
 </details>
 <br>
 
-<h2>Sample Use Cases</h2>
+<details>
+<summary> 
+For sample use cases click here.
+</summary>
+<h3>Use Cases</h3>
 <p>
 1. <strong>Vulnerability findings - Public bucket ACL:</strong> When a cloud storage bucket is detected as publicly accessible (that means that anyone can read/ edit the content of the bucket) the user will be notified about this event and will get a recommendation on how to act regarding this issue. <br> 
 Usually for this type of event, you will need to remove users from the bucket's members list.
@@ -71,6 +76,9 @@ Usually for this type of event, you will need to remove users from the bucket's 
 2. <strong>Vulnerability findings - Open RDP Port:</strong> When a firewall configuration is set to have an open RDP port that allows connections from all IP addresses on TCP | UDP port 3389. <br>
 The recommendation will be to restrict firewall rules.
 </p>
+
+</details>
+
 <br>
 
 
@@ -106,21 +114,9 @@ The default <i><strong>Finding</i></strong> query returns all findings in the <i
 
 </p>
 <br>
-
- <br>
  
-
 </body>
 </html>
-
-
-  
-
-
-<br>
-<br>
-
-
-
  
+
 </~XSIAM>
