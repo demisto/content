@@ -64,7 +64,7 @@ as describe in <a href="https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/
 
 <h2>Sample Use Cases</h2>
 <p>
-1. <strong>Vulnerability findings - Public bucket ACL:</strong> When a cloud storage bucket is detected as publicly accessible (that means that anyone can read/ edit the content of the bucket) the user will notified about this event and will get a recommendation on how to act regarding this issue. <br> 
+1. <strong>Vulnerability findings - Public bucket ACL:</strong> When a cloud storage bucket is detected as publicly accessible (that means that anyone can read/ edit the content of the bucket) the user will be notified about this event and will get a recommendation on how to act regarding this issue. <br> 
 usually for this type of event, you will need to remove users from the bucket's members list
 </p>
 <p>
