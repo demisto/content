@@ -330,23 +330,23 @@ def test_get_entitlements(client, mock_http_request):
     assert mock_http_request.call_count == 1
 
 
-# def test_yield_indicators(client, mock_http_request):
-#     """Test the yield_indicators generator."""
-#     # Mock multiple API responses with pagination
-#     mock_responses = [
-#         {"indicators": [{"id": 1}, {"id": 2}], "next": "page2"},
-#         {"indicators": [{"id": 3}]},  # No next page
-#     ]
-#     mock_http_request.side_effect = mock_responses
+def test_yield_indicators(client, mock_http_request):
+    """Test the yield_indicators generator."""
+    # Mock multiple API responses with pagination
+    mock_responses = [
+        {"indicators": [{"id": 1}, {"id": 2}], "next": "page2"},
+        {"indicators": [{"id": 3}]},  # No next page
+    ]
+    mock_http_request.side_effect = mock_responses
 
-#     # Iterate over the generator and check the results
-#     all_indicators = []
-#     for i in client.yield_indicators(0, 100, 1):
-#         all_indicators.append(i)
-#     assert all_indicators == [{"id": 1}, {"id": 2}, {"id": 3}]
+    # Iterate over the generator and check the results
+    all_indicators = []
+    for i in client.yield_indicators(0, 100, 2, 80):
+        all_indicators.append(i)
+    assert all_indicators == [{"id": 1}, {"id": 2}, {"id": 3}]
 
-#     # Ensure _http_request is called with the correct parameters and pagination
-#     assert mock_http_request.call_count == 2
+    # Ensure _http_request is called with the correct parameters and pagination
+    assert mock_http_request.call_count == 2
 
 
 @pytest.mark.parametrize(

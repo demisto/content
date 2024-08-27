@@ -8,6 +8,7 @@ commonfields:
 configuration:
 - defaultvalue: 'true'
   display: Fetch indicators
+  additionalinfo: 'Defines if the integration should check Mandiant for new indicators'
   name: feed
   type: 8
   required: false
@@ -91,7 +92,8 @@ configuration:
   type: 0
   required: false
 - name: feedExpirationPolicy
-  display: ''
+  display: 'Feed Expiration Policy'
+  additionalinfo: Defines how expiration for an indicator created by the Feed will be managed
   options:
   - never
   - interval
@@ -100,14 +102,16 @@ configuration:
   type: 17
   required: false
 - name: feedExpirationInterval
-  display: ''
+  display: 'Feed Expiration Interval'
+  additionalinfo: 'Defines the expiration date based on the number of days after an indicator is created / updated when the Feed Expiration Policy is set to `interval`'
   type: 1
   required: false
 - defaultvalue: '240'
   display: Feed Fetch Interval
   name: feedFetchInterval
+  additionalinfo: 'How frequently the Feed should check Mandiant for new indicators'
   type: 19
-  required: false
+  required: true
 - additionalinfo: Incremental feeds pull only new or modified indicators that have been sent from the integration. The determination if the indicator is new or modified happens on the 3rd-party vendor's side, so only indicators that are new or modified are sent to Cortex XSOAR. Therefore, all indicators coming from these feeds are labeled new or modified.
   defaultvalue: 'true'
   display: Incremental feed
