@@ -11125,11 +11125,12 @@ class UniversalCommand:
         result_data = []
         for device in topology.all(filter_string=device_filter_str, target=target):
             command = UniversalCommand.SHOW_JOBS_ID_PREFIX.format(id) if id else UniversalCommand.SHOW_JOBS_COMMAND
+            demisto.debug(f'{command}')
             response = run_op_command(device, command)
 
             for job in response.findall("./result/job"):
-                result_data_obj: ShowJobsAllResultData = dataclass_from_element(device, ShowJobsAllResultData,
-                                                                                job)
+                demisto.debug(f'{job=}')
+                result_data_obj: ShowJobsAllResultData = dataclass_from_element(device, ShowJobsAllResultData, job)
 
                 result_data.append(result_data_obj)
 
