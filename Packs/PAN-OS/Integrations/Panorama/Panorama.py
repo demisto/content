@@ -14186,10 +14186,10 @@ def get_threat_id_from_predefined_threats(threat: str) -> tuple[str, str, list]:
         exception_name = entry.get("threatname", "")
         extracted_id = entry["@name"]
         cves = entry.get("cve", {}).get("member", [])
-        
+
         if not isinstance(cves, list):
             cves = [cves]
-            
+
         search_keys = [exception_name.lower(), extracted_id] + [cve.lower() for cve in cves]
 
         if threat.lower() in search_keys:
