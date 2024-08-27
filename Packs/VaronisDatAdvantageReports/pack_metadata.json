@@ -1,0 +1,21 @@
+{
+    "name": "Varonis DatAdvantage Reports",
+    "description": "Leverages the Varonis DatAdvantage Reports API. Allows users to submit queries and retrieve reports on the Varonis DSP.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "HeimDOS",
+    "url": "",
+    "email": "",
+    "created": "2024-08-27T20:08:10Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "mrogerspan"
+    ]
+}
