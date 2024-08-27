@@ -636,7 +636,8 @@ def get_mitre_value_from_id(client, args):
                 sub_technique_attack_id = attack_id[:5]
                 parent_object = list(filter(lambda attack_pattern_obj:
                                             filter_attack_pattern_object_by_attack_id(sub_technique_attack_id,
-                                                                                      attack_pattern_obj), attack_pattern_objects))
+                                                                                      attack_pattern_obj),
+                                            attack_pattern_objects))
                 parent_name = parent_object[0]['name']
 
                 attack_pattern_name = f'{parent_name}: {attack_pattern_name}'
