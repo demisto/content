@@ -38,7 +38,7 @@ Findings show the issue that was detected, the resource that is affected by the 
 <br>
 
 <details>
-<summary> For <a href="https://cloud.google.com/logging/docs/audit">Google Cloud audit logs</a> normalization follow this procedure</summary>
+<summary> For <a href="https://cloud.google.com/logging/docs/audit">Google Cloud audit logs normalization </a>, follow this procedure:</summary>
 <p>
 
 1. Go to Marketplace and search for <i><strong>Google Cloud Logging</i></strong>.<br>
