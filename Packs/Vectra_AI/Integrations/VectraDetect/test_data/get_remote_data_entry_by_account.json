@@ -1,0 +1,428 @@
+[
+    {
+        "_vectra_specific": {
+            "UI_URL": "https://vectra.test/accounts/107?pivot=Vectra_AI-XSOAR-2.0.0",
+            "entity_type": "account"
+        },
+        "account_type": [
+            "o365"
+        ],
+        "assignment": {
+            "account_id": 107,
+            "assigned_by": {
+                "id": 52,
+                "username": "cds_xsoar"
+            },
+            "assigned_to": {
+                "id": 20,
+                "username": "admin"
+            },
+            "date_assigned": "2024-07-11T05:40:56Z",
+            "date_resolved": "",
+            "events": [
+                {
+                    "actor": 52,
+                    "assignment_id": 13,
+                    "context": {
+                        "entity_c_score": 0,
+                        "entity_t_score": 0,
+                        "to": 20
+                    },
+                    "datetime": "2024-07-11T05:40:56Z",
+                    "event_type": "created"
+                }
+            ],
+            "host_id": null,
+            "id": 13,
+            "outcome": {
+                    "title": ""
+                },
+                "resolved_by": {
+                    "username": ""
+                },
+            "triaged_detections": {}
+        },
+        "assignment_details": {
+            "account_id": 107,
+            "assigned_by": {
+                "id": 52,
+                "username": "cds_xsoar"
+            },
+            "assigned_to": {
+                "id": 20,
+                "username": "admin"
+            },
+            "date_assigned": "2024-07-11T05:40:56Z",
+            "date_resolved": "",
+            "events": [
+                {
+                    "actor": 52,
+                    "assignment_id": 13,
+                    "context": {
+                        "entity_c_score": 0,
+                        "entity_t_score": 0,
+                        "to": 20
+                    },
+                    "datetime": "2024-07-11T05:40:56Z",
+                    "event_type": "created"
+                }
+            ],
+            "host_id": null,
+            "id": 13,
+            "outcome": {
+                "title": ""
+            },
+            "resolved_by": {
+                "username": ""
+            },
+            "triaged_detections": {}
+        },
+        "associated_accounts": [
+            "O365:darcy@corp.example.com"
+        ],
+        "calculated_severity": 2,
+        "certainty": 58,
+        "detection_details": [
+            {
+                "_doc_modified_ts": "2022-07-11T07:01:42.553031",
+                "assigned_date": null,
+                "assigned_to": null,
+                "campaign_summaries": [],
+                "category": "COMMAND & CONTROL",
+                "certainty": 70,
+                "created_timestamp": "2022-07-09T13:42:45Z",
+                "custom_detection": null,
+                "description": null,
+                "detection": "Azure AD Suspicious Sign-On",
+                "detection_category": "COMMAND & CONTROL",
+                "detection_type": "Azure AD Suspicious Sign-On",
+                "url": "https://vectra.test/detections/14?pivot=Vectra_AI-XSOAR-2.0.0",
+                "filtered_by_ai": false,
+                "filtered_by_rule": false,
+                "filtered_by_user": false,
+                "first_timestamp": "2022-07-09T13:42:22Z",
+                "grouped_details": [
+                    {
+                        "application": "Skype for Business Online",
+                        "browser": "Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:24.0) Gecko/20100101 Firefox/24.0",
+                        "city": "South Brisbane",
+                        "client_application": "Office 365 Exchange Online",
+                        "country": "Australia",
+                        "device_name": "",
+                        "last_timestamp": "2022-07-09T13:45:53Z",
+                        "mfa_status": "notApplied",
+                        "os": "Linux",
+                        "previous_countries": [
+                            "United States of America"
+                        ],
+                        "previous_device_names": [
+                            "Windows-Conrad-laptop",
+                            "Android-Conrad-phone"
+                        ],
+                        "previous_os_browsers": [
+                            {
+                                "browser": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103 Safari/537.36",
+                                "os": "Windows 10"
+                            },
+                            {
+                                "browser": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4103 Safari/537.36",
+                                "os": "Windows 10"
+                            },
+                            {
+                                "browser": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4103 Safari/537.36",
+                                "os": "Windows 10"
+                            },
+                            {
+                                "browser": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240 Safari/537.36",
+                                "os": "Windows 10"
+                            }
+                        ],
+                        "reasons": [
+                            "rare IP",
+                            "rare device",
+                            "rare location",
+                            "concurrent session",
+                            "fast traveler"
+                        ],
+                        "src_ip": "101.162.72.123",
+                        "state": "QLD"
+                    },
+                    {
+                        "application": "Skype for Business Online",
+                        "browser": "Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:24.0) Gecko/20100101 Firefox/24.0",
+                        "city": "South Brisbane",
+                        "client_application": "Office 365 Exchange Online",
+                        "country": "Australia",
+                        "device_name": "",
+                        "last_timestamp": "2022-07-09T13:42:22Z",
+                        "mfa_status": "notApplied",
+                        "os": "Linux",
+                        "previous_countries": [
+                            "United States of America"
+                        ],
+                        "previous_device_names": [
+                            "Windows-Conrad-laptop",
+                            "Android-Conrad-phone"
+                        ],
+                        "previous_os_browsers": [
+                            {
+                                "browser": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103 Safari/537.36",
+                                "os": "Windows 10"
+                            },
+                            {
+                                "browser": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4103 Safari/537.36",
+                                "os": "Windows 10"
+                            },
+                            {
+                                "browser": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4103 Safari/537.36",
+                                "os": "Windows 10"
+                            },
+                            {
+                                "browser": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240 Safari/537.36",
+                                "os": "Windows 10"
+                            }
+                        ],
+                        "reasons": [
+                            "rare IP",
+                            "rare device",
+                            "rare location",
+                            "concurrent session",
+                            "fast traveler"
+                        ],
+                        "src_ip": "101.162.72.123",
+                        "state": "QLD"
+                    }
+                ],
+                "groups": [],
+                "id": 14,
+                "is_custom_model": false,
+                "is_marked_custom": false,
+                "is_targeting_key_asset": false,
+                "is_triaged": false,
+                "last_timestamp": "2022-07-09T13:45:53Z",
+                "note": null,
+                "note_modified_by": null,
+                "note_modified_timestamp": null,
+                "sensor": "t3gtos4d",
+                "sensor_name": "Sensor_A",
+                "src_account": {
+                    "certainty": 85,
+                    "id": 9,
+                    "name": "O365:conrad@corp.example.com",
+                    "privilege_category": null,
+                    "privilege_level": null,
+                    "threat": 80,
+                    "url": "http://localhost:4080/api/v2.1/accounts/9"
+                },
+                "src_host": null,
+                "src_ip": "101.162.72.123",
+                "src_linked_account": {
+                    "certainty": 88,
+                    "id": 7,
+                    "name": "conrad@corp.example.com",
+                    "privilege_category": "Low",
+                    "privilege_level": 1,
+                    "threat": 82,
+                    "url": "http://localhost:4080/api/v2.2/accounts/7"
+                },
+                "state": "active",
+                "summary": {
+                    "client_applications": [
+                        "Office 365 Exchange Online"
+                    ],
+                    "countries": [
+                        "Australia"
+                    ],
+                    "description": "A successful but suspicious sign-on to this account was detected.",
+                    "mfa_status": [
+                        "notApplied"
+                    ],
+                    "oss": [
+                        "Linux"
+                    ],
+                    "reasons": [
+                        "rare IP",
+                        "rare device",
+                        "rare location",
+                        "concurrent session",
+                        "fast traveler"
+                    ],
+                    "src_ips": [
+                        "101.162.72.123"
+                    ]
+                },
+                "tags": [],
+                "targets_key_asset": false,
+                "threat": 80,
+                "triage_rule_id": null
+            }
+        ],
+        "detection_set": [
+            "https://example.com/api/v2.2/detections/14"
+        ],
+        "detection_summaries": [
+            {
+                "assigned_date": "2024-07-11T05:40:56Z",
+                "assigned_to": "admin",
+                "certainty": 70,
+                "detection_category": "example_category",
+                "detection_id": 14,
+                "detection_type": "Azure AD Newly Created Admin Account",
+                "detection_url": "https://example.com/api/v2.5/detections/14",
+                "is_targeting_key_asset": false,
+                "is_triaged": true,
+                "state": "active",
+                "summary": {
+                    "actor_accounts": [
+                        "serviceprincipal_dummy_account"
+                    ],
+                    "description": "This account was created and given administrative roles shortly afterwards.",
+                    "roles": [
+                        "TenantAdmins"
+                    ]
+                },
+                "tags": [
+                    "MDR - Monitoring - 2024-07-10"
+                ],
+                "threat": 80
+            }
+        ],
+        "id": 107,
+        "last_detection_timestamp": "2024-07-10T16:12:38Z",
+        "name": "O365:darcy@corp.example.com",
+        "groups": [
+            {
+                "id": 1,
+                "name": "Cognito - Box",
+                "description": "Domains used by the Box service",
+                "last_modified": "2023-05-31T13:57:53Z",
+                "last_modified_by": "cognito",
+                "type": "domain",
+                "members": [
+                    "*.abc.com",
+                    "*.xyz.net"
+                ],
+                "rules": [
+                    {
+                        "triage_category": "Box",
+                        "id": 175,
+                        "description": "data storage to Box service"
+                    }
+                ],
+                "importance": "medium",
+                "cognito_managed": true
+            },
+            {
+                "id": 8,
+                "name": "Cognito - IPAM",
+                "description": "IPAM, created by Cognito",
+                "last_modified": "2023-08-18T09:16:54Z",
+                "last_modified_by": "cognito",
+                "type": "host",
+                "members": [
+                    {
+                        "is_key_asset": false,
+                        "id": 97,
+                        "name": "IP-0.0.0.0",
+                        "url": "https://server_url.com/api/v2.5/hosts/97"
+                    },
+                    {
+                        "is_key_asset": false,
+                        "id": 212,
+                        "name": "IP-0.0.0.1",
+                        "url": "https://server_url.com/api/v2.5/hosts/212"
+                    }
+                ],
+                "rules": [
+                    {
+                        "triage_category": "Expected IPAM Behavior",
+                        "id": 189,
+                        "description": "Expected behavior from these devices"
+                    },
+                    {
+                        "triage_category": "Expected IPAM Behavior",
+                        "id": 193,
+                        "description": "Expected behavior from these devices"
+                    }
+                ],
+                "importance": "medium"
+            },
+            {
+                "id": 16,
+                "name": "Cognito - Guest Wifi",
+                "description": "IP space used by Guest Wifi",
+                "last_modified": "2023-08-18T08:55:54Z",
+                "last_modified_by": "cognito",
+                "type": "ip",
+                "members": [
+                    "0.0.0.0",
+                    "0.0.0.1"
+                ],
+                "rules": [],
+                "importance": "medium",
+                "cognito_managed": false
+            },
+            {
+                "id": 22,
+                "name": "Dev-Group-Account-High",
+                "description": "",
+                "last_modified": "2023-08-25T10:17:37Z",
+                "last_modified_by": "cognito",
+                "type": "account",
+                "members": [
+                    {
+                        "uid": "O300:service-principal_00000000-0000-0000-0000-000000000001"
+                    },
+                    {
+                        "uid": "administrator@fictotech.com"
+                    }
+                ],
+                "rules": [],
+                "importance": "high"
+            }
+        ],
+        "note": "MDR - 2024-07-10\n\nVectra MXDR is utilizing advanced AI-driven prioritization to more effectively determine which entities have a high potential for doing damage to business operations.",
+        "note_modified_by": "vectra_mdr",
+        "note_modified_timestamp": "2024-07-10T15:37:22Z",
+        "notes": [
+            {
+                "created_by": "vectra_mdr",
+                "date_created": "2024-07-10T15:37:22Z",
+                "date_modified": null,
+                "id": 1963,
+                "modified_by": null,
+                "note": "MDR - 2024-07-10\n\nVectra MXDR is utilizing advanced AI-driven prioritization to more effectively determine which entities have a high potential for doing damage to business operations."
+            }
+        ],
+        "past_assignments": [],
+        "privilege_category": null,
+        "privilege_level": null,
+        "probable_home": null,
+        "sensors": [
+            "g7pv84nd"
+        ],
+        "severity": "Medium",
+        "state": "active",
+        "subaccounts": [
+            "O365:darcy@corp.example.com"
+        ],
+        "tags": [
+            "MDR - Monitoring - 2024-07-10"
+        ],
+        "threat": 30,
+        "url": "https://example.com/api/v2.5/accounts/107"
+    },
+    {
+        "Contents": {
+            "dbotIncidentReopen": true
+        },
+        "ContentsFormat": "json",
+        "Type": 1
+    },
+    {
+        "Contents": "[Mirrored From Vectra]\nAdded By: vectra_mdr\nAdded At: 2024-07-10T15:37:22Z UTC\nNote: \nMDR - 2024-07-10\n\nVectra MXDR is utilizing advanced AI-driven prioritization to more effectively determine which entities have a high potential for doing damage to business operations.",
+        "ContentsFormat": "markdown",
+        "Note": true,
+        "Type": 1
+    }
+]

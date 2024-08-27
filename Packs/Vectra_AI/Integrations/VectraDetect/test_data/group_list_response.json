@@ -1,0 +1,96 @@
+{
+    "count": 4,
+    "next": null,
+    "previous": null,
+    "results": [
+        {
+            "id": 1,
+            "name": "Cognito - Box",
+            "description": "Domains used by the Box service",
+            "last_modified": "2023-05-31T13:57:53Z",
+            "last_modified_by": "cognito",
+            "type": "domain",
+            "members": [
+                "*.abc.com",
+                "*.xyz.net"
+            ],
+            "rules": [
+                {
+                    "triage_category": "Box",
+                    "id": 175,
+                    "description": "data storage to Box service"
+                }
+            ],
+            "importance": "medium",
+            "cognito_managed": true
+        },
+        {
+            "id": 8,
+            "name": "Cognito - IPAM",
+            "description": "IPAM, created by Cognito",
+            "last_modified": "2023-08-18T09:16:54Z",
+            "last_modified_by": "cognito",
+            "type": "host",
+            "members": [
+                {
+                    "is_key_asset": false,
+                    "id": 97,
+                    "name": "IP-0.0.0.0",
+                    "url": "https://server_url.com/api/v2.5/hosts/97"
+                },
+                {
+                    "is_key_asset": false,
+                    "id": 212,
+                    "name": "IP-0.0.0.1",
+                    "url": "https://server_url.com/api/v2.5/hosts/212"
+                }
+            ],
+            "rules": [
+                {
+                    "triage_category": "Expected IPAM Behavior",
+                    "id": 189,
+                    "description": "Expected behavior from these devices"
+                },
+                {
+                    "triage_category": "Expected IPAM Behavior",
+                    "id": 193,
+                    "description": "Expected behavior from these devices"
+                }
+            ],
+            "importance": "medium"
+        },
+        {
+            "id": 16,
+            "name": "Cognito - Guest Wifi",
+            "description": "IP space used by Guest Wifi",
+            "last_modified": "2023-08-18T08:55:54Z",
+            "last_modified_by": "cognito",
+            "type": "ip",
+            "members": [
+                "0.0.0.0",
+                "0.0.0.1"
+            ],
+            "rules": [],
+            "importance": "medium",
+            "cognito_managed": false
+        },
+        {
+            "id": 22,
+            "name": "Dev-Group-Account-High",
+            "description": "",
+            "last_modified": "2023-08-25T10:17:37Z",
+            "last_modified_by": "cognito",
+            "type": "account",
+            "members": [
+                {
+                    "uid": "O300:service-principal_00000000-0000-0000-0000-000000000001"
+                },
+                {
+                    "uid": "administrator@fictotech.com"
+                }
+            ],
+            "rules": [],
+            "importance": "high"
+        }
+    ]
+}
