@@ -378,10 +378,10 @@ script:
       type: boolean
     - contextPath: Zscaler.Category.URL
       description: The URL of the category.
-      type: List
+      type: string
     - contextPath: Zscaler.Category.RetainingParentCategory
-      description: The URL of the retaining parent category.
-      type: List
+      description: The URLs of the retaining parent category.
+      type: string
     - contextPath: Zscaler.Category.Description
       description: The description of the category.
       type: string

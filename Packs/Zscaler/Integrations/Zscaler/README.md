@@ -618,8 +618,8 @@ Retrieves a list of all categories.
 |------------------------------------------|----------|---------------------------------------------------------------|
 | Zscaler.Category.ID                      | string   | The ID of the category.                                       | 
 | Zscaler.Category.CustomCategory          | boolean  | True, if the category is a custom category. Otherwise, false. | 
-| Zscaler.Category.URL                     | List     | The URL of the category.                                      | 
-| Zscaler.Category.RetainingParentCategory | List     | The URL of the retaining parent category.                     | 
+| Zscaler.Category.URL                     | string   | The URL of the category.                                      | 
+| Zscaler.Category.RetainingParentCategory | string   | The URLs of the retaining parent category.                    | 
 | Zscaler.Category.Description             | string   | The description of the category.                              | 
 | Zscaler.Category.Name                    | string   | The name of the category.                                     | 
 
