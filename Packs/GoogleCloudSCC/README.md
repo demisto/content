@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Google Cloud Security Command Center</title>
+<h1>Google Cloud Security Command Center</h1>
 </head>
 <body>
-<p> 
+
 <~XSOAR>
  <a href="https://xsoar.pan.dev/docs/reference/integrations/google-cloud-scc">Google Cloud Security Command Center XSOAR integration</a>
 </~XSOAR>
-</p>
+
 
 <h2>
 Overview
