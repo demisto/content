@@ -7561,8 +7561,6 @@ def test_pan_os_add_profile_exception(mocker):
     import Panorama
 
     mock_response = {'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
-
-    # mock_response = MockedResponse(text=expected_text_response, status_code=200)
     mocker.patch.object(Panorama, 'http_request', return_value=mock_response)
     mocker.patch.object(Panorama, 'get_threat_id_from_predefined_threats', return_value=('1000', 'threatname', 'cve'))
 
@@ -7591,9 +7589,7 @@ def test_pan_os_edit_profile_exception(mocker):
     Panorama.API_KEY = 'thisisabogusAPIKEY!'
     Panorama.DEVICE_GROUP = 'device_group'
 
-    expected_text_response = '<response status="success" code="20"><msg>command succeeded</msg></response>'
-
-    mock_response = MockedResponse(text=expected_text_response, status_code=200)
+    mock_response = {'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
     mocker.patch.object(Panorama, 'http_request', return_value=mock_response)
     mocker.patch.object(Panorama, 'get_threat_id_from_predefined_threats', return_value=('1000', 'threatname', 'cve'))
     command_results = Panorama.pan_os_edit_profile_exception_command(args={"profile_name": "test_spg",
@@ -7618,9 +7614,7 @@ def test_pan_os_delete_profile_exception(mocker):
     """
     import Panorama
 
-    expected_text_response = '<response status="success" code="20"><msg>command succeeded</msg></response>'
-
-    mock_response = MockedResponse(text=expected_text_response, status_code=200)
+    mock_response = {'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
     mocker.patch.object(Panorama, 'http_request', return_value=mock_response)
     mocker.patch.object(Panorama, 'get_threat_id_from_predefined_threats', return_value=('1000', 'threatname', 'cve'))
 
