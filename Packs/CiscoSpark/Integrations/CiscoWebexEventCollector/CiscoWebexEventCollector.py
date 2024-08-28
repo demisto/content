@@ -472,6 +472,9 @@ def main() -> None:  # pragma: no cover
 
     demisto.debug(f'Command being called is {demisto.command()}')
 
+    if command == 'cisco-webex-oauth-start':
+        remove_integration_context_for_user(args.get('user'))
+
     try:
         admin_client = AdminClient(
             url=base_url,
@@ -499,7 +502,6 @@ def main() -> None:  # pragma: no cover
 
         elif demisto.command() == 'cisco-webex-oauth-start':
             client = admin_client if args.get('user') == 'admin' else compliance_officer_client
-            remove_integration_context_for_user(client.user)
             result = oauth_start(client)
             return_results(result)
 
