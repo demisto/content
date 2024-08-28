@@ -24,7 +24,8 @@ DEFAULT_MAX_FETCH = 200
 
 def remove_integration_context_for_user(user: str):
     """
-    Remove integration context for a user
+    Remove integration context for a user.
+    Used when running the oath-start command to avoid using the deprecated access token saved in the context data.
     Args:
         user: The user to remove the integration context for.
     """
