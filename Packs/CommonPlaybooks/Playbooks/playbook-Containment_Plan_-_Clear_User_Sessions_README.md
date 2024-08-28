@@ -22,10 +22,10 @@ This playbook does not use any integrations.
 
 ### Commands
 
-* setParentIncidentContext
-* okta-clear-user-sessions
 * msgraph-user-get
+* okta-clear-user-sessions
 * okta-get-user
+* setParentIncidentContext
 * msgraph-user-session-revoke
 
 ## Playbook Inputs

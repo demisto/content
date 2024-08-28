@@ -5,18 +5,26 @@ This playbook is designed to handle the following alerts:
 The playbook executes the following stages:
 
 Early Containment:
-- Clear/revoke the user sessions and force re-authentication.
+- The playbooks will perform early containment actions by clearing\revoking user sessions and enforcing re-authentication to terminate the connection from the Tor exit node and verify the user's identity. 
+Depending on the alert source, the playbook will use either
+Azure Active Directory Users or Okta v2 integrations to clear the user sessions.
 
 Investigation:
+During the alert investigation, the playbook will perform the following:
 - Checks the user's risk score.
-- Checks for suspicious user agent usage within the alert.
-- Checks for related XDR alerts using MITRE tactics to identify any malicious activity.
+- Search for suspicious user agent usage within the alert.
+- Search for related XDR alerts using the following MITRE techniques to identify any malicious activity:
+T1566 - Phishing 
+T1621 - Multi-Factor Authentication Request Generation
+ T1110 - Brute Force
+ T1556 - Modify Authentication Process
 
 Remediation:
-- Based on the user's risk score and related alerts, the playbook will disable the account if any malicious parameters are found. By default, account disabling requires analyst approval.
+- Remediation actions will be taken if the user’s risk score is high, a suspicious user agent is detected, or a related alert is found. In such cases, the playbook will disable the account.
+By default, account disabling requires analyst approval.
 
 Requires: 
-Integrations - Microsoft Graph User / Okta v2.
+For any response action, you will need one of the following integrations: Azure Active Directory Users / Okta v2.
 
 ## Dependencies
 
@@ -24,30 +32,27 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Block Account - Generic v2
 * Containment Plan - Clear User Sessions
+* Block Account - Generic v2
 
 ### Integrations
 
-* CortexCoreIR
+* Cortex Core - IR
 
 ### Scripts
 
-* SearchAlertsV2
+* SearchIncidentsV2
 
 ### Commands
 
+* core-list-risky-users
 * core-get-cloud-original-alerts
 * closeInvestigation
-* core-list-risky-users
 
 ## Playbook Inputs
 
 ---
-
-| **Name** | **Description** | **Default Value** | **Required** |
-| --- | --- | --- | --- |
-| UserVerification | Specify if analyst verification is required to disable user accounts.<br/>Possible values:True/False.  | True | Optional |
+There are no inputs for this playbook.
 
 ## Playbook Outputs
 
