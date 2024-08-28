@@ -1,6 +1,6 @@
 import demistomock as demisto
-from CommonServerPython import *  # lgtm [py/polluting-import]
-from tld import get_tld
+from CommonServerPython import *  # noqa: F401
+from tld import get_tld, Result
 from urllib.parse import urlparse, parse_qs, unquote
 import re
 
@@ -51,18 +51,21 @@ def unescape_url(escaped_url):
     return url
 
 
-def get_fqdn(the_input):
+def get_fqdn(input_url: str) -> str | None:
     fqdn = ''
-    fixed = get_tld(the_input, fail_silently=True, as_object=True, fix_protocol=True)
-    domain = fixed or get_tld(the_input, fail_silently=True, as_object=True)
+    domain_info = get_tld(input_url, fail_silently=True, as_object=True, fix_protocol=True) or \
+        get_tld(input_url, fail_silently=True, as_object=True)
 
-    if domain:  # Weve removed the filter for "zip" as it is now a valid gTLD by Google
-        # get the subdomain using tld.subdomain
-        subdomain = domain.subdomain  # type: ignore[union-attr]
-        if (subdomain):
-            fqdn = f"{subdomain}.{domain.fld}"  # type: ignore[union-attr]
+    if domain_info:  # Weve removed the filter for "zip" as it is now a valid gTLD by Google
+        if isinstance(domain_info, Result):
+            # get the subdomain using tld.subdomain
+            subdomain = domain_info.subdomain
+            if subdomain:
+                fqdn = f"{subdomain}.{domain_info.fld}"
+            else:
+                fqdn = domain_info.fld
         else:
-            fqdn = domain.fld  # type: ignore[union-attr]
+            raise ValueError(f"Expected to get a Result object but got {type(domain_info)}")
 
     return fqdn
 
@@ -103,8 +106,8 @@ def extract_fqdn(the_input):
     the_input = unquote(the_input)
     the_input = unescape_url(the_input)
 
-    indicator = get_fqdn(the_input)
-    indicator = ".".join([re.sub("[^\w-]", "", part) for part in indicator.split(".")])
+    if indicator := get_fqdn(the_input):
+        indicator = ".".join([re.sub("[^\w-]", "", part) for part in indicator.split(".")])
     return indicator
 
 
@@ -139,5 +142,5 @@ def main():
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ == "__builtin__" or __name__ == "builtins":
+if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
