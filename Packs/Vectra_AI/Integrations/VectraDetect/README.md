@@ -1,6 +1,21 @@
 This integration allows to create incidents based on Vectra Accounts/Hosts/Detections objects.
 This integration was integrated and tested with version 7.1 of Vectra Detect
 
+## Use cases
+
+1. Fetch accounts, hosts and detections from Vectra Detect.
+2. Bi-Directional Mirroring for accounts and hosts.
+3. List and Describe accounts, hosts, detections and users.
+4. List, Describe, Create and Resolve assignment for account and host.
+5. List, Describe and Create assignment outcomes.
+6. List, Create, Update and Delete notes for account, host and detection.
+7. List, Create and Remove tags for account, host and detection.
+8. List, Assign and Unassign members in group.
+9. Mark and Unmark detection as fixed.
+10. Mark all detections as fixed for account and host. 
+11. Get detection's PCAP file.
+12. Cleanup all incidents in XSOAR by closing duplicate incidents from Vectra Detect.
+
 ## Configure Vectra Detect on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
