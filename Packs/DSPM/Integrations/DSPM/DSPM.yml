@@ -412,6 +412,9 @@ script:
     - contextPath: DSPM.configs
       description: Integration configuration values.
       type: String
+  - name: dspm-get-lifetime-for-slack
+    arguments: []
+    description: waiting time for user response
   # - arguments:
   #   - description: The incident ID.
   #     name: id
