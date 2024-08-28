@@ -41,7 +41,7 @@ demisto_score_to_xdr: dict[int, str] = {
     2: 'SUSPICIOUS',
     3: 'BAD'
 }
-
+CURRENT_BATCH_LAST_MODIFIED_TIME: str = ''
 
 def create_validation_errors_response(validation_errors):
     if not validation_errors:
@@ -373,13 +373,14 @@ def parse_demisto_single_comments(ioc: dict, comment_field_name: list[str] | str
 def demisto_ioc_to_xdr(ioc: dict) -> dict:
     try:
         # demisto.debug(f'Raw outgoing IOC: {ioc}') # uncomment to debug, otherwise spams the log
+        global CURRENT_BATCH_LAST_MODIFIED_TIME
+        CURRENT_BATCH_LAST_MODIFIED_TIME = ioc.get('modified')
         xdr_ioc: dict = {
             'indicator': ioc['value'],
             'severity': Client.severity,  # default, may be overwritten, see below
             'type': demisto_types_to_xdr(str(ioc['indicator_type'])),
             'reputation': demisto_score_to_xdr.get(ioc.get('score', 0), 'UNKNOWN'),
-            'expiration_date': demisto_expiration_to_xdr(ioc.get('expiration')),
-            'modified': ioc.get('modified')
+            'expiration_date': demisto_expiration_to_xdr(ioc.get('expiration'))
         }
         if aggregated_reliability := ioc.get('aggregatedReliability'):
             xdr_ioc['reliability'] = aggregated_reliability[0]
@@ -489,6 +490,7 @@ def sync(client: Client, batch_size: int = 200, is_first_stage_sync: bool = Fals
     request_data: List[Any] = []
     try:
         # demisto.debug(f"time_before_query_is {datetime.now(timezone.utc).strftime(DEMISTO_TIME_FORMAT)}")
+        full_query = Client.query
         if is_first_stage_sync:
             full_query = create_query_with_end_time(to_date=get_integration_context().get('time'))
         request_data = list(map(demisto_ioc_to_xdr, get_iocs_generator(size=batch_size,
@@ -498,14 +500,15 @@ def sync(client: Client, batch_size: int = 200, is_first_stage_sync: bool = Fals
             # demisto.debug(f"time_after_query_is {datetime.now(timezone.utc).strftime(DEMISTO_TIME_FORMAT)}")
             integration_context = get_integration_context()
             demisto.debug(f"Fetched {len(request_data)} indicators from xsoar. last_modified_that_was_synced "
-                          f"{request_data[-1].get('modified')}, {request_data[-1].get('indicator')}, "
+                          f"{CURRENT_BATCH_LAST_MODIFIED_TIME}, {request_data[-1].get('indicator')}, "
                           f"search_after {integration_context.get('search_after')}")
-            last_modified_time = request_data[-1].get('modified')
-            last_sync_time = integration_context.get('time')
+            last_sync_time = integration_context.get('time','')
             if len(request_data) < MAX_INDICATORS_TO_SYNC:
-                demisto.debug(f"{last_sync_time=}, {last_modified_time=}")
+                demisto.debug(f"{last_sync_time=}, {CURRENT_BATCH_LAST_MODIFIED_TIME=}")
                 update_integration_context(update_is_first_sync_phase='false',
-                                           update_sync_time_with_date_string=last_modified_time if last_modified_time < last_sync_time else None)
+                                           update_sync_time_with_date_string=CURRENT_BATCH_LAST_MODIFIED_TIME
+                                           if last_sync_time > CURRENT_BATCH_LAST_MODIFIED_TIME
+                                           else None)
             requests_kwargs: dict = get_requests_kwargs(_json=request_data, validate=True)
             path: str = 'tim_insert_jsons'
             response = client.http_request(path, requests_kwargs)
