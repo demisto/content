@@ -616,7 +616,8 @@ def category_add(category_id, data, retaining_parent_category_data, data_type):
 
         added_data = "\n".join(f"- {item}" for item in data_list) + \
             "\n".join(f"- {item}" for item in retaining_parent_category_data_list)
-        hr = f"Added the following {data_type.upper()}, retaining-parent-category-{data_type} addresses to category {category_id}:\n{added_data}\n"
+        hr = (f"Added the following {data_type.upper()}, retaining-parent-category-{data_type} "
+              f"addresses to category {category_id}:\n{added_data}\n")
         entry = {
             "Type": entryTypes["note"],
             "Contents": category_data,
