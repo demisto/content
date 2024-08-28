@@ -9695,17 +9695,17 @@ class ShowJobsAllResultData(ResultData):
     :param status: Status of job
     :param id: ID of job
     """
-    id: int
+    id: int = -1
     type: str
-    tfin: str
-    status: str
-    result: str
-    user: str
-    tenq: str
-    stoppable: str
-    positionInQ: int
-    progress: int
-    description: str = ""
+    tfin: str = ''
+    status: str = ''
+    result: str = ''
+    user: Optional[str] = None
+    tenq: str = ''
+    stoppable: str = 'no'
+    positionInQ: str = '0'
+    progress: str = '0'
+    description: Optional[str] = None
 
     _output_prefix = OUTPUT_PREFIX + "JobStatus"
     _title = "PAN-OS Job Status"
@@ -9713,19 +9713,6 @@ class ShowJobsAllResultData(ResultData):
 
     def __post_init__(self):
         self.id = int(self.id)
-
-
-@dataclass
-class ShowJobsAllCommandResult:
-    summary_data: List[ShowJobsAllSummaryData]
-    result_data: List[ShowJobsAllResultData]
-
-    _output_prefix = OUTPUT_PREFIX + "JobStatus"
-    _title = "PAN-OS Job Status"
-
-    _summary_cls = ShowJobsAllSummaryData
-    _result_cls = ShowJobsAllResultData
-    _outputs_key_field = "id"
 
 
 @dataclass

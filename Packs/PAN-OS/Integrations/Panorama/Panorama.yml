@@ -7901,8 +7901,8 @@ script:
       type: String
       description: The host ID.
     - contextPath: PANOS.JobStatus.id
-      description: The ID of the job.
-      type: String
+      description: The ID of the job. For failed jobs, the ID will be -1.
+      type: Number
     - contextPath: PANOS.JobStatus.type
       description: The job type.
       type: String
@@ -7916,7 +7916,7 @@ script:
       type: String
       description: The result of the job.
     - contextPath: PANOS.JobStatus.user
-      type: String
+      type: Unknown
       description: The user who initiated the job.
     - contextPath: PANOS.JobStatus.tenq
       type: String
@@ -7925,7 +7925,7 @@ script:
       type: String
       description: Whether the job can be stopped after it started.
     - contextPath: PANOS.JobStatus.description
-      type: String
+      type: Unknown
       description: The job description.
     - contextPath: PANOS.JobStatus.positionInQ
       type: String
