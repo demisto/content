@@ -17,7 +17,7 @@ PRODUCT = 'Segment'
 FIRST_FETCH = 'one minute'
 MAX_RESULTS_FOR_LOG_TYPE = {'audit': 10000, 'network_activities': 2000}
 MAX_CALLS_FOR_LOG_TYPE = {'audit': 10000, 'network_activities': 400}
-URL = {'audit': '/audit', 'network_activities': 'activities/network'}
+URL = {'audit': '/audit', 'network_activities': '/activities/network'}
 MAX_FETCH_PARAM_NAME = {'audit': 'max_fetch_audit', 'network_activities': 'max_fetch_network'}
 AUDIT_TYPE = 'audit'
 NETWORK_ACTIVITIES_TYPE = 'network_activities'
@@ -49,7 +49,6 @@ class Client(BaseClient):
         Returns:
             Dict[str, Any]: A list of events.
         """
-
         if log_type == NETWORK_ACTIVITIES_TYPE:
             params = remove_empty_elements({"_limit": limit, "order": "asc", "_cursor": cursor, "_filters": filters})
         else:
@@ -150,15 +149,16 @@ def fetch_events(client: Client, params: dict, last_run: dict, arg_from=None):
     log_types = get_log_types(params)
     all_events: list = []
     events_split_to_log_type: dict = {}
+    filters = params.get("network_activity_filters", [])
     for log_type in log_types:
         start_timestamp = initialize_start_timestamp(last_run, log_type, arg_from)
         cursor = start_timestamp
         last_event_time = start_timestamp
         collected_events: list = []
         max_results, limit = get_max_results_and_limit(params, log_type)
+        if limit < 20:
+            limit = 20
         previous_ids = last_run.get(log_type, {}).get("previous_ids", {})
-
-        filters = params.get("network_activity_filters", [])
 
         while len(collected_events) < max_results:
             response = client.search_events(limit, cursor=cursor, log_type=log_type, filters=filters)
@@ -167,16 +167,20 @@ def fetch_events(client: Client, params: dict, last_run: dict, arg_from=None):
                 break
 
             events = response.get('items', [])
-            cursor = int(response.get('scrollCursor', cursor))
+            scroll_cursor = response.get('scrollCursor')
+            if scroll_cursor:
+                cursor = int(scroll_cursor)
 
             if not events:
                 break
 
             new_events, previous_ids, last_event_time = process_events(events, previous_ids, last_event_time, max_results,
                                                                        len(collected_events), log_type)
-
+            
             if not new_events:
-                break
+                if len(events) < limit:
+                    break
+                limit += 20
 
             collected_events.extend(new_events)
 

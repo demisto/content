@@ -61,7 +61,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: If true, the command will create events, otherwise it will only display them.
+      description: "If true, the command will create events, otherwise it will only display them. Warning: Using this argument may lead to duplicate events."
       isArray: false
       name: should_push_events
       predefined:
