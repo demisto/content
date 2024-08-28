@@ -562,7 +562,7 @@ def create_event_command(demisto_args: dict):
     if isinstance(new_event, dict):
         if new_event.get('errors'):
             raise DemistoException(new_event.get('errors'))
-        raise DemistoException("Unknown error occurred while creating event.")
+        raise DemistoException(f"Unknown event type:{type(new_event)}.")
     event_id = new_event.id
     add_attribute(event_id=event_id, internal=True, new_event=new_event, demisto_args=demisto_args)
     event = PYMISP.search(eventid=event_id)
