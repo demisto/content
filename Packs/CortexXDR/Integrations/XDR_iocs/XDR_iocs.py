@@ -506,18 +506,17 @@ def sync(client: Client, batch_size: int = 200, is_first_stage_sync: bool = Fals
                 demisto.debug(f"{last_sync_time=}, {last_modified_time=}")
                 update_integration_context(update_is_first_sync_phase='false',
                                            update_sync_time_with_date_string=last_modified_time if last_modified_time < last_sync_time else None)
-            # TODO
-            # requests_kwargs: dict = get_requests_kwargs(_json=request_data, validate=True)
-            # path: str = 'tim_insert_jsons'
-            # response = client.http_request(path, requests_kwargs)
-            # if not response.get('reply', {}).get('success') == 'true':
-            #     raise DemistoException("Response status was not success")
-            # if validation_errors := response.get('reply', {}).get('validation_errors'):
-            #     errors = create_validation_errors_response(validation_errors)
-            #     demisto.debug('pushing IOCs to XDR:' + errors.replace('\n', '. '))
-            #     return_warning(errors)
-            # demisto.debug(f"Fetched from xsoar {len(request_data)} IOCs to send to XDR. Last indicator modified time is"
-            #             f" {get_integration_context().get('search_after')}")
+            requests_kwargs: dict = get_requests_kwargs(_json=request_data, validate=True)
+            path: str = 'tim_insert_jsons'
+            response = client.http_request(path, requests_kwargs)
+            if not response.get('reply', {}).get('success') == 'true':
+                raise DemistoException("Response status was not success")
+            if validation_errors := response.get('reply', {}).get('validation_errors'):
+                errors = create_validation_errors_response(validation_errors)
+                demisto.debug('pushing IOCs to XDR:' + errors.replace('\n', '. '))
+                return_warning(errors)
+            demisto.debug(f"Fetched from xsoar {len(request_data)} IOCs to send to XDR. Last indicator modified time is"
+                        f" {get_integration_context().get('search_after')}")
         else:
             demisto.debug("request_data is empty, no indicators to sync")
             update_integration_context(update_is_first_sync_phase='false')
