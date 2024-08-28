@@ -11943,7 +11943,7 @@ def get_topology() -> Topology:
 
 
 def dataclasses_to_command_results(
-    result: Union[list[ShowJobsAllResultData], ShowJobsAllResultData],
+    result: Any,
     empty_result_message: str = "No results.",
     override_table_name: Optional[str] = "",
     override_table_headers: Optional[List[str]] = None
