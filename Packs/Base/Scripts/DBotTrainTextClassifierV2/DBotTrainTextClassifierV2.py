@@ -1,12 +1,10 @@
+from CommonServerPython import *
 # pylint: disable=no-member
 import gc
-
+import demisto_ml
 import pandas as pd
-from typing import List, Dict
 from collections import defaultdict, Counter
 from sklearn.model_selection import StratifiedKFold
-from CommonServerPython import *
-import demisto_ml
 
 ALL_LABELS = "*"
 GENERAL_SCORES = {
@@ -46,8 +44,7 @@ def get_phishing_map_labels(comma_values):
             labels_dict[v] = v
     if len(set(labels_dict.values())) == 1:
         mapped_value = list(labels_dict.values())[0]
-        error = ['Label mapping error: you need to map to at least two labels: {}.'.format(mapped_value)]
-        return_error('\n'.join(error))
+        return_error(f'Label mapping error: you need to map to at least two labels: {mapped_value}.')
     return {k.encode('utf-8', 'ignore').decode("utf-8"): v for k, v in labels_dict.items()}
 
 
@@ -64,10 +61,10 @@ def read_file(input_data, input_type):
     else:
         res = demisto.getFilePath(input_data)
         if not res:
-            return_error("Entry {} not found".format(input_data))
+            return_error(f"Entry {input_data} not found")
         file_path = res['path']
         if input_type.startswith('json'):
-            with open(file_path, 'r') as f:
+            with open(file_path) as f:
                 file_content = f.read()
     if input_type.startswith('csv'):
         return pd.read_csv(file_path).fillna('').to_dict(orient='records')
@@ -77,24 +74,24 @@ def read_file(input_data, input_type):
         return pd.read_pickle(file_path, compression=None)
     else:
         return_error("Unsupported file type %s" % input_type)
+        return None
 
 
 def get_file_entry_id(file_name):
     file_name = file_name.strip()
-    res = demisto.dt(demisto.context(), "File(val.Name == '%s')" % file_name)
+    res = demisto.dt(demisto.context(), f"File(val.Name == '{file_name}')")
     if not res or len(res) == 0:
-        return_error("Cannot find file entry id in context by filename: " + file_name)
-    if type(res) is list:
+        return_error(f"Cannot find file entry id in context by filename: {file_name}")
+    if isinstance(res, list):
         res = res[0]
     return res['EntryID']
 
 
 def read_files_by_name(file_names, input_type):
-    file_names = file_names.split(",")
-    file_names = [f for f in file_names if f]
+    names = filter(None, argToList(file_names))  # type: ignore[var-annotated]
     data = []
-    for file_name in file_names:
-        data += read_file(get_file_entry_id(file_name), input_type)
+    for name in names:
+        data += read_file(get_file_entry_id(name), input_type)
     return data
 
 
@@ -158,7 +155,7 @@ def find_keywords(data, tag_field, text_field, min_score):
     human_readable = "# Keywords per category\n"
     for category, scores in keywords.items():
         sorted_scores = sorted(scores.items(), key=lambda x: x[1], reverse=True)
-        table_items = [{"Word": word, "Score": '{:.2f}'.format(score)} for
+        table_items = [{"Word": word, "Score": f'{score:.2f}'} for
                        word, score in sorted_scores if score >= min_score]
         human_readable += tableToMarkdown(category, table_items, ["Word", "Score"])
     demisto.results({
@@ -240,13 +237,13 @@ def validate_data_and_labels(data, exist_labels_counter, labels_mapping, missing
     labels_counter = Counter([x[DBOT_TAG_FIELD] for x in data])
     labels_below_thresh = [label for label, count in labels_counter.items() if count < MIN_INCIDENTS_THRESHOLD]
     if len(labels_below_thresh) > 0:
-        err = ['Minimum number of incidents per label required for training is {}.'.format(MIN_INCIDENTS_THRESHOLD)]
-        err += ['The following labels have less than {} incidents: '.format(MIN_INCIDENTS_THRESHOLD)]
+        err = [f'Minimum number of incidents per label required for training is {MIN_INCIDENTS_THRESHOLD}.']
+        err += [f'The following labels have less than {MIN_INCIDENTS_THRESHOLD} incidents: ']
         for x in labels_below_thresh:
-            err += ['- {}: {}'.format(x, str(labels_counter[x]))]
+            err += [f'- {x}: {str(labels_counter[x])}']
         err += ['Make sure that enough incidents exist in the environment per each of these labels.']
         missing_labels = ', '.join(missing_labels_counter.keys())
-        err += ['The following labels were not mapped to any label in the labels mapping: {}.'.format(missing_labels)]
+        err += [f'The following labels were not mapped to any label in the labels mapping: {missing_labels}.']
         if labels_mapping != ALL_LABELS:
             err += ['The given mapped labels are: {}.'.format(', '.join(labels_mapping.keys()))]
         return_error('\n'.join(err))
@@ -271,7 +268,7 @@ def validate_data_and_labels(data, exist_labels_counter, labels_mapping, missing
         for label, count in exist_labels_counter.items():
             mapped_label = labels_mapping[label] if isinstance(labels_mapping, dict) else label
             if mapped_label != label:
-                label = "%s -> %s" % (label, mapped_label)
+                label = f"{label} -> {mapped_label}"
             exist_labels_counter_mapped[label] = count
         human_readable = tableToMarkdown("Found labels", exist_labels_counter_mapped)
         entry = {
@@ -282,23 +279,23 @@ def validate_data_and_labels(data, exist_labels_counter, labels_mapping, missing
             'HumanReadableFormat': formats['markdown'],
         }
         demisto.results(entry)
-    if len(set([x[DBOT_TAG_FIELD] for x in data])) == 1:
+    if len({x[DBOT_TAG_FIELD] for x in data}) == 1:
         single_label = [x[DBOT_TAG_FIELD] for x in data][0]
         if labels_mapping == ALL_LABELS:
-            err = ['All received incidents have the same label: {}.'.format(single_label)]
+            err = [f'All received incidents have the same label: {single_label}.']
         else:
-            err = ['All received incidents mapped to the same label: {}.'.format(single_label)]
+            err = [f'All received incidents mapped to the same label: {single_label}.']
         err += ['At least 2 different labels are required to train a classifier.']
         if labels_mapping == ALL_LABELS:
             err += ['Please make sure that incidents of at least 2 labels exist in the environment.']
         else:
             err += ['The following labels were not mapped to any label in the labels mapping:']
-            err += [', '.join([x for x in missing_labels_counter])]
+            err += [', '.join(list(missing_labels_counter))]
             not_found_mapped_label = [x for x in labels_mapping if x not in exist_labels_counter
                                       or exist_labels_counter[x] == 0]
             if len(not_found_mapped_label) > 0:
                 miss = ', '.join(not_found_mapped_label)
-                err += ['Notice that the following mapped labels were not found among all incidents: {}.'.format(miss)]
+                err += [f'Notice that the following mapped labels were not found among all incidents: {miss}.']
         return_error('\n'.join(err))
 
 
@@ -356,6 +353,7 @@ def validate_labels_and_decide_algorithm(y, algorithm):
         error += ['The following labels/verdicts need to be mapped to one of those values: ']
         error += [', '.join(illegal_labels_for_fine_tune) + '.']
         return_error('\n'.join(error))
+        return None
     elif algorithm == AUTO_TRAINING_ALGO:
         return FASTTEXT_TRAINING_ALGO
     else:
@@ -394,64 +392,58 @@ def main():
     else:
         data = read_file(input, input_type)
 
-    if len(data) == 0:
-        err = ['No incidents were received.']
-        err += ['Make sure that all arguments are set correctly and that incidents exist in the environment.']
-        return_error(' '.join(err))
     if len(data) < MIN_INCIDENTS_THRESHOLD:
-        err = ['Only {} incident(s) were received.'.format(len(data))]
-        err += ['Minimum number of incidents per label required for training is {}.'.format(MIN_INCIDENTS_THRESHOLD)]
-        err += ['Make sure that all arguments are set correctly and that enough incidents exist in the environment.']
-        return_error('\n'.join(err))
-
-    data = set_tag_field(data, tag_fields)
-    data, exist_labels_counter, missing_labels_counter = get_data_with_mapped_label(data, labels_mapping,
-                                                                                    DBOT_TAG_FIELD)
-    validate_data_and_labels(data, exist_labels_counter, labels_mapping, missing_labels_counter)
-    # print important words for each category
-    find_keywords_bool = 'findKeywords' in demisto.args() and demisto.args()['findKeywords'] == 'true'
-    if find_keywords_bool:
-        try:
-            find_keywords(data, DBOT_TAG_FIELD, text_field, keyword_min_score)
-        except Exception:
-            pass
-    X, y = get_X_and_y_from_data(data, text_field)
-    algorithm = validate_labels_and_decide_algorithm(y, algorithm)
-    test_index, train_index = get_train_and_test_sets_indices(X, y)
-    X_train, X_test = [X[i] for i in train_index], [X[i] for i in test_index]
-    y_train, y_test = [y[i] for i in train_index], [y[i] for i in test_index]
-    phishing_model = demisto_ml.train_model_handler(X_train, y_train, algorithm=algorithm, compress=False)
-    ft_test_predictions = phishing_model.predict(X_test)
-    y_pred = [{y_tuple[0]: float(y_tuple[1])} for y_tuple in ft_test_predictions]
-    if return_predictions_on_test_set:
-        return_file_result_with_predictions_on_test_set(data, original_text_fields, test_index, text_field, y_test,
-                                                        y_pred)
-    if 'maxBelowThreshold' in demisto.args():
-        target_recall = 1 - float(demisto.args()['maxBelowThreshold'])
+        return_results(
+            f'{len(data)} incident(s) received.'
+            '\nMinimum number of incidents per label required for training: {MIN_INCIDENTS_THRESHOLD}.'
+            '\nMake sure that all arguments are set correctly and that enough incidents exist in the environment.'
+        )
     else:
-        target_recall = 0
-    threshold_metrics_entry = get_ml_model_evaluation(y_test, y_pred, target_accuracy, target_recall, detailed=True)
-    # show results for the threshold found - last result so it will appear first
-    confusion_matrix, metrics_json = output_model_evaluation(model_name=model_name, y_test=y_test, y_pred=y_pred,
-                                                             res=threshold_metrics_entry,
-                                                             context_field='DBotPhishingClassifier')
-    actual_min_accuracy = min(v for k, v in metrics_json['Precision'].items() if k != 'All')
-    if store_model:
-        del phishing_model
-        gc.collect()
-        if not validate_confusion_matrix(confusion_matrix):
-            return_error("The trained model didn't manage to predict some of the classes. This model won't be stored."
-                         "Please try to retrain the model using a different configuration.")
-        y_test_pred = [y_tuple[0] for y_tuple in ft_test_predictions]
-        y_test_pred_prob = [y_tuple[1] for y_tuple in ft_test_predictions]
-        threshold = float(threshold_metrics_entry['Contents']['threshold'])
-        store_model_in_demisto(model_name=model_name, model_override=model_override, X=X, y=y,
-                               confusion_matrix=confusion_matrix, threshold=threshold,
-                               y_test_true=y_test, y_test_pred=y_test_pred, y_test_pred_prob=y_test_pred_prob,
-                               target_accuracy=actual_min_accuracy, algorithm=algorithm)
-        demisto.results("Done training on {} samples model stored successfully".format(len(y)))
-    else:
-        demisto.results('Skip storing model')
+        data = set_tag_field(data, tag_fields)
+        data, exist_labels_counter, missing_labels_counter = get_data_with_mapped_label(data, labels_mapping,
+                                                                                        DBOT_TAG_FIELD)
+        validate_data_and_labels(data, exist_labels_counter, labels_mapping, missing_labels_counter)
+        # print important words for each category
+        find_keywords_bool = 'findKeywords' in demisto.args() and demisto.args()['findKeywords'] == 'true'
+        if find_keywords_bool:
+            try:
+                find_keywords(data, DBOT_TAG_FIELD, text_field, keyword_min_score)
+            except Exception:
+                pass
+        X, y = get_X_and_y_from_data(data, text_field)
+        algorithm = validate_labels_and_decide_algorithm(y, algorithm)
+        test_index, train_index = get_train_and_test_sets_indices(X, y)
+        X_train, X_test = [X[i] for i in train_index], [X[i] for i in test_index]
+        y_train, y_test = [y[i] for i in train_index], [y[i] for i in test_index]
+        phishing_model = demisto_ml.train_model_handler(X_train, y_train, algorithm=algorithm, compress=False)
+        ft_test_predictions = phishing_model.predict(X_test)
+        y_pred = [{y_tuple[0]: float(y_tuple[1])} for y_tuple in ft_test_predictions]
+        if return_predictions_on_test_set:
+            return_file_result_with_predictions_on_test_set(data, original_text_fields, test_index, text_field, y_test,
+                                                            y_pred)
+        target_recall = 1 - float(demisto.args().get('maxBelowThreshold', 1))
+        threshold_metrics_entry = get_ml_model_evaluation(y_test, y_pred, target_accuracy, target_recall, detailed=True)
+        # show results for the threshold found - last result so it will appear first
+        confusion_matrix, metrics_json = output_model_evaluation(model_name=model_name, y_test=y_test, y_pred=y_pred,
+                                                                 res=threshold_metrics_entry,
+                                                                 context_field='DBotPhishingClassifier')
+        actual_min_accuracy = min(v for k, v in metrics_json['Precision'].items() if k != 'All')
+        if store_model:
+            del phishing_model
+            gc.collect()
+            if not validate_confusion_matrix(confusion_matrix):
+                return_error("The trained model didn't manage to predict some of the classes. This model won't be stored."
+                             "Please try to retrain the model using a different configuration.")
+            y_test_pred = [y_tuple[0] for y_tuple in ft_test_predictions]
+            y_test_pred_prob = [y_tuple[1] for y_tuple in ft_test_predictions]
+            threshold = float(threshold_metrics_entry['Contents']['threshold'])
+            store_model_in_demisto(model_name=model_name, model_override=model_override, X=X, y=y,
+                                   confusion_matrix=confusion_matrix, threshold=threshold,
+                                   y_test_true=y_test, y_test_pred=y_test_pred, y_test_pred_prob=y_test_pred_prob,
+                                   target_accuracy=actual_min_accuracy, algorithm=algorithm)
+            demisto.results(f"Done training on {len(y)} samples model stored successfully")
+        else:
+            demisto.results('Skip storing model')
 
 
 if __name__ in ['builtins', '__main__']:

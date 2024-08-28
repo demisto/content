@@ -10,7 +10,7 @@ def create_widget_entry(mse_score) -> dict:
         color_mse = "#f57d00"
     else:
         color_mse = "#00cd33"
-        
+
     data = {
         "Type": 17,
         "size": 30,

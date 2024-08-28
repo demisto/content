@@ -5,7 +5,7 @@ import uuid
 import json
 from collections.abc import Callable
 from flask import Flask, request, make_response, jsonify, Response
-from urllib.parse import ParseResult, urlparse, urlunparse
+from urllib.parse import ParseResult, urlparse
 from secrets import compare_digest
 from requests.utils import requote_uri
 from werkzeug.exceptions import RequestedRangeNotSatisfiable
@@ -638,7 +638,8 @@ def parse_manifest_and_object_args() -> tuple:
             datetime.strptime(added_after, UTC_DATE_FORMAT)
     except ValueError:
         try:
-            datetime.strptime(added_after, STIX_DATE_FORMAT)
+            if added_after:
+                datetime.strptime(added_after, STIX_DATE_FORMAT)
         except Exception as e:
             raise Exception(f'Added after time format should be YYYY-MM-DDTHH:mm:ss.[s+]Z. {e}')
 
@@ -901,15 +902,16 @@ def edit_server_info(server_info: dict) -> dict:
 
 
 def alter_url(url: str) -> str:
-    """Alters the URL's netloc with the "ext-" prefix.
+    """Alters the URL's netloc with the "ext-" prefix, and the path with the "/xsoar" path.
 
     Args:
         url (str): The URL to alter.
     """
     parsed_url = urlparse(url)
     new_netloc = "ext-" + parsed_url.netloc
-    new_url_tuple = (parsed_url.scheme, new_netloc, parsed_url.path, parsed_url.params, parsed_url.query, parsed_url.fragment)
-    new_url = urlunparse(new_url_tuple)
+    new_path = '/xsoar' + parsed_url.path
+    new_url = f'{parsed_url.scheme}://{new_netloc}{new_path}'
+
     return new_url
 
 

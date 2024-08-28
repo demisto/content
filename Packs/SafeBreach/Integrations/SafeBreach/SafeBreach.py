@@ -342,10 +342,11 @@ def test_outputs_headers_transform(header):
 
 metadata_collector = YMLMetadataCollector(
     integration_name="Safebreach",
-    description="SafeBreach automatically executes thousands of breach methods from its extensive"
-    + "and growing Hacker's Playbook™ to validate security control effectiveness. "
-    + "Simulations are automatically correlated with network, endpoint, and SIEM solutions "
-    + "providing data-driven SafeBreach Insights for holistic remediation to harden enterprise defenses.",
+    description="For enterprises using SafeBreach and XSOAR, integrating this package streamlines"
+    + "operations by allowing you to operate SafeBreach through XSOAR, making SafeBreach "
+    + "an integral part of the enterprise workflows. This integration includes "
+    + "commands for managing tests, insight indicators, simulators "
+    + "and deployments, users, API keys, integration issues, and more.",
     display="Safebreach",
     category="Deception & Breach Simulation",
     docker_image="demisto/python3:3.10.13.88772",

@@ -200,16 +200,16 @@ script:
       description: A list of Vulnerabilities.
       type: Unknown
     - contextPath: DBotScore.Indicator
-      description: The indicator value.
+      description: The indicator that was tested.
       type: String
     - contextPath: DBotScore.Score
-      description: The indicator score according to the vendor.
+      description: The actual score.
       type: Number
     - contextPath: DBotScore.Type
       description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: The vendor name.
+      description: The vendor used to calculate the score.
       type: String
   - arguments:
     - description: The query for searching the database of banners. The search query supports filtering using the "filter:value" format to narrow your search. For example, the query "apache country:DE" returns Apache web servers located in Germany.
@@ -348,7 +348,7 @@ script:
       required: true
     description: Resumes receiving notifications for network alerts that are set off by the specified triggers.
     name: shodan-network-alert-remove-service-from-whitelist
-  dockerimage: demisto/python3:3.10.13.80593
+  dockerimage: demisto/python3:3.10.14.99865
   runonce: false
   script: '-'
   subtype: python3

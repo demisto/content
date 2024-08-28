@@ -1,0 +1,25 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "Varonis SaaS Incident - Outgoing Mapper",
+    "mapping": {
+        "Varonis SaaS Incident": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Status": {
+                    "simple": "varonissaasalertstatus"
+                },
+                "CloseReason": {
+                    "simple": "varonissaasclosereason"
+                },
+                "CloseNotes": {
+                    "simple": "closeNotes"
+                }
+            }
+        }
+    },
+    "name": "Varonis SaaS Incident - Outgoing Mapper",
+    "type": "mapping-outgoing",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

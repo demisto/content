@@ -4,11 +4,16 @@ This package enables organizations to integrate SafeBreach into the enterprise w
 
 
 ### To configure the integration on SafeBreach:
-1. Open the Navigation bar → … → CLI Console.
-2. Type “config accounts” to get the account ID.
-3. Use the IDas the accountId parameter when configuring the SafeBreach integration in Cortex XSOAR.
-4. Type “config apikeys” to list existing API keys. OR
- Add a new API key by typing: “config apikeys add --name <key_name>”
+
+1. From the main menu, click **Settings > API Keys**.
+2. Retrive account ID from this screen and use as the accountId parameter when configuring the SafeBreach integration in Cortex XSOAR.
+3. Click **Create API Key**.  
+    The Create API Key pop-up is displayed.
+4. Provide a name for the API key and optionally include a description, and then click CreateCreate.  
+    The API key is created and displayed.  
+    **Note**: Currently API keys have admin privileges.  
+    **Important**: You will not have access to the key through SafeBreach Management again. It is
+each user’s responsibility to store the keys safely after creating them.
 5. Use the generated API token as apiKey parameter when configuring the SafeBreach integration in Cortex XSOAR.
 6. Use your SafeBreach Management URL as the url parameter when configuring the SafeBreach integration in Cortex XSOAR.
 

@@ -12,10 +12,15 @@
     "initial_interval": 2,
     "limit": 5
   },
-  "args": {
+    "args": {
     "limit": 5,
     "begin": "2022-06-11 00:00:00",
     "end": "2022-06-13 00:00:00",
+    "collection": "phishing_url1",
+    "override_limit": "True"
+  },
+    "args2": {
+    "limit": 5,
     "collection": "phishing_url1",
     "override_limit": "True"
   }

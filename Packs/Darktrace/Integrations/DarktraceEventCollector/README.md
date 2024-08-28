@@ -1,5 +1,8 @@
 Use this integration to fetch a list of model breaches, filtered by the specified parameters. This is important for organizations that wish to integrate Darktrace programmatically into their SOC environment.
 The integration was integrated and tested with version v5.2 API of Darktrace.
+
+This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
+
 ## Configure Darktrace Event Collector on Cortex XSIAM
 
 1. Navigate to **Settings** > **Configurations** > **Data Collection** > **Automations & Feed Integrations**. 

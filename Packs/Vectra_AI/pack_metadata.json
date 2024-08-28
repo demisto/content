@@ -4,7 +4,7 @@
         "Network Security"
     ],
     "created": "2022-06-27T10:00:00Z",
-    "currentVersion": "1.2.12",
+    "currentVersion": "1.2.13",
     "description": "This content pack allows to create incidents based on Vectra Accounts/Hosts/Detections objects.",
     "devEmail": [
         "tme@vectra.ai"
@@ -29,5 +29,6 @@
     "support": "partner",
     "tags": [],
     "url": "https://support.vectra.ai",
-    "useCases": []
+    "useCases": [],
+    "defaultDataSource": "VectraAIEventCollector"
 }

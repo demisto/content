@@ -31,6 +31,14 @@ function setLock(guid, info, version) {
         return [integrationContext[lockName], null];
     }
 }
+function attemptToAcquireLock(guid, lockInfo, version) {
+    logDebug("Attempting to acquire lock");
+    try {
+        setLock(guid, lockInfo, version);
+    } catch (err) {
+        logDebug(err.message);
+    }
+}
 var lockName = args.name || 'Default';
 
 switch (command) {
@@ -39,51 +47,85 @@ switch (command) {
 
     case 'demisto-lock-get':
         var lockTimeout = args.timeout || params.timeout || 600;
-        var incidentID = incidents[0].id
-        var lockInfo = 'Locked by incident #' + incidentID + '.';
-        lockInfo += (args.info) ? ' Additional info: ' + args.info :'';
+        var lockInfo = 'Locked by incident #' + incidents[0].id + '.';
+        lockInfo += (args.info) ? ' Additional info: ' + args.info : '';
+        var pollingInterval = args.polling_interval || '20';
 
-        var guid = guid();
+        var guid = args.guid || guid();
         var time = 0;
-        var lock, version;
-        var attempt = 1;
-        do{
-            logDebug('Task guid: ' + guid + ', Incident:' + incidentID + ' | Trying to acquire lock lockName: ' + lockName + ', attempt number: ' + attempt);
+        var lock, version, lock_candidate;
+
+        if (isDemistoVersionGE('8.0.0')) {  // XSOAR 8 lock implementation with polling.
+            logDebug('Running on XSOAR version 8');
+
+            // check if a lock already exists in the integration context
             [lock, version] = getLock();
 
-            if (typeof version === 'object') {
+            if (typeof version === "object") {
                 version = JSON.stringify(version)
             }
-            logDebug('Task guid: ' + guid + ', Incident:' + incidentID + ' | Current lock is: ' + JSON.stringify(lock) + ', version: ' + version);
+            logDebug('Task guid: ' + guid + ' | Current lock is: ' + JSON.stringify(lock) + ', version: ' + version);
 
-            if (lock.guid === guid) {
-                break;
-            }
+            // if no lock found, try to acquire a new lock
             if (!lock.guid) {
-                try {
-                    setLock(guid, lockInfo, version);
-                } catch(err) {
-                    logDebug('Task guid: ' + guid + ', Incident:' + incidentID + ' | Failed setting lock: ' + err.message);
+                attemptToAcquireLock(guid, lockInfo, version)
+                lock_candidate = getLock();
+            }
+
+            // stopping condition - the lock is acquired successfully
+            if (lock_candidate && lock_candidate[0].guid === guid) {
+                var md = '### Demisto Locking Mechanism\n';
+                md += 'Lock acquired successfully\n';
+                md += 'GUID: ' + guid;
+                logDebug(md)
+                return { ContentsFormat: formats.markdown, Type: entryTypes.note, Contents: md };
+            }
+            else { // polling condition - the lock acquire attempt failed (another lock already exist)
+                var timeout_err_msg = 'Timeout waiting for lock\n';
+                timeout_err_msg += 'Lock name: ' + lockName + '\n';
+                timeout_err_msg += 'Lock info: ' + lock.info + '\n';
+                logDebug(timeout_err_msg)
+                return {
+                    Type: entryTypes.note,
+                    Contents: 'Lock was not acquired, Polling.',
+                    PollingCommand: 'demisto-lock-get',
+                    NextRun: pollingInterval,
+                    PollingArgs: { name: lockName, info: args.info, timeout: args.timeout, polling_interval: pollingInterval ,guid: guid, timeout_err_msg: timeout_err_msg },
+                    Timeout: String(lockTimeout)
                 }
             }
-            attempt++;
-            wait(1);
-        } while (time++ < lockTimeout) ;
+        } else {  // XSOAR 6 lock implementation without polling.
+            logDebug('Running on XSOAR version 6');
+            do {
+                [lock, version] = getLock();
+                if (lock.guid === guid) {
+                    break;
+                }
+                if (!lock.guid) {
+                    try {
+                        setLock(guid, lockInfo, version);
+                    } catch (err) {
+                        logDebug(err.message)
+                    }
+                }
+                wait(1);
+            } while (time++ < lockTimeout);
 
-        [lock, version] = getLock();
+            [lock, version] = getLock();
 
-        if (lock.guid === guid) {
-            var md = '### Demisto Locking Mechanism\n';
-            md += 'Lock acquired successfully\n';
-            md += 'GUID: ' + guid;
-            return { ContentsFormat: formats.markdown, Type: entryTypes.note, Contents: md } ;
-        } else {
-            var md = 'Timeout waiting for lock\n';
-            md += 'Lock name: ' + lockName + '\n';
-            md += 'Lock info: ' + lock.info + '\n';
-            return { ContentsFormat: formats.text, Type: entryTypes.error, Contents: md };
+            if (lock.guid === guid) {
+                var md = '### Demisto Locking Mechanism\n';
+                md += 'Lock acquired successfully\n';
+                md += 'GUID: ' + guid;
+                return { ContentsFormat: formats.markdown, Type: entryTypes.note, Contents: md };
+            } else {
+                var md = 'Timeout waiting for lock\n';
+                md += 'Lock name: ' + lockName + '\n';
+                md += 'Lock info: ' + lock.info + '\n';
+                return { ContentsFormat: formats.text, Type: entryTypes.error, Contents: md };
+            }
+            break;
         }
-        break;
 
     case 'demisto-lock-release':
         logDebug('Releasing lock lockName: ' + lockName);

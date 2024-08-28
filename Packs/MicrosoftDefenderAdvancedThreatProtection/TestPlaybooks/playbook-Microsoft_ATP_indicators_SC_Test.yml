@@ -682,7 +682,7 @@ tasks:
       - '2'
     scriptarguments:
       seconds:
-        simple: '5'
+        simple: '7'
     separatecontext: false
     view: |-
       {

@@ -415,6 +415,8 @@ tasks:
       using:
         complex:
           root: inputs.InstanceName
+      execution-timeout:
+        simple: "1000"
     separatecontext: false
     view: |-
       {

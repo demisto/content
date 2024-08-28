@@ -2,7 +2,6 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import json
 import traceback
-from typing import Dict, List, Union, Tuple
 import requests
 from datetime import datetime
 import time
@@ -45,7 +44,7 @@ def loglist(base_url, access_token, refresh_token, headers1):
     return log_list
 
 
-def raw_response_to_context_rules(items: Union[Dict, List]) -> Union[Dict, List]:
+def raw_response_to_context_rules(items: dict | list) -> dict | list:
     if isinstance(items, list):
         return [raw_response_to_context_rules(item) for item in items]
     return {
@@ -79,8 +78,8 @@ def get_log_list(base_url, username, password):
     return_results(results)
 
 
-def fetch_incidents(base_url, username, password, last_run: Dict[str, int],
-                    first_fetch_time: int) -> Tuple[Dict[str, int], List[dict]]:
+def fetch_incidents(base_url, username, password, last_run: dict[str, int],
+                    first_fetch_time: int) -> tuple[dict[str, int], list[dict]]:
     access_token, refresh_token, headers1 = login(base_url, username, password)
     log_list = loglist(base_url, access_token, refresh_token, headers1)
     log_server_id = [e["id"] for e in log_list if e["is_connected"] is True]

@@ -1,38 +1,7 @@
-
-default:
-  image: ${DOCKER_IO}/devdemisto/gitlab-content-ci:1.0.0.64455
-  artifacts:
-    expire_in: 30 days
-    paths:
-      - ${CI_PROJECT_DIR}/artifacts/*
-      - ${CI_PROJECT_DIR}/pipeline_jobs_folder/*
-    when: always
-
-stages:
-  - cleanup
-  - security
-  - unittests-and-validations
-  - prepare-testing-bucket
-  - run-instances
-  - results
-  - upload-to-marketplace
-  - create-release-branch
-  - trigger-nightlies
-  - wait-for-build-to-finish
-  - release-flow
-  - are-jobs-really-done
-  - fan-in  # concentrate pipeline artifacts to single job before triggering child slack pipeline
-  - trigger-contribution-build
+variables:
+  CURRENT_BRANCH_NAME: $INFRA_BRANCH
 
 include:
-  - local: .gitlab/ci/.gitlab-ci.variables.yml
-  - local: .gitlab/ci/.gitlab-ci.global.yml
-  - local: .gitlab/ci/.gitlab-ci.on-push.yml
-  - local: .gitlab/ci/.gitlab-ci.bucket-upload.yml
-  - local: .gitlab/ci/.gitlab-ci.sdk-nightly.yml
-  - local: .gitlab/ci/.gitlab-ci.miscellaneous.yml
-  - local: .gitlab/ci/.gitlab-ci.test-native-candidate.yml
-  - local: .gitlab/ci/.gitlab-ci.security-scans.yml
-  - local: .gitlab/ci/.gitlab-ci.build-machines-cleanup.yml
-  - local: .gitlab/ci/.gitlab-ci.sdk-release.yml
-  - local: .gitlab/ci/.gitlab-ci.trigger-contribution-build.yml
+  - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
+    ref: $INFRA_BRANCH
+    project: "${CI_PROJECT_NAMESPACE}/infra"

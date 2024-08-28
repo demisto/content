@@ -19,5 +19,6 @@
     "marketplaces": [
         "xsoar",
         "marketplacev2"
-    ]
+    ],
+    "defaultDataSource": "FireEye HX Event Collector"
 }

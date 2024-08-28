@@ -131,6 +131,7 @@ def test_parse_cpe(cpe, expected_output, expected_relationships):
     [
         ({"param1": "value1", "noRejected": "None"}, "param1=value1&noRejected&cvssV3Severity=LOW&cvssV3Severity=MEDIUM"),
         ({"noRejected": "None"}, "noRejected&cvssV3Severity=LOW&cvssV3Severity=MEDIUM"),
+        ({"hasKev": "True"}, "hasKev&cvssV3Severity=LOW&cvssV3Severity=MEDIUM"),
     ],
 )
 def test_build_param_string(input_params, expected_param_string):

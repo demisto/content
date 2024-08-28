@@ -113,7 +113,7 @@ def get_events(client: "SecurityHubClient", start_time: dt.datetime | None = Non
         result = [event for event in result if event['Id'] not in id_ignore_set]
 
         count += len(result)
-        yield result
+        yield result  # type: ignore
 
         if 'NextToken' in response and (limit == 0 or count < limit):
             kwargs['NextToken'] = response['NextToken']

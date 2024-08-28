@@ -719,7 +719,7 @@ Retrieve the submission info.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| submission_ids | A comma-separated list of submission IDs. | Optional | 
+| submission_ids | A comma-separated list of submission IDs. | Required | 
 | full_display | When set to true, indicators information, including their DBot Scores, will be displayed. Possible values are: true, false. Default is true. | Optional | 
 
 

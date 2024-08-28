@@ -1,5 +1,7 @@
 Collects the events log for authentication and Audit provided by Okta admin API
 
+This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
+
 ## Configure Okta Log on Cortex XSIAM
 
 1. Navigate to **Settings** > **Configurations** > **Automation & Feed Integrations**.

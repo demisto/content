@@ -36,4 +36,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![SafeNet Trusted Access - Terminate User SSO Sessions](./doc_files/SafeNet_Trusted_Access_-_Terminate_User_SSO_Sessions.png)
+![SafeNet Trusted Access - Terminate User SSO Sessions](../doc_files/SafeNet_Trusted_Access_-_Terminate_User_SSO_Sessions.png)

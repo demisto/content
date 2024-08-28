@@ -2,6 +2,8 @@ ReliaQuest GreyMatter DRP Event Collector minimizes digital risk by identifying 
 
 This integration fetches event items which can be either incident/alerts, for more information refer [here](https://portal-digitalshadows.com/learn/searchlight-api/key-words/triage)
 
+This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
+
 ## Configure ReliaQuest GreyMatter DRP Event Collector On XSIAM
 
 1. Navigate to **Settings** > **Configurations** > **Data Collection** > **Automations & Feed Integrations**.

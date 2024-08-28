@@ -1,28 +1,33 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
-"""
-Vectra Detect Integration for Cortex XSOAR
+# ## ### #### #####
+# Vectra Detect Integration for Cortex XSOAR
+#
+# Developer Documentation: https://xsoar.pan.dev/docs/welcome
+# Code Conventions: https://xsoar.pan.dev/docs/integrations/code-conventions
+# Linting: https://xsoar.pan.dev/docs/integrations/linting
+# ## ### #### #####
 
-Developer Documentation: https://xsoar.pan.dev/docs/welcome
-Code Conventions: https://xsoar.pan.dev/docs/integrations/code-conventions
-Linting: https://xsoar.pan.dev/docs/integrations/linting
-
-"""
 # Python linting disabled example (disable linting on error code E203)
 # noqa: E203
 
-from CommonServerUserPython import *
-
-import dateparser
+# Standard libraries
 import json
 import traceback
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Set
+
+# Specific libraries
+import dateparser
 import urllib3
+
+# XSOAR libraries
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+from CommonServerUserPython import *
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-''' CONSTANTS '''
+# ####       #### #
+# ## CONSTANTS ## #
 
 DATE_FORMAT: str = '%Y-%m-%dT%H:%M:%S.000Z'
 MAX_RESULTS: int = 200
@@ -68,15 +73,17 @@ OUTCOME_CATEGORIES = {
 }
 ASSIGNMENT_ENTITY_TYPES = ('account', 'host')
 
+BACK_IN_TIME_SEARCH_IN_HOURS = 1
 
-''' GLOBALS '''
+# ####     #### #
+# ## GLOBALS ## #
 global_UI_URL: Optional[str] = None
 
 # DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
-''' CLIENT CLASS '''
 
-
+# ####          #### #
+# ## CLIENT CLASS ## #
 class Client(BaseClient):
     """Client class to interact with the service API
 
@@ -705,7 +712,6 @@ class Client(BaseClient):
 # ####                 #### #
 # ##  HELPER FUNCTIONS   ## #
 #                           #
-
 def str2bool(value: Optional[str]) -> Optional[bool]:
     """
     Converts a string into a boolean
@@ -713,8 +719,8 @@ def str2bool(value: Optional[str]) -> Optional[bool]:
     - params:
         - value: The string to convert
     - returns:
-        True if value matchs the 'true' list
-        False if value matchs the 'false' list
+        True if value matches the 'true' list
+        False if value matches the 'false' list
         None instead
     """
     if value is None:
@@ -868,7 +874,7 @@ def validate_argument(label: Optional[str], value: Any) -> int:
         except ValueError:
             raise ValueError(f'"{label}" must be an integer between 1 and 10')
     else:
-        raise SystemError('Unknow argument type')
+        raise SystemError('Unknown argument type')
     return value
 
 
@@ -904,7 +910,7 @@ def sanitize_str_ids_list_to_set(list: Optional[str]) -> Optional[Set[int]]:
     - params:
         - list: The list to sanitize
     - returns:
-        Returns the sanitazed list (only valid IDs)
+        Returns the sanitized list (only valid IDs)
     """
     output: Set[int] = set()
     if list is not None and isinstance(list, str):
@@ -1002,13 +1008,13 @@ def common_extract_data(entity: Dict[str, Any]) -> Dict[str, Any]:
         The extracted data
     """
     return {
-        'Assignee': entity.get('assigned_to'),                              # noqa: E203
-        'AssignedDate': convert_date(entity.get('assigned_date')),              # noqa: E203
-        'CertaintyScore': entity.get('certainty'),                                # noqa: E203
-        'ID': entity.get('id'),                                       # noqa: E203
-        'State': entity.get('state'),                                    # noqa: E203
-        'Tags': entity.get('tags'),                                     # noqa: E203
-        'ThreatScore': entity.get('threat'),                                   # noqa: E203
+        'Assignee': entity.get('assigned_to'),
+        'AssignedDate': convert_date(entity.get('assigned_date')),
+        'CertaintyScore': entity.get('certainty'),
+        'ID': entity.get('id'),
+        'State': entity.get('state'),
+        'Tags': entity.get('tags'),
+        'ThreatScore': entity.get('threat'),
     }
 
 
@@ -1022,13 +1028,13 @@ def extract_account_data(account: Dict[str, Any]) -> Dict[str, Any]:
         The Account extracted data
     """
     return common_extract_data(account) | {
-        'LastDetectionTimestamp': convert_date(account.get('last_detection_timestamp')),  # noqa: E203
-        'PrivilegeLevel': account.get('privilege_level'),                         # noqa: E203
-        'PrivilegeCategory': account.get('privilege_category'),                      # noqa: E203
-        'Severity': unify_severity(account.get('severity')),                # noqa: E203
-        'Type': account.get('account_type'),                            # noqa: E203
-        'URL': forge_entity_url('account', account.get('id')),         # noqa: E203
-        'Username': account.get('name'),                                    # noqa: E203
+        'LastDetectionTimestamp': convert_date(account.get('last_detection_timestamp')),
+        'PrivilegeLevel': account.get('privilege_level'),
+        'PrivilegeCategory': account.get('privilege_category'),
+        'Severity': unify_severity(account.get('severity')),
+        'Type': account.get('account_type'),
+        'URL': forge_entity_url('account', account.get('id')),
+        'Username': account.get('name'),
     }
 
 
@@ -1059,23 +1065,23 @@ def extract_detection_data(detection: Dict[str, Any]) -> Dict[str, Any]:
         description = dst_ips = dst_ports = None
 
     return common_extract_data(detection) | remove_empty_elements({
-        'Category': detection.get('category'),                                                # noqa: E203
-        'Description': description,                                                              # noqa: E203
-        'DestinationIPs': dst_ips,                                                                  # noqa: E203
-        'DestinationPorts': dst_ports,                                                                # noqa: E203
-        'FirstTimestamp': convert_date(detection.get('first_timestamp')),                           # noqa: E203
-        'IsTargetingKeyAsset': detection.get('is_targeting_key_asset'),                                  # noqa: E203
-        'LastTimestamp': convert_date(detection.get('last_timestamp')),                            # noqa: E203
-        'Name': detection_name,                                                           # noqa: E203
-        'Severity': scores_to_severity(detection.get('threat'), detection.get('certainty')),  # noqa: E203
-        'SensorLUID': detection.get('sensor'),                                                  # noqa: E203
-        'SensorName': detection.get('sensor_name'),                                             # noqa: E203
-        'SourceAccountID': source_account_id,                                                        # noqa: E203
-        'SourceHostID': source_host_id,                                                           # noqa: E203
-        'SourceIP': detection.get('src_ip'),                                                  # noqa: E203
-        'TriageRuleID': detection.get('triage_rule_id'),                               # noqa: E203
-        'Type': detection.get('detection'),                                               # noqa: E203
-        'URL': forge_entity_url('detection', detection.get('id')),                       # noqa: E203
+        'Category': detection.get('category'),
+        'Description': description,
+        'DestinationIPs': dst_ips,
+        'DestinationPorts': dst_ports,
+        'FirstTimestamp': convert_date(detection.get('first_timestamp')),
+        'IsTargetingKeyAsset': detection.get('is_targeting_key_asset'),
+        'LastTimestamp': convert_date(detection.get('last_timestamp')),
+        'Name': detection_name,
+        'Severity': scores_to_severity(detection.get('threat'), detection.get('certainty')),
+        'SensorLUID': detection.get('sensor'),
+        'SensorName': detection.get('sensor_name'),
+        'SourceAccountID': source_account_id,
+        'SourceHostID': source_host_id,
+        'SourceIP': detection.get('src_ip'),
+        'TriageRuleID': detection.get('triage_rule_id'),
+        'Type': detection.get('detection'),
+        'URL': forge_entity_url('detection', detection.get('id')),
     })
 
 
@@ -1089,19 +1095,19 @@ def extract_host_data(host: Dict[str, Any]) -> Dict[str, Any]:
         The Host extracted data
     """
     return common_extract_data(host) | {
-        'HasActiveTraffic': host.get('has_active_traffic'),                      # noqa: E203
-        'Hostname': host.get('name'),                                    # noqa: E203
-        'IPAddress': host.get('ip'),                                      # noqa: E203
-        'IsKeyAsset': host.get('is_key_asset'),                            # noqa: E203
-        'IsTargetingKeyAsset': host.get('is_targeting_key_asset'),                  # noqa: E203
-        'LastDetectionTimestamp': convert_date(host.get('last_detection_timestamp')),  # noqa: E203
-        'PrivilegeLevel': host.get('privilege_level'),                         # noqa: E203
-        'PrivilegeCategory': host.get('privilege_category'),                      # noqa: E203
-        'ProbableOwner': host.get('probable_owner'),                          # noqa: E203
-        'SensorLUID': host.get('sensor'),                                  # noqa: E203
-        'SensorName': host.get('sensor_name'),                             # noqa: E203
-        'Severity': unify_severity(host.get('severity')),                # noqa: E203
-        'URL': forge_entity_url('host', host.get('id')),            # noqa: E203
+        'HasActiveTraffic': host.get('has_active_traffic'),
+        'Hostname': host.get('name'),
+        'IPAddress': host.get('ip'),
+        'IsKeyAsset': host.get('is_key_asset'),
+        'IsTargetingKeyAsset': host.get('is_targeting_key_asset'),
+        'LastDetectionTimestamp': convert_date(host.get('last_detection_timestamp')),
+        'PrivilegeLevel': host.get('privilege_level'),
+        'PrivilegeCategory': host.get('privilege_category'),
+        'ProbableOwner': host.get('probable_owner'),
+        'SensorLUID': host.get('sensor'),
+        'SensorName': host.get('sensor_name'),
+        'Severity': unify_severity(host.get('severity')),
+        'URL': forge_entity_url('host', host.get('id')),
     }
 
 
@@ -1130,19 +1136,19 @@ def extract_assignment_data(assignment: Dict[str, Any]) -> Dict[str, Any]:
     triaged_as = assignment['events'][0]['context'].get('triage_as')
 
     return remove_empty_elements({
-        'AccountID': assignment.get('account_id'),                                  # noqa: E203
-        'AssignedBy': assigned_by_user,                                              # noqa: E203
-        'AssignedDate': convert_date(assignment.get('date_assigned')),                 # noqa: E203
-        'AssignedTo': assigned_to_user,                                              # noqa: E203
-        'HostID': assignment.get('host_id'),                                     # noqa: E203
-        'ID': assignment.get('id'),                                          # noqa: E203
-        'IsResolved': True if assignment.get('resolved_by') is not None else False,  # noqa: E203
-        'OutcomeCategory': convert_outcome_category_raw2text(outcome_category),           # noqa: E203
-        'OutcomeTitle': outcome_title,                                                 # noqa: E203
-        'TriagedDetections': assignment.get('triaged_detections'),                          # noqa: E203
-        'TriagedAs': triaged_as,                                                    # noqa: E203
-        'ResolvedBy': resolved_by_user,                                              # noqa: E203
-        'ResolvedDate': convert_date(assignment.get('date_resolved')),                 # noqa: E203
+        'AccountID': assignment.get('account_id'),
+        'AssignedBy': assigned_by_user,
+        'AssignedDate': convert_date(assignment.get('date_assigned')),
+        'AssignedTo': assigned_to_user,
+        'HostID': assignment.get('host_id'),
+        'ID': assignment.get('id'),
+        'IsResolved': True if assignment.get('resolved_by') is not None else False,
+        'OutcomeCategory': convert_outcome_category_raw2text(outcome_category),
+        'OutcomeTitle': outcome_title,
+        'TriagedDetections': assignment.get('triaged_detections'),
+        'TriagedAs': triaged_as,
+        'ResolvedBy': resolved_by_user,
+        'ResolvedDate': convert_date(assignment.get('date_resolved')),
     })
 
 
@@ -1156,10 +1162,10 @@ def extract_outcome_data(outcome: Dict[str, Any]) -> Dict[str, Any]:
         The Outcome extracted data
     """
     return {
-        'Category': convert_outcome_category_raw2text(outcome.get('category')),  # noqa: E203
-        'ID': outcome.get('id'),                                           # noqa: E203
-        'IsBuiltIn': outcome.get('builtin'),                                      # noqa: E203
-        'Title': outcome.get('title')                                         # noqa: E203
+        'Category': convert_outcome_category_raw2text(outcome.get('category')),
+        'ID': outcome.get('id'),
+        'IsBuiltIn': outcome.get('builtin'),
+        'Title': outcome.get('title')
     }
 
 
@@ -1173,12 +1179,12 @@ def extract_user_data(user: Dict[str, Any]) -> Dict[str, Any]:
         The User extracted data
     """
     return {
-        'Email': user.get('email'),                    # noqa: E203
-        'ID': user.get('id'),                       # noqa: E203
-        'Role': user.get('role'),                     # noqa: E203
-        'Type': user.get('account_type'),             # noqa: E203
-        'Username': user.get('username'),                 # noqa: E203
-        'LastLoginDate': convert_date(user.get('last_login'))  # noqa: E203
+        'Email': user.get('email'),
+        'ID': user.get('id'),
+        'Role': user.get('role'),
+        'Type': user.get('account_type'),
+        'Username': user.get('username'),
+        'LastLoginDate': convert_date(user.get('last_login'))
     }
 
 
@@ -1302,7 +1308,16 @@ def account_to_incident(account: Dict):
     return incident, incident_last_run
 
 
-def get_last_run_details(integration_params: Dict):
+def get_last_run_details(integration_params: Dict) -> Dict:
+    """
+    Extracts detail from the stored last_run variable or create them if needed
+
+    :type integration_params: ``dict``
+    :param integration_params: The integration configuration parameters
+
+    :return: Last run content
+    :rtype ``dict``
+    """
     # Get the config settings
     fetch_first_time = integration_params.get('first_fetch')
     fetch_entity_types = integration_params.get('fetch_entity_types', {})
@@ -1311,7 +1326,7 @@ def get_last_run_details(integration_params: Dict):
     last_run = demisto.getLastRun()
     demisto.debug(f"last run : {last_run}")
 
-    output_last_run = dict()
+    output_last_run: Dict = {}
     for entity_type in ENTITY_TYPES:
         if entity_type in fetch_entity_types:
             if not last_run.get(entity_type):
@@ -1323,7 +1338,8 @@ def get_last_run_details(integration_params: Dict):
                 last_id = 0
                 output_last_run[entity_type] = {
                     'last_timestamp': last_timestamp,
-                    'id': last_id
+                    'id': last_id,
+                    'last_created_events': []
                 }
                 demisto.debug(f"New last run for {entity_type}, {output_last_run[entity_type]}")
             else:
@@ -1336,7 +1352,7 @@ def get_last_run_details(integration_params: Dict):
     return output_last_run
 
 
-def iso_date_to_vectra_start_time(iso_date: str):
+def iso_date_to_vectra_start_time(iso_date: str, backward_search: bool = False):
     """
     Converts an iso date into a Vectra timestamp used in search query
 
@@ -1350,12 +1366,21 @@ def iso_date_to_vectra_start_time(iso_date: str):
 
     if date:
         # We should return time in YYYY-MM-DDTHHMM format for Vectra Lucene query search ...
-        start_time = date.strftime('%Y-%m-%dT%H%M')
-        demisto.debug(f'Start time is : {start_time}')
+        start_datetime = date.strftime(r'%Y-%m-%dT%H%M')
+        demisto.debug(f'Start datetime is : {start_datetime}')
+
+        if backward_search:
+            # Manipulate the date if we need to search backward
+            date = date - timedelta(hours=BACK_IN_TIME_SEARCH_IN_HOURS)  # Timedelta is imported from CommonServerPython
+            backward_start_datetime = date.strftime('%Y-%m-%dT%H%M')
+            demisto.debug((f'Manipulated time as backward search. '
+                           f'Start datetime changed from : {start_datetime} to : {backward_start_datetime}'))
+            start_datetime = backward_start_datetime
+
     else:
         raise SystemError('Invalid ISO date')
 
-    return start_time
+    return start_datetime
 
 
 def unify_severity(severity: Optional[str]) -> str:
@@ -1403,14 +1428,13 @@ def convert_outcome_category_text2raw(category: str) -> Optional[str]:
 
 class VectraException(Exception):
     """
-    Custome Vectra Exception in case of Vectra API issue
+    Custom Vectra Exception in case of Vectra API issue
     """
+
 
 # ####               #### #
 # ## COMMAND FUNCTIONS ## #
 #                         #
-
-
 def test_module(client: Client, integration_params: Dict) -> str:
     """
     Tests API connectivity and authentication.
@@ -1521,12 +1545,16 @@ def fetch_incidents(client: Client, integration_params: Dict):
         else:
             last_fetched_timestamp = previous_last_run[entity_type]['last_timestamp']
             last_fetched_id = previous_last_run[entity_type]['id']
+            # Forced to use "get" as this field wasn't present in the first version of this integration
+            last_created_events = previous_last_run[entity_type].get('last_created_events', [])  # Retro-compat
 
             demisto.debug(f"{entity_type} - Last fetched incident"
                           f"last_timestamp : {last_fetched_timestamp} / ID : {last_fetched_id}")
 
-            start_time = iso_date_to_vectra_start_time(last_fetched_timestamp)
+            start_time = iso_date_to_vectra_start_time(last_fetched_timestamp, backward_search=True)
 
+            new_last_run[entity_type] = {}
+            new_last_run[entity_type]['last_created_events'] = []
             if entity_type == 'Accounts':
                 api_response = client.search_accounts(
                     last_timestamp=start_time,
@@ -1551,37 +1579,11 @@ def fetch_incidents(client: Client, integration_params: Dict):
             elif api_response.get('count', 0) > 0:
                 demisto.debug(f"{entity_type} - {api_response.get('count')} objects fetched from Vectra")
 
-                # To avoid duplicates, find if in this batch is present the last fetched event
-                # If yes, start ingesting incident after it
-                # This has to be done in two pass
-                last_fetched_incident_found = False
-
-                # 1st pass
                 if api_response.get('results') is None:
                     raise VectraException("API issue - Response is empty or invalid")
 
+                # Due to backward search we need to avoid creating incidents of already ingested events
                 api_results = api_response.get('results', {})
-                for event in api_results:
-                    incident_last_run = None
-                    if entity_type == 'Accounts':
-                        incident, incident_last_run = account_to_incident(event)
-                    elif entity_type == 'Hosts':
-                        incident, incident_last_run = host_to_incident(event)
-                    elif entity_type == 'Detections':
-                        incident, incident_last_run = detection_to_incident(event)
-
-                    if (incident_last_run is not None) \
-                            and (incident_last_run.get('last_timestamp') == last_fetched_timestamp) \
-                            and (incident_last_run.get('id') == last_fetched_id):
-                        demisto.debug(f"{entity_type} - Object with timestamp : "
-                                      f"{last_fetched_timestamp} and ID : {last_fetched_id} "
-                                      f"was already fetched during previous run.")
-                        last_fetched_incident_found = True
-                        break
-
-                # 2nd pass
-                start_ingesting_incident = False
-
                 for event in api_results:
                     if len(entity_incidents) >= max_created_incidents:
                         demisto.info(f"{entity_type} - Maximum created incidents has been reached ({max_created_incidents}). "
@@ -1596,23 +1598,26 @@ def fetch_incidents(client: Client, integration_params: Dict):
                     elif entity_type == 'Detections':
                         incident, incident_last_run = detection_to_incident(event)
 
-                    if (incident_last_run is not None) \
-                            and (incident_last_run.get('last_timestamp') == last_fetched_timestamp) \
-                            and (incident_last_run.get('id') == last_fetched_id):
-                        # Start creating incidents after this one as already fetched during last run
-                        start_ingesting_incident = True
-                        continue
+                    # Search this incident in the last_run, if it's in, skip it, if not create it
+                    # Create incident UID and search for it
+                    if incident_last_run is not None:
+                        incident_uid = f"{entity_type}_{incident_last_run.get('id')}_{incident_last_run.get('last_timestamp')}"
+                        if incident_uid in last_created_events:
+                            demisto.debug(f"{entity_type} - Skipping object "
+                                          f"last_timestamp : {incident_last_run.get('last_timestamp')} "
+                                          f"/ ID : {incident_last_run.get('id')}")
+                            # We keep this event in the list, as still part of the search output
+                            new_last_run[entity_type]['last_created_events'].append(incident_uid)
+                            continue
 
-                    if last_fetched_incident_found and not start_ingesting_incident:
-                        demisto.debug(f"{entity_type} - Skipping object "
-                                      f"last_timestamp : {incident_last_run.get('last_timestamp')} "
-                                      f"/ ID : {incident_last_run.get('id')}")
-                    else:
                         demisto.debug(f"{entity_type} - New incident from object "
                                       f"last_timestamp : {incident_last_run.get('last_timestamp')} "
                                       f"/ ID : {incident_last_run.get('id')}")
                         entity_incidents.append(incident)
-                        new_last_run[entity_type] = incident_last_run
+                        new_last_run[entity_type]['last_timestamp'] = incident_last_run.get('last_timestamp')
+                        new_last_run[entity_type]['id'] = incident_last_run.get('id')
+                        # We add this event in the list, as that's a new event we need to remember for next run
+                        new_last_run[entity_type]['last_created_events'].append(incident_uid)
 
             if len(entity_incidents) > 0:
                 demisto.info(f"{entity_type} - {len(entity_incidents)} incident(s) to create")
@@ -1634,7 +1639,7 @@ def fetch_incidents(client: Client, integration_params: Dict):
 
 def vectra_search_accounts_command(client: Client, **kwargs) -> CommandResults:
     """
-    Returns several Account objects maching the search criterias passed as arguments
+    Returns several Account objects matching the search criteria passed as arguments
 
     - params:
         - client: Vectra Client
@@ -1648,7 +1653,7 @@ def vectra_search_accounts_command(client: Client, **kwargs) -> CommandResults:
     if count is None:
         raise VectraException('API issue - Response is empty or invalid')
 
-    accounts_data = list()
+    accounts_data = []
     if count == 0:
         readable_output = 'Cannot find any Account.'
     else:
@@ -1682,7 +1687,7 @@ def vectra_search_accounts_command(client: Client, **kwargs) -> CommandResults:
 
 def vectra_search_detections_command(client: Client, **kwargs) -> CommandResults:
     """
-    Returns several Detection objects maching the search criterias passed as arguments
+    Returns several Detection objects matching the search criteria passed as arguments
 
     - params:
         - client: Vectra Client
@@ -1696,7 +1701,7 @@ def vectra_search_detections_command(client: Client, **kwargs) -> CommandResults
     if count is None:
         raise VectraException('API issue - Response is empty or invalid')
 
-    detections_data = list()
+    detections_data = []
     if count == 0:
         readable_output = 'Cannot find any Detection.'
     else:
@@ -1706,9 +1711,9 @@ def vectra_search_detections_command(client: Client, **kwargs) -> CommandResults
         api_results = api_response.get('results', [])
 
         # Define which fields we want to exclude from the context output
-        # detection_context_excluded_fields = list()
+        # detection_context_excluded_fields = []
         # Context Keys
-        # context_keys = list()
+        # context_keys = []
 
         for detection in api_results:
             detection_data = extract_detection_data(detection)
@@ -1737,7 +1742,7 @@ def vectra_search_detections_command(client: Client, **kwargs) -> CommandResults
 
 def vectra_search_hosts_command(client: Client, **kwargs) -> CommandResults:
     """
-    Returns several Host objects maching the search criterias passed as arguments
+    Returns several Host objects matching the search criteria passed as arguments
 
     - params:
         - client: Vectra Client
@@ -1751,7 +1756,7 @@ def vectra_search_hosts_command(client: Client, **kwargs) -> CommandResults:
     if count is None:
         raise VectraException('API issue - Response is empty or invalid')
 
-    hosts_data = list()
+    hosts_data = []
     if count == 0:
         readable_output = 'Cannot find any Host.'
     else:
@@ -1785,7 +1790,7 @@ def vectra_search_hosts_command(client: Client, **kwargs) -> CommandResults:
 
 def vectra_search_assignments_command(client: Client, **kwargs) -> CommandResults:
     """
-    Returns several Assignment objects maching the search criterias passed as arguments
+    Returns several Assignment objects matching the search criteria passed as arguments
 
     - params:
         - client: Vectra Client
@@ -1799,7 +1804,7 @@ def vectra_search_assignments_command(client: Client, **kwargs) -> CommandResult
     if count is None:
         raise VectraException('API issue - Response is empty or invalid')
 
-    assignments_data = list()
+    assignments_data = []
     if count == 0:
         readable_output = 'Cannot find any Assignments.'
     else:
@@ -1832,7 +1837,7 @@ def vectra_search_assignments_command(client: Client, **kwargs) -> CommandResult
 
 def vectra_search_outcomes_command(client: Client, **kwargs) -> CommandResults:
     """
-    Returns several Assignment outcome objects maching the search criterias passed as arguments
+    Returns several Assignment outcome objects matching the search criteria passed as arguments
 
     - params:
         - client: Vectra Client
@@ -1846,7 +1851,7 @@ def vectra_search_outcomes_command(client: Client, **kwargs) -> CommandResults:
     if count is None:
         raise VectraException('API issue - Response is empty or invalid')
 
-    outcomes_data = list()
+    outcomes_data = []
     if count == 0:
         readable_output = 'Cannot find any Outcomes.'
     else:
@@ -1878,7 +1883,7 @@ def vectra_search_outcomes_command(client: Client, **kwargs) -> CommandResults:
 
 def vectra_search_users_command(client: Client, **kwargs) -> CommandResults:
     """
-    Returns several Vectra Users objects maching the search criterias passed as arguments
+    Returns several Vectra Users objects matching the search criteria passed as arguments
 
     - params:
         - client: Vectra Client
@@ -1892,7 +1897,7 @@ def vectra_search_users_command(client: Client, **kwargs) -> CommandResults:
     if count is None:
         raise VectraException('API issue - Response is empty or invalid')
 
-    users_data = list()
+    users_data = []
     if count == 0:
         readable_output = 'Cannot find any Vectra Users.'
     else:
@@ -2349,7 +2354,7 @@ def vectra_outcome_create_command(client: Client, category: str, title: str) -> 
 
 def vectra_get_user_by_id_command(client: Client, id: str) -> CommandResults:
     """
-    Gets Vectre User details using its ID
+    Gets Vectra User details using its ID
 
     - params:
         - client: Vectra Client
@@ -2445,9 +2450,8 @@ def del_tags_command(client: Client, type: str, id: str, tags: str) -> CommandRe
     return command_result
 
 
-''' MAIN FUNCTION '''
-
-
+# ####           #### #
+# ## MAIN FUNCTION ## #
 def main() -> None:  # pragma: no cover
     # Set some settings as global (to use them inside some functions)
     global global_UI_URL
@@ -2581,8 +2585,7 @@ def main() -> None:  # pragma: no cover
         return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
 
-''' ENTRY POINT '''
-
-
+# ####         #### #
+# ## ENTRY POINT ## #
 if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
     main()

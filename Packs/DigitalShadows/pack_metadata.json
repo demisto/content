@@ -73,5 +73,6 @@
         "DS",
         "Digital Shadows",
         "SearchLight"
-    ]
+    ],
+    "defaultDataSource": "ReliaQuest GreyMatter DRP Event Collector"
 }

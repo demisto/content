@@ -475,7 +475,7 @@
               },
               {
                 "endCol": 2,
-                "fieldId": "starttime",
+                "fieldId": "externalstarttime",
                 "height": 22,
                 "id": "f21bd910-0cb4-11eb-9647-db2151019621",
                 "index": 9,
@@ -485,7 +485,7 @@
               {
                 "dropEffect": "move",
                 "endCol": 2,
-                "fieldId": "lastupdatetime",
+                "fieldId": "externallastupdatedtime",
                 "height": 22,
                 "id": "0abf86b0-0cb5-11eb-9647-db2151019621",
                 "index": 10,

@@ -1,0 +1,25 @@
+{
+    "statusType": 2,
+    "status": "DONE",
+    "statusCode": 200,
+    "data": {
+        "data": [
+            {
+                "machine": {
+                    "id": "a1",
+                    "name": "DESKTOP-MTEUD0M",
+                    "ipAddress": "1.1.1.1"
+                },
+                "operation": {
+                    "response": null,
+                    "status": "TIMED_OUT"
+                }
+            }
+        ],
+        "metadata": {
+            "from": 0,
+            "to": 100,
+            "count": 1
+        }
+    }
+}

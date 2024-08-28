@@ -49,14 +49,13 @@ An API key for this feed can be obtained at [the NIST NVD Developer Website](htt
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 ### nvd-get-indicators
 ***
-Manually retrieve CVEs from the NVD feed going back X number of days based on the *history* argument.
-
+Manually retrieve CVEs from NVD using the history parameter for the duration back to fetch.
 
 #### Base Command
 
-`!nvd-get-indicators history=90`
+`!nvd-get-indicators history="7 days"`
 
 #### Input
 |**Argument Name**|**Description**|**Required**|
 |---|---|---|
-| History | Number of days back from today to retrieve CVEs | True |
+| History | Time back to retrieve CVEs, e.g. `7 days` | True |

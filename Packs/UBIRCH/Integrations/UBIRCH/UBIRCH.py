@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 from CommonServerUserPython import *  # noqa
 import paho.mqtt.client as mqtt
 import paho
-from typing import Callable
+from collections.abc import Callable
 import traceback
 import json
 
@@ -154,7 +154,7 @@ class Client:
         self.mqtt_client.username_pw_set(username, password)
         self.mqtt_host = mqtt_host
         self.mqtt_port = mqtt_port
-        self.topic = "com/ubirch/{}/incident/tenant/{}".format(stage, tenant_id)
+        self.topic = f"com/ubirch/{stage}/incident/tenant/{tenant_id}"
 
     def connect(self, on_connect_callback: Callable[[mqtt.Client, dict, dict, int], None] = None) -> None:
         if on_connect_callback is not None:

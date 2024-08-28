@@ -26,7 +26,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": -180
+          "y": -400
         }
       }
     note: false
@@ -38,13 +38,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: b2ac05c6-d58d-41ca-89af-f53212b9609f
+    taskid: f58f0b25-ae83-4196-8202-f58c135ebf7f
     type: condition
     task:
-      id: b2ac05c6-d58d-41ca-89af-f53212b9609f
+      id: f58f0b25-ae83-4196-8202-f58c135ebf7f
       version: -1
-      name: Is Cortex Xpanse enabled and IP present?
-      description: Determines if the "Cortex Xpanse" integration instance is configured and an IP is present to continue with cloud enrichment.
+      name: Is Cortex Xpanse enabled?
+      description: Determines if the "Cortex Xpanse" integration instance is configured to continue with enrichment.
       type: condition
       iscommand: false
       brand: ""
@@ -52,7 +52,8 @@ tasks:
       '#default#':
       - "38"
       "yes":
-      - "88"
+      - "128"
+      - "129"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -82,18 +83,12 @@ tasks:
             iscontext: true
           right:
             value: {}
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: inputs.RemoteIP
-            iscontext: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 460,
-          "y": -40
+          "y": -270
         }
       }
     note: false
@@ -133,32 +128,31 @@ tasks:
     isautoswitchedtoquietmode: false
   "88":
     id: "88"
-    taskid: 5e18d026-6149-4f5c-858f-c7995a5b3550
+    taskid: 41e5b734-11c8-45d6-83cd-dd04e1f3980b
     type: regular
     task:
-      id: 5e18d026-6149-4f5c-858f-c7995a5b3550
+      id: 41e5b734-11c8-45d6-83cd-dd04e1f3980b
       version: -1
       name: Search external service information
-      description: Get a list of all your external services filtered by the remote IP of the alert.
-      script: '|||asm-list-external-service'
+      description: Get service details according to the service ID.
+      script: 'Cortex Xpanse|||asm-get-external-service'
       type: regular
       iscommand: true
-      brand: ""
+      brand: "Cortex Xpanse"
     nexttasks:
       '#none#':
       - "90"
     scriptarguments:
-      ip_address:
+      service_id:
         complex:
-          root: inputs.RemoteIP
-      is_active:
-        simple: "yes"
+          accessor: xpanseserviceid
+          root: incident
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 800,
+          "x": 190,
           "y": 170
         }
       }
@@ -171,33 +165,48 @@ tasks:
     isautoswitchedtoquietmode: false
   "89":
     id: "89"
-    taskid: 9fb19614-5316-43d9-8c67-d8c31eed003c
+    taskid: 0a3ff6f7-216d-4055-8169-e9e9c862f72a
     type: regular
     task:
-      id: 9fb19614-5316-43d9-8c67-d8c31eed003c
+      id: 0a3ff6f7-216d-4055-8169-e9e9c862f72a
       version: -1
       name: Search related Xpanse assets
-      description: Get a list of all your internet exposures filtered by IP address, domain, type, and/or if there is an active external service. Maximum result limit is 100 assets.
-      script: Cortex Xpanse|||asm-list-asset-internet-exposure
+      description: Get internet exposure asset details according to the asset ID.
+      script: Cortex Xpanse|||asm-get-asset-internet-exposure
       type: regular
       iscommand: true
       brand: Cortex Xpanse
     nexttasks:
       '#none#':
-      - "38"
+      - "97"
     scriptarguments:
-      has_active_external_services:
-        simple: "yes"
-      ip_address:
+      asm_id:
         complex:
-          root: inputs.RemoteIP
+          accessor: xpanseassetids
+          root: incident
+          transformers:
+          - args:
+              chars:
+                value:
+                  simple: '[]'
+            operator: StripChars
+          - args:
+              delimiter:
+                value:
+                  simple: ','
+            operator: split
+          - args:
+              chars:
+                value:
+                  simple: '"'
+            operator: StripChars
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 740,
-          "y": 1610
+          "x": 1550,
+          "y": 150
         }
       }
     note: false
@@ -209,21 +218,22 @@ tasks:
     isautoswitchedtoquietmode: false
   "90":
     id: "90"
-    taskid: e1b53bce-b5bd-46a0-84e5-69bb5f7192d6
+    taskid: 8758da78-9cc6-4587-8d75-422327f2f2bb
     type: condition
     task:
-      id: e1b53bce-b5bd-46a0-84e5-69bb5f7192d6
+      id: 8758da78-9cc6-4587-8d75-422327f2f2bb
       version: -1
-      name: Services exist?
+      name: Service exist?
       description: Determines if service information was passed back from the last command.
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       '#default#':
-      - "89"
+      - "38"
       "yes":
-      - "91"
+      - "112"
+      - "98"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -241,229 +251,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 800,
-          "y": 360
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "91":
-    id: "91"
-    taskid: 9fecdfbf-97b1-4af0-81bf-e819be660a24
-    type: regular
-    task:
-      id: 9fecdfbf-97b1-4af0-81bf-e819be660a24
-      version: -1
-      name: Set Xpanse service ID
-      description: commands.local.cmd.set.incident
-      script: Builtin|||setIncident
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "92"
-    scriptarguments:
-      xpanseserviceid:
-        complex:
-          root: ASM.ExternalService
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: ASM.ExternalService.port
-                iscontext: true
-              right:
-                value:
-                  simple: incident.xpanseport
-                iscontext: true
-          accessor: service_id
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1160,
-          "y": 540
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "92":
-    id: "92"
-    taskid: b546bba5-63c9-4f60-8481-b8f9f265e70d
-    type: condition
-    task:
-      id: b546bba5-63c9-4f60-8481-b8f9f265e70d
-      version: -1
-      name: Service ID exists?
-      description: Determines if a service ID was passed back from the last command.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "89"
-      "yes":
-      - "93"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: incident
-                accessor: xpanseserviceid
-            iscontext: true
-          right:
-            value: {}
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1160,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "93":
-    id: "93"
-    taskid: 53726b10-a1d0-44fa-8d1f-f9707f246ab5
-    type: regular
-    task:
-      id: 53726b10-a1d0-44fa-8d1f-f9707f246ab5
-      version: -1
-      name: Get service details
-      description: Get service details according to the service ID.
-      script: Cortex Xpanse|||asm-get-external-service
-      type: regular
-      iscommand: true
-      brand: Cortex Xpanse
-    nexttasks:
-      '#none#':
-      - "94"
-    scriptarguments:
-      service_id:
-        complex:
-          root: incident
-          accessor: xpanseserviceid
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1490,
-          "y": 920
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "94":
-    id: "94"
-    taskid: 4cb5d6e4-dd65-4a5e-836b-531f2447b157
-    type: regular
-    task:
-      id: 4cb5d6e4-dd65-4a5e-836b-531f2447b157
-      version: -1
-      name: Set Xpanse protocol
-      description: commands.local.cmd.set.incident
-      script: Builtin|||setIncident
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "96"
-    scriptarguments:
-      xpanseprotocol:
-        complex:
-          root: ASM.ExternalService
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: ASM.ExternalService.service_id
-                iscontext: true
-              right:
-                value:
-                  simple: incident.xpanseserviceid
-                iscontext: true
-          accessor: protocol
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1490,
-          "y": 1090
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "96":
-    id: "96"
-    taskid: f8bd180a-8e64-4346-8d04-a244aa6da48d
-    type: regular
-    task:
-      id: f8bd180a-8e64-4346-8d04-a244aa6da48d
-      version: -1
-      name: Set classifications
-      description: |-
-        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Example of command:
-        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "97"
-    scriptarguments:
-      gridfield:
-        simple: xpanseserviceclassifications
-      keys:
-        simple: activeclassifications
-      val1:
-        complex:
-          root: ASM.ExternalService
-          accessor: active_classifications
-          transformers:
-          - operator: uniq
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1490,
-          "y": 1260
+          "x": 190,
+          "y": 330
         }
       }
     note: false
@@ -475,34 +264,28 @@ tasks:
     isautoswitchedtoquietmode: false
   "97":
     id: "97"
-    taskid: 2c67d08f-993b-48a4-89a4-d950268354b0
-    type: regular
+    taskid: 60961560-078f-44c7-8336-0418d94977cc
+    type: condition
     task:
-      id: 2c67d08f-993b-48a4-89a4-d950268354b0
+      id: 60961560-078f-44c7-8336-0418d94977cc
       version: -1
-      name: Set provider
-      description: commands.local.cmd.set.incident
-      script: Builtin|||setIncident
-      type: regular
-      iscommand: true
-      brand: Builtin
+      name: Asset exists?
+      description: Determines if asset information was passed back from the last command.
+      type: condition
+      iscommand: false
+      brand: ""
     nexttasks:
-      '#none#':
-      - "89"
-    scriptarguments:
-      xpanseprovider:
-        complex:
-          root: ASM.ExternalService
-          accessor: externally_detected_providers
-          transformers:
-          - operator: FirstArrayElement
+      '#default#':
+      - "38"
+      "yes":
+      - "113"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1490,
-          "y": 1430
+          "x": 1550,
+          "y": 310
         }
       }
     note: false
@@ -512,27 +295,2495 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: AssetInternetExposure
+                root: ASM
+          operator: isNotEmpty
+          right:
+            value: {}
+      label: "yes"
+  "98":
+    continueonerrortype: ""
+    id: "98"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "99"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      gridfield:
+        simple: xpanseservicedetails
+      keys:
+        simple: field,value
+      val1:
+        simple: Service Name
+      val2:
+        complex:
+          accessor: service_name
+          root: ASM.ExternalService
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: n/a
+            operator: SetIfEmpty
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. Example of command:
+        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
+      id: bb5c3806-9983-40ce-85d2-e224942d135b
+      iscommand: false
+      name: Set service information (Service Name)
+      script: GridFieldSetup
+      type: regular
+      version: -1
+    taskid: bb5c3806-9983-40ce-85d2-e224942d135b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 190,
+          "y": 510
+        }
+      }
+  "99":
+    continueonerrortype: ""
+    id: "99"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "101"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      gridfield:
+        simple: xpanseservicedetails
+      keys:
+        simple: field,value
+      val1:
+        simple: Is Active
+      val2:
+        complex:
+          accessor: is_active
+          root: ASM.ExternalService
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: n/a
+            operator: SetIfEmpty
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. Example of command:
+        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
+      id: fdaef9a9-d071-4b8d-8361-2a77e159353f
+      iscommand: false
+      name: Set service information (Is Active)
+      script: GridFieldSetup
+      type: regular
+      version: -1
+    taskid: fdaef9a9-d071-4b8d-8361-2a77e159353f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 190,
+          "y": 680
+        }
+      }
+  "100":
+    continueonerrortype: ""
+    id: "100"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "107"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      gridfield:
+        simple: xpanseservicedetails
+      keys:
+        simple: field,value
+      val1:
+        simple: Potential CVEs
+      val2:
+        complex:
+          accessor: externally_inferred_vulnerability_score
+          root: ASM.ExternalService
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: n/a
+            operator: SetIfEmpty
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. Example of command:
+        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
+      id: 667637a3-7289-42a3-88f8-38f9085aabe1
+      iscommand: false
+      name: Set service information (Potential CVEs)
+      script: GridFieldSetup
+      type: regular
+      version: -1
+    taskid: 667637a3-7289-42a3-88f8-38f9085aabe1
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 190,
+          "y": 1010
+        }
+      }
+  "101":
+    continueonerrortype: ""
+    id: "101"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "100"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      gridfield:
+        simple: xpanseservicedetails
+      keys:
+        simple: field,value
+      val1:
+        simple: Active Classifications
+      val2:
+        complex:
+          accessor: active_classifications
+          root: ASM.ExternalService
+          transformers:
+          - args:
+              separator:
+                value:
+                  simple: ', '
+            operator: join
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. Example of command:
+        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
+      id: edcabcaa-be6e-45ec-86a5-add2df3e2734
+      iscommand: false
+      name: Set service information (Active Classifications)
+      script: GridFieldSetup
+      type: regular
+      version: -1
+    taskid: edcabcaa-be6e-45ec-86a5-add2df3e2734
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 190,
+          "y": 845
+        }
+      }
+  "102":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: type
+                root: ASM.AssetInternetExposure
+          operator: isEqualString
+          right:
+            value:
+              simple: Certificate
+      label: "yes"
+    continueonerrortype: ""
+    id: "102"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "38"
+      "yes":
+      - "114"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Determines if there is an asset of type certificate.
+      id: e0856db5-4c44-4f19-89ee-84768af91985
+      iscommand: false
+      name: Is there a certificate asset?
+      type: condition
+      version: -1
+    taskid: e0856db5-4c44-4f19-89ee-84768af91985
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 860,
+          "y": 680
+        }
+      }
+  "103":
+    continueonerrortype: ""
+    id: "103"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "38"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      gridfield:
+        simple: xpansecertificateasset
+      keys:
+        simple: name,type,date_added,tags,explainers,subject,subject_alerternative_names,issuer,issuer_email,expires,algorithm
+      val1:
+        complex:
+          accessor: name
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ASM.AssetInternetExposure.type
+              operator: isEqualString
+              right:
+                value:
+                  simple: Certificate
+          root: ASM.AssetInternetExposure
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: n/a
+            operator: SetIfEmpty
+      val2:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ASM.AssetInternetExposure.type
+              operator: isEqualString
+              right:
+                value:
+                  simple: Certificate
+          root: ASM.AssetInternetExposure.type
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: n/a
+            operator: SetIfEmpty
+      val3:
+        complex:
+          accessor: created
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ASM.AssetInternetExposure.type
+              operator: isEqualString
+              right:
+                value:
+                  simple: Certificate
+          root: ASM.AssetInternetExposure
+          transformers:
+          - operator: TimeStampToDate
+      val4:
+        complex:
+          accessor: tags
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ASM.AssetInternetExposure.type
+              operator: isEqualString
+              right:
+                value:
+                  simple: Certificate
+          root: ASM.AssetInternetExposure
+          transformers:
+          - args:
+              separator:
+                value:
+                  simple: ', '
+            operator: join
+      val5:
+        complex:
+          accessor: explainers
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ASM.AssetInternetExposure.type
+              operator: isEqualString
+              right:
+                value:
+                  simple: Certificate
+          root: ASM.AssetInternetExposure
+          transformers:
+          - args:
+              separator:
+                value:
+                  simple: ', '
+            operator: join
+      val6:
+        complex:
+          accessor: details.certificateDetails.subject
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ASM.AssetInternetExposure.type
+              operator: isEqualString
+              right:
+                value:
+                  simple: Certificate
+          root: ASM.AssetInternetExposure
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: n/a
+            operator: SetIfEmpty
+      val7:
+        complex:
+          accessor: details.certificateDetails.subjectAlternativeNames
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ASM.AssetInternetExposure.type
+              operator: isEqualString
+              right:
+                value:
+                  simple: Certificate
+          root: ASM.AssetInternetExposure
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: n/a
+            operator: SetIfEmpty
+      val8:
+        complex:
+          accessor: certificate_issuer
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ASM.AssetInternetExposure.type
+              operator: isEqualString
+              right:
+                value:
+                  simple: Certificate
+          root: ASM.AssetInternetExposure
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: n/a
+            operator: SetIfEmpty
+      val9:
+        complex:
+          accessor: details.certificateDetails.issuerEmail
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ASM.AssetInternetExposure.type
+              operator: isEqualString
+              right:
+                value:
+                  simple: Certificate
+          root: ASM.AssetInternetExposure
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: n/a
+      val10:
+        complex:
+          accessor: details.certificateDetails.validNotAfter
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ASM.AssetInternetExposure.type
+              operator: isEqualString
+              right:
+                value:
+                  simple: Certificate
+          root: ASM.AssetInternetExposure
+          transformers:
+          - operator: TimeStampToDate
+      val11:
+        complex:
+          accessor: certificate_algorithm
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ASM.AssetInternetExposure.type
+              operator: isEqualString
+              right:
+                value:
+                  simple: Certificate
+          root: ASM.AssetInternetExposure
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: n/a
+            operator: SetIfEmpty
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. Example of command:
+        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
+      id: 7ec17610-c685-49ca-8a65-935721a02bcb
+      iscommand: false
+      name: Set asset information (with time)
+      script: GridFieldSetup
+      type: regular
+      version: -1
+    taskid: 7ec17610-c685-49ca-8a65-935721a02bcb
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 1050
+        }
+      }
+  "104":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: type
+                root: ASM.AssetInternetExposure
+          operator: isEqualString
+          right:
+            value:
+              simple: ResponsiveIP
+      label: "yes"
+    continueonerrortype: ""
+    id: "104"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "38"
+      "yes":
+      - "130"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Determines if there is an asset of type responsive IP.
+      id: b0768e44-c968-4d69-8110-fd5cdf639a08
+      iscommand: false
+      name: Is there a responsive ip asset?
+      type: condition
+      version: -1
+    taskid: b0768e44-c968-4d69-8110-fd5cdf639a08
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1550,
+          "y": 680
+        }
+      }
+  "105":
+    continueonerrortype: ""
+    id: "105"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "38"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      gridfield:
+        simple: xpanseresponsiveipasset
+      keys:
+        simple: name,type,date_added,tags,explainers,ip_version,range,asn_number,asn_country
+      val1:
+        complex:
+          accessor: name
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ASM.AssetInternetExposure.type
+              operator: isEqualString
+              right:
+                value:
+                  simple: ResponsiveIP
+          root: ASM.AssetInternetExposure
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: n/a
+            operator: SetIfEmpty
+      val2:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ASM.AssetInternetExposure.type
+              operator: isEqualString
+              right:
+                value:
+                  simple: ResponsiveIP
+          root: ASM.AssetInternetExposure.type
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: n/a
+            operator: SetIfEmpty
+      val3:
+        complex:
+          accessor: created
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ASM.AssetInternetExposure.type
+              operator: isEqualString
+              right:
+                value:
+                  simple: ResponsiveIP
+          root: ASM.AssetInternetExposure
+          transformers:
+          - operator: TimeStampToDate
+      val4:
+        complex:
+          accessor: tags
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ASM.AssetInternetExposure.type
+              operator: isEqualString
+              right:
+                value:
+                  simple: ResponsiveIP
+          root: ASM.AssetInternetExposure
+          transformers:
+          - args:
+              separator:
+                value:
+                  simple: ', '
+            operator: join
+      val5:
+        complex:
+          accessor: explainers
+          root: ASM.AssetInternetExposure
+          transformers:
+          - args:
+              separator:
+                value:
+                  simple: ', '
+            operator: join
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ASM.AssetInternetExposure.type
+              operator: isEqualString
+              right:
+                value:
+                  simple: ResponsiveIP
+      val6:
+        complex:
+          accessor: IP_VERSION
+          root: range_info
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: n/a
+      val7:
+        complex:
+          accessor: handle
+          root: range_info.DETAILS.networkRecords
+          transformers:
+          - operator: uniq
+          - args:
+              separator:
+                value:
+                  simple: ', '
+            operator: join
+      val8:
+        complex:
+          accessor: ASN_HANDLES
+          root: range_info
+          transformers:
+          - args:
+              separator:
+                value:
+                  simple: ', '
+            operator: join
+      val9:
+        complex:
+          accessor: ASN_COUNTRIES
+          root: range_info
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: n/a
+            operator: SetIfEmpty
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. Example of command:
+        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
+      id: 49969165-0261-4433-892f-71ea9f797a60
+      iscommand: false
+      name: Set asset information (with time)
+      script: GridFieldSetup
+      type: regular
+      version: -1
+    taskid: 49969165-0261-4433-892f-71ea9f797a60
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1400,
+          "y": 1340
+        }
+      }
+  "107":
+    continueonerrortype: ""
+    id: "107"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "111"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      gridfield:
+        simple: xpanseservicedetails
+      keys:
+        simple: field,value
+      val1:
+        simple: Confirmed Vulnerable CVEs
+      val2:
+        complex:
+          accessor: confirmed_vulnerable_cve_ids
+          root: ASM.ExternalService
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: n/a
+            operator: SetIfEmpty
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. Example of command:
+        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
+      id: 8772970e-8dfc-43a2-83d8-96655ad71ec0
+      iscommand: false
+      name: Set service information (Confirmed Vulnerable CVEs)
+      script: GridFieldSetup
+      type: regular
+      version: -1
+    taskid: 8772970e-8dfc-43a2-83d8-96655ad71ec0
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 190,
+          "y": 1170
+        }
+      }
+  "108":
+    continueonerror: true
+    continueonerrortype: ""
+    id: "108"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "109"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      gridfield:
+        simple: xpanseservicedetails
+      keys:
+        simple: field,value
+      val1:
+        simple: First Observed
+      val2:
+        complex:
+          accessor: first_observed
+          root: ASM.ExternalService
+          transformers:
+          - operator: TimeStampToDate
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. Example of command:
+        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
+      id: 8802dbed-5fb6-4fb5-8857-e06df0702af4
+      iscommand: false
+      name: Set service information (First Observed)
+      script: GridFieldSetup
+      type: regular
+      version: -1
+    taskid: 8802dbed-5fb6-4fb5-8857-e06df0702af4
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 190,
+          "y": 1510
+        }
+      }
+  "109":
+    continueonerror: true
+    continueonerrortype: ""
+    id: "109"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "38"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      gridfield:
+        simple: xpanseservicedetails
+      keys:
+        simple: field,value
+      val1:
+        simple: Last Observed
+      val2:
+        complex:
+          accessor: last_observed
+          root: ASM.ExternalService
+          transformers:
+          - operator: TimeStampToDate
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. Example of command:
+        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
+      id: 8a838e32-b013-4f73-8d8c-f98c71a36f9e
+      iscommand: false
+      name: Set service information (Last Observed)
+      script: GridFieldSetup
+      type: regular
+      version: -1
+    taskid: 8a838e32-b013-4f73-8d8c-f98c71a36f9e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 190,
+          "y": 1670
+        }
+      }
+  "110":
+    continueonerrortype: ""
+    id: "110"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "105"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: range_info
+      value:
+        complex:
+          accessor: details.ip_ranges
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ASM.AssetInternetExposure.type
+              operator: isEqualString
+              right:
+                value:
+                  simple: ResponsiveIP
+          root: ASM.AssetInternetExposure
+          transformers:
+          - args:
+              field:
+                iscontext: true
+                value:
+                  simple: ASM.AssetInternetExposure.name
+            operator: getField
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 66051cf8-3404-4693-8b4c-5a7dae07b230
+      iscommand: false
+      name: Set temp context
+      script: Set
+      type: regular
+      version: -1
+    taskid: 66051cf8-3404-4693-8b4c-5a7dae07b230
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1400,
+          "y": 1180
+        }
+      }
+  "111":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ASM.ExternalService.first_observed
+          operator: isExists
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
+    id: "111"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "38"
+      "yes":
+      - "108"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Determines if there are time entries to add to the service grid field.
+      id: 064f771f-dff0-4705-8fca-91b07804d0ed
+      iscommand: false
+      name: Are there time entries?
+      type: condition
+      version: -1
+    taskid: 064f771f-dff0-4705-8fca-91b07804d0ed
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 190,
+          "y": 1330
+        }
+      }
+  "112":
+    continueonerrortype: ""
+    id: "112"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "99"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      investigationID:
+        simple: ${incident.investigationId}
+      text:
+        complex:
+          accessor: ' confirmed_vulnerable_cve_ids'
+          root: ASM.ExternalService
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: n/a
+            operator: SetIfEmpty
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.extract.indicators
+      id: aaeb28a6-25a5-4915-8a3a-5b425709617a
+      iscommand: true
+      name: Extract CVEs
+      script: Builtin|||extractIndicators
+      type: regular
+      version: -1
+    taskid: aaeb28a6-25a5-4915-8a3a-5b425709617a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -230,
+          "y": 510
+        }
+      }
+  "113":
+    continueonerrortype: ""
+    id: "113"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "102"
+      - "104"
+      - "118"
+      - "119"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      investigationID:
+        simple: ${incident.investigationId}
+      text:
+        complex:
+          accessor: ' confirmed_vulnerable_cve_ids'
+          root: ASM.ExternalService
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: n/a
+            operator: SetIfEmpty
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.extract.indicators
+      id: 718b677b-8e2f-4679-81c9-34af5702e041
+      iscommand: true
+      name: Extract CVEs
+      script: Builtin|||extractIndicators
+      type: regular
+      version: -1
+    taskid: 718b677b-8e2f-4679-81c9-34af5702e041
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1550,
+          "y": 480
+        }
+      }
+  "114":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: details.certificateDetails.validNotAfter
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: ASM.AssetInternetExposure.type
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Certificate
+                root: ASM.AssetInternetExposure
+          operator: isExists
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
+    id: "114"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "120"
+      "yes":
+      - "103"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Determines if there are time entries to add to the asset grid field.
+      id: e6a098c6-5cdc-4fdd-810d-b866d2d7da53
+      iscommand: false
+      name: Are there time entries?
+      type: condition
+      version: -1
+    taskid: e6a098c6-5cdc-4fdd-810d-b866d2d7da53
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 860,
+          "y": 845
+        }
+      }
+  "118":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: type
+                root: ASM.AssetInternetExposure
+          operator: isEqualString
+          right:
+            value:
+              simple: Domain
+      label: "yes"
+    continueonerrortype: ""
+    id: "118"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "38"
+      "yes":
+      - "124"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Determines if there is an asset of type domain.
+      id: 551aaf77-07d5-4610-8f72-43949dba127f
+      iscommand: false
+      name: Is there a domain asset?
+      type: condition
+      version: -1
+    taskid: 551aaf77-07d5-4610-8f72-43949dba127f
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 2230,
+          "y": 690
+        }
+      }
+  "119":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: type
+                root: ASM.AssetInternetExposure
+          operator: isEqualString
+          right:
+            value:
+              simple: CloudIntegration
+      label: "yes"
+    continueonerrortype: ""
+    id: "119"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "38"
+      "yes":
+      - "122"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Determines if there is an asset of type cloud.
+      id: 92d4b2f3-5493-456a-88a8-7d259da37241
+      iscommand: false
+      name: Is there a cloud asset?
+      type: condition
+      version: -1
+    taskid: 92d4b2f3-5493-456a-88a8-7d259da37241
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 2950,
+          "y": 690
+        }
+      }
+  "120":
+    continueonerrortype: ""
+    id: "120"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "38"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      gridfield:
+        simple: xpansecertificateasset
+      keys:
+        simple: name,type,date_added,tags,explainers,subject,subject_alerternative_names,issuer,issuer_email,expires,algorithm
+      val1:
+        complex:
+          accessor: name
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ASM.AssetInternetExposure.type
+              operator: isEqualString
+              right:
+                value:
+                  simple: Certificate
+          root: ASM.AssetInternetExposure
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: n/a
+            operator: SetIfEmpty
+      val2:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ASM.AssetInternetExposure.type
+              operator: isEqualString
+              right:
+                value:
+                  simple: Certificate
+          root: ASM.AssetInternetExposure.type
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: n/a
+            operator: SetIfEmpty
+      val3:
+        complex:
+          accessor: created
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ASM.AssetInternetExposure.type
+              operator: isEqualString
+              right:
+                value:
+                  simple: Certificate
+          root: ASM.AssetInternetExposure
+          transformers:
+          - operator: TimeStampToDate
+      val4:
+        complex:
+          accessor: tags
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ASM.AssetInternetExposure.type
+              operator: isEqualString
+              right:
+                value:
+                  simple: Certificate
+          root: ASM.AssetInternetExposure
+          transformers:
+          - args:
+              separator:
+                value:
+                  simple: ', '
+            operator: join
+      val5:
+        complex:
+          accessor: explainers
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ASM.AssetInternetExposure.type
+              operator: isEqualString
+              right:
+                value:
+                  simple: Certificate
+          root: ASM.AssetInternetExposure
+          transformers:
+          - args:
+              separator:
+                value:
+                  simple: ', '
+            operator: join
+      val6:
+        complex:
+          accessor: details.certificateDetails.subject
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ASM.AssetInternetExposure.type
+              operator: isEqualString
+              right:
+                value:
+                  simple: Certificate
+          root: ASM.AssetInternetExposure
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: n/a
+            operator: SetIfEmpty
+      val7:
+        complex:
+          accessor: details.certificateDetails.subjectAlternativeNames
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ASM.AssetInternetExposure.type
+              operator: isEqualString
+              right:
+                value:
+                  simple: Certificate
+          root: ASM.AssetInternetExposure
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: n/a
+            operator: SetIfEmpty
+      val8:
+        complex:
+          accessor: certificate_issuer
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ASM.AssetInternetExposure.type
+              operator: isEqualString
+              right:
+                value:
+                  simple: Certificate
+          root: ASM.AssetInternetExposure
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: n/a
+            operator: SetIfEmpty
+      val9:
+        complex:
+          accessor: details.certificateDetails.issuerEmail
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ASM.AssetInternetExposure.type
+              operator: isEqualString
+              right:
+                value:
+                  simple: Certificate
+          root: ASM.AssetInternetExposure
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: n/a
+            operator: SetIfEmpty
+      val10:
+        simple: n/a
+      val11:
+        complex:
+          accessor: certificate_algorithm
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ASM.AssetInternetExposure.type
+              operator: isEqualString
+              right:
+                value:
+                  simple: Certificate
+          root: ASM.AssetInternetExposure
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: n/a
+            operator: SetIfEmpty
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. Example of command:
+        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
+      id: 71564cd0-f13d-4ec0-8e38-7d6006061f45
+      iscommand: false
+      name: Set asset information (without time)
+      script: GridFieldSetup
+      type: regular
+      version: -1
+    taskid: 71564cd0-f13d-4ec0-8e38-7d6006061f45
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1090,
+          "y": 1050
+        }
+      }
+  "121":
+    continueonerrortype: ""
+    id: "121"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "38"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      gridfield:
+        simple: xpansedomainasset
+      keys:
+        simple: name,type,date_added,tags,explainers,registrar_name,registry_expiration,domain_status,registrant_name,registrant_org,registrant_email
+      val1:
+        complex:
+          accessor: name
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ASM.AssetInternetExposure.type
+              operator: isEqualString
+              right:
+                value:
+                  simple: Domain
+          root: ASM.AssetInternetExposure
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: n/a
+            operator: SetIfEmpty
+      val2:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ASM.AssetInternetExposure.type
+              operator: isEqualString
+              right:
+                value:
+                  simple: Domain
+          root: ASM.AssetInternetExposure.type
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: n/a
+            operator: SetIfEmpty
+      val3:
+        complex:
+          accessor: created
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ASM.AssetInternetExposure.type
+              operator: isEqualString
+              right:
+                value:
+                  simple: Domain
+          root: ASM.AssetInternetExposure
+          transformers:
+          - operator: TimeStampToDate
+      val4:
+        complex:
+          accessor: tags
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ASM.AssetInternetExposure.type
+              operator: isEqualString
+              right:
+                value:
+                  simple: Domain
+          root: ASM.AssetInternetExposure
+          transformers:
+          - args:
+              separator:
+                value:
+                  simple: ', '
+            operator: join
+      val5:
+        complex:
+          accessor: explainers
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ASM.AssetInternetExposure.type
+              operator: isEqualString
+              right:
+                value:
+                  simple: Domain
+          root: ASM.AssetInternetExposure
+          transformers:
+          - args:
+              separator:
+                value:
+                  simple: ', '
+            operator: join
+      val6:
+        complex:
+          accessor: details.domainDetails.registrar.name
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ASM.AssetInternetExposure.type
+              operator: isEqualString
+              right:
+                value:
+                  simple: Domain
+          root: ASM.AssetInternetExposure
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: n/a
+      val7:
+        complex:
+          accessor: details.domainDetails.registryExpiryDate
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ASM.AssetInternetExposure.type
+              operator: isEqualString
+              right:
+                value:
+                  simple: Domain
+          root: ASM.AssetInternetExposure
+          transformers:
+          - operator: TimeStampToDate
+      val8:
+        complex:
+          accessor: details.domainDetails.domainStatuses
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ASM.AssetInternetExposure.type
+              operator: isEqualString
+              right:
+                value:
+                  simple: Domain
+          root: ASM.AssetInternetExposure
+          transformers:
+          - args:
+              separator:
+                value:
+                  simple: ', '
+            operator: join
+      val9:
+        complex:
+          accessor: details.domainDetails.registrant.name
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ASM.AssetInternetExposure.type
+              operator: isEqualString
+              right:
+                value:
+                  simple: Domain
+          root: ASM.AssetInternetExposure
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: n/a
+            operator: SetIfEmpty
+      val10:
+        complex:
+          accessor: details.domainDetails.registrant.organization
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ASM.AssetInternetExposure.type
+              operator: isEqualString
+              right:
+                value:
+                  simple: Domain
+          root: ASM.AssetInternetExposure
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: n/a
+            operator: SetIfEmpty
+      val11:
+        complex:
+          accessor: details.domainDetails.registrant.emailAddress
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ASM.AssetInternetExposure.type
+              operator: isEqualString
+              right:
+                value:
+                  simple: Domain
+          root: ASM.AssetInternetExposure
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: n/a
+            operator: SetIfEmpty
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. Example of command:
+        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
+      id: 04d78478-e2e2-4867-85b8-067411f75680
+      iscommand: false
+      name: Set asset information (with time)
+      script: GridFieldSetup
+      type: regular
+      version: -1
+    taskid: 04d78478-e2e2-4867-85b8-067411f75680
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 2050,
+          "y": 1060
+        }
+      }
+  "122":
+    continueonerrortype: ""
+    id: "122"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "38"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      gridfield:
+        simple: xpansecloudasset
+      keys:
+        simple: name,type,date_added,tags,explainers,externally_detected_providers,ips,domain
+      val1:
+        complex:
+          accessor: name
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ASM.AssetInternetExposure.type
+              operator: isEqualString
+              right:
+                value:
+                  simple: CloudIntegration
+          root: ASM.AssetInternetExposure
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: n/a
+            operator: SetIfEmpty
+      val2:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ASM.AssetInternetExposure.type
+              operator: isEqualString
+              right:
+                value:
+                  simple: CloudIntegration
+          root: ASM.AssetInternetExposure.type
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: n/a
+            operator: SetIfEmpty
+      val3:
+        complex:
+          accessor: created
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ASM.AssetInternetExposure.type
+              operator: isEqualString
+              right:
+                value:
+                  simple: CloudIntegration
+          root: ASM.AssetInternetExposure
+          transformers:
+          - operator: TimeStampToDate
+      val4:
+        complex:
+          accessor: tags
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ASM.AssetInternetExposure.type
+              operator: isEqualString
+              right:
+                value:
+                  simple: CloudIntegration
+          root: ASM.AssetInternetExposure
+          transformers:
+          - args:
+              separator:
+                value:
+                  simple: ', '
+            operator: join
+      val5:
+        complex:
+          accessor: explainers
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ASM.AssetInternetExposure.type
+              operator: isEqualString
+              right:
+                value:
+                  simple: CloudIntegration
+          root: ASM.AssetInternetExposure
+          transformers:
+          - args:
+              separator:
+                value:
+                  simple: ', '
+            operator: join
+      val6:
+        complex:
+          accessor: externally_detected_providers
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ASM.AssetInternetExposure.type
+              operator: isEqualString
+              right:
+                value:
+                  simple: CloudIntegration
+          root: ASM.AssetInternetExposure
+          transformers:
+          - args:
+              separator:
+                value:
+                  simple: ', '
+            operator: join
+      val7:
+        complex:
+          accessor: ips
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ASM.AssetInternetExposure.type
+              operator: isEqualString
+              right:
+                value:
+                  simple: CloudIntegration
+          root: ASM.AssetInternetExposure
+          transformers:
+          - args:
+              separator:
+                value:
+                  simple: ', '
+            operator: join
+      val8:
+        complex:
+          accessor: domain
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ASM.AssetInternetExposure.type
+              operator: isEqualString
+              right:
+                value:
+                  simple: CloudIntegration
+          root: ASM.AssetInternetExposure
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: n/a
+            operator: SetIfEmpty
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. Example of command:
+        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
+      id: 792fb7b0-2162-4b00-8ae1-c6ca8e3ddd9e
+      iscommand: false
+      name: Set asset information (with time)
+      script: GridFieldSetup
+      type: regular
+      version: -1
+    taskid: 792fb7b0-2162-4b00-8ae1-c6ca8e3ddd9e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 2950,
+          "y": 1050
+        }
+      }
+  "124":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: details.domainDetails.domainStatuses
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: ASM.AssetInternetExposure.type
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Domain
+                root: ASM.AssetInternetExposure
+          operator: isExists
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
+    id: "124"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "126"
+      "yes":
+      - "121"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Determines if there are time entries to add to the asset grid field.
+      id: 4b745d05-e52e-4c0f-8d97-2fcc071f4dec
+      iscommand: false
+      name: Are there time entries?
+      type: condition
+      version: -1
+    taskid: 4b745d05-e52e-4c0f-8d97-2fcc071f4dec
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 2230,
+          "y": 885
+        }
+      }
+  "126":
+    continueonerrortype: ""
+    id: "126"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "38"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      gridfield:
+        simple: xpansedomainasset
+      keys:
+        simple: name,type,date_added,tags,explainers,registrar_name,registry_expiration,domain_status,registrant_name,registrant_org,registrant_email
+      val1:
+        complex:
+          accessor: name
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ASM.AssetInternetExposure.type
+              operator: isEqualString
+              right:
+                value:
+                  simple: Domain
+          root: ASM.AssetInternetExposure
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: n/a
+            operator: SetIfEmpty
+      val2:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ASM.AssetInternetExposure.type
+              operator: isEqualString
+              right:
+                value:
+                  simple: Domain
+          root: ASM.AssetInternetExposure.type
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: n/a
+            operator: SetIfEmpty
+      val3:
+        complex:
+          accessor: created
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ASM.AssetInternetExposure.type
+              operator: isEqualString
+              right:
+                value:
+                  simple: Domain
+          root: ASM.AssetInternetExposure
+          transformers:
+          - operator: TimeStampToDate
+      val4:
+        complex:
+          accessor: tags
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ASM.AssetInternetExposure.type
+              operator: isEqualString
+              right:
+                value:
+                  simple: Domain
+          root: ASM.AssetInternetExposure
+          transformers:
+          - args:
+              separator:
+                value:
+                  simple: ', '
+            operator: join
+      val5:
+        complex:
+          accessor: explainers
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ASM.AssetInternetExposure.type
+              operator: isEqualString
+              right:
+                value:
+                  simple: Domain
+          root: ASM.AssetInternetExposure
+          transformers:
+          - args:
+              separator:
+                value:
+                  simple: ', '
+            operator: join
+      val6:
+        complex:
+          accessor: details.domainDetails.registrar.name
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ASM.AssetInternetExposure.type
+              operator: isEqualString
+              right:
+                value:
+                  simple: Domain
+          root: ASM.AssetInternetExposure
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: n/a
+            operator: SetIfEmpty
+      val7:
+        simple: n/a
+      val8:
+        complex:
+          accessor: details.domainDetails.domainStatuses
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ASM.AssetInternetExposure.type
+              operator: isEqualString
+              right:
+                value:
+                  simple: Domain
+          root: ASM.AssetInternetExposure
+          transformers:
+          - args:
+              separator:
+                value:
+                  simple: ', '
+            operator: join
+      val9:
+        complex:
+          accessor: details.domainDetails.registrant.name
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ASM.AssetInternetExposure.type
+              operator: isEqualString
+              right:
+                value:
+                  simple: Domain
+          root: ASM.AssetInternetExposure
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: n/a
+            operator: SetIfEmpty
+      val10:
+        complex:
+          accessor: details.domainDetails.registrant.organization
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ASM.AssetInternetExposure.type
+              operator: isEqualString
+              right:
+                value:
+                  simple: Domain
+          root: ASM.AssetInternetExposure
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: n/a
+            operator: SetIfEmpty
+      val11:
+        complex:
+          accessor: details.domainDetails.registrant.emailAddress
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ASM.AssetInternetExposure.type
+              operator: isEqualString
+              right:
+                value:
+                  simple: Domain
+          root: ASM.AssetInternetExposure
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: n/a
+            operator: SetIfEmpty
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. Example of command:
+        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
+      id: fa63614a-ca49-4bf3-8051-b862ab3f97b0
+      iscommand: false
+      name: Set asset information (without time)
+      script: GridFieldSetup
+      type: regular
+      version: -1
+    taskid: fa63614a-ca49-4bf3-8051-b862ab3f97b0
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 2440,
+          "y": 1060
+        }
+      }
+  "128":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: xpanseassetids
+                root: incident
+          operator: isExists
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
+    id: "128"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "38"
+      "yes":
+      - "89"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Determines if there is an asset ID to enrich.
+      id: b21b79b5-bb5f-43d8-818a-46be4de44320
+      iscommand: false
+      name: Is Xpanse Asset IDs defined?
+      type: condition
+      version: -1
+    taskid: b21b79b5-bb5f-43d8-818a-46be4de44320
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1550,
+          "y": -15
+        }
+      }
+  "129":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: xpanseserviceid
+                root: incident
+          operator: isExists
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
+    id: "129"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "38"
+      "yes":
+      - "88"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Determines if there is a service ID to enrich.
+      id: 1e7f5704-542d-48b4-845c-351460a1cc69
+      iscommand: false
+      name: Is Xpanse Service ID defined?
+      type: condition
+      version: -1
+    taskid: 1e7f5704-542d-48b4-845c-351460a1cc69
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 190,
+          "y": -35
+        }
+      }
+  "130":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: details.ip_ranges
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: ASM.AssetInternetExposure.type
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: ResponsiveIP
+                root: ASM.AssetInternetExposure
+                transformers:
+                - args:
+                    field:
+                      iscontext: true
+                      value:
+                        simple: ASM.AssetInternetExposure.name
+                  operator: getField
+          operator: isExists
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
+    id: "130"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "131"
+      "yes":
+      - "110"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Determines if there are time entries to add to the asset grid field.
+      id: f81c2323-d804-4a83-8972-b59dc47930ae
+      iscommand: false
+      name: Are there ip_range entries?
+      type: condition
+      version: -1
+    taskid: f81c2323-d804-4a83-8972-b59dc47930ae
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1550,
+          "y": 860
+        }
+      }
+  "131":
+    continueonerrortype: ""
+    id: "131"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "38"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      gridfield:
+        simple: xpanseresponsiveipasset
+      keys:
+        simple: name,type,date_added,tags,explainers,ip_version,range,asn_number,asn_country
+      val1:
+        complex:
+          accessor: name
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ASM.AssetInternetExposure.type
+              operator: isEqualString
+              right:
+                value:
+                  simple: ResponsiveIP
+          root: ASM.AssetInternetExposure
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: n/a
+            operator: SetIfEmpty
+      val2:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ASM.AssetInternetExposure.type
+              operator: isEqualString
+              right:
+                value:
+                  simple: ResponsiveIP
+          root: ASM.AssetInternetExposure.type
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: n/a
+            operator: SetIfEmpty
+      val3:
+        complex:
+          accessor: created
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ASM.AssetInternetExposure.type
+              operator: isEqualString
+              right:
+                value:
+                  simple: ResponsiveIP
+          root: ASM.AssetInternetExposure
+          transformers:
+          - operator: TimeStampToDate
+      val4:
+        complex:
+          accessor: tags
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ASM.AssetInternetExposure.type
+              operator: isEqualString
+              right:
+                value:
+                  simple: ResponsiveIP
+          root: ASM.AssetInternetExposure
+          transformers:
+          - args:
+              separator:
+                value:
+                  simple: ', '
+            operator: join
+      val5:
+        complex:
+          accessor: explainers
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ASM.AssetInternetExposure.type
+              operator: isEqualString
+              right:
+                value:
+                  simple: ResponsiveIP
+          root: ASM.AssetInternetExposure
+          transformers:
+          - args:
+              separator:
+                value:
+                  simple: ', '
+            operator: join
+      val6:
+        simple: n/a
+      val7:
+        simple: n/a
+      val8:
+        simple: n/a
+      val9:
+        simple: n/a
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. Example of command:
+        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
+      id: 4719d617-837d-4aef-81ea-da9214bba227
+      iscommand: false
+      name: Set asset information (with time)
+      script: GridFieldSetup
+      type: regular
+      version: -1
+    taskid: 4719d617-837d-4aef-81ea-da9214bba227
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1800,
+          "y": 1180
+        }
+      }
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "102_38_#default#": 0.17,
+      "104_38_#default#": 0.54,
+      "111_38_#default#": 0.33,
+      "118_38_#default#": 0.72,
+      "119_38_#default#": 0.1,
+      "11_38_#default#": 0.1,
+      "128_38_#default#": 0.2,
+      "129_38_#default#": 0.11,
+      "130_110_yes": 0.54,
+      "130_131_#default#": 0.29,
+      "90_38_#default#": 0.14,
+      "97_38_#default#": 0.14
+    },
     "paper": {
       "dimensions": {
-        "height": 2085,
-        "width": 1410,
-        "x": 460,
-        "y": -180
+        "height": 2305,
+        "width": 3560,
+        "x": -230,
+        "y": -400
       }
     }
   }
-inputs:
-- key: RemoteIP
-  value:
-    complex:
-      root: incident
-      accessor: xpanseip
-  required: false
-  description: IP address of service
-  playbookInputQuery:
+inputs: []
 outputs: []
 tests:
 - No tests (auto formatted)

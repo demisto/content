@@ -52,7 +52,8 @@ filter eventType = "Threat"
 filter eventType = "Alert"
 | alter
     osFamily = json_extract_scalar(agentDetectionInfo, "$.osFamily"),
-    loginType = json_extract_scalar(alertInfo, "$.loginType")
+    loginType = json_extract_scalar(alertInfo, "$.loginType"),
+    lower_tgtProcIntegrityLevel = lowercase(json_extract_scalar(targetProcessInfo, "$.tgtProcIntegrityLevel"))
 | alter
     xdm.event.type = eventType,
     xdm.source.host.hostname = json_extract_scalar(agentDetectionInfo, "$.name"),
@@ -87,5 +88,12 @@ filter eventType = "Alert"
     xdm.target.file_before.path = json_extract_scalar(targetProcessInfo, "$.tgtFileOldPath"),
     xdm.target.process.command_line = json_extract_scalar(targetProcessInfo, "$.tgtProcCmdLine"),
     xdm.target.process.executable.filename = json_extract_scalar(targetProcessInfo, "$.tgtProcName"),
-    xdm.target.process.integrity_level = to_integer(json_extract_scalar(targetProcessInfo, "$.tgtProcIntegrityLevel")),
+    xdm.target.process.integrity_level = if(lower_tgtProcIntegrityLevel = "protected", 20480,
+                                            lower_tgtProcIntegrityLevel = "system", 16384,
+                                            lower_tgtProcIntegrityLevel = "high", 12288,
+                                            lower_tgtProcIntegrityLevel = "medium_plus", 8448,
+                                            lower_tgtProcIntegrityLevel = "medium", 8192,
+                                            lower_tgtProcIntegrityLevel = "low", 4096, 
+                                            lower_tgtProcIntegrityLevel = "untrusted", 0, 
+                                            null),
     xdm.target.process.pid = to_integer(json_extract_scalar(targetProcessInfo, "$.tgtProcPid"));

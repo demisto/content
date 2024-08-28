@@ -19,6 +19,7 @@ from gevent.pywsgi import WSGIServer
 from jwt.algorithms import RSAAlgorithm
 from ssl import SSLContext, SSLError, PROTOCOL_TLSv1_2
 from cryptography.hazmat.primitives.asymmetric.rsa import RSAPublicKey
+import urllib.parse
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # type: ignore
@@ -947,8 +948,8 @@ def get_team_aad_id(team_name: str) -> str:
         for team in teams:
             if team_name == team.get('team_name', ''):
                 return team.get('team_aad_id', '')
-    url: str = f"{GRAPH_BASE_URL}/v1.0/groups?$filter=displayName eq '{team_name}' " \
-               "and resourceProvisioningOptions/Any(x:x eq 'Team')"
+    url: str = (f"{GRAPH_BASE_URL}/v1.0/groups?$filter=displayName eq '{urllib.parse.quote(team_name)}' "
+                f"and resourceProvisioningOptions/Any(x:x eq 'Team')")
     response: dict = cast(dict[Any, Any], http_request('GET', url))
     demisto.debug(f'Response {response}')
     teams = response.get('value', [])
@@ -2753,7 +2754,7 @@ def generate_login_url_command():
                         " and the bot is added to a team.")
     login_url = f'https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/authorize?' \
                 f'response_type=code&scope=offline_access%20https://graph.microsoft.com/.default' \
-                f'&client_id={BOT_ID}&redirect_uri={REDIRECT_URI}&prompt=consent'
+                f'&client_id={BOT_ID}&redirect_uri={REDIRECT_URI}'
 
     result_msg = f"""### Authorization instructions
 1. Click on the [login URL]({login_url}) to sign in and grant Cortex XSOAR permissions for your Azure Service Management.

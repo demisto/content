@@ -1,0 +1,22 @@
+{
+    "orientation": "DEVICE",
+    "id": "34",
+    "name": "New Rule 1",
+    "assignments": [
+        {
+            "id": "01",
+            "name": "Entire Organization",
+            "type": "ORGANIZATION_ROOT"
+        },
+        {
+            "id": "12",
+            "name": "Desktops",
+            "type": "VIRTUAL_GROUP"
+        }
+    ],
+    "comment": "",
+    "connectionState": "CONNECTED",
+    "family": "Access",
+    "isDefaultRule": true,
+    "order": 0
+}

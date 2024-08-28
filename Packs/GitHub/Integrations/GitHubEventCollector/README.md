@@ -1,6 +1,8 @@
 Github logs event collector integration for Cortex XSIAM.
 This integration was integrated and tested with Github REST API V3
 
+This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
+
 ## Configure Github Event Collector on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.

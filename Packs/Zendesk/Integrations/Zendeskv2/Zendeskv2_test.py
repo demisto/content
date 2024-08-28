@@ -25,7 +25,7 @@ def cache_manager(zendesk_client):
 
 def get_json_file(file_data_type: str):
     full_file_path = Path(__file__).parent / 'test_data' / f'{file_data_type}.json'
-    with open(full_file_path, 'r') as json_file:
+    with open(full_file_path) as json_file:
         return json.load(json_file)
 
 
@@ -270,7 +270,7 @@ class TestValidators:
     def test_all_valid(self, value, function):
         function(value)
 
-    @pytest.mark.parametrize('function', map(lambda x: x[1], data_test_all_valid))
+    @pytest.mark.parametrize('function', (x[1] for x in data_test_all_valid))
     def test_all_invalid(self, function):
         with pytest.raises(AssertionError):
             function('invalid')
@@ -307,8 +307,8 @@ class TestZendeskClient:
 
     class TestHTTPRequest:
 
-        @ staticmethod
-        @ pytest.fixture
+        @staticmethod
+        @pytest.fixture
         def default_kwargs():
             return {
                 'data': None,
@@ -865,7 +865,7 @@ class TestFetchIncidents:
             assert ticket_mock_10.called_once
             assert ticket_mock_20.called_once
             assert demisto_incidents_mock.called_once()
-            assert list(map(lambda x: json.loads(x['rawJSON'])['id'], demisto_incidents_mock.call_args[0][0])) == [10, 20]
+            assert [json.loads(x['rawJSON'])['id'] for x in demisto_incidents_mock.call_args[0][0]] == [10, 20]
             assert demisto_set_lust_run_mock.call_args[0][0] == {'fetched_tickets': [
                 10, 20], 'fetch_time': '2023-01-15T11:59:00Z'}
 
@@ -883,7 +883,7 @@ class TestFetchIncidents:
             assert ticket_mock_10.called_once
             assert ticket_mock_20.call_count == 0
             assert demisto_incidents_mock.called_once()
-            assert list(map(lambda x: json.loads(x['rawJSON'])['id'], demisto_incidents_mock.call_args[0][0])) == [10]
+            assert [json.loads(x['rawJSON'])['id'] for x in demisto_incidents_mock.call_args[0][0]] == [10]
             assert demisto_set_lust_run_mock.call_args[0][0] == {
                 'max_fetch': 1, 'page_number': 2,
                 'fetched_tickets': [10], 'query': '',
@@ -911,7 +911,7 @@ class TestFetchIncidents:
             assert ticket_mock_10.call_count == 0
             assert ticket_mock_20.called_once
             assert demisto_incidents_mock.called_once()
-            assert list(map(lambda x: json.loads(x['rawJSON'])['id'], demisto_incidents_mock.call_args[0][0])) == [20]
+            assert [json.loads(x['rawJSON'])['id'] for x in demisto_incidents_mock.call_args[0][0]] == [20]
             assert demisto_set_lust_run_mock.call_args[0][0] == {
                 'max_fetch': 1, 'page_number': 4,
                 'fetched_tickets': [10, 20], 'query': '',
@@ -955,7 +955,7 @@ class TestFetchIncidents:
             assert ticket_mock_10.call_count == 0
             assert ticket_mock_20.called_once
             assert demisto_incidents_mock.called_once()
-            assert list(map(lambda x: json.loads(x['rawJSON'])['id'], demisto_incidents_mock.call_args[0][0])) == [20]
+            assert [json.loads(x['rawJSON'])['id'] for x in demisto_incidents_mock.call_args[0][0]] == [20]
             assert demisto_set_lust_run_mock.call_args[0][0] == {
                 'fetched_tickets': [10, 20], 'fetch_time': '2023-01-15T11:59:00Z'}
 
@@ -991,6 +991,6 @@ class TestFetchIncidents:
             assert ticket_mock_10.call_count == 0
             assert ticket_mock_20.called_once
             assert demisto_incidents_mock.called_once()
-            assert list(map(lambda x: json.loads(x['rawJSON'])['id'], demisto_incidents_mock.call_args[0][0])) == [20]
+            assert [json.loads(x['rawJSON'])['id'] for x in demisto_incidents_mock.call_args[0][0]] == [20]
             assert demisto_incidents_mock.call_args[0][0][0]['attachment'] == [{
                 'path': '77fe1c6d-3096-4f1c-80c7-4e7c8573d580', 'name': 'TestFile.json'}]

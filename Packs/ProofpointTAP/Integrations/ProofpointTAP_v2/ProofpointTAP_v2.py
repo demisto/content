@@ -537,6 +537,23 @@ def get_events_command(client, args):
     )
 
 
+def validate_first_fetch_time(first_fetch_time: str):
+    """
+        validate that the start time is less than 7 days ago
+        Args:
+            first_fetch_time(str) - the start date time that needs to be validated.
+        Returns:
+            A valid datetime for the start_query_time
+        """
+    dt_start_query_time = arg_to_datetime(first_fetch_time) or get_now() - timedelta(hours=1)
+    seven_days_ago = get_now() - timedelta(days=7)
+    if dt_start_query_time <= seven_days_ago:
+        raise DemistoException('The First fetch time range is more than 7 days ago. Please update this parameter since '
+                               'Proofpoint supports a maximum 1 week fetch back.')
+    else:
+        demisto.debug(f'The {first_fetch_time=} is less than 7 days ago.')
+
+
 def fetch_incidents(
     client,
     last_run,
@@ -1235,6 +1252,7 @@ def main():
             'proofpoint-get-forensics': get_forensic_command
         }
         if command == 'test-module':
+            validate_first_fetch_time(fetch_time)
             return_outputs(test_module(client))
 
         elif demisto.command() == 'fetch-incidents':

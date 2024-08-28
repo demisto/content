@@ -41,14 +41,17 @@ repos:
     - --config=nightly_ruff.toml
     args:ci:
     - --config=nightly_ruff.toml
-- repo: https://github.com/pre-commit/mirrors-autopep8
-  rev: v2.0.4
+    args:docker_autoupdate:
+    - --config=nightly_ruff.toml
+- repo: https://github.com/hhatto/autopep8
+  rev: v2.3.1
   hooks:
   - id: autopep8
     exclude_support_level:ci:
     - community
     exclude_support_level:nightly:
     - community
+    skip:nightly: true
 - repo: https://github.com/pre-commit/mirrors-mypy
   rev: v0.982
   hooks:
@@ -60,7 +63,7 @@ repos:
     - --show-error-codes
     - --follow-imports=silent
     - --allow-redefinition
-    exclude: test_data|tests_data|.venv|.*_test.py$|infrastructure_tests|.vulture_whitelist.py|demistomock.py|Templates|conftest.py
+    exclude: test_data|tests_data|.venv|.*_test.py$|infrastructure_tests|.vulture_whitelist.py|demistomock.py|Templates|conftest.py|Utils/download_packs_and_docker_images.py
     language: system
     entry: mypy
 
@@ -76,6 +79,7 @@ repos:
     language: system
     # skip nightly since we don't care about warnings in nightly
     skip:nightly: true
+    skip:docker_autoupdate: true
 
   - id: pylint-in-docker
     name: pylint-in-docker
@@ -122,6 +126,15 @@ repos:
     - -p
     - --source=.
     - -m
+    - pytest
+    - -v
+    - --override-ini='asyncio_mode=auto'
+    - --rootdir=/src
+    - --junitxml=/src/.pre-commit/pytest-junit/.report_pytest.xml
+    - --color=yes
+    - --files
+    args:docker_autoupdate:
+    - /src/Tests/scripts/script_runner.py
     - pytest
     - -v
     - --override-ini='asyncio_mode=auto'
@@ -185,12 +198,10 @@ repos:
     require_serial: true
     args:
     -  validate
-    -  --skip-depth-one-file
     -  --skip-depth-one-folder
     -  --skip-integration-script-file-name
     -  --skip-markdown
     -  --skip-suffix
-
 
   - id: validate-conf-json
     name: validate-conf-json
@@ -245,24 +256,6 @@ repos:
     pass_docker_extra_args:nightly: --rm=false --network=none
     pass_docker_extra_args: --network=none
 
-  - id: is-circle-changed
-    name: is-circle-changed
-    description: Checks if circle files are changed, and checkout to current if it is.
-    entry: ./Tests/scripts/is_file_up_to_date.sh .circleci/config.yml "" false
-    language: script
-    skip:nightly: true
-    pass_filenames: false
-    skip:commit: true
-
-  - id: is-gitlab-changed
-    name: is-gitlab-changed
-    description: Checks if gitlab files are changed, and checkout to current if it is.
-    entry: ./Tests/scripts/is_file_up_to_date.sh .gitlab "" false
-    language: script
-    pass_filenames: false
-    skip:commit: true
-    skip:nightly: true
-
   - id: validate
     name: validate
     description: validate content
@@ -275,6 +268,7 @@ repos:
     require_serial: true
     skip:commit: true
     skip:nightly: true
+    skip:docker_autoupdate: true
 
   - id: format
     name: format
@@ -287,6 +281,7 @@ repos:
     language: system
     pass_filenames: false
     require_serial: true
+    skip:docker_autoupdate: true
 
   - id: secrets
     name: secrets
@@ -334,6 +329,7 @@ repos:
     - '100'
     needs:
     - pytest-in-docker
+
 - repo: https://github.com/sourcery-ai/sourcery
   rev: v1.6.0
   hooks:

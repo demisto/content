@@ -1,4 +1,0 @@
-name: myPlaybook
-id: myPlaybook
-tests:
-  - myOtherTestPlaybook

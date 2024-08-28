@@ -60,7 +60,7 @@ def test_get_atp_command(mocker):
             "setting_name": 'test',
             "storage_account": 'test'}
     _, ec, _ = get_atp_command(client, args)
-    assert EXPECTED_GET_ATP_COMMAND_CONTEXT == ec
+    assert ec == EXPECTED_GET_ATP_COMMAND_CONTEXT
 
 
 def test_update_atp_command(mocker):
@@ -70,21 +70,21 @@ def test_update_atp_command(mocker):
             "is_enabled": "test",
             "storage_account": "test"}
     _, ec, _ = update_atp_command(client, args)
-    assert EXPECTED_UPDATE_ATP_CONTEXT == ec
+    assert ec == EXPECTED_UPDATE_ATP_CONTEXT
 
 
 def test_get_aps_command(mocker):
     mocker.patch.object(client, 'get_aps', return_value=GET_APS_RAW_RESPONSE)
     args = {"setting_name": 'test'}
     _, ec, _ = get_aps_command(client, args)
-    assert EXPECTED_GET_APS_CONTEXT == ec
+    assert ec == EXPECTED_GET_APS_CONTEXT
 
 
 def test_get_secure_score_command(mocker):
     mocker.patch.object(client, 'get_secure_scores', return_value=GET_SECURE_SCORE_RAW_RESPONSE)
     args = {"secure_score_name": 'ascScore'}
     _, ec, _ = get_secure_scores_command(client, args)
-    assert EXPECTED_GET_SECURE_SCORE_CONTEXT == ec
+    assert ec == EXPECTED_GET_SECURE_SCORE_CONTEXT
 
 
 @pytest.mark.parametrize(argnames='client_id', argvalues=['test_client_id', None])

@@ -111,7 +111,7 @@ def main():
     verify = params['verify']
     proxy = params['proxy']
     after = arg_to_datetime(
-        arg=params.get('after'), arg_name='after', required=True).strftime("%Y-%m-%dT%H:%M:%SZ")  # type: ignore
+        arg='1 minute').strftime("%Y-%m-%dT%H:%M:%SZ")  # type: ignore
     client = Client(base_url='https://api.abnormalplatform.com/v1',
                     verify=verify,
                     proxy=proxy,
@@ -122,6 +122,7 @@ def main():
         after = last_run
 
     command = demisto.command()
+    demisto.debug(f'Command being called is {command}')
     try:
         threats, last_run = get_events(client, after)
         if command == 'test-module':

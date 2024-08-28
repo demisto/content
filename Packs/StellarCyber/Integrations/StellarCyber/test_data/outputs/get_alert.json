@@ -1,0 +1,241 @@
+{
+    "took": 6,
+    "timed_out": false,
+    "_shards": {
+        "total": 2,
+        "successful": 2,
+        "skipped": 0,
+        "failed": 0
+    },
+    "hits": {
+        "total": {
+            "value": 1,
+            "relation": "eq"
+        },
+        "max_score": 1.0,
+        "hits": [
+            {
+                "_index": "stellar-index-v1-ser-5593fbd8b0444b1eaef5a89589d788d2-64486c346020c889507f32ae-2024.03.07-000033",
+                "_type": "_doc",
+                "_id": "1710883791406342b1f41b2247774d60bf035a6f98e5ff21",
+                "_score": 1.0,
+                "_source": {
+                    "aella_tuples": "131.186.44.94.null.null.null",
+                    "anomaly_id": "c1udWI4BgU-RVXJ6pL6v",
+                    "appid_stdport": "yes",
+                    "detected_fields": [
+                        "email.from.address",
+                        "email.sender.address"
+                    ],
+                    "detected_values": [
+                        "srso+yf09=cw=testing.com=jane@testing.com",
+                        "srso+yf09=cw=testing.com=jane@testing.com"
+                    ],
+                    "dscp_name": "Best Effort",
+                    "email": {
+                        "from": {
+                            "address": "srso+yf09=cw=testing.com=jane@testing.com"
+                        },
+                        "recipient": {
+                            "addresses": [
+                                "info@example.com"
+                            ]
+                        },
+                        "sender": {
+                            "address": "srso+yf09=cw=testing.com=jane@testing.com"
+                        },
+                        "subject": "Action Required: info@example.com",
+                        "to": {
+                            "addresses": [
+                                "info@example.com"
+                            ]
+                        }
+                    },
+                    "engid": "proofpoint_tap_kct-test-cust-proofpoint-tap",
+                    "engid_gateway": "",
+                    "engid_name": "proofpoint_tap_kct-test-cust-proofpoint-tap",
+                    "event": {
+                        "threat_list": [
+                            {
+                                "attack_spread": 1,
+                                "category": "phish",
+                                "id": "1e0c9b3310817e5171edad03df1b0203e77ce7956b5db85b1016fe58b708b4e6",
+                                "name": "https://wkaknns.s3.ap-southeast-2.amazonaws.com/bafkbfkbs.html",
+                                "type": "url",
+                                "url": "https://example.com/35fd1d8c-be8d-81be-3e81-d6db34a328b3/threat/email/1e0c9b3310817e5171edad03df1b0203e77ce7956b5db85b1016fe58b708b4e6"
+                            }
+                        ]
+                    },
+                    "event_score": 10,
+                    "event_source": "proofpoint_tap",
+                    "event_status": "New",
+                    "fidelity": 10,
+                    "locid": "unassigned location",
+                    "msg_class": "proofpoint_tap_event",
+                    "msg_origin": {
+                        "category": "email",
+                        "processor": {
+                            "id": "659f34c1ba3f87505be3c33d",
+                            "name": "proofpoint_tap",
+                            "type": "log_collector"
+                        },
+                        "source": "proofpoint_tap",
+                        "vendor": "proofpoint"
+                    },
+                    "msgtype_name": "start",
+                    "netid": 0,
+                    "netid_name": "vlannull",
+                    "org_id": "5593fbd8b0444b1eaef5a89589d788d2",
+                    "orig_id": "c1udWI4BgU-RVXJ6pL6v",
+                    "orig_index": "stellar-index-v1-syslog-5593fbd8b0444b1eaef5a89589d788d2-64486c346020c889507f32ae-2024.03.11-000047",
+                    "proofpoint_tap": {
+                        "GUID": "gSYSardrwigh-BmBrnwhmPVod1ntbixs",
+                        "QID": "3ww3rrs5xf-1",
+                        "ccAddresses": [],
+                        "cluster": "example_hosted",
+                        "completelyRewritten": false,
+                        "fromAddress": [
+                            "srso+yf09=cw=testing.com=jane@testing.com"
+                        ],
+                        "headerFrom": "\"example.com\" <SRSO+yf09=Cw=testing.com=jane@testing.com>",
+                        "headerReplyTo": "<noreply@example.com>",
+                        "id": "97072092-5f78-07fe-eebe-2fe82d3d2694",
+                        "impostorScore": 0,
+                        "log_type": "messagesBlocked",
+                        "malwareScore": 0,
+                        "messageID": "<18512024035109E0484040A4$632D738394@testing.com>",
+                        "messageParts": [
+                            {
+                                "contentType": "text/plain",
+                                "disposition": "inline",
+                                "filename": "text.txt",
+                                "md5": "78df7684ec666c48b836e4940d970ef4",
+                                "oContentType": "text/plain",
+                                "sandboxStatus": null,
+                                "sha256": "b39be2d2341ce5cb64aded4db2c294ee6ef3aef04d83ab146725c99645c003b7"
+                            },
+                            {
+                                "contentType": "text/html",
+                                "disposition": "inline",
+                                "filename": "text.html",
+                                "md5": "9dffc4582a65b030e2dcacc1be2a219b",
+                                "oContentType": "text/html",
+                                "sandboxStatus": null,
+                                "sha256": "ee304c0562b37243fa606f9d76d3e780bcfc56f4485f67f051e15c42f51f8912"
+                            }
+                        ],
+                        "messageSize": 6613,
+                        "modulesRun": [
+                            "access",
+                            "av",
+                            "spf",
+                            "spam",
+                            "dmarc",
+                            "urldefense",
+                            "pdr"
+                        ],
+                        "phishScore": 100,
+                        "policyRoutes": [
+                            "default_inbound"
+                        ],
+                        "quarantineFolder": "Phish",
+                        "quarantineRule": "inbound_phish",
+                        "recipient": [
+                            "info@example.com"
+                        ],
+                        "replyToAddress": [
+                            "83a4ea31dad468ede0faebfa9563a758@example.com>"
+                        ],
+                        "sender": "srso+yf09=cw=testing.com=jane@testing.com",
+                        "senderIP": "131.186.44.94",
+                        "spamScore": 0,
+                        "subject": "Action Required: info@example.com",
+                        "threatsInfoMap": [
+                            {
+                                "campaignID": null,
+                                "classification": "phish",
+                                "threat": "https://sfgsgs.s3.ap-southeast-2.amazonaws.com/dfgdsgd.html",
+                                "threatID": "1e0c9b3310817e5171edad03df1b0203e77ce7956b5db85b1016fe58b708b4e6",
+                                "threatStatus": "active",
+                                "threatTime": "2024-03-19T21:16:14.000Z",
+                                "threatType": "url",
+                                "threatUrl": "https://example.com/35fd1d8c-be8d-81be-3e81-d6db34a328b3/threat/email/1e0c9b3310817e5171edad03df1b0203e77ce7956b5db85b1016fe58b708b4e6"
+                            }
+                        ],
+                        "toAddresses": [
+                            "info@example.com"
+                        ],
+                        "xmailer": null
+                    },
+                    "severity": 10,
+                    "srcip": "131.186.44.94",
+                    "srcip_geo": {
+                        "city": "Unknown",
+                        "countryCode": "JP",
+                        "countryName": "Japan",
+                        "latitude": 35.6906,
+                        "longitude": 139.9873,
+                        "region": "Chiba"
+                    },
+                    "srcip_geo_point": "35.6906,139.9873",
+                    "srcip_host": "131.186.44.94",
+                    "srcip_reputation": "Good",
+                    "srcip_type": "public",
+                    "srcip_version": "ipv4",
+                    "stellar": {
+                        "detection_time": 81214,
+                        "status": "New"
+                    },
+                    "stellar_da_input": 3368,
+                    "stellar_index_id": "aella-syslog-2024.03.19-6aeb2aae7d8d4ef0820136f42d107db4",
+                    "stellar_uuid": "ef5c7340-5e33-496e-a0d5-cc8431d31a331710755712000",
+                    "tenant_name": "QA-SPUTTA",
+                    "tenantid": "6aeb2aae7d8d4ef0820136f42d107db4",
+                    "threat_score": 0,
+                    "timestamp": 1710755712000,
+                    "totalbytes": 0,
+                    "totalpackets": 0,
+                    "write_by": "sef",
+                    "write_time": 1710883791406,
+                    "xdr_event": {
+                        "description": "Proofpoint TAP reported that a suspicious email with the subject \"Action Required: info@example.com\" was sent from the email address \"srso+yf09=cw=testing.com=jane@testing.com\" to address(es) \"info@example.com.\"",
+                        "display_name": "Proofpoint TAP messagesBlocked: Phishing",
+                        "event_name_add_on": "messagesBlocked",
+                        "framework_version": "v8",
+                        "name": "proofpoint_tap-messagesblocked-initial_access-phishing",
+                        "scope": "",
+                        "subtype": {
+                            "display_name": "Proofpoint TAP: Phish",
+                            "name": "proofpoint_tap_phish"
+                        },
+                        "tactic": {
+                            "id": "TA0001",
+                            "name": "Initial Access"
+                        },
+                        "tags": [
+                            "Proofpoint TAP"
+                        ],
+                        "technique": {
+                            "id": "T1566",
+                            "name": "Phishing"
+                        },
+                        "ttps": [
+                            {
+                                "tactic": {
+                                    "id": "TA0001",
+                                    "name": "Initial Access"
+                                },
+                                "technique": {
+                                    "id": "T1566",
+                                    "name": "Phishing"
+                                }
+                            }
+                        ],
+                        "xdr_killchain_stage": "Initial Attempts",
+                        "xdr_killchain_version": "v1"
+                    }
+                }
+            }
+        ]
+    }
+}

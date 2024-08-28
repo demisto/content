@@ -573,7 +573,7 @@ def init_client(params: dict) -> GemClient:
     """
     return GemClient(
         base_url=params['api_endpoint'],
-        verify=True,
+        verify=not params.get('insecure', False),
         proxy=params.get('proxy', False),
         client_id=demisto.getParam('credentials')['identifier'] if demisto.getParam('credentials') else "",
         client_secret=demisto.getParam('credentials')['password'] if demisto.getParam('credentials') else ""

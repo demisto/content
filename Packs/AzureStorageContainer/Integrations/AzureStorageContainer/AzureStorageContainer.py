@@ -1013,8 +1013,6 @@ def main() -> None:  # pragma: no cover
     global account_sas_token
     global storage_account_name
     account_sas_token = params.get('credentials', {}).get('password')
-    if account_sas_token and not account_sas_token.startswith("?"):
-        account_sas_token = f"?{account_sas_token}"
     storage_account_name = params['credentials']['identifier']
     managed_identities_client_id = get_azure_managed_identities_client_id(params)
     api_version = "2020-10-02"

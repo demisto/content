@@ -1,0 +1,41 @@
+{
+    "meta": {
+        "status": 200
+    },
+    "data": [
+        {
+            "option": "disable_bypass",
+            "id": "eNo1jr0OgjAYAN",
+            "policy": {
+                "description": "test",
+                "fromPart": "envelope_from",
+                "from": {
+                    "type": "email_domain",
+                    "emailDomain": "googl.com"
+                },
+                "to": {
+                    "type": "email_domain",
+                    "emailDomain": "google.com"
+                },
+                "fromType": "email_domain",
+                "fromValue": "googl.com",
+                "toType": "email_domain",
+                "toValue": "google.com",
+                "fromDate": "2024-05-25T14:39:12+0000",
+                "toDate": "2024-05-26T14:39:12+0000",
+                "override": false,
+                "bidirectional": false,
+                "conditions": {
+                    "spfDomains": [
+                        "google.com"
+                    ]
+                },
+                "enabled": false,
+                "enforced": false,
+                "createTime": "2024-05-26T14:39:13+0000",
+                "lastUpdated": "2024-05-26T14:39:13+0000"
+            }
+        }
+    ],
+    "fail": []
+}

@@ -95,9 +95,9 @@ script:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
     - contextPath: DBotScore.Type
-      description: The type of the indicator.
+      description: The indicator type.
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score.
+      description: The vendor used to calculate the score.
     - contextPath: DBotScore.Score
       description: The actual score.
     description: Checks if URL is phishing.
