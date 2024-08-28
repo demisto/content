@@ -649,20 +649,7 @@ tasks:
       contextKey:
         simple: SuspiciousUserAgent
       data:
-        complex:
-          root: alert.useragent
-          accessor: '[0]'
-          transformers:
-          - operator: RegexExtractAll
-            args:
-              error_if_no_match: {}
-              ignore_case: {}
-              multi_line: {}
-              period_matches_newline: {}
-              regex:
-                value:
-                  simple: Client=([^;]+);
-              unpack_matches: {}
+        simple: ${alert.useragent.[0]}
       regex:
         simple: \b(Python-urllib|libwww-perl|Scrapy|curl|Wget|sqlmap|Nikto|Xrumer|Hydra|JohnTheRipper|LOIC|HOIC|MJ12bot|Baiduspider|BlackWidow|HeadlessChrome|PhantomJS|Selenium|REST)\b
     separatecontext: false
