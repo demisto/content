@@ -277,6 +277,15 @@ MOCK_FILE_INDICATOR = {
     ]
 }
 
+MOCK_INDICATORS = {
+    "indicators": [
+        MOCK_IP_INDICATOR,
+        MOCK_DOMAIN_INDICATOR,
+        MOCK_FILE_INDICATOR,
+        MOCK_URL_INDICATOR
+    ]
+}
+
 
 @pytest.fixture
 def config():
@@ -506,19 +515,18 @@ def test_build_indicator_relationships(value_, indicator, expected_relationships
     assert relationships == expected_relationships
 
 
-@pytest.mark.parametrize(
-    "indicator, tlp_color, tags, expected_type, expected_value",
-    [
-        (MOCK_IP_INDICATOR, "RED", ["tag1"], "IP", "1.2.3.4"),
-        (MOCK_DOMAIN_INDICATOR, "RED", ["tag1"], "Domain", "domain.test"),
-        (MOCK_URL_INDICATOR, "RED", ["tag1"], "URL", "https://domain.test/test"),
-        (MOCK_FILE_INDICATOR, "RED", ["tag1"], "File", "ae1747c930e9e4f45fbc970a83b52284"),
-    ]
-)
-def test_translate_indicator(indicator, tlp_color, tags, expected_type, expected_value):
-    result = FeedMandiant.translate_indicator(indicator, tlp_color, tags)
-    assert isinstance(result, Dict)
-    assert isinstance(result["relationships"], List)
-    assert isinstance(result["fields"], Dict)
-    assert result.get("type") == expected_type
-    assert result.get("value") == expected_value
+def test_fetch_indicators_command(client, mock_http_request):
+    mock_http_request.return_value = MOCK_INDICATORS
+    result = FeedMandiant.fetch_indicators_command(client)
+    assert isinstance(result, List)
+    assert result[0].get("value") == "1.2.3.4"
+    assert "rawJSON" in result[0]
+    assert "fields" in result[0]
+    assert "relationships" in result[0]
+    assert result[0].get("fields", {}).get("STIX ID") == "ipv4--1526529a-8489-55f5-a2f1-603ec2576f6c"
+    assert result[0].get("fields", {}).get("Traffic Light Protocol") == "RED"
+    assert result[0].get("fields", {}).get("Mandiant First Seen") == "2024-06-07T20:30:44.000Z"
+    assert result[0].get("fields", {}).get("Mandiant Last Seen") == "2024-06-09T00:14:03.000Z"
+    assert result[0].get("fields", {}).get("Mandiant Threat Score") == 100
+    assert result[0].get("fields", {}).get("Mandiant Severity Level") == "high"
+    assert result[0].get("fields", {}).get("Tags") == ['tag1', 'tag2', 'control-server']
