@@ -33,7 +33,7 @@ def module_of_testing(client: Client):
         if 'data' in res:
             return 'ok'
         else:
-            return 'Test Command Error: {0}'.format(res)
+            return f'Test Command Error: {res}'
     except DemistoException as error:
         raise error
 
@@ -80,7 +80,7 @@ def get_reports_command(client: Client, limit: int, order_by: str, order: str) -
             )
 
         else:
-            raise DemistoException('Could not receive data from Orkl. {0}'.format(res))
+            raise DemistoException(f'Could not receive data from Orkl. {res}')
 
     except DemistoException as error:
         raise error
@@ -129,18 +129,17 @@ def fetch_indicator_command(client: Client, feed_tags: str, tlp_color: str, limi
 
                     if len(report.get('threat_actors')) > 0:
                         for actor in report.get('threat_actors'):
-                            if actor.get('tools'):
-                                if len(actor.get('tools')) > 0:
-                                    for tool in actor.get('tools'):
-                                        ind_tool = {
-                                            'type': 'Tool',
-                                            'value': tool,
-                                            'source': FEED_NAME,
-                                            'fields': {
-                                                'trafficlightprotocol': tlp_color
-                                            }
+                            if actor.get('tools') and len(actor.get('tools')) > 0:
+                                for tool in actor.get('tools'):
+                                    ind_tool = {
+                                        'type': 'Tool',
+                                        'value': tool,
+                                        'source': FEED_NAME,
+                                        'fields': {
+                                            'trafficlightprotocol': tlp_color
                                         }
-                                        indicators.append(ind_tool)
+                                    }
+                                    indicators.append(ind_tool)
 
                             ind_actor = {
                                 'type': 'Threat Actor',
@@ -169,7 +168,7 @@ def fetch_indicator_command(client: Client, feed_tags: str, tlp_color: str, limi
             return indicators
 
         else:
-            raise DemistoException('Could not receive data from Orkl. {0}'.format(res))
+            raise DemistoException(f'Could not receive data from Orkl. {res}')
 
     except DemistoException as error:
         raise error
