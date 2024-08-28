@@ -16,7 +16,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 disable_warnings()
 DEMISTO_TIME_FORMAT: str = '%Y-%m-%dT%H:%M:%SZ'
-MAX_INDICATORS_TO_SYNC: int = 50000
+MAX_INDICATORS_TO_SYNC: int = 40000
 xdr_types_to_demisto: dict = {
     "DOMAIN_NAME": 'Domain',
     "HASH": 'File',
@@ -509,6 +509,7 @@ def sync(client: Client, batch_size: int = 200, is_first_stage_sync: bool = Fals
             requests_kwargs: dict = get_requests_kwargs(_json=request_data, validate=True)
             path: str = 'tim_insert_jsons'
             response = client.http_request(path, requests_kwargs)
+            demisto.debug(f"{response=}")
             if response.get('reply', {}).get('success') is not True:
                 raise DemistoException("Response status was not success")
             if validation_errors := response.get('reply', {}).get('validation_errors'):
@@ -611,7 +612,7 @@ def tim_insert_jsons(client: Client):
         iocs = get_indicators(indicators)
     else:
         demisto.info("pushing IOCs to XDR: did not get indicators, will use recently-modified IOCs")
-        iocs = get_last_iocs(batch_size=5000)
+        iocs = get_last_iocs(batch_size=4000)
     validation_errors: list = []
     if iocs:
         path = 'tim_insert_jsons/'
@@ -627,7 +628,7 @@ def tim_insert_jsons(client: Client):
                     validation_errors.extend(errors)
                 except Exception as exc:
                     demisto.error(f'Batch #{batch_index} generated an exception: {exc}')
-        # for i, single_batch_iocs in enumerate(batch_iocs(iocs, batch_size=5000)):
+        # for i, single_batch_iocs in enumerate(batch_iocs(iocs, batch_size=4000)):
         #    demisto.debug(f'pushing IOCs to XDR: batch #{i} with {len(single_batch_iocs)} IOCs')
         #    requests_kwargs: dict = get_requests_kwargs(_json=list(
         #        map(demisto_ioc_to_xdr, single_batch_iocs)), validate=True)
@@ -798,7 +799,7 @@ def xdr_iocs_sync_command(client: Client, first_time: bool = False, is_first_sta
     if first_time or not get_integration_context() or is_first_stage_sync:
         demisto.debug("first time, running sync")
         # the sync is the large operation including the data and the get_integration_context is fill in the sync
-        sync(client, batch_size=5000, is_first_stage_sync=True)
+        sync(client, batch_size=4000, is_first_stage_sync=True)
     else:
         pass
         # iocs_to_keep(client)
