@@ -63,8 +63,6 @@ def get_fqdn(input_url: str) -> str | None:
         subdomain = domain_info.subdomain
         if subdomain:
             fqdn = f"{subdomain}.{domain_info.fld}"
-        else:
-            fqdn = domain_info.fld
 
     return fqdn
 
