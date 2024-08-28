@@ -6,18 +6,22 @@
   "trigger_name": "A successful SSO sign-in from TOR",
   "alerts_filter": {
     "filter": {
-      "OR": [
-        {
-            "SEARCH_FIELD": "alert_name",
-            "SEARCH_TYPE": "EQ",
-            "SEARCH_VALUE": "A successful SSO sign-in from TOR"
-        },
-        {
-            "SEARCH_FIELD": "alert_name",
-            "SEARCH_TYPE": "EQ",
-            "SEARCH_VALUE": "A successful SSO sign-in from TOR via a mobile device"
-        }
-      ]
+        "AND": [
+            {
+            "OR": [
+                {
+                "SEARCH_FIELD": "alert_name",
+                "SEARCH_TYPE": "EQ",
+                "SEARCH_VALUE": "A successful SSO sign-in from TOR"
+                },
+                {
+                "SEARCH_FIELD": "alert_name",
+                "SEARCH_TYPE": "EQ",
+                "SEARCH_VALUE": "A successful SSO sign-in from TOR via a mobile device"
+                }
+                ]
+            }
+        ]    
     }
   }
 }
