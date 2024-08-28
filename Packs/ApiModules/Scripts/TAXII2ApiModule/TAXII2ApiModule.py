@@ -1039,7 +1039,7 @@ class STIX2XSOARParser(BaseClient):
         :param indicator_obj: indicator object
         :return: indicators extracted from the indicator object in cortex format
         """
-        field_map = self.field_map if self.field_map else {}
+        field_map = self.field_map or {}
         pattern = indicator_obj.get("pattern")
         indicators = []
         if pattern:
