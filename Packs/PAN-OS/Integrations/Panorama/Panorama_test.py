@@ -7796,12 +7796,37 @@ def test_pan_os_list_profile_exception(mocker):
             "Packet Capture": "no",
         },
     ]
+    
+    expected_output = {
+        'Name': 'test_profile',
+        'Exception': [
+            {
+                'id': '10003',
+                'name': 'threatname',
+                'CVE': 'cve',
+                'action': 'block',
+                'packet-capture': 'yes',
+                'exempt-ip': '192.168.1.1'
+            },
+            {
+                'id': '10002',
+                'name': 'threatname',
+                'CVE': 'cve',
+                'action': 'allow',
+                'packet-capture': 'no',
+            },
+        ]
+    }
 
     assert "Profile Exceptions" in result.readable_output
+    
     for hr_entry in expected_hr:
         for _, value in hr_entry.items():
             assert value in result.readable_output
-
+            
+    assert result.outputs == expected_output
+    assert result.outputs_prefix == 'Panorama.Vulnerability'
+    assert result.outputs_key_field == 'Name'
 
 def test_fetch_incidents_correlation(mocker: MockerFixture):
     '''
