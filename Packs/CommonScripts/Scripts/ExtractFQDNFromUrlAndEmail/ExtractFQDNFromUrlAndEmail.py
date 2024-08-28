@@ -59,9 +59,9 @@ def get_fqdn(the_input):
     # handle fqdn if needed
     if domain:
         # get the subdomain using tld.subdomain
-        subdomain = domain.subdomain
+        subdomain = domain.subdomain  # type: ignore[union-attr]
         if (subdomain):
-            fqdn = f"{subdomain}.{domain.fld}"
+            fqdn = f"{subdomain}.{domain.fld}"  # type: ignore[union-attr]
 
     return fqdn
 

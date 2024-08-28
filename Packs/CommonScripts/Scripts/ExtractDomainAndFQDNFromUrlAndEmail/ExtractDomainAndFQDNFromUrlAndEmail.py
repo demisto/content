@@ -58,11 +58,11 @@ def get_fqdn(the_input):
 
     if domain:  # Weve removed the filter for "zip" as it is now a valid gTLD by Google
         # get the subdomain using tld.subdomain
-        subdomain = domain.subdomain
+        subdomain = domain.subdomain  # type: ignore[union-attr]
         if (subdomain):
-            fqdn = f"{subdomain}.{domain.fld}"
+            fqdn = f"{subdomain}.{domain.fld}"  # type: ignore[union-attr]
         else:
-            fqdn = domain.fld
+            fqdn = domain.fld  # type: ignore[union-attr]
 
     return fqdn
 
