@@ -1,0 +1,83 @@
+args:
+- description: The user ID of the user to retrieve.
+  name: user_id
+- description: The user name of the user to retrieve.
+  name: user_name
+- description:  The user email of the user to retrieve.
+  name: user_email
+- description: The user domain of the user to retrieve, required for the iam-get-user command.
+  name: domain
+comment: Returns the user data.
+commonfields:
+  id: get-user-data
+  version: -1
+name: get-user-data
+outputs:
+- contextPath: Account.Type
+  description: The account type. The most common value is 'AD', but can be 'LocalOS', 'Google', 'AppleID'
+  type: String
+- contextPath: Account.ID
+  description: The unique ID for the account (integration specific). For AD accounts this is the Distinguished Name (DN).
+  type: String
+- contextPath: Account.Username
+  description: The username in the relevant system.
+  type: String
+- contextPath: Account.DisplayName
+  description: The display name.
+  type: String
+- contextPath: Account.Groups
+  description: Groups to which the account belongs (integration specific). For example, for AD these are groups of which the account is memberOf.
+  type: String
+- contextPath: Account.Domain
+  description: The domain of the account.
+  type: String
+- contextPath: Account.OrganizationUnit
+  description: The Organization Unit (OU) of the account.
+  type: String
+- contextPath: Account.Email.Address
+  description: The email address of the account.
+  type: String
+- contextPath: Account.TelephoneNumber
+  description: The phone number associated with the account.
+  type: String
+- contextPath: Account.Office
+  description: The office where the person associated with the account works.
+  type: String
+- contextPath: Account.JobTitle
+  description: The job title of the account.
+  type: String
+- contextPath: Account.Department
+  description: The department of the account.
+  type: String
+- contextPath: Account.Country
+  description: The country associated with the account.
+  type: String
+- contextPath: Account.State
+  description: The state where the account works.
+  type: String
+- contextPath: Account.City
+  description: The city associated with the account.
+  type: String
+- contextPath: Account.Street
+  description: The street associated with the account.
+  type: String
+- contextPath: Account.IsEnabled
+  description: Whether the account is enabled or disabled. 'True' means the account is enabled.
+  type: Bool
+- contextPath: Account.CloudApplications.Application Name
+  description: Cloud application name that is assosciated with this account.
+  type: String
+- contextPath: Account.ChangePasswordAtNextLogin
+  description: Whether this account should change its password at the next login. 'True' means the account have to change its password.
+  type: Bool
+- contextPath: Account.IsInternal
+  description: Whether the account is internal or external to the organization. 'True' means the account is internal.
+  type: Bool
+script: '-'
+tags:
+- basescript
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.10.14.100715
+fromversion: 5.5.0
