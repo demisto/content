@@ -509,7 +509,7 @@ def sync(client: Client, batch_size: int = 200, is_first_stage_sync: bool = Fals
             requests_kwargs: dict = get_requests_kwargs(_json=request_data, validate=True)
             path: str = 'tim_insert_jsons'
             response = client.http_request(path, requests_kwargs)
-            if not response.get('reply', {}).get('success') == 'true':
+            if response.get('reply', {}).get('success') is not True:
                 raise DemistoException("Response status was not success")
             if validation_errors := response.get('reply', {}).get('validation_errors'):
                 errors = create_validation_errors_response(validation_errors)
