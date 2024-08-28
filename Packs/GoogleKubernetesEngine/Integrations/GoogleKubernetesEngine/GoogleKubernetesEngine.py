@@ -509,17 +509,17 @@ def gcloud_clusters_set_master_authorized_network_command(client: ClusterManager
         dict: Operation raw response.
     """
     # Perform cluster update
-    update: ClusterUpdate = {
+    update = {
         'desired_master_authorized_networks_config': {
             'enabled': enable == 'true',
             'cidr_blocks': [{'cidr_block': cidr_block} for cidr_block in argToList(cidrs)]
         }
-    }  # type: ignore[assignment]
+    }
 
     raw_response_msg = client.update_cluster(project_id=project,
                                              zone=zone,
                                              cluster_id=cluster,
-                                             update=update,
+                                             update=update,  # type: ignore[arg-type]
                                              timeout=API_TIMEOUT)
     raw_response_dict: dict = MessageToDict(raw_response_msg._pb)
     # Entry context
