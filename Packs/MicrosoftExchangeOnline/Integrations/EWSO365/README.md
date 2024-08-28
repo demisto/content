@@ -35,6 +35,10 @@ There are two application authentication methods available.
 Follow your preferred method's guide on how to use the admin consent flow in order to receive your authentication information:
 
 * [Cortex XSOAR Application](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#cortex-xsoar-application)
+    To allow access to EWS O365, an administrator has to approve the Demisto app using an admin consent flow, by clicking on the following [link](https://oproxy.demisto.ninja/ms-ews-o365).
+    After authorizing the Demisto app, you will get an ID, Token, and Key, which needs to be added to the integration instance configuration's corresponding fields.
+
+
 * [Self-Deployed Application](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#self-deployed-application) - Client Credential Flow.
 
 ## Authentication
@@ -64,10 +68,6 @@ For more information on this permission, see [the Microsoft documentation](https
 To limit the application's permissions to only specific mailboxes, follow the [Microsoft documentation](https://docs.microsoft.com/en-us/graph/auth-limit-mailbox-access). Note that it may take about an hour for permissions changes to take effect.
 
 ## Configure Integration on Cortex
-
-To allow access to EWS O365, an administrator has to approve the Demisto app using an admin consent flow, by clicking on the following [link](https://oproxy.demisto.ninja/ms-ews-o365).
-After authorizing the Demisto app, you will get an ID, Token, and Key, which needs to be added to the integration instance configuration's corresponding fields.
-
 
 | **Parameter** | **Description** |**Required**|
 | --- | --- | --- |
