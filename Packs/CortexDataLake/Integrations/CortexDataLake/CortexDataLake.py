@@ -1170,7 +1170,7 @@ def main():
     enc_key = params.get('credentials_auth_key', {}).get('password') or params.get('auth_key')
     if not enc_key or not refresh_token or not registration_id_and_url:
         raise DemistoException('Key, Token and ID must be provided.')
-    is_fr = ('fedramp' in demisto.getLicenseCustomField('Http_Connector.url'))
+    is_fr = ('federal' in demisto.getLicenseCustomField('Http_Connector.url'))
     demisto.debug(is_fr)
     registration_id_and_url = registration_id_and_url.split('@')
     if len(registration_id_and_url) != 2:
