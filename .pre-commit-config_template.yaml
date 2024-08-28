@@ -16,7 +16,8 @@ repos:
     min_py_version: '3.7'
     files: .+_test.py$
   - id: check-added-large-files
-    args: ['--maxkb=5120']
+    args:
+    - '--maxkb=5120'
 - repo: https://github.com/python-poetry/poetry
   rev: 1.8.2
   hooks:
