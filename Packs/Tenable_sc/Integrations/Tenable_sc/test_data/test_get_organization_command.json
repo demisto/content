@@ -1,0 +1,8 @@
+{
+    "test_case_1": {
+        "mock_response": {"type": "regular", "response": [{"vulnScoreMedium": "3","restrictedIPs": "","id": "1","repositories": [{"id": "1","name": "Local","description": "","type": "Local","dataFormat": "IPv4","groupAssign": "all","uuid": "repo_uuid"}],"name": "Demisto","description": "","uuid": "test_uuid"}],"error_code": 0,"error_msg": "","warnings": [],"timestamp": 1723618341},
+        "args":{"fields":"vulnScoreMedium,repositories,restrictedIPs"},
+        "expected_hr": "### Tenable.sc Orgnization\n|ID|Name|repositories|vulnScoreMedium|\n|---|---|---|---|\n| 1 | Demisto | {'id': '1', 'name': 'Local', 'description': '', 'type': 'Local', 'dataFormat': 'IPv4', 'groupAssign': 'all', 'uuid': 'repo_uuid'} | 3 |\n",
+        "expected_ec": [{"vulnScoreMedium": "3", "id": "1", "repositories": [{"id": "1", "name": "Local", "description": "", "type": "Local", "dataFormat": "IPv4", "groupAssign": "all", "uuid": "repo_uuid"}], "name": "Demisto", "uuid": "test_uuid"}]
+    }
+}
