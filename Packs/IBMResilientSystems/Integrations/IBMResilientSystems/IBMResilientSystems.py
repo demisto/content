@@ -155,6 +155,10 @@ IBM_QRADAR_INCIDENT_FIELDS = {
         'xsoar_name': 'ibmqradarresolution',
         'description': ''
     },
+    'resolution_summary': {
+        'xsoar_name': 'ibmqradarresolutionsummary',
+        'description': ''
+    },
     "owner_id": {
         "xsoar_name": "",
         "description": "The principal ID of the incident owner.",
@@ -526,20 +530,28 @@ def process_raw_incident(client: SimpleClient, incident: dict) -> dict:
     return incident
 
 
-def resolve_field_value(field: str, value: Any) -> dict:
+def resolve_field_value(field: str, raw_value: Any) -> dict:
     """
     Resolve an incident's field value for an API PATCH request.
     """
-    if not value:
-        return {"textarea": None}
+    demisto.debug(f"resolve_field_value {field=} | {type(raw_value)=} | {raw_value=}")
+
+    # Null values & object-formatted values are returned as-is under 'textarea' key.
+    if not raw_value or isinstance(raw_value, dict):
+        raw_value = None    # Unifying all null-like values to None.
+        return {"textarea": raw_value}
+
     elif field in ["severity_code", "owner_id", "resolution_id"]:
-        return {"id": int(value)}
+        return {"id": int(raw_value)}
+
     elif field in ["reporter", "plan_status"]:
-        return {"text": value}
+        return {"text": raw_value}
+
     elif field in ["resolution_summary", "description"]:
-        return {"textarea": {"format": "html", "content": value}}
+        return {"textarea": {"format": "html", "content": raw_value}}
+
     elif field in ["incident_type_ids"]:
-        return {"ids": value}
+        return {"ids": raw_value}
 
 
 def get_field_changes_entry(field: str, old_value: Any, new_value: Any) -> dict:
@@ -687,9 +699,7 @@ def prepare_incident_update_dto(
     return dto
 
 
-def prepare_incident_update_dto_for_mirror(
-    client: SimpleClient, incident_id: str, delta: dict
-) -> dict:
+def prepare_incident_update_dto_for_mirror(client: SimpleClient, incident_id: str, delta: dict) -> dict:
     """
     Prepare an incident update DTO for mirroring data.
     Args:
@@ -698,41 +708,32 @@ def prepare_incident_update_dto_for_mirror(
         delta (dict): A dictionary containing the fields and their new values to be updated.
     """
     incident = get_incident(client, incident_id, content_format=True)
-    demisto.debug(f"prepare_incident_update_dto_for_mirror {delta=} | {incident}")
+    demisto.debug(f"prepare_incident_update_dto_for_mirror {delta=} | {incident=}")
+
     changes = []
-    for field, _value in delta.items():
-        if field in [
-            "closeNotes",
-            "closeReason",
-            "plan_status",
-            "resolution_id",
-            "resolution_summary",
-        ]:
-            continue
-    # TODO - Fix this
-
-    # Incident closure handling.
-    if resolution_summary := delta.get("resolution_summary"):
+    for field, new_value in delta.items():
         changes.append(
             get_field_changes_entry(
-                "resolution_summary", incident["resolution_summary"], resolution_summary
+                field=field, old_value=incident[field], new_value=new_value
             )
         )
 
-    if new_resolution_id := delta.get("resolution_id"):
-        changes.append(
-            get_field_changes_entry(
-                "resolution_id", incident["resolution_id"], new_resolution_id
-            )
-        )
+        if field == 'resolution_id':
+            new_resolution_id = new_value
+            remote_status = incident["plan_status"]
 
-        # Updating the `plan_status` field closes the incident on the remote system if it's not already closed.
-        if incident_status := incident["plan_status"] != "C":
-            changes.append(get_field_changes_entry("plan_status", incident_status, "C"))
+            # Handling remote incident reopening.
+            if new_resolution_id == '' and remote_status == "C":
+                changes.append(get_field_changes_entry("plan_status", remote_status, "A"))
+
+            # Remote incident closure handling.
+            else:
+                changes.append(get_field_changes_entry("plan_status", remote_status, "C"))
 
     dto = {"changes": changes}
     demisto.debug(f"prepare_incident_update_dto_for_mirror {dto=}")
     return dto
+
 def date_to_timestamp(date_str_or_dt, date_format='%Y-%m-%dT%H:%M:%SZ'):
     """
       Parses date_str_or_dt in the given format (default: %Y-%m-%dT%H:%M:%S) to milliseconds
@@ -885,7 +886,7 @@ def get_incident_command(client, incident_id):
     return entry
 
 
-def get_incident(client, incident_id, content_format=False):
+def get_incident(client: SimpleClient, incident_id, content_format=False):
     url = '/incidents/' + str(incident_id)
     if content_format:
         url += '?text_content_output_format=objects_convert_html'
@@ -1676,11 +1677,9 @@ def get_modified_remote_data_command(
     return GetModifiedRemoteDataResponse(modified_incident_ids)
 
 
-def handle_incoming_incident_resolution(
-    incident_id: str, resolution_id: int, resolution_summary: str
-) -> dict:
+def handle_incoming_incident_resolution(incident_id: str, resolution_id: int, resolution_summary: str) -> dict:
     """
-    TODO - Complete
+    Resolves XSOAR close reason and creates a closing entry to be posted in the incident's War Room.
     """
     resolution_status = RESOLUTION_DICT.get(resolution_id, "Resolved")
     demisto.debug(
@@ -1698,12 +1697,11 @@ def handle_incoming_incident_resolution(
     return closing_entry
 
 
-def handle_incident_reopening(incident_id: str) -> dict:
+def handle_incoming_incident_reopening(incident_id: str) -> dict:
     """
-    TODO - Complete
+    Post a reopening entry to the incident's War Room.
     """
     demisto.debug(f"handle_incident_reopening {incident_id=}")
-    # TODO - Check if should be re-opened or already open.
     reopening_entry = {
         "Type": EntryType.NOTE,
         "Contents": {"dbotIncidentReopen": True},
@@ -1739,25 +1737,24 @@ def get_remote_data_command(client: SimpleClient, args: dict) -> GetRemoteDataRe
     entries = []
 
     # Handling remote incident resolution.
-    if (
-        incident.get("end_date") and incident.get("plan_status") == "C"
-    ):  # 'C' stands for 'Closed'
-        resolution_id = incident.get("resolution_id")
-        closing_entry = handle_incoming_incident_resolution(
-            incident_id=incident_id,
-            resolution_id=resolution_id,
-            resolution_summary=remove_html_div_tags(
-                incident.get("resolution_summary", "")
-            ),
-        )
-        entries.append(closing_entry)
+    if incident.get("end_date") and incident.get("plan_status") == "C":  # 'C' stands for 'Closed'
+        if DEMISTO_PARAMS.get('close_xsoar_incident', True):
+            resolution_id = incident.get("resolution_id")
+            closing_entry = handle_incoming_incident_resolution(
+                incident_id=incident_id,
+                resolution_id=resolution_id,
+                resolution_summary=remove_html_div_tags(
+                    incident.get("resolution_summary", "")
+                )
+            )
+            entries.append(closing_entry)
 
     # Handling open and remote incident re-opening.
     elif not incident.get("end_date") and incident.get("plan_status") == "A":
-        reopening_entry = handle_incident_reopening(incident_id=incident_id)
+        reopening_entry = handle_incoming_incident_reopening(incident_id=incident_id)
         entries.append(reopening_entry)
 
-    mirrored_data = {}
+    mirrored_data = dict()
     mirrored_data["rawJSON"] = json.dumps(incident)
 
     # TODO - Handle tags for attachments, tasks, notes
@@ -1772,9 +1769,7 @@ def update_remote_system_command(client: SimpleClient, args: dict) -> str:
         f" {remote_args.entries=} | {remote_args.delta=} | {remote_args.data=} | {remote_args.inc_status}"
     )
     if remote_args.incident_changed and remote_args.delta:
-        update_dto = prepare_incident_update_dto_for_mirror(
-            client, incident_id, remote_args.delta
-        )
+        update_dto = prepare_incident_update_dto_for_mirror(client, incident_id, remote_args.delta)
         update_incident(client, incident_id, update_dto)
     else:
         demisto.debug(
@@ -1791,7 +1786,7 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
 
     for field in IBM_QRADAR_INCIDENT_FIELDS:
         ibm_qradar_incident_type_scheme.add_field(
-            name=IBM_QRADAR_INCIDENT_FIELDS[field].get("xsoar_name"),
+            name=field,
             description=IBM_QRADAR_INCIDENT_FIELDS[field].get("description"),
         )
     return GetMappingFieldsResponse([ibm_qradar_incident_type_scheme])

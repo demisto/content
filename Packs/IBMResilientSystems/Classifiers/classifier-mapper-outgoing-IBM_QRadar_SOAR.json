@@ -27,7 +27,7 @@
 				"resolution_id": {
 					"complex": {
 						"filters": [],
-						"root": "ibmqradarresolution",
+						"root": "closeReason",
 						"transformers": [
 							{
 								"args": {
@@ -50,7 +50,7 @@
 					}
 				},
 				"resolution_summary": {
-					"simple": "ibmqradarresolutionsummary"
+					"simple": "closeNotes"
 				},
                 "creator.display_name": {
                     "simple": "displayname"
