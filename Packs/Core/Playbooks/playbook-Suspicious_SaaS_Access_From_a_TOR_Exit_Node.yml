@@ -666,6 +666,7 @@ tasks:
       regex:
         simple: \b(Python-urllib|libwww-perl|Scrapy|curl|Wget|sqlmap|Nikto|Xrumer|Hydra|JohnTheRipper|LOIC|HOIC|MJ12bot|Baiduspider|BlackWidow|HeadlessChrome|PhantomJS|Selenium|REST)\b
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
