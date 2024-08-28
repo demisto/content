@@ -89,23 +89,13 @@ else
 fi
 
 if [ -n "${CI}" ]; then
-    retry_count=3
-    sleep_time=10
-    echo "Detected CI environment. Running extra requirements"
-    echo "Check if poetry files are valid"
+    echo "Detected CI environment"
+    echo "Checking whether poetry files are valid"
     poetry check --no-interaction
     exit_on_error $? "Failed to check poetry files"
-
     echo "Installing dependencies..."
-    for ((i=1; i <= retry_count; i++)); do
-        poetry install --no-interaction --with ci && exit_code=0 && break || exit_code=$?
-        [ -d .venv ] && rm -rf .venv
-        if [ "${i}" -ne "${retry_count}" ]; then
-            echo "Sleeping for ${sleep_time} seconds before retrying"
-            sleep "${sleep_time}"
-        fi
-    done
-    exit_on_error "${exit_code}" "Failed to install dependencies after ${retry_count} tries"
+    poetry install --no-interaction
+    exit_on_error "${exit_code}" "Failed to install dependencies"
 else
     echo "Detected local environment"
     echo "Check if poetry files are valid"
