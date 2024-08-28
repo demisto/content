@@ -1,5 +1,22 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
+class new_demisto:
+
+    def __init__(self) -> None:
+        self.debug_message: str = '\n\nDEBUG new_demisto: Start\n\n'
+        self.old_debug = demisto.debug
+        demisto.debug = self.debug
+
+    def debug(self, msg: str):
+        self.debug_message += f'{datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")} debug: {msg}\n'
+
+    def log_debugs(self):
+        self.old_debug(self.debug_message + '\n\nDEBUG new_demisto: Done\n\n')
+        demisto.debug = self.old_debug
+
+DEBUG = new_demisto()
+
 demisto.debug('about to import')
 import dateutil  # type: ignore
 
@@ -53,7 +70,8 @@ def func_logger(func):
         before = datetime.now()
         ret_val = func(*args, **kwargs)
         after = datetime.now()
-        demisto.debug(f'Return value [{func.__name__}]: {ret_val!r}\nCommand {func.__name__!r} ran for {abs(before - after)}')
+        demisto.debug(f'Return value [{func.__name__}]: {ret_val!r}')
+        demisto.debug(f'Command {func.__name__!r} ran for {abs(before - after)}')
         return ret_val
     return func_wrapper
 
@@ -444,3 +462,4 @@ def main():
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
     main()
+    DEBUG.log_debugs()
