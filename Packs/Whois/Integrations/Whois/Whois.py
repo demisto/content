@@ -8352,7 +8352,7 @@ def get_domain_from_query(query):
             domain = query[suffixless_query.rindex(".") + 1:]
 
         demisto.debug(f"Found domain '{domain}' from query")
-        return domain
+        return domain.removesuffix("/") if isinstance(domain, str) else domain
     except Exception:
         demisto.error(f"Error parsing domain from query '{query}'.")
         raise WhoisInvalidDomain(f"Can't parse domain from query '{query}'")
