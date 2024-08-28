@@ -7,7 +7,7 @@ from CommonServerPython import *  # noqa: F401
 from typing import Any
 from collections.abc import Callable
 # 3-rd party packages
-from google.cloud.container_v1 import ClusterManagerClient, ClusterUpdate, AddonsConfig
+from google.cloud.container_v1 import ClusterManagerClient, ClusterUpdate, AddonsConfig, ListClustersResponse, Cluster
 from google.protobuf.json_format import MessageToDict
 from google.oauth2 import service_account
 # Local packages
@@ -301,9 +301,9 @@ def gcloud_clusters_list_command(client: ClusterManagerClient, project: str, zon
         dict: Cluster raw response.
     """
     # Query and gPRC unpack
-    raw_response_msg = client.list_clusters(project_id=project,
-                                            zone=zone,
-                                            timeout=API_TIMEOUT)
+    raw_response_msg: ListClustersResponse = client.list_clusters(project_id=project,
+                                                                  zone=zone,
+                                                                  timeout=API_TIMEOUT)
     raw_response_dict: dict = MessageToDict(raw_response_msg._pb)
 
     # Entry context
@@ -335,10 +335,10 @@ def gcloud_clusters_describe_command(client: ClusterManagerClient, project: str 
         dict: Cluster raw response.
     """
     # Query and gPRC unpack
-    raw_response_msg = client.get_cluster(cluster_id=cluster,
-                                          project_id=project,
-                                          zone=zone,
-                                          timeout=API_TIMEOUT)
+    raw_response_msg: Cluster = client.get_cluster(cluster_id=cluster,
+                                                   project_id=project,
+                                                   zone=zone,
+                                                   timeout=API_TIMEOUT)
     # Entry context
     raw_response_dict: dict = MessageToDict(raw_response_msg._pb)  # type: ignore[attr-defined]
     cluster_ec = parse_cluster(raw_response_dict)
@@ -736,7 +736,7 @@ def gcloud_node_pool_describe_command(client: ClusterManagerClient, project: str
 def gcloud_set_node_pool_management(client: ClusterManagerClient, project: str, zone: str, cluster: str,
                                     node_pool: str, auto_repair: str | None = None,
                                     auto_upgrade: str | None = None) -> COMMAND_OUTPUT:
-    """ Disbale or Enable node-pool functionallity:
+    """ Disable or Enable node-pool functionallity:
             1. auto-repair.
             2. auto-upgrade.
         https://cloud.google.com/sdk/gcloud/reference/container/node-pools/update
