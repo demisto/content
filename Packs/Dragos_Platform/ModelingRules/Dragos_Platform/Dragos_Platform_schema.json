@@ -1,0 +1,8 @@
+{
+  "msft_azure_raw": {
+      "callerIpAddress": {
+          "type": "string",
+          "is_array": false
+      }
+  }
+}
