@@ -159,7 +159,7 @@ tasks:
       name: Get User ID from MS-Graph
       description: |-
         Retrieves a list of user objects.
-        Permissions: - User.ReadBasic.All (Delegated) - User.Read.All (Application).
+        Permissions: User.ReadBasic.All (Delegated), User.Read.All (Application).
       script: '|||msgraph-user-list'
       type: regular
       iscommand: true
@@ -286,7 +286,7 @@ tasks:
       id: deb95ec9-2850-45c8-8a1c-1d2f2ccf07fe
       version: -1
       name: Sign out User using G-Suite Admin
-      description: Signs a user out of all web and device sessions and reset their sign-in cookies.
+      description: Signs a user out of all web and device sessions and resets their sign-in cookies.
       script: '|||gsuite-user-signout'
       type: regular
       iscommand: true
@@ -597,7 +597,7 @@ tasks:
         tooltip: ""
         readonly: false
       title: Decide if you want to block the account
-      description: You can block the user that created the connection.
+      description: You can block the user who created the connection.
       sender: ""
       expired: false
       totalanswers: 0
@@ -613,7 +613,7 @@ tasks:
       id: dd1a92cb-c7eb-42c9-8679-429bd572a0b7
       version: -1
       name: Check if user agent is suspicious
-      description: Extracts regex data from the provided text. The script support groups and looping.
+      description: Extracts regex data from the provided text. The script supports groups and looping.
       scriptName: MatchRegexV2
       type: regular
       iscommand: false
@@ -772,8 +772,8 @@ tasks:
       version: -1
       name: Block user with MS-Graph
       description: |-
-        Disables a user from all Office 365 applications, and prevents sign in. Note: This command disables user,
-        but does not terminate an existing session. Supported only in a self deployed app flow with the
+        Disables a user from all Office 365 applications, and prevents sign in. Note: This command disables a user,
+        but does not terminate an existing session. Supported only in a self-deployed app flow.
         Permission: Directory.AccessAsUser.All(Delegated).
       script: '|||msgraph-user-account-disable'
       type: regular
