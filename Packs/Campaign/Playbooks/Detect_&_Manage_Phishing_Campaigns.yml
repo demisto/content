@@ -1118,7 +1118,7 @@ tasks:
     skipunavailable: false
     quietmode: 0
     isoversize: false
-    isautoswitchedtoquietmode: false
+    isautoswitchedtoquietmode: false 
   "34":
     id: "34"
     taskid: e420f8db-0b11-4416-82f7-6cac5d3727c4
