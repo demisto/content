@@ -1,5 +1,3 @@
-# type: ignore
-
 import logging
 import warnings
 from typing import Union, List, Any, Tuple, Dict

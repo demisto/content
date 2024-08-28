@@ -121,3 +121,6 @@ ignore=RM108
 
 [file:playbook-Containment_Plan_-_Block_Indicators.yml]
 ignore=PB118
+
+[file:playbook-Containment_Plan_-_Clear_User_Sessions.yml]
+ignore=PB118

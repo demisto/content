@@ -41,6 +41,8 @@ repos:
     - --config=nightly_ruff.toml
     args:ci:
     - --config=nightly_ruff.toml
+    args:docker_autoupdate:
+    - --config=nightly_ruff.toml
 - repo: https://github.com/hhatto/autopep8
   rev: v2.3.1
   hooks:
@@ -261,6 +263,11 @@ repos:
     args:
     - --skip-pack-dependencies
     - --config-path=validation_config.toml
+    args:packwise:
+    - --skip-pack-dependencies
+    - --config-path=validation_config.toml
+    - --ignore=DO106
+    - --ignore=CJ105
     pass_filenames: false
     language: system
     require_serial: true

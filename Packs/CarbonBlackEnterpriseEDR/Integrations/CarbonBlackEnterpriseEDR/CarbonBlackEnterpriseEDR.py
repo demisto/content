@@ -1,10 +1,8 @@
+from typing import Any
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-from typing import Any
-import dateparser
-import requests
 import urllib3
 from more_itertools import map_reduce
 
@@ -61,7 +59,6 @@ class Client(BaseClient):
                 device_name=device_name,
                 process_name=process_name
             ),
-            'time_range': create_time,
             'sort': [
                 {
                     'field': sort_field,
@@ -71,6 +68,9 @@ class Client(BaseClient):
             'rows': limit,
             'start': 1
         }
+
+        if create_time:
+            body['time_range'] = create_time
 
         return self._http_request('POST', suffix_url, json_data=body)
 
@@ -100,17 +100,16 @@ class Client(BaseClient):
         return response
 
     def devices_list_request(self, device_id: None | list = None, status: None | list = None, device_os: None | list = None,
-                             last_contact_time: None | dict[str, Any | None] = None, ad_group_id: None | list = None,
+                             last_contact_time: dict[str, str | None] | None = None, ad_group_id: None | list = None,
                              policy_id: None | list = None, target_priority: None | list = None, limit: None | int = None,
                              sort_field: None | str = None, sort_order: None | str = None) -> dict:
         suffix_url = f'/appservices/v6/orgs/{self.cb_org_key}/devices/_search'
 
-        body = {
+        body: dict[str, Any] = {
             'criteria': {
                 'id': device_id,
                 'status': status,
                 'os': device_os,
-                'last_contact_time': last_contact_time,
                 'ad_group_id': ad_group_id,
                 'policy_id': policy_id,
                 'target_priority': target_priority
@@ -124,6 +123,9 @@ class Client(BaseClient):
                 }
             ]
         }
+        # Ensure that last_contact_time is a dictionary with the expected structure
+        if isinstance(last_contact_time, dict) and last_contact_time.get('start'):
+            body['criteria'].update({'last_contact_time': last_contact_time})
 
         return self._http_request('POST', suffix_url, json_data=body)
 
@@ -373,13 +375,17 @@ class Client(BaseClient):
         body = assign_params(criteria=assign_params(
             process_hash=process_hash_list,
             process_name=process_name_list,
-            event_id=event_id,
+            event_id=[event_id]
         ),
             query=query,
             rows=limit,
             start=start,
 
         )
+
+        if not event_id:
+            del body['criteria']['event_id']
+
         timestamp_format = '%Y-%m-%dT%H:%M:%S.%fZ'
         start_iso = parse_date_range(start_time, date_format=timestamp_format)[0]
         if end_time:
@@ -680,7 +686,7 @@ def list_devices_command(client: Client, args: dict) -> CommandResults | str:
     policy_id = argToList(args.get('policy_id'))
     target_priority = argToList(args.get('target_priority'))
     limit = args.get('limit')
-    sort_field = args.get('sort_field', '')
+    sort_field = args.get('sort_field', 'last_contact_time')
     sort_order = args.get('sort_order')
     contents = []
     headers = ['ID', 'Name', 'OS', 'PolicyName', 'Quarantined', 'status', 'TargetPriority', 'LastInternalIpAddress',
