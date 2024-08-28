@@ -65,6 +65,10 @@ To limit the application's permissions to only specific mailboxes, follow the [M
 
 ## Configure Integration on Cortex
 
+To allow access to EWS O365, an administrator has to approve the Demisto app using an admin consent flow, by clicking on the following [link](https://oproxy.demisto.ninja/ms-ews-o365).
+After authorizing the Demisto app, you will get an ID, Token, and Key, which needs to be added to the integration instance configuration's corresponding fields.
+
+
 | **Parameter** | **Description** |**Required**|
 | --- | --- | --- |
 | ID / Application ID | ID can be received after following the System Integration Setup (Device side steps). | False |
