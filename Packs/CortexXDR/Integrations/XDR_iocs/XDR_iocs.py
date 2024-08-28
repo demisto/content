@@ -497,7 +497,7 @@ def sync(client: Client, batch_size: int = 200, is_first_stage_sync: bool = Fals
         if request_data:
             # demisto.debug(f"time_after_query_is {datetime.now(timezone.utc).strftime(DEMISTO_TIME_FORMAT)}")
             integration_context = get_integration_context()
-            demisto.debug(f"sending {len(request_data)} indicators to xdr. last_modified_that_was_synced "
+            demisto.debug(f"Fetched {len(request_data)} indicators from xsoar. last_modified_that_was_synced "
                           f"{request_data[-1].get('modified')}, {request_data[-1].get('indicator')}, "
                           f"search_after {integration_context.get('search_after')}")
             last_modified_time = request_data[-1].get('modified')
@@ -515,8 +515,6 @@ def sync(client: Client, batch_size: int = 200, is_first_stage_sync: bool = Fals
                 errors = create_validation_errors_response(validation_errors)
                 demisto.debug('pushing IOCs to XDR:' + errors.replace('\n', '. '))
                 return_warning(errors)
-            demisto.debug(f"Fetched from xsoar {len(request_data)} IOCs to send to XDR. Last indicator modified time is"
-                        f" {get_integration_context().get('search_after')}")
         else:
             demisto.debug("request_data is empty, no indicators to sync")
             update_integration_context(update_is_first_sync_phase='false')
@@ -785,15 +783,15 @@ def fetch_indicators(client: Client, auto_sync: bool = False):
     else:
         # This will happen every fetch time interval as defined in the integration configuration and first_phase_sync=False
         demisto.debug("fetching IOCs: running get_changes")
-        # get_changes(client)
-        # if auto_sync:
-        #     demisto.debug("fetching IOCs: auto_sync is on")
-        #     tim_insert_jsons(client)
-        #     demisto.debug("checking if iocs_to_keep should run")
-        #     if is_iocs_to_keep_time():
-        #         # first_time=False will call iocs_to_keep
-        #         demisto.debug("running sync with first_time=False")
-        #         xdr_iocs_sync_command(client)
+        get_changes(client)
+        if auto_sync:
+            demisto.debug("fetching IOCs: auto_sync is on")
+            tim_insert_jsons(client)
+            demisto.debug("checking if iocs_to_keep should run")
+            if is_iocs_to_keep_time():
+                # first_time=False will call iocs_to_keep
+                demisto.debug("running sync with first_time=False")
+                xdr_iocs_sync_command(client)
 
 
 def xdr_iocs_sync_command(client: Client, first_time: bool = False, is_first_stage_sync: bool = False):
