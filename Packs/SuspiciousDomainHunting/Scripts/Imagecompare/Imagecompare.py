@@ -2,7 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 import cv2
-from skimage.metrics import structural_similarity as compare_ssim
+from skimage import metrics
 
 
 def calculate_mse(image_path1, image_path2):
@@ -33,7 +33,7 @@ def calculate_ssim(image_path1, image_path2):
     img2_gray = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)  # pylint: disable=[E1101]
 
     # Calculate Structural Similarity Index (SSIM)
-    ssim = compare_ssim(img1_gray, img2_gray)
+    ssim = metrics.structural_similarity(img1_gray, img2_gray)
     return ssim
 
 
