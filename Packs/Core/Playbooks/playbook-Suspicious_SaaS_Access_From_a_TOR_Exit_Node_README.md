@@ -1,6 +1,6 @@
 This playbook is designed to handle the following alerts: 
 - Suspicious SaaS API call from a Tor exit node	
-- Suspicious SaaS API call from a Tor exit node via Mobile Device
+- Suspicious SaaS API call from a Tor exit node via a mobile device
 - Suspicious API call from a Tor exit node
 - Suspicious Kubernetes API call from a Tor exit node
 
@@ -17,15 +17,15 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* PAN-OS - Block IPs From EDL - Custom Block Rule
+PAN-OS - Block IPs From EDL - Custom Block Rule
 
 ### Integrations
 
-* CortexCoreIR
+CortexCoreIR
 
 ### Scripts
 
-* MatchRegexV2
+MatchRegexV2
 
 ### Commands
 

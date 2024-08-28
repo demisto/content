@@ -1,4 +1,4 @@
-This playbook blocks IP addresses from External Dynamic List using Custom Block Rules in Palo Alto Networks Panorama or Firewall. The playbook receives EDL name as input, creates a custom "from" directional rule to block, and commits the configuration.
+This playbook blocks IP addresses from an External Dynamic List using Custom Block Rules in Palo Alto Networks Panorama or Firewall. The playbook receives an EDL name as input, creates a custom "from" directional rule to block, and commits the configuration.
 
 ## Dependencies
 
@@ -10,7 +10,7 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-* Panorama
+Panorama
 
 ### Scripts
 
@@ -27,10 +27,10 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| RuleName | Panorama rule name |  | Optional |
-| EDLName | EDL IPs to block |  | Optional |
+| RuleName | Panorama rule name. |  | Optional |
+| EDLName | EDL IPs to block. |  | Optional |
 | AutoCommit | This input establishes whether to commit the configuration automatically.<br/>Yes - Commit automatically.<br/>No - Commit manually. | No | Optional |
-| LogForwarding | Panorama log forwarding object name |  | Optional |
+| LogForwarding | Panorama log forwarding object name. |  | Optional |
 
 ## Playbook Outputs
 
