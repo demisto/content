@@ -1,0 +1,98 @@
+category: Analytics & SIEM
+sectionOrder:
+- Connect
+- Collect
+commonfields:
+  id: HPEArubaCentralEventCollector
+  version: -1
+configuration:
+- display: Server URL
+  name: url
+  required: true
+  type: 0
+  section: Connect
+- display: Client id
+  name: client_id
+  required: true
+  type: 9
+  section: Connect
+- display: Client secret
+  name: client_secret
+  required: true
+  type: 9
+  section: Connect
+- display: Customer id
+  name: customer_id
+  required: true
+  type: 9
+  section: Connect
+- display: Fetch networking events
+  type: 8
+  required: false
+  section: Collect
+- defaultvalue: 10000
+  section: Collect
+  display: The maximum number of audit events per fetch (Max. allowed - 50,000)
+  name: max_audit_events_per_fetch
+  required: false
+  type: 0
+  advanced: true
+- defaultvalue: 1000
+  section: Collect
+  display: The maximum number of networking events per fetch (Max. allowed - 5,000)
+  name: max_networking_events_per_fetch
+  required: false
+  type: 0
+  advanced: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+  section: Connect
+  advanced: true
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+  section: Connect
+  advanced: true
+description: This is the Aruba Central event collector integration for Cortex XSIAM.
+display: HPE Aruba Central Event Collector
+name: HPEArubaCentralEventCollector
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: If true, the command will create events, otherwise it will only display them.
+      isArray: false
+      name: should_push_events
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+    - default: false
+      description: Maximum number of results to return.
+      isArray: false
+      name: limit
+      required: true
+      secret: false
+    - default: false
+      description: Date from which to get events.
+      name: from_date
+      required: false
+    deprecated: false
+    description: Gets events from Aruba Central.
+    execution: false
+    name: aruba-central-get-events
+  dockerimage: demisto/python3:3.10.13.87159
+  isfetchevents: true
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+marketplaces:
+- marketplacev2
+fromversion: 8.4.0
+tests:
+- No tests (auto formatted)
