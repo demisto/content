@@ -602,7 +602,7 @@ def parse_rate_limit_int(i):
 
 def parse_unix_time(ts) -> str:
     try:
-        return datetime.utcfromtimestamp(ts).strftime("%Y-%m-%dT%H:%M:%SZ")  # type: ignore[attr-defined]
+        return datetime.utcfromtimestamp(ts).strftime("%Y-%m-%dT%H:%M:%SZ")
     except TypeError:
         return ts
 
