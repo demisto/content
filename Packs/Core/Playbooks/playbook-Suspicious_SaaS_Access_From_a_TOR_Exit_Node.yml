@@ -120,7 +120,7 @@ tasks:
       version: -1
       name: Clear user sessions using MS-Graph
       description: |-
-        Revoke a user session- Invalidates all the refresh tokens issued to applications for a user.
+        Revoke a user session. Invalidates all the refresh tokens issued to applications for a user.
         Permission: Directory.AccessAsUser.All(Delegated).
       script: '|||msgraph-user-session-revoke'
       type: regular
