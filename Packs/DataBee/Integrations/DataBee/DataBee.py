@@ -3,7 +3,6 @@ from CommonServerPython import *  # noqa: F401
 from http import HTTPStatus
 from enum import Enum
 from typing import Any
-from requests import Response
 from dataclasses import dataclass
 from datetime import datetime
 
@@ -151,23 +150,23 @@ class Client(BaseClient):
                 proxy=proxy,
             )
 
-    def _http_request(self, *args, **kwargs) -> Response:
+    def _http_request(self, *args, **kwargs) -> requests.Response:
         """
         Warp to _http_request command, for adding error handler.
 
         Returns:
-            Response: API response from DataBee API.
+            requests.Response: API response from DataBee API.
         """
         kwargs["error_handler"] = self.error_handler
         res = super()._http_request(*args, **kwargs)
         return res
 
-    def error_handler(self, res: Response):
+    def error_handler(self, res: requests.Response):
         """
         Handling with request errors.
 
         Args:
-            res (Response): API response from DataBee API.
+            res (requests.Response): API response from DataBee API.
 
         Raises:
             DemistoException: Error response.
@@ -191,7 +190,7 @@ class Client(BaseClient):
         self,
         username: str,
         password: str,
-    ) -> Response:
+    ) -> requests.Response:
         """Get API token with username and password.
 
         Args:
@@ -216,19 +215,18 @@ class Client(BaseClient):
         query: str,
         limit: int | None = None,
         offset: int = 0,
-    ) -> Response:
+    ) -> requests.Response:
         """Search data in DataBee.
 
         Args:
             table (str): Table (to search for) name.
             query (str): Query.
-            limit (int | None): Response limit. Defaults to None.
+            limit (int | None): requests.Response limit. Defaults to None.
             offset (int): Offset. Defaults to 0.
 
         Returns:
-            Response: API response from DataBee.
+            requests.Response: API response from DataBee.
         """
-
         return self._http_request(
             method="GET",
             url_suffix=f"/search/{table}",
@@ -421,7 +419,7 @@ def get_pagination_args(
     Returns:
         tuple[int, int]: DataBee limit and offset.
     """
-    xsoar_limit = arg_to_number(limit if not page_size else page_size)
+    xsoar_limit = arg_to_number(page_size if page_size else limit)
     xsoar_offset = DEFAULT_OFFSET
     if (
         page_size
@@ -490,7 +488,7 @@ def get_endpoint_command(
 
     # use OR operator between filters (https://github.com/demisto/etc/issues/46353)
     raw_res = client.search(
-        table=SEARCH_CONFIGURATIONS[SearchTypes.DEVICE].type,
+        table=SearchTypes.DEVICE.value,
         query=build_full_query(
             search_type=SEARCH_CONFIGURATIONS[SearchTypes.DEVICE].type,
             args=(args | {"search_operator": "in"}),

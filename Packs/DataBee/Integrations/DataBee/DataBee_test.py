@@ -23,7 +23,7 @@ def load_mock_response(file_name: str) -> str:
         str: Mock file content.
     """
     file_path = os.path.join("test_data", file_name)
-    with open(file_path, mode="r", encoding="utf-8") as mock_file:
+    with open(file_path, encoding="utf-8") as mock_file:
         return json.loads(mock_file.read())
 
 
@@ -123,7 +123,7 @@ def test_get_endpoint_command(
     json_response = load_mock_response("search_device.json")
     url = urljoin(
         mock_client._base_url,
-        "/search/device",
+        "/search/device?query=ip+in+%281.2.3.4%29&offset=0",
     )
     requests_mock.get(url=url, json=json_response, status_code=HTTPStatus.OK)
     result = get_endpoint_command(mock_client, {"ip": "1.2.3.4"})
