@@ -180,7 +180,7 @@ def fetch_events(client: Client, params: dict, last_run: dict, arg_from=None):
             if not new_events:
                 if len(events) < limit:
                     break
-                limit += 20
+                limit += limit
 
             collected_events.extend(new_events)
 
