@@ -15,6 +15,7 @@ Azure.CloudIPs Feed Integration.
     | feedExpirationInterval |  | False |
     | feedFetchInterval | Feed Fetch Interval | False |
     | feedBypassExclusionList | Bypass exclusion list | False |
+    | Enrichment Excluded | Select this option to exclude the fetched indicators from the enrichment process | False |
     | regions | Regions | True |
     | services | Services | True |
     | feedTags | Tags | False |
