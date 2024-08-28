@@ -33,7 +33,10 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Integrations
 
-* CortexCoreIR
+* Cortex Core - IR
+* Azure Active Directory Users
+* Google Workspace Admin
+* AWS IAM
 
 ### Scripts
 
