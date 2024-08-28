@@ -84,3 +84,12 @@ ignore=IF113
 
 [file:incidentfield-Veeam_Event_Source_Description.json]
 ignore=IF113
+
+[file:README.md]
+ignore=RM100
+
+[file:classifier-VeeamONERESTAPI.json]
+ignore=GR103
+
+[file:classifier-Veeam_Backup_&_Replication_RESTAPI.json]
+ignore=GR103

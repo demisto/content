@@ -1,7 +1,7 @@
 {
     "description": "",
     "feed": false,
-    "id": "Veeam One incoming mapper",
+    "id": "Veeam One Incoming Mapper",
     "mapping": {
         "Backup Copy Creation Time": {
             "dontMapEventToLabels": true,
@@ -1286,7 +1286,7 @@
             }
         }
     },
-    "name": "Veeam One incoming mapper",
+    "name": "Veeam One Incoming Mapper",
     "type": "mapping-incoming",
     "version": -1,
     "fromVersion": "6.10.0"

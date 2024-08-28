@@ -5,6 +5,7 @@ The content pack includes:
 
 - Veeam Incident Dashboard
 - Custom incident types and fields related to malware detection and health state of the backup infrastructure components
+- Incident classifiers and incoming mappers for incident types
 - Layouts:
   - Configuration Backup
   - Malware Detection

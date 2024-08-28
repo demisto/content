@@ -2,7 +2,7 @@
     "name": "Veeam App for Palo Alto Networks XSOAR",
     "description": "Veeam content pack for Cortex XSOAR.",
     "support": "partner",
-    "currentVersion": "1.0.60",
+    "currentVersion": "1.0.0",
     "author": "Veeam Software",
     "url": "https://www.veeam.com/support.html",
     "email": "paloaltoappsupport@veeam.com",

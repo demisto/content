@@ -1,7 +1,7 @@
 {
     "description": "",
     "feed": false,
-    "id": "Veeam Backup \u0026 Replication incoming mapper",
+    "id": "Veeam Backup \u0026 Replication Incoming Mapper",
     "mapping": {
         "Configuration Backup": {
             "dontMapEventToLabels": false,
@@ -768,7 +768,7 @@
             }
         }
     },
-    "name": "Veeam Backup \u0026 Replication incoming mapper",
+    "name": "Veeam Backup \u0026 Replication Incoming Mapper",
     "type": "mapping-incoming",
     "version": -1,
     "fromVersion": "6.10.0"

@@ -115,11 +115,25 @@ tasks:
     quietmode: 0
     scriptarguments:
       antivirusScanEnabled:
-        simple: "false"
+        complex:
+          accessor: "0"
+          root: Specify Parameters for Instant VM Recovery.Answers
       biosUuidPolicy:
         simple: preserve
+      folderObjectId:
+        complex:
+          accessor: "1"
+          root: Specify Parameters for Instant VM Recovery.Answers
+      hostObjectId:
+        complex:
+          accessor: "2"
+          root: Specify Parameters for Instant VM Recovery.Answers
       overwrite:
         simple: "false"
+      platform:
+        complex:
+          accessor: "3"
+          root: Specify Parameters for Instant VM Recovery.Answers
       redirectEnabled:
         simple: "false"
       restorePointId:
@@ -129,10 +143,14 @@ tasks:
       restoredVmName:
         complex:
           accessor: restored_vm_name
-          root: VMNAME
+          root: Veeam.VMNAME
       using:
         complex:
           root: inputs.Instance
+      vCenterName:
+        complex:
+          accessor: "4"
+          root: Specify Parameters for Instant VM Recovery.Answers
     separatecontext: false
     skipunavailable: false
     task:
@@ -394,12 +412,103 @@ tasks:
       }
   "20":
     continueonerrortype: ""
+    form:
+      description: ""
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: antivirusScanEnabled
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: If `true`, Veeam Backup & Replication scans machine data with antivirus software before restoring the machine to the production environment.
+        type: shortText
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "1"
+        label: ""
+        labelarg:
+          simple: folderObjectId
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ID of the VMware vSphere object. The parameter is required for all VMware vSphere objects except vCenter Servers and standalone ESXi hosts.
+        type: shortText
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "2"
+        label: ""
+        labelarg:
+          simple: hostObjectId
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ID of the VMware vSphere object. The parameter is required for all VMware vSphere objects except vCenter Servers and standalone ESXi hosts.
+        type: shortText
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "3"
+        label: ""
+        labelarg:
+          simple: platform
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: Platform name.
+        type: shortText
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "4"
+        label: ""
+        labelarg:
+          simple: vCenterName
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: Name of the vCenter Server.
+        type: shortText
+      sender: Your SOC team
+      title: Specify Parameters for Instant VM Recovery
+      totalanswers: 0
     id: "20"
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
+    message:
+      bcc:
+      body:
+      cc:
+      format: ""
+      methods: []
+      subject:
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to:
     nexttasks:
-      Enter Input Parameters:
+      '#none#':
       - "2"
     note: false
     quietmode: 0
@@ -408,19 +517,19 @@ tasks:
     task:
       brand: ""
       description: Enter Parameters
-      id: 0914268c-a616-411c-80d7-51c6dbd5e7b5
+      id: 54213fb0-14db-45c7-8382-83769afabe3a
       iscommand: false
-      name: Enter Parameters
-      type: condition
+      name: Specify Parameters for Instant VM Recovery
+      type: collection
       version: -1
-    taskid: 0914268c-a616-411c-80d7-51c6dbd5e7b5
+    taskid: 54213fb0-14db-45c7-8382-83769afabe3a
     timertriggers: []
-    type: condition
+    type: collection
     view: |-
       {
         "position": {
           "x": -490,
-          "y": 545
+          "y": 585
         }
       }
   "21":

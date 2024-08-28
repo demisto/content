@@ -126,6 +126,6 @@ script:
   type: python
 fromversion: 6.10.0
 defaultclassifier: Veeam One Incidents Classifier
-defaultmapperin: Veeam One incoming mapper
+defaultmapperin: Veeam One Incoming Mapper
 tests:
 - No tests (auto formatted)
