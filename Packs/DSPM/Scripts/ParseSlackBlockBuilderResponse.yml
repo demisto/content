@@ -24,7 +24,7 @@ script: |
           api_key = integration_conf.get('jiraApiToken')
           jiraEmail = integration_conf.get('jiraEmail')
 
-          url = f"https://{jira_url}/rest/api/2/project/SCRUM"
+          url = f"https://{jira_url}/rest/api/2/project/{project_id}"
           auth = HTTPBasicAuth(jiraEmail, api_key)
           headers = {
               "Accept": "application/json",
@@ -160,6 +160,7 @@ outputs:
 - contextPath: User.JiraTicketTypeID
 scripttarget: 0
 subtype: python3
+timeout: 362.88ms
 pswd: ""
 runonce: false
 dockerimage: demisto/python3:3.11.9.104657

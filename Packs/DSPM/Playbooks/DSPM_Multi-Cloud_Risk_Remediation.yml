@@ -482,6 +482,13 @@ tasks:
     nexttasks:
       '#none#':
       - "35"
+    scriptarguments:
+      retry-count:
+        simple: "3"
+      retry-interval:
+        simple: "300"
+    results:
+    - SlackMsgLifetime
     separatecontext: false
     continueonerror: true
     continueonerrortype: ""
@@ -1062,8 +1069,13 @@ tasks:
     nexttasks:
       '#none#':
       - "34"
-    separatecontext: true
+    separatecontext: false
     continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
     view: |-
       {
         "position": {

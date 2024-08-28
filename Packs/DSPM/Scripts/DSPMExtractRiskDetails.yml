@@ -62,6 +62,7 @@ args:
   required: true
 scripttarget: 0
 subtype: python3
+timeout: 362.88ms
 pswd: ""
 runonce: false
 dockerimage: demisto/python3:3.11.9.107902

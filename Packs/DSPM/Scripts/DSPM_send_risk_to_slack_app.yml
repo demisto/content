@@ -101,6 +101,7 @@ args:
   defaultValue: '["N/A","N/A"]'
 scripttarget: 0
 subtype: python3
+timeout: 362.88ms
 pswd: ""
 runonce: false
 dockerimage: demisto/python3:3.10.14.98471

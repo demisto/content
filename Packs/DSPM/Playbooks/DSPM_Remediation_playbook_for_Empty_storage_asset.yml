@@ -86,6 +86,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
+      AWS:
+      - "10"
       Azure:
       - "8"
       GCP:
@@ -236,6 +238,7 @@ tasks:
       container_name:
         simple: my-dummy-bucket
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
@@ -271,11 +274,48 @@ tasks:
       bucket_name:
         simple: my-dummy-bucket-dspm
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 1430,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 2308178e-faa7-4525-8545-81155e505183
+    type: regular
+    task:
+      id: 2308178e-faa7-4525-8545-81155e505183
+      version: -1
+      name: aws-s3-delete-bucket
+      description: Delete AWS S3 bucket.
+      script: AWS - S3|||aws-s3-delete-bucket
+      type: regular
+      iscommand: true
+      brand: AWS - S3
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      bucket:
+        simple: dspmdummybucket
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 420,
           "y": 230
         }
       }
@@ -292,8 +332,8 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 985,
-        "width": 1230,
-        "x": 580,
+        "width": 1390,
+        "x": 420,
         "y": -190
       }
     }
