@@ -1,9 +1,4 @@
-
-#### Playbooks
-
-##### New: Suspicious SaaS Access From a TOR Exit Node
-
-- New: Playbook Overview:
+Playbook Overview:
 
 This playbook is designed to handle the following alerts:
 
@@ -28,9 +23,49 @@ For users with PAN-OS enabled, the playbook will recommend blocking all IPs from
 Requirements:
 For any response action, you will need one of the following integrations: Microsoft Graph User / G-Suite Admin / AWS-IAM.
 
-#### Triggers Recommendations
+## Dependencies
 
-##### New: Suspicious SaaS Access From a TOR Exit Node
+This playbook uses the following sub-playbooks, integrations, and scripts.
 
-New: This trigger is responsible for handling Suspicious SaaS Access From a TOR Exit Node<~XSIAM> (Available for Cortex XSIAM).</~XSIAM>
+### Sub-playbooks
 
+* PAN-OS - Block IPs From EDL - Custom Block Rule
+
+### Integrations
+
+* Cortex Core - IR
+* Azure Active Directory Users
+* Google Workspace Admin
+* AWS IAM
+
+### Scripts
+
+* MatchRegexV2
+
+### Commands
+
+* msgraph-user-account-disable
+* aws-iam-delete-login-profile
+* msgraph-user-session-revoke
+* closeInvestigation
+* core-list-risky-users
+* gsuite-user-signout
+* gsuite-user-update
+* msgraph-user-list
+* core-get-cloud-original-alerts
+
+## Playbook Inputs
+
+---
+There are no inputs for this playbook.
+
+## Playbook Outputs
+
+---
+There are no outputs for this playbook.
+
+## Playbook Image
+
+---
+
+![Suspicious SaaS Access From a TOR Exit Node](../doc_files/Suspicious_SaaS_Access_From_a_TOR_Exit_Node.png)
