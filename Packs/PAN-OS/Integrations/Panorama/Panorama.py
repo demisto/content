@@ -39,7 +39,6 @@ from urllib.parse import urlparse
 
 
 ''' GLOBALS '''
-TEST_VARIABLE = "test"
 URL = ''
 API_KEY = None
 USE_SSL = None
