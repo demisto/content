@@ -56,10 +56,9 @@ def get_fqdn(input_url: str) -> str | None:
     fqdn = None
     domain_info = get_tld(input_url, fail_silently=True, as_object=True)
 
-    if not isinstance(domain_info, Result):
-        raise ValueError(f"Expected to get a Result object but got {type(domain_info)}")
-
     if domain_info:
+        if not isinstance(domain_info, Result):
+            raise ValueError(f"Expected to get a Result object but got {type(domain_info)}")
         subdomain = domain_info.subdomain
         if subdomain:
             fqdn = f"{subdomain}.{domain_info.fld}"
