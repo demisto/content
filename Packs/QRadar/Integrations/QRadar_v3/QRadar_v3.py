@@ -2591,7 +2591,7 @@ def long_running_execution_command(client: Client, params: dict):
     mirror_options = params.get('mirror_options', DEFAULT_MIRRORING_DIRECTION)
     mirror_direction = MIRROR_DIRECTION.get(mirror_options)
     mirror_options = params.get('mirror_options', '')
-    assets_limit = int(params.get('assets_limit', DEFAULT_ASSETS_LIMIT))
+    assets_limit = int(params.get('limit_assets', DEFAULT_ASSETS_LIMIT))
     if not argToBoolean(params.get('retry_events_fetch', True)):
         EVENTS_SEARCH_TRIES = 1
     context_data, version = get_integration_context_with_version()
