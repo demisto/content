@@ -117,7 +117,7 @@ script:
       isArray: true
       name: attack_pattern
       required: true
-    description: Looks up the reputation of the indicator.
+    description: Looks up the reputation of the indicator in the Enterprise collection only.
     name: attack-pattern
     outputs:
     - contextPath: DBotScore.Indicator
@@ -161,7 +161,7 @@ script:
       isArray: true
       name: attack_ids
       required: true
-    description: Gets the Attack Pattern value from the Attack Pattern ID.
+    description: Gets the Attack Pattern value from the Attack Pattern ID in the Enterprise collection only.
     name: mitre-get-indicator-name
     outputs:
     - contextPath: MITREATTACK.id
@@ -170,7 +170,7 @@ script:
     - contextPath: MITREATTACK.value
       description: MITRE ATTACK Attack Pattern value.
       type: String
-  dockerimage: demisto/taxii2:1.0.0.96248
+  dockerimage: demisto/taxii2:1.0.0.107875
   feed: true
   runonce: false
   script: '-'
