@@ -379,7 +379,7 @@ script:
     - contextPath: Zscaler.Category.URL
       description: The URL of the category.
       type: string
-    - contextPath: Zscaler.Category.RetainingParentCategory
+    - contextPath: Zscaler.Category.RetainingParentCategoryURL
       description: The URLs of the retaining parent category.
       type: string
     - contextPath: Zscaler.Category.Description
