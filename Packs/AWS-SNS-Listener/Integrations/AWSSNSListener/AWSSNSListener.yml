@@ -56,7 +56,7 @@ configuration:
   section: Connect
   advanced: true
   required: false
-description: 'Amazon Simple Notification Service (SNS) is a managed service that provides message delivery from publishers to subscribers.dlfkjhdsl'
+description: 'Amazon Simple Notification Service (SNS) is a managed service that provides message delivery from publishers to subscribers.
 display: AWS-SNS-Listener
 name: AWS-SNS-Listener
 script:
