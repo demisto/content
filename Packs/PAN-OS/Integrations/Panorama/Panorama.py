@@ -9695,8 +9695,8 @@ class ShowJobsAllResultData(ResultData):
     :param status: Status of job
     :param id: ID of job
     """
-    id: int = -1
     type: str
+    id: int = -1
     tfin: str = ''
     status: str = ''
     result: str = ''
