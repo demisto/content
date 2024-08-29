@@ -239,21 +239,28 @@ def get_iocs_generator(size=200, query=None, is_first_stage_sync=False) -> Itera
     full_query = query or Client.query
     ioc_count = 0
     try:
-        search_after = get_integration_context().get('search_after')
+        search_after_array = None
+        search_after = get_integration_context().get('search_after', None)
         for batch in IndicatorsSearcher(size=size,
                                         query=full_query,
                                         search_after=search_after,
                                         sort=[{"field": "modified", "asc": True},
                                               {"field": "id", "asc": True}],
                                         filter_fields='value,indicator_type,score,expiration,modified,aggregatedReliability,moduleToFeedMap,comments,id,CustomFields'):
+            search_after_array = batch.get('searchAfter', [])
             for ioc in batch.get('iocs', []):
                 ioc_count += 1
                 yield ioc
                 if is_first_stage_sync and ioc_count >= MAX_INDICATORS_TO_SYNC:
-                    search_after_array = batch.get('searchAfter', [])
                     update_integration_context(update_search_after_array=search_after_array)
                     raise StopIteration
+        demisto.debug(f"1{search_after=}")
+        demisto.debug(f"{search_after_array=}")
+        update_integration_context(update_search_after_array=search_after_array)
     except StopIteration:
+        demisto.debug(f"{search_after=}")
+        demisto.debug(f"{search_after_array=}")
+        update_integration_context(update_search_after_array=search_after_array)
         pass
     except Exception as e:
         raise e
@@ -430,22 +437,6 @@ def set_search_after(modified_date: int):
     demisto.debug(f"this_is_the_context {get_integration_context()}")
 
 
-def set_sync_time_with_str_time(date_string: str):
-    parsed_time = datetime.strptime(date_string, DEMISTO_TIME_FORMAT)
-    parsed_time = parsed_time.replace(tzinfo=timezone.utc)
-    value = {
-        "ts": int(parsed_time.timestamp()) * 1000,
-        "time": date_string,
-    }
-    demisto.info(f"setting sync time to integration context: {value}")
-    if integration_context := get_integration_context():
-        integration_context['ts'] = int(parsed_time.timestamp()) * 1000
-        integration_context['time'] = date_string
-        set_integration_context(integration_context)
-    else:
-        set_integration_context(value)
-
-
 def set_sync_time(timestamp: datetime) -> None:
     value = {
         "ts": int(timestamp.timestamp()) * 1000,
@@ -465,6 +456,7 @@ def update_integration_context(update_sync_time_with_datetime: datetime | None =
                                update_is_first_sync_phase: str | None = None,
                                update_search_after_array: List[Any] | None = None):
     updated_integration_context = get_integration_context() or {}
+    demisto.debug(f"{updated_integration_context=}")
     if update_sync_time_with_datetime:
         updated_integration_context['ts'] = int(update_sync_time_with_datetime.timestamp()) * 1000
         updated_integration_context['time'] = update_sync_time_with_datetime.strftime(DEMISTO_TIME_FORMAT)
@@ -577,10 +569,10 @@ def get_last_iocs(batch_size=200) -> list:
     demisto.info(f"querying XSOAR's recently-modified IOCs with {query=}")
     iocs: list = list(get_iocs_generator(query=query, size=batch_size))
     demisto.info(f"querying XSOAR's recently-modified: got {len(iocs)}")
-    # last_run['time'] = current_run
+    integration_context = get_integration_context()
+    integration_context['time'] = current_run
     demisto.debug(f"querying querying XSOAR's recently-modified IOCs: setting integration_context['time']={current_run}")
-    # set_integration_context(last_run)
-    update_integration_context(update_sync_time_with_date_string=current_run)
+    set_integration_context(integration_context)
     return iocs
 
 
@@ -622,7 +614,7 @@ def tim_insert_jsons(client: Client):
         demisto.info(f"pushing IOCs to XDR: pushing {len(iocs)} IOCs to the {path} endpoint")
         with ThreadPoolExecutor(max_workers=math.ceil(len(iocs) / MAX_INDICATORS_TO_SYNC)) as executor:
             futures = {executor.submit(push_iocs_to_xdr, i, batch, client, path): i for i, batch in
-                       enumerate(batch_iocs(iocs))}
+                       enumerate(batch_iocs(generator=iocs, batch_size=4000))}
 
             for future in as_completed(futures.keys()):
                 batch_index = futures[future]
@@ -724,7 +716,6 @@ def xdr_ioc_to_demisto(ioc: dict) -> dict:
         }
 
     tag_comment_fields = {k: v for k, v in tag_comment_fields.items() if v}  # ommits falsey values
-
     entry: dict = {
         "value": indicator,
         "type": xdr_types_to_demisto.get(ioc.get('IOC_TYPE')),
@@ -738,26 +729,26 @@ def xdr_ioc_to_demisto(ioc: dict) -> dict:
     }
     if Client.tlp_color:
         entry['fields']['trafficlightprotocol'] = Client.tlp_color
-
     # demisto.debug(f'Processed incoming entry: {entry}') # uncomment to debug, otherwise it spams the log
     return entry
 
 
 def get_changes(client: Client):
     demisto.debug("pull XDR changes: starting")
-    from_time: dict = get_integration_context()
-    if not from_time:
+    integration_context: dict = get_integration_context()
+    if not integration_context:
         raise DemistoException('XDR is not synced.')
-    path, requests_kwargs = prepare_get_changes(from_time['ts'])
+    path, requests_kwargs = prepare_get_changes(integration_context['ts'])
     requests_kwargs: dict = get_requests_kwargs(_json=requests_kwargs)
     demisto.debug(f'pull XDR changes: calling endpoint {path}, {requests_kwargs=}')
     if iocs := client.http_request(url_suffix=path, requests_kwargs=requests_kwargs).get('reply', []):
-        from_time['ts'] = iocs[-1].get('RULE_MODIFY_TIME', from_time) + 1
+        integration_context['ts'] = iocs[-1].get('RULE_MODIFY_TIME', integration_context) + 1
         demisto.info(f'pull XDR changes: got {len(iocs)} IOCs from XDR')
-        demisto.info(f'pull XDR changes: setting {from_time} to integration context ')
-        set_integration_context(from_time)
+        demisto.info(f'pull XDR changes: setting {integration_context} to integration context ')
+        set_integration_context(integration_context)
         demisto.debug(f"pull XDR changes: converting {len(iocs)} XDR IOCs to demisto format, then creating indicators")
         demisto_indicators = list(map(xdr_ioc_to_demisto, iocs))
+        demisto.debug(f"{demisto_indicators=}")
         demisto.createIndicators(demisto_indicators)
         demisto.debug("pull XDR changes: done")
     else:
@@ -777,7 +768,7 @@ def fetch_indicators(client: Client, auto_sync: bool = False):
     demisto.debug("fetching IOCs: starting")
     integration_context = get_integration_context()
     demisto.debug(f"The integration context is {integration_context=}")
-    if (((not integration_context) or (integration_context.get('is_first_sync_phase')))
+    if (((not integration_context) or (integration_context.get('is_first_sync_phase', False)))
             and auto_sync):
         if not integration_context:
             sync_time = datetime.now(timezone.utc)
@@ -793,7 +784,7 @@ def fetch_indicators(client: Client, auto_sync: bool = False):
             tim_insert_jsons(client)
             demisto.debug("checking if iocs_to_keep should run")
             if is_iocs_to_keep_time():
-                # first_time=False will call iocs_to_keep
+                # first_time=False, is_first_stage_sync=False so will call iocs_to_keep
                 demisto.debug("running sync with first_time=False")
                 xdr_iocs_sync_command(client)
 
@@ -948,7 +939,7 @@ def main():  # pragma: no cover
     if xsoar_severity_field := params.get('xsoar_severity_field'):
         Client.xsoar_severity_field = to_cli_name(xsoar_severity_field)
     if xsoar_comment_field := params.get('xsoar_comments_field'):
-        Client.xsoar_comments_field = xsoar_comment_field
+        Client.xsoar_comments_field = xsoar_comment_field[0] if isinstance(xsoar_comment_field, list) else xsoar_comment_field
 
     client = Client(params)
     commands = {

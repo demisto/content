@@ -33,7 +33,7 @@ An API key of type **Advanced** with an **Administrator** role.
 | tlp_color | The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed. More information about the protocol can be found at https://us-cert.cisa.gov/tlp | False |
 | feedExpirationPolicy |  | False |  
 | feedExpirationInterval |  | False |  
-| feedFetchInterval | Feed Fetch Interval | False |  
+| feedFetchInterval | Feed Fetch Interval (make sure to set it to at least 20 minutes) | False |  
 | feedBypassExclusionList | Bypass exclusion list | False |  
   
 4. Click **Test** to validate the URLs, token, and connection.  
