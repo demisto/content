@@ -59,7 +59,7 @@ configuration:
   type: 8
   required: false
 description: The CyberArk Application Identity Manager (AIM) provides a secure safe in which to store your account credentials. Use this integration to retrieve the account credentials in CyberArk AIM.
-display: CyberArk AIM v2
+display: CyberArk AIM v2 dummy
 name: CyberArkAIM v2
 script:
   commands:
