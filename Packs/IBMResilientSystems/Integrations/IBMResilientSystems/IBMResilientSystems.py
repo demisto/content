@@ -717,7 +717,7 @@ def prepare_incident_update_dto_for_mirror(client: SimpleClient, incident_id: st
                 field=field, old_value=incident[field], new_value=new_value
             )
         )
-
+        # `resolution_id` is updated once the incident is closed or re-opened and requires additional treatment.
         if field == 'resolution_id':
             new_resolution_id = new_value
             remote_status = incident["plan_status"]
@@ -1715,10 +1715,10 @@ def get_remote_data_command(client: SimpleClient, args: dict) -> GetRemoteDataRe
     Args:
         client (SimpleClient): The IBM Resillient client.
         # TODO - Complete
-        attachment_tag (str): The attachment tag, to tag the mirrored attachments.
-        comment_tag (str): The comment tag, to tag the mirrored comments.
+        attachments_tag (str): The attachment tag, to tag the mirrored attachments.
+        notes_tag (str): The comment tag, to tag the mirrored comments.
         fetch_attachments (bool): Whether to fetch the attachments or not.
-        fetch_comments (bool): Whether to fetch the comments or not.
+        fetch_notes (bool): Whether to fetch the comments or not.
         mirror_resolved_issue (bool): Whether to mirror Jira issues that have been resolved, or have the status `Done`.
         args:
             id: Remote incident id.
