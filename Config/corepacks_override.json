@@ -125,7 +125,7 @@
                 "AWS-S3/1.2.23/AWS-S3.zip",
                 "FiltersAndTransformers/1.2.72/FiltersAndTransformers.zip",
                 "AccessInvestigation/1.2.8/AccessInvestigation.zip",
-                "CoreAlertFields/1.0.37/CoreAlertFields.zip",
+                "CoreAlertFields/1.0.34/CoreAlertFields.zip",
                 "Tenable_io/2.2.2/Tenable_io.zip",
                 "Identity/1.0.4/Identity.zip",
                 "GCP-IAM/1.0.24/GCP-IAM.zip",
@@ -151,7 +151,7 @@
                 "CommonTypes/3.5.4/CommonTypes.zip",
                 "AzureCompute/1.2.26/AzureCompute.zip",
                 "CortexAttackSurfaceManagement/1.7.39/CortexAttackSurfaceManagement.zip",
-                "Base/1.34.35/Base.zip",
+                "Base/1.34.12/Base.zip",
                 "GCP-Enrichment-Remediation/1.1.18/GCP-Enrichment-Remediation.zip"
             ],
             "upgradeCorePacks": [
