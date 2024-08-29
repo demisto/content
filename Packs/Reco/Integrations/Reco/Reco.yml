@@ -65,7 +65,7 @@ description: Reco is a Saas data security solution that protects your data from 
 display: Reco
 name: Reco
 script:
-  dockerimage: demisto/python3:3.10.14.92207
+  dockerimage: demisto/python3:3.11.9.107902
   isfetch: true
   runonce: false
   script: "-"
@@ -381,6 +381,37 @@ script:
       - contextPath: Reco.privateEmails.user_category
         description: User category.
         type: String
+  - arguments:
+      - description: Asset id to search for.
+        name: asset_id
+        required: true
+    description: Get all assets from Reco by id.
+    name: reco-get-assets-by-id
+    outputs:
+      - contextPath: Reco.SensitiveAssets.file_name
+        description: The name of the asset.
+        type: String
+      - contextPath: Reco.SensitiveAssets.file_owner
+        description: The owner of the asset.
+        type: String
+      - contextPath: Reco.SensitiveAssets.file_url
+        description: Json string of the asset's url and the name.
+        type: Unknown
+      - contextPath: Reco.SensitiveAssets.currently_permitted_users
+        description: List of currently permitted users.
+        type: String
+      - contextPath: Reco.SensitiveAssets.visibility
+        description: Visibility of the asset.
+        type: String
+      - contextPath: Reco.SensitiveAssets.location
+        description: The path of the asset.
+        type: String
+      - contextPath: Reco.SensitiveAssets.source
+        description: SaaS tool source of the asset.
+        type: String
+      - contextPath: Reco.SensitiveAssets.sensitivity_level
+        description: The sensitivity level of the asset.
+        type: Number
 tests:
 - No tests
 fromversion: 6.5.0
