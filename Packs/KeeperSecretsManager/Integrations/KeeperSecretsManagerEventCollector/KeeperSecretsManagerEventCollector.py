@@ -277,10 +277,12 @@ class Client:
             salt = api.get_correct_salt(resp.salt)
             password_step = self.PasswordStep(salt_bytes=salt.salt, salt_iterations=salt.iterations)
             verify_password_response = password_step.verify_password(self.keeper_params, encrypted_login_token)
-            if verify_password_response.loginState == APIRequest_pb2.LOGGED_IN:  # type: ignore
+            if verify_password_response.loginState == APIRequest_pb2.LOGGED_IN:  # pylint: disable=no-member
                 LoginV3Flow.post_login_processing(self.keeper_params, verify_password_response)
             else:
-                raise DemistoException(f"Unknown login state after verify password {verify_password_response.loginState}")  # type: ignore
+                raise DemistoException(
+                    "Unknown login state after verify"
+                    f" password {verify_password_response.loginState}")  # pylint: disable=no-member
         else:
             raise DemistoException(f"Unknown login state {resp.loginState}")
 
