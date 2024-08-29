@@ -727,16 +727,18 @@ Get remote data from a remote incident. Note that this method will not update th
 
 There is no context output for this command.
 ### get-mapping-fields
+
 ***
 Returns the list of fields for an incident type.
-
 
 #### Base Command
 
 `get-mapping-fields`
+
 #### Input
 
-There are no input arguments for this command.
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
 
 #### Context Output
 
@@ -757,19 +759,19 @@ Get the list of incidents that were modified since the last update. Note that th
 
 
 #### Context Output
-
-There is no context output for this command.
 ### update-remote-system
+
 ***
 Updates local incident changes in the remote incident. This method is only used for debugging purposes and will not update the current incident.
-
 
 #### Base Command
 
 `update-remote-system`
+
 #### Input
 
-There are no input arguments for this command.
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
 
 #### Context Output
 
@@ -781,8 +783,6 @@ There is no context output for this command.
 ***
 Get group's users. 
 Allowed for: Admins, Agents and Light Agents.
-
-*Note*: In case the group_id does not exist, the command will return all users.
 
 #### Base Command
 
@@ -838,64 +838,6 @@ Allowed for: Admins, Agents and Light Agents.
 | Zendesk.UserGroup.url | String | The URL that points to the user's API record. | 
 | Zendesk.UserGroup.user_fields | Unknown | The user fields as shown in the Zendesk user interface. | 
 | Zendesk.UserGroup.verified | Boolean | Whether any of the user's identities is verified. | 
-
-#### Command example
-```!zendesk-group-user-list group_id=12345 limit=1```
-#### Context Example
-```json
-{
-    "Zendesk": {
-        "UserGroup": [
-            {
-                "active": true,
-                "alias": "",
-                "created_at": "2022-03-27T08:42:06Z",
-                "custom_role_id": 4678497517981,
-                "default_group_id": 4678483739805,
-                "details": "",
-                "email": "test@user.com",
-                "external_id": null,
-                "iana_time_zone": "Asia/Jerusalem",
-                "id": 1908275070333,
-                "last_login_at": "2023-05-31T11:13:41Z",
-                "locale": "en-US",
-                "locale_id": 1,
-                "moderator": true,
-                "name": "Admin",
-                "notes": "",
-                "only_private_comments": false,
-                "organization_id": 4678483740317,
-                "phone": null,
-                "photo": null,
-                "report_csv": true,
-                "restricted_agent": false,
-                "role": "admin",
-                "role_type": 4,
-                "shared": false,
-                "shared_agent": false,
-                "shared_phone_number": null,
-                "signature": "",
-                "suspended": false,
-                "tags": [],
-                "ticket_restriction": null,
-                "time_zone": "Asia/Jerusalem",
-                "two_factor_auth_enabled": null,
-                "updated_at": "2023-05-31T11:13:41Z",
-                "url": "https://some-url/api/v2/users/1908275070333.json",
-                "user_fields": {},
-                "verified": true
-            }
-        ]
-    }
-}
-```
-
-#### Human Readable Output
-
->### Zendesk Group Users:
->|Id|Name|Email|Role|CreatedAt|
->|---|---|---|---|---|
->| 1908275070333 | Admin | test@user.com | admin | 2022-03-27T08:42:06Z |
 
 ### zendesk-group-list
 
@@ -982,4 +924,3 @@ Newly fetched incidents will be mirrored in the chosen direction. However, this 
 **Important Notes:** 
 - To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and Zendesk v2.
 - Required permissions: Admins
-

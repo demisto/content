@@ -1,5 +1,7 @@
-import demistomock as demisto
-from CommonServerPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
+
 from copy import copy
 from functools import lru_cache
 from urllib3 import disable_warnings
@@ -655,7 +657,7 @@ class ZendeskClient(BaseClient):
             if followers:
                 self._data['followers'] = list(map(self.follower_and_email_cc_parse, argToList(followers)))
             if email_ccs:
-                self._data['email_ccs'] = list(map(self.follower_and_email_cc_parse, argToList(followers)))
+                self._data['email_ccs'] = list(map(self.follower_and_email_cc_parse, argToList(email_ccs)))
 
             self._data.update(prepare_kwargs(
                 kwargs=kwargs,
