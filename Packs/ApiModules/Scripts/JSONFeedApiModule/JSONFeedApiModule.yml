@@ -11,7 +11,7 @@ tags:
 - server
 timeout: 0s
 type: python
-dockerimage: demisto/py3-tools:1.0.0.108552
+dockerimage: demisto/py3-tools:1.0.0.108682
 dependson: {}
 fromversion: 5.5.0
 tests:

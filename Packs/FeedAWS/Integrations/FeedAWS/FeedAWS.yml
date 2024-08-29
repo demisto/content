@@ -1,7 +1,4 @@
 category: Data Enrichment & Threat Intelligence
-sectionOrder:
-  - Connect
-  - Collect
 commonfields:
   id: AWS Feed
   version: -1
@@ -162,14 +159,14 @@ configuration:
   required: false
   section: Collect
   advanced: true
-- defaultvalue: 'false'
-  display: Enrichment Excluded
-  additionalinfo: Select this option to exclude the fetched indicators from the enrichment process.
+- display: Enrichment Excluded
   name: enrichmentExcluded
   type: 8
-  hidden:
-    - xsoar_on_prem
   required: false
+  defaultvalue: 'false'
+  additionalinfo: Select this option to exclude the fetched indicators from the enrichment process.
+  hidden:
+  - xsoar_on_prem
   section: Collect
 - display: Trust any certificate (not secure)
   name: insecure
@@ -194,7 +191,7 @@ script:
       name: limit
     description: Fetches indicators from the feed.
     name: aws-get-indicators
-  dockerimage: demisto/py3-tools:1.0.0.99035
+  dockerimage: demisto/py3-tools:1.0.0.108682
   feed: true
   runonce: false
   script: '-'
@@ -205,3 +202,6 @@ defaultclassifier: AWS Feed Classifier
 defaultmapperin: AWS Feed Mapper
 tests:
 - No tests (auto formatted)
+sectionOrder:
+- Connect
+- Collect

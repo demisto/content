@@ -1,7 +1,4 @@
 category: Data Enrichment & Threat Intelligence
-sectionOrder:
-  - Connect
-  - Collect
 commonfields:
   id: AzureFeed
   version: -1
@@ -85,10 +82,10 @@ configuration:
   advanced: true
 - defaultvalue: 'false'
   display: Enrichment Excluded
-  additionalinfo: Select this option to exclude the fetched indicators from the enrichment process.
   name: enrichmentExcluded
   required: false
   type: 8
+  additionalinfo: Select this option to exclude the fetched indicators from the enrichment process.
   hidden:
   - xsoar_on_prem
   section: Collect
@@ -267,3 +264,6 @@ script:
 tests:
 - AzureFeed - Test
 fromversion: 5.5.0
+sectionOrder:
+- Connect
+- Collect

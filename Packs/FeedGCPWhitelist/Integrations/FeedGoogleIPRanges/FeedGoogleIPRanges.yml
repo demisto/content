@@ -1,7 +1,4 @@
 category: Data Enrichment & Threat Intelligence
-sectionOrder:
-  - Connect
-  - Collect
 commonfields:
   id: Google IP Ranges Feed
   version: -1
@@ -100,10 +97,10 @@ configuration:
   section: Collect
   advanced: true
 - display: Enrichment Excluded
-  additionalinfo: Select this option to exclude the fetched indicators from the enrichment process.
   name: enrichmentExcluded
   type: 8
   required: false
+  additionalinfo: Select this option to exclude the fetched indicators from the enrichment process.
   defaultvalue: 'false'
   hidden:
   - xsoar_on_prem
@@ -131,7 +128,7 @@ script:
       defaultValue: "10"
     description: Gets indicators from the feed.
     name: google-ip-ranges-get-indicators
-  dockerimage: demisto/py3-tools:1.0.0.108552
+  dockerimage: demisto/py3-tools:1.0.0.108682
   feed: true
   runonce: false
   script: '-'
@@ -140,3 +137,6 @@ script:
 fromversion: 6.0.0
 tests:
 - Fetch Indicators Test
+sectionOrder:
+- Connect
+- Collect

@@ -1,7 +1,4 @@
 category: Data Enrichment & Threat Intelligence
-sectionOrder:
-  - Connect
-  - Collect
 commonfields:
   id: Fastly Feed
   version: -1
@@ -83,8 +80,8 @@ configuration:
   required: false
   section: Collect
   advanced: true
-- display: Enrichment Excluded
-  additionalinfo: Select this option to exclude the fetched indicators from the enrichment process.
+- additionalinfo: Select this option to exclude the fetched indicators from the enrichment process.
+  display: Enrichment Excluded
   name: enrichmentExcluded
   type: 8
   required: false
@@ -122,12 +119,15 @@ script:
       name: limit
     description: Fetches indicators from the feed.
     name: fastly-get-indicators
-  dockerimage: demisto/py3-tools:1.0.0.108552
+  dockerimage: demisto/py3-tools:1.0.0.108682
   feed: true
   runonce: false
   script: '-'
   subtype: python3
   type: python
 fromversion: 5.5.0
+sectionOrder:
+- Connect
+- Collect
 tests:
 - No tests (auto formatted)

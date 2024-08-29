@@ -1,6 +1,3 @@
-sectionOrder:
-  - Connect
-  - Collect
 commonfields:
   id: Zoom Feed
   version: -1
@@ -126,10 +123,10 @@ configuration:
   section: Collect
   advanced: true
 - display: Enrichment Excluded
-  additionalinfo: Select this option to exclude the fetched indicators from the enrichment process.
   name: enrichmentExcluded
   type: 8
   required: false
+  additionalinfo: Select this option to exclude the fetched indicators from the enrichment process.
   defaultvalue: 'false'
   hidden:
   - xsoar_on_prem
@@ -161,3 +158,6 @@ script:
   subtype: python3
 tests:
 - FeedZoom_Test
+sectionOrder:
+- Connect
+- Collect

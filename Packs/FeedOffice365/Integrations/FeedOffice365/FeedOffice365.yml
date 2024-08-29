@@ -1,7 +1,4 @@
 category: Data Enrichment & Threat Intelligence
-sectionOrder:
-  - Connect
-  - Collect
 commonfields:
   id: Office 365 Feed
   version: -1
@@ -36,24 +33,24 @@ configuration:
   required: true
   type: 16
   section: Connect
-- defaultvalue: All
-  display: Services
+- display: Services
   name: services
+  defaultvalue: 'All'
+  type: 16
+  required: true
   options:
   - Common
   - Exchange
   - Sharepoint
   - Skype
   - All
-  required: true
-  type: 16
   section: Connect
-- display: Allow Germany
-  additionalinfo: In some cases, the Germany endpoints can be unavailable for some users. By default, we exclude Germany to prevent the fetch indicators from failing.
+- defaultvalue: 'false'
+  display: Allow Germany
   name: allow_germany
-  defaultvalue: 'false'
-  type: 8
   required: false
+  type: 8
+  additionalinfo: In some cases, the Germany endpoints can be unavailable for some users. By default, we exclude Germany to prevent the fetch indicators from failing.
   section: Connect
 - additionalinfo: Indicators from this integration instance will be marked with this reputation
   defaultvalue: Good
@@ -134,10 +131,10 @@ configuration:
   section: Collect
   advanced: true
 - display: Enrichment Excluded
-  additionalinfo: Select this option to exclude the fetched indicators from the enrichment process.
   name: enrichmentExcluded
   type: 8
   required: false
+  additionalinfo: Select this option to exclude the fetched indicators from the enrichment process.
   defaultvalue: 'false'
   hidden:
   - xsoar_on_prem
@@ -182,3 +179,6 @@ script:
 tests:
 - Office365_Feed_Test
 fromversion: 5.5.0
+sectionOrder:
+- Connect
+- Collect

@@ -1,7 +1,4 @@
 category: Data Enrichment & Threat Intelligence
-sectionOrder:
-  - Connect
-  - Collect
 commonfields:
   id: Cloudflare Feed
   version: -1
@@ -91,9 +88,9 @@ configuration:
   required: false
   section: Collect
   advanced: true
-- defaultvalue: 'false'
+- additionalinfo: Select this option to exclude the fetched indicators from the enrichment process.
+  defaultvalue: 'false'
   display: Enrichment Excluded
-  additionalinfo: Select this option to exclude the fetched indicators from the enrichment process.
   name: enrichmentExcluded
   type: 8
   required: false
@@ -147,3 +144,6 @@ script:
 fromversion: 5.5.0
 tests:
 - No tests (auto formatted)
+sectionOrder:
+- Connect
+- Collect
