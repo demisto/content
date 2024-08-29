@@ -365,6 +365,8 @@ def get_urls_and_emails_from_pdf_html_content(cpy_file_path: str, output_folder:
         tuple[set, set]: The URLs and emails that were found.
     """
     pdf_html_content = get_pdf_htmls_content(cpy_file_path, output_folder, unescape_url)
+    if isinstance(pdf_html_content, bytes):
+        pdf_html_content = pdf_html_content.decode('utf-8')
     return set(re.findall(URL_EXTRACTION_REGEX, pdf_html_content)), set(re.findall(EMAIL_REGXEX, pdf_html_content))
 
 
@@ -404,6 +406,9 @@ def extract_url(extracted_object: Any):
          (str): The extracted url.
     """
     match = ""
+    if isinstance(extracted_object, bytes):
+        extracted_object = extracted_object.decode('utf-8')
+
     matched_url = re.findall(URL_EXTRACTION_REGEX, extracted_object)
     if len(matched_url) != 0:
         match = matched_url[0]
@@ -422,6 +427,9 @@ def extract_email(extracted_object: Any):
          (str): The extracted email.
     """
     match = ""
+    if isinstance(extracted_object, bytes):
+        extracted_object = extracted_object.decode('utf-8')
+
     matched_email = re.findall(EMAIL_REGXEX, extracted_object)
     if len(matched_email) != 0:
         match = matched_email[0]
