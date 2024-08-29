@@ -8335,11 +8335,12 @@ def get_whois(domain: str, is_recursive=True):
 
 # Drops the mic disable-secrets-detection-end
 
-def get_domain_from_query(query):
+def get_domain_from_query(query: str):
 
     demisto.debug(f"Attempting to get domain from query '{query}'...")
 
     try:
+        query = query.removesuffix("/")
         # checks for largest matching suffix inside tlds dictionary
         suffix_len = max([len(suffix) for suffix in tlds if query.endswith('.{}'.format(suffix))] or [0])
         # if suffix(TLD) was found increase the length by one in order to add the dot before it. --> .com instead of com
@@ -8352,7 +8353,7 @@ def get_domain_from_query(query):
             domain = query[suffixless_query.rindex(".") + 1:]
 
         demisto.debug(f"Found domain '{domain}' from query")
-        return domain.removesuffix("/") if isinstance(domain, str) else domain
+        return domain
     except Exception:
         demisto.error(f"Error parsing domain from query '{query}'.")
         raise WhoisInvalidDomain(f"Can't parse domain from query '{query}'")

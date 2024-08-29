@@ -62,7 +62,7 @@ def test_test_command(mocker: MockerFixture):
     [("app.paloaltonetwork.com", "paloaltonetwork.com"),
      ("test.this.google.co.il", "google.co.il"),
      ("app.XSOAR.test", "app.XSOAR.test"),
-     ("test.io/", "test.io"),
+     ("https://hello.world.io/", "world.io"),
      ]
 )
 def test_get_domain_from_query(query, expected):
