@@ -2278,10 +2278,12 @@ def test_create_x509_certificate_object():
 @pytest.mark.parametrize(
     "pattern, value",
     [
-        ("[domain-name:value = 'www.example.com']", 'www.example.com'),
-        ("[file:hashes.'SHA-256' = '0000000000000000000000000000000000000000000000000000000000000000']",
-         '0000000000000000000000000000000000000000000000000000000000000000'),
-        ("[file:hashes.'MD5' = '00000000000000000000000000000000']", '00000000000000000000000000000000')
+        pytest.param("[domain-name:value = 'www.example.com']", 'www.example.com', id='case: domain'),
+        pytest.param("[file:hashes.'SHA-256' = '0000000000000000000000000000000000000000000000000000000000000000']",
+         '0000000000000000000000000000000000000000000000000000000000000000', id='case: file hashed with SHA-256'),
+        pytest.param("[file:hashes.'MD5' = '00000000000000000000000000000000']", '00000000000000000000000000000000',
+                     id='case: file hashed with MD5'),
+        pytest.param("A regular name with no pattern", 'A regular name with no pattern', id='A regular name with no pattern'),
     ],
 )
 def test_get_single_pattern_value(pattern, value):
