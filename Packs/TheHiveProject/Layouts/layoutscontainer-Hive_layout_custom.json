@@ -4,18 +4,6 @@
       {
         "description": "",
         "fields": [
-          {
-            "fieldId": "incident_casestatus",
-            "isVisible": true
-          },
-          {
-            "fieldId": "incident_caseresolutionstatus",
-            "isVisible": true
-          },
-          {
-            "fieldId": "incident_casesummary",
-            "isVisible": true
-          }
         ],
         "isVisible": true,
         "name": "Basic Information",

@@ -64,12 +64,7 @@
                         "accessor": "",
                         "filters": [],
                         "root": "events",
-                        "transformers": [
-                            {
-                                "args": {},
-                                "operator": "88d687c2-a411-4a8e-8fb1-196de418ccc2"
-                            }
-                        ]
+                        "transformers": []
                     },
                     "simple": ""
                 },

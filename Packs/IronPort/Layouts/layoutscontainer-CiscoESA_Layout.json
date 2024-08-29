@@ -320,15 +320,6 @@
                                 "startCol": 0
                             },
                             {
-                                "endCol": 4,
-                                "fieldId": "ciscoesaattriutes",
-                                "height": 53,
-                                "id": "36e10d80-33fb-11ed-892b-ab9999778868",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 2
-                            },
-                            {
                                 "dropEffect": "move",
                                 "endCol": 4,
                                 "fieldId": "emailsubject",
