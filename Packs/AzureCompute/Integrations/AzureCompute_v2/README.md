@@ -253,7 +253,7 @@ Gets the properties of a given virtual machine.
 | Azure.Compute.ResourceGroup | string | The resource group to which the virtual machine belongs. | 
 | Azure.Compute.NetworkInterfaces | Unknown | The list of network interfaces attached to this machine. | 
 | Azure.Compute.UserData | string | UserData for the VM. | 
-| Azure.Compute.Tags | Unknown | Tags associated with the VM. | 
+| Azure.Compute.Tags | string | Tags associated with the VM. | 
 
 #### Command example
 ```!azure-vm-get-instance-details resource_group=Compute-Labs virtual_machine_name=webserver```

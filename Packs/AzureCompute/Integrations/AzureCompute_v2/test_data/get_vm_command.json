@@ -103,7 +103,7 @@
                         "time": "2024-08-27T15:43:14+00:00"
                     }
                 ],
-                "vmAgentVersion": "2.11.1.12"
+                "vmAgentVersion": "1.1.1.9"
             }
         },
         "networkProfile": {
