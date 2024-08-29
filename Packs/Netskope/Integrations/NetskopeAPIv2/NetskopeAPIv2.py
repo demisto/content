@@ -1,5 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
+
 import copy
 from http import HTTPStatus
 from typing import Any, NamedTuple
@@ -1230,7 +1232,7 @@ def pagination(args: dict[str, Any]) -> Pagination:
         Tuple: page, limit, pagination_message.
     """
     page = arg_to_number(args.get("page", 1))
-    limit = arg_to_number(args.get("page")) or 50
+    limit = arg_to_number(args.get("limit")) or 50
 
     validate_pagination_arguments(page, limit)
 

@@ -1005,7 +1005,7 @@ script:
     - contextPath: Netskope.URLList.pending
       description: Netskope URL list pending.
       type: Number
-  dockerimage: demisto/python3:3.10.14.92207
+  dockerimage: demisto/python3:3.11.9.107902
   isfetch: true
   runonce: false
   script: ''
