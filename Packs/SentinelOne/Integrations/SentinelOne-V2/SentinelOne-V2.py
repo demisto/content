@@ -98,6 +98,7 @@ def get_agents_outputs(agents, column_to_display: list | None = None):
             'EncryptedApplications': agent.get('encryptedApplications'),
             'OSName': agent.get('osName'),
             'ComputerName': agent.get('computerName'),
+            'MachineType': agent.get('machineType'),
             'Domain': agent.get('domain'),
             'CreatedAt': agent.get('createdAt'),
             'SiteName': agent.get('siteName'),
@@ -936,17 +937,16 @@ class Client(BaseClient):
         response = self._http_request(method="GET", url_suffix=f"threats?ids={threat_ids}")
         return response.get("data", [])
 
-    def get_power_query_request(self, account_ids: list, site_ids: list, query: str, from_date: str, to_date: str, limit: int):
+    def get_power_query_request(self, account_ids: list, site_ids: list, query: str, from_date: str, to_date: str, limit: Any):
         endpoint_url = 'dv/events/pq'
-        payload = {
-            "accountIds": account_ids,
-            "siteIds": site_ids,
-            "limit": limit,
-            "query": query,
-            "toDate": to_date,
-            "fromDate": from_date
-        }
-        payload = {key: value for key, value in payload.items() if value}
+        payload = assign_params(
+            accountIds=account_ids,
+            siteIds=site_ids,
+            limit=limit,
+            query=query,
+            toDate=to_date,
+            fromDate=from_date
+        )
         response = self._http_request(method='POST', url_suffix=endpoint_url, json_data=payload)
         return response.get('data', {})
 
@@ -3364,11 +3364,7 @@ def remote_script_automate_results(client: Client, args: dict):
 
 
 def get_columns_from_result(columns: list):
-    heading = []
-    for column in columns:
-        name = column.get("name")
-        heading.append(name)
-    return heading
+    return [column["name"] for column in columns if column.get("name")]
 
 
 def get_power_query_output(cmd: str, interval: int, timeout: int, args: dict, query_response: dict):
@@ -3414,7 +3410,7 @@ def poll_power_query_results(client: Client, cmd: str, args: dict) -> CommandRes
     # Get arguments
     account_ids = argToList(args.get("account_ids"))
     site_ids = account_ids = argToList(args.get("site_ids"))
-    limit = int(args.get('limit', 10))
+    limit = args.get('limit')
     query = args.get('query', '')
     from_date = args.get('from_date', '')
     to_date = args.get('to_date', '')

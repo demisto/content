@@ -730,7 +730,45 @@ def test_get_power_query_results(mocker, requests_mock):
     main()
     call = sentinelone_v2.return_results.call_args_list
     command_results = call[0].args[0]
-    assert command_results.outputs is None
+    readable_output = ('### SentinelOne - Get Power Query Results - for ID pqe5a4cbb0a0f0981f4125976b49fb0ebb'
+                       '\nRecommendation: Result set limited to 1000 rows by default. To display more rows, add'
+                       ' a command like \"| limit 10000\".\n|eventTime|agentUuid|siteId|\n|---|---|---|\n'
+                       '| 1724151854609 | ed8f14f1-f35b-0eca-1c1e-e31e97aefc71 | 123456789 |\n'
+                       '| 1724151823332 | ed8f14f1-f35b-0eca-1c1e-e31e97aefc71 | 123456789 |\n')
+    assert command_results.readable_output == readable_output
+
+
+def test_get_power_query_results_without_query_id(mocker, requests_mock):
+    """
+    Given
+        - required query, from_date and to_date arguments
+    When
+        - running sentinelone-get-power-query-results command
+    Then
+        - returns a table of result if data present
+    """
+    json_output = util_load_json('test_data/get_power_query_response.json')
+    requests_mock.post("https://usea1.sentinelone.net/web/api/v2.1/dv/events/pq",
+                       json=json_output)
+    mocker.patch.object(demisto, 'params', return_value={'token': 'token',
+                                                         'url': 'https://usea1.sentinelone.net',
+                                                         'api_version': '2.1'})
+    mocker.patch.object(demisto, 'command', return_value='sentinelone-get-power-query-results')
+    mocker.patch.object(demisto, 'args', return_value={
+        'from_date': '2024-08-20T04:49:26.257525Z',
+        'to_date': '2024-08-21T04:49:26.257525Z',
+        'query': 'event.time = * | columns eventTime = event.time, agentUuid = agent.uuid, siteId = site.id'
+    })
+    mocker.patch.object(sentinelone_v2, "return_results")
+    main()
+    call = sentinelone_v2.return_results.call_args_list
+    command_results = call[0].args[0]
+    readable_output = ('### SentinelOne - Get Power Query Results - for ID pqe5a4cbb0a0f0981f4125976b49fb0ebb'
+                       '\nRecommendation: Result set limited to 1000 rows by default. To display more rows, add'
+                       ' a command like \"| limit 10000\".\n|eventTime|agentUuid|siteId|\n|---|---|---|\n'
+                       '| 1724151854609 | ed8f14f1-f35b-0eca-1c1e-e31e97aefc71 | 123456789 |\n'
+                       '| 1724151823332 | ed8f14f1-f35b-0eca-1c1e-e31e97aefc71 | 123456789 |\n')
+    assert command_results.readable_output == readable_output
 
 
 def test_get_remote_data_command(mocker, requests_mock):

@@ -200,6 +200,9 @@ script:
     - contextPath: SentinelOne.Agents.ComputerName
       description: Name of agent computer.
       type: string
+    - contextPath: SentinelOne.Agents.MachineType
+      description: Machine type.
+      type: string
     - contextPath: SentinelOne.Agents.Domain
       description: Domain name of the agent.
       type: string
@@ -585,6 +588,9 @@ script:
       type: string
     - contextPath: SentinelOne.Agent.ComputerName
       description: Name of the agent computer.
+      type: string
+    - contextPath: SentinelOne.Agent.MachineType
+      description: Machine type.
       type: string
     - contextPath: SentinelOne.Agent.Domain
       description: Domain name of the agent.
@@ -1928,14 +1934,14 @@ script:
       description: Events created before or at this timestamp.
     - name: limit
       description: Limit number of returned items (1-100000).
-    description: Deprecated. Start a Deep Visibility Power query to get back status and potential results (ping afterwards using the queryId if query has not finished). Relevant for API version 2.1.
+    description: Deprecated. Use ***sentinelone-get-power-query-results*** instead. Start a Deep Visibility Power query to get back status and potential results (ping afterwards using the queryId if query has not finished). Relevant for API version 2.1.
     name: sentinelone-create-power-query
     deprecated: true
   - arguments:
     - name: queryId
       required: true
       description: QueryId.
-    description: Deprecated. Ping a Deep Visibility Power query using the queryId argument if results have not returned from an initial Power query or a previous ping. Relevant for API version 2.1.
+    description: Deprecated. Use ***sentinelone-get-power-query-results*** instead. Ping a Deep Visibility Power query using the queryId argument if results have not returned from an initial Power query or a previous ping. Relevant for API version 2.1.
     name: sentinelone-ping-power-query
     deprecated: true
   - arguments:
@@ -2521,7 +2527,6 @@ script:
       description: "Events created before or at this date. Example: '2018-02-27T04:49:26.257525Z'."
     - name: limit
       description: Limit number of returned items (1-100000).
-      defaultValue: '10'
     - defaultValue: '10'
       description: Indicates how long to wait between command execution (in seconds) when 'polling' argument is true. Minimum value is 10 seconds.
       name: interval

@@ -78,6 +78,7 @@ Returns all agents that match the specified criteria.
 | SentinelOne.Agents.EncryptedApplications | boolean | Whether disk encryption is enabled. | 
 | SentinelOne.Agents.OSName | string | Name of operating system. | 
 | SentinelOne.Agents.ComputerName | string | Name of agent computer. | 
+| SentinelOne.Agents.MachineType | string | Machine type. |
 | SentinelOne.Agents.Domain | string | Domain name of the agent. | 
 | SentinelOne.Agents.CreatedAt | date | Creation time of the agent. | 
 | SentinelOne.Agents.SiteName | string | Site name associated with the agent. | 
@@ -347,6 +348,7 @@ Returns the details of an agent according to the agent ID.
 | SentinelOne.Agent.EncryptedApplications | boolean | Whether disk encryption is enabled. | 
 | SentinelOne.Agent.OSName | string | Name of the operating system. | 
 | SentinelOne.Agent.ComputerName | string | Name of the agent computer. | 
+| SentinelOne.Agent.MachineType | string | Machine type. |
 | SentinelOne.Agent.Domain | string | Domain name of the agent. | 
 | SentinelOne.Agent.CreatedAt | date | Agent creation time. | 
 | SentinelOne.Agent.SiteName | string | Site name associated with the agent. | 
