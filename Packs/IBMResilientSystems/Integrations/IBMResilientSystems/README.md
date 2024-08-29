@@ -6,25 +6,25 @@ Case management that enables visibility across your tools for continual IR impro
 2. Search for IBM Security QRadar SOAR.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL (e.g. 192.168.0.1) |  | True |
-    | Organization name |  | True |
-    | API key ID |  | False |
-    | API key secret |  | False |
-    | API key ID |  | True |
-    | API key secret |  | True |
-    | Credentials (Deprecated - use API Key authentication instead) |  | False |
-    | Password |  | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | Incident type |  | False |
-    | Fetch incidents |  | False |
-    | First fetch timestamp (YYYY-MM-DDTHH:MM:SSZ). For example: 2020-02-02T19:00:00Z |  | False |
-    | Maximum incidents to fetch. | Maximum number of incidents per fetch. The maximum is 1000. | False |
-    | Incident Mirroring Direction |  | False |
-    | Close Mirrored XSOAR Incidents | When selected, closing the IBM Resilient incident with a 'Closed' status, will close the Cortex XSOAR incident. | False |
-    | Close Mirrored IBM Resilient Incidents | When selected, closing the Cortex XSOAR incident will close the incident in IBM Resilient | False |
+    | **Parameter**                                                                   | **Description**                                                                                                | **Required** |
+    |---------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------| --- |
+    | Server URL (e.g. 192.168.0.1)                                                   |                                                                                                                | True |
+    | Organization name                                                               |                                                                                                                | True |
+    | API key ID                                                                      |                                                                                                                | False |
+    | API key secret                                                                  |                                                                                                                | False |
+    | API key ID                                                                      |                                                                                                                | True |
+    | API key secret                                                                  |                                                                                                                | True |
+    | Credentials (Deprecated - use API Key authentication instead)                   |                                                                                                                | False |
+    | Password                                                                        |                                                                                                                | False |
+    | Trust any certificate (not secure)                                              |                                                                                                                | False |
+    | Use system proxy settings                                                       |                                                                                                                | False |
+    | Incident type                                                                   |                                                                                                                | False |
+    | Fetch Incidents                                                                 |                                                                                                                | False |
+    | First fetch timestamp (YYYY-MM-DDTHH:MM:SSZ). For example: 2020-02-02T19:00:00Z |                                                                                                                | False |
+    | Maximum incidents to fetch.                                                     | Maximum number of incidents per fetch. The maximum is 1000.                                                    | False |
+    | Incident Mirroring Direction                                                    |                                                                                                        | False |
+    | Close Mirrored XSOAR Incidents                                                  | When selected, closing the IBM Resilient incident with a 'Closed' status, will close the Cortex XSOAR incident. | False |
+    | Close Mirrored IBM Resilient Incidents                                          | When selected, closing the Cortex XSOAR incident will close the incident in IBM Resilient                      | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -59,7 +59,7 @@ Query for incidents
 | nist | NIST Attack Vectors. Possible values: "Attrition", "E-mail", "External/RemovableMedia", "Impersonation", "ImproperUsage", "Loss/TheftOfEquipment", "Other", "Web". Possible values are: Attrition, E-mail, External/RemovableMedia, Impersonation, ImproperUsage, Loss/TheftOfEquipment, Other, Web. | Optional | 
 | status | Incident status. Possible values: "Active" and "Closed". Possible values are: Active, Closed. | Optional | 
 | due-in | Due date of the incident in given time frame (days/hours/minutes). Should be given a number, along with the timeframe argument. | Optional | 
-| return_level | The incident data structure returned ("partial", "normal", "full").'. Possible values are: partial, normal, full. | Optional | 
+| return_level | The incident data structure returned ("partial", "normal", "full"). Possible values are: partial, normal, full. | Optional | 
 
 #### Context Output
 
