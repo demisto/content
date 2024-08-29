@@ -302,14 +302,14 @@ def prepare_search_query_data(args: dict) -> dict:
             'value': value
         })
     if 'date-created-before' in args:
-        value = date_to_timestamp(args['date-created-before'])
+        value = to_timestamp(args['date-created-before'])
         conditions.append({
             'field_name': 'create_date',
             'method': 'lte',
             'value': value
         })
     elif 'date-created-after' in args:
-        value = args['date-created-after']
+        value = to_timestamp(args['date-created-after'])
         conditions.append({
             'field_name': 'create_date',
             'method': 'gte',
@@ -339,14 +339,14 @@ def prepare_search_query_data(args: dict) -> dict:
                 'value': from_time * 1000
             }))
     if 'date-occurred-before' in args:
-        value = date_to_timestamp(args['date-occurred-before'])
+        value = to_timestamp(args['date-occurred-before'])
         conditions.append({
             'field_name': 'start_date',
             'method': 'lte',
             'value': value
         })
     elif 'date-occurred-after' in args:
-        value = date_to_timestamp(args['date-occurred-after'])
+        value = to_timestamp(args['date-occurred-after'])
         conditions.append({
             'field_name': 'start_date',
             'method': 'gte',
@@ -420,7 +420,7 @@ def prepare_search_query_data(args: dict) -> dict:
                 'value': now * 1000
             }))
     if 'last-modified-after' in args:
-        value = date_to_timestamp(args['last-modified-after'])
+        value = to_timestamp(args['last-modified-after'])
         conditions.append({
             'field_name': 'inc_last_modified_date',
             'method': 'gte',
@@ -550,7 +550,7 @@ def resolve_field_value(field: str, raw_value: Any) -> dict:
     elif field in ["resolution_summary", "description"]:
         return {"textarea": {"format": "html", "content": raw_value}}
 
-    elif field in ["incident_type_ids"]:
+    elif field in ["incident_type_ids", "nist_attack_vectors"]:
         return {"ids": raw_value}
 
 
@@ -564,139 +564,6 @@ def get_field_changes_entry(field: str, old_value: Any, new_value: Any) -> dict:
         "new_value": resolve_field_value(field, new_value),
     }
     return field_changes
-
-
-def prepare_incident_update_dto(
-    client: SimpleClient, incident_id: str, args: dict
-) -> dict:
-    """
-    TODO - Complete
-    """
-    incident = get_incident(client, incident_id, True)
-    changes = []
-    if 'severity' in args:
-        old_value = incident['severity_code']
-        severity = args['severity']
-        new_value = SEVERITY_CODE_DICT.get(severity)
-        changes.append({
-            'field': 'severity_code',
-            'old_value': {
-                'id': old_value
-            },
-            'new_value': {
-                'id': new_value
-            }
-        })
-    if 'owner' in args:
-        users = get_users(client)
-        old_value = incident['owner_id']
-        full_name = args['owner'].split(' ')
-        first_name, last_name = full_name[0], full_name[1]
-        new_value = -1
-        for user in users:
-            if first_name == user['fname'] and last_name == user['lname']:
-                new_value = user['id']
-                break
-        if new_value == -1:
-            raise Exception('User was not found')
-        changes.append({
-            'field': 'owner_id',
-            'old_value': {
-                'id': old_value
-            },
-            'new_value': {
-                'id': new_value
-            }
-        })
-    if 'incident-type' in args:
-        old_value = incident['incident_type_ids']
-        type_id = INCIDENT_TYPE_DICT[args['incident-type']]
-        new_value_list = old_value[:]
-        new_value_list.append(type_id)
-        changes.append({
-            'field': 'incident_type_ids',
-            'old_value': {
-                'ids': old_value
-            },
-            'new_value': {
-                'ids': new_value_list
-            }
-        })
-    if 'nist' in args:
-        old_value = incident['nist_attack_vectors']
-        nist_id = NIST_DICT[args['nist']]
-        new_value_list = old_value[:]
-        new_value_list.append(nist_id)
-        changes.append({
-            'field': 'nist_attack_vectors',
-            'old_value': {
-                'ids': old_value
-            },
-            'new_value': {
-                'ids': new_value_list
-            }
-        })
-    if 'resolution' in args:
-        old_value = incident['resolution_id']
-        new_value = RESOLUTION_TO_ID_DICT[args['resolution']]
-        changes.append({
-            'field': 'resolution_id',
-            'old_value': {
-                'id': old_value
-            },
-            'new_value': {
-                'id': new_value
-            }
-        })
-    if 'resolution-summary' in args:
-        old_summary = incident['resolution_summary']
-        new_summary = args['resolution-summary']
-        changes.append({
-            'field': 'resolution_summary',
-            'old_value': {
-                'textarea': old_summary
-            },
-            'new_value': {
-                'textarea': {
-                    'format': 'html',
-                    'content': new_summary
-                }
-            }
-        })
-    if 'description' in args:
-        old_description = incident['description']
-        new_description = args['description']
-        changes.append({
-            'field': 'description',
-            'old_value': {
-                'textarea': old_description
-            },
-            'new_value': {
-                'textarea': {
-                    'format': 'html',
-                    'content': new_description
-                }
-            }
-        })
-    if 'name' in args:
-        old_name = incident['name']
-        new_name = args['name']
-        changes.append({
-            'field': 'name',
-            'old_value': {
-                'text': old_name
-            },
-            'new_value': {
-                'text': new_name
-            }
-        })
-    if args.get('other-fields'):
-        extract_data_form_other_fields_argument(args.get('other-fields'), incident, changes)
-
-    dto = {
-        'changes': changes
-    }
-    return dto
 
 
 def prepare_incident_update_dto_for_mirror(client: SimpleClient, incident_id: str, delta: dict) -> dict:
@@ -734,27 +601,41 @@ def prepare_incident_update_dto_for_mirror(client: SimpleClient, incident_id: st
     demisto.debug(f"prepare_incident_update_dto_for_mirror {dto=}")
     return dto
 
-def date_to_timestamp(date_str_or_dt, date_format='%Y-%m-%dT%H:%M:%SZ'):
+def to_timestamp(date_str_or_dt, date_format='%Y-%m-%dT%H:%M:%SZ'):
     """
-      Parses date_str_or_dt in the given format (default: %Y-%m-%dT%H:%M:%S) to milliseconds
-      Examples: ('2018-11-06T08:56:41', '2018-11-06T08:56:41', etc.)
+    Parses date_str_or_dt in the given format (default: %Y-%m-%dT%H:%M:%SZ) to milliseconds.
+    If the input is already a timestamp, it returns it as is.
 
-      :type date_str_or_dt: ``str`` or ``datetime.datetime``
-      :param date_str_or_dt: The date to be parsed. (required)
+    :type date_str_or_dt: ``str``, ``datetime.datetime``, or ``int``
+    :param date_str_or_dt: The date to be parsed. (required)
 
-      :type date_format: ``str``
-      :param date_format: The date format of the date string (will be ignored if date_str_or_dt is of type
-        datetime.datetime). (optional)
+    :type date_format: ``str``
+    :param date_format: The date format of the date string (will be ignored if date_str_or_dt is of type
+        datetime.datetime or int). (optional)
 
-      :return: The parsed timestamp.
-      :rtype: ``int``
+    :return: The parsed timestamp.
+    :rtype: ``int``
     """
-    if isinstance(date_str_or_dt, STRING_OBJ_TYPES):
-        return int(time.mktime(time.strptime(date_str_or_dt, date_format)) * 1000)
+    # Check if the input is already an integer, assuming it's a timestamp in milliseconds
+    if isinstance(date_str_or_dt, int):
+        return date_str_or_dt
 
-    # otherwise datetime.datetime
-    return int(time.mktime(date_str_or_dt.timetuple()) * 1000)
+    # Check if the input is a string that could be a timestamp
+    if isinstance(date_str_or_dt, str):
+        try:
+            # Try converting the string directly to an integer (e.g., Unix timestamp)
+            timestamp = int(date_str_or_dt)
+            return timestamp
+        except ValueError:
+            # If it can't be converted, assume it's a date string and parse it
+            parsed_time = time.strptime(date_str_or_dt, date_format)
+            return int(time.mktime(parsed_time) * 1000)
 
+    # If the input is a datetime object, convert it to a timestamp
+    if isinstance(date_str_or_dt, datetime):
+        return int(time.mktime(date_str_or_dt.timetuple()) * 1000)
+
+    raise TypeError("Unsupported type for date_str_or_dt")
 
 ''' COMMAND FUNCTIONS '''
 
@@ -835,7 +716,69 @@ def update_incident_command(client, args):
     if len(list(args.keys())) == 1:
         raise Exception('No fields to update were given')
     incident_id = args['incident-id']
-    update_dto = prepare_incident_update_dto(client, incident_id, args)
+    incident = get_incident(client, incident_id, True)
+
+    changes = []
+    if 'severity' in args:
+        old_value = incident['severity_code']
+        severity = args['severity']
+        new_value = SEVERITY_CODE_DICT.get(severity)
+        changes.append(get_field_changes_entry('severity_code', old_value, new_value))
+
+    if 'owner' in args:
+        users = get_users(client)
+        old_value = incident['owner_id']
+        full_name = args['owner'].split(' ')
+        first_name, last_name = full_name[0], full_name[1]
+        new_value = -1
+        for user in users:
+            if first_name == user['fname'] and last_name == user['lname']:
+                new_value = user['id']
+                break
+        if new_value == -1:
+            raise Exception('User was not found')
+        changes.append(get_field_changes_entry('owner_id', old_value, new_value))
+
+    if 'incident-type' in args:
+        old_value = incident['incident_type_ids']
+        type_id = INCIDENT_TYPE_DICT[args['incident-type']]
+        new_value_list = old_value[:]
+        new_value_list.append(type_id)
+        changes.append(get_field_changes_entry('incident_type_ids', old_value, new_value_list))
+
+    if 'nist' in args:
+        old_value = incident['nist_attack_vectors']
+        nist_id = NIST_DICT[args['nist']]
+        new_value_list = old_value[:]
+        new_value_list.append(nist_id)
+        changes.append(get_field_changes_entry('nist_attack_vectors', old_value, new_value_list))
+
+    if 'resolution' in args:
+        old_value = incident['resolution_id']
+        new_value = RESOLUTION_TO_ID_DICT[args['resolution']]
+        changes.append(get_field_changes_entry('resolution_id', old_value, new_value))
+
+    if 'resolution-summary' in args:
+        old_summary = incident['resolution_summary']
+        new_summary = args['resolution-summary']
+        changes.append(get_field_changes_entry('resolution_summary', old_summary, new_summary))
+
+    if 'description' in args:
+        old_description = incident['description']
+        new_description = args['description']
+        changes.append(get_field_changes_entry('description', old_description, new_description))
+
+    if 'name' in args:
+        old_name = incident['name']
+        new_name = args['name']
+        changes.append(get_field_changes_entry('name', old_name, new_name))
+
+    if args.get('other-fields'):
+        extract_data_form_other_fields_argument(args.get('other-fields'), incident, changes)
+
+    update_dto = {
+        'changes': changes
+    }
     response = update_incident(client, incident_id, update_dto)
     if response.status_code == 200:
         return 'Incident ' + str(args['incident-id']) + ' was updated successfully.'
@@ -1353,7 +1296,7 @@ def fetch_incidents(client, first_fetch_time: str):
     demisto.debug(f'fetch_incidents {last_fetched_timestamp=}')
 
     if not last_fetched_timestamp:
-        last_fetched_timestamp = date_to_timestamp(first_fetch_time)
+        last_fetched_timestamp = to_timestamp(first_fetch_time)
     args = {'date-created-after': last_fetched_timestamp}    # Fetch incident from the last fetched timestamp.
     resilient_incidents = search_incidents(client, args)
 

@@ -158,9 +158,9 @@ script:
     - name: severity
       description: Comma-separated list of incident severity, e.g., Low,Medium,High.
     - name: date-created-before
-      description: Created date of the incident before the given date in the formatYYYY-MM-DDTHH:MM:SSZ, e.g., 2018-05-07T10:59:07Z.
+      description: Created date of the incident before the given date in the formatYYYY-MM-DDTHH:MM:SSZ, e.g. 2018-05-07T10:59:07Z.
     - name: date-created-after
-      description: Created date of the incident after the given date in the format YYYY-MM-DDTHH:MM:SSZ, e.g., 2018-05-07T10:59:07Z.
+      description: Created date of the incident after the given date in the format YYYY-MM-DDTHH:MM:SSZ, e.g. 2018-05-07T10:59:07Z.
     - name: date-created-within-the-last
       description: Created date of the incident within the last time frame (days/hours/minutes). Should be given a number, along with with the timeframe argument.
     - name: timeframe
@@ -173,7 +173,7 @@ script:
     - name: date-occurred-within-the-last
       description: Occurred date of the incident within the last time frame (days/hours/minutes). Should be given a number, along with the timeframe argument.
     - name: date-occurred-before
-      description: Occurred date of the incident before the given date in the format YYYY-MM-DDTHH:MM:SSZ, e.g., 2018-05-07T10:59:07Z.
+      description: Occurred date of the incident before the given date in the format YYYY-MM-DDTHH:MM:SSZ, e.g. 2018-05-07T10:59:07Z.
     - name: date-occurred-after
       description: Occurred date of the incident after the given date in the format YYYY-MM-DDTHH:MM:SSZ, e.g., 2018-05-07T10:59:07Z.
     - name: incident-type
@@ -516,7 +516,6 @@ script:
     - description: Incident ID to get related incidents of.
       name: incident-id
       required: true
-
     outputs:
     - contextPath: Resilient.Incidents.Id
       description: Incident ID.
@@ -549,7 +548,6 @@ script:
     - description: Incident ID to get tasks of.
       name: incident-id
       required: true
-
     outputs:
     - contextPath: Resilient.Incidents.Id
       description: Incident ID.
