@@ -28,13 +28,13 @@ def test_close_alert(mocker):
     mocker.patch.object(demisto, "executeCommand", return_value=output_data)
     mocker.patch.object(SekoiaXDRCloseAlert, "post_closure_comment", return_value=None)
     mocker.patch.object(demisto, "results")
-    close_alert("1", "false", "Out", "reason", "notes", "admin")
+    close_alert("1", "false", "reason", "notes", "admin")
     assert (
         demisto.results.call_args[0][0]["Contents"]
         == "**** The alert 1 has been closed. ****"
     )
 
-    close_alert("1", "true", "Out", "reason", "notes", "admin")
+    close_alert("1", "true", "reason", "notes", "admin")
     assert (
         demisto.results.call_args[0][0]["Contents"]
         == "**** The alert 1 has been rejected. ****"
@@ -42,7 +42,7 @@ def test_close_alert(mocker):
 
     mocker.patch.object(SekoiaXDRCloseAlert, "get_status_name", return_value="Closed")
     try:
-        close_alert("1", "false", "Out", "reason", "notes", "admin")
+        close_alert("1", "false", "reason", "notes", "admin")
     except Exception as e:
         assert str(e) == "**** The alert is already closed or rejected. ****"
 

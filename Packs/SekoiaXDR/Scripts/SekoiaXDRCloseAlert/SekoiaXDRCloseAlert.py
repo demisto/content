@@ -16,7 +16,7 @@ def post_closure_comment(
     alert_id: str,
     close_reason: Optional[str],
     close_notes: Optional[str],
-    username: str,
+    username: Optional[str],
 ):
     try:
         execute_command(
@@ -38,53 +38,46 @@ def post_closure_comment(
 def close_alert(
     alert_id: str,
     reject: str,
-    isMirrorEnable: str,
     close_reason: Optional[str],
     close_notes: Optional[str],
     username: str,
 ):
+    readable_output = ""
     alert_status = get_status_name(alert_id)
     if alert_status not in ["Closed", "Rejected"]:
-        if isMirrorEnable in ["Out", "Both"]:
-            if reject == "false":
-                execute_command("setIncident", {"sekoiaxdralertstatus": "Closed"})
-                readable_output = f"**** The alert {alert_id} has been closed. ****"
-            if reject == "true":
-                execute_command("setIncident", {"sekoiaxdralertstatus": "Rejected"})
-                readable_output = f"**** The alert {alert_id} has been rejected. ****"
+        if reject == "false":
+            execute_command("setIncident", {"sekoiaxdralertstatus": "Closed"})
+            readable_output = f"**** The alert {alert_id} has been closed. ****"
+        if reject == "true":
+            execute_command("setIncident", {"sekoiaxdralertstatus": "Rejected"})
+            readable_output = f"**** The alert {alert_id} has been rejected. ****"
 
         post_closure_comment(alert_id, close_reason, close_notes, username)
 
-        return_results(
-            {
-                "ContentsFormat": formats["markdown"],
-                "Type": entryTypes["note"],
-                "Contents": readable_output,
-            }
-        )
-
     else:
-        raise Exception("**** The alert is already closed or rejected. ****")
+        execute_command("setIncident", {"sekoiaxdralertstatus": alert_status})
+        readable_status = "closed" if alert_status == "closed" else "rejected"
+        readable_output = f"**** The alert {alert_id} has been {readable_status}. ****"
+
+    return_results(
+        {
+            "ContentsFormat": formats["markdown"],
+            "Type": entryTypes["note"],
+            "Contents": readable_output,
+        }
+    )
 
 
 def main():
     incident = demisto.incidents()[0]  # type: ignore
-    isMirrorEnable = incident.get("dbotMirrorDirection")
     alert_short_id = incident.get("CustomFields", {}).get("alertid")
     reject = demisto.getArg("sekoiaxdralertreject")  # type: ignore
     close_reason = demisto.getArg("closeReason")
     close_notes = demisto.getArg("closeNotes")
-    owner = demisto.getArg("owner")
     username = demisto.getArg("closingUserId")  # type: ignore
 
-    # Check if the owner is set when closing the incident otherwise raise an error.
-    if not owner or owner == "Assign owner":
-        raise Exception(
-            "**** Please select a owner, the incident can't be closed without an owner. ****"
-        )
-
     close_alert(
-        alert_short_id, reject, isMirrorEnable, close_reason, close_notes, username
+        alert_short_id, reject, close_reason, close_notes, username  # type: ignore
     )
 
 
