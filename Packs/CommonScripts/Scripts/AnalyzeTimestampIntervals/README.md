@@ -1,0 +1,1 @@
+Calculates and analyzes the Median, Mean and Standard Deviation values for a list of intervals in Unix milliseconds.
