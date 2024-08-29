@@ -162,7 +162,10 @@ class Email:
         for attachment in self.attachments:
             payload = attachment.get('payload')
 
-            file_data = base64.b64decode(payload) if attachment.get('binary') else payload
+            try:
+                file_data = base64.b64decode(payload) if attachment.get('binary') else payload
+            except Exception as e:
+                demisto.error(f'parse_attachments: Failed to decode the attachment data - {str(e)}')
 
             # save the attachment
             file_result = fileResult(attachment.get('filename'), file_data, attachment.get('mail_content_type'))
