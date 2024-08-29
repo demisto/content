@@ -1,6 +1,6 @@
 commonfields:
   id: d93ce82d-4704-4d9a-887e-c8b59d472d74
-  version: 162
+  version: 18
 vcShouldKeepItemLegacyProdMachine: false
 name: ParseSlackBlockBuilderResponse
 script: |
@@ -49,10 +49,9 @@ script: |
           context_data = demisto.get(demisto.context(), 'SlackBlockState')
           if context_data is None:
               raise TypeError("SlackBlockState is None")
-          
+          print(context_data)
           if isinstance(context_data, list):
               context_data = context_data[0]
-
           user_input_data = context_data.get("values")
           if user_input_data is None:
               raise TypeError("values in SlackBlockState is None")
@@ -85,8 +84,8 @@ script: |
       except TypeError as ex:
           demisto.error(traceback.format_exc())  # log the traceback
           print(traceback.format_exc())
-          print("User response is not found in slackBlockState.")
-          demisto.setContext("User.Action", 'no_response')
+          print("Invalid response found.")
+          demisto.setContext("User.Action", 'invalid_response')
       except Exception as ex:
           print(traceback.format_exc())  # log the traceback
           return_error(f'Failed to parse Slack block builder response: {str(ex)}')
