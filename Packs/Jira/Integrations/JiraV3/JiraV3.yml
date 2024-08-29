@@ -1464,7 +1464,7 @@ script:
     - description: The issue ID.
       name: issue_id
       required: true
-    description: Fetches questions and answers for forms tied to a Jira issue.
+    description: Fetches questions and answers for forms tied to a Jira issue. This command requires Jira Service Desk, the ProForma plugin and an API user with `Service Desk Team` or higher permissions on the Jira project the forms are being pulled from.
     name: jira-issue-get-forms
     outputs:
     - contextPath: JiraForms.ID

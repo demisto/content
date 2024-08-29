@@ -211,58 +211,6 @@ Scope: `read:jira-work`
 
 #### Human Readable Output
 
-### jira-issue-get-forms
-
-***
-Fetches questions and answers for forms tied to a Jira issue.
-
-#### Base Command
-
-`jira-issue-get-forms`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| issue_id | The issue ID. | Required | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| JiraForms.ID | Unknown | The ID of the form. | 
-| JiraForms.Issue | Unknown | Issue the form belongs to. | 
-| JiraForms.Questions | Unknown | Questions for the form. | 
-
-### jira-get-user
-
-***
-Get's information about the specified user.
-
-#### Base Command
-
-`jira-get-user`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| key | The user's key (also called ID). | Optional | 
-| username | The user's username. | Optional | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Jira.Users.Key | Unknown | The user's key or ID. | 
-| Jira.Users.Name | Unknown | Name of the user. | 
-| Jira.Users.Email | Unknown | User's email address. | 
-| Jira.Users.Display Name | Unknown | Display name for the user. | 
-| Jira.Users.Active | Unknown | If the user is active or not. | 
-| Jira.Users.Deleted | Unknown | If the user is deleted or not. | 
-| Jira.Users.Timezone | Unknown | Timezone setting for the user. | 
-| Jira.Users.Locale | Unknown | Locale setting for the user. | 
-
 ### jira-delete-issue
 
 ***
@@ -2993,3 +2941,57 @@ In the *jira-edit-issue* command:
 In the *jira-get-issue* command:
 
 * *get_attachments* - Supplying this argument with the value `true` will return the attachments found in the specified issue as `Entry Info File`, and not as `File`.
+
+### jira-get-user-info
+
+***
+Get's information about the specified user.
+
+#### Base Command
+
+`jira-get-user-info`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| key | The user's key (On Prem only). | Optional | 
+| username | The user's username (On Prem only). | Optional | 
+| accountId | The user's accountId (Cloud only). | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Jira.Users.Key | Unknown | The user's key or ID. | 
+| Jira.Users.Name | Unknown | Name of the user. | 
+| Jira.Users.Email | Unknown | User's email address. | 
+| Jira.Users.Display Name | Unknown | Display name for the user. | 
+| Jira.Users.Active | Unknown | If the user is active or not. | 
+| Jira.Users.Deleted | Unknown | If the user is deleted or not. | 
+| Jira.Users.Timezone | Unknown | Timezone setting for the user. | 
+| Jira.Users.Locale | Unknown | Locale setting for the user. | 
+
+### jira-issue-get-forms
+
+***
+Fetches questions and answers for forms tied to a Jira issue. This command requires Jira Service Desk, the ProForma plugin and an API user with `Service Desk Team` or higher permissions on the Jira project the forms are being pulled from.
+
+#### Base Command
+
+`jira-issue-get-forms`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| issue_id | The issue ID. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| JiraForms.ID | Unknown | The ID of the form. | 
+| JiraForms.Issue | Unknown | Issue the form belongs to. | 
+| JiraForms.Questions | Unknown | Questions for the form. | 
+
