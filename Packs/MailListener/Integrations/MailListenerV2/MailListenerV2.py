@@ -165,6 +165,7 @@ class Email:
             try:
                 file_data = base64.b64decode(payload) if attachment.get('binary') else payload
             except Exception as e:
+                file_data = 'NO DATA'
                 demisto.error(f'parse_attachments: Failed to decode the attachment data - {str(e)}')
 
             # save the attachment
