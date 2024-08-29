@@ -38,16 +38,16 @@ class Client(BaseClient):
 
     def search_events(self, limit: int, cursor: int, log_type: str, filters=None) -> dict[str, Any]:
         """
-        Get a list of events.
+        Search for events based on given parameters.
+
         Args:
-            start_date (str, optional): Fetch events that are newer than given time.
-                Defaults to None.
-            limit (int, optional): Maximum number of events to return.
-                Defaults to None.
-            offset (int, optional): Item number to start looking from.
-                Defaults to None.
+            limit (int): Maximum number of events to return.
+            cursor (int): The starting point for fetching events.
+            log_type (str): Type of logs to fetch (e.g., network activities).
+            filters (Optional[dict[str, Any]]): Filters to apply when fetching events. Defaults to None.
+
         Returns:
-            Dict[str, Any]: A list of events.
+            Dict[str, Any]: A dictionary containing the search results.
         """
         if log_type == NETWORK_ACTIVITIES_TYPE:
             params = remove_empty_elements({"_limit": limit, "order": "asc", "_cursor": cursor, "_filters": filters})
@@ -66,6 +66,15 @@ class Client(BaseClient):
 
 
 def get_log_types(params: dict) -> list:
+    """
+    Get a list of log types based on input parameters.
+
+    Args:
+        params (dict): Dictionary of parameters to determine log types.
+
+    Returns:
+        List[str]: A list of log types based on the input parameters.
+    """
     log_types = [AUDIT_TYPE]
     is_fetch_network = argToBoolean(params.get("isFetchNetwork", False))
     if is_fetch_network:
@@ -75,6 +84,17 @@ def get_log_types(params: dict) -> list:
 
 
 def initialize_start_timestamp(last_run: dict[str, Any], log_type: str, arg_from=None) -> int:
+    """
+    Initialize the start timestamp for fetching logs based on provided parameters.
+
+    Args:
+        last_run (dict[str, Any]): Dictionary containing the last fetch timestamps for different log types.
+        log_type (str): Type of log for which to initialize the start timestamp.
+        arg_from (Optional[int]): A specific start timestamp to use. Defaults to None.
+
+    Returns:
+        int: The start timestamp for fetching logs.
+    """
     if arg_from:
         return arg_from
 
@@ -87,6 +107,18 @@ def initialize_start_timestamp(last_run: dict[str, Any], log_type: str, arg_from
 
 
 def get_max_results_and_limit(params: dict[str, Any], log_type: str) -> tuple[int, int]:
+    """
+    Determine the maximum number of results and the limit for fetching logs based on input parameters.
+
+    Args:
+        params (dict[str, Any]): Dictionary of parameters including the maximum fetch limit.
+        log_type (str): Type of log for which to determine the limits.
+
+    Returns:
+        Tuple[int, int]: A tuple containing:
+            - max_results (int): The maximum number of results to fetch.
+            - limit (int): The limit for fetching results, adjusted to be at least 20.
+    """
     max_results = arg_to_number(params.get(MAX_FETCH_PARAM_NAME[log_type])) or MAX_RESULTS_FOR_LOG_TYPE[log_type]
     limit = min(max_results, MAX_CALLS_FOR_LOG_TYPE[log_type])
     if limit < 20:
@@ -96,6 +128,18 @@ def get_max_results_and_limit(params: dict[str, Any], log_type: str) -> tuple[in
 
 
 def update_last_run(last_run: dict[str, Any], log_type: str, last_event_time: int, previous_ids: list) -> dict:
+    """
+    Update the last run details for a specific log type.
+
+    Args:
+        last_run (dict[str, Any]): Dictionary containing the last run details for different log types.
+        log_type (str): Type of log to update.
+        last_event_time (int): Timestamp of the last event fetched.
+        previous_ids (list): List of IDs from the previous fetch to track.
+
+    Returns:
+        Dict[str, Any]: Updated dictionary containing the last run details.
+    """
     last_run[log_type] = {
         "last_fetch": last_event_time,
         "previous_ids": previous_ids
@@ -104,12 +148,23 @@ def update_last_run(last_run: dict[str, Any], log_type: str, last_event_time: in
 
 
 def create_id(event: dict, log_type: str) -> str:
+    """
+    Create a unique ID for an event based on its log type.
+
+    Args:
+        event (dict): Dictionary containing event details.
+        log_type (str): Type of log to determine how to generate the ID (e.g., audit or network activities).
+
+    Returns:
+        str: A unique ID generated for the event, represented as a SHA-256 hash.
+    """
     timestamp = event.get("timestamp")
     if log_type == AUDIT_TYPE:
         reported_object_id = event.get("reportedObjectId", "")
         performed_by_name = event.get("performed_by", {}).get("id", "")
         combined_string = f"{timestamp}-{reported_object_id}-{performed_by_name}"
-    if log_type == NETWORK_ACTIVITIES_TYPE:
+
+    elif log_type == NETWORK_ACTIVITIES_TYPE:
         src_asset_id = event.get("src", {}).get("assetId", "")
         dst_asset_id = event.get("dst", {}).get("assetId", "")
         combined_string = f"{timestamp}-{src_asset_id}-{dst_asset_id}"
@@ -120,6 +175,23 @@ def create_id(event: dict, log_type: str) -> str:
 
 def process_events(events: list, previous_ids: list, last_event_time: int, max_results: int, num_results: int,
                    log_type: str) -> tuple[list, list, int]:
+    """
+    Process a list of events to filter out new ones and update tracking information.
+
+    Args:
+        events (list): List of event dictionaries to process.
+        previous_ids (list): List of IDs from previously processed events.
+        last_event_time (int): Timestamp of the last event processed.
+        max_results (int): Maximum number of results to process.
+        num_results (int): Current number of results processed.
+        log_type (str): Type of log to determine how to process the events.
+
+    Returns:
+        Tuple[list, list, int]: A tuple containing:
+            - new_events (list): List of newly processed events.
+            - updated_previous_ids (list): Updated list of IDs from previously processed events.
+            - updated_last_event_time (int): Updated timestamp of the last event processed.
+    """
     new_events = []
     for event in events:
         event_id = create_id(event, log_type)
@@ -198,7 +270,18 @@ def fetch_events(client: Client, params: dict, last_run: dict, arg_from=None) ->
 
 def get_events(client: Client, args: dict, last_run: dict, params: dict) -> tuple[list, CommandResults]:
     """
-       Gets events from Zero Networks Segment API.
+    Fetch events from the Zero Networks Segment API and format the results.
+
+    Args:
+        client (Client): The client instance used to interact with the API.
+        args (dict): Dictionary of arguments, potentially including a "from_date" for filtering.
+        last_run (dict): Dictionary of the last run details to determine the starting point for fetching events.
+        params (dict): Additional parameters to pass to the event fetching function.
+
+    Returns:
+        Tuple[list, CommandResults]: A tuple containing:
+            - events (list): List of fetched events.
+            - CommandResults: An object containing the formatted results for output.
     """
     if arg_from := args.get("from_date"):
         arg_from = date_to_timestamp(arg_from, ISO_8601_FORMAT)
@@ -240,12 +323,12 @@ def test_module(client: Client) -> str:
 
 def main() -> None:
     """
-    main function, parses params and runs command functions
+    Main function for parsing parameters and executing command functions.
     """
     params = demisto.params()
     args = demisto.args()
-
     command = demisto.command()
+
     api_key = params.get('credentials', {}).get('password')
     server_url = urljoin(params.get('url'))
     verify_certificate = not argToBoolean(params.get('insecure', False))
@@ -254,7 +337,7 @@ def main() -> None:
     fetch_network = argToBoolean(params.get('isFetchNetwork', 'False'))
     filters = params.get('network_activity_filters', '')
     if fetch_network and not filters:
-        return_error("Using filters is required to limit the number of events.")
+        raise DemistoException("Using filters is required to limit the number of events.")
 
     demisto.debug(f'Command being called is {command}')
     try:
