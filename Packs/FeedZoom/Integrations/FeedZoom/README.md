@@ -27,7 +27,7 @@ For information about Zoom network settings, see the [Zoom documentation](https:
     | Feed Fetch Interval | Setting a more frequent fetch interval may cause errors from the vendor. | False |
     | Tags | Supports CSV values. | False |
     | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
-    | Enrichment Excluded | Select this option to exclude the fetched indicators from the enrichment process | False |
+    | Enrichment Excluded | Select this option to exclude the fetched indicators from the enrichment process. | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
 

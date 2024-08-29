@@ -17,7 +17,7 @@ A feed of known benign IPs of public DNS servers.
     | feedTags | Tags | False |
     | feedBypassExclusionList | Bypass exclusion list | False |
     | tlp_color | Traffic Light Protocol Color | False |
-    | Enrichment Excluded | Select this option to exclude the fetched indicators from the enrichment process | False |
+    | Enrichment Excluded | Select this option to exclude the fetched indicators from the enrichment process. | False |
     | insecure | Trust any certificate \(not secure\) | False |
     | proxy | Use system proxy settings | False |
 

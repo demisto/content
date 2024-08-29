@@ -15,7 +15,7 @@ Use the Cloudflare feed integration to fetch indicators from the feed.
 | Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed | False |
 | Feed Fetch Interval |  | False |
 | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
-| Enrichment Excluded | Select this option to exclude the fetched indicators from the enrichment process | False |
+| Enrichment Excluded | Select this option to exclude the fetched indicators from the enrichment process. | False |
 | Request Timeout | Timeout of the polling request in seconds. | False |
 | Tags | Supports CSV values. | False |
 | Trust any certificate (not secure) |  | False |

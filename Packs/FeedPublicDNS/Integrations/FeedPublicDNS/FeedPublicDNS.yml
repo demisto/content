@@ -88,7 +88,7 @@ configuration:
   name: tlp_color
   type: 15
   required: false
-  additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+  additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed.
   options:
   - RED
   - AMBER
@@ -96,7 +96,7 @@ configuration:
   - WHITE
   section: Collect
 - display: Enrichment Excluded
-  additionalinfo: Select this option to exclude the fetched indicators from the enrichment process
+  additionalinfo: Select this option to exclude the fetched indicators from the enrichment process.
   name: enrichmentExcluded
   type: 8
   required: false
