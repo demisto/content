@@ -11618,6 +11618,22 @@ def xsiam_api_call_with_retries(
             raise DemistoException(error_msg + response.get('error'))
     return response
 
+def validate_no_oversize_chunks(data: list):
+    """
+    This function validates that the received data does not have an item bigger than the limit defined in
+    XSIAM_EVENT_CHUNK_SIZE_LIMIT. In such a case we will raise an error.
+
+    :type data: ``list``
+    :param data: A list of items to be validated
+    """
+
+    for data_part in data:
+        if oversize_item_size := sys.getsizeof(data_part) > XSIAM_EVENT_CHUNK_SIZE_LIMIT:
+            # We fail the submission process as it will cause errors on the BE side.
+            raise DemistoException(
+                f'ERROR: failed splitting data to chunks. Chunk size limit is {XSIAM_EVENT_CHUNK_SIZE_LIMIT} '
+                f'but data contains and item of size: {oversize_item_size}')
+
 
 def split_data_to_chunks(data, target_chunk_size):
     """
@@ -11637,6 +11653,10 @@ def split_data_to_chunks(data, target_chunk_size):
     chunk_size = 0
     if isinstance(data, str):
         data = data.split('\n')
+
+    # Note that even tho this function is a generator function (uses yields), the below check will only run once.
+    validate_no_oversize_chunks(data)
+
     for data_part in data:
         if chunk_size >= target_chunk_size:
             demisto.debug("reached max chunk size, sending chunk with size: {size}".format(size=chunk_size))
