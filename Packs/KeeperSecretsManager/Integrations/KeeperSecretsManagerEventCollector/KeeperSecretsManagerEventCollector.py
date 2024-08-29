@@ -1,12 +1,12 @@
 import urllib3
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from keepercommander import api
 from keepercommander.params import KeeperParams
 from keepercommander.auth.login_steps import LoginStepDeviceApproval, DeviceApprovalChannel, LoginStepPassword
-from keepercommander import utils, crypto
+from keepercommander import utils, crypto, api
 from keepercommander.loginv3 import LoginV3Flow, LoginV3API, InvalidDeviceToken
 from keepercommander.proto import APIRequest_pb2
+from datetime import datetime
 
 """ CONSTANTS """
 
@@ -25,37 +25,14 @@ DEVICE_ALREADY_REGISTERED = (
     "Device is already registered, try running the 'ksm-event-collector-register-complete'"
     " command without supplying a code argument."
 )
-""" Fetch Events Classes"""
 LAST_RUN = "Last Run"
-
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-""" CONSTANTS """
-
-DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 
 """ HELPER FUNCTIONS """
-
-
-def get_max_events_to_fetch(params_max_fetch: str | int) -> int:
-    """Gets the maximum number of events to fetch.
-
-    Args:
-        params_max_fetch (str): A limit for the log type.
-
-    Returns:
-        int: The maximum number of events to fetch.
-
-    Raises:
-        ValueError: If the limit is not a valid integer.
-    """
-    try:
-        return DEFAULT_MAX_FETCH if params_max_fetch in ["", None] else int(params_max_fetch)
-
-    except ValueError:
-        raise ValueError("Please provide a valid integer value for a fetch limit.")
 
 
 def get_current_time_in_seconds() -> int:
@@ -64,7 +41,7 @@ def get_current_time_in_seconds() -> int:
     Returns:
         int: Number of seconds since the epoch
     """
-    return int(time.time())
+    return int(datetime.now().timestamp())
 
 
 def load_integration_context_into_keeper_params(
@@ -73,7 +50,8 @@ def load_integration_context_into_keeper_params(
     server_url: str,
 ):
     """Load data from the integration context into a KeeperParams instance, which is used
-    to communicate with the product.
+    to communicate with the product. We call it inside the init method of the Client that
+    will be used to communicate with the product.
 
     Args:
         username (str): The username of the account.
@@ -90,6 +68,7 @@ def load_integration_context_into_keeper_params(
     keeper_params.server = server_url
 
     # To allow requests to bypass proxy
+    # ref -> https://docs.keeper.io/en/v/secrets-manager/commander-cli/troubleshooting-commander-cli#ssl-certificate-errors
     keeper_params.rest_context.certificate_check = False
 
     keeper_params.device_token = integration_context.get("device_token")
@@ -422,7 +401,7 @@ def get_audit_logs(
                     for audit_event in dedupped_audit_events
                     if int(audit_event["created"]) == start_time_to_fetch
                 }
-                # Last run of pagination, avoiding endless loop if all page has the same time.
+                # Last run of pagination, avoiding endless loop if all the page's results have the same time.
                 # We do not have other eay to handle this case.
                 if last_latest_event_time == start_time_to_fetch:
                     demisto.debug("Got equal start and end time, this was the last page.")
@@ -453,12 +432,12 @@ def dedup_events(audit_events: list[dict[str, Any]], last_fetched_ids: set[str])
 def fetch_events(client: Client, last_run: dict[str, Any], max_fetch_limit: int) -> list[dict[str, Any]]:
     demisto.debug(f"last_run: {last_run}" if last_run else "last_run is empty")
     # SDK's query uses Epoch time to filter events
-    last_fetch_epoch_time: int = int(last_run.get("last_fetch_epoch_time", "0"))
+    last_fetch_epoch_time = int(last_run.get("last_fetch_epoch_time", "0"))
 
     # (if 0) returns False
     last_fetch_epoch_time = last_fetch_epoch_time if last_fetch_epoch_time else int(datetime.now().timestamp())
     # last_fetch_epoch_time = 0
-    last_fetched_ids: set[str] = set(last_run.get("last_fetch_ids", []))
+    last_fetched_ids = set(last_run.get("last_fetch_ids", []))
     audit_log = get_audit_logs(
         client=client,
         last_latest_event_time=last_fetch_epoch_time,
@@ -524,7 +503,7 @@ def main() -> None:  # pragma: no cover
             fetched_audit_logs = fetch_events(
                 client=client,
                 last_run=last_run,
-                max_fetch_limit=get_max_events_to_fetch(params.get("alerts_max_fetch", DEFAULT_MAX_FETCH)),
+                max_fetch_limit=arg_to_number(params.get("alerts_max_fetch")) or DEFAULT_MAX_FETCH,
             )
             demisto.debug(f"Events to send to XSIAM {fetched_audit_logs=}")
             send_events_to_xsiam(fetched_audit_logs, VENDOR, PRODUCT)

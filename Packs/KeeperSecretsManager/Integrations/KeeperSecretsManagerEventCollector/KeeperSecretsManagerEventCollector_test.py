@@ -70,29 +70,6 @@ def test_load_integration_context_into_keeper_params(
     assert keeper_params.clone_code == clone_code
 
 
-@pytest.mark.parametrize(
-    "params_max_fetch, expected",
-    [
-        pytest.param(10, 10, id="param overrides default"),
-        pytest.param("invalid", None, id="invalid params max fetch"),
-        pytest.param("", DEFAULT_MAX_FETCH, id="empty param, using default"),
-    ],
-)
-def test_get_max_events_to_fetch(params_max_fetch: str | int, expected: None | int):
-    """
-    Given: max_fetch parameters
-    When: Setting the max events to fetch
-    Then: Calculate the max events to fetch based on the parameter passed in
-    """
-    from KeeperSecretsManagerEventCollector import get_max_events_to_fetch
-
-    if expected is None:
-        with pytest.raises(ValueError):
-            get_max_events_to_fetch(params_max_fetch)
-    else:
-        get_max_events_to_fetch(params_max_fetch)
-
-
 def test_append_to_integration_context(mocker: MockerFixture):
     """
     Given: Data to append to the integration context
