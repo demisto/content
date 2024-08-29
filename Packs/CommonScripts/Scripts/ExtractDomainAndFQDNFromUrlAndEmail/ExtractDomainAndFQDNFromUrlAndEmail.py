@@ -58,7 +58,7 @@ def get_fqdn(input_url: str) -> str | None:
 
     if domain_info:  # Weve removed the filter for "zip" as it is now a valid gTLD by Google
         if not isinstance(domain_info, Result):
-            raise ValueError(f"Expected to get a Result object but got {type(domain_info)}")
+            raise TypeError(f"Expected to get a Result object but got {type(domain_info)}")
         # get the subdomain using tld.subdomain
         subdomain = domain_info.subdomain
         if subdomain:
