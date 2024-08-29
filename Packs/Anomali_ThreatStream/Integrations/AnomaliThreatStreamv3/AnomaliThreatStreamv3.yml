@@ -1,66 +1,69 @@
-category: Data Enrichment & Threat Intelligence
-sectionOrder:
-- Connect
-- Collect
 commonfields:
   id: Anomali ThreatStream v3
   version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: Anomali ThreatStream v3_tmx
+display: Anomali ThreatStream v3_tmx
+category: Data Enrichment & Threat Intelligence
+description: Use Anomali ThreatStream to query and submit threats.
 configuration:
-- defaultvalue: https://api.threatstream.com
+- section: Connect
   display: Server URL (e.g., https://www.test.com)
   name: url
-  required: true
+  defaultvalue: https://api.threatstream.com
   type: 0
-  section: Connect
-- display: Username
-  name: credentials
   required: true
-  type: 9
+- section: Connect
+  display: Username
   displaypassword: API Key
-  section: Connect
-- display: URL threshold
+  name: credentials
+  type: 9
+  required: true
+- section: Collect
+  advanced: true
+  display: URL threshold
   name: url_threshold
   type: 0
-  section: Collect
-  advanced: true
   required: false
-- display: IP threshold
+- section: Collect
+  advanced: true
+  display: IP threshold
   name: ip_threshold
   type: 0
-  section: Collect
-  advanced: true
   required: false
-- display: Domain threshold
+- section: Collect
+  advanced: true
+  display: Domain threshold
   name: domain_threshold
   type: 0
-  section: Collect
-  advanced: true
   required: false
-- display: File threshold
+- section: Collect
+  advanced: true
+  display: File threshold
   name: file_threshold
   type: 0
-  section: Collect
-  advanced: true
   required: false
-- display: Email threshold
-  additionalinfo: Email indicators with confidence value above this threshold are considered malicious.
+- section: Collect
+  advanced: true
+  display: Email threshold
   name: email_threshold
   type: 0
-  section: Collect
-  advanced: true
   required: false
-- defaultvalue: 'false'
-  additionalinfo: Whether to include inactive indicators in reputation commands.
+  additionalinfo: Email indicators with confidence value above this threshold are considered malicious.
+- section: Collect
+  advanced: true
   display: Include inactive results
   name: include_inactive
+  defaultvalue: 'false'
   type: 8
-  section: Collect
-  advanced: true
   required: false
-- additionalinfo: Reliability of the source providing the intelligence data.
-  defaultvalue: B - Usually reliable
+  additionalinfo: Whether to include inactive indicators in reputation commands.
+- section: Collect
   display: Source Reliability
   name: integrationReliability
+  defaultvalue: B - Usually reliable
+  type: 15
+  required: true
   options:
   - A+ - 3rd party enrichment
   - A - Completely reliable
@@ -69,74 +72,69 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: true
-  type: 15
-  section: Collect
-- defaultvalue: Benign
+  additionalinfo: Reliability of the source providing the intelligence data.
+- section: Collect
   display: Default DBOT score for indicators with low confidence
   name: indicator_default_score
+  defaultvalue: Benign
+  type: 15
+  required: false
   options:
   - Benign
   - Unknown
-  required: false
-  type: 15
-  section: Collect
-- defaultvalue: 'false'
+- section: Connect
+  advanced: true
   display: Trust any certificate (not secure)
   name: insecure
+  defaultvalue: 'false'
   type: 8
-  section: Connect
-  advanced: true
   required: false
-- display: Use system proxy settings
+- section: Connect
+  advanced: true
+  display: Use system proxy settings
   name: proxy
   type: 8
-  section: Connect
-  advanced: true
   required: false
-- defaultvalue: 'true'
-  additionalinfo: Create relationships between indicators as part of enrichment.
+- section: Collect
+  advanced: true
   display: Create relationships
   name: create_relationships
+  defaultvalue: 'true'
   type: 8
-  section: Collect
-  advanced: true
   required: false
-- additionalinfo: Gather additional information about the threat model from remote APIs.
-  defaultvalue: 'false'
-  display: Remote API
+  additionalinfo: Create relationships between indicators as part of enrichment.
+- display: Remote API
   name: remote_api
-  required: false
+  defaultvalue: 'false'
   type: 8
-defaultclassifier: 'null'
-description: Use Anomali ThreatStream to query and submit threats.
-display: Anomali ThreatStream v3
-name: Anomali ThreatStream v3
+  required: false
+  additionalinfo: Gather additional information about the threat model from remote APIs.
 script:
+  script: ''
+  type: python
   commands:
-  - arguments:
-    - default: true
+  - name: ip
+    arguments:
+    - name: ip
+      required: true
+      default: true
       description: The IP to check.
       isArray: true
-      name: ip
-      required: true
-    - description: If confidence is greater than the threshold the IP address is considered malicious, otherwise it is considered good. This argument overrides the default IP threshold defined as a parameter.
-      name: threshold
-    - auto: PREDEFINED
+    - name: threshold
+      description: If confidence is greater than the threshold the IP address is considered malicious, otherwise it is considered good. This argument overrides the default IP threshold defined as a parameter.
+    - name: include_inactive
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
       description: Whether to include results with an inactive status.
-      name: include_inactive
+    - name: threat_model_association
+      auto: PREDEFINED
       predefined:
       - 'True'
       - 'False'
-    - auto: PREDEFINED
-      defaultValue: 'False'
       description: 'Enhance generic reputation commands to include additional information such as Threat Bulletins, Attach patterns, Actors, Campaigns, TTPs, vulnerabilities, etc. Note: If set to true, additional 6 API calls will be performed.'
-      name: threat_model_association
-      predefined:
-      - 'True'
-      - 'False'
-    description: Checks the reputation of the given IP address.
-    name: ip
+      defaultValue: 'False'
     outputs:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -831,29 +829,29 @@ script:
     - contextPath: ThreatStream.IP.Campaign.uuid
       description: The UUID of the campaign.
       type: String
-  - arguments:
-    - default: true
+    description: Checks the reputation of the given IP address.
+  - name: domain
+    arguments:
+    - name: domain
+      required: true
+      default: true
       description: The domain name to check.
       isArray: true
-      name: domain
-      required: true
-    - description: If confidence is greater than the threshold the domain is considered malicious, otherwise it is considered good. This argument overrides the default domain threshold defined as a parameter.
-      name: threshold
-    - auto: PREDEFINED
+    - name: threshold
+      description: If confidence is greater than the threshold the domain is considered malicious, otherwise it is considered good. This argument overrides the default domain threshold defined as a parameter.
+    - name: include_inactive
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
       description: Whether to include results with an inactive status.
-      name: include_inactive
+    - name: threat_model_association
+      auto: PREDEFINED
       predefined:
       - 'True'
       - 'False'
-    - auto: PREDEFINED
-      defaultValue: 'False'
       description: 'Enhance generic reputation commands to include additional information such as Threat Bulletins, Attach patterns, Actors, Campaigns, TTPs, vulnerabilities, etc. Note: If set to true, additional 6 API calls will be performed.'
-      name: threat_model_association
-      predefined:
-      - 'True'
-      - 'False'
-    description: Checks the reputation of the given domain name.
-    name: domain
+      defaultValue: 'False'
     outputs:
     - contextPath: Domain.Name
       description: The domain name.
@@ -862,14 +860,10 @@ script:
       description: The IP addresses resolved by the DNS.
       type: String
     - contextPath: Domain.WHOIS.CreationDate
-      description: |-
-        The date the domain was created. The date format is: YYYYMMDDThhmmss, where T denotes the start of the value
-        for time in UTC time.
+      description: "The date the domain was created. The date format is: YYYYMMDDThhmmss, where T denotes the start of the value\nfor time in UTC time."
       type: Date
     - contextPath: Domain.WHOIS.UpdatedDate
-      description: |-
-        The date the domain was last updated. The date format is: YYYYMMDDThhmmss, where T denotes the start of the value
-        for time in UTC time.
+      description: "The date the domain was last updated. The date format is: YYYYMMDDThhmmss, where T denotes the start of the value\nfor time in UTC time."
       type: Date
     - contextPath: Domain.WHOIS.Registrant.Name
       description: The registrant name.
@@ -893,9 +887,7 @@ script:
       description: The indicator type.
       type: String
     - contextPath: ThreatStream.Domain.Modified
-      description: |-
-        The date and time the indicator was last updated. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value
-        for time in UTC time.
+      description: "The date and time the indicator was last updated. The date format is: YYYYMMDDThhmmss, where \"T\" denotes the start of the value\nfor time in UTC time."
       type: String
     - contextPath: ThreatStream.Domain.Severity
       description: The indicator severity ("very-high", "high", "medium", "low").
@@ -1563,29 +1555,29 @@ script:
     - contextPath: ThreatStream.Domain.Campaign.uuid
       description: The UUID of the campaign.
       type: String
-  - arguments:
-    - default: true
+    description: Checks the reputation of the given domain name.
+  - name: file
+    arguments:
+    - name: file
+      required: true
+      default: true
       description: The hash of file to check.
       isArray: true
-      name: file
-      required: true
-    - description: If the confidence is greater than the threshold the hash of the file is considered malicious, otherwise it is considered good. This argument overrides the default file threshold defined as a parameter.
-      name: threshold
-    - auto: PREDEFINED
+    - name: threshold
+      description: If the confidence is greater than the threshold the hash of the file is considered malicious, otherwise it is considered good. This argument overrides the default file threshold defined as a parameter.
+    - name: include_inactive
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
       description: Whether to include results with an inactive status.
-      name: include_inactive
+    - name: threat_model_association
+      auto: PREDEFINED
       predefined:
       - 'True'
       - 'False'
-    - auto: PREDEFINED
-      defaultValue: 'False'
       description: 'Enhance generic reputation commands to include additional information such as Threat Bulletins, Attach patterns, Actors, Campaigns, TTPs, vulnerabilities, etc. Note: If set to true, additional 6 API calls will be performed.'
-      name: threat_model_association
-      predefined:
-      - 'True'
-      - 'False'
-    description: Checks the reputation of the given hash of the file.
-    name: file
+      defaultValue: 'False'
     outputs:
     - contextPath: File.MD5
       description: The MD5 hash of the file.
@@ -1639,9 +1631,7 @@ script:
       description: The SHA512 hash of the indicator.
       type: String
     - contextPath: ThreatStream.File.Modified
-      description: |-
-        The date and time the indicator was last updated. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value
-        for time in UTC time.
+      description: "The date and time the indicator was last updated. The date format is: YYYYMMDDThhmmss, where \"T\" denotes the start of the value\nfor time in UTC time."
       type: String
     - contextPath: ThreatStream.File.Source
       description: The indicator source.
@@ -2282,20 +2272,20 @@ script:
     - contextPath: ThreatStream.File.Campaign.uuid
       description: The UUID of the campaign.
       type: String
-  - arguments:
-    - description: The email address to check.
-      name: email
+    description: Checks the reputation of the given hash of the file.
+  - name: threatstream-email-reputation
+    arguments:
+    - name: email
       required: true
-    - description: If the confidence is greater than the threshold the email address is considered malicious, otherwise it is considered good. This argument overrides the default email threshold defined as a parameter.
-      name: threshold
-    - auto: PREDEFINED
-      description: Whether to include results with an inactive status.
-      name: include_inactive
+      description: The email address to check.
+    - name: threshold
+      description: If the confidence is greater than the threshold the email address is considered malicious, otherwise it is considered good. This argument overrides the default email threshold defined as a parameter.
+    - name: include_inactive
+      auto: PREDEFINED
       predefined:
       - 'True'
       - 'False'
-    description: Checks the reputation of the given email address.
-    name: threatstream-email-reputation
+      description: Whether to include results with an inactive status.
     outputs:
     - contextPath: DBotScore.Indicator
       description: The tested indicator.
@@ -2328,37 +2318,35 @@ script:
       description: The indicator source.
       type: String
     - contextPath: ThreatStream.EmailReputation.Modified
-      description: |-
-        The date and time the indicator was last updated. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value
-        for time in UTC time.
+      description: "The date and time the indicator was last updated. The date format is: YYYYMMDDThhmmss, where \"T\" denotes the start of the value\nfor time in UTC time."
       type: String
     - contextPath: ThreatStream.EmailReputation.Tags
       description: Tags assigned to the email.
       type: Unknown
-  - arguments:
-    - auto: PREDEFINED
-      defaultValue: ip
-      description: The type of passive DNS search ("ip", "domain").
-      name: type
+    description: Checks the reputation of the given email address.
+  - name: threatstream-get-passive-dns
+    arguments:
+    - name: type
+      required: true
+      auto: PREDEFINED
       predefined:
       - ip
       - domain
+      description: The type of passive DNS search ("ip", "domain").
+      defaultValue: ip
+    - name: value
       required: true
-    - description: The values that can be sent to the API should correspond to the type that is chosen. For example,if IP is chosen in the type argument, then a valid IP address should be sent in the value argument.
-      name: value
-      required: true
-    - defaultValue: '50'
+      description: The values that can be sent to the API should correspond to the type that is chosen. For example,if IP is chosen in the type argument, then a valid IP address should be sent in the value argument.
+    - name: limit
       description: The maximum number of results to return.
-      name: limit
-    - auto: PREDEFINED
-      defaultValue: 'false'
-      description: 'Whether to retrieve all results. The "limit" argument will be ignored.'
-      name: all_results
+      defaultValue: '50'
+    - name: all_results
+      auto: PREDEFINED
       predefined:
       - 'false'
       - 'true'
-    description: Returns enrichment data for Domain or IP for available observables.
-    name: threatstream-get-passive-dns
+      description: Whether to retrieve all results. The "limit" argument will be ignored.
+      defaultValue: 'false'
     outputs:
     - contextPath: ThreatStream.PassiveDNS.Domain
       description: The domain value.
@@ -2373,32 +2361,28 @@ script:
       description: The source value.
       type: String
     - contextPath: ThreatStream.PassiveDNS.FirstSeen
-      description: |-
-        The first seen date. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value
-        for time, in UTC time.
+      description: "The first seen date. The date format is: YYYYMMDDThhmmss, where \"T\" denotes the start of the value\nfor time, in UTC time."
       type: String
     - contextPath: ThreatStream.PassiveDNS.LastSeen
-      description: |-
-        The last seen date. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value
-        for time in UTC time.
+      description: "The last seen date. The date format is: YYYYMMDDThhmmss, where \"T\" denotes the start of the value\nfor time in UTC time."
       type: String
-  - arguments:
-    - defaultValue: '50'
+    description: Returns enrichment data for Domain or IP for available observables.
+  - name: threatstream-import-indicator-with-approval
+    arguments:
+    - name: confidence
       description: The observable certainty level of a reported indicator type.
-      name: confidence
-    - description: Ratio (0-100) between the source confidence and the ThreatStream confidence. To use your specified confidence entirely and not re-assess the value using machine learning algorithms, set this argument to 100.
-      name: source_confidence_weight
-    - auto: PREDEFINED
-      defaultValue: private
-      description: Whether the indicator data is public or private to the organization.
-      name: classification
+      defaultValue: '50'
+    - name: source_confidence_weight
+      description: Ratio (0-100) between the source confidence and the ThreatStream confidence. To use your specified confidence entirely and not re-assess the value using machine learning algorithms, set this argument to 100.
+    - name: classification
+      auto: PREDEFINED
       predefined:
       - private
       - public
-    - auto: PREDEFINED
-      defaultValue: exploit
-      description: Type of threat associated with the imported observables.
-      name: threat_type
+      description: Whether the indicator data is public or private to the organization.
+      defaultValue: private
+    - name: threat_type
+      auto: PREDEFINED
       predefined:
       - adware
       - anomalous
@@ -2428,57 +2412,57 @@ script:
       - suspicious
       - tor
       - vps
-    - auto: PREDEFINED
-      defaultValue: low
-      description: The potential impact of the indicator type with which the observable is believed to be associated.
-      name: severity
+      description: Type of threat associated with the imported observables.
+      defaultValue: exploit
+    - name: severity
+      auto: PREDEFINED
       predefined:
       - low
       - medium
       - high
       - very-high
-    - auto: PREDEFINED
-      description: The import type of the indicator.
-      name: import_type
+      description: The potential impact of the indicator type with which the observable is believed to be associated.
+      defaultValue: low
+    - name: import_type
+      required: true
+      auto: PREDEFINED
       predefined:
       - datatext
       - file-id
       - url
+      description: The import type of the indicator.
+    - name: import_value
       required: true
-    - description: 'The imported data source. Can be one of the following: url or file-id datatext of the file uploaded to the War Room. Supported file types for file-id are: CSV, HTML, IOC, JSON, PDF, TXT.'
-      name: import_value
-      required: true
-    - description: Indicator type to assign if a specific type is not associated with an observable. This is a global setting that applies to any imported IP-type observable when an explicit itype is not specified for it.
-      name: ip_mapping
-    - description: Indicator type to assign if a specific type is not associated with an observable. This is a global setting that applies to any imported domain-type observable when an explicit itype is not specified for it.
-      name: domain_mapping
-    - description: Indicator type to assign if a specific type is not associated with an observable. This is a global setting that applies to any imported URL-type observable when an explicit itype is not specified for it.
-      name: url_mapping
-    - description: Indicator type to assign if a specific type is not associated with an observable. This is a global setting that applies to any imported email-type observable when an explicit itype is not specified for it.
-      name: email_mapping
-    - description: Indicator type to assign if a specific type is not associated with an observable. This is a global setting that applies to any imported MD5-type observable when an explicit itype is not specified for it.
-      name: md5_mapping
-    - description: A comma-separated list of tags applied to the imported observables. For example, tag1,tag2.
-      name: tags
-    - auto: PREDEFINED
-      description: You can add tags that are private to your organization by setting the tlp attribute for the tag to red. If you do not specify a tlp setting, the tag is visible to any ThreatStream user with access to the observable.
-      name: tags_tlp
+      description: 'The imported data source. Can be one of the following: url or file-id datatext of the file uploaded to the War Room. Supported file types for file-id are: CSV, HTML, IOC, JSON, PDF, TXT.'
+    - name: ip_mapping
+      description: Indicator type to assign if a specific type is not associated with an observable. This is a global setting that applies to any imported IP-type observable when an explicit itype is not specified for it.
+    - name: domain_mapping
+      description: Indicator type to assign if a specific type is not associated with an observable. This is a global setting that applies to any imported domain-type observable when an explicit itype is not specified for it.
+    - name: url_mapping
+      description: Indicator type to assign if a specific type is not associated with an observable. This is a global setting that applies to any imported URL-type observable when an explicit itype is not specified for it.
+    - name: email_mapping
+      description: Indicator type to assign if a specific type is not associated with an observable. This is a global setting that applies to any imported email-type observable when an explicit itype is not specified for it.
+    - name: md5_mapping
+      description: Indicator type to assign if a specific type is not associated with an observable. This is a global setting that applies to any imported MD5-type observable when an explicit itype is not specified for it.
+    - name: tags
+      description: A comma-separated list of tags applied to the imported observables. For example, tag1,tag2.
+    - name: tags_tlp
+      auto: PREDEFINED
       predefined:
       - Red
       - Amber
       - Green
       - White
-    - description: The timestamp when intelligence will expire on ThreatStream, in ISO format. For example, 2020-12-24T00:00:00. By default, the expiration_ts is set to 90 days from the current date.
-      name: expiration_ts
-    - auto: PREDEFINED
-      defaultValue: 'inactive'
-      description: Whether the import job must be approved from the ThreatStream user interface before observables become active. When default_state is set to active, observables become active upon submission, without requiring approval. In these cases, an import job is created on ThreatStream which is automatically approved.
-      name: default_state
+      description: You can add tags that are private to your organization by setting the tlp attribute for the tag to red. If you do not specify a tlp setting, the tag is visible to any ThreatStream user with access to the observable.
+    - name: expiration_ts
+      description: The timestamp when intelligence will expire on ThreatStream, in ISO format. For example, 2020-12-24T00:00:00. By default, the expiration_ts is set to 90 days from the current date.
+    - name: default_state
+      auto: PREDEFINED
       predefined:
       - active
       - inactive
-    description: 'Imports indicators (observables) into ThreatStream. The imported data must be approved using the ThreatStream UI. The data can be imported using one of three methods: plain-text, file, or URL. You must have the Approve Import privilege in order to import observables through the API with default_state set to active.'
-    name: threatstream-import-indicator-with-approval
+      description: Whether the import job must be approved from the ThreatStream user interface before observables become active. When default_state is set to active, observables become active upon submission, without requiring approval. In these cases, an import job is created on ThreatStream which is automatically approved.
+      defaultValue: inactive
     outputs:
     - contextPath: ThreatStream.Import.JobID
       description: The identifier for the job on ThreatStream.
@@ -2486,56 +2470,59 @@ script:
     - contextPath: ThreatStream.Import.ImportID
       description: The ID for the import job.
       type: Number
-  - arguments:
-    - defaultValue: '50'
+    description: 'Imports indicators (observables) into ThreatStream. The imported data must be approved using the ThreatStream UI. The data can be imported using one of three methods: plain-text, file, or URL. You must have the Approve Import privilege in order to import observables through the API with default_state set to active.'
+  - name: threatstream-import-indicator-without-approval
+    arguments:
+    - name: confidence
       description: The observable certainty level of a reported indicator type.
-      name: confidence
-    - description: Ratio (0-100) between the source confidence and the ThreatStream confidence. To use your specified confidence entirely and not re-assess the value using machine learning algorithms, set this argument to 100.
-      name: source_confidence_weight
-    - description: The timestamp when intelligence will expire on ThreatStream, in ISO format. For example, 2020-12-24T00:00:00. By default, the expiration_ts is set to 90 days from the current date.
-      name: expiration_ts
-    - description: The severity to assign to the observable when it is imported.
-      name: severity
+      defaultValue: '50'
+    - name: source_confidence_weight
+      description: Ratio (0-100) between the source confidence and the ThreatStream confidence. To use your specified confidence entirely and not re-assess the value using machine learning algorithms, set this argument to 100.
+    - name: expiration_ts
+      description: The timestamp when intelligence will expire on ThreatStream, in ISO format. For example, 2020-12-24T00:00:00. By default, the expiration_ts is set to 90 days from the current date.
+    - name: severity
+      auto: PREDEFINED
       predefined:
       - low
       - medium
       - high
       - very-high
-    - description: 'A comma-separated list of tags applied to the imported observables. For example, tag1,tag2. Note: In cases where tags are specified at both the global and per observable level, tags specified per observable overwrite global tags.'
-      name: tags
-    - description: A comma-separated list of trusted circle IDs with which threat data should be shared.
-      name: trustedcircles
-    - auto: PREDEFINED
-      description: Denotes whether the indicator data is public or private to the organization.
-      name: classification
+      description: The severity to assign to the observable when it is imported.
+    - name: tags
+      description: 'A comma-separated list of tags applied to the imported observables. For example, tag1,tag2. Note: In cases where tags are specified at both the global and per observable level, tags specified per observable overwrite global tags.'
+    - name: trustedcircles
+      description: A comma-separated list of trusted circle IDs with which threat data should be shared.
+    - name: classification
+      required: true
+      auto: PREDEFINED
       predefined:
       - private
       - public
-      required: true
-    - auto: PREDEFINED
-      description: Whether unresolved domain observables included in the file will be accepted as valid in ThreatStream and imported.
-      name: allow_unresolved
+      description: Denotes whether the indicator data is public or private to the organization.
+    - name: allow_unresolved
+      auto: PREDEFINED
       predefined:
-      - 'yes'
-      - 'no'
-    - description: The entry ID of a file (containing a JSON with an "objects" array and "meta" maps) that is uploaded to the War Room. It is recommended to use the "ThreatstreamBuildIocImportJson" script to build a valid JSON file if possible.
-      name: file_id
-    - description: The “meta” section will be added to this json, and we will send this json to the api endpoint. It is recommended to use the "ThreatstreamBuildIocImportJson" script to build a valid JSON file if possible.
-      name: indicators_json
-    - auto: PREDEFINED
-      description: You can add tags that are private to your organization by setting the tlp attribute for the tag to red. If you do not specify a tlp setting, the tag is visible to any ThreatStream user with access to the observable.
-      name: tags_tlp
+      - yes
+      - no
+      description: Whether unresolved domain observables included in the file will be accepted as valid in ThreatStream and imported.
+    - name: file_id
+      description: The entry ID of a file (containing a JSON with an "objects" array and "meta" maps) that is uploaded to the War Room. It is recommended to use the "ThreatstreamBuildIocImportJson" script to build a valid JSON file if possible.
+    - name: indicators_json
+      description: The “meta” section will be added to this json, and we will send this json to the api endpoint. It is recommended to use the "ThreatstreamBuildIocImportJson" script to build a valid JSON file if possible.
+    - name: tags_tlp
+      auto: PREDEFINED
       predefined:
       - Red
       - Amber
       - Green
       - White
+      description: You can add tags that are private to your organization by setting the tlp attribute for the tag to red. If you do not specify a tlp setting, the tag is visible to any ThreatStream user with access to the observable.
     description: Imports indicators (observables) into ThreatStream. Approval is not required for the imported data. You must have the Approve Intel user permission to import without approval using the API.
-    name: threatstream-import-indicator-without-approval
-  - arguments:
-    - auto: PREDEFINED
-      description: The threat model of the returned list.
-      name: model
+  - name: threatstream-get-model-list
+    arguments:
+    - name: model
+      required: true
+      auto: PREDEFINED
       predefined:
       - actor
       - campaign
@@ -2546,15 +2533,13 @@ script:
       - tipreport
       - malware
       - attack pattern
-      required: true
-    - description: Limits the model size list. Specifying limit=0 returns up to a maximum of 1000 models. For limit=0, the output is not set in the context.
-      name: limit
-    - description: Page number to get result from. Needs to be used with the page_size argument.
-      name: page
-    - description: The page size of the returned results. Needs to be used with the page argument.
-      name: page_size
-    description: Returns a list of threat models.
-    name: threatstream-get-model-list
+      description: The threat model of the returned list.
+    - name: limit
+      description: Limits the model size list. Specifying limit=0 returns up to a maximum of 1000 models. For limit=0, the output is not set in the context.
+    - name: page
+      description: Page number to get result from. Needs to be used with the page_size argument.
+    - name: page_size
+      description: The page size of the returned results. Needs to be used with the page argument.
     outputs:
     - contextPath: ThreatStream.List.Type
       description: The threat model type.
@@ -2568,10 +2553,12 @@ script:
     - contextPath: ThreatStream.List.CreatedTime
       description: 'The date and time of threat model creation. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value for time in UTC time.'
       type: String
-  - arguments:
-    - auto: PREDEFINED
-      description: The threat model.
-      name: model
+    description: Returns a list of threat models.
+  - name: threatstream-get-model-description
+    arguments:
+    - name: model
+      required: true
+      auto: PREDEFINED
       predefined:
       - actor
       - campaign
@@ -2580,12 +2567,10 @@ script:
       - ttp
       - vulnerability
       - tipreport
+      description: The threat model.
+    - name: id
       required: true
-    - description: The threat model ID.
-      name: id
-      required: true
-    description: Returns an HTML file with a description of the threat model.
-    name: threatstream-get-model-description
+      description: The threat model ID.
     outputs:
     - contextPath: File.Name
       description: The file name of the model description.
@@ -2593,10 +2578,12 @@ script:
     - contextPath: File.EntryID
       description: The entry ID of the model description.
       type: String
-  - arguments:
-    - auto: PREDEFINED
-      description: The threat model.
-      name: model
+    description: Returns an HTML file with a description of the threat model.
+  - name: threatstream-get-indicators-by-model
+    arguments:
+    - name: model
+      required: true
+      auto: PREDEFINED
       predefined:
       - actor
       - campaign
@@ -2607,18 +2594,16 @@ script:
       - tipreport
       - malware
       - attack pattern
+      description: The threat model.
+    - name: id
       required: true
-    - description: The model ID.
-      name: id
-      required: true
-    - description: The maximum number of results to return.
-      name: limit
-    - description: Page number to get result from. Needs to be used with the page_size argument.
-      name: page
-    - description: The page size of the returned results. Needs to be used with the page argument.
-      name: page_size
-    description: Returns a list of indicators associated with the specified model and ID of the model.
-    name: threatstream-get-indicators-by-model
+      description: The model ID.
+    - name: limit
+      description: The maximum number of results to return.
+    - name: page
+      description: Page number to get result from. Needs to be used with the page_size argument.
+    - name: page_size
+      description: The page size of the returned results. Needs to be used with the page argument.
     outputs:
     - contextPath: ThreatStream.Model.ModelType
       description: The threat model type.
@@ -2665,50 +2650,50 @@ script:
     - contextPath: ThreatStream.Model.Indicators.Type
       description: The indicator type.
       type: String
-  - arguments:
-    - auto: PREDEFINED
-      defaultValue: private
-      description: Classification of the sandbox submission.
-      name: submission_classification
+    description: Returns a list of indicators associated with the specified model and ID of the model.
+  - name: threatstream-submit-to-sandbox
+    arguments:
+    - name: submission_classification
+      auto: PREDEFINED
       predefined:
       - private
       - public
-    - auto: PREDEFINED
-      defaultValue: WINDOWS7
-      description: The platform on which the submitted URL or file is run. To obtain a list of supported platforms, run the threatstream-supported-platforms command.
-      name: report_platform
+      description: Classification of the sandbox submission.
+      defaultValue: private
+    - name: report_platform
+      auto: PREDEFINED
       predefined:
       - WINDOWS7
       - WINDOWSXP
-    - auto: PREDEFINED
-      defaultValue: file
-      description: The detonation type.
-      name: submission_type
+      description: The platform on which the submitted URL or file is run. To obtain a list of supported platforms, run the threatstream-supported-platforms command.
+      defaultValue: WINDOWS7
+    - name: submission_type
+      required: true
+      auto: PREDEFINED
       predefined:
       - file
       - url
+      description: The detonation type.
+      defaultValue: file
+    - name: submission_value
       required: true
-    - description: The submission value. Possible values are a valid URL or a file ID that was uploaded to the War Room to detonate.
-      name: submission_value
-      required: true
-    - auto: PREDEFINED
-      defaultValue: 'false'
-      description: Whether the premium sandbox should be used for detonation.
-      name: premium_sandbox
-      predefined:
-      - 'false'
-      - 'true'
-    - description: A comma-separated list of additional details for the indicator. This information is displayed in the Tag column of the ThreatStream UI.
-      name: detail
-    - default: true
+      description: The submission value. Possible values are a valid URL or a file ID that was uploaded to the War Room to detonate.
+    - name: premium_sandbox
       auto: PREDEFINED
-      description: If you want to initiate an import job for observables discovered during detonation, set this value to true. Default value is true.
-      name: import_indicators
       predefined:
       - 'false'
       - 'true'
-    description: Submits a file or URL to the ThreatStream-hosted sandbox for detonation.
-    name: threatstream-submit-to-sandbox
+      description: Whether the premium sandbox should be used for detonation.
+      defaultValue: 'false'
+    - name: detail
+      description: A comma-separated list of additional details for the indicator. This information is displayed in the Tag column of the ThreatStream UI.
+    - name: import_indicators
+      default: true
+      auto: PREDEFINED
+      predefined:
+      - 'false'
+      - 'true'
+      description: If you want to initiate an import job for observables discovered during detonation, set this value to true. Default value is true.
     outputs:
     - contextPath: ThreatStream.Analysis.ReportID
       description: The report ID submitted to the sandbox.
@@ -2719,12 +2704,12 @@ script:
     - contextPath: ThreatStream.Analysis.Platform
       description: The platform of the submission submitted to the sandbox.
       type: String
-  - arguments:
-    - description: The report ID to check the status.
-      name: report_id
+    description: Submits a file or URL to the ThreatStream-hosted sandbox for detonation.
+  - name: threatstream-get-analysis-status
+    arguments:
+    - name: report_id
       required: true
-    description: Returns the current status of the report submitted to the sandbox. The report ID is returned from the threatstream-submit-to-sandbox command.
-    name: threatstream-get-analysis-status
+      description: The report ID to check the status.
     outputs:
     - contextPath: ThreatStream.Analysis.ReportID
       description: The report ID of the file or URL that was detonated in the sandbox.
@@ -2738,12 +2723,12 @@ script:
     - contextPath: ThreatStream.Analysis.Verdict
       description: The report verdict of the file or URL detonated in the sandbox. The verdict remains "benign" until detonation is complete.
       type: String
-  - arguments:
-    - description: The report ID to return.
-      name: report_id
+    description: Returns the current status of the report submitted to the sandbox. The report ID is returned from the threatstream-submit-to-sandbox command.
+  - name: threatstream-analysis-report
+    arguments:
+    - name: report_id
       required: true
-    description: Returns the report of a file or URL submitted to the sandbox.
-    name: threatstream-analysis-report
+      description: The report ID to return.
     outputs:
     - contextPath: ThreatStream.Analysis.ReportID
       description: The ID of the report submitted to the sandbox.
@@ -2817,47 +2802,42 @@ script:
     - contextPath: ThreatStream.Analysis.Verdict
       description: The verdict of the sandbox detonation.
       type: String
-  - arguments:
-    - description: The Anomali Observable Search Filter Language query to filter indicator results. If a query is passed as an argument, it overrides all other arguments.
-      name: query
-    - description: The Autonomous System (AS) number associated with the indicator.
-      name: asn
-    - description: |-
-        The observable certainty level
-        of a reported indicator type. Confidence scores range from 0-100 in increasing order of confidence, and are assigned by ThreatStream based on several factors.
-      name: confidence
-    - description: The country associated with the indicator.
-      name: country
-    - description: |-
-        The date the indicator was first seen on
-        the ThreatStream cloud platform. The date must be specified in this format:
-        YYYYMMDDThhmmss, where "T" denotes the start of the value for time, in UTC time.
-        For example, 2014-10-02T20:44:35.
-      name: created_ts
-    - description: The unique ID for the indicator.
-      name: id
-    - auto: PREDEFINED
-      description: Whether the classification of the indicator is public. Default is "false".
-      name: is_public
+    description: Returns the report of a file or URL submitted to the sandbox.
+  - name: threatstream-get-indicators
+    arguments:
+    - name: query
+      description: The Anomali Observable Search Filter Language query to filter indicator results. If a query is passed as an argument, it overrides all other arguments.
+    - name: asn
+      description: The Autonomous System (AS) number associated with the indicator.
+    - name: confidence
+      description: "The observable certainty level\nof a reported indicator type. Confidence scores range from 0-100 in increasing order of confidence, and are assigned by ThreatStream based on several factors."
+    - name: country
+      description: The country associated with the indicator.
+    - name: created_ts
+      description: "The date the indicator was first seen on\nthe ThreatStream cloud platform. The date must be specified in this format:\nYYYYMMDDThhmmss, where \"T\" denotes the start of the value for time, in UTC time.\nFor example, 2014-10-02T20:44:35."
+    - name: id
+      description: The unique ID for the indicator.
+    - name: is_public
+      auto: PREDEFINED
       predefined:
       - 'false'
       - 'true'
-    - description: The severity assigned to the indicator by ThreatStream.
-      name: indicator_severity
-    - description: The registered owner (organization) of the IP address associated with the indicator.
-      name: org
-    - auto: PREDEFINED
-      description: The status assigned to the indicator.
-      name: status
+      description: Whether the classification of the indicator is public. Default is "false".
+    - name: indicator_severity
+      description: The severity assigned to the indicator by ThreatStream.
+    - name: org
+      description: The registered owner (organization) of the IP address associated with the indicator.
+    - name: status
+      auto: PREDEFINED
       predefined:
       - active
       - inactive
       - falsepos
-    - description: The tag assigned to the indicator.
-      name: tags_name
-    - auto: PREDEFINED
-      description: The type of indicator.
-      name: type
+      description: The status assigned to the indicator.
+    - name: tags_name
+      description: The tag assigned to the indicator.
+    - name: type
+      auto: PREDEFINED
       predefined:
       - domain
       - email
@@ -2865,24 +2845,21 @@ script:
       - md5
       - string
       - url
-    - description: 'The value of the indicator. .'
-      name: indicator_value
-    - description: The maximum number of results to return from ThreatStream. Default value is 20.
-      name: limit
-    - description: Page number to get result from. Needs to be used with the page_size argument.
-      name: page
-    - description: The page size of the returned results. Needs to be used with the page argument.
-      name: page_size
-    description: Return filtered indicators from ThreatStream. If a query is defined, it overrides all other arguments that were passed to the command.
-    name: threatstream-get-indicators
+      description: The type of indicator.
+    - name: indicator_value
+      description: The value of the indicator. .
+    - name: limit
+      description: The maximum number of results to return from ThreatStream. Default value is 20.
+    - name: page
+      description: Page number to get result from. Needs to be used with the page_size argument.
+    - name: page_size
+      description: The page size of the returned results. Needs to be used with the page argument.
     outputs:
     - contextPath: ThreatStream.Indicators.IType
       description: The indicator type.
       type: String
     - contextPath: ThreatStream.Indicators.Modified
-      description: |-
-        The date and time the indicator was last updated in ThreatStream. The date format is: YYYYMMDDThhmmss, where T denotes the start of the value
-        for time in UTC time.
+      description: "The date and time the indicator was last updated in ThreatStream. The date format is: YYYYMMDDThhmmss, where T denotes the start of the value\nfor time in UTC time."
       type: String
     - contextPath: ThreatStream.Indicators.Confidence
       description: The observable certainty level of a reported indicator type.
@@ -2914,11 +2891,11 @@ script:
     - contextPath: ThreatStream.Indicators.Severity
       description: The severity assigned to the indicator.
       type: String
-  - arguments:
-    - auto: PREDEFINED
-      defaultValue: intelligence
-      description: The type of threat model entity to which to add the tag.
-      name: model
+    description: Return filtered indicators from ThreatStream. If a query is defined, it overrides all other arguments that were passed to the command.
+  - name: threatstream-add-tag-to-model
+    arguments:
+    - name: model
+      auto: PREDEFINED
       predefined:
       - actor
       - campaign
@@ -2928,104 +2905,106 @@ script:
       - tipreport
       - ttp
       - vulnerability
-    - description: 'A comma-separated list of tags applied to the specified threat model entities or observables. .'
+      description: The type of threat model entity to which to add the tag.
+      defaultValue: intelligence
+    - name: tags
+      required: true
+      description: A comma-separated list of tags applied to the specified threat model entities or observables. .
       isArray: true
-      name: tags
+    - name: model_id
       required: true
-    - description: The ID of the model to which to add the tag.
-      name: model_id
-      required: true
+      description: The ID of the model to which to add the tag.
     description: Adds tags to intelligence to filter for related entities.
-    name: threatstream-add-tag-to-model
-  - arguments:
-    - auto: PREDEFINED
+  - name: threatstream-create-model
+    arguments:
+    - name: model
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - actor
+      - campaign
+      - incident
+      - ttp
+      - vulnerability
+      - tipreport
       description: The type of threat model to create.
-      name: model
-      predefined:
-      - actor
-      - campaign
-      - incident
-      - ttp
-      - vulnerability
-      - tipreport
+    - name: name
       required: true
-    - description: The name of the threat model to create.
-      name: name
-      required: true
-    - auto: PREDEFINED
-      defaultValue: 'false'
-      description: Whether the scope of threat model is visible.
-      name: is_public
+      description: The name of the threat model to create.
+    - name: is_public
+      auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
-    - auto: PREDEFINED
-      defaultValue: red
-      description: The Traffic Light Protocol designation for the threat model.
-      name: tlp
+      description: Whether the scope of threat model is visible.
+      defaultValue: 'false'
+    - name: tlp
+      auto: PREDEFINED
       predefined:
       - red
       - amber
       - green
       - white
-    - description: A comma-separated list of tags.
-      name: tags
-    - description: A comma-separated list of indicators IDs associated with the threat model on the ThreatStream platform.
-      name: intelligence
-    - description: The description of the threat model.
-      name: description
+      description: The Traffic Light Protocol designation for the threat model.
+      defaultValue: red
+    - name: tags
+      description: A comma-separated list of tags.
+    - name: intelligence
+      description: A comma-separated list of indicators IDs associated with the threat model on the ThreatStream platform.
+    - name: description
+      description: The description of the threat model.
+    outputs:
+    - contextPath: ThreatStream.Model.ModelType
+      description: The threat model type.
+      type: String
+    - contextPath: ThreatStream.Model.ModelID
+      description: The threat model ID.
+      type: String
+    - contextPath: ThreatStream.Model.Indicators.Value
+      description: The value of the indicator associated with the specified model.
+      type: String
+    - contextPath: ThreatStream.Model.Indicators.ID
+      description: The ID of the indicator associated with the specified model.
+      type: String
+    - contextPath: ThreatStream.Model.Indicators.IType
+      description: The itype of the indicator associated with the specified model.
+      type: String
+    - contextPath: ThreatStream.Model.Indicators.Severity
+      description: The severity of the indicator associated with the specified model.
+      type: String
+    - contextPath: ThreatStream.Model.Indicators.Confidence
+      description: The confidence of the indicator associated with the specified model.
+      type: String
+    - contextPath: ThreatStream.Model.Indicators.Country
+      description: The country of the indicator associated with the specified model.
+      type: String
+    - contextPath: ThreatStream.Model.Indicators.Organization
+      description: The organization of the indicator associated with the specified model.
+      type: String
+    - contextPath: ThreatStream.Model.Indicators.ASN
+      description: The ASN of the indicator associated with the specified model.
+      type: String
+    - contextPath: ThreatStream.Model.Indicators.Status
+      description: The status of the indicator associated with the specified model.
+      type: String
+    - contextPath: ThreatStream.Model.Indicators.Tags
+      description: The tags of the indicator associated with the specified model.
+      type: String
+    - contextPath: ThreatStream.Model.Indicators.Modified
+      description: The date and time the indicator was last modified.
+      type: String
+    - contextPath: ThreatStream.Model.Indicators.Source
+      description: The indicator source.
+      type: String
+    - contextPath: ThreatStream.Model.Indicators.Type
+      description: The indicator type.
+      type: String
     description: Creates a threat model with the specified parameters.
-    name: threatstream-create-model
-    outputs:
-    - contextPath: ThreatStream.Model.ModelType
-      description: The threat model type.
-      type: String
-    - contextPath: ThreatStream.Model.ModelID
-      description: The threat model ID.
-      type: String
-    - contextPath: ThreatStream.Model.Indicators.Value
-      description: The value of the indicator associated with the specified model.
-      type: String
-    - contextPath: ThreatStream.Model.Indicators.ID
-      description: The ID of the indicator associated with the specified model.
-      type: String
-    - contextPath: ThreatStream.Model.Indicators.IType
-      description: The itype of the indicator associated with the specified model.
-      type: String
-    - contextPath: ThreatStream.Model.Indicators.Severity
-      description: The severity of the indicator associated with the specified model.
-      type: String
-    - contextPath: ThreatStream.Model.Indicators.Confidence
-      description: The confidence of the indicator associated with the specified model.
-      type: String
-    - contextPath: ThreatStream.Model.Indicators.Country
-      description: The country of the indicator associated with the specified model.
-      type: String
-    - contextPath: ThreatStream.Model.Indicators.Organization
-      description: The organization of the indicator associated with the specified model.
-      type: String
-    - contextPath: ThreatStream.Model.Indicators.ASN
-      description: The ASN of the indicator associated with the specified model.
-      type: String
-    - contextPath: ThreatStream.Model.Indicators.Status
-      description: The status of the indicator associated with the specified model.
-      type: String
-    - contextPath: ThreatStream.Model.Indicators.Tags
-      description: The tags of the indicator associated with the specified model.
-      type: String
-    - contextPath: ThreatStream.Model.Indicators.Modified
-      description: The date and time the indicator was last modified.
-      type: String
-    - contextPath: ThreatStream.Model.Indicators.Source
-      description: The indicator source.
-      type: String
-    - contextPath: ThreatStream.Model.Indicators.Type
-      description: The indicator type.
-      type: String
-  - arguments:
-    - auto: PREDEFINED
-      description: The type of threat model to update.
-      name: model
+  - name: threatstream-update-model
+    arguments:
+    - name: model
+      required: true
+      auto: PREDEFINED
       predefined:
       - actor
       - campaign
@@ -3033,36 +3012,34 @@ script:
       - ttp
       - vulnerability
       - tipreport
+      description: The type of threat model to update.
+    - name: model_id
       required: true
-    - description: The ID of the threat model to update.
-      name: model_id
-      required: true
-    - description: The name of the threat model to update.
-      name: name
-    - auto: PREDEFINED
-      defaultValue: 'false'
-      description: Whether the scope of threat model is visible.
-      name: is_public
+      description: The ID of the threat model to update.
+    - name: name
+      description: The name of the threat model to update.
+    - name: is_public
+      auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
-    - auto: PREDEFINED
-      defaultValue: red
-      description: The Traffic Light Protocol designation for the threat model.
-      name: tlp
+      description: Whether the scope of threat model is visible.
+      defaultValue: 'false'
+    - name: tlp
+      auto: PREDEFINED
       predefined:
       - red
       - amber
       - green
       - white
-    - description: A comma-separated list of tags.
-      name: tags
-    - description: A comma-separated list of indicator IDs associated with the threat model on the ThreatStream platform.
-      name: intelligence
-    - description: The description of the threat model.
-      name: description
-    description: Updates a threat model with specific parameters. If one or more optional parameters are defined, the command overrides previous data stored in ThreatStream.
-    name: threatstream-update-model
+      description: The Traffic Light Protocol designation for the threat model.
+      defaultValue: red
+    - name: tags
+      description: A comma-separated list of tags.
+    - name: intelligence
+      description: A comma-separated list of indicator IDs associated with the threat model on the ThreatStream platform.
+    - name: description
+      description: The description of the threat model.
     outputs:
     - contextPath: ThreatStream.Model.ModelType
       description: The threat model type.
@@ -3109,26 +3086,26 @@ script:
     - contextPath: ThreatStream.Model.Indicators.Type
       description: The indicator type.
       type: String
-  - arguments:
-    - auto: PREDEFINED
-      defaultValue: default
-      description: The type of sandbox.
-      name: sandbox_type
+    description: Updates a threat model with specific parameters. If one or more optional parameters are defined, the command overrides previous data stored in ThreatStream.
+  - name: threatstream-supported-platforms
+    arguments:
+    - name: sandbox_type
+      auto: PREDEFINED
       predefined:
       - default
       - premium
-    - defaultValue: '50'
+      description: The type of sandbox.
+      defaultValue: default
+    - name: limit
       description: The maximum number of results to return from ThreatStream.
-      name: limit
-    - auto: PREDEFINED
-      defaultValue: 'false'
-      description: 'Whether to retrieve all results. The "limit" argument will be ignored.'
-      name: all_results
+      defaultValue: '50'
+    - name: all_results
+      auto: PREDEFINED
       predefined:
       - 'false'
       - 'true'
-    description: Returns a list of supported platforms for default or premium sandbox.
-    name: threatstream-supported-platforms
+      description: Whether to retrieve all results. The "limit" argument will be ignored.
+      defaultValue: 'false'
     outputs:
     - contextPath: ThreatStream.PremiumPlatforms.Name
       description: The name of the supported platform for the premium sandbox.
@@ -3148,30 +3125,29 @@ script:
     - contextPath: ThreatStream.DefaultPlatforms.Label
       description: The display name of the supported platform of the standard sandbox.
       type: String
-  - arguments:
-    - default: true
+    description: Returns a list of supported platforms for default or premium sandbox.
+  - name: url
+    arguments:
+    - name: url
+      required: true
+      default: true
       description: The URL to check.
       isArray: true
-      name: url
-      required: true
-    - auto: PREDEFINED
+    - name: threshold
       description: If confidence is greater than the threshold the URL is considered malicious, otherwise it is considered good. This argument overrides the default URL threshold defined as a parameter.
-      name: threshold
-    - auto: PREDEFINED
+    - name: include_inactive
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
       description: Whether to include results with an inactive status.
-      name: include_inactive
+    - name: threat_model_association
+      auto: PREDEFINED
       predefined:
       - 'True'
       - 'False'
-    - auto: PREDEFINED
-      defaultValue: 'False'
       description: 'Enhance generic reputation commands to include additional information such as Threat Bulletins, Attach patterns, Actors, Campaigns, TTPs, vulnerabilities, etc. Note: If set to true, additional 6 API calls will be performed.'
-      name: threat_model_association
-      predefined:
-      - 'True'
-      - 'False'
-    description: Checks the reputation of the given URL.
-    name: url
+      defaultValue: 'False'
     outputs:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -3192,9 +3168,7 @@ script:
       description: The vendor that reported the indicator as malicious.
       type: String
     - contextPath: ThreatStream.URL.Modified
-      description: |-
-        The date and time the indicator was last updated. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value
-        for time in UTC time.
+      description: "The date and time the indicator was last updated. The date format is: YYYYMMDDThhmmss, where \"T\" denotes the start of the value\nfor time in UTC time."
       type: String
     - contextPath: ThreatStream.URL.Confidence
       description: The observable certainty level of a reported indicator type. Confidence score ranges from 0-100, in increasing order of confidence.
@@ -3856,15 +3830,16 @@ script:
     - contextPath: ThreatStream.URL.Campaign.uuid
       description: The UUID of the campaign.
       type: String
-  - arguments:
-    - description: The value of an intelligence.
-      name: value
-    - description: The UUID of an intelligence. When several UUIDs stated, an “OR” operator is used.
+    description: Checks the reputation of the given URL.
+  - name: threatstream-search-intelligence
+    arguments:
+    - name: value
+      description: The value of an intelligence.
+    - name: uuid
+      description: The UUID of an intelligence. When several UUIDs stated, an “OR” operator is used.
       isArray: true
-      name: uuid
-    - auto: PREDEFINED
-      description: The type of an intelligence.
-      name: type
+    - name: type
+      auto: PREDEFINED
       predefined:
       - domain
       - email
@@ -3872,41 +3847,40 @@ script:
       - md5
       - string
       - url
-    - description: The itType of an intelligence. (e.g., apt_ip, apt_email).
-      name: itype
-    - auto: PREDEFINED
-      description: The status of an intelligence.
-      name: status
+      description: The type of an intelligence.
+    - name: itype
+      description: The itType of an intelligence. (e.g., apt_ip, apt_email).
+    - name: status
+      auto: PREDEFINED
       predefined:
       - active
       - inactive
       - falsepos
-    - description: The tags of an intelligence. Comma-separated list. When several tags are stated, an “OR” operator is used.
+      description: The status of an intelligence.
+    - name: tags
+      description: The tags of an intelligence. Comma-separated list. When several tags are stated, an “OR” operator is used.
       isArray: true
-      name: tags
-    - description: The ASN of an intelligence.
-      name: asn
-    - description: The confidence of an intelligence. Input will be operator then value, i.e., “gt 65” or “lt 85”. If only a value is stated, then it must match exactly.
-      name: confidence
-    - description: The threat type of an intelligence.
-      name: threat_type
-    - description: Whether the intelligence is public.
-      name: is_public
-    - description: Query that overrides all other arguments. The filter operators used for the filter language query are the symbolic form (=, <, >, and so on) and not the descriptive form (exact, lt, gt, and so on). E.g., (confidence>=90+AND+(itype="apt_ip"+OR+itype="bot_ip"+OR+itype="c2_ip")).
-      name: query
-    - description: An incrementing numeric identifier associated with each update to intelligence on ThreatStream. If specified, then it is recommended to use order_by=update_id.
-      name: update_id_gt
-    - description: How to order the results.
-      name: order_by
-    - defaultValue: '50'
+    - name: asn
+      description: The ASN of an intelligence.
+    - name: confidence
+      description: The confidence of an intelligence. Input will be operator then value, i.e., “gt 65” or “lt 85”. If only a value is stated, then it must match exactly.
+    - name: threat_type
+      description: The threat type of an intelligence.
+    - name: is_public
+      description: Whether the intelligence is public.
+    - name: query
+      description: Query that overrides all other arguments. The filter operators used for the filter language query are the symbolic form (=, <, >, and so on) and not the descriptive form (exact, lt, gt, and so on). E.g., (confidence>=90+AND+(itype="apt_ip"+OR+itype="bot_ip"+OR+itype="c2_ip")).
+    - name: update_id_gt
+      description: An incrementing numeric identifier associated with each update to intelligence on ThreatStream. If specified, then it is recommended to use order_by=update_id.
+    - name: order_by
+      description: How to order the results.
+    - name: limit
       description: The maximum number of results to return from ThreatStream. The maximum number of returned results is 1000. For more results, use the page and page_size arguments.
-      name: limit
-    - description: Page number to get result from. Needs to be used with the page_size argument.
-      name: page
-    - description: The page size of the returned results. Needs to be used with the page argument.
-      name: page_size
-    description: Returns filtered intelligence from ThreatStream. If a query is defined, it overrides all other arguments that were passed to the command.
-    name: threatstream-search-intelligence
+      defaultValue: '50'
+    - name: page
+      description: Page number to get result from. Needs to be used with the page_size argument.
+    - name: page_size
+      description: The page size of the returned results. Needs to be used with the page argument.
     outputs:
     - contextPath: ThreatStream.Intelligence.source_created
       description: The source from which the intelligence was created.
@@ -4022,17 +3996,17 @@ script:
     - contextPath: ThreatStream.Intelligence.severity
       description: The severity of the intelligence.
       type: String
-  - arguments:
-    - description: Unique ID assigned to the rule.
-      name: rule_id
-    - description: The maximum number of results to return. Default is 50.
-      name: limit
-    - description: The page number of the results to retrieve.
-      name: page
-    - description: The maximum number of objects to retrieve per page.
-      name: page_size
-    description: Gets a list of rules from ThreatStream.
-    name: threatstream-list-rule
+    description: Returns filtered intelligence from ThreatStream. If a query is defined, it overrides all other arguments that were passed to the command.
+  - name: threatstream-list-rule
+    arguments:
+    - name: rule_id
+      description: Unique ID assigned to the rule.
+    - name: limit
+      description: The maximum number of results to return. Default is 50.
+    - name: page
+      description: The page number of the results to retrieve.
+    - name: page_size
+      description: The maximum number of objects to retrieve per page.
     outputs:
     - contextPath: ThreatStream.Rule.adv_keyword
       description: Advanced keyword or regular expression that the rule is designed to match.
@@ -4361,76 +4335,76 @@ script:
     - contextPath: ThreatStream.Rule.vulnerabilities.resource_uri
       description: Resource URI of the vulnerability with which to associate matched entities.
       type: String
-  - arguments:
-    - description: The name of the rule.
-      name: rule_name
+    description: Gets a list of rules from ThreatStream.
+  - name: threatstream-create-rule
+    arguments:
+    - name: rule_name
       required: true
-    - description: 'A comma-separated list of keywords for which you want the rule to match. Keywords added to rules must adhere to the following requirements: IP addresses must be expressed as regular expressions. IP subnets should be expressed using CIDR notation and not as regular expressions. Do not start or end keywords with *. Keywords must contain at least three characters.'
-      isArray: true
-      name: keywords
+      description: The name of the rule.
+    - name: keywords
       required: true
-    - description: 'A comma-separated list of fields you want the rule to match to their keywords. Possible values: observables, sandbox reports, threat bulletins, signatures, vulnerabilities.'
+      description: 'A comma-separated list of keywords for which you want the rule to match. Keywords added to rules must adhere to the following requirements: IP addresses must be expressed as regular expressions. IP subnets should be expressed using CIDR notation and not as regular expressions. Do not start or end keywords with *. Keywords must contain at least three characters.'
       isArray: true
-      name: match_include
+    - name: match_include
       required: true
-    - description: A comma-separated list of IDs of the actors with which you want to associate matched entities. Use the threatstream-get-model-list command to get the actor IDs.
+      description: 'A comma-separated list of fields you want the rule to match to their keywords. Possible values: observables, sandbox reports, threat bulletins, signatures, vulnerabilities.'
       isArray: true
-      name: actor_ids
-    - description: A comma-separated list of IDs of the campaigns with which you want to associate matched entities. Use the threatstream-get-model-list command to get the campaign IDs.
+    - name: actor_ids
+      description: A comma-separated list of IDs of the actors with which you want to associate matched entities. Use the threatstream-get-model-list command to get the actor IDs.
       isArray: true
-      name: campaign_ids
-    - auto: PREDEFINED
-      description: The action you want to perform related to the investigation. Default is 'No Action'.
-      name: investigation_action
+    - name: campaign_ids
+      description: A comma-separated list of IDs of the campaigns with which you want to associate matched entities. Use the threatstream-get-model-list command to get the campaign IDs.
+      isArray: true
+    - name: investigation_action
+      auto: PREDEFINED
       predefined:
       - Create New
       - Add To Existing
       - No Action
-    - description: The investigation name. Required when 'Create New' is selected in the investigation_action argument.
-      name: new_investigation_name
-    - description: Existing investigation ID. Required when 'Add To Existing' is selected in the investigation_action argument. Use the threatstream-list-investigation command to get the investigation ID.
-      name: existing_investigation_id
-    - description: 'A comma-separated list of indicator types you want to exclude from rule matches. Example: actor_ipv6.'
+      description: The action you want to perform related to the investigation. Default is 'No Action'.
+    - name: new_investigation_name
+      description: The investigation name. Required when 'Create New' is selected in the investigation_action argument.
+    - name: existing_investigation_id
+      description: Existing investigation ID. Required when 'Add To Existing' is selected in the investigation_action argument. Use the threatstream-list-investigation command to get the investigation ID.
+    - name: exclude_indicator
+      description: 'A comma-separated list of indicator types you want to exclude from rule matches. Example: actor_ipv6.'
       isArray: true
-      name: exclude_indicator
-    - description: 'A comma-separated list of indicator types you want to include from rule matches. Example: actor_ipv6.'
+    - name: include_indicator
+      description: 'A comma-separated list of indicator types you want to include from rule matches. Example: actor_ipv6.'
       isArray: true
-      name: include_indicator
-    - auto: PREDEFINED
+    - name: exclude_notify_org_whitelisted
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
       description: Whether you want to exclude the rule from matching observables that are included in your organization whitelist.
-      name: exclude_notify_org_whitelisted
+    - name: exclude_notify_owner_org
+      auto: PREDEFINED
       predefined:
       - 'True'
       - 'False'
-    - auto: PREDEFINED
       description: Whether you want to exclude keyword matches on observables imported by your organization from a keyword match or hourly digest email notifications.
-      name: exclude_notify_owner_org
-      predefined:
-      - 'True'
-      - 'False'
-    - description: A comma-separated list of IDs of the incidents with which you want to associate matched entities. Use the threatstream-get-model-list command to get the incident IDs.
+    - name: incident_ids
+      description: A comma-separated list of IDs of the incidents with which you want to associate matched entities. Use the threatstream-get-model-list command to get the incident IDs.
       isArray: true
-      name: incident_ids
-    - description: A comma-separated list of IDs of the malwares with which you want to associate matched entities. Use the threatstream-get-model-list command to get the malware IDs.
+    - name: malware_ids
+      description: A comma-separated list of IDs of the malwares with which you want to associate matched entities. Use the threatstream-get-model-list command to get the malware IDs.
       isArray: true
-      name: malware_ids
-    - description: A comma-separated list of IDs of the signatures with which you want to associate matched entities. Use the threatstream-get-model-list command to get the signature IDs.
+    - name: signature_ids
+      description: A comma-separated list of IDs of the signatures with which you want to associate matched entities. Use the threatstream-get-model-list command to get the signature IDs.
       isArray: true
-      name: signature_ids
-    - description: A comma-separated list of IDs of the threat bulletin with which you want to associate matched entities. Use the threatstream-get-model-list command to get the threat bulletin IDs.
+    - name: threat_bulletin_ids
+      description: A comma-separated list of IDs of the threat bulletin with which you want to associate matched entities. Use the threatstream-get-model-list command to get the threat bulletin IDs.
       isArray: true
-      name: threat_bulletin_ids
-    - description: A comma-separated list of IDs of the TTPs with which you want to associate matched entities. Use the threatstream-get-model-list command to get the TTPs IDs.
+    - name: ttp_ids
+      description: A comma-separated list of IDs of the TTPs with which you want to associate matched entities. Use the threatstream-get-model-list command to get the TTPs IDs.
       isArray: true
-      name: ttp_ids
-    - description: A comma-separated list of IDs of the vulnerabilities with which you want to associate matched entities. Use the threatstream-get-model-list command to get the vulnerabilities IDs.
+    - name: vulnerability_ids
+      description: A comma-separated list of IDs of the vulnerabilities with which you want to associate matched entities. Use the threatstream-get-model-list command to get the vulnerabilities IDs.
       isArray: true
-      name: vulnerability_ids
-    - description: A comma-separated list of IDs of the tags with which you want to associate matched entities.
+    - name: tags
+      description: A comma-separated list of IDs of the tags with which you want to associate matched entities.
       isArray: true
-      name: tags
-    description: Create a rule in the ThreatStream platform.
-    name: threatstream-create-rule
     outputs:
     - contextPath: ThreatStream.Rule.actors.id
       description: Actor's ID associated with the rule.
@@ -4759,77 +4733,77 @@ script:
     - contextPath: ThreatStream.Rule.workgroups
       description: Assigned workgroups.
       type: Unknown
-  - arguments:
-    - description: The rule ID.
-      name: rule_id
+    description: Create a rule in the ThreatStream platform.
+  - name: threatstream-update-rule
+    arguments:
+    - name: rule_id
       required: true
-    - description: The rule name.
-      name: rule_name
-    - description: 'A comma-separated list of keywords for which you want the rule to match. Keywords added to rules must adhere to the following requirements: IP addresses must be expressed as regular expressions. IP subnets should be expressed using CIDR notation and not as regular expressions. Do not start or end keywords with *. Keywords must contain at least three characters.'
+      description: The rule ID.
+    - name: rule_name
+      description: The rule name.
+    - name: keywords
+      description: 'A comma-separated list of keywords for which you want the rule to match. Keywords added to rules must adhere to the following requirements: IP addresses must be expressed as regular expressions. IP subnets should be expressed using CIDR notation and not as regular expressions. Do not start or end keywords with *. Keywords must contain at least three characters.'
       isArray: true
-      name: keywords
-    - description: 'A comma-separated list of fields you want the rule to match to their keywords. Possible values: observables, sandbox reports, threat bulletins, signatures, vulnerabilities.'
+    - name: match_include
+      description: 'A comma-separated list of fields you want the rule to match to their keywords. Possible values: observables, sandbox reports, threat bulletins, signatures, vulnerabilities.'
       isArray: true
-      name: match_include
-    - description: A comma-separated list of IDs of the actors with which you want to associate matched entities. Use the threatstream-get-model-list command to get the actor IDs.
+    - name: actor_ids
+      description: A comma-separated list of IDs of the actors with which you want to associate matched entities. Use the threatstream-get-model-list command to get the actor IDs.
       isArray: true
-      name: actor_ids
-    - description: A comma-separated list of IDs of the campaigns with which you want to associate matched entities. Use the threatstream-get-model-list command to get the campaign IDs.
+    - name: campaign_ids
+      description: A comma-separated list of IDs of the campaigns with which you want to associate matched entities. Use the threatstream-get-model-list command to get the campaign IDs.
       isArray: true
-      name: campaign_ids
-    - auto: PREDEFINED
-      description: The action you want to perform related to the investigation. Default is 'No Action'.
-      name: investigation_action
+    - name: investigation_action
+      auto: PREDEFINED
       predefined:
       - Create New
       - Add To Existing
       - No Action
-    - description: The investigation name. Required when 'Create New' is selected in the investigation_action argument.
-      name: new_investigation_name
-    - description: Existing investigation ID. Required when 'Add To Existing' is selected in the investigation_action argument. Use the threatstream-list-investigation command to get the investigation ID.
-      name: existing_investigation_id
-    - description: A comma-separated list of indicator types you want to exclude from rule matches.
+      description: The action you want to perform related to the investigation. Default is 'No Action'.
+    - name: new_investigation_name
+      description: The investigation name. Required when 'Create New' is selected in the investigation_action argument.
+    - name: existing_investigation_id
+      description: Existing investigation ID. Required when 'Add To Existing' is selected in the investigation_action argument. Use the threatstream-list-investigation command to get the investigation ID.
+    - name: exclude_indicator
+      description: A comma-separated list of indicator types you want to exclude from rule matches.
       isArray: true
-      name: exclude_indicator
-    - description: A comma-separated list of indicator types you want to include from rule matches.
+    - name: include_indicator
+      description: A comma-separated list of indicator types you want to include from rule matches.
       isArray: true
-      name: include_indicator
-    - auto: PREDEFINED
+    - name: exclude_notify_org_whitelisted
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
       description: Whether observables whitelisted by your organization are excluded from rule matches.
-      name: exclude_notify_org_whitelisted
+    - name: exclude_notify_owner_org
+      auto: PREDEFINED
       predefined:
       - 'True'
       - 'False'
-    - auto: PREDEFINED
-      defaultValue: 'False'
       description: Whether you want to exclude keyword matches on observables imported by your organization from a keyword match or hourly digest email notifications.
-      name: exclude_notify_owner_org
-      predefined:
-      - 'True'
-      - 'False'
-    - description: A comma-separated list of IDs of the incidents with which you want to associate matched entities. Use the threatstream-get-model-list command to get the incident IDs.
+      defaultValue: 'False'
+    - name: incident_ids
+      description: A comma-separated list of IDs of the incidents with which you want to associate matched entities. Use the threatstream-get-model-list command to get the incident IDs.
       isArray: true
-      name: incident_ids
-    - description: A comma-separated list of IDs of the malwares with which you want to associate matched entities. Use the threatstream-get-model-list command to get the malware IDs.
+    - name: malware_ids
+      description: A comma-separated list of IDs of the malwares with which you want to associate matched entities. Use the threatstream-get-model-list command to get the malware IDs.
       isArray: true
-      name: malware_ids
-    - description: A comma-separated list of IDs of the signatures with which you want to associate matched entities. Use the threatstream-get-model-list command to get the signature IDs.
+    - name: signature_ids
+      description: A comma-separated list of IDs of the signatures with which you want to associate matched entities. Use the threatstream-get-model-list command to get the signature IDs.
       isArray: true
-      name: signature_ids
-    - description: A comma-separated list of IDs of the threat bulletin with which you want to associate matched entities. Use the threatstream-get-model-list command to get the threat bulletin IDs.
+    - name: threat_bulletin_ids
+      description: A comma-separated list of IDs of the threat bulletin with which you want to associate matched entities. Use the threatstream-get-model-list command to get the threat bulletin IDs.
       isArray: true
-      name: threat_bulletin_ids
-    - description: A comma-separated list of IDs of the TTPs with which you want to associate matched entities. Use the threatstream-get-model-list command to get the TTPs IDs.
+    - name: ttp_ids
+      description: A comma-separated list of IDs of the TTPs with which you want to associate matched entities. Use the threatstream-get-model-list command to get the TTPs IDs.
       isArray: true
-      name: ttp_ids
-    - description: A comma-separated list of IDs of the vulnerabilities with which you want to associate matched entities. Use the threatstream-get-model-list command to get the vulnerabilities IDs.
+    - name: vulnerability_ids
+      description: A comma-separated list of IDs of the vulnerabilities with which you want to associate matched entities. Use the threatstream-get-model-list command to get the vulnerabilities IDs.
       isArray: true
-      name: vulnerability_ids
-    - description: A comma-separated list of tags. For example, tag1,tag2.
+    - name: tags
+      description: A comma-separated list of tags. For example, tag1,tag2.
       isArray: true
-      name: tags
-    description: Updates existing rule from ThreatStream.
-    name: threatstream-update-rule
     outputs:
     - contextPath: ThreatStream.Rule.actors.id
       description: Actor's ID associated with the rule.
@@ -5158,23 +5132,23 @@ script:
     - contextPath: ThreatStream.Rule.workgroups
       description: Assigned workgroups.
       type: Unknown
-  - arguments:
-    - description: The rule ID.
-      name: rule_id
+    description: Updates existing rule from ThreatStream.
+  - name: threatstream-delete-rule
+    arguments:
+    - name: rule_id
       required: true
+      description: The rule ID.
     description: Delete a rule from ThreatStream.
-    name: threatstream-delete-rule
-  - arguments:
-    - description: ID of the user. If specified, returns the specific user.
-      name: user_id
-    - description: The maximum number of results to return. Default is 50.
-      name: limit
-    - description: The page number of the results to retrieve.
-      name: page
-    - description: The maximum number of objects to retrieve per page.
-      name: page_size
-    description: Gets list of users from ThreatStream. Only users with org admin permission can run this command.
-    name: threatstream-list-user
+  - name: threatstream-list-user
+    arguments:
+    - name: user_id
+      description: ID of the user. If specified, returns the specific user.
+    - name: limit
+      description: The maximum number of results to return. Default is 50.
+    - name: page
+      description: The page number of the results to retrieve.
+    - name: page_size
+      description: The maximum number of objects to retrieve per page.
     outputs:
     - contextPath: ThreatStream.User.avatar_s3_url
       description: URL for the avatar image associated with the user.
@@ -5248,17 +5222,17 @@ script:
     - contextPath: ThreatStream.User.user_id
       description: ID of the user.
       type: String
-  - arguments:
-    - description: ID of the investigation. If specified, returns the specific investigation.
-      name: investigation_id
-    - description: The maximum number of results to return. Default is 50.
-      name: limit
-    - description: The page number of the results to retrieve.
-      name: page
-    - description: The maximum number of objects to retrieve per page.
-      name: page_size
-    description: Gets a list of investigations from ThreatStream.
-    name: threatstream-list-investigation
+    description: Gets list of users from ThreatStream. Only users with org admin permission can run this command.
+  - name: threatstream-list-investigation
+    arguments:
+    - name: investigation_id
+      description: ID of the investigation. If specified, returns the specific investigation.
+    - name: limit
+      description: The maximum number of results to return. Default is 50.
+    - name: page
+      description: The page number of the results to retrieve.
+    - name: page_size
+      description: The maximum number of objects to retrieve per page.
     outputs:
     - contextPath: ThreatStream.Investigation.assignee.assignee_type
       description: 'Type of assignee: "user" or "tsworkgroup".'
@@ -5389,74 +5363,74 @@ script:
     - contextPath: ThreatStream.Investigation.workgroups
       description: Assigned workgroups.
       type: Unknown
-  - arguments:
-    - description: The name of the investigation.
-      name: name
+    description: Gets a list of investigations from ThreatStream.
+  - name: threatstream-create-investigation
+    arguments:
+    - name: name
       required: true
-    - description: The description of the investigation.
-      name: description
-    - auto: PREDEFINED
+      description: The name of the investigation.
+    - name: description
+      description: The description of the investigation.
+    - name: priority
+      auto: PREDEFINED
+      predefined:
+      - Very Low
+      - Low
+      - Medium
+      - High
+      - Very High
       description: The priority of the investigation.
-      name: priority
+    - name: status
+      auto: PREDEFINED
       predefined:
-      - 'Very Low'
-      - 'Low'
-      - 'Medium'
-      - 'High'
-      - 'Very High'
-    - auto: PREDEFINED
+      - Completed
+      - In-Progress
+      - Pending
+      - Unassigned
       description: The status of the investigation.
-      name: status
-      predefined:
-      - 'Completed'
-      - 'In-Progress'
-      - 'Pending'
-      - 'Unassigned'
-    - description: A comma-separated list of tags. For example, tag1,tag2.
+    - name: tags
+      description: A comma-separated list of tags. For example, tag1,tag2.
       isArray: true
-      name: tags
-    - auto: PREDEFINED
-      description: tlp.
-      name: tlp
+    - name: tlp
+      auto: PREDEFINED
       predefined:
-      - 'White'
-      - 'Green'
-      - 'Amber'
-      - 'Red'
-    - description: Assignee ID. Use the threatstream-list-user command to get the user ID value.
-      name: assignee_id
-    - auto: PREDEFINED
-      description: When enabled, observables related to the entity you are associating with the investigation are also added.
-      name: connect_related_indicators
+      - White
+      - Green
+      - Amber
+      - Red
+      description: tlp.
+    - name: assignee_id
+      description: Assignee ID. Use the threatstream-list-user command to get the user ID value.
+    - name: connect_related_indicators
+      auto: PREDEFINED
       predefined:
       - 'True'
       - 'False'
-    - description: A comma-separated list of IDs of the actors with which you want to associate matched entities. Use the threatstream-get-model-list command to get the actor IDs.
+      description: When enabled, observables related to the entity you are associating with the investigation are also added.
+    - name: associated_actor_ids
+      description: A comma-separated list of IDs of the actors with which you want to associate matched entities. Use the threatstream-get-model-list command to get the actor IDs.
       isArray: true
-      name: associated_actor_ids
-    - description: A comma-separated list of IDs of the campaigns with which you want to associate matched entities. Use the threatstream-get-model-list command to get the campaign IDs.
+    - name: associated_campaign_ids
+      description: A comma-separated list of IDs of the campaigns with which you want to associate matched entities. Use the threatstream-get-model-list command to get the campaign IDs.
       isArray: true
-      name: associated_campaign_ids
-    - description: A comma-separated list of IDs of the incidents with which you want to associate matched entities. Use the threatstream-get-model-list command to get the incident IDs.
+    - name: associated_incident_ids
+      description: A comma-separated list of IDs of the incidents with which you want to associate matched entities. Use the threatstream-get-model-list command to get the incident IDs.
       isArray: true
-      name: associated_incident_ids
-    - description: A comma-separated list of IDs of the observables with which you want to associate matched entities. Use the threatstream-get-indicators command to get the observable IDs.
+    - name: associated_observable_ids
+      description: A comma-separated list of IDs of the observables with which you want to associate matched entities. Use the threatstream-get-indicators command to get the observable IDs.
       isArray: true
-      name: associated_observable_ids
-    - description: A comma-separated list of IDs of the signatures with which you want to associate matched entities. Use the threatstream-get-model-list command to get the signature IDs.
+    - name: associated_signature_ids
+      description: A comma-separated list of IDs of the signatures with which you want to associate matched entities. Use the threatstream-get-model-list command to get the signature IDs.
       isArray: true
-      name: associated_signature_ids
-    - description: A comma-separated list of IDs of the threat bulletin with which you want to associate matched entities. Use the threatstream-get-model-list command to get the threat bulletin IDs.
+    - name: associated_threat_bulletin_ids
+      description: A comma-separated list of IDs of the threat bulletin with which you want to associate matched entities. Use the threatstream-get-model-list command to get the threat bulletin IDs.
       isArray: true
-      name: associated_threat_bulletin_ids
-    - description: A comma-separated list of IDs of the TTPs with which you want to associate matched entities. Use the threatstream-get-model-list command to get the TTPs IDs.
+    - name: associated_ttp_ids
+      description: A comma-separated list of IDs of the TTPs with which you want to associate matched entities. Use the threatstream-get-model-list command to get the TTPs IDs.
       isArray: true
-      name: associated_ttp_ids
-    - description: A comma-separated list of IDs of the vulnerabilities with which you want to associate matched entities. Use the threatstream-get-model-list command to get the vulnerabilities IDs.
+    - name: associated_vulnerability_ids
+      description: A comma-separated list of IDs of the vulnerabilities with which you want to associate matched entities. Use the threatstream-get-model-list command to get the vulnerabilities IDs.
       isArray: true
-      name: associated_vulnerability_ids
-    description: Create an investigation at ThreatStream.
-    name: threatstream-create-investigation
     outputs:
     - contextPath: ThreatStream.Investigation.add_related_indicators
       description: Whether to add related indicators to the investigation.
@@ -5818,42 +5792,42 @@ script:
     - contextPath: ThreatStream.Investigation.workgroups
       description: Assigned workgroups.
       type: Unknown
-  - arguments:
-    - description: The ID of the investigation. Use the threatstream-list-investigation command to get the investigation ID.
-      name: investigation_id
+    description: Create an investigation at ThreatStream.
+  - name: threatstream-update-investigation
+    arguments:
+    - name: investigation_id
       required: true
-    - auto: PREDEFINED
+      description: The ID of the investigation. Use the threatstream-list-investigation command to get the investigation ID.
+    - name: priority
+      auto: PREDEFINED
+      predefined:
+      - Very Low
+      - Low
+      - Medium
+      - High
+      - Very High
       description: The priority of the investigation.
-      name: priority
+    - name: status
+      auto: PREDEFINED
       predefined:
-      - 'Very Low'
-      - 'Low'
-      - 'Medium'
-      - 'High'
-      - 'Very High'
-    - auto: PREDEFINED
+      - Completed
+      - In-Progress
+      - Pending
+      - Unassigned
       description: The status of the investigation.
-      name: status
-      predefined:
-      - 'Completed'
-      - 'In-Progress'
-      - 'Pending'
-      - 'Unassigned'
-    - description: A comma-separated list of tags. For example, tag1,tag2.
+    - name: tags
+      description: A comma-separated list of tags. For example, tag1,tag2.
       isArray: true
-      name: tags
-    - auto: PREDEFINED
-      description: The tlp (Traffic Light Protocol designation) of the investigation.
-      name: tlp
+    - name: tlp
+      auto: PREDEFINED
       predefined:
-      - 'White'
-      - 'Green'
-      - 'Amber'
-      - 'Red'
-    - description: Assignee ID. Use the threatstream-list-user command to get the user ID.
-      name: assignee_id
-    name: threatstream-update-investigation
-    description: Updates an existing investigation at ThreatStream.
+      - White
+      - Green
+      - Amber
+      - Red
+      description: The tlp (Traffic Light Protocol designation) of the investigation.
+    - name: assignee_id
+      description: Assignee ID. Use the threatstream-list-user command to get the user ID.
     outputs:
     - contextPath: ThreatStream.Investigation.add_related_indicators
       description: Errors related to the investigation.
@@ -5972,66 +5946,66 @@ script:
     - contextPath: ThreatStream.Investigation.tlp
       description: Traffic Light Protocol designation for the investigation—red, amber, green, white.
       type: String
-  - arguments:
-    - description: The ID of the investigation.
-      name: investigation_id
+    description: Updates an existing investigation at ThreatStream.
+  - name: threatstream-delete-investigation
+    arguments:
+    - name: investigation_id
       required: true
-    name: threatstream-delete-investigation
+      description: The ID of the investigation.
     description: Deletes an existing investigation at ThreatStream.
-  - arguments:
-    - description: The ID of the investigation. Use the threatstream-get-model-list command to get the investigation ID.
-      name: investigation_id
+  - name: threatstream-add-investigation-element
+    arguments:
+    - name: investigation_id
       required: true
-    - auto: PREDEFINED
-      description: When enabled, observables related to the entity you are associating with the investigation are also added.
-      name: connect_related_indicators
+      description: The ID of the investigation. Use the threatstream-get-model-list command to get the investigation ID.
+    - name: connect_related_indicators
+      auto: PREDEFINED
       predefined:
       - 'True'
       - 'False'
-    - description: A comma-separated list of IDs of the actors with which you want to associate matched entities. Use the threatstream-get-model-list command to get the actor IDs.
+      description: When enabled, observables related to the entity you are associating with the investigation are also added.
+    - name: associated_actor_ids
+      description: A comma-separated list of IDs of the actors with which you want to associate matched entities. Use the threatstream-get-model-list command to get the actor IDs.
       isArray: true
-      name: associated_actor_ids
-    - description: A comma-separated list of IDs of the campaigns with which you want to associate matched entities. Use the threatstream-get-model-list command to get the campaign IDs.
+    - name: associated_campaign_ids
+      description: A comma-separated list of IDs of the campaigns with which you want to associate matched entities. Use the threatstream-get-model-list command to get the campaign IDs.
       isArray: true
-      name: associated_campaign_ids
-    - description: A comma-separated list of IDs of the incidents with which you want to associate matched entities. Use the threatstream-get-model-list command to get the incident IDs.
+    - name: associated_incident_ids
+      description: A comma-separated list of IDs of the incidents with which you want to associate matched entities. Use the threatstream-get-model-list command to get the incident IDs.
       isArray: true
-      name: associated_incident_ids
-    - description: A comma-separated list of IDs of the observables with which you want to associate matched entities. Use the threatstream-get-indicators command to get the observable IDs.
+    - name: associated_observable_ids
+      description: A comma-separated list of IDs of the observables with which you want to associate matched entities. Use the threatstream-get-indicators command to get the observable IDs.
       isArray: true
-      name: associated_observable_ids
-    - description: A comma-separated list of IDs of the signatures with which you want to associate matched entities. Use the threatstream-get-model-list command to get the signature IDs.
+    - name: associated_signature_ids
+      description: A comma-separated list of IDs of the signatures with which you want to associate matched entities. Use the threatstream-get-model-list command to get the signature IDs.
       isArray: true
-      name: associated_signature_ids
-    - description: A comma-separated list of IDs of the threat bulletin with which you want to associate matched entities. Use the threatstream-get-model-list command to get the threat bulletin IDs.
+    - name: associated_threat_bulletin_ids
+      description: A comma-separated list of IDs of the threat bulletin with which you want to associate matched entities. Use the threatstream-get-model-list command to get the threat bulletin IDs.
       isArray: true
-      name: associated_threat_bulletin_ids
-    - description: A comma-separated list of IDs of the TTPs with which you want to associate matched entities. Use the threatstream-get-model-list command to get the TTPs IDs.
+    - name: associated_ttp_ids
+      description: A comma-separated list of IDs of the TTPs with which you want to associate matched entities. Use the threatstream-get-model-list command to get the TTPs IDs.
       isArray: true
-      name: associated_ttp_ids
-    - description: A comma-separated list of IDs of the vulnerabilities with which you want to associate matched entities. Use the threatstream-get-model-list command to get the vulnerabilities IDs.
+    - name: associated_vulnerability_ids
+      description: A comma-separated list of IDs of the vulnerabilities with which you want to associate matched entities. Use the threatstream-get-model-list command to get the vulnerabilities IDs.
       isArray: true
-      name: associated_vulnerability_ids
-    name: threatstream-add-investigation-element
     description: Add an element to the existing investigation at ThreatStream.
-  - arguments:
-    - auto: PREDEFINED
+  - name: threatstream-list-whitelist-entry
+    arguments:
+    - name: format
       default: true
-      defaultValue: 'JSON'
-      description: Defines the format of the response.
-      name: format
+      auto: PREDEFINED
       predefined:
-      - 'CSV'
-      - 'JSON'
-    - defaultValue: '50'
+      - CSV
+      - JSON
+      description: Defines the format of the response.
+      defaultValue: JSON
+    - name: limit
       description: The maximum number of results to return.
-      name: limit
-    - description: Page number to get result from. Needs to be used with the page_size argument.
-      name: page
-    - description: The page size of the returned results. Needs to be used with the page argument.
-      name: page_size
-    description: Get a list of whitelist entries.
-    name: threatstream-list-whitelist-entry
+      defaultValue: '50'
+    - name: page
+      description: Page number to get result from. Needs to be used with the page_size argument.
+    - name: page_size
+      description: The page size of the returned results. Needs to be used with the page argument.
     outputs:
     - contextPath: InfoFile.Name
       description: Name of the file.
@@ -6069,69 +6043,69 @@ script:
     - contextPath: ThreatStream.WhitelistEntry.value_type
       description: Value type of the entry.
       type: String
-  - arguments:
-    - description: The entry ID of the file you want to upload.
-      name: entry_id
-    - description: A comma-separated list of CIDRs associated with the entry.
+    description: Get a list of whitelist entries.
+  - name: threatstream-create-whitelist-entry
+    arguments:
+    - name: entry_id
+      description: The entry ID of the file you want to upload.
+    - name: cidr
+      description: A comma-separated list of CIDRs associated with the entry.
       isArray: true
-      name: cidr
-    - description: A comma-separated list of domains associated with the entry.
+    - name: domains
+      description: A comma-separated list of domains associated with the entry.
       isArray: true
-      name: domains
-    - description: A comma-separated list of emails associated with the entry.
+    - name: emails
+      description: A comma-separated list of emails associated with the entry.
       isArray: true
-      name: emails
-    - description: A comma-separated list of IPs associated with the entry.
+    - name: ips
+      description: A comma-separated list of IPs associated with the entry.
       isArray: true
-      name: ips
-    - description: A comma-separated list of MD5 hashes associated with the entry.
+    - name: md5
+      description: A comma-separated list of MD5 hashes associated with the entry.
       isArray: true
-      name: md5
-    - description: A comma-separated list of URLs associated with the entry.
+    - name: urls
+      description: A comma-separated list of URLs associated with the entry.
       isArray: true
-      name: urls
-    - description: A comma-separated list of user agents associated with the entry.
+    - name: user_agents
+      description: A comma-separated list of user agents associated with the entry.
       isArray: true
-      name: user_agents
-    - description: A note that will be associated with all the indicator types that are provided in the command arguments.
-      name: note
+    - name: note
+      description: A note that will be associated with all the indicator types that are provided in the command arguments.
     description: Creates a new whitelist entry.
-    name: threatstream-create-whitelist-entry
-  - arguments:
-    - description: The ID of the entry you want to update.
-      name: entry_id
+  - name: threatstream-update-whitelist-entry-note
+    arguments:
+    - name: entry_id
       required: true
-    - description: A note that will be associated with all the indicator types that are provided in the command arguments.
-      name: note
+      description: The ID of the entry you want to update.
+    - name: note
       required: true
-    description: "Modify contextual notes associated with existing whitelist entries."
-    name: threatstream-update-whitelist-entry-note
-  - arguments:
-    - description: The ID of the entry you want to update. Use the threatstream-list-whitelist-entry command to get the entry ID.
-      name: entry_id
+      description: A note that will be associated with all the indicator types that are provided in the command arguments.
+    description: Modify contextual notes associated with existing whitelist entries.
+  - name: threatstream-delete-whitelist-entry
+    arguments:
+    - name: entry_id
       required: true
+      description: The ID of the entry you want to update. Use the threatstream-list-whitelist-entry command to get the entry ID.
     description: Delete a whitelist entry.
-    name: threatstream-delete-whitelist-entry
-  - arguments:
-    - description: When specified, the results returned in the list are limited to specific import ID.
-      name: import_id
-    - auto: PREDEFINED
-      description: When specified, the results returned in the list are limited to the selected status.
-      name: status_in
+  - name: threatstream-list-import-job
+    arguments:
+    - name: import_id
+      description: When specified, the results returned in the list are limited to specific import ID.
+    - name: status_in
+      auto: PREDEFINED
       predefined:
-      - 'Processing'
-      - 'Errors'
-      - 'Ready To Review'
-      - 'Rejected'
-      - 'Approved'
-    - description: The maximum number of results to return. Default is 50.
-      name: limit
-    - description: Page number to get result from. Needs to be used with the page_size argument.
-      name: page
-    - description: The page size of the returned results. Needs to be used with the page argument.
-      name: page_size
-    description: Gets an import list.
-    name: threatstream-list-import-job
+      - Processing
+      - Errors
+      - Ready To Review
+      - Rejected
+      - Approved
+      description: When specified, the results returned in the list are limited to the selected status.
+    - name: limit
+      description: The maximum number of results to return. Default is 50.
+    - name: page
+      description: Page number to get result from. Needs to be used with the page_size argument.
+    - name: page_size
+      description: The page size of the returned results. Needs to be used with the page argument.
     outputs:
     - contextPath: ThreatStream.Import.approved_by_id
       description: The ID of the user who approved the import.
@@ -6238,56 +6212,56 @@ script:
     - contextPath: ThreatStream.Import.visibleForReview
       description: Whether the entity is visible for review.
       type: Boolean
-  - arguments:
-    - description: The ID of the import job.
-      name: import_id
+    description: Gets an import list.
+  - name: threatstream-approve-import-job
+    arguments:
+    - name: import_id
       required: true
+      description: The ID of the import job.
     description: Approve all observables in an import job.
-    name: threatstream-approve-import-job
-  - arguments:
-    - description: 'A comma-separated list of model types. Supported values are: actor, attackpattern , campaign, courseofaction, incident,identity, infrastructure, intrusionset, malware,signature, tipreport, ttp, tool, vulnerability.'
+  - name: threatstream-search-threat-model
+    arguments:
+    - name: model_type
+      description: 'A comma-separated list of model types. Supported values are: actor, attackpattern , campaign, courseofaction, incident,identity, infrastructure, intrusionset, malware,signature, tipreport, ttp, tool, vulnerability.'
       isArray: true
-      name: model_type
-    - description: The name of the threat model.
-      name: name
-    - description: 'Free text to search string in the fields: Aliases, Description, Name, Tags.'
-      name: keyword_search
-    - description: Other names by which the entity are known.
-      name: alias
-    - description: Numeric ID of the threat feed that provided the Threat Model entity.
-      name: feed_id
-    - auto: PREDEFINED
+    - name: name
+      description: The name of the threat model.
+    - name: keyword_search
+      description: 'Free text to search string in the fields: Aliases, Description, Name, Tags.'
+    - name: alias
+      description: Other names by which the entity are known.
+    - name: feed_id
+      description: Numeric ID of the threat feed that provided the Threat Model entity.
+    - name: is_email
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
       description: Whether the entity was created as a result of an email import.
-      name: is_email
+    - name: is_public
+      auto: PREDEFINED
       predefined:
       - 'True'
       - 'False'
-    - auto: PREDEFINED
-      description: 'Whether the entity is public or private. True—if the entity is public, False—if the entity is private or belongs to a Trusted Circle.'
-      name: is_public
-      predefined:
-      - 'True'
-      - 'False'
-    - description: 'A comma-separated list of publication statuses. Supported values are: new, pending_review, review_requested, reviewed.'
+      description: Whether the entity is public or private. True—if the entity is public, False—if the entity is private or belongs to a Trusted Circle.
+    - name: publication_status
+      description: 'A comma-separated list of publication statuses. Supported values are: new, pending_review, review_requested, reviewed.'
       isArray: true
-      name: publication_status
-    - description: 'A comma-separated list of signature types. Supported values are: Bro, Carbon Black Query, ClamAV, Custom, CybOX, OpenIOC, RSA NetWitness, Snort, Splunk Query, Suricata, YARA.'
+    - name: signature_type
+      description: 'A comma-separated list of signature types. Supported values are: Bro, Carbon Black Query, ClamAV, Custom, CybOX, OpenIOC, RSA NetWitness, Snort, Splunk Query, Suricata, YARA.'
       isArray: true
-      name: signature_type
-    - description: 'A comma-separated list of additional comments and context associated with the entity when it was imported from its original threat feed.'
+    - name: tags
+      description: A comma-separated list of additional comments and context associated with the entity when it was imported from its original threat feed.
       isArray: true
-      name: tags
-    - description: Used for querying entities associated with specified trusted circles.
-      name: trusted_circle_id
-    - defaultValue: '50'
+    - name: trusted_circle_id
+      description: Used for querying entities associated with specified trusted circles.
+    - name: limit
       description: The maximum number of results to return.
-      name: limit
-    - description: Page number to get result from. Needs to be used with the page_size argument.
-      name: page
-    - description: The page size of the returned results. Needs to be used with the page argument.
-      name: page_size
-    description: Retrieve threat model entities from ThreatStream.
-    name: threatstream-search-threat-model
+      defaultValue: '50'
+    - name: page
+      description: Page number to get result from. Needs to be used with the page_size argument.
+    - name: page_size
+      description: The page size of the returned results. Needs to be used with the page argument.
     outputs:
     - contextPath: ThreatStream.ThreatModel.source_created
       description: Timestamp of when the entity was created by its original source.
@@ -6361,81 +6335,103 @@ script:
     - contextPath: ThreatStream.ThreatModel.resource_uri
       description: Resource URI associated with the entity.
       type: String
-  - arguments:
-    - auto: PREDEFINED
-      description: The type of threat model entity to which you are adding the association.
-      name: entity_type
+    description: Retrieve threat model entities from ThreatStream.
+  - name: threatstream-add-threat-model-association
+    arguments:
+    - name: entity_type
+      required: true
+      auto: PREDEFINED
       predefined:
-      - 'Actor'
-      - 'Attack Pattern'
-      - 'Campaign'
-      - 'Course Of Action'
-      - 'Identity'
-      - 'Infrastructure'
-      - 'Intrusion Set'
-      - 'Incident'
-      - 'Malware'
-      - 'Signature'
-      - 'Threat Bulletin'
-      - 'Tool'
-      - 'Ttp'
-      - 'Vulnerability'
+      - Actor
+      - Attack Pattern
+      - Campaign
+      - Course Of Action
+      - Identity
+      - Infrastructure
+      - Intrusion Set
+      - Incident
+      - Malware
+      - Signature
+      - Threat Bulletin
+      - Tool
+      - Ttp
+      - Vulnerability
+      description: The type of threat model entity to which you are adding the association.
+    - name: entity_id
       required: true
-    - description: The ID of the threat model entity to which you are adding the association.
-      name: entity_id
+      description: The ID of the threat model entity to which you are adding the association.
+    - name: associated_entity_ids
       required: true
-    - description: 'The entities IDs to associate with the primary entity. Note: The model type of all the IDs must be equal to the type in the “associated_entity_type” argument.'
+      description: 'The entities IDs to associate with the primary entity. Note: The model type of all the IDs must be equal to the type in the “associated_entity_type” argument.'
       isArray: true
-      name: associated_entity_ids
+    - name: associated_entity_type
       required: true
-    - auto: PREDEFINED
-      description: The type of threat model entity to which you are adding the association.
-      name: associated_entity_type
+      auto: PREDEFINED
       predefined:
-      - 'Actor'
-      - 'Attack Pattern'
-      - 'Campaign'
-      - 'Course Of Action'
-      - 'Identity'
-      - 'Infrastructure'
-      - 'Intrusion Set'
-      - 'Incident'
-      - 'Malware'
-      - 'Signature'
-      - 'Threat Bulletin'
-      - 'Tool'
-      - 'Ttp'
-      - 'Vulnerability'
-      required: true
+      - Actor
+      - Attack Pattern
+      - Campaign
+      - Course Of Action
+      - Identity
+      - Infrastructure
+      - Intrusion Set
+      - Incident
+      - Malware
+      - Signature
+      - Threat Bulletin
+      - Tool
+      - Ttp
+      - Vulnerability
+      description: The type of threat model entity to which you are adding the association.
     description: Creates associations between threat model entities on the ThreatStream platform.
-    name: threatstream-add-threat-model-association
-  - arguments:
-    - description: A comma-separated list of unique IDs of the indicator to which you are adding tags (execute the command threatstream-get-indicators to get the list of indicators).
-      name: indicator_ids
+  - name: threatstream-add-indicator-tag
+    arguments:
+    - name: indicator_ids
       required: true
+      description: A comma-separated list of unique IDs of the indicator to which you are adding tags (execute the command threatstream-get-indicators to get the list of indicators).
       isArray: true
-    - description: A comma-separated list of values of the tags you want to add.
-      name: tags
+    - name: tags
       required: true
+      description: A comma-separated list of values of the tags you want to add.
       isArray: true
     description: Add tags to the indicators.
-    name: threatstream-add-indicator-tag
-  - arguments:
-    - description: A comma-separated list of unique IDs of the indicator to which you are removing tags (execute the command threatstream-get-indicators to get the list of indicators).
-      name: indicator_ids
+  - name: threatstream-remove-indicator-tag
+    arguments:
+    - name: indicator_ids
       required: true
+      description: A comma-separated list of unique IDs of the indicator to which you are removing tags (execute the command threatstream-get-indicators to get the list of indicators).
       isArray: true
-    - description: A comma-separated list of values of the tags you want to remove.
-      name: tags
+    - name: tags
       required: true
+      description: A comma-separated list of values of the tags you want to remove.
       isArray: true
     description: Remove tags from the indicators.
-    name: threatstream-remove-indicator-tag
+  - name: threatstream-clone-imported-indicator
+    arguments:
+    - name: indicator_id
+      required: true
+      description: ID of the indicator to clone
+    outputs:
+    - contextPath: ThreatStream.Clone.ID
+      description: Indicator ID
+      type: string
+    - contextPath: ThreatStream.Clone.Import_Session_ID
+      description: Import Session ID for the clone request
+      type: string
+    - contextPath: ThreatStream.Clone.Job_ID
+      description: Job ID for the clone request
+      type: string
+    description: Clones already imported indicators (observables), used with the edit classification to move to a trusted circle
+  - name: threatstream-edit-classification
+    arguments:
+    - name: import_id
+      required: true
+      description: Import Session ID of the import session from the clone-imported-indicator command
+    - name: data
+      required: true
+      description: JSON data of edits to be made {"is_public":false,"circles":[12866]}
+    description: Edit the values for observable that have been cloned
   dockerimage: demisto/py3-tools:1.0.0.99035
   runonce: false
-  script: '-'
   subtype: python3
-  type: python
-tests:
-- ThreatStream-Test
-fromversion: 6.0.0
+sourcemoduleid: Anomali ThreatStream v3
