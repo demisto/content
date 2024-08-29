@@ -87,6 +87,9 @@ def initialize_start_timestamp(last_run: dict[str, Any], log_type: str, arg_from
 def get_max_results_and_limit(params: dict[str, Any], log_type: str) -> tuple[int, int]:
     max_results = arg_to_number(params.get(MAX_FETCH_PARAM_NAME[log_type])) or MAX_RESULTS_FOR_LOG_TYPE[log_type]
     limit = min(max_results, MAX_CALLS_FOR_LOG_TYPE[log_type])
+    if limit < 20:
+        limit = 20
+
     return max_results, limit
 
 
@@ -156,8 +159,6 @@ def fetch_events(client: Client, params: dict, last_run: dict, arg_from=None):
         last_event_time = start_timestamp
         collected_events: list = []
         max_results, limit = get_max_results_and_limit(params, log_type)
-        if limit < 20:
-            limit = 20
         previous_ids = last_run.get(log_type, {}).get("previous_ids", {})
 
         while len(collected_events) < max_results:
@@ -176,10 +177,11 @@ def fetch_events(client: Client, params: dict, last_run: dict, arg_from=None):
 
             new_events, previous_ids, last_event_time = process_events(events, previous_ids, last_event_time, max_results,
                                                                        len(collected_events), log_type)
-            
+
             if not new_events:
                 if len(events) < limit:
                     break
+
                 limit += limit
 
             collected_events.extend(new_events)

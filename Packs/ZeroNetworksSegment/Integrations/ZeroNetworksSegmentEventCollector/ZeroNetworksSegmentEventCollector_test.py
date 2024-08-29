@@ -17,6 +17,7 @@ from ZeroNetworksSegmentEventCollector import (Client, process_events, initializ
                                                get_events, create_id, AUDIT_TYPE, NETWORK_ACTIVITIES_TYPE)
 from CommonServerPython import *
 import hashlib
+import demistomock as demisto  # noqa: F401
 
 
 class MockClient(Client):
@@ -395,3 +396,28 @@ def compute_hash(combined_string):
 def test_create_id(event, log_type, expected_id):
     result = create_id(event, log_type)
     assert result == expected_id
+
+
+def test_event_limit_logic(mocker):
+    mocker.patch('ZeroNetworksSegmentEventCollector.initialize_start_timestamp', return_value=1000)
+    mocker.patch('ZeroNetworksSegmentEventCollector.get_max_results_and_limit', return_value=(1, 1))
+    mocker.patch('ZeroNetworksSegmentEventCollector.get_log_types', return_value=['audit'])
+    mock_search_events = mocker.patch('ZeroNetworksSegmentEventCollector.Client.search_events', 
+                                      return_value={'items':[{'id': 1, 'timestamp': 1}], 'scrollCursor': '1'})
+    mocker.patch('ZeroNetworksSegmentEventCollector.process_events', return_value=([], {}, 0))
+
+    params = {"network_activity_filters": []}
+    last_run = {}
+    client = Client("", False, False, {})
+    # Call the function
+    last_run, all_events, events_split_to_log_type = fetch_events(client, params, last_run)
+
+    # Check if limit increased as expected
+    calls = list(mock_search_events.call_args_list)
+    first_call_limit = calls[0][0][0]  # Limit in the first call
+    assert first_call_limit == 1
+
+    second_call_limit = calls[1][0][0]  # Limit in the second call
+    assert second_call_limit == 2
+
+    assert len(calls) == 2

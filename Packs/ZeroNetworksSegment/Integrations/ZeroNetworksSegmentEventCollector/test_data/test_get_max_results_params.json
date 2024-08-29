@@ -29,6 +29,11 @@
             "params": {},
             "log_type": "network_activities",
             "expected": [2000, 400]
+        },
+        {
+            "params": {"max_fetch_audit": "1"},
+            "log_type": "audit",
+            "expected": [1, 20]
         }
     ]
 }
