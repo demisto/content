@@ -402,8 +402,8 @@ def test_event_limit_logic(mocker):
     mocker.patch('ZeroNetworksSegmentEventCollector.initialize_start_timestamp', return_value=1000)
     mocker.patch('ZeroNetworksSegmentEventCollector.get_max_results_and_limit', return_value=(1, 1))
     mocker.patch('ZeroNetworksSegmentEventCollector.get_log_types', return_value=['audit'])
-    mock_search_events = mocker.patch('ZeroNetworksSegmentEventCollector.Client.search_events', 
-                                      return_value={'items':[{'id': 1, 'timestamp': 1}], 'scrollCursor': '1'})
+    mock_search_events = mocker.patch('ZeroNetworksSegmentEventCollector.Client.search_events',
+                                      return_value={'items': [{'id': 1, 'timestamp': 1}], 'scrollCursor': '1'})
     mocker.patch('ZeroNetworksSegmentEventCollector.process_events', return_value=([], {}, 0))
 
     params = {"network_activity_filters": []}
