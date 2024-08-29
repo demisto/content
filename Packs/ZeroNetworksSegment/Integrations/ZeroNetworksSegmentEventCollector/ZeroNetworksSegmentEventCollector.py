@@ -77,12 +77,12 @@ def get_log_types(params: dict) -> list:
 def initialize_start_timestamp(last_run: dict[str, Any], log_type: str, arg_from=None) -> int:
     if arg_from:
         return arg_from
-    
+
     start_timestamp = last_run.get(log_type, {}).get("last_fetch")
     if not start_timestamp:
         start_date = dateparser.parse(FIRST_FETCH).strftime(ISO_8601_FORMAT)  # type: ignore[union-attr]
         start_timestamp = date_to_timestamp(start_date, ISO_8601_FORMAT)
-        
+
     return start_timestamp
 
 

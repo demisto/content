@@ -1,14 +1,3 @@
-"""Base Integration for Cortex XSOAR - Unit Tests file
-
-Pytest Unit Tests: all funcion names must start with "test_"
-
-More details: https://xsoar.pan.dev/docs/integrations/unit-testing
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-You must add at least a Unit Test function for every XSOAR command
-you are implementing with your integration
-"""
 
 import json
 import pytest
@@ -63,9 +52,6 @@ def test_process_events(mocker, inputs, expected_outputs):
     mocker.patch('ZeroNetworksSegmentEventCollector.create_id', side_effect=mock_create_id_function)
     input_events, input_previous_ids, input_last_event_time, max_results, num_results = inputs
     expected_events, expected_ids, expected_last_event_time, expected_num_results = expected_outputs
-
-    input_previous_ids = set(input_previous_ids)
-    expected_ids = set(expected_ids)
 
     new_events, updated_ids, updated_last_event_time = process_events(
         input_events, input_previous_ids, input_last_event_time, max_results, num_results, "audit"
@@ -179,7 +165,7 @@ def test_update_last_run(last_run, log_type, last_event_time, previous_ids, expe
             {},
             None,
             {
-                'audit': {'last_fetch': 123457, 'previous_ids': {2}}
+                'audit': {'last_fetch': 123457, 'previous_ids': [2]}
             },
             [{'id': 1, 'timestamp': 123456, '_TIME': '1970-01-01T00:02:03.000Z', 'source_log_type': 'audit'},
              {'id': 2, 'timestamp': 123457, '_TIME': '1970-01-01T00:02:03.000Z', 'source_log_type': 'audit'}],
@@ -193,7 +179,7 @@ def test_update_last_run(last_run, log_type, last_event_time, previous_ids, expe
             {},
             None,
             {
-                'audit': {'last_fetch': 12345678, 'previous_ids': {3}}
+                'audit': {'last_fetch': 12345678, 'previous_ids': [3]}
             },
             [{'id': 1, 'timestamp': 123456, '_TIME': '1970-01-01T00:02:03.000Z', 'source_log_type': 'audit'},
              {'id': 2, 'timestamp': 123457, '_TIME': '1970-01-01T00:02:03.000Z', 'source_log_type': 'audit'},
@@ -209,7 +195,7 @@ def test_update_last_run(last_run, log_type, last_event_time, previous_ids, expe
             {},
             None,
             {
-                'audit': {'last_fetch': 12345678, 'previous_ids': {3, 4}}
+                'audit': {'last_fetch': 12345678, 'previous_ids': [3, 4]}
             },
             [{'id': 1, 'timestamp': 123456, '_TIME': '1970-01-01T00:02:03.000Z', 'source_log_type': 'audit'},
              {'id': 2, 'timestamp': 123457, '_TIME': '1970-01-01T00:02:03.000Z', 'source_log_type': 'audit'},
@@ -224,10 +210,10 @@ def test_update_last_run(last_run, log_type, last_event_time, previous_ids, expe
         # Case with existing last_run and provided from_date
         (
             {'max_fetch_audit': '3'},
-            {'audit': {'last_fetch': 123456, 'previous_ids': {1}}},
+            {'audit': {'last_fetch': 123456, 'previous_ids': [1]}},
             '2024-08-25T12:34:56.000Z',
             {
-                'audit': {'last_fetch': 12345678, 'previous_ids': {3, 4}}
+                'audit': {'last_fetch': 12345678, 'previous_ids': [3, 4]}
             },
             [{'id': 2, 'timestamp': 123457, '_TIME': '1970-01-01T00:02:03.000Z', 'source_log_type': 'audit'},
              {'id': 3, 'timestamp': 12345678, '_TIME': '1970-01-01T03:25:45.000Z', 'source_log_type': 'audit'},
@@ -240,10 +226,10 @@ def test_update_last_run(last_run, log_type, last_event_time, previous_ids, expe
         # Case with existing last_run and provided from_date
         (
             {'max_fetch_audit': '3'},
-            {'audit': {'last_fetch': 12345678, 'previous_ids': {3}}},
+            {'audit': {'last_fetch': 12345678, 'previous_ids': [3]}},
             '2024-08-25T12:34:56.000Z',
             {
-                'audit': {'last_fetch': 12345678, 'previous_ids': {3, 4}}
+                'audit': {'last_fetch': 12345678, 'previous_ids': [3, 4]}
             },
             [{'id': 4, 'timestamp': 12345678, '_TIME': '1970-01-01T03:25:45.000Z', 'source_log_type': 'audit'}],
             {'audit': [{'id': 4, 'timestamp': 12345678, '_TIME': '1970-01-01T03:25:45.000Z', 'source_log_type': 'audit'}]},
@@ -258,10 +244,6 @@ def test_fetch_events(mocker, params, last_run, arg_from, expected_last_run, exp
 
     mocker.patch('ZeroNetworksSegmentEventCollector.create_id', side_effect=mock_create_id_function)
     mocker.patch('ZeroNetworksSegmentEventCollector.initialize_start_timestamp', return_value=start_timestamp)
-    # if not last_run or last_run == {'audit': {'last_fetch': 123456, 'previous_ids': {1}}}:
-    #     mocker.patch('ZeroNetworksSegmentEventCollector.initialize_start_timestamp', return_value=123456)
-    # else:
-    #     mocker.patch('ZeroNetworksSegmentEventCollector.initialize_start_timestamp', return_value=12345678)
 
     mock_client = MockClient('', False, False, {})
 
