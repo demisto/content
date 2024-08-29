@@ -6604,7 +6604,7 @@ def create_gql_client(url_suffix="identity-protection/combined/graphql/v1"):
                     "Accept": "application/json",
                     "Content-Type": "application/json"}
     }
-    transport = RequestsHTTPTransport(**kwargs)
+    transport = RequestsHTTPTransport(**kwargs)  # type: ignore[arg-type]
     client = Client(
         transport=transport,
         fetch_schema_from_transport=True,
