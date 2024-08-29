@@ -38,6 +38,12 @@ configuration:
   section: Collect
   hidden:
   - xsoar
+- defaultvalue: 10000
+  section: Collect
+  display: Max number of events per fetch
+  name: max_events_per_fetch
+  required: false
+  type: 0
 - display: Fetch Events
   name: isFetchEvents
   type: 8
