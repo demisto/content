@@ -30,11 +30,7 @@ class TestClient:
         c = DNSDB.Client(DNSDB.DEFAULT_DNSDB_SERVER, '')
 
         requests_mock.get(
-            '{server}/dnsdb/v2/rate_limit?swclient={swclient}&version={version}'.format(
-                server=DNSDB.DEFAULT_DNSDB_SERVER,
-                swclient=DNSDB.SWCLIENT,
-                version=DNSDB.VERSION,
-            ),
+            f'{DNSDB.DEFAULT_DNSDB_SERVER}/dnsdb/v2/rate_limit?swclient={DNSDB.SWCLIENT}&version={DNSDB.VERSION}',
             json={})
 
         c.rate_limit()
@@ -495,14 +491,7 @@ class TestClient:
         value = 'farsightsecurity'
 
         requests_mock.get(
-            '{server}/dnsdb/v2/{method}/{key}/{value}?swclient={swclient}&version={version}'.format(
-                server=DNSDB.DEFAULT_DNSDB_SERVER,
-                method=method,
-                key=key,
-                value=value,
-                swclient=DNSDB.SWCLIENT,
-                version=DNSDB.VERSION,
-            ),
+            f'{DNSDB.DEFAULT_DNSDB_SERVER}/dnsdb/v2/{method}/{key}/{value}?swclient={DNSDB.SWCLIENT}&version={DNSDB.VERSION}',
             text=_saf_wrap(records))
 
         for rrset in c.flex(method, key, value):
