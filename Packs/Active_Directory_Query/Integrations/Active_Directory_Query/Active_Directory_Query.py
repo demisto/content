@@ -63,7 +63,8 @@ DEFAULT_PERSON_ATTRIBUTES = [
     'mail',
     'sAMAccountName',
     'manager',
-    'userAccountControl'
+    'userAccountControl',
+    'msDS-User-Account-Control-Computed'
 ]
 DEFAULT_COMPUTER_ATTRIBUTES = [
     'name',
@@ -190,6 +191,20 @@ def user_account_to_boolean_fields(user_account_control):
         'PASSWORD_EXPIRED': bool(user_account_control & 0x800000),
         'TRUSTED_TO_AUTH_FOR_DELEGATION': bool(user_account_control & 0x1000000),
         'PARTIAL_SECRETS_ACCOUNT': bool(user_account_control & 0x04000000),
+    }
+
+
+def user_account_to_boolean_fields_msDS_user_account_control_computed(user_account_control):
+    """
+    parse the msDS-User-Account-Control-Computed into boolean values.
+    following the values from:
+    https://learn.microsoft.com/en-us/windows/win32/adschema/a-msds-user-account-control-computed
+    """
+    return {
+        'UF_LOCKOUT': bool(user_account_control & 0x0010),
+        'UF_PASSWORD_EXPIRED': bool(user_account_control & 0x800000),
+        'UF_PARTIAL_SECRETS_ACCOUNT': bool(user_account_control & 0x4000000),
+        'UF_USE_AES_KEYS': bool(user_account_control & 0x8000000)
     }
 
 
@@ -682,6 +697,20 @@ def search_users(default_base_dn, page_size):
             if user.get('userAccountControl'):
                 user_account_control = user.get('userAccountControl')[0]
                 user['userAccountControlFields'] = user_account_to_boolean_fields(user_account_control)
+
+            if user.get("msDS-User-Account-Control-Computed"):
+                user_account_control = user.get("msDS-User-Account-Control-Computed")[0]
+                user_account_to_boolean_dict = (
+                    user_account_to_boolean_fields_msDS_user_account_control_computed(
+                        user_account_control
+                    )
+                )
+                if user["userAccountControlFields"]:
+                    user["userAccountControlFields"].update(
+                        user_account_to_boolean_dict
+                    )
+                else:
+                    user["userAccountControlFields"] = user_account_to_boolean_dict
 
                 # display a literal translation of the numeric account control flag
                 if args.get('user-account-control-out', '') == 'true':
