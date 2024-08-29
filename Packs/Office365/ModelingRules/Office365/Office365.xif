@@ -261,7 +261,7 @@ alter
 	xdm.observer.unique_identifier = webLink,
 	xdm.email.recipients = arraymap(toRecipients -> [], "@element"-> emailAddress.address),
 	xdm.email.cc = arraymap(ccRecipients -> [], "@element"-> emailAddress.address),
-	// xdm.email.bcc = arraymap(bccRecipients -> [], "@element"-> emailAddress.address)
+	// xdm.email.bcc = arraymap(bccRecipients -> [], "@element"-> emailAddress.address),
 	xdm.email.attachment.filename = arraystring(arraymap(attachments  -> [], "@element"-> name), "|"),
 	xdm.email.data = to_string(internetMessageHeaders),
 	xdm.alert.severity = importance;
