@@ -10,3 +10,7 @@ ignore=BA124
 [file:CyrenShowThreatIndicators.yml]
 ignore=BA124
 
+# Temporarily ignoring GR103.
+# For more details, refer to the ticket: https://jira-dc.paloaltonetworks.com/browse/CIAC-11656
+[file:layoutscontainer-Cyren_Inbox_Security_layout.json]
+ignore= GR103
