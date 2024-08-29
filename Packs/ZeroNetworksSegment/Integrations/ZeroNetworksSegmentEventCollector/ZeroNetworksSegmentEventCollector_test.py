@@ -25,7 +25,7 @@ class MockClient(Client):
         pass
 
     def search_events(self, limit, cursor, log_type, filters=None):
-        if cursor == 1000:
+        if cursor <= 123456:
             return {
                 'items': [{'id': 1, 'timestamp': 123456}, {'id': 2, 'timestamp': 123457}],
                 'scrollCursor': 123457
@@ -171,7 +171,7 @@ def test_update_last_run(last_run, log_type, last_event_time, previous_ids, expe
 
 
 @pytest.mark.parametrize(
-    "params, last_run, arg_from, expected_last_run, expected_collected_events, expected_split_logs",
+    "params, last_run, arg_from, expected_last_run, expected_collected_events, expected_split_logs, start_timestamp",
     [
         # Basic scenario with a few events
         (
@@ -184,7 +184,8 @@ def test_update_last_run(last_run, log_type, last_event_time, previous_ids, expe
             [{'id': 1, 'timestamp': 123456, '_TIME': '1970-01-01T00:02:03.000Z', 'source_log_type': 'audit'},
              {'id': 2, 'timestamp': 123457, '_TIME': '1970-01-01T00:02:03.000Z', 'source_log_type': 'audit'}],
             {'audit': [{'id': 1, 'timestamp': 123456, '_TIME': '1970-01-01T00:02:03.000Z', 'source_log_type': 'audit'},
-             {'id': 2, 'timestamp': 123457, '_TIME': '1970-01-01T00:02:03.000Z', 'source_log_type': 'audit'}]}
+             {'id': 2, 'timestamp': 123457, '_TIME': '1970-01-01T00:02:03.000Z', 'source_log_type': 'audit'}]},
+            1000
         ),
         # Case with more events than max_fetch
         (
@@ -199,7 +200,8 @@ def test_update_last_run(last_run, log_type, last_event_time, previous_ids, expe
              {'id': 3, 'timestamp': 12345678, '_TIME': '1970-01-01T03:25:45.000Z', 'source_log_type': 'audit'}],
             {'audit': [{'id': 1, 'timestamp': 123456, '_TIME': '1970-01-01T00:02:03.000Z', 'source_log_type': 'audit'},
              {'id': 2, 'timestamp': 123457, '_TIME': '1970-01-01T00:02:03.000Z', 'source_log_type': 'audit'},
-             {'id': 3, 'timestamp': 12345678, '_TIME': '1970-01-01T03:25:45.000Z', 'source_log_type': 'audit'}]}
+             {'id': 3, 'timestamp': 12345678, '_TIME': '1970-01-01T03:25:45.000Z', 'source_log_type': 'audit'}]},
+            1000
         ),
         # Case with events number equals to max_fetch
         (
@@ -216,7 +218,8 @@ def test_update_last_run(last_run, log_type, last_event_time, previous_ids, expe
             {'audit': [{'id': 1, 'timestamp': 123456, '_TIME': '1970-01-01T00:02:03.000Z', 'source_log_type': 'audit'},
              {'id': 2, 'timestamp': 123457, '_TIME': '1970-01-01T00:02:03.000Z', 'source_log_type': 'audit'},
              {'id': 3, 'timestamp': 12345678, '_TIME': '1970-01-01T03:25:45.000Z', 'source_log_type': 'audit'},
-             {'id': 4, 'timestamp': 12345678, '_TIME': '1970-01-01T03:25:45.000Z', 'source_log_type': 'audit'}]}
+             {'id': 4, 'timestamp': 12345678, '_TIME': '1970-01-01T03:25:45.000Z', 'source_log_type': 'audit'}]},
+            1000
         ),
         # Case with existing last_run and provided from_date
         (
@@ -231,7 +234,8 @@ def test_update_last_run(last_run, log_type, last_event_time, previous_ids, expe
              {'id': 4, 'timestamp': 12345678, '_TIME': '1970-01-01T03:25:45.000Z', 'source_log_type': 'audit'}],
             {'audit': [{'id': 2, 'timestamp': 123457, '_TIME': '1970-01-01T00:02:03.000Z', 'source_log_type': 'audit'},
              {'id': 3, 'timestamp': 12345678, '_TIME': '1970-01-01T03:25:45.000Z', 'source_log_type': 'audit'},
-             {'id': 4, 'timestamp': 12345678, '_TIME': '1970-01-01T03:25:45.000Z', 'source_log_type': 'audit'}]}
+             {'id': 4, 'timestamp': 12345678, '_TIME': '1970-01-01T03:25:45.000Z', 'source_log_type': 'audit'}]},
+            123456
         ),
         # Case with existing last_run and provided from_date
         (
@@ -242,19 +246,22 @@ def test_update_last_run(last_run, log_type, last_event_time, previous_ids, expe
                 'audit': {'last_fetch': 12345678, 'previous_ids': {3, 4}}
             },
             [{'id': 4, 'timestamp': 12345678, '_TIME': '1970-01-01T03:25:45.000Z', 'source_log_type': 'audit'}],
-            {'audit': [{'id': 4, 'timestamp': 12345678, '_TIME': '1970-01-01T03:25:45.000Z', 'source_log_type': 'audit'}]}
+            {'audit': [{'id': 4, 'timestamp': 12345678, '_TIME': '1970-01-01T03:25:45.000Z', 'source_log_type': 'audit'}]},
+            12345678
         )
     ]
 )
-def test_fetch_events(mocker, params, last_run, arg_from, expected_last_run, expected_collected_events, expected_split_logs):
+def test_fetch_events(mocker, params, last_run, arg_from, expected_last_run, expected_collected_events, expected_split_logs,
+                      start_timestamp):
     def mock_create_id_function(event, log_type):
         return event.get('id')
 
     mocker.patch('ZeroNetworksSegmentEventCollector.create_id', side_effect=mock_create_id_function)
-    if not last_run or last_run == {'audit': {'last_fetch': 123456, 'previous_ids': {1}}}:
-        mocker.patch('ZeroNetworksSegmentEventCollector.initialize_start_timestamp', return_value=1000)
-    else:
-        mocker.patch('ZeroNetworksSegmentEventCollector.initialize_start_timestamp', return_value=12345678)
+    mocker.patch('ZeroNetworksSegmentEventCollector.initialize_start_timestamp', return_value=start_timestamp)
+    # if not last_run or last_run == {'audit': {'last_fetch': 123456, 'previous_ids': {1}}}:
+    #     mocker.patch('ZeroNetworksSegmentEventCollector.initialize_start_timestamp', return_value=123456)
+    # else:
+    #     mocker.patch('ZeroNetworksSegmentEventCollector.initialize_start_timestamp', return_value=12345678)
 
     mock_client = MockClient('', False, False, {})
 
