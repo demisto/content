@@ -438,3 +438,31 @@ Get private email list with access
 | Reco.privateEmails.user_category | String   | The category of the user  | 
 
 
+
+### reco-get-assets-by-id
+
+***
+Get all assets from Reco by id
+
+#### Base Command
+
+`reco-get-assets-by-id`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| asset_id | Asset id to search for. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Reco.SensitiveAssets.file_name | String | The name of the asset | 
+| Reco.SensitiveAssets.file_owner | String | The owner of the asset | 
+| Reco.SensitiveAssets.file_url | Unknown | Json string of the asset's url and the name | 
+| Reco.SensitiveAssets.currently_permitted_users | String | List of currently permitted users | 
+| Reco.SensitiveAssets.visibility | String | Visibility of the asset | 
+| Reco.SensitiveAssets.location | String | The path of the asset | 
+| Reco.SensitiveAssets.source | String | SaaS tool source of the asset | 
+| Reco.SensitiveAssets.sensitivity_level | Number | The sensitivity level of the asset | 
