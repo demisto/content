@@ -250,7 +250,7 @@ def long_running_execution(client: Client) -> None:
 
         Create incidents, when the client subscribes to an error from the mqtt server.
         """
-        demisto.info(f"on message. {message.topic} {message.qos} {message.payload}")
+        demisto.info(f"on message. {message.topic} {message.qos} {message.payload}")  # type: ignore[str-bytes-safe]
         incidents = create_incidents(message.payload.decode("utf-8", "ignore"))  # the message payload is binary.
         demisto.info(f"catch an incident. {incidents}")
         demisto.createIncidents(incidents)

@@ -22,7 +22,7 @@ if ELASTIC_SEARCH_CLIENT == 'OpenSearch':
     from opensearch_dsl import Search
     from opensearch_dsl.query import QueryString
 else:
-    from elasticsearch import Elasticsearch, RequestsHttpConnection, NotFoundError
+    from elasticsearch import Elasticsearch, RequestsHttpConnection, NotFoundError  # type ignore[assignment]
     from elasticsearch_dsl import Search
     from elasticsearch_dsl.query import QueryString
 
@@ -160,7 +160,8 @@ def elasticsearch_builder(proxies):
     es = Elasticsearch(**connection_args)
     # this should be passed as api_key via Elasticsearch init, but this code ensures it'll be set correctly
     if API_KEY_ID and hasattr(es, 'transport'):
-        es.transport.get_connection().session.headers['authorization'] = get_api_key_header_val(API_KEY)
+        es.transport.get_connection().session.headers['authorization'] = get_api_key_header_val(
+            API_KEY)  # type ignore[attr-defined]
 
     return es
 
@@ -376,7 +377,7 @@ def test_general_query(es):
 
     except NotFoundError as e:
         return_error("Failed executing general search command - please check the Server URL and port number "
-                     "and the supplied credentials.\nError message: {}.".format(str(e)))
+                     f"and the supplied credentials.\nError message: {str(e)}.")
 
 
 def test_time_field_query(es):
@@ -477,7 +478,7 @@ def test_connectivity_auth(proxies):
                 if HTTP_ERRORS.get(res.status_code) is not None:
                     # if it is a known http error - get the message form the preset messages
                     return_error("Failed to connect. "
-                                 "The following error occurred: {}".format(HTTP_ERRORS.get(res.status_code)))
+                                 f"The following error occurred: {HTTP_ERRORS.get(res.status_code)}")
 
                 else:
                     # if it is unknown error - get the message from the error itself
