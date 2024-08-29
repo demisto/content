@@ -4,3 +4,8 @@ ignore=BA108,BA109
 [file:SafeBreach_v2_image.png]
 ignore=IM111
 
+
+# Temporarily ignoring GR103.
+# For more details, refer to the ticket: https://jira-dc.paloaltonetworks.com/browse/CIAC-11656
+[file:reputation-SafeBreach_IP.json]
+ignore=GR103
