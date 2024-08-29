@@ -49,6 +49,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
+      Invalid response:
+      - "48"
       Jira action:
       - "16"
       No Response from user:
@@ -115,6 +117,16 @@ tasks:
           right:
             value:
               simple: Empty storage asset
+    - label: Invalid response
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: User.Action
+            iscontext: true
+          right:
+            value:
+              simple: invalid_response
     continueonerrortype: ""
     view: |-
       {
@@ -189,8 +201,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 230,
-          "y": 1940
+          "x": 440,
+          "y": 1915
         }
       }
     note: false
@@ -304,6 +316,7 @@ tasks:
       incident_data:
         simple: ${incident_object}
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
@@ -377,11 +390,6 @@ tasks:
     nexttasks:
       '#none#':
       - "45"
-    scriptarguments:
-      retry-count:
-        simple: "2"
-      retry-interval:
-        simple: "60"
     separatecontext: false
     continueonerror: true
     continueonerrortype: ""
@@ -422,8 +430,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -340,
-          "y": 1940
+          "x": -460,
+          "y": 1820
         }
       }
     note: false
@@ -452,6 +460,7 @@ tasks:
       get_incident_details:
         simple: ${incident}
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
@@ -487,8 +496,6 @@ tasks:
         simple: "3"
       retry-interval:
         simple: "300"
-    results:
-    - SlackMsgLifetime
     separatecontext: false
     continueonerror: true
     continueonerrortype: ""
@@ -566,8 +573,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 230,
-          "y": 1770
+          "x": 440,
+          "y": 1740
         }
       }
     note: false
@@ -611,8 +618,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 210,
-          "y": 905
+          "x": 500,
+          "y": 750
         }
       }
     note: false
@@ -652,8 +659,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 210,
-          "y": 1170
+          "x": 430,
+          "y": 1350
         }
       }
     note: false
@@ -694,8 +701,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1630,
-          "y": 1640
+          "x": -1670,
+          "y": 1740
         }
       }
     note: false
@@ -735,8 +742,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -610,
-          "y": 1760
+          "x": -460,
+          "y": 1645
         }
       }
     note: false
@@ -1043,8 +1050,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1380,
-          "y": 1400
+          "x": -1410,
+          "y": 1380
         }
       }
     note: false
@@ -1181,12 +1188,58 @@ tasks:
       '#none#':
       - "23"
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": -490,
           "y": -370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: ee45a6da-4957-495c-87b7-8cfccd4317df
+    type: regular
+    task:
+      id: ee45a6da-4957-495c-87b7-8cfccd4317df
+      version: -1
+      name: OverwriteListAndNotify
+      description: This automation script overwrites the value of a specified list
+        and sends a Slack notification to inform the user that they failed to respond
+        to an incident notification in a timely manner. The notification includes
+        a message indicating the end of the incident playbook and an invitation to
+        reopen the incident if necessary.
+      scriptName: OverwriteListAndNotify
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      incident_id:
+        simple: ${incident_object.incidentId}
+      list_name:
+        simple: ${block_list_name}
+      message:
+        simple: |-
+          We received invalid response from you on incident ID : ${incident_object.incidentId} .
+          We are coming to an end of the${incident_object.incidentId} incident playbook from XSOAR.You are welcome to reopen it. Regards.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 140,
+          "y": 935
         }
       }
     note: false
@@ -1203,7 +1256,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 3765,
+        "height": 3740,
         "width": 3050,
         "x": -1930,
         "y": -1730
