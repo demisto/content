@@ -10,16 +10,14 @@ urllib3.disable_warnings()
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 VENDOR = 'ibm'
 PRODUCT = 'security verify'
-TOKEN_EXPIRY_BUFFER = timedelta(minutes=5)
+TOKEN_EXPIRY_BUFFER = timedelta(minutes=1)
 DEFAULT_LIMIT_COMMAND = 1_000
 DEFAULT_LIMIT_FETCH = 10_000
 MAX_LIMIT = 50_000
 MIN_LIMIT = 1
-
 # TODO: print
 # print(f"{demisto.params()=}")
 # print(f"{demisto.args()=}")
-
 
 ''' CLIENT CLASS '''
 
@@ -29,7 +27,6 @@ class Client(BaseClient):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self.client_id = client_id
         self.client_secret = client_secret
-        self.access_token = None
 
         self._authenticate()
 
@@ -42,7 +39,8 @@ class Client(BaseClient):
             token_data = self._get_new_token()
             demisto.setIntegrationContext(token_data)
 
-        self.access_token = token_data["access_token"]
+        access_token = token_data["access_token"]
+        self._headers = {"Authorization": f"Bearer {access_token}"}
 
     def _is_token_valid(self, token_data):
         """
@@ -95,15 +93,10 @@ class Client(BaseClient):
             'after_id': last_item.get("last_id")
         }
 
-        headers = {
-            "Authorization": f"Bearer {self.access_token}",
-        }
-
         response = self._http_request(
             method="GET",
             url_suffix="events",
             params=params,
-            headers=headers
         )
         events = response.get("response", {}).get("events", {}).get("events", [])
         return events
@@ -115,20 +108,11 @@ class Client(BaseClient):
 
 def test_module(client: Client) -> str:
     """
-    ok' if test passed, anything else will raise an exception and will fail the test.
+    'ok' if test passed, anything else will raise an exception and will fail the test.
     """
-
-    try:
-        args = {"limit": 1}
-        get_events(client, args)
-
-    except Exception as e:
-        if 'Forbidden' in str(e):
-            return 'Authorization Error: make sure API Key is correctly set'
-        else:
-            raise e
-
-    return 'ok'
+    args = {"limit": 1}
+    get_events(client, args)
+    return "ok"
 
 
 def get_events(client: Client, args: dict) -> list[dict]:
@@ -187,6 +171,7 @@ def fetch_events(client: Client, last_run: dict[str, str], limit: int) -> tuple[
 
 ''' MAIN FUNCTION '''
 
+
 def add_time_to_events(events: list[dict]):
     """
     Adds the _time key to the events.
@@ -199,6 +184,7 @@ def add_time_to_events(events: list[dict]):
         for event in events:
             create_time = arg_to_datetime(event["time"])
             event["_time"] = create_time.strftime(DATE_FORMAT)  # type: ignore[union-attr]
+
 
 def main() -> None:  # pragma: no cover
     """
@@ -231,7 +217,7 @@ def main() -> None:  # pragma: no cover
 
         elif command == 'ibm-security-verify-get-events':
             events = get_events(client, args)
-            return_results(CommandResults(readable_output=tableToMarkdown(f"{VENDOR} Events:", events)))
+            return_results(CommandResults(readable_output=tableToMarkdown(f"{VENDOR.title()} Events:", events)))
 
             should_push_events = argToBoolean(args.get('should_push_events'))
             if should_push_events:

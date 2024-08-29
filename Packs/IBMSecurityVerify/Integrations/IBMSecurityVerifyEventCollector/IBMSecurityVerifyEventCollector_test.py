@@ -1,88 +1,44 @@
-from IBMSecurityVerifyEventCollector import Client, fetch_events, get_events
+from datetime import datetime, timedelta, timezone
+from CommonServerPython import *
 
 
-def test_fetch_detection_events_command():
-    """
-    Given:
-    - fetch events command (fetches detections)
+import pytest
+from IBMSecurityVerifyEventCollector import Client
 
-    When:
-    - Running fetch-events command
 
-    Then:
-    - Ensure number of events fetched, and next run fields
-    """
-    first_fetch_str = '2022-12-21T03:42:05Z'
-    base_url = 'https://server_url/'
+@pytest.fixture()
+def mock_client(mocker) -> Client:
+    mocker.patch.object(Client, "_authenticate")
     client = Client(
-        base_url=base_url,
-        verify=True,
+        base_url="test",
+        client_id="client_id",
+        client_secret="secret_key",
+        verify=False,
         proxy=False,
     )
-    last_run = {'prev_id': 1}
-    next_run, events = fetch_events(
-        client=client,
-        last_run=last_run,
-        first_fetch_time=first_fetch_str,
-        alert_status="Status",
-        max_events_per_fetch=1,
-    )
-
-    assert len(events) == 1
-    assert next_run.get('prev_id') == 2
-    assert events[0].get('id') == 2
+    client._headers = {"Authorization": "Bearer DUMMY_TOKEN"}
+    return client
 
 
-def test_test_module_command():
-    """
-    Given:
-    - test module command (fetches detections)
-
-    When:
-    - Pressing test button
-
-    Then:
-    - Test module passed
-    """
-    from IBMSecurityVerifyEventCollector import test_module
-    first_fetch_str = '2022-12-21T03:42:05Z'
-    base_url = 'https://server_url/'
-    client = Client(
-        base_url=base_url,
-        verify=True,
-        proxy=False,
-    )
-    res = test_module(
-        client=client,
-        params={},
-        first_fetch_time=first_fetch_str,
-    )
-
-    assert res == 'ok'
-
-
-def test_get_events_command():
-    """
-    Given:
-    - get_events command (fetches detections)
-
-    When:
-    - running get events command
-
-    Then:
-    - events and human readable as expected
-    """
-    base_url = 'https://server_url/'
-    client = Client(
-        base_url=base_url,
-        verify=True,
-        proxy=False,
-    )
-    events, hr = get_events(
-        client=client,
-        alert_status="Some Status",
-        args={},
-    )
-
-    assert events[0].get('id') == 1
-    assert 'Test Event' in hr.readable_output
+@pytest.mark.parametrize(
+    "token_data, expected_result",
+    [
+        (
+            {
+                "access_token": "valid_token",
+                "expiry_time_utc": (datetime.now(timezone.utc) + timedelta(minutes=5)).isoformat()
+            },
+            True
+        ),
+        (
+            {
+                "access_token": "valid_token",
+                "expiry_time_utc": datetime.now(timezone.utc).isoformat()
+            },
+            False
+        ),
+    ]
+)
+def test_is_token_valid(mock_client, token_data, expected_result):
+    result = mock_client._is_token_valid(token_data)
+    assert result == expected_result
