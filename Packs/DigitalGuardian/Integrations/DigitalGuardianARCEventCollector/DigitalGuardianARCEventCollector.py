@@ -60,6 +60,8 @@ class Client(BaseClient):
     def get_events(self, time_of_last_event_str, current_time):
         token = self.get_token()
         time_param = f'dg_time:{time_of_last_event_str},{current_time}'
+        demisto.debug(f'Getting events with time_param set to {time_param}')
+
         headers = {
             'Authorization': 'Bearer ' + token
         }
@@ -111,11 +113,14 @@ def get_raw_events(client: Client, time_of_last_event: str) -> list:
     outcome = []
     event_list = []
     if not time_of_last_event:
+        demisto.debug('time_of_last_event is not set using 1 hour back')
         time_of_last_event_datetime = datetime.now() - timedelta(hours=1)
         time_of_last_event_str = datetime_to_string(time_of_last_event_datetime)
     else:
         temp_time: datetime = arg_to_datetime(arg=time_of_last_event, required=True)  # type: ignore[assignment]
         time_of_last_event_str = temp_time.isoformat(sep=' ', timespec='milliseconds')
+        demisto.debug(f'time_of_last_event is  set using it {time_of_last_event_str}')
+
     current_time = datetime_to_string(datetime.now())
     events = client.get_events(time_of_last_event_str, current_time)
     events = {} if events is None else events
@@ -125,6 +130,7 @@ def get_raw_events(client: Client, time_of_last_event: str) -> list:
         result = dict(zip(outcome, event))
         event_list.append(result)
     event_list.sort(key=lambda item: (item.get("inc_mtime"), item.get("dg_guid")))
+    demisto.debug(f'in get_raw_events got {len(event_list)} events')
     return event_list
 
 
@@ -168,7 +174,10 @@ def create_events_for_push(event_list: list, last_time: str, id_list: list, limi
     demisto.debug('Checking duplications and creating events for pushing to XSIAM')
     for event in event_list:
         inc_time = event.get("inc_mtime")
+        demisto.debug(f'inc time is {str(inc_time)}')
         if last_time:
+            demisto.debug(f'there is last time {str(last_time)}')
+
             last_time_date = arg_to_datetime(arg=last_time, required=True).date()   # type: ignore[union-attr]
             event_date = arg_to_datetime(arg=inc_time, required=True).date() if inc_time else None   # type: ignore[union-attr]
             if (inc_time and inc_time < last_time) or event.get("dg_guid") in id_list:
@@ -178,6 +187,7 @@ def create_events_for_push(event_list: list, last_time: str, id_list: list, limi
             elif event.get("dg_guid"):
                 id_list = [event.get("dg_guid")]
         else:
+            demisto.debug('no Last time')
             if event.get("dg_guid"):
                 id_list.append(event.get("dg_guid"))
         event_list_for_push.append(event)
@@ -185,6 +195,7 @@ def create_events_for_push(event_list: list, last_time: str, id_list: list, limi
         index += 1
         if index == limit:
             break
+    demisto.debug(f'returning {len(event_list_for_push)} events with last time {str(last_time)}')
     return event_list_for_push, last_time, id_list
 
 
