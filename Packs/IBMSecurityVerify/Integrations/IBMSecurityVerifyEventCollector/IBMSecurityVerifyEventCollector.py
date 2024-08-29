@@ -120,7 +120,7 @@ def get_events(client: Client, args: dict) -> list[dict]:
     last_time = args.get("last_time")
     last_item = {"last_id": last_id, "last_time": last_time}
     limit = arg_to_number(args.get("limit")) or DEFAULT_LIMIT_COMMAND
-    sort_order = args.get("sort_order", "desc")
+    sort_order = args.get("sort_order", "desc").lower()
 
     events = client.search_events(limit, sort_order, last_item)
     return events
