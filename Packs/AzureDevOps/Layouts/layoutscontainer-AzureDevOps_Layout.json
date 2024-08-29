@@ -395,15 +395,6 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "azuredevopscreationdate",
-                                "height": 53,
-                                "id": "4ac05c20-326c-11ec-84d6-5f4988896723",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
                                 "fieldId": "azuredevopsrepositoryid",
                                 "height": 53,
                                 "id": "4a1e7e30-3269-11ec-861a-d1f08a1c9041",
@@ -444,17 +435,6 @@
                                 "height": 53,
                                 "id": "51b2a5e0-3269-11ec-861a-d1f08a1c9041",
                                 "index": 5,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "azuredevopscreatedby",
-                                "height": 53,
-                                "id": "5bbc8880-3269-11ec-861a-d1f08a1c9041",
-                                "index": 6,
-                                "listId": "caseinfoid-3a3bb870-3269-11ec-861a-d1f08a1c9041",
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
