@@ -179,42 +179,6 @@ def run_fetch_mechanism(client: Client, next_link: str | None, start_date: int, 
     return response
 
 
-def dedup(curr_events: list[dict[str, Any]], last_events_hashes: dict[int, int] | None):
-    """
-    Deduplicates a list of current events based on their occurrence in a previous set of event hashes.
-
-    This function takes a list of current events and a dictionary of event hashes from previous events.
-    It returns a list of new events that are either not present in the previous set of event hashes or
-    appear more frequently than they did previously.
-
-    Parameters:
-    curr_events (list): A list of current events to be processed.
-    last_events_hashes (dict): A dictionary where keys are hashes of previously seen events and values are their counts.
-
-    Returns:
-    list: A list of new events that are considered deduplicated based on their occurrence.
-    """
-    demisto.info('dedup start')
-    if not last_events_hashes:
-        demisto.info('No previous event hashes found, returning all current events')
-        return curr_events
-
-    occurrence_dict = {}
-    new_events = []
-
-    for event in curr_events:
-        event_hash = hash(json.dumps(event, sort_keys=True))
-        occurrence_dict[event_hash] = occurrence_dict.get(event_hash, 0) + 1
-        hash_count = last_events_hashes.get(event_hash)
-
-        if hash_count is None or occurrence_dict[event_hash] > hash_count:
-            new_events.append(event)
-        else:
-            demisto.info('duplicate found! {}'.format(event))
-    demisto.info('returning deduplicated events: {}'.format(new_events))
-    return new_events
-
-
 def add_time_to_events(events: List[Dict] | None):
     """
     Adds the _time key to the events.
