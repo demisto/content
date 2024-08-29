@@ -162,7 +162,7 @@ class CoreClient(BaseClient):
         self.timeout = timeout
         # For Xpanse tenants requiring direct use of the base client HTTP request instead of the _apiCall,
 
-    def _http_request(self, method, url_suffix='', full_url=None, headers=None, json_data=None,
+    def _http_request(self, method, url_suffix='', full_url=None, headers=None, json_data=None,  # type: ignore[override]
                       params=None, data=None, timeout=None, raise_on_status=False, ok_codes=None,
                       error_handler=None, with_metrics=False, resp_type='json'):
         '''
@@ -3546,12 +3546,13 @@ def decode_dict_values(dict_to_decode: dict):
                 continue
 
 
-def filter_general_fields(alert: dict, filter_fields: bool = True) -> dict:
+def filter_general_fields(alert: dict, filter_fields: bool = True, events_from_decider_as_list: bool = False) -> dict:
     """filter only relevant general fields from a given alert.
 
     Args:
       alert (dict): The alert to filter
       filter_fields (bool): Whether to return a subset of the fields.
+      events_from_decider_as_list (bool): Whether to return events_from_decider context endpoint as a dictionary or as a list.
 
     Returns:
       dict: The filtered alert
@@ -3561,6 +3562,9 @@ def filter_general_fields(alert: dict, filter_fields: bool = True) -> dict:
         result = {k: v for k, v in alert.items() if k in ALERT_GENERAL_FIELDS}
     else:
         result = alert
+
+    if (events_from_decider := alert.get("stateful_raw_data", {}).get("events_from_decider", {})) and events_from_decider_as_list:
+        alert["stateful_raw_data"]["events_from_decider"] = list(events_from_decider.values())
 
     if not (event := alert.get('raw_abioc', {}).get('event', {})):
         return_warning('No XDR cloud analytics event.')
@@ -3601,6 +3605,7 @@ def filter_vendor_fields(alert: dict):
 
 def get_original_alerts_command(client: CoreClient, args: Dict) -> CommandResults:
     alert_id_list = argToList(args.get('alert_ids', []))
+    events_from_decider_as_list = bool(args.get('events_from_decider_format', '') == 'list')
     raw_response = client.get_original_alerts(alert_id_list)
     reply = copy.deepcopy(raw_response)
     alerts = reply.get('alerts', [])
@@ -3625,10 +3630,11 @@ def get_original_alerts_command(client: CoreClient, args: Dict) -> CommandResult
         alert.update(alert.pop('original_alert_json', {}))
 
         # Process the alert (with without filetring fields)
-        processed_alerts.append(filter_general_fields(alert, filter_fields=False))
+        processed_alerts.append(filter_general_fields(alert, filter_fields=False,
+                                                      events_from_decider_as_list=events_from_decider_as_list))
 
         # Create a filtered version (used either for output when filter_fields is False, or for readable output)
-        filtered_alert = filter_general_fields(alert, filter_fields=True)
+        filtered_alert = filter_general_fields(alert, filter_fields=True, events_from_decider_as_list=False)
         filter_vendor_fields(filtered_alert)  # changes in-place
 
         filtered_alerts.append(filtered_alert)
