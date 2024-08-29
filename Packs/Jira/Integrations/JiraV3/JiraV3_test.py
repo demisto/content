@@ -2670,6 +2670,42 @@ class TestJiraIssueAssign:
             update_issue_assignee_command(client=client, args=args)
 
 
+class TestJiraIssueGetForms:
+    @pytest.mark.parametrize(
+        'issue_id',
+        [
+            ("TES-2")
+        ]
+    )
+    def test_issue_get_forms_command(self, mocker, issue_id):
+        """
+        Given:
+            - issue_id
+        When
+            - Running the issue_get_forms_command
+        Then
+            - Ensure the body request is ok
+        """
+        from JiraV3 import issue_get_forms_command
+
+        args = {
+            'issue_id': issue_id
+        }
+        client: JiraBaseClient = jira_base_client_mock()
+        client = jira_onprem_client_mock()
+
+        raw_response_path = "test_data/get_issue_forms_test/raw_response.json"
+        parsed_result_path = "test_data/get_issue_forms_test/parsed_result.json"
+        issue_get_forms_response = util_load_json(raw_response_path)
+        expected_command_results_context = util_load_json(parsed_result_path)
+        mock_request = mocker.patch.object(client, 'issue_get_forms', return_value=issue_get_forms_response)
+
+        command_results = issue_get_forms_command(client=client, args=args)
+        for command_result in command_results:
+            assert expected_command_results_context == command_result.to_context()
+        mock_request.assert_called_with(issue_id=issue_id)
+
+
 class TestJiraGetUserInfo:
     @pytest.mark.parametrize(
         'key, username, accountId, raw_response_path, parsed_result_path',
