@@ -2,8 +2,8 @@ commonfields:
   id: Anomali ThreatStream v3
   version: -1
 vcShouldKeepItemLegacyProdMachine: false
-name: Anomali ThreatStream v3_tmx
-display: Anomali ThreatStream v3_tmx
+name: Anomali ThreatStream v3
+display: Anomali ThreatStream v3
 category: Data Enrichment & Threat Intelligence
 description: Use Anomali ThreatStream to query and submit threats.
 configuration:
