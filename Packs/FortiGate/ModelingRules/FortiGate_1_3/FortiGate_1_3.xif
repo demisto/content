@@ -47,8 +47,8 @@ alter // format, validate & regroup relevant raw data
     risks_formatted = concat("{", arraystring(arrayfilter(split(rtrim(ltrim(to_string(alert_risk_artifacts), "{"), "}"), ","), "@element" !~= "null"), ","), "}"),
     
     // validate & divide ip addresses according to the version ipv4/6
-    dst_ipv4_addresses = arrayfilter(dst_ip_address, "@element" ~= "(?:\d{1,3}\.){3}\d{1,3}"),
-    dst_ipv6_addresses = arrayfilter(dst_ip_address, "@element" ~= "(?:[a-fA-F\d]{0,4}\:){1,7}[a-fA-F\d]{0,4}"),
+    dst_ipv4_addresses = if(array_length(dst_ip_address) > 0, arrayfilter(dst_ip_address, "@element" ~= "(?:\d{1,3}\.){3}\d{1,3}")),
+    dst_ipv6_addresses = if(array_length(dst_ip_address) > 0, arrayfilter(dst_ip_address, "@element" ~= "(?:[a-fA-F\d]{0,4}\:){1,7}[a-fA-F\d]{0,4}")),
     src_ipv4_addresses = if(array_length(xff_ipv4_addresses) > 0, 
         arraydistinct(arrayconcat(arrayfilter(src_ip_addresses, "@element" ~= "(?:\d{1,3}\.){3}\d{1,3}"), xff_ipv4_addresses)),
         arrayfilter(src_ip_addresses, "@element" ~= "(?:\d{1,3}\.){3}\d{1,3}")),
