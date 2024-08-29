@@ -152,10 +152,9 @@ class Client:
         def forgot_password(self):
             pass
 
-        def verify_password(self, params: KeeperParams, encryptedLoginToken: bytes) -> APIRequest_pb2.LoginResponse:
-            params.auth_verifier = crypto.derive_keyhash_v1(  # type: ignore
-                params.password, self.salt_bytes, self.salt_iterations
-            )
+        def verify_password(self, params: KeeperParams, encryptedLoginToken: bytes) -> Any:
+            # This function returns the data type APIRequest_pb2.LoginResponse
+            params.auth_verifier = crypto.derive_keyhash_v1(params.password, self.salt_bytes, self.salt_iterations)
             return LoginV3API.validateAuthHashMessage(params, encryptedLoginToken)
 
         def verify_biometric_key(self, biometric_key):
@@ -194,7 +193,7 @@ class Client:
             resp = self.save_device_tokens(
                 encrypted_device_token=encrypted_device_token,
             )
-            encrypted_login_token: bytes = resp.encryptedLoginToken  # type: ignore
+            encrypted_login_token: bytes = resp.encryptedLoginToken
 
             self.validate_device_registration(
                 encrypted_device_token=encrypted_device_token,
@@ -204,7 +203,7 @@ class Client:
         else:
             demisto.info("No need to refresh session token")
 
-    def save_device_tokens(self, encrypted_device_token: bytes) -> APIRequest_pb2.LoginResponse:
+    def save_device_tokens(self, encrypted_device_token: bytes) -> Any:
         """Save the devices' tokens when starting to verify the device registration.
 
         Args:
@@ -213,14 +212,13 @@ class Client:
         Returns:
             APIRequest_pb2.LoginResponse: The response that holds data about the API call.
         """
-        resp: APIRequest_pb2.LoginResponse = LoginV3API.startLoginMessage(  # type: ignore
-            self.keeper_params, encrypted_device_token, cloneCode=None, loginType="NORMAL"
-        )
+        # This function returns the data type APIRequest_pb2.LoginResponse
+        resp = LoginV3API.startLoginMessage(self.keeper_params, encrypted_device_token, cloneCode=None, loginType="NORMAL")
         append_to_integration_context(
             {
                 "device_private_key": self.keeper_params.device_private_key,
                 "device_token": self.keeper_params.device_token,
-                "login_token": utils.base64_url_encode(resp.encryptedLoginToken),  # type: ignore
+                "login_token": utils.base64_url_encode(resp.encryptedLoginToken),
             }
         )
         return resp
@@ -245,18 +243,18 @@ class Client:
         resp = self.save_device_tokens(
             encrypted_device_token=encryptedDeviceToken,
         )
-        if resp.loginState == APIRequest_pb2.DEVICE_APPROVAL_REQUIRED:  # type: ignore
+        if resp.loginState == APIRequest_pb2.DEVICE_APPROVAL_REQUIRED:
             # client goes to “standard device approval”
             device_approval.send_push(
                 self.keeper_params,
                 DeviceApprovalChannel.Email,
                 encryptedDeviceToken,
-                resp.encryptedLoginToken,  # type: ignore
+                resp.encryptedLoginToken,
             )
-        elif resp.loginState == APIRequest_pb2.REQUIRES_AUTH_HASH:  # type: ignore
+        elif resp.loginState == APIRequest_pb2.REQUIRES_AUTH_HASH:
             raise DemistoException(DEVICE_ALREADY_REGISTERED)
         else:
-            raise DemistoException(f"Unknown login state {resp.loginState}")  # type: ignore
+            raise DemistoException(f"Unknown login state {resp.loginState}")
 
     def validate_device_registration(
         self,
@@ -275,16 +273,16 @@ class Client:
             DemistoException: When trying to verify the device registration, and an error occurs.
         """
         resp = LoginV3API.startLoginMessage(self.keeper_params, encrypted_device_token)
-        if resp.loginState == APIRequest_pb2.REQUIRES_AUTH_HASH:  # type: ignore
-            salt = api.get_correct_salt(resp.salt)  # type: ignore
+        if resp.loginState == APIRequest_pb2.REQUIRES_AUTH_HASH:
+            salt = api.get_correct_salt(resp.salt)
             password_step = self.PasswordStep(salt_bytes=salt.salt, salt_iterations=salt.iterations)
             verify_password_response = password_step.verify_password(self.keeper_params, encrypted_login_token)
-            if verify_password_response.loginState == APIRequest_pb2.LOGGED_IN:  # type: ignore
+            if verify_password_response.loginState == APIRequest_pb2.LOGGED_IN:
                 LoginV3Flow.post_login_processing(self.keeper_params, verify_password_response)
             else:
-                raise DemistoException(f"Unknown login state after verify password {verify_password_response.loginState}")  # type: ignore
+                raise DemistoException(f"Unknown login state after verify password {verify_password_response.loginState}")
         else:
-            raise DemistoException(f"Unknown login state {resp.loginState}")  # type: ignore
+            raise DemistoException(f"Unknown login state {resp.loginState}")
 
     def finish_registering_device(
         self,
@@ -301,7 +299,7 @@ class Client:
             encrypted_login_token (bytes): The encrypted login token.
             code (str, optional): The code sent to the user's email. Defaults to "".
         """
-        encrypted_device_token = utils.base64_url_decode(self.keeper_params.device_token)  # type: ignore
+        encrypted_device_token = utils.base64_url_decode(self.keeper_params.device_token)
         if code:
             device_approval.send_code(
                 self.keeper_params,
