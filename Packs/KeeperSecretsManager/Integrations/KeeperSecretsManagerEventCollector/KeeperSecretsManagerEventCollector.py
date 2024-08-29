@@ -157,7 +157,7 @@ class Client:
             params.auth_verifier = crypto.derive_keyhash_v1(params.password, self.salt_bytes, self.salt_iterations)
             return LoginV3API.validateAuthHashMessage(params, encryptedLoginToken)
 
-        def verify_biometric_key(self, biometric_key):
+        def verify_biometric_key(self, biometric_key: bytes):
             pass
 
         def cancel(self):
@@ -277,10 +277,10 @@ class Client:
             salt = api.get_correct_salt(resp.salt)
             password_step = self.PasswordStep(salt_bytes=salt.salt, salt_iterations=salt.iterations)
             verify_password_response = password_step.verify_password(self.keeper_params, encrypted_login_token)
-            if verify_password_response.loginState == APIRequest_pb2.LOGGED_IN:
+            if verify_password_response.loginState == APIRequest_pb2.LOGGED_IN:  # type: ignore
                 LoginV3Flow.post_login_processing(self.keeper_params, verify_password_response)
             else:
-                raise DemistoException(f"Unknown login state after verify password {verify_password_response.loginState}")
+                raise DemistoException(f"Unknown login state after verify password {verify_password_response.loginState}")  # type: ignore
         else:
             raise DemistoException(f"Unknown login state {resp.loginState}")
 
@@ -505,6 +505,8 @@ def main() -> None:  # pragma: no cover
             )
             demisto.debug(f"Events to send to XSIAM {fetched_audit_logs=}")
             send_events_to_xsiam(fetched_audit_logs, VENDOR, PRODUCT)
+        else:
+            raise NotImplementedError
     # Log exceptions and return errors
     except Exception as e:
         return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")

@@ -2,7 +2,7 @@ import json
 import pytest
 from pytest_mock import MockerFixture
 from CommonServerPython import DemistoException
-from KeeperSecretsManagerEventCollector import DEFAULT_MAX_FETCH, Client, KeeperParams
+from KeeperSecretsManagerEventCollector import Client, KeeperParams
 from freezegun import freeze_time
 import demistomock as demisto
 
