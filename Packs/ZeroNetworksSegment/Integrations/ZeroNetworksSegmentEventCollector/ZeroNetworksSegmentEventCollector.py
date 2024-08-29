@@ -36,7 +36,7 @@ class Client(BaseClient):
             headers=headers
         )
 
-    def search_events(self, limit, cursor, log_type, filters=None) -> dict[str, Any]:
+    def search_events(self, limit: int, cursor: int, log_type: str, filters=None) -> dict[str, Any]:
         """
         Get a list of events.
         Args:
@@ -65,7 +65,7 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def get_log_types(params):
+def get_log_types(params: dict) -> list:
     log_types = [AUDIT_TYPE]
     is_fetch_network = argToBoolean(params.get("isFetchNetwork", False))
     if is_fetch_network:
@@ -77,10 +77,12 @@ def get_log_types(params):
 def initialize_start_timestamp(last_run: dict[str, Any], log_type: str, arg_from=None) -> int:
     if arg_from:
         return arg_from
+    
     start_timestamp = last_run.get(log_type, {}).get("last_fetch")
     if not start_timestamp:
         start_date = dateparser.parse(FIRST_FETCH).strftime(ISO_8601_FORMAT)  # type: ignore[union-attr]
         start_timestamp = date_to_timestamp(start_date, ISO_8601_FORMAT)
+        
     return start_timestamp
 
 
@@ -93,7 +95,7 @@ def get_max_results_and_limit(params: dict[str, Any], log_type: str) -> tuple[in
     return max_results, limit
 
 
-def update_last_run(last_run: dict[str, Any], log_type: str, last_event_time: int, previous_ids: set):
+def update_last_run(last_run: dict[str, Any], log_type: str, last_event_time: int, previous_ids: list) -> dict:
     last_run[log_type] = {
         "last_fetch": last_event_time,
         "previous_ids": previous_ids
@@ -101,7 +103,7 @@ def update_last_run(last_run: dict[str, Any], log_type: str, last_event_time: in
     return last_run
 
 
-def create_id(event: dict, log_type: str):
+def create_id(event: dict, log_type: str) -> str:
     timestamp = event.get("timestamp")
     if log_type == AUDIT_TYPE:
         reported_object_id = event.get("reportedObjectId", "")
@@ -116,7 +118,8 @@ def create_id(event: dict, log_type: str):
     return hash_object.hexdigest()
 
 
-def process_events(events: list, previous_ids: set, last_event_time: int, max_results: int, num_results: int, log_type: str):
+def process_events(events: list, previous_ids: list, last_event_time: int, max_results: int, num_results: int,
+                   log_type: str) -> tuple[list, list, int]:
     new_events = []
     for event in events:
         event_id = create_id(event, log_type)
@@ -129,15 +132,15 @@ def process_events(events: list, previous_ids: set, last_event_time: int, max_re
             new_events.append(event)
             event_timestamp = event.get("timestamp")
             num_results += 1
-            if event_timestamp > last_event_time:
+            if int(event_timestamp) > last_event_time:
                 demisto.debug('updating the last run')
-                previous_ids = {event_id}
+                previous_ids = [event_id]
                 last_event_time = event_timestamp
 
             # Adding the event ID when the event time is equal to the last received event
-            elif event_timestamp == last_event_time:
+            elif int(event_timestamp) == last_event_time:
                 demisto.debug('adding id to the "new_previous_ids"')
-                previous_ids.add(event_id)
+                previous_ids.append(event_id)
 
     return new_events, previous_ids, last_event_time
 
@@ -145,7 +148,7 @@ def process_events(events: list, previous_ids: set, last_event_time: int, max_re
 ''' COMMAND FUNCTIONS '''
 
 
-def fetch_events(client: Client, params: dict, last_run: dict, arg_from=None):
+def fetch_events(client: Client, params: dict, last_run: dict, arg_from=None) -> tuple[dict, list, dict]:
     """
        Fetches audit logs from ZeroNetworks API.
     """
@@ -159,7 +162,7 @@ def fetch_events(client: Client, params: dict, last_run: dict, arg_from=None):
         last_event_time = start_timestamp
         collected_events: list = []
         max_results, limit = get_max_results_and_limit(params, log_type)
-        previous_ids = last_run.get(log_type, {}).get("previous_ids", {})
+        previous_ids = last_run.get(log_type, {}).get("previous_ids", [])
 
         while len(collected_events) < max_results:
             response = client.search_events(limit, cursor=cursor, log_type=log_type, filters=filters)
@@ -193,7 +196,7 @@ def fetch_events(client: Client, params: dict, last_run: dict, arg_from=None):
     return last_run, all_events, events_split_to_log_type
 
 
-def get_events(client, args, last_run, params):
+def get_events(client: Client, args: dict, last_run: dict, params: dict) -> tuple[list, CommandResults]:
     """
        Gets events from Zero Networks Segment API.
     """
@@ -208,7 +211,7 @@ def get_events(client, args, last_run, params):
     return events, CommandResults(readable_output=final_hr)
 
 
-def test_module(client: Client, params) -> str:
+def test_module(client: Client) -> str:
     """
     Tests API connectivity and authentication'
     When 'ok' is returned it indicates the integration works like it is supposed to and connection to the service is
@@ -265,7 +268,7 @@ def main() -> None:
 
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
-            return_results(test_module(client, params))
+            return_results(test_module(client))
 
         elif command == 'zero-networks-segment-get-events':
             last_run = demisto.getLastRun()
@@ -275,7 +278,7 @@ def main() -> None:
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
 
         elif command == 'fetch-events':
-            last_run = demisto.getLastRun()
+            last_run = demisto.getLastRun() or {}
             next_run, events, _ = fetch_events(client, params, last_run)
             demisto.setLastRun(next_run)
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
