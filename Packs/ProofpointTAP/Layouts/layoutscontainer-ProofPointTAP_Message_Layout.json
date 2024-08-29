@@ -476,15 +476,6 @@
                                 "index": 0,
                                 "sectionItemType": "field",
                                 "startCol": 0
-                            },
-                            {
-                                "endCol": 4,
-                                "fieldId": "proofpointtaptmessageparts",
-                                "height": 22,
-                                "id": "3d02baa0-ab04-11eb-838e-0d868af172e9",
-                                "index": 2,
-                                "sectionItemType": "field",
-                                "startCol": 0
                             }
                         ],
                         "maxW": 3,
