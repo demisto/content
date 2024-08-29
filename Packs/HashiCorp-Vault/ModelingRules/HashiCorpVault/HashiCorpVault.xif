@@ -1,0 +1,47 @@
+[MODEL: dataset = hashicorp_vault_raw]
+alter
+    is_access_denied = if(auth -> policy_results.allowed = "false"),
+    auth_policies = arraydistinct(arrayconcat(
+        request -> policies[], // a list of policies
+        request -> token_policies[])), //  list of policies associated with the token
+    auth_entity_id = auth -> entity_id, // The Identity entity ID attached to the token, if any    
+    auth_granting_policies = if(to_boolean(auth -> policy_results.allowed),
+        arraymap(auth -> policy_results.granting_policies[], "@element" -> name)),
+    auth_display_name = auth -> display_name, // This is the display name set by the auth method role or explicitly at secret creation time; this is often useful for determining from which auth method mount point or user this request could be related to
+    auth_metadata_roles = arraycreate(
+        auth -> metadata.role, 
+        auth -> metadata.role_name),
+    auth_metadata_loglevel = auth -> metadata.loglevel,
+    http_status_code = response -> data.http_status_code,
+    http_content_type = response -> data.http_content_type,
+    auth_token_type = coalesce(auth -> token_type, response -> auth.token_type),
+    request_remote_address = request -> remote_address, // The IP address of the client making the request
+    request_remote_port = request -> remote_port, //  The port used by the client 
+    request_id = request -> id, // Unique identifier for the request
+    request_operation = request -> operation, // This is the type of operation which corresponds to path capabilities and is expected to be one of: create, read, update, delete, or list
+    request_path = request -> path, // The requested Vault path for operation
+    request_data = request -> data, // content of any data passed to the request
+    mount_class = coalesce(request -> mount_class, response -> mount_class), // Authentication method used for a particular request.
+    mount_type = coalesce(request -> mount_type, response -> mount_type), // Authentication method used for a particular request.
+    service_account_name = auth -> metadata.service_account_name,
+    service_account_uid = auth -> metadata.service_account_uid
+| alter 
+    client_ipv4 = if(request_remote_address ~= "(?:\d{1,3}\.){3}\d{1,3}", request_remote_address), 
+    client_ipv6 = if(request_remote_address ~= "(?:[a-fA-F\d]{0,4}\:){1,7}[a-fA-F\d]{0,4}", request_remote_address)
+alter 
+    xdm.auth.auth_method = if(mount_class = "auth", mount_type),
+    xdm.event.id = request_id, 
+    xdm.event.outcome_reason = error, 
+    xdm.event.outcome = if(error != null or is_access_denied, XDM_CONST.OUTCOME_FAILED),
+    xdm.event.type = type, 
+    xdm.event.operation_sub_type = request_operation, 
+    xdm.source.ipv4 = client_ipv4,
+    xdm.source.ipv6 = client_ipv6, 
+    xdm.source.user.identifier = auth_entity_id,
+    xdm.source.host.ipv4_addresses = if(client_ipv4 != null, arraycreate(client_ipv4)),
+    xdm.source.host.ipv6_addresses = if(client_ipv6 != null, arraycreate(client_ipv6)),
+    xdm.source.host.ipv4_public_addresses = if(client_ipv4 != null and not incidr(client_ipv4, "10.0.0.0/8, 192.168.0.0/16, 172.16.0.0/12, 127.0.0.0/8, 169.254.0.0/16, 100.64.0.0/10"), arraycreate(client_ipv4)),
+    xdm.source.port = to_integer(request_remote_port), 
+    xdm.target.resource.name = request_path,
+    xdm.network.rule = arraystring(auth_policies, ","),
+    xdm.event.log_level = auth_metadata_loglevel;
