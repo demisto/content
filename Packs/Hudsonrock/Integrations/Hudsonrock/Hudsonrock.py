@@ -69,7 +69,6 @@ def main():
     verify_certificate = not demisto.params().get('insecure', False)
 
     proxy = demisto.params().get('proxy', False)
-    api_key = demisto.params().get('api_key')
 
     headers = {'Accept': 'application/json'}
     reliability = demisto.params().get('integrationReliability', DBotScoreReliability.B)
