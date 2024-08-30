@@ -1,6 +1,6 @@
 {
     "name": "Zero Networks Segment",
-    "description": "## FILL MANDATORY FIELD ##",
+    "description": "Integrates with Zero Networks Segment API to fetch and process network events.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
