@@ -1,8 +1,8 @@
-id: ReliaQuest GreyMatter DRP - Domain_IoC Assessment & Enrichment
+id: Digital Shadows- Domain_IoC Assessment & Enrichment
 version: -1
 contentitemexportablefields:
   contentitemfields: {}
-name: ReliaQuest GreyMatter DRP - Domain_IoC Assessment & Enrichment
+name: Digital Shadows - Domain_IoC Assessment & Enrichment
 description: Enrichment of Domain IOC types - sub-playbook for IOC Assessment & Enrichment playbook.
 starttaskid: "0"
 tasks:
