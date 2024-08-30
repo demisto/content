@@ -276,7 +276,7 @@ Command to retrieve the events from the search job "sekoia-xdr-execute-events-qu
 ### sekoia-xdr-search-events
 
 ***
-Command to search and retrieve the events from an alert. This is a combination of 3 commands: jobquery-events, jobquery-events-status and jobquery-retrieve events.
+Command to search and retrieve the events from an alert. This is a combination of 3 commands: sekoia-xdr-events-execute-query, sekoia-xdr-events-status-query and sekoia-xdr-events-results-query.
 
 #### Base Command
 
@@ -393,7 +393,7 @@ Command to get the possible transitions of status on the alert.
 ### sekoia-xdr-get-cases-alert
 
 ***
-Command to retrieve the cases related to an Alert from Sekoia XDR. If a case_id is given, returns the information about it.
+Command to retrieve the cases related to an Alert from Sekoia XDR. If a case_id is given, returns the information about it, and if not it will give all cases in this alert.
 
 #### Base Command
 
@@ -757,7 +757,7 @@ There is no context output for this command.
 ### get-mapping-fields
 
 ***
-This command pulls the remote schema for the different incident types,  and their associated incident fields, from the remote system.
+This command pulls the remote schema for the different incident types, and their associated incident fields, from the remote system.
 
 #### Base Command
 
@@ -823,7 +823,7 @@ Command that performs a HTTP request to Sekoia using the integration authenticat
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | method | Method to use with the http request (GET,POST,etc). Default is GET. | Required | 
-| url_sufix | The URL sufix after https://api.sekoia.io/v1, i.e. /sic/alerts/ or /asset-management/assets/. | Required | 
+| url_sufix | The URL suffix after https://api.sekoia.io, i.e. /v1/sic/alerts/ or /v1/asset-management/assets/. | Required | 
 | parameters | Query parameters, i.e. limit -&gt; 10 , match['status_name'] -&gt; Ongoing. | Optional | 
 
 #### Context Output

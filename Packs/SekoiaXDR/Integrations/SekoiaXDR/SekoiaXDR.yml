@@ -666,7 +666,7 @@ script:
     outputs:
     - contextPath: SekoiaXDR.Events.Results
       description: The outputs are different for each event, they will be output inside SekoiaXDR.Events.Results.
-    description: "Command to search and retrieve the events from an alert. This is a combination of 3 commands: jobquery-events, jobquery-events-status and jobquery-retrieve events."
+    description: "Command to search and retrieve the events from an alert. This is a combination of 3 commands: sekoia-xdr-events-execute-query, sekoia-xdr-events-status-query and sekoia-xdr-events-results-query."
   - name: sekoia-xdr-update-status-alert
     arguments:
     - name: id
@@ -885,7 +885,7 @@ script:
       description: The unique identifier of the avatar of the subscriber.
     - contextPath: SekoiaXDR.Cases.subscribers.type
       description: The type of subscriber.
-    description: Command to retrieve the cases related to an Alert from Sekoia XDR. If a case_id is given, returns the information about it.
+    description: Command to retrieve the cases related to an Alert from Sekoia XDR. If a case_id is given, returns the information about it, and if not it will give all cases in this alert.
   - name: sekoia-xdr-get-asset
     arguments:
     - name: asset_uuid
@@ -1149,7 +1149,7 @@ script:
     description: Pushes local changes to the remote system.
   - name: get-mapping-fields
     arguments: []
-    description: This command pulls the remote schema for the different incident types,  and their associated incident fields, from the remote system.
+    description: This command pulls the remote schema for the different incident types, and their associated incident fields, from the remote system.
   - name: sekoia-xdr-remove-attribute-asset
     arguments:
     - name: asset_uuid
@@ -1176,7 +1176,7 @@ script:
       defaultValue: GET
     - name: url_sufix
       required: true
-      description: "The URL sufix after https://api.sekoia.io/v1, i.e. /sic/alerts/ or /asset-management/assets/."
+      description: "The URL suffix after https://api.sekoia.io, i.e. /v1/sic/alerts/ or /v1/asset-management/assets/."
     - name: parameters
       description: Query parameters, i.e. limit -> 10 , match['status_name'] -> Ongoing.
       type: keyValue
