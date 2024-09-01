@@ -133,7 +133,7 @@ class Model:
     top_domains: dict
     top_domains_path: str
 
-    def predict(self, x_pred: pd.DataFrame) -> dict:
+    def predict(self, x_pred: pd.DataFrame):
         pass
 
 
