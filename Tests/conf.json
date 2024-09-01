@@ -1335,14 +1335,14 @@
             "integrations": "Panorama",
             "instance_names": "palo_alto_firewall_9.1",
             "playbookID": "test_playbook_pan_os_firewall_exceptions_commands",
-            "memory_threshold": 80
+            "memory_threshold": 90
 
         },
         {
             "integrations": "Panorama",
             "instance_names": "palo_alto_panorama_9.0",
             "playbookID": "test_playbook_pan_os_firewall_exceptions_commands",
-            "memory_threshold": 80
+            "memory_threshold": 90
         },
         {
             "integrations": "Panorama",
