@@ -46,7 +46,7 @@ CURRENT_BATCH_LAST_MODIFIED_TIME: str = ''
 def create_validation_errors_response(validation_errors):
     if not validation_errors:
         return ''
-    response = 'The following IOCs were not pushed due to following errors:\n'
+    response = f'The following {len(validation_errors)} IOCs were not pushed due to following errors:\n'
     for item in validation_errors:
         indicator = item.get('indicator')
         error = item.get('error')
@@ -254,12 +254,8 @@ def get_iocs_generator(size=200, query=None, is_first_stage_sync=False) -> Itera
                 if is_first_stage_sync and ioc_count >= MAX_INDICATORS_TO_SYNC:
                     update_integration_context(update_search_after_array=search_after_array)
                     raise StopIteration
-        demisto.debug(f"1{search_after=}")
-        demisto.debug(f"{search_after_array=}")
         update_integration_context(update_search_after_array=search_after_array)
     except StopIteration:
-        demisto.debug(f"{search_after=}")
-        demisto.debug(f"{search_after_array=}")
         update_integration_context(update_search_after_array=search_after_array)
         pass
     except Exception as e:
@@ -456,7 +452,6 @@ def update_integration_context(update_sync_time_with_datetime: datetime | None =
                                update_is_first_sync_phase: str | None = None,
                                update_search_after_array: List[Any] | None = None):
     updated_integration_context = get_integration_context() or {}
-    demisto.debug(f"{updated_integration_context=}")
     if update_sync_time_with_datetime:
         updated_integration_context['ts'] = int(update_sync_time_with_datetime.timestamp()) * 1000
         updated_integration_context['time'] = update_sync_time_with_datetime.strftime(DEMISTO_TIME_FORMAT)
@@ -470,12 +465,34 @@ def update_integration_context(update_sync_time_with_datetime: datetime | None =
         updated_integration_context['is_first_sync_phase'] = argToBoolean(update_is_first_sync_phase)
     if update_search_after_array:
         updated_integration_context['search_after'] = update_search_after_array
+    demisto.debug(f"Updating integration context to {updated_integration_context=}")
     set_integration_context(updated_integration_context)
 
 
-def sync(client: Client, batch_size: int = 200, is_first_stage_sync: bool = False):
+def sync(client: Client, batch_size: int = 200):
     """
-    Sync command runs in batches of 5,000 with total of 50,000 indicators in each sync.
+    Sync command is supposed to run only in first run or the integration context is empty.
+    Creates the initial sync between xdr and xsoar iocs.
+    """
+    demisto.info("executing sync")
+    temp_file_path: str = get_temp_file()
+    try:
+        sync_time = datetime.now(timezone.utc)
+        create_file_sync(temp_file_path)  # may end up empty
+        requests_kwargs: dict = get_requests_kwargs(file_path=temp_file_path)
+        path: str = 'sync_tim_iocs'
+        client.http_request(path, requests_kwargs)
+    finally:
+        os.remove(temp_file_path)
+
+    set_sync_time(sync_time)
+    set_new_iocs_to_keep_time()
+    return_outputs("sync with XDR completed.")
+
+
+def sync_for_fetch(client: Client, batch_size: int = 200, is_first_stage_sync: bool = False):
+    """
+    Sync command runs in batches of 4,000 with total of 40,000 indicators in each sync.
     Syncs the data in xsoar to xdr.
     """
     demisto.info("executing sync")
@@ -497,10 +514,12 @@ def sync(client: Client, batch_size: int = 200, is_first_stage_sync: bool = Fals
             last_sync_time = integration_context.get('time','')
             if len(request_data) < MAX_INDICATORS_TO_SYNC:
                 demisto.debug(f"{last_sync_time=}, {CURRENT_BATCH_LAST_MODIFIED_TIME=}")
+                # is the update_sync_time_with_date_string nessary (to ask judith)
                 update_integration_context(update_is_first_sync_phase='false',
                                            update_sync_time_with_date_string=CURRENT_BATCH_LAST_MODIFIED_TIME
                                            if last_sync_time > CURRENT_BATCH_LAST_MODIFIED_TIME
                                            else None)
+                demisto.debug(f"updated integration_context to {get_integration_context()=}")
             requests_kwargs: dict = get_requests_kwargs(_json=request_data, validate=True)
             path: str = 'tim_insert_jsons'
             response = client.http_request(path, requests_kwargs)
@@ -571,7 +590,7 @@ def get_last_iocs(batch_size=200) -> list:
     demisto.info(f"querying XSOAR's recently-modified: got {len(iocs)}")
     integration_context = get_integration_context()
     integration_context['time'] = current_run
-    demisto.debug(f"querying querying XSOAR's recently-modified IOCs: setting integration_context['time']={current_run}")
+    demisto.debug(f"querying XSOAR's recently-modified IOCs: updating integration context to {integration_context}.")
     set_integration_context(integration_context)
     return iocs
 
@@ -600,7 +619,7 @@ def get_indicators(indicators: str) -> list:
 
 
 def tim_insert_jsons(client: Client):
-    # takes our changes and pushes to XDR
+    # Retrieve iocs changes from xsoar and pushes to XDR
     indicators = demisto.args().get('indicator', '')
     if indicators:
         demisto.info(f"pushing IOCs to XDR: querying with input {indicators}")
@@ -748,7 +767,6 @@ def get_changes(client: Client):
         set_integration_context(integration_context)
         demisto.debug(f"pull XDR changes: converting {len(iocs)} XDR IOCs to demisto format, then creating indicators")
         demisto_indicators = list(map(xdr_ioc_to_demisto, iocs))
-        demisto.debug(f"{demisto_indicators=}")
         demisto.createIndicators(demisto_indicators)
         demisto.debug("pull XDR changes: done")
     else:
@@ -767,33 +785,39 @@ def module_test(client: Client):
 def fetch_indicators(client: Client, auto_sync: bool = False):
     demisto.debug("fetching IOCs: starting")
     integration_context = get_integration_context()
-    demisto.debug(f"The integration context is {integration_context=}")
+    demisto.debug(f"The integration context inside fetch_indicators is {integration_context=}")
     if (((not integration_context) or (integration_context.get('is_first_sync_phase', False)))
             and auto_sync):
         if not integration_context:
             sync_time = datetime.now(timezone.utc)
             update_integration_context(update_sync_time_with_datetime=sync_time, update_is_first_sync_phase='true')
         demisto.debug("fetching IOCs: running sync with is_first_stage_sync=True")
-        xdr_iocs_sync_command(client=client, is_first_stage_sync=True)
+        xdr_iocs_sync_command(client=client, is_first_stage_sync=True, called_from_fetch=True)
     else:
-        # This will happen every fetch time interval as defined in the integration configuration and first_phase_sync=False
+        # This will happen every fetch time interval as defined in the integration configuration and is_first_sync_phase=False
         demisto.debug("fetching IOCs: running get_changes")
         get_changes(client)
         if auto_sync:
-            demisto.debug("fetching IOCs: auto_sync is on")
+            demisto.debug("fetching IOCs from xsoar: auto_sync is on")
             tim_insert_jsons(client)
             demisto.debug("checking if iocs_to_keep should run")
             if is_iocs_to_keep_time():
                 # first_time=False, is_first_stage_sync=False so will call iocs_to_keep
                 demisto.debug("running sync with first_time=False")
-                xdr_iocs_sync_command(client)
+                xdr_iocs_sync_command(client, called_from_fetch=True)
 
 
-def xdr_iocs_sync_command(client: Client, first_time: bool = False, is_first_stage_sync: bool = False):
+def xdr_iocs_sync_command(client: Client,
+                          first_time: bool = False,
+                          is_first_stage_sync: bool = False,
+                          called_from_fetch: bool = False):
     if first_time or not get_integration_context() or is_first_stage_sync:
         demisto.debug("first time, running sync")
+        if called_from_fetch:
+            sync_for_fetch(client, batch_size=4000, is_first_stage_sync=True)
+        else:
         # the sync is the large operation including the data and the get_integration_context is fill in the sync
-        sync(client, batch_size=4000, is_first_stage_sync=True)
+            sync(client, batch_size=4000)
     else:
         pass
         # iocs_to_keep(client)
@@ -951,8 +975,6 @@ def main():  # pragma: no cover
     command = demisto.command()
     args = demisto.args()
     demisto.debug(f'Command being called is {command}, {args=}')
-    # if not get_integration_context():
-    #     set_integration_context({'is_first_sync_phase': False})
     try:
         if command == "fetch-indicators":
             fetch_indicators(client, params.get("autoSync", False))
