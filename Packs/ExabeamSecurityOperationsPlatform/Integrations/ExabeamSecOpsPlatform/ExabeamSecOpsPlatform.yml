@@ -110,7 +110,7 @@ script:
       isArray: true
       defaultValue: ""
     - name: order_by
-      description: Order results by a specified field in ASC or DESC order, such as "riskScore ASC" or "riskScore DESC".
+      description: Order results by a specified field. Defaults to ascending (ASC), for example, "riskScore". Use "DESC" for descending, for example, "riskScore DESC".
       isArray: true
     - name: limit
       defaultValue: 50
@@ -272,7 +272,7 @@ script:
       isArray: true
       defaultValue: ""
     - name: order_by
-      description: Order results by a specified field in ASC or DESC order, such as "riskScore ASC" or "riskScore DESC".
+      description: Order results by a specified field. Defaults to ascending (ASC), for example, "riskScore". Use "DESC" for descending, for example, "riskScore DESC".
       isArray: true
     - name: limit
       defaultValue: 50
