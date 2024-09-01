@@ -54,7 +54,6 @@ def create_account(
     }
     for key, value in account.items():
         if isinstance(value, list) and value:
-            demisto.debug(f"value is a list: {value}")
             account[key] = value[0]
 
     return remove_empty_elements(account)
@@ -78,8 +77,6 @@ class Command:
         self.is_enabled = is_enabled
         self.is_generic = is_generic
         self.output_key = output_key
-        self.outputs = []
-        self.results = []
         self.command = CommandRunner.Command(
             commands=self.name,
             args_lst=self.args,
@@ -133,8 +130,10 @@ class Command:
     def update_command_args(self, args: dict):
         self.command.args_lst = [args]
 
-    def execute(self) -> bool:
+    def execute(self) -> tuple[bool, list[CommandResults], list[dict]]:
         status = False
+        return_results = []
+        return_outputs = []
         if not self.is_enabled:
             demisto.debug(f"Skipping command {self.name} since it is disabled.")
         elif not self._verify_args():
@@ -149,16 +148,18 @@ class Command:
                 command=self.command, extract_contents=False
             )
             for result in results:
-                self.results.append(self._prepare_readable_output(result.result))
-                self.outputs.append(self._prepare_output(result.result["EntryContext"]))
+                return_results.append(self._prepare_readable_output(result.result))
+                return_outputs.append(
+                    self._prepare_output(result.result["EntryContext"])
+                )
             for error in errors:
-                self.results.append(
+                return_results.append(
                     self._prepare_readable_output(error.result, is_error=True)
                 )
             if results:
                 status = True
             demisto.debug(f"Finish running command={self.name} with {status=}")
-        return status
+        return status, return_results, return_outputs
 
 
 class Task:
@@ -168,9 +169,12 @@ class Task:
         self.command = command
         self.status = True
 
-    def execute(self):
+    def execute(self) -> tuple[list[CommandResults], list[dict]]:
+        results = []
+        outputs = []
         if self.command:
-            self.status = self.command.execute()
+            self.status, results, outputs = self.command.execute()
+        return results, outputs
 
 
 class PlaybookGraph:
@@ -183,13 +187,15 @@ class PlaybookGraph:
         self.tasks: dict[str, Task] = {}
         self.connections: dict[str, list[tuple[str, Optional[Callable[[], bool]]]]] = {}
         self.start_task_id: str = ""
+        self.outputs = []
+        self.results = []
 
     def add_task(self, node: Task):
         self.tasks[node.task_id] = node
         self.connections[node.task_id] = []
 
-    def add_tasks(self, nodes: list[Task]):
-        for node in nodes:
+    def add_tasks(self, tasks: list[Task]):
+        for node in tasks:
             self.add_task(node)
 
     def add_connection(
@@ -211,7 +217,9 @@ class PlaybookGraph:
                 if not task:
                     continue
                 demisto.debug(f"Current task: {task.task_id}")
-                task.execute()
+                results, outputs = task.execute()
+                self.results.extend(results)
+                self.outputs.extend(outputs)
                 executed_task_ids.add(task.task_id)
                 next_tasks = self.connections.get(task.task_id, [])
                 if task.status:
@@ -228,11 +236,11 @@ class PlaybookGraph:
         demisto.debug(f"All tasks executed: {executed_task_ids}")
 
 
-def update_enabled_commands(commands: list[Command]) -> None:
+def update_enabled_commands(commands: dict[str, Command]) -> None:
     """
     This function updates the is_enabled attribute of the commands based on the availability of the brand.
     """
-    brands = [command.brand for command in commands if not command.is_generic]
+    brands = [command.brand for command in commands.values() if not command.is_generic]
     res = execute_command(
         command="IsIntegrationAvailable",
         args={"brandname": brands},
@@ -240,14 +248,14 @@ def update_enabled_commands(commands: list[Command]) -> None:
 
     enabled_brands = [brand[0] for brand in list(zip(brands, res)) if brand[1] == "yes"]
 
-    for command in commands:
+    for command in commands.values():
         if command.is_generic:
             command.is_enabled = True
         else:
             command.is_enabled = command.brand in enabled_brands
 
     demisto.debug(
-        f"Enabled commands: {[command.name for command in commands if command.is_enabled]}"
+        f"Enabled commands: {[command.name for command in commands.values() if command.is_enabled]}"
     )
 
 
@@ -270,275 +278,264 @@ def merge_accounts(accounts: list[dict[str, str]]) -> dict[str, Any]:
 
 def setup_playbook_graph(
     user_id: str, user_name: str, user_email: str, domain: str
-) -> tuple[PlaybookGraph, list[Command]]:
+) -> PlaybookGraph:
     ##########################
     ##### Setup commands #####
     ##########################
-    identityiq_search_identities_command = Command(
-        name="identityiq-search-identities",
-        brand="SailPointIdentityIQ",
-        args={
-            "id": user_id,
-            "email": user_email,
-        },
-        output_key="IdentityIQ.Identity",
-        output_function=lambda entry_context: create_account(
-            id=entry_context.get("id"),
-            username=entry_context.get("name", {}).get("formatted"),
-            display_name=entry_context.get("DisplayName"),
-            email_address=entry_context.get("emails", {}).get("value"),
-            is_enabled=entry_context.get("active"),
-        ),
-    )
-    identitynow_get_accounts_command = Command(
-        name="identitynow-get-accounts",
-        brand="SailPointIdentityNow",
-        args={
-            "id": user_id,
-            "name": user_name,
-        },
-        output_key="IdentityNow.Account",
-        output_function=lambda entry_context: create_account(
-            id=entry_context.get("id"),
-            display_name=entry_context.get("name"),
-            is_enabled=not entry_context.get("disabled"),
-        ),
-    )
-    ad_get_user_command = Command(
-        name="ad-get-user",
-        brand="Active Directory Query v2",
-        args={
-            "username": user_name,
-            "email": user_email,
-        },
-        output_key="ActiveDirectory.Users",
-        output_function=lambda entry_context: (
-            create_account(
-                id=entry_context.get("dn"),
-                display_name=entry_context.get("displayName", [])
-                if entry_context.get("displayName")
-                else "",
-                email_address=entry_context.get("mail", [])
-                if entry_context.get("mail")
-                else "",
-                groups=entry_context.get("memberOf"),
-                # manager=entry_context.get("Manager"),
-                is_enabled=not entry_context.get("userAccountControlFields", {}).get(
-                    "ACCOUNTDISABLE"
+    def setup_commands() -> dict[str, Command]:
+        return {
+            "identityiq_search_identities_command": Command(
+                name="identityiq-search-identities",
+                brand="SailPointIdentityIQ",
+                args={
+                    "id": user_id,
+                    "email": user_email,
+                },
+                output_key="IdentityIQ.Identity",
+                output_function=lambda entry_context: create_account(
+                    id=entry_context.get("id"),
+                    username=entry_context.get("name", {}).get("formatted"),
+                    display_name=entry_context.get("DisplayName"),
+                    email_address=entry_context.get("emails", {}).get("value"),
+                    is_enabled=entry_context.get("active"),
                 ),
             ),
-            SHARED_CONTEXT.update(
-                {
-                    ad_get_user_command.name: {
-                        "manager": entry_context.get("manager", [])[0]
-                    }
-                }
+            "identitynow_get_accounts_command": Command(
+                name="identitynow-get-accounts",
+                brand="SailPointIdentityNow",
+                args={
+                    "id": user_id,
+                    "name": user_name,
+                },
+                output_key="IdentityNow.Account",
+                output_function=lambda entry_context: create_account(
+                    id=entry_context.get("id"),
+                    display_name=entry_context.get("name"),
+                    is_enabled=not entry_context.get("disabled"),
+                ),
             ),
-        )[0],
-    )
-    ad_get_user_manager_command = Command(
-        name="ad-get-user",
-        brand="Active Directory Query v2",
-        args={},
-        output_key="ActiveDirectory.Users",
-        output_function=lambda entry_context: create_account(
-            manager_display_name=entry_context.get("displayName", [])
-            if entry_context.get("displayName")
-            else "",
-            manager_email=entry_context.get("mail", [])
-            if entry_context.get("mail")
-            else "",
-        ),
-        update_args_fun=lambda: {
-            "dn": SHARED_CONTEXT.get(ad_get_user_command.name, {}).get("manager")
-        },
-    )
-    pingone_get_user_command = Command(
-        name="pingone-get-user",
-        brand="PingOne",
-        args={
-            "userId": user_id,
-            "username": user_name,
-        },
-        output_key="PingOne.Account",
-        output_function=lambda entry_context: create_account(
-            id=entry_context.get("ID"),
-            username=entry_context.get("Username"),
-            display_name=entry_context.get("DisplayName"),
-            email_address=entry_context.get("Email"),
-            is_enabled=entry_context.get("Enabled"),
-        ),
-    )
-    okta_get_user_command = Command(
-        name="okta-get-user",
-        brand="Okta v2",
-        args={
-            "userId": user_id,
-            "username": user_name,
-        },
-        output_key="Account",
-        output_function=lambda entry_context: create_account(
-            id=entry_context.get("ID"),
-            username=entry_context.get("Username"),
-            display_name=entry_context.get("DisplayName"),
-            email_address=entry_context.get("Email"),
-            is_enabled=entry_context.get("Status"),
-        ),
-    )
-    aws_iam_get_user_command = Command(
-        name="aws-iam-get-user",
-        brand="AWS - IAM",
-        args={
-            "userName": user_name,
-        },
-        output_key="AWS.IAM.Users",
-        output_function=lambda entry_context: create_account(
-            id=entry_context.get("UserId"),
-            username=entry_context.get("UserName"),
-        ),
-    )
-    msgraph_user_get_command = Command(
-        name="msgraph-user-get",
-        brand="Microsoft Graph User",
-        args={
-            "user": user_id,
-        },
-        output_key="Account",
-        output_function=lambda entry_context: create_account(
-            id=entry_context.get("ID"),
-            username=entry_context.get("Username"),
-            display_name=entry_context.get("DisplayName"),
-            email_address=entry_context.get("Email", {}).get("Address"),
-            job_title=entry_context.get("JobTitle"),
-            office=entry_context.get("Office"),
-            telephone_number=entry_context.get("TelephoneNumber"),
-            type=entry_context.get("Type"),
-        ),
-    )
-    xdr_list_risky_users_command = Command(
-        name="xdr-list-risky-users",
-        brand="Cortex XDR - IR",
-        args={"user_id": user_id},
-        output_key="PaloAltoNetworksXDR.RiskyUser",
-        output_function=lambda entry_context: create_account(
-            id=entry_context.get("id"),
-            type=entry_context.get("type"),
-        ),
-    )
-    iam_get_user_command = Command(
-        name="iam-get-user",
-        args={
-            "user-profile": {"id": user_id}
-            if user_id
-            else {"email": f"{user_name}@{domain}"}
-            if domain and user_name
-            else {"username": user_name}
-            if user_name
-            else {"email": user_email}
-            if user_email
-            else None,
-        },
-        is_generic=True,
-        output_key="Account",
-        output_function=lambda entry_context: create_account(
-            id=entry_context.get("id"),
-            type=entry_context.get("type"),
-        ),
-    )
-
-    list_commands = [
-        identityiq_search_identities_command,
-        identitynow_get_accounts_command,
-        ad_get_user_command,
-        pingone_get_user_command,
-        okta_get_user_command,
-        aws_iam_get_user_command,
-        msgraph_user_get_command,
-        xdr_list_risky_users_command,
-        iam_get_user_command,
-        ad_get_user_manager_command,
-    ]
-    update_enabled_commands(list_commands)
+            "ad_get_user_command": Command(
+                name="ad-get-user",
+                brand="Active Directory Query v2",
+                args={
+                    "username": user_name,
+                    "email": user_email,
+                },
+                output_key="ActiveDirectory.Users",
+                output_function=lambda entry_context: (
+                    create_account(
+                        id=entry_context.get("dn"),
+                        display_name=entry_context.get("displayName", [])
+                        if entry_context.get("displayName")
+                        else "",
+                        email_address=entry_context.get("mail", [])
+                        if entry_context.get("mail")
+                        else "",
+                        groups=entry_context.get("memberOf"),
+                        # manager=entry_context.get("Manager"),
+                        is_enabled=not entry_context.get(
+                            "userAccountControlFields", {}
+                        ).get("ACCOUNTDISABLE"),
+                    ),
+                    # tasks["ad_get_user_task"].task_id
+                    SHARED_CONTEXT.update(
+                        {
+                            "ad_get_user_task": {
+                                "manager": entry_context.get("manager", [])[0]
+                            }
+                        }
+                    ),
+                )[0],
+            ),
+            "ad_get_user_manager_command": Command(
+                name="ad-get-user",
+                brand="Active Directory Query v2",
+                args={},
+                output_key="ActiveDirectory.Users",
+                output_function=lambda entry_context: create_account(
+                    manager_display_name=entry_context.get("displayName", [])
+                    if entry_context.get("displayName")
+                    else "",
+                    manager_email=entry_context.get("mail", [])
+                    if entry_context.get("mail")
+                    else "",
+                ),
+                update_args_fun=lambda: {
+                    "dn": SHARED_CONTEXT.get("ad_get_user_task", {}).get("manager")
+                },
+            ),
+            "pingone_get_user_command": Command(
+                name="pingone-get-user",
+                brand="PingOne",
+                args={
+                    "userId": user_id,
+                    "username": user_name,
+                },
+                output_key="PingOne.Account",
+                output_function=lambda entry_context: create_account(
+                    id=entry_context.get("ID"),
+                    username=entry_context.get("Username"),
+                    display_name=entry_context.get("DisplayName"),
+                    email_address=entry_context.get("Email"),
+                    is_enabled=entry_context.get("Enabled"),
+                ),
+            ),
+            "okta_get_user_command": Command(
+                name="okta-get-user",
+                brand="Okta v2",
+                args={
+                    "userId": user_id,
+                    "username": user_name,
+                },
+                output_key="Account",
+                output_function=lambda entry_context: create_account(
+                    id=entry_context.get("ID"),
+                    username=entry_context.get("Username"),
+                    display_name=entry_context.get("DisplayName"),
+                    email_address=entry_context.get("Email"),
+                    is_enabled=entry_context.get("Status"),
+                ),
+            ),
+            "aws_iam_get_user_command": Command(
+                name="aws-iam-get-user",
+                brand="AWS - IAM",
+                args={
+                    "userName": user_name,
+                },
+                output_key="AWS.IAM.Users",
+                output_function=lambda entry_context: create_account(
+                    id=entry_context.get("UserId"),
+                    username=entry_context.get("UserName"),
+                ),
+            ),
+            "msgraph_user_get_command": Command(
+                name="msgraph-user-get",
+                brand="Microsoft Graph User",
+                args={
+                    "user": user_id,
+                },
+                output_key="Account",
+                output_function=lambda entry_context: create_account(
+                    id=entry_context.get("ID"),
+                    username=entry_context.get("Username"),
+                    display_name=entry_context.get("DisplayName"),
+                    email_address=entry_context.get("Email", {}).get("Address"),
+                    job_title=entry_context.get("JobTitle"),
+                    office=entry_context.get("Office"),
+                    telephone_number=entry_context.get("TelephoneNumber"),
+                    type=entry_context.get("Type"),
+                ),
+            ),
+            "xdr_list_risky_users_command": Command(
+                name="xdr-list-risky-users",
+                brand="Cortex XDR - IR",
+                args={"user_id": user_id},
+                output_key="PaloAltoNetworksXDR.RiskyUser",
+                output_function=lambda entry_context: create_account(
+                    id=entry_context.get("id"),
+                    type=entry_context.get("type"),
+                ),
+            ),
+            "iam_get_user_command": Command(
+                name="iam-get-user",
+                args={
+                    "user-profile": {"id": user_id}
+                    if user_id
+                    else {"email": f"{user_name}@{domain}"}
+                    if domain and user_name
+                    else {"username": user_name}
+                    if user_name
+                    else {"email": user_email}
+                    if user_email
+                    else None,
+                },
+                is_generic=True,
+                output_key="Account",
+                output_function=lambda entry_context: create_account(
+                    id=entry_context.get("id"),
+                    type=entry_context.get("type"),
+                ),
+            ),
+        }
 
     #######################
     ##### Setup tasks #####
     #######################
-    start_task = Task("Start task")
-    identityiq_search_identities_task = Task(
-        "identityiq_search_identities_command", identityiq_search_identities_command
-    )
-    identitynow_get_accounts_task = Task(
-        "identitynow_get_accounts_command", identitynow_get_accounts_command
-    )
-    ad_get_user_task = Task("ad_get_user_command", ad_get_user_command)
-    ad_get_user_manager_task = Task(
-        "ad_get_user_manager_command", ad_get_user_manager_command
-    )
-    pingone_get_user_task = Task("pingone_get_user_command", pingone_get_user_command)
-    okta_get_user_task = Task("okta_get_user_command", okta_get_user_command)
-    aws_iam_get_user_task = Task("aws_iam_get_user_command", aws_iam_get_user_command)
-    msgraph_user_get_task = Task("msgraph_user_get_command", msgraph_user_get_command)
-    xdr_list_risky_users_task = Task(
-        "xdr_list_risky_users_command", xdr_list_risky_users_command
-    )
-    iam_get_user_task = Task("iam_get_user_command", iam_get_user_command)
+    def setup_tasks(commands: dict[str, Command]) -> dict[str, Task]:
+        tasks = {"start_task": Task("start_task")}
+        tasks.update(
+            {
+                command_name.replace("_command", "_task"): Task(
+                    command_name.replace("_command", "_task"), command
+                )
+                for command_name, command in commands.items()
+            }
+        )
+        return tasks
 
     ################################
-    ##### Setup playbook graph #####
+    ##### Setup playbook #####
     ################################
-    playbook = PlaybookGraph()
-    playbook.add_tasks(
-        [
-            start_task,
-            identityiq_search_identities_task,
-            identitynow_get_accounts_task,
-            ad_get_user_task,
-            ad_get_user_manager_task,
-            pingone_get_user_task,
-            okta_get_user_task,
-            aws_iam_get_user_task,
-            msgraph_user_get_task,
-            xdr_list_risky_users_task,
-            iam_get_user_task,
-        ]
-    )
-    is_domain_in_user_name = "/" in user_name
-    playbook.add_connection(
-        start_task,
-        identityiq_search_identities_task,
-        lambda: not is_domain_in_user_name,
-    )
-    playbook.add_connection(
-        start_task,
-        identitynow_get_accounts_task,
-        lambda: not is_domain_in_user_name,
-    )
-    playbook.add_connection(
-        start_task, ad_get_user_task, lambda: not is_domain_in_user_name
-    )
-    playbook.add_connection(
-        start_task, pingone_get_user_task, lambda: not is_domain_in_user_name
-    )
-    playbook.add_connection(
-        start_task, okta_get_user_task, lambda: not is_domain_in_user_name
-    )
-    playbook.add_connection(
-        start_task, aws_iam_get_user_task, lambda: not is_domain_in_user_name
-    )
-    playbook.add_connection(
-        start_task, msgraph_user_get_task, lambda: not is_domain_in_user_name
-    )
-    playbook.add_connection(start_task, xdr_list_risky_users_task)
-    playbook.add_connection(
-        start_task, iam_get_user_task, lambda: not is_domain_in_user_name
-    )
-    playbook.add_connection(
-        ad_get_user_task,
-        ad_get_user_manager_task,
-        lambda: bool(SHARED_CONTEXT.get(ad_get_user_command.name, {}).get("manager")),
-    )
-    playbook.start_task_id = start_task.task_id
-    return playbook, list_commands
+    def setup_playbook(tasks: dict[str, Task]):
+        playbook = PlaybookGraph()
+        playbook.add_tasks(list(tasks.values()))
+        is_domain_in_user_name = "/" in user_name
+        playbook.add_connection(
+            tasks["start_task"],
+            tasks["identityiq_search_identities_task"],
+            lambda: not is_domain_in_user_name,
+        )
+        playbook.add_connection(
+            tasks["start_task"],
+            tasks["identitynow_get_accounts_task"],
+            lambda: not is_domain_in_user_name,
+        )
+        playbook.add_connection(
+            tasks["start_task"],
+            tasks["ad_get_user_task"],
+            lambda: not is_domain_in_user_name,
+        )
+        playbook.add_connection(
+            tasks["start_task"],
+            tasks["pingone_get_user_task"],
+            lambda: not is_domain_in_user_name,
+        )
+        playbook.add_connection(
+            tasks["start_task"],
+            tasks["okta_get_user_task"],
+            lambda: not is_domain_in_user_name,
+        )
+        playbook.add_connection(
+            tasks["start_task"],
+            tasks["aws_iam_get_user_task"],
+            lambda: not is_domain_in_user_name,
+        )
+        playbook.add_connection(
+            tasks["start_task"],
+            tasks["msgraph_user_get_task"],
+            lambda: not is_domain_in_user_name,
+        )
+        playbook.add_connection(tasks["start_task"], tasks["xdr_list_risky_users_task"])
+        playbook.add_connection(
+            tasks["start_task"],
+            tasks["iam_get_user_task"],
+            lambda: not is_domain_in_user_name,
+        )
+        playbook.add_connection(
+            tasks["ad_get_user_task"],
+            tasks["ad_get_user_manager_task"],
+            lambda: bool(
+                SHARED_CONTEXT.get(tasks["ad_get_user_task"].task_id, {}).get("manager")
+            ),
+        )
+        playbook.start_task_id = tasks["start_task"].task_id
+        return playbook
+
+    commands = setup_commands()
+    update_enabled_commands(commands)
+    tasks = setup_tasks(commands)
+    playbook = setup_playbook(tasks)
+    return playbook
 
 
 """ MAIN FUNCTION """
@@ -556,17 +553,10 @@ def main():
             raise ValueError(
                 "At least one of the following arguments must be specified: user_id, user_name or user_email."
             )
-        playbook, list_commands = setup_playbook_graph(
-            user_id, user_name, user_email, domain
-        )
+        playbook = setup_playbook_graph(user_id, user_name, user_email, domain)
         playbook.run()
-        results = []
-        outputs = []
-        for command in list_commands:
-            results.extend(command.results)
-            outputs.extend(command.outputs)
-
-        merged_output = merge_accounts(outputs)
+        results = playbook.results
+        merged_output = merge_accounts(playbook.outputs)
         if merged_output:
             results.append(
                 CommandResults(
