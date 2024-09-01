@@ -55,6 +55,28 @@ configuration:
   - Incoming
   - Outgoing
   - Both
+
+- additionalinfo: When selected, closing the Cortex XDR ticket is mirrored in Cortex XSOAR.
+  defaultvalue: true
+  display: Close Mirrored XSOAR Incident
+  name: close_cortex_incident
+  type: 8
+  hidden:
+  - marketplacev2
+  section: Collect
+  advanced: true
+  required: false  
+- additionalinfo: When selected, closing the Cortex XSOAR incident is mirrored in Cortex XDR
+  defaultvalue: true
+  display: Close Mirrored Cortex XDR Incident	
+  name: close_xdr_incident
+  type: 8
+  hidden:
+  - marketplacev2
+  section: Collect
+  advanced: true
+  required: false
+
 - defaultvalue: '1'
   display: XDR mirroring delay in minutes
   name: xdr_delay
