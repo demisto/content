@@ -279,7 +279,7 @@ CS_FALCON_INCIDENT_OUTGOING_ARGS = {'tag': 'A tag that have been added or remove
 LEGACY_CS_FALCON_DETECTION_INCOMING_ARGS = ['status', 'severity', 'behaviors.tactic', 'behaviors.scenario', 'behaviors.objective',
                                             'behaviors.technique', 'device.hostname', 'detection_id', 'behaviors.display_name']
 CS_FALCON_DETECTION_INCOMING_ARGS = ['status', 'severity', 'tactic', 'scenario', 'objective',
-                                     'technique', 'device.hostname', "composite_id", 'display_name']
+                                     'technique', 'device.hostname', "composite_id", 'display_name', 'tags']
 CS_FALCON_INCIDENT_INCOMING_ARGS = ['state', 'fine_score', 'status', 'tactics', 'techniques', 'objectives',
                                     'tags', 'hosts.hostname', 'incident_id']
 
@@ -6604,7 +6604,7 @@ def create_gql_client(url_suffix="identity-protection/combined/graphql/v1"):
                     "Accept": "application/json",
                     "Content-Type": "application/json"}
     }
-    transport = RequestsHTTPTransport(**kwargs)
+    transport = RequestsHTTPTransport(**kwargs)  # type: ignore[arg-type]
     client = Client(
         transport=transport,
         fetch_schema_from_transport=True,
