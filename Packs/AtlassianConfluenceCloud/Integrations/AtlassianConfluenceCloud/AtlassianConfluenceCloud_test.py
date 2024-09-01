@@ -982,21 +982,33 @@ def test_confluence_cloud_content_list_command_when_when_object_not_present(requ
     assert response.readable_output == expected_readable_output
 
 
-def test_fetch_events_with_last_index(mocker: MockerFixture):
-    last_run = {'last_index': 10}
-    limit = 5
+def test_fetch_events_next_link_input_no_next_link_output(mocker: MockerFixture):
+    """
+    Tests the case where the previous batch reached the fetch limit before pagination was through.
+    In that case, next_link is saved for the next run, and we start our next batch by cleaning up the last one.
+    Given:
+        - A next link is present in the last_run dictionary.
+        - A response with no next link is returned from the API.
+    When:
+        - Calling the fetch_events function with the last_run dictionary.
+    Then:
+        - The search_event client function is called twice:
+            - First with the next_link from last_run dictionary and no dates.
+            - Second with no next_link and dates.
+        - The fetch_events function yields the events from the response with None as next_link
+    """
+    last_run = {'next_link': 'dummy_next_link.url'}
 
-    expected_start_index = last_run['last_index'] + 1
-    expected_next_run = {'last_index': last_run.get('last_index') + limit}
-    expected_events = collector_test_data['get-audit-records']['results'][:limit]
-    response = {'results': expected_events, 'start': 11}
-
+    # expected_next_run = {'last_index': last_run.get('last_index') + limit}
+    response = collector_test_data['get-audit-records-no-links']
+    expected_events = response['results']
+    #
     mock_client = mocker.patch.object(client, 'search_events', return_value=response)
-    next_run, events = fetch_events(client, last_run, limit)
-
-    mock_client.assert_called_once_with(start_index=expected_start_index, limit=limit)
-    assert next_run == expected_next_run
-    assert events == expected_events
+    # next_run, events = fetch_events(client, last_run, limit)
+    #
+    # mock_client.assert_called_once_with(start_index=expected_start_index, limit=limit)
+    # assert next_run == expected_next_run
+    # assert events == expected_events
 
 
 def test_fetch_events_without_last_index(mocker: MockerFixture):

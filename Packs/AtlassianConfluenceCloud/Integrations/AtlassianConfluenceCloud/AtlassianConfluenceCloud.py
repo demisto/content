@@ -1425,10 +1425,13 @@ def fetch_events(client: Client, last_run: dict[str, Any], fetch_limit: int) -> 
 
             # clean up the previous batch
             demisto.debug('In cleanup mode. Fetching the last events from previous batch.')
-            response = run_fetch_mechanism(client, next_link, start_date, end_date)
+            response = run_fetch_mechanism(client, None, start_date, end_date)
             events.extend(response['results'])
             next_link = response['_links'].get('next', None)
             total_length += len(events)
+            if not next_link:
+                yield events, next_link, end_date
+                break
 
         yield events, next_link, end_date
         demisto.debug(f'Yielding events and next_link: {next_link}')

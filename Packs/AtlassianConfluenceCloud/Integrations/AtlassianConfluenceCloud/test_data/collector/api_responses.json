@@ -1,5 +1,5 @@
 {
-    "get-audit-records": {
+    "get-audit-records-no-links": {
         "results": [
             {
                 "author": {
