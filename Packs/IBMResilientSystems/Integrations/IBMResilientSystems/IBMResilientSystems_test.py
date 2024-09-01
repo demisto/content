@@ -423,6 +423,56 @@ def test_get_incident_command(mocker, incident_id, expected_human_readable):
     assert context_entry['HumanReadable'].strip() == expected_human_readable
 
 
+@pytest.mark.parametrize('script_id, expected_output', [
+    ('1', ),
+    ('', )
+])
+def test_list_scripts_command(mocker, script_id: str, expected_output: str):
+    mocker.patch.object(demisto, 'params', return_value={
+        'server': 'example.com:80', 'org': 'example', 'proxy': True
+    })
+    from IBMResilientSystems import SimpleClient, list_scripts_command
+
+    client = SimpleClient()
+    client.org_id = 0
+
+    args = {}
+    response = {
+        "entities": [
+            {
+                "id": 1,
+                "name": "Sample script: process inbound email (v35)",
+                "description": "SAMPLE SCRIPT",
+                "language": "python",
+                "object_type": 13,
+                "uuid": "0000-0000-0000-0000-0000",
+                "actions": [],
+                "tags": []
+            }, {
+                "id": 3,
+                "name": "test-script",
+                "description": "testing",
+                "language": "python",
+                "object_type": 0,
+                "uuid": "0000-0000-0000-0000-0000",
+                "actions": [],
+                "tags": []
+            }, {
+                "id": 4,
+                "name": "test-script-2",
+                "description": "Testing 2",
+                "language": "python",
+                "object_type": 13,
+                "uuid": "0000-0000-0000-0000-0000",
+                "actions": [],
+                "tags": []
+            }
+            ]
+    }
+    request = mocker.patch('IBMResilientSystems.get_scripts', return_value=response)
+
+    command_result = list_scripts_command(client, args)
+    assert request
 # @pytest.mark.parametrize("script_id", ['100', '', 'INVALID_SCRIPT'])
 # def test_list_scripts(mocker, script_id):
 #     mocker.patch.object(demisto, 'params', return_value={

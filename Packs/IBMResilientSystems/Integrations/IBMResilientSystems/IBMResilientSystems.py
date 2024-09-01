@@ -1343,10 +1343,11 @@ def fetch_incidents(client, first_fetch_time: str):
 
 def get_scripts(client: SimpleClient, script_id: str) -> Dict[str, Any]:
     """
-    Retrieves the list of scripts belonging to the IBM QRadar SOAR organization.
+    Retrieves a single script's enriched data if `script_id` is provided,
+    and retrieves the list of scripts belonging to the IBM QRadar SOAR organization if `script_id` is not provided.
     """
     response = client.get(f"/scripts/{script_id}")
-    demisto.debug(f"list_scripts_command {response=}")
+    demisto.debug(f"list_scripts_command | {type(response)=} | {response=}")
     return response
 
 def list_scripts_command(client: SimpleClient, args: dict) -> CommandResults:
@@ -1355,7 +1356,6 @@ def list_scripts_command(client: SimpleClient, args: dict) -> CommandResults:
     or a specific script if `script_id` argument was provided.
     """
     script_id = args.get("script_id", "")
-
     response = get_scripts(client, script_id)
 
     script_ids = []
@@ -1366,7 +1366,7 @@ def list_scripts_command(client: SimpleClient, args: dict) -> CommandResults:
     if not script_id and len(scripts_to_process) > 1:  # Multiple script to retrieve info for.
         for script in scripts_to_process:
             _script_id = script.get('id')
-            script = get_scripts(client, _script_id)
+            script = get_scripts(client, _script_id)    # Enriching script's data.
             script_ids.append(_script_id)
 
     demisto.info(f"list_scripts_command received script ids: {str(script_ids)}")
@@ -1377,7 +1377,6 @@ def list_scripts_command(client: SimpleClient, args: dict) -> CommandResults:
                                         scripts_to_process,
                                         headers=["id", "name", "description", "language"])
     )
-
 
 
 def upload_incident_attachment_command(
