@@ -6196,6 +6196,7 @@ Get all the jobs from the devices in the environment, or a single job when ID is
 | PANOS.JobStatus.description | Unknown | The job description. | 
 | PANOS.JobStatus.positionInQ | String | The position of the job in the current job queue. | 
 | PANOS.JobStatus.progress | String | The numerical progress of the job. | 
+| PANOS.JobStatus.warnings | Unknown | The warnings of the job. | 
 
 #### Command example
 ```!pan-os-platform-get-jobs```

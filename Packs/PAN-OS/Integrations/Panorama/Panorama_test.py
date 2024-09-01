@@ -3269,6 +3269,7 @@ class TestUniversalCommand:
     SHOW_SYSTEM_INFO_XML = "test_data/show_system_info.xml"
     SHOW_JOB_XML = "test_data/show_jobs_all.xml"
     SHOW_COMMIT_JOB_XML = "test_data/show_commit_jobs_all.xml"
+    SHOW_JOB_WITH_FAILED_XML = "test_data/show_jobs_with_failed.xml"
 
     @patch("Panorama.run_op_command")
     def test_get_system_info(self, patched_run_op_command, mock_topology):
@@ -3311,8 +3312,35 @@ class TestUniversalCommand:
         for result_dataclass in result:
             for key, value in result_dataclass.__dict__.items():
                 # Nullable Values
-                if key not in ["description", "user"]:
+                if key not in ["description", "user", "details", "warnings"]:
                     assert value
+
+    @patch("Panorama.run_op_command")
+    def test_get_jobs_with_failed(self, patched_run_op_command):
+        """Given the output XML for show jobs with a failed job, assert it is skipped."""
+        from Panorama import UniversalCommand, ShowJobsAllResultData, Panorama
+        from CommonServerPython import elem2json
+        xml_tree = load_xml_root_from_test_file(TestUniversalCommand.SHOW_JOB_WITH_FAILED_XML)
+        patched_run_op_command.return_value = xml_tree
+        MockTopology = type('MockTopology', (), {'all': lambda *x, **y: [Panorama(hostname='123')]})
+        result = UniversalCommand.show_jobs(MockTopology())
+
+        assert isinstance(result, ShowJobsAllResultData)
+        assert result.__dict__ == {
+            'description': 'description',
+            'hostid': '123',
+            'id': 7,
+            'positionInQ': '0',
+            'progress': '100',
+            'result': 'OK',
+            'status': 'FIN',
+            'stoppable': 'no',
+            'tenq': '2024/08/25 22:07:53',
+            'tfin': '2024/08/25 22:09:00',
+            'type': 'Job Type',
+            'user': None,
+            'warnings': None
+        }
 
     def test_download_software(self, mock_topology):
         """
