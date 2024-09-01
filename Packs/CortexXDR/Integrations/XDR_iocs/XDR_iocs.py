@@ -796,7 +796,6 @@ def fetch_indicators(client: Client, auto_sync: bool = False):
     else:
         # This will happen every fetch time interval as defined in the integration configuration and is_first_sync_phase=False
         demisto.debug("fetching IOCs: running get_changes")
-        get_changes(client)
         if auto_sync:
             demisto.debug("fetching IOCs from xsoar: auto_sync is on")
             tim_insert_jsons(client)
@@ -805,6 +804,7 @@ def fetch_indicators(client: Client, auto_sync: bool = False):
                 # first_time=False, is_first_stage_sync=False so will call iocs_to_keep
                 demisto.debug("running sync with first_time=False")
                 xdr_iocs_sync_command(client, called_from_fetch=True)
+        get_changes(client)
 
 
 def xdr_iocs_sync_command(client: Client,
