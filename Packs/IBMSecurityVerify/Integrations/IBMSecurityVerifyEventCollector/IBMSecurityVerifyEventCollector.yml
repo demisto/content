@@ -55,9 +55,9 @@ script:
       description: Maximum number of results to return.
       defaultValue: 1000
     - name: last_id
-      description: "The ID of the last event retrieved. Use together with `last_time` for pagination to get events after this ID. Example: e5b0d500-bc39-471d-8174-119a2a166792."
+      description: "The ID of the last event retrieved. Use together with `last_time` for pagination to get events after this ID. Example: 1234abcd-5678-90ef-1234-567890abcdef."
     - name: last_time
-      description: "The timestamp of the last event retrieved. Use together with `last_id` for pagination to get events after this time. Example: 1720358259541."
+      description: "The timestamp of the last event retrieved. Use together with `last_id` for pagination to get events after this time. Example: 1672531200000."
     - name: sort_order
       description: "Order to sort events by: 'desc' or 'asc'."
       defaultValue: 'desc'

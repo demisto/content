@@ -20,7 +20,6 @@ RESPONSE = {
 }
 
 
-
 @pytest.fixture()
 def mock_client(mocker) -> Client:
     mocker.patch.object(Client, "_authenticate")
