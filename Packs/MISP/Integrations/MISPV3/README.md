@@ -16,7 +16,7 @@ If you are upgrading from a previous version of this integration, see [Breaking 
     | Client Certificate |  | False |
     | Private Key |  | False |
     | Use IDS flag | This is to enable checking the boolean flag to_ids. The flag allows you to indicate if an attribute should be actionable or not. | False |
-    | ORG names to use for reputation checks | Comma-separated list of allowed TI providers (orgc in MISP events). | False |
+    | ORG names to use for reputation checks | Comma-separated list of allowed TI providers (orgc in MISP events) | False |
     | Use system proxy settings |  | False |
     | Trust any certificate (not secure) |  | False |
     | Malicious tag IDs | Comma-separated list of event's or attribute's malicious tag IDs. Malicious tags are stronger than suspicious tags. | False |
