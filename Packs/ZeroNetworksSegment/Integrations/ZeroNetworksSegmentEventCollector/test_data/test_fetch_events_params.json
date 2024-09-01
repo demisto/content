@@ -8,12 +8,6 @@
                 {"id": 1, "timestamp": 123456, "_TIME": "1970-01-01T00:02:03.000Z", "source_log_type": "audit"},
                 {"id": 2, "timestamp": 123457, "_TIME": "1970-01-01T00:02:03.000Z", "source_log_type": "audit"}
             ],
-            "expected_split_logs": {
-                "audit": [
-                    {"id": 1, "timestamp": 123456, "_TIME": "1970-01-01T00:02:03.000Z", "source_log_type": "audit"},
-                    {"id": 2, "timestamp": 123457, "_TIME": "1970-01-01T00:02:03.000Z", "source_log_type": "audit"}
-                ]
-            },
             "start_timestamp": 1000
         },
         {
@@ -25,13 +19,6 @@
                 {"id": 2, "timestamp": 123457, "_TIME": "1970-01-01T00:02:03.000Z", "source_log_type": "audit"},
                 {"id": 3, "timestamp": 12345678, "_TIME": "1970-01-01T03:25:45.000Z", "source_log_type": "audit"}
             ],
-            "expected_split_logs": {
-                "audit": [
-                    {"id": 1, "timestamp": 123456, "_TIME": "1970-01-01T00:02:03.000Z", "source_log_type": "audit"},
-                    {"id": 2, "timestamp": 123457, "_TIME": "1970-01-01T00:02:03.000Z", "source_log_type": "audit"},
-                    {"id": 3, "timestamp": 12345678, "_TIME": "1970-01-01T03:25:45.000Z", "source_log_type": "audit"}
-                ]
-            },
             "start_timestamp": 1000
         },
         {
@@ -44,14 +31,6 @@
                 {"id": 3, "timestamp": 12345678, "_TIME": "1970-01-01T03:25:45.000Z", "source_log_type": "audit"},
                 {"id": 4, "timestamp": 12345678, "_TIME": "1970-01-01T03:25:45.000Z", "source_log_type": "audit"}
             ],
-            "expected_split_logs": {
-                "audit": [
-                    {"id": 1, "timestamp": 123456, "_TIME": "1970-01-01T00:02:03.000Z", "source_log_type": "audit"},
-                    {"id": 2, "timestamp": 123457, "_TIME": "1970-01-01T00:02:03.000Z", "source_log_type": "audit"},
-                    {"id": 3, "timestamp": 12345678, "_TIME": "1970-01-01T03:25:45.000Z", "source_log_type": "audit"},
-                    {"id": 4, "timestamp": 12345678, "_TIME": "1970-01-01T03:25:45.000Z", "source_log_type": "audit"}
-                ]
-            },
             "start_timestamp": 1000
         },
         {
@@ -63,13 +42,6 @@
                 {"id": 3, "timestamp": 12345678, "_TIME": "1970-01-01T03:25:45.000Z", "source_log_type": "audit"},
                 {"id": 4, "timestamp": 12345678, "_TIME": "1970-01-01T03:25:45.000Z", "source_log_type": "audit"}
             ],
-            "expected_split_logs": {
-                "audit": [
-                    {"id": 2, "timestamp": 123457, "_TIME": "1970-01-01T00:02:03.000Z", "source_log_type": "audit"},
-                    {"id": 3, "timestamp": 12345678, "_TIME": "1970-01-01T03:25:45.000Z", "source_log_type": "audit"},
-                    {"id": 4, "timestamp": 12345678, "_TIME": "1970-01-01T03:25:45.000Z", "source_log_type": "audit"}
-                ]
-            },
             "start_timestamp": 123456
         },
         {
@@ -79,11 +51,6 @@
             "expected_collected_events": [
                 {"id": 4, "timestamp": 12345678, "_TIME": "1970-01-01T03:25:45.000Z", "source_log_type": "audit"}
             ],
-            "expected_split_logs": {
-                "audit": [
-                    {"id": 4, "timestamp": 12345678, "_TIME": "1970-01-01T03:25:45.000Z", "source_log_type": "audit"}
-                ]
-            },
             "start_timestamp": 12345678
         }
     ]

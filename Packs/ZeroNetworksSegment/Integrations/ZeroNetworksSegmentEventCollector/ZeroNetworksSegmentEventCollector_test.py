@@ -46,6 +46,19 @@ def util_load_json(path):
     for test_case in util_load_json('test_data/test_process_events_params.json')['test_cases']
 ])
 def test_process_events(mocker, inputs, expected_outputs):
+    """
+    Given:
+        - Mocked `create_id` function.
+        - Inputs including `input_events`, `input_previous_ids`, `input_last_event_time`, and any other relevant parameters.
+
+    When:
+        Calling the process_events function with the provided inputs.
+
+    Then:
+        - Verify that `new_events` matches the `expected_events`.
+        - Ensure that `updated_ids` matches the `expected_ids`.
+        - Confirm that `updated_last_event_time` matches the `expected_last_event_time`.
+    """
     def mock_create_id_function(event, log_type):
         return event.get('id')
 
@@ -149,6 +162,17 @@ def test_handle_log_types(event_types_to_fetch, expected):
 
 
 def test_handle_not_valid_log_types():
+    """
+    Given:
+        - An `event_types` list containing invalid event types, such as `['fake_type']`.
+
+    When:
+        Calling the `handle_log_types` function with the provided `event_types` list.
+
+    Then:
+        - Verify that `handle_log_types` raises a `DemistoException`.
+        - Ensure that the exception message includes "Event type title 'fake_type' is not valid."
+    """
     event_types = ['fake_type']
     with pytest.raises(DemistoException) as e:
         handle_log_types(event_types)
@@ -161,18 +185,40 @@ def test_handle_not_valid_log_types():
       case['previous_ids'], case['expected']) for case in util_load_json('test_data/test_update_last_run_params.json')]
 )
 def test_update_last_run(last_run, log_type, last_event_time, previous_ids, expected):
+    """
+    Given:
+        - Initial input values (`last_run`, `log_type`, `last_event_time`, `previous_ids`).
+        - An expected result after processing.
+
+    When:
+        Calling the `update_last_run` function with the given inputs.
+
+    Then:
+        Verify that the function returns the expected result, ensuring it processes the inputs correctly.
+    """
     last_run_result = update_last_run(last_run, log_type, last_event_time, previous_ids)
     assert last_run_result == expected
 
 
 @pytest.mark.parametrize(
-    "params, last_run, expected_last_run, expected_collected_events, expected_split_logs, start_timestamp",
+    "params, last_run, expected_last_run, expected_collected_events, start_timestamp",
     [(case['params'], case['last_run'], case['expected_last_run'],
-      case['expected_collected_events'], case['expected_split_logs'],
-      case['start_timestamp']) for case in util_load_json('test_data/test_fetch_events_params.json')['test_cases']]
+      case['expected_collected_events'], case['start_timestamp']) 
+     for case in util_load_json('test_data/test_fetch_events_params.json')['test_cases']]
 )
-def test_fetch_events(mocker, params, last_run, expected_last_run, expected_collected_events, expected_split_logs,
-                      start_timestamp):
+def test_fetch_events(mocker, params, last_run, expected_last_run, expected_collected_events, start_timestamp):
+    """
+    Given:
+        - A mock setup for dependencies (`mocker`, `mock_create_id_function`, `MockClient`).
+        - Input parameters for the `fetch_events` function (`params`, `last_run`, `start_timestamp`).
+        - Expected results after fetching events (`expected_last_run`, `expected_collected_events`).
+
+    When:
+        Calling the `fetch_events` function with the mocked client and provided inputs.
+
+    Then:
+        Verify that the function returns the expected `last_run` and `collected_events`, ensuring it processes the inputs correctly and integrates with the mocks as intended.
+    """
     def mock_create_id_function(event, log_type):
         return event.get('id')
 
@@ -216,6 +262,20 @@ def test_fetch_events(mocker, params, last_run, expected_last_run, expected_coll
     ]
 )
 def test_get_events(mocker, args, last_run, expected_events, expected_hr):
+    """
+    Given:
+        - A mock setup for dependencies (`mocker`, `mock_fetch_events`, `mock_table_to_markdown`).
+        - Input arguments for the `get_events` function (`args`, `last_run`, `params`, `log_types`).
+        - Expected results for events and human-readable output (`expected_events`, `expected_hr`).
+
+    When:
+        Calling the `get_events` function with the mocked client and provided inputs.
+
+    Then:
+        Verify that the function returns the expected events and performs the correct integration with the mocks:
+        - Ensure the returned events match `expected_events`.
+        - Confirm that `tableToMarkdown` was called once with the correct parameters if events are present.
+    """
     mock_fetch_events = mocker.patch('ZeroNetworksSegmentEventCollector.fetch_events')
     mock_fetch_events.return_value = (last_run, expected_events)
 
@@ -306,11 +366,34 @@ def compute_hash(combined_string):
     ]
 )
 def test_create_id(event, log_type, expected_id):
+    """
+    Given:
+        - An `event` and a `log_type` used to generate an ID.
+        - An `expected_id` that represents the anticipated result.
+
+    When:
+        Calling the `create_id` function with the provided `event` and `log_type`.
+
+    Then:
+        Verify that the function returns the expected ID, ensuring it generates the ID correctly based on the inputs.
+    """
     result = create_id(event, log_type)
     assert result == expected_id
 
 
 def test_fetch_events_limit_logic(mocker):
+    """
+    Given:
+        - Mocked functions such as `initialize_start_timestamp`, `get_max_results_and_limit`, and others.
+        - Specific parameters and inputs required by `fetch_events`.
+
+    When:
+        Calling the `fetch_events` function with these parameters and a limit value.
+
+    Then:
+        - Verify that the limit values in the calls to `mock_search_events` increase as expected.
+        - Ensure that the number of calls to `mock_search_events` matches the expected count.
+    """
     mocker.patch('ZeroNetworksSegmentEventCollector.initialize_start_timestamp', return_value=1000)
     mocker.patch('ZeroNetworksSegmentEventCollector.get_max_results_and_limit', return_value=(1, 1))
     mocker.patch('ZeroNetworksSegmentEventCollector.handle_log_types', return_value=['audit'])
@@ -321,10 +404,9 @@ def test_fetch_events_limit_logic(mocker):
     params = {"network_activity_filters": []}
     last_run = {}
     client = Client("", False, False, {})
-    # Call the function
+
     last_run, all_events = fetch_events(client, params, last_run, 1000, 'audit', [])
 
-    # Check if limit increased as expected
     calls = list(mock_search_events.call_args_list)
     first_call_limit = calls[0][0][0]  # Limit in the first call
     assert first_call_limit == 1
@@ -378,7 +460,19 @@ def test_fetch_events_limit_logic(mocker):
 )
 def test_fetch_all_events(mocker, last_run, log_types, mock_initialize_start_timestamp, mock_fetch_events_side_effect,
                           expected_last_run, expected_all_events):
-    """Test the fetch_all_events function with mocked dependencies."""
+    """
+    Given:
+        - A mock setup for dependencies (`mocker`, `mock_initialize_start_timestamp`, `mock_fetch_events_side_effect`).
+        - Initial state (`last_run`) and a list of `log_types`.
+        - Expected results for the last run and all events after fetching (`expected_last_run`, `expected_all_events`).
+
+    When:
+        Calling the `fetch_all_events` function with the mocked client, initial state, and log types.
+
+    Then:
+        Verify that the function returns the expected `last_run` and `all_events`, ensuring it correctly integrates with the mocks
+        and processes the inputs as intended.
+    """
     mocker.patch('ZeroNetworksSegmentEventCollector.initialize_start_timestamp', return_value=mock_initialize_start_timestamp)
     mocker.patch('ZeroNetworksSegmentEventCollector.fetch_events', side_effect=mock_fetch_events_side_effect)
 
