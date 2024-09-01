@@ -201,10 +201,7 @@ def user_account_to_boolean_fields_msDS_user_account_control_computed(user_accou
     https://learn.microsoft.com/en-us/windows/win32/adschema/a-msds-user-account-control-computed
     """
     return {
-        'UF_LOCKOUT': bool(user_account_control & 0x0010),
-        'UF_PASSWORD_EXPIRED': bool(user_account_control & 0x800000),
-        'UF_PARTIAL_SECRETS_ACCOUNT': bool(user_account_control & 0x4000000),
-        'UF_USE_AES_KEYS': bool(user_account_control & 0x8000000)
+        'PASSWORD_EXPIRED': bool(user_account_control & 0x800000),
     }
 
 
