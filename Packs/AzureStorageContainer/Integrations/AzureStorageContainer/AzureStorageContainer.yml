@@ -314,7 +314,7 @@ script:
     - description: specifies a public IP address or a range of public IP addresses from which to accept requests.
       name: signed_ip
       type: unknown
-    - description: The account key to create the SAS with.
+    - description: The account key to create the SAS token with.
       name: account_key
     description: create SAS token for container.
     name: azure-storage-container-sas-create
