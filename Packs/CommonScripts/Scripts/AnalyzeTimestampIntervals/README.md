@@ -1,1 +1,1 @@
-Calculates and analyzes the Median, Mean and Standard Deviation values for a list of intervals in Unix milliseconds.
+This script is designed to analyze timestamp data, typically from logs related to events like brute force attacks, and determine the likelihood of automated behavior based on the most common timing patterns.

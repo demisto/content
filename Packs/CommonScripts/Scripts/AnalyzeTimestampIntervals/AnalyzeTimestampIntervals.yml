@@ -1,48 +1,52 @@
 commonfields:
   id: AnalyzeTimestampIntervals
-  version: -1
+  version: 17
+vcShouldKeepItemLegacyProdMachine: false
 name: AnalyzeTimestampIntervals
 script: ''
 type: python
 tags: []
-comment: This script is designed to analyze a series of timestamps in Unix (Epoch) format, by calculating the intervals between them and determining the consistency of those intervals. It starts by computing the differences between each consecutive timestamp and then calculates the differences between these intervals. The script then evaluates the statistical properties of the intervals, such as the mean, median, and standard deviation. Based on these calculations and a user-defined or default threshold, it determines whether the pattern of intervals is likely to be automated and if it is consistent.
 enabled: true
 args:
 - name: timestamps
-  description: A list of timestamps in milliseconds in Unix Timestamp format. E.g., [1724935193585, 1724933794248].
+  description: List of Unix timestamps (in milliseconds) representing time intervals.
   isArray: true
+- name: max_intervals_per_window
+  description: The maximum number of intervals allowed within a specific time window.
+  defaultValue: '60'
+- name: interval_consistency_threshold
+  description: The threshold for determining how consistent the intervals are (in seconds).
+  defaultValue: '0.1'
 - name: verbose
-  auto: PREDEFINED
-  predefined:
-  - 'true'
-  - 'false'
-  description: Whether to also output lists of all intervals and of interval differences in seconds. Can aid in understanding patterns.
+  description: If true, includes detailed interval information in the output.
   defaultValue: 'false'
-- name: thershold
-  description: A threshold in seconds for identification of patterns in the timestamps. The standard deviation and the difference between the mean and median are checked against this value. A high threshold increases the tolerance and could result in a higher false positive ratio.
-  defaultValue: '1.0'
 outputs:
+- contextPath: IntervalAnalysis.TimestampCount
+  description: The total number of timestamps analyzed.
+  type: number
 - contextPath: IntervalAnalysis.MeanIntervalInSeconds
-  description: The average interval in seconds between the timestamps. This provides an overall view of the typical time between events.
+  description: The average time interval (in seconds) between consecutive timestamps.
   type: number
 - contextPath: IntervalAnalysis.MedianIntervalInSeconds
-  description: ' The median interval in seconds between the timestamps. This is the middle value of the intervals, which helps understand the central tendency of the intervals.'
+  description: The median time interval (in seconds) between consecutive timestamps.
   type: number
 - contextPath: IntervalAnalysis.StandardDeviationInSeconds
-  description: The standard deviation of the intervals in seconds. This measures the amount of variation or dispersion in the intervals, indicating how consistent or varied the time between events is.
+  description: The standard deviation of the time intervals (in seconds) between consecutive timestamps.
   type: number
-- contextPath: IntervalAnalysis.IsPatternLikelyAutomated
-  description: Whether a pattern indicating the use of automation could be identified in the timestamps .
+- contextPath: IntervalAnalysis.HighFrequencyDetected
+  description: Indicates whether a high frequency of intervals within a short time window was detected.
   type: boolean
-- contextPath: IntervalAnalysis.IsPatternConsistent
-  description: Whether a pattern of consistency is shown across the timestamps.
+- contextPath: IntervalAnalysis.ConsistentIntervalsDetected
+  description: Indicates whether the intervals between timestamps were consistent based on the standard deviation threshold.
+  type: boolean
+- contextPath: IntervalAnalysis.IsPatternLikelyAutomated
+  description: Indicates whether the pattern of intervals is likely automated based on analysis.
   type: boolean
 scripttarget: 0
 subtype: python3
+pswd: ''
 runonce: false
 dockerimage: demisto/python3:3.11.9.107902
 runas: DBotWeakRole
 engineinfo: {}
-fromversion: 6.10.0
-tests:
-- No tests (auto formatted)
+mainengineinfo: {}
