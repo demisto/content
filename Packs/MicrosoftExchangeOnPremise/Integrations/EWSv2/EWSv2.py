@@ -1037,6 +1037,14 @@ def parse_item_as_dict(item, email_address=None, camel_case=False, compact_field
     return raw_dict
 
 
+def cast_mime_item_to_message(item):
+    mime_content = item.mime_content
+    if isinstance(mime_content, bytes):
+        return email.message_from_bytes(mime_content)
+    else:
+        return email.message_from_string(mime_content)
+
+
 def parse_incident_from_item(item, is_fetch):  # pragma: no cover
     incident = {}
     labels = []

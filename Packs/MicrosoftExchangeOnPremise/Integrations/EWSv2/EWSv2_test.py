@@ -917,3 +917,33 @@ def test_get_attachment_name_legacy_name(monkeypatch, attachment_name, content_i
     monkeypatch.setattr('EWSv2.LEGACY_NAME', True)
     assert get_attachment_name(attachment_name=attachment_name, content_id=content_id,
                                is_inline=is_inline) == expected_result
+
+
+def test_parse_mime_content_with_quoted_printable():
+    """
+    Given:
+        - A MIME item with quoted-printable encoded subject and UTF-8 encoded body.
+
+    When:
+        - The MIME item is cast to a message object.
+
+    Then:
+        - The subject should be correctly decoded.
+        - The body of the email should be correctly parsed.
+    """
+
+    from EWSv2 import cast_mime_item_to_message
+
+    class MockMimeItem:
+        mime_content: str = ''
+
+        def __init__(self, message: str):
+            self.mime_content = message
+
+    mime_content = "Subject: =?UTF-8?Q?Prueba_de_correo?=\n\nEste es un correo de prueba."
+    mime_item = cast_mime_item_to_message(MockMimeItem(mime_content))
+    expected_subject = "Prueba de correo"
+    expected_body = "Este es un correo de prueba."
+
+    assert mime_item['Subject'] == expected_subject, f"Expected subject '{expected_subject}', got '{mime_item['Subject']}'"
+    assert mime_item.get_payload() == expected_body, f"Expected body '{expected_body}', got '{mime_item.get_payload()}'"
