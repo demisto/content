@@ -118,7 +118,7 @@ RESOLUTION_DICT = {
 RESOLUTION_TO_ID_DICT = {
     'Unresolved': 7,
     'Duplicate': 8,
-    'Not an Issue': 9,
+    'NotAnIssue': 9,
     'Resolved': 10
 }
 
@@ -224,39 +224,44 @@ def prettify_incidents(client, incidents):
         incident['created_date'] = normalize_timestamp(incident['create_date'])
         incident.pop('create_date', None)
         incident.pop('inc_training', None)
-        incident.pop('plan_status', None)
+
         for user in users:
             if incident['owner_id'] == user['id']:
                 incident['owner'] = user['fname'] + ' ' + user['lname']
                 incident.pop('owner_id', None)
                 break
+
         for phase in phases:
             if incident['phase_id'] == phase['id']:
                 incident['phase'] = phase['name']
                 incident.pop('phase_id', None)
                 break
+
         incident['severity'] = incident.get('severity_code', DEFAULT_SEVERITY_CODE)
-        start_date = incident.get('start_date')
-        if start_date:
+
+        if start_date := incident.get('start_date'):
             incident['date_occurred'] = normalize_timestamp(start_date)
             incident.pop('start_date', None)
-        due_date = incident.get('due_date')
-        if due_date:
+
+        if due_date := incident.get('due_date'):
             incident['due_date'] = normalize_timestamp(due_date)
-        negative_pr = incident.get('negative_pr_likely')
-        if negative_pr:
+
+        if negative_pr := incident.get('negative_pr_likely'):
             incident['negative_pr'] = negative_pr
             incident.pop('negative_pr_likely', None)
-        exposure_type_id = incident.get('exposure_type_id')
-        if exposure_type_id:
+
+        if exposure_type_id := incident.get('exposure_type_id'):
             incident['exposure_type'] = EXP_TYPE_ID_DICT.get(exposure_type_id, exposure_type_id)
             incident.pop('exposure_type_id', None)
-        nist_attack_vectors = incident.get('nist_attack_vectors')
-        if nist_attack_vectors:
+
+        if nist_attack_vectors := incident.get('nist_attack_vectors'):
             translated_nist = []
             for vector in nist_attack_vectors:
                 translated_nist.append(NIST_ID_DICT[vector])
             incident['nist_attack_vectors'] = translated_nist
+
+        if plan_status := incident.get('plan_status'):
+            incident['plan_status'] = 'Active' if plan_status == 'A' else 'Closed'
     return incidents
 
 
@@ -538,13 +543,12 @@ def resolve_field_value(field: str, raw_value: Any) -> dict:
 
     # Null values & object-formatted values are returned as-is under 'textarea' key.
     if not raw_value or isinstance(raw_value, dict):
-        raw_value = None    # Unifying all null-like values to None.
-        return {"textarea": raw_value}
+        return {"textarea": raw_value or None}
 
     elif field in ["severity_code", "owner_id", "resolution_id"]:
         return {"id": int(raw_value)}
 
-    elif field in ["reporter", "plan_status"]:
+    elif field in ["reporter", "plan_status", "name"]:
         return {"text": raw_value}
 
     elif field in ["resolution_summary", "description"]:
@@ -552,6 +556,8 @@ def resolve_field_value(field: str, raw_value: Any) -> dict:
 
     elif field in ["incident_type_ids", "nist_attack_vectors"]:
         return {"ids": raw_value}
+
+    raise DemistoException('Could no resolve field value for field: {}'.format(field))
 
 
 def get_field_changes_entry(field: str, old_value: Any, new_value: Any) -> dict:
@@ -637,47 +643,6 @@ def to_timestamp(date_str_or_dt, date_format='%Y-%m-%dT%H:%M:%SZ'):
 
     raise TypeError("Unsupported type for date_str_or_dt")
 
-''' COMMAND FUNCTIONS '''
-
-
-def search_incidents_command(client, args):
-    incidents = search_incidents(client, args)
-    if incidents:
-        pretty_incidents = prettify_incidents(client, incidents)
-        result_incidents = createContext(pretty_incidents, id=None, keyTransform=underscoreToCamelCase, removeNull=True)
-        ec = {
-            'Resilient.Incidents(val.Id && val.Id === obj.Id)': result_incidents
-        }
-        title = 'QRadar SOAR Incidents'
-        entry = {
-            'Type': entryTypes['note'],
-            'Contents': incidents,
-            'ContentsFormat': formats['json'],
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown(title, result_incidents,
-                                             headers=['Id', 'Name', 'CreatedDate', 'DiscoveredDate', 'Owner', 'Phase'],
-                                             removeNull=True),
-            'EntryContext': ec
-        }
-        return entry
-    else:
-        return 'No results found.'
-
-
-def search_incidents(client: SimpleClient, args: dict) -> list | dict:
-    """
-    Search and get IBM QRadar incidents according to filters and pagination parameters.
-    :return: List of IBM QRadar incidents matching the search query.
-    """
-    search_query_data = prepare_search_query_data(args)
-
-    return_level = args.get('return_level', DEFAULT_RETURN_LEVEL)
-    endpoint = f'{SEARCH_INCIDENTS_ENDPOINT}?return_level={return_level}'
-
-    response = client.post(endpoint, search_query_data)
-    demisto.debug(f'search_incidents {response}')
-    return response['data']
-
 
 def extract_data_form_other_fields_argument(other_fields, incident, changes):
     """Extracts the values from other-field argument and build a json object in ibm format to update an incident.
@@ -712,9 +677,57 @@ def extract_data_form_other_fields_argument(other_fields, incident, changes):
         )
 
 
+''' COMMAND FUNCTIONS '''
+
+
+def search_incidents_command(client, args):
+    incidents = search_incidents(client, args)
+    if incidents:
+        pretty_incidents = prettify_incidents(client, incidents)
+
+        result_incidents = createContext(pretty_incidents, id=None, keyTransform=underscoreToCamelCase, removeNull=True)    # pragma: no cover
+        ec = {
+            'Resilient.Incidents(val.Id && val.Id === obj.Id)': result_incidents
+        }
+        title = 'QRadar SOAR Incidents'
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': incidents,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable':
+                tableToMarkdown(
+                    title,
+                    result_incidents,
+                    headers=['Id', 'Name', 'PlanStatus', 'CreatedDate', 'DiscoveredDate', 'Owner', 'Phase'],
+                    removeNull=True
+                ),
+
+            'EntryContext': ec
+        }
+        return entry
+    else:
+        return 'No results found.'
+
+
+def search_incidents(client: SimpleClient, args: dict) -> list | dict:
+    """
+    Search and get IBM QRadar incidents according to filters and pagination parameters.
+    :return: List of IBM QRadar incidents matching the search query.
+    """
+    search_query_data = prepare_search_query_data(args)
+
+    return_level = args.get('return_level', DEFAULT_RETURN_LEVEL)
+    endpoint = f'{SEARCH_INCIDENTS_ENDPOINT}?return_level={return_level}'
+
+    response = client.post(endpoint, search_query_data)
+    demisto.debug(f'search_incidents {response}')
+    return response['data']
+
+
 def update_incident_command(client, args):
-    if len(list(args.keys())) == 1:
-        raise Exception('No fields to update were given')
+    if len(args) == 1:
+        raise DemistoException("No fields to update were given.")
     incident_id = args['incident-id']
     incident = get_incident(client, incident_id, True)
 
@@ -736,7 +749,7 @@ def update_incident_command(client, args):
                 new_value = user['id']
                 break
         if new_value == -1:
-            raise Exception('User was not found')
+            raise DemistoException('User was not found')
         changes.append(get_field_changes_entry('owner_id', old_value, new_value))
 
     if 'incident-type' in args:
@@ -773,15 +786,20 @@ def update_incident_command(client, args):
         new_name = args['name']
         changes.append(get_field_changes_entry('name', old_name, new_name))
 
-    if args.get('other-fields'):
-        extract_data_form_other_fields_argument(args.get('other-fields'), incident, changes)
+    if other_fields := args.get('other-fields'):
+        extract_data_form_other_fields_argument(other_fields, incident, changes)
 
     update_dto = {
         'changes': changes
     }
+
+    demisto.debug(f'update_incident_command: {json.dumps(update_dto, indent=4)}')
     response = update_incident(client, incident_id, update_dto)
+    demisto.debug(f'update_incident_command {str(response)=}')
     if response.status_code == 200:
-        return 'Incident ' + str(args['incident-id']) + ' was updated successfully.'
+        return f'Incident {incident_id} was updated successfully.'
+    else:   # pragma: no cover
+        return f'Failed to update incident {incident_id}'
 
 
 def update_incident(client, incident_id, data):
@@ -1325,45 +1343,39 @@ def fetch_incidents(client, first_fetch_time: str):
 
 def list_scripts_command(client: SimpleClient, args: dict) -> CommandResults:
     """
-    Getting the list of scripts of an IBM SOAR organization (client is organization specific)
+    Getting the list of scripts belonging to the IBM QRadar SOAR organization (client instance is org specific),
     or a specific script if `script_id` argument was provided.
     """
     human_readable = ""
     script_id = args.get("script_id", "")
 
-    try:
-        response = client.get(f"/scripts/{script_id}")
+    response = client.get(f"/scripts/{script_id}")
+    demisto.debug(f"list_scripts_command {response=}")
 
-        demisto.debug(f"list_scripts_command {response=}")
-
-        script_ids = []
-        scripts_to_process = (
-            [response] if script_id else response.get(SCRIPT_ENTITIES, [])
-        )
-        human_readable += "Received script IDs: {received_ids}"
-        for script in scripts_to_process:
-            script_id = script.get("id", "")
-            script_ids.append(script_id)
-            # Padding blank lines inorder to format the outputs in a block.
-            human_readable += f"""
-            
+    script_ids = []
+    scripts_to_process = (
+        [response] if script_id else response.get(SCRIPT_ENTITIES, [])
+    )
+    human_readable += "Received script IDs: {received_ids}"
+    for script in scripts_to_process:
+        script_id = script.get("id", "")
+        script_ids.append(script_id)
+        # Padding blank lines inorder to format the outputs in a block.
+        human_readable += f"""
+        
 Script ID: {script_id}
 Script Name: {script.get('name, ''')}
 Description: {script.get('description', '')}
 Language: {script.get('language', '')}
-            
-            """
-        demisto.info(f"list_scripts_command received script ids: {str(script_ids)}")
-        return CommandResults(
-            outputs_prefix="Resilient.Script",
-            outputs=response,
-            readable_output=human_readable.format(received_ids=str(script_ids)),
-        )
+        
+        """
+    demisto.info(f"list_scripts_command received script ids: {str(script_ids)}")
+    return CommandResults(
+        outputs_prefix="Resilient.Script",
+        outputs=response,
+        readable_output=human_readable.format(received_ids=str(script_ids)),
+    )
 
-    except (SimpleHTTPException, RetryHTTPException) as e:
-        return_error(
-            f"Could not find a script with ID: {script_id}.\nGot error: {e.response.text}"
-        )
 
 
 def upload_incident_attachment_command(

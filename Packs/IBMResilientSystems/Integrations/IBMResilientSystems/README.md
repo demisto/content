@@ -6,25 +6,25 @@ Case management that enables visibility across your tools for continual IR impro
 2. Search for IBM Security QRadar SOAR.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter**                                                                   | **Description**                                                                                                | **Required** |
-    |---------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------| --- |
-    | Server URL (e.g. 192.168.0.1)                                                   |                                                                                                                | True |
-    | Organization name                                                               |                                                                                                                | True |
-    | API key ID                                                                      |                                                                                                                | False |
-    | API key secret                                                                  |                                                                                                                | False |
-    | API key ID                                                                      |                                                                                                                | True |
-    | API key secret                                                                  |                                                                                                                | True |
-    | Credentials (Deprecated - use API Key authentication instead)                   |                                                                                                                | False |
-    | Password                                                                        |                                                                                                                | False |
-    | Trust any certificate (not secure)                                              |                                                                                                                | False |
-    | Use system proxy settings                                                       |                                                                                                                | False |
-    | Incident type                                                                   |                                                                                                                | False |
-    | Fetch Incidents                                                                 |                                                                                                                | False |
-    | First fetch timestamp (YYYY-MM-DDTHH:MM:SSZ). For example: 2020-02-02T19:00:00Z |                                                                                                                | False |
-    | Maximum incidents to fetch.                                                     | Maximum number of incidents per fetch. The maximum is 1000.                                                    | False |
-    | Incident Mirroring Direction                                                    |                                                                                                        | False |
-    | Close Mirrored XSOAR Incidents                                                  | When selected, closing the IBM Resilient incident with a 'Closed' status, will close the Cortex XSOAR incident. | False |
-    | Close Mirrored IBM Resilient Incidents                                          | When selected, closing the Cortex XSOAR incident will close the incident in IBM Resilient                      | False |
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | Server URL (e.g. 192.168.0.1) |  | True |
+    | Organization name |  | True |
+    | API key ID |  | False |
+    | API key secret |  | False |
+    | API key ID |  | True |
+    | API key secret |  | True |
+    | Credentials (Deprecated - use API Key authentication instead) |  | False |
+    | Password |  | False |
+    | Trust any certificate (not secure) |  | False |
+    | Use system proxy settings |  | False |
+    | Incident type |  | False |
+    | Fetch incidents |  | False |
+    | First fetch timestamp (YYYY-MM-DDTHH:MM:SSZ). For example: 2020-02-02T19:00:00Z |  | False |
+    | Maximum incidents to fetch. | Maximum number of incidents per fetch. The maximum is 1000. | False |
+    | Incident Mirroring Direction |  | False |
+    | Close Mirrored XSOAR Incidents | When selected, closing the IBM Resilient incident with a 'Closed' status, will close the Cortex XSOAR incident. | False |
+    | Close Mirrored IBM Resilient Incidents | When selected, closing the Cortex XSOAR incident will close the incident in IBM Resilient | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -48,12 +48,12 @@ Query for incidents
 | page_size | The maximum number of records to return in the response. Null or less than 1 to return all records, up to the server-configured maximum limit. When greater than 0. An error will be thrown if the length is greater than the server-configured maximum limit. | Optional | 
 | limit | Maximum number of incidents to retrieve. Default is 1000. | Optional | 
 | severity | Comma-separated list of incident severity, e.g., Low,Medium,High. | Optional | 
-| date-created-before | Created date of the incident before the given date in the formatYYYY-MM-DDTHH:MM:SSZ, e.g., 2018-05-07T10:59:07Z. | Optional | 
-| date-created-after | Created date of the incident after the given date in the format YYYY-MM-DDTHH:MM:SSZ, e.g., 2018-05-07T10:59:07Z. | Optional | 
+| date-created-before | Created date of the incident before the given date in the formatYYYY-MM-DDTHH:MM:SSZ, e.g. 2018-05-07T10:59:07Z. | Optional | 
+| date-created-after | Created date of the incident after the given date in the format YYYY-MM-DDTHH:MM:SSZ, e.g. 2018-05-07T10:59:07Z. | Optional | 
 | date-created-within-the-last | Created date of the incident within the last time frame (days/hours/minutes). Should be given a number, along with with the timeframe argument. | Optional | 
 | timeframe | Time frame to search within for incident. Should be given with within-the-last/due-in argument. Possible values: "days", "hours", "minutes". Possible values are: days, hours, minutes. | Optional | 
 | date-occurred-within-the-last | Occurred date of the incident within the last time frame (days/hours/minutes). Should be given a number, along with the timeframe argument. | Optional | 
-| date-occurred-before | Occurred date of the incident before the given date in the format YYYY-MM-DDTHH:MM:SSZ, e.g., 2018-05-07T10:59:07Z. | Optional | 
+| date-occurred-before | Occurred date of the incident before the given date in the format YYYY-MM-DDTHH:MM:SSZ, e.g. 2018-05-07T10:59:07Z. | Optional | 
 | date-occurred-after | Occurred date of the incident after the given date in the format YYYY-MM-DDTHH:MM:SSZ, e.g., 2018-05-07T10:59:07Z. | Optional | 
 | incident-type | Incident type. Possible values are: CommunicationError, DenialOfService, ImproperDisposal:DigitalAsset, ImproperDisposal:documents/files, LostDocuments/files/records, LostPC/laptop/tablet, LostPDA/smartphone, LostStorageDevice/media, Malware, NotAnIssue, Other, Phishing, StolenDocuments/files/records, StolenPC/laptop/tablet, StolenPDA/Smartphone, StolenStorageDevice/media, SystemIntrusion, TBD/Unknown, Vendor/3rdPartyError. | Optional | 
 | nist | NIST Attack Vectors. Possible values: "Attrition", "E-mail", "External/RemovableMedia", "Impersonation", "ImproperUsage", "Loss/TheftOfEquipment", "Other", "Web". Possible values are: Attrition, E-mail, External/RemovableMedia, Impersonation, ImproperUsage, Loss/TheftOfEquipment, Other, Web. | Optional | 
@@ -67,11 +67,32 @@ Query for incidents
 | --- | --- | --- |
 | Resilient.Incidents.CreateDate | string | Created date of the incident. | 
 | Resilient.Incidents.Name | string | Incident name. | 
+| Resilient.Incidents.Resolution | string | Incident resolution. | 
 | Resilient.Incidents.DiscoveredDate | string | Discovered date of the incident. | 
+| Resilient.Incidents.ResolutionSummary | string | Incident resolution summary. | 
 | Resilient.Incidents.Id | string | Incident ID. | 
-| Resilient.Incidents.Phase | string | Incident Phase. | 
+| Resilient.Incidents.Phase | string | Incident phase. | 
+| Resilient.Incidents.PlanStatus | string | Incident status. | 
 | Resilient.Incidents.Severity | string | Incident severity. | 
 | Resilient.Incidents.Description | string | Incident description. | 
+| Resilient.Incidents.Confirmed | boolean | Incident confirmation. | 
+| Resilient.Incidents.NegativePr | boolean | Whether negative PR is likely. | 
+| Resilient.Incidents.DateOccurred | string | Date incident occurred. | 
+| Resilient.Incidents.Reporter | string | Name of reporting individual. | 
+| Resilient.Incidents.NistAttackVectors | Unknown | Incident NIST attack vectors. | 
+| Resilient.Incidents.ExposureType | string | Incident exposure type. | 
+| Resilient.Incidents.ResolutionSummary | string | Incident resolution summary. | 
+
+
+#### Command Example
+```!rs-search-incidents date-created-after="2024-08-07T10:00:00Z" page="1" page_size="20" return_level=partial```
+
+#### Human Readable Output
+
+>|Id| Name     | PlanStatus | CreatedDate           | DiscoveredDate       | Owner   | Phase   |
+>|-|----------|------------|-----------------------|----------------------|---------|---------|
+>| 1234 | inci-1.0 | Active     |  2024-08-28T10:00:00Z | 2024-08-28T09:57:00Z | Example | Respond |
+
 
 ### rs-update-incident
 ***
@@ -191,6 +212,34 @@ Gets an individual incident by ID.
 | Resilient.Incidents.Id | string | Incident ID. | 
 | Resilient.Incidents.Phase | string | Incident phase. | 
 | Resilient.Incidents.Severity | string | Incident severity. | 
+### rs-get-incident
+
+***
+Gets an individual incident by ID.
+
+#### Base Command
+
+`rs-get-incident`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| incident-id | ID of incident to get. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Resilient.Incidents.CreateDate | string | Created date of the incident. | 
+| Resilient.Incidents.Name | string | Incident name. | 
+| Resilient.Incidents.Resolution | string | Incident resolution. | 
+| Resilient.Incidents.DiscoveredDate | string | Discovered date of the incident. | 
+| Resilient.Incidents.ResolutionSummary | string | Incident resolution summary. | 
+| Resilient.Incidents.Id | string | Incident ID. | 
+| Resilient.Incidents.Phase | string | Incident phase. | 
+| Resilient.Incidents.PlanStatus | string | Incident status. | 
+| Resilient.Incidents.Severity | string | Incident severity. | 
 | Resilient.Incidents.Description | string | Incident description. | 
 | Resilient.Incidents.Confirmed | boolean | Incident confirmation. | 
 | Resilient.Incidents.NegativePr | boolean | Whether negative PR is likely. | 
@@ -237,29 +286,6 @@ Gets an individual incident by ID.
 ***
 Updates the incident's members.
 
-
-#### Base Command
-
-`rs-incidents-update-member`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| incident-id | ID of the incident for which to update its members. | Required | 
-| members | A comma-separated list of members to add, e.g. 1,2,3. | Required | 
-
-
-#### Context Output
-
-There is no context output for this command.
-
-#### Command Example
-```!rs-incidents-update-member incident-id=1234 members=2```
-
-#### Context Example
-```json
-{
-    "Resilient": {
         "Incidents": {
             "Id": "1234",
             "Members": {
@@ -917,86 +943,25 @@ Upload an attachment for an incident.
 #### Context Output
 
 There is no context output for this command.
-### rs-delete-tasks
+### rs-add-custom-incident-task
 
 ***
-Deletes a specified list of tasks. Note that only custom tasks can be deleted.
+Add a custom task to the incident.
 
 #### Base Command
 
-`rs-delete-tasks`
+`rs-add-custom-incident-task`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| task_ids | A comma-separated list of task IDs to be deleted. | Required | 
+| incident_id | Incident ID to add a custom task to. | Required | 
+| Instructions | Task instructions text. | Required | 
 
 #### Context Output
 
 There is no context output for this command.
-### rs-update-incident-note
-
-***
-Updates an incident's comment (“notes” in the UI).
-
-#### Base Command
-
-`rs-update-incident-note`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| incident_id | Incident ID to update its note. | Required | 
-| note_id | Note ID to update. | Required | 
-| note | Text of the note. | Required | 
-
-#### Context Output
-
-There is no context output for this command.
-### rs-list-task-instructions
-
-***
-Get the task's instructions.
-
-#### Base Command
-
-`rs-list-task-instructions`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| task_id | ID of the task to list its instructions. | Required | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Resilient.Task | Dictionary | Task instructions. | 
-
-### rs-get-task-members
-
-***
-Get the members of a task. Private tasks will have the returned "members" property set. Non-private tasks will have a null "members" property.
-
-#### Base Command
-
-`rs-get-task-members`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| task_id | A comma-separated list of task IDs to be deleted. | Required | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Resilient.Task | Dictionary | Task members. | 
-
 ### rs-list-incident-notes
 
 ***
@@ -1018,57 +983,20 @@ Gets all of the top-level comments for an incident.
 | --- | --- | --- |
 | Resilient.IncidentNotes | Dictionary | Top-level comments for incident. | 
 
-### rs-delete-task-members
+### rs-delete-tasks
 
 ***
-Delete a task's member. This effectively changes the task from a "private" task to a non-private task (to one where any incident member can operate on it).
+Deletes a specified list of tasks. Note that only custom tasks can be deleted.
 
 #### Base Command
 
-`rs-delete-task-members`
+`rs-delete-tasks`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| task_id | ID of the task to delete its members. | Required | 
-
-#### Context Output
-
-There is no context output for this command.
-### rs-delete-incidents
-
-***
-Delete multiple incidents.
-
-#### Base Command
-
-`rs-delete-incidents`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| incident_ids | A comma-separated list of incident IDs to be deleted. | Required | 
-
-#### Context Output
-
-There is no context output for this command.
-### rs-add-custom-incident-task
-
-***
-Add a custom task to the incident.
-
-#### Base Command
-
-`rs-add-custom-incident-task`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| incident_id | Incident ID to add a custom task to. | Required | 
-| Instructions | Task instructions text. | Required | 
+| task_ids | A comma-separated list of task IDs to be deleted. | Required | 
 
 #### Context Output
 
@@ -1094,6 +1022,65 @@ Get list of available scripts.
 | --- | --- | --- |
 | Resilient.Script | Dictionary | Retrieved script or list of scripts with metadata. | 
 
+### rs-delete-incidents
+
+***
+Delete multiple incidents.
+
+#### Base Command
+
+`rs-delete-incidents`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| incident_ids | A comma-separated list of incident IDs to be deleted. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### rs-update-incident-note
+
+***
+Updates an incident's comment (“notes” in the UI).
+
+#### Base Command
+
+`rs-update-incident-note`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| incident_id | Incident ID to update its note. | Required | 
+| note_id | Note ID to update. | Required | 
+| note | Text of the note. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### rs-get-task-members
+
+***
+Get the members of a task. Private tasks will have the returned "members" property set. Non-private tasks will have a null "members" property.
+
+#### Base Command
+
+`rs-get-task-members`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| task_id | A comma-separated list of task IDs to be deleted. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Resilient.Task | Dictionary | Task members. | 
+
 ### rs-list-tasks
 
 ***
@@ -1113,3 +1100,42 @@ There are no input arguments for this command.
 | --- | --- | --- |
 | Resilient.Tasks | Dictionary | List of open tasks. | 
 
+### rs-list-task-instructions
+
+***
+Get the task's instructions.
+
+#### Base Command
+
+`rs-list-task-instructions`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| task_id | ID of the task to list its instructions. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Resilient.Task | Dictionary | Task instructions. | 
+
+### rs-delete-task-members
+
+***
+Delete a task's member. This effectively changes the task from a "private" task to a non-private task (to one where any incident member can operate on it).
+
+#### Base Command
+
+`rs-delete-task-members`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| task_id | ID of the task to delete its members. | Required | 
+
+#### Context Output
+
+There is no context output for this command.

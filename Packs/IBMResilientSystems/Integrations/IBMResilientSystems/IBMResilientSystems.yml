@@ -234,20 +234,50 @@ script:
     - contextPath: Resilient.Incidents.Name
       description: Incident name.
       type: string
+    - contextPath: Resilient.Incidents.Resolution
+      description: Incident resolution.
+      type: string
     - contextPath: Resilient.Incidents.DiscoveredDate
       description: Discovered date of the incident.
+      type: string
+    - contextPath: Resilient.Incidents.ResolutionSummary
+      description: Incident resolution summary.
       type: string
     - contextPath: Resilient.Incidents.Id
       description: Incident ID.
       type: string
     - contextPath: Resilient.Incidents.Phase
-      description: Incident Phase.
+      description: Incident phase.
+      type: string
+    - contextPath: Resilient.Incidents.PlanStatus
+      description: Incident status.
       type: string
     - contextPath: Resilient.Incidents.Severity
       description: Incident severity.
       type: string
     - contextPath: Resilient.Incidents.Description
       description: Incident description.
+      type: string
+    - contextPath: Resilient.Incidents.Confirmed
+      description: Incident confirmation.
+      type: boolean
+    - contextPath: Resilient.Incidents.NegativePr
+      description: Whether negative PR is likely.
+      type: boolean
+    - contextPath: Resilient.Incidents.DateOccurred
+      description: Date incident occurred.
+      type: string
+    - contextPath: Resilient.Incidents.Reporter
+      description: Name of reporting individual.
+      type: string
+    - contextPath: Resilient.Incidents.NistAttackVectors
+      description: Incident NIST attack vectors.
+      type: Unknown
+    - contextPath: Resilient.Incidents.ExposureType
+      description: Incident exposure type.
+      type: string
+    - contextPath: Resilient.Incidents.ResolutionSummary
+      description: Incident resolution summary.
       type: string
 
   - name: rs-update-incident
@@ -368,6 +398,9 @@ script:
     - contextPath: Resilient.Incidents.Phase
       description: Incident phase.
       type: string
+    - contextPath: Resilient.Incidents.PlanStatus
+      description: Incident status.
+      type: string
     - contextPath: Resilient.Incidents.Severity
       description: Incident severity.
       type: string
@@ -389,6 +422,12 @@ script:
     - contextPath: Resilient.Incidents.NistAttackVectors
       description: Incident NIST attack vectors.
       type: Unknown
+    - contextPath: Resilient.Incidents.ExposureType
+      description: Incident exposure type.
+      type: string
+    - contextPath: Resilient.Incidents.ResolutionSummary
+      description: Incident resolution summary.
+      type: string
 
   - name: rs-incidents-update-member
     description: Updates the incident's members.
@@ -853,11 +892,11 @@ script:
       description: Whether the IP address is a destination.
       type: Boolean
 
-  - name: rs-list-scripts
-    description: Get list of available scripts.
+  - name: rs-list-script
+    description: Retrieve the specified script's information or a list of all organization's scripts.
     arguments:
     - name: script_id
-      description: Internal ID/name of the script. Leave empty to list all available scripts.
+      description: Internal ID/name of the script.
       required: false
     outputs:
     - contextPath: Resilient.Script

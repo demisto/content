@@ -1,5 +1,4 @@
-!rs-search-incidents
-!rs-update-incident incident-id=1234 severity=High incident-type=Malware
+!rs-search-incidents date-created-after="2024-08-07T10:00:00Z" page="1" page_size="20" return_level=partial!rs-update-incident incident-id=1234 severity=High incident-type=Malware
 !rs-incidents-get-members incident-id=1234
 !rs-get-incident incident-id=1234
 !rs-incidents-update-member incident-id=1234 members=1
