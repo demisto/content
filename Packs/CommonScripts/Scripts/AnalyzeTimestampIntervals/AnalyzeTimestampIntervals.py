@@ -135,7 +135,6 @@ def main():
         return_results(command_results)
 
     except Exception as e:
-        demisto.error(f"An error occurred: {str(e)}")
         return_error(f"An error occurred: {str(e)}")
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
