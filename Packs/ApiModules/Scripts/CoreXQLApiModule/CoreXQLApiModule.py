@@ -29,7 +29,7 @@ class CoreClient(BaseClient):
                       params=None, data=None, timeout=None, raise_on_status=False, ok_codes=None,
                       error_handler=None, with_metrics=False, resp_type='json', response_data_type=None):
         '''
-        """A wrapper for requests lib to send our requests and handle requests and responses better.
+        """A wrapper for requests lib to send our requests and handle requests and responses.
 
             :type method: ``str``
             :param method: The HTTP method, for example: GET, POST, and so on.
