@@ -214,7 +214,8 @@ def getEventsByQuery(session, queryData, max_results, extended_data, max_wait_ti
             if len(key["data"]) == 0 or key["data"][0] == "No report results found.":
                 md = "No report results found."
                 break
-            cur[eventKeys[i]] = key["data"][i]
+            else:  # noqa: RET508
+                cur[eventKeys[i]] = key["data"][i]
         if md != "":
             # no results were found, not need to loop
             break
