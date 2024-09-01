@@ -31,6 +31,7 @@ from exchangelib.version import (EXCHANGE_2007, EXCHANGE_2010,
 from future import utils as future_utils
 from requests.exceptions import ConnectionError
 from exchangelib.version import VERSIONS as EXC_VERSIONS
+from email.policy import SMTP, SMTPUTF8
 
 
 # Exchange2 2019 patch - server dosen't connect with 2019 but with other versions creating an error mismatch (see CIAC-3086),
@@ -1039,10 +1040,11 @@ def parse_item_as_dict(item, email_address=None, camel_case=False, compact_field
 
 def cast_mime_item_to_message(item):
     mime_content = item.mime_content
+    email_policy = SMTP if mime_content.isascii() else SMTPUTF8
     if isinstance(mime_content, bytes):
-        return email.message_from_bytes(mime_content)
+        return email.message_from_bytes(mime_content, policy=email_policy)
     else:
-        return email.message_from_string(mime_content)
+        return email.message_from_string(mime_content, policy=email_policy)
 
 
 def parse_incident_from_item(item, is_fetch):  # pragma: no cover
@@ -1132,10 +1134,7 @@ def parse_incident_from_item(item, is_fetch):  # pragma: no cover
                         # save the attachment
                         if hasattr(attachment, 'item') and attachment.item.mime_content:
                             # Some items arrive with bytes attachemnt
-                            if isinstance(attachment.item.mime_content, bytes):
-                                attached_email = email.message_from_bytes(attachment.item.mime_content)
-                            else:
-                                attached_email = email.message_from_string(attachment.item.mime_content)
+                            attached_email = cast_mime_item_to_message(attachment.item)
                             if attachment.item.headers:
                                 attached_email_headers = []
                                 for h, v in list(attached_email.items()):
@@ -1936,10 +1935,7 @@ def get_item_as_eml(item_id, target_mailbox=None):  # pragma: no cover
 
     if item.mime_content:
         # came across an item with bytes attachemnt which failed in the source code, added this to keep functionality
-        if isinstance(item.mime_content, bytes):
-            email_content = email.message_from_bytes(item.mime_content)
-        else:
-            email_content = email.message_from_string(item.mime_content)
+        email_content = cast_mime_item_to_message(item)
         if item.headers:
             attached_email_headers = []
             for h, v in list(email_content.items()):
