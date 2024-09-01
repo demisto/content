@@ -68,3 +68,51 @@ def test_get_new_token(mocker, mock_client):
     )
 
     assert rustle == expected_result
+
+
+def test_max_limit_validation(mock_client):
+    MAX_LIMIT = 50_000
+    mock_client._max_limit_validation(1_000)
+    with pytest.raises(DemistoException):
+        mock_client._max_limit_validation(MAX_LIMIT + 1)
+    with pytest.raises(DemistoException):
+        mock_client._max_limit_validation(0)
+
+
+def test_search_events(mocker, mock_client):
+    response = {
+        "response": {
+            "events": {
+                "events": [
+                    {"indexed_at": "1", "tenantname": "Test Event 1"},
+                    {"indexed_at": "2", "tenantname": "Test Event 2"}
+                ]
+            }
+        }
+    }
+    http_request = mocker.patch.object(Client, "_http_request", return_value=response)
+    
+    limit = 2
+    sort_order = "asc"
+    last_item = {"last_id":"123","after_time":"456"}
+    
+    events = mock_client.search_events(limit, sort_order, last_item)
+    
+    expected_events = [
+        {"indexed_at": "1", "tenantname": "Test Event 1"},
+        {"indexed_at": "2", "tenantname": "Test Event 2"}
+    ]
+    assert events == expected_events
+    
+    http_request.assert_called_with(
+        method="GET",
+        url_suffix="events",
+        params={
+            "size": limit,
+            "range_type": "indexed_at",
+            "all_events": "yes",
+            "sort_order": sort_order,
+            "after_time": last_item.get("last_time"),
+            "after_id": last_item.get("last_id")
+        },
+    )

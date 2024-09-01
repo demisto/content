@@ -79,6 +79,10 @@ class Client(BaseClient):
         token_data = {"access_token": new_token, "expiry_time_utc": expiry_time_utc.isoformat()}
         return token_data
 
+    def _max_limit_validation(self, limit):
+        if limit > MAX_LIMIT or limit < MIN_LIMIT:
+            raise DemistoException(f"The maximum number of events per fetch should be between 1 - {MAX_LIMIT}")
+
     def search_events(self, limit: int, sort_order: str, last_item: dict = {}) -> list:
         """
 
@@ -100,10 +104,6 @@ class Client(BaseClient):
         )
         events = response.get("response", {}).get("events", {}).get("events", [])
         return events
-
-    def _max_limit_validation(self, limit):
-        if limit > MAX_LIMIT or limit < MIN_LIMIT:
-            raise DemistoException(f"The maximum number of events per fetch should be between 1 - {MAX_LIMIT}")
 
 
 def test_module(client: Client) -> str:

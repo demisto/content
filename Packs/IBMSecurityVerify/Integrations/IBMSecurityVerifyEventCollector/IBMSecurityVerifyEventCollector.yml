@@ -65,7 +65,7 @@ script:
       predefined:
       - 'Desc'
       - 'Asc'
-  dockerimage: demisto/python3:3.10.13.87159
+  dockerimage: demisto/python3:3.11.9.107902
   isfetchevents: true
   runonce: false
   script: '-'
