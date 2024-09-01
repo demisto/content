@@ -2,8 +2,8 @@
 import json
 import pytest
 from ZeroNetworksSegmentEventCollector import (Client, process_events, initialize_start_timestamp,
-                                               get_max_results_and_limit, get_log_types, update_last_run, fetch_events,
-                                               get_events, create_id, AUDIT_TYPE, NETWORK_ACTIVITIES_TYPE)
+                                               get_max_results_and_limit, handle_log_types, update_last_run, fetch_events,
+                                               get_events, create_id, fetch_all_events, AUDIT_TYPE, NETWORK_ACTIVITIES_TYPE)
 from CommonServerPython import *
 import hashlib
 import demistomock as demisto  # noqa: F401
@@ -84,73 +84,38 @@ def test_get_max_results_and_limit_with_param(params, log_type, expected):
     assert result == tuple(expected)
 
 
-@pytest.mark.parametrize("params, expected", [
+@pytest.mark.parametrize("event_types_to_fetch, expected", [
     (
-        {"isFetchNetwork": True},
+        ['Audit', 'Network Activities'],
         [AUDIT_TYPE, NETWORK_ACTIVITIES_TYPE]
     ),
     (
-        {"isFetchNetwork": False},
+        ['Audit'],
         [AUDIT_TYPE]
+    ),
+    (
+        [],
+        []
     )
 ])
-def test_get_log_types(params, expected):
-    result = get_log_types(params)
+def test_handle_log_types(event_types_to_fetch, expected):
+    result = handle_log_types(event_types_to_fetch)
     assert result == expected
 
 
-@pytest.mark.parametrize("last_run, log_type, last_event_time, previous_ids, expected", [
-    (
-        {},
-        'audit',
-        1000,
-        {1, 2, 3},
-        {
-            'audit': {
-                'last_fetch': 1000,
-                'previous_ids': {1, 2, 3}
-            }
-        }
-    ),
-    (
-        {
-            'audit': {
-                'last_fetch': 900,
-                'previous_ids': {1}
-            }
-        },
-        'audit',
-        1000,
-        {1, 2, 3},
-        {
-            'audit': {
-                'last_fetch': 1000,
-                'previous_ids': {1, 2, 3}
-            }
-        }
-    ),
-    (
-        {
-            'network_activities': {
-                'last_fetch': 2000,
-                'previous_ids': {2, 3}
-            }
-        },
-        'audit',
-        1000,
-        {1, 2, 3},
-        {
-            'audit': {
-                'last_fetch': 1000,
-                'previous_ids': {1, 2, 3}
-            },
-            'network_activities': {
-                'last_fetch': 2000,
-                'previous_ids': {2, 3}
-            }
-        }
-    )
-])
+def test_partial_valid_event_types():
+    """Test that partial valid event types raise an exception."""
+    event_types = ['fake_type']
+    with pytest.raises(DemistoException) as e:
+        handle_log_types(event_types)
+    assert "Event type title 'fake_type' is not valid." in str(e)
+
+
+@pytest.mark.parametrize(
+    "last_run, log_type, last_event_time, previous_ids, expected",
+    [(case['last_run'], case['log_type'], case['last_event_time'],
+      case['previous_ids'], case['expected']) for case in util_load_json('test_data/test_update_last_run_params.json')]
+)
 def test_update_last_run(last_run, log_type, last_event_time, previous_ids, expected):
     last_run_result = update_last_run(last_run, log_type, last_event_time, previous_ids)
     assert last_run_result == expected
@@ -207,21 +172,16 @@ def test_fetch_events(mocker, params, last_run, expected_last_run, expected_coll
     ]
 )
 def test_get_events(mocker, args, last_run, expected_events, expected_hr):
-    # Mock fetch_events
     mock_fetch_events = mocker.patch('ZeroNetworksSegmentEventCollector.fetch_events')
     mock_fetch_events.return_value = (last_run, expected_events)
 
-    # Mock tableToMarkdown
     mock_table_to_markdown = mocker.patch('ZeroNetworksSegmentEventCollector.tableToMarkdown')
     mock_table_to_markdown.return_value = expected_hr
 
-    # Create a mock client instance
     mock_client = MockClient("", False, False, {})
 
-    # Call the function
-    result_events, _ = get_events(mock_client, args, last_run, params={})
+    result_events, _ = get_events(mock_client, args, last_run, params={}, log_types=['audit'])
 
-    # Assertions
     assert result_events == expected_events
     if result_events:
         mock_table_to_markdown.assert_called_once_with(name='Audit Events', t=expected_events)
@@ -309,7 +269,7 @@ def test_create_id(event, log_type, expected_id):
 def test_fetch_events_limit_logic(mocker):
     mocker.patch('ZeroNetworksSegmentEventCollector.initialize_start_timestamp', return_value=1000)
     mocker.patch('ZeroNetworksSegmentEventCollector.get_max_results_and_limit', return_value=(1, 1))
-    mocker.patch('ZeroNetworksSegmentEventCollector.get_log_types', return_value=['audit'])
+    mocker.patch('ZeroNetworksSegmentEventCollector.handle_log_types', return_value=['audit'])
     mock_search_events = mocker.patch('ZeroNetworksSegmentEventCollector.Client.search_events',
                                       return_value={'items': [{'id': 1, 'timestamp': 1}], 'scrollCursor': '1'})
     mocker.patch('ZeroNetworksSegmentEventCollector.process_events', return_value=([], {}, 0))
@@ -329,3 +289,59 @@ def test_fetch_events_limit_logic(mocker):
     assert second_call_limit == 2
 
     assert len(calls) == 2
+
+
+@pytest.mark.parametrize(
+    "last_run, log_types, mock_initialize_start_timestamp, mock_fetch_events_side_effect, expected_last_run, expected_all_events",
+    [
+        (
+            {"last_fetch": "2023-01-01T00:00:00Z"},
+            [],
+            "2023-01-01T00:00:00Z",
+            [],
+            {"last_fetch": "2023-01-01T00:00:00Z"},
+            []
+        ),
+        (
+            {},
+            ["audit", "network_activities"],
+            "FAKE_DATE",
+            [
+                ({"audit": {"last_fetch": "FIRSE_DATE"}}, [{"event_id": 1, "type": "Audit"}]),
+                ({"audit": {"last_fetch": "FIRSE_DATE"}, "network_activities": {
+                 "last_fetch": "SECOND_DATE"}}, [{"event_id": 2, "type": "network_activities"}])
+            ],
+            {"audit": {"last_fetch": "FIRSE_DATE"}, "network_activities": {"last_fetch": "SECOND_DATE"}},
+            [
+                {"event_id": 1, "type": "Audit"},
+                {"event_id": 2, "type": "network_activities"}
+            ]
+        ),
+        (
+            {"audit": {"last_fetch": "2023-01-01T00:00:00Z"}},
+            ["network_activities"],
+            "2023-01-01T00:00:00Z",
+            [
+                ({"audit": {"last_fetch": "2023-01-01T00:00:00Z"},
+                 "network_activities": {"last_fetch": "New_fetch_time"}}, [{"event_id": 1, "type": "Audit"}]),
+            ],
+            {"audit": {"last_fetch": "2023-01-01T00:00:00Z"}, "network_activities": {"last_fetch": "New_fetch_time"}},
+            [
+                {"event_id": 1, "type": "Audit"},
+            ]
+        ),
+    ]
+)
+def test_fetch_all_events(mocker, last_run, log_types, mock_initialize_start_timestamp, mock_fetch_events_side_effect,
+                          expected_last_run, expected_all_events):
+    """Test the fetch_all_events function with mocked dependencies."""
+    mocker.patch('ZeroNetworksSegmentEventCollector.initialize_start_timestamp',
+                 return_value=mock_initialize_start_timestamp)
+    mocker.patch('ZeroNetworksSegmentEventCollector.fetch_events', side_effect=mock_fetch_events_side_effect)
+
+    client = MockClient("", False, False, {})
+
+    result_last_run, result_all_events = fetch_all_events(client, {}, last_run, log_types)
+
+    assert result_last_run == expected_last_run
+    assert result_all_events == expected_all_events

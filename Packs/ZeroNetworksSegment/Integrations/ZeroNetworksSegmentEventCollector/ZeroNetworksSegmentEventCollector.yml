@@ -19,11 +19,16 @@ configuration:
   hiddenusername: true
   type: 9
   section: Connect
-- display: Fetch network events
-  name: isFetchNetwork
-  required: false
-  type: 8
+- display: Event Types To Fetch
   section: Collect
+  name: event_types_to_fetch
+  type: 16
+  required: false
+  additionalinfo: 'Event types to fetch. Default is Audit.'
+  defaultvalue: Audit
+  options:
+  - Audit
+  - Network Activities
 - defaultvalue: '[{"id":"dstRiskLevel","includeValues":["2"]}]'
   display: Network Activity Filters
   additionalinfo: Using filters is necessary to reduce amount of events

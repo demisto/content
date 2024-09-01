@@ -22,6 +22,9 @@ MAX_FETCH_PARAM_NAME = {'audit': 'max_fetch_audit', 'network_activities': 'max_f
 AUDIT_TYPE = 'audit'
 NETWORK_ACTIVITIES_TYPE = 'network_activities'
 TYPES_TO_TITLES = {'audit': 'Audit', 'network_activities': 'Network Activities'}
+TITLES_TO_TYPES = {'Audit': 'audit', 'Network Activities': 'network_activities'}
+
+
 ''' CLIENT CLASS '''
 
 
@@ -64,20 +67,25 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def get_log_types(params: dict) -> list:
+def handle_log_types(event_types_to_fetch: list) -> list:
     """
-    Get a list of log types based on input parameters.
-
     Args:
-        params (dict): Dictionary of parameters to determine log types.
+        event_types_to_fetch (list of str): A list of event type titles to be converted to log types.
+
+    Raises:
+        InvalidEventTypeError: If any of the event type titles are not found in the `TITLES_TO_TYPES` mapping.
 
     Returns:
-        List[str]: A list of log types based on the input parameters.
+        list: A list of log types corresponding to the provided event type titles.
+              The list contains log types that have a matching title in the `TITLES_TO_TYPES` mapping.
+              If an event type title is not found, an exception is raised.
     """
-    log_types = [AUDIT_TYPE]
-    is_fetch_network = argToBoolean(params.get("isFetchNetwork", False))
-    if is_fetch_network:
-        log_types.append(NETWORK_ACTIVITIES_TYPE)
+    log_types = []
+    for type_title in event_types_to_fetch:
+        if log_type := TITLES_TO_TYPES.get(type_title):
+            log_types.append(log_type)
+        else:
+            raise DemistoException(f"Event type title '{type_title}' is not valid.")
 
     return log_types
 
@@ -186,10 +194,9 @@ def process_events(events: list, previous_ids: list, last_event_time: int, max_r
         log_type (str): Type of log to determine how to process the events.
 
     Returns:
-        Tuple[list, list, int]: A tuple containing:
-            - new_events (list): List of newly processed events.
-            - updated_previous_ids (list): Updated list of IDs from previously processed events.
-            - updated_last_event_time (int): Updated timestamp of the last event processed.
+        new_events (list): List of newly processed events.
+        updated_previous_ids (list): Updated list of IDs from previously processed events.
+        updated_last_event_time (int): Updated timestamp of the last event processed.
     """
     new_events = []
     for event in events:
@@ -282,7 +289,7 @@ def fetch_events(client: Client, params: dict, last_run: dict, start_timestamp: 
     return last_run, collected_events
 
 
-def get_events(client: Client, args: dict, last_run: dict, params: dict) -> tuple[list, CommandResults]:
+def get_events(client: Client, args: dict, last_run: dict, params: dict, log_types: list) -> tuple[list, CommandResults]:
     """
     Fetch events from the Zero Networks Segment API and format the results.
 
@@ -296,7 +303,6 @@ def get_events(client: Client, args: dict, last_run: dict, params: dict) -> tupl
         events (list): List of fetched events.
         CommandResults: An object containing the formatted results for output.
     """
-    log_types = get_log_types(params)
     all_events: list = []
     filters = params.get("network_activity_filters", [])
     final_hr = ""
@@ -313,7 +319,7 @@ def get_events(client: Client, args: dict, last_run: dict, params: dict) -> tupl
     return all_events, CommandResults(readable_output=final_hr)
 
 
-def fetch_all_events(client: Client, params: dict, last_run: dict) -> tuple[dict, list]:
+def fetch_all_events(client: Client, params: dict, last_run: dict, log_types: list) -> tuple[dict, list]:
     """
     Fetch events from various log types and aggregate the results.
 
@@ -326,7 +332,6 @@ def fetch_all_events(client: Client, params: dict, last_run: dict) -> tuple[dict
         last_run (dict): Updated dictionary with new timestamps for each log type.
         all_events (list): List of all collected events from different log types.
     """
-    log_types = get_log_types(params)
     all_events: list = []
     filters = params.get("network_activity_filters", [])
     for log_type in log_types:
@@ -376,9 +381,16 @@ def main() -> None:
     verify_certificate = not argToBoolean(params.get('insecure', False))
     proxy = params.get('proxy', False)
     should_push_events = argToBoolean(args.get('should_push_events', False))
-    fetch_network = argToBoolean(params.get('isFetchNetwork', False))
+    event_types_to_fetch = argToList(params.get('event_types_to_fetch', []))
+    log_types = handle_log_types(event_types_to_fetch)
+    isFetch = params.get('isFetchEvents')
+    if isFetch and not log_types:
+        raise DemistoException("At least one event type must be specified for fetching.")
+
+    demisto.debug(f'Event types that will be fetched in this instance: {log_types}')
+
     filters = params.get('network_activity_filters', '')
-    if fetch_network and not filters:
+    if 'network_activities' in log_types and not filters:
         message = "Using network_activity_filters is required when fetching network events, to limit the number of events."
         raise DemistoException(message)
 
@@ -398,14 +410,14 @@ def main() -> None:
 
         elif command == 'zero-networks-segment-get-events':
             last_run = demisto.getLastRun()
-            events, results = get_events(client, args, last_run, params)  # type: ignore
+            events, results = get_events(client, args, last_run, params, log_types)  # type: ignore
             return_results(results)
             if should_push_events:
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
 
         elif command == 'fetch-events':
             last_run = demisto.getLastRun() or {}
-            next_run, events = fetch_all_events(client, params, last_run)
+            next_run, events = fetch_all_events(client, params, last_run, log_types)
             demisto.setLastRun(next_run)
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
 
