@@ -336,15 +336,6 @@
 							},
 							{
 								"endCol": 2,
-								"fieldId": "guardicoreendtime",
-								"height": 22,
-								"id": "109b5dc0-ed56-11eb-b6cc-d9d8af995038",
-								"index": 3,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
 								"fieldId": "closetime",
 								"height": 22,
 								"id": "201c4b90-f5f5-11eb-9621-a79ea81203c7",

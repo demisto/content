@@ -6,14 +6,14 @@
         "Datadog Cloud SIEM": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "Datadog": {
+                "Datadog Cloud SIEM": {
                     "complex": {
                         "filters": [],
                         "root": "incidents",
                         "transformers": []
                     }
                 },
-                "Datadog Attachment User ID": {
+                "Datadog Cloud SIEM Attachment User ID": {
                     "complex": {
                         "accessor": "id",
                         "filters": [],
@@ -21,7 +21,7 @@
                         "transformers": []
                     }
                 },
-                "Datadog Commander User": {
+                "Datadog Cloud SIEM Commander User": {
                     "complex": {
                         "accessor": "id",
                         "filters": [],
@@ -45,7 +45,7 @@
                         "transformers": []
                     }
                 },
-                "Datadog Detect and Create Duration ": {
+                "Datadog Cloud SIEM Detect and Create Duration ": {
                     "complex": {
                         "accessor": "time_to_internal_response",
                         "filters": [],
@@ -53,7 +53,7 @@
                         "transformers": []
                     }
                 },
-                "Datadog Detected": {
+                "Datadog Cloud SIEM Detected": {
                     "complex": {
                         "accessor": "detected",
                         "filters": [],
@@ -61,7 +61,7 @@
                         "transformers": []
                     }
                 },
-                "Datadog Detected Method": {
+                "Datadog Cloud SIEM Detected Method": {
                     "complex": {
                         "accessor": "value",
                         "filters": [],
@@ -69,7 +69,7 @@
                         "transformers": []
                     }
                 },
-                "Datadog Display Name": {
+                "Datadog Cloud SIEM Display Name": {
                     "complex": {
                         "accessor": "display_name",
                         "filters": [],
@@ -77,7 +77,7 @@
                         "transformers": []
                     }
                 },
-                "Datadog Duration": {
+                "Datadog Cloud SIEM Duration": {
                     "complex": {
                         "accessor": "customer_impact_duration",
                         "filters": [],
@@ -85,7 +85,7 @@
                         "transformers": []
                     }
                 },
-                "Datadog Last Modified By": {
+                "Datadog Cloud SIEM Last Modified By": {
                     "complex": {
                         "accessor": "user_id",
                         "filters": [],
@@ -93,7 +93,7 @@
                         "transformers": []
                     }
                 },
-                "Datadog Modified": {
+                "Datadog Cloud SIEM Modified": {
                     "complex": {
                         "accessor": "modified",
                         "filters": [],
@@ -101,7 +101,7 @@
                         "transformers": []
                     }
                 },
-                "Datadog Notification Email": {
+                "Datadog Cloud SIEM Notification Email": {
                     "complex": {
                         "accessor": "handle",
                         "filters": [],
@@ -109,7 +109,7 @@
                         "transformers": []
                     }
                 },
-                "Datadog Public ID": {
+                "Datadog Cloud SIEM Public ID": {
                     "complex": {
                         "accessor": "public_id",
                         "filters": [],
@@ -117,7 +117,7 @@
                         "transformers": []
                     }
                 },
-                "Datadog Repair Time": {
+                "Datadog Cloud SIEM Repair Time": {
                     "complex": {
                         "accessor": "time_to_repair",
                         "filters": [],
@@ -125,7 +125,7 @@
                         "transformers": []
                     }
                 },
-                "Datadog Resolution Time": {
+                "Datadog Cloud SIEM Resolution Time": {
                     "complex": {
                         "accessor": "time_to_resolve",
                         "filters": [],
@@ -133,7 +133,7 @@
                         "transformers": []
                     }
                 },
-                "Datadog Resolved": {
+                "Datadog Cloud SIEM Resolved": {
                     "complex": {
                         "accessor": "resolved",
                         "filters": [],
@@ -141,7 +141,7 @@
                         "transformers": []
                     }
                 },
-                "Datadog Root Cause ": {
+                "Datadog Cloud SIEM Root Cause": {
                     "complex": {
                         "accessor": "value",
                         "filters": [],
@@ -162,13 +162,13 @@
         "dbot_classification_incident_type_all": {
             "dontMapEventToLabels": true,
             "internalMapping": {
-                "Datadog Customer Impact Scope ": {
+                "Datadog Cloud SIEM Customer Impact Scope ": {
                     "simple": "incidents.customer_impact_scope"
                 },
-                "Datadog Customer Impacted": {
+                "Datadog Cloud SIEM Customer Impacted": {
                     "simple": "incidents.customer_impacted"
                 },
-                "Datadog Relationships User ID": {
+                "Datadog Cloud SIEM Relationships User ID": {
                     "complex": {
                         "accessor": "id",
                         "filters": [],
@@ -176,7 +176,7 @@
                         "transformers": []
                     }
                 },
-                "Datadog Title": {
+                "Datadog Cloud SIEM Title": {
                     "complex": {
                         "accessor": "title",
                         "filters": [],
