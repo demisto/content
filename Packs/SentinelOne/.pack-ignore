@@ -16,8 +16,3 @@ ignore=MR108
 [file:layoutscontainer-SentinelOne_Incident_Layout.json]
 ignore=LO107
 
-# Temporarily ignoring GR103.
-# For more details, refer to the ticket: https://jira-dc.paloaltonetworks.com/browse/CIAC-11656
-[file:classifier-mapper-outgoing-SentinelOne.json]
-ignore=GR103
-

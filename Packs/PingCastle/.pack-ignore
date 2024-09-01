@@ -4,7 +4,3 @@ ignore=PB115
 [file:PingCastle_image.png]
 ignore=IM111
 
-# Temporarily ignoring GR103.
-# For more details, refer to the ticket: https://jira-dc.paloaltonetworks.com/browse/CIAC-11656
-[file:incidenttype-PingCastle.json]
-ignore=GR103
