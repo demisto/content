@@ -52,8 +52,9 @@ def create_account(
         "manager_email": manager_email,
         "manager_display_name": manager_display_name,
     }
-    for key, value in account:
+    for key, value in account.items():
         if isinstance(value, list) and value:
+            demisto.debug(f"value is a list: {value}")
             account[key] = value[0]
 
     return remove_empty_elements(account)
@@ -165,47 +166,54 @@ class Task:
         """Base class for all tasks."""
         self.task_id = task_id
         self.command = command
+        self.status = True
 
     def execute(self):
         if self.command:
             self.status = self.command.execute()
 
 
-class Graph:
+class PlaybookGraph:
+    """
+    tasks: nodes
+    connections: edges
+    """
+
     def __init__(self):
-        self.nodes: dict[str, Task] = {}
-        self.edges: dict[str, list[tuple[str, Optional[Callable[[], bool]]]]] = {}
+        self.tasks: dict[str, Task] = {}
+        self.connections: dict[str, list[tuple[str, Optional[Callable[[], bool]]]]] = {}
+        self.start_task_id: str = ""
 
-    def add_node(self, node: Task):
-        self.nodes[node.task_id] = node
-        self.edges[node.task_id] = []
+    def add_task(self, node: Task):
+        self.tasks[node.task_id] = node
+        self.connections[node.task_id] = []
 
-    def add_nodes(self, nodes: list[Task]):
+    def add_tasks(self, nodes: list[Task]):
         for node in nodes:
-            self.add_node(node)
+            self.add_task(node)
 
-    def add_edge(
+    def add_connection(
         self,
         from_task: Task,
         to_task: Task,
         condition: Callable[[], bool] = lambda: True,
     ):
-        self.edges[from_task.task_id].append((to_task.task_id, condition))
+        self.connections[from_task.task_id].append((to_task.task_id, condition))
 
-    def run(self, start_task_id: str):
-        current_task_ids = [start_task_id]
+    def run(self):
+        current_task_ids = [self.start_task_id]
         executed_task_ids = set()
 
         while current_task_ids:
             next_task_ids = []
             for current_task_id in current_task_ids:
-                task = self.nodes.get(current_task_id)
+                task = self.tasks.get(current_task_id)
                 if not task:
                     continue
                 demisto.debug(f"Current task: {task.task_id}")
                 task.execute()
                 executed_task_ids.add(task.task_id)
-                next_tasks = self.edges.get(task.task_id, [])
+                next_tasks = self.connections.get(task.task_id, [])
                 if task.status:
                     for next_task_id, condition in next_tasks:
                         if condition is None or condition():
@@ -260,6 +268,279 @@ def merge_accounts(accounts: list[dict[str, str]]) -> dict[str, Any]:
     )
 
 
+def setup_playbook_graph(
+    user_id: str, user_name: str, user_email: str, domain: str
+) -> tuple[PlaybookGraph, list[Command]]:
+    ##########################
+    ##### Setup commands #####
+    ##########################
+    identityiq_search_identities_command = Command(
+        name="identityiq-search-identities",
+        brand="SailPointIdentityIQ",
+        args={
+            "id": user_id,
+            "email": user_email,
+        },
+        output_key="IdentityIQ.Identity",
+        output_function=lambda entry_context: create_account(
+            id=entry_context.get("id"),
+            username=entry_context.get("name", {}).get("formatted"),
+            display_name=entry_context.get("DisplayName"),
+            email_address=entry_context.get("emails", {}).get("value"),
+            is_enabled=entry_context.get("active"),
+        ),
+    )
+    identitynow_get_accounts_command = Command(
+        name="identitynow-get-accounts",
+        brand="SailPointIdentityNow",
+        args={
+            "id": user_id,
+            "name": user_name,
+        },
+        output_key="IdentityNow.Account",
+        output_function=lambda entry_context: create_account(
+            id=entry_context.get("id"),
+            display_name=entry_context.get("name"),
+            is_enabled=not entry_context.get("disabled"),
+        ),
+    )
+    ad_get_user_command = Command(
+        name="ad-get-user",
+        brand="Active Directory Query v2",
+        args={
+            "username": user_name,
+            "email": user_email,
+        },
+        output_key="ActiveDirectory.Users",
+        output_function=lambda entry_context: (
+            create_account(
+                id=entry_context.get("dn"),
+                display_name=entry_context.get("displayName", [])
+                if entry_context.get("displayName")
+                else "",
+                email_address=entry_context.get("mail", [])
+                if entry_context.get("mail")
+                else "",
+                groups=entry_context.get("memberOf"),
+                # manager=entry_context.get("Manager"),
+                is_enabled=not entry_context.get("userAccountControlFields", {}).get(
+                    "ACCOUNTDISABLE"
+                ),
+            ),
+            SHARED_CONTEXT.update(
+                {
+                    ad_get_user_command.name: {
+                        "manager": entry_context.get("manager", [])[0]
+                    }
+                }
+            ),
+        )[0],
+    )
+    ad_get_user_manager_command = Command(
+        name="ad-get-user",
+        brand="Active Directory Query v2",
+        args={},
+        output_key="ActiveDirectory.Users",
+        output_function=lambda entry_context: create_account(
+            manager_display_name=entry_context.get("displayName", [])
+            if entry_context.get("displayName")
+            else "",
+            manager_email=entry_context.get("mail", [])
+            if entry_context.get("mail")
+            else "",
+        ),
+        update_args_fun=lambda: {
+            "dn": SHARED_CONTEXT.get(ad_get_user_command.name, {}).get("manager")
+        },
+    )
+    pingone_get_user_command = Command(
+        name="pingone-get-user",
+        brand="PingOne",
+        args={
+            "userId": user_id,
+            "username": user_name,
+        },
+        output_key="PingOne.Account",
+        output_function=lambda entry_context: create_account(
+            id=entry_context.get("ID"),
+            username=entry_context.get("Username"),
+            display_name=entry_context.get("DisplayName"),
+            email_address=entry_context.get("Email"),
+            is_enabled=entry_context.get("Enabled"),
+        ),
+    )
+    okta_get_user_command = Command(
+        name="okta-get-user",
+        brand="Okta v2",
+        args={
+            "userId": user_id,
+            "username": user_name,
+        },
+        output_key="Account",
+        output_function=lambda entry_context: create_account(
+            id=entry_context.get("ID"),
+            username=entry_context.get("Username"),
+            display_name=entry_context.get("DisplayName"),
+            email_address=entry_context.get("Email"),
+            is_enabled=entry_context.get("Status"),
+        ),
+    )
+    aws_iam_get_user_command = Command(
+        name="aws-iam-get-user",
+        brand="AWS - IAM",
+        args={
+            "userName": user_name,
+        },
+        output_key="AWS.IAM.Users",
+        output_function=lambda entry_context: create_account(
+            id=entry_context.get("UserId"),
+            username=entry_context.get("UserName"),
+        ),
+    )
+    msgraph_user_get_command = Command(
+        name="msgraph-user-get",
+        brand="Microsoft Graph User",
+        args={
+            "user": user_id,
+        },
+        output_key="Account",
+        output_function=lambda entry_context: create_account(
+            id=entry_context.get("ID"),
+            username=entry_context.get("Username"),
+            display_name=entry_context.get("DisplayName"),
+            email_address=entry_context.get("Email", {}).get("Address"),
+            job_title=entry_context.get("JobTitle"),
+            office=entry_context.get("Office"),
+            telephone_number=entry_context.get("TelephoneNumber"),
+            type=entry_context.get("Type"),
+        ),
+    )
+    xdr_list_risky_users_command = Command(
+        name="xdr-list-risky-users",
+        brand="Cortex XDR - IR",
+        args={"user_id": user_id},
+        output_key="PaloAltoNetworksXDR.RiskyUser",
+        output_function=lambda entry_context: create_account(
+            id=entry_context.get("id"),
+            type=entry_context.get("type"),
+        ),
+    )
+    iam_get_user_command = Command(
+        name="iam-get-user",
+        args={
+            "user-profile": {"id": user_id}
+            if user_id
+            else {"email": f"{user_name}@{domain}"}
+            if domain and user_name
+            else {"username": user_name}
+            if user_name
+            else {"email": user_email}
+            if user_email
+            else None,
+        },
+        is_generic=True,
+        output_key="Account",
+        output_function=lambda entry_context: create_account(
+            id=entry_context.get("id"),
+            type=entry_context.get("type"),
+        ),
+    )
+
+    list_commands = [
+        identityiq_search_identities_command,
+        identitynow_get_accounts_command,
+        ad_get_user_command,
+        pingone_get_user_command,
+        okta_get_user_command,
+        aws_iam_get_user_command,
+        msgraph_user_get_command,
+        xdr_list_risky_users_command,
+        iam_get_user_command,
+        ad_get_user_manager_command,
+    ]
+    update_enabled_commands(list_commands)
+
+    #######################
+    ##### Setup tasks #####
+    #######################
+    start_task = Task("Start task")
+    identityiq_search_identities_task = Task(
+        "identityiq_search_identities_command", identityiq_search_identities_command
+    )
+    identitynow_get_accounts_task = Task(
+        "identitynow_get_accounts_command", identitynow_get_accounts_command
+    )
+    ad_get_user_task = Task("ad_get_user_command", ad_get_user_command)
+    ad_get_user_manager_task = Task(
+        "ad_get_user_manager_command", ad_get_user_manager_command
+    )
+    pingone_get_user_task = Task("pingone_get_user_command", pingone_get_user_command)
+    okta_get_user_task = Task("okta_get_user_command", okta_get_user_command)
+    aws_iam_get_user_task = Task("aws_iam_get_user_command", aws_iam_get_user_command)
+    msgraph_user_get_task = Task("msgraph_user_get_command", msgraph_user_get_command)
+    xdr_list_risky_users_task = Task(
+        "xdr_list_risky_users_command", xdr_list_risky_users_command
+    )
+    iam_get_user_task = Task("iam_get_user_command", iam_get_user_command)
+
+    ################################
+    ##### Setup playbook graph #####
+    ################################
+    playbook = PlaybookGraph()
+    playbook.add_tasks(
+        [
+            start_task,
+            identityiq_search_identities_task,
+            identitynow_get_accounts_task,
+            ad_get_user_task,
+            ad_get_user_manager_task,
+            pingone_get_user_task,
+            okta_get_user_task,
+            aws_iam_get_user_task,
+            msgraph_user_get_task,
+            xdr_list_risky_users_task,
+            iam_get_user_task,
+        ]
+    )
+    is_domain_in_user_name = "/" in user_name
+    playbook.add_connection(
+        start_task,
+        identityiq_search_identities_task,
+        lambda: not is_domain_in_user_name,
+    )
+    playbook.add_connection(
+        start_task,
+        identitynow_get_accounts_task,
+        lambda: not is_domain_in_user_name,
+    )
+    playbook.add_connection(
+        start_task, ad_get_user_task, lambda: not is_domain_in_user_name
+    )
+    playbook.add_connection(
+        start_task, pingone_get_user_task, lambda: not is_domain_in_user_name
+    )
+    playbook.add_connection(
+        start_task, okta_get_user_task, lambda: not is_domain_in_user_name
+    )
+    playbook.add_connection(
+        start_task, aws_iam_get_user_task, lambda: not is_domain_in_user_name
+    )
+    playbook.add_connection(
+        start_task, msgraph_user_get_task, lambda: not is_domain_in_user_name
+    )
+    playbook.add_connection(start_task, xdr_list_risky_users_task)
+    playbook.add_connection(
+        start_task, iam_get_user_task, lambda: not is_domain_in_user_name
+    )
+    playbook.add_connection(
+        ad_get_user_task,
+        ad_get_user_manager_task,
+        lambda: bool(SHARED_CONTEXT.get(ad_get_user_command.name, {}).get("manager")),
+    )
+    playbook.start_task_id = start_task.task_id
+    return playbook, list_commands
+
+
 """ MAIN FUNCTION """
 
 
@@ -270,274 +551,15 @@ def main():
         user_name = args.get("user_name", "")
         user_email = args.get("user_email", "")
         domain = args.get("domain", "")
-        is_domain_in_user_name = "/" in user_name
 
         if not any((user_id, user_name, user_email)):
             raise ValueError(
                 "At least one of the following arguments must be specified: user_id, user_name or user_email."
             )
-
-        identityiq_search_identities_command = Command(
-            name="identityiq-search-identities",
-            brand="SailPointIdentityIQ",
-            args={
-                "id": user_id,
-                "email": user_email,
-            },
-            output_key="IdentityIQ.Identity",
-            output_function=lambda entry_context: create_account(
-                id=entry_context.get("id"),
-                username=entry_context.get("name", {}).get("formatted"),
-                display_name=entry_context.get("DisplayName"),
-                email_address=entry_context.get("emails", {}).get("value"),
-                is_enabled=entry_context.get("active"),
-            ),
+        playbook, list_commands = setup_playbook_graph(
+            user_id, user_name, user_email, domain
         )
-        identitynow_get_accounts_command = Command(
-            name="identitynow-get-accounts",
-            brand="SailPointIdentityNow",
-            args={
-                "id": user_id,
-                "name": user_name,
-            },
-            output_key="IdentityNow.Account",
-            output_function=lambda entry_context: create_account(
-                id=entry_context.get("id"),
-                display_name=entry_context.get("name"),
-                is_enabled=not entry_context.get("disabled"),
-            ),
-        )
-        ad_get_user_command = Command(
-            name="ad-get-user",
-            brand="Active Directory Query v2",
-            args={
-                "username": user_name,
-                "email": user_email,
-            },
-            output_key="ActiveDirectory.Users",
-            output_function=lambda entry_context: (
-                create_account(
-                    id=entry_context.get("dn"),
-                    display_name=entry_context.get("displayName", [])[0]
-                    if entry_context.get("displayName")
-                    else "",
-                    email_address=entry_context.get("mail", [])[0]
-                    if entry_context.get("mail")
-                    else "",
-                    groups=entry_context.get("memberOf"),
-                    # manager=entry_context.get("Manager"),
-                    is_enabled=not entry_context.get(
-                        "userAccountControlFields", {}
-                    ).get("ACCOUNTDISABLE"),
-                ),
-                SHARED_CONTEXT.update(
-                    {
-                        ad_get_user_task.task_id: {
-                            "manager": entry_context.get("manager", [])[0]
-                        }
-                    }
-                ),
-            )[0],
-        )
-        ad_get_user_manager_command = Command(
-            name="ad-get-user",
-            brand="Active Directory Query v2",
-            args={},
-            output_key="ActiveDirectory.Users",
-            output_function=lambda entry_context: create_account(
-                manager_display_name=entry_context.get("displayName", [])[0]
-                if entry_context.get("displayName")
-                else "",
-                manager_email=entry_context.get("mail", [])[0]
-                if entry_context.get("mail")
-                else "",
-            ),
-            update_args_fun=lambda: {
-                "dn": SHARED_CONTEXT.get("ad_get_user_command", {}).get("manager")
-            },
-        )
-        pingone_get_user_command = Command(
-            name="pingone-get-user",
-            brand="PingOne",
-            args={
-                "userId": user_id,
-                "username": user_name,
-            },
-            output_key="PingOne.Account",
-            output_function=lambda entry_context: create_account(
-                id=entry_context.get("ID"),
-                username=entry_context.get("Username"),
-                display_name=entry_context.get("DisplayName"),
-                email_address=entry_context.get("Email"),
-                is_enabled=entry_context.get("Enabled"),
-            ),
-        )
-        okta_get_user_command = Command(
-            name="okta-get-user",
-            brand="Okta v2",
-            args={
-                "userId": user_id,
-                "username": user_name,
-            },
-            output_key="Account",
-            output_function=lambda entry_context: create_account(
-                id=entry_context.get("ID"),
-                username=entry_context.get("Username"),
-                display_name=entry_context.get("DisplayName"),
-                email_address=entry_context.get("Email"),
-                is_enabled=entry_context.get("Status"),
-            ),
-        )
-        aws_iam_get_user_command = Command(
-            name="aws-iam-get-user",
-            brand="AWS - IAM",
-            args={
-                "userName": user_name,
-            },
-            output_key="AWS.IAM.Users",
-            output_function=lambda entry_context: create_account(
-                id=entry_context.get("UserId"),
-                username=entry_context.get("UserName"),
-            ),
-        )
-        msgraph_user_get_command = Command(
-            name="msgraph-user-get",
-            brand="Microsoft Graph User",
-            args={
-                "user": user_id,
-            },
-            output_key="Account",
-            output_function=lambda entry_context: create_account(
-                id=entry_context.get("ID"),
-                username=entry_context.get("Username"),
-                display_name=entry_context.get("DisplayName"),
-                email_address=entry_context.get("Email", {}).get("Address"),
-                job_title=entry_context.get("JobTitle"),
-                office=entry_context.get("Office"),
-                telephone_number=entry_context.get("TelephoneNumber"),
-                type=entry_context.get("Type"),
-            ),
-        )
-        xdr_list_risky_users_command = Command(
-            name="xdr-list-risky-users",
-            brand="Cortex XDR - IR",
-            args={"user_id": user_id},
-            output_key="PaloAltoNetworksXDR.RiskyUser",
-            output_function=lambda entry_context: create_account(
-                id=entry_context.get("id"),
-                type=entry_context.get("type"),
-            ),
-        )
-        iam_get_user_command = Command(
-            name="iam-get-user",
-            args={
-                "user-profile": {"id": user_id}
-                if user_id
-                else {"email": f"{user_name}@{domain}"}
-                if domain and user_name
-                else {"username": user_name}
-                if user_name
-                else {"email": user_email}
-                if user_email
-                else None,
-            },
-            is_generic=True,
-            output_key="Account",
-            output_function=lambda entry_context: create_account(
-                id=entry_context.get("id"),
-                type=entry_context.get("type"),
-            ),
-        )
-
-        list_commands = [
-            identityiq_search_identities_command,
-            identitynow_get_accounts_command,
-            ad_get_user_command,
-            pingone_get_user_command,
-            okta_get_user_command,
-            aws_iam_get_user_command,
-            msgraph_user_get_command,
-            xdr_list_risky_users_command,
-            iam_get_user_command,
-            ad_get_user_manager_command,
-        ]
-        update_enabled_commands(list_commands)
-
-        start_task = Task("Start task")
-        identityiq_search_identities_task = Task(
-            "identityiq_search_identities_command", identityiq_search_identities_command
-        )
-        identitynow_get_accounts_task = Task(
-            "identitynow_get_accounts_command", identitynow_get_accounts_command
-        )
-        ad_get_user_task = Task("ad_get_user_command", ad_get_user_command)
-        ad_get_user_manager_task = Task(
-            "ad_get_user_manager_command", ad_get_user_manager_command
-        )
-        pingone_get_user_task = Task(
-            "pingone_get_user_command", pingone_get_user_command
-        )
-        okta_get_user_task = Task("okta_get_user_command", okta_get_user_command)
-        aws_iam_get_user_task = Task(
-            "aws_iam_get_user_command", aws_iam_get_user_command
-        )
-        msgraph_user_get_task = Task(
-            "msgraph_user_get_command", msgraph_user_get_command
-        )
-        xdr_list_risky_users_task = Task(
-            "xdr_list_risky_users_command", xdr_list_risky_users_command
-        )
-        iam_get_user_task = Task("iam_get_user_command", iam_get_user_command)
-        graph = Graph()
-        graph.add_nodes(
-            [
-                start_task,
-                identityiq_search_identities_task,
-                identitynow_get_accounts_task,
-                ad_get_user_task,
-                ad_get_user_manager_task,
-                pingone_get_user_task,
-                okta_get_user_task,
-                aws_iam_get_user_task,
-                msgraph_user_get_task,
-                xdr_list_risky_users_task,
-                iam_get_user_task,
-            ]
-        )
-        graph.add_edge(
-            start_task,
-            identityiq_search_identities_task,
-            lambda: not is_domain_in_user_name,
-        )
-        graph.add_edge(
-            start_task,
-            identitynow_get_accounts_task,
-            lambda: not is_domain_in_user_name,
-        )
-        graph.add_edge(start_task, ad_get_user_task, lambda: not is_domain_in_user_name)
-        graph.add_edge(
-            start_task, pingone_get_user_task, lambda: not is_domain_in_user_name
-        )
-        graph.add_edge(
-            start_task, okta_get_user_task, lambda: not is_domain_in_user_name
-        )
-        graph.add_edge(
-            start_task, aws_iam_get_user_task, lambda: not is_domain_in_user_name
-        )
-        graph.add_edge(
-            start_task, msgraph_user_get_task, lambda: not is_domain_in_user_name
-        )
-        graph.add_edge(start_task, xdr_list_risky_users_task)
-        graph.add_edge(
-            start_task, iam_get_user_task, lambda: not is_domain_in_user_name
-        )
-        graph.add_edge(
-            ad_get_user_task,
-            ad_get_user_manager_task,
-            lambda: bool(SHARED_CONTEXT.get(ad_get_user_task.task_id, {}).get("manager")),
-        )
-
-        graph.run(start_task.task_id)
+        playbook.run()
         results = []
         outputs = []
         for command in list_commands:
