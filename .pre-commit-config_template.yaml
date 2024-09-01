@@ -263,6 +263,11 @@ repos:
     args:
     - --skip-pack-dependencies
     - --config-path=validation_config.toml
+    args:packwise:
+    - --skip-pack-dependencies
+    - --config-path=validation_config.toml
+    - --ignore=DO106
+    - --ignore=CJ105
     pass_filenames: false
     language: system
     require_serial: true
