@@ -201,40 +201,6 @@ def create_file_sync(file_path, batch_size: int = 200):
             demisto.info("created sync file without any indicators")
 
 
-def search_indicators_corresponding_modification_time(query: str, from_date: str, to_date: str):
-    updated_query = f'modified:>={from_date} and modified:<{to_date} and ({query})'
-    demisto.debug(f"{updated_query=}")
-    ioc_count = 0
-    try:
-        for batch in IndicatorsSearcher(size=5000, query=updated_query, sort=[{"field": "modified", "asc": True}], filter_fields='value,indicator_type,score,expiration,modified,aggregatedReliability,moduleToFeedMap,comments,id,CustomFields'):
-            for ioc in batch.get('iocs', []):
-                ioc_count += 1
-                demisto.debug(f"{ioc.get('modified')=}")
-                yield ioc
-            if ioc_count == 0:
-                raise StopIteration
-            # TODO move this to main function - and send to API after every 50,000 indicators.
-            # if ioc_count >= MAX_INDICATORS_TO_SYNC:
-            #     raise StopIteration
-    except StopIteration:
-        pass
-    except Exception as e:
-        raise e
-
-
-def convert_timestamp_to_datetime_string(timestamp_in_milliseconds: int) -> str:
-    timestamp_in_seconds = timestamp_in_milliseconds / 1000.0
-    utc_dt = datetime.utcfromtimestamp(timestamp_in_seconds)
-    return utc_dt.isoformat() + '000Z'
-
-
-def increment_timestamp_by_one_millisecond(timestamp_str: str) -> str:
-    datetime_obj = datetime.fromisoformat(timestamp_str.replace('000Z', '+00:00'))
-    new_datetime_obj = datetime_obj + timedelta(milliseconds=1)
-    new_datetime_str = new_datetime_obj.strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + '000000Z'
-    return new_datetime_str
-
-
 def get_iocs_generator(size=200, query=None, is_first_stage_sync=False) -> Iterable:
     full_query = query or Client.query
     ioc_count = 0
@@ -423,14 +389,6 @@ def demisto_ioc_to_xdr(ioc: dict) -> dict:
 def get_temp_file() -> str:
     temp_file = tempfile.mkstemp()
     return temp_file[1]
-
-
-def set_search_after(modified_date: int):
-    demisto.info(f"setting search after value to integration context: {modified_date}")
-    integration_context = get_integration_context()
-    integration_context['search_after'] = modified_date
-    set_integration_context(integration_context)
-    demisto.debug(f"this_is_the_context {get_integration_context()}")
 
 
 def set_sync_time(timestamp: datetime) -> None:
@@ -735,6 +693,7 @@ def xdr_ioc_to_demisto(ioc: dict) -> dict:
         }
 
     tag_comment_fields = {k: v for k, v in tag_comment_fields.items() if v}  # ommits falsey values
+
     entry: dict = {
         "value": indicator,
         "type": xdr_types_to_demisto.get(ioc.get('IOC_TYPE')),
@@ -748,6 +707,7 @@ def xdr_ioc_to_demisto(ioc: dict) -> dict:
     }
     if Client.tlp_color:
         entry['fields']['trafficlightprotocol'] = Client.tlp_color
+
     # demisto.debug(f'Processed incoming entry: {entry}') # uncomment to debug, otherwise it spams the log
     return entry
 
