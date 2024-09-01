@@ -1146,13 +1146,16 @@ def parse_incident_from_item(item, is_fetch):  # pragma: no cover
                                             continue
 
                                     v = ' '.join(map(str.strip, v.split('\r\n')))
-                                    attached_email_headers.append((h, v))
+                                    attached_email_headers.append((h.lower(), v))
 
                                 for header in attachment.item.headers:
-                                    if (header.name, header.value) not in attached_email_headers \
-                                            and header.name != 'Content-Type':
-                                        attached_email.add_header(header.name, header.value)
-
+                                    if (header.name.lower(), header.value) not in attached_email_headers \
+                                            and header.name.lower() != 'content-type':
+                                        try:
+                                            attached_email.add_header(header.name, header.value)
+                                        except ValueError as err:
+                                            if "There may be at most" not in str(err):
+                                                raise err
                             file_result = fileResult(get_attachment_name(attachment_name=attachment.name,
                                                                          content_id=attachment.content_id,
                                                                          is_inline=attachment.is_inline) + ".eml",
@@ -1946,11 +1949,14 @@ def get_item_as_eml(item_id, target_mailbox=None):  # pragma: no cover
                         demisto.debug(f'cannot parse the header "{h}"')
 
                 v = ' '.join(map(str.strip, v.split('\r\n')))
-                attached_email_headers.append((h, v))
+                attached_email_headers.append((h.lower(), v))
             for header in item.headers:
-                if (header.name, header.value) not in attached_email_headers and header.name != 'Content-Type':
-                    email_content.add_header(header.name, header.value)
-
+                if (header.name.lower(), header.value) not in attached_email_headers and header.name.lower() != 'content-type':
+                    try:
+                        email_content.add_header(header.name, header.value)
+                    except ValueError as err:
+                        if "There may be at most" not in str(err):
+                            raise err
         eml_name = item.subject if item.subject else 'demisto_untitled_eml'
         file_result = fileResult(eml_name + ".eml", email_content.as_string())
         file_result = file_result if file_result else "Failed uploading eml file to war room"
