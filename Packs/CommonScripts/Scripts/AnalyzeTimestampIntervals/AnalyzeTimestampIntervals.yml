@@ -40,7 +40,7 @@ outputs:
   description: Indicates whether the intervals between timestamps were consistent based on the standard deviation threshold.
   type: boolean
 - contextPath: IntervalAnalysis.IsPatternLikelyAutomated
-  description: Indicates whether the pattern of intervals is likely automated based on analysis.
+  description: Indicates whether the pattern of intervals is likely automated based on analysis. Intervals with high frequency or consistency can suggest the use of an automation.
   type: boolean
 scripttarget: 0
 subtype: python3
