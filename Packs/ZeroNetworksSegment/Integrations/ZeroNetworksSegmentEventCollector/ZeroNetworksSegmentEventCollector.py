@@ -58,7 +58,6 @@ class Client(BaseClient):
             method="GET",
             url_suffix=URL[log_type],
             params=params,
-            headers=self._headers
         )
 
 
@@ -205,13 +204,11 @@ def process_events(events: list, previous_ids: list, last_event_time: int, max_r
             event_timestamp = event.get("timestamp")
             num_results += 1
             if int(event_timestamp) > last_event_time:
-                demisto.debug('updating the last run')
                 previous_ids = [event_id]
                 last_event_time = event_timestamp
 
             # Adding the event ID when the event time is equal to the last received event
             elif int(event_timestamp) == last_event_time:
-                demisto.debug('adding id to the "new_previous_ids"')
                 previous_ids.append(event_id)
 
     return new_events, previous_ids, last_event_time
@@ -220,52 +217,69 @@ def process_events(events: list, previous_ids: list, last_event_time: int, max_r
 ''' COMMAND FUNCTIONS '''
 
 
-def fetch_events(client: Client, params: dict, last_run: dict, arg_from=None) -> tuple[dict, list, dict]:
+def fetch_events(client: Client, params: dict, last_run: dict, start_timestamp: int, log_type: str,
+                 filters: list) -> tuple[dict, list]:
     """
-       Fetches audit logs from ZeroNetworks API.
+    Fetches audit logs from ZeroNetworks API for a specific log type.
+
+    Args:
+        client (Client): The client instance used to interact with the ZeroNetworks API.
+        params (dict): Dictionary of parameters used for fetching events, including limits and filters.
+        last_run (dict): Dictionary containing the last run information, including previously processed event IDs and timestamps.
+        start_timestamp (int): Timestamp to start fetching events from.
+        log_type (str): The type of log to fetch, used to determine how to process the events and set limits.
+        filters (list): List of filters to apply to the event search.
+
+    Returns:
+        last_run (dict): Updated dictionary with the latest information on processed events and timestamps.
+        collected_events (list): List of newly fetched and processed events.
     """
-    log_types = get_log_types(params)
-    all_events: list = []
-    events_split_to_log_type: dict = {}
-    filters = params.get("network_activity_filters", [])
-    for log_type in log_types:
-        start_timestamp = initialize_start_timestamp(last_run, log_type, arg_from)
-        cursor = start_timestamp
-        last_event_time = start_timestamp
-        collected_events: list = []
-        max_results, limit = get_max_results_and_limit(params, log_type)
-        previous_ids = last_run.get(log_type, {}).get("previous_ids", [])
+    cursor = last_event_time = start_timestamp
+    collected_events: list = []
+    max_results, limit = get_max_results_and_limit(params, log_type)
+    previous_ids = last_run.get(log_type, {}).get("previous_ids", [])
 
-        while len(collected_events) < max_results:
-            response = client.search_events(limit, cursor=cursor, log_type=log_type, filters=filters)
+    while len(collected_events) < max_results:
+        demisto.debug(f"Fetching events for log type '{log_type}' with cursor '{cursor}' and limit '{limit}'")
+        response = client.search_events(limit, cursor=cursor, log_type=log_type, filters=filters)
 
-            if not response:
+        if not response:
+            demisto.debug("No response received from client.")
+            break
+
+        events = response.get('items', [])
+        scroll_cursor = response.get('scrollCursor')
+        if scroll_cursor:
+            cursor = int(scroll_cursor)
+
+        if not events:
+            demisto.debug("No events found in response.")
+            break
+
+        new_events, previous_ids, last_event_time = process_events(events, previous_ids, last_event_time, max_results,
+                                                                   len(collected_events), log_type)
+
+        # If no new events are returned from process_events, but there are existing events:
+        # It indicates that all events might be within the range of previously processed IDs.
+        # This situation can occur if the cursor is initialized to the timestamp of the last event,
+        # resulting in some of the events returned being from before the current processing period.
+        # To handle this, we adjust the limit to fetch new events, unless the number of events is less than the limit,
+        # which implies there are no more new events to retrieve.
+        if not new_events:
+            demisto.debug("No new events returned from process_events.")
+            if len(events) < limit:
+                demisto.debug("Number of events is less than the limit; breaking out of the loop.")
                 break
 
-            events = response.get('items', [])
-            scroll_cursor = response.get('scrollCursor')
-            if scroll_cursor:
-                cursor = int(scroll_cursor)
+            limit += limit
 
-            if not events:
-                break
+        collected_events.extend(new_events)
 
-            new_events, previous_ids, last_event_time = process_events(events, previous_ids, last_event_time, max_results,
-                                                                       len(collected_events), log_type)
+    last_run = update_last_run(last_run, log_type, last_event_time, previous_ids)
+    demisto.debug(
+        f"Updated last_run for log type '{log_type}' with last_event_time '{last_event_time}' and previous_ids '{previous_ids}'")
 
-            if not new_events:
-                if len(events) < limit:
-                    break
-
-                limit += limit
-
-            collected_events.extend(new_events)
-
-        last_run = update_last_run(last_run, log_type, last_event_time, previous_ids)
-        all_events.extend(collected_events)
-        events_split_to_log_type[log_type] = collected_events
-
-    return last_run, all_events, events_split_to_log_type
+    return last_run, collected_events
 
 
 def get_events(client: Client, args: dict, last_run: dict, params: dict) -> tuple[list, CommandResults]:
@@ -279,24 +293,53 @@ def get_events(client: Client, args: dict, last_run: dict, params: dict) -> tupl
         params (dict): Additional parameters to pass to the event fetching function.
 
     Returns:
-        Tuple[list, CommandResults]: A tuple containing:
-            - events (list): List of fetched events.
-            - CommandResults: An object containing the formatted results for output.
+        events (list): List of fetched events.
+        CommandResults: An object containing the formatted results for output.
     """
-    if arg_from := args.get("from_date"):
-        arg_from = date_to_timestamp(arg_from, ISO_8601_FORMAT)
-
-    last_run, events, events_split_to_log_type = fetch_events(client=client, params=params, last_run=last_run, arg_from=arg_from)
+    log_types = get_log_types(params)
+    all_events: list = []
+    filters = params.get("network_activity_filters", [])
     final_hr = ""
-    for log_type in events_split_to_log_type:
-        final_hr += tableToMarkdown(name=f'{TYPES_TO_TITLES[log_type]} Events', t=events_split_to_log_type[log_type])
+    for log_type in log_types:
+        if arg_from := args.get("from_date"):
+            start_timestamp = date_to_timestamp(arg_from, ISO_8601_FORMAT)
+        else:
+            start_timestamp = initialize_start_timestamp(last_run, log_type, arg_from=None)
 
-    return events, CommandResults(readable_output=final_hr)
+        last_run, collected_events = fetch_events(client, params, last_run, start_timestamp, log_type, filters)
+        final_hr += tableToMarkdown(name=f'{TYPES_TO_TITLES[log_type]} Events', t=collected_events)
+        all_events.extend(collected_events)
+
+    return all_events, CommandResults(readable_output=final_hr)
+
+
+def fetch_all_events(client: Client, params: dict, last_run: dict) -> tuple[dict, list]:
+    """
+    Fetch events from various log types and aggregate the results.
+
+    Args:
+        client (Client): The client instance used to interact with the event source.
+        params (dict): Dictionary of parameters, including network activity filters and settings for fetching events.
+        last_run (dict): Dictionary of the last run details used to determine the starting point for fetching events.
+
+    Returns:
+        last_run (dict): Updated dictionary with new timestamps for each log type.
+        all_events (list): List of all collected events from different log types.
+    """
+    log_types = get_log_types(params)
+    all_events: list = []
+    filters = params.get("network_activity_filters", [])
+    for log_type in log_types:
+        start_timestamp = initialize_start_timestamp(last_run, log_type, arg_from=None)
+        last_run, collected_events = fetch_events(client, params, last_run, start_timestamp, log_type, filters)
+        all_events.extend(collected_events)
+
+    return last_run, all_events
 
 
 def test_module(client: Client) -> str:
     """
-    Tests API connectivity and authentication'
+    Tests API connectivity and authentication
     When 'ok' is returned it indicates the integration works like it is supposed to and connection to the service is
     successful.
     Raises exceptions if something goes wrong.
@@ -307,8 +350,7 @@ def test_module(client: Client) -> str:
     """
 
     try:
-        start_date = dateparser.parse(FIRST_FETCH).strftime(ISO_8601_FORMAT)  # type: ignore[union-attr]
-        start_timestamp = date_to_timestamp(start_date, ISO_8601_FORMAT)
+        start_timestamp = initialize_start_timestamp({}, "")
         client.search_events(limit=1, cursor=start_timestamp, log_type=AUDIT_TYPE)
     except Exception as e:
         if 'Unauthorized' in str(e):
@@ -334,10 +376,11 @@ def main() -> None:
     verify_certificate = not argToBoolean(params.get('insecure', False))
     proxy = params.get('proxy', False)
     should_push_events = argToBoolean(args.get('should_push_events', False))
-    fetch_network = argToBoolean(params.get('isFetchNetwork', 'False'))
+    fetch_network = argToBoolean(params.get('isFetchNetwork', False))
     filters = params.get('network_activity_filters', '')
     if fetch_network and not filters:
-        raise DemistoException("Using filters is required to limit the number of events.")
+        message = "Using network_activity_filters is required when fetching network events, to limit the number of events."
+        raise DemistoException(message)
 
     demisto.debug(f'Command being called is {command}')
     try:
@@ -362,7 +405,7 @@ def main() -> None:
 
         elif command == 'fetch-events':
             last_run = demisto.getLastRun() or {}
-            next_run, events, _ = fetch_events(client, params, last_run)
+            next_run, events = fetch_all_events(client, params, last_run)
             demisto.setLastRun(next_run)
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
 

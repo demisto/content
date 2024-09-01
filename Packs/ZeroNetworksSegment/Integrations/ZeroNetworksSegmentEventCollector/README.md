@@ -61,4 +61,4 @@ There is no context output for this command.
 
 | timestamp | protocol | state | trafficType | dst | src |
 |-------------|---------------------|------------|----------------------|---------|---------|
-| 1724924207581 | 6 | 2 | 1 | {"assetId":"fake_dst", "ip":"1.2.3.4"} | {"assetId":"fake_src", "ip":"1.2.3.6"} |
+| 1724924207581 | 6 | 2 | 1 | {"assetId":"fake_dst", "ip":"1.2.3.4"} | {"assetId":"fake_src", "ip":"1.1.1.1"} |

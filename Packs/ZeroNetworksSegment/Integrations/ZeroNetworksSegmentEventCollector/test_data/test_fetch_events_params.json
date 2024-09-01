@@ -1,109 +1,90 @@
 {
     "test_cases": [
         {
-            "mock_return_value": {
-                "items": [{"id": 1, "timestamp": 1000}],
-                "scrollCursor": 1
-            },
-            "inputs": [
-                {"max_results": 10},
-                {"log_type": "audit"}
+            "params": {"max_fetch_audit": "2"},
+            "last_run": {},
+            "expected_last_run": {"audit": {"last_fetch": 123457, "previous_ids": [2]}},
+            "expected_collected_events": [
+                {"id": 1, "timestamp": 123456, "_TIME": "1970-01-01T00:02:03.000Z", "source_log_type": "audit"},
+                {"id": 2, "timestamp": 123457, "_TIME": "1970-01-01T00:02:03.000Z", "source_log_type": "audit"}
             ],
-            "last_run": {
-                "audit": {"last_fetch": 900, "previous_ids": []},
-                "network_activities": {"last_fetch": 500, "previous_ids": [2]}
-            },
-            "expected_results": [
-                {
-                    "audit": {"last_fetch": 1000, "previous_ids": [1]},
-                    "network_activities": {"last_fetch": 500, "previous_ids": [2]}
-                },
-                [
-                    {
-                        "id": 1,
-                        "timestamp": 1000,
-                        "_TIME": "1970-01-01T00:00:01.000Z",
-                        "source_log_type": "audit"
-                    }
+            "expected_split_logs": {
+                "audit": [
+                    {"id": 1, "timestamp": 123456, "_TIME": "1970-01-01T00:02:03.000Z", "source_log_type": "audit"},
+                    {"id": 2, "timestamp": 123457, "_TIME": "1970-01-01T00:02:03.000Z", "source_log_type": "audit"}
                 ]
-            ]
+            },
+            "start_timestamp": 1000
         },
         {
-            "mock_return_value": {
-                "items": [],
-                "scrollCursor": null
-            },
-            "inputs": [
-                {"max_results": 10},
-                {"log_type": "audit"}
+            "params": {"max_fetch_audit": "3"},
+            "last_run": {},
+            "expected_last_run": {"audit": {"last_fetch": 12345678, "previous_ids": [3]}},
+            "expected_collected_events": [
+                {"id": 1, "timestamp": 123456, "_TIME": "1970-01-01T00:02:03.000Z", "source_log_type": "audit"},
+                {"id": 2, "timestamp": 123457, "_TIME": "1970-01-01T00:02:03.000Z", "source_log_type": "audit"},
+                {"id": 3, "timestamp": 12345678, "_TIME": "1970-01-01T03:25:45.000Z", "source_log_type": "audit"}
             ],
-            "last_run": {
-                "audit": {"last_fetch": 900, "previous_ids": [1]},
-                "network_activities": {"last_fetch": 500, "previous_ids": [2]}
+            "expected_split_logs": {
+                "audit": [
+                    {"id": 1, "timestamp": 123456, "_TIME": "1970-01-01T00:02:03.000Z", "source_log_type": "audit"},
+                    {"id": 2, "timestamp": 123457, "_TIME": "1970-01-01T00:02:03.000Z", "source_log_type": "audit"},
+                    {"id": 3, "timestamp": 12345678, "_TIME": "1970-01-01T03:25:45.000Z", "source_log_type": "audit"}
+                ]
             },
-            "expected_results": [
-                {
-                    "audit": {"last_fetch": 900, "previous_ids": [1]},
-                    "network_activities": {"last_fetch": 500, "previous_ids": [2]}
-                },
-                []
-            ]
+            "start_timestamp": 1000
         },
         {
-            "mock_return_value": {
-                "items": [{"id": 2, "timestamp": 2000}],
-                "scrollCursor": 2000
-            },
-            "inputs": [
-                {"max_results": 5},
-                {"log_type": "network_activities"}
+            "params": {"max_fetch_audit": "4"},
+            "last_run": {},
+            "expected_last_run": {"audit": {"last_fetch": 12345678, "previous_ids": [3, 4]}},
+            "expected_collected_events": [
+                {"id": 1, "timestamp": 123456, "_TIME": "1970-01-01T00:02:03.000Z", "source_log_type": "audit"},
+                {"id": 2, "timestamp": 123457, "_TIME": "1970-01-01T00:02:03.000Z", "source_log_type": "audit"},
+                {"id": 3, "timestamp": 12345678, "_TIME": "1970-01-01T03:25:45.000Z", "source_log_type": "audit"},
+                {"id": 4, "timestamp": 12345678, "_TIME": "1970-01-01T03:25:45.000Z", "source_log_type": "audit"}
             ],
-            "last_run": {
-                "audit": {"last_fetch": 900, "previous_ids": [1]},
-                "network_activities": {"last_fetch": 1500, "previous_ids": [2]}
-            },
-            "expected_results": [
-                {
-                    "audit": {"last_fetch": 900, "previous_ids": [1]},
-                    "network_activities": {"last_fetch": 2000, "previous_ids": [2, 2]}
-                },
-                [
-                    {
-                        "id": 2,
-                        "timestamp": 2000,
-                        "_TIME": "1970-01-01T00:00:02.000Z",
-                        "source_log_type": "network_activities"
-                    }
+            "expected_split_logs": {
+                "audit": [
+                    {"id": 1, "timestamp": 123456, "_TIME": "1970-01-01T00:02:03.000Z", "source_log_type": "audit"},
+                    {"id": 2, "timestamp": 123457, "_TIME": "1970-01-01T00:02:03.000Z", "source_log_type": "audit"},
+                    {"id": 3, "timestamp": 12345678, "_TIME": "1970-01-01T03:25:45.000Z", "source_log_type": "audit"},
+                    {"id": 4, "timestamp": 12345678, "_TIME": "1970-01-01T03:25:45.000Z", "source_log_type": "audit"}
                 ]
-            ]
+            },
+            "start_timestamp": 1000
         },
         {
-            "mock_return_value": {
-                "items": [{"id": 3, "timestamp": 3000}],
-                "scrollCursor": 3000
-            },
-            "inputs": [
-                {"max_results": 1},
-                {"log_type": "audit"}
+            "params": {"max_fetch_audit": "3"},
+            "last_run": {"audit": {"last_fetch": 123456, "previous_ids": [1]}},
+            "expected_last_run": {"audit": {"last_fetch": 12345678, "previous_ids": [3, 4]}},
+            "expected_collected_events": [
+                {"id": 2, "timestamp": 123457, "_TIME": "1970-01-01T00:02:03.000Z", "source_log_type": "audit"},
+                {"id": 3, "timestamp": 12345678, "_TIME": "1970-01-01T03:25:45.000Z", "source_log_type": "audit"},
+                {"id": 4, "timestamp": 12345678, "_TIME": "1970-01-01T03:25:45.000Z", "source_log_type": "audit"}
             ],
-            "last_run": {
-                "audit": {"last_fetch": 2500, "previous_ids": [1, 2]},
-                "network_activities": {"last_fetch": 1500, "previous_ids": [2]}
-            },
-            "expected_results": [
-                {
-                    "audit": {"last_fetch": 3000, "previous_ids": [1, 2, 3]},
-                    "network_activities": {"last_fetch": 1500, "previous_ids": [2]}
-                },
-                [
-                    {
-                        "id": 3,
-                        "timestamp": 3000,
-                        "_TIME": "1970-01-01T00:00:03.000Z",
-                        "source_log_type": "audit"
-                    }
+            "expected_split_logs": {
+                "audit": [
+                    {"id": 2, "timestamp": 123457, "_TIME": "1970-01-01T00:02:03.000Z", "source_log_type": "audit"},
+                    {"id": 3, "timestamp": 12345678, "_TIME": "1970-01-01T03:25:45.000Z", "source_log_type": "audit"},
+                    {"id": 4, "timestamp": 12345678, "_TIME": "1970-01-01T03:25:45.000Z", "source_log_type": "audit"}
                 ]
-            ]
+            },
+            "start_timestamp": 123456
+        },
+        {
+            "params": {"max_fetch_audit": "3"},
+            "last_run": {"audit": {"last_fetch": 12345678, "previous_ids": [3]}},
+            "expected_last_run": {"audit": {"last_fetch": 12345678, "previous_ids": [3, 4]}},
+            "expected_collected_events": [
+                {"id": 4, "timestamp": 12345678, "_TIME": "1970-01-01T03:25:45.000Z", "source_log_type": "audit"}
+            ],
+            "expected_split_logs": {
+                "audit": [
+                    {"id": 4, "timestamp": 12345678, "_TIME": "1970-01-01T03:25:45.000Z", "source_log_type": "audit"}
+                ]
+            },
+            "start_timestamp": 12345678
         }
     ]
 }
