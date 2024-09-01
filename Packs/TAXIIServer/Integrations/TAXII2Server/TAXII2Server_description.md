@@ -16,7 +16,7 @@ The collections are defined by a JSON object in the following format:
   "collection2_name": "<Cortex XSOAR indicator query>"
 }
 ```
-You can add a collection description as is doen in `collection1_name`, or enter only a collection query, as in `collection2_name`.
+You can add a collection description as is done in `collection1_name`, or enter only a collection query, as in `collection2_name`.
 
 
 ## How to Access the TAXII Service
