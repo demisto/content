@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, UTC
 
 from freezegun import freeze_time
 from CommonServerPython import *
@@ -40,14 +40,14 @@ def mock_client(mocker) -> Client:
         (
             {
                 "access_token": "valid_token",
-                "expiry_time_utc": (datetime.now(timezone.utc) + timedelta(minutes=5)).isoformat()
+                "expiry_time_utc": (datetime.now(UTC) + timedelta(minutes=5)).isoformat()
             },
             True
         ),
         (
             {
                 "access_token": "valid_token",
-                "expiry_time_utc": datetime.now(timezone.utc).isoformat()
+                "expiry_time_utc": datetime.now(UTC).isoformat()
             },
             False
         ),
@@ -61,7 +61,7 @@ def test_is_token_valid(mock_client, token_data, expected_result):
 @freeze_time("2024-08-29 12:00:00")
 def test_get_new_token(mocker, mock_client):
     expires_in = 7200
-    expiry_time_utc = datetime.now(timezone.utc) + timedelta(seconds=expires_in)
+    expiry_time_utc = datetime.now(UTC) + timedelta(seconds=expires_in)
     expected_result = {"access_token": "DUMMY_TOKEN", "expiry_time_utc": expiry_time_utc.isoformat()}
 
     response = {"access_token": "DUMMY_TOKEN", "expires_in": expires_in}
