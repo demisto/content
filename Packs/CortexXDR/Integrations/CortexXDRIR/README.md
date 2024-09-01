@@ -2280,6 +2280,7 @@ Builtin Roles with this permission includes: "Investigator", "Responder", "Privi
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | alert_ids | A comma-separated list of alert IDs. | Required | 
+| events_from_decider_format | Whether to return events_from_decider context output as a dictionary (the raw API response) or as a list (improved for playbook automation) - relevant only when filter_alert_fields is set to False. | Optional |
 
 
 #### Context Output
