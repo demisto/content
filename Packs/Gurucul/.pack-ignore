@@ -7,8 +7,3 @@ ignore=RM102
 [file:GRAAnomaliesDisplay.yml]
 ignore=BA124
 
-# Temporarily ignoring GR103.
-# For more details, refer to the ticket: https://jira-dc.paloaltonetworks.com/browse/CIAC-11656
-[file:layoutscontainer-GRACaseLayout.json]
-ignore = GR103
-

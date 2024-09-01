@@ -1,4 +1,0 @@
-# Temporarily ignoring GR103.
-# For more details, refer to the ticket: https://jira-dc.paloaltonetworks.com/browse/CIAC-11656
-[file:layoutscontainer-Correlation_Alerts.json]
-ignore=GR103
