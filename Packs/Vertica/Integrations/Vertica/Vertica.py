@@ -9,6 +9,7 @@ import getpass
 
 class FixGetPass():
     """Class to override the getuser function such that it returns a default value on error."""
+
     def __init__(self):
         # Obtain the original getuser function address.
         self.getpass_getuser_org = getpass.getuser
