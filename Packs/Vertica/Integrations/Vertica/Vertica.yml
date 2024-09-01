@@ -4,7 +4,7 @@ commonfields:
 name: Vertica
 display: Vertica
 category: Database
-description: Analytic database management software
+description: Analytic database management software.
 configuration:
 - display: Host (myhost.example.com)
   name: url
