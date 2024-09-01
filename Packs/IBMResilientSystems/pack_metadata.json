@@ -2,7 +2,7 @@
     "name": "IBM Security SOAR",
     "description": "Case management that enables visibility across your tools for continual IR improvement",
     "support": "xsoar",
-    "currentVersion": "1.1.9",
+    "currentVersion": "1.1.10",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -12,7 +12,10 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": ["IBM Resilient Systems", "IBM Security SOAR"],
+    "keywords": [
+        "IBM Resilient Systems",
+        "IBM Security SOAR"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2"
