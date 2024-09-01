@@ -111,8 +111,8 @@ script:
     description: Search for events in MISP. This search command will return only information about the matched events. To get information about attributes, use the misp-search-attributes command.
     name: misp-search-events
     outputs:
-    - contextPath: MISP.Event.ID
-      description: MISP event ID.
+    - contextPath: MISP.Event.I
+      description: MISP event ID
       type: string
     - contextPath: MISP.Event.Distribution
       description: MISP event distribution.
