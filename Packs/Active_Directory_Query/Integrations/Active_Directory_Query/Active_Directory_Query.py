@@ -63,8 +63,7 @@ DEFAULT_PERSON_ATTRIBUTES = [
     'mail',
     'sAMAccountName',
     'manager',
-    'userAccountControl',
-    'msDS-User-Account-Control-Computed'
+    'userAccountControl'
 ]
 DEFAULT_COMPUTER_ATTRIBUTES = [
     'name',
@@ -678,7 +677,8 @@ def search_users(default_base_dn, page_size):
 
     attributes = list(set(custom_attributes + DEFAULT_PERSON_ATTRIBUTES)
                       - set(argToList(args.get('attributes-to-exclude'))))
-
+    if 'userAccountControl' in attributes:
+        attributes.append('msDS-User-Account-Control-Computed')
     entries = search_with_paging(
         query,
         default_base_dn,
@@ -702,7 +702,7 @@ def search_users(default_base_dn, page_size):
                         user_account_control
                     )
                 )
-                if user["userAccountControlFields"]:
+                if user.get("userAccountControlFields"):
                     user["userAccountControlFields"].update(
                         user_account_to_boolean_dict
                     )
