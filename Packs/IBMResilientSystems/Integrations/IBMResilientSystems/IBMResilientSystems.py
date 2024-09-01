@@ -1341,39 +1341,41 @@ def fetch_incidents(client, first_fetch_time: str):
     demisto.incidents(demisto_incidents)
 
 
+def get_scripts(client: SimpleClient, script_id: str) -> Dict[str, Any]:
+    """
+    Retrieves the list of scripts belonging to the IBM QRadar SOAR organization.
+    """
+    response = client.get(f"/scripts/{script_id}")
+    demisto.debug(f"list_scripts_command {response=}")
+    return response
+
 def list_scripts_command(client: SimpleClient, args: dict) -> CommandResults:
     """
     Getting the list of scripts belonging to the IBM QRadar SOAR organization (client instance is org specific),
     or a specific script if `script_id` argument was provided.
     """
-    human_readable = ""
     script_id = args.get("script_id", "")
 
-    response = client.get(f"/scripts/{script_id}")
-    demisto.debug(f"list_scripts_command {response=}")
+    response = get_scripts(client, script_id)
 
     script_ids = []
     scripts_to_process = (
         [response] if script_id else response.get(SCRIPT_ENTITIES, [])
     )
-    human_readable += "Received script IDs: {received_ids}"
-    for script in scripts_to_process:
-        script_id = script.get("id", "")
-        script_ids.append(script_id)
-        # Padding blank lines inorder to format the outputs in a block.
-        human_readable += f"""
-        
-Script ID: {script_id}
-Script Name: {script.get('name, ''')}
-Description: {script.get('description', '')}
-Language: {script.get('language', '')}
-        
-        """
+
+    if not script_id and len(scripts_to_process) > 1:  # Multiple script to retrieve info for.
+        for script in scripts_to_process:
+            _script_id = script.get('id')
+            script = get_scripts(client, _script_id)
+            script_ids.append(_script_id)
+
     demisto.info(f"list_scripts_command received script ids: {str(script_ids)}")
     return CommandResults(
-        outputs_prefix="Resilient.Script",
-        outputs=response,
-        readable_output=human_readable.format(received_ids=str(script_ids)),
+        outputs_prefix="Resilient.Scripts",
+        outputs=scripts_to_process,  # Already processed and enriched with additional data.
+        readable_output=tableToMarkdown(f'{DEMISTO_PARAMS.get("org")} Scripts',
+                                        scripts_to_process,
+                                        headers=["id", "name", "description", "language"])
     )
 
 

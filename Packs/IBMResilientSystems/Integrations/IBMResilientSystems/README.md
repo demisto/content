@@ -924,6 +924,8 @@ Add an artifact to an incident.
 #### Human Readable Output
 
 >The artifact was added successfully to incident 1234
+
+
 ### rs-upload-incident-attachment
 
 ***
@@ -1001,10 +1003,12 @@ Deletes a specified list of tasks. Note that only custom tasks can be deleted.
 #### Context Output
 
 There is no context output for this command.
+
+
 ### rs-list-scripts
 
 ***
-Get list of available scripts.
+Retrieves the specified script's information or a list of all organization's scripts.
 
 #### Base Command
 
@@ -1021,6 +1025,78 @@ Get list of available scripts.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Resilient.Script | Dictionary | Retrieved script or list of scripts with metadata. | 
+
+
+#### Command Example
+```!rs-list-scripts script_id="1"```
+
+```json
+{
+    "Resilient": {
+        "Script": {
+            "actions": [],
+            "attachment": null,
+            "created": 1600000000000,
+            "creator": {
+                "cell": "",
+                "display_name": "example example",
+                "email": "example@example.com",
+                "fname": "example",
+                "id": 9,
+                "is_external": false,
+                "lname": "example",
+                "locked": false,
+                "password_changed": false,
+                "phone": "",
+                "status": "A",
+                "title": "",
+                "ui_theme": "darkmode"
+            },
+            "creator_principal": {
+                "display_name": "example example",
+                "id": 1,
+                "name": "example@example.com",
+                "type": "user"
+            },
+            "description": "example",
+            "hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "hits": [],
+            "id": 1,
+            "inc_id": 1234,
+            "inc_name": "example",
+            "inc_owner": 1,
+            "ip": {
+                "destination": null,
+                "source": null
+            },
+            "last_modified_by": {
+                "display_name": "example example",
+                "id": 1,
+                "name": "example@example.com",
+                "type": "user"
+            },
+            "last_modified_time": 1600000000000,
+            "parent_id": null,
+            "pending_sources": [],
+            "perms": {
+                "delete": true,
+                "read": true,
+                "write": true
+            },
+            "properties": null,
+            "relating": null,
+            "type": 1,
+            "value": "1.1.1.1"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+> |ID | Name                                       | Description | language |
+> - |--------------------------------------------|-------------|----------|
+> |1 | Sample script: process inbound email (v35) | This script processes inbound emails. Change the new incident owner value on line 8 before running. The script creates an incident from an email message, adds artifacts to the incident, based on information in the body of the message, and adds any email attachments to the incident. | python|
 
 ### rs-delete-incidents
 

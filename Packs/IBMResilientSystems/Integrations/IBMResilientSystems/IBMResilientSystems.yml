@@ -892,14 +892,14 @@ script:
       description: Whether the IP address is a destination.
       type: Boolean
 
-  - name: rs-list-script
-    description: Retrieve the specified script's information or a list of all organization's scripts.
+  - name: rs-list-scripts
+    description: Retrieves the specified script's information or a list of all organization's scripts.
     arguments:
     - name: script_id
       description: Internal ID/name of the script.
       required: false
     outputs:
-    - contextPath: Resilient.Script
+    - contextPath: Resilient.Scripts
       description: Retrieved script or list of scripts with metadata.
       type: Dictionary
 

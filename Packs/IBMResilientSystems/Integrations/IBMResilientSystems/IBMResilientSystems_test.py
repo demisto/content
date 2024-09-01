@@ -416,8 +416,7 @@ def test_get_incident_command(mocker, incident_id, expected_human_readable):
     client.org_id = 0
     mocker.patch('IBMResilientSystems.get_users', return_value=[])
     mocker.patch('IBMResilientSystems.get_phases', return_value={})
-
-    request = mocker.patch.object(Session, 'get', return_value=dict_to_response(
+    mocker.patch.object(Session, 'get', return_value=dict_to_response(
         load_test_data('./test_data/test_get_incident_response.json')))
 
     context_entry = get_incident_command(client, incident_id)
