@@ -448,7 +448,7 @@ def test_generate_sas_signature_no_key(mocker):
      - Ensure command raises an exception.
     """
     from AzureStorageContainer import generate_sas_token_command, Client
-    mocker.object.patch(demisto, "params", return_value={})
+    mocker.patch.object(demisto, "params", return_value={})
     client = Client(server_url=BASE_URL, verify=False, proxy=False,
                     account_sas_token=SAS_TOKEN,
                     storage_account_name=ACCOUNT_NAME, api_version=API_VERSION)
