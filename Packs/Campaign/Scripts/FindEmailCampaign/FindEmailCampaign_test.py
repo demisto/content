@@ -310,7 +310,7 @@ def test_return_non_content_entries(mocker):
     """
     Given: a content entry and non-content entries as a response to the executeCommand.
     When: Running the scipt (usually happens with debug-mode=true)
-    Then: assert the non context entries are returned.
+    Then: assert the non-content entries are returned.
     """
     import FindEmailCampaign
     mocker.patch.object(FindEmailCampaign.demisto, "args", return_value={})
