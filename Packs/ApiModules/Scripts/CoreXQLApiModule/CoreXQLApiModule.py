@@ -24,7 +24,6 @@ class CoreClient(BaseClient):
         super().__init__(base_url=base_url, headers=headers, proxy=proxy, verify=verify)
         self.timeout = timeout
         self.is_core = is_core
-        # For Xpanse tenants requiring direct use of the base client HTTP request instead of the _apiCall,
 
     def _http_request(self, method, url_suffix='', full_url=None, headers=None, json_data=None,
                       params=None, data=None, timeout=None, raise_on_status=False, ok_codes=None,
