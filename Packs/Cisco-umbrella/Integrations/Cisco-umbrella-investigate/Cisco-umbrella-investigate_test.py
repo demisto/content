@@ -1,248 +1,887 @@
+import json
+import os
+from http import HTTPStatus
+from urllib.parse import urljoin
 import pytest
-import requests
-
-import demistomock as demisto
+import CommonServerPython
 import importlib
-from CommonServerPython import DBotScoreReliability, Common
 
-Cisco_umbrella_investigate = importlib.import_module('Cisco-umbrella-investigate')
-
-
-ERROR_VERIFY_THRESHOLD_MESSAGE = 'Please provide valid threshold values for the Suspicious and Malicious thresholds when ' \
-                                 'Suspicious is greater than Malicious and both are within a range of -100 to 100'
+BASE_URL = "http://example.com"
+module = importlib.import_module("Cisco-umbrella-investigate")
 
 
-@pytest.mark.parametrize('suspicious, malicious, expected_mock_result', [
-    (0, -100, None),
-    (0, -200, ERROR_VERIFY_THRESHOLD_MESSAGE),
-    (200, -100, ERROR_VERIFY_THRESHOLD_MESSAGE),
-    (0, 50, ERROR_VERIFY_THRESHOLD_MESSAGE)
-])
-def test_verify_threshold_suspicious_and_malicious_parameters(suspicious, malicious, expected_mock_result, mocker):
+def load_mock_response(file_name: str) -> str:
     """
-        Given:
-            - The suspicious and malicious thresholds params
-        When:
-            - Running the integration
-        Then:
-            - Verify suspicious is bigger then malicious and both of them in range of -100 to 100
+    Load mock file that simulates an API response.
+    Args:
+        file_name (str): Name of the mock response JSON file to return.
+    Returns:
+        str: Mock file content.
     """
-    mock_result = mocker.patch('Cisco-umbrella-investigate.return_error')
-    Cisco_umbrella_investigate.verify_threshold_params(suspicious, malicious)
-
-    if not mock_result.call_args:
-        assert not expected_mock_result
-    else:
-        assert mock_result.call_args[0][0] == expected_mock_result
+    file_path = os.path.join("test_data", file_name)
+    with open(file_path, encoding="utf-8") as mock_file:
+        return json.loads(mock_file.read())
 
 
-def test_reliability_in_get_domain_security_command(mocker):
+@pytest.fixture(autouse=True)
+def mock_client() -> module.Client:
+    """Create a test client for DataBee.
+
+    Returns:
+        Client: Cisco Umbrella Investigate API Client.
     """
-        Given:
-            - The user reliability param
-        When:
-            - Running get_domain_security_command
-        Then:
-            - Verify reliability as excepted
+    return module.Client(
+        base_url=BASE_URL,
+        verify=False,
+        proxy=False,
+        api_key="test",
+        api_secret="test",
+        reliability=CommonServerPython.DBotScoreReliability.A,
+    )
+
+
+def test_get_domain_categorization_command(
+    requests_mock,
+    mock_client: module.Client,
+):
     """
-    params = {
-        'APIToken': '12345678',
-        'baseURL': 'https://test.com',
-        'integrationReliability': DBotScoreReliability.B
-    }
-
-    mocker.patch.object(demisto, 'params', return_value=params)
-    mocker.patch.object(demisto, 'args', return_value={'domain': 'test.com'})
-    mocker.patch.object(Cisco_umbrella_investigate, 'http_request')
-
-    results = Cisco_umbrella_investigate.get_domain_security_command()
-
-    assert results[0]['EntryContext']['DBotScore']['Reliability'] == 'B - Usually reliable'
-
-
-def test_get_domain_command_all_domains_are_valid(mocker):
+    Scenario: Get the status, security and content category IDs for domain.
+    Given:
+     - User has provided correct parameters.
+    When:
+     - umbrella-domain-categorization
+    Then:
+     - Ensure that output prefix correct.
+     - Ensure that output key field correct.
+     - Ensure that outputs fields correct.
+     - Ensure that outputs contains indicator.
     """
-        Given:
-            - list of domains
-        When:
-            - All of the domains can be found by whois
-        Then:
-            - returns results for all of the domains
-            - return successful metrics
+    json_response = load_mock_response("domain_categorization.json")
+    url = urljoin(
+        BASE_URL,
+        "investigate/v2/domains/categorization/test.com?showLabels",
+    )
+    requests_mock.get(url=url, json=json_response, status_code=HTTPStatus.OK)
+    result = module.get_domain_categorization_command(
+        mock_client,
+        {
+            "domain": "test.com",
+        },
+    )
+    assert result.outputs_prefix == "Domain"
+    assert result.outputs_key_field == "Name"
+    assert isinstance(result.outputs, dict)
+    assert {"Name", "SecurityCategories", "ContentCategories"}.issubset(result.outputs)
+    assert result.indicator
+
+
+def test_search_domain_command(
+    requests_mock,
+    mock_client: module.Client,
+):
     """
-    mocker.patch.object(demisto, 'args', return_value={'domain': ["good1.com", "good2.com", "good3.com"]})
-    mocker.patch.object(Cisco_umbrella_investigate, 'get_whois_for_domain', return_value={})
-    domains_info = {
-        "good1.com": {"key": "val"},
-        "good2.com": {"key": "val"},
-        "good3.com": {"key": "val"}
-    }
-    mocker.patch.object(Cisco_umbrella_investigate, 'http_request', return_value=domains_info)
-    mocker.patch.object(demisto, 'demistoVersion', return_value={
-        'version': '6.8.0',
-        'buildNumber': '12345'
-    })
-
-    results = Cisco_umbrella_investigate.get_domain_command()
-    assert len(results) == 4
-    metrics = results[3].execution_metrics
-    assert metrics == [{'Type': 'Successful', 'APICallsCount': 3}]
-
-
-def test_get_domain_command_no_valid_domains(mocker):
+    Scenario: Search for newly seen domains that match a regular expression pattern.
+    Given:
+     - User has provided correct parameters.
+    When:
+     - umbrella-domain-search
+    Then:
+     - Ensure that output prefix correct.
+     - Ensure that output key field correct.
+     - Ensure that outputs fields correct.
+     - Ensure that outputs contains indicator.
     """
-        Given:
-            - list of domains
-        When:
-            - All of the domains cannot be found by whois
-        Then:
-            - return an empty list
-            - return general error metrics
+    requests_mock.get(
+        url=urljoin(
+            BASE_URL,
+            "investigate/v2/search/exa%5Ba-z%5Dple.com?start=1711450998000"
+            + "&stop=1711450998000&includeCategory=False&limit=50",
+        ),
+        json=load_mock_response("search_domain.json"),
+    )
+    result = module.search_domain_command(
+        mock_client,
+        {
+            "regex": "exa[a-z]ple.com",
+            "start": "2024-03-26T11:03:18Z",
+            "stop": "2024-03-26T11:03:18Z",
+            "include_category": "false",
+            "page": "0",
+            "limit": "50",
+        },
+    )
+    assert result.outputs_prefix == "Domain"
+    assert result.outputs_key_field == "Name"
+    assert isinstance(result.outputs, list)
+    assert len(result.outputs) == 1
+    assert {"Name", "FirstSeen", "FirstSeenISO", "SecurityCategories"}.issubset(result.outputs[0])
+
+
+def test_list_domain_co_occurens_command(
+    requests_mock,
+    mock_client: module.Client,
+):
     """
-    error = requests.HTTPError()
-    error.response = requests.Response()
-    error.response.status_code = 404
-    mocker.patch.object(demisto, 'args', return_value={'domain': ["bad1.com", "bad2.com"]})
-    mocker.patch.object(Cisco_umbrella_investigate, 'get_whois_for_domain', side_effect=error)
-    mocker.patch.object(demisto, 'demistoVersion', return_value={
-        'version': '6.8.0',
-        'buildNumber': '12345'
-    })
+    Scenario: List the co-occurences for the specified domain.
 
-    results = Cisco_umbrella_investigate.get_domain_command()
-    assert len(results) == 3
-    metrics = results[2].execution_metrics
-    assert metrics == [{'Type': 'GeneralError', 'APICallsCount': 2}]
-
-
-def test_get_domain_command_quota_error(mocker):
+    Given:
+     - User has provided correct parameters.
+    When:
+     - umbrella-domain-co-occurrences
+    Then:
+     - Ensure that output prefix correct.
+     - Ensure that output key field correct.
+     - Ensure that outputs fields correct.
     """
-        Given:
-            - list of domains
-        When:
-            - Quota limit reached
-        Then:
-            - return an empty list
-            - return quota error metrics
+    json_response = load_mock_response("domain_co_occurence.json")
+    url = urljoin(
+        BASE_URL,
+        "investigate/v2/recommendations/name/test.com.json",
+    )
+    requests_mock.get(url=url, json=json_response, status_code=HTTPStatus.OK)
+    result = module.list_domain_co_occurences_command(
+        mock_client,
+        {
+            "domain": "test.com",
+        },
+    )
+    assert result.outputs_prefix == "Domain"
+    assert result.outputs_key_field == "Name"
+    assert isinstance(result.outputs, dict)
+    assert "CoOccurrences" in result.outputs
+    assert isinstance(result.outputs["CoOccurrences"], list)
+    assert len(result.outputs["CoOccurrences"]) == 2
+    assert ["Name", "Score"] == list(result.outputs["CoOccurrences"][0])
+
+
+def test_list_related_domain_command(
+    requests_mock,
+    mock_client: module.Client,
+):
     """
-    error = requests.HTTPError()
-    error.response = requests.Response()
-    error.response.status_code = 429
-    mocker.patch.object(demisto, 'args', return_value={'domain': ["quota.com", "quota.com"]})
-    mocker.patch.object(Cisco_umbrella_investigate, 'get_whois_for_domain', side_effect=error)
-    mocker.patch.object(demisto, 'demistoVersion', return_value={
-        'version': '6.8.0',
-        'buildNumber': '12345'
-    })
-
-    results = Cisco_umbrella_investigate.get_domain_command()
-    assert len(results) == 3
-    metrics = results[2].execution_metrics
-    assert metrics == [{'Type': 'QuotaError', 'APICallsCount': 2}]
-
-
-def test_get_domain_command_some_valid_domains(mocker):
+    Scenario: List domain names that are frequently requested around the same time.
+    Given:
+     - User has provided correct parameters.
+    When:
+     - umbrella-domain-related
+    Then:
+     - Ensure that output prefix correct.
+     - Ensure that output key field correct.
+     - Ensure that outputs fields correct.
     """
-        Given:
-            - list of domains
-        When:
-            - Some of the domains can be found by whois
-        Then:
-            - returns results for all of the domains that can be found
+    json_response = load_mock_response("domain_related_domains.json")
+    url = urljoin(
+        BASE_URL,
+        "investigate/v2/links/name/test.com",
+    )
+    requests_mock.get(url=url, json=json_response, status_code=HTTPStatus.OK)
+    result = module.list_related_domain_command(
+        mock_client,
+        {
+            "domain": "test.com",
+        },
+    )
+    assert result.outputs_prefix == "Domain"
+    assert result.outputs_key_field == "Name"
+    assert isinstance(result.outputs, dict)
+    assert "Related" in result.outputs
+    assert isinstance(result.outputs["Related"], list)
+    assert len(result.outputs["Related"]) == 2
+    assert ["Name", "Score"] == list(result.outputs["Related"][0])
+
+
+def test_get_domain_security_score_command(
+    requests_mock,
+    mock_client: module.Client,
+):
     """
-    mocker.patch.object(demisto, 'args', return_value={'domain': ["good.com", "bad.com"]})
-    mocker.patch.object(Cisco_umbrella_investigate, 'get_whois_for_domain', side_effect=different_inputs_handling)
-    mocker.patch.object(Cisco_umbrella_investigate, 'http_request', return_value={"good.com": {"key": "val"}})
-    mocker.patch.object(demisto, 'demistoVersion', return_value={
-        'version': '6.8.0',
-        'buildNumber': '12345'
-    })
-
-    results = Cisco_umbrella_investigate.get_domain_command()
-    assert len(results) == 3
-    metrics = results[2].execution_metrics
-    assert metrics == [{'Type': 'Successful', 'APICallsCount': 1}, {'Type': 'GeneralError', 'APICallsCount': 1}]
-
-
-def test_get_whois_command_for_domain(mocker):
+    Scenario: Get multiple scores or security features for a domain.
+    Given:
+     - User has provided correct parameters.
+    When:
+     - umbrella-domain-security
+    Then:
+     - Ensure that output prefix correct.
+     - Ensure that output key field correct.
+     - Ensure that outputs fields correct.
     """
-        Given:
-            - list of domains
-        When:
-            - Some of the domains can be found by whois
-        Then:
-            - returns results for all of the domains that can be found
-            - returns metrics command results
+    requests_mock.get(
+        url=urljoin(
+            BASE_URL,
+            "investigate/v2/security/name/test.com",
+        ),
+        json=load_mock_response("domain_security.json"),
+    )
+    result = module.get_domain_security_score_command(
+        mock_client,
+        {
+            "domain": "test.com",
+        },
+    )
+    assert result.outputs_prefix == "Domain"
+    assert result.outputs_key_field == "Name"
+    assert isinstance(result.outputs, dict)
+    assert {
+        "Name",
+        "Security",
+        "tld_geodiversity",
+        "GeodiversityNormalized",
+        "Geodiversity",
+    }.issubset(result.outputs)
+    assert isinstance(result.outputs["Security"], dict)
+    assert {
+        "DGA",
+        "Perplexity",
+        "Entropy",
+        "SecureRank",
+        "PageRank",
+        "ASNScore",
+        "PrefixScore",
+        "RipScore",
+        "Popularity",
+        "GeoScore",
+        "KolmoorovSmirnov",
+        "AttackName",
+        "ThreatType",
+    }.issubset(result.outputs["Security"])
+
+
+def test_get_domain_risk_score_command(
+    requests_mock,
+    mock_client: module.Client,
+):
     """
-    mocker.patch.object(demisto, 'args', return_value={'domain': "good.com"})
-    domains_info = {
-        "good1.com": {"key": "val"},
-        "domainName": "good1.com"
-    }
-    mocker.patch.object(Cisco_umbrella_investigate, 'http_request', return_value=domains_info)
-    mocker.patch.object(demisto, 'demistoVersion', return_value={
-        'version': '6.8.0',
-        'buildNumber': '12345'
-    })
-    results_whois_command = Cisco_umbrella_investigate.get_whois_for_domain_command()
-    assert len(results_whois_command) == 2
-    metrics = results_whois_command[1].execution_metrics
-    assert metrics == [{'Type': 'Successful', 'APICallsCount': 1}]
-
-
-def test_get_domain_command_non_404_request_exception(mocker):
+    Scenario: Get the domain risk score.
+    Given:
+     - User has provided correct parameters.
+    When:
+     - umbrella-get-domain-risk-score
+    Then:
+     - Ensure that output prefix correct.
+     - Ensure that output key field correct.
+     - Ensure that outputs fields.
+     - Ensure that outputs contains indicator.
     """
-        Given:
-            - list of domains
-        When:
-            - A non 404 http error is returned
-        Then:
-            - raise error
+    requests_mock.get(
+        url=urljoin(
+            BASE_URL,
+            "investigate/v2/domains/risk-score/test.com",
+        ),
+        json=load_mock_response("domain_risk_score.json"),
+    )
+    result = module.get_domain_risk_score_command(
+        mock_client,
+        {
+            "domain": "test.com",
+        },
+    )
+    assert result.outputs_prefix == "Umbrella.Domain"
+    assert result.outputs_key_field == "name"
+    assert isinstance(result.outputs, dict)
+    assert "Indicator" in result.outputs
+    assert {
+        "name",
+        "risk_score",
+        "Indicator",
+    }.issubset(result.outputs)
+    assert isinstance(result.outputs["Indicator"], list)
+    assert len(result.outputs["Indicator"]) == 1
+    assert {
+        "score",
+        "normalized_score",
+        "indicator_id",
+        "indicator",
+    }.issubset(result.outputs["Indicator"][0])
+    assert result.indicator
+
+
+def test_list_resource_record_command(
+    requests_mock,
+    mock_client: module.Client,
+):
     """
-    with pytest.raises(SystemExit):
-        error = requests.HTTPError()
-        error.response = requests.Response()
-        error.response.status_code = 403
-        mocker.patch.object(demisto, 'args', return_value={'domain': ["bad1.com", "bad2.com"]})
-        mocker.patch.object(Cisco_umbrella_investigate, 'get_whois_for_domain', side_effect=error)
-        Cisco_umbrella_investigate.get_domain_command()
+    List the Resource Record (RR) data for DNS responses.
+    Given:
+     - User has provided correct parameters.
+    When:
+     - umbrella-list-resource-record
+    Then:
+     - Ensure that output prefix correct.
+     - Ensure that output key field correct.
+     - Ensure that outputs fields correct.
+    """
+    requests_mock.get(
+        url=urljoin(
+            BASE_URL,
+            "investigate/v2/pdns/Domain/test.com?sortorder=desc&includefeatures=False&limit=50&offset=0",
+        ),
+        json=load_mock_response("resource_records.json"),
+    )
+    result = module.list_resource_record_command(
+        mock_client,
+        {
+            "value": "test.com",
+            "limit": "50",
+            "page": "0",
+            "type": "Domain",
+            "sort_order": "desc",
+        },
+    )
+    assert result.outputs_prefix == "Umbrella.ResourceRecord"
+    assert result.outputs_key_field == "rr"
+    assert isinstance(result.outputs, list)
+    assert {
+        "value",
+        "last_seen_iso",
+        "first_seen_iso",
+        "content_categories",
+        "security_categories",
+        "type",
+        "name",
+        "rr",
+        "last_seen",
+        "first_seen",
+        "max_ttl",
+        "min_ttl",
+    }.issubset(result.outputs[0])
 
 
-def different_inputs_handling(*args):
-    if args[0] == "good.com":
-        return {}
-    if args[0] == "bad.com":
-        error = requests.HTTPError()
-        error.response = requests.Response()
-        error.response.status_code = 404
-        raise error
-    return None
+def test_list_sub_domain_command(
+    requests_mock,
+    mock_client: module.Client,
+):
+    """
+    Scenario: List sub-domains of a given domain.
+    Given:
+     - User has provided correct parameters.
+    When:
+     - umbrella-list-domain-subdomian
+    Then:
+     - Ensure that output prefix correct.
+     - Ensure that output key field correct.
+     - Ensure that outputs fields correct.
+    """
+    requests_mock.get(
+        url=urljoin(
+            BASE_URL,
+            "investigate/v2/subdomains/test.com?limit=50",
+        ),
+        json=load_mock_response("domain_sub_domain.json"),
+    )
+    result = module.list_sub_domain_command(
+        mock_client,
+        {"domain": "test.com", "all_results": "false", "limit": "50"},
+    )
+    assert result.outputs_prefix == "Umbrella.Domain"
+    assert result.outputs_key_field == "name"
+    assert isinstance(result.outputs, dict)
+    assert {
+        "name",
+        "SubDomain",
+    }.issubset(result.outputs)
+    assert isinstance(result.outputs["SubDomain"], list)
+    assert len(result.outputs["SubDomain"]) == 2
+    assert {
+        "name",
+        "first_seen",
+        "security_categories",
+    }.issubset(result.outputs["SubDomain"][0])
 
 
-@pytest.mark.parametrize(("status", "securerank2", "expected_score"), (
-    pytest.param(0, None, Common.DBotScore.NONE, id="status 0"),
-    pytest.param(-1, None, Common.DBotScore.BAD, id="status -1"),
-    pytest.param(1, None, Common.DBotScore.GOOD, id="status 1"),
-    pytest.param(None, None, Common.DBotScore.NONE, id="status None, rank None"),
-    pytest.param(0, Cisco_umbrella_investigate.SUSPICIOUS_THRESHOLD + 1, Common.DBotScore.GOOD, id="above suspicious threshold"),
-    pytest.param(1, Cisco_umbrella_investigate.SUSPICIOUS_THRESHOLD + 1,
-                 Common.DBotScore.GOOD, id="status (1) is stronger than threshold"),
-    pytest.param(-1, Cisco_umbrella_investigate.SUSPICIOUS_THRESHOLD + 1,
-                 Common.DBotScore.BAD, id="status (-1) is stronger than threshold"),
-    pytest.param(0, Cisco_umbrella_investigate.SUSPICIOUS_THRESHOLD, Common.DBotScore.GOOD, id="equal to suspicious threshold"),
-    pytest.param(0, Cisco_umbrella_investigate.SUSPICIOUS_THRESHOLD - 1,
-                 Common.DBotScore.SUSPICIOUS, id="below suspicious to threshold"),
-    pytest.param(0, Cisco_umbrella_investigate.MALICIOUS_THRESHOLD + 1,
-                 Common.DBotScore.SUSPICIOUS, id="above malicious threshold"),
-    pytest.param(0, Cisco_umbrella_investigate.MALICIOUS_THRESHOLD,
-                 Common.DBotScore.SUSPICIOUS, id="equal to malicious threshold"),
-    pytest.param(0, Cisco_umbrella_investigate.MALICIOUS_THRESHOLD - 1, Common.DBotScore.BAD, id="below malicious threshold"),
-))
-def test_calculate_domain_dbot_score(status: int | None, securerank2: int | None, expected_score: int):
-    assert Cisco_umbrella_investigate.calculate_domain_dbot_score(status, securerank2) == expected_score
+def test_get_ip_bgp_command(
+    requests_mock,
+    mock_client: module.Client,
+):
+    """
+    Scenario: Get data about ASN and IP relationships,
+    showing how IP addresses are related to each other and to the regional registries.
+    Given:
+     - User has provided correct parameters.
+    When:
+     - umbrella-get-ip-bgp
+    Then:
+     - Ensure that output prefix correct.
+     - Ensure that output key field correct.
+     - Ensure that outputs fields correct.
+    """
+    requests_mock.get(
+        url=urljoin(
+            BASE_URL,
+            "investigate/v2/bgp_routes/ip/8.8.8.8/as_for_ip.json",
+        ),
+        json=load_mock_response("ip_bgp.json"),
+    )
+    result = module.get_ip_bgp_command(
+        mock_client,
+        {
+            "ip": "8.8.8.8",
+        },
+    )
+    assert result.outputs_prefix == "Umbrella.BGPInformation"
+    assert result.outputs_key_field == "cidr"
+    assert isinstance(result.outputs, list)
+    assert {
+        "ip",
+        "creation_date",
+        "ir",
+        "description",
+        "asn",
+        "cidr",
+    }.issubset(result.outputs[0])
 
 
-@pytest.mark.parametrize("status", (("", "3", "none", "na", "NA", "🥲")))
-def test_calculate_domain_dbot_score_unexpected_status(status: str):
-    with pytest.raises(ValueError, match=f"unexpected {status=}, expected 0,1 or -1"):
-        Cisco_umbrella_investigate.calculate_domain_dbot_score(status, 0)
+def test_get_asn_bgp_command(
+    requests_mock,
+    mock_client: module.Client,
+):
+    """
+    Scenario: Get BGP Route Information for ASN.
+    Given:
+     - User has provided correct parameters.
+    When:
+     - umbrella-get-asn-bgp
+    Then:
+     - Ensure that output prefix correct.
+     - Ensure that output key field correct.
+     - Ensure that outputs fields correct.
+    """
+    requests_mock.get(
+        url=urljoin(
+            BASE_URL,
+            "investigate/v2/bgp_routes/asn/1234/prefixes_for_asn.json",
+        ),
+        json=load_mock_response("asn_bgp.json"),
+    )
+    result = module.get_asn_bgp_command(
+        mock_client,
+        {
+            "asn": "1234",
+        },
+    )
+    assert result.outputs_prefix == "Umbrella.BGPInformation"
+    assert result.outputs_key_field == "cidr"
+    assert isinstance(result.outputs, list)
+    assert {
+        "asn",
+        "Geo",
+        "cidr",
+    }.issubset(result.outputs[0])
+
+
+def test_get_top_seen_domain_command(
+    requests_mock,
+    mock_client: module.Client,
+):
+    """
+    Scenario: List the most seen domains in Umbrella.
+    Given:
+     - User has provided correct parameters.
+    When:
+     - umbrella-get-top-most-seen-domain
+    Then:
+     - Ensure that output prefix correct.
+     - Ensure that output key field correct.
+     - Ensure that outputs fields correct.
+    """
+    requests_mock.get(
+        url=urljoin(
+            BASE_URL,
+            "investigate/v2/topmillion?limit=50",
+        ),
+        json=load_mock_response("top_domain.json"),
+    )
+    result = module.get_top_seen_domain_command(
+        mock_client,
+        {"all_results": "false", "limit": "50"},
+    )
+    assert result.outputs_prefix == "Umbrella.MostSeenDomain"
+    assert result.outputs_key_field == "domain"
+    assert isinstance(result.outputs, list)
+    assert len(result.outputs) == 4
+
+
+def test_get_domain_volume_command(
+    requests_mock,
+    mock_client: module.Client,
+):
+    """
+    Scenario: List the query volume for a domain over the last 30 days.
+    Given:
+     - User has provided correct parameters.
+    When:
+     - umbrella-list-domain-volume
+    Then:
+     - Ensure that output prefix correct.
+     - Ensure that output key field correct.
+     - Ensure that outputs fields correct.
+    """
+    json_response = load_mock_response("domain_volume.json")
+    url = urljoin(
+        BASE_URL,
+        "investigate/v2/domains/volume/test.com?start=1711450998000&stop=1711450998000",
+    )
+    requests_mock.get(url=url, json=json_response, status_code=HTTPStatus.OK)
+    result = module.get_domain_volume_command(
+        mock_client,
+        {"domain": "test.com", "start": "2024-03-26T11:03:18Z", "stop": "2024-03-26T11:03:18Z", "all_results": "true"},
+    )
+    assert result.outputs_prefix == "Umbrella.QueryVolume"
+    assert result.outputs_key_field == "name"
+    assert isinstance(result.outputs, dict)
+    assert {
+        "name",
+        "Domain",
+        "Data",
+        "QueriesInfo",
+    }.issubset(result.outputs)
+    assert {
+        "StartDate",
+        "StopDate",
+    }.issubset(result.outputs["Data"])
+    assert isinstance(result.outputs["QueriesInfo"], list)
+    assert len(result.outputs["QueriesInfo"]) == 4
+    assert {
+        "QueryHour",
+        "Queries",
+    }.issubset(result.outputs["QueriesInfo"][0])
+
+
+def test_list_timeline(
+    requests_mock,
+    mock_client: module.Client,
+):
+    """
+    Scenario: List the historical tagging timeline for a given IP, domain, or URL.
+    Given:
+     - User has provided correct parameters.
+    When:
+     - umbrella-list-timeline
+    Then:
+     - Ensure that output prefix correct.
+     - Ensure that output key field correct.
+     - Ensure that outputs fields correct.
+    """
+    requests_mock.get(
+        url=urljoin(
+            BASE_URL,
+            "investigate/v2/timeline/test.com",
+        ),
+        json=load_mock_response("list_timeline.json"),
+    )
+    result = module.list_timeline_command(
+        mock_client,
+        {
+            "domain": "test.com",
+            "all_results": "false",
+            "limit": "50",
+        },
+        "Domain"
+    )
+    assert result.outputs_prefix == "Umbrella.Timeline"
+    assert result.outputs_key_field == "Domain"
+    assert isinstance(result.outputs, dict)
+    assert {
+        "Domain",
+        "Data",
+    }.issubset(result.outputs)
+    assert isinstance(result.outputs["Data"], list)
+    assert len(result.outputs["Data"]) == 2
+    assert {
+        "MalwareCategories",
+        "Attacks",
+        "ThreatTypes",
+        "Timestamp",
+    }.issubset(result.outputs["Data"][0])
+
+
+def test_get_domain_who_is_command(
+    requests_mock,
+    mock_client: module.Client,
+):
+    """
+    Scenario: Get the WHOIS information for the specified domains.
+    Given:
+     - User has provided correct parameters.
+    When:
+     - umbrella-get-whois-for-domain
+    Then:
+     - Ensure that output prefix correct.
+     - Ensure that output key field correct.
+     - Ensure that outputs fields correct.
+    """
+    requests_mock.get(
+        url=urljoin(
+            BASE_URL,
+            "investigate/v2/security/name/test.com",
+        ),
+        json=load_mock_response("domain_security.json"),
+    )
+    requests_mock.get(
+        url=urljoin(
+            BASE_URL,
+            "investigate/v2/whois/test.com",
+        ),
+        json=load_mock_response("domain_whois.json"),
+    )
+    result = module.get_domain_who_is_command(
+        mock_client,
+        {
+            "domain": "test.com",
+            "all_results": "false",
+            "limit": "50",
+        },
+    )
+    assert result.outputs_prefix == "Umbrella.WHOIS"
+    assert result.outputs_key_field == "name"
+    assert result.indicator
+    assert isinstance(result.outputs, dict)
+    assert {
+        "name",
+        "Domain",
+        "Data",
+    }.issubset(result.outputs)
+    assert {
+        "RegistrarName",
+        "LastRetrieved",
+        "Created",
+        "Updated",
+        "Expires",
+        "IANAID",
+        "Emails",
+        "Nameservers",
+        "LastObserved",
+    }.issubset(result.outputs["Data"])
+
+
+def test_get_domain_who_is_history_command(
+    requests_mock,
+    mock_client: module.Client,
+):
+    """
+    Scenario: Get a WHOIS response record for a single domain with available historical WHOIS data.
+    Given:
+     - User has provided correct parameters.
+    When:
+     - umbrella-get-domain-whois-history
+    Then:
+     - Ensure that output prefix correct.
+     - Ensure that output key field correct.
+     - Ensure that outputs fields correct.
+    """
+    json_response = load_mock_response("whois_history.json")
+    url = urljoin(
+        BASE_URL,
+        "investigate/v2/whois/test.com/history?limit=50",
+    )
+    requests_mock.get(url=url, json=json_response, status_code=HTTPStatus.OK)
+    result = module.get_domain_who_is_history_command(
+        mock_client,
+        {
+            "domain": "test.com",
+            "all_results": "false",
+            "limit": "50",
+        },
+    )
+    assert result.outputs_prefix == "Umbrella.WHOIS"
+    assert result.outputs_key_field == "name"
+
+
+def test_get_nameserver_who_is_command(
+    requests_mock,
+    mock_client: module.Client,
+):
+    """
+    Scenario: Get WHOIS information for the nameserver.
+    Given:
+     - User has provided correct parameters.
+    When:
+     - umbrella-get-nameserver-whois
+    Then:
+     - Ensure that output prefix correct.
+     - Ensure that output key field correct.
+     - Ensure that outputs fields correct.
+    """
+    json_response = load_mock_response("nameserver_whois.json")
+    url = urljoin(
+        BASE_URL,
+        "investigate/v2/whois/nameservers/test.com?limit=50&offset=0",
+    )
+    requests_mock.get(url=url, json=json_response, status_code=HTTPStatus.OK)
+    result = module.get_nameserver_who_is_command(
+        mock_client,
+        {"nameserver": "test.com", "page": "0", "limit": "50"},
+    )
+    assert result.outputs_prefix == "Umbrella.WHOIS.Nameserver"
+    assert result.outputs_key_field == "name"
+    assert isinstance(result.outputs, list)
+    assert len(result.outputs) == 1
+    assert {
+        "name",
+        "Domain",
+    }.issubset(result.outputs[0])
+
+
+def test_get_email_who_is_command(
+    requests_mock,
+    mock_client: module.Client,
+):
+    """
+    Scenario: Get WHOIS information for the email address.
+    Given:
+     - User has provided correct parameters.
+    When:
+     - umbrella-get-email-whois
+    Then:
+     - Ensure that output prefix correct.
+     - Ensure that output key field correct.
+     - Ensure that outputs fields correct.
+    """
+    json_response = load_mock_response("email_whois.json")
+    url = urljoin(
+        BASE_URL,
+        "investigate/v2/whois/emails/test@test.com?limit=50&offset=0",
+    )
+    requests_mock.get(url=url, json=json_response, status_code=HTTPStatus.OK)
+    result = module.get_email_who_is_command(
+        mock_client,
+        {
+            "email": "test@test.com",
+            "page": "0",
+            "limit": "50",
+        },
+    )
+    assert result.outputs_prefix == "Umbrella.WHOIS.Email"
+    assert result.outputs_key_field == "name"
+    assert isinstance(result.outputs, dict)
+    assert {
+        "name",
+        "Domain",
+    }.issubset(result.outputs)
+
+
+def test_get_regex_who_is_command(
+    requests_mock,
+    mock_client: module.Client,
+):
+    """
+    Scenario: Performs a regular expression (RegEx) search on the WHOIS data
+    (domain, nameserver, and email fields) that was updated or created in the specified time range.
+    Given:
+     - User has provided correct parameters.
+    When:
+     - umbrella-get-regex-whois
+    Then:
+     - Ensure that output prefix correct.
+     - Ensure that output key field correct.
+     - Ensure that outputs fields correct.
+    """
+    json_response = load_mock_response("regex_whois.json")
+    url = urljoin(
+        BASE_URL,
+        "investigate/v2/whois/search/Domain/exa%5Ba-z%5Dple.com"
+        + "?start=1711450998000&stop=1711450998000&limit=50&offset=0",
+    )
+    requests_mock.get(url=url, json=json_response, status_code=HTTPStatus.OK)
+    result = module.get_regex_who_is_command(
+        mock_client,
+        {
+            "regex": "exa[a-z]ple.com",
+            "search_field": "Domain",
+            "start": "2024-03-26T11:03:18Z",
+            "stop": "2024-03-26T11:03:18Z",
+            "page": "0",
+            "limit": "50",
+        },
+    )
+    assert result.outputs_prefix == "Umbrella.WHOIS.Regex"
+    assert result.outputs_key_field == "domain_name"
+
+
+def test_domain_command(
+    requests_mock,
+    mock_client: module.Client,
+):
+    """
+    Scenario: Get the WHOIS information for the specified domains.
+    You can search by multiple email addresses or multiple nameservers.
+    Given:
+     - User has provided correct parameters.
+    When:
+     - domain
+    Then:
+     - Ensure that output prefix correct.
+     - Ensure that output key field correct.
+     - Ensure that outputs fields correct.
+    """
+    requests_mock.get(
+        url=urljoin(
+            BASE_URL,
+            "investigate/v2/whois/test.com",
+        ),
+        json=load_mock_response("domain_whois.json"),
+    )
+    requests_mock.get(
+        url=urljoin(
+            BASE_URL,
+            "investigate/v2/domains/risk-score/test.com",
+        ),
+        json=load_mock_response("domain_risk_score.json"),
+    )
+    requests_mock.get(
+        url=urljoin(
+            BASE_URL,
+            "investigate/v2/domains/categorization/test.com",
+        ),
+        json=load_mock_response("domain_categorization.json"),
+    )
+    requests_mock.get(
+        url=urljoin(
+            BASE_URL,
+            "investigate/v2/security/name/test.com",
+        ),
+        json=load_mock_response("domain_security.json"),
+    )
+    result = module.domain_command(
+        mock_client,
+        {
+            "domain": "test.com",
+        },
+    )
+    assert isinstance(result, list)
+    assert len(result) == 1
+    assert result[0].outputs_prefix == "Domain"
+    assert result[0].outputs_key_field == "Name"
+
+
+@pytest.mark.parametrize(
+    ("status", "securerank", "risk_score", "expected_result"),
+    (
+        (1, None, None, CommonServerPython.Common.DBotScore.GOOD),
+        (-1, None, None, CommonServerPython.Common.DBotScore.BAD),
+        (0, None, None, CommonServerPython.Common.DBotScore.NONE),
+        (None, -1, None, CommonServerPython.Common.DBotScore.SUSPICIOUS),
+        (None, 7, None, CommonServerPython.Common.DBotScore.GOOD),
+        (None, -7, None, CommonServerPython.Common.DBotScore.SUSPICIOUS),
+        (None, -100, 0, CommonServerPython.Common.DBotScore.BAD),
+        (None, None, 1, CommonServerPython.Common.DBotScore.GOOD),
+        (None, None, 51, CommonServerPython.Common.DBotScore.SUSPICIOUS),
+        (None, None, 97, CommonServerPython.Common.DBotScore.BAD),
+    ),
+)
+def test_calculate_domain_dbot_score(status, securerank, risk_score, expected_result):
+    """
+    Scenario: Get the WHOIS information for the specified domains.
+    You can search by multiple email addresses or multiple nameservers.
+    Given:
+     - User has provided correct parameters.
+    When:
+     - domain
+    Then:
+     - Ensure that output prefix correct.
+     - Ensure that output key field correct.
+     - Ensure that outputs fields correct.
+    """
+    result = module.calculate_domain_dbot_score(
+        status=status, secure_rank=securerank, risk_score=risk_score
+    )
+    assert result == expected_result

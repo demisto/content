@@ -86,6 +86,7 @@ ENRICHMENT_TYPE_TO_ENRICHMENT_STATUS = {
     IDENTITY_ENRICHMENT: 'successful_identity_enrichment'
 }
 COMMENT_MIRRORED_FROM_XSOAR = 'Mirrored from Cortex XSOAR'
+USER_RELATED_FIELDS = ['user', 'src_user']
 
 # =========== Not Missing Events Mechanism Globals ===========
 CUSTOM_ID = 'custom_id'
@@ -950,6 +951,19 @@ def get_notable_field_and_value(raw_field, notable_data, raw=None):
     return "", ""
 
 
+def remove_double_quotes(query: str) -> str:
+    """
+        query (str): query with double double quotes.
+
+        Return: query with no double double quotes. Example: "this is a ""test""\" -> "this is a "test""
+    """
+    # Regular expression to match two consecutive quotation marks with any character(s) in between
+    pattern = re.compile(r'""(.*?)""')
+
+    # Substitute the pattern with single quotes around the matched content
+    return pattern.sub(r'"\1"', query)
+
+
 def build_drilldown_search(notable_data, search, raw_dict, is_query_name=False):
     """ Replaces all needed fields in a drilldown search query, or a search query name
     Args:
@@ -972,14 +986,31 @@ def build_drilldown_search(notable_data, search, raw_dict, is_query_name=False):
             if not is_query_name:
                 demisto.error(f'Failed building drilldown search query. Field {raw_field} was not found in the notable.')
             return ""
+
         if prefix:
-            replacement = get_fields_query_part(notable_data, prefix, [field], raw_dict)
+            if field in USER_RELATED_FIELDS:
+                replacement = get_fields_query_part(notable_data, prefix, [field], raw_dict, add_backslash=True)
+            else:
+                replacement = get_fields_query_part(notable_data, prefix, [field], raw_dict)
+
+        elif field in USER_RELATED_FIELDS:
+            # User fields usually contains backslashes - to pass a literal backslash in an argument to Splunk we must escape
+            # the backslash by using the double-slash ( \\ ) string
+            replacement = replacement.replace('\\', '\\\\')
+            replacement = f""""{replacement.strip('"')}\""""
+
         end = match.start()
         searchable_search.extend((search[start:end], str(replacement)))
         start = match.end()
     searchable_search.append(search[start:])  # Handling the tail of the query
 
-    return ''.join(searchable_search)
+    parsed_query = ''.join(searchable_search)
+
+    # Avoiding double quotes in splunk variables that were surrounded by quotation marks in the original query (ex: '"$user|s"')
+    parsed_query = remove_double_quotes(parsed_query)
+    demisto.debug(f"Parsed query is: {parsed_query}")
+
+    return parsed_query
 
 
 def get_drilldown_timeframe(notable_data, raw) -> tuple[str, str]:
@@ -1019,20 +1050,51 @@ def parse_drilldown_searches(drilldown_searches: list) -> list[dict]:
         drilldown_searches (list): The list of the drilldown searches.
 
     Returns:
-        list[str]: A list of the drilldown searches dictionaries.
+        list[dict]: A list of the drilldown searches dictionaries.
     """
     demisto.debug("There are multiple drilldown searches to enrich, parsing each drilldown search object")
     searches = []
 
     for drilldown_search in drilldown_searches:
         try:
+            # drilldown_search may be a json list/dict represented as string
             search = json.loads(drilldown_search)
-            searches.append(search)
+            if isinstance(search, list):
+                searches.extend(search)
+            else:
+                searches.append(search)
         except json.JSONDecodeError as e:
             demisto.error(f"Caught an exception while parsing a drilldown search object."
                           f"Drilldown search is: {drilldown_search}, Original Error is: {str(e)}")
 
     return searches
+
+
+def get_drilldown_searches(notable_data):
+    """ Extract the drilldown_searches from the notable_data.
+    It can be a list of objects, a single object or a simple string that contains the query.
+
+    Args:
+        notable_data (dict): The notable data
+
+    Returns: A list that contains dict/s of the drilldown data like: name, search etc or the simple search query.
+    """
+    # Multiple drilldown searches is a feature added to Enterprise Security v7.2.0.
+    # from this version, if a user set a drilldown search, we get a list of drilldown search objects (under
+    # the 'drilldown_searches' key) and submit a splunk enrichment for each one of them.
+    # To maintain backwards compatibility we keep using the 'drilldown_search' key as well.
+
+    if drilldown_search := notable_data.get("drilldown_search"):
+        # The drilldown_searches are in 'old' format a simple string query.
+        return [drilldown_search]
+    if drilldown_search := notable_data.get("drilldown_searches", []):
+        if isinstance(drilldown_search, list):
+            # The drilldown_searches are a list of searches data stored as json strings:
+            return parse_drilldown_searches(drilldown_search)
+        else:
+            # The drilldown_searches are a dict/list of the search data in a JSON string representation.
+            return parse_drilldown_searches([drilldown_search])
+    return []
 
 
 def drilldown_enrichment(service: client.Service, notable_data, num_enrichment_events) -> list[tuple[str, str, client.Job]]:
@@ -1049,20 +1111,8 @@ def drilldown_enrichment(service: client.Service, notable_data, num_enrichment_e
     """
     jobs_and_queries = []
     demisto.debug(f"notable data is: {notable_data}")
-    if drilldown_search := ((notable_data.get("drilldown_search")) or argToList(notable_data.get("drilldown_searches", []))):
-        # Multiple drilldown searches is a feature added to Enterprise Security v7.2.0.
-        # If a user set more than one drilldown search, we get a list of drilldown search objects (under
-        # the 'drilldown_searches' key) and submit a splunk enrichment for each one of them.
-        # To maintain backwards compatibility we keep using the 'drilldown_search' key as well.
+    if searches := get_drilldown_searches(notable_data):
         raw_dict = rawToDict(notable_data.get("_raw", ""))
-
-        if isinstance(drilldown_search, list):
-            # There are multiple drilldown searches to enrich
-            searches = parse_drilldown_searches(drilldown_search)
-
-        else:
-            # Got a single drilldown search (BC)
-            searches = [drilldown_search]
 
         total_searches = len(searches)
         demisto.debug(f'Notable {notable_data[EVENT_ID]} has {total_searches} drilldown searches to enrich')
@@ -1075,8 +1125,8 @@ def drilldown_enrichment(service: client.Service, notable_data, num_enrichment_e
             if isinstance(search, dict):
                 query_name = search.get("name", "")
                 query_search = search.get("search", "")
-                earliest_offset = search.get("earliest", "")  # The earliest time to query from.
-                latest_offset = search.get("latest", "")  # The latest time to query to.
+                earliest_offset = search.get("earliest") or search.get("earliest_offset", "")  # The earliest time to query from.
+                latest_offset = search.get("latest") or search.get("latest_offset", "")  # The latest time to query to.
 
             else:
                 # Got a single drilldown search under the 'drilldown_search' key (BC)
@@ -1125,7 +1175,7 @@ def drilldown_enrichment(service: client.Service, notable_data, num_enrichment_e
                 )
                 jobs_and_queries.append((None, None, None))
     else:
-        demisto.debug(f"drill-down was not configured for notable {notable_data[EVENT_ID]}")
+        demisto.debug(f"drill-down was not properly configured for notable {notable_data[EVENT_ID]}")
         jobs_and_queries.append((None, None, None))
 
     return jobs_and_queries
@@ -1146,7 +1196,7 @@ def identity_enrichment(service: client.Service, notable_data, num_enrichment_ev
     if users := get_fields_query_part(
         notable_data=notable_data,
         prefix="identity",
-        fields=["user", "src_user"],
+        fields=USER_RELATED_FIELDS,
         add_backslash=True,
     ):
         tables = argToList(demisto.params().get('identity_enrich_lookup_tables', DEFAULT_IDENTITY_ENRICH_TABLE))
@@ -1527,7 +1577,8 @@ def get_remote_data_command(service: client.Service, args: dict,
              f'| where rule_id="{notable_id}" ' \
              f'| where last_modified_timestamp>{last_update_splunk_timestamp} ' \
              '| fields - time ' \
-             '| map search=" search `notable_by_id($rule_id$)`"'
+             '| map search=" search `notable_by_id($rule_id$)`"' \
+             '| expandtoken'
 
     demisto.debug(f'Performing get-remote-data command with query: {search}')
 
@@ -1624,7 +1675,7 @@ def update_remote_system_command(args, params, service: client.Service, auth_tok
     delta = parsed_args.delta
     notable_id = parsed_args.remote_incident_id
     entries = parsed_args.entries
-    base_url = 'https://' + params['host'] + ':' + params['port'] + '/'
+    base_url = f"https://{params['host'].replace('https://', '')}:{params['port']}/"
     demisto.debug(f"mirroring args: entries:{parsed_args.entries} delta:{parsed_args.delta}")
     if parsed_args.incident_changed and delta:
         demisto.debug(
@@ -1944,7 +1995,7 @@ class ResponseReaderWrapper(io.RawIOBase):
     def close(self):
         self.responseReader.close()
 
-    def read(self, n):
+    def read(self, n):  # type: ignore[override]
         return self.responseReader.read(n)
 
     def readinto(self, b):
@@ -2373,6 +2424,32 @@ def parse_batch_of_results(current_batch_of_results, max_results_to_add, app):
     return parsed_batch_results, batch_dbot_scores
 
 
+def raise_error_for_failed_job(job):
+    """
+    Handle the case that the search job failed due to dome reason like parsing issues etc
+    raise DemistoException in case there is a fatal error in the search job.
+    see https://docs.splunk.com/Documentation/Splunk/9.3.0/RESTTUT/RESTsearches#:~:text=the%20results%20returned.-,dispatchState,-dispatchState%20is%20one
+
+    Args:
+        job (Job): the created search job
+
+    Raises:
+        Exception: DemistoException in case there is a fatal error
+    """
+    err_msg = None
+    try:
+        if job and job['dispatchState'] == 'FAILED':
+            messages = job['messages']
+            for err_type in ['fatal', 'error']:
+                if messages.get(err_type):
+                    err_msg = ','.join(messages[err_type])
+                    break
+    except Exception:
+        pass
+    if err_msg:
+        raise DemistoException(f'Failed to run the search in Splunk: {err_msg}')
+
+
 def splunk_search_command(service: client.Service, args: dict) -> CommandResults | list[CommandResults]:
     query = build_search_query(args)
     polling = argToBoolean(args.get("polling", False))
@@ -2385,6 +2462,8 @@ def splunk_search_command(service: client.Service, args: dict) -> CommandResults
         search_job = service.jobs.create(query, **search_kwargs)
         job_sid = search_job["sid"]
         args['sid'] = job_sid
+        raise_error_for_failed_job(search_job)
+
     status_cmd_result: CommandResults | None = None
     if polling:
         status_cmd_result = splunk_job_status(service, args)
@@ -3010,7 +3089,7 @@ def main():  # pragma: no cover
 
     connection_args = get_connection_args(params)
 
-    base_url = 'https://' + params['host'] + ':' + params['port'] + '/'
+    base_url = f"https://{params['host'].replace('https://', '')}:{params['port']}/"
     auth_token = None
     username = params['authentication']['identifier']
     password = params['authentication']['password']

@@ -112,7 +112,7 @@ script:
   script: ''
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.14.91134
+  dockerimage: demisto/python3:3.10.14.95137
   isfetch: true
   isremotesyncin: true
   isremotesyncout: true
@@ -2131,6 +2131,87 @@ script:
     description: Updates the remote incident with local incident changes. This method is only used for debugging purposes and will not update the current incident.
     execution: false
     name: update-remote-system
+  - arguments:
+      - description: Access key name.
+        name: name
+        required: true
+      - description: Timestamp in milliseconds when access key expires. Default:0.
+        name: expires-on
+    deprecated: false
+    description: Adds a new access key for the current user. If you have API access, you can create up to two access keys.
+    execution: false
+    name: prisma-cloud-access-key-create
+    outputs:
+      - contextPath: PrismaCloud.AccessKeys.id
+        description: Access key ID.
+        type: String
+      - contextPath: PrismaCloud.AccessKeys.secretKey
+        description: Access key secret.
+        type: String
+  - arguments:
+      - description: Returns the metadata of the access key that has the specified ID.
+        name: access-key
+      - description: Maximum number of entries to return.
+        name: limit
+    deprecated: false
+    description: Returns all access keys for your tenant if you have a Prisma Cloud System Admin role. Returns just your access keys if you don't have this role.
+    execution: false
+    name: prisma-cloud-access-keys-list
+    outputs:
+      - contextPath: PrismaCloud.AccessKeys.id
+        description: Access key ID.
+        type: String
+      - contextPath: PrismaCloud.AccessKeys.createdBy
+        description: The user who created the access key.
+        type: String
+      - contextPath: PrismaCloud.AccessKeys.createdTs
+        description: Time access key was created.
+        type: Number
+      - contextPath: PrismaCloud.AccessKeys.expiresOn
+        description: The time the access key expires.
+        type: Number
+      - contextPath: PrismaCloud.AccessKeys.lastUsedTime
+        description: The last time the access key was used.
+        type: Number
+      - contextPath: PrismaCloud.AccessKeys.name
+        description: The name of the access key.
+        type: String
+      - contextPath: PrismaCloud.AccessKeys.role
+        description: Access key user role.
+        type: Object
+      - contextPath: PrismaCloud.AccessKeys.roleType
+        description: User role permission type.
+        type: String
+      - contextPath: PrismaCloud.AccessKeys.status
+        description: Access key status.
+        type: String
+      - contextPath: PrismaCloud.AccessKeys.username
+        description: Access key user name.
+        type: String
+  - arguments:
+      - description: Access key ID.
+        name: access-key
+        required: true
+    deprecated: false
+    description: Deactivates the access key that has the specified ID.
+    execution: false
+    name: prisma-cloud-access-key-disable
+  - arguments:
+      - description: Access key ID.
+        name: access-key
+        required: true
+    deprecated: false
+    description: Activates the access key that has the specified ID. You cannot activate an expired access key.
+    execution: false
+    name: prisma-cloud-access-key-enable
+  - arguments:
+      - description: Access key ID.
+        name: access-key
+        required: true
+    deprecated: false
+    description: Deletes the access key that has the specified ID.
+    execution: false
+    name: prisma-cloud-access-key-delete
 tests:
 - Prisma Cloud V2 Test
 defaultmapperin: RedLock-mapper

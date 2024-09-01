@@ -1,0 +1,62 @@
+{
+    "qualifiedDomainName": "example.com",
+    "domain": "example",
+    "idn": "",
+    "extension": "com",
+    "newGtld": false,
+    "managedStatus": "ACTIVE",
+    "registrationDate": "09-Dec-2011 UTC",
+    "registryExpiryDate": "09-Dec-2030 UTC",
+    "paidThroughDate": "09-Dec-2030 UTC",
+    "countryCode": "",
+    "serverDeleteProhibited": false,
+    "serverTransferProhibited": false,
+    "serverUpdateProhibited": false,
+    "dnsType": "CSC_BASIC",
+    "whoisPrivacy": false,
+    "localAgent": false,
+    "dnssecActivated": "ENABLED",
+    "criticalDomain": true,
+    "businessUnit": "My Business Unit",
+    "brandName": "My Brand",
+    "idnReferenceName": "",
+    "customFields": [
+      {
+        "name": "Cost Center",
+        "value": "Marketing"
+      }
+    ],
+    "account": {
+      "accountNumber": "1234567",
+      "accountName": "CSC"
+    },
+    "urlf": {
+      "urlForwarding": true,
+      "redirectType": 0
+    },
+    "nameServers": [
+      "ns1.cscdns.net",
+      "ns2.cscdns.net"
+    ],
+    "whoisContacts": [
+      {
+        "contactType": "REGISTRANT",
+        "firstName": "John",
+        "lastName": "Lee",
+        "organization": "CSC",
+        "street1": "251 Little Falls Dr",
+        "street2": "",
+        "city": "Wilmington",
+        "stateProvince": "DE",
+        "country": "US",
+        "postalCode": "19808",
+        "email": "john.lee@cscglobal.com",
+        "phone": "+1.1234567890",
+        "phoneExtn": "1234",
+        "fax": "+1.1234567890"
+      }
+    ],
+    "lastModifiedDate": "20-May-2019 UTC",
+    "lastModifiedReason": "RENEWAL_COMPLETE",
+    "lastModifiedDescription": "Domain renewed"
+  }

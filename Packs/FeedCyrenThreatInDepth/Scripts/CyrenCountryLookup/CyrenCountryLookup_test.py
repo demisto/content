@@ -16,15 +16,15 @@ def test_lookup(value, expected):
     """
     from CyrenCountryLookup import lookup
 
-    assert lookup(dict(value=value)) == expected
+    assert lookup({"value": value}) == expected
 
 
 @pytest.mark.parametrize("args", [
-    dict(),
-    dict(value=None),
-    dict(value=""),
-    dict(value=9),
-    dict(value=[]),
+    {},
+    {"value": None},
+    {"value": ""},
+    {"value": 9},
+    {"value": []},
 ])
 def test_lookup_error(args):
     """

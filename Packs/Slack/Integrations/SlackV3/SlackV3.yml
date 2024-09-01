@@ -100,6 +100,7 @@ configuration:
   advanced: true
   additionalinfo: Trust any certificate (not secure). Make sure to mark this parameter if you want the SlackBlockBuilder script to send a response back to the incident context.
 - defaultvalue: 'true'
+  defaultvalue:xpanse: 'false'
   display: Enable Incident Mirroring
   name: mirroring
   type: 8
@@ -112,6 +113,7 @@ configuration:
   required: false
   additionalinfo: Whether to enable mirroring only from xsoar to slack, mark it if file mirroring is required in investigations.
 - defaultvalue: 'true'
+  defaultvalue:xpanse: 'false'
   display: Long running instance. Required for investigation mirroring and direct messages.
   name: longRunning
   type: 8
@@ -306,7 +308,7 @@ script:
       name: threadID
     - description: A comment to add to the file.
       name: comment
-    description: Sends a file to a user, channel, or group. If not specified, the file is sent to the mirrored investigation channel (if the channel exists).
+    description: 'Sends a file to a user, channel, or group. If not specified, the file is sent to the mirrored investigation channel (if the channel exists). Newly created apps (from the beginning of May 8, 2024) will be unable to use "slack_send_file" and will get an error in case of use, due to changes from the Slack API side.'
     name: slack-send-file
   - arguments:
     - description: The channel name. If not specified, the topic of the mirrored investigation channel is set (if the channel exists).
@@ -498,7 +500,7 @@ script:
       description: Set this argument to specify how many results to return.
     description: Retrieves replies to specific messages, regardless of whether it's from a public or private channel, direct message, or otherwise.
     name: slack-get-conversation-replies
-  dockerimage: demisto/slackv3:1.0.0.97264
+  dockerimage: demisto/slackv3:1.0.0.99303
   longRunning: true
   runonce: false
   script: '-'

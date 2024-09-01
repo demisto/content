@@ -118,7 +118,8 @@ LIMIT: int = 2000
 
 class Client(BaseClient):
 
-    def __init__(self, base_url: str, authorization: str, timeout: float, verify: bool, proxy: bool):
+    def __init__(self, base_url: str, authorization: str, timeout: float, verify: bool, proxy: bool,
+                 performance: bool, max_indicator_to_fetch: Optional[int]):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self.timeout = timeout
 
@@ -127,6 +128,8 @@ class Client(BaseClient):
             'Accept': 'application/json',
             'Content-Type': 'application/json',
         }
+        self.performance = performance
+        self.max_indicator_to_fetch = max_indicator_to_fetch
 
     def search_query(self, body: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -233,7 +236,7 @@ def build_params_dict(tags: List[str], attribute_type: List[str], limit: int, pa
         'page': page
     }
     if from_timestamp:
-        params['from'] = from_timestamp
+        params['attribute_timestamp'] = from_timestamp
     return params
 
 
@@ -248,12 +251,13 @@ def parsing_user_query(query: str, limit: int, page: int = 1, from_timestamp: st
     try:
         params = json.loads(query)
         params["returnFormat"] = "json"
-        params.pop("timestamp", None)
         if 'page' not in params:
             params["page"] = page
         params["limit"] = params.get("limit") or LIMIT
+        if params.get("timestamp"):
+            params['attribute_timestamp'] = params.pop("timestamp")
         if from_timestamp:
-            params['from'] = from_timestamp
+            params['attribute_timestamp'] = from_timestamp
     except Exception as err:
         demisto.debug(str(err))
         raise DemistoException(f'Could not parse user query. \nError massage: {err}')
@@ -319,7 +323,7 @@ def build_indicator(value_: str, type_: str, raw_data: Dict[str, Any], reputatio
     return indicator_obj
 
 
-def build_indicators(response: Dict[str, Any],
+def build_indicators(client: Client, response: Dict[str, Any],
                      attribute_type: List[str],
                      tlp_color: Optional[str],
                      url: Optional[str],
@@ -337,7 +341,8 @@ def build_indicators(response: Dict[str, Any],
         update_indicator_fields(indicator_obj, tlp_color, raw_type, feed_tags)
         galaxy_indicators = build_indicators_from_galaxies(indicator_obj, reputation)
         create_and_add_relationships(indicator_obj, galaxy_indicators)
-
+        if client.performance:
+            indicator_obj.pop("rawJSON")
         indicators.append(indicator_obj)
     return indicators
 
@@ -488,7 +493,7 @@ def get_attributes_command(client: Client, args: Dict[str, str], params: Dict[st
     response = client.search_query(params_dict)
     if error_message := response.get('Error'):
         raise DemistoException(error_message)
-    indicators = build_indicators(response, attribute_type, tlp_color, params.get('url'), reputation, feed_tags)
+    indicators = build_indicators(client, response, attribute_type, tlp_color, params.get('url'), reputation, feed_tags)
     hr_indicators = []
     for indicator in indicators:
         hr_indicators.append({
@@ -522,6 +527,8 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]):
     tags = argToList(params.get('attribute_tags', ''))
     feed_tags = argToList(params.get("feedTags", []))
     attribute_types = argToList(params.get('attribute_types', ''))
+    fetch_limit = client.max_indicator_to_fetch
+
     query = params.get('query', None)
     last_run = demisto.getLastRun().get('timestamp') or ""
     params_dict = parsing_user_query(query, LIMIT, from_timestamp=last_run) if query else\
@@ -531,26 +538,35 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]):
     while len(search_query_per_page.get("response", {}).get("Attribute", [])):
         demisto.debug(f'search_query_per_page number of attributes:\
                       {len(search_query_per_page.get("response", {}).get("Attribute", []))} page: {params_dict["page"]}')
-        indicators = build_indicators(search_query_per_page, attribute_types, tlp_color, params.get('url'), reputation, feed_tags)
+        indicators = build_indicators(client, search_query_per_page, attribute_types,
+                                      tlp_color, params.get('url'), reputation, feed_tags)
         for iter_ in batch(indicators, batch_size=2000):
             demisto.createIndicators(iter_)
         params_dict['page'] += 1
         last_run = search_query_per_page['response']['Attribute'][-1]['timestamp']
+        # Note: The limit is applied after indicators are created,
+        # so the total number of indicators may slightly exceed the limit due to page size constraints.
+        if fetch_limit and fetch_limit <= len(indicators):
+            demisto.debug(f"Reached the limit of indicators to fetch. The number of indicators fetched is: {len(indicators)}")
+            break
         search_query_per_page = client.search_query(params_dict)
     if error_message := search_query_per_page.get('Error'):
         raise DemistoException(f"Error in API call - check the input parameters and the API Key. Error: {error_message}")
     demisto.setLastRun({'timestamp': last_run})
 
 
-def main():
+def main():  # pragma: no cover
     params = demisto.params()
     base_url = params.get('url').rstrip('/')
     timeout = arg_to_number(params.get('timeout')) or 60
     insecure = not params.get('insecure', False)
     proxy = params.get('proxy', False)
+    performance = argToBoolean(params.get('performance') or False)
+    max_indicator_to_fetch = arg_to_number(x) if (x := params.get('max_indicator_to_fetch')) else None
     command = demisto.command()
     args = demisto.args()
-
+    if params.get('feedExpirationPolicy') == 'suddenDeath':
+        raise DemistoException('The feed is incremental, so a sudden-death policy is not applicable.')
     demisto.debug(f'Command being called is {command}')
     try:
         client = Client(
@@ -558,7 +574,9 @@ def main():
             authorization=params['credentials']['password'],
             verify=insecure,
             proxy=proxy,
-            timeout=timeout
+            timeout=timeout,
+            performance=performance,
+            max_indicator_to_fetch=max_indicator_to_fetch
         )
 
         if command == 'test-module':

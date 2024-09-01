@@ -132,5 +132,145 @@
         "flagStatus": "notFlagged"
       }
     }
-  }
+  },
+{
+    "@odata.type": "#microsoft.graph.fileAttachment",
+    "@odata.mediaContentType": "image/png",
+    "id": "exampleID2",
+    "lastModifiedDateTime": "2024-05-07T14:21:06Z",
+    "name": "image2.png",
+    "contentType": "image/png",
+    "size": 1800926,
+    "isInline": true,
+    "contentId": "f1145f66-90fe-4604-a7ea-faac8c33684e",
+    "contentLocation": null,
+    "contentBytes": "TmV2ZXIgYXJlIGNvbnRyb2wgaW5jbHVkaW5nIHN0cmluZw==",
+    "item": {
+        "@odata.type": "#microsoft.graph.message",
+        "id": "",
+        "createdDateTime": "2017-07-21T00:20:41Z",
+        "lastModifiedDateTime": "2017-07-21T00:20:34Z",
+        "receivedDateTime": "2017-07-21T00:19:55Z",
+        "sentDateTime": "2017-07-21T00:19:52Z",
+        "hasAttachments": false,
+        "internetMessageId": "<example>",
+        "subject": "Test it2",
+        "bodyPreview": "PFA\r\n\r\nThanks,\r\nRob",
+        "importance": "normal",
+        "conversationId": "example",
+        "conversationIndex": "example",
+        "isDeliveryReceiptRequested": false,
+        "isReadReceiptRequested": false,
+        "isRead": false,
+        "isDraft": false,
+        "webLink": "https:example",
+        "internetMessageHeaders": [],
+        "body": {
+          "contentType": "html",
+          "content": "<html><head>\r\n</head>\r\n<body>\r\n</body>\r\n</html>",
+          "contentId": "4567"
+        },
+        "sender": {
+          "emailAddress": {
+            "name": "Test Test",
+            "address": "test@test.onmicrosoft.com"
+          }
+        },
+        "from": {
+          "emailAddress": {
+            "name": "Test Test",
+            "address": "test@test.onmicrosoft.com"
+          }
+        },
+        "toRecipients": [
+          {
+            "emailAddress": {
+              "name": "Test Test",
+              "address": "test@test.onmicrosoft.com"
+            }
+          }
+        ],
+        "ccRecipients": [
+          {
+            "emailAddress": {
+              "name": "Test Test",
+              "address": "test@test.onmicrosoft.com"
+            }
+          }
+        ],
+        "flag": {
+          "flagStatus": "notFlagged"
+        }
+      }
+  },
+  {
+    "@odata.type": "#microsoft.graph.fileAttachment",
+    "@odata.mediaContentType": "image/png",
+    "id": "exampleID3",
+    "lastModifiedDateTime": "2024-05-07T14:21:06Z",
+    "name": "image3.png",
+    "contentType": "image/png",
+    "size": 1800926,
+    "isInline": true,
+    "contentId": "None",
+    "contentLocation": null,
+    "contentBytes": "TmV2ZXIgYXJlIGNvbnRyb2wgaW5jbHVkaW5nIHN0cmluZw==",
+    "item": {
+        "@odata.type": "#microsoft.graph.message",
+        "id": "",
+        "createdDateTime": "2017-07-21T00:20:41Z",
+        "lastModifiedDateTime": "2017-07-21T00:20:34Z",
+        "receivedDateTime": "2017-07-21T00:19:55Z",
+        "sentDateTime": "2017-07-21T00:19:52Z",
+        "hasAttachments": false,
+        "internetMessageId": "<example>",
+        "subject": "Test it2",
+        "bodyPreview": "PFA\r\n\r\nThanks,\r\nRob",
+        "importance": "normal",
+        "conversationId": "example",
+        "conversationIndex": "example",
+        "isDeliveryReceiptRequested": false,
+        "isReadReceiptRequested": false,
+        "isRead": false,
+        "isDraft": false,
+        "webLink": "https:example",
+        "internetMessageHeaders": [],
+        "body": {
+          "contentType": "html",
+          "content": "<html><head>\r\n</head>\r\n<body>\r\n</body>\r\n</html>",
+          "contentId": "4567"
+        },
+        "sender": {
+          "emailAddress": {
+            "name": "Test Test",
+            "address": "test@test.onmicrosoft.com"
+          }
+        },
+        "from": {
+          "emailAddress": {
+            "name": "Test Test",
+            "address": "test@test.onmicrosoft.com"
+          }
+        },
+        "toRecipients": [
+          {
+            "emailAddress": {
+              "name": "Test Test",
+              "address": "test@test.onmicrosoft.com"
+            }
+          }
+        ],
+        "ccRecipients": [
+          {
+            "emailAddress": {
+              "name": "Test Test",
+              "address": "test@test.onmicrosoft.com"
+            }
+          }
+        ],
+        "flag": {
+          "flagStatus": "notFlagged"
+        }
+      }
+    }
 ]

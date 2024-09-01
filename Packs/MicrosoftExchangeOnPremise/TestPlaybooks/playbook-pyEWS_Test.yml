@@ -82,7 +82,7 @@ tasks:
       id: 4f7f7453-5365-4b3d-880c-4c414fc9f104
       version: -1
       name: Get searchable mailboxes
-      script: '|||ews-get-searchable-mailboxes'
+      script: 'EWS v2|||ews-get-searchable-mailboxes'
       type: regular
       iscommand: true
       brand: ""
@@ -156,7 +156,7 @@ tasks:
       id: 758d522f-fb9d-4ea1-8dbb-86280bbd04d8
       version: -1
       name: Get contacts
-      script: '|||ews-get-contacts'
+      script: 'EWS v2|||ews-get-contacts'
       type: regular
       iscommand: true
       brand: ""
@@ -235,7 +235,7 @@ tasks:
       id: d8ff6bb9-f1c3-4b08-8721-6035d8ec8a9e
       version: -1
       name: Get item attachment
-      script: '|||ews-get-attachment'
+      script: 'EWS v2|||ews-get-attachment'
       type: regular
       iscommand: true
       brand: ""
@@ -326,7 +326,7 @@ tasks:
       id: ec5ffa8a-5ba6-4fb8-8c90-bb75b1bc9900
       version: -1
       name: Get file attachment
-      script: '|||ews-get-attachment'
+      script: 'EWS v2|||ews-get-attachment'
       type: regular
       iscommand: true
       brand: ""
@@ -417,7 +417,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: containsGeneral
           left:
             value:
               simple: ${File.Name}
@@ -447,7 +447,7 @@ tasks:
       id: 1631eadb-02b9-4051-8f1d-8e4116442ea5
       version: -1
       name: Get out of office status
-      script: '|||ews-get-out-of-office'
+      script: 'EWS v2|||ews-get-out-of-office'
       type: regular
       iscommand: true
       brand: ""
@@ -534,7 +534,7 @@ tasks:
       id: 2cd7f7cc-fc5c-4494-8231-1d8efd07278c
       version: -1
       name: Find folders
-      script: '|||ews-find-folders'
+      script: 'EWS v2|||ews-find-folders'
       type: regular
       iscommand: true
       brand: ""
@@ -603,7 +603,7 @@ tasks:
       id: c5ade2d7-dbf9-4d98-83b7-ad2308e15b40
       version: -1
       name: Get items
-      script: '|||ews-get-items'
+      script: 'EWS v2|||ews-get-items'
       type: regular
       iscommand: true
       brand: ""
@@ -711,7 +711,7 @@ tasks:
       id: e2424daf-8daa-4b72-86b9-d25b9d67b191
       version: -1
       name: Get expanded group
-      script: '|||ews-expand-group'
+      script: 'EWS v2|||ews-expand-group'
       type: regular
       iscommand: true
       brand: ""
@@ -783,7 +783,7 @@ tasks:
       id: 25903e54-29c1-4b05-8c71-a8f12e398b74
       version: -1
       name: Get items from folder
-      script: '|||ews-get-items-from-folder'
+      script: 'EWS v2|||ews-get-items-from-folder'
       type: regular
       iscommand: true
       brand: ""
@@ -886,7 +886,7 @@ tasks:
       version: -1
       name: Send mail
       description: Sends an email using Microsoft Graph.
-      script: '|||send-mail'
+      script: 'EWS v2|||send-mail'
       type: regular
       iscommand: true
       brand: ""
@@ -1046,7 +1046,7 @@ tasks:
       version: -1
       name: search for mail with itemAttachment
       description: Searches for items in the specified mailbox. Specific permissions are needed for this operation to search in a target mailbox other than the default.
-      script: '|||ews-search-mailbox'
+      script: 'EWS v2|||ews-search-mailbox'
       type: regular
       iscommand: true
       brand: ""
@@ -1127,7 +1127,7 @@ tasks:
       version: -1
       name: Search mail with fileAttachment
       description: Searches for items in the specified mailbox. Specific permissions are needed for this operation to search in a target mailbox other than the default.
-      script: '|||ews-search-mailbox'
+      script: 'EWS v2|||ews-search-mailbox'
       type: regular
       iscommand: true
       brand: ""
@@ -1203,7 +1203,7 @@ tasks:
       version: -1
       name: Delete mail from DO_NOT_DELETE-TPB:pyEWS_TEST
       description: Delete items from mailbox.
-      script: '|||ews-delete-items'
+      script: 'EWS v2|||ews-delete-items'
       type: regular
       iscommand: true
       brand: ""
@@ -1242,7 +1242,7 @@ tasks:
       version: -1
       name: search mail in sent Items
       description: Searches for items in the specified mailbox. Specific permissions are needed for this operation to search in a target mailbox other than the default.
-      script: '|||ews-search-mailbox'
+      script: 'EWS v2|||ews-search-mailbox'
       type: regular
       iscommand: true
       brand: ""
@@ -1319,7 +1319,7 @@ tasks:
       version: -1
       name: Delete mail from sent items
       description: Delete items from mailbox.
-      script: '|||ews-delete-items'
+      script: 'EWS v2|||ews-delete-items'
       type: regular
       iscommand: true
       brand: ""
