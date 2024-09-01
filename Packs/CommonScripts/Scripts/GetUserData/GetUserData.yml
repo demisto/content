@@ -74,8 +74,6 @@ outputs:
   description: Whether the account is internal or external to the organization. 'True' means the account is internal.
   type: Bool
 script: '-'
-tags:
-- basescript
 timeout: '0'
 type: python
 subtype: python3

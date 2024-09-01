@@ -1,26 +1,11 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
-
-from CommonServerUserPython import *
+import demistomock as demisto
+from CommonServerPython import *
 
 from typing import Any
 from collections.abc import Callable
 
 
-# def run_execute_command(
-#     command: str, args: dict[str, Any], extract_contents: bool = False
-# ) -> tuple[bool, dict | str]:
-#     status, res = execute_command(
-#         command=command,
-#         args=args,
-#         extract_contents=extract_contents,
-#         fail_on_error=False,
-#     )
-#     demisto.debug(f"Command {command} finished with status {status} and result {res}")
-#     if status and isinstance(res, list):
-#         res = res[0]
-
-#     return status, res
+SHARED_CONTEXT = {}
 
 
 def prepare_readable_output(
@@ -51,9 +36,9 @@ def create_account(
     telephone_number: Optional[str] = None,
     is_enabled: Optional[bool] = None,
     manager_email: Optional[str] = None,
-    manager_display_name: Optional[str] = None
+    manager_display_name: Optional[str] = None,
 ) -> dict[str, Any]:
-    return {
+    account = {
         "id": id,
         "username": username,
         "display_name": display_name,
@@ -65,16 +50,13 @@ def create_account(
         "telephone_number": telephone_number,
         "is_enabled": is_enabled,
         "manager_email": manager_email,
-        "manager_display_name": manager_display_name
+        "manager_display_name": manager_display_name,
     }
-    formatted_values = {}
-    for key, value in locals().items():
-        if isinstance(value, list):
-            formatted_values[key] = value[0] if value else ""
-        else:
-            formatted_values[key] = value
-    formatted_values.pop("formatted_values")
-    return Common.Account(**formatted_values).to_context()
+    for key, value in account:
+        if isinstance(value, list) and value:
+            account[key] = value[0]
+
+    return remove_empty_elements(account)
 
 
 class Command:
@@ -84,6 +66,7 @@ class Command:
         args: dict,
         output_key: str,
         output_function: Callable[[dict[str, Any]], dict[str, Any]],
+        update_args_fun: Optional[Callable[[], dict[str, Any]]] = None,
         brand: Optional[str] = None,
         is_generic: bool = False,
         is_enabled: bool = True,
@@ -94,7 +77,6 @@ class Command:
         self.is_enabled = is_enabled
         self.is_generic = is_generic
         self.output_key = output_key
-        self.raw_outputs = {}
         self.outputs = []
         self.results = []
         self.command = CommandRunner.Command(
@@ -102,6 +84,7 @@ class Command:
             args_lst=self.args,
         )
         self.output_function = output_function
+        self.update_args_fun = update_args_fun
 
     def _verify_args(self) -> bool:
         if self.args:
@@ -146,23 +129,27 @@ class Command:
             )
         return result
 
+    def update_command_args(self, args: dict):
+        self.command.args_lst = [args]
+
     def execute(self) -> bool:
         status = False
         if not self.is_enabled:
-            demisto.debug(f"Command {self.name} is disabled, skipping...")
+            demisto.debug(f"Skipping command {self.name} since it is disabled.")
         elif not self._verify_args():
             demisto.debug(
                 f"Skipping command {self.name} since no required arguments were provided for the command."
             )
         else:
             demisto.debug(f"Running command {self.name}")
+            if self.update_args_fun:
+                self.update_command_args(self.update_args_fun())
             results, errors = CommandRunner.execute_commands(
                 command=self.command, extract_contents=False
             )
             for result in results:
                 self.results.append(self._prepare_readable_output(result.result))
                 self.outputs.append(self._prepare_output(result.result["EntryContext"]))
-                self.raw_outputs = result.result["EntryContext"]
             for error in errors:
                 self.results.append(
                     self._prepare_readable_output(error.result, is_error=True)
@@ -174,94 +161,63 @@ class Command:
 
 
 class Task:
-    def __init__(self, command: Optional[Command] = None):
+    def __init__(self, task_id: str, command: Optional[Command] = None):
         """Base class for all tasks."""
+        self.task_id = task_id
         self.command = command
-        self.children: list[Task] = []
-        self.conditions: list[Optional[Callable[[Any], bool]]] = []
-        self.pre_execute_children = []
 
-    def add_child(self, task, condition: Optional[Callable[[Any], bool]] = None, pre_execute_child: Optional[Callable[[Command, Command], None]] = None):
-        """
-        Add a child task with an optional condition.
-
-        :param task: The child task to add.
-        :param condition: A callable that takes a result and returns a boolean.
-        """
-        self.children.append(task)
-        self.conditions.append(condition)
-        self.pre_execute_children.append(pre_execute_child)
-
-    def execute(self, result=None):
-        status = True
+    def execute(self):
         if self.command:
-            status = self.command.execute()
-            result = self.command.raw_outputs
-
-        """Evaluate conditions and execute the appropriate child tasks."""
-        if status:
-            for child, condition, pre_execute_child in zip(self.children, self.conditions, self.pre_execute_children):
-                if condition is None or condition(result):
-                    if pre_execute_child:
-                        pre_execute_child(self.command, child.command)
-                    child.execute()
-                else:
-                    demisto.debug("Skipping child task since condition check failed.")
+            self.status = self.command.execute()
 
 
-# class CommandTask(Task):
-#     def __init__(self, command: Command):
-#         """
-#         Initialize a flow task with a command.
+class Graph:
+    def __init__(self):
+        self.nodes: dict[str, Task] = {}
+        self.edges: dict[str, list[tuple[str, Optional[Callable[[], bool]]]]] = {}
 
-#         :param command: The command associated with this task.
-#         """
-#         super().__init__()
-#         self.command = command
+    def add_node(self, node: Task):
+        self.nodes[node.task_id] = node
+        self.edges[node.task_id] = []
 
-#     def execute(self):
-#         """Execute the command and conditionally proceed to child tasks."""
-#         status = self.command.execute()
-#         outputs = self.command.outputs
+    def add_nodes(self, nodes: list[Task]):
+        for node in nodes:
+            self.add_node(node)
 
-#         if status:
-#             # Logic to determine the next task(s) to execute based on conditions
-#             for child, condition in zip(self.children, self.conditions):
-#                 if condition is None or condition(outputs):
-#                     child.execute()
-#                 else:
-#                     demisto.debug(f"Skipping child task {child.__class__.__name__} since condition check failed.")
+    def add_edge(
+        self,
+        from_task: Task,
+        to_task: Task,
+        condition: Callable[[], bool] = lambda: True,
+    ):
+        self.edges[from_task.task_id].append((to_task.task_id, condition))
 
+    def run(self, start_task_id: str):
+        current_task_ids = [start_task_id]
+        executed_task_ids = set()
 
-# class Decisiontask(Task):
-#     def __init__(self):
-#         """Initialize a decision task."""
-#         super().__init__()
+        while current_task_ids:
+            next_task_ids = []
+            for current_task_id in current_task_ids:
+                task = self.nodes.get(current_task_id)
+                if not task:
+                    continue
+                demisto.debug(f"Current task: {task.task_id}")
+                task.execute()
+                executed_task_ids.add(task.task_id)
+                next_tasks = self.edges.get(task.task_id, [])
+                if task.status:
+                    for next_task_id, condition in next_tasks:
+                        if condition is None or condition():
+                            next_task_ids.append(next_task_id)
+                        else:
+                            demisto.debug(
+                                f"Skipping task {next_task_id} since condition check failed."
+                            )
 
-#     def execute(self, result=None):
-#         """Evaluate conditions and execute the appropriate child tasks."""
-#         for child, condition in zip(self.children, self.conditions):
-#             if condition is None or condition(result):
-#                 child.execute()
+            current_task_ids = next_task_ids
 
-
-# class Flow:
-#     def __init__(self, root_task: Task):
-#         """
-#         Initialize the flow.
-
-#         :param root_task: The root task of the flow.
-#         """
-#         self.root_task = root_task
-
-#     def execute(self):
-#         """Start executing the flow from the root task."""
-#         demisto.debug("Starting flow execution...")
-#         self.root_task.execute()
-#         demisto.debug("Flow execution completed.")
-
-
-""" COMMAND FUNCTION """
+        demisto.debug(f"All tasks executed: {executed_task_ids}")
 
 
 def update_enabled_commands(commands: list[Command]) -> None:
@@ -291,13 +247,17 @@ def merge_accounts(accounts: list[dict[str, str]]) -> dict[str, Any]:
     merged_account = {}
     for account in accounts:
         for key, value in account.items():
-            if key not in merged_account:
+            if key not in merged_account or not merged_account[key]:
                 merged_account[key] = value
             elif merged_account[key] != value:
                 demisto.debug(
                     f"Conflicting values for key '{key}': '{merged_account[key]}' vs '{value}'"
                 )
-    return Common.Account(**merged_account).to_context()[Common.Account.CONTEXT_PATH] if merged_account else {}
+    return (
+        Common.Account(**merged_account).to_context()[Common.Account.CONTEXT_PATH]
+        if merged_account
+        else {}
+    )
 
 
 """ MAIN FUNCTION """
@@ -355,16 +315,29 @@ def main():
                 "email": user_email,
             },
             output_key="ActiveDirectory.Users",
-            output_function=lambda entry_context: create_account(
-                id=entry_context.get("dn"),
-                display_name=entry_context.get("displayName", [])[0] if entry_context.get("displayName") else "",
-                email_address=entry_context.get("mail", [])[0] if entry_context.get("mail") else "",
-                groups=entry_context.get("memberOf"),
-                # manager=entry_context.get("Manager"),
-                is_enabled=not entry_context.get("userAccountControlFields", {}).get(
-                    "ACCOUNTDISABLE"
+            output_function=lambda entry_context: (
+                create_account(
+                    id=entry_context.get("dn"),
+                    display_name=entry_context.get("displayName", [])[0]
+                    if entry_context.get("displayName")
+                    else "",
+                    email_address=entry_context.get("mail", [])[0]
+                    if entry_context.get("mail")
+                    else "",
+                    groups=entry_context.get("memberOf"),
+                    # manager=entry_context.get("Manager"),
+                    is_enabled=not entry_context.get(
+                        "userAccountControlFields", {}
+                    ).get("ACCOUNTDISABLE"),
                 ),
-            ),
+                SHARED_CONTEXT.update(
+                    {
+                        ad_get_user_task.task_id: {
+                            "manager": entry_context.get("manager", [])[0]
+                        }
+                    }
+                ),
+            )[0],
         )
         ad_get_user_manager_command = Command(
             name="ad-get-user",
@@ -372,9 +345,16 @@ def main():
             args={},
             output_key="ActiveDirectory.Users",
             output_function=lambda entry_context: create_account(
-                manager_display_name=entry_context.get("displayName", [])[0] if entry_context.get("displayName") else "",
-                manager_email=entry_context.get("mail", [])[0] if entry_context.get("mail") else "",
+                manager_display_name=entry_context.get("displayName", [])[0]
+                if entry_context.get("displayName")
+                else "",
+                manager_email=entry_context.get("mail", [])[0]
+                if entry_context.get("mail")
+                else "",
             ),
+            update_args_fun=lambda: {
+                "dn": SHARED_CONTEXT.get("ad_get_user_command", {}).get("manager")
+            },
         )
         pingone_get_user_command = Command(
             name="pingone-get-user",
@@ -483,47 +463,87 @@ def main():
         ]
         update_enabled_commands(list_commands)
 
-        start_task = Task()
+        start_task = Task("Start task")
         identityiq_search_identities_task = Task(
-            identityiq_search_identities_command
+            "identityiq_search_identities_command", identityiq_search_identities_command
         )
-        identitynow_get_accounts_task = Task(identitynow_get_accounts_command)
-        ad_get_user_task = Task(ad_get_user_command)
-        ad_get_user_manager_task = Task(ad_get_user_manager_command)
-        pingone_get_user_task = Task(pingone_get_user_command)
-        okta_get_user_task = Task(okta_get_user_command)
-        aws_iam_get_user_task = Task(aws_iam_get_user_command)
-        msgraph_user_get_task = Task(msgraph_user_get_command)
-        xdr_list_risky_users_task = Task(xdr_list_risky_users_command)
-        iam_get_user_task = Task(iam_get_user_command)
-        start_task.add_child(identityiq_search_identities_task, lambda _: not is_domain_in_user_name)
-        start_task.add_child(identitynow_get_accounts_task, lambda _: not is_domain_in_user_name)
-        start_task.add_child(ad_get_user_task, lambda _: not is_domain_in_user_name)
-        start_task.add_child(pingone_get_user_task, lambda _: not is_domain_in_user_name)
-        start_task.add_child(okta_get_user_task, lambda _: not is_domain_in_user_name)
-        start_task.add_child(aws_iam_get_user_task, lambda _: not is_domain_in_user_name)
-        start_task.add_child(msgraph_user_get_task, lambda _: not is_domain_in_user_name)
-        start_task.add_child(xdr_list_risky_users_task)
-        start_task.add_child(iam_get_user_task, lambda _: not is_domain_in_user_name)
-
-        def pre_execute_child_ad_get_user_task(father_task: Command, child_task: Command):
-            child_task.args = {
-                "dn": father_task.raw_outputs.get(father_task._get_output_key(father_task.raw_outputs), {})[0].get("manager")[0]
-            }
-        ad_get_user_task.add_child(
+        identitynow_get_accounts_task = Task(
+            "identitynow_get_accounts_command", identitynow_get_accounts_command
+        )
+        ad_get_user_task = Task("ad_get_user_command", ad_get_user_command)
+        ad_get_user_manager_task = Task(
+            "ad_get_user_manager_command", ad_get_user_manager_command
+        )
+        pingone_get_user_task = Task(
+            "pingone_get_user_command", pingone_get_user_command
+        )
+        okta_get_user_task = Task("okta_get_user_command", okta_get_user_command)
+        aws_iam_get_user_task = Task(
+            "aws_iam_get_user_command", aws_iam_get_user_command
+        )
+        msgraph_user_get_task = Task(
+            "msgraph_user_get_command", msgraph_user_get_command
+        )
+        xdr_list_risky_users_task = Task(
+            "xdr_list_risky_users_command", xdr_list_risky_users_command
+        )
+        iam_get_user_task = Task("iam_get_user_command", iam_get_user_command)
+        graph = Graph()
+        graph.add_nodes(
+            [
+                start_task,
+                identityiq_search_identities_task,
+                identitynow_get_accounts_task,
+                ad_get_user_task,
+                ad_get_user_manager_task,
+                pingone_get_user_task,
+                okta_get_user_task,
+                aws_iam_get_user_task,
+                msgraph_user_get_task,
+                xdr_list_risky_users_task,
+                iam_get_user_task,
+            ]
+        )
+        graph.add_edge(
+            start_task,
+            identityiq_search_identities_task,
+            lambda: not is_domain_in_user_name,
+        )
+        graph.add_edge(
+            start_task,
+            identitynow_get_accounts_task,
+            lambda: not is_domain_in_user_name,
+        )
+        graph.add_edge(start_task, ad_get_user_task, lambda: not is_domain_in_user_name)
+        graph.add_edge(
+            start_task, pingone_get_user_task, lambda: not is_domain_in_user_name
+        )
+        graph.add_edge(
+            start_task, okta_get_user_task, lambda: not is_domain_in_user_name
+        )
+        graph.add_edge(
+            start_task, aws_iam_get_user_task, lambda: not is_domain_in_user_name
+        )
+        graph.add_edge(
+            start_task, msgraph_user_get_task, lambda: not is_domain_in_user_name
+        )
+        graph.add_edge(start_task, xdr_list_risky_users_task)
+        graph.add_edge(
+            start_task, iam_get_user_task, lambda: not is_domain_in_user_name
+        )
+        graph.add_edge(
+            ad_get_user_task,
             ad_get_user_manager_task,
-            lambda output: bool(
-                output.get(ad_get_user_command._get_output_key(output), {})[0].get("manager")),
-            pre_execute_child_ad_get_user_task
+            lambda: bool(SHARED_CONTEXT.get(ad_get_user_task.task_id, {}).get("manager")),
         )
-        start_task.execute()
-        # flow = Flow(root_task=start_task)
-        # flow.execute()
+
+        graph.run(start_task.task_id)
         results = []
         outputs = []
         for command in list_commands:
             results.extend(command.results)
             outputs.extend(command.outputs)
+
         merged_output = merge_accounts(outputs)
         if merged_output:
             results.append(
@@ -537,11 +557,7 @@ def main():
                 )
             )
         else:
-            results.append(
-                CommandResults(
-                    readable_output="No user data found."
-                )
-            )
+            results.append(CommandResults(readable_output="No user data found."))
         return_results(results)
     except Exception as e:
         return_error(f"Failed to execute get-user-data. Error: {str(e)}")
