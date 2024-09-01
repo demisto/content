@@ -5,18 +5,19 @@ from CommonServerPython import *
 
 
 import pytest
-from IBMSecurityVerifyEventCollector import Client, get_events_command
+from IBMSecurityVerifyEventCollector import Client, get_events_command, fetch_events
 
 RESPONSE = {
     "response": {
         "events": {
-            "events": [
-                {"indexed_at": "1", "tenantname": "Test Event 1"},
-                {"indexed_at": "2", "tenantname": "Test Event 2"}
-            ]
+            "events": EVENTS
         }
     }
 }
+
+EVENTS = [
+    {"indexed_at": "2", "tenantname": "Test Event 2", "id": "123"}
+]
 
 
 @pytest.fixture()
@@ -100,8 +101,7 @@ def test_search_events(mocker, mock_client):
     events = mock_client.search_events(limit, sort_order, last_item)
 
     expected_events = [
-        {"indexed_at": "1", "tenantname": "Test Event 1"},
-        {"indexed_at": "2", "tenantname": "Test Event 2"}
+        {"indexed_at": "2", "tenantname": "Test Event 2", "id": "123"}
     ]
     assert events == expected_events
 
@@ -136,4 +136,19 @@ def test_get_events_command(mocker, mock_client):
 
 
 def test_fetch_events(mocker, mock_client):
-    pass
+    """
+    """
+    # First fetch
+    search_events = mocker.patch.object(mock_client, "search_events", return_value=EVENTS)
+    last_run = {}
+
+    # Verify the first fetch initializes last_run with the latest event
+    last_run, events = fetch_events(client=mock_client, last_run=last_run, limit=2)
+    search_events.assert_any_call(limit=1, sort_order="desc")
+    search_events.assert_called_with(limit=2, sort_order="asc", last_item=last_run)
+
+    # Second fetch
+    updated_last_run, events = fetch_events(client=mock_client, last_run=last_run, limit=2)
+
+    # Verify that the second fetch uses the last_run from the first fetch
+    search_events.assert_any_call(limit=2, sort_order="asc", last_item=updated_last_run)
