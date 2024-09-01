@@ -1,6 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-# type: ignore
+
 # pylint: disable=no-member
 import copy
 from collections.abc import Callable

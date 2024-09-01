@@ -1668,7 +1668,7 @@ tasks:
     quietmode: 0
     scriptarguments:
       serviceowner:
-        simple: ${alert.asmserviceowner.email}
+        simple: ${alert.asmserviceownerunrankedraw.email}
     separatecontext: true
     skipunavailable: false
     task:
