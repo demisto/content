@@ -111,18 +111,18 @@ def test_module(client: Client) -> str:
     'ok' if test passed, anything else will raise an exception and will fail the test.
     """
     args = {"limit": 1}
-    get_events(client, args)
+    get_events_command(client, args)
     return "ok"
 
 
-def get_events(client: Client, args: dict) -> list[dict]:
+def get_events_command(client: Client, args: dict) -> list[dict]:
     last_id = args.get("last_id")
     last_time = args.get("last_time")
     last_item = {"last_id": last_id, "last_time": last_time}
     limit = arg_to_number(args.get("limit")) or DEFAULT_LIMIT_COMMAND
     sort_order = args.get("sort_order", "desc").lower()
 
-    events = client.search_events(limit, sort_order, last_item)
+    events = client.search_events(limit=limit, sort_order=sort_order, last_item=last_item)
     return events
 
 
@@ -216,7 +216,7 @@ def main() -> None:  # pragma: no cover
             return_results(test_module(client))
 
         elif command == 'ibm-security-verify-get-events':
-            events = get_events(client, args)
+            events = get_events_command(client, args)
             return_results(CommandResults(readable_output=tableToMarkdown(f"{VENDOR.title()} Events:", events)))
 
             should_push_events = argToBoolean(args.get('should_push_events'))

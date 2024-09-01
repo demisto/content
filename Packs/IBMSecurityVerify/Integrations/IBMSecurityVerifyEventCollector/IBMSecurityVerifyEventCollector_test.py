@@ -5,7 +5,18 @@ from CommonServerPython import *
 
 
 import pytest
-from IBMSecurityVerifyEventCollector import Client
+from IBMSecurityVerifyEventCollector import Client, get_events_command
+
+RESPONSE = {
+    "response": {
+        "events": {
+            "events": [
+                {"indexed_at": "1", "tenantname": "Test Event 1"},
+                {"indexed_at": "2", "tenantname": "Test Event 2"}
+            ]
+        }
+    }
+}
 
 
 @pytest.fixture()
@@ -80,30 +91,20 @@ def test_max_limit_validation(mock_client):
 
 
 def test_search_events(mocker, mock_client):
-    response = {
-        "response": {
-            "events": {
-                "events": [
-                    {"indexed_at": "1", "tenantname": "Test Event 1"},
-                    {"indexed_at": "2", "tenantname": "Test Event 2"}
-                ]
-            }
-        }
-    }
-    http_request = mocker.patch.object(Client, "_http_request", return_value=response)
-    
+    http_request = mocker.patch.object(Client, "_http_request", return_value=RESPONSE)
+
     limit = 2
     sort_order = "asc"
-    last_item = {"last_id":"123","after_time":"456"}
-    
+    last_item = {"last_id": "123", "after_time": "456"}
+
     events = mock_client.search_events(limit, sort_order, last_item)
-    
+
     expected_events = [
         {"indexed_at": "1", "tenantname": "Test Event 1"},
         {"indexed_at": "2", "tenantname": "Test Event 2"}
     ]
     assert events == expected_events
-    
+
     http_request.assert_called_with(
         method="GET",
         url_suffix="events",
@@ -116,3 +117,23 @@ def test_search_events(mocker, mock_client):
             "after_id": last_item.get("last_id")
         },
     )
+
+
+def test_get_events_command(mocker, mock_client):
+    """
+
+    """
+    args = {"limit": 2, "sort_order": "Desc", "last_id": "123", "last_time": "456"}
+
+    search_events = mocker.patch.object(mock_client, "search_events")
+    get_events_command(mock_client, args)
+
+    search_events.assert_called_with(
+        limit=2,
+        sort_order="desc",
+        last_item={"last_id": "123", "last_time": "456"}
+    )
+
+
+def test_fetch_events(mocker, mock_client):
+    pass
