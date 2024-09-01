@@ -15,9 +15,7 @@ DEFAULT_LIMIT_COMMAND = 1_000
 DEFAULT_LIMIT_FETCH = 10_000
 MAX_LIMIT = 50_000
 MIN_LIMIT = 1
-# TODO: print
-# print(f"{demisto.params()=}")
-# print(f"{demisto.args()=}")
+
 
 ''' CLIENT CLASS '''
 

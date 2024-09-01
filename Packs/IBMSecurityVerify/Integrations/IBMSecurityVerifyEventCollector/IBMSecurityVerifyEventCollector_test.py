@@ -7,6 +7,10 @@ from CommonServerPython import *
 import pytest
 from IBMSecurityVerifyEventCollector import Client, get_events_command, fetch_events
 
+EVENTS = [
+    {"indexed_at": "2", "tenantname": "Test Event 2", "id": "123"}
+]
+
 RESPONSE = {
     "response": {
         "events": {
@@ -15,9 +19,6 @@ RESPONSE = {
     }
 }
 
-EVENTS = [
-    {"indexed_at": "2", "tenantname": "Test Event 2", "id": "123"}
-]
 
 
 @pytest.fixture()
