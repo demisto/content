@@ -62,13 +62,33 @@ def test_process_events(mocker, inputs, expected_outputs):
     assert updated_last_event_time == expected_last_event_time
 
 
-def test_initialize_start_timestamp_with_existing_timestamp(mocker):
+def test_initialize_start_timestamp_with_existing_timestamp():
+    """
+    Given
+            A dictionary with a nested structure and a specific key
+    When
+            Calling `initialize_start_timestamp` with the dictionary and the key
+    Then
+            The function should return the value associated with the specified key
+            The result is verified to match the expected value
+    """
     last_run = {'audit': {'last_fetch': 1234567890}}
     result = initialize_start_timestamp(last_run, 'audit')
     assert result == 1234567890
 
 
-def test_initialize_start_timestamp_with_arg_from(mocker):
+def test_initialize_start_timestamp_with_arg_from():
+    """
+    Given:
+        A last run dictionary with a specific timestamp and an argument defining a starting timestamp.
+
+    When:
+        Calling the initialize_start_timestamp function to determine the starting point for fetching data.
+
+    Then:
+        Verify that the function returns the starting timestamp provided as an argument, ensuring that the 
+        'last_fetch' timestamp from the last run is not used.
+    """
     arg_from = 111111
     last_run = {'audit': {'last_fetch': 1234567890}}
     result = initialize_start_timestamp(last_run, 'audit', arg_from)
@@ -80,6 +100,19 @@ def test_initialize_start_timestamp_with_arg_from(mocker):
     for test_case in util_load_json('test_data/test_get_max_results_params.json')['test_cases']
 ])
 def test_get_max_results_and_limit_with_param(params, log_type, expected):
+    """
+    Given:
+        - A set of parameters (params) which include configuration options related to fetching results.
+        - A log type (log_type) indicating the type of log data being processed.
+        - An expected tuple (expected) representing the maximum number of results and a limit value.
+
+    When:
+        Calling the get_max_results_and_limit function with the provided parameters and log type.
+
+    Then:
+        Verify that the function returns a tuple matching the expected result, ensuring it correctly processes 
+        the parameters to determine the maximum results and limit.
+    """
     result = get_max_results_and_limit(params, log_type)
     assert result == tuple(expected)
 
@@ -99,12 +132,23 @@ def test_get_max_results_and_limit_with_param(params, log_type, expected):
     )
 ])
 def test_handle_log_types(event_types_to_fetch, expected):
+    """
+    Given:
+        - A list or set of event types to fetch (event_types_to_fetch).
+        - An expected result (expected) representing the processed event types.
+
+    When:
+        Calling the handle_log_types function with the provided event types to fetch.
+
+    Then:
+        Verify that the function returns the expected result, confirming that it correctly processes the event types 
+        as intended.
+    """
     result = handle_log_types(event_types_to_fetch)
     assert result == expected
 
 
-def test_partial_valid_event_types():
-    """Test that partial valid event types raise an exception."""
+def test_handle_not_valid_log_types():
     event_types = ['fake_type']
     with pytest.raises(DemistoException) as e:
         handle_log_types(event_types)
@@ -335,8 +379,7 @@ def test_fetch_events_limit_logic(mocker):
 def test_fetch_all_events(mocker, last_run, log_types, mock_initialize_start_timestamp, mock_fetch_events_side_effect,
                           expected_last_run, expected_all_events):
     """Test the fetch_all_events function with mocked dependencies."""
-    mocker.patch('ZeroNetworksSegmentEventCollector.initialize_start_timestamp',
-                 return_value=mock_initialize_start_timestamp)
+    mocker.patch('ZeroNetworksSegmentEventCollector.initialize_start_timestamp', return_value=mock_initialize_start_timestamp)
     mocker.patch('ZeroNetworksSegmentEventCollector.fetch_events', side_effect=mock_fetch_events_side_effect)
 
     client = MockClient("", False, False, {})
