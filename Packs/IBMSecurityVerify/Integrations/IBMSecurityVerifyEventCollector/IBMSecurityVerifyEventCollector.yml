@@ -11,7 +11,7 @@ configuration:
   required: true
   type: 0
   section: Connect
-  additionalinfo: 'For example: https://{tenant_id}.verify.ibm.com'
+  additionalinfo: 'For example: https://example.verify.ibm.com'
 - display: Client ID
   name: credentials
   required: true
@@ -59,8 +59,8 @@ script:
     - name: last_time
       description: "The timestamp of the last event retrieved. Use together with `last_id` for pagination to get events after this time. Example: 1672531200000."
     - name: sort_order
-      description: "Order to sort events by: 'desc' or 'asc'."
-      defaultValue: 'desc'
+      description: "Order to sort events by: 'Desc' or 'Asc'."
+      defaultValue: 'Desc'
       auto: PREDEFINED
       predefined:
       - 'Desc'

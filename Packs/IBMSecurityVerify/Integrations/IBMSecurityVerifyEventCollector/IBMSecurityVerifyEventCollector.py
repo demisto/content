@@ -30,6 +30,9 @@ class Client(BaseClient):
 
     def _authenticate(self):
         """
+        Authenticates by validating or obtaining a new access token.
+
+        Sets the authorization header with the valid access token.
         """
         token_data = demisto.getIntegrationContext()
 
@@ -40,9 +43,15 @@ class Client(BaseClient):
         access_token = token_data["access_token"]
         self._headers = {"Authorization": f"Bearer {access_token}"}
 
-    def _is_token_valid(self, token_data):
+    def _is_token_valid(self, token_data) -> bool:
         """
-        Checks if the current token is valid and not expired with a security buffer.
+        Checks if the access token is valid and not expired.
+
+        Args:
+            token_data (dict): Token data with 'access_token' and 'expiry_time_utc'.
+
+        Returns:
+            bool: True if valid, False otherwise.
         """
         access_token = token_data.get("access_token")
         expiry_time_str = token_data.get("expiry_time_utc")
@@ -55,7 +64,7 @@ class Client(BaseClient):
 
     def _get_new_token(self):
         """
-        Fetches a new token from the Exabeam API and updates the integration context.
+        Checks if the access token is valid and not expired.
         """
         data = {
             "client_id": self.client_id,
@@ -78,11 +87,15 @@ class Client(BaseClient):
         return token_data
 
     def _max_limit_validation(self, limit):
+        """
+        Validates if the limit is within the allowed range.
+        """
         if limit > MAX_LIMIT or limit < MIN_LIMIT:
             raise DemistoException(f"The maximum number of events per fetch should be between 1 - {MAX_LIMIT}")
 
     def search_events(self, limit: int, sort_order: str, last_item: dict = {}) -> list:
         """
+        Searches and returns a list of events based on the specified criteria.
 
         """
         self._max_limit_validation(limit)
@@ -114,6 +127,9 @@ def test_module(client: Client) -> str:
 
 
 def get_events_command(client: Client, args: dict) -> list[dict]:
+    """
+    Retrieves events using the client based on the provided arguments.
+    """
     last_id = args.get("last_id")
     last_time = args.get("last_time")
     last_item = {"last_id": last_id, "last_time": last_time}
