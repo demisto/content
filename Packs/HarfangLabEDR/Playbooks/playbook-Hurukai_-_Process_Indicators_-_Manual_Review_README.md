@@ -30,4 +30,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Hurukai - Process Indicators - Manual Review](./doc_files/Hurukai_-_Process_Indicators_-_Manual_Review.png)
+![Hurukai - Process Indicators - Manual Review](../doc_files/Hurukai_-_Process_Indicators_-_Manual_Review.png)

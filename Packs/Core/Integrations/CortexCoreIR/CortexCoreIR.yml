@@ -1978,6 +1978,13 @@ script:
       predefined:
         - 'true'
         - 'false'
+    - description: Whether to return events_from_decider context output as a dictionary (the raw API response) or as a list (improved for playbook automation) - relevant only when filter_alert_fields is set to False.
+      name: events_from_decider_format
+      auto: PREDEFINED
+      defaultValue: 'dict'
+      predefined:
+      - 'list'
+      - 'dict'
     description: Returns information about each alert ID.
     name: core-get-cloud-original-alerts
     outputs:
@@ -2943,7 +2950,7 @@ script:
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/google-cloud-storage:1.0.0.96060
+  dockerimage: demisto/google-cloud-storage:1.0.0.100327
 tests:
 - No tests
 fromversion: 6.2.0

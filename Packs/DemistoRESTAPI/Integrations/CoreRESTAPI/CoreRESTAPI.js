@@ -32,6 +32,9 @@ getTenantAccountName = function () {
             account_name = 'acc_' + tenant_name
         }
     }
+    else{
+        logDebug('getTenantAccountName: The server url ' + server_url + ' does not contain the expected tenant prefix acc_');
+    }
     return account_name
 }
 
@@ -120,7 +123,7 @@ sendMultipart = function (uri, entryID, body) {
             'file'
         );
         tries++;
-    } while (tries < 3 && res.Status.startsWith('timeout while waiting for answer'));
+    } while (tries < 3 && res.Status.startsWith('timeout'));
     logDebug("Ran httpMultipart() " + tries + " time(s)")
 
     if (res.StatusCode < 200 || res.StatusCode >= 300) {
