@@ -6208,7 +6208,7 @@ Get all the jobs from the devices in the environment, or a single job when ID is
             {
                 "description": null,
                 "hostid": "11111111111111",
-                "id": 6,
+                "id": 1,
                 "positionInQ": "0",
                 "progress": "01:02:18",
                 "result": "OK",
@@ -6217,21 +6217,23 @@ Get all the jobs from the devices in the environment, or a single job when ID is
                 "tenq": "2022/03/30 01:02:04",
                 "tfin": "01:02:18",
                 "type": "Downld",
-                "user": null
+                "user": null,
+                "warnings": null
             },
             {
                 "description": null,
-                "hostid": "2222222222222",
-                "id": -1,
+                "hostid": "22222222222222",
+                "id": 2,
                 "positionInQ": "0",
-                "progress": "0",
-                "result": "",
-                "status": "",
+                "progress": "100",
+                "result": "OK",
+                "status": "FIN",
                 "stoppable": "no",
-                "tenq": "",
-                "tfin": "",
-                "type": "Failed-Job",
-                "user": null
+                "tenq": "2022/03/15 14:16:32",
+                "tfin": "14:16:33",
+                "type": "BuildXMLCache",
+                "user": null,
+                "warnings": null
             }
         ]
     }
@@ -6241,11 +6243,10 @@ Get all the jobs from the devices in the environment, or a single job when ID is
 #### Human Readable Output
 
 >### PAN-OS Job Status
->|hostid|id|positionInQ|progress|result|status|stoppable|tenq|tfin|type|
->|---|---|---|---|---|---|---|---|---|---|
->| 11111111111111 | 6 | 0 | 01:02:18 | OK | FIN | no | 2022/03/30 01:02:04 | 01:02:18 | Downld |
->| 2222222222222 | -1 | 0 | 0 |  |  | no |  |  | Failed-Job |
-
+>|hostid|id|positionInQ|progress|result|status|stoppable|tenq|tfin|type|user|warnings|
+>|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 11111111111111 | 1 | 0 | 100 | OK | FIN | no | 2022/03/15 14:17:16 | 14:18:17 | Downld |  |  |
+>| 22222222222222 | 2 | 0 | 01:02:15 | OK | FIN | no | 2022/03/16 01:02:04 | 01:02:15 | BuildXMLCache |  |  |
 
 ### pan-os-platform-download-software
 ***
