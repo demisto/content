@@ -1,2 +1,5 @@
 [file:NucleonCyberFeed_image.png]
 ignore=IM111
+
+[file:NucleonCyberFeed.yml]
+ignore=IN122

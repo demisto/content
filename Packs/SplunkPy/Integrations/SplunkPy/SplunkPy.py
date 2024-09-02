@@ -74,6 +74,8 @@ DATA = 'data'
 TYPE = 'type'
 ID = 'id'
 CREATION_TIME = 'creation_time'
+QUERY_NAME = 'query_name'
+QUERY_SEARCH = 'query_search'
 INCIDENT_CREATED = 'incident_created'
 
 DRILLDOWN_REGEX = r'([^\s\$]+)=(\$[^\$]+\$)|(\$[^\$]+\$)'
@@ -84,6 +86,7 @@ ENRICHMENT_TYPE_TO_ENRICHMENT_STATUS = {
     IDENTITY_ENRICHMENT: 'successful_identity_enrichment'
 }
 COMMENT_MIRRORED_FROM_XSOAR = 'Mirrored from Cortex XSOAR'
+USER_RELATED_FIELDS = ['user', 'src_user']
 
 # =========== Not Missing Events Mechanism Globals ===========
 CUSTOM_ID = 'custom_id'
@@ -505,7 +508,7 @@ def fetch_incidents(service: client.Service, mapper: UserMappingObject, comment_
 # =========== Enriching Fetch Mechanism ===========
 
 class Enrichment:
-    """ A class to represent an Enrichment. Each notable has 3 possible enrichments: Drilldown, Asset & Identity
+    """ A class to represent an Enrichment. Each notable has 3 possible enrichment types: Drilldown, Asset & Identity
 
     Attributes:
         type (str): The enrichment type. Possible values are: Drilldown, Asset & Identity.
@@ -513,6 +516,8 @@ class Enrichment:
         data (list): The enrichment's data list (events retrieved from the job's search).
         creation_time (str): The enrichment's creation time in ISO format.
         status (str): The enrichment's status.
+        query_name (str): The enrichment's query name.
+        query_search (str): The enrichment's query search.
     """
     FAILED = 'Enrichment failed'
     EXCEEDED_TIMEOUT = 'Enrichment exceed the given timeout'
@@ -520,26 +525,32 @@ class Enrichment:
     SUCCESSFUL = 'Enrichment successfully handled'
     HANDLED = (EXCEEDED_TIMEOUT, FAILED, SUCCESSFUL)
 
-    def __init__(self, enrichment_type, status=None, enrichment_id=None, data=None, creation_time=None):
+    def __init__(self, enrichment_type, status=None, enrichment_id=None, data=None, creation_time=None,
+                 query_name=None, query_search=None):
         self.type = enrichment_type
         self.id = enrichment_id
         self.data = data or []
         self.creation_time = creation_time if creation_time else datetime.utcnow().isoformat()
         self.status = status or Enrichment.IN_PROGRESS
+        self.query_name = query_name
+        self.query_search = query_search
 
     @classmethod
-    def from_job(cls, enrichment_type, job: client.Job):
+    def from_job(cls, enrichment_type, job: client.Job, query_name=None, query_search=None):
         """ Creates an Enrichment object from Splunk Job object
 
         Args:
             enrichment_type (str): The enrichment type
             job (splunklib.client.Job): The corresponding Splunk Job
+            query_name: The enrichment query name
+            query_search: The enrichment query search
 
         Returns:
             The created enrichment (Enrichment)
         """
         if job:
-            return cls(enrichment_type=enrichment_type, enrichment_id=job["sid"])
+            return cls(enrichment_type=enrichment_type, enrichment_id=job["sid"],
+                       query_name=query_name, query_search=query_search)
         else:
             return cls(enrichment_type=enrichment_type, status=Enrichment.FAILED)
 
@@ -552,13 +563,16 @@ class Enrichment:
 
         Returns:
             An instance of the Enrichment class constructed from JSON representation.
+
         """
         return cls(
             enrichment_type=enrichment_dict.get(TYPE),
             data=enrichment_dict.get(DATA),
             status=enrichment_dict.get(STATUS),
             enrichment_id=enrichment_dict.get(ID),
-            creation_time=enrichment_dict.get(CREATION_TIME)
+            creation_time=enrichment_dict.get(CREATION_TIME),
+            query_name=enrichment_dict.get(QUERY_NAME),
+            query_search=enrichment_dict.get(QUERY_SEARCH)
         )
 
 
@@ -656,22 +670,65 @@ class Notable:
         """ Gathers all data from all notable's enrichments and return an incident """
         self.incident_created = True
 
+        total_drilldown_searches = self.drilldown_searches_counter()
+
         for e in self.enrichments:
-            self.data[e.type] = e.data
-            self.data[ENRICHMENT_TYPE_TO_ENRICHMENT_STATUS[e.type]] = e.status == Enrichment.SUCCESSFUL
+            if e.type == DRILLDOWN_ENRICHMENT and total_drilldown_searches > 1:
+                # A notable can have more than one drilldown search enrichment, in that case we keep the searches results in
+                # a list of dictionaries - each dict contains the query detail and the search results of a drilldown search
+
+                drilldown_enrichment_details = {"query_name": e.query_name, "query_search": e.query_search,
+                                                "query_results": e.data, "enrichment_status": e.status}
+
+                if not self.data.get(e.type):  # first drilldown enrichment result to add - initiate the list
+                    self.data[e.type] = [drilldown_enrichment_details]
+
+                else:  # there are previous drilldown enrichments in the notable's data
+                    self.data[e.type].append(drilldown_enrichment_details)
+
+                if not self.data.get('successful_drilldown_enrichment'):
+                    # Drilldown enrichment is successful if at least one drilldown search was successful
+                    self.data['successful_drilldown_enrichment'] = e.status == Enrichment.SUCCESSFUL
+
+            else:  # asset enrichment, identity enrichment or a single drilldown enrichment
+                # (return a list to maintain Backwards compatibility)
+                self.data[e.type] = e.data
+                self.data[ENRICHMENT_TYPE_TO_ENRICHMENT_STATUS[e.type]] = e.status == Enrichment.SUCCESSFUL
 
         return self.create_incident(self.data, self.occurred, mapper=mapper, comment_tag_to_splunk=comment_tag_to_splunk,
                                     comment_tag_from_splunk=comment_tag_from_splunk)
 
+    def drilldown_searches_counter(self):
+        """ Counts the drilldown searches of a notable """
+        drilldown_search_cnt = 0
+
+        for e in self.enrichments:
+            if e.type == DRILLDOWN_ENRICHMENT:
+                drilldown_search_cnt += 1
+
+        return drilldown_search_cnt
+
     def submitted(self) -> bool:
         """ Returns an indicator on whether any of the notable's enrichments was submitted or not """
+        notable_enrichment_types = {e.type for e in self.enrichments}
         return any(enrichment.status == Enrichment.IN_PROGRESS for enrichment in self.enrichments) and len(
-            self.enrichments) == len(ENABLED_ENRICHMENTS)
+            notable_enrichment_types) == len(ENABLED_ENRICHMENTS)
+
+        # Explanation of the conditions:
+        # 1. First condition - if any of the notable's enrichments is 'in progress', it means that it was submitted to splunk.
+        # 2. Second condition - The ENABLED_ENRICHMENTS list contains the enrichment types that the user wants to enrich.
+        # According to the logic of the submit_notable() function, in a normal situation (where the code wasn't interrupted)
+        # the notable.enrichments list should include an enrichment object for each enrichment type that exist in the
+        # ENABLED_ENRICHMENTS list. That is because in the submit_notable() function we always add Enrichments objects to the
+        # notable.enrichments list regardless their statuses (failed\success). So if the function had finished it's run without
+        # any interruption we will have at least one enrichment object for each enrichment type (for drilldown enrichment we could
+        # have more than one enrichment object - in a case of multiple drilldown searches enrichment).
 
     def failed_to_submit(self):
         """ Returns an indicator on whether all notable's enrichments were failed to submit or not """
+        notable_enrichment_types = {e.type for e in self.enrichments}
         return all(enrichment.status == Enrichment.FAILED for enrichment in self.enrichments) and len(
-            self.enrichments) == len(ENABLED_ENRICHMENTS)
+            notable_enrichment_types) == len(ENABLED_ENRICHMENTS)
 
     def handled(self):
         """ Returns an indicator on whether all notable's enrichments were handled or not """
@@ -890,19 +947,32 @@ def get_notable_field_and_value(raw_field, notable_data, raw=None):
     for field in raw:
         if field in raw_field:
             return field, raw[field]
-    demisto.error(f'Failed building drilldown search query. field {raw_field} was not found in the notable.')
+    demisto.error(f'Field {raw_field} was not found in the notable.')
     return "", ""
 
 
-def build_drilldown_search(notable_data, search, raw_dict):
-    """ Replaces all needed fields in a drilldown search query
+def remove_double_quotes(query: str) -> str:
+    """
+        query (str): query with double double quotes.
 
+        Return: query with no double double quotes. Example: "this is a ""test""\" -> "this is a "test""
+    """
+    # Regular expression to match two consecutive quotation marks with any character(s) in between
+    pattern = re.compile(r'""(.*?)""')
+
+    # Substitute the pattern with single quotes around the matched content
+    return pattern.sub(r'"\1"', query)
+
+
+def build_drilldown_search(notable_data, search, raw_dict, is_query_name=False):
+    """ Replaces all needed fields in a drilldown search query, or a search query name
     Args:
         notable_data (dict): The notable data
         search (str): The drilldown search query
         raw_dict (dict): The raw dict
+        is_query_name (bool): Whether the given query is a query name (default is false)
 
-    Returns (str): A searchable drilldown search query
+    Returns (str): A searchable drilldown search query or a parsed query name
     """
     searchable_search: list = []
     start = 0
@@ -913,18 +983,37 @@ def build_drilldown_search(notable_data, search, raw_dict):
         raw_field = (groups[1] or groups[2]).strip('$')
         field, replacement = get_notable_field_and_value(raw_field, notable_data, raw_dict)
         if not field and not replacement:
+            if not is_query_name:
+                demisto.error(f'Failed building drilldown search query. Field {raw_field} was not found in the notable.')
             return ""
+
         if prefix:
-            replacement = get_fields_query_part(notable_data, prefix, [field], raw_dict)
+            if field in USER_RELATED_FIELDS:
+                replacement = get_fields_query_part(notable_data, prefix, [field], raw_dict, add_backslash=True)
+            else:
+                replacement = get_fields_query_part(notable_data, prefix, [field], raw_dict)
+
+        elif field in USER_RELATED_FIELDS:
+            # User fields usually contains backslashes - to pass a literal backslash in an argument to Splunk we must escape
+            # the backslash by using the double-slash ( \\ ) string
+            replacement = replacement.replace('\\', '\\\\')
+            replacement = f""""{replacement.strip('"')}\""""
+
         end = match.start()
         searchable_search.extend((search[start:end], str(replacement)))
         start = match.end()
     searchable_search.append(search[start:])  # Handling the tail of the query
 
-    return ''.join(searchable_search)
+    parsed_query = ''.join(searchable_search)
+
+    # Avoiding double quotes in splunk variables that were surrounded by quotation marks in the original query (ex: '"$user|s"')
+    parsed_query = remove_double_quotes(parsed_query)
+    demisto.debug(f"Parsed query is: {parsed_query}")
+
+    return parsed_query
 
 
-def get_drilldown_timeframe(notable_data, raw):
+def get_drilldown_timeframe(notable_data, raw) -> tuple[str, str]:
     """ Sets the drilldown search timeframe data.
 
     Args:
@@ -932,11 +1021,9 @@ def get_drilldown_timeframe(notable_data, raw):
         raw (dict): The raw dict
 
     Returns:
-        task_status: True if the timeframe was retrieved successfully, False otherwise.
         earliest_offset: The earliest time to query from.
         latest_offset: The latest time to query to.
     """
-    task_status = True
     earliest_offset = notable_data.get("drilldown_earliest", "")
     latest_offset = notable_data.get("drilldown_latest", "")
     info_min_time = raw.get(INFO_MIN_TIME, "")
@@ -947,57 +1034,151 @@ def get_drilldown_timeframe(notable_data, raw):
             earliest_offset = info_min_time
         else:
             demisto.debug("Failed retrieving info min time")
-            task_status = False
     if not latest_offset or latest_offset == f"${INFO_MAX_TIME}$":
         if info_max_time:
             latest_offset = info_max_time
         else:
             demisto.debug("Failed retrieving info max time")
-            task_status = False
 
-    return task_status, earliest_offset, latest_offset
+    return earliest_offset, latest_offset
 
 
-def drilldown_enrichment(service: client.Service, notable_data, num_enrichment_events):
+def parse_drilldown_searches(drilldown_searches: list) -> list[dict]:
+    """ Goes over the drilldown searches list, parses each drilldown search and converts it to a python dictionary.
+
+    Args:
+        drilldown_searches (list): The list of the drilldown searches.
+
+    Returns:
+        list[dict]: A list of the drilldown searches dictionaries.
+    """
+    demisto.debug("There are multiple drilldown searches to enrich, parsing each drilldown search object")
+    searches = []
+
+    for drilldown_search in drilldown_searches:
+        try:
+            # drilldown_search may be a json list/dict represented as string
+            search = json.loads(drilldown_search)
+            if isinstance(search, list):
+                searches.extend(search)
+            else:
+                searches.append(search)
+        except json.JSONDecodeError as e:
+            demisto.error(f"Caught an exception while parsing a drilldown search object."
+                          f"Drilldown search is: {drilldown_search}, Original Error is: {str(e)}")
+
+    return searches
+
+
+def get_drilldown_searches(notable_data):
+    """ Extract the drilldown_searches from the notable_data.
+    It can be a list of objects, a single object or a simple string that contains the query.
+
+    Args:
+        notable_data (dict): The notable data
+
+    Returns: A list that contains dict/s of the drilldown data like: name, search etc or the simple search query.
+    """
+    # Multiple drilldown searches is a feature added to Enterprise Security v7.2.0.
+    # from this version, if a user set a drilldown search, we get a list of drilldown search objects (under
+    # the 'drilldown_searches' key) and submit a splunk enrichment for each one of them.
+    # To maintain backwards compatibility we keep using the 'drilldown_search' key as well.
+
+    if drilldown_search := notable_data.get("drilldown_search"):
+        # The drilldown_searches are in 'old' format a simple string query.
+        return [drilldown_search]
+    if drilldown_search := notable_data.get("drilldown_searches", []):
+        if isinstance(drilldown_search, list):
+            # The drilldown_searches are a list of searches data stored as json strings:
+            return parse_drilldown_searches(drilldown_search)
+        else:
+            # The drilldown_searches are a dict/list of the search data in a JSON string representation.
+            return parse_drilldown_searches([drilldown_search])
+    return []
+
+
+def drilldown_enrichment(service: client.Service, notable_data, num_enrichment_events) -> list[tuple[str, str, client.Job]]:
     """ Performs a drilldown enrichment.
+    If the notable has multiple drilldown searches, enriches all the drilldown searches.
 
     Args:
         service (splunklib.client.Service): Splunk service object.
         notable_data (dict): The notable data
         num_enrichment_events (int): The maximal number of events to return per enrichment type.
 
-    Returns: The Splunk Job
+    Returns: A list that contains tuples of a query name, query search and the splunk job that runs the query.
+             [(query_name, query_search, splunk_job)]
     """
-    job = None
+    jobs_and_queries = []
     demisto.debug(f"notable data is: {notable_data}")
-    if search := notable_data.get("drilldown_search") or notable_data.get("drilldown_searches", ""):
+    if searches := get_drilldown_searches(notable_data):
         raw_dict = rawToDict(notable_data.get("_raw", ""))
-        if searchable_query := build_drilldown_search(
-            notable_data, search, raw_dict
-        ):
-            status, earliest_offset, latest_offset = get_drilldown_timeframe(notable_data, raw_dict)
-            if status:
-                kwargs = {"max_count": num_enrichment_events, "exec_mode": "normal"}
-                if latest_offset:
-                    kwargs['latest_time'] = latest_offset
-                if earliest_offset:
-                    kwargs['earliest_time'] = earliest_offset
-                query = build_search_query({"query": searchable_query})
-                demisto.debug(f"Drilldown query for notable {notable_data[EVENT_ID]}: {query}")
-                try:
-                    job = service.jobs.create(query, **kwargs)
-                except Exception as e:
-                    demisto.error(f"Caught an exception in drilldown_enrichment function: {str(e)}")
-            else:
-                demisto.debug(f'Failed getting the drilldown timeframe for notable {notable_data[EVENT_ID]}')
-        else:
-            demisto.debug(
-                f"Couldn't build search query for notable {notable_data[EVENT_ID]} with the following drilldown search {search}"
-            )
-    else:
-        demisto.debug(f"drill-down was not configured for notable {notable_data[EVENT_ID]}")
 
-    return job
+        total_searches = len(searches)
+        demisto.debug(f'Notable {notable_data[EVENT_ID]} has {total_searches} drilldown searches to enrich')
+
+        for i in range(total_searches):
+            # Iterates over the drilldown searches of the given notable to enrich each one of them
+            search = searches[i]
+            demisto.debug(f'Enriches drilldown search number {i+1} out of {total_searches} for notable {notable_data[EVENT_ID]}')
+
+            if isinstance(search, dict):
+                query_name = search.get("name", "")
+                query_search = search.get("search", "")
+                earliest_offset = search.get("earliest") or search.get("earliest_offset", "")  # The earliest time to query from.
+                latest_offset = search.get("latest") or search.get("latest_offset", "")  # The latest time to query to.
+
+            else:
+                # Got a single drilldown search under the 'drilldown_search' key (BC)
+                query_search = search
+                query_name = notable_data.get("drilldown_name", "")
+                earliest_offset, latest_offset = get_drilldown_timeframe(notable_data, raw_dict)
+
+            try:
+                parsed_query_name = build_drilldown_search(notable_data, query_name, raw_dict, True)
+                if not parsed_query_name:  # if parsing failed - keep original unparsed name
+                    demisto.debug(
+                        f'Failed parsing drilldown search query name, using the original '
+                        f'un-parsed query name instead: {query_name}.')
+                    parsed_query_name = query_name
+            except Exception as e:
+                demisto.error(
+                    f"Caught an exception while parsing the query name, using the original query name instead: {str(e)}")
+                parsed_query_name = query_name
+
+            if searchable_query := build_drilldown_search(
+                notable_data, query_search, raw_dict
+            ):
+                demisto.debug(f"Search Query was build successfully for notable {notable_data[EVENT_ID]}")
+
+                if earliest_offset and latest_offset:
+                    kwargs = {"max_count": num_enrichment_events, "exec_mode": "normal"}
+                    if latest_offset:
+                        kwargs['latest_time'] = latest_offset
+                    if earliest_offset:
+                        kwargs['earliest_time'] = earliest_offset
+                    query = build_search_query({"query": searchable_query})
+                    demisto.debug(f"Drilldown query for notable {notable_data[EVENT_ID]} is: {query}")
+                    try:
+                        job = service.jobs.create(query, **kwargs)
+                        jobs_and_queries.append((parsed_query_name, query, job))
+
+                    except Exception as e:
+                        demisto.error(f"Caught an exception in drilldown_enrichment function: {str(e)}")
+                else:
+                    demisto.debug(f'Failed getting the drilldown timeframe for notable {notable_data[EVENT_ID]}')
+                    jobs_and_queries.append((None, None, None))
+            else:
+                demisto.debug(
+                    f"Couldn't build search query for notable {notable_data[EVENT_ID]} "
+                    f"with the following drilldown search {query_search}"
+                )
+                jobs_and_queries.append((None, None, None))
+    else:
+        demisto.debug(f"drill-down was not properly configured for notable {notable_data[EVENT_ID]}")
+        jobs_and_queries.append((None, None, None))
+
+    return jobs_and_queries
 
 
 def identity_enrichment(service: client.Service, notable_data, num_enrichment_events) -> client.Job:
@@ -1015,7 +1196,7 @@ def identity_enrichment(service: client.Service, notable_data, num_enrichment_ev
     if users := get_fields_query_part(
         notable_data=notable_data,
         prefix="identity",
-        fields=["user", "src_user"],
+        fields=USER_RELATED_FIELDS,
         add_backslash=True,
     ):
         tables = argToList(demisto.params().get('identity_enrich_lookup_tables', DEFAULT_IDENTITY_ENRICH_TABLE))
@@ -1027,7 +1208,7 @@ def identity_enrichment(service: client.Service, notable_data, num_enrichment_ev
             kwargs = {"max_count": num_enrichment_events, "exec_mode": "normal"}
             job = service.jobs.create(query, **kwargs)
         except Exception as e:
-            demisto.error(f"Caught an exception in drilldown_enrichment function: {str(e)}")
+            demisto.error(f"Caught an exception in identity_enrichment function: {str(e)}")
     else:
         demisto.debug(f'No users were found in notable. {error_msg}')
 
@@ -1115,28 +1296,31 @@ def handle_submitted_notable(service: client.Service, notable: Notable, enrichme
     task_status = False
 
     if not notable.is_enrichment_process_exceeding_timeout(enrichment_timeout):
-        demisto.debug(f"Trying to handle open enrichment {notable.id}")
+        demisto.debug(f"Trying to handle open enrichment for notable {notable.id}")
         for enrichment in notable.enrichments:
             if enrichment.status == Enrichment.IN_PROGRESS:
                 try:
                     job = client.Job(service=service, sid=enrichment.id)
                     if job.is_done():
-                        demisto.debug(f'Handling {enrichment.type=} for notable {notable.id}')
+                        demisto.debug(f'Handling {enrichment.id=} of {enrichment.type=} for notable {notable.id}')
                         for item in results.JSONResultsReader(job.results(output_mode=OUTPUT_MODE_JSON)):
                             if handle_message(item):
                                 continue
                             enrichment.data.append(item)
                         enrichment.status = Enrichment.SUCCESSFUL
-                        demisto.debug(f'{notable.id} {enrichment.type} status is successful. {len(enrichment.data)=}')
+                        demisto.debug(f'{enrichment.id=} of {enrichment.type=} for notable {notable.id} status is successful '
+                                      f'{len(enrichment.data)=}')
                     else:
-                        demisto.debug(f'Enrichment {enrichment.type} for notable {notable.id} is still not done')
+                        demisto.debug(f'{enrichment.id=} of {enrichment.type=} for notable {notable.id} is still not done')
                 except Exception as e:
 
                     demisto.error(
-                        f"Caught an exception while retrieving {enrichment.type}\
-                        enrichment results for notable {notable.id}: {str(e)}"
+                        f"Caught an exception while retrieving {enrichment.id=} of {enrichment.type=}\
+                        results for notable {notable.id}: {str(e)}"
                     )
+
                     enrichment.status = Enrichment.FAILED
+                    demisto.error(f'{enrichment.id=} of {enrichment.type=} for notable {notable.id} was failed.')
 
         if notable.handled():
             task_status = True
@@ -1147,7 +1331,7 @@ def handle_submitted_notable(service: client.Service, notable: Notable, enrichme
     else:
         task_status = True
         demisto.debug(
-            f"Open enrichment {notable.id} has exceeded the enrichment timeout of {enrichment_timeout}.\
+            f"Open enrichment for notable {notable.id} has exceeded the enrichment timeout of {enrichment_timeout}.\
             Submitting the notable without the enrichment."
         )
 
@@ -1211,8 +1395,11 @@ def submit_notable(service: client.Service, notable: Notable, num_enrichment_eve
     submitted_drilldown, submitted_asset, submitted_identity = notable.get_submitted_enrichments()
 
     if DRILLDOWN_ENRICHMENT in ENABLED_ENRICHMENTS and not submitted_drilldown:
-        job = drilldown_enrichment(service, notable.data, num_enrichment_events)
-        notable.enrichments.append(Enrichment.from_job(DRILLDOWN_ENRICHMENT, job))
+        jobs_and_queries = drilldown_enrichment(service, notable.data, num_enrichment_events)
+        for job_and_query in jobs_and_queries:
+            notable.enrichments.append(
+                Enrichment.from_job(DRILLDOWN_ENRICHMENT, job=job_and_query[2],
+                                    query_name=job_and_query[0], query_search=job_and_query[1]))
     if ASSET_ENRICHMENT in ENABLED_ENRICHMENTS and not submitted_asset:
         job = asset_enrichment(service, notable.data, num_enrichment_events)
         notable.enrichments.append(Enrichment.from_job(ASSET_ENRICHMENT, job))
@@ -1390,7 +1577,8 @@ def get_remote_data_command(service: client.Service, args: dict,
              f'| where rule_id="{notable_id}" ' \
              f'| where last_modified_timestamp>{last_update_splunk_timestamp} ' \
              '| fields - time ' \
-             '| map search=" search `notable_by_id($rule_id$)`"'
+             '| map search=" search `notable_by_id($rule_id$)`"' \
+             '| expandtoken'
 
     demisto.debug(f'Performing get-remote-data command with query: {search}')
 
@@ -1487,7 +1675,7 @@ def update_remote_system_command(args, params, service: client.Service, auth_tok
     delta = parsed_args.delta
     notable_id = parsed_args.remote_incident_id
     entries = parsed_args.entries
-    base_url = 'https://' + params['host'] + ':' + params['port'] + '/'
+    base_url = f"https://{params['host'].replace('https://', '')}:{params['port']}/"
     demisto.debug(f"mirroring args: entries:{parsed_args.entries} delta:{parsed_args.delta}")
     if parsed_args.incident_changed and delta:
         demisto.debug(
@@ -1807,7 +1995,7 @@ class ResponseReaderWrapper(io.RawIOBase):
     def close(self):
         self.responseReader.close()
 
-    def read(self, n):
+    def read(self, n):  # type: ignore[override]
         return self.responseReader.read(n)
 
     def readinto(self, b):
@@ -2236,6 +2424,32 @@ def parse_batch_of_results(current_batch_of_results, max_results_to_add, app):
     return parsed_batch_results, batch_dbot_scores
 
 
+def raise_error_for_failed_job(job):
+    """
+    Handle the case that the search job failed due to dome reason like parsing issues etc
+    raise DemistoException in case there is a fatal error in the search job.
+    see https://docs.splunk.com/Documentation/Splunk/9.3.0/RESTTUT/RESTsearches#:~:text=the%20results%20returned.-,dispatchState,-dispatchState%20is%20one
+
+    Args:
+        job (Job): the created search job
+
+    Raises:
+        Exception: DemistoException in case there is a fatal error
+    """
+    err_msg = None
+    try:
+        if job and job['dispatchState'] == 'FAILED':
+            messages = job['messages']
+            for err_type in ['fatal', 'error']:
+                if messages.get(err_type):
+                    err_msg = ','.join(messages[err_type])
+                    break
+    except Exception:
+        pass
+    if err_msg:
+        raise DemistoException(f'Failed to run the search in Splunk: {err_msg}')
+
+
 def splunk_search_command(service: client.Service, args: dict) -> CommandResults | list[CommandResults]:
     query = build_search_query(args)
     polling = argToBoolean(args.get("polling", False))
@@ -2248,6 +2462,8 @@ def splunk_search_command(service: client.Service, args: dict) -> CommandResults
         search_job = service.jobs.create(query, **search_kwargs)
         job_sid = search_job["sid"]
         args['sid'] = job_sid
+        raise_error_for_failed_job(search_job)
+
     status_cmd_result: CommandResults | None = None
     if polling:
         status_cmd_result = splunk_job_status(service, args)
@@ -2873,7 +3089,7 @@ def main():  # pragma: no cover
 
     connection_args = get_connection_args(params)
 
-    base_url = 'https://' + params['host'] + ':' + params['port'] + '/'
+    base_url = f"https://{params['host'].replace('https://', '')}:{params['port']}/"
     auth_token = None
     username = params['authentication']['identifier']
     password = params['authentication']['password']

@@ -23,7 +23,7 @@ def read_json_util(path: str):
     """
     Read json util functions
     """
-    with open(path, 'r') as f:
+    with open(path) as f:
         json_file = json.load(f)
 
     return json_file

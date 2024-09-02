@@ -1019,7 +1019,7 @@ def test_get_team_aad_id(mocker, requests_mock):
         'value': [
             {
                 'id': '02bd9fd6-8f93-4758-87c3-1fb73740a315',
-                'displayName': 'MyGreatTeam',
+                'displayName': 'MyGreat #Team',
                 'groupTypes': [
                     'Unified'
                 ],
@@ -1055,11 +1055,11 @@ def test_get_team_aad_id(mocker, requests_mock):
         get_team_aad_id('The-B-Team')
     assert str(e.value) == 'Could not find requested team.'
 
-    url_b = f"{BASE_URL}?$filter=displayName eq 'MyGreatTeam' and resourceProvisioningOptions/Any(x:x eq 'Team')"
+    url_b = f"{BASE_URL}?$filter=displayName eq 'MyGreat%20%23Team' and resourceProvisioningOptions/Any(x:x eq 'Team')"
     requests_mock.get(url_b, json=json_response)
 
     # verify team ID for team which is not in integration context
-    assert get_team_aad_id('MyGreatTeam') == '02bd9fd6-8f93-4758-87c3-1fb73740a315'
+    assert get_team_aad_id('MyGreat #Team') == '02bd9fd6-8f93-4758-87c3-1fb73740a315'
 
 
 def test_get_team_member():
@@ -2276,7 +2276,7 @@ def test_generate_login_url(mocker):
     # assert
     expected_url = f'[login URL](https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/authorize?' \
                    'response_type=code&scope=offline_access%20https://graph.microsoft.com/.default' \
-                   f'&client_id={client_id}&redirect_uri={redirect_uri}&prompt=consent)'
+                   f'&client_id={client_id}&redirect_uri={redirect_uri})'
     res = MicrosoftTeams.return_results.call_args[0][0].readable_output
     assert expected_url in res
 

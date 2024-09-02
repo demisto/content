@@ -5,6 +5,7 @@ ignore=RM112
 commonscripts
 urlencode
 substring
+matchexact
 
 [file:StripChar.yml]
 ignore=BA124

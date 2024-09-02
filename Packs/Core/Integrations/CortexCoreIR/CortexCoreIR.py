@@ -148,27 +148,30 @@ def main():  # pragma: no cover
     args = demisto.args()
     args["integration_context_brand"] = INTEGRATION_CONTEXT_BRAND
     args["integration_name"] = INTEGRATION_NAME
-    api_key = demisto.params().get('apikey')
-    api_key_id = demisto.params().get('apikey_id')
-    url = demisto.params().get('url')
+    headers = {}
     url_suffix = '/xsiam' if command in PREVALENCE_COMMANDS else "/public_api/v1"
+    if not FORWARD_USER_RUN_RBAC:
+        api_key = demisto.params().get('apikey')
+        api_key_id = demisto.params().get('apikey_id')
+        url = demisto.params().get('url')
 
-    if not api_key or not api_key_id or not url:
-        headers = {
-            "HOST": demisto.getLicenseCustomField("Core.ApiHostName"),
-            demisto.getLicenseCustomField("Core.ApiHeader"): demisto.getLicenseCustomField("Core.ApiKey"),
-            "Content-Type": "application/json"
-        }
-        url = "http://" + demisto.getLicenseCustomField("Core.ApiHost") + "/api/webapp/"
-        add_sensitive_log_strs(demisto.getLicenseCustomField("Core.ApiKey"))
+        if not api_key or not api_key_id or not url:
+            headers = {
+                "HOST": demisto.getLicenseCustomField("Core.ApiHostName"),
+                demisto.getLicenseCustomField("Core.ApiHeader"): demisto.getLicenseCustomField("Core.ApiKey"),
+                "Content-Type": "application/json"
+            }
+            url = "http://" + demisto.getLicenseCustomField("Core.ApiHost") + "/api/webapp/"
+            add_sensitive_log_strs(demisto.getLicenseCustomField("Core.ApiKey"))
+        else:
+            headers = {
+                "Content-Type": "application/json",
+                "x-xdr-auth-id": str(api_key_id),
+                "Authorization": api_key
+            }
+            add_sensitive_log_strs(api_key)
     else:
-        headers = {
-            "Content-Type": "application/json",
-            "x-xdr-auth-id": str(api_key_id),
-            "Authorization": api_key
-        }
-        add_sensitive_log_strs(api_key)
-
+        url = "/api/webapp/"
     base_url = urljoin(url, url_suffix)
     proxy = demisto.params().get('proxy')
     verify_cert = not demisto.params().get('insecure', False)
@@ -178,13 +181,12 @@ def main():  # pragma: no cover
     except ValueError as e:
         demisto.debug(f'Failed casting timeout parameter to int, falling back to 120 - {e}')
         timeout = 120
-
     client = Client(
         base_url=base_url,
         proxy=proxy,
         verify=verify_cert,
         headers=headers,
-        timeout=timeout
+        timeout=timeout,
     )
 
     try:

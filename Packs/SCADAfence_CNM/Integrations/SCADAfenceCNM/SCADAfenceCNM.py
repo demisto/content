@@ -194,6 +194,7 @@ def get_assets(asset_data):
         api_suffix = "/assets"
         return call_api('GET', api_suffix, asset_data)
     return_error("Invalid call for assets data (missing parameters)")
+    return None
 
 
 def get_asset_map(asset_details):
@@ -206,6 +207,7 @@ def get_asset_map(asset_details):
         api_suffix = "/asset/map"
         return call_api('GET', api_suffix, asset_details)
     return_error("Invalid call for asset map (missing parameters)")
+    return None
 
 
 def get_assets_map():
@@ -228,6 +230,7 @@ def get_asset_traffic(asset_details):
         api_suffix = "/asset/traffic"
         return call_api('GET', api_suffix, asset_details)
     return_error("Invalid call for asset traffic (missing parameters)")
+    return None
 
 
 def dest_endpoint(ep):

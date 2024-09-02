@@ -11,7 +11,7 @@ else:
 
 data = []
 
-for idx, progression in enumerate(progressions):
+for _idx, progression in enumerate(progressions):
     if progression['riskScore'] == 0:
         color = "blue"
     elif progression['riskScore'] < 25:

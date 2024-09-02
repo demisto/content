@@ -8,6 +8,7 @@ setcontext
 setandhandleempty
 ccAddresses
 messageTime
+Mailboxed
 
 [file:ProofpointTapTopClickers.yml]
 ignore=BA124

@@ -2033,7 +2033,7 @@ tasks:
       interval_between_tries:
         simple: "10"
       max_timeout:
-        simple: "300"
+        simple: "600"
       task_name:
         simple: Cortex XDR - Retrieve File
       task_states:

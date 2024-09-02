@@ -532,19 +532,6 @@ def get_nonce() -> str:
     return "".join([secrets.choice(string.ascii_letters + string.digits) for _ in range(64)])
 
 
-def remove_query_id_from_integration_context(query_id: str):
-    """
-    Remove the given query_id from the integration context.
-
-    Args:
-        query_id (str): The query ID to remove.
-    """
-    if query_id:
-        integration_context = get_integration_context()
-        integration_context.pop(query_id, None)
-        set_integration_context(integration_context)
-
-
 # ========================================== Generic Query ===============================================#
 
 
@@ -585,26 +572,15 @@ def start_xql_query_polling_command(client: Client, args: dict) -> Union[Command
     Returns:
         CommandResults: The command results.
     """
-    if not (query_name := args.get('query_name')):
+    if not args.get('query_name'):
         raise DemistoException('Please provide a query name')
     execution_id = start_xql_query(client, args)
     if not execution_id:
         raise DemistoException('Failed to start query\n')
     args['query_id'] = execution_id
-    # the query data is being saved in the integration context for the next scheduled command command.
-    try:
-        set_to_integration_context_with_retries({
-            execution_id: {
-                'query': args.get('query'),
-                'time_frame': args.get('time_frame'),
-                'command_name': demisto.command(),
-                'query_name': query_name,
-            }
-        })
-        return get_xql_query_results_polling_command(client, args)
-    except Exception:
-        remove_query_id_from_integration_context(execution_id)
-        raise
+    args['command_name'] = demisto.command()
+
+    return get_xql_query_results_polling_command(client, args)
 
 
 def get_xql_query_results_polling_command(client: Client, args: dict) -> Union[CommandResults, list]:
@@ -618,19 +594,14 @@ def get_xql_query_results_polling_command(client: Client, args: dict) -> Union[C
         Union[CommandResults, dict]: The command results.
     """
     # get the query data either from the integration context (if its not the first run) or from the given args.
-    query_id = args.get('query_id', '')
     parse_result_file_to_context = argToBoolean(args.get('parse_result_file_to_context', 'false'))
-    integration_context, _ = get_integration_context_with_version()
-    command_data_raw = integration_context.get(query_id, args)
-    command_data = json.loads(command_data_raw) if isinstance(command_data_raw, str)\
-        else integration_context.get(query_id, args)
-    command_name = command_data.get('command_name', demisto.command())
+    command_name = args.get('command_name', demisto.command())
     interval_in_secs = int(args.get('interval_in_seconds', 10))
     max_fields = arg_to_number(args.get('max_fields', 20))
     if max_fields is None:
         raise DemistoException('Please provide a valid number for max_fields argument.')
     outputs, file_data = get_xql_query_results(client, args)  # get query results with query_id
-    outputs.update({'query_name': command_data.get('query_name', '')})
+    outputs.update({'query_name': args.get('query_name', '')})
     outputs_prefix = get_outputs_prefix(command_name)
     command_results = CommandResults(outputs_prefix=outputs_prefix, outputs_key_field='execution_id', outputs=outputs,
                                      raw_response=copy.deepcopy(outputs))
@@ -640,18 +611,14 @@ def get_xql_query_results_polling_command(client: Client, args: dict) -> Union[C
             #  Extracts the results into a file only
             file = fileResult(filename="results.gz", data=file_data)
             command_results.readable_output = 'More than 1000 results were retrieved, see the compressed gzipped file below.'
-            remove_query_id_from_integration_context(query_id)
             return [file, command_results]
         else:
             # Parse the results to context:
             data = gzip.decompress(file_data).decode()
             outputs['results'] = [json.loads(line) for line in data.split("\n") if len(line) > 0]
 
-    # if status is pending, in versions above 6.2.0, the command will be called again in the next run until success.
+    # if status is pending, the command will be called again in the next run until success.
     if outputs.get('status') == 'PENDING':
-        if not is_demisto_version_ge('6.2.0'):  # only 6.2.0 version and above support polling command.
-            remove_query_id_from_integration_context(query_id)
-            return command_results
         scheduled_command = ScheduledCommand(command='xdr-xql-get-query-results', next_run_in_seconds=interval_in_secs,
                                              args=args, timeout_in_seconds=600)
         command_results.scheduled_command = scheduled_command
@@ -660,8 +627,8 @@ def get_xql_query_results_polling_command(client: Client, args: dict) -> Union[C
 
     results_to_format = outputs.pop('results')
     # create Human Readable output
-    query = command_data.get('query', '')
-    time_frame = command_data.get('time_frame')
+    query = args.get('query', '')
+    time_frame = args.get('time_frame')
     extra_for_human_readable = ({'query': query, 'time_frame': time_frame})
     outputs.update(extra_for_human_readable)
     command_results.readable_output = tableToMarkdown('General Information', outputs,
@@ -682,7 +649,7 @@ def get_xql_query_results_polling_command(client: Client, args: dict) -> Union[C
 
     command_results.readable_output += tableToMarkdown('Data Results', outputs.get('results'),
                                                        headerTransform=string_to_table_header)
-    remove_query_id_from_integration_context(query_id)
+
     return command_results
 
 

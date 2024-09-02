@@ -4,37 +4,38 @@ from CommonServerUserPython import *
 import secrets
 import tempfile
 from datetime import timezone
-from typing import Dict, List, Tuple, Union
 from dateparser import parse
 from urllib3 import disable_warnings
 from math import ceil
 from google.cloud import storage
+from CoreIRApiModule import *
 
 disable_warnings()
 DEMISTO_TIME_FORMAT: str = '%Y-%m-%dT%H:%M:%SZ'
-core_types_to_demisto: Dict = {
+
+core_types_to_demisto: dict = {
     "DOMAIN_NAME": 'Domain',
     "HASH": 'File',
     "IP": 'IP'
 }
-core_reputation_to_demisto: Dict = {
+core_reputation_to_demisto: dict = {
     'GOOD': 1,
     'SUSPICIOUS': 2,
     'BAD': 3
 }
-demisto_score_to_core: Dict[int, str] = {
+demisto_score_to_core: dict[int, str] = {
     1: 'GOOD',
     2: 'SUSPICIOUS',
     3: 'BAD'
 }
 
 
-class Client:
+class Client(CoreClient):
     severity: str = ''
     query: str = 'reputation:Bad and (type:File or type:Domain or type:IP)'
     tag = 'Cortex Core'
     tlp_color = None
-    error_codes: Dict[int, str] = {
+    error_codes: dict[int, str] = {
         500: 'XDR internal server error.',
         401: 'Unauthorized access. An issue occurred during authentication. This can indicate an '    # noqa: W504
              + 'incorrect key, id, or other invalid authentication parameters.',
@@ -44,18 +45,22 @@ class Client:
         413: 'Request entity too large. Please reach out to the XDR support team.'
     }
 
-    def __init__(self, params: Dict):
-        url = params.get('url')
-        if not url:
-            url = "http://" + demisto.getLicenseCustomField("Core.ApiHost") + "/api/webapp/"
+    def __init__(self, params: dict):
+        url = "/api/webapp/"
+        if not FORWARD_USER_RUN_RBAC:
+            url = params.get('url', '')
+            if not url:
+                url = "http://" + demisto.getLicenseCustomField("Core.ApiHost") + "/api/webapp/"  # type: ignore
         self._base_url: str = urljoin(url, '/public_api/v1/indicators/')
         self._verify_cert: bool = not params.get('insecure', False)
         self._params = params
         handle_proxy()
 
-    def http_request(self, url_suffix: str, requests_kwargs=None) -> Dict:
+    def http_request(self, url_suffix: str, requests_kwargs=None) -> dict:
+        if FORWARD_USER_RUN_RBAC:
+            return CoreClient._http_request(self, method='POST', url_suffix=url_suffix, data=requests_kwargs)
         if requests_kwargs is None:
-            requests_kwargs = dict()
+            requests_kwargs = {}
         res = requests.post(url=self._base_url + url_suffix,
                             verify=self._verify_cert,
                             headers=self._headers,
@@ -77,7 +82,7 @@ class Client:
         return get_headers(self._params)
 
 
-def get_headers(params: Dict) -> Dict:
+def get_headers(params: dict) -> dict:
     api_key: str = str(params.get('apikey'))
     api_key_id: str = str(params.get('apikey_id'))
     if not api_key or not api_key_id:
@@ -98,28 +103,29 @@ def get_headers(params: Dict) -> Dict:
     return headers
 
 
-def get_requests_kwargs(_json=None) -> Dict:
+def get_requests_kwargs(_json=None) -> dict:
     if _json is not None:
-        return {'data': json.dumps({"request_data": _json})}
+        return {"request_data": _json} if FORWARD_USER_RUN_RBAC else \
+            {'data': json.dumps({"request_data": _json})}
     else:
         return {}
 
 
-def prepare_get_changes(time_stamp: int) -> Tuple[str, Dict]:
+def prepare_get_changes(time_stamp: int) -> tuple[str, dict]:
     url_suffix: str = 'get_changes'
-    _json: Dict = {'last_update_ts': time_stamp}
+    _json: dict = {'last_update_ts': time_stamp}
     return url_suffix, _json
 
 
-def prepare_enable_iocs(iocs: str) -> Tuple[str, List]:
+def prepare_enable_iocs(iocs: str) -> tuple[str, list]:
     url_suffix: str = 'enable_iocs'
-    _json: List = argToList(iocs)
+    _json: list = argToList(iocs)
     return url_suffix, _json
 
 
-def prepare_disable_iocs(iocs: str) -> Tuple[str, List]:
+def prepare_disable_iocs(iocs: str) -> tuple[str, list]:
     url_suffix: str = 'disable_iocs'
-    _json: List = argToList(iocs)
+    _json: list = argToList(iocs)
     return url_suffix, _json
 
 
@@ -127,8 +133,8 @@ def create_file_iocs_to_keep(file_path, batch_size: int = 200):
     with open(file_path, 'a') as _file:
         total_size: int = get_iocs_size()
         for i in range(0, ceil(total_size / batch_size)):
-            iocs: List = get_iocs(page=i, size=batch_size)
-            for ios in map(lambda x: x.get('value', ''), iocs):
+            iocs: list = get_iocs(page=i, size=batch_size)
+            for ios in (x.get('value', '') for x in iocs):
                 _file.write(ios + '\n')
 
 
@@ -136,8 +142,8 @@ def create_file_sync(file_path, batch_size: int = 200):
     with open(file_path, 'a') as _file:
         total_size: int = get_iocs_size()
         for i in range(0, ceil(total_size / batch_size)):
-            iocs: List = get_iocs(page=i, size=batch_size)
-            for ioc in map(lambda x: demisto_ioc_to_core(x), iocs):
+            iocs: list = get_iocs(page=i, size=batch_size)
+            for ioc in (demisto_ioc_to_core(x) for x in iocs):
                 if ioc:
                     _file.write(json.dumps(ioc) + '\n')
 
@@ -150,7 +156,7 @@ def get_iocs_size(query=None) -> int:
         .get('total', 0)
 
 
-def get_iocs(page=0, size=200, query=None) -> List:
+def get_iocs(page=0, size=200, query=None) -> list:
     search_indicators = IndicatorsSearcher(page=page)
     query = query if query else Client.query
     query = f'expirationStatus:active AND ({query})'
@@ -176,8 +182,8 @@ def demisto_reliability_to_core(reliability: str) -> str:
         return 'F'
 
 
-def demisto_vendors_to_core(demisto_vendors) -> List[Dict]:
-    core_vendors: List[Dict] = []
+def demisto_vendors_to_core(demisto_vendors) -> list[dict]:
+    core_vendors: list[dict] = []
     for module_id, data in demisto_vendors.items():
         reliability = demisto_reliability_to_core(data.get('reliability'))
         reputation = demisto_score_to_core.get(data.get('score'), 'UNKNOWN')
@@ -200,9 +206,9 @@ def demisto_types_to_core(_type: str) -> str:
         return core_type
 
 
-def demisto_ioc_to_core(ioc: Dict) -> Dict:
+def demisto_ioc_to_core(ioc: dict) -> dict:
     try:
-        core_ioc: Dict = {
+        core_ioc: dict = {
             'indicator': ioc['value'],
             'severity': Client.severity,
             'type': demisto_types_to_core(str(ioc['indicator_type'])),
@@ -210,7 +216,7 @@ def demisto_ioc_to_core(ioc: Dict) -> Dict:
             'expiration_date': demisto_expiration_to_core(ioc.get('expiration'))
         }
         # get last 'IndicatorCommentRegular'
-        comment: Dict = next(filter(lambda x: x.get('type') == 'IndicatorCommentRegular', reversed(ioc.get('comments', []))), {})
+        comment: dict = next(filter(lambda x: x.get('type') == 'IndicatorCommentRegular', reversed(ioc.get('comments', []))), {})
         if comment:
             core_ioc['comment'] = comment.get('content')
         if ioc.get('aggregatedReliability'):
@@ -254,7 +260,7 @@ def sync(client: Client):
 
 
 def iocs_to_keep(client: Client):
-    if not datetime.utcnow().hour in range(1, 3):
+    if datetime.utcnow().hour not in range(1, 3):
         raise DemistoException('iocs_to_keep runs only between 01:00 and 03:00.')
     temp_file_path: str = get_temp_file()
     try:
@@ -271,12 +277,12 @@ def create_last_iocs_query(from_date, to_date):
     return f'modified:>={from_date} and modified:<{to_date} and ({Client.query})'
 
 
-def get_last_iocs(batch_size=200) -> List:
+def get_last_iocs(batch_size=200) -> list:
     current_run: str = datetime.utcnow().strftime(DEMISTO_TIME_FORMAT)
-    last_run: Dict = get_integration_context()
+    last_run: dict = get_integration_context()
     query = create_last_iocs_query(from_date=last_run['time'], to_date=current_run)
     total_size = get_iocs_size(query)
-    iocs: List = []
+    iocs: list = []
     for i in range(0, ceil(total_size / batch_size)):
         iocs.extend(get_iocs(query=query, page=i, size=batch_size))
     last_run['time'] = current_run
@@ -284,7 +290,7 @@ def get_last_iocs(batch_size=200) -> List:
     return iocs
 
 
-def get_indicators(indicators: str) -> List:
+def get_indicators(indicators: str) -> list:
     if indicators:
         iocs: list = []
         not_found = []
@@ -310,7 +316,7 @@ def tim_insert_jsons(client: Client):
         iocs = get_indicators(indicators)
     if iocs:
         path = 'tim_insert_jsons/'
-        requests_kwargs: Dict = get_requests_kwargs(_json=list(map(lambda ioc: demisto_ioc_to_core(ioc), iocs)))
+        requests_kwargs: dict = get_requests_kwargs(_json=[demisto_ioc_to_core(ioc) for ioc in iocs])
         client.http_request(url_suffix=path, requests_kwargs=requests_kwargs)
     return_outputs('push done.')
 
@@ -322,12 +328,12 @@ def iocs_command(client: Client):
         path, iocs = prepare_enable_iocs(indicators)
     else:   # command == 'disable'
         path, iocs = prepare_disable_iocs(indicators)
-    requests_kwargs: Dict = get_requests_kwargs(_json=iocs)
+    requests_kwargs: dict = get_requests_kwargs(_json=iocs)
     client.http_request(url_suffix=path, requests_kwargs=requests_kwargs)
     return_outputs(f'indicators {indicators} {command}d.')
 
 
-def core_ioc_to_timeline(iocs: List) -> Dict:
+def core_ioc_to_timeline(iocs: list) -> dict:
     ioc_time_line = {
         'Value': ','.join(iocs),
         'Message': 'indicator updated in Cortex.',
@@ -336,7 +342,7 @@ def core_ioc_to_timeline(iocs: List) -> Dict:
     return ioc_time_line
 
 
-def core_expiration_to_demisto(expiration) -> Union[str, None]:
+def core_expiration_to_demisto(expiration) -> str | None:
     if expiration:
         if expiration == -1:
             return 'Never'
@@ -348,7 +354,7 @@ def core_expiration_to_demisto(expiration) -> Union[str, None]:
 def module_test(client: Client):
     ts = int(datetime.now(timezone.utc).timestamp() * 1000) - 1
     path, requests_kwargs = prepare_get_changes(ts)
-    requests_kwargs: Dict = get_requests_kwargs(_json=requests_kwargs)
+    requests_kwargs: dict = get_requests_kwargs(_json=requests_kwargs)
     client.http_request(url_suffix=path, requests_kwargs=requests_kwargs).get('reply', [])
     demisto.results('ok')
 
@@ -395,7 +401,7 @@ def get_indicator_core_score(indicator: str, core_server: int):
         if ioc:
             ioc = ioc[0]
             score = ioc.get('score', 0)
-            temp: Dict = next(filter(is_core_data, ioc.get('moduleToFeedMap', {}).values()), {})
+            temp: dict = next(filter(is_core_data, ioc.get('moduleToFeedMap', {}).values()), {})
             core_local = temp.get('score', 0)
     if core_server != score:
         return core_server
@@ -417,7 +423,7 @@ def get_sync_file():
     temp_file_path = get_temp_file()
     try:
         create_file_sync(temp_file_path)
-        with open(temp_file_path, 'r') as _tmpfile:
+        with open(temp_file_path) as _tmpfile:
             return_results(fileResult('core-sync-file', _tmpfile.read()))
     finally:
         os.remove(temp_file_path)

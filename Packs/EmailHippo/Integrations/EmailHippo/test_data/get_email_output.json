@@ -80,9 +80,9 @@
         }
     },
     "expected_context": {
-        "Email(val.Address && val.Address == obj.Address)": [
+        "Account(val.Email.Address && val.Email.Address == obj.Email.Address)": [
             {
-                "Address": "test@example.com",
+                "Email": {"Address": "test@example.com"},
                 "Domain": "example.com"
             }
         ],

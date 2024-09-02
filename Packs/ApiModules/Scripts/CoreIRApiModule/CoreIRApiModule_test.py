@@ -2262,26 +2262,51 @@ OFFLINE_STATUS = {
     'host_name': 'TEST',
     'ip': '1.1.1.1'
 }
+PUBLIC_IP = {
+    'endpoint_status': 'Connected',
+    'is_isolated': 'Isolated',
+    'host_name': 'TEST',
+    'ip': [],
+    'public_ip': ['1.1.1.1']
+}
+NO_IP = {
+    'endpoint_status': 'Connected',
+    'is_isolated': 'Isolated',
+    'host_name': 'TEST',
+    'ip': [],
+    'public_ip': []
+}
 
 
-@pytest.mark.parametrize("endpoint, expected", [
-    (CONNECTED_STATUS, 'Online'),
-    (NO_STATUS, 'Offline'),
-    (OFFLINE_STATUS, 'Offline')
+@pytest.mark.parametrize("endpoint, expected_status, expected_ip", [
+    (CONNECTED_STATUS, 'Online', '1.1.1.1'),
+    (NO_STATUS, 'Offline', '1.1.1.1'),
+    (OFFLINE_STATUS, 'Offline', '1.1.1.1'),
+    (PUBLIC_IP, 'Online', ['1.1.1.1']),
+    (NO_IP, 'Online', '')
 ])
-def test_get_endpoint_properties(endpoint, expected):
+def test_get_endpoint_properties(endpoint, expected_status, expected_ip):
     """
     Given:
         - Endpoint data
     When
-        - The status of the enndpoint is 'Connected' with a capital C.
+        - Case a: The status of the endpoint is 'Connected' with a capital C and ip is 1.1.1.1.
+        - Case b: When no status is not given and ip is 1.1.1.1.
+        - Case c: The status of the endpoint is offline and ip is 1.1.1.1.
+        - Case d: The status of the endpoint is 'Connected' with a capital C ip is empty but public_ip is 1.1.1.1.
+        - Case d: The status of the endpoint is 'Connected' with a capital C and both ip and public_ip are empty.
     Then
-        - The status of the endpointn is determined to be 'Online'
+        - Case a: The status of the endpoint is determined to be 'Online' and the ip is set to 1.1.1.1.
+        - Case b: The status of the endpoint is determined to be 'Offline' and the ip is set to 1.1.1.1.
+        - Case c: The status of the endpoint is determined to be 'Offline' and the ip is set to 1.1.1.1.
+        - Case d: The status of the endpoint is determined to be 'Online' and the ip is set to 1.1.1.1.
+        - Case d: The status of the endpoint is determined to be 'Online' and the ip is set to empty.
     """
     from CoreIRApiModule import get_endpoint_properties
 
     status, is_isolated, hostname, ip = get_endpoint_properties(endpoint)
-    assert status == expected
+    assert status == expected_status
+    assert ip == expected_ip
 
 
 def test_remove_blocklist_files_command(requests_mock):
@@ -2503,6 +2528,97 @@ def test_filter_general_fields():
         'detection_modules': 'test1',
         "content_version": "version1",
         "detector_id": 'ID',
+        'event': {
+            'event_type': 'type',
+            'event_id': 'id',
+            'identity_sub_type': 'subtype',
+        }
+    }
+
+
+def test_filter_general_fields_with_stateful_raw_data():
+    """
+    Given:
+        - An alert dict with stateful_raw_data section
+    When
+        - Running filter_general_fields command once with events_from_decider_as_list as False and once as True.
+    Then
+        - Verify expected output
+    """
+    from CoreIRApiModule import filter_general_fields
+    alert = {
+        'detection_modules': 'test1',
+        "content_version": "version1",
+        "detector_id": 'ID',
+        'raw_abioc': {
+            'event': {
+                'event_type': 'type',
+                'event_id': 'id',
+                'identity_sub_type': 'subtype',
+            }
+        },
+        'stateful_raw_data': {
+            'events_from_decider': {
+                "test_1": {
+                    "story_id": "test_1",
+                    "additional_info": "this is a test."
+                },
+                "test_2": {
+                    "story_id": "test_2",
+                    "additional_info": "this is a test."
+                }
+            }
+        }
+    }
+    assert filter_general_fields(alert, False, False) == {
+        'detection_modules': 'test1',
+        "content_version": "version1",
+        "detector_id": 'ID',
+        'raw_abioc': {
+            'event': {
+                'event_type': 'type',
+                'event_id': 'id',
+                'identity_sub_type': 'subtype',
+            }
+        },
+        'stateful_raw_data': {
+            'events_from_decider': {
+                "test_1": {
+                    "story_id": "test_1",
+                    "additional_info": "this is a test."
+                },
+                "test_2": {
+                    "story_id": "test_2",
+                    "additional_info": "this is a test."
+                }
+            }
+        },
+        'event': {
+            'event_type': 'type',
+            'event_id': 'id',
+            'identity_sub_type': 'subtype',
+        }
+    }
+    assert filter_general_fields(alert, False, True) == {
+        'detection_modules': 'test1',
+        "content_version": "version1",
+        "detector_id": 'ID',
+        'raw_abioc': {
+            'event': {
+                'event_type': 'type',
+                'event_id': 'id',
+                'identity_sub_type': 'subtype',
+            }
+        },
+        'stateful_raw_data': {
+            'events_from_decider': [{
+                "story_id": "test_1",
+                "additional_info": "this is a test."
+            }, {
+                "story_id": "test_2",
+                "additional_info": "this is a test."
+            }]
+        },
         'event': {
             'event_type': 'type',
             'event_id': 'id',
@@ -2999,7 +3115,7 @@ class TestPollingCommands:
 
         assert command_result.readable_output == "Waiting for the script to " \
                                                  "finish running on the following endpoints: ['1']..."
-        assert not command_result.outputs
+        assert command_result.outputs == {'action_id': 1, 'endpoints_count': 1, 'status': 1}
 
         polling_args = {
             'endpoint_ids': '1', 'script_uid': '1', 'action_id': '1', 'hide_polling_output': True
@@ -4053,3 +4169,62 @@ def test_xsoar_to_xdr_flexible_close_reason_mapping(capfd, mocker, custom_mappin
 
         assert remote_args.delta.get('status')
         assert remote_args.delta['status'] == expected_resolved_status[i]
+
+
+@pytest.mark.parametrize('data, expected_result',
+                         [('{"reply": {"container": ["1.1.1.1"]}}', {"reply": {"container": ["1.1.1.1"]}}),
+                          (b'XXXXXXX', b'XXXXXXX')])
+def test_http_request_demisto_call(mocker, data, expected_result):
+    """
+    Given:
+        - An XSIAM machine with a build version that supports demisto._apiCall() with RBAC validations.
+    When:
+        - Calling the http_request method.
+    Then:
+        - Make sure demisto._apiCall() is being called and the method returns the expected result.
+        - converting to json is possible - do it and return json
+        - converting to json is impossible - catch the error and return the data as is
+    """
+    from CoreIRApiModule import CoreClient
+    client = CoreClient(
+        base_url=f'{Core_URL}/public_api/v1', headers={},
+    )
+    mocker.patch("CoreIRApiModule.FORWARD_USER_RUN_RBAC", new=True)
+    mocker.patch.object(demisto, "_apiCall", return_value={'name': '/api/webapp/public_api/v1/distributions/get_versions/',
+                                                           'status': 200,
+                                                           'data': data})
+    res = client._http_request(method="POST",
+                               url_suffix="/distributions/get_versions/")
+    assert expected_result == res
+
+
+@pytest.mark.parametrize('allow_bin_response', [True, False])
+def test_request_for_bin_file_via_demisto_call(mocker, allow_bin_response):
+    """
+    Given:
+        - An XSIAM machine with a build version that supports demisto._apiCall() with RBAC validations.
+        - case 1 - build version that support response of binary files.
+        - case 2 - build version that doesn't support response of binary files.
+    When:
+        - Calling the http_request method.
+    Then:
+        - case 1 - Make sure the response are as expected (base64 decoded).
+        - case 2 - Make sure en DemistoException was thrown with details about the server version that allowed bin response.
+    """
+    from CoreIRApiModule import CoreClient, ALLOW_BIN_CONTENT_RESPONSE_SERVER_VERSION, ALLOW_BIN_CONTENT_RESPONSE_BUILD_NUM
+    import base64
+    test_bin_data = b'test bin data'
+    client = CoreClient(
+        base_url=f'{Core_URL}/public_api/v1', headers={},
+    )
+    mocker.patch("CoreIRApiModule.FORWARD_USER_RUN_RBAC", new=True)
+    mocker.patch("CoreIRApiModule.ALLOW_RESPONSE_AS_BINARY", new=allow_bin_response)
+    mocker.patch.object(demisto, "_apiCall", return_value={'name': '/api/webapp/public_api/v1/distributions/get_versions/',
+                                                           'status': 200,
+                                                           'data': base64.b64encode(test_bin_data)})
+    try:
+        res = client._http_request(method="get",
+                                   resp_type='content')
+        assert res == test_bin_data
+    except DemistoException as e:
+        assert f'{ALLOW_BIN_CONTENT_RESPONSE_SERVER_VERSION}-{ALLOW_BIN_CONTENT_RESPONSE_BUILD_NUM}' in str(e)

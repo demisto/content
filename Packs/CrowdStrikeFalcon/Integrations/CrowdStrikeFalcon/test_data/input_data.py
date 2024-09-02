@@ -193,6 +193,92 @@ response_idp_detection = {
             "updated_timestamp": "2023-06-27T09:29:52.448779709Z"
 }
 
+response_mobile_detection = {'agent_id': '111...111',
+                             'agent_load_flags': '0',
+                             'agent_version': '2024.04.4060003',
+                             'aggregate_id': '',
+                             'android_sdk_version': '31',
+                             'bootloader_unlocked': '1',
+                             'bootloader_version': 'slider-1.0-7683913',
+                             'cid': '2222...222',
+                             'composite_id': '1111111111111111111111:ind:22222222222222222222222222222222:33333|4444444444444444444',
+                             'computer_name': 'computer_name',
+                             'confidence': 100,
+                             'config_id_base': 'config_id_base',
+                             'config_id_build': 'config_id_build',
+                             'config_id_platform': 'config_id_platform',
+                             'config_version': '0',
+                             'context_timestamp': '2024-05-30T12:26:34.384Z',
+                             'crawled_timestamp': '2024-05-30T13:26:35.874005623Z',
+                             'created_timestamp': '2024-05-30T12:27:35.879609848Z',
+                             'data_domains': ['Endpoint'],
+                             'description': 'Mobile detection description',
+                             'developer_options_enabled': '1',
+                             'display_name': 'DisplayName',
+                             'enrollment_email': 'test@test.com',
+                             'falcon_app_trusted': True,
+                             'falcon_host_link': 'https://falcon.crowdstrike.com/mobile/detections/1111111111111111111111:ind:22222222222222222222222222222222:33333|4444444444444444444?_cid=1111111111111111111111',
+                             'firmware_build_fingerprint': 'firmware_build_fingerprint',
+                             'firmware_build_time': '2021-09-02T12:01:16.000Z',
+                             'firmware_build_type': 'user',
+                             'fma_version_code': 'fma_version_code',
+                             'id': 'ind:22222222222222222222222222222222:33333|4444444444444444444',
+                             'keystore_check_failed': False,
+                             'keystore_inconclusive': False,
+                             'keystore_insecure': False,
+                             'lock_screen_enabled': '0',
+                             'mobile_brand': 'mobile_brand',
+                             'mobile_design': 'mobile_design',
+                             'mobile_detection_id': '1111111111111111111',
+                             'mobile_hardware': 'mobile_hardware',
+                             'mobile_manufacturer': 'mobile_manufacturer',
+                             'mobile_model': 'mobile_model',
+                             'mobile_product': 'mobile_product',
+                             'mobile_serial': 'unknown',
+                             'name': 'name',
+                             'objective': 'Falcon Detection Method',
+                             'os_integrity_intact': '0',
+                             'os_major_version': '12',
+                             'os_minor_version': '0',
+                             'os_version': 'Android 12',
+                             'pattern_id': 'pattern_id',
+                             'platform': 'Android',
+                             'platform_version': 'platform_version',
+                             'playintegrity_compatibility_failed': False,
+                             'playintegrity_insecure_device': True,
+                             'playintegrity_meets_basic_integrity': False,
+                             'playintegrity_meets_device_integrity': False,
+                             'playintegrity_meets_partial_integrity': False,
+                             'playintegrity_meets_strong_integrity': False,
+                             'playintegrity_only_basic_integrity': False,
+                             'playintegrity_timestamp_expired': False,
+                             'poly_id': 'poly_id',
+                             'product': 'mobile',
+                             'radio_version': 'radio_version',
+                             'safetynet_verify_apps_enabled': '1',
+                             'scenario': 'attacker_methodology',
+                             'seconds_to_resolved': 590841,
+                             'seconds_to_triaged': 591762,
+                             'security_patch_level': '2021-10-05',
+                             'selinux_enforcement_policy': '1',
+                             'severity': 90,
+                             'severity_name': 'Critical',
+                             'show_in_ui': True,
+                             'source_products': ['Falcon for Mobile'],
+                             'source_vendors': ['CrowdStrike'],
+                             'status': 'new',
+                             'storage_encrypted': '1',
+                             'supported_arch': '7',
+                             'tactic': 'Insecure security posture',
+                             'tactic_id': 'CSTA0009',
+                             'technique': 'Bad device settings',
+                             'technique_id': 'CST0024',
+                             'timestamp': '2024-05-30T12:26:34.384Z',
+                             'type': 'mobile-android-attestation',
+                             'updated_timestamp': '2024-06-06T08:57:44.904557373Z',
+                             'user_name': 'test@test.com',
+                             'verified_boot_state': 2}
+
 context_idp_detection = {
     'name': 'IDP Detection ID: 20879a8064904ecfbb62c118a6a19411:ind:20879a8064904ecfbb62c118a6a19411:C0BB6ACD-8FDC-4CBA-9CF9-EBF3E28B3E56',
     'occurred': '2023-04-20T11:12:03.089Z', 'last_updated': '2023-06-27T09:29:52.448779709Z',
@@ -201,6 +287,8 @@ context_idp_detection = {
 remote_incident_id = 'inc:afb5d1512a00480f53e9ad91dc3e4b55:1cf23a95678a421db810e11b5db693bd'
 remote_detection_id = 'ldt:15dbb9d8f06b89fe9f61eb46e829d986:528715079668'
 remote_idp_detection_id = '20879a8064904e:ind:20879a8064904ecfbb62c118a6a19411:26DF54C9-8803-4F97-AD22-A725EE820EA9'
+remote_mobile_detection_id = '1111111111111111111'
+remote_detection_id_new_version = '1234'
 
 # remote_id, close_incident, incident_status, detection_status, mirrored_object, entries
 get_remote_incident = (remote_incident_id,
@@ -310,6 +398,31 @@ set_xsoar_incident_entries_args = [incident_closes,
                                    incident_not_closed,
                                    incident_no_status,
                                    ]
+
+# updated_object
+incident_new_status = ({'status': 'New'})
+incident_in_progress_status = ({'status': 'In Progress'})
+incident_reopened_status = ({'status': 'Reopened'})
+check_reopen_set_xsoar_incident_entries_args = [incident_new_status, incident_in_progress_status, incident_reopened_status]
+
+# updated_object
+detection_new_status = ({'status': 'new'})
+detection_in_progress_status = ({'status': 'in_progress'})
+detection_reopened_status = ({'status': 'reopened'})
+detection_true_positive_status = ({'status': 'true_positive'})
+detection_false_positive_status = ({'status': 'false_positive'})
+detection_ignored_status = ({'status': 'ignored'})
+check_reopen_set_xsoar_detections_entries_args = [detection_new_status, detection_in_progress_status, detection_reopened_status,
+                                                  detection_true_positive_status, detection_false_positive_status,
+                                                  detection_ignored_status]
+
+# updated_object
+idp_mobile_detection_new_status = ({'status': 'new'})
+idp_mobile_detection_in_progress_status = ({'status': 'in_progress'})
+idp_mobile_detection_reopened_status = ({'status': 'reopened'})
+idp_mobile_detection_closed_status = ({'status': 'closed'})
+set_xsoar_idp_or_mobile_detection_entries = [idp_mobile_detection_new_status, idp_mobile_detection_in_progress_status,
+                                             idp_mobile_detection_reopened_status, idp_mobile_detection_closed_status]
 
 # updated_object, entry_content, close_incident
 detection_closes = ({'status': 'closed'},
@@ -614,3 +727,67 @@ remote_incident_handle_tags_args = [
     add_tags,
     delete_tags,
 ]
+
+
+response_detection_new_version = {
+    'agent_id': 123,
+    'aggregate_id': 123,
+    'alleged_filetype': None,
+    'associated_files': None,
+    'child_process_ids': None,
+    'cid': None,
+    'cloud_indicator': None,
+    'cmdline': None,
+    'composite_id': None,
+    'confidence': None,
+    'context_timestamp': None,
+    'control_graph_id': None,
+    'crawled_timestamp': None,
+    'created_timestamp': None,
+    'data_domains': None,
+    'description': None,
+    'device': None,
+    'display_name': None,
+    'documents_accessed': None,
+    'email_sent': None,
+    'external': None,
+    'falcon_host_link': None,
+    'filename': None,
+    'filepath': None,
+    'files_accessed': None,
+    'global_prevalence': None,
+    'id': None,
+    'indicator_id': None,
+    'ioc_context': None,
+    'ioc_created_by': None,
+    'ioc_indicator_id': None,
+    'ioc_type': None,
+    'ioc_value': None,
+    'ioc_values': None,
+    'local_prevalence': None,
+    'local_process_id': None,
+    'logon_domain': None,
+    'name': None,
+    'network_accesses': None,
+    'objective': None,
+    'parent_details': None,
+    'parent_process_id': None,
+    'pattern_disposition': None,
+    'pattern_disposition_description': None,
+    'pattern_disposition_details': None,
+    'pattern_id': None,
+    'platform': None,
+    'poly_id': None,
+    'process_id': None,
+    'process_start_time': None,
+    'product': "epp",
+    'scenario': None,
+    'seconds_to_resolved': None,
+    'seconds_to_triaged': None,
+    'severity': 90,
+    'severity_name': None,
+    'sha256': None,
+    'show_in_ui': None,
+    'source_products': None,
+    'status': "new"
+}

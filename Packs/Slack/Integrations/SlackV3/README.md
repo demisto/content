@@ -31,7 +31,6 @@ to learn about configuring SlackV3 using the app manifest.
    | `bot_icon` | Bot icon in Slack - Image URL (Cortex XSOAR icon by default).                                                                                                                                                                                                                         | False |
    | `max_limit_time` | Maximum time to wait for a rate limiting call in seconds.                                                                                                                                                                                                                             | False |
    | `paginated_count` | Number of objects to return in each paginated call.                                                                                                                                                                                                                                   | False |
-   | `proxy_url` | Proxy URL to use in Slack API calls.                                                                                                                                                                                                                                                  | False |
    | `filtered_tags` | Comma-separated list of tags by which to filter the messages sent from Cortex XSOAR. Only supported in Cortex XSOAR V6.1 and above.                                                                                                                                                   | False |
    | `permitted_notifications` | Types of notifications to send (to individual users and to the dedicated Slack channel, if specified).                                                                                                                                                                                | False |
    | `common_channels` | For workspaces where a handful of channels are consistently being used, you may add them as a CSV in the format ChannelName:ChannelID.                                                                                                                                                | False |
@@ -137,11 +136,11 @@ This will bring up a page which confirms that you are installing the app to your
 
 ![install-app-8](../../doc_files/SlackDocs_install_workspace8.png)
 
-:::note
-When utilizing long-running features such as mirroring or SlackAsk, each integration instance must have a dedicated bot
+
+**NOTE: When utilizing long-running features such as mirroring or SlackAsk, each integration instance must have a dedicated bot
 and tokens that should not be used elsewhere. Failure to comply with this requirement may result in issues with incoming
-messages and the steady flow of the integration.
-:::
+messages and the steady flow of the integration.**
+
 
 ### Testing the Bot
 
@@ -283,6 +282,8 @@ There is no context output for this command.
 ***
 Sends a file to a user, channel, or group. If not specified, the file is sent to the mirrored investigation channel (if
 the channel exists).
+
+**Note:** Command slack-send-file isn't available for newly created apps (from May 8, 2024) and will get an error in case of use, due to changes from the Slack API side.
 
 #### Base Command
 

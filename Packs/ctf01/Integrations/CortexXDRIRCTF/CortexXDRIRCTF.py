@@ -183,10 +183,12 @@ class Client(CoreClient):
 
         return filtered_incidents
 
-    def get_incidents(self, incident_id_list=None, lte_modification_time=None, gte_modification_time=None,
-                      lte_creation_time=None, gte_creation_time=None, status=None, starred=None,
-                      starred_incidents_fetch_window=None, sort_by_modification_time=None, sort_by_creation_time=None,
-                      page_number=0, limit=1000, gte_creation_time_milliseconds=0):
+    def get_incidents(  # type: ignore[override]
+        self, incident_id_list=None, lte_modification_time=None, gte_modification_time=None,
+        lte_creation_time=None, gte_creation_time=None, status=None, starred=None,
+        starred_incidents_fetch_window=None, sort_by_modification_time=None, sort_by_creation_time=None,
+        page_number=0, limit=1000, gte_creation_time_milliseconds=0
+    ):
         """
         Filters and returns incidents
 

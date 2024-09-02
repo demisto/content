@@ -1,7 +1,6 @@
 from CommonServerPython import *
 
 import json
-import io
 from unittest import mock
 from unittest.mock import patch
 import SailPointIdentityNow
@@ -24,7 +23,7 @@ def util_load_txt(path: str):
     """
     Utility to load text data from a local folder.
     """
-    with io.open(path, mode='r', encoding='utf-8') as file:
+    with open(path, encoding='utf-8') as file:
         return file.read()
 
 
@@ -32,7 +31,7 @@ def util_load_json(path: str):
     """
     Utility to load json data from a local folder.
     """
-    with io.open(path, mode='r', encoding='utf-8') as file:
+    with open(path, encoding='utf-8') as file:
         return json.loads(file.read())
 
 

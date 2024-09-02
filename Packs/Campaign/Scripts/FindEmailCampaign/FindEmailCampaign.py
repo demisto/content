@@ -17,7 +17,7 @@ import tldextract
 import pytz
 
 
-no_fetch_extract = tldextract.TLDExtract(suffix_list_urls=None, cache_dir=False)
+no_fetch_extract = tldextract.TLDExtract(suffix_list_urls=None, cache_dir=False)  # type: ignore[arg-type]
 utc = pytz.UTC
 
 SELF_IN_CONTEXT = False
@@ -138,7 +138,12 @@ def create_context_for_campaign_details(campaign_found=False, incidents_df=None,
         incident_id = demisto.incident()['id']
         incidents_df['recipients'] = incidents_df.apply(lambda row: get_recipients(row), axis=1)
         incidents_df['recipientsdomain'] = incidents_df.apply(lambda row: extract_domain_from_recipients(row), axis=1)
-        context_keys = {'id', 'similarity', FROM_FIELD, FROM_DOMAIN_FIELD, 'recipients', 'recipientsdomain'}
+        if 'removedfromcampaigns' not in incidents_df.columns.tolist():
+            incidents_df['removedfromcampaigns'] = pd.NA
+
+        incidents_df['removedfromcampaigns'] = incidents_df['removedfromcampaigns'].apply(lambda x: [] if pd.isna(x) else x)
+        context_keys = {'id', 'similarity', FROM_FIELD, FROM_DOMAIN_FIELD, 'recipients', 'recipientsdomain',
+                        'removedfromcampaigns'}
         invalid_context_keys = set()
         if additional_context_fields is not None:
             for key in additional_context_fields:
@@ -297,6 +302,14 @@ def calculate_campaign_details_table(incidents_df, fields_to_display):
             if len(field_values) > 0:
                 if field in RECIPIENTS_COLUMNS:
                     field_values = [item for sublist in field_values for item in sublist]
+                elif any(isinstance(field_value, list) for field_value in field_values):
+                    flattened_list = []
+                    for item in field_values:
+                        if isinstance(item, list):
+                            flattened_list.extend(item)
+                        else:
+                            flattened_list.append(item)
+                    field_values = flattened_list
                 field_values_counter = Counter(field_values).most_common()  # type: ignore
                 field_value_str = get_str_representation_top_n_values(field_values, field_values_counter, top_n)
                 headers.append(field)
@@ -402,7 +415,6 @@ def return_campaign_details_entry(incidents_df, fields_to_display):
     hr_campaign_details = calculate_campaign_details_table(incidents_df, fields_to_display)
     context, hr_email_summary = create_email_summary_hr(incidents_df, fields_to_display)
     hr = '\n'.join([hr_campaign_details, hr_email_summary])
-
     vertical_hr_campaign_details = horizontal_to_vertical_md_table(hr_campaign_details)
     demisto.executeCommand('setIncident',
                            {'emailcampaignsummary': f"{vertical_hr_campaign_details}",
@@ -541,6 +553,7 @@ def analyze_incidents_campaign(incidents, fields_to_display):
 
 def main():
     global EMAIL_BODY_FIELD, EMAIL_SUBJECT_FIELD, EMAIL_HTML_FIELD, FROM_FIELD, SELF_IN_CONTEXT
+
     input_args = demisto.args()
     EMAIL_BODY_FIELD = input_args.get('emailBody', EMAIL_BODY_FIELD)
     EMAIL_SUBJECT_FIELD = input_args.get('emailSubject', EMAIL_SUBJECT_FIELD)
@@ -548,7 +561,6 @@ def main():
     FROM_FIELD = input_args.get('emailFrom', FROM_FIELD)
     fields_to_display = input_args.get('fieldsToDisplay')
     SELF_IN_CONTEXT = argToBoolean(input_args.get('includeSelf', 'false'))
-
     if fields_to_display is not None:
         input_args['populateFields'] = fields_to_display
         fields_to_display = get_comma_sep_list(fields_to_display)
@@ -559,7 +571,6 @@ def main():
         return_error(get_error(res))
     res = res[-1]
     incidents = json.loads(res['Contents'])
-
     if is_number_of_incidents_too_low(res, incidents):
         return
     if is_number_of_unique_recipients_is_too_low(incidents):

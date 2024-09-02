@@ -102,9 +102,9 @@ SAMPLE_RESPONSE = [
         '_cd': '668:17198',
         '_indextime': '1596545116',
         '_raw': '1596545116, search_name="Endpoint - Recurring Malware Infection - Rule", count="17", '
-        'day_count="8", dest="ACME-workstation-012", info_max_time="1596545100.000000000", '
-        'info_min_time="1595939700.000000000", info_search_time="1596545113.965466000", '
-        'signature="Trojan.Gen.2"',
+                'day_count="8", dest="ACME-workstation-012", info_max_time="1596545100.000000000", '
+                'info_min_time="1595939700.000000000", info_search_time="1596545113.965466000", '
+                'signature="Trojan.Gen.2"',
         '_serial': '50',
         '_si': ['ip-172-31-44-193', 'notable'],
         '_sourcetype': 'stash',
@@ -217,6 +217,7 @@ class Jobs:
     def create(self, query, **kwargs):
         job = client.Job(sid='123456', service=self.service, **kwargs)
         job.resultCount = 0
+        job._state = self.state
         return job
 
 
@@ -350,6 +351,7 @@ def test_splunk_submit_event_hec_command(mocker):
     class MockRes:
         def __init__(self, text):
             self.text = text
+
     mocker.patch.object(splunk, "splunk_submit_event_hec", return_value=MockRes(text))
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
     splunk.splunk_submit_event_hec_command(params={"hec_url": "mock_url"}, args={})
@@ -496,7 +498,6 @@ data_test_check_error = [
 
 @pytest.mark.parametrize('args, out_error', data_test_check_error)
 def test_check_error(args, out_error):
-
     class Service:
         def __init__(self):
             self.apps = APPS
@@ -591,7 +592,6 @@ data_test_get_keys_and_types = [
 
 @pytest.mark.parametrize('raw_keys, expected_keys', data_test_get_keys_and_types)
 def test_get_keys_and_types(raw_keys, expected_keys):
-
     class KVMock:
         def __init__(self):
             pass
@@ -630,7 +630,6 @@ def test_get_kv_store_config(fields, expected_output, mocker):
 
 
 class TestFetchRemovingIrrelevantIncidents:
-
     notable1 = {'status': '5', 'event_id': '3'}
     notable2 = {'status': '6', 'event_id': '4'}
 
@@ -891,7 +890,7 @@ def test_fetch_notables(mocker):
     mocker.patch.object(splunk.client.Job, 'is_done', return_value=True)
     mocker.patch.object(splunk.client.Job, 'results', return_value=None)
     mocker.patch.object(splunk, 'ENABLED_ENRICHMENTS', [splunk.ASSET_ENRICHMENT,
-                        splunk.DRILLDOWN_ENRICHMENT, splunk.IDENTITY_ENRICHMENT])
+                                                        splunk.DRILLDOWN_ENRICHMENT, splunk.IDENTITY_ENRICHMENT])
     mocker.patch.object(demisto, 'incidents')
     mocker.patch.object(demisto, 'setLastRun')
     mock_last_run = {'time': '2018-10-24T14:13:20'}
@@ -994,7 +993,7 @@ def test_reset_enriching_fetch_mechanism(mocker):
 def test_is_enrichment_exceeding_timeout(mocker, drilldown_creation_time, asset_creation_time, enrichment_timeout,
                                          output):
     """
-    Scenario: When one of the notable's enrichments is exceeding the timeout, we want to create an incident we all
+    Scenario: When one of the notable's enrichments is exceeding the timeout, we want to create an incident with all
      the data gathered so far.
 
     Given:
@@ -1042,14 +1041,14 @@ def test_store_incidents_for_mapping(integration_context, incidents, output):
     assert integration_context.get(splunk.INCIDENTS, []) == output
 
 
-@pytest.mark.parametrize('notable_data, raw, status, earliest, latest', [
-    ({}, {}, False, "", ""),
+@pytest.mark.parametrize('notable_data, raw, earliest, latest', [
+    ({}, {}, "", ""),
     ({"drilldown_earliest": f"${splunk.INFO_MIN_TIME}$",
       "drilldown_latest": f"${splunk.INFO_MAX_TIME}$"},
-     {splunk.INFO_MIN_TIME: '1', splunk.INFO_MAX_TIME: '2'}, True, '1', '2'),
-    ({"drilldown_earliest": '1', "drilldown_latest": '2', }, {}, True, '1', '2')
+     {splunk.INFO_MIN_TIME: '1', splunk.INFO_MAX_TIME: '2'}, '1', '2'),
+    ({"drilldown_earliest": '1', "drilldown_latest": '2', }, {}, '1', '2')
 ])
-def test_get_drilldown_timeframe(notable_data, raw, status, earliest, latest, mocker):
+def test_get_drilldown_timeframe(notable_data, raw, earliest, latest, mocker):
     """
     Scenario: Trying to get the drilldown's timeframe from the notable's data
 
@@ -1065,8 +1064,7 @@ def test_get_drilldown_timeframe(notable_data, raw, status, earliest, latest, mo
     - Return the expected result
     """
     mocker.patch.object(demisto, 'info')
-    task_status, earliest_offset, latest_offset = splunk.get_drilldown_timeframe(notable_data, raw)
-    assert task_status == status
+    earliest_offset, latest_offset = splunk.get_drilldown_timeframe(notable_data, raw)
     assert earliest_offset == earliest
     assert latest_offset == latest
 
@@ -1101,12 +1099,35 @@ def test_get_notable_field_and_value(raw_field, notable_data, expected_field, ex
     assert value == expected_value
 
 
-@pytest.mark.parametrize('notable_data, search, raw, expected_search', [
-    ({'a': '1', '_raw': 'c=3'}, 'search a=$a|s$ c=$c$ suffix', {'c': '3'}, 'search a="1" c="3" suffix'),
-    ({'a': ['1', '2'], 'b': '3'}, 'search a=$a|s$ b=$b|s$ suffix', {}, 'search (a="1" OR a="2") b="3" suffix'),
-    ({'a': '1', '_raw': 'b=3', 'event_id': '123'}, 'search a=$a|s$ c=$c$ suffix', {'b': '3'}, ''),
+@pytest.mark.parametrize('notable_data, search, raw, is_query_name, expected_search', [
+    ({'a': '1', '_raw': 'c=3'}, 'search a=$a|s$ c=$c$ suffix', {'c': '3'}, False, 'search a="1" c="3" suffix'),
+    ({'a': ['1', '2'], 'b': '3'}, 'search a=$a|s$ b=$b|s$ suffix', {}, False, 'search (a="1" OR a="2") b="3" suffix'),
+    ({'a': '1', '_raw': 'b=3', 'event_id': '123'}, 'search a=$a|s$ c=$c$ suffix', {'b': '3'}, False, ''),
+    ({"signature": "Backdoor.test"}, "View related '$signature$' events for $dest$", {"dest": "ACME-test-005"}, True,
+     "View related 'Backdoor.test' events for ACME-test-005"),
+    ({}, 'View all wineventlogs involving user="$user$"', {'user': "test"}, True,
+     'View all wineventlogs involving user="test"'),
+    ({}, 'Test query name', {}, True, 'Test query name'),
+    ({'user': 'test\crusher'}, 'index="test" | where user = $user|s$', {}, False,
+     'index="test" | where user = "test\\\\crusher"'),
+    ({'user': 'test\crusher'}, 'index="test" | where user = "$user|s$"', {}, False,
+     'index="test" | where user = "test\\\\crusher"'),
+    ({'countryNameA': '"test\country"', 'countryNameB': '""'},
+     'search countryA="$countryNameA|s$" countryB=$countryNameB|s$', {}, False,
+     'search countryA="test\country" countryB=""'),
+], ids=[
+    "search query fields in notables data and raw data",
+    "search query fields in notable data more than one value",
+    "search query fields don't exist in notable data and raw data",
+    "query name fields in notables data and raw data",
+    "query name fields in raw data",
+    "query name without fields to replace",
+    "search query with a user field that contains a backslash",
+    "search query with a user field that is surrounded by quotation marks and contains a backslash",
+    "search query fields in notable data more than one value, with one empty value"
+
 ])
-def test_build_drilldown_search(notable_data, search, raw, expected_search, mocker):
+def test_build_drilldown_search(notable_data, search, raw, is_query_name, expected_search, mocker):
     """
     Scenario: When building the drilldown search query, we replace every field in between "$" sign with its
      corresponding query part (key & value).
@@ -1115,6 +1136,12 @@ def test_build_drilldown_search(notable_data, search, raw, expected_search, mock
     - A raw search query with fields both in the notable's data and in the notable's raw data
     - A raw search query with fields in the notable's data that has more than one value
     - A raw search query with fields that does not exist in the notable's data or in the notable's raw data
+    - A raw query name with fields both in the notable's data and in the notable's raw data
+    - A raw query name with fields in the notable's raw data
+    - A raw query name without any fields to replace.
+    - A raw query search with a user field that contains a backslash
+    - A raw query search with a user field that is surrounded by quotation marks and contains a backslash
+
 
     When:
     - build_drilldown_search is called
@@ -1123,7 +1150,8 @@ def test_build_drilldown_search(notable_data, search, raw, expected_search, mock
     - Return the expected result
     """
     mocker.patch.object(demisto, 'error')
-    assert splunk.build_drilldown_search(notable_data, search, raw) == expected_search
+    parsed_query = splunk.build_drilldown_search(notable_data, search, raw, is_query_name)
+    assert parsed_query == expected_search
 
 
 @pytest.mark.parametrize('notable_data, prefix, fields, query_part', [
@@ -1151,6 +1179,463 @@ def test_get_fields_query_part(notable_data, prefix, fields, query_part):
     - Return the expected result
     """
     assert splunk.get_fields_query_part(notable_data, prefix, fields) == query_part
+
+
+@pytest.mark.parametrize('enrichments, expected_result', [
+    ([splunk.Enrichment(splunk.DRILLDOWN_ENRICHMENT, enrichment_id='1'),
+      splunk.Enrichment(splunk.DRILLDOWN_ENRICHMENT, enrichment_id='2'),
+      splunk.Enrichment(splunk.DRILLDOWN_ENRICHMENT, enrichment_id='3')], 3),
+    ([splunk.Enrichment(splunk.DRILLDOWN_ENRICHMENT, enrichment_id='1'),
+      splunk.Enrichment(splunk.ASSET_ENRICHMENT, enrichment_id='2'),
+      splunk.Enrichment(splunk.IDENTITY_ENRICHMENT, enrichment_id='3')], 1),
+    ([splunk.Enrichment(splunk.ASSET_ENRICHMENT, enrichment_id='1'),
+      splunk.Enrichment(splunk.ASSET_ENRICHMENT, enrichment_id='2'),
+      splunk.Enrichment(splunk.IDENTITY_ENRICHMENT, enrichment_id='3')], 0)
+], ids=[
+    "A Notable with 3 drilldown enrichments",
+    "A Notable with 1 drilldown enrichment, 1 asset enrichment and 1 identity enrichment",
+    "A Notable with 2 asset enrichments and 1 identity enrichment"
+])
+def test_drilldown_searches_counter(enrichments, expected_result):
+    """
+     Tests the drilldown searches enrichment counter.
+
+    Given:
+    - A Notable with 3 drilldown enrichments.
+    - A Notable with 1 drilldown enrichment, 1 asset enrichment and 1 identity enrichment.
+    - A Notable with 2 asset enrichments and 1 identity enrichment.
+
+    When:
+    - drilldown_searches_counter function is called
+
+    Then:
+    - Return the expected result - number of drilldown enrichments.
+    """
+    notable = splunk.Notable({}, notable_id='id', enrichments=enrichments)
+    assert notable.drilldown_searches_counter() == expected_result
+
+
+@pytest.mark.parametrize('enrichments, expected_data', [
+    ([splunk.Enrichment(splunk.DRILLDOWN_ENRICHMENT, enrichment_id='1', status=splunk.Enrichment.SUCCESSFUL,
+                        query_name='query_name1', query_search='query_search1', data=[{'result1': 'a'}, {'result2': 'b'}]),
+      splunk.Enrichment(splunk.DRILLDOWN_ENRICHMENT, enrichment_id='2', status=splunk.Enrichment.SUCCESSFUL,
+                        query_name='query_name2', query_search='query_search2', data=[{'result1': 'c'}, {'result2': 'd'}]),
+      splunk.Enrichment(splunk.DRILLDOWN_ENRICHMENT, enrichment_id='3', status=splunk.Enrichment.SUCCESSFUL,
+                        query_name='query_name3', query_search='query_search3', data=[{'result1': 'e'}, {'result2': 'f'}])],
+     [{'query_name': 'query_name1', 'query_search': 'query_search1', 'query_results': [{'result1': 'a'}, {'result2': 'b'}],
+       'enrichment_status': splunk.Enrichment.SUCCESSFUL},
+      {'query_name': 'query_name2', 'query_search': 'query_search2', 'query_results': [{'result1': 'c'}, {'result2': 'd'}],
+       'enrichment_status': splunk.Enrichment.SUCCESSFUL},
+      {'query_name': 'query_name3', 'query_search': 'query_search3', 'query_results': [{'result1': 'e'}, {'result2': 'f'}],
+       'enrichment_status': splunk.Enrichment.SUCCESSFUL}]
+     ),
+    ([splunk.Enrichment(splunk.DRILLDOWN_ENRICHMENT, enrichment_id='1', status=splunk.Enrichment.SUCCESSFUL,
+                        query_name='query_name1', query_search='query_search1', data=[{'result1': 'a'}, {'result2': 'b'}]),
+      splunk.Enrichment(splunk.DRILLDOWN_ENRICHMENT, enrichment_id='2', status=splunk.Enrichment.SUCCESSFUL,
+                        query_name='query_name2', query_search='query_search2', data=[{'result1': 'c'}, {'result2': 'd'}])],
+     [{'query_name': 'query_name1', 'query_search': 'query_search1', 'query_results': [{'result1': 'a'}, {'result2': 'b'}],
+       'enrichment_status': splunk.Enrichment.SUCCESSFUL},
+      {'query_name': 'query_name2', 'query_search': 'query_search2', 'query_results': [{'result1': 'c'}, {'result2': 'd'}],
+       'enrichment_status': splunk.Enrichment.SUCCESSFUL}]
+     ),
+    ([splunk.Enrichment(splunk.DRILLDOWN_ENRICHMENT, enrichment_id='1', status=splunk.Enrichment.SUCCESSFUL,
+                        query_name='query_name1', query_search='query_search1', data=[{'result1': 'a'}, {'result2': 'b'}])],
+     [{'result1': 'a'}, {'result2': 'b'}]
+     ),
+    ([], None)
+], ids=[
+    "A Notable with 3 drilldown enrichments, 1 asset enrichment and 1 identity enrichment",
+    "A Notable with 2 drilldown enrichment, 1 asset enrichment and 1 identity enrichment",
+    "A Notable with 1 drilldown enrichment, 1 asset enrichment and 1 identity enrichment",
+    "A Notable without drilldown enrichments, 1 asset enrichments and 1 identity enrichment"
+])
+def test_to_incident_notable_enrichments_data(enrichments, expected_data):
+    """
+     Tests the logic of the Notable.to_incident() function, regarding the results data of multiple drilldown enrichments.
+
+    Given:
+        1. A Notable with 3 drilldown enrichments, 1 asset enrichment and 1 identity enrichment.
+        2. A Notable with 2 drilldown enrichment, 1 asset enrichment and 1 identity enrichment.
+        3. A Notable with 1 drilldown enrichment, 1 asset enrichment and 1 identity enrichment.
+        4. A Notable without drilldown enrichments, 1 asset enrichments and 1 identity enrichment.
+
+    When:
+    - Notable.to_incident() function is called
+
+    Then:
+    - Verify that the data of the notable includes the expected enrichements result as follow:
+        1. A dictionary with the results of the 3 drilldown searches by query names.
+        2. A dictionary with the results of the 2 drilldown searches by query names.
+        3. A list of the drilldown searches results (backwards competability).
+        4. No 'Drilldown' key in the notables data.
+
+    """
+    notable = splunk.Notable({}, notable_id='id', enrichments=enrichments)
+    enrichments_to_add = [
+        splunk.Enrichment(splunk.ASSET_ENRICHMENT, enrichment_id='111', status=splunk.Enrichment.SUCCESSFUL,
+                          data=[{'result1': 'a'}, {'result2': 'b'}]),
+        splunk.Enrichment(splunk.IDENTITY_ENRICHMENT, enrichment_id='222', status=splunk.Enrichment.FAILED,
+                          data=[{'result1': 'a'}, {'result2': 'b'}])
+    ]
+    notable.enrichments.extend(enrichments_to_add)
+
+    service = Service('DONE')
+    mapper = splunk.UserMappingObject(service, False)
+    notable.to_incident(mapper, 'comment_tag_to_splunk', 'comment_tag_from_splunk')
+
+    assert notable.data.get(splunk.ASSET_ENRICHMENT) == [{'result1': 'a'}, {'result2': 'b'}]
+    assert notable.data.get(splunk.IDENTITY_ENRICHMENT) == [{'result1': 'a'}, {'result2': 'b'}]
+    assert notable.data.get(splunk.DRILLDOWN_ENRICHMENT) == expected_data
+
+
+@pytest.mark.parametrize('enrichments, enrichment_type, expected_stauts_result', [
+    ([splunk.Enrichment(splunk.ASSET_ENRICHMENT, enrichment_id='1', status=splunk.Enrichment.SUCCESSFUL,
+                        data=[{'result1': 'a'}, {'result2': 'b'}])], splunk.ASSET_ENRICHMENT, True
+     ),
+    ([splunk.Enrichment(splunk.ASSET_ENRICHMENT, enrichment_id='1', status=splunk.Enrichment.FAILED,
+                        data=[{'result1': 'a'}, {'result2': 'b'}])], splunk.ASSET_ENRICHMENT, False
+     ),
+    ([splunk.Enrichment(splunk.IDENTITY_ENRICHMENT, enrichment_id='1', status=splunk.Enrichment.SUCCESSFUL,
+                        data=[{'result1': 'a'}, {'result2': 'b'}])], splunk.IDENTITY_ENRICHMENT, True
+     ),
+    ([splunk.Enrichment(splunk.IDENTITY_ENRICHMENT, enrichment_id='1', status=splunk.Enrichment.FAILED,
+                        data=[{'result1': 'a'}, {'result2': 'b'}])], splunk.IDENTITY_ENRICHMENT, False
+     ),
+    ([splunk.Enrichment(splunk.DRILLDOWN_ENRICHMENT, enrichment_id='1', status=splunk.Enrichment.SUCCESSFUL,
+                        query_name='query_name1', query_search='query_search1', data=[{'result1': 'a'}, {'result2': 'b'}])],
+     splunk.DRILLDOWN_ENRICHMENT, True
+     ),
+    ([splunk.Enrichment(splunk.DRILLDOWN_ENRICHMENT, enrichment_id='1', status=splunk.Enrichment.FAILED,
+                        query_name='query_name1', query_search='query_search1', data=[{'result1': 'a'}, {'result2': 'b'}])],
+     splunk.DRILLDOWN_ENRICHMENT, False
+     ),
+    ([splunk.Enrichment(splunk.DRILLDOWN_ENRICHMENT, enrichment_id='1', status=splunk.Enrichment.SUCCESSFUL,
+                        data=[{'result1': 'a'}, {'result2': 'b'}]),
+      splunk.Enrichment(splunk.DRILLDOWN_ENRICHMENT, enrichment_id='1', status=splunk.Enrichment.FAILED,
+                        data=[{'result1': 'a'}, {'result2': 'b'}])], splunk.DRILLDOWN_ENRICHMENT, True
+     ),
+    ([splunk.Enrichment(splunk.DRILLDOWN_ENRICHMENT, enrichment_id='1', status=splunk.Enrichment.FAILED,
+                        data=[{'result1': 'a'}, {'result2': 'b'}]),
+      splunk.Enrichment(splunk.DRILLDOWN_ENRICHMENT, enrichment_id='1', status=splunk.Enrichment.SUCCESSFUL,
+                        data=[{'result1': 'a'}, {'result2': 'b'}])], splunk.DRILLDOWN_ENRICHMENT, True
+     ),
+    ([splunk.Enrichment(splunk.DRILLDOWN_ENRICHMENT, enrichment_id='1', status=splunk.Enrichment.FAILED,
+                        data=[{'result1': 'a'}, {'result2': 'b'}]),
+      splunk.Enrichment(splunk.DRILLDOWN_ENRICHMENT, enrichment_id='1', status=splunk.Enrichment.FAILED,
+                        data=[{'result1': 'a'}, {'result2': 'b'}])], splunk.DRILLDOWN_ENRICHMENT, False
+     ),
+    ([splunk.Enrichment(splunk.DRILLDOWN_ENRICHMENT, enrichment_id='1', status=splunk.Enrichment.SUCCESSFUL,
+                        data=[{'result1': 'a'}, {'result2': 'b'}]),
+      splunk.Enrichment(splunk.DRILLDOWN_ENRICHMENT, enrichment_id='1', status=splunk.Enrichment.SUCCESSFUL,
+                        data=[{'result1': 'a'}, {'result2': 'b'}])], splunk.DRILLDOWN_ENRICHMENT, True
+     ),
+    ([splunk.Enrichment(splunk.DRILLDOWN_ENRICHMENT, enrichment_id='1', status=splunk.Enrichment.FAILED,
+                        data=[{'result1': 'a'}, {'result2': 'b'}]),
+      splunk.Enrichment(splunk.DRILLDOWN_ENRICHMENT, enrichment_id='1', status=splunk.Enrichment.SUCCESSFUL,
+                        data=[{'result1': 'a'}, {'result2': 'b'}]),
+      splunk.Enrichment(splunk.DRILLDOWN_ENRICHMENT, enrichment_id='1', status=splunk.Enrichment.FAILED,
+                        data=[{'result1': 'a'}, {'result2': 'b'}])], splunk.DRILLDOWN_ENRICHMENT, True
+     )
+], ids=[
+    "A Notable with 1 successful Asset enrichment",
+    "A Notable with 1 failed Asset enrichment",
+    "A Notable with 1 successful Identity enrichment",
+    "A Notable with 1 failed Identity enrichment",
+    "A Notable with 1 successful Drilldown enrichment",
+    "A Notable with 1 failed Drilldown enrichment",
+    "A Notable with 1 successful Drilldown enrichment and 1 failed drilldown enrichment (the first is successful)",
+    "A Notable with 1 successful Drilldown enrichment and 1 failed drilldown enrichment (the second is successful)",
+    "A Notable with 2 Drilldown enrichments [failed, failed]",
+    "A Notable with 2 Drilldown enrichments [successful, successful]",
+    "A Notable with 3 Drilldown enrichments [failed, successful, failed]"
+])
+def test_to_incident_notable_enrichments_status(enrichments, enrichment_type, expected_stauts_result):
+    """
+     Tests the logic of the Notable.to_incident() function, regarding the statuses of enrichments.
+
+    Given:
+        1. A Notable with 1 successful Asset enrichment.
+        2. A Notable with 1 failed Asset enrichment.
+        3. A Notable with 1 successful Identity enrichment.
+        4. A Notable with 1 failed Identity enrichment.
+        5. A Notable with 1 successful Drilldown enrichment.
+        6. A Notable with 1 failed Drilldown enrichment.
+        7. A Notable with 1 successful Drilldown enrichment and 1 failed drilldown enrichment (the first is successful).
+        8. A Notable with 1 successful Drilldown enrichment and 1 failed drilldown enrichment (the second is successful).
+        9. A Notable with 2 Drilldown enrichments [failed, failed].
+        10. A Notable with 2 Drilldown enrichments [successful, successful].
+        11. A Notable with 3 Drilldown enrichments [failed, successful, failed].
+
+
+    When:
+    - Notable.to_incident() function is called
+
+    Then:
+    - Verify that the status of the notable enrichments is as follow:
+        1. Asset Enrichment status is: successful_asset_enrichment = True.
+        2. Asset Enrichment status is: successful_asset_enrichment = False.
+        3. Identity Enrichment status is: successful_identity_enrichment = True.
+        4. Identity Enrichment status is: successful_identity_enrichment = False.
+
+        # In Drilldown enrichment - if at least one drilldown enrichment is successful the status is Success.
+        5. Drilldown Enrichment status is: successful_drilldown_enrichment = True.
+        6. Drilldown Enrichment status is: successful_drilldown_enrichment = False.
+        7. Drilldown Enrichment status is: successful_drilldown_enrichment = True.
+        8. Drilldown Enrichment status is: successful_drilldown_enrichment = True.
+        9. Drilldown Enrichment status is: successful_drilldown_enrichment = False.
+        10. Drilldown Enrichment status is: successful_drilldown_enrichment = True.
+        11. Drilldown Enrichment status is: successful_drilldown_enrichment = True.
+
+    """
+    notable = splunk.Notable({}, notable_id='id', enrichments=enrichments)
+    service = Service('DONE')
+    mapper = splunk.UserMappingObject(service, False)
+    notable.to_incident(mapper, 'comment_tag_to_splunk', 'comment_tag_from_splunk')
+
+    assert notable.data[splunk.ENRICHMENT_TYPE_TO_ENRICHMENT_STATUS[enrichment_type]] == expected_stauts_result
+
+
+def test_parse_drilldown_searches():
+    """
+    Given:
+    - A list of valid Json strings with splunk drilldown searches data.
+
+    When:
+    - Running the splunk.parse_drilldown_searches function
+
+    Then:
+    - Verify that the search data was parsed into a python dictionary as expected.
+    """
+    searches = ["{\"name\":\"View related '$signature$' events for $dest$\",\"search\":\"| from datamodel:\\\"Malware\\\"."
+                "\\\"Malware_Attacks\\\" | search dest=$dest|s$ signature=$signature|s$\",\"earliest\":17145"
+                "63300,\"latest\":1715168700}",
+                "{\"name\":\"View related '$category$' events for $signature$\",\"search\":\"| from datamodel:\\\"Malw"
+                "are\\\".\\\"Malware_Attacks\\\" \\n|  fields category, dest, signature | search dest=$dest|s$ signature="
+                "$signature|s$\",\"earliest\":1714563300,\"latest\":1715168700}"
+                ]
+    parsed_searches = splunk.parse_drilldown_searches(searches)
+    for search in parsed_searches:
+        assert isinstance(search, dict)
+    assert parsed_searches == [
+        {'name': "View related '$signature$' events for $dest$",
+         'search': '| from datamodel:"Malware"."Malware_Attacks" | search dest=$dest|s$ signature=$signature|s$',
+         'earliest': 1714563300,
+         'latest': 1715168700
+         },
+        {'name': "View related '$category$' events for $signature$",
+         'search': '| from datamodel:"Malware"."Malware_Attacks" \n|  fields category, dest, signature | search dest=$dest|s$ '
+                   'signature=$signature|s$',
+         'earliest': 1714563300,
+         'latest': 1715168700
+         }
+    ]
+
+
+@pytest.mark.parametrize('notable_data, expected_call_count', [
+    ({'event_id': 'test_id', 'drilldown_search': 'test_search', 'drilldown_searches': ['test_search1', 'test_search2']}, 0),
+    ({'event_id': 'test_id', 'drilldown_search': '', 'drilldown_searches': ['test_search1', 'test_search2']}, 1),
+    ({'event_id': 'test_id', 'drilldown_searches': ['test_search1', 'test_search2']}, 1)
+], ids=[
+    "A notable data with both 'drilldown_search' and 'drilldown_searches' keys with values",
+    "A notable data with both 'drilldown_search' and 'drilldown_searches' keys but 'drilldown_search' has no value",
+    "A notable data with 'drilldown_searches' key only"
+])
+def test_drilldown_enrichment_main_condition(mocker, notable_data, expected_call_count):
+    """
+    Tests the logic of the first (main) condition in the drilldown_enrichment() function.
+    We want to make sure that in a case that the notable data include both 'drilldown_search' and 'drilldown_searches'
+    keys (happens when there is only one drilldown search to enrich) the 'drilldown_search' value will be taken to maintain
+    backwards cometability. In any other case the value of the 'drilldown_searches' key will be used.
+
+    Given:
+        1. A notable data that includes both 'drilldown_search' and 'drilldown_searches' keys with values.
+        2. A notable data that includes both 'drilldown_search' and 'drilldown_searches' keys but 'drilldown_search' has no value.
+        3. A notable data that includes 'drilldown_searches' key only.
+
+    When:
+    - Running the  splunk.drilldown_enrichment function
+
+    Then:
+    - Verify that:
+        1. The value of the 'drilldown_search' key is taken (to maintain backwards competability), and therefore we don't call the
+           parse_drilldown_searches function.
+        2. The value of the 'drilldown_searches' key is taken, and therefore we call the parse_drilldown_searches function.
+        3. The value of the 'drilldown_searches' key is taken, and therefore we call the parse_drilldown_searches function.
+
+    """
+    mock_parse_drilldown_searches = mocker.patch('SplunkPy.parse_drilldown_searches', return_value=[])
+    service = Service('DONE')
+    splunk.drilldown_enrichment(service, notable_data, 5)
+    assert mock_parse_drilldown_searches.call_count == expected_call_count
+
+
+@pytest.mark.parametrize('notable_data, expected_call_count', [
+    ({'event_id': 'test_id', 'drilldown_search': 'test_search', 'drilldown_searches': [{}], '_raw': "{'test':1}"}, 1),
+    ({'event_id': 'test_id',
+      'drilldown_searches':
+          ["{\"name\":\"View related '$signature$' events for $dest$\",\"search\":\"| from datamodel:\\\"Malware\\\".\\\"Malwa"
+           "re_Attacks\\\" | search dest=$dest|s$ signature=$signature|s$\",\"earliest\":1714563300,\"latest\":1715168700}",
+           "{\"name\":\"View related '$category$' events for $signature$\",\"search\":\"| from datamodel:\\\"Malware\\\".\\\"M"
+           "alware_Attacks\\\" \\n|  fields category, dest, signature | search dest=$dest|s$ signature=$signature|s$\",\"ear"
+           "liest\":1714563300,\"latest\":1715168700}"
+           ]
+      },
+     0)
+], ids=[
+    "A notable data with one drilldown search",
+    "A notable data with multiple drilldown searches"
+])
+def test_drilldown_enrichment_get_timeframe(mocker, notable_data, expected_call_count):
+    """
+    Tests that in a case of one drildown search we extract the search timeframe from the notable data by calling the
+    get_drilldown_timeframe() function, and in a case of multiple drilldown searches, we get the timeframe from the drilldown
+    search data dictionary without calling the get_drilldown_timeframe() function.
+
+    Given:
+        1. A notable data with one drilldown search.
+        2. A notable data with multiple drilldown searches.
+
+
+    When:
+    - Running the splunk.get_drilldown_timeframe function.
+
+    Then:
+    - Verify that:
+        1. The timeframe is determined according to fields in the notable data and raw data by using the
+           get_drilldown_timeframe function.
+        2. The timeframe is determined according to fields of each drilldown search data dict.
+
+    """
+    mock_get_drilldown_timeframe = mocker.patch('SplunkPy.get_drilldown_timeframe', return_value=("", ""))
+    mocker.patch('SplunkPy.build_drilldown_search', return_value='')
+    service = Service('DONE')
+    splunk.drilldown_enrichment(service, notable_data, 5)
+    assert mock_get_drilldown_timeframe.call_count == expected_call_count
+
+
+@pytest.mark.parametrize('notable_data, expected_result', [
+    ({'event_id': 'test_id', 'drilldown_name': 'View all login attempts by system $src$',
+      'drilldown_search': "| from datamodel:\"Authentication\".\"Authentication\" | search src=$src|s$",
+      'drilldown_searches': "{\"name\":\"View all login attempts by system $src$\",\"search\":\"| from datamodel:\\\"Authent"
+                            "ication\\\".\\\"Authentication\\\" | search src=$src|s$\",\"earliest\":1715040000,"
+                            "\"latest\":1715126400}",
+      '_raw': "src=\'test_src\'", "drilldown_latest": "1715126400.000000000", "drilldown_earliest": "1715040000.000000000"},
+     [
+         ("View all login attempts by system 'test_src'",
+          '| from datamodel:"Authentication"."Authentication" | search src="\'test_src\'"')]),
+
+    ({'event_id': 'test_id2', 'drilldown_searches':
+        ["{\"name\":\"View all login attempts by system $src$\",\"search\":\"| from datamodel:\\\"Authentication\\\".\\\"Authe"
+         "ntication\\\" | search src=$src|s$\",\"earliest\":1715040000,\"latest\":1715126400}",
+         "{\"name\":\"View all test involving user=\\\"$user$\\\"\",\"search\":\"index=\\\"test\\\"\\n| where "
+         "user = $user|s$\",\"earliest\":1716955500,\"latest\":1716959400}"],
+      '_raw': "src=\'test_src\', user='test_user'"},
+     [("View all login attempts by system 'test_src'",
+       '| from datamodel:"Authentication"."Authentication" | search src="\'test_src\'"'),
+      ('View all test involving user="\'test_user\'"',
+       'search index="test"\n| where user = "\'test_user\'"')]),
+    ({'event_id': 'test_id3', 'drilldown_searches':
+        ["{\"name\":\"View all login attempts by system $src$\",\"search\":\"| from datamodel:\\\"Authentication\\\".\\\"Authe"
+         "ntication\\\" | search src=$src|s$\",\"earliest_offset\":1715040000,\"latest_offset\":1715126400}",
+         "{\"name\":\"View all test involving user=\\\"$user$\\\"\",\"search\":\"index=\\\"test\\\"\\n| where "
+         "user = $user|s$\",\"earliest_offset\":1716955500,\"latest_offset\":1716959400}"],
+      '_raw': "src=\'test_src\', user='test_user'"},
+     [("View all login attempts by system 'test_src'",
+       '| from datamodel:"Authentication"."Authentication" | search src="\'test_src\'"'),
+      ('View all test involving user="\'test_user\'"',
+       'search index="test"\n| where user = "\'test_user\'"')]),
+], ids=[
+    "A notable data with one drilldown search enrichment",
+    "A notable data with two drilldown searches which contained the earlies in 'earliest' key ",
+    "A notable data with two drilldown searches which contained the earlies in 'earliest_offset' key "
+])
+def test_drilldown_enrichment(notable_data, expected_result):
+    """
+    Tests the logic of the drilldown_enrichment function.
+
+    Given:
+        1. A notable data with one drilldown search enrichment.
+        2. A notable data with multiple (two) drilldown searches to enrich.
+
+
+    When:
+    - Running the splunk.drilldown_enrichment function.
+
+    Then:
+    - Verify that the returned jobs and queries are as expected.
+
+    """
+    from splunklib import client
+    service = Service('DONE')
+    jobs_and_queries = splunk.drilldown_enrichment(service, notable_data, 5)
+    for i in range(len(jobs_and_queries)):
+        job_and_queries = jobs_and_queries[i]
+        assert job_and_queries[0] == expected_result[i][0]
+        assert job_and_queries[1] == expected_result[i][1]
+        assert isinstance(job_and_queries[2], client.Job)
+
+
+@pytest.mark.parametrize('notable_data, debug_log_message', [
+    ({'event_id': 'test_id'}, 'drill-down was not properly configured for notable test_id'),
+
+    ({'event_id': 'test_id', 'drilldown_name': 'View all login attempts by system $src$',
+      'drilldown_search': "| from datamodel:\"Authentication\".\"Authentication\" | search src=$src|s$",
+      '_raw': "src=\'test_src\'", "drilldown_latest": "", "drilldown_earliest": ""},
+     'Failed getting the drilldown timeframe for notable test_id'),
+
+    ({'event_id': 'test_id', 'drilldown_name': 'View all login attempts by system $src$',
+      'drilldown_search': "| from datamodel:\"Authentication\".\"Authentication\" | search src=$src|s$", '_raw': "",
+      "drilldown_latest": "00101", "drilldown_earliest": "00001"},
+     "Couldn't build search query for notable test_id with the following drilldown search "),
+
+    ({'event_id': 'test_id',
+      'drilldown_searches': [
+          "{\"name\":\"View all login attempts by system $src$\",\"search\":\"| from datamodel:\\\"Authentica"
+          "tion\\\".\\\"Authentication\\\" | search src=$src|s$\",\"earliest\":\"\",\"latest\":\"\"}",
+          "{\"name\":\"View all test involving user=\\\"$user$\\\"\",\"search\":\"index=\\\"test\\\"\\n| where user ="
+          "$user|s$\",\"earliest\":\"\",\"latest\":\"\"}"],
+      '_raw': "src=\'test_src\', user='test_user'"},
+     'Failed getting the drilldown timeframe for notable test_id'),
+
+    ({'event_id': 'test_id',
+      'drilldown_searches':
+          ["{\"name\":\"View all login attempts by system $src$\",\"search\":\"| from datamodel:\\\"Authentic"
+           "ation\\\".\\\"Authentication\\\" | search src=$src|s$\",\"earliest\":\"\",\"latest\":\"\"}",
+           "{\"name\":\"View all test involving user=\\\"$user$\\\"\",\"search\":\"index=\\\"test\\\"\\n| where user ="
+           "$user|s$\",\"earliest\":\"\",\"latest\":\"\"}"], '_raw': ""},
+     "Couldn't build search query for notable test_id with the following drilldown search"),
+], ids=[
+    "A notable data without drilldown enrichment data",
+    "A notable data with a single drilldown enrichment without search timeframe data",
+    "A notable data with a single drilldown enrichment with an invalid search query",
+    "A notable data with multiple drilldown enrichments without search timeframe data",
+    "A notable data with multiple drilldown enrichments with invalid search queries"
+])
+def test_drilldown_enrichment_no_enrichement_cases(mocker, notable_data, debug_log_message):
+    """
+    Tests the logic of the drilldown_enrichment function when for some reason the enrichments raw data is invalid.
+
+    Given:
+        1. A notable data without drilldown enrichment data.
+        2. A notable data with a single drilldown enrichment without search timeframe data.
+        3. A notable data with a single drilldown enrichment with an invalid search query.
+        4. A notable data with multiple drilldown enrichments without search timeframe data.
+        5. A notable data with multiple drilldown enrichments with invalid search queries.
+
+    When:
+    - Running the splunk.drilldown_enrichment function.
+
+    Then:
+    - Verify that the returned value is a tuple of None values as expected.
+
+    """
+    debug_log = mocker.patch.object(demisto, 'debug')
+    mocker.patch.object(demisto, 'error')
+    service = Service('DONE')
+    jobs_and_queries = splunk.drilldown_enrichment(service, notable_data, 5)
+    for i in range(len(jobs_and_queries)):
+        assert jobs_and_queries[i] == (None, None, None)
+        assert debug_log_message in debug_log.call_args.args[0]
 
 
 """ ========== Mirroring Mechanism Tests ========== """
@@ -1353,6 +1838,7 @@ def test_get_remote_data_command_with_message(mocker):
     Returns:
         None
     """
+
     class Jobs:
         def oneshot(self, _, output_mode: str):
             assert output_mode == splunk.OUTPUT_MODE_JSON
@@ -1420,6 +1906,7 @@ def test_get_remote_data_command_add_comment(mocker, notable_data: dict,
         - ensure the event was updated
 
     """
+
     class Jobs:
         def oneshot(self, _, output_mode: str):
             assert output_mode == splunk.OUTPUT_MODE_JSON
@@ -1518,7 +2005,6 @@ def test_edit_notable_event__failed_to_update(mocker, requests_mock):
      5, True)
 ])
 def test_update_remote_system(args, params, call_count, success, mocker, requests_mock):
-
     class Service:
         def __init__(self):
             self.token = 'fake_token'
@@ -1825,6 +2311,34 @@ def test_splunk_search_command(mocker, polling, status):
                                                 'sid: 123456\n**No entries.**\n'
 
 
+@pytest.mark.parametrize('messages,expected_msg', [
+    ({'fatal': ['fatal msg']}, 'fatal msg'),
+    ({'error': ['error msg']}, 'error msg')
+])
+def test_err_in_splunk_search(mocker, messages, expected_msg):
+    """
+    Given:
+        A wrong search query.
+
+    When:
+        Running the splunk_search_command.
+
+    Then:
+        Ensure the result as expected in polling and in regular search.
+    """
+    mock_args = {
+        "query": "wrong search query",
+        "earliest_time": "2021-11-23T10:10:10",
+        "latest_time": "2020-10-20T10:10:20",
+        "fast_mode": "false",
+    }
+    service = Service(status="FAILED")
+    service.jobs.state.content['messages'] = messages
+    with pytest.raises(DemistoException) as e:
+        splunk.splunk_search_command(service, mock_args)
+    assert f'Failed to run the search in Splunk: {expected_msg}' in str(e)
+
+
 @pytest.mark.parametrize(
     argnames='credentials',
     argvalues=[{'username': 'test', 'password': 'test'}, {'splunkToken': 'token', 'password': 'test'}]
@@ -1867,6 +2381,7 @@ def test_module__exception_raised(mocker, credentials):
     Then:
         - Validate the expected message was returned
     """
+
     # prepare
     def exception_raiser():
         raise AuthenticationError
@@ -2035,6 +2550,7 @@ def test_owner_mapping_mechanism_xsoar_to_splunk(mocker, xsoar_name, expected_sp
     Then:
         - validates the splunk user is correct
     """
+
     def mocked_get_record(col, value_to_search):
         return filter(lambda x: x[col] == value_to_search, OWNER_MAPPING[:-1])
 
@@ -2074,6 +2590,7 @@ def test_owner_mapping_mechanism_splunk_to_xsoar(mocker, splunk_name, expected_x
     Then:
         - validates the splunk user is correct
     """
+
     def mocked_get_record(col, value_to_search):
         return filter(lambda x: x[col] == value_to_search, OWNER_MAPPING)
 
@@ -2119,6 +2636,7 @@ def test_get_splunk_user_by_xsoar_command(mocker, xsoar_names, expected_outputs)
     When: trying to get splunk matching users
     Then: validates correctness of list
     """
+
     def mocked_get_record(col, value_to_search):
         return filter(lambda x: x[col] == value_to_search, OWNER_MAPPING[:-1])
 
@@ -2164,6 +2682,37 @@ def test_basic_authentication_param(mocker, username, expected_username, basic_a
     assert ('basic' in client.connect.call_args[1]) == basic_auth
 
 
+@pytest.mark.parametrize(argnames='host, expected_base_url', argvalues=[
+    ('8.8.8.8', 'https://8.8.8.8:8089/'),
+    ('https://www.test.com', 'https://www.test.com:8089/'),
+    ('http://www.test.com', 'https://http://www.test.com:8089/'),  # we don't want to silently replace http with https
+])
+def test_base_url(mocker, host, expected_base_url):
+    """
+    Given: - Different host values
+    When:  - Running the splunk-notable-event-edit command
+    Then:  - Ensure the base URL is built as expected
+
+    """
+    mocked_params = {
+        'host': host,
+        'port': '8089',
+        'proxy': 'false',
+        'authentication': {
+            'identifier': 'username',
+            'password': 'test_password'
+        }
+    }
+    mocker.patch.object(demisto, 'command', return_value='splunk-notable-event-edit')
+    mocker.patch.object(demisto, 'params', return_value=mocked_params)
+    mocker.patch.object(client, 'connect')
+
+    cmd = mocker.patch.object(splunk, 'splunk_edit_notable_event_command')
+    splunk.main()
+
+    assert cmd.call_args[0][0] == expected_base_url
+
+
 @pytest.mark.parametrize(
     'item, expected',
     [
@@ -2176,3 +2725,69 @@ def test_handle_message(item: dict | results.Message, expected: bool):
     Tests that passing a results.Message object returns True
     """
     assert splunk.handle_message(item) is expected
+
+
+def test_single_drilldown_searches(mocker):
+    """
+    Given: - notable with single string represent dict, in the drilldown_searches key.
+    When:  - call to drilldown_enrichment.
+    Then:  - validate there is no errors in the process.
+
+    """
+
+    drilldown_searches = json.dumps(
+        {
+            "name": "test drilldown",
+            "search": "| from datamodel: test",
+            "earliest": 1719218100,
+            "latest": 1719823500
+        }
+    )
+    mocker.patch.object(demisto, 'error')
+    mocker.patch.object(splunk, 'build_drilldown_search', return_value=None)
+
+    splunk.drilldown_enrichment(
+        service=None,
+        notable_data={'drilldown_searches': drilldown_searches, 'event_id': 'test_id'},
+        num_enrichment_events=1)
+
+    assert demisto.error.call_count == 0, 'Something was wrong in the drilldown_enrichment process'
+
+
+@pytest.mark.parametrize(
+    'drilldown_data, expected',
+    [({'drilldown_search': 'test'}, ['test']),
+     ({'drilldown_searches': '{"search_1":"test_1"}'}, [{'search_1': 'test_1'}]),
+     ({'drilldown_searches': ['{"search_1":"test_1"}', '{"search_2":"test_2"}']},
+      [{'search_1': 'test_1'}, {'search_2': 'test_2'}]),
+     ({'drilldown_searches': '[{"search_1":"test_1"}]'},
+      [{'search_1': 'test_1'}]),
+     ({'drilldown_searches': '[{"search_1":"test_1"}, {"search_2":"test_2"}]'},
+      [{'search_1': 'test_1'}, {'search_2': 'test_2'}])
+     ]
+)
+def test_get_drilldown_searches(drilldown_data, expected):
+    """
+    Given:  -
+        1. A notable data with a single 'old' (string value in the 'drilldown_search' key) drilldown enrichment data .
+        2. A notable data with a single drilldown enrichments as json string in the 'new' key (drilldown_searches).
+        3. A notable data with multiple drilldown enrichments as json string in the 'new' key (drilldown_searches).
+        4. A notable data with a single drilldown enrichments as json list string in the 'new' key (drilldown_searches).
+        5. A notable data with a multiple drilldown enrichments as json list string in the 'new' key (drilldown_searches).
+    When:   - call to get_drilldown_searches.
+    Then:   - validate the result are as expected.
+    """
+
+    assert splunk.get_drilldown_searches(drilldown_data) == expected
+
+
+def test_remove_double_quotes():
+    """
+        Given: string with double quotes
+        When: replacing a var in a query
+        Then: make sure no double double quotes are returned.
+    """
+    from SplunkPy import remove_double_quotes
+
+    assert remove_double_quotes('this is a ""test""') == 'this is a "test"'
+    assert remove_double_quotes('no ""double quotes"" here, and here: ""') == 'no "double quotes" here, and here: ""'

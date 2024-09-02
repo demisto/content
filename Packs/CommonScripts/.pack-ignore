@@ -1,3 +1,6 @@
+[file:PrintToIncident.yml]
+ignore=SC105
+
 [file:GetDuplicatesMlv2.yml]
 ignore=SC100
 
@@ -175,6 +178,8 @@ qr
 cv
 unescape_url
 unescape
+hyperlinks
+Auth
 
 [file:ScheduleGenericPolling.yml]
 ignore=BA124

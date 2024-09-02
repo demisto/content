@@ -1,6 +1,6 @@
 
 {
-    "aruba_clearpass_raw": {        
+    "aruba_networks_clearpass_raw": {        
         "rt": {
             "type": "int",
             "is_array": false

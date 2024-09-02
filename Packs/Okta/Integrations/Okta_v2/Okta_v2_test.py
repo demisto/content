@@ -601,6 +601,12 @@ okta_zone = {
     "type": "IP"
 }
 
+LOGS = [
+    {'mock_log1': 'mock_value1'},
+    {'mock_log2': 'mock_value2'},
+    {'mock_log3': 'mock_value3'}
+]
+
 
 def util_load_json(path: str):
     """
@@ -939,8 +945,47 @@ def test_set_temp_password_command():
     with requests_mock.Mocker() as m:
         m.get('https://demisto.com/api/v1/users?filter=profile.login eq "test"', json=[{'id': '1234'}])
         m.post('https://demisto.com/api/v1/users/1234', json={'passwordChanged': '2023-03-22T10:15:26.000Z'})
-        m.post('https://demisto.com/api/v1/users/1234/lifecycle/expire_password', json={})
+        m.post('https://demisto.com/api/v1/users/1234/lifecycle/expire_password?tempPassword=true',
+               json={"tempPassword": "cAn5N3gx"})
 
         result = set_password_command(client, {'username': 'test', 'password': 'a1b2c3', 'temporary_password': 'true'})
+    expected_results = "test password was last changed on 2023-03-22T10:15:26.000Z\n" \
+                       "### Okta Temporary Password\n|tempPassword|\n|---|\n| cAn5N3gx |\n"
+    assert result[0] == expected_results
 
-    assert result[0] == 'test password was last changed on 2023-03-22T10:15:26.000Z'
+
+def mock_get_paged_results(url_suffix='', query_params=None, max_limit=None):
+    if max_limit:
+        return LOGS[:max_limit]
+    else:
+        return LOGS
+
+
+LOGS_WITH_LIMIT = [
+    (None, 3),
+    (1, 1),
+    (3, 3),
+    (1001, 3)
+]
+
+
+@pytest.mark.parametrize('limit, logs_amount', LOGS_WITH_LIMIT)
+def test_get_logs_command_with_limit(mocker, requests_mock, limit, logs_amount):
+    """
+    Given:
+        - An Okta IAM client object.
+    When:
+        - Calling function okta-get-logs
+        - Events should come in two batches of two events in the first batch, and one event in the second batch.
+    Then:
+        - Ensure three events are returned in incident the correct format.
+    """
+    from Okta_v2 import get_logs_command
+
+    client = Client(base_url='https://demisto.com', api_token="XXX")
+    mocker.patch.object(Client, 'get_paged_results', side_effect=mock_get_paged_results)
+    mocker.patch.object(Client, 'get_readable_logs', side_effect=mock_get_paged_results)
+    requests_mock.get(f"https://demisto.com/api/v1/logs?limit={limit}", json=LOGS[:limit])
+    args = {'limit': limit}
+    readable, outputs, raw_response = get_logs_command(client=client, args=args)
+    assert len(outputs.get('Okta.Logs.Events(val.uuid && val.uuid === obj.uuid)')) == logs_amount

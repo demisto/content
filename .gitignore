@@ -21,8 +21,8 @@ CommonServerUserPython.py
 CommonServerPowerShell.ps1
 demistomock.py
 demistomock.ps1
-!Tests/demistomock/demistomock.py
-!Tests/demistomock/demistomock.ps1
+Tests/demistomock/demistomock.py
+Tests/demistomock/demistomock.ps1
 Tests/filter_file.txt
 Tests/filter_file_old.txt
 Tests/id_set.json
@@ -32,7 +32,7 @@ Integrations/*/*_unified.yml
 Beta_Integrations/*/*_unified.yml
 Packs/*/*/*/*_unified.yml
 conftest.py
-!Tests/scripts/pytest/conftest.py
+!Tests/scripts/dev_envs/pytest/conftest.py
 !Tests/tests_e2e/conftest.py
 venv
 failed_unittests.txt
