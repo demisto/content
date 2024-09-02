@@ -6415,6 +6415,9 @@
             },
             "demisto/python3:3.10.4.29342": {
                 "memory_threshold": 85
+            },
+            "demisto/pan-os-python:1.0.0.108041": {
+                "memory_threshold": 85
             }
         }
     },
