@@ -247,7 +247,6 @@ def test_prepare_search_query_data(mocker, args, expected):
     from IBMResilientSystems import prepare_search_query_data
     assert prepare_search_query_data(args) == expected
 
-
 @pytest.mark.parametrize(
     "input_notes, expected_output",
     [

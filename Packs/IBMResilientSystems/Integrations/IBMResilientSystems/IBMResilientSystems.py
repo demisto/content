@@ -218,7 +218,7 @@ def prettify_incidents(client, incidents):
     for incident in incidents:
         incident['id'] = str(incident['id'])
         if isinstance(incident['description'], str):
-            incident['description'] = remove_html_div_tags(incident['description'])
+            incident['description'] = incident['description']
         incident['discovered_date'] = normalize_timestamp(incident['discovered_date'])
         incident['created_date'] = normalize_timestamp(incident['create_date'])
         incident.pop('create_date', None)
@@ -272,9 +272,10 @@ def prettify_incident_notes(notes: list[dict]) -> list[dict]:
     notes_copy = notes.copy()
     while notes_copy:
         note = notes_copy.pop()
+        demisto.debug(f"prettify_incident_notes {note=}")
         new_note_obj = {
             "id": note.get("id", ""),
-            "text": remove_html_div_tags(note.get("text", "")),
+            "text": note.get("text", {}).get('content'),
             "created_by": f"{note.get('user_fname', '')} {note.get('user_lname', '')}",
             "create_date": normalize_timestamp(note.get("create_date")),
         }
@@ -471,22 +472,6 @@ def get_mirroring_data() -> dict:
     }
 
 
-def remove_html_div_tags(raw_value: str) -> str:
-    """
-    Remove HTML tags from a given string.
-
-    Args:
-        raw_value (str): The string to remove HTML tags from.
-    Returns:
-        str: The string with HTML tags removed.
-    """
-    # Replace opening div tags with a newline character.
-    raw_value = re.sub(r"<div[^>]*>", "\n", raw_value)
-    # Remove closing div tags.
-    result = re.sub(r"</div>", "", raw_value)
-    return result.strip()
-
-
 def process_raw_incident(client: SimpleClient, incident: dict) -> dict:
     """
     Process a raw incident dictionary by fetching associated artifacts and attachments,
@@ -508,7 +493,7 @@ def process_raw_incident(client: SimpleClient, incident: dict) -> dict:
         incident["attachments"] = attachments
 
     if isinstance(incident.get("description"), str):
-        incident["description"] = remove_html_div_tags(incident["description"])
+        incident["description"] = incident["description"]
 
     incident["discovered_date"] = normalize_timestamp(incident.get("discovered_date"))
     incident["create_date"] = normalize_timestamp(incident.get("create_date"))
@@ -719,7 +704,7 @@ def search_incidents(client: SimpleClient, args: dict) -> list | dict:
     search_query_data = prepare_search_query_data(args)
 
     return_level = args.get('return_level', DEFAULT_RETURN_LEVEL)
-    endpoint = f'{SEARCH_INCIDENTS_ENDPOINT}?return_level={return_level}'
+    endpoint = f'{SEARCH_INCIDENTS_ENDPOINT}?text_content_output_format=objects_convert_text&return_level={return_level}'
 
     response = client.post(endpoint, search_query_data)
     demisto.debug(f'search_incidents {response}')
@@ -1458,7 +1443,7 @@ def list_incident_notes_command(client: SimpleClient, args: dict) -> CommandResu
     incident_id = args.get("incident_id")
     demisto.debug(f"list_incident_notes_command {incident_id=}")
 
-    response = client.get(f"/incidents/{incident_id}/comments")
+    response = client.get(f"/incidents/{incident_id}/comments?text_content_output_format=objects_convert_text")
     human_readable: str = tableToMarkdown(
         f"Incident {incident_id} Notes", t=prettify_incident_notes(response)
     )
@@ -1722,9 +1707,8 @@ def get_remote_data_command(client: SimpleClient, args: dict) -> GetRemoteDataRe
             closing_entry = handle_incoming_incident_resolution(
                 incident_id=incident_id,
                 resolution_id=resolution_id,
-                resolution_summary=remove_html_div_tags(
-                    incident.get("resolution_summary", "")
-                )
+                resolution_summary=incident.get("resolution_summary", "")
+
             )
             entries.append(closing_entry)
 
