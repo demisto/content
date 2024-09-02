@@ -28,7 +28,8 @@ XDR_RESOLVED_STATUS_TO_XSOAR = {
     'resolved_true_positive': 'Resolved',
     'resolved_security_testing': 'Security Testing',
     'resolved_other': 'Other',
-    'resolved_auto': 'Resolved'
+    'resolved_auto': 'Resolved',
+    'resolved_auto_resolve': 'Resolved'
 }
 
 ALERT_GENERAL_FIELDS = {
