@@ -1,5 +1,4 @@
 IBM Security Verify provides a secure and scalable solution for collecting and managing security events from IBM Security Verify, offering advanced threat detection and response capabilities for protecting identities, applications, and data.
-This integration was integrated and tested with version xx of IBMSecurityVerifyEventCollector.
 
 ## Configure IBM Security Verify Event Collector on Cortex XSOAR
 
