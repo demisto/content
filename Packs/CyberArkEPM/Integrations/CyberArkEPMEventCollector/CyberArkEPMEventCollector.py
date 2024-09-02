@@ -62,6 +62,8 @@ class Client(BaseClient):
             "password": self.password,
         }
         result = self._http_request('POST', full_url=self.authentication_url, json_data=data)
+        if result.get("status", "") == "PASSWORD_EXPIRED":
+            return_error(f"Okta password has expired, please update it.")
         return result.get('sessionToken')
 
     def get_saml_response(self) -> str:
