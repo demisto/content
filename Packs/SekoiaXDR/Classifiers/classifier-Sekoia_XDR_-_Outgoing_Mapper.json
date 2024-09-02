@@ -8,7 +8,10 @@
             "internalMapping": {
                 "short_id": {
                     "simple": "alertid"
-                }
+                },
+				"status": {
+					"simple": "sekoiaxdralertstatus"
+				}
             }
         },
         "dbot_classification_incident_type_all": {

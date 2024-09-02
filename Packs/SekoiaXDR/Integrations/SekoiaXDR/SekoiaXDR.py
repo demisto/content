@@ -809,7 +809,7 @@ def update_remote_system_command(client: Client, args):
     )
     try:
         if parsed_args.incident_changed:
-            sekoia_status = delta.get("sekoiaxdralertstatus", None)
+            sekoia_status = delta.get("status", None)
             if sekoia_status:
                 demisto.debug(
                     f"The incident {remote_incident_id} status changed to: {sekoia_status}.\
