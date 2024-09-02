@@ -6,6 +6,7 @@ name: DSPM_fetch_incident_details
 script: |+
   from typing import Dict, Any
   import traceback
+  from datetime import datetime
 
 
   def get_incident_details_command(args):
@@ -34,7 +35,8 @@ script: |+
           "dataTypeGroups":asset_details.get("dataTypeGroups","N/A"),
           "tags":asset_details.get("assetDigTags","N/A"),
           "remediateDescription": incident_data.get('remediateDescription','N/A'),
-          "remediateSteps": incident_data.get('remediateSteps','N/A')
+          "remediateSteps": incident_data.get('remediateSteps','N/A'),
+          "incidentCreated": datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S.%f")
       }
       return incident_object
 
