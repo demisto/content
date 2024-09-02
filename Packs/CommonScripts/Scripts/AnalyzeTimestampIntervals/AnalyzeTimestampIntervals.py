@@ -92,9 +92,9 @@ def create_human_readable(result, verbose):
     human_readable += f"- **Is Pattern Likely Automated:** {result.get('IsPatternLikelyAutomated')}\n"
 
     if verbose:
-    intervals = result.get('IntervalsInSeconds', [])
-    if intervals:
-        human_readable += f"- **Intervals (seconds):** {intervals}\n"
+        intervals = result.get('IntervalsInSeconds', [])
+        if intervals:  # Fixing the condition to correctly check intervals
+            human_readable += f"- **Intervals (seconds):** {intervals}\n"
 
     return human_readable
 
