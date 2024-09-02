@@ -10,7 +10,7 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-* DataBee
+DataBee
 
 ### Scripts
 
