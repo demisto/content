@@ -2285,7 +2285,8 @@ def test_create_x509_certificate_object():
                      id='case: file hashed with MD5'),
         pytest.param("A regular name with no pattern", 'A regular name with no pattern', id='A regular name with no pattern'),
         pytest.param(
-            "([ipv4-addr:value = '1.1.1.1/32' OR ipv4-addr:value = '8.8.8.8/32'] FOLLOWEDBY [domain-name:value = 'example.com']) WITHIN 600 SECONDS",
+            ("([ipv4-addr:value = '1.1.1.1/32' OR ipv4-addr:value = '8.8.8.8/32'] "
+            "FOLLOWEDBY [domain-name:value = 'example.com']) WITHIN 600 SECONDS"),
             '1.1.1.1/32', id='Complex pattern with multiple values'
         ),
     ],
