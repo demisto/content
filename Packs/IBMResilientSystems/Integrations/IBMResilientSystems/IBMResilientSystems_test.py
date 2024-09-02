@@ -309,6 +309,7 @@ def test_prettify_incident_notes(mocker, input_notes, expected_output):
     from IBMResilientSystems import prettify_incident_notes
     assert prettify_incident_notes(input_notes) == expected_output
 
+
 @pytest.mark.parametrize('incidents, expected_output', [
     ([], 'No results found.'),
 ])
@@ -321,6 +322,7 @@ def test_search_incidents_command(mocker, incidents, expected_output):
     mocker.patch('IBMResilientSystems.search_incidents', return_value=incidents)
 
     assert search_incidents_command(client=client, args={}) == expected_output
+
 
 @pytest.mark.parametrize(
     "args", [
@@ -355,16 +357,30 @@ def test_search_incidents(mocker, args):
 
 @pytest.mark.parametrize('args, processed_payload', [
     ({
-        'incident-id': 0000,
-        'severity': 'Low',
-        'incident-type': "Malware",
-        'nist': "Attrition",
-        "resolution": "NotAnIssue",
-        "resolution-summary": "This is a test incident.",
-        "description": "Test incident",
-        "name": "incident-0000",
-    },
-     {"changes": [{"field": "severity_code", "old_value": {"id": 6}, "new_value": {"id": 4}}, {"field": "incident_type_ids", "old_value": {"ids": [21, 19, 17, 6]}, "new_value": {"ids": [21, 19, 17, 6, 19]}}, {"field": "nist_attack_vectors", "old_value": {"ids": [4, 2]}, "new_value": {"ids": [4, 2, 2]}}, {"field": "resolution_id", "old_value": {"id": 9}, "new_value": {"id": 9}}, {"field": "resolution_summary", "old_value": {"textarea": {"format": "html", "content": "This is a test incident."}}, "new_value": {"textarea": {"format": "html", "content": "This is a test incident."}}}, {"field": "description", "old_value": {"textarea": {"format": "html", "content": "<div class=\"rte\"><div>1111</div><div>2222</div><div>3333</div></div>"}}, "new_value": {"textarea": {"format": "html", "content": "Test incident"}}}, {"field": "name", "old_value": {"text": "incident_name"}, "new_value": {"text": "incident-0000"}}]}
+         'incident-id': 0000,
+         'severity': 'Low',
+         'incident-type': "Malware",
+         'nist': "Attrition",
+         "resolution": "NotAnIssue",
+         "resolution-summary": "This is a test incident.",
+         "description": "Test incident",
+         "name": "incident-0000",
+     },
+     {"changes": [{"field": "severity_code", "old_value": {"id": 6}, "new_value": {"id": 4}},
+                  {"field": "incident_type_ids", "old_value": {"ids": [21, 19, 17, 6]},
+                   "new_value": {"ids": [21, 19, 17, 6, 19]}},
+                  {"field": "nist_attack_vectors", "old_value": {"ids": [4, 2]}, "new_value": {"ids": [4, 2, 2]}},
+                  {"field": "resolution_id", "old_value": {"id": 9}, "new_value": {"id": 9}}, {"field": "resolution_summary",
+                                                                                               "old_value": {
+                                                                                                   "textarea": {"format": "html",
+                                                                                                                "content": "This is a test incident."}},
+                                                                                               "new_value": {
+                                                                                                   "textarea": {"format": "html",
+                                                                                                                "content": "This is a test incident."}}},
+                  {"field": "description", "old_value": {"textarea": {"format": "html",
+                                                                      "content": "<div class=\"rte\"><div>1111</div><div>2222</div><div>3333</div></div>"}},
+                   "new_value": {"textarea": {"format": "html", "content": "Test incident"}}},
+                  {"field": "name", "old_value": {"text": "incident_name"}, "new_value": {"text": "incident-0000"}}]}
     ),
 ])
 def test_update_incident_command(mocker, args, processed_payload):
@@ -383,6 +399,8 @@ def test_update_incident_command(mocker, args, processed_payload):
     update_incident_command(client, args)
     assert request.call_args.args[0].endswith(f"/rest/orgs/{client.org_id}/incidents/{args['incident-id']}")
     assert json.loads(request.call_args[1]['data']) == processed_payload
+
+
 def test_update_incident(mocker):
     mocker.patch.object(demisto, 'params', return_value={
         'server': 'example.com:80', 'org': 'example', 'proxy': True
@@ -403,7 +421,8 @@ def test_update_incident(mocker):
 
 
 @pytest.mark.parametrize('incident_id, expected_human_readable', [
-    ('1000', '### IBM QRadar SOAR incident ID 1000\n|Id|Name|Description|NistAttackVectors|Phase|Resolution|ResolutionSummary|Owner|CreatedDate|DateOccurred|DiscoveredDate|DueDate|NegativePr|Confirmed|ExposureType|Severity|Reporter|\n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n| 1000 | incident_name | 1111<br>2222<br>3333 | E-mail<br>Attrition<br> |  | Not an Issue | This is a test incident. |  | 2024-07-29T14:32:36Z |  | 2024-07-29T14:31:57Z |  | true | true | ExternalParty | 6 |  |'),
+    ('1000',
+     '### IBM QRadar SOAR incident ID 1000\n|Id|Name|Description|NistAttackVectors|Phase|Resolution|ResolutionSummary|Owner|CreatedDate|DateOccurred|DiscoveredDate|DueDate|NegativePr|Confirmed|ExposureType|Severity|Reporter|\n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n| 1000 | incident_name | 1111<br>2222<br>3333 | E-mail<br>Attrition<br> |  | Not an Issue | This is a test incident. |  | 2024-07-29T14:32:36Z |  | 2024-07-29T14:31:57Z |  | true | true | ExternalParty | 6 |  |'),
 ])
 def test_get_incident_command(mocker, incident_id, expected_human_readable):
     mocker.patch.object(demisto, 'params', return_value={
@@ -423,80 +442,71 @@ def test_get_incident_command(mocker, incident_id, expected_human_readable):
     assert context_entry['HumanReadable'].strip() == expected_human_readable
 
 
-@pytest.mark.parametrize('script_id, expected_output', [
-    ('1', ),
-    ('', )
+@pytest.mark.parametrize('script_id, expected_outputs, expected_readable_output', [
+    ('1', [{'id': 1, 'name': 'Sample script: process inbound email (v35)',
+            'description': 'This script processes inbound emails.',
+            'language': 'python', 'object_type': 13, 'uuid': '0000-0000-0000-0000-0000',
+            'actions': [], 'tags': [], 'script_text': '...',
+            'creator_id': 0, 'last_modified_by': 0, 'last_modified_time': 1600698818789}],
+     """### example Scripts
+|id|name|description|language|
+|---|---|---|---|
+| 1 | Sample script: process inbound email (v35) | This script processes inbound emails. | python |
+"""),
+    ('', [{'id': 1, 'name': 'Sample script: process inbound email (v35)',
+           'description': 'This script processes inbound emails.',
+           'language': 'python', 'object_type': 13, 'uuid': '0000-0000-0000-0000-0000',
+           'actions': [], 'tags': []}, {'id': 3, 'name': 'test-script',
+                                        'description': 'Testing', 'language': 'python', 'object_type': 0,
+                                        'uuid': '0000-0000-0000-0000-0000', 'actions': [], 'tags': []},
+          {'id': 4, 'name': 'test-script-2', 'description': 'Testing 2',
+           'language': 'python', 'object_type': 13, 'uuid': '0000-0000-0000-0000-0000',
+           'actions': [], 'tags': []}],
+     """### example Scripts
+|id|name|description|language|
+|---|---|---|---|
+| 1 | Sample script: process inbound email (v35) | This script processes inbound emails. | python |
+| 3 | test-script | Testing | python |
+| 4 | test-script-2 | Testing 2 | python |
+"""),
+    ('2', [{'error_code': 'generic',
+            'hints': [], 'message': 'Unable to find object with ID 2', 'success': False, 'title': None}],
+     """### example Scripts
+|id|name|description|language|
+|---|---|---|---|
+|  |  |  |  |
+""")
 ])
-def test_list_scripts_command(mocker, script_id: str, expected_output: str):
+def test_list_scripts_command(mocker, script_id: str, expected_outputs: list, expected_readable_output: str):
     mocker.patch.object(demisto, 'params', return_value={
         'server': 'example.com:80', 'org': 'example', 'proxy': True
     })
     from IBMResilientSystems import SimpleClient, list_scripts_command
+    from os import path
+
+    def side_effect(url: str):
+        _script_id = url.split('/')[-1]
+        if _script_id:  # Return enriched script data for a specific script ID
+            response_path = f'./test_data/test_get_script_{_script_id}_response.json'
+            if not path.exists(response_path):
+                response_path = f'./test_data/test_get_script_fail_response.json'
+        else:
+            response_path = f'./test_data/test_get_all_scripts_response.json'
+
+        return load_test_data(response_path)
 
     client = SimpleClient()
     client.org_id = 0
+    args = {'script_id': script_id}
 
-    args = {}
-    response = {
-        "entities": [
-            {
-                "id": 1,
-                "name": "Sample script: process inbound email (v35)",
-                "description": "SAMPLE SCRIPT",
-                "language": "python",
-                "object_type": 13,
-                "uuid": "0000-0000-0000-0000-0000",
-                "actions": [],
-                "tags": []
-            }, {
-                "id": 3,
-                "name": "test-script",
-                "description": "testing",
-                "language": "python",
-                "object_type": 0,
-                "uuid": "0000-0000-0000-0000-0000",
-                "actions": [],
-                "tags": []
-            }, {
-                "id": 4,
-                "name": "test-script-2",
-                "description": "Testing 2",
-                "language": "python",
-                "object_type": 13,
-                "uuid": "0000-0000-0000-0000-0000",
-                "actions": [],
-                "tags": []
-            }
-            ]
-    }
-    request = mocker.patch('IBMResilientSystems.get_scripts', return_value=response)
+    request = mocker.patch.object(SimpleClient, 'get', side_effect=side_effect)
 
     command_result = list_scripts_command(client, args)
-    assert request
-# @pytest.mark.parametrize("script_id", ['100', '', 'INVALID_SCRIPT'])
-# def test_list_scripts(mocker, script_id):
-#     mocker.patch.object(demisto, 'params', return_value={
-#         'server': 'example.com:80', 'org': 'example', 'proxy': True, 'max_fetch': DEFAULT_MAX_FETCH
-#     })
-#     from requests import Session
-#     from co3 import SimpleClient
-#     from IBMResilientSystems import list_scripts_command, DEFAULT_RETURN_LEVEL
-#
-#     test_dict_response = load_test_data('./test_data/test_search_incidents_response.json')
-#     test_response = dict_to_response(test_dict_response)
-#     request = mocker.patch.object(Session, "post", return_value=test_response)
-#     client = SimpleClient()
-#     client.org_id = 0
-#     list_scripts_command(client=client, args=args)
-#
-#     request_url = request.call_args.args[0]
-#     request_headers = request.call_args.kwargs['headers']
-#     request_data = request.call_args.kwargs['data']
-#     assert request_url.endswith(
-#         f"/rest/orgs/0/incidents/query_paged?return_level={args.get('return_level', DEFAULT_RETURN_LEVEL)}")
-#     assert request_headers['content-type'] == 'application/json'
-#     assert request_data == ('{"filters": [{"conditions": [{"field_name": "create_date", "method": "gte", "value": '
-#                             '1577865600000}]}], "length": 10, "start": 0}')
+    assert command_result.readable_output == expected_readable_output
+    assert command_result.outputs == expected_outputs
+
+
+def
 
 def test_fetch_incidents(mocker):
     # TODO
