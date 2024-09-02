@@ -1,5 +1,5 @@
 DataBee, from Comcast Technology Solutions, is a cloud-native security and compliance data fabric that ingests data from multiple disparate feeds; then aggregates, compresses, standardizes, enriches, correlates, and normalizes before transferring a full time-series dataset to your data lake of choice.
-This integration was integrated and tested with version xx of DataBee.
+This integration was integrated and tested with version 1.0 of DataBee.
 
 ## Configure DataBee on Cortex XSOAR
 
