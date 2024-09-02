@@ -419,44 +419,9 @@ def test_fetch_events_limit_logic(mocker):
 
 @pytest.mark.parametrize(
     "last_run, log_types, mock_initialize_start_timestamp, mock_fetch_events_side_effect, expected_last_run, expected_all_events",
-    [
-        (
-            {"last_fetch": "2023-01-01T00:00:00Z"},
-            [],
-            "2023-01-01T00:00:00Z",
-            [],
-            {"last_fetch": "2023-01-01T00:00:00Z"},
-            []
-        ),
-        (
-            {},
-            ["audit", "network_activities"],
-            "FAKE_DATE",
-            [
-                ({"audit": {"last_fetch": "FIRSE_DATE"}}, [{"event_id": 1, "type": "Audit"}]),
-                ({"audit": {"last_fetch": "FIRSE_DATE"}, "network_activities": {
-                 "last_fetch": "SECOND_DATE"}}, [{"event_id": 2, "type": "network_activities"}])
-            ],
-            {"audit": {"last_fetch": "FIRSE_DATE"}, "network_activities": {"last_fetch": "SECOND_DATE"}},
-            [
-                {"event_id": 1, "type": "Audit"},
-                {"event_id": 2, "type": "network_activities"}
-            ]
-        ),
-        (
-            {"audit": {"last_fetch": "2023-01-01T00:00:00Z"}},
-            ["network_activities"],
-            "2023-01-01T00:00:00Z",
-            [
-                ({"audit": {"last_fetch": "2023-01-01T00:00:00Z"},
-                 "network_activities": {"last_fetch": "New_fetch_time"}}, [{"event_id": 1, "type": "Audit"}]),
-            ],
-            {"audit": {"last_fetch": "2023-01-01T00:00:00Z"}, "network_activities": {"last_fetch": "New_fetch_time"}},
-            [
-                {"event_id": 1, "type": "Audit"},
-            ]
-        ),
-    ]
+    [(case["last_run"], case["log_types"], case["mock_initialize_start_timestamp"],
+      case["mock_fetch_events_side_effect"], case["expected_last_run"],
+      case["expected_all_events"]) for case in util_load_json('test_data/test_fetch_all_events_params.json')['test_cases']]
 )
 def test_fetch_all_events(mocker, last_run, log_types, mock_initialize_start_timestamp, mock_fetch_events_side_effect,
                           expected_last_run, expected_all_events):
