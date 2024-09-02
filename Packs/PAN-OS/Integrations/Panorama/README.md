@@ -6193,10 +6193,10 @@ Get all the jobs from the devices in the environment, or a single job when ID is
 | PANOS.JobStatus.user | Unknown | The user who initiated the job. | 
 | PANOS.JobStatus.tenq | String | The time the job was enqueued into the system. | 
 | PANOS.JobStatus.stoppable | String | Whether the job can be stopped after it started. | 
-| PANOS.JobStatus.description | Unknown | The job description. | 
+| PANOS.JobStatus.description | String | The job description. | 
 | PANOS.JobStatus.positionInQ | String | The position of the job in the current job queue. | 
 | PANOS.JobStatus.progress | String | The numerical progress of the job. | 
-| PANOS.JobStatus.warnings | Unknown | The warnings of the job. | 
+| PANOS.JobStatus.warnings | String | The warnings of the job. | 
 
 #### Command example
 ```!pan-os-platform-get-jobs```

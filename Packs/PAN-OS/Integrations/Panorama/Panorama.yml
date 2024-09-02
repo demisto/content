@@ -7916,7 +7916,7 @@ script:
       type: String
       description: The result of the job.
     - contextPath: PANOS.JobStatus.user
-      type: Unknown
+      type: String
       description: The user who initiated the job.
     - contextPath: PANOS.JobStatus.tenq
       type: String
@@ -7925,7 +7925,7 @@ script:
       type: String
       description: Whether the job can be stopped after it started.
     - contextPath: PANOS.JobStatus.description
-      type: Unknown
+      type: String
       description: The job description.
     - contextPath: PANOS.JobStatus.positionInQ
       type: String
@@ -7934,7 +7934,7 @@ script:
       type: String
       description: The numerical progress of the job.
     - contextPath: PANOS.JobStatus.warnings
-      type: Unknown
+      type: String
       description: The warnings of the job.
   - arguments:
     - description: The software version to upgrade to, for example, 9.1.2.

@@ -19,7 +19,7 @@ else:
 import panos.errors
 
 from panos.base import PanDevice, VersionedPanObject, Root, ENTRY, VersionedParamPath  # type: ignore
-from panos.panorama import Panorama, DeviceGroup, Template, PanoramaCommitAll, ET
+from panos.panorama import Panorama, DeviceGroup, Template, PanoramaCommitAll
 from panos.policies import Rulebase, PreRulebase, PostRulebase, SecurityRule, NatRule
 from panos.objects import (
     LogForwardingProfile, LogForwardingProfileMatchList, AddressObject, AddressGroup, ServiceObject, ServiceGroup,
@@ -9919,7 +9919,7 @@ def flatten_xml_to_dict(element: ET.Element, object_dict: dict, class_type: type
     return object_dict
 
 
-def dataclass_from_element(device: Union[Panorama, Firewall], class_type: type, element: ET.Element):
+def dataclass_from_element(device: Union[Panorama, Firewall], class_type: type, element: Optional[ET.Element]):
     """
     Turns an XML `Element` Object into an instance of the provided dataclass. Dataclass parameters must match
     element: Optional[Element]
