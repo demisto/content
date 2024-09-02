@@ -3007,12 +3007,10 @@ def resolve_xdr_close_reason(xsoar_close_reason: str) -> str:
 def handle_outgoing_issue_closure(remote_args):
     incident_id = remote_args.remote_incident_id
     demisto.debug(f"handle_outgoing_issue_closure {incident_id=}")
-
     update_args = remote_args.delta
     current_remote_status = remote_args.data.get('status') if remote_args.data else None
     close_reason = update_args.get('close_reason') or update_args.get('closeReason')
     demisto.debug(f'{current_remote_status=} {remote_args.data=} {remote_args.inc_status=} {close_reason=}')
-
     # force closing remote incident only if:
     #   The XSOAR incident is closed
     #   and the remote incident isn't already closed
