@@ -1,6 +1,6 @@
 commonfields:
   id: d93ce82d-4704-4d9a-887e-c8b59d472d74
-  version: 162
+  version: 46
 vcShouldKeepItemLegacyProdMachine: false
 name: ParseSlackBlockBuilderResponse
 script: |
@@ -31,35 +31,32 @@ script: |
           }
 
           response = requests.request("GET", url, headers=headers, auth=auth)
-          print("get_jira_issue_type_id res: ",response.text)
+          print("get_jira_issue_type_id res: ", response.text)
           res = response.json()
           project_name = res.get("name")
           if response.status_code == 200:
-              issue_types = res['issueTypes']
+              issue_types = res.get('issueTypes', [])
               for issue_type in issue_types:
                   if issue_type['name'] == issue_type_name:
                       issue_type_id = issue_type['id']
                       return str(issue_type_id), str(project_name)
-
+          else:
+              raise Exception(f"Failed to fetch Jira issue type. HTTP Status Code: {response.status_code}")
       except Exception as e:
           return_error(f"Error while fetching Jira Issue Type: {str(e)}")
 
-  def parse_slack_block_builder_res():
+  def parse_slack_block_builder_res(SlackBlockState):
       try:
-          context_data = demisto.get(demisto.context(), 'SlackBlockState')
-          if context_data is None:
-              raise TypeError("SlackBlockState is None")
-          
-          if isinstance(context_data, list):
-              context_data = context_data[0]
+          if isinstance(SlackBlockState, list):
+              SlackBlockState = SlackBlockState[0]
 
-          user_input_data = context_data.get("values")
+          user_input_data = SlackBlockState.get("values")
           if user_input_data is None:
-              raise TypeError("values in SlackBlockState is None")
+              raise TypeError("values in SlackBlockState is None or missing")
 
           action_name = user_input_data.get("radio_buttons_0", {}).get("actionId-0", {}).get("selected_option", {}).get("value")
           if action_name is None:
-              raise TypeError("selected_option value is None")
+              raise TypeError("selected_option value is None or missing")
 
           user_email = None
           project_name = None
@@ -71,7 +68,7 @@ script: |
               ticket_type = user_input_data.get("static_select_2", {}).get("static_select-action", {}).get("selected_option", {}).get("value")
 
               ticket_type_id, project_name = get_jira_issue_type_id_and_project_name(ticket_type, project_key)
-              print("ticket_type_id: ",ticket_type_id)
+              print("ticket_type_id: ", ticket_type_id)
 
               demisto.setContext("User.Action", "jira")
               demisto.setContext("User.Email", user_email)
@@ -82,13 +79,19 @@ script: |
           else:
               raise Exception(f"Sorry!!, this '{action_name}' action type is not supported")
 
+      except AttributeError as ae:
+          demisto.error(traceback.format_exc())  # log the traceback
+          print(traceback.format_exc())
+          print("Invalid response found.")
+          demisto.setContext("User.Action", 'invalid_response')
       except TypeError as ex:
           demisto.error(traceback.format_exc())  # log the traceback
           print(traceback.format_exc())
-          print("User response is not found in slackBlockState.")
-          demisto.setContext("User.Action", 'no_response')
+          print("Invalid response found.")
+          demisto.setContext("User.Action", 'invalid_response')
       except Exception as ex:
           print(traceback.format_exc())  # log the traceback
+          demisto.setContext("User.Action", 'invalid_response')
           return_error(f'Failed to parse Slack block builder response: {str(ex)}')
 
   def timeDifferenceInHours(given_timestamp):
@@ -146,9 +149,13 @@ script: |
   def main():  # pragma: no cover
       try:
           delete_incident_data(demisto.args())
-          parse_slack_block_builder_res()
+          SlackBlockState = demisto.args().get("SlackBlockState",None)
+          if SlackBlockState is None:
+              raise AttributeError("SlackBlockState is None")
+          parse_slack_block_builder_res(SlackBlockState)
       except Exception as excep:
-          demisto.error(traceback.format_exc())  # print the traceback
+          print(traceback.format_exc())  # print the traceback
+          demisto.setContext("User.Action", 'no_response')
           return_error(f'Failed to execute ParseSlackBlockBuilderResponse. Error: {str(excep)}')
 
   ''' ENTRY POINT '''
@@ -162,6 +169,8 @@ args:
 - name: incident_data
   required: true
   isArray: true
+- name: SlackBlockState
+  required: true
 outputs:
 - contextPath: User.Email
 - contextPath: User.Action
@@ -169,7 +178,6 @@ outputs:
 - contextPath: User.JiraTicketTypeID
 scripttarget: 0
 subtype: python3
-timeout: 362.88ms
 pswd: ""
 runonce: false
 dockerimage: demisto/python3:3.11.9.104657
