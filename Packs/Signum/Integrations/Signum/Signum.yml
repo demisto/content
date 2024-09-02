@@ -37,12 +37,12 @@ script:
       predefined:
       - 'True'
       - 'False'
-    description: 'List all the users for a given domain ID.'      
+    description: 'List all the users for a given domain ID.'
     name: signum-list-domain-users
     outputs:
     - contextPath: Signum.ListDomainUsers
       description: The result of the signum-list-domain-users command.
-  dockerimage: demisto/python3:3.11.9.106008
+  dockerimage: demisto/python3:3.11.9.107902
   runonce: false
   script: ''
   subtype: python3
