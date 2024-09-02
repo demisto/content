@@ -1036,7 +1036,9 @@ class Client(BaseClient):
         Returns:
             response (Response): API response from Sophos.
         """
-        body = {"enabled": True, "ids": endpoint_id, "comment": comment}
+        body = {"enabled": True, "ids": endpoint_id}
+        if comment:
+            body.update({"comment": comment})
         return self._http_request(
             method="POST",
             headers=self.headers,

@@ -3,7 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: Sophos Central
+  id: Sophos Central Fix
   version: -1
 configuration:
 - display: Client ID
@@ -98,8 +98,8 @@ configuration:
   section: Connect
   required: false
 description: The unified console for managing Sophos products.
-display: Sophos Central
-name: Sophos Central
+display: Sophos Central Fix
+name: Sophos Central Fix
 script:
   commands:
   - arguments:
