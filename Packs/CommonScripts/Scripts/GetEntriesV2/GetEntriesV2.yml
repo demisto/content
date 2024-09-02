@@ -1,0 +1,61 @@
+args:
+- description: Optional incident ID to fetch entries from. If not specified, current incident is used.
+  name: id
+- description: The number of entries to return.
+  name: pageSize
+- description: Return entries starting from the specified entry ID and backward.
+  name: lastId
+- description: Return entries starting from the specified entry ID and forward.
+  name: firstID
+- description: Return entries before and after the specified entry ID.
+  name: selectedEntryID
+- description: The list of categories.
+  isArray: true
+  name: categories
+- description: The list of tags.
+  isArray: true
+  name: tags
+- description: The list of specified users.
+  isArray: true
+  name: users
+- description: Return entries that include all specified tags.
+  name: tagsAndOperator
+- description: Return entries from this time and forward.
+  name: fromTime
+- description: The ID of the parent entry.
+  name: parentID
+comment: Collect entries matching to the conditions in the war room.
+commonfields:
+  id: GetEntriesV2
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+dockerimage: demisto/python3:3.11.9.107902
+enabled: true
+engineinfo: {}
+name: GetEntriesV2
+outputs:
+- contextPath: Entry.ID
+  description: Entry ID.
+- contextPath: Entry.Type
+  description: Entry Type.
+- contextPath: Entry.Tags
+  description: Tags associated with the entry.
+- contextPath: Entry.Category
+  description: Entry categories.
+- contextPath: Entry.Created
+  description: Creation time of the entry.
+- contextPath: Entry.Modified
+  description: Last modified time of the entry.
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- Utility
+type: python
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
