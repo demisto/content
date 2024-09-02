@@ -4992,17 +4992,11 @@ class Common(object):
                         account_context['Email'] = {
                             'Address': self.email_address
                         }
-                    elif detail in ('manager_email_address'):
+                    elif detail in ('manager_email_address', 'manager_display_name'):
                         account_context['Manager'] = {
-                            'Email': self.manager_email_address
+                            'Email': self.manager_email_address,
+                            'DisplayName': self.manager_display_name
                         }
-                    elif detail == 'manager_display_name':
-                        if 'Manager' in account_context:
-                            account_context['Manager']['DisplayName'] = self.manager_display_name
-                        else:
-                            account_context['Manager'] = {
-                                'DisplayName': self.manager_display_name
-                            }
                     else:
                         Detail = camelize_string(detail, '_')
                         account_context[Detail] = self.__getattribute__(detail)
