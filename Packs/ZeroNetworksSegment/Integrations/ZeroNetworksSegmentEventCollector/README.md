@@ -1,5 +1,4 @@
 This is the Zero Networks event collector integration for Cortex XSIAM.
-This integration was integrated and tested with version xx of ZeroNetworksSegmentEventCollector.
 
 ## Configure Zero Networks Segment Event Collector on Cortex XSOAR
 

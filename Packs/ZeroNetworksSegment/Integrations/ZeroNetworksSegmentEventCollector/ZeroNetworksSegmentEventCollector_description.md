@@ -22,6 +22,7 @@ Click on `Add new token`.
 ***Token Name:*** Provide a name for your token.
 
 ***Access Type:*** Choose one of the following:
+
 - **Read only:** Allows only GET API requests.
 - **Full access:** Allows GET, PUT, POST, and DELETE API requests.
 
