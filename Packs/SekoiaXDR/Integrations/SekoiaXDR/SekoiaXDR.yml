@@ -228,14 +228,6 @@ configuration:
   additionalinfo: When selected, it includes the kill chain information of the alert in the mirrored alerts when an alert is updated in Sekoia.
 - section: Collect
   advanced: true
-  display: Reopen Mirrored Cortex XSOAR Incidents (Incoming Mirroring)
-  name: reopen_incident
-  defaultvalue: "false"
-  type: 8
-  required: false
-  additionalinfo: When selected, reopening the Sekoia XDR alert will reopen the Cortex XSOAR incident.
-- section: Collect
-  advanced: true
   display: Close Mirrored Cortex XSOAR Incidents (Incoming Mirroring)
   name: close_incident
   defaultvalue: "false"

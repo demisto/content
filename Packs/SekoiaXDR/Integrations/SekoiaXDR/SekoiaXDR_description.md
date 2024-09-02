@@ -14,6 +14,10 @@
 - **Alerts status**: Pending, Acknowledge, Ongoing
 - **Close notes**: Closed by Sekoia
 
+### Important Note
+
+For the case of reopening an incident from Sekoia to Cortex after it has been closed, it is not functional for now. However, the reverse is achievable.
+
 ### API Key Creation
 
 Similar to other APIs, SEKOIA's API employs an authentication mechanism that involves the use of an API key. To obtain an API key and facilitate secure access to SEKOIA's services, follow these straightforward steps:
