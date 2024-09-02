@@ -11,7 +11,6 @@ Using the commands in the integration, you can leverage what the QRadar API has 
 - Getting object lists
 - Adding notes
 You can perform tasks that a user would need to do manually in the QRadar UI or would need to provide automations to do.
-# Architecture
 # Special Notes/Disclaimers
 ## Important Note Regarding the *Query to fetch offenses* Parameter
 The *Query to fetch offenses* feature enables defining a specific query for offenses to be retrieved, e.g., **'status = OPEN and id = 5'**. The QRadar integration keeps track of IDs that have already been fetched in order to avoid duplicate fetching.   
@@ -20,7 +19,7 @@ If you change the *Query to fetch offenses* value, it will not re-fetch offenses
 The list of QRadar IDs that were already fetched will be reset and duplicate offenses could be re-fetched, depending on the user query. 
 
 
-<details><summary><h1 style={{display: 'inline'}}>Migration-from QradarV2 to V3</h1></summary>
+<details><summary><h1 style={{display: 'inline'}}>Migration - from QradarV2 to V3</h1></summary>
 
 Every command and playbook that runs in QRadar v2 also runs in QRadar v3. No adjustments are required.
 ### Additions and Changes from QRadar v2 to QRadar v3
@@ -65,9 +64,6 @@ The *Pull from instance* option to create a new mapper is not supported in Corte
 ## Creating a Classifier Using the *Pull from instance* Parameter
 QRadar fetches incidents using a long-running execution, not in real time. Therefore, *Pull from instance* pulls incidents from the QRadar service to create a classifier using samples, not real time data. This results in seeing the latest sample stored, and not the latest offense that was fetched.  
 
-# Set up the integrated system
-
-
 # Permissions
 | Component | Permission |
 | --- | --- |
@@ -79,10 +75,7 @@ QRadar fetches incidents using a long-running execution, not in real time. There
 | References (Create/Update) | Admin |
 | References (Read) | View Reference Data |
 
-# Configure Integration on Cortex XSOAR
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for IBM QRadar v3.
-3. Click **Add instance** to create and configure a new integration instance.
+# Configure Integration on Cortex
 
 | **Parameter** | **Description** | **Required** |
 |----------------|-----------------|--------------|
@@ -108,7 +101,6 @@ QRadar fetches incidents using a long-running execution, not in real time. There
 | Timeout for HTTP requests | The timeout for HTTP requests to the QRadar API (in seconds). Defaults to 60 seconds if not specified. | False |
 | Fetch Incidents Interval | The interval between fetch-incidents executions (in seconds). | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
    
 <details><summary><h3 style={{display: 'inline'}}> API Token Instead of Username and Password</h3></summary> 
 
