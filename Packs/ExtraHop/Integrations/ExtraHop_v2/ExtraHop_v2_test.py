@@ -96,6 +96,7 @@ def init_mock_client(requests_mock, on_cloud):
         client_id=CLIENT_ID,
         client_secret=CLIENT_SECRET,
         verify=True,
+        use_proxy=False,
         ok_codes=(200, 201, 204),
         on_cloud=on_cloud,
     )

@@ -7125,7 +7125,11 @@ def is_integration_command_execution():
     try:
         return demisto.callingContext['context']['ExecutedCommands'][0]['moduleBrand'] != 'Scripts'
     except (KeyError, IndexError, TypeError):
-        return True
+        try:
+            # In dynamic-section scripts ExecutedCommands is None and another way is needed to verify if we are in a Script.
+            return demisto.callingContext['context']['ScriptName'] == ''
+        except (KeyError, IndexError, TypeError):
+            return True
 
 
 EXECUTION_METRICS_SCRIPT_SKIP_MSG = "returning results with Type=EntryType.EXECUTION_METRICS isn't fully supported for scripts. dropping result."
