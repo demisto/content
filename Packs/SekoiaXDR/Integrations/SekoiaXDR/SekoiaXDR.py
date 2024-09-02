@@ -626,7 +626,6 @@ def get_remote_data_command(
     close_note: str,
     mirror_events: bool,
     mirror_kill_chain: bool,
-    reopen_incident: bool,
 ):
     """get-remote-data command: Returns an updated alert and error entry (if needed)
 
@@ -638,8 +637,6 @@ def get_remote_data_command(
         close_note (str): Indicates the notes to be including when the incident gets closed by mirroring.
         mirror_events (bool): If the events will be included in the mirroring of the alerts or not.
         mirror_kill_chain: If the kill chain information from the alerts will be mirrored.
-        reopen_incident: Indicates whether to reopen the corresponding XSOAR incident if the alert
-            has been reopened on Sekoia's end.
     Returns:
         GetRemoteDataResponse: The Response containing the update alert to mirror and the entries
     """
@@ -724,23 +721,6 @@ def get_remote_data_command(
                     "closeReason": f"{alert_status} - Mirror",
                     "closeNotes": close_note,
                 },
-                "ContentsFormat": EntryFormat.JSON,
-            }
-        ]
-
-    # Reopen the XSOAR incident using mirroring
-    if (
-        (reopen_incident)
-        and (alert_status not in ["Closed", "Rejected"])
-        and (investigation["status"] == 1)
-    ):
-        demisto.debug(
-            f"Alert {alert_short_id} with status {alert_status} was reopened in Sekoia, reopening incident {incident_id} in XSOAR"
-        )
-        entries = [
-            {
-                "Type": EntryType.NOTE,
-                "Contents": {"dbotIncidentReopen": True},
                 "ContentsFormat": EntryFormat.JSON,
             }
         ]
