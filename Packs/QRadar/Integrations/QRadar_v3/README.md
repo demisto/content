@@ -109,7 +109,7 @@ QRadar fetches incidents using a long-running execution, not in real time. There
 
 </details>
    
-<details><summary><h3 id="get-qradar-version" style={{display: 'inline'}}> Get Your QRadar Version</h3> </summary> 
+<details><summary><h3 id="get-qradar-version" style={{display: 'inline'}}> Get Your QRadar Version</h3></summary> 
 
 1. Enter to QRadar service.
 2. Click the **Menu** toolbar. A scrolling toolbar will appear.
@@ -118,6 +118,7 @@ If you're uncertain which API version to use, it is recommended to use the lates
 
 </details>
    
+
 # Mirroring
 This integration supports in mirroring from QRadar offenses to Cortex XSOAR.  
 When a field of an offense is updated in QRadar services, the update is mirrored in Cortex XSOAR.
