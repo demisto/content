@@ -11,10 +11,9 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 VENDOR = 'ibm'
 PRODUCT = 'security verify'
 TOKEN_EXPIRY_BUFFER = timedelta(minutes=1)
-DEFAULT_LIMIT_COMMAND = 1_000
-DEFAULT_LIMIT_FETCH = 10_000
-MAX_LIMIT = 50_000
-MIN_LIMIT = 1
+MIN_FETCH = 1
+MAX_FETCH = 50_000
+MAX_EVENTS_API_CALL = 10_000
 
 
 ''' CLIENT CLASS '''
@@ -86,19 +85,11 @@ class Client(BaseClient):
         token_data = {"access_token": new_token, "expiry_time_utc": expiry_time_utc.isoformat()}
         return token_data
 
-    def _max_limit_validation(self, limit):
-        """
-        Validates if the limit is within the allowed range.
-        """
-        if limit > MAX_LIMIT or limit < MIN_LIMIT:
-            raise DemistoException(f"The maximum number of events per fetch should be between 1 - {MAX_LIMIT}")
-
     def search_events(self, limit: int, sort_order: str, last_item: dict = {}) -> list:
         """
         Searches and returns a list of events based on the specified criteria.
 
         """
-        self._max_limit_validation(limit)
         params = {
             'size': limit,
             'range_type': 'indexed_at',
@@ -117,12 +108,15 @@ class Client(BaseClient):
         return events
 
 
-def test_module(client: Client) -> str:
+def test_module(client: Client, params) -> str:
     """
     'ok' if test passed, anything else will raise an exception and will fail the test.
     """
     args = {"limit": 1}
     get_events_command(client, args)
+
+    if argToBoolean(params.get('isFetchEvents')):
+        max_limit_validation(arg_to_number(params.get('max_fetch')))
     return "ok"
 
 
@@ -130,13 +124,17 @@ def get_events_command(client: Client, args: dict) -> list[dict]:
     """
     Retrieves events using the client based on the provided arguments.
     """
+
     last_id = args.get("last_id")
     last_time = args.get("last_time")
     last_item = {"last_id": last_id, "last_time": last_time}
-    limit = arg_to_number(args.get("limit")) or DEFAULT_LIMIT_COMMAND
+    limit = arg_to_number(args.get("limit")) or MAX_EVENTS_API_CALL
     sort_order = args.get("sort_order", "desc").lower()
+    if limit > MAX_EVENTS_API_CALL or limit < MIN_FETCH:
+        raise DemistoException(f"The maximum number of events per fetch should be between {MIN_FETCH} - {MAX_EVENTS_API_CALL}")
 
     events = client.search_events(limit=limit, sort_order=sort_order, last_item=last_item)
+    events = format_record_keys(events)
     return events
 
 
@@ -152,10 +150,11 @@ def fetch_events(client: Client, last_run: dict[str, str], limit: int) -> tuple[
     Returns:
         tuple: A tuple containing the updated last run information and a list of events.
     """
+    max_limit_validation(limit)
     last_time = last_run.get("last_time")
     last_id = last_run.get("last_id")
 
-    if not last_time or not last_id:
+    if not last_time or not last_id:  # If this is a first run
         demisto.debug('Last run data is missing. Fetching initial last_run.')
 
         first_event = client.search_events(limit=1, sort_order="desc")
@@ -169,21 +168,40 @@ def fetch_events(client: Client, last_run: dict[str, str], limit: int) -> tuple[
         }
         demisto.debug(f'Initial last_run set to: {last_run}')
 
-    events = client.search_events(
-        limit=limit,
-        sort_order="asc",
-        last_item=last_run
-    )
-    demisto.debug(f'Fetched {len(events)} new events')
-    if events:
+    collected_events: list[dict] = []
+    while len(collected_events) < limit:
+        limit_for_request = min(limit - len(collected_events), MAX_EVENTS_API_CALL)
+        events = client.search_events(
+            limit=limit_for_request,
+            sort_order="asc",
+            last_item=last_run
+        )
+        if not events:
+            break
+
+        demisto.debug(f'In the call get {len(collected_events)} events')
         last_run = {
             "last_time": events[-1].get("indexed_at"),
             "last_id": events[-1].get("id")
         }
-    return last_run, events
+        collected_events.extend(events)
+
+    demisto.debug(f'Sum fetched {len(collected_events)} new events')
+    return last_run, collected_events
 
 
-''' MAIN FUNCTION '''
+''' HELPER FUNCTIONS '''
+
+
+def format_record_keys(dict_list):
+    new_list = []
+    for input_dict in dict_list:
+        new_dict = {}
+        for key, value in input_dict.items():
+            new_key = key.replace('_', ' ').title()
+            new_dict[new_key] = value
+        new_list.append(new_dict)
+    return new_list
 
 
 def add_time_to_events(events: list[dict]):
@@ -200,6 +218,17 @@ def add_time_to_events(events: list[dict]):
             event["_time"] = create_time.strftime(DATE_FORMAT)  # type: ignore[union-attr]
 
 
+def max_limit_validation(limit):
+    """
+    Validates if the limit is within the allowed range.
+    """
+    if limit > MAX_FETCH or limit < MIN_FETCH:
+        raise DemistoException(f"The maximum number of events per fetch should be between {MIN_FETCH} - {MAX_FETCH}")
+
+
+''' MAIN FUNCTION '''
+
+
 def main() -> None:  # pragma: no cover
     """
     main function, parses params and runs command functions
@@ -213,7 +242,7 @@ def main() -> None:  # pragma: no cover
     credentials = params.get('credentials', {})
     client_id = credentials.get('identifier')
     client_secret = credentials.get('password')
-    limit = arg_to_number(params.get('max_fetch')) or DEFAULT_LIMIT_FETCH
+    limit_fetch = arg_to_number(params.get('max_fetch')) or MAX_EVENTS_API_CALL
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
 
@@ -227,12 +256,12 @@ def main() -> None:  # pragma: no cover
             proxy=proxy)
 
         if command == 'test-module':
-            return_results(test_module(client))
+            return_results(test_module(client, params))
 
         elif command == 'ibm-security-verify-get-events':
             events = get_events_command(client, args)
-            return_results(CommandResults(readable_output=tableToMarkdown(f"{VENDOR.title()} Events:", events)))
-
+            return_results(CommandResults(readable_output=tableToMarkdown(
+                f"{VENDOR.title()} - {PRODUCT.title()} Events:", events)))
             should_push_events = argToBoolean(args.get('should_push_events'))
             if should_push_events:
                 add_time_to_events(events)
@@ -248,7 +277,7 @@ def main() -> None:  # pragma: no cover
             next_run, events = fetch_events(
                 client=client,
                 last_run=last_run,
-                limit=limit,
+                limit=limit_fetch,
             )
 
             add_time_to_events(events)

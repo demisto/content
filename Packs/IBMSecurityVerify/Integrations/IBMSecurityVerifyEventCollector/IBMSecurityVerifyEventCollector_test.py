@@ -5,7 +5,7 @@ from CommonServerPython import *
 
 
 import pytest
-from IBMSecurityVerifyEventCollector import Client, get_events_command, fetch_events
+from IBMSecurityVerifyEventCollector import Client, get_events_command, fetch_events, max_limit_validation
 
 EVENTS = [
     {"indexed_at": "2", "tenantname": "Test Event 2", "id": "123"}
@@ -84,11 +84,11 @@ def test_get_new_token(mocker, mock_client):
 
 def test_max_limit_validation(mock_client):
     MAX_LIMIT = 50_000
-    mock_client._max_limit_validation(1_000)
+    max_limit_validation(1_000)
     with pytest.raises(DemistoException):
-        mock_client._max_limit_validation(MAX_LIMIT + 1)
+        max_limit_validation(MAX_LIMIT + 1)
     with pytest.raises(DemistoException):
-        mock_client._max_limit_validation(0)
+        max_limit_validation(0)
 
 
 def test_search_events(mocker, mock_client):
@@ -143,12 +143,11 @@ def test_fetch_events(mocker, mock_client):
     last_run = {}
 
     # Verify the first fetch initializes last_run with the latest event
-    last_run, events = fetch_events(client=mock_client, last_run=last_run, limit=2)
+    last_run, _ = fetch_events(client=mock_client, last_run=last_run, limit=2)
     search_events.assert_any_call(limit=1, sort_order="desc")
-    search_events.assert_called_with(limit=2, sort_order="asc", last_item=last_run)
 
     # Second fetch
-    updated_last_run, events = fetch_events(client=mock_client, last_run=last_run, limit=2)
+    updated_last_run, _ = fetch_events(client=mock_client, last_run=last_run, limit=2)
 
     # Verify that the second fetch uses the last_run from the first fetch
     search_events.assert_any_call(limit=2, sort_order="asc", last_item=updated_last_run)

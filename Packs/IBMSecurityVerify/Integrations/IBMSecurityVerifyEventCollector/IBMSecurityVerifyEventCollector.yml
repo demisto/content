@@ -11,7 +11,7 @@ configuration:
   required: true
   type: 0
   section: Connect
-  additionalinfo: 'For example: https://example.verify.ibm.com'
+  additionalinfo: 'For example: https://tenant.verify.ibm.com'
 - display: Client ID
   name: credentials
   required: true
