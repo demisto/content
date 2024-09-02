@@ -997,6 +997,21 @@ script:
     - contextPath: Resilient.Task
       description: Task instructions.
       type: Dictionary
+
+  - name: rs-execute-remote-script
+    description: Execute a custom script on the IBM Resilient platform.
+    arguments:
+      - name: incident_id
+        description: The incident ID to execute the script for.
+        required: true
+      - name: script_id
+        description: Remote ID of the script to execute.
+        required: true
+    outputs:
+    - contextPath: Resilient.RemoteScriptExecution
+      description: Script execution results.
+      type: Dictionary
+
   dockerimage: demisto/resilient:2.0.0.86430
   isfetch: true
   ismappable: true

@@ -922,8 +922,7 @@ Add an artifact to an incident.
 ```
 
 #### Human Readable Output
-
->The artifact was added successfully to incident 1234
+>The artifact was added successfully to incident 1234.
 
 
 ### rs-upload-incident-attachment
@@ -945,6 +944,15 @@ Upload an attachment for an incident.
 #### Context Output
 
 There is no context output for this command.
+
+
+#### Command Example
+```!rs-update-incident-attachment incident_id="1000" entry_id="0000-0000-0000-0000"```
+
+#### Human Readable Output
+>File was uploaded successfully to 1000.
+
+
 ### rs-add-custom-incident-task
 
 ***

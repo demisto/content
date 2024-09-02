@@ -1,5 +1,5 @@
 import os
-from typing import Dict, List, Any
+from typing import Any
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -11,7 +11,6 @@ import urllib3
 import re
 import resilient
 from resilient.co3 import SimpleClient, SimpleHTTPException
-from resilient.co3base import RetryHTTPException
 
 ''' IMPORTS '''
 logging.basicConfig()
@@ -35,7 +34,7 @@ DEMISTO_PARAMS = (demisto.params()
                       'api_key_id': os.getenv('API_KEY_ID'),
                       'api_key_secret': os.getenv('API_KEY_SECRET'),
                       'fetch_time': '2020-02-02T19:00:00Z'
-                  })
+})
 
 if not DEMISTO_PARAMS['proxy']:
     for var in ['HTTP_PROXY', 'HTTPS_PROXY', 'http_proxy', 'https_proxy']:
@@ -186,7 +185,7 @@ IBM_QRADAR_SOAR_INCIDENT_SCHEMA_NAME = "IBM QRadar SOAR Incident Schema"
 DEFAULT_SEVERITY_CODE = 5
 """ ENDPOINTS """
 SEARCH_INCIDENTS_ENDPOINT = "/incidents/query_paged"
-
+EXECUTE_SCRIPT_ENDPOINT = "/scripts/executions"
 ''' HELPER FUNCTIONS '''
 
 
@@ -557,7 +556,7 @@ def resolve_field_value(field: str, raw_value: Any) -> dict:
     elif field in ["incident_type_ids", "nist_attack_vectors"]:
         return {"ids": raw_value}
 
-    raise DemistoException('Could no resolve field value for field: {}'.format(field))
+    raise DemistoException(f'Could no resolve field value for field: {field}')
 
 
 def get_field_changes_entry(field: str, old_value: Any, new_value: Any) -> dict:
@@ -606,6 +605,7 @@ def prepare_incident_update_dto_for_mirror(client: SimpleClient, incident_id: st
     dto = {"changes": changes}
     demisto.debug(f"prepare_incident_update_dto_for_mirror {dto=}")
     return dto
+
 
 def to_timestamp(date_str_or_dt, date_format='%Y-%m-%dT%H:%M:%SZ'):
     """
@@ -685,7 +685,8 @@ def search_incidents_command(client, args):
     if incidents:
         pretty_incidents = prettify_incidents(client, incidents)
 
-        result_incidents = createContext(pretty_incidents, id=None, keyTransform=underscoreToCamelCase, removeNull=True)    # pragma: no cover
+        result_incidents = createContext(pretty_incidents, id=None,
+                                         keyTransform=underscoreToCamelCase, removeNull=True)    # pragma: no cover
         ec = {
             'Resilient.Incidents(val.Id && val.Id === obj.Id)': result_incidents
         }
@@ -701,7 +702,7 @@ def search_incidents_command(client, args):
                     result_incidents,
                     headers=['Id', 'Name', 'PlanStatus', 'CreatedDate', 'DiscoveredDate', 'Owner', 'Phase'],
                     removeNull=True
-                ),
+            ),
 
             'EntryContext': ec
         }
@@ -813,7 +814,7 @@ def get_incident_command(client, incident_id):
                    'phase_id', 'severity_code', 'confirmed', 'employee_involved', 'negative_pr_likely',
                    'confirmed', 'start_date', 'due_date', 'negative_pr_likely', 'reporter', 'exposure_type_id',
                    'nist_attack_vectors']
-    pretty_incident = dict((k, incident[k]) for k in wanted_keys if k in incident)
+    pretty_incident = {k: incident[k] for k in wanted_keys if k in incident}
     if incident['resolution_id']:
         pretty_incident['resolution'] = RESOLUTION_DICT.get(incident['resolution_id'], incident['resolution_id'])
     if incident['resolution_summary']:
@@ -1038,6 +1039,7 @@ def close_incident_command(client, incident_id):
     response = close_incident(client, incident_id, incident)
     if response.status_code == 200:
         return 'Incident ' + incident_id + ' was closed.'
+    return None
 
 
 def close_incident(client, incident_id, incident):
@@ -1259,6 +1261,71 @@ def related_incidents(client, incident_id):
     return response
 
 
+def get_scripts(client: SimpleClient, script_id: str) -> dict[str, Any]:
+    """
+    Retrieves a single script's enriched data if `script_id` is provided,
+    and retrieves the list of scripts belonging to the IBM QRadar SOAR organization if `script_id` is not provided.
+    """
+    response = client.get(f"/scripts/{script_id}")
+    demisto.debug(f"get_scripts | {type(response)=} | {response=}")
+    return response
+
+
+def fetch_incidents(client, first_fetch_time: str):
+    last_fetched_timestamp = demisto.getLastRun() and demisto.getLastRun().get('time')
+    demisto.debug(f'fetch_incidents {last_fetched_timestamp=}')
+
+    if not last_fetched_timestamp:
+        last_fetched_timestamp = to_timestamp(first_fetch_time)
+    args = {'date-created-after': last_fetched_timestamp}    # Fetch incident from the last fetched timestamp.
+    resilient_incidents = search_incidents(client, args)
+
+    demisto_incidents = []
+    last_incident_creation_time = last_fetched_timestamp
+    if resilient_incidents:
+        #  Update last_run_time to the latest incident creation time (maximum in milliseconds).
+        last_incident_creation_time = max(
+            [_incident.get("create_date") for _incident in resilient_incidents]
+        )
+        for incident in resilient_incidents:
+            # Only fetching non-resolved incidents.
+            if not incident.get('end_date') and incident.get('plan_status') == 'A':  # 'A' stands for 'Active'
+                demisto.debug(f'fetch_incidents {incident=}')
+                incident = process_raw_incident(client, incident)
+                demisto_incident = {}
+                demisto_incident['name'] = f'IBM QRadar SOAR incident ID {str(incident["id"])}'
+                demisto_incident['occurred'] = incident['create_date']
+                demisto_incident['rawJSON'] = json.dumps(incident)
+                demisto_incidents.append(demisto_incident)
+
+    # Increasing by one millisecond in order not to fetch the same incident in the next run.
+    demisto.setLastRun({'time': last_incident_creation_time + 1})
+    demisto.incidents(demisto_incidents)
+
+
+def execute_script(client: SimpleClient, incident_id: str, script_id: str) -> dict:
+    """
+    Executes a script by the given script_id and returns the script execution result.
+    Args:
+        client (SimpleClient): The SimpleClient instance.
+        incident_id (str): The incident ID to execute the script for.
+        script_id (str): ID of script to be executed.
+
+    Returns:
+        dict: The script execution result.
+    """
+    script_data = get_scripts(client, script_id)
+
+    payload = {
+        "script_text": script_data.get('script_text'),
+        "script_language": script_data.get('language'),
+        "object_type_id": 0,
+        "object_id": incident_id
+    }
+    demisto.debug(f'execute_script {payload=}')
+    return client.post(EXECUTE_SCRIPT_ENDPOINT, payload)
+
+
 def add_note_command(client, incident_id, note):
     body = {
         'text': {
@@ -1278,7 +1345,7 @@ def add_note_command(client, incident_id, note):
         'ContentsFormat': formats['json'],
         'EntryContext': ec,
         'ReadableContentsFormat': formats['text'],
-        'HumanReadable': 'The note was added successfully to incident {0}'.format(incident_id)
+        'HumanReadable': f'The note was added successfully to incident {incident_id}'
     }
     return entry
 
@@ -1303,52 +1370,11 @@ def add_artifact_command(client, incident_id, artifact_type, artifact_value, art
         'ContentsFormat': formats['json'],
         'EntryContext': ec,
         'ReadableContentsFormat': formats['text'],
-        'HumanReadable': 'The artifact was added successfully to incident {0}'.format(incident_id)
+        'HumanReadable': f'The artifact was added successfully to incident {incident_id}'
     }
 
     return entry
 
-
-def fetch_incidents(client, first_fetch_time: str):
-    last_fetched_timestamp = demisto.getLastRun() and demisto.getLastRun().get('time')
-    demisto.debug(f'fetch_incidents {last_fetched_timestamp=}')
-
-    if not last_fetched_timestamp:
-        last_fetched_timestamp = to_timestamp(first_fetch_time)
-    args = {'date-created-after': last_fetched_timestamp}    # Fetch incident from the last fetched timestamp.
-    resilient_incidents = search_incidents(client, args)
-
-    demisto_incidents = []
-    last_incident_creation_time = last_fetched_timestamp
-    if resilient_incidents:
-        #  Update last_run_time to the latest incident creation time (maximum in milliseconds).
-        last_incident_creation_time = max(
-            [_incident.get("create_date") for _incident in resilient_incidents]
-        )
-        for incident in resilient_incidents:
-            # Only fetching non-resolved incidents.
-            if not incident.get('end_date') and incident.get('plan_status') == 'A':  # 'A' stands for 'Active'
-                demisto.debug(f'fetch_incidents {incident=}')
-                incident = process_raw_incident(client, incident)
-                demisto_incident = dict()
-                demisto_incident['name'] = f'IBM QRadar SOAR incident ID {str(incident["id"])}'
-                demisto_incident['occurred'] = incident['create_date']
-                demisto_incident['rawJSON'] = json.dumps(incident)
-                demisto_incidents.append(demisto_incident)
-
-    # Increasing by one millisecond in order not to fetch the same incident in the next run.
-    demisto.setLastRun({'time': last_incident_creation_time + 1})
-    demisto.incidents(demisto_incidents)
-
-
-def get_scripts(client: SimpleClient, script_id: str) -> Dict[str, Any]:
-    """
-    Retrieves a single script's enriched data if `script_id` is provided,
-    and retrieves the list of scripts belonging to the IBM QRadar SOAR organization if `script_id` is not provided.
-    """
-    response = client.get(f"/scripts/{script_id}")
-    demisto.debug(f"list_scripts_command | {type(response)=} | {response=}")
-    return response
 
 def list_scripts_command(client: SimpleClient, args: dict) -> CommandResults:
     """
@@ -1383,7 +1409,7 @@ def upload_incident_attachment_command(
     client: SimpleClient, args: dict
 ) -> CommandResults:
     """
-    Uploads a file from XSOAR to an IBM SOAR incident.
+    Uploads a file from XSOAR to an IBM QRadar SOAR incident.
     """
     incident_id = args.get("incident_id")
     entry_id = args.get("entry_id")
@@ -1397,19 +1423,12 @@ def upload_incident_attachment_command(
 
     file_path, file_name = file_path_obj.get("path"), file_path_obj.get("name")
 
-    try:
-        response = client.post_attachment(
-            uri=f"/incidents/{incident_id}/attachments",
-            filepath=file_path,
-            filename=file_name,
-        )
-        demisto.debug(f"upload_incident_attachment_command {response=}")
-    except SimpleHTTPException as e:
-        return CommandResults(
-            entry_type=EntryType.ERROR,
-            readable_output=f"Could not upload a file with entry ID: {entry_id} to incident: {incident_id}."
-            f"\nGot error: {e.response.text}",
-        )
+    response = client.post_attachment(
+        uri=f"/incidents/{incident_id}/attachments",
+        filepath=file_path,
+        filename=file_name,
+    )
+    demisto.debug(f"upload_incident_attachment_command {response=}")
     return CommandResults(
         readable_output=f"File was uploaded successfully to {incident_id}."
     )
@@ -1421,18 +1440,14 @@ def delete_incidents_command(client: SimpleClient, args: dict) -> CommandResults
     """
     incident_ids: list = argToList(args.get("incident_ids", ""))
     demisto.info(f"delete_incidents_command {incident_ids=}")
-    try:
-        response: dict = client.put("/incidents/delete", payload=incident_ids)
-        human_readable: str = (
-            f"{incident_ids} were deleted successfully."
-            if response["success"]
-            else f"{response['message']}"
-        )
-    except SimpleHTTPException as e:
-        return CommandResults(
-            entry_type=EntryType.ERROR,
-            readable_output=f"Could not delete incidents {incident_ids}. Got error: {e.response.text} ",
-        )
+
+    response: dict = client.put("/incidents/delete", payload=incident_ids)
+    human_readable: str = (
+        f"{incident_ids} were deleted successfully."
+        if response["success"]
+        else f"{response['message']}"
+    )
+
     return CommandResults(readable_output=human_readable)
 
 
@@ -1442,22 +1457,17 @@ def list_incident_notes_command(client: SimpleClient, args: dict) -> CommandResu
     """
     incident_id = args.get("incident_id")
     demisto.debug(f"list_incident_notes_command {incident_id=}")
-    try:
-        response = client.get(f"/incidents/{incident_id}/comments")
-        human_readable: str = tableToMarkdown(
-            f"Incident {incident_id} Notes", t=prettify_incident_notes(response)
-        )
-        demisto.debug(f"{response=}")
-        return CommandResults(
-            outputs_prefix="Resilient.IncidentNotes",
-            outputs=response,
-            readable_output=human_readable,
-        )
-    except SimpleHTTPException as e:
-        return CommandResults(
-            entry_type=EntryType.ERROR,
-            readable_output=f"Could not retrieve incident nots for incident ID: {incident_id}. Got error {e.response.text}",
-        )
+
+    response = client.get(f"/incidents/{incident_id}/comments")
+    human_readable: str = tableToMarkdown(
+        f"Incident {incident_id} Notes", t=prettify_incident_notes(response)
+    )
+    demisto.debug(f"{response=}")
+    return CommandResults(
+        outputs_prefix="Resilient.IncidentNotes",
+        outputs=response,
+        readable_output=human_readable,
+    )
 
 
 def update_incident_note_command(client: SimpleClient, args: dict) -> CommandResults:
@@ -1614,9 +1624,22 @@ def list_task_instructions_command(client: SimpleClient, args: dict) -> CommandR
     )
 
 
-def get_modified_remote_data_command(
-    client: SimpleClient, args: dict
-) -> GetModifiedRemoteDataResponse:
+def execute_remote_script_command(client: SimpleClient, args: dict) -> CommandResults:
+    """
+    Given a remote script id, executes it on the remote IBM QRadar SOAR platform.
+    """
+    script_id = args.get("script_id")
+    incident_id = args.get("incident_id")
+    execute_script_response = execute_script(client, incident_id, script_id)
+
+    return CommandResults(
+        readable_output=f"Successfully executed remote script with ID {script_id} on incident {incident_id}.",
+        outputs_prefix="Resilient.RemoteScriptExecution",
+        outputs=execute_script_response,
+    )
+
+
+def get_modified_remote_data_command(client: SimpleClient, args: dict) -> GetModifiedRemoteDataResponse:
     remote_args = GetModifiedRemoteDataArgs(args)
     last_update = (
         remote_args.last_update
@@ -1710,7 +1733,7 @@ def get_remote_data_command(client: SimpleClient, args: dict) -> GetRemoteDataRe
         reopening_entry = handle_incoming_incident_reopening(incident_id=incident_id)
         entries.append(reopening_entry)
 
-    mirrored_data = dict()
+    mirrored_data = {}
     mirrored_data["rawJSON"] = json.dumps(incident)
 
     # TODO - Handle tags for attachments, tasks, notes
@@ -1773,7 +1796,7 @@ def test_module(client: SimpleClient, fetch_time: str):
 ''' EXECUTION CODE '''
 
 
-def get_client():
+def get_client():  # pragma: no cover
     opts_dict = {
         "host": SERVER,
         "port": PORT,
@@ -1793,7 +1816,7 @@ def get_client():
     return resilient_client
 
 
-def main():
+def main():     # pragma: no cover
     params = demisto.params()
     fetch_time = validate_fetch_time(params.get("fetch_time", ""))
     client = get_client()
@@ -1872,6 +1895,8 @@ def main():
             return_results(delete_task_members_command(client, args))
         elif command == "rs-list-task-instructions":
             return_results(list_task_instructions_command(client, args))
+        elif command == "rs-execute-remote-script":
+            return_results(execute_remote_script_command(client, args))
         elif command == "get-modified-remote-data":
             return_results(get_modified_remote_data_command(client, args))
         elif command == "get-remote-data":
