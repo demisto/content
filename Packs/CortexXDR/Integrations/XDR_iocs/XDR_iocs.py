@@ -722,11 +722,11 @@ def get_changes(client: Client):
     demisto.debug(f'pull XDR changes: calling endpoint {path}, {requests_kwargs=}')
     if iocs := client.http_request(url_suffix=path, requests_kwargs=requests_kwargs).get('reply', []):
         integration_context['ts'] = iocs[-1].get('RULE_MODIFY_TIME', integration_context) + 1
-        demisto.info(f'pull XDR changes: got {len(iocs)} IOCs from XDR')
-        demisto.info(f'pull XDR changes: setting {integration_context} to integration context ')
         set_integration_context(integration_context)
-        demisto.debug(f"pull XDR changes: converting {len(iocs)} XDR IOCs to demisto format, then creating indicators")
+        demisto.info(f'pull XDR changes: setting {integration_context} to integration context ')
+        demisto.info(f"pull XDR changes: converting {len(iocs)} XDR IOCs to xsoar format, then creating indicators")
         demisto_indicators = list(map(xdr_ioc_to_demisto, iocs))
+        demisto.debug(f"{demisto_indicators=}")
         demisto.createIndicators(demisto_indicators)
         demisto.debug("pull XDR changes: done")
     else:
