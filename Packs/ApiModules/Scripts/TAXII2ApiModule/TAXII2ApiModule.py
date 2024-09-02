@@ -18,6 +18,7 @@ from taxii2client.exceptions import InvalidJSONError
 import tempfile
 import uuid
 from dateutil.parser import parse
+from stix2patterns.pattern import Pattern
 
 # disable insecure warnings
 urllib3.disable_warnings()
@@ -1017,7 +1018,9 @@ class STIX2XSOARParser(BaseClient):
     @staticmethod
     def get_single_pattern_value(pattern: str) -> str:
         """
-        Parses a pattern with a single single key & value pair.
+        Parses a pattern with a single single comparison and extracts the right hand value of the comparison.
+        If the pattern is invalid, the pattern itself will be returned.
+
         For Example:
 
         >>> STIX2XSOARParser.get_single_pattern_value("[domain-name:value = 'www.example.com']")
@@ -1028,10 +1031,12 @@ class STIX2XSOARParser(BaseClient):
 
         Returns:
             str. the value in the pattern.
-
-
         """
-        return pattern.rpartition(' = ')[2].strip(" ']")
+        try:
+            return next(iter(Pattern(pattern).inspect().comparisons.values()))[0][-1].strip("'")
+        except Exception as error:
+            demisto.debug(f'Unable to parse {pattern=}, {error=}')
+            return pattern
 
     def parse_indicator(self, indicator_obj: dict[str, Any]) -> list[dict[str, Any]]:
         """
