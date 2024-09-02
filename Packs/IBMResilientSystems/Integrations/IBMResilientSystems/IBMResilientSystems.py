@@ -1443,7 +1443,7 @@ def delete_incidents_command(client: SimpleClient, args: dict) -> CommandResults
 
     response: dict = client.put("/incidents/delete", payload=incident_ids)
     human_readable: str = (
-        f"{incident_ids} were deleted successfully."
+        f"Incidents {incident_ids} were deleted successfully."
         if response["success"]
         else f"{response['message']}"
     )
@@ -1836,33 +1836,33 @@ def main():     # pragma: no cover
         elif command == "fetch-incidents":
             fetch_incidents(client, fetch_time)
         elif command == "rs-search-incidents":
-            demisto.results(search_incidents_command(client, args))
+            return_results(search_incidents_command(client, args))
         elif command == "rs-update-incident":
-            demisto.results(update_incident_command(client, args))
+            return_results(update_incident_command(client, args))
         elif command == "rs-incidents-get-members":
-            demisto.results(get_members_command(client, args["incident-id"]))
+            return_results(get_members_command(client, args["incident-id"]))
         elif command == "rs-get-incident":
-            demisto.results(get_incident_command(client, args["incident-id"]))
+            return_results(get_incident_command(client, args["incident-id"]))
         elif command == "rs-incidents-update-member":
-            demisto.results(
+            return_results(
                 set_member_command(client, args["incident-id"], args["members"])
             )
         elif command == "rs-incidents-get-tasks":
-            demisto.results(get_tasks_command(client, args["incident-id"]))
+            return_results(get_tasks_command(client, args["incident-id"]))
         elif command == "rs-get-users":
-            demisto.results(get_users_command(client))
+            return_results(get_users_command(client))
         elif command == "rs-close-incident":
-            demisto.results(close_incident_command(client, args["incident-id"]))
+            return_results(close_incident_command(client, args["incident-id"]))
         elif command == "rs-create-incident":
-            demisto.results(create_incident_command(client, args))
+            return_results(create_incident_command(client, args))
         elif command == "rs-incident-artifacts":
-            demisto.results(incident_artifacts_command(client, args["incident-id"]))
+            return_results(incident_artifacts_command(client, args["incident-id"]))
         elif command == "rs-incident-attachments":
-            demisto.results(incident_attachments_command(client, args["incident-id"]))
+            return_results(incident_attachments_command(client, args["incident-id"]))
         elif command == "rs-related-incidents":
-            demisto.results(related_incidents_command(client, args["incident-id"]))
+            return_results(related_incidents_command(client, args["incident-id"]))
         elif command == "rs-add-note":
-            demisto.results(add_note_command(client, args["incident-id"], args["note"]))
+            return_results(add_note_command(client, args["incident-id"], args["note"]))
         elif command == "rs-add-artifact":
             demisto.results(
                 add_artifact_command(

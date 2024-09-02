@@ -972,10 +972,12 @@ Add a custom task to the incident.
 #### Context Output
 
 There is no context output for this command.
+
+
 ### rs-list-incident-notes
 
 ***
-Gets all of the top-level comments for an incident.
+Gets all top-level comments for an incident.
 
 #### Base Command
 
@@ -989,9 +991,30 @@ Gets all of the top-level comments for an incident.
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
+| **Path**                | **Type** | **Description** |
+|-------------------------| --- | --- |
 | Resilient.IncidentNotes | Dictionary | Top-level comments for incident. | 
+
+
+#### Command Example
+```!rs-list-incident-notes incident-id=1234```
+
+#### Context Example
+```json
+{
+    "Resilient": {
+        "IncidentNotes": [
+            {
+                
+            }   
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+
 
 ### rs-delete-tasks
 
@@ -1124,6 +1147,14 @@ Delete multiple incidents.
 #### Context Output
 
 There is no context output for this command.
+
+#### Command Example
+``` !rs-delete-incident incident_id="1000,1001"```
+
+#### Human Readable Output
+> Incidents ['1000', '1001'] were deleted successfully.
+
+
 ### rs-update-incident-note
 
 ***

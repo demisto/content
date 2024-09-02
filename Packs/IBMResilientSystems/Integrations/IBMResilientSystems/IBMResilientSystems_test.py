@@ -564,6 +564,7 @@ def test_delete_incidents_command(mocker, ):
     delete_incident_request.assert_called_once_with("/incidents/delete", payload=incident_ids)
 
 
+
 def test_fetch_incidents(mocker):
     # TODO
     pass
