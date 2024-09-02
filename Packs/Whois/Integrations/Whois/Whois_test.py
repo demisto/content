@@ -63,6 +63,11 @@ def test_test_command(mocker: MockerFixture):
      ("test.this.google.co.il", "google.co.il"),
      ("app.XSOAR.test", "app.XSOAR.test"),
      ("https://hello.world.io/", "world.io"),
+     ("https://hello.world.io?", "world.io"),
+     ("https://hello.world.io#", "world.io"),
+     ("https://hello.world.io/a?b=c&d", "world.io"),
+     ("https://hello.world.io#a?b=c&d", "world.io"),
+     ("https://hello.world.io?a=b&c=d", "world.io"),
      ]
 )
 def test_get_domain_from_query(query, expected):
