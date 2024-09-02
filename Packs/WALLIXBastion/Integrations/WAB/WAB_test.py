@@ -8,6 +8,22 @@ class Settable:
     pass
 
 
+def test_timeout(mocker):
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "timeout": "0"
+        },
+    )
+    try:
+        main()
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("zero timeout should not be allowed")
+
+
 def test_wab_get_device(mocker):
     mocker.patch.object(demisto, "args", return_value={"device_id": "012345"})
     mocker.patch.object(
@@ -19,6 +35,7 @@ def test_wab_get_device(mocker):
             "api_version": "v3.12",
             "auth_key": "key",
             "auth_user": "user",
+            "timeout": "50"
         },
     )
     mocker.patch.object(demisto, "results")
@@ -26,11 +43,12 @@ def test_wab_get_device(mocker):
 
     mock_result = mocker.patch("WAB.return_results")
 
-    def mock_http_request(*args, **kwargs):
+    def mock_http_request(self: BaseClient, *args, **kwargs):
         assert args[0] == "get"
         assert args[1] == "/devices/012345"
         assert kwargs["headers"].get("X-Auth-Key") == "key"
         assert kwargs["headers"].get("X-Auth-User") == "user"
+        assert self.timeout == 50
 
         mock: Any = Settable()
 
@@ -40,7 +58,7 @@ def test_wab_get_device(mocker):
 
         return mock
 
-    mocker.patch.object(BaseClient, "_http_request", side_effect=mock_http_request)
+    mocker.patch.object(BaseClient, "_http_request", autospec=True, side_effect=mock_http_request)
 
     main()
 
@@ -73,6 +91,7 @@ def test_commands(mocker):
             "api_version": "v3.12",
             "auth_key": "key",
             "auth_user": "user",
+            "timeout": "50"
         },
     )
 
