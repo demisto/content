@@ -391,8 +391,8 @@ def main() -> None:
 
     filters = params.get('network_activity_filters', '')
     if 'network_activities' in log_types and not filters:
-        message = "Using network_activity_filters is required when fetching network events, to limit the number of events."
-        raise DemistoException(message)
+        raise DemistoException(
+            "Using network_activity_filters is required when fetching network events, to limit the number of events.")
 
     demisto.debug(f'Command being called is {command}')
     try:

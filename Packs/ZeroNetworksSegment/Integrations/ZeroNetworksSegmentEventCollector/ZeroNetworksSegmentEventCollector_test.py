@@ -99,7 +99,7 @@ def test_initialize_start_timestamp_with_arg_from():
         Calling the initialize_start_timestamp function to determine the starting point for fetching data.
 
     Then:
-        Verify that the function returns the starting timestamp provided as an argument, ensuring that the 
+        Verify that the function returns the starting timestamp provided as an argument, ensuring that the
         'last_fetch' timestamp from the last run is not used.
     """
     arg_from = 111111
@@ -123,7 +123,7 @@ def test_get_max_results_and_limit_with_param(params, log_type, expected):
         Calling the get_max_results_and_limit function with the provided parameters and log type.
 
     Then:
-        Verify that the function returns a tuple matching the expected result, ensuring it correctly processes 
+        Verify that the function returns a tuple matching the expected result, ensuring it correctly processes
         the parameters to determine the maximum results and limit.
     """
     result = get_max_results_and_limit(params, log_type)
@@ -154,7 +154,7 @@ def test_handle_log_types(event_types_to_fetch, expected):
         Calling the handle_log_types function with the provided event types to fetch.
 
     Then:
-        Verify that the function returns the expected result, confirming that it correctly processes the event types 
+        Verify that the function returns the expected result, confirming that it correctly processes the event types
         as intended.
     """
     result = handle_log_types(event_types_to_fetch)
@@ -203,7 +203,7 @@ def test_update_last_run(last_run, log_type, last_event_time, previous_ids, expe
 @pytest.mark.parametrize(
     "params, last_run, expected_last_run, expected_collected_events, start_timestamp",
     [(case['params'], case['last_run'], case['expected_last_run'],
-      case['expected_collected_events'], case['start_timestamp']) 
+      case['expected_collected_events'], case['start_timestamp'])
      for case in util_load_json('test_data/test_fetch_events_params.json')['test_cases']]
 )
 def test_fetch_events(mocker, params, last_run, expected_last_run, expected_collected_events, start_timestamp):
@@ -217,7 +217,8 @@ def test_fetch_events(mocker, params, last_run, expected_last_run, expected_coll
         Calling the `fetch_events` function with the mocked client and provided inputs.
 
     Then:
-        Verify that the function returns the expected `last_run` and `collected_events`, ensuring it processes the inputs correctly and integrates with the mocks as intended.
+        Verify that the function returns the expected `last_run` and `collected_events`, ensuring it processes the inputs
+        correctly and integrates with the mocks as intended.
     """
     def mock_create_id_function(event, log_type):
         return event.get('id')
