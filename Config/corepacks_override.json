@@ -1,6 +1,6 @@
 {
     "server_version": "8.7.0",
-    "file_version": "1",
+    "file_version": "2",
     "xsoar_saas": {
         "updated_corepacks_content": {
             "corePacks": [
@@ -69,7 +69,7 @@
                 "FeedMitreAttackv2/1.1.38/FeedMitreAttackv2.zip",
                 "ThreatIntelligenceManagement/1.1.10/ThreatIntelligenceManagement.zip",
                 "FiltersAndTransformers/1.2.72/FiltersAndTransformers.zip",
-                "CoreAlertFields/1.0.34/CoreAlertFields.zip",
+                "CoreAlertFields/1.0.37/CoreAlertFields.zip",
                 "FeedUnit42v2/1.0.54/FeedUnit42v2.zip",
                 "AutoFocus/2.2.1/AutoFocus.zip",
                 "EDL/3.3.1/EDL.zip",
@@ -86,7 +86,7 @@
                 "Unit42Intel/1.0.23/Unit42Intel.zip",
                 "CommonTypes/3.5.4/CommonTypes.zip",
                 "CortexAttackSurfaceManagement/1.7.39/CortexAttackSurfaceManagement.zip",
-                "Base/1.34.12/Base.zip",
+                "Base/1.34.35/Base.zip",
                 "DemistoRESTAPI/1.3.55/DemistoRESTAPI.zip",
                 "rasterize/2.0.13/rasterize.zip"
             ],

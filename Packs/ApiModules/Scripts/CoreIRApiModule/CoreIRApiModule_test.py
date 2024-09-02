@@ -2262,26 +2262,51 @@ OFFLINE_STATUS = {
     'host_name': 'TEST',
     'ip': '1.1.1.1'
 }
+PUBLIC_IP = {
+    'endpoint_status': 'Connected',
+    'is_isolated': 'Isolated',
+    'host_name': 'TEST',
+    'ip': [],
+    'public_ip': ['1.1.1.1']
+}
+NO_IP = {
+    'endpoint_status': 'Connected',
+    'is_isolated': 'Isolated',
+    'host_name': 'TEST',
+    'ip': [],
+    'public_ip': []
+}
 
 
-@pytest.mark.parametrize("endpoint, expected", [
-    (CONNECTED_STATUS, 'Online'),
-    (NO_STATUS, 'Offline'),
-    (OFFLINE_STATUS, 'Offline')
+@pytest.mark.parametrize("endpoint, expected_status, expected_ip", [
+    (CONNECTED_STATUS, 'Online', '1.1.1.1'),
+    (NO_STATUS, 'Offline', '1.1.1.1'),
+    (OFFLINE_STATUS, 'Offline', '1.1.1.1'),
+    (PUBLIC_IP, 'Online', ['1.1.1.1']),
+    (NO_IP, 'Online', '')
 ])
-def test_get_endpoint_properties(endpoint, expected):
+def test_get_endpoint_properties(endpoint, expected_status, expected_ip):
     """
     Given:
         - Endpoint data
     When
-        - The status of the enndpoint is 'Connected' with a capital C.
+        - Case a: The status of the endpoint is 'Connected' with a capital C and ip is 1.1.1.1.
+        - Case b: When no status is not given and ip is 1.1.1.1.
+        - Case c: The status of the endpoint is offline and ip is 1.1.1.1.
+        - Case d: The status of the endpoint is 'Connected' with a capital C ip is empty but public_ip is 1.1.1.1.
+        - Case d: The status of the endpoint is 'Connected' with a capital C and both ip and public_ip are empty.
     Then
-        - The status of the endpointn is determined to be 'Online'
+        - Case a: The status of the endpoint is determined to be 'Online' and the ip is set to 1.1.1.1.
+        - Case b: The status of the endpoint is determined to be 'Offline' and the ip is set to 1.1.1.1.
+        - Case c: The status of the endpoint is determined to be 'Offline' and the ip is set to 1.1.1.1.
+        - Case d: The status of the endpoint is determined to be 'Online' and the ip is set to 1.1.1.1.
+        - Case d: The status of the endpoint is determined to be 'Online' and the ip is set to empty.
     """
     from CoreIRApiModule import get_endpoint_properties
 
     status, is_isolated, hostname, ip = get_endpoint_properties(endpoint)
-    assert status == expected
+    assert status == expected_status
+    assert ip == expected_ip
 
 
 def test_remove_blocklist_files_command(requests_mock):
@@ -2503,6 +2528,97 @@ def test_filter_general_fields():
         'detection_modules': 'test1',
         "content_version": "version1",
         "detector_id": 'ID',
+        'event': {
+            'event_type': 'type',
+            'event_id': 'id',
+            'identity_sub_type': 'subtype',
+        }
+    }
+
+
+def test_filter_general_fields_with_stateful_raw_data():
+    """
+    Given:
+        - An alert dict with stateful_raw_data section
+    When
+        - Running filter_general_fields command once with events_from_decider_as_list as False and once as True.
+    Then
+        - Verify expected output
+    """
+    from CoreIRApiModule import filter_general_fields
+    alert = {
+        'detection_modules': 'test1',
+        "content_version": "version1",
+        "detector_id": 'ID',
+        'raw_abioc': {
+            'event': {
+                'event_type': 'type',
+                'event_id': 'id',
+                'identity_sub_type': 'subtype',
+            }
+        },
+        'stateful_raw_data': {
+            'events_from_decider': {
+                "test_1": {
+                    "story_id": "test_1",
+                    "additional_info": "this is a test."
+                },
+                "test_2": {
+                    "story_id": "test_2",
+                    "additional_info": "this is a test."
+                }
+            }
+        }
+    }
+    assert filter_general_fields(alert, False, False) == {
+        'detection_modules': 'test1',
+        "content_version": "version1",
+        "detector_id": 'ID',
+        'raw_abioc': {
+            'event': {
+                'event_type': 'type',
+                'event_id': 'id',
+                'identity_sub_type': 'subtype',
+            }
+        },
+        'stateful_raw_data': {
+            'events_from_decider': {
+                "test_1": {
+                    "story_id": "test_1",
+                    "additional_info": "this is a test."
+                },
+                "test_2": {
+                    "story_id": "test_2",
+                    "additional_info": "this is a test."
+                }
+            }
+        },
+        'event': {
+            'event_type': 'type',
+            'event_id': 'id',
+            'identity_sub_type': 'subtype',
+        }
+    }
+    assert filter_general_fields(alert, False, True) == {
+        'detection_modules': 'test1',
+        "content_version": "version1",
+        "detector_id": 'ID',
+        'raw_abioc': {
+            'event': {
+                'event_type': 'type',
+                'event_id': 'id',
+                'identity_sub_type': 'subtype',
+            }
+        },
+        'stateful_raw_data': {
+            'events_from_decider': [{
+                "story_id": "test_1",
+                "additional_info": "this is a test."
+            }, {
+                "story_id": "test_2",
+                "additional_info": "this is a test."
+            }]
+        },
         'event': {
             'event_type': 'type',
             'event_id': 'id',
