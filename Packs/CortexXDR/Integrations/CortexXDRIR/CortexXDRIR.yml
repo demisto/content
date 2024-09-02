@@ -55,14 +55,14 @@ configuration:
   - Incoming
   - Outgoing
   - Both
-- defaultvalue: '0'
+- defaultvalue: '1'
   display: XDR mirroring delay in minutes
   name: xdr_delay
   type: 0
   section: Collect
   required: false
   advanced: true
-  additionalinfo: "In the event of a mismatch or a delay in mirroring incoming changes from XDR, use the xdr_delay parameter to extend the look-back period. However, be aware that this may result in increased latency when updating incidents."
+  additionalinfo: "In the event of a delay in mirroring incoming changes from XDR, use the xdr_delay parameter to extend the look-back period. However, be aware that this may result in increased latency when updating incidents."
 - display: Custom close-reason mapping (XSOAR -> XDR mirrored incident. Overwrites default close-reason mapping defined by Cortex XSOAR)
   section: Collect
   advanced: true
@@ -2786,6 +2786,13 @@ script:
       predefined:
       - 'true'
       - 'false'
+    - description: Whether to return events_from_decider context output as a dictionary (the raw API response) or as a list (improved for playbook automation) - relevant only when filter_alert_fields is set to False.
+      name: events_from_decider_format
+      auto: PREDEFINED
+      defaultValue: 'dict'
+      predefined:
+      - 'list'
+      - 'dict'
     description: Returns information about each alert ID.
     name: xdr-get-cloud-original-alerts
     outputs:

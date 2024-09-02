@@ -1304,7 +1304,7 @@ def main():  # pragma: no cover
     starred = True if params.get('starred') else None
     starred_incidents_fetch_window = params.get('starred_incidents_fetch_window', '3 days')
     exclude_artifacts = argToBoolean(params.get('exclude_fields', True))
-    xdr_delay = abs((arg_to_number(params.get('xdr_delay')) or 0) - 1)
+    xdr_delay = arg_to_number(params.get('xdr_delay')) or 1
     try:
         timeout = int(params.get('timeout', 120))
     except ValueError as e:
