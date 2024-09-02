@@ -16,7 +16,7 @@ tasks:
       description: ""
     nexttasks:
       "#none#":
-        - "11"
+      - "11"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -48,7 +48,7 @@ tasks:
       brand: DataBee
     nexttasks:
       "#none#":
-        - "15"
+      - "15"
     scriptarguments:
       name:
         simple: ${inputs.SearchTerm}
@@ -83,7 +83,7 @@ tasks:
       brand: DataBee
     nexttasks:
       "#none#":
-        - "13"
+      - "13"
     scriptarguments:
       name:
         simple: ${inputs.SearchTerm}
@@ -118,7 +118,7 @@ tasks:
       brand: DataBee
     nexttasks:
       "#none#":
-        - "14"
+      - "14"
     scriptarguments:
       analytic_name:
         simple: ${inputs.SearchTerm}
@@ -153,7 +153,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "10"
+      - "10"
     scriptarguments:
       headers:
         simple: DataBee Device Search Result
@@ -161,11 +161,11 @@ tasks:
         complex:
           root: DataBee.Device
           filters:
-            - - operator: isExists
-                left:
-                  value:
-                    simple: DataBee.Device
-                  iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: DataBee.Device
+                iscontext: true
     separatecontext: false
     continueonerror: true
     continueonerrortype: ""
@@ -198,7 +198,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "8"
+      - "8"
     scriptarguments:
       headers:
         simple: DataBee User Search Result
@@ -206,11 +206,11 @@ tasks:
         complex:
           root: DataBee.User
           filters:
-            - - operator: isExists
-                left:
-                  value:
-                    simple: DataBee.User
-                  iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: DataBee.User
+                iscontext: true
     separatecontext: false
     continueonerror: true
     continueonerrortype: ""
@@ -243,7 +243,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "9"
+      - "9"
     scriptarguments:
       headers:
         simple: DataBee Finding Search Result
@@ -251,11 +251,11 @@ tasks:
         complex:
           root: DataBee.Finding
           filters:
-            - - operator: isExists
-                left:
-                  value:
-                    simple: DataBee.Finding
-                  iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: DataBee.Finding
+                iscontext: true
     separatecontext: false
     continueonerror: true
     continueonerrortype: ""
@@ -316,26 +316,26 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "7"
+      - "7"
     scriptarguments:
       value:
         complex:
           root: DataBee.User
           filters:
-            - - operator: isExists
-                left:
-                  value:
-                    simple: DataBee.User
-                  iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: DataBee.User
+                iscontext: true
           transformers:
-            - operator: JsonToTable
-              args:
-                headers: {}
-                is_auto_json_transform: {}
-                json_transform_properties: {}
-                title:
-                  value:
-                    simple: DataBee Users Search Result
+          - operator: JsonToTable
+            args:
+              headers: {}
+              is_auto_json_transform: {}
+              json_transform_properties: {}
+              title:
+                value:
+                  simple: DataBee Users Search Result
     separatecontext: false
     continueonerror: true
     continueonerrortype: ""
@@ -368,26 +368,26 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "7"
+      - "7"
     scriptarguments:
       value:
         complex:
           root: DataBee.Finding
           filters:
-            - - operator: isExists
-                left:
-                  value:
-                    simple: DataBee.Finding
-                  iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: DataBee.Finding
+                iscontext: true
           transformers:
-            - operator: JsonToTable
-              args:
-                headers: {}
-                is_auto_json_transform: {}
-                json_transform_properties: {}
-                title:
-                  value:
-                    simple: DataBee Findings Search Result
+          - operator: JsonToTable
+            args:
+              headers: {}
+              is_auto_json_transform: {}
+              json_transform_properties: {}
+              title:
+                value:
+                  simple: DataBee Findings Search Result
     separatecontext: false
     continueonerror: true
     continueonerrortype: ""
@@ -420,26 +420,26 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "7"
+      - "7"
     scriptarguments:
       value:
         complex:
           root: DataBee.Device
           filters:
-            - - operator: isExists
-                left:
-                  value:
-                    simple: DataBee.Device
-                  iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: DataBee.Device
+                iscontext: true
           transformers:
-            - operator: JsonToTable
-              args:
-                headers: {}
-                is_auto_json_transform: {}
-                json_transform_properties: {}
-                title:
-                  value:
-                    simple: DataBee Device Search Result
+          - operator: JsonToTable
+            args:
+              headers: {}
+              is_auto_json_transform: {}
+              json_transform_properties: {}
+              title:
+                value:
+                  simple: DataBee Device Search Result
     separatecontext: false
     continueonerror: true
     continueonerrortype: ""
@@ -468,31 +468,32 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       "#default#":
-        - "7"
+      - "7"
       "yes":
-        - "12"
+      - "12"
     separatecontext: false
     conditions:
-      - label: "yes"
-        condition:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: modules.brand
-                iscontext: true
-              right:
-                value:
-                  simple: DataBee
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: modules.state
-                iscontext: true
-              right:
-                value:
-                  simple: active
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: modules.brand
+            iscontext: true
+          right:
+            value:
+              simple: DataBee
+      - - operator: isEqualString
+          left:
+            value:
+              simple: modules.state
+            iscontext: true
+          right:
+            value:
+              simple: active
     continueonerrortype: ""
     view: |-
       {
@@ -519,24 +520,25 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       "#default#":
-        - "7"
+      - "7"
       "yes":
-        - "2"
-        - "3"
-        - "1"
+      - "2"
+      - "3"
+      - "1"
     separatecontext: false
     conditions:
-      - label: "yes"
-        condition:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.SearchTerm
-                iscontext: true
-              right:
-                value: {}
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.SearchTerm
+            iscontext: true
+          right:
+            value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -563,20 +565,21 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       "#default#":
-        - "7"
+      - "7"
       "yes":
-        - "5"
+      - "5"
     separatecontext: false
     conditions:
-      - label: "yes"
-        condition:
-          - - operator: isExists
-              left:
-                value:
-                  simple: DataBee.User
-                iscontext: true
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: DataBee.User
+            iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -603,20 +606,21 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       "#default#":
-        - "7"
+      - "7"
       "yes":
-        - "6"
+      - "6"
     separatecontext: false
     conditions:
-      - label: "yes"
-        condition:
-          - - operator: isExists
-              left:
-                value:
-                  simple: DataBee.Finding
-                iscontext: true
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: DataBee.Finding
+            iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -643,20 +647,21 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       "#default#":
-        - "7"
+      - "7"
       "yes":
-        - "4"
+      - "4"
     separatecontext: false
     conditions:
-      - label: "yes"
-        condition:
-          - - operator: isExists
-              left:
-                value:
-                  simple: DataBee.Device
-                iscontext: true
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: DataBee.Device
+            iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -685,14 +690,14 @@ view: |-
     }
   }
 inputs:
-  - key: SearchTerm
-    value: {}
-    required: true
-    description: Enter a string to be used for enrichment. This string can represent a device name, username, or finding name. The command will search the provided value and return all results that contain the specified string.
-    playbookInputQuery:
+- key: SearchTerm
+  value: {}
+  required: true
+  description: Enter a string to be used for enrichment. This string can represent a device name, username, or finding name. The command will search the provided value and return all results that contain the specified string.
+  playbookInputQuery:
 outputs: []
 quiet: true
 tests:
-  - No tests (auto formatted)
+- No tests (auto formatted)
 fromversion: 6.10.0
 description: ""
