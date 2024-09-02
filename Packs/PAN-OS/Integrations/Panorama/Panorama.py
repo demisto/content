@@ -9946,7 +9946,7 @@ def dataclass_from_element(device: Union[Panorama, Firewall], class_type: type, 
     try:
         return class_type(**flatten_xml_to_dict(element, object_dict, class_type))
     except TypeError as error:  # catch cases where values are missing from the element
-        demisto.debug(f'{class_type} cannot be instantiated with element: {elem2json(element, "pretty")}\n{error=}')
+        demisto.debug(f'{class_type.__name__!r} cannot be instantiated with element: {elem2json(element, "")}\n{error=}')
         return
 
 
@@ -14064,7 +14064,6 @@ def get_query_by_job_id_request(log_type: str, query: str, max_fetch: int) -> st
     """
     params = assign_params(key=API_KEY, type='log',
                            log_type=LOG_TYPE_TO_REQUEST[log_type], query=query, nlogs=max_fetch, dir='forward')
-    demisto.debug(f'{params=}')
     response = http_request(URL, 'GET', params=params)
     return dict_safe_get(response, ('response', 'result', 'job'))  # type: ignore
 

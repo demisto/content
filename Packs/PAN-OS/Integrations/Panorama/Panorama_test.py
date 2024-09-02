@@ -3316,15 +3316,21 @@ class TestUniversalCommand:
                     assert value
 
     @patch("Panorama.run_op_command")
-    def test_get_jobs_with_failed(self, patched_run_op_command):
+    @patch("Panorama.demisto.debug")
+    def test_get_jobs_with_failed(self, patched_debug, patched_run_op_command):
         """Given the output XML for show jobs with a failed job, assert it is skipped."""
         from Panorama import UniversalCommand, ShowJobsAllResultData, Panorama
-        from CommonServerPython import elem2json
-        xml_tree = load_xml_root_from_test_file(TestUniversalCommand.SHOW_JOB_WITH_FAILED_XML)
-        patched_run_op_command.return_value = xml_tree
+
+        patched_run_op_command.return_value = load_xml_root_from_test_file(TestUniversalCommand.SHOW_JOB_WITH_FAILED_XML)
         MockTopology = type('MockTopology', (), {'all': lambda *x, **y: [Panorama(hostname='123')]})
+
         result = UniversalCommand.show_jobs(MockTopology())
 
+        assert patched_debug.call_args_list[0].args[0] == (
+            '\'ShowJobsAllResultData\' cannot be instantiated with element: '
+            '{"job": {"type": "Failed-Job", "details": {"line": "job failed because of configd restart"}, "warnings": null}}'
+            '\nerror=TypeError("ShowJobsAllResultData.__init__() missing 9 required positional arguments: '
+            "'id', 'tfin', 'status', 'result', 'user', 'tenq', 'stoppable', 'positionInQ', and 'progress'\")")
         assert isinstance(result, ShowJobsAllResultData)
         assert result.__dict__ == {
             'description': 'description',
