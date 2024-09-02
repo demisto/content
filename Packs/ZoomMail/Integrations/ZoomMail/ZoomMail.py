@@ -882,7 +882,7 @@ def send_email_command(
     recipients = args.get("to")
 
     # Validate that the email parameter is provided
-    if not body or html_body:
+    if not body or not html_body:
         raise ValueError("Either the 'body' or 'html_body' argument is required.")
     if email is None:
         if not client.default_email:
@@ -925,9 +925,9 @@ def create_email_message(
         MIMEMultipart: The constructed email message object.
     """
     message = MIMEMultipart("mixed" if html_body or attachment_ids else "alternative")
-    message["From"] = from_email
-    message["To"] = to
-    message["Subject"] = subject
+    message["From"] = from_email  # type: ignore[assignment]
+    message["To"] = to  # type: ignore[assignment]
+    message["Subject"] = subject  # type: ignore[assignment]
 
     if body:
         message.attach(MIMEText(body, "plain"))
@@ -1149,24 +1149,63 @@ def parse_email_headers(headers: List[Dict[str, str]]) -> Dict[str, str]:
 
 def safe_bytes_to_string(byte_data: bytes, encoding: str = 'utf-8') -> str:
     """
-    Safely converts bytes to a string using the specified encoding.
+    Safely converts bytes to a string using the specified encoding, handling specific known errors.
 
     Args:
         byte_data (bytes): The byte data to convert.
-        encoding (str): The encoding format to use (default is 'utf-8').
+        encoding (str): The encoding format to use, default is 'utf-8'.
 
     Returns:
-        str: The decoded string.
+        str: The decoded string or a generic error message if decoding fails.
     """
-    return byte_data.decode(encoding, errors='ignore')  # Ignores any decoding errors
+    try:
+        return byte_data.decode(encoding, errors='ignore')
+    except UnicodeDecodeError:
+        return 'Unicode decode error.'
+
+
+def correct_base64_errors(encoded_data: str) -> str:
+    """
+    Attempts to correct common errors in a base64 string, such as non-base64 characters and padding issues.
+
+    Args:
+        encoded_data (str): The base64 encoded string to correct.
+
+    Returns:
+        str: The corrected base64 string.
+    """
+    # Filter out invalid base64 characters
+    valid_base64_chars = set('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=')
+    corrected_data = ''.join(char for char in encoded_data if char in valid_base64_chars)
+
+    # Correct padding issues
+    padding_needed = 4 - len(corrected_data) % 4
+    if padding_needed != 4:
+        corrected_data += '=' * padding_needed
+
+    return corrected_data
 
 
 def decode_base64(encoded_data: str) -> str:
-    """Helper function to decode base64 strings."""
-    # Split the string on '-' if it's causing the issue
-    parts = encoded_data.split('-')
-    decoded_bytes = b''.join([base64.b64decode(p + '=' * ((4 - len(p) % 4) % 4)) for p in parts])
-    return safe_bytes_to_string(decoded_bytes)
+    """
+    Decodes base64 strings and handles specific errors, including improper padding and invalid characters,
+    while attempting to correct common issues.
+
+    Args:
+        encoded_data (str): The base64 encoded string which may have improper padding or be corrupted.
+
+    Returns:
+        str: The decoded and converted string, or an error message if decoding fails.
+    """
+    try:
+        # Normalize the encoded data and attempt to correct errors
+        normalized_data = encoded_data.replace('-', '+').replace('_', '/')
+        corrected_data = correct_base64_errors(normalized_data)
+
+        decoded_bytes = base64.b64decode(corrected_data, altchars=b'+/')
+        return safe_bytes_to_string(decoded_bytes)
+    except ValueError as e:
+        return f'Value error: {str(e)}'
 
 
 def parse_mail_parts(parts: List[Dict[str, Any]]) -> tuple[str, str, List[Dict[str, str]]]:

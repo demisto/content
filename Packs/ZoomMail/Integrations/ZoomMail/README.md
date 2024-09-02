@@ -97,6 +97,26 @@ Lists the messages in the user's mailbox.
 | ZoomMail.Email.messages.id | string | The ID of the email message. | 
 | ZoomMail.Email.messages.threadId | string | The ID of the email thread. | 
 | ZoomMail.Email.resultSizeEstimate | number | The estimated amount of messages found. | 
+| ZoomMail.Email.messages.labelIds | string | The labels assigned to the email. | 
+| ZoomMail.Email.messages.snippet | string | A snippet of the email content. | 
+| ZoomMail.Email.messages.historyId | string | The history ID of the email. | 
+| ZoomMail.Email.messages.internalDate | date | The internal date of the email. | 
+| ZoomMail.Email.messages.expiration | number | The expiration time of the email. | 
+| ZoomMail.Email.messages.lastMoved | date | The last moved timestamp of the email. | 
+| ZoomMail.Email.messages.sendTime | date | The send time of the email. | 
+| ZoomMail.Email.messages.userScheduled | boolean | Indicates if the email was user scheduled. | 
+| ZoomMail.Email.messages.manifest | string | The manifest of the email. | 
+| ZoomMail.Email.messages.originalMime | string | The original MIME of the email. | 
+| ZoomMail.Email.messages.payload.partId | string | The part ID of the email payload. | 
+| ZoomMail.Email.messages.payload.mimeType | string | The MIME type of the email payload. | 
+| ZoomMail.Email.messages.payload.filename | string | The filename of the email payload. | 
+| ZoomMail.Email.messages.payload.headers | unknown | The headers of the email payload. | 
+| ZoomMail.Email.messages.payload.body.attachmentId | string | The attachment ID of the email body. | 
+| ZoomMail.Email.messages.payload.body.size | number | The size of the email body. | 
+| ZoomMail.Email.messages.payload.body.data | string | The data of the email body. | 
+| ZoomMail.Email.messages.payload.parts | unknown | The parts of the email payload. | 
+| ZoomMail.Email.sizeEstimate | number | The size estimate of the email. | 
+| ZoomMail.Email.raw | string | The raw content of the email. |  
 
 ### zoom-mail-thread-list
 

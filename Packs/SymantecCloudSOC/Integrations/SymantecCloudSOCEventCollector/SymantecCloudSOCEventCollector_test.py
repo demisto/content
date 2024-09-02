@@ -450,3 +450,17 @@ def test_fetch_events_command(mocker, max_fetch, last_run, first_fetch_time, fir
     assert investigate_mocker.called_once
     assert detect_incidents_mocker.called
     assert detect_incidents_mocker.called_once
+
+
+def test_get_date_timestamp():
+    """
+        Given:
+            - date string in both format with and without 'Z'
+        When:
+            - call get_date_timestamp
+        Then:
+            - Validate that the return date are as expected.
+    """
+    from SymantecCloudSOCEventCollector import get_date_timestamp
+
+    assert get_date_timestamp('2024-06-02T07:39:08Z') == get_date_timestamp('2024-06-02T07:39:08')

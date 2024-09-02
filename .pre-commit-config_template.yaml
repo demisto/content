@@ -41,14 +41,17 @@ repos:
     - --config=nightly_ruff.toml
     args:ci:
     - --config=nightly_ruff.toml
-- repo: https://github.com/pre-commit/mirrors-autopep8
-  rev: v2.0.4
+    args:docker_autoupdate:
+    - --config=nightly_ruff.toml
+- repo: https://github.com/hhatto/autopep8
+  rev: v2.3.1
   hooks:
   - id: autopep8
     exclude_support_level:ci:
     - community
     exclude_support_level:nightly:
     - community
+    skip:nightly: true
 - repo: https://github.com/pre-commit/mirrors-mypy
   rev: v0.982
   hooks:
@@ -60,7 +63,7 @@ repos:
     - --show-error-codes
     - --follow-imports=silent
     - --allow-redefinition
-    exclude: test_data|tests_data|.venv|.*_test.py$|infrastructure_tests|.vulture_whitelist.py|demistomock.py|Templates|conftest.py
+    exclude: test_data|tests_data|.venv|.*_test.py$|infrastructure_tests|.vulture_whitelist.py|demistomock.py|Templates|conftest.py|Utils/download_packs_and_docker_images.py
     language: system
     entry: mypy
 
@@ -76,6 +79,7 @@ repos:
     language: system
     # skip nightly since we don't care about warnings in nightly
     skip:nightly: true
+    skip:docker_autoupdate: true
 
   - id: pylint-in-docker
     name: pylint-in-docker
@@ -129,8 +133,17 @@ repos:
     - --junitxml=/src/.pre-commit/pytest-junit/.report_pytest.xml
     - --color=yes
     - --files
+    args:docker_autoupdate:
+    - /src/Tests/scripts/script_runner.py
+    - pytest
+    - -v
+    - --override-ini='asyncio_mode=auto'
+    - --rootdir=/src
+    - --junitxml=/src/.pre-commit/pytest-junit/.report_pytest.xml
+    - --color=yes
+    - --files
     copy_files:
-    - Tests/scripts/pytest/conftest.py
+    - Tests/scripts/dev_envs/pytest/conftest.py
     skip:commit: true
     pass_docker_extra_args:ci: --rm=false --network=none
     pass_docker_extra_args:nightly: --rm=false --network=none
@@ -160,7 +173,7 @@ repos:
     - --junitxml=/src/.pre-commit/pytest-junit/.report_pytest.xml
     - --color=yes
     copy_files:
-    - Tests/scripts/pytest/conftest.py
+    - Tests/scripts/dev_envs/pytest/conftest.py
     skip:commit: true
     run_isolated: true
     pass_docker_extra_args:ci: --rm=false
@@ -185,12 +198,10 @@ repos:
     require_serial: true
     args:
     -  validate
-    -  --skip-depth-one-file
     -  --skip-depth-one-folder
     -  --skip-integration-script-file-name
     -  --skip-markdown
     -  --skip-suffix
-
 
   - id: validate-conf-json
     name: validate-conf-json
@@ -252,11 +263,17 @@ repos:
     args:
     - --skip-pack-dependencies
     - --config-path=validation_config.toml
+    args:packwise:
+    - --skip-pack-dependencies
+    - --config-path=validation_config.toml
+    - --ignore=DO106
+    - --ignore=CJ105
     pass_filenames: false
     language: system
     require_serial: true
     skip:commit: true
     skip:nightly: true
+    skip:docker_autoupdate: true
 
   - id: format
     name: format
@@ -269,6 +286,7 @@ repos:
     language: system
     pass_filenames: false
     require_serial: true
+    skip:docker_autoupdate: true
 
   - id: secrets
     name: secrets
@@ -290,32 +308,33 @@ repos:
     needs:
     - pytest-in-docker
 
-  # - id: coverage-pytest-analyze
-  #   name: coverage-pytest-analyze
-  #   entry: demisto-sdk coverage-analyze
-  #   description: Running demisto-sdk coverage-analyze and showing a coverage report.
-  #   language: system
-  #   pass_filenames: false
-  #   args:
-  #   - -i
-  #   - .coverage
-  #   - --report-dir
-  #   - coverage_report
-  #   - --report-type
-  #   - all
-  #   - --previous-coverage-report-url
-  #   - https://storage.googleapis.com/marketplace-dist-dev/code-coverage-reports/coverage-min.json
-  #   args:nightly:
-  #   - -i
-  #   - .coverage
-  #   - --report-dir
-  #   - coverage_report
-  #   - --report-type
-  #   - all
-  #   - --allowed-coverage-degradation-percentage
-  #   - '100'
-  #   needs:
-  #   - pytest-in-docker
+  - id: coverage-pytest-analyze
+    name: coverage-pytest-analyze
+    entry: demisto-sdk coverage-analyze
+    description: Running demisto-sdk coverage-analyze and showing a coverage report.
+    language: system
+    pass_filenames: false
+    args:
+    - -i
+    - .coverage
+    - --report-dir
+    - coverage_report
+    - --report-type
+    - all
+    - --previous-coverage-report-url
+    - https://storage.googleapis.com/marketplace-dist-dev/code-coverage-reports/coverage-min.json
+    args:nightly:
+    - -i
+    - .coverage
+    - --report-dir
+    - coverage_report
+    - --report-type
+    - all
+    - --allowed-coverage-degradation-percentage
+    - '100'
+    needs:
+    - pytest-in-docker
+
 - repo: https://github.com/sourcery-ai/sourcery
   rev: v1.6.0
   hooks:

@@ -73,7 +73,7 @@ references:
   install_build_dependencies: &install_build_dependencies
     python/install-packages:
         pkg-manager: "poetry"
-        args: "--with ci"
+        args: "--with github-actions"
         cache-version: << pipeline.parameters.cache-version >>
         pre-install-steps:
           - run:
@@ -175,6 +175,7 @@ references:
 
         chmod +x ./Tests/scripts/*
         chmod +x ./Tests/Marketplace/*
+        chmod +x ./Config/*
 
         source ./.venv/bin/activate
 
@@ -224,36 +225,10 @@ references:
         # poll for neo4j status until available
         while ! curl --fail http://127.0.0.1:7474 &> /dev/null; do sleep 1; done
 
-        ./.circleci/linters_runner.sh
+        ./.circleci/analyze_non_packs_files.sh
         ./.circleci/validate.sh
 
-  run_unit_testing_and_lint: &run_unit_testing_and_lint
-    run:
-      parameters:
-        dockerimageflag:
-          type: string
-      name: Run Unit Testing And Lint - Docker Image:<< parameters.dockerimageflag >>
-      when: always
-      no_output_timeout: 5h
-      command: |
-        if [[ "$(echo "$GCS_MARKET_BUCKET" | tr '[:upper:]' '[:lower:]')" != "marketplace-dist" ]]; then
-          echo "Skipping validations when uploading to a test bucket."
-          exit 0
-        fi
-
-        echo "demisto-sdk version: $(demisto-sdk --version)"
-        echo "mypy version: $(mypy --version)"
-        echo "flake8 py3 version: $(python3 -m flake8 --version)"
-        echo "bandit py3 version: $(python3 -m bandit --version 2>&1)"
-        echo "vulture py3 version: $(python3 -m vulture --version 2>&1)"
-        mkdir ./unit-tests
-
-        neo4j start
-        # poll for neo4j status until available
-        while ! curl --fail http://127.0.0.1:7474 &> /dev/null; do sleep 1; done
-
-        demisto-sdk lint -p 8 -g --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts --coverage-report $ARTIFACTS_FOLDER/coverage_report --docker-image << parameters.dockerimageflag >> --check-dependent-api-module
-
+  
   # generate_coverage_reports: &generate_coverage_reports
   #   run:
   #     name: Generate coverage reports
@@ -298,14 +273,6 @@ references:
   nightly_jobs: &nightly_jobs
     - Setup Environment:
         context: nightly_env
-    - Run Unit Testing And Lint:
-        context: nightly_env
-        requires:
-          - Setup Environment
-        matrix:
-          parameters:
-            dockerimageflag: [ "native:ga", "native:maintenance", "native:dev", "from-yml" ]
-        name: Run Unit Testing And Lint - Docker Image:<< matrix.dockerimageflag >>
     - Run Validations:
         requires:
           - Setup Environment
@@ -324,25 +291,6 @@ jobs:
       - *get_contribution_pack
       - *persist_to_workspace
 
-  Run Unit Testing And Lint:
-    <<: *container_config
-    resource_class: large
-    <<: *environment
-    parameters:
-      dockerimageflag:
-        type: string
-    steps:
-      - *attach_workspace
-      - *remote_docker
-      - *install_build_dependencies
-      - *install_node_ci
-      - *install_neo4j
-      - *prepare_environment
-      - *run_unit_testing_and_lint
-      # - *generate_coverage_reports
-      - store_test_results:
-          path: ./unit-tests
-      - *store_artifacts
 
   Run Validations:
     <<: *container_config
@@ -389,6 +337,17 @@ jobs:
 
 workflows:
   version: 2
+  commit:
+    when:
+      matches:
+        # matching the environment variable << pipeline.git.branch >> to contributions branch pattern.
+        pattern: pull/[0-9]+
+        value: << pipeline.git.branch >>
+    jobs:
+      - Setup Environment
+      - Run Validations:
+          requires:
+            - Setup Environment
 
   nightly:
     triggers:

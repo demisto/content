@@ -46,10 +46,10 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DBotScore.Indicator | string | The indicator we tested | 
-| DBotScore.Type | string | The type of the indicator | 
-| DBotScore.Vendor | string | Vendor used to calculate the score | 
-| DBotScore.Score | int | The actual score | 
+| DBotScore.Indicator | string | The indicator that was tested.| 
+| DBotScore.Type | string | The indicator type. | 
+| DBotScore.Vendor | string | The vendor used to calculate the score. | 
+| DBotScore.Score | int | The actual score. | 
 | DBotScore.Reliability | string | Reliability of the source providing the intelligence data. |
 | GoogleSafeBrowsing.URL.cacheDuration | string | The URL cache duration time. |
 | GoogleSafeBrowsing.URL.threatType | string | The URL threat type. |

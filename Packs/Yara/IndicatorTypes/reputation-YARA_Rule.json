@@ -13,6 +13,8 @@
     "updateAfter": 0,
     "mergeContext": false,
     "expiration": 0,
+    "contextPath": "YARA Rule(val.value \u0026\u0026 val.value === obj.value)",
+    "contextValue": "Rule",
     "layout": "YARA Rule Layout",
     "fromVersion": "6.10.0"
 }

@@ -107,7 +107,7 @@ script:
     - description: ID or name of the container
       name: id
       required: true
-    description: Get changes on a container’s filesystem
+    description: Get changes on a container's filesystem
     name: docker-container-changes
     outputs:
     - contextPath: Docker.ContainerChangeResponseItem.Path
@@ -981,7 +981,7 @@ script:
       description: 'The network endpoint that the Engine advertises for the purpose of node discovery. ClusterAdvertise is a `host:port` combination on which the daemon is reachable by other hosts.   p    /  /p       Deprecated  : This field is only propagated when using standalone Swarm   mode, and overlay networking using an external k/v store. Overlay   networks with Swarm mode enabled use the built-in raft store, and   this field will be empty. '
       type: String
     - contextPath: Docker.SystemInfo.Runtimes.path
-      description: "Name and, optional, path, of the OCI executable binary.  If the path is omitted, the daemon searches the host's `$PATH` for the binary and uses the first result. "
+      description: "Name and, optional, path of the OCI executable binary.  If the path is omitted, the daemon searches the host's `$PATH` for the binary and uses the first result. "
       type: String
     - contextPath: Docker.SystemInfo.DefaultRuntime
       description: 'Name of the default OCI runtime that is used when starting containers.  The default can be overridden per-container at create time. '
@@ -1234,7 +1234,7 @@ script:
     - contextPath: Docker.ImageTag.Status Code
       description: Image Tag Result
       type: String
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.14.100715
   runonce: false
   script: '-'
   subtype: python3

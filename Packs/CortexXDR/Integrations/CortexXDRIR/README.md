@@ -17,7 +17,8 @@ This integration was integrated and tested with version 2.6.5 of Cortex XDR - IR
     | Custom close-reason mapping for mirrored **XDR -> XSOAR** incidents.             | Define how to close the mirrored incidents from Cortex XDR into Cortex XSOAR with a custom close reason mapping. Enter a comma-separated list of close reasons (acceptable format {XDR close reason}={XSOAR close reason}) to override the default close reason mapping defined by Cortex XSOAR. Note that the mapping must be configured accordingly with the existing close reasons in Cortex XSOAR and Cortex XDR. Not following this format will result in closing the incident with a default close reason. Example: “Known Issue=Resolved". Default: “Known Issue=Other,Duplicate Incident=Duplicate,False Positive=False Positive,True Positive=Resolved,Security Testing=Other,Other=Other,Auto=Resolved". Refer to the integration documentation for possible close-reasons (`XDR Incident Mirroring, sec. 7`). | False        |
     | Server URL (copy URL from XDR - click ? to see more info.)                       |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | True         |
     | API Key ID                                                                       |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | False        |
-    | API Key                                                                          |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | False        |
+    | API Key                                                                          |
+    | XDR mirroring delay in minutes| In the event of a delay in mirroring incoming changes from XDR, use the xdr_delay parameter to extend the look-back period. | False        |
     | HTTP Timeout                                                                     | The timeout of the HTTP requests sent to Cortex XDR API \(in seconds\).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | False        |
     | Maximum number of incidents per fetch                                            | The maximum number of incidents per fetch. Cannot exceed 100.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | False        |
     | Only fetch starred incidents                                                     |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | False        |
@@ -46,9 +47,11 @@ You need to collect several pieces of information in order to configure the inte
 4. Copy and paste the key.
 5. From the ID column, copy the Key ID.
 
-*Note*: When Configuring a role for the API Key's permission you can create a custom role or use a builtin.
+*Note 1*: When Configuring a role for the API Key's permission you can create a custom role or use a builtin.
 The highest privileged builtin role is the Instance Admin. 
-For builtin role with less permission but maximum command running abilities, use the `Privileged Responder`.  
+For builtin role with less permission but maximum command running abilities, use the `Privileged Responder`.
+
+*Note 2*: In case of missing updates in mirroring incoming changes from XDR, use the xdr_delay parameter to extend the delay period. However, be aware that this may result in increased latency when updating incidents.
 
 #### URL
 
@@ -231,22 +234,22 @@ Builtin Roles with this permission includes: "Investigator", "Responder", "Privi
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| lte_creation_time | A date in the format 2019-12-31T23:59:00. Only incidents that were created on or before the specified date/time will be retrieved. | Optional | 
-| gte_creation_time | A date in the format 2019-12-31T23:59:00. Only incidents that were created on or after the specified date/time will be retrieved. | Optional | 
-| lte_modification_time | Filters returned incidents that were created on or before the specified date/time, in the format 2019-12-31T23:59:00. | Optional | 
-| gte_modification_time | Filters returned incidents that were modified on or after the specified date/time, in the format 2019-12-31T23:59:00. | Optional | 
-| incident_id_list | An array or CSV string of incident IDs. | Optional | 
-| since_creation_time | Filters returned incidents that were created on or after the specified date/time range, for example, 1 month, 2 days, 1 hour, and so on. | Optional | 
-| since_modification_time | Filters returned incidents that were modified on or after the specified date/time range, for example, 1 month, 2 days, 1 hour, and so on. | Optional | 
-| sort_by_modification_time | Sorts returned incidents by the date/time that the incident was last modified ("asc" - ascending, "desc" - descending). Possible values are: asc, desc. | Optional | 
-| sort_by_creation_time | Sorts returned incidents by the date/time that the incident was created ("asc" - ascending, "desc" - descending). Possible values are: asc, desc. | Optional | 
-| page | Page number (for pagination). The default is 0 (the first page). Default is 0. | Optional | 
-| limit | Maximum number of incidents to return per page. The default and maximum is 100. Default is 100. | Optional | 
+| **Argument Name** | **Description**                                                                                                                                                                                                            | **Required** |
+| --- |----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| lte_creation_time | A date in the format 2019-12-31T23:59:00 in UTC. Only incidents that were created on or before the specified date/time will be retrieved.                                                                                  | Optional | 
+| gte_creation_time | A date in the format 2019-12-31T23:59:00 in UTC. Only incidents that were created on or after the specified date/time will be retrieved.                                                                                          | Optional | 
+| lte_modification_time | Filters returned incidents that were created on or before the specified date/time, in the format 2019-12-31T23:59:00.                                                                                                      | Optional | 
+| gte_modification_time | Filters returned incidents that were modified on or after the specified date/time, in the format 2019-12-31T23:59:00.                                                                                                      | Optional | 
+| incident_id_list | An array or CSV string of incident IDs.                                                                                                                                                                                    | Optional | 
+| since_creation_time | Filters returned incidents that were created on or after the specified date/time range, for example, 1 month, 2 days, 1 hour, and so on.                                                                                   | Optional | 
+| since_modification_time | Filters returned incidents that were modified on or after the specified date/time range, for example, 1 month, 2 days, 1 hour, and so on.                                                                                  | Optional | 
+| sort_by_modification_time | Sorts returned incidents by the date/time that the incident was last modified ("asc" - ascending, "desc" - descending). Possible values are: asc, desc.                                                                    | Optional | 
+| sort_by_creation_time | Sorts returned incidents by the date/time that the incident was created ("asc" - ascending, "desc" - descending). Possible values are: asc, desc.                                                                          | Optional | 
+| page | Page number (for pagination). The default is 0 (the first page). Default is 0.                                                                                                                                             | Optional | 
+| limit | Maximum number of incidents to return per page. The default and maximum is 100. Default is 100.                                                                                                                            | Optional | 
 | status | Filters only incidents in the specified status. The options are: new, under_investigation, resolved_known_issue, resolved_false_positive, resolved_true_positive resolved_security_testing, resolved_other, resolved_auto. | Optional | 
-| starred | Whether the incident is starred (Boolean value: true or false). Possible values are: true, false. | Optional | 
-| starred_incidents_fetch_window | Starred fetch window timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). Default is 3 days. | Optional | 
+| starred | Whether the incident is starred (Boolean value: true or false). Possible values are: true, false.                                                                                                                          | Optional | 
+| starred_incidents_fetch_window | Starred fetch window timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). Default is 3 days.                                                                                                              | Optional | 
 
 
 #### Context Output
@@ -314,13 +317,13 @@ Builtin Roles with this permission includes: "Investigator", "Responder", "Privi
             "description": "'test 1' generated by Virus Total - Firewall", 
             "severity": "medium", 
             "modification_time": 1579237974014, 
-            "assigned_user_pretty_name": "woo@demisto.com", 
+            "assigned_user_pretty_name": "woo@test.com", 
             "notes": null, 
             "creation_time": 1576100096594, 
             "alert_count": 1, 
             "med_severity_alert_count": 0, 
             "detection_time": null, 
-            "assigned_user_mail": "woo@demisto.com", 
+            "assigned_user_mail": "woo@test.com", 
             "resolve_comment": null, 
             "status": "new", 
             "user_count": 1, 
@@ -361,11 +364,11 @@ Builtin Roles with this permission includes: "Investigator", "Responder", "Privi
 
 >### Incidents
 
->|alert_count|assigned_user_mail|assigned_user_pretty_name|creation_time|description|detection_time|high_severity_alert_count|host_count|incident_id|low_severity_alert_count|manual_description|manual_severity|med_severity_alert_count|modification_time|notes|resolve_comment|severity|starred|status|user_count|xdr_url|
->|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 5 |  |  | 1577276587937 | 5 'This alert from content  TestXDRPlaybook' alerts detected by Checkpoint - SandBlast   |  | 4 | 1 | 4 | 0 |  | medium | 1 | 1579290004178 |  | This issue was solved in Incident number 192304 | medium | false | new | 1 | `https://some.xdr.url.com/incident-view/4` |
->| 1 | woo@demisto.com | woo@demisto.com | 1576100096594 | 'test 1' generated by Virus Total - Firewall |  | 1 | 1 | 3 | 0 |  | medium | 0 | 1579237974014 |  |  | medium | false | new | 1 | `https://some.xdr.url.com/incident-view/3` |
->| 2 |  |  | 1576062816474 | 'Alert Name Example 333' along with 1 other alert generated by Virus Total - VPN & Firewall-3 and Checkpoint - SandBlast |  | 2 | 1 | 2 | 0 |  | high | 0 | 1579288790259 |  |  | high | false | under_investigation | 1 | `https://some.xdr.url.com/incident-view/2` |
+>|alert_count| assigned_user_mail | assigned_user_pretty_name |creation_time|description|detection_time|high_severity_alert_count|host_count|incident_id|low_severity_alert_count|manual_description|manual_severity|med_severity_alert_count|modification_time|notes|resolve_comment|severity|starred|status|user_count|xdr_url|
+>|---|--------------------|---------------------------|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 5 |                    |                           | 1577276587937 | 5 'This alert from content  TestXDRPlaybook' alerts detected by Checkpoint - SandBlast   |  | 4 | 1 | 4 | 0 |  | medium | 1 | 1579290004178 |  | This issue was solved in Incident number 192304 | medium | false | new | 1 | `https://some.xdr.url.com/incident-view/4` |
+>| 1 | woo@test.com       | woo@test.com              | 1576100096594 | 'test 1' generated by Virus Total - Firewall |  | 1 | 1 | 3 | 0 |  | medium | 0 | 1579237974014 |  |  | medium | false | new | 1 | `https://some.xdr.url.com/incident-view/3` |
+>| 2 |                    |                           | 1576062816474 | 'Alert Name Example 333' along with 1 other alert generated by Virus Total - VPN & Firewall-3 and Checkpoint - SandBlast |  | 2 | 1 | 2 | 0 |  | high | 0 | 1579288790259 |  |  | high | false | under_investigation | 1 | `https://some.xdr.url.com/incident-view/2` |
 
 
 ### xdr-get-incident-extra-data
@@ -2016,7 +2019,7 @@ Builtin Roles with this permission includes: "Privileged Responder", "Viewer" an
 | PaloAltoNetworksXDR.ScriptResult.action_id | Number | ID of the action initiated. | 
 | PaloAltoNetworksXDR.ScriptResult.results.retrieved_files | Number | Number of successfully retrieved files. | 
 | PaloAltoNetworksXDR.ScriptResult.results.endpoint_ip_address | String | Endpoint IP address. | 
-| PaloAltoNetworksXDR.ScriptResult.results.endpoint_name | String | Number of successfully retrieved files. | 
+| PaloAltoNetworksXDR.ScriptResult.results.endpoint_name | String | Name of successfully retrieved files. | 
 | PaloAltoNetworksXDR.ScriptResult.results.failed_files | Number | Number of files failed to retrieve. | 
 | PaloAltoNetworksXDR.ScriptResult.results.endpoint_status | String | Endpoint status. | 
 | PaloAltoNetworksXDR.ScriptResult.results.domain | String | Domain to which the endpoint belongs. | 
@@ -2277,6 +2280,7 @@ Builtin Roles with this permission includes: "Investigator", "Responder", "Privi
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | alert_ids | A comma-separated list of alert IDs. | Required | 
+| events_from_decider_format | Whether to return events_from_decider context output as a dictionary (the raw API response) or as a list (improved for playbook automation) - relevant only when filter_alert_fields is set to False. | Optional |
 
 
 #### Context Output
@@ -2447,8 +2451,8 @@ Builtin Roles with this permission includes: "Investigator", "Responder", "Privi
 | sort_order | The order in which we sort the results. Possible values are: DESC, ASC. | Optional | 
 | offset | The first page from which we bring the alerts. Default is 0. | Optional | 
 | limit | The last page from which we bring the alerts. Default is 50. | Optional | 
-| start_time | Relevant when "time_frame" argument is "custom". Supports Epoch timestamp and simplified extended ISO format (YYYY-MM-DDThh:mm:ss.000Z). | Optional | 
-| end_time | Relevant when "time_frame" argument is "custom". Supports Epoch timestamp and simplified extended ISO format (YYYY-MM-DDThh:mm:ss.000Z). | Optional | 
+| start_time | Relevant when "time_frame" argument is "custom". Supports Epoch timestamp and simplified extended ISO format (YYYY-MM-DDThh:mm:ss). | Optional | 
+| end_time | Relevant when "time_frame" argument is "custom". Supports Epoch timestamp and simplified extended ISO format (YYYY-MM-DDThh:mm:ss). | Optional | 
 | starred | Whether the alert is starred or not. Possible values are: true, false. | Optional | 
 | mitre_technique_id_and_name | The MITRE attack technique. | Optional | 
 

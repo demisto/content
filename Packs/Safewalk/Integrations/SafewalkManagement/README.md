@@ -1,9 +1,7 @@
 Safewalk server integration
 This integration was integrated and tested with version 3 of SafewalkManagement
 
-<~XSIAM>
-This is the default integration for this content pack when configured by the Data Onboarder.
-</~XSIAM>
+This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
 
 ## Configure SafewalkManagement on Cortex XSOAR
 

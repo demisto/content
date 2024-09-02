@@ -31,6 +31,7 @@ configuration:
   name: key
   type: 0
   required: false
+  hidden: true
 description: Create and Manage Azure Storage Container services.
 display: Azure Storage Container
 name: Azure Storage Container
@@ -313,9 +314,11 @@ script:
     - description: specifies a public IP address or a range of public IP addresses from which to accept requests.
       name: signed_ip
       type: unknown
+    - description: The account key to create the SAS token with.
+      name: account_key
     description: create SAS token for container.
     name: azure-storage-container-sas-create
-  dockerimage: demisto/python3:3.10.13.86272
+  dockerimage: demisto/python3:3.10.14.100715
   runonce: false
   script: ''
   subtype: python3

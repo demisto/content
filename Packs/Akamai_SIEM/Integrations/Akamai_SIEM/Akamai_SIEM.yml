@@ -208,7 +208,7 @@ script:
     - contextPath: IP.Geo.Country
       description: The country in which the IP address is located.
       type: String
-  dockerimage: demisto/auth-utils:1.0.0.91447
+  dockerimage: demisto/auth-utils:1.0.0.99717
   isfetch: true
   isfetch:marketplacev2: false
   isfetchevents: true

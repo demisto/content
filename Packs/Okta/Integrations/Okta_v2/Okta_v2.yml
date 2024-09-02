@@ -1485,7 +1485,8 @@ script:
       type: String
   - description: Reset OAuth authentication data (authentication process will start from the beginning, and a new token will be generated).
     name: okta-auth-reset
-  dockerimage: demisto/crypto:1.0.0.87358
+    arguments: []
+  dockerimage: demisto/crypto:1.0.0.106632
   runonce: false
   script: ""
   subtype: python3

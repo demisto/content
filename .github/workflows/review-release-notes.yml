@@ -32,7 +32,7 @@ jobs:
       - name: Install python dependencies
         if: ${{ steps.changed-files.outputs.all_changed_files }}
         run: |
-          poetry install --with ci
+          poetry install --with github-actions
       - name: Set Python Path
         if: ${{ steps.changed-files.outputs.all_changed_files }}
         run: |

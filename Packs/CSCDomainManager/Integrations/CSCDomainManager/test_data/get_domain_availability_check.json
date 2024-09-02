@@ -1,0 +1,31 @@
+{
+    "meta": {
+        "numResults": 2
+    },
+    "results": [
+        {
+            "qualifiedDomainName": "cscpanw.org",
+            "result": {
+                "code": "DOMAIN_IN_PORTFOLIO",
+                "message": "Domain already in portfolio"
+            },
+            "basePrice": {
+                "price": null,
+                "currency": ""
+            },
+            "availableTerms": []
+        },
+        {
+            "qualifiedDomainName": "csc-panw.info",
+            "result": {
+                "code": "DOMAIN_IN_PORTFOLIO",
+                "message": "Domain already in portfolio"
+            },
+            "basePrice": {
+                "price": null,
+                "currency": ""
+            },
+            "availableTerms": []
+        }
+    ]
+}
