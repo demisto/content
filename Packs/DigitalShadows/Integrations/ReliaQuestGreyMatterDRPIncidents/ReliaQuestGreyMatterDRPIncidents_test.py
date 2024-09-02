@@ -13,7 +13,10 @@ from ReliaQuestGreyMatterDRPIncidents import \
 
 TEST_URL = "https://test.com/api"
 
-RISK_TYPES = ['exposed-credential', 'impersonating-domain', 'impersonating-subdomain', 'unauthorized-code-commit', 'exposed-access-key']
+RISK_TYPES = ['exposed-credential', 'impersonating-domain',
+              'impersonating-subdomain', 'unauthorized-code-commit', 'exposed-access-key']
+
+
 @pytest.fixture
 def client() -> Client:
     return Client(
@@ -108,7 +111,9 @@ class ClientMock:
             response = create_assets(params["id"])
         elif url_suffix == '/v1/triage-item-comments':
             response = create_comments(params["id"])
-        elif url_suffix in ['/v1/exposed-credential-alerts', '/v1/impersonating-domain-alerts', '/v1/impersonating-subdomain-alerts', '/v1/unauthorized-code-commit-alerts', '/v1/exposed-access-key-alerts']:
+        elif url_suffix in ['/v1/exposed-credential-alerts', '/v1/impersonating-domain-alerts',
+                            '/v1/impersonating-subdomain-alerts', '/v1/unauthorized-code-commit-alerts',
+                            '/v1/exposed-access-key-alerts']:
             response = create_alert_with_risk_type(params["id"], url_suffix.split('/')[-1])
         elif url_suffix == '/api/search/find':
             response = create_search_find_response()

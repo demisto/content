@@ -1,18 +1,18 @@
-id: ReliaQuest GreyMatter DRP - SHA1_IoC Assessment & Enrichment
+id: Digital Shadows - URL_IoC Assessment & Enrichment_url
 version: -1
 contentitemexportablefields:
   contentitemfields: {}
 fromversion: 6.10.0
-name: ReliaQuest GreyMatter DRP - SHA1_IoC Assessment & Enrichment
-description: Enrichment of SHA1 IOC types - sub-playbook for IOC Assessment & Enrichment playbook.
+name: Digital Shadows - URL_IoC Assessment & Enrichment_url
+description: Enrichment of URL IOC types - sub-playbook for IOC Assessment & Enrichment playbook.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 0af24832-6cf1-4605-808b-d486167c8451
+    taskid: 7fd1819c-3159-40fa-8ea7-ea470bafc0c2
     type: start
     task:
-      id: 0af24832-6cf1-4605-808b-d486167c8451
+      id: 7fd1819c-3159-40fa-8ea7-ea470bafc0c2
       version: -1
       name: ""
       iscommand: false
@@ -39,10 +39,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 8c405794-27f0-48da-89da-01c476ea8d6c
+    taskid: 163ba693-6484-4a5a-8c52-94bf3b2d4ff7
     type: title
     task:
-      id: 8c405794-27f0-48da-89da-01c476ea8d6c
+      id: 163ba693-6484-4a5a-8c52-94bf3b2d4ff7
       version: -1
       name: End
       type: title
@@ -67,10 +67,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: 507cb454-536f-4c96-8bc0-54530cbd07a3
+    taskid: bccae4a9-4607-4644-8140-6b463f031109
     type: regular
     task:
-      id: 507cb454-536f-4c96-8bc0-54530cbd07a3
+      id: bccae4a9-4607-4644-8140-6b463f031109
       version: -1
       name: ds-search - THREAT FEEDS
       description: Perform a general search against incidents, threats closed sources, etc.
@@ -83,9 +83,9 @@ tasks:
       - "45"
     scriptarguments:
       extend-context:
-        simple: SHA1 Associated Indicators=content.entity.indicators.title
+        simple: URL Associated Indicators=content.entity.indicators.title
       query:
-        simple: ${inputs.IoC_SHA1}
+        simple: ${inputs.IoC_URL}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -104,10 +104,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: 8e932ebb-3422-41e2-80b1-2c1fd839a03d
+    taskid: ae8bffb9-db81-4338-892d-e6342dcd3e5e
     type: condition
     task:
-      id: 8e932ebb-3422-41e2-80b1-2c1fd839a03d
+      id: ae8bffb9-db81-4338-892d-e6342dcd3e5e
       version: -1
       name: is Associated Indicators blank?
       type: condition
@@ -126,14 +126,14 @@ tasks:
       - - operator: isEmpty
           left:
             value:
-              simple: ${SHA1 Associated Indicators}
+              simple: ${URL Associated Indicators}
             iscontext: true
     - label: "no"
       condition:
       - - operator: isNotEmpty
           left:
             value:
-              simple: ${SHA1 Associated Indicators}
+              simple: ${URL Associated Indicators}
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -152,10 +152,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "48":
     id: "48"
-    taskid: b7431f35-0831-4551-8073-4aedbd32749b
+    taskid: 7b85fae7-4c1d-49df-8fcb-f3008341c22a
     type: regular
     task:
-      id: b7431f35-0831-4551-8073-4aedbd32749b
+      id: 7b85fae7-4c1d-49df-8fcb-f3008341c22a
       version: -1
       name: ds-search - INTEL UPDATES
       description: Perform a general search against incidents, threats closed sources, etc.
@@ -166,12 +166,12 @@ tasks:
     nexttasks:
       '#none#':
       - "49"
-      - "60"
+      - "58"
     scriptarguments:
       extend-context:
-        simple: SHA1 Intel Summary=content.entity.summary
+        simple: URL Intel Summary=content.entity.summary
       query:
-        simple: ${inputs.IoC_SHA1}
+        simple: ${inputs.IoC_URL}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -190,10 +190,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "49":
     id: "49"
-    taskid: db8e13b4-7741-4ea4-8eb8-c942366505c8
+    taskid: dea5655a-f9c9-4ee7-8e37-d539c3493347
     type: regular
     task:
-      id: db8e13b4-7741-4ea4-8eb8-c942366505c8
+      id: dea5655a-f9c9-4ee7-8e37-d539c3493347
       version: -1
       name: AddEvidence - INTEL UPDATES
       description: |
@@ -206,7 +206,7 @@ tasks:
       desc:
         simple: Summary
       description:
-        simple: ${SHA1 Intel Summary}
+        simple: ${URL Intel Summary}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -225,10 +225,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "50":
     id: "50"
-    taskid: f41b24fe-3798-4d54-8d75-bf134335c15d
+    taskid: 1d0298b5-a8bd-4545-8e8e-3d3787b01ae1
     type: regular
     task:
-      id: f41b24fe-3798-4d54-8d75-bf134335c15d
+      id: 1d0298b5-a8bd-4545-8e8e-3d3787b01ae1
       version: -1
       name: ds-search - PROFILE INTELLIGENCE
       description: Perform a general search against incidents, threats closed sources, etc.
@@ -242,9 +242,9 @@ tasks:
       - "59"
     scriptarguments:
       extend-context:
-        simple: SHA1 Profile Name=content.entity.primaryTag.name
+        simple: URL Profile Name=content.entity.primaryTag.name
       query:
-        simple: ${inputs.IoC_SHA1}
+        simple: ${inputs.IoC_URL}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -263,10 +263,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "51":
     id: "51"
-    taskid: f85fa319-9bf8-4e1b-824d-5641f77542e5
+    taskid: 7a57d17d-5bb6-4a68-8835-3ca5fcfcc85c
     type: regular
     task:
-      id: f85fa319-9bf8-4e1b-824d-5641f77542e5
+      id: 7a57d17d-5bb6-4a68-8835-3ca5fcfcc85c
       version: -1
       name: AddEvidence - INTEL PROFILES
       description: |
@@ -279,7 +279,7 @@ tasks:
       desc:
         simple: Profiles
       description:
-        simple: ${SHA1 Profile Name}
+        simple: ${URL Profile Name}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -298,10 +298,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "52":
     id: "52"
-    taskid: 185dcdfe-7c7a-48f8-82c8-6c1313baf5d9
+    taskid: a67e4451-9b41-406c-8874-4ad7b65dcd50
     type: regular
     task:
-      id: 185dcdfe-7c7a-48f8-82c8-6c1313baf5d9
+      id: a67e4451-9b41-406c-8874-4ad7b65dcd50
       version: -1
       name: ds-search - MITRE TECHNIQUES
       description: Perform a general search against incidents, threats closed sources, etc.
@@ -312,12 +312,12 @@ tasks:
     nexttasks:
       '#none#':
       - "53"
-      - "58"
+      - "60"
     scriptarguments:
       extend-context:
-        simple: SHA1 TTP Profiles=content.entity.primaryTag.name
+        simple: URL TTP Profiles=content.entity.primaryTag.name
       query:
-        simple: ${inputs.IoC_SHA1}
+        simple: ${inputs.IoC_URL}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -336,10 +336,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "53":
     id: "53"
-    taskid: e07f6962-720f-420e-88e4-f1775bea531a
+    taskid: 67c74312-b15f-417b-8d2b-43ac9cae7fc8
     type: regular
     task:
-      id: e07f6962-720f-420e-88e4-f1775bea531a
+      id: 67c74312-b15f-417b-8d2b-43ac9cae7fc8
       version: -1
       name: AddEvidence - MITRE TECHNIQUES
       description: |
@@ -352,7 +352,7 @@ tasks:
       desc:
         simple: Associated TTPs
       description:
-        simple: ${SHA1 TTP Profiles}
+        simple: ${URL TTP Profiles}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -371,10 +371,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "54":
     id: "54"
-    taskid: 0d5452e1-8157-497b-8380-2cf58da178fc
+    taskid: 979bb6bf-f484-4b2b-8536-f566f350e8c2
     type: regular
     task:
-      id: 0d5452e1-8157-497b-8380-2cf58da178fc
+      id: 979bb6bf-f484-4b2b-8536-f566f350e8c2
       version: -1
       name: ds-search - CONFIRMED ACTIVITY
       description: Perform a general search against incidents, threats closed sources, etc.
@@ -388,9 +388,9 @@ tasks:
       - "57"
     scriptarguments:
       extend-context:
-        simple: SHA1 Confirmed Activity=total
+        simple: URL Confirmed Activity=total
       query:
-        simple: ${inputs.IoC_SHA1}
+        simple: ${inputs.IoC_URL}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -409,13 +409,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "55":
     id: "55"
-    taskid: 6c378cbb-cafa-4b33-8d4c-0c621f58bf35
+    taskid: 2b55d178-f59b-46bb-8c12-4f4056b8456d
     type: regular
     task:
-      id: 6c378cbb-cafa-4b33-8d4c-0c621f58bf35
+      id: 2b55d178-f59b-46bb-8c12-4f4056b8456d
       version: -1
       name: AddEvidence - CONFIRMED ACTIVITY
-      description: Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)
+      description: |
+        Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)
       scriptName: AddEvidence
       type: regular
       iscommand: false
@@ -424,7 +425,7 @@ tasks:
       desc:
         simple: Confirmed Malicious Activity Count
       description:
-        simple: ${SHA1 Confirmed Activity}
+        simple: ${URL Confirmed Activity}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -443,12 +444,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "56":
     id: "56"
-    taskid: 245d5fcb-f328-4f7f-8fcd-b642e3bea836
+    taskid: d95005fe-c105-458d-8444-ccba7209a25e
     type: regular
     task:
-      id: 245d5fcb-f328-4f7f-8fcd-b642e3bea836
+      id: d95005fe-c105-458d-8444-ccba7209a25e
       version: -1
-      name: Print Associated Indicators
+      name: |
+        Print Associated Indicators
       description: Prints text to war room (Markdown supported)
       scriptName: Print
       type: regular
@@ -456,7 +458,7 @@ tasks:
       brand: ""
     scriptarguments:
       value:
-        simple: ${SHA1 Associated Indicators}
+        simple: ${URL Associated Indicators}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -475,10 +477,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "57":
     id: "57"
-    taskid: 5d5e2e53-480c-4edc-87b2-fe907bd4c0ca
+    taskid: 7927f787-811a-4a7a-8873-014372b4277f
     type: regular
     task:
-      id: 5d5e2e53-480c-4edc-87b2-fe907bd4c0ca
+      id: 7927f787-811a-4a7a-8873-014372b4277f
       version: -1
       name: Sleep
       description: Sleep for X seconds.
@@ -510,10 +512,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "58":
     id: "58"
-    taskid: cabbb96a-0a56-4cc2-8a5e-78ce0266888c
+    taskid: 3e59915e-e393-4d02-852d-449a3e216b54
     type: regular
     task:
-      id: cabbb96a-0a56-4cc2-8a5e-78ce0266888c
+      id: 3e59915e-e393-4d02-852d-449a3e216b54
       version: -1
       name: Sleep
       description: Sleep for X seconds.
@@ -523,7 +525,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "50"
+      - "44"
     scriptarguments:
       seconds:
         simple: "1"
@@ -532,8 +534,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 720
+          "x": 1125,
+          "y": 1420
         }
       }
     note: false
@@ -545,10 +547,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "59":
     id: "59"
-    taskid: 86e982c3-a39b-4585-811e-cbd4b03bfbed
+    taskid: 0b790db8-fb8f-4f8a-8ce0-50fea3d47fb8
     type: regular
     task:
-      id: 86e982c3-a39b-4585-811e-cbd4b03bfbed
+      id: 0b790db8-fb8f-4f8a-8ce0-50fea3d47fb8
       version: -1
       name: Sleep
       description: Sleep for X seconds.
@@ -580,10 +582,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "60":
     id: "60"
-    taskid: f3bc4239-68e4-455e-8d55-53e338f0b66b
+    taskid: df41d05f-4f6c-4862-8cbd-0b46eed65644
     type: regular
     task:
-      id: f3bc4239-68e4-455e-8d55-53e338f0b66b
+      id: df41d05f-4f6c-4862-8cbd-0b46eed65644
       version: -1
       name: Sleep
       description: Sleep for X seconds.
@@ -593,7 +595,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "44"
+      - "50"
     scriptarguments:
       seconds:
         simple: "1"
@@ -602,8 +604,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
-          "y": 1420
+          "x": 695,
+          "y": 720
         }
       }
     note: false
@@ -626,15 +628,24 @@ view: |-
     }
   }
 inputs:
-- key: IoC_SHA1
+- key: IoC_URL
   value:
     complex:
-      root: File
-      accessor: SHA1
+      root: URL
+      filters:
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: URL
+            iscontext: true
+          right:
+            value:
+              simple: portal-digitalshadows.com
+      accessor: Data
       transformers:
       - operator: uniq
   required: false
-  description: A Digital Shadows ShadowSearch query containing SHA1 hashes
+  description: A Digital Shadows ShadowSearch query containing URLs
   playbookInputQuery:
 outputs:
 - contextPath: DBotScore.Indicator

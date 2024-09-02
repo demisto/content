@@ -1793,7 +1793,7 @@
             }
         ]
     },
-    "fromVersion": "6.10.0",
+    "fromVersion": "6.0.0",
     "group": "incident",
     "id": "Reliaquest GreyMatter DRP Incident Layout",
     "name": "Reliaquest GreyMatter DRP Incident Layout",

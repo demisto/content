@@ -1,18 +1,18 @@
-id: ReliaQuest GreyMatter DRP - URL_IoC Assessment & Enrichment_url
+id: Digital Shadows - MD5_IoC Assessment & Enrichment
 version: -1
 contentitemexportablefields:
   contentitemfields: {}
-fromversion: 6.10.0
-name: ReliaQuest GreyMatter DRP - URL_IoC Assessment & Enrichment_url
-description: Enrichment of URL IOC types - sub-playbook for IOC Assessment & Enrichment playbook.
+name: Digital Shadows - MD5_IoC Assessment & Enrichment
+description: Enrichment of MD5 IOC types - sub-playbook for IOC Assessment & Enrichment playbook.
 starttaskid: "0"
+fromversion: 6.10.0
 tasks:
   "0":
     id: "0"
-    taskid: 7fd1819c-3159-40fa-8ea7-ea470bafc0c2
+    taskid: 8c729c31-df10-404b-8f70-cd86c4a2186f
     type: start
     task:
-      id: 7fd1819c-3159-40fa-8ea7-ea470bafc0c2
+      id: 8c729c31-df10-404b-8f70-cd86c4a2186f
       version: -1
       name: ""
       iscommand: false
@@ -39,10 +39,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 163ba693-6484-4a5a-8c52-94bf3b2d4ff7
+    taskid: c3c4636b-7fb5-402e-84a9-26a2aca7f82b
     type: title
     task:
-      id: 163ba693-6484-4a5a-8c52-94bf3b2d4ff7
+      id: c3c4636b-7fb5-402e-84a9-26a2aca7f82b
       version: -1
       name: End
       type: title
@@ -67,10 +67,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: bccae4a9-4607-4644-8140-6b463f031109
+    taskid: 04fe083e-bbeb-4366-830b-ed2b4a16a3bd
     type: regular
     task:
-      id: bccae4a9-4607-4644-8140-6b463f031109
+      id: 04fe083e-bbeb-4366-830b-ed2b4a16a3bd
       version: -1
       name: ds-search - THREAT FEEDS
       description: Perform a general search against incidents, threats closed sources, etc.
@@ -83,9 +83,9 @@ tasks:
       - "45"
     scriptarguments:
       extend-context:
-        simple: URL Associated Indicators=content.entity.indicators.title
+        simple: MD5 Associated Indicators=content.entity.indicators.title
       query:
-        simple: ${inputs.IoC_URL}
+        simple: ${inputs.IoC_MD5}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -104,10 +104,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: ae8bffb9-db81-4338-892d-e6342dcd3e5e
+    taskid: c9a5e8a8-0bab-41a2-8495-48134992c3f5
     type: condition
     task:
-      id: ae8bffb9-db81-4338-892d-e6342dcd3e5e
+      id: c9a5e8a8-0bab-41a2-8495-48134992c3f5
       version: -1
       name: is Associated Indicators blank?
       type: condition
@@ -126,14 +126,14 @@ tasks:
       - - operator: isEmpty
           left:
             value:
-              simple: ${URL Associated Indicators}
+              simple: ${MD5 Associated Indicators}
             iscontext: true
     - label: "no"
       condition:
       - - operator: isNotEmpty
           left:
             value:
-              simple: ${URL Associated Indicators}
+              simple: ${MD5 Associated Indicators}
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -152,10 +152,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "48":
     id: "48"
-    taskid: 7b85fae7-4c1d-49df-8fcb-f3008341c22a
+    taskid: e1ba8fd4-951f-4180-8234-5e989aede187
     type: regular
     task:
-      id: 7b85fae7-4c1d-49df-8fcb-f3008341c22a
+      id: e1ba8fd4-951f-4180-8234-5e989aede187
       version: -1
       name: ds-search - INTEL UPDATES
       description: Perform a general search against incidents, threats closed sources, etc.
@@ -166,12 +166,12 @@ tasks:
     nexttasks:
       '#none#':
       - "49"
-      - "58"
+      - "63"
     scriptarguments:
       extend-context:
-        simple: URL Intel Summary=content.entity.summary
+        simple: MD5 Intel Summary=content.entity.summary
       query:
-        simple: ${inputs.IoC_URL}
+        simple: ${inputs.IoC_MD5}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -190,10 +190,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "49":
     id: "49"
-    taskid: dea5655a-f9c9-4ee7-8e37-d539c3493347
+    taskid: 8031a8b5-bb46-4be3-82c7-eb17d76b16e2
     type: regular
     task:
-      id: dea5655a-f9c9-4ee7-8e37-d539c3493347
+      id: 8031a8b5-bb46-4be3-82c7-eb17d76b16e2
       version: -1
       name: AddEvidence - INTEL UPDATES
       description: |
@@ -206,7 +206,7 @@ tasks:
       desc:
         simple: Summary
       description:
-        simple: ${URL Intel Summary}
+        simple: ${MD5 Intel Summary}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -225,10 +225,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "50":
     id: "50"
-    taskid: 1d0298b5-a8bd-4545-8e8e-3d3787b01ae1
+    taskid: 5718d577-9121-4075-81cb-da25e9697ea7
     type: regular
     task:
-      id: 1d0298b5-a8bd-4545-8e8e-3d3787b01ae1
+      id: 5718d577-9121-4075-81cb-da25e9697ea7
       version: -1
       name: ds-search - PROFILE INTELLIGENCE
       description: Perform a general search against incidents, threats closed sources, etc.
@@ -239,12 +239,12 @@ tasks:
     nexttasks:
       '#none#':
       - "51"
-      - "59"
+      - "62"
     scriptarguments:
       extend-context:
-        simple: URL Profile Name=content.entity.primaryTag.name
+        simple: MD5 Profile Name=content.entity.primaryTag.name
       query:
-        simple: ${inputs.IoC_URL}
+        simple: '${inputs.IoC_MD5} '
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -263,10 +263,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "51":
     id: "51"
-    taskid: 7a57d17d-5bb6-4a68-8835-3ca5fcfcc85c
+    taskid: bfacda91-4e00-45ad-8b04-18546b543a5d
     type: regular
     task:
-      id: 7a57d17d-5bb6-4a68-8835-3ca5fcfcc85c
+      id: bfacda91-4e00-45ad-8b04-18546b543a5d
       version: -1
       name: AddEvidence - INTEL PROFILES
       description: |
@@ -279,7 +279,7 @@ tasks:
       desc:
         simple: Profiles
       description:
-        simple: ${URL Profile Name}
+        simple: ${MD5 Profile Name}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -298,10 +298,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "52":
     id: "52"
-    taskid: a67e4451-9b41-406c-8874-4ad7b65dcd50
+    taskid: 10bb5a27-a695-4782-82ee-b15018569e3d
     type: regular
     task:
-      id: a67e4451-9b41-406c-8874-4ad7b65dcd50
+      id: 10bb5a27-a695-4782-82ee-b15018569e3d
       version: -1
       name: ds-search - MITRE TECHNIQUES
       description: Perform a general search against incidents, threats closed sources, etc.
@@ -312,12 +312,12 @@ tasks:
     nexttasks:
       '#none#':
       - "53"
-      - "60"
+      - "61"
     scriptarguments:
       extend-context:
-        simple: URL TTP Profiles=content.entity.primaryTag.name
+        simple: MD5 TTP Profiles=content.entity.primaryTag.name
       query:
-        simple: ${inputs.IoC_URL}
+        simple: ${inputs.IoC_MD5}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -336,10 +336,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "53":
     id: "53"
-    taskid: 67c74312-b15f-417b-8d2b-43ac9cae7fc8
+    taskid: b07098bb-8dd8-4406-8271-22b6739129ea
     type: regular
     task:
-      id: 67c74312-b15f-417b-8d2b-43ac9cae7fc8
+      id: b07098bb-8dd8-4406-8271-22b6739129ea
       version: -1
       name: AddEvidence - MITRE TECHNIQUES
       description: |
@@ -352,7 +352,7 @@ tasks:
       desc:
         simple: Associated TTPs
       description:
-        simple: ${URL TTP Profiles}
+        simple: ${MD5 TTP Profiles}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -371,10 +371,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "54":
     id: "54"
-    taskid: 979bb6bf-f484-4b2b-8536-f566f350e8c2
+    taskid: f9272c80-7e5c-4d32-87f2-6d97a21c274b
     type: regular
     task:
-      id: 979bb6bf-f484-4b2b-8536-f566f350e8c2
+      id: f9272c80-7e5c-4d32-87f2-6d97a21c274b
       version: -1
       name: ds-search - CONFIRMED ACTIVITY
       description: Perform a general search against incidents, threats closed sources, etc.
@@ -385,12 +385,12 @@ tasks:
     nexttasks:
       '#none#':
       - "55"
-      - "57"
+      - "64"
     scriptarguments:
       extend-context:
-        simple: URL Confirmed Activity=total
+        simple: MD5 Confirmed Activity=total
       query:
-        simple: ${inputs.IoC_URL}
+        simple: ${inputs.IoC_MD5}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -409,10 +409,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "55":
     id: "55"
-    taskid: 2b55d178-f59b-46bb-8c12-4f4056b8456d
+    taskid: 5ffcad26-e485-443d-8712-35a9803a4a7d
     type: regular
     task:
-      id: 2b55d178-f59b-46bb-8c12-4f4056b8456d
+      id: 5ffcad26-e485-443d-8712-35a9803a4a7d
       version: -1
       name: AddEvidence - CONFIRMED ACTIVITY
       description: |
@@ -425,7 +425,7 @@ tasks:
       desc:
         simple: Confirmed Malicious Activity Count
       description:
-        simple: ${URL Confirmed Activity}
+        simple: ${MD5 Confirmed Activity}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -444,13 +444,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "56":
     id: "56"
-    taskid: d95005fe-c105-458d-8444-ccba7209a25e
+    taskid: 5abbee56-ba8b-439a-84e4-5609d9967d51
     type: regular
     task:
-      id: d95005fe-c105-458d-8444-ccba7209a25e
+      id: 5abbee56-ba8b-439a-84e4-5609d9967d51
       version: -1
-      name: |
-        Print Associated Indicators
+      name: Print Associated Indicators
       description: Prints text to war room (Markdown supported)
       scriptName: Print
       type: regular
@@ -458,7 +457,7 @@ tasks:
       brand: ""
     scriptarguments:
       value:
-        simple: ${URL Associated Indicators}
+        simple: ${MD5 Associated Indicators}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -475,117 +474,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "57":
-    id: "57"
-    taskid: 7927f787-811a-4a7a-8873-014372b4277f
+  "61":
+    id: "61"
+    taskid: 1866f842-5b02-4337-8cee-820fc8dc016a
     type: regular
     task:
-      id: 7927f787-811a-4a7a-8873-014372b4277f
-      version: -1
-      name: Sleep
-      description: Sleep for X seconds.
-      scriptName: Sleep
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "52"
-    scriptarguments:
-      seconds:
-        simple: "1"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "58":
-    id: "58"
-    taskid: 3e59915e-e393-4d02-852d-449a3e216b54
-    type: regular
-    task:
-      id: 3e59915e-e393-4d02-852d-449a3e216b54
-      version: -1
-      name: Sleep
-      description: Sleep for X seconds.
-      scriptName: Sleep
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "44"
-    scriptarguments:
-      seconds:
-        simple: "1"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1125,
-          "y": 1420
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "59":
-    id: "59"
-    taskid: 0b790db8-fb8f-4f8a-8ce0-50fea3d47fb8
-    type: regular
-    task:
-      id: 0b790db8-fb8f-4f8a-8ce0-50fea3d47fb8
-      version: -1
-      name: Sleep
-      description: Sleep for X seconds.
-      scriptName: Sleep
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "48"
-    scriptarguments:
-      seconds:
-        simple: "1"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "60":
-    id: "60"
-    taskid: df41d05f-4f6c-4862-8cbd-0b46eed65644
-    type: regular
-    task:
-      id: df41d05f-4f6c-4862-8cbd-0b46eed65644
+      id: 1866f842-5b02-4337-8cee-820fc8dc016a
       version: -1
       name: Sleep
       description: Sleep for X seconds.
@@ -615,6 +509,111 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "62":
+    id: "62"
+    taskid: b72f9e8b-3a63-4a58-8997-03debd40e1f2
+    type: regular
+    task:
+      id: b72f9e8b-3a63-4a58-8997-03debd40e1f2
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds.
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      seconds:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "63":
+    id: "63"
+    taskid: 7877d176-9c3e-4091-824d-6a47d0021162
+    type: regular
+    task:
+      id: 7877d176-9c3e-4091-824d-6a47d0021162
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds.
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "44"
+    scriptarguments:
+      seconds:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "64":
+    id: "64"
+    taskid: a0413c8c-dbcf-42ae-83d8-fdc499342b0d
+    type: regular
+    task:
+      id: a0413c8c-dbcf-42ae-83d8-fdc499342b0d
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds.
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "52"
+    scriptarguments:
+      seconds:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
@@ -628,24 +627,15 @@ view: |-
     }
   }
 inputs:
-- key: IoC_URL
+- key: IoC_MD5
   value:
     complex:
-      root: URL
-      filters:
-      - - operator: notContainsGeneral
-          left:
-            value:
-              simple: URL
-            iscontext: true
-          right:
-            value:
-              simple: portal-digitalshadows.com
-      accessor: Data
+      root: File
+      accessor: MD5
       transformers:
       - operator: uniq
   required: false
-  description: A Digital Shadows ShadowSearch query containing URLs
+  description: A Digital Shadows ShadowSearch query containing MD5 hashes
   playbookInputQuery:
 outputs:
 - contextPath: DBotScore.Indicator

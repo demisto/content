@@ -1,17 +1,18 @@
-id: ReliaQuest GreyMatter DRP - CVE_IoC Assessment & Enrichment
+id: Digital Shadows - IP_IoC Assessment & Enrichment
 version: -1
 contentitemexportablefields:
   contentitemfields: {}
-name: ReliaQuest GreyMatter DRP - CVE_IoC Assessment & Enrichment
-description: Enrichment of CVE IOC types - sub-playbook for IOC Assessment & Enrichment playbook.
+name: Digital Shadows - IP_IoC Assessment & Enrichment
+description: Enrichment of IP IOC types - sub-playbook for IOC Assessment & Enrichment playbook.
 starttaskid: "0"
+fromversion: 6.10.0
 tasks:
   "0":
     id: "0"
-    taskid: 32dabdab-88b2-4433-8198-8a8d7e4984b7
+    taskid: e6b786dd-ea95-4297-8fe3-1f812d7f17d4
     type: start
     task:
-      id: 32dabdab-88b2-4433-8198-8a8d7e4984b7
+      id: e6b786dd-ea95-4297-8fe3-1f812d7f17d4
       version: -1
       name: ""
       iscommand: false
@@ -19,7 +20,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "18"
+      - "17"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -36,12 +37,275 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 01ba2ce2-f60c-4009-89aa-88a85aa048b6
+    type: regular
+    task:
+      id: 01ba2ce2-f60c-4009-89aa-88a85aa048b6
+      version: -1
+      name: ds-search - THREAT FEEDS
+      description: Perform a general search against incidents, threats closed sources, etc.
+      script: ReliaQuest GreyMatter DRP Incidents|||ds-search
+      type: regular
+      iscommand: true
+      brand: ReliaQuest GreyMatter DRP Incidents
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      extend-context:
+        simple: IP Associated Indicators=content.entity.indicators.title
+      query:
+        simple: ${inputs.IoC_IP}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 9ac907c8-802c-4126-8d3d-27c5514d941d
+    type: regular
+    task:
+      id: 9ac907c8-802c-4126-8d3d-27c5514d941d
+      version: -1
+      name: ds-search - INTEL UPDATES
+      description: Perform a general search against incidents, threats closed sources, etc.
+      script: ReliaQuest GreyMatter DRP Incidents|||ds-search
+      type: regular
+      iscommand: true
+      brand: ReliaQuest GreyMatter DRP Incidents
+    nexttasks:
+      '#none#':
+      - "9"
+      - "26"
+    scriptarguments:
+      extend-context:
+        simple: IP Intel Summary=content.entity.summary
+      query:
+        simple: ${inputs.IoC_IP}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: fef4b210-0b39-4d2c-8f8c-ad99f6eccff3
+    type: condition
+    task:
+      id: fef4b210-0b39-4d2c-8f8c-ad99f6eccff3
+      version: -1
+      name: is Associated Indicators blank?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      "no":
+      - "16"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              simple: ${IP Associated Indicators}
+            iscontext: true
+    - label: "no"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ${IP Associated Indicators}
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 211651a2-36a9-4ee2-8f16-c681b63e5ae8
+    type: regular
+    task:
+      id: 211651a2-36a9-4ee2-8f16-c681b63e5ae8
+      version: -1
+      name: AddEvidence - INTEL UPDATES
+      description: |
+        Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)
+      scriptName: AddEvidence
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      desc:
+        simple: Summary
+      description:
+        simple: ${IP Intel Summary}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 8abd417f-3a2e-4dd9-8544-38063e65dffe
+    type: regular
+    task:
+      id: 8abd417f-3a2e-4dd9-8544-38063e65dffe
+      version: -1
+      name: AddEvidence - INTEL PROFILES
+      description: |
+        Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)
+      scriptName: AddEvidence
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      desc:
+        simple: Profiles
+      description:
+        simple: ${IP Profile Name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 06a27aa3-bfaa-4801-8e5e-5aa7b6a0f4ba
+    type: regular
+    task:
+      id: 06a27aa3-bfaa-4801-8e5e-5aa7b6a0f4ba
+      version: -1
+      name: AddEvidence - MITRE TECHNIQUES
+      description: |
+        Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)
+      scriptName: AddEvidence
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      desc:
+        simple: Associated TTPs
+      description:
+        simple: ${IP TTP Profiles}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 0e627857-ebd8-4f5d-8968-138f0376b55a
+    type: regular
+    task:
+      id: 0e627857-ebd8-4f5d-8968-138f0376b55a
+      version: -1
+      name: AddEvidence - SUSPECTED ACTIVITY
+      description: |
+        Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)
+      scriptName: AddEvidence
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      desc:
+        simple: Suspected Malicious Activity Count
+      description:
+        simple: ${IP Suspected Activity}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: d13911d2-7aac-456f-890b-defcbf43969b
+    taskid: 244d7e17-80cb-4466-89ed-fb71a6cca9ef
     type: title
     task:
-      id: d13911d2-7aac-456f-890b-defcbf43969b
+      id: 244d7e17-80cb-4466-89ed-fb71a6cca9ef
       version: -1
       name: End
       type: title
@@ -64,389 +328,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "18":
-    id: "18"
-    taskid: c52bbc2c-ed1f-4d1b-854b-3db522ff75dc
+  "16":
+    id: "16"
+    taskid: 97e25be5-a4a1-4ac2-8536-7fcc674190a4
     type: regular
     task:
-      id: c52bbc2c-ed1f-4d1b-854b-3db522ff75dc
-      version: -1
-      name: ds-search - CONFIRMED ACTIVITY
-      description: Perform a general search against incidents, threats closed sources, etc.
-      script: ReliaQuest GreyMatter DRP Incidents|||ds-search
-      type: regular
-      iscommand: true
-      brand: ReliaQuest GreyMatter DRP Incidents
-    nexttasks:
-      '#none#':
-      - "19"
-      - "35"
-    scriptarguments:
-      extend-context:
-        simple: CVE Confirmed Activity=total
-      query:
-        simple: ${inputs.IoC_CVE}
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "19":
-    id: "19"
-    taskid: 924d5566-1e8f-4d28-8fda-a5508c97020f
-    type: regular
-    task:
-      id: 924d5566-1e8f-4d28-8fda-a5508c97020f
-      version: -1
-      name: AddEvidence - CONFIRMED ACTIVITY
-      description: |
-        Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)
-      scriptName: AddEvidence
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      desc:
-        simple: Confirmed Malicious Activity Count
-      description:
-        simple: ${CVE Confirmed Activity}
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "20":
-    id: "20"
-    taskid: 9074af8c-19d3-449f-8425-6a0beaa7c8f4
-    type: regular
-    task:
-      id: 9074af8c-19d3-449f-8425-6a0beaa7c8f4
-      version: -1
-      name: ds-search - MITRE TECHNIQUES
-      description: Perform a general search against incidents, threats closed sources, etc.
-      script: ReliaQuest GreyMatter DRP Incidents|||ds-search
-      type: regular
-      iscommand: true
-      brand: ReliaQuest GreyMatter DRP Incidents
-    nexttasks:
-      '#none#':
-      - "21"
-      - "31"
-    scriptarguments:
-      extend-context:
-        simple: CVE TTP Profiles=content.entity.primaryTag.name
-      query:
-        simple: ${inputs.IoC_CVE}
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "21":
-    id: "21"
-    taskid: b9c8e600-8626-4e24-8857-e0726806cee5
-    type: regular
-    task:
-      id: b9c8e600-8626-4e24-8857-e0726806cee5
-      version: -1
-      name: AddEvidence - MITRE TECHNIQUES
-      description: |
-        Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)
-      scriptName: AddEvidence
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      desc:
-        simple: Associated TTPs
-      description:
-        simple: ${CVE TTP Profiles}
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "22":
-    id: "22"
-    taskid: 0a490609-9fb9-493a-8fb2-d47b99468283
-    type: regular
-    task:
-      id: 0a490609-9fb9-493a-8fb2-d47b99468283
-      version: -1
-      name: ds-search - PROFILE INTELLIGENCE
-      description: Perform a general search against incidents, threats closed sources, etc.
-      script: ReliaQuest GreyMatter DRP Incidents|||ds-search
-      type: regular
-      iscommand: true
-      brand: ReliaQuest GreyMatter DRP Incidents
-    nexttasks:
-      '#none#':
-      - "23"
-      - "34"
-    scriptarguments:
-      extend-context:
-        simple: CVE Profile Name=content.entity.primaryTag.name
-      query:
-        simple: ${inputs.IoC_CVE}
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "23":
-    id: "23"
-    taskid: e7b5bb61-eefb-4c7a-8515-0ce179825b7e
-    type: regular
-    task:
-      id: e7b5bb61-eefb-4c7a-8515-0ce179825b7e
-      version: -1
-      name: AddEvidence - INTEL PROFILES
-      description: |
-        Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)
-      scriptName: AddEvidence
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      desc:
-        simple: Profiles
-      description:
-        simple: ${CVE Profile Name}
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "24":
-    id: "24"
-    taskid: 476e4b9b-a3d9-4f13-8fc7-b2b1adde2157
-    type: regular
-    task:
-      id: 476e4b9b-a3d9-4f13-8fc7-b2b1adde2157
-      version: -1
-      name: ds-search - INTEL UPDATES
-      description: Perform a general search against incidents, threats closed sources, etc.
-      script: ReliaQuest GreyMatter DRP Incidents|||ds-search
-      type: regular
-      iscommand: true
-      brand: ReliaQuest GreyMatter DRP Incidents
-    nexttasks:
-      '#none#':
-      - "25"
-      - "33"
-    scriptarguments:
-      extend-context:
-        simple: CVE Intel Summary=content.entity.summary
-      query:
-        simple: ${inputs.IoC_CVE}
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 1245
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "25":
-    id: "25"
-    taskid: 2be029dd-5efd-43cf-8a89-a229a6ab088d
-    type: regular
-    task:
-      id: 2be029dd-5efd-43cf-8a89-a229a6ab088d
-      version: -1
-      name: AddEvidence - INTEL UPDATES
-      description: |
-        Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)
-      scriptName: AddEvidence
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      desc:
-        simple: Summary
-      description:
-        simple: ${CVE Intel Summary}
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 1420
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "26":
-    id: "26"
-    taskid: c83975b0-c78c-46bf-82d4-f8519005a3f4
-    type: regular
-    task:
-      id: c83975b0-c78c-46bf-82d4-f8519005a3f4
-      version: -1
-      name: ds-search - THREAT FEEDS
-      description: Perform a general search against incidents, threats closed sources, etc.
-      script: ReliaQuest GreyMatter DRP Incidents|||ds-search
-      type: regular
-      iscommand: true
-      brand: ReliaQuest GreyMatter DRP Incidents
-    nexttasks:
-      '#none#':
-      - "27"
-    scriptarguments:
-      extend-context:
-        simple: CVE Associated Indicators=content.entity.indicators.title
-      query:
-        simple: ${inputs.IoC_CVE}
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1125,
-          "y": 1595
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "27":
-    id: "27"
-    taskid: 2ff62656-99f5-4a99-8d41-a07e74f1fc24
-    type: condition
-    task:
-      id: 2ff62656-99f5-4a99-8d41-a07e74f1fc24
-      version: -1
-      name: is Associated Indicators blank?
-      type: condition
-      iscommand: false
-      brand: ""
-      description: ""
-    nexttasks:
-      "no":
-      - "30"
-      "yes":
-      - "13"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEmpty
-          left:
-            value:
-              simple: ${CVE Associated Indicators}
-            iscontext: true
-    - label: "no"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ${CVE Associated Indicators}
-            iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1125,
-          "y": 1770
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "30":
-    id: "30"
-    taskid: 7da0fb45-51bc-456a-8e4c-8228d0b9d3a4
-    type: regular
-    task:
-      id: 7da0fb45-51bc-456a-8e4c-8228d0b9d3a4
+      id: 97e25be5-a4a1-4ac2-8536-7fcc674190a4
       version: -1
       name: Print Associated Indicators
       description: Prints text to war room (Markdown supported)
@@ -456,7 +343,7 @@ tasks:
       brand: ""
     scriptarguments:
       value:
-        simple: ${CVE Associated Indicators}
+        simple: ${IP Associated Indicators}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -473,32 +360,35 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "31":
-    id: "31"
-    taskid: 0bb1f9eb-882d-46e4-80c7-e6f93d7acaa5
+  "17":
+    id: "17"
+    taskid: fcc82811-93a0-41ba-8dc9-abb833108b9d
     type: regular
     task:
-      id: 0bb1f9eb-882d-46e4-80c7-e6f93d7acaa5
+      id: fcc82811-93a0-41ba-8dc9-abb833108b9d
       version: -1
-      name: Sleep
-      description: Sleep for X seconds.
-      scriptName: Sleep
+      name: ds-search - SUSPECTED ACTIVITY
+      description: Perform a general search against incidents, threats closed sources, etc.
+      script: ReliaQuest GreyMatter DRP Incidents|||ds-search
       type: regular
-      iscommand: false
-      brand: ""
+      iscommand: true
+      brand: ReliaQuest GreyMatter DRP Incidents
     nexttasks:
       '#none#':
-      - "22"
+      - "12"
+      - "24"
     scriptarguments:
-      seconds:
-        simple: "1"
+      extend-context:
+        simple: IP Suspected Activity=total
+      query:
+        simple: ${inputs.IoC_IP}
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 720
+          "x": 265,
+          "y": 195
         }
       }
     note: false
@@ -508,12 +398,88 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "33":
-    id: "33"
-    taskid: f8daf308-3685-446e-8e8d-4b1119a07881
+  "18":
+    id: "18"
+    taskid: 6cde9ae0-2098-4004-8ade-c0860b5e6f9f
     type: regular
     task:
-      id: f8daf308-3685-446e-8e8d-4b1119a07881
+      id: 6cde9ae0-2098-4004-8ade-c0860b5e6f9f
+      version: -1
+      name: ds-search - MITRE TECHNIQUES
+      description: Perform a general search against incidents, threats closed sources, etc.
+      script: ReliaQuest GreyMatter DRP Incidents|||ds-search
+      type: regular
+      iscommand: true
+      brand: ReliaQuest GreyMatter DRP Incidents
+    nexttasks:
+      '#none#':
+      - "11"
+      - "28"
+    scriptarguments:
+      extend-context:
+        simple: IP TTP Profiles=content.entity.primaryTag.name
+      query:
+        simple: ${inputs.IoC_IP}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: d161e389-42af-44a2-8e44-2fc64642129c
+    type: regular
+    task:
+      id: d161e389-42af-44a2-8e44-2fc64642129c
+      version: -1
+      name: ds-search - PROFILE INTELLIGENCE
+      description: Perform a general search against incidents, threats closed sources, etc.
+      script: ReliaQuest GreyMatter DRP Incidents|||ds-search
+      type: regular
+      iscommand: true
+      brand: ReliaQuest GreyMatter DRP Incidents
+    nexttasks:
+      '#none#':
+      - "10"
+      - "27"
+    scriptarguments:
+      extend-context:
+        simple: IP Profile Name=content.entity.primaryTag.name
+      query:
+        simple: ${inputs.IoC_IP}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 39dcb8f2-6fa6-4bb0-807a-e41cee6b54df
+    type: regular
+    task:
+      id: 39dcb8f2-6fa6-4bb0-807a-e41cee6b54df
       version: -1
       name: Sleep
       description: Sleep for X seconds.
@@ -523,7 +489,42 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "26"
+      - "18"
+    scriptarguments:
+      seconds:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 193d2968-6ce8-4029-8be7-b7940a6c30a2
+    type: regular
+    task:
+      id: 193d2968-6ce8-4029-8be7-b7940a6c30a2
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds.
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
     scriptarguments:
       seconds:
         simple: "1"
@@ -543,12 +544,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "34":
-    id: "34"
-    taskid: a7d52e21-9708-4aaf-88c6-891b9f6247b3
+  "27":
+    id: "27"
+    taskid: 9e6a8f45-510e-4330-867a-4b7767cdc7aa
     type: regular
     task:
-      id: a7d52e21-9708-4aaf-88c6-891b9f6247b3
+      id: 9e6a8f45-510e-4330-867a-4b7767cdc7aa
       version: -1
       name: Sleep
       description: Sleep for X seconds.
@@ -558,7 +559,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "24"
+      - "7"
     scriptarguments:
       seconds:
         simple: "1"
@@ -578,12 +579,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "35":
-    id: "35"
-    taskid: 8fbdbc7f-5de4-4c6b-83cc-6fd514d44dca
+  "28":
+    id: "28"
+    taskid: 6b401951-0e61-4886-8f19-69bda7873543
     type: regular
     task:
-      id: 8fbdbc7f-5de4-4c6b-83cc-6fd514d44dca
+      id: 6b401951-0e61-4886-8f19-69bda7873543
       version: -1
       name: Sleep
       description: Sleep for X seconds.
@@ -593,7 +594,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "20"
+      - "19"
     scriptarguments:
       seconds:
         simple: "1"
@@ -602,8 +603,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 370
+          "x": 695,
+          "y": 720
         }
       }
     note: false
@@ -626,15 +627,24 @@ view: |-
     }
   }
 inputs:
-- key: IoC_CVE
+- key: IoC_IP
   value:
     complex:
-      root: CVE
-      accessor: ID
+      root: IP
+      filters:
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: IP
+            iscontext: true
+          right:
+            value:
+              simple: 0.0.0.0
+      accessor: Address
       transformers:
       - operator: uniq
   required: false
-  description: A Digital Shadows ShadowSearch query containing CVE IDs
+  description: A Digital Shadows ShadowSearch query containing IP addresses
   playbookInputQuery:
 outputs:
 - contextPath: DBotScore.Indicator
@@ -643,6 +653,5 @@ outputs:
 - contextPath: DBotScore.Type
   description: Indicator Type.
   type: string
-fromversion: 6.10.0
 tests:
 - No tests (auto formatted)
