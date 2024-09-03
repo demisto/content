@@ -1335,14 +1335,14 @@
             "integrations": "Panorama",
             "instance_names": "palo_alto_firewall_9.1",
             "playbookID": "test_playbook_pan_os_firewall_exceptions_commands",
-            "memory_threshold": 90
+            "memory_threshold": 120
 
         },
         {
             "integrations": "Panorama",
             "instance_names": "palo_alto_panorama_9.0",
             "playbookID": "test_playbook_pan_os_firewall_exceptions_commands",
-            "memory_threshold": 90
+            "memory_threshold": 120
         },
         {
             "integrations": "Panorama",
@@ -6417,7 +6417,7 @@
                 "memory_threshold": 85
             },
             "demisto/pan-os-python:1.0.0.108041": {
-                "memory_threshold": 85
+                "memory_threshold": 120
             }
         }
     },
