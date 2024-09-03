@@ -2,11 +2,11 @@ import gzip
 import json
 from unittest.mock import MagicMock, patch
 from freezegun import freeze_time
-import XQLQueryingEngine
+import CortexCoreXQLQueryEngine
 import pytest
 from CommonServerPython import *
 
-CLIENT = XQLQueryingEngine.Client(headers={}, base_url='some_mock_url', verify=False, is_core=False)
+CLIENT = CortexCoreXQLQueryEngine.Client(headers={}, base_url='some_mock_url', verify=False, is_core=True)
 ENDPOINT_IDS = '"test1","test2"'
 INTEGRATION_CONTEXT = {}
 
@@ -23,7 +23,6 @@ def get_integration_context():
 def set_integration_context(integration_context):
     global INTEGRATION_CONTEXT
     INTEGRATION_CONTEXT = integration_context
-
 
 # =========================================== TEST Built-In Queries helpers ===========================================#
 
@@ -45,7 +44,7 @@ def test_wrap_list_items_in_double_quotes(input_arg, expected):
     Then:
     - Ensure the returned string is correct.
     """
-    response = XQLQueryingEngine.wrap_list_items_in_double_quotes(input_arg)
+    response = CortexCoreXQLQueryEngine.wrap_list_items_in_double_quotes(input_arg)
     assert response == expected
 
 
@@ -64,7 +63,7 @@ def test_get_file_event_query():
     args = {
         'file_sha256': 'testSHA1,testSHA2'
     }
-    response = XQLQueryingEngine.get_file_event_query(endpoint_ids=ENDPOINT_IDS, args=args)
+    response = CortexCoreXQLQueryEngine.get_file_event_query(endpoint_ids=ENDPOINT_IDS, args=args)
 
     assert response == '''dataset = xdr_data | filter agent_id in ("test1","test2") and event_type = FILE and action_file_sha256
  in ("testSHA1","testSHA2")| fields agent_hostname, agent_ip_addresses, agent_id, action_file_path, action_file_sha256,
@@ -86,7 +85,7 @@ def test_get_process_event_query():
     args = {
         'process_sha256': 'testSHA1,testSHA2'
     }
-    response = XQLQueryingEngine.get_process_event_query(endpoint_ids=ENDPOINT_IDS, args=args)
+    response = CortexCoreXQLQueryEngine.get_process_event_query(endpoint_ids=ENDPOINT_IDS, args=args)
 
     assert response == '''dataset = xdr_data | filter agent_id in ("test1","test2") and event_type = PROCESS and
  action_process_image_sha256 in ("testSHA1","testSHA2") | fields agent_hostname, agent_ip_addresses, agent_id,
@@ -111,7 +110,7 @@ def test_get_dll_module_query():
     args = {
         'loaded_module_sha256': 'testSHA1,testSHA2'
     }
-    response = XQLQueryingEngine.get_dll_module_query(endpoint_ids=ENDPOINT_IDS, args=args)
+    response = CortexCoreXQLQueryEngine.get_dll_module_query(endpoint_ids=ENDPOINT_IDS, args=args)
 
     assert response == '''dataset = xdr_data | filter agent_id in ("test1","test2") and event_type = LOAD_IMAGE and
  action_module_sha256 in ("testSHA1","testSHA2")| fields agent_hostname, agent_ip_addresses, agent_id,
@@ -137,7 +136,7 @@ def test_get_network_connection_query():
         'remote_ip': '3.3.3.3,4.4.4.4',
         'port': '7777,8888'
     }
-    response = XQLQueryingEngine.get_network_connection_query(endpoint_ids=ENDPOINT_IDS, args=args)
+    response = CortexCoreXQLQueryEngine.get_network_connection_query(endpoint_ids=ENDPOINT_IDS, args=args)
 
     assert response == '''dataset = xdr_data | filter agent_id in ("test1","test2") and event_type = STORY
  and action_local_ip in("1.1.1.1","2.2.2.2") and action_remote_ip in("3.3.3.3","4.4.4.4") and action_remote_port in(7777,8888)|
@@ -161,7 +160,7 @@ def test_get_network_connection_query_only_remote_ip():
     args = {
         'remote_ip': '3.3.3.3,4.4.4.4',
     }
-    response = XQLQueryingEngine.get_network_connection_query(endpoint_ids=ENDPOINT_IDS, args=args)
+    response = CortexCoreXQLQueryEngine.get_network_connection_query(endpoint_ids=ENDPOINT_IDS, args=args)
 
     assert response == '''dataset = xdr_data | filter agent_id in ("test1","test2") and event_type = STORY
   and action_remote_ip in("3.3.3.3","4.4.4.4") |
@@ -185,7 +184,7 @@ def test_get_registry_query():
     args = {
         'reg_key_name': 'testARG1,testARG2'
     }
-    response = XQLQueryingEngine.get_registry_query(endpoint_ids=ENDPOINT_IDS, args=args)
+    response = CortexCoreXQLQueryEngine.get_registry_query(endpoint_ids=ENDPOINT_IDS, args=args)
 
     assert response == '''dataset = xdr_data | filter agent_id in ("test1","test2") and event_type = REGISTRY and
  action_registry_key_name in ("testARG1","testARG2") | fields agent_hostname, agent_id, agent_ip_addresses, agent_os_type,
@@ -208,7 +207,7 @@ def test_get_event_log_query():
     args = {
         'event_id': '1234,4321'
     }
-    response = XQLQueryingEngine.get_event_log_query(endpoint_ids=ENDPOINT_IDS, args=args)
+    response = CortexCoreXQLQueryEngine.get_event_log_query(endpoint_ids=ENDPOINT_IDS, args=args)
 
     assert response == '''dataset = xdr_data | filter agent_id in ("test1","test2") and event_type = EVENT_LOG and
  action_evtlog_event_id in (1234,4321) | fields agent_hostname, agent_id, agent_ip_addresses, agent_os_type,
@@ -232,7 +231,7 @@ def test_get_dns_query():
         'external_domain': 'testARG1,testARG2',
         'dns_query': 'testARG3,testARG4',
     }
-    response = XQLQueryingEngine.get_dns_query(endpoint_ids=ENDPOINT_IDS, args=args)
+    response = CortexCoreXQLQueryEngine.get_dns_query(endpoint_ids=ENDPOINT_IDS, args=args)
 
     assert response == '''dataset = xdr_data | filter (agent_id in ("test1","test2") and event_type = STORY) and
  (dst_action_external_hostname in ("testARG1","testARG2") or dns_query_name in ("testARG3","testARG4"))| fields
@@ -257,7 +256,7 @@ def test_get_dns_query_no_external_domain_arg():
     args = {
         'dns_query': 'testARG3,testARG4',
     }
-    response = XQLQueryingEngine.get_dns_query(endpoint_ids=ENDPOINT_IDS, args=args)
+    response = CortexCoreXQLQueryEngine.get_dns_query(endpoint_ids=ENDPOINT_IDS, args=args)
 
     assert response == '''dataset = xdr_data | filter (agent_id in ("test1","test2") and event_type = STORY) and
  (dst_action_external_hostname in ("") or dns_query_name in ("testARG3","testARG4"))| fields
@@ -283,7 +282,7 @@ def test_get_file_dropper_query():
         'file_path': 'testARG1,testARG2',
         'file_sha256': 'testARG3,testARG4',
     }
-    response = XQLQueryingEngine.get_file_dropper_query(endpoint_ids=ENDPOINT_IDS, args=args)
+    response = CortexCoreXQLQueryEngine.get_file_dropper_query(endpoint_ids=ENDPOINT_IDS, args=args)
 
     assert response == '''dataset = xdr_data | filter (agent_id in ("test1","test2") and event_type = FILE and event_sub_type in (
  FILE_WRITE, FILE_RENAME)) and (action_file_path in ("testARG1","testARG2") or action_file_sha256 in ("testARG3","testARG4")) |
@@ -310,7 +309,7 @@ def test_get_file_dropper_query_no_file_path_arg():
     args = {
         'file_sha256': 'testARG3,testARG4',
     }
-    response = XQLQueryingEngine.get_file_dropper_query(endpoint_ids=ENDPOINT_IDS, args=args)
+    response = CortexCoreXQLQueryEngine.get_file_dropper_query(endpoint_ids=ENDPOINT_IDS, args=args)
 
     assert response == '''dataset = xdr_data | filter (agent_id in ("test1","test2") and event_type = FILE and event_sub_type in (
  FILE_WRITE, FILE_RENAME)) and (action_file_path in ("") or action_file_sha256 in ("testARG3","testARG4")) |
@@ -337,7 +336,7 @@ def test_get_process_instance_network_activity_query():
     args = {
         'process_instance_id': 'testARG1,testARG2',
     }
-    response = XQLQueryingEngine.get_process_instance_network_activity_query(endpoint_ids=ENDPOINT_IDS, args=args)
+    response = CortexCoreXQLQueryEngine.get_process_instance_network_activity_query(endpoint_ids=ENDPOINT_IDS, args=args)
 
     assert response == '''dataset = xdr_data | filter agent_id in ("test1","test2") and event_type = NETWORK and
  actor_process_instance_id in ("testARG1","testARG2") | fields agent_hostname, agent_ip_addresses, agent_id,
@@ -362,7 +361,7 @@ def test_get_process_causality_network_activity_query():
     args = {
         'process_causality_id': 'testARG1,testARG2',
     }
-    response = XQLQueryingEngine.get_process_causality_network_activity_query(endpoint_ids=ENDPOINT_IDS, args=args)
+    response = CortexCoreXQLQueryEngine.get_process_causality_network_activity_query(endpoint_ids=ENDPOINT_IDS, args=args)
 
     assert response == '''dataset = xdr_data | filter agent_id in ("test1","test2") and event_type = NETWORK
  and actor_process_causality_id in ("testARG1","testARG2") | fields agent_hostname, agent_ip_addresses,agent_id,
@@ -397,7 +396,7 @@ def test_convert_timeframe_string_to_json(time_to_convert, expected):
     - Ensure the returned timestamp is correct.
     """
 
-    response = XQLQueryingEngine.convert_timeframe_string_to_json(time_to_convert=time_to_convert)
+    response = CortexCoreXQLQueryEngine.convert_timeframe_string_to_json(time_to_convert=time_to_convert)
 
     assert response == expected
 
@@ -418,7 +417,7 @@ def test_start_xql_query_valid(mocker):
         'time_frame': '1 year'
     }
     mocker.patch.object(CLIENT, 'start_xql_query', return_value='execution_id')
-    response = XQLQueryingEngine.start_xql_query(CLIENT, args=args)
+    response = CortexCoreXQLQueryEngine.start_xql_query(CLIENT, args=args)
     assert response == 'execution_id'
 
 
@@ -450,7 +449,7 @@ def test_start_xql_query_with_tenant_id_and_tenant_ids(mocker, tenant_id, expect
     args |= tenant_id
 
     res = mocker.patch.object(CLIENT, 'start_xql_query', return_value='execution_id')
-    XQLQueryingEngine.start_xql_query(CLIENT, args=args)
+    CortexCoreXQLQueryEngine.start_xql_query(CLIENT, args=args)
     assert res.call_args[0][0].get('request_data').get('tenants')[0] == expected
 
 
@@ -481,7 +480,7 @@ def test_get_xql_query_results_success_under_1000(mocker):
         }
     }
     mocker.patch.object(CLIENT, 'get_xql_query_results', return_value=mock_response)
-    response, file_data = XQLQueryingEngine.get_xql_query_results(CLIENT, args=args)
+    response, file_data = CortexCoreXQLQueryEngine.get_xql_query_results(CLIENT, args=args)
     assert response == {'status': 'SUCCESS',
                         'number_of_results': 1,
                         'query_cost': {'376699223': 0.0031591666666666665},
@@ -519,7 +518,7 @@ def test_get_xql_query_results_success_more_than_1000(mocker):
     }
     mocker.patch.object(CLIENT, 'get_xql_query_results', return_value=mock_response)
     mocker.patch.object(CLIENT, 'get_query_result_stream', return_value='FILE DATA')
-    response, file_data = XQLQueryingEngine.get_xql_query_results(CLIENT, args=args)
+    response, file_data = CortexCoreXQLQueryEngine.get_xql_query_results(CLIENT, args=args)
     assert response == {'status': 'SUCCESS',
                         'number_of_results': 1500,
                         'query_cost': {'376699223': 0.0031591666666666665},
@@ -548,7 +547,7 @@ def test_get_xql_query_results_pending(mocker):
         "status": "PENDING"
     }
     mocker.patch.object(CLIENT, 'get_xql_query_results', return_value=mock_response)
-    response, _ = XQLQueryingEngine.get_xql_query_results(CLIENT, args=args)
+    response, _ = CortexCoreXQLQueryEngine.get_xql_query_results(CLIENT, args=args)
     assert response == {'status': 'PENDING',
                         'execution_id': 'query_id_mock',
                         'results': None}
@@ -567,7 +566,7 @@ def test_get_query_result_stream(mocker):
     """
     stream_id = 'mock_stream_id'
     mocker.patch.object(CLIENT, 'get_query_result_stream', return_value='Raw Data')
-    response = XQLQueryingEngine.get_query_result_stream(CLIENT, stream_id=stream_id)
+    response = CortexCoreXQLQueryEngine.get_query_result_stream(CLIENT, stream_id=stream_id)
     assert response == 'Raw Data'
 
 
@@ -616,7 +615,7 @@ def test_format_results_remove_empty_fields():
          }
          }
     ]
-    response = XQLQueryingEngine.format_results(list_to_format, remove_empty_fields=True)
+    response = CortexCoreXQLQueryEngine.format_results(list_to_format, remove_empty_fields=True)
     assert expected == response
 
 
@@ -671,7 +670,7 @@ def test_format_results_do_not_remove_empty_fields():
          }
          }
     ]
-    response = XQLQueryingEngine.format_results(list_to_format, remove_empty_fields=False)
+    response = CortexCoreXQLQueryEngine.format_results(list_to_format, remove_empty_fields=False)
     assert expected == response
 
 
@@ -695,7 +694,8 @@ def test_start_xql_query_polling_not_supported(mocker):
     mocker.patch('CoreXQLApiModule.get_xql_query_results', return_value=(mock_response, None))
     mocker.patch('CoreXQLApiModule.is_demisto_version_ge', return_value=False)
     mocker.patch.object(demisto, 'command', return_value='xdr-xql-generic-query')
-    command_results = XQLQueryingEngine.start_xql_query_polling_command(CLIENT, {'query': query, 'query_name': 'mock_name'})
+    command_results = CortexCoreXQLQueryEngine.start_xql_query_polling_command(
+        CLIENT, {'query': query, 'query_name': 'mock_name'})
     assert command_results.outputs == {'status': 'PENDING',
                                        'execution_id': 'query_id_mock',
                                        'results': None,
@@ -737,7 +737,8 @@ def test_start_xql_query_polling_command(mocker):
     mocker.patch.object(demisto, 'command', return_value='xdr-xql-generic-query')
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
-    command_results = XQLQueryingEngine.start_xql_query_polling_command(CLIENT, {'query': query, 'query_name': 'mock_name'})
+    command_results = CortexCoreXQLQueryEngine.start_xql_query_polling_command(
+        CLIENT, {'query': query, 'query_name': 'mock_name'})
     assert command_results.outputs == {'status': 'SUCCESS', 'number_of_results': 1, 'query_name': 'mock_name',
                                        'query_cost': {'376699223': 0.0031591666666666665}, 'remaining_quota': 1000.0,
                                        'execution_id': 'query_id_mock', 'results': [{'x': 'test1'}]}
@@ -768,7 +769,7 @@ def test_get_xql_query_results_polling_command_success_under_1000(mocker):
                      'execution_id': 'query_id_mock'}
     mocker.patch('CoreXQLApiModule.get_xql_query_results', return_value=(mock_response, None))
     mocker.patch.object(demisto, 'command', return_value='xdr-xql-generic-query')
-    command_results = XQLQueryingEngine.get_xql_query_results_polling_command(CLIENT, {'query': query, })
+    command_results = CortexCoreXQLQueryEngine.get_xql_query_results_polling_command(CLIENT, {'query': query, })
     assert command_results.outputs == {'status': 'SUCCESS', 'number_of_results': 1, 'query_name': '',
                                        'query_cost': {'376699223': 0.0031591666666666665}, 'remaining_quota': 1000.0,
                                        'execution_id': 'query_id_mock', 'results': [{'x': 'test1'}]}
@@ -798,7 +799,7 @@ def test_get_xql_query_results_clear_integration_context_on_success(mocker):
                      'execution_id': 'query_id_mock'}
     mocker.patch('CoreXQLApiModule.get_xql_query_results', return_value=(mock_response, None))
     mocker.patch.object(demisto, 'command', return_value='xdr-xql-generic-query')
-    command_results = XQLQueryingEngine.get_xql_query_results_polling_command(CLIENT, {'query': query})
+    command_results = CortexCoreXQLQueryEngine.get_xql_query_results_polling_command(CLIENT, {'query': query})
     assert command_results.outputs == {'status': 'SUCCESS', 'number_of_results': 1, 'query_name': '',
                                        'query_cost': {'376699223': 0.0031591666666666665}, 'remaining_quota': 1000.0,
                                        'execution_id': 'query_id_mock', 'results': [{'x': 'test1'}]}
@@ -831,7 +832,7 @@ def test_get_xql_query_results_polling_command_success_more_than_1000(mocker):
     mocker.patch('CoreXQLApiModule.fileResult',
                  return_value={'Contents': '', 'ContentsFormat': 'text', 'Type': 3, 'File': 'results.gz',
                                'FileID': '12345'})
-    results = XQLQueryingEngine.get_xql_query_results_polling_command(CLIENT, {'query': query})
+    results = CortexCoreXQLQueryEngine.get_xql_query_results_polling_command(CLIENT, {'query': query})
     assert results[0] == {'Contents': '', 'ContentsFormat': 'text', 'Type': 3, 'File': 'results.gz', 'FileID': '12345'}
     command_result = results[1]
     assert command_result.outputs == {'status': 'SUCCESS', 'number_of_results': 1500, 'query_name': '',
@@ -870,7 +871,7 @@ def test_get_xql_query_results_polling_command_success_more_than_1000_results_pa
         {"_time": "2021-10-14 04:00:27.797 UTC", "event_id": "567", "_vendor": "PANW", "_product": "XDR agent",
          "insert_timestamp": "2021-10-14 04:04:34.332563 UTC"}
     ]
-    # Creates the mocked data which returns from 'CoreXQLApiModule.get_xql_query_results' command:
+    # Creates the mocked data which returns from 'CortexCoreXQLQueryEngine.get_xql_query_results' command:
     mock_file_data = b''
     for item in expected_results_in_context:
         mock_file_data += json.dumps(item).encode('utf-8')
@@ -879,8 +880,8 @@ def test_get_xql_query_results_polling_command_success_more_than_1000_results_pa
 
     mocker.patch('CoreXQLApiModule.get_xql_query_results', return_value=(mock_response, compressed_mock_file_data))
     mocker.patch.object(demisto, 'command', return_value='xdr-xql-generic-query')
-    results = XQLQueryingEngine.get_xql_query_results_polling_command(CLIENT, {'query': query,
-                                                                               'parse_result_file_to_context': True})
+    results = CortexCoreXQLQueryEngine.get_xql_query_results_polling_command(CLIENT, {'query': query,
+                                                                                      'parse_result_file_to_context': True})
 
     assert results.outputs.get('results', []) == expected_results_in_context, \
         'There might be a problem in parsing the results into the context'
@@ -908,8 +909,8 @@ def test_get_xql_query_results_polling_command_pending(mocker):
     mocker.patch('CoreXQLApiModule.get_xql_query_results', return_value=(mock_response, None))
     mocker.patch('CoreXQLApiModule.is_demisto_version_ge', return_value=True)
     mocker.patch.object(demisto, 'command', return_value='xdr-xql-generic-query')
-    mocker.patch('CoreXQLApiModule.ScheduledCommand', return_value=None)
-    command_results = XQLQueryingEngine.get_xql_query_results_polling_command(CLIENT, {'query': query})
+    mocker.patch('CortexCoreXQLQueryEngine.ScheduledCommand', return_value=None)
+    command_results = CortexCoreXQLQueryEngine.get_xql_query_results_polling_command(CLIENT, {'query': query})
     assert command_results.readable_output == 'Query is still running, it may take a little while...'
     assert command_results.outputs == {'status': 'PENDING', 'execution_id': 'query_id_mock', 'results': None, 'query_name': ''}
 
@@ -934,7 +935,7 @@ def test_get_xql_quota_command(mocker):
         }
     }
     mocker.patch.object(CLIENT, 'get_xql_quota', return_value=mock_response)
-    response = XQLQueryingEngine.get_xql_quota_command(CLIENT, {})
+    response = CortexCoreXQLQueryEngine.get_xql_quota_command(CLIENT, {})
     assert '|Additional Purchased Quota|License Quota|Used Quota|' in response.readable_output
     assert response.outputs == {'license_quota': 1000, 'additional_purchased_quota': 0, 'used_quota': 0.0}
 
@@ -964,7 +965,7 @@ def test_get_built_in_query_results_polling_command(mocker):
     }
     res = mocker.patch('CoreXQLApiModule.start_xql_query_polling_command')
     mocker.patch.object(demisto, 'command', return_value='xdr-xql-file-event-query')
-    XQLQueryingEngine.get_built_in_query_results_polling_command(CLIENT, args)
+    CortexCoreXQLQueryEngine.get_built_in_query_results_polling_command(CLIENT, args)
     assert (
         res.call_args.args[1]["query"]
         == """dataset = xdr_data | filter agent_id in ("123456","654321") and event_type = FILE and action_file_sha256
@@ -975,63 +976,88 @@ def test_get_built_in_query_results_polling_command(mocker):
     assert res.call_args.args[1]['time_frame'] == '7 days'
 
 
-@patch('XQLQueryingEngine.get_nonce')
-@patch('CoreXQLApiModule.demisto.debug')
-@patch('CoreXQLApiModule.demisto.command')
-@patch('CoreXQLApiModule.demisto.args')
-@patch('CoreXQLApiModule.demisto.params')
-@patch('XQLQueryingEngine.Client')
-@patch('CoreXQLApiModule.return_results')
-@patch('CoreXQLApiModule.return_error')
-def test_main_success(mock_return_error, mock_return_results, mock_Client, mock_demisto_params, mock_demisto_args,
-                      mock_demisto_command, mock_demisto_debug, mock_get_nonce):
+@patch('CoreXQLApiModule.IS_CORE_AVAILABLE', True)
+@patch('CoreXQLApiModule.demisto._apiCall')
+def test_get_xql_quota_is_core_available_true(mock_api_call):
     """
     Given:
-    - demisto.params().
-    - demisto.args().
-    - demisto.command()
+    - IS_CORE_AVAILABLE is true meaning we run on necessary version of xsiam.
 
     When:
-    - Calling main().
+    - Calling get_xql_quota function.
 
     Then:
-    - Ensure the main() is called properly.
+    - Ensure the request for get_xql_quota use the demisto.apiCall.
 
     """
-    import hashlib
-    from XQLQueryingEngine import main
-    mock_demisto_params.return_value = {
-        'apikey': {'password': 'test_apikey'},
-        'apikey_id': {'password': 'test_apikey_id'},
-        'url': 'http://example.com',
-        'insecure': False,
-        'proxy': False
-    }
-    mock_demisto_command.return_value = 'some_command'
-    mock_demisto_args.return_value = {'arg1': 'value1'}
-    mock_get_nonce.return_value = 'random_nonce'
-    mock_Client.return_value = MagicMock()
-    mock_demisto_command.return_value = 'test-module'
-    mock_return_results.return_value = None
+    mock_api_call.return_value = {'name': '/api/webapp/public_api/v1/xql/get_quota', 'status': 200, 'data':
+                                  '{"reply": {"license_quota": 1, "additional_purchased_quota": 0.0, "used_quota": 0.0,'
+                                  '"eval_quota": 0.0}}'}
+    response = CLIENT.get_xql_quota({})
+    mock_api_call.assert_called_once_with(method='POST',
+                                          path='some_mock_url/xql/get_quota',
+                                          data=None,
+                                          headers={},
+                                          timeout=None,
+                                          response_data_type=None)
+    assert response == {'reply': {'additional_purchased_quota': 0.0,
+                                  'eval_quota': 0.0,
+                                  'license_quota': 1,
+                                  'used_quota': 0.0}}
 
-    timestamp = str(int(datetime.now(timezone.utc).timestamp()) * 1000)
-    auth_key = f'test_apikeyrandom_nonce{timestamp}'.encode()
-    api_key_hash = hashlib.sha256(auth_key).hexdigest()
 
-    main()
+@patch('CoreXQLApiModule.IS_CORE_AVAILABLE', True)
+@patch('CoreXQLApiModule.demisto._apiCall')
+def test_start_xql_query_is_core_available_true(mock_api_call):
+    """
+    Given:
+    - IS_CORE_AVAILABLE is true meaning we run on necessary version of xsiam.
 
-    mock_demisto_debug.assert_called_once_with('Command being called is test-module')
-    mock_Client.assert_called_once_with(
-        base_url='http://example.com/public_api/v1',
-        verify=True,
-        headers={'x-xdr-timestamp': timestamp,
-                 'x-xdr-nonce': 'random_nonce',
-                 'x-xdr-auth-id': 'test_apikey_id',
-                 'Authorization': api_key_hash},
-        proxy=False,
-        is_core=False
-    )
-    mock_return_error.assert_not_called()
+    When:
+    - Calling start_xql_query function.
+
+    Then:
+    - Ensure the request for start_xql_query use the demisto.apiCall.
+
+    """
+    mock_api_call.return_value = {'name': '/api/webapp/public_api/v1/xql/start_xql_query',
+                                  'status': 200,
+                                  'data': '{"reply": "aaa"}'}
+    response = CLIENT.start_xql_query({})
+    mock_api_call.assert_called_once_with(method='POST',
+                                          path='some_mock_url/xql/start_xql_query',
+                                          data=None,
+                                          headers={},
+                                          timeout=None,
+                                          response_data_type=None)
+    assert response == 'aaa'
+
+
+@patch('CoreXQLApiModule.IS_CORE_AVAILABLE', True)
+@patch('CoreXQLApiModule.demisto._apiCall')
+def test_get_xql_query_results_is_core_necessary_true(mock_api_call):
+    """
+    Given:
+    - IS_CORE_AVAILABLE is true meaning we run on necessary version of xsiam.
+
+    When:
+    - Calling get_xql_query_results function.
+
+    Then:
+    - Ensure the request for get_xql_query_results use the demisto.apiCall.
+
+    """
+    mock_api_call.return_value = {'name': '/api/webapp/public_api/v1/xql/start_xql_query',
+                                  'status': 200,
+                                  'data': '{"reply": "aaa"}'}
+    response = CLIENT.get_xql_query_results({})
+    mock_api_call.assert_called_once_with(method='POST',
+                                          path='some_mock_url/xql/get_query_results',
+                                          data=None,
+                                          headers={},
+                                          timeout=None,
+                                          response_data_type=None)
+    assert response == 'aaa'
 
 
 @patch('CoreXQLApiModule.IS_CORE_AVAILABLE', False)
@@ -1045,14 +1071,93 @@ def test_get_xql_quota_is_core_available_false(mock_http_request):
     - Calling get_xql_quota function.
 
     Then:
-    - Ensure the request for get_xql_quota use the _http_request.
+    - Raises an error.
 
     """
     mock_http_request.return_value = {'name': '/api/webapp/public_api/v1/xql/get_quota', 'status': 200, 'data':
                                       '{"reply": {"license_quota": 1, "additional_purchased_quota": 0.0, "used_quota": 0.0,'
                                       ' "eval_quota": 0.0}}'}
-    CLIENT.get_xql_quota({})
-    mock_http_request.assert_called_once_with(CLIENT, method='POST', url_suffix='/xql/get_quota',
-                                              full_url=None, headers=None, json_data={}, params=None, data=None, timeout=None,
-                                              raise_on_status=False, ok_codes=None, error_handler=None, with_metrics=False,
-                                              resp_type='json')
+    with pytest.raises(DemistoException) as e:
+        CLIENT.get_xql_quota({})
+    assert e.value.message == 'Using the XQL Query Engine from the core Pack is available only from version 8.7.0-1247804.'
+
+
+@patch('CoreXQLApiModule.IS_CORE_AVAILABLE', False)
+@patch('CoreXQLApiModule.BaseClient._http_request')
+def test_start_xql_query_is_core_available_false(mock_api_call):
+    """
+    Given:
+    - IS_CORE_AVAILABLE is false meaning we run on necessary version of xsiam.
+
+    When:
+    - Calling start_xql_query function.
+
+    Then:
+    - Raises an error.
+
+    """
+    mock_api_call.return_value = {'name': '/api/webapp/public_api/v1/xql/start_xql_query',
+                                  'status': 200,
+                                  'data': '{"reply": "aaa"}'}
+    with pytest.raises(DemistoException) as e:
+        CLIENT.start_xql_query({})
+    assert e.value.message == 'Using the XQL Query Engine from the core Pack is available only from version 8.7.0-1247804.'
+
+
+@patch('CoreXQLApiModule.IS_CORE_AVAILABLE', False)
+@patch('CoreXQLApiModule.BaseClient._http_request')
+def test_get_xql_query_results_is_core_available_false(mock_api_call):
+    """
+    Given:
+    - IS_CORE_AVAILABLE is false meaning we run on necessary version of xsiam.
+
+    When:
+    - Calling get_xql_query_results function.
+
+    Then:
+    - Raises an error.
+
+    """
+    mock_api_call.return_value = {'name': '/api/webapp/public_api/v1/xql/start_xql_query',
+                                  'status': 200,
+                                  'data': '{"reply": "aaa"}'}
+    with pytest.raises(DemistoException) as e:
+        CLIENT.get_xql_query_results({})
+    assert e.value.message == 'Using the XQL Query Engine from the core Pack is available only from version 8.7.0-1247804.'
+
+
+@patch('CoreXQLApiModule.demisto.debug')
+@patch('CoreXQLApiModule.demisto.command')
+@patch('CoreXQLApiModule.demisto.args')
+@patch('CoreXQLApiModule.demisto.params')
+@patch('CortexCoreXQLQueryEngine.Client')
+@patch('CoreXQLApiModule.return_results')
+@patch('CoreXQLApiModule.return_error')
+def test_main_success_generic_command(mock_return_error, mock_return_results, mock_Client, mock_demisto_params, mock_demisto_args,
+                                      mock_demisto_command, mock_demisto_debug):
+    """
+    Given:
+    - demisto.params().
+    - demisto.args().
+    - demisto.command()
+
+    When:
+    - Calling main().
+
+    Then:
+    - Ensure the main() is called properly.
+
+    """
+    from CortexCoreXQLQueryEngine import main
+    mock_demisto_params.return_value = {'insecure': False, 'proxy': False}
+    mock_demisto_command.return_value = 'test-module'
+    mock_demisto_args.return_value = {'arg1': 'value1'}
+    mock_Client.return_value = MagicMock()
+
+    mock_return_results.return_value = None
+
+    main()
+
+    mock_demisto_debug.assert_called_once_with('Command being called is test-module')
+    mock_Client.assert_called_once_with(base_url='/api/webapp/public_api/v1', proxy=False, verify=True, headers={}, is_core=True)
+    mock_return_error.assert_not_called()

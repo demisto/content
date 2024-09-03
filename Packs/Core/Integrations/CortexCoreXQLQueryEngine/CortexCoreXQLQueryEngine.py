@@ -1,18 +1,10 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
-import hashlib
 from CoreXQLApiModule import *
-
-import urllib3
-
+import demistomock as demisto
+from CommonServerPython import *
+from CommonServerUserPython import *
 
 # Disable insecure warnings
-urllib3.disable_warnings()  # pylint: disable=no-member
-
-''' CONSTANTS '''
-
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
-DEFAULT_LIMIT = 100
+urllib3.disable_warnings()
 
 ''' CLIENT CLASS '''
 
@@ -84,60 +76,38 @@ GENERIC_QUERY_COMMANDS = {
 
 
 def main() -> None:
-    """main function, parses params and runs command functions
     """
-    args = demisto.args()
-    params = demisto.params()
-    # using two different credentials object as they both fields need to be encrypted
-    apikey = params.get('apikey', {}).get('password', '')
-    apikey_id = params.get('apikey_id', {}).get('password', '')
-    if not apikey:
-        raise DemistoException('Missing API Key. Fill in a valid key in the integration configuration.')
-    if not apikey_id:
-        raise DemistoException('Missing API Key ID. Fill in a valid key ID in the integration configuration.')
-    base_url = urljoin(params['url'], '/public_api/v1')
-    verify_cert = not params.get('insecure', False)
-    proxy = params.get('proxy', False)
+        executes an integration command
+    """
+    verify_certificate = not demisto.params().get('insecure', False)
+    proxy = demisto.params().get('proxy', False)
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
+    args = demisto.args()
+    url_suffix = "/public_api/v1"
     try:
-        # generate a 64 bytes random string
-        nonce = get_nonce()
-        # get the current timestamp as milliseconds.
-        timestamp = str(int(datetime.now(timezone.utc).timestamp()) * 1000)
-        # generate the auth key:
-        auth_key = f'{apikey}{nonce}{timestamp}'.encode()
-        # convert to bytes object and calculate sha256
-        api_key_hash = hashlib.sha256(auth_key).hexdigest()  # lgtm [py/weak-sensitive-data-hashing]
-
-        # generate HTTP call headers
-        headers = {
-            "x-xdr-timestamp": timestamp,
-            "x-xdr-nonce": nonce,
-            "x-xdr-auth-id": apikey_id,
-            "Authorization": api_key_hash,
-        }
-
+        url = "/api/webapp/"
+        base_url = urljoin(url, url_suffix)
         client = Client(
             base_url=base_url,
-            verify=verify_cert,
-            headers=headers,
             proxy=proxy,
-            is_core=False
+            verify=verify_certificate,
+            headers={},
+            is_core=True
         )
+
         if command in GENERIC_QUERY_COMMANDS:
             return_results(GENERIC_QUERY_COMMANDS[command](client, args))
         elif command in BUILT_IN_QUERY_COMMANDS:
             return_results(get_built_in_query_results_polling_command(client, args))
         else:
             raise NotImplementedError(f'Command {command} does not exist.')
-
-    # Log exceptions and return errors
     except Exception as e:
-        return_error(f'Failed to execute {command} command.\nError: {str(e)}')
+        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
 
 ''' ENTRY POINT '''
+
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()

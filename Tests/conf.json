@@ -5791,6 +5791,10 @@
         {
             "integrations": "Proofpoint Threat Protection",
             "playbookID": "test-ProofpointThreatProtectionIntegration-Playbook"
+        },
+        {
+            "integrations": "XQL Query Engine",
+            "playbookID": "XQL Query Engine - Test"
         }
     ],
     "skipped_tests": {
