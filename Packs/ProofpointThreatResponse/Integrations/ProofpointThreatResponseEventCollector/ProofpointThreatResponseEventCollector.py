@@ -63,7 +63,7 @@ def find_and_remove_large_entry(event):
         if isinstance(value, dict):
             find_and_remove_large_entry(value)
         elif isinstance(value, str) and sys.getsizeof(value) > XSIAM_EVENT_CHUNK_SIZE_LIMIT:
-            demisto.debug(f'Found key {key} with None as its value exceeded chunk size limit, its size is {sys.getsizeof(value)}')
+            demisto.debug(f'Found key {key} with value exceeding chunk size limit, its size is {sys.getsizeof(value)}')
             keys_to_remove.append(key)
         else:
             demisto.debug('Value is not dict nor str, trying to convert')
@@ -72,7 +72,7 @@ def find_and_remove_large_entry(event):
                 keys_to_remove.append(key)
 
     for key in keys_to_remove:
-        demisto.debug(f'Replacing {key} with None as its value exceeded chunk size limit')
+        demisto.info(f'Replacing {key} with None as its value exceeded chunk size limit')
         event[key] = ""
 
 
