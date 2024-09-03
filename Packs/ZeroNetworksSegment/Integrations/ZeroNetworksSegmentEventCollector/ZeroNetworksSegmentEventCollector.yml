@@ -59,7 +59,7 @@ configuration:
   type: 8
   required: false
 description: This is the Zero Networks event collector integration for Cortex XSIAM.
-display: Zero Networks Segment Event Collector
+display: Zero Networks Segment
 name: ZeroNetworksSegmentEventCollector
 script:
   commands:
@@ -77,9 +77,9 @@ script:
       description: Date from which to get events.
       name: from_date
       required: false
-    - description: Maximum audit events to fetch
+    - description: Maximum audit events to fetch.
       name: max_fetch_audit
-    - description: Maximum network activities events to fetch
+    - description: Maximum network activities events to fetch.
       name: max_fetch_network
     description: Gets events from Zero Networks Segment.
     name: zero-networks-segment-get-events
@@ -89,7 +89,7 @@ script:
   subtype: python3
   dockerimage: demisto/python3:3.11.9.107902
   isfetchevents: true
-fromversion: 5.5.0
+fromversion: 6.10.0
 tests:
 - No tests (auto formatted)
 marketplaces:

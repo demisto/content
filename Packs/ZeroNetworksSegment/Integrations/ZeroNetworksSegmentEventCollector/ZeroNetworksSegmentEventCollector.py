@@ -204,7 +204,7 @@ def process_events(events: list, previous_ids: list, last_event_time: int, max_r
             break
 
         if event_id not in previous_ids:
-            event['_TIME'] = event.get('timestamp')
+            event['_time'] = event.get('timestamp')
             event['source_log_type'] = log_type
             new_events.append(event)
             event_timestamp = event.get("timestamp")
@@ -423,7 +423,7 @@ def main() -> None:
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             demisto.setLastRun(next_run)
 
-    # Log exceptions and return errors
+# Log exceptions and return errors
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
