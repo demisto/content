@@ -467,6 +467,8 @@ def chrome_manager() -> tuple[Any | None, str | None]:
 
     elif chrome_options != instance_id_to_chrome_options.get(instance_id):
         chrome_port = instance_id_to_port.get(instance_id, '')
+        demisto.debug(f'chrome_options changed, terminating {chrome_port=} {instance_id=} {chrome_options=}\
+            and starting a new chrome')
         delete_row_with_old_chrome_configurations_from_chrome_instances_file(chrome_instances_contents, instance_id, chrome_port)
         terminate_chrome(chrome_port=chrome_port)
         return generate_new_chrome_instance(instance_id, chrome_options)
@@ -838,7 +840,22 @@ def perform_rasterize(path: str | list[str],
                 total_rasterizations_count = int(previous_rasterizations_counter_from_file) + len(rasterization_threads)
             else:
                 total_rasterizations_count = len(rasterization_threads)
+<<<<<<< Updated upstream
             write_file(RASTERIZATIONS_COUNTER_FILE_PATH, str(total_rasterizations_count), overwrite=True)
+=======
+            demisto.debug(f"Should Chrome be terminated?, {total_rasterizations_count=},"
+                          f" {MAX_RASTERIZATIONS_COUNT=}, {len(browser.list_tab())=}")
+            if total_rasterizations_count > MAX_RASTERIZATIONS_COUNT:
+                demisto.info(f"Terminating Chrome after {total_rasterizations_count} rasterizations")
+                if chrome_port:
+                    terminate_chrome(chrome_port=chrome_port) # killing only the chrome
+                    write_file(RASTERIZATIONS_COUNTER_FILE_PATH, {total_rasterizations_count-1}, overwrite=True)
+                    # needs to delete only the chrome port line- write_file(CHROME_INSTANCES_FILE_PATH, "", overwrite=True)
+                demisto.info(f"Terminated Chrome after {total_rasterizations_count} rasterizations")
+                write_file(RASTERIZATIONS_COUNTER_FILE_PATH, "0", overwrite=True)
+            else:
+                write_file(RASTERIZATIONS_COUNTER_FILE_PATH, str(total_rasterizations_count), overwrite=True)
+>>>>>>> Stashed changes
 
             # Get the results
             for current_thread in rasterization_threads:
