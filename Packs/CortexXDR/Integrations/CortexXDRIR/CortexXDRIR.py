@@ -1305,6 +1305,8 @@ def main():  # pragma: no cover
     starred_incidents_fetch_window = params.get('starred_incidents_fetch_window', '3 days')
     exclude_artifacts = argToBoolean(params.get('exclude_fields', True))
     xdr_delay = arg_to_number(params.get('xdr_delay')) or 1
+    close_cortex_incident = params.get('close_cortex_incident')
+    close_xdr_incident = params.get('close_xdr_incident')
     try:
         timeout = int(params.get('timeout', 120))
     except ValueError as e:
