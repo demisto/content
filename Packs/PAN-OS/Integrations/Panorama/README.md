@@ -6190,7 +6190,7 @@ Get all the jobs from the devices in the environment, or a single job when ID is
 | PANOS.JobStatus.tfin | String | Time finished. | 
 | PANOS.JobStatus.status | String | Status of the job. | 
 | PANOS.JobStatus.result | String | The result of the job. | 
-| PANOS.JobStatus.user | Unknown | The user who initiated the job. | 
+| PANOS.JobStatus.user | String | The user who initiated the job. | 
 | PANOS.JobStatus.tenq | String | The time the job was enqueued into the system. | 
 | PANOS.JobStatus.stoppable | String | Whether the job can be stopped after it started. | 
 | PANOS.JobStatus.description | String | The job description. | 
