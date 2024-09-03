@@ -223,14 +223,13 @@ def process_events(events: list, previous_ids: list, last_event_time: int, max_r
 ''' COMMAND FUNCTIONS '''
 
 
-def fetch_events(client: Client, params: dict, last_run: dict, start_timestamp: int, log_type: str,
+def fetch_events(client: Client, last_run: dict, start_timestamp: int, log_type: str,
                  filters: list, max_results: int, limit: int) -> tuple[dict, list]:
     """
     Fetches events from ZeroNetworks API by log type.
 
     Args:
         client (Client): The client instance used to interact with the ZeroNetworks API.
-        params (dict): Dictionary of parameters used for fetching events, including limits and filters.
         last_run (dict): Dictionary containing the last run information, including previously processed event IDs and timestamps.
         start_timestamp (int): Timestamp to start fetching events from.
         log_type (str): The type of log to fetch, used to determine how to process the events and set limits.
@@ -311,7 +310,7 @@ def get_events(client: Client, args: dict, last_run: dict, params: dict, log_typ
             start_timestamp = initialize_start_timestamp(last_run, log_type)
 
         max_results, limit = get_max_results_and_limit(params, log_type, args)
-        last_run, collected_events = fetch_events(client, params, last_run, start_timestamp,
+        last_run, collected_events = fetch_events(client, last_run, start_timestamp,
                                                   log_type, filters, max_results, limit)
         hr += tableToMarkdown(name=f'{TYPES_TO_TITLES[log_type]} Events', t=collected_events)
         all_events.extend(collected_events)
@@ -337,7 +336,7 @@ def fetch_all_events(client: Client, params: dict, last_run: dict, log_types: li
     for log_type in log_types:
         start_timestamp = initialize_start_timestamp(last_run, log_type)
         max_results, limit = get_max_results_and_limit(params, log_type)
-        last_run, collected_events = fetch_events(client, params, last_run, start_timestamp,
+        last_run, collected_events = fetch_events(client, last_run, start_timestamp,
                                                   log_type, filters, max_results, limit)
         all_events.extend(collected_events)
 

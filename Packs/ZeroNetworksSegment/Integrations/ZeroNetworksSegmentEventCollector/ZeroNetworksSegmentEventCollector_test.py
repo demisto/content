@@ -183,12 +183,12 @@ def test_update_last_run(last_run, log_type, last_event_time, previous_ids, expe
 
 
 @pytest.mark.parametrize(
-    "params, max_results, limit, last_run, expected_last_run, expected_collected_events, start_timestamp",
-    [(case['params'], case['max_results'], case['limit'], case['last_run'], case['expected_last_run'],
+    "max_results, limit, last_run, expected_last_run, expected_collected_events, start_timestamp",
+    [(case['max_results'], case['limit'], case['last_run'], case['expected_last_run'],
       case['expected_collected_events'], case['start_timestamp'])
      for case in util_load_json('test_data/test_fetch_events_params.json')['test_cases']]
 )
-def test_fetch_events(mocker, params, max_results, limit, last_run, expected_last_run,
+def test_fetch_events(mocker, max_results, limit, last_run, expected_last_run,
                       expected_collected_events, start_timestamp):
     """
     Given:
@@ -211,7 +211,7 @@ def test_fetch_events(mocker, params, max_results, limit, last_run, expected_las
 
     mock_client = MockClient('', False, False, {})
 
-    result_last_run, result_collected_events = fetch_events(mock_client, params, last_run, start_timestamp, 'audit', [],
+    result_last_run, result_collected_events = fetch_events(mock_client, last_run, start_timestamp, 'audit', [],
                                                             max_results, limit)
 
     assert result_last_run == expected_last_run
@@ -386,11 +386,10 @@ def test_fetch_events_limit_logic(mocker):
     mocker.patch('ZeroNetworksSegmentEventCollector.process_events', return_value=([], {}, 0))
 
     max_results, limit = (1, 1)
-    params = {"network_activity_filters": []}
     last_run = {}
     client = Client("", False, False, {})
 
-    last_run, all_events = fetch_events(client, params, last_run, 1000, 'audit', [], max_results, limit)
+    last_run, all_events = fetch_events(client, last_run, 1000, 'audit', [], max_results, limit)
 
     calls = list(mock_search_events.call_args_list)
     first_call_limit = calls[0][0][0]  # Limit in the first call

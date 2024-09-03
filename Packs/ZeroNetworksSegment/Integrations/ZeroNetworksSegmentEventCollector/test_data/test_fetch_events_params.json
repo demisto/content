@@ -1,7 +1,6 @@
 {
     "test_cases": [
         {
-            "params": {"max_fetch_audit": "2"},
             "max_results": 2,
             "limit": 2,
             "last_run": {},
@@ -13,7 +12,6 @@
             "start_timestamp": 1000
         },
         {
-            "params": {"max_fetch_audit": "3"},
             "max_results": 3,
             "limit": 3,
             "last_run": {},
@@ -26,7 +24,6 @@
             "start_timestamp": 1000
         },
         {
-            "params": {"max_fetch_audit": "4"},
             "max_results": 4,
             "limit": 4,
             "last_run": {},
@@ -40,7 +37,6 @@
             "start_timestamp": 1000
         },
         {
-            "params": {"max_fetch_audit": "3"},
             "max_results": 3,
             "limit": 3,
             "last_run": {"audit": {"last_fetch": 123456, "previous_ids": [1]}},
@@ -53,7 +49,6 @@
             "start_timestamp": 123456
         },
         {
-            "params": {"max_fetch_audit": "3"},
             "max_results": 3,
             "limit": 3,
             "last_run": {"audit": {"last_fetch": 12345678, "previous_ids": [3]}},
