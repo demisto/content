@@ -242,18 +242,6 @@ def test_commands(mocker):
 
         assert mock_result.call_count == 1
 
-    for deprecated in deprecated_names:
-        mocker.patch.object(demisto, "command", return_value=deprecated)
-
-        mock_result = mocker.patch("WAB.return_results")
-        main()
-
-        assert mock_result.call_count == 1
-
-
-deprecated_names = [
-    "wab-get-metadata-of-one-or-multiple-sessions"
-]
 
 command_names = [
     "wab-add-account-in-global-domain",
@@ -263,7 +251,10 @@ command_names = [
     "wab-add-device",
     "wab-add-mapping-in-group",
     "wab-add-notification",
+    "wab-add-password-target-to-target-group",
+    "wab-add-restriction-to-target-group",
     "wab-add-service-in-device",
+    "wab-add-session-target-to-target-group",
     "wab-add-target-group",
     "wab-add-user",
     "wab-cancel-accepted-approval",
@@ -335,6 +326,7 @@ command_names = [
     "wab-get-ldap-users-of-domain",
     "wab-get-mapping-of-user-group",
     "wab-get-mappings-of-user-group",
+    "wab-get-metadata-of-one-or-multiple-sessions",
     "wab-get-notification",
     "wab-get-notifications",
     "wab-get-object-to-onboard",
