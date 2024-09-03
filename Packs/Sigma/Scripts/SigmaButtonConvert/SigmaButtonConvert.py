@@ -1,16 +1,17 @@
+import json
+
+from sigma import exceptions
+from sigma.backends.carbonblack import CarbonBlackBackend
+from sigma.backends.cortexxdr import CortexXDRBackend
+from sigma.backends.elasticsearch import LuceneBackend
+from sigma.backends.microsoft365defender import Microsoft365DefenderBackend
+from sigma.backends.qradar import QradarBackend
+from sigma.backends.sentinelone import SentinelOneBackend
+from sigma.backends.splunk import SplunkBackend
+from sigma.rule import SigmaRule
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from sigma.rule import SigmaRule
-from sigma import exceptions
-from sigma.backends.cortexxdr import CortexXDRBackend
-from sigma.backends.splunk import SplunkBackend
-from sigma.backends.sentinelone import SentinelOneBackend
-from sigma.backends.qradar import QradarBackend
-from sigma.backends.microsoft365defender import Microsoft365DefenderBackend
-from sigma.backends.carbonblack import CarbonBlackBackend
-from sigma.backends.elasticsearch import LuceneBackend
-
-import json
 
 
 def main():
@@ -25,7 +26,7 @@ def main():
     }
 
     args = demisto.callingContext["args"]
-    
+
     indicator = args["indicator"]
 
     try:

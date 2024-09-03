@@ -1,18 +1,17 @@
+import json
+
+from sigma import exceptions
+from sigma.backends.carbonblack import CarbonBlackBackend
+from sigma.backends.cortexxdr import CortexXDRBackend
+from sigma.backends.elasticsearch import LuceneBackend
+from sigma.backends.microsoft365defender import Microsoft365DefenderBackend
+from sigma.backends.qradar import QradarBackend
+from sigma.backends.sentinelone import SentinelOneBackend
+from sigma.backends.splunk import SplunkBackend
+from sigma.rule import SigmaRule
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-
-
-from sigma.rule import SigmaRule
-from sigma import exceptions
-from sigma.backends.cortexxdr import CortexXDRBackend
-from sigma.backends.splunk import SplunkBackend
-from sigma.backends.sentinelone import SentinelOneBackend
-from sigma.backends.qradar import QradarBackend
-from sigma.backends.microsoft365defender import Microsoft365DefenderBackend
-from sigma.backends.carbonblack import CarbonBlackBackend
-from sigma.backends.elasticsearch import LuceneBackend
-
-import json
 
 SIEMS = {
     "xql": CortexXDRBackend(),
@@ -23,6 +22,7 @@ SIEMS = {
     "carbon_black": CarbonBlackBackend(),
     "elastic": LuceneBackend()
 }
+
 
 def get_sigma_dictionary(indicator: str) -> dict:
     """
@@ -60,6 +60,7 @@ def get_sigma_dictionary(indicator: str) -> dict:
 
     return sigma_dict
 
+
 def main() -> None:
     """
     Main function to convert a Sigma rule indicator into a SIEM query.
@@ -91,6 +92,6 @@ def main() -> None:
                                   outputs={"query": query, "name": rule.title},
                                   readable_output=query))
 
+
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
-

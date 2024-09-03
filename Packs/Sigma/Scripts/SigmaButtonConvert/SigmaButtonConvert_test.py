@@ -1,16 +1,28 @@
-import pytest
 import json
-import demistomock as demisto
+from typing import Any
 from unittest.mock import patch
 
+import pytest
 import SigmaButtonConvert
 from SigmaButtonConvert import main
 
-rule_example = json.dumps({"title": "Potential AMSI COM Server Hijacking", "logsource": {"category": "registry_set", "product": "windows"}, "detection": {"selection": {"TargetObject|endswith": "\\CLSID\\{fdb00e52-a214-4aa1-8fba-4357bb0072ec}\\InProcServer32\\(Default)"}, "filter": {"Details": "%windir%\\system32\\amsi.dll"}, "condition": "selection and not filter"}, "id": "160d2780-31f7-4922-8b3a-efce30e63e96", "status": "test", "level": "high", "author": "Nasreddine Bencherchali (Nextron Systems)", "description": "Detects changes to the AMSI come server registry key in order disable AMSI scanning functionalities. When AMSI attempts to starts its COM component, it will query its registered CLSID and return a non-existent COM server. This causes a load failure and prevents any scanning methods from being accessed, ultimately rendering AMSI useless", "references": ["https://enigma0x3.net/2017/07/19/bypassing-amsi-via-com-server-hijacking/", "https://github.com/r00t-3xp10it/hacking-material-books/blob/43cb1e1932c16ff1f58b755bc9ab6b096046853f/obfuscation/simple_obfuscation.md#amsi-comreg-bypass"], "falsepositives": ["Unknown"], "tags": ["attack.defense-evasion", "attack.t1562.001"], "date": "2023-01-04"})
+import demistomock as demisto
 
-xql_query = 'dataset=xdr_data | filter event_type = ENUM.REGISTRY and (agent_os_type = ENUM.AGENT_OS_WINDOWS and (action_registry_key_name contains "\\\\CLSID\\\\{fdb00e52-a214-4aa1-8fba-4357bb0072ec}\\\\InProcServer32\\\\(Default)" and (not (action_registry_value_name = "%windir%\\\\system32\\\\amsi.dll" or action_registry_data = "%windir%\\\\system32\\\\amsi.dll"))))'
 
-splunk_query = 'TargetObject="*\\\\CLSID\\\\{fdb00e52-a214-4aa1-8fba-4357bb0072ec}\\\\InProcServer32\\\\(Default)" NOT Details="%windir%\\\\system32\\\\amsi.dll"'
+def load_file(path: str, json_file: bool) -> dict[str, Any] | str:
+    with open(path) as f:
+        if json_file:
+            return json.load(f)
+        else:
+            return f.read()
+
+
+rule_example = json.dumps(load_file("test_data/sigma_rule.json", json_file=True))
+
+xql_query = load_file("test_data/xql_query.txt", json_file=False)
+
+splunk_query = load_file("test_data/splunk_query.txt", json_file=False)
+
 
 @pytest.mark.parametrize("siem_name, result, expect_exception", [
     ("xql", xql_query, False),
@@ -21,9 +33,9 @@ splunk_query = 'TargetObject="*\\\\CLSID\\\\{fdb00e52-a214-4aa1-8fba-4357bb0072e
 @patch.object(demisto, 'executeCommand')
 def test_main(mock_executeCommand, mock_return_error, mocker, siem_name, result, expect_exception):
     mock_callingContext = {'args': {'indicator': {"value": "sigma",
-                                                  "CustomFields": {"sigmaruleraw": rule_example}}, 
+                                                  "CustomFields": {"sigmaruleraw": rule_example}},
                                     'SIEM': siem_name}}
-    
+
     mocker.patch.dict(demisto.callingContext, mock_callingContext)
 
     if expect_exception:
