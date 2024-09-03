@@ -1031,7 +1031,7 @@ def update_remote_system_command(client, args):
             demisto.debug(
                 f"update_remote_system_command {incident_id=} : before updating close reason {is_closed=} {closed_without_status=} {remote_is_already_closed=}")
 
-            if is_closed and closed_without_status and not remote_is_already_closed:
+            if is_closed and closed_without_status and remote_is_already_closed:
                 demisto.debug(
                     f'updating the status to other {update_args.get("closeReason")=} {update_args.get("close_reason")=}')
                 update_args['status'] = XSOAR_RESOLVED_STATUS_TO_XDR.get('Other')
