@@ -2,7 +2,6 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import sys
 from datetime import datetime, timedelta
-from dateutil.relativedelta import relativedelta
 
 
 import requests
@@ -33,9 +32,7 @@ def test_module() -> str:
 def connection(url, additional_parameters):
 
     headers = {'Accept': 'application/json'}
-    demisto.log(f"{additional_parameters}")
     req = requests.get(url, headers=headers, params=additional_parameters, verify=VERIFY_SSL)
-    # demisto.log(req.text)
     if req.status_code != 200:
         return_results(req.content)
         sys.exit(1)
@@ -102,7 +99,7 @@ def extractVulnDetails(requestfromconnection):
                     cvssmetric = cvssmetric[0]
 
                     for key, locations in key_locations.items():
-                        cvssmetricsdict[key] = next((get_value_from_hierarchy(cvssmetric, loc)
+                        cvssmetricsdict[key] = next((get_value_from_hierarchy(cvssmetric, loc) \
                                                     for loc in locations if get_value_from_hierarchy(cvssmetric, loc) is not None), None)
                     cvssmetricslist.append(cvssmetricsdict)
 
@@ -181,13 +178,10 @@ def keywordSearch():
     # modEndDate= modEndDate_date.strftime('%Y-%m-%dT%H:%M:%S.000')
     startIndex = demisto.args().get('startIndex')
     resultsPerPage = demisto.args().get('resultsPerPage')
-    # additional_parameters = '?modStartDate=' + start_date + '+00:00' + '&modEndDate=' + modEndDate + ' UTC-00:00' + '&keyword=' + keyword + \
-    #     '&isExactMatch=' + isExactMatch + '&startIndex=' + str(startIndex) + '&resultsPerPage=' + str(resultsPerPage)
-    additional_parameters = {"lastModStartDate": f"{start_date}+00:00", "lastModEndDate": f"{end_date}+00:00",
+    additional_parameters = {"lastModStartDate": f"{start_date}+00:00", "lastModEndDate": f"{end_date}+00:00", \
                              "keywordSearch": keyword, "startIndex": f"{startIndex}", "resultsPerPage": f"{resultsPerPage}"}
     if isExactMatch:
-        additional_parameters = {"lastModStartDate": f"{start_date}+00:00", "lastModEndDate": f"{end_date}+00:00",
-                                 "keywordSearch": keyword, "keywordExactMatch": None, "startIndex": f"{startIndex}", "resultsPerPage": f"{resultsPerPage}"}
+        additional_parameters["keywordExactMatch"] = None
         additional_parameters = '&'.join([k if v is None else f"{k}={v}" for k, v in additional_parameters.items()])
     generalSearchRequest = connection(base_url, additional_parameters)
     generalVulnerabilityList = extractVulnDetails(generalSearchRequest)
@@ -223,11 +217,8 @@ def cvssSearch():
     startIndex = demisto.args().get('startIndex')
     resultsPerPage = demisto.args().get('resultsPerPage')
 
-    # additional_parameters = '?modStartDate=' + start_date + ' UTC-00:00' + '&' + searchParameters + \
-    #     '=' + value + '&startIndex=' + str(startIndex) + '&resultsPerPage=' + str(resultsPerPage)
-    additional_parameters = {"lastModStartDate": f"{start_date}+00:00", "lastModEndDate": f"{end_date}+00:00",
+    additional_parameters = {"lastModStartDate": f"{start_date}+00:00", "lastModEndDate": f"{end_date}+00:00", \
                              f"{searchParameters}": f"{value}", "startIndex": f"{startIndex}", "resultsPerPage": f"{resultsPerPage}"}
-    #     '=' + value + '&startIndex=' + str(startIndex) + '&resultsPerPage=' + str(resultsPerPage)
     generalSearchRequest = connection(base_url, additional_parameters)
     generalVulnerabilityList = extractVulnDetails(generalSearchRequest)
 
@@ -257,8 +248,6 @@ def cweSearch():
     startIndex = demisto.args().get('startIndex')
     resultsPerPage = demisto.args().get('resultsPerPage')
 
-    # additional_parameters = '?lastModStartDate=' + start_date + '+00:00' + '&cweId=' + \
-    #     cweId + '&startIndex=' + str(startIndex) + '&resultsPerPage=' + str(resultsPerPage)
     additional_parameters = {"lastModStartDate": f"{start_date}+00:00", "lastModEndDate": f"{end_date}+00:00",
                              "cweId": f"{cweId}", "startIndex": f"{startIndex}", "resultsPerPage": f"{resultsPerPage}"}
     generalSearchRequest = connection(base_url, additional_parameters)
@@ -286,19 +275,14 @@ def cpeSearch():
     # last_time = datetime.today() - relativedelta(months=int(time))
     start_date = last_time.strftime('%Y-%m-%dT%H:%M:%S.000')
     end_date = datetime.today().strftime('%Y-%m-%dT%H:%M:%S.000')
-    # demisto.log(start_date)
 
     cpeName = demisto.args().get('cpe')
     startIndex = demisto.args().get('startIndex')
     resultsPerPage = demisto.args().get('resultsPerPage')
 
-    # additional_parameters = '?modStartDate=' + start_date + ' UTC-00:00' + '&cpeMatchString=' + \
-    #     cpeMatchString + '&startIndex=' + str(startIndex) + '&resultsPerPage=' + str(resultsPerPage)
-    # additional_parameters = {"modStartDate": f"{start_date} UTC-00:00", "cpeName": cpeName, "startIndex": f"{str(startIndex)}", "resultsPerPage": f"{str(resultsPerPage)}"}
-    additional_parameters = {"lastModStartDate": f"{start_date}+00:00", "lastModEndDate": f"{end_date}+00:00",
+    additional_parameters = {"lastModStartDate": f"{start_date}+00:00", "lastModEndDate": f"{end_date}+00:00", \
                              "cpeName": f"{cpeName}", "startIndex": f"{str(startIndex)}", "resultsPerPage": f"{str(resultsPerPage)}"}
     generalSearchRequest = connection(base_url, additional_parameters)
-    # demisto.results(generalSearchRequest)
     generalVulnerabilityList = extractVulnDetails(generalSearchRequest)
 
     headers = ['CVE ID', 'Description', 'Published Date', 'Last Modified Date', 'References']
@@ -322,8 +306,6 @@ def cveSearch():
 
     additional_parameters = {"cveId": cve}
     generalSearchRequest = connection(base_url, additional_parameters)
-    # demisto.log(json.dumps(generalSearchRequest, indent=4))
-    # demisto.results(generalSearchRequest)
     generalVulnerabilityList = extractVulnDetails(generalSearchRequest)
     headers = ['CVE ID', 'Description', 'Published Date', 'Last Modified Date',
                'References', 'CVSS Base Score', 'CVSS Base Severity',
