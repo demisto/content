@@ -1,1 +1,1 @@
-Get your API key from Hoxhunt: https://admin.hoxhunt.com/ -> Account settings page.
+Integration with Hudsonrock OSINT tools to check IP, Email or username usage.

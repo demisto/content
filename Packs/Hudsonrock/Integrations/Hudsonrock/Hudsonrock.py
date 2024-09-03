@@ -35,16 +35,17 @@ def create_indicator_output(results: Dict[str, Any], indicator: str, indicatorty
     indicator_to_return: Union[Common.IP, Common.EMAIL]
     if indicatortype == 'ip':
         indicator_to_return = Common.IP(dbot_score=dbot_score_object, ip=indicator)
-        outputs_prefix = 'IP'
+        outputs_prefix_end = 'IP'
+        results['ip'] = indicator
     else:
         indicator_to_return = Common.EMAIL(dbot_score=dbot_score_object, address=indicator)
-        outputs_prefix = 'Email'
+        outputs_prefix_end = 'Email'
+        results['email'] = indicator
 
     human_readable = tableToMarkdown('Hudsonrock results', results)
-
     return CommandResults(
-        outputs_prefix=outputs_prefix,
-        outputs_key_field=indicator,
+        outputs_prefix=f'Hudsonrock.{outputs_prefix_end}',
+        outputs_key_field='indicator',
         outputs=results,
         indicator=indicator_to_return,
         readable_output=human_readable
@@ -64,7 +65,8 @@ def create_output(results: Dict[str, Any], endpoint: str, keyfield: str = '') ->
 
 
 def main():
-    base_url = 'https://cavalier.hudsonrock.com/api/json/v2/osint-tools/'
+    base_url = demisto.params()['url']
+    full_url = f'{base_url}api/json/v2/osint-tools/'
 
     verify_certificate = not demisto.params().get('insecure', False)
 
@@ -77,7 +79,7 @@ def main():
 
     try:
         client = Client(
-            base_url=base_url,
+            base_url=full_url,
             verify=verify_certificate,
             headers=headers,
             proxy=proxy)
@@ -89,15 +91,17 @@ def main():
             testresult = test_module(client, query)
             return_results(testresult)
         elif demisto.command() == 'ip':
-            ip = args.get('ip')
-            query = f'/search-by-ip?ip={ip}'
-            result = client.query(query)
-            return_results(create_indicator_output(result, ip, 'ip', reliability))
+            ip = argToList(args.get('ip'))
+            for item in ip:
+                query = f'/search-by-ip?ip={item}'
+                result = client.query(query)
+                return_results(create_indicator_output(result, item, 'ip', reliability))
         elif demisto.command() == 'email':
-            email = args.get('email')
-            query = f'/search-by-email?email={email}'
-            result = client.query(query)
-            return_results(create_indicator_output(result, email, 'email', reliability))
+            email = argToList(args.get('email'))
+            for item in email:
+                query = f'/search-by-email?email={item}'
+                result = client.query(query)
+                return_results(create_indicator_output(result, item, 'email', reliability))
         elif demisto.command() == 'hudsonrock-get-username':
             username = args.get('username')
             query = f'/search-by-username?username={username}'

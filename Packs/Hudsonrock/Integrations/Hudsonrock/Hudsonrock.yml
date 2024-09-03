@@ -4,8 +4,13 @@ commonfields:
 name: Hudsonrock
 display: Hudsonrock
 category: Data Enrichment & Threat Intelligence
-description: "Enrichment from Hudsonrock free APIs at \n\nhttps://cavalier.hudsonrock.com/api/json/v2/osint-tools/\n\nSupports: IP, Email and Username query."
+description: "Enrichment from Hudsonrock OSINT tools at https://cavalier.hudsonrock.com/api/json/v2/osint-tools/ Supports: IP, Email and Username"
 configuration:
+- display: Server URL (e.g. https://cavalier.hudsonrock.com/)
+  name: url
+  defaultvalue: https://cavalier.hudsonrock.com/
+  type: 0
+  required: true
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -16,7 +21,7 @@ configuration:
   required: false
 - display: Source Reliability
   name: integrationReliability
-  defaultvalue: B - Usually reliable
+  defaultvalue: D - Not usually reliable
   type: 15
   required: true
   options:
