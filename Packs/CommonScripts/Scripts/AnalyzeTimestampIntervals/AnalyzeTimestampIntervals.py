@@ -100,18 +100,8 @@ def create_human_readable(result, verbose):
 
 def main():
     try:
-        timestamps = demisto.args().get('timestamps')
-        verbose = demisto.args().get('verbose', 'false').lower() == 'true'  # Get verbose argument, default is false
-
-        # Ensure timestamps are provided and are in a valid format
-        if not timestamps:
-            return_error("No timestamps provided.")
-
-        if isinstance(timestamps, str):
-            try:
-                timestamps = [int(x.strip()) for x in timestamps.split(',')]  # Convert comma-separated string to list of integers
-            except ValueError:
-                return_error("Invalid timestamp format. Ensure all timestamps are integers.")
+        timestamps = argToList(demisto.args()['timestamps'], transform=int)
+        verbose = argToBoolean(demisto.args().get('verbose') or False)
 
         # Get thresholds from arguments
         max_intervals_per_window = int(demisto.args().get('max_intervals_per_window', 30))
