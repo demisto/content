@@ -5,7 +5,7 @@ Identity and access management is a crucial part of maintaining security in mode
 **IBM Security Verify Integration Highlights:**
 
 - Centralized Monitoring: Collect security events from the IBM Security Verify EventCollector for centralized monitoring and analysis.
-- Enhanced Security: Use the power of Cortex XSOAR to respond to security incidents involving identity and access management.
+- Enhanced Security: Use the power of Cortex XSIAM to respond to security incidents involving identity and access management.
 - Automated Incident Response: Integrate with playbooks to handle identity-related incidents automatically.
 
 **What does this pack do?**

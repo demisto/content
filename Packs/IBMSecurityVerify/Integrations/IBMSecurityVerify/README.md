@@ -6,18 +6,18 @@ To obtain the **Client ID** and **Client Secret**, follow these steps:
 1. **Log in to the IBM Security Verify UI**.
 2. **Click on the profile icon** located at the top right corner of the interface.
 3. **Select "Switch to admin"** to access administrative settings.
-4. Navigate to **Security > API Access**.
-5. Click on **Add API Client** to generate the necessary credentials.
-6. After clicking on **Add API Client**, make sure to assign the following permissions to the API client:
+4. Navigate to **Security** > **API Access**.  
+5. Click **Add API Client** to generate the necessary credentials.
+6. After clicking **Add API Client**, make sure to assign the following permissions to the API client:
    - **Manage reports**
    - **Read reports**
 
 - ![Creating an API Client](../../doc_files/Creating_an_API_Client.gif)
 
-## Configure IBM Security Verify Event Collector on Cortex XSOAR
+## Configure IBM Security Verify on Cortex XSIAM
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for IBM Security Verify Event Collector.
+1. Navigate to **Settings** > **Configurations** > **Data Collection** > **Automations & Feed Integrations**.
+2. Search for IBM Security Verify.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
@@ -33,7 +33,7 @@ To obtain the **Client ID** and **Client Secret**, follow these steps:
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSIAM CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### ibm-security-verify-get-events
