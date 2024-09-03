@@ -14371,7 +14371,7 @@ def log_types_queries_to_dict(params: dict[str, str]) -> QueryMap:
     if log_types := params.get('log_types'):
         # if 'All' is chosen in Log Type (log_types) parameter then all query parameters are used, else only the chosen query parameters are used.
         active_log_type_queries = FETCH_INCIDENTS_LOG_TYPES if 'All' in log_types else log_types
-        queries_dict |= {  # type: ignore[assignment]
+        queries_dict |= {  # type: ignore[assignment, typeddict-item]
             log_type: log_type_query
             for log_type in active_log_type_queries
             if (log_type_query := params.get(f'{log_type.lower()}_query'))
