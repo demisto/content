@@ -1958,14 +1958,14 @@ def get_session_token():
 def update_session_token(token: str | None):
     if token is None:
         set_integration_context({})
+    else:
+        time_now = int(time.time())
 
-    time_now = int(time.time())
-
-    integration_context = {
-        "session_token": token,
-        "last_request_at": time_now,
-    }
-    set_integration_context(integration_context)
+        integration_context = {
+            "session_token": token,
+            "last_request_at": time_now,
+        }
+        set_integration_context(integration_context)
 
 
 def raise_deprecated(old_command, new_command):
