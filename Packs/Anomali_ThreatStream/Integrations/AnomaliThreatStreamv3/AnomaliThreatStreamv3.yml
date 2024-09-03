@@ -1,4 +1,7 @@
 category: Data Enrichment & Threat Intelligence
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: Anomali ThreatStream v3
   version: -1
@@ -105,6 +108,7 @@ configuration:
   name: remote_api
   required: false
   type: 8
+defaultclassifier: 'null'
 description: Use Anomali ThreatStream to query and submit threats.
 display: Anomali ThreatStream v3
 name: Anomali ThreatStream v3
@@ -6454,7 +6458,7 @@ script:
     description: Edit the values for observable that have been cloned.
   dockerimage: demisto/py3-tools:1.0.0.99035
   runonce: false
-  script: ''
+  script: '-'
   subtype: python3
   type: python
 tests:

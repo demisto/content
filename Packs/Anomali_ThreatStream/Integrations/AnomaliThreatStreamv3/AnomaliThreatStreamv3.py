@@ -2628,6 +2628,8 @@ def clone_ioc_command(client: Client, indicator_id: str = None) -> CommandResult
     Returns:
         (CommandResults).
     """
+    res_json = client.http_request("POST", F"v2/intelligence/{indicator_id}/clone/")
+    # res = client.http_request("POST", F"v2/intelligence/{indicator_id}/clone/", resp_type='response')
 
     res_json = client.http_request("POST", F"v2/intelligence/{indicator_id}/clone/")
 
@@ -2656,14 +2658,15 @@ def edit_classification_job_command(client: Client, import_id: str = None, data:
         (CommandResults).
     """
     res = client.edit_classification_job_request(import_id, data)
-    '''
-    if res.get("approved_by_id"):
+
+    if res.get("status") != 'errors':
+
         readable_output = 'The import session was successfully approved.'
     else:
         raise DemistoException('Import Session Approval Failed.')
-    '''
+
     return CommandResults(
-        readable_output='The import session was successfully approved.',
+        readable_output=readable_output,
         raw_response=res,
     )
 
