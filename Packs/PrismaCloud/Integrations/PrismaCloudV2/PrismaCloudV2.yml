@@ -118,6 +118,12 @@ script:
   isremotesyncout: true
   commands:
   - arguments:
+    - name: page
+      description: Page number to return.
+      type: integer
+    - name: page_size
+      description: Number of results in a page. Maximum is 1000.
+      type: integer
     - description: Names of git users. Supports comma separated values.
       isArray: true
       name: git_users
@@ -265,7 +271,7 @@ script:
       - Error
       - Passed
       - Suppressed
-      - FixPendin
+      - FixPending
     - description: The limit of issues to retrieve.
       name: limit
       defaultValue: 50

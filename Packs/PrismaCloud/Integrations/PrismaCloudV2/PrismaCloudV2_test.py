@@ -1565,12 +1565,12 @@ def test_remove_additional_resource_fields(prisma_cloud_v2_client):
 
 code_issues_list_request_data = [
     # case 'fixable_only', 'scopes' with one value, 'term', 'branch' and 'limit'.
-    ({'fixable_only': True, 'scopes': ['Secrets'], 'term': 'bla1', 'branch': 'bla2', 'limit': 30},
+    ({'fixable_only': True, 'search_scopes': ['Secrets'], 'search_term': 'bla1', 'branch': 'bla2', 'limit': 30},
      {'filters': {'branch': 'bla2', 'fixableOnly': True},  # expected
       'search': {'scopes': ['Secrets'], 'term': 'bla1'}, 'limit': 30, 'offset': 0}),
-    # case 'scopes' with more than one value and offset.
-    ({'scopes': ['Secrets', 'Licenses'], 'offset': 10},
-     {'search': {'scopes': ['Secrets', 'Licenses']}, 'limit': 50, 'offset': 10}),
+    # case 'scopes' with more than one value.
+    ({'search_scopes': ['Secrets', 'Licenses']},
+     {'search': {'scopes': ['Secrets', 'Licenses']}, 'limit': 50, 'offset': 10})
 ]
 @pytest.mark.parametrize('args, expected', code_issues_list_request_data)
 def test_code_issues_list_request(mocker, prisma_cloud_v2_client, args, expected):
@@ -1615,15 +1615,23 @@ def test_get_labels(labels, expected):
 valid_args = [
     ({'license_type': 'OSI_APACHE', 'some_filter': 'value1', 'search_scopes': 'scope1', 'search_term': 'term1'}),
     ({'license_type': 'OSI_APACHE', 'some_filter': 'value1', 'search_scopes': 'scope1', 'limit': 20, 'search_term': 'term1'}),
+    ({'page_size': 50, 'page': 50, 'some_filter': 'value1'})
 ]
 
 invalid_args = [
-    ({'license_type': 'invalid_type', 'some_filter': 'value1'}, DemistoException, 'Invalid license type.'),
+    ({'license_type': 'invalid_type', 'some_filter': 'value1'}, DemistoException,
+     'Invalid license type. For the list of valid license types go to- https://pan.dev/prisma-cloud/api/code/get-periodic-findings/#request'),
     ({'search_scopes': 'scope1', 'search_term': 'term1', 'limit': 10}, DemistoException,
-     "At least one filtering argument is required, excluding `search_scopes`, `search_term`, and `limit`."),
-    ({}, DemistoException, "At least one filtering argument is required, excluding `search_scopes`, `search_term`, and `limit`."),
+     "At least one filtering argument is required, excluding `search_scopes`, `search_term`, and `limit`. For example, `fixable_only` or 'branch`"),
+    ({}, DemistoException, "At least one filtering argument is required, excluding `search_scopes`, `search_term`, and `limit`. For example, `fixable_only` or 'branch`"),
     ({'search_scopes': 'scope1', 'some_filter': 'value1'}, DemistoException,
-     'The `search_term` argument is required when specifying `search_scopes`.')
+     'The `search_term` argument is required when specifying `search_scopes`.'),
+    ({'page': 40, 'some_filter': 'value1'}, DemistoException,
+     "Both `page` and `page_size` must be specified together. If one is provided, the other must be as well."),
+    ({'page_size': 50, 'some_filter': 'value1'}, DemistoException,
+     "Both `page` and `page_size` must be specified together. If one is provided, the other must be as well."),
+    ({'page_size': 1001, 'page': 40, 'some_filter': 'value1'}, DemistoException,
+     "`Page_size argument can't be more than 1000")
 ]
 
 @pytest.mark.parametrize('given', valid_args)
@@ -1811,3 +1819,27 @@ def test_code_issues_list_request(mocker, given_params, expected_body, prisma_cl
         '/code/api/v2/code-issues/branch_scan',
         json_data=expected_body
     )
+
+user_pagination_data = [
+    ({'fixable_only': True, 'page': 100, 'page_size': 1, 'limit': 50}, 1),  # case `page` and `page_size` with limit arguments witch needs to be ignored
+    ({'fixable_only': True, 'page': 100, 'page_size': 1}, 1),  # case `page` and `page_size`
+    ({'fixable_only': True, 'limit': 2}, 2)  # case `limit` (no pagination)
+]
+@pytest.mark.parametrize("args, expected_call_count", user_pagination_data)
+def test_code_issues_list_command__user_pagination(mocker, args, expected_call_count, prisma_cloud_v2_client):
+    """
+    Given
+        has_next feild from api response.
+    When
+        Running code_issues_list_command function.
+    Then
+        The api is called in the right amount of times.
+    """
+    from PrismaCloudV2 import code_issues_list_command
+    m = mocker.patch.object(prisma_cloud_v2_client, '_http_request',
+                            side_effect=[{'data': [{'firstDetected':'some_date', 'policy': 'policy1', 'severity': 'severity1',
+                                                    'labels': ['label1']}], 'hasNext': True},
+                                         {'data': [{'firstDetected':'some_date', 'policy': 'policy1', 'severity': 'severity1',
+                                                    'labels': ['label1']}], 'hasNext': False}])
+    code_issues_list_command(prisma_cloud_v2_client, args)
+    assert m.call_count == expected_call_count

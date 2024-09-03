@@ -2244,9 +2244,17 @@ def validate_code_issues_list_args(args):
     license_type = args.get('license_type')
     search_scopes = args.get('search_scopes')
     search_term = args.get('search_term')
+    page = args.get('page')
+    page_size = arg_to_number(args.get('page_size'))
+    
+    if page and not page_size or page_size and not page:
+        raise DemistoException("Both `page` and `page_size` must be specified together. If one is provided, the other must be as well.")
+    
+    if page_size and page_size>1000:
+        raise DemistoException("`Page_size argument can't be more than 1000")
     
     if license_type and license_type not in LICENSE_TYPES:
-        raise DemistoException('Invalid license type.')
+        raise DemistoException('Invalid license type. For the list of valid license types go to- https://pan.dev/prisma-cloud/api/code/get-periodic-findings/#request')  #TODO we need to tell the user witch ones he can use
     
     if search_scopes and not search_term:
         raise DemistoException('The `search_term` argument is required when specifying `search_scopes`.')
@@ -2260,11 +2268,15 @@ def validate_code_issues_list_args(args):
     # Ensure there is at least one valid filtering argument
     if not filtered_args:
         raise DemistoException(
-            "At least one filtering argument is required, excluding `search_scopes`, `search_term`, and `limit`."
+            "At least one filtering argument is required, excluding `search_scopes`, `search_term`, and `limit`. For example, `fixable_only` or 'branch`"
         )
 
 
 def get_labels(labels)->Optional[List]:
+    """
+    Converts the labels from a code issue into a list of strings,
+    handling both string lists and lists of label dictionaries
+    """
     if labels:
         res = []
         for label in labels:
@@ -2297,13 +2309,23 @@ def code_issues_list_command(client, args):
     license_type = argToList(args.get('license_type'))
     code_categories = argToList(args.get('code_categories'))
     limit = arg_to_number(args.get('limit')) or 50
+    page = arg_to_number(args.get('page')) or 0
+    page_size = arg_to_number(args.get('page_size'))
+
     
-    
+    limit_for_request = limit
     if limit>1000:
-        limit = 1000
+        limit_for_request = 1000
         
+    # pagination
+    if page_size:
+        limit_for_request = page_size
+        offset = page
+        limit = page_size
+    else:
+        offset = 0
+
     has_next = True
-    offset = 0
     
     res_issues = []
     issues_for_readable_output = []
@@ -2316,7 +2338,7 @@ def code_issues_list_command(client, args):
                                                    secrets_risk_factors=secrets_risk_factors, severities=severities,
                                                    vulnerability_risk_factors=vulnerability_risk_factors, iac_tags=iac_tags,
                                                    license_type=license_type, code_categories=code_categories,
-                                                   limit=limit, offset=offset)
+                                                   limit=limit_for_request, offset=offset)
         res_issues.extend(response['data'])
         
         for issue in response['data']:
@@ -2328,7 +2350,7 @@ def code_issues_list_command(client, args):
                 'Labels': get_labels(issue.get('labels')),
                 'Repository Source': issue.get('repositorySource')
             })
-                
+             
         has_next = response['hasNext']
         offset = len(res_issues)
     
