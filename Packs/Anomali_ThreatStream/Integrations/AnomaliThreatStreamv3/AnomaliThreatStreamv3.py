@@ -2628,8 +2628,6 @@ def clone_ioc_command(client: Client, indicator_id: str = None) -> CommandResult
     Returns:
         (CommandResults).
     """
-    res_json = client.http_request("POST", F"v2/intelligence/{indicator_id}/clone/")
-    # res = client.http_request("POST", F"v2/intelligence/{indicator_id}/clone/", resp_type='response')
 
     res_json = client.http_request("POST", F"v2/intelligence/{indicator_id}/clone/")
 
