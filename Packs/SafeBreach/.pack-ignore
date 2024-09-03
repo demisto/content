@@ -4,3 +4,22 @@ ignore=BA108,BA109
 [file:SafeBreach_v2_image.png]
 ignore=IM111
 
+# GR103 is temporary, see CIAC-11656
+[file:reputation-SafeBreach_IP.json]
+ignore=GR103
+[file:layoutscontainer-SafeBreach_URL.json]
+ignore=GR103
+[file:layoutscontainer-SafeBreach_Command.json]
+ignore=GR103
+[file:layoutscontainer-SafeBreach_Domain.json]
+ignore=GR103
+[file:layoutscontainer-SafeBreach_Hash.json]
+ignore=GR103
+[file:layoutscontainer-SafeBreach_Protocol.json]
+ignore=GR103
+[file:layoutscontainer-SafeBreach_Registry.json]
+ignore=GR103
+[file:layoutscontainer-SafeBreach_Process.json]
+ignore=GR103
+[file:layoutscontainer-SafeBreach_Port.json]
+ignore=GR103
