@@ -5,7 +5,7 @@ from CommonServerPython import *
 
 
 import pytest
-from IBMSecurityVerifyEventCollector import Client, get_events_command, fetch_events, max_limit_validation
+from Integrations.IBMSecurityVerify.IBMSecurityVerify import Client, get_events_command, fetch_events, max_limit_validation
 
 EVENTS = [
     {"indexed_at": "2", "tenantname": "Test Event 2", "id": "123"}

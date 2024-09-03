@@ -183,7 +183,7 @@ def fetch_events(client: Client, last_run: dict[str, str], limit: int) -> tuple[
 
         demisto.debug(f'In the call get {len(collected_events)} events')
         last_run = {
-            "last_time": search_after.get("time", ""), # Contains the 'indexed_at' of the last event
+            "last_time": search_after.get("time", ""),  # Contains the 'indexed_at' of the last event
             "last_id": search_after.get("id", "")
         }
         collected_events.extend(events)
