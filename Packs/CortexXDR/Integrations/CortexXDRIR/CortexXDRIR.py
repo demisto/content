@@ -1025,12 +1025,16 @@ def update_remote_system_command(client, args):
             closed_without_status = not update_args.get('close_reason') and not update_args.get('closeReason')
             remote_is_already_closed = current_remote_status in XDR_RESOLVED_STATUS_TO_XSOAR
             demisto.debug(f"{remote_is_already_closed=}")
+            
+            close_alerts_in_xdr = client._params.get("close_xdr_incident", False)
+            
             if is_closed and closed_without_status and not remote_is_already_closed:
                 update_args['status'] = XSOAR_RESOLVED_STATUS_TO_XDR.get('Other')
             demisto.debug(f"After checking status {update_args=}")
             update_incident_command(client, update_args)
 
             close_alerts_in_xdr = argToBoolean(client._params.get("close_alerts_in_xdr", False))
+            
             # Check all relevant fields for an incident being closed in XSOAR UI
             demisto.debug(f"Defining whether to close related alerts by: {is_closed=} {close_alerts_in_xdr=}")
             if is_closed and closed_without_status and remote_is_already_closed:
@@ -1305,8 +1309,8 @@ def main():  # pragma: no cover
     starred_incidents_fetch_window = params.get('starred_incidents_fetch_window', '3 days')
     exclude_artifacts = argToBoolean(params.get('exclude_fields', True))
     xdr_delay = arg_to_number(params.get('xdr_delay')) or 1
-    close_cortex_incident = params.get('close_cortex_incident')
-    close_xdr_incident = params.get('close_xdr_incident')
+    close_cortex_incident = params.get('close_cortex_incident', False)
+    close_xdr_incident = params.get('close_xdr_incident', False)
     try:
         timeout = int(params.get('timeout', 120))
     except ValueError as e:
