@@ -4,7 +4,7 @@ import pytest
 from pytest_mock import MockerFixture
 
 from CommonServerPython import *
-from AtlassianConfluenceCloud import Client, URL_SUFFIX, MESSAGES, fetch_events, get_events
+from AtlassianConfluenceCloud import Client, URL_SUFFIX, MESSAGES, PAGE_SIZE, fetch_events, get_events
 from test_data import input_data
 
 BASE_URL = "https://dummy.atlassian.com"
@@ -982,98 +982,338 @@ def test_confluence_cloud_content_list_command_when_when_object_not_present(requ
     assert response.readable_output == expected_readable_output
 
 
-def test_fetch_events_next_link_input_no_next_link_output(mocker: MockerFixture):
+def test_fetch_events_first_run_no_links(mocker: MockerFixture):
     """
-    Tests the case where the previous batch reached the fetch limit before pagination was through.
-    In that case, next_link is saved for the next run, and we start our next batch by cleaning up the last one.
     Given:
-        - A next link is present in the last_run dictionary.
-        - A response with no next link is returned from the API.
+        - First time running fetch_events (last_run is empty)
+        - There are events to fetch
+        - There is only one page (there is no next link after the first api call)
     When:
-        - Calling the fetch_events function with the last_run dictionary.
+        - The fetch_events function is called with an empty last_run dictionary and a fetch_limit of 100
     Then:
-        - The search_event client function is called twice:
-            - First with the next_link from last_run dictionary and no dates.
-            - Second with no next_link and dates.
-        - The fetch_events function yields the events from the response with None as next_link
+        - Ensure the events are returned
+        - Ensure the end_date is returned correctly
+        - Ensure client.search_events is called with the correct arguments
     """
-    last_run = {'next_link': 'dummy_next_link.url'}
-
-    # expected_next_run = {'last_index': last_run.get('last_index') + limit}
-    response = collector_test_data['get-audit-records-no-links']
-    expected_events = response['results']
-    #
-    mock_client = mocker.patch.object(client, 'search_events', return_value=response)
-    # next_run, events = fetch_events(client, last_run, limit)
-    #
-    # mock_client.assert_called_once_with(start_index=expected_start_index, limit=limit)
-    # assert next_run == expected_next_run
-    # assert events == expected_events
-
-
-def test_fetch_events_without_last_index(mocker: MockerFixture):
     last_run = {}
-    limit = 5
+    fetch_limit = 100
+    response = collector_test_data['get-audit-records-no-links']
 
-    expected_events = collector_test_data['get-audit-records']['results'][:limit]
-    response = {'results': expected_events, 'start': 5}
-    expected_next_run = {'last_index': response['start'] + len(expected_events) - 1}
+    # mock values
+    mock_time = 1680000000
+    mocker.patch('time.time', return_value=mock_time)
+    mock_search = mocker.patch.object(client, 'search_events', return_value=response)
 
-    mock_client = mocker.patch.object(client, 'search_events', return_value=response)
-    next_run, events = fetch_events(client, last_run, limit)
+    # expected values
+    expected_end_date = (mock_time - 5)*1000
+    expected_start_date = expected_end_date - 60000
 
-    mock_client.assert_called_once()
-    assert next_run == expected_next_run
-    assert events == expected_events
+    # call
+    fetch = fetch_events(client, last_run, fetch_limit)
+    actual_events, actual_next_link, actual_end_date = next(fetch)
+    # assertions
+    mock_search.assert_called_with(limit=PAGE_SIZE, start_date=str(expected_start_date), end_date=str(expected_end_date))
+    assert actual_events == response['results']
+    assert not actual_next_link
+    assert actual_end_date == expected_end_date
 
-
-def test_get_events_with_both_start_index_and_start_date(mocker):
-    mock_client = mocker.MagicMock(spec=Client)
-    args = {
-        'limit': '10',
-        'start': '5',
-        'start_date': '2021-01-01'
-    }
-
-    with pytest.raises(ValueError):
-        get_events(mock_client, args)
-
-
-def test_get_events_without_start_index_and_start_date(mocker):
-    mock_client = mocker.MagicMock(spec=Client)
-    args = {'limit': 10}
-    expected_events = [{'id': 1}, {'id': 2}]
-    mock_client.search_events.return_value = {'results': expected_events}
-
-    events, command_results = get_events(mock_client, args)
-
-    assert events == expected_events
-    assert isinstance(command_results, CommandResults)
-    mock_client.search_events.assert_called_once_with(limit=10, start_index=0)
+    actual_events, actual_next_link, actual_end_date = next(fetch)
+    assert actual_events == []
+    assert not actual_next_link
+    assert actual_end_date == expected_end_date
 
 
-def test_get_events_with_start_index(mocker):
-    mock_client = mocker.MagicMock(spec=Client)
-    args = {'limit': 10, 'start': 5}
-    expected_events = [{'id': 6}, {'id': 7}]
-    mock_client.search_events.return_value = {'results': expected_events}
+def test_fetch_events_first_run_with_links(mocker: MockerFixture):
+    """
+    Given:
+        - First time running fetch_events (last_run is empty)
+        - There are events to fetch
+        - There is more than one page
+    When:
+        - The fetch_events function is called with an empty last_run dictionary and a fetch_limit of 100
 
-    events, command_results = get_events(mock_client, args)
+    Then:
+        - Ensure the events are returned
+        - Ensure the next_link is calculated correctly
+        - Ensure the end_date is returned correctly
+        - Ensure calling to client.search_events with the correct arguments
+    """
+    fetch_limit = 100
+    first_page_response = collector_test_data['get-audit-records-with-links']
 
-    assert events == expected_events
-    assert isinstance(command_results, CommandResults)
-    mock_client.search_events.assert_called_once_with(limit=10, start_index=5)
+    # mock values
+    mock_time = 1680000000
+    mocker.patch('time.time', return_value=mock_time)
+    mock_search = mocker.patch.object(client, 'search_events', return_value=first_page_response)
+
+    # expected values
+    expected_end_date = (mock_time - 5)*1000
+    expected_start_date = expected_end_date - 60000
+
+    # call
+    fetch = fetch_events(client, {}, fetch_limit)
+    actual_events, actual_next_link, actual_end_date = next(fetch)
+
+    # assertions
+    mock_search.assert_called_with(limit=PAGE_SIZE, start_date=str(expected_start_date), end_date=str(expected_end_date))
+    assert actual_events == first_page_response['results']
+    assert actual_next_link == first_page_response['_links']['next']
+    assert actual_end_date == expected_end_date
+
+    # mock values
+    second_page_response = collector_test_data['get-audit-records-no-links']
+    mock_search = mocker.patch.object(client, 'search_events', return_value=second_page_response)
+
+    # call
+    actual_events, actual_next_link, actual_end_date = next(fetch)
+
+    # assertions
+    mock_search.assert_called_with(limit=PAGE_SIZE, next_link=first_page_response['_links']['next'])
+    assert actual_events == second_page_response['results']
+    assert not actual_next_link
+    assert actual_end_date == expected_end_date
+
+    # call
+    actual_events, actual_next_link, actual_end_date = next(fetch)
+
+    # assertions
+    assert actual_events == []
+    assert not actual_next_link
+    assert actual_end_date == expected_end_date
 
 
-def test_get_events_with_start_date(mocker):
-    mock_client = mocker.MagicMock(spec=Client)
-    start_date = str(round((time.time() - 60) * 1000))
-    args = {'limit': 10, 'start_date': start_date}
-    expected_events = [{'id': 3}, {'id': 4}]
-    mock_client.search_events.return_value = {'results': expected_events}
+def test_fetch_events_fetch_limit_reached_no_link(mocker: MockerFixture):
+    """
+    Given:
+        - Running fetch_events with a fetch limit of 1
+    When:
+        - The fetch limit is reached
+        - The last response had no next link
+    Then:
+        - Ensure only the events within the fetch limit are returned
+        - Ensure the next_link is calculated correctly
+        - Ensure the end_date is returned correctly
+    """
+    fetch_limit = 1
+    first_page_response = collector_test_data['get-audit-records-no-links']
 
-    events, command_results = get_events(mock_client, args)
+    # mock values
+    mock_time = 1680000000
+    mocker.patch('time.time', return_value=mock_time)
+    mock_search = mocker.patch.object(client, 'search_events', return_value=first_page_response)
 
-    assert events == expected_events
-    assert isinstance(command_results, CommandResults)
-    mock_client.search_events.assert_called_once_with(limit=10, start_date=start_date)
+    # expected values
+    expected_end_date = (mock_time - 5) * 1000
+    expected_start_date = expected_end_date - 60000
+    expected_event = first_page_response['results'][:fetch_limit]
+    expected_next_link = URL_SUFFIX['NEXT_LINK_TEMPLATE'].format(expected_end_date, PAGE_SIZE, fetch_limit, expected_start_date)
+
+    # call
+    fetch = fetch_events(client, {}, fetch_limit)
+    actual_events, actual_next_link, actual_end_date = next(fetch)
+
+    # assertions
+    mock_search.assert_called_with(limit=PAGE_SIZE, start_date=str(expected_start_date),end_date=str(expected_end_date))
+    assert actual_events == expected_event
+    assert actual_next_link == expected_next_link
+    assert actual_end_date == expected_end_date
+
+    # call
+    actual_events, actual_next_link, actual_end_date = next(fetch)
+
+    # assertions
+    assert actual_events == []
+    assert actual_next_link == expected_next_link
+    assert actual_end_date == expected_end_date
+
+
+def test_fetch_events_fetch_limit_reached_with_link(mocker: MockerFixture):
+    """
+    Given:
+        - Running fetch_events with a fetch limit of 1
+    When:
+        - The fetch limit is reached
+        - The last response had no next link
+    Then:
+        - Ensure only the events within the fetch limit are returned
+        - Ensure the next_link is calculated correctly
+        - Ensure the end_date is returned correctly
+    """
+    fetch_limit = 1
+    first_page_response = collector_test_data['get-audit-records-with-links']
+
+    # mock values
+    mock_time = 1680000000
+    mocker.patch('time.time', return_value=mock_time)
+    mock_search = mocker.patch.object(client, 'search_events', return_value=first_page_response)
+
+    # expected values
+    expected_end_date = (mock_time - 5) * 1000
+    expected_start_date = expected_end_date - 60000
+    expected_event = first_page_response['results'][:fetch_limit]
+    expected_next_link = first_page_response['_links']['next'].replace('start=2000', f'start={fetch_limit}')
+
+    # call
+    fetch = fetch_events(client, {}, fetch_limit)
+    actual_events, actual_next_link, actual_end_date = next(fetch)
+
+    # assertions
+    mock_search.assert_called_with(limit=PAGE_SIZE, start_date=str(expected_start_date),end_date=str(expected_end_date))
+    assert actual_events == expected_event
+    assert actual_next_link == expected_next_link
+    assert actual_end_date == expected_end_date
+
+    # call
+    actual_events, actual_next_link, actual_end_date = next(fetch)
+
+    # assertions
+    assert actual_events == []
+    assert actual_next_link == expected_next_link
+    assert actual_end_date == expected_end_date
+
+
+def test_fetch_events_cleanup_no_link(mocker: MockerFixture):
+    """
+    Given:
+        - Running fetch_events in cleanup mode (last_run dictionary contains next_link)
+    When:
+        - There are events to fetch
+        - The cleanup call returns the last page
+    Then:
+        - Ensure the events are returned
+        - Ensure the end_date is returned correctly
+        - Ensure client.search_events is called with the correct arguments
+    """
+    last_run = {"next_link": "/rest/api/audit/?end_date=1680000000000&next=true&limit=1000&start=2000&startDate=1679999940000"}
+    fetch_limit = 100
+    first_page_response = collector_test_data['get-audit-records-no-links']
+    second_page_response = collector_test_data['get-audit-records-with-links']
+
+    # mock values
+    mock_time = 1680000000
+    mocker.patch('time.time', return_value=mock_time)
+    mock_search = mocker.patch.object(client, 'search_events', return_value=first_page_response)
+
+    # expected values
+    expected_end_date = (mock_time - 5) * 1000
+    expected_start_date = expected_end_date - 60000
+    expected_events = first_page_response['results'] + second_page_response['results']
+
+    # call
+    fetch = fetch_events(client, last_run, fetch_limit)
+    actual_events, actual_next_link, actual_end_date = next(fetch)
+
+    # assertions
+    mock_search.assert_has_calls([
+        mocker.call(limit=PAGE_SIZE, next_link=last_run['next_link']),
+        mocker.call(limit=PAGE_SIZE, start_date=str(expected_start_date), end_date=str(expected_end_date))
+    ])
+
+    assert actual_events == expected_events
+    assert not actual_next_link
+    assert actual_end_date == expected_end_date
+
+
+def test_fetch_events_no_more_events(mocker: MockerFixture):
+    """
+    Given:
+        - Running fetch_events when there are no more events to fetch
+
+    When:
+        - next_link is None
+
+    Then:
+        - Ensure empty lists are returned for events and next_link
+        - Ensure the end_date is returned correctly
+    """
+    last_run = {}
+    fetch_limit = 100
+    empty_results_page = collector_test_data['get-empty-audit-records']
+    mock_time = 1680000000
+    mocker.patch('time.time', return_value=mock_time)
+    mocker.patch.object(client, 'search_events', return_value=empty_results_page)
+
+    generator = fetch_events(client, last_run, fetch_limit)
+    next(generator)
+    actual_events, actual_next_link, actual_end_date = next(generator)
+
+    assert actual_events == []
+    assert actual_next_link is None
+    assert actual_end_date == (mock_time-5)*1000
+
+
+def test_get_events_default_values(mocker: MockerFixture):
+    """
+    Given:
+        - Using default values for start_date, end_date and limit
+
+    When:
+        - Calling get_events
+
+    Then:
+        - Ensure the events are returned
+        - Ensure client.search_events is called with the correct arguments
+    """
+    # mock values
+    mock_time = 1680000000
+    mocker.patch('time.time', return_value=mock_time)
+    mocked_response = collector_test_data['get-audit-records-with-links']
+    mock_search = mocker.patch.object(client, 'search_events', return_value=mocked_response)
+
+    # expected value
+    expected_events = (mocked_response.get("results")) * 2
+    expected_next_link = mocked_response['_links']['next']
+    expected_end_date = (mock_time - 5) * 1000
+    expected_start_date = expected_end_date - 60000
+
+    # call
+    actual_events, _ = get_events(client, {})
+
+    # assertions
+    assert actual_events == expected_events
+    mock_search.assert_has_calls([
+        mocker.call(limit=PAGE_SIZE, start_date=str(expected_start_date), end_date=str(expected_end_date)),
+        mocker.call(limit=PAGE_SIZE, next_link=expected_next_link)
+    ])
+
+
+def test_get_events_with_arguments(mocker: MockerFixture):
+    """
+    Given:
+        - Providing start_date, end_date and limit as arguments
+
+    When:
+        - Calling get_events
+
+    Then:
+        - Ensure the events are returned
+        - Ensure client.search_events is called with the correct arguments
+    """
+    args = {"start_date": 1670000000, "end_date": 1680000000, "limit": 50}
+    mocked_response = collector_test_data['get-audit-records-no-links']
+    mocked_search = mocker.patch.object(client, 'search_events', return_value=mocked_response)
+    actual_events, _ = get_events(client, args)
+
+    assert actual_events == mocked_response['results']
+    mocked_search.assert_called_once_with(limit=PAGE_SIZE, start_date="1670000000", end_date="1680000000")
+
+
+def test_get_events_with_arguments_with_limit(mocker: MockerFixture):
+    """
+    Given:
+        - Providing start_date, end_date and limit as arguments
+
+    When:
+        - Calling get_events
+
+    Then:
+        - Ensure the events are returned
+        - Ensure client.search_events is called with the correct arguments
+    """
+    args = {"start_date": 1670000000, "end_date": 1680000000, "limit": 10}
+    mocked_response = collector_test_data['get-audit-records-no-links']
+    mocked_search = mocker.patch.object(client, 'search_events', return_value=mocked_response)
+    actual_events, _ = get_events(client, args)
+
+    assert actual_events == mocked_response['results'][:args['limit']]
+    mocked_search.assert_called_once_with(limit=PAGE_SIZE, start_date="1670000000", end_date="1680000000")

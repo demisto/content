@@ -1379,7 +1379,7 @@ def confluence_cloud_group_list_command(client: Client, args: Dict[str, str]) ->
         raw_response=response_json)
 
 
-def fetch_events(client: Client, last_run: dict[str, Any], fetch_limit: int) -> tuple[Dict, List[Dict]]:
+def fetch_events(client: Client, last_run: dict[str, Any], fetch_limit: int):
     demisto.debug(f'Starting fetch_events with last_run: {last_run} and fetch_limit: {fetch_limit}')
     end_date = int((time.time() - 5) * 1000)
     last_end_date = last_run.get('end_date', 0)
@@ -1423,8 +1423,8 @@ def fetch_events(client: Client, last_run: dict[str, Any], fetch_limit: int) -> 
                 yield events, next_link, end_date
                 break
 
-            # clean up the previous batch
-            demisto.debug('In cleanup mode. Fetching the last events from previous batch.')
+            # last call cleaned up the previous batch, start new batch
+            demisto.debug('Finished cleanup mode. Starting the new batch.')
             response = run_fetch_mechanism(client, None, start_date, end_date)
             events.extend(response['results'])
             next_link = response['_links'].get('next', None)
