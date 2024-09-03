@@ -385,7 +385,7 @@ def test_fetch_events_limit_logic(mocker):
                                       return_value={'items': [{'id': 1, 'timestamp': 1}], 'scrollCursor': '1'})
     mocker.patch('ZeroNetworksSegmentEventCollector.process_events', return_value=([], {}, 0))
 
-    max_results, limit = (1,1)
+    max_results, limit = (1, 1)
     params = {"network_activity_filters": []}
     last_run = {}
     client = Client("", False, False, {})
