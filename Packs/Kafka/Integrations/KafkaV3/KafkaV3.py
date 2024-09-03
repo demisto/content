@@ -28,6 +28,11 @@ class KProducer(Producer):
     pass
 
 
+class Handler:
+    @staticmethod
+    def write(msg: str):
+        demisto.info(msg)
+
 class KafkaCommunicator:
     """Client class to interact with Kafka."""
     conf_producer: Optional[Dict[str, Any]] = None
@@ -38,7 +43,7 @@ class KafkaCommunicator:
     kafka_logger: Optional[logging.Logger] = None
 
     SESSION_TIMEOUT: int = 280000
-    REQUESTS_TIMEOUT: float = 280.0
+    REQUESTS_TIMEOUT: float = 10.0
     POLL_TIMEOUT: float = 10.0
     MAX_POLLS_FOR_LOG: int = 100
 
@@ -70,7 +75,9 @@ class KafkaCommunicator:
                               'session.timeout.ms': self.SESSION_TIMEOUT,
                               'auto.offset.reset': offset,
                               'group.id': group_id,
-                              'enable.auto.commit': False}
+                              'enable.auto.commit': False,
+                              'log_level': 7,
+                              'debug': 'all'}
 
         self.kafka_logger = kafka_logger
 
@@ -111,7 +118,6 @@ class KafkaCommunicator:
             self.conf_consumer.update({'ssl.key.password': ssl_password})
 
     def get_kafka_consumer(self) -> KConsumer:
-        demisto.debug(f"[test] in get_kafka_consumer, {self.kafka_logger=}")
         if self.kafka_logger:
             return KConsumer(self.conf_consumer, logger=self.kafka_logger)
         else:
@@ -464,6 +470,7 @@ def print_topics(kafka: KafkaCommunicator, demisto_args: dict) -> Union[CommandR
     demisto.debug("[test] in print_topics, preparing to get topics.")
     kafka_topics = kafka.get_topics().values()
     demisto.debug(f"[test] in print_topics, {kafka_topics=}")
+    counter = 0
     if kafka_topics:
         topics = []
         for topic in kafka_topics:
@@ -474,11 +481,19 @@ def print_topics(kafka: KafkaCommunicator, demisto_args: dict) -> Union[CommandR
                     try:
                         partition_output['EarliestOffset'], partition_output['OldestOffset'] = kafka.get_partition_offsets(
                             topic=topic.topic, partition=int(partition.id))
+                        demisto.info(f"[test] got success for {topics=} with {partition.id=}")
+                    except Exception as e:
+                        demisto.info(f"[test] failed with {topics=} with {partition.id=}\n{e}")
                     except KafkaException as e:
                         # Sometimes listing topics can return uninitialized partitions.
                         # If that's the case, ignore them and continue.
                         if 'Unknown partition' not in str(e):
                             raise e
+                counter += 1
+                if counter == 10:
+                    break
+            if counter == 10:
+                break
                 partitions.append(partition_output)
 
             topics.append({
