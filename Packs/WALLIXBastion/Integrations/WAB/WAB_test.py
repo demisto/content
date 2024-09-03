@@ -29,6 +29,43 @@ def test_timeout(mocker):
         raise AssertionError("zero timeout should not be allowed")
 
 
+def test_test_module(mocker):
+    mocker.patch.object(demisto, "command", return_value="test-module")
+    mocker.patch.object(demisto, "args", return_value={})
+    results_mock = mocker.patch.object(demisto, "results")
+
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "url": "1.1.1.1",
+            "verify_certificate": False,
+            "api_version": "v3.12",
+            "auth_key": "key",
+            "auth_user": "user"
+        }
+    )
+
+    def mock_http_request(*args, **kwargs):
+        assert args[0] == "get"
+        assert args[1] == ""
+        assert kwargs["headers"].get("X-Auth-Key") == "key"
+        assert kwargs["headers"].get("X-Auth-User") == "user"
+
+        mock: Any = Settable()
+
+        mock.status_code = 204
+        mock.headers = {}
+
+        return mock
+
+    mocker.patch.object(BaseClient, "_http_request", side_effect=mock_http_request)
+
+    main()
+
+    results_mock.assert_called_once_with("ok")
+
+
 def test_login(mocker):
     mocker.patch.object(demisto, "command", return_value="wab-get-current-serial-configuration-number-of-bastion")
     mocker.patch.object(demisto, "args", return_value={})
