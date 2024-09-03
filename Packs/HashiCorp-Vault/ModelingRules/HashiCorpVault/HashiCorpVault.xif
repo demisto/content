@@ -13,7 +13,7 @@ alter
     mount_point = coalesce(_raw_log -> request.mount_point, _raw_log -> response.mount_point),
     mount_type = coalesce(_raw_log -> request.mount_type, _raw_log -> response.mount_type), // Authentication method used for a particular request.
     operation = _raw_log -> request.operation, // This is the type of operation which corresponds to path capabilities and is expected to be one of: create, read, update, delete, or list
-    policies = arraydistinct(arrayconcat(_raw_log -> request.policies[], _raw_log -> request.token_policies[])), // list of policies associated with the token
+    policies = arraydistinct(arrayconcat(json_extract_scalar_array(_raw_log, "$.auth.token_policies"), json_extract_scalar_array(_raw_log, "$.auth.policies"))), // list of policies associated with the token
     request_id = _raw_log -> request.id, // Unique identifier for the request
     request_path = _raw_log -> request.path, // The requested Vault path for operation
     roles = arraycreate(_raw_log -> auth.metadata.role, _raw_log -> auth.metadata.role_name),
