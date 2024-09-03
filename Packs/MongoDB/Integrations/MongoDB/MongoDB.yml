@@ -154,7 +154,7 @@ script:
     - description: Name of the collection to query.
       name: collection
       required: true
-    - description: 'A JSON pipeline query to search by in the collection. Pipeline query should by list of dictionaries. For example: [{"key1": "value1"}, {"key2": "value2"}].'
+    - description: 'A JSON pipeline query to search by in the collection. Pipeline query should by list of dictionaries. For example: `[{"key1": "value1"}, {"key2": "value2"}]`.'
       name: pipeline
       required: true
     - defaultValue: '50'
