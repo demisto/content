@@ -21,7 +21,7 @@ class FixGetPass():
             user = 'vertica'
             try:
                 # Check if the getpass_getuser_org function exists and was not overriden after init.
-                if self.getpass_getuser_org:
+                if self.getpass_getuser_org:  # type: ignore[truthy-function]
                     # If so, obtain the user by calling it.
                     user = self.getpass_getuser_org()
             except (NameError, KeyError):
@@ -33,7 +33,7 @@ class FixGetPass():
 
     def __del__(self):
         # If the getpass_getuser_org and getpass objects are still intact
-        if self.getpass_getuser_org and getpass:
+        if self.getpass_getuser_org and getpass:  # type: ignore[truthy-function]
             # return the state to as it was before the override.
             getpass.getuser = self.getpass_getuser_org
 
