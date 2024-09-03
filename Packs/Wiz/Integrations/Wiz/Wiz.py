@@ -159,10 +159,1139 @@ query IssuesTable(
     orderBy: $orderBy) {
     nodes {
       evidenceQuery
+      threatDetectionDetails{
+        ...ThreatDetectionDetailsDetections
+        ...ThreatDetectionDetailsActorsResources
+        ...ThreatDetectionDetailsMainDetection
+        ...ThreatDetectionDetailsCloudEventGroups
+      }
+      type
     }
     pageInfo {
       hasNextPage
       endCursor
+    }
+  }
+}
+fragment ThreatDetectionDetailsDetections on ThreatDetectionIssueDetails {
+  detections(first: 500) {
+    nodes {
+      primaryResource {
+        id
+        type
+        name
+        externalId
+      }
+      actors {
+        id
+        name
+        externalId
+        providerUniqueId
+        type
+      }
+      startedAt
+      id
+      severity
+      description(format: MARKDOWN)
+      primaryResource {
+        region
+        cloudAccount {
+          id
+          name
+          externalId
+          cloudProvider
+        }
+      }
+      ruleMatch {
+        rule {
+          id
+          name
+          securitySubCategories {
+            id
+            title
+            category {
+              id
+              name
+              framework {
+                id
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+fragment ThreatDetectionDetailsActorsResources on ThreatDetectionIssueDetails {
+  actors {
+    id
+    name
+    externalId
+    providerUniqueId
+    type
+  }
+  resources {
+    id
+    name
+    externalId
+    providerUniqueId
+    type
+    nativeType
+  }
+}
+
+fragment ThreatDetectionDetailsMainDetection on ThreatDetectionIssueDetails {
+  mainDetection {
+    id
+    startedAt
+    severity
+    description(format: MARKDOWN)
+    ruleMatch {
+      rule {
+        id
+        name
+        origins
+      }
+    }
+  }
+}
+
+fragment ThreatDetectionDetailsCloudEventGroups on ThreatDetectionIssueDetails {
+  cloudEventGroups(first: 500) {
+    nodes {
+      id
+      name
+      firstEventAt
+      lastEventAt
+      status
+      kind
+      origin
+      groupType
+      description
+      cloudEvents {
+        ...CloudEventGroupCloudEventResponse
+      }
+    }
+  }
+}
+
+fragment CloudEventGroupCloudEventResponse on CloudEvent {
+  id
+  category
+  externalName
+  isForeignActorIP
+  rawAuditLogRecord
+  errorMessage
+  timestamp
+  origin
+  path
+  kind
+  cloudPlatform
+  actor {
+    id
+    externalId
+    name
+    type
+    email
+    userAgent
+    accessKeyId
+    providerUniqueId
+    inactiveInLast90Days
+    friendlyName
+    hasAdminKubernetesPrivileges
+    hasAdminPrivileges
+    hasHighKubernetesPrivileges
+    hasHighPrivileges
+    isExternalCloudAccount
+    actingAs {
+      id
+      name
+      friendlyName
+      externalId
+      providerUniqueId
+      type
+    }
+  }
+  actorIP
+  actorIPMeta {
+    relatedAttackGroupNames
+    city
+    country
+    countryCode
+    reputation
+    autonomousSystemOrganization
+  }
+  subjectResource {
+    id
+    type
+    name
+    nativeType
+    externalId
+    providerUniqueId
+    region
+    cloudAccount {
+      id
+      name
+      externalId
+      cloudProvider
+    }
+    containerService {
+      id
+      name
+      type
+      providerUniqueId
+    }
+    containerServiceGraphEntity {
+      id
+      name
+      type
+      providerUniqueId
+    }
+    kubernetesClusterGraphEntity {
+      id
+      name
+      type
+      providerUniqueId
+    }
+    kubernetesCluster {
+      id
+      name
+      type
+      providerUniqueId
+    }
+    kubernetesNamespaceGraphEntity {
+      id
+      name
+      providerUniqueId
+    }
+    kubernetesNamespace {
+      id
+      name
+      providerUniqueId
+    }
+    kubernetesControllerGraphEntity {
+      id
+      name
+      type
+      providerUniqueId
+    }
+    kubernetesController {
+      id
+      name
+      type
+      providerUniqueId
+    }
+    openToAllInternet
+  }
+  errorCode
+  statusDetails {
+    errorReason
+    providerErrorMessage
+    providerErrorCode
+  }
+  status
+  matchedRules {
+    rule {
+      builtInId
+      name
+      id
+    }
+  }
+  ...CloudEventExtraDetails
+}
+
+fragment CloudEventExtraDetails on CloudEvent {
+  extraDetails {
+    ...CloudEventRuntimeDetails
+    ...CloudEventAdmissionReviewDetails
+    ...CloudEventFimDetails
+    ...CloudEventImageIntegrityDetails
+    ...CloudEventCICDScanDetails
+  }
+  trigger {
+    ...CloudEventSensorRulesMatch
+    ...CloudEventAdmissionReviewTriggerDetails
+  }
+}
+
+fragment CloudEventRuntimeDetails on CloudEventRuntimeDetails {
+  sensor {
+    id
+    name
+    lastSeenAt
+    firstSeenAt
+    sensorVersion
+    definitionsVersion
+    status
+    ipAddress
+    type
+    workload {
+      id
+      name
+      sensorName
+    }
+    cluster {
+      id
+      name
+      type
+    }
+  }
+  processTree {
+    ...CloudEventRuntimeProcessBasicDetails
+    userName
+    userId
+    hash
+    executionTime
+    stdin
+    stdout
+    name
+    wizResponse
+    enforcementResult {
+      action
+      errorMessage
+    }
+    containerGraphEntity {
+      ...ProcessResourceGraphEntity
+      properties
+    }
+    container {
+      id
+      name
+      externalId
+      imageGraphEntity {
+        ...ProcessResourceGraphEntity
+      }
+      image {
+        id
+        externalId
+      }
+      podGraphEntity {
+        ...ProcessResourceGraphEntity
+      }
+      pod {
+        id
+        name
+        externalId
+        ips
+        namespace
+        namespaceGraphEntity {
+          ...ProcessResourceGraphEntity
+        }
+      }
+      kubernetesControllerGraphEntity {
+        ...ProcessResourceGraphEntity
+      }
+      kubernetesController {
+        id
+        name
+        externalId
+        type
+      }
+      kubernetesClusterGraphEntity {
+        ...ProcessResourceGraphEntity
+      }
+      kubernetesCluster {
+        id
+        name
+        externalId
+      }
+      serviceAccount
+      ecsContainerDetails {
+        ecsTask {
+          id
+          externalId
+        }
+        ecsTaskGraphEntity {
+          ...ProcessResourceGraphEntity
+        }
+        ecsCluster {
+          id
+          name
+          externalId
+        }
+        ecsClusterGraphEntity {
+          ...ProcessResourceGraphEntity
+        }
+        ecsService {
+          id
+          name
+          externalId
+        }
+        ecsServiceGraphEntity {
+          ...ProcessResourceGraphEntity
+        }
+      }
+    }
+  }
+  hostGraphEntity {
+    properties
+    ...ProcessResourceGraphEntity
+  }
+  host {
+    id
+    externalId
+    type
+    hostname
+    kernelVersion
+    computeInstanceGroupGraphEntity {
+      id
+      name
+      type
+    }
+  }
+  rawDetails
+  runtimeExecutionDataId
+  type
+  context {
+    ... on CloudEventRuntimeTypeFileContext {
+      fileName
+    }
+    ... on CloudEventRuntimeTypeNetworkConnectContext {
+      remoteIP
+      remotePort
+    }
+    ... on CloudEventRuntimeTypeDNSQueryContext {
+      query
+    }
+    ... on CloudEventRuntimeTypeProcessStartContext {
+      commandLine
+    }
+    ... on CloudEventRuntimeTypeIMDSQueryContext {
+      query
+    }
+    ... on CloudEventRuntimeTypeChangeDirectoryContext {
+      path
+    }
+  }
+}
+
+fragment CloudEventRuntimeProcessBasicDetails on CloudEventRuntimeProcess {
+  id
+  command
+  path
+  executionTime
+}
+
+fragment ProcessResourceGraphEntity on GraphEntity {
+  id
+  name
+  type
+  kubernetesPaths(first: 0) {
+    totalCount
+  }
+}
+
+fragment CloudEventAdmissionReviewDetails on CloudEventAdmissionReviewDetails {
+  verdict
+  policyEnforcement
+  reviewDuration
+  infoMatches
+  lowMatches
+  mediumMatches
+  highMatches
+  criticalMatches
+  totalMatches
+  policies {
+    ...CICDScanPolicyDetails
+  }
+  cloudConfigurationFindings {
+    cloudConfigurationRule {
+      id
+      shortId
+      name
+      severity
+      cloudProvider
+    }
+    passedPolicies {
+      ...CICDScanPolicyDetails
+    }
+    failedPolicies {
+      ...CICDScanPolicyDetails
+    }
+  }
+}
+
+fragment CICDScanPolicyDetails on CICDScanPolicy {
+  id
+  name
+  description
+  policyLifecycleEnforcements {
+    enforcementMethod
+    deploymentLifecycle
+  }
+  params {
+    __typename
+    ... on CICDScanPolicyParamsIAC {
+      severityThreshold
+    }
+    ... on CICDScanPolicyParamsVulnerabilities {
+      severity
+    }
+    ... on CICDScanPolicyParamsSensitiveData {
+      dataFindingSeverityThreshold
+    }
+    ... on CICDScanPolicyParamsHostConfiguration {
+      hostConfigurationSeverity
+      rulesScope {
+        type
+        securityFrameworks {
+          id
+          name
+        }
+      }
+      failCountThreshold
+      passPercentageThreshold
+    }
+  }
+}
+
+fragment CloudEventFimDetails on CloudEventFimDetails {
+  previousHash
+}
+
+fragment CloudEventImageIntegrityDetails on CloudEventImageIntegrityAdmissionReviewDetails {
+  verdict
+  policyEnforcement
+  reviewDuration
+  policies {
+    ...CICDScanPolicyDetails
+  }
+  images {
+    id
+    name
+    imageVerdict
+    sources
+    digest
+    policiesFailedBasedOnNoMatchingValidators {
+      id
+      name
+    }
+    imageIntegrityValidators {
+      imageIntegrityValidator {
+        ...ImageSignatureValidatorDetails
+      }
+      verdict
+      failedPolicies {
+        ...CICDScanPolicyDetails
+      }
+      passedPolicies {
+        ...CICDScanPolicyDetails
+      }
+      extraDetails {
+        ... on ImageIntegrityAdmissionReviewImageValidatorExtraDetailsWizScan {
+          cicdScan {
+            id
+            status {
+              verdict
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+fragment ImageSignatureValidatorDetails on ImageIntegrityValidator {
+  id
+  name
+  description
+  imagePatterns
+  projects {
+    id
+    isFolder
+    slug
+    name
+  }
+  value {
+    method
+    notary {
+      certificate
+    }
+    cosign {
+      method
+      key
+      certificate
+      certificateChain
+    }
+    wizScan {
+      maxAgeHours
+      policyId
+      serviceAccountIds
+    }
+  }
+}
+
+fragment CloudEventCICDScanDetails on CloudEventCICDScanDetails {
+  cicdScanPolicyEnforcement: policyEnforcement
+  scanDuration
+  trigger
+  tags {
+    key
+    value
+  }
+  createdBy {
+    serviceAccount {
+      id
+      name
+    }
+    user {
+      id
+      name
+      email
+    }
+  }
+  cliDetails {
+    ...CICDScanCLIDetailsFragment
+  }
+  codeAnalyzerDetails {
+    taskUrl
+    commit {
+      author
+      infoURL
+      messageSnippet
+      ref
+      sha
+    }
+    webhookEvent {
+      createdAt
+      hookID
+      payload
+      processedAt
+      receivedAt
+      source
+      sourceRequestID
+      type
+      wizRequestID
+    }
+    pullRequest {
+      author
+      title
+      baseCommit {
+        sha
+        ref
+        infoURL
+      }
+      headCommit {
+        sha
+        ref
+        infoURL
+      }
+      bodySnippet
+      infoURL
+      analytics {
+        additions
+        deletions
+        changedFiles
+        commits
+      }
+    }
+  }
+  warnedPolicies {
+    ...CICDScanPolicyDetails
+  }
+  failedPolicies {
+    ...CICDScanPolicyDetails
+  }
+  passedPolicies {
+    ...CICDScanPolicyDetails
+  }
+  policies {
+    ...CICDScanPolicyDetails
+  }
+  secretDetails {
+    failedPolicyMatches {
+      policy {
+        __typename
+        id
+        name
+      }
+    }
+    secrets {
+      id
+      contains {
+        name
+        type
+      }
+      details {
+        __typename
+      }
+      failedPolicyMatches {
+        policy {
+          __typename
+          id
+          name
+        }
+      }
+      description
+      lineNumber
+      offset
+      path
+      snippet
+      type
+      severity
+      hasAdminPrivileges
+      hasHighPrivileges
+      relatedEntities {
+        id
+        type
+        name
+        properties
+      }
+    }
+    analytics {
+      cloudKeyCount
+      dbConnectionStringCount
+      gitCredentialCount
+      passwordCount
+      privateKeyCount
+      totalCount
+    }
+  }
+  iacDetails {
+    ruleMatches {
+      rule {
+        id
+        shortId
+        name
+        description
+        cloudProvider
+      }
+      deletedRuleFallback: rule {
+        id
+        name
+      }
+      severity
+      failedResourceCount
+      failedPolicyMatches {
+        policy {
+          id
+        }
+      }
+      matches {
+        resourceName
+        fileName
+        lineNumber
+        matchContent
+        expected
+        found
+      }
+    }
+    scanStatistics {
+      infoMatches
+      lowMatches
+      highMatches
+      mediumMatches
+      criticalMatches
+      totalMatches
+    }
+  }
+  hostConfigurationDetails {
+    ...HostConfigurationDetails
+  }
+  vulnerabilityDetails {
+    vulnerableSBOMArtifactsByNameVersion {
+      ...CICDSbomArtifactsByNameVersion
+    }
+    cpes {
+      name
+      version
+      path
+      vulnerabilities {
+        ...CICDScanDiskScanVulnerabilityDetails
+      }
+      detectionMethod
+    }
+    osPackages {
+      name
+      version
+      vulnerabilities {
+        ...CICDScanDiskScanVulnerabilityDetails
+      }
+      detectionMethod
+    }
+    libraries {
+      name
+      version
+      path
+      vulnerabilities {
+        ...CICDScanDiskScanVulnerabilityDetails
+      }
+      detectionMethod
+    }
+    applications {
+      name
+      vulnerabilities {
+        path
+        pathType
+        version
+        vulnerability {
+          ...CICDScanDiskScanVulnerabilityDetails
+        }
+      }
+      detectionMethod
+    }
+    analytics {
+      vulnerabilities {
+        infoCount
+        lowCount
+        mediumCount
+        highCount
+        criticalCount
+        totalCount
+      }
+      filesScannedCount
+      directoriesScannedCount
+    }
+  }
+  dataDetails {
+    dataFindingsWithFullClassifierInfo: findings {
+      dataClassifier {
+        id
+        name
+        category
+        originalDataClassifierOverridden
+      }
+      ...CICDScanDataFindingDetails
+    }
+    dataFindings: findings {
+      dataClassifier {
+        id
+        name
+      }
+      ...CICDScanDataFindingDetails
+    }
+  }
+  status {
+    details
+    state
+    verdict
+  }
+  policies {
+    __typename
+    id
+    name
+    params {
+      __typename
+    }
+  }
+  analytics {
+    vulnerabilityScanResultAnalytics {
+      infoCount
+      lowCount
+      mediumCount
+      highCount
+      criticalCount
+    }
+    dataScanResultAnalytics {
+      infoCount
+      lowCount
+      mediumCount
+      highCount
+      criticalCount
+    }
+    iacScanResultAnalytics {
+      infoCount: infoMatches
+      lowCount: lowMatches
+      mediumCount: mediumMatches
+      highCount: highMatches
+      criticalCount: criticalMatches
+    }
+    secretScanResultAnalytics {
+      cloudKeyCount
+      dbConnectionStringCount
+      gitCredentialCount
+      passwordCount
+      privateKeyCount
+      saasAPIKeyCount
+      infoCount
+      lowCount
+      mediumCount
+      highCount
+      criticalCount
+      totalCount
+    }
+  }
+  infoMatches
+  lowMatches
+  mediumMatches
+  highMatches
+  criticalMatches
+  totalMatches
+}
+
+fragment CICDScanCLIDetailsFragment on CICDScanCLIDetails {
+  scanOriginResource {
+    name
+    __typename
+    ... on CICDScanOriginIAC {
+      subTypes
+      name
+    }
+    ... on CICDScanOriginContainerImage {
+      digest
+      id
+      name
+    }
+  }
+  scanOriginResourceType
+  clientName
+  clientVersion
+  buildParams {
+    commitUrl
+    branch
+    commitHash
+    committedBy
+    platform
+    repository
+    extraDetails {
+      ... on CICDBuildParamsContainerImage {
+        dockerfilePath
+        dockerfileContents
+      }
+    }
+  }
+}
+
+fragment HostConfigurationDetails on CICDHostConfigurationScanResult {
+  hostConfigurationFrameworks {
+    framework {
+      id
+      name
+    }
+    matches {
+      analytics {
+        severity {
+          infoCount
+          lowCount
+          mediumCount
+          highCount
+          criticalCount
+        }
+        status {
+          passCount
+          failCount
+          errorCount
+          notAssessedCount
+          totalCount
+        }
+      }
+      policyMatch {
+        policy {
+          id
+        }
+      }
+    }
+  }
+  hostConfigurationFindings {
+    rule {
+      description
+      name
+      id
+      securitySubCategories {
+        id
+        resolutionRecommendation
+        title
+        description
+        category {
+          id
+          name
+          framework {
+            id
+            name
+            enabled
+          }
+        }
+      }
+    }
+    status
+    severity
+    failedPolicyMatches {
+      policy {
+        id
+      }
+    }
+  }
+}
+
+fragment CICDSbomArtifactsByNameVersion on CICDDiskScanResultSBOMArtifactsByNameVersion {
+  id
+  name
+  version
+  filePath
+  vulnerabilityFindings {
+    fixedVersion
+    remediation
+    severities {
+      criticalCount
+      highCount
+      infoCount
+      lowCount
+      mediumCount
+    }
+    findings {
+      id
+      vulnerabilityExternalId
+      vulnerableAsset {
+        ... on VulnerableAssetRepositoryBranch {
+          id
+          type
+          name
+          providerUniqueId
+          repositoryName
+        }
+      }
+      remediationPullRequestAvailable
+      remediationPullRequestConnector {
+        id
+        name
+        type {
+          id
+          name
+        }
+      }
+      severity
+    }
+  }
+  layerMetadata {
+    id
+    isBaseLayer
+    details
+  }
+  type {
+    ...SBOMArtifactTypeFragment
+  }
+}
+
+fragment SBOMArtifactTypeFragment on SBOMArtifactType {
+  group
+  codeLibraryLanguage
+  osPackageManager
+  hostedTechnology {
+    id
+    name
+    icon
+  }
+  plugin
+}
+
+fragment CICDScanDiskScanVulnerabilityDetails on DiskScanVulnerability {
+  name
+  severity
+  fixedVersion
+  source
+  score
+  exploitabilityScore
+  hasExploit
+  hasCisaKevExploit
+  cisaKevReleaseDate
+  cisaKevDueDate
+  epssProbability
+  epssPercentile
+  epssSeverity
+  publishDate
+  fixPublishDate
+  gracePeriodEnd
+  gracePeriodRemainingHours
+  failedPolicyMatches {
+    policy {
+      id
+      name
+      params {
+        ... on CICDScanPolicyParamsHostConfiguration {
+          failCountThreshold
+          passPercentageThreshold
+          rulesScope {
+            type
+          }
+        }
+      }
+    }
+  }
+  weightedSeverity
+  finding {
+    id
+    version
+  }
+}
+
+fragment CICDScanDataFindingDetails on CICDDiskScanResultDataFinding {
+  matchCount
+  severity
+  examples {
+    path
+    matchCount
+    value
+  }
+}
+
+fragment CloudEventSensorRulesMatch on CloudEventSensorRulesMatch {
+  sensorEngineRules {
+    rule {
+      id
+      name
+      description
+      MITRETactics
+      MITRETechniques
+    }
+    version
+  }
+  fileReputationHashMatch {
+    name
+    md5
+    sha1
+    sha256
+    sampleFirstSeen
+    sampleLastSeen
+    scannerMatch
+    scannerCount
+    scannerPercent
+    trustFactor
+    malwareClassification {
+      isGeneric
+      type
+      platform
+      subPlatform
+      family
+      vulnerability {
+        id
+      }
+    }
+  }
+  connectivityReputation {
+    source {
+      ip
+      port
+    }
+    destination {
+      ip
+      ipReputation
+      port
+    }
+    process {
+      ...CloudEventRuntimeProcessBasicDetails
+    }
+  }
+  dnsQueryReputation {
+    domain
+    domainReputation
+    process {
+      ...CloudEventRuntimeProcessBasicDetails
+    }
+  }
+}
+
+fragment CloudEventAdmissionReviewTriggerDetails on CloudEventAdmissionReview {
+  cloudConfigurationRuleMatches {
+    cloudConfigurationRule {
+      id
+    }
+    cicdScanPolicies {
+      id
+      name
+      params {
+        __typename
+      }
     }
   }
 }
@@ -733,11 +1862,9 @@ def get_filtered_issues(issue_type, resource_id, severity, limit):
                     "OPEN",
                     "IN_PROGRESS"
                 ],
-                "relatedEntity": {
-                    "type": [
-                        issue_type
-                    ]
-                }
+                "type": [
+                    issue_type
+                ]
             },
             "orderBy": {
                 "field":
@@ -1157,6 +2284,14 @@ def get_issue_evidence(issue_id):
     # Getting the Issue Evidence Query
     issue_object = _get_issue(issue_id, is_evidence=True)
 
+    issue_type = issue_object['data']['issues']['nodes'][0]['type']
+
+    if issue_type == 'THREAT_DETECTION':
+        if issue_object['data']['issues']['nodes'][0]['threatDetectionDetails'] is not None:
+            return issue_object['data']['issues']['nodes'][0]['threatDetectionDetails']
+        else:
+            return f"No issue threat detection details evidence for Issue ID: {issue_id}"
+
     query_for_evidence = issue_object['data']['issues']['nodes'][0]['evidenceQuery']
 
     if not query_for_evidence:
@@ -1370,6 +2505,39 @@ def get_project_team(project_name):
         return project_team
 
 
+def copy_to_forensics_account(resource_id):
+    """
+    Copy resource Volumes to a Forensics Account
+    """
+    demisto.info(f"resource id is {resource_id}\n")
+    demisto.debug("copy_to_forensics_account, enter")
+
+    if not is_valid_uuid(resource_id):
+        demisto.error("You should pass a valid UUID.")
+        return "You should pass a valid UUID."
+
+    copy_to_forensics_account_mutation = """
+        mutation CopyResourceForensicsToExternalAccount($input: CopyResourceForensicsToExternalAccountInput!) {
+          copyResourceForensicsToExternalAccount(input: $input) {
+            systemActivityGroupId
+          }
+        }
+    """
+    copy_to_forensics_account_variables = {
+        "input": {
+            "id": resource_id
+        }
+    }
+
+    response_json = checkAPIerrors(copy_to_forensics_account_mutation, copy_to_forensics_account_variables)
+    demisto.debug(f"The API response is {response_json}")
+
+    if not response_json["data"]["copyResourceForensicsToExternalAccount"]["systemActivityGroupId"]:
+        demisto.info(f"Resource with ID {resource_id} was not copied to Forensics Account.")
+        return None
+    else:
+        return response_json
+
 def is_valid_uuid(uuid_string):
     if not isinstance(uuid_string, str):
         uuid_string = str(uuid_string)
@@ -1445,115 +2613,115 @@ def main():
 
         elif command == 'wiz-reject-issue':
             demisto_args = demisto.args()
-            issue_id = demisto_args.get(WizInputParam.ISSUE_ID)
+            resource_id = demisto_args.get(WizInputParam.ISSUE_ID)
             resolution_reason = demisto_args.get(WizInputParam.REJECT_REASON)
             resolution_note = demisto_args.get(WizInputParam.REJECT_NOTE)
-            issue_response = reject_issue(
-                issue_id=issue_id,
+            copy_mutation_response = reject_issue(
+                issue_id=resource_id,
                 reject_reason=resolution_reason,
                 reject_comment=resolution_note
             )
-            command_result = CommandResults(readable_output=issue_response, raw_response=issue_response)
+            command_result = CommandResults(readable_output=copy_mutation_response, raw_response=copy_mutation_response)
             return_results(command_result)
 
         elif command == 'wiz-reopen-issue':
             demisto_args = demisto.args()
-            issue_id = demisto_args.get(WizInputParam.ISSUE_ID)
+            resource_id = demisto_args.get(WizInputParam.ISSUE_ID)
             reopen_note = demisto_args.get(WizInputParam.REOPEN_NOTE)
-            issue_response = reopen_issue(
-                issue_id=issue_id,
+            copy_mutation_response = reopen_issue(
+                issue_id=resource_id,
                 reopen_note=reopen_note
             )
-            command_result = CommandResults(readable_output=issue_response, raw_response=issue_response)
+            command_result = CommandResults(readable_output=copy_mutation_response, raw_response=copy_mutation_response)
             return_results(command_result)
 
         elif command == 'wiz-resolve-issue':
             demisto_args = demisto.args()
-            issue_id = demisto_args.get(WizInputParam.ISSUE_ID)
+            resource_id = demisto_args.get(WizInputParam.ISSUE_ID)
             resolution_reason = demisto_args.get(WizInputParam.RESOLUTION_REASON)
             resolution_note = demisto_args.get(WizInputParam.RESOLUTION_NOTE)
-            issue_response = resolve_issue(
-                issue_id=issue_id,
+            copy_mutation_response = resolve_issue(
+                issue_id=resource_id,
                 resolution_reason=resolution_reason,
                 resolution_note=resolution_note
             )
-            command_result = CommandResults(readable_output=issue_response, raw_response=issue_response)
+            command_result = CommandResults(readable_output=copy_mutation_response, raw_response=copy_mutation_response)
             return_results(command_result)
 
         elif command == 'wiz-get-issue':
             demisto_args = demisto.args()
-            issue_id = demisto_args.get(WizInputParam.ISSUE_ID)
+            resource_id = demisto_args.get(WizInputParam.ISSUE_ID)
             issue_result = get_issue(
-                issue_id=issue_id,
+                issue_id=resource_id,
             )
             command_result = CommandResults(readable_output=issue_result, raw_response=issue_result)
             return_results(command_result)
 
         elif command == 'wiz-issue-in-progress':
             demisto_args = demisto.args()
-            issue_id = demisto_args.get(WizInputParam.ISSUE_ID)
-            issue_response = issue_in_progress(
-                issue_id=issue_id
+            resource_id = demisto_args.get(WizInputParam.ISSUE_ID)
+            copy_mutation_response = issue_in_progress(
+                issue_id=resource_id
             )
-            command_result = CommandResults(readable_output=issue_response, raw_response=issue_response)
+            command_result = CommandResults(readable_output=copy_mutation_response, raw_response=copy_mutation_response)
             return_results(command_result)
 
         elif command == 'wiz-set-issue-note':
             demisto_args = demisto.args()
-            issue_id = demisto_args.get(WizInputParam.ISSUE_ID)
+            resource_id = demisto_args.get(WizInputParam.ISSUE_ID)
             note = demisto_args.get(WizInputParam.NOTE)
-            issue_response = set_issue_comment(
-                issue_id=issue_id,
+            copy_mutation_response = set_issue_comment(
+                issue_id=resource_id,
                 comment=note
             )
-            command_result = CommandResults(readable_output=issue_response, raw_response=issue_response)
+            command_result = CommandResults(readable_output=copy_mutation_response, raw_response=copy_mutation_response)
             return_results(command_result)
 
         elif command == 'wiz-clear-issue-note':
             demisto_args = demisto.args()
-            issue_id = demisto_args.get(WizInputParam.ISSUE_ID)
-            issue_response = clear_issue_note(
-                issue_id=issue_id
+            resource_id = demisto_args.get(WizInputParam.ISSUE_ID)
+            copy_mutation_response = clear_issue_note(
+                issue_id=resource_id
             )
-            command_result = CommandResults(readable_output=issue_response, raw_response=issue_response)
+            command_result = CommandResults(readable_output=copy_mutation_response, raw_response=copy_mutation_response)
             return_results(command_result)
 
         elif command == 'wiz-get-issue-evidence':
             demisto_args = demisto.args()
-            issue_id = demisto_args.get(WizInputParam.ISSUE_ID)
-            issue_response = get_issue_evidence(
-                issue_id=issue_id
+            resource_id = demisto_args.get(WizInputParam.ISSUE_ID)
+            copy_mutation_response = get_issue_evidence(
+                issue_id=resource_id
             )
-            command_result = CommandResults(readable_output=issue_response, raw_response=issue_response)
+            command_result = CommandResults(readable_output=copy_mutation_response, raw_response=copy_mutation_response)
             return_results(command_result)
 
         elif command == 'wiz-set-issue-due-date':
             demisto_args = demisto.args()
-            issue_id = demisto_args.get(WizInputParam.ISSUE_ID)
+            resource_id = demisto_args.get(WizInputParam.ISSUE_ID)
             due_at = demisto_args.get('due_at')
-            issue_response = set_issue_due_date(
-                issue_id=issue_id,
+            copy_mutation_response = set_issue_due_date(
+                issue_id=resource_id,
                 due_at=due_at
             )
-            command_result = CommandResults(readable_output=issue_response, raw_response=issue_response)
+            command_result = CommandResults(readable_output=copy_mutation_response, raw_response=copy_mutation_response)
             return_results(command_result)
 
         elif command == 'wiz-clear-issue-due-date':
             demisto_args = demisto.args()
-            issue_id = demisto_args.get(WizInputParam.ISSUE_ID)
-            issue_response = clear_issue_due_date(
-                issue_id=issue_id
+            resource_id = demisto_args.get(WizInputParam.ISSUE_ID)
+            copy_mutation_response = clear_issue_due_date(
+                issue_id=resource_id
             )
-            command_result = CommandResults(readable_output=issue_response, raw_response=issue_response)
+            command_result = CommandResults(readable_output=copy_mutation_response, raw_response=copy_mutation_response)
             return_results(command_result)
 
         elif command == 'wiz-rescan-machine-disk':
             demisto_args = demisto.args()
             vm_id = demisto_args.get(WizInputParam.VM_ID)
-            issue_response = rescan_machine_disk(
+            copy_mutation_response = rescan_machine_disk(
                 vm_id=vm_id
             )
-            command_result = CommandResults(readable_output=issue_response, raw_response=issue_response)
+            command_result = CommandResults(readable_output=copy_mutation_response, raw_response=copy_mutation_response)
             return_results(command_result)
 
         elif command == 'wiz-get-project-team':
@@ -1563,6 +2731,15 @@ def main():
                 project_name=project_name
             )
             command_result = CommandResults(readable_output=projects_response, raw_response=projects_response)
+            return_results(command_result)
+
+        elif command == 'wiz-copy-to-forensics-account':
+            demisto_args = demisto.args()
+            resource_id = demisto_args.get(WizInputParam.RESOURCE_ID)
+            copy_mutation_response = copy_to_forensics_account(
+                resource_id=resource_id
+            )
+            command_result = CommandResults(readable_output=copy_mutation_response, raw_response=copy_mutation_response)
             return_results(command_result)
 
         else:

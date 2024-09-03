@@ -659,6 +659,31 @@ def test_get_issue_evidence_failure(checkAPIerrors, _get_issue, capfd):
         assert "Failed getting Issue evidence on ID 12345678-1234-1234-1234-d25e16359c19" in str(e)
 
 
+test_get_issue_evidence_tdr_response = {
+   "data": {
+      "issues": {
+         "nodes": [
+            {
+               "type": "THREAT_DETECTION",
+               "evidenceQuery": {
+
+               },
+               "threatDetectionDetails": {
+                  "data": "data"
+               }
+            }
+         ]
+      }
+   }
+}
+@patch('Wiz._get_issue', return_value=test_get_issue_evidence_tdr_response)
+@patch('Wiz.checkAPIerrors',  return_value=test_get_issue_evidence_tdr_response)
+def test_get_issue_evidence_tdr(checkAPIerrors, _get_issue):
+    from Wiz import get_issue_evidence
+    res = get_issue_evidence('12345678-1234-1234-1234-d25e16359c19')
+    assert res == test_get_issue_evidence_tdr_response['data']['issues']['nodes'][0]['threatDetectionDetails']
+
+
 test_set_issue_due_data_response = {
     "data": {
         "updateIssue": {

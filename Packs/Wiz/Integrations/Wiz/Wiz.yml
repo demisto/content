@@ -308,6 +308,12 @@ script:
     - name: vm_id
       description: vm cloud provider id.
       required: true
+  - name: wiz-copy-to-forensics-account
+    description: Copy Volumes to Forensics Account.
+    arguments:
+      - name: resource_id
+        description: ID of the resource to copy.
+        required: true
   dockerimage: demisto/python3:3.10.14.91134
   isfetch: true
   runonce: false
