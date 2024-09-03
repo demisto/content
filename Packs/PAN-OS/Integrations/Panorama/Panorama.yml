@@ -304,7 +304,7 @@ script:
     deprecated: true
     name: panorama-get-predefined-threats-list
     outputs:
-    - contextPath: File.Size
+    - contextPath: File.Siz
       description: The file size.
       type: number
     - contextPath: File.Name
