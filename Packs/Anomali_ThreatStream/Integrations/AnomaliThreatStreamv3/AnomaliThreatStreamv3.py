@@ -2629,8 +2629,7 @@ def clone_ioc_command(client: Client, indicator_id: str = None) -> CommandResult
         (CommandResults).
     """
 
-    res = client.http_request("POST", F"v2/intelligence/{indicator_id}/clone/")
-
+    res_json = client.http_request("POST", F"v2/intelligence/{indicator_id}/clone/")
 
     # append the indocator ID being used in the clone
     res_json["indicator_id"] = indicator_id
@@ -2657,7 +2656,6 @@ def edit_classification_job_command(client: Client, import_id: str = None, data:
         (CommandResults).
     """
     res = client.edit_classification_job_request(import_id, data)
-    readable_output = 'The import session was successfully approved.'
     '''
     if res.get("approved_by_id"):
         readable_output = 'The import session was successfully approved.'
