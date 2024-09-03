@@ -3,7 +3,7 @@ import json
 import pytest
 from ZeroNetworksSegmentEventCollector import (Client, process_events, initialize_start_timestamp,
                                                get_max_results_and_limit, handle_log_types, update_last_run, fetch_events,
-                                               get_events, create_id, fetch_all_events, AUDIT_TYPE, NETWORK_ACTIVITIES_TYPE)
+                                               get_events, create_id, fetch_all_events, AUDIT, NETWORK_ACTIVITIES)
 from CommonServerPython import *
 import hashlib
 import demistomock as demisto  # noqa: F401
@@ -90,24 +90,6 @@ def test_initialize_start_timestamp_with_existing_timestamp():
     assert result == 1234567890
 
 
-def test_initialize_start_timestamp_with_arg_from():
-    """
-    Given:
-        A last run dictionary with a specific timestamp and an argument defining a starting timestamp.
-
-    When:
-        Calling the initialize_start_timestamp function to determine the starting point for fetching data.
-
-    Then:
-        Verify that the function returns the starting timestamp provided as an argument, ensuring that the
-        'last_fetch' timestamp from the last run is not used.
-    """
-    arg_from = 111111
-    last_run = {'audit': {'last_fetch': 1234567890}}
-    result = initialize_start_timestamp(last_run, 'audit', arg_from)
-    assert result == 111111
-
-
 @pytest.mark.parametrize("params, log_type, expected", [
     (test_case["params"], test_case["log_type"], test_case['expected'])
     for test_case in util_load_json('test_data/test_get_max_results_params.json')['test_cases']
@@ -133,11 +115,11 @@ def test_get_max_results_and_limit_with_param(params, log_type, expected):
 @pytest.mark.parametrize("event_types_to_fetch, expected", [
     (
         ['Audit', 'Network Activities'],
-        [AUDIT_TYPE, NETWORK_ACTIVITIES_TYPE]
+        [AUDIT, NETWORK_ACTIVITIES]
     ),
     (
         ['Audit'],
-        [AUDIT_TYPE]
+        [AUDIT]
     ),
     (
         [],
@@ -176,7 +158,7 @@ def test_handle_not_valid_log_types():
     event_types = ['fake_type']
     with pytest.raises(DemistoException) as e:
         handle_log_types(event_types)
-    assert "Event type title 'fake_type' is not valid." in str(e)
+    assert "'fake_type' is not valid event type, please select from the following list:" in str(e)
 
 
 @pytest.mark.parametrize(
@@ -201,12 +183,13 @@ def test_update_last_run(last_run, log_type, last_event_time, previous_ids, expe
 
 
 @pytest.mark.parametrize(
-    "params, last_run, expected_last_run, expected_collected_events, start_timestamp",
-    [(case['params'], case['last_run'], case['expected_last_run'],
+    "params, max_results, limit, last_run, expected_last_run, expected_collected_events, start_timestamp",
+    [(case['params'], case['max_results'], case['limit'], case['last_run'], case['expected_last_run'],
       case['expected_collected_events'], case['start_timestamp'])
      for case in util_load_json('test_data/test_fetch_events_params.json')['test_cases']]
 )
-def test_fetch_events(mocker, params, last_run, expected_last_run, expected_collected_events, start_timestamp):
+def test_fetch_events(mocker, params, max_results, limit, last_run, expected_last_run,
+                      expected_collected_events, start_timestamp):
     """
     Given:
         - A mock setup for dependencies (`mocker`, `mock_create_id_function`, `MockClient`).
@@ -228,7 +211,8 @@ def test_fetch_events(mocker, params, last_run, expected_last_run, expected_coll
 
     mock_client = MockClient('', False, False, {})
 
-    result_last_run, result_collected_events = fetch_events(mock_client, params, last_run, start_timestamp, 'audit', [])
+    result_last_run, result_collected_events = fetch_events(mock_client, params, last_run, start_timestamp, 'audit', [],
+                                                            max_results, limit)
 
     assert result_last_run == expected_last_run
     assert result_collected_events == expected_collected_events
@@ -300,44 +284,44 @@ def compute_hash(combined_string):
 @pytest.mark.parametrize(
     "event, log_type, expected_id",
     [
-        # Test case for AUDIT_TYPE with all fields present
+        # Test case for AUDIT with all fields present
         (
             {
                 "timestamp": "1234567890",
                 "reportedObjectId": "123",
-                "performed_by": {"id": "user"}
+                "performedBy": {"id": "user"}
             },
-            AUDIT_TYPE,
+            AUDIT,
             compute_hash("1234567890-123-user")
         ),
-        # Test case for AUDIT_TYPE with missing performed_by name
+        # Test case for AUDIT with missing performedBy name
         (
             {
                 "timestamp": "1234567890",
                 "reportedObjectId": "123",
-                "performed_by": {}
+                "performedBy": {}
             },
-            AUDIT_TYPE,
+            AUDIT,
             compute_hash("1234567890-123-")
         ),
-        # Test case for NETWORK_ACTIVITIES_TYPE with all fields present
+        # Test case for NETWORK_ACTIVITIES with all fields present
         (
             {
                 "timestamp": "0987654321",
                 "src": {"assetId": "src-asset"},
                 "dst": {"assetId": "dst-asset"}
             },
-            NETWORK_ACTIVITIES_TYPE,
+            NETWORK_ACTIVITIES,
             compute_hash("0987654321-src-asset-dst-asset")
         ),
-        # Test case for NETWORK_ACTIVITIES_TYPE with missing src or dst assetId
+        # Test case for NETWORK_ACTIVITIES with missing src or dst assetId
         (
             {
                 "timestamp": "0987654321",
                 "src": {},
                 "dst": {"assetId": "dst-asset"}
             },
-            NETWORK_ACTIVITIES_TYPE,
+            NETWORK_ACTIVITIES,
             compute_hash("0987654321--dst-asset")
         ),
         (
@@ -346,22 +330,22 @@ def compute_hash(combined_string):
                 "src": {"assetId": "src-asset"},
                 "dst": {}
             },
-            NETWORK_ACTIVITIES_TYPE,
+            NETWORK_ACTIVITIES,
             compute_hash("0987654321-src-asset-")
         ),
         # Test case with missing timestamp
         (
             {
                 "reportedObjectId": "123",
-                "performed_by": {"id": "user"}
+                "performedBy": {"id": "user"}
             },
-            AUDIT_TYPE,
+            AUDIT,
             compute_hash("None-123-user")
         ),
         # Test case with empty event
         (
             {},
-            AUDIT_TYPE,
+            AUDIT,
             compute_hash("None--")
         )
     ]
@@ -396,17 +380,17 @@ def test_fetch_events_limit_logic(mocker):
         - Ensure that the number of calls to `mock_search_events` matches the expected count.
     """
     mocker.patch('ZeroNetworksSegmentEventCollector.initialize_start_timestamp', return_value=1000)
-    mocker.patch('ZeroNetworksSegmentEventCollector.get_max_results_and_limit', return_value=(1, 1))
     mocker.patch('ZeroNetworksSegmentEventCollector.handle_log_types', return_value=['audit'])
     mock_search_events = mocker.patch('ZeroNetworksSegmentEventCollector.Client.search_events',
                                       return_value={'items': [{'id': 1, 'timestamp': 1}], 'scrollCursor': '1'})
     mocker.patch('ZeroNetworksSegmentEventCollector.process_events', return_value=([], {}, 0))
 
+    max_results, limit = (1,1)
     params = {"network_activity_filters": []}
     last_run = {}
     client = Client("", False, False, {})
 
-    last_run, all_events = fetch_events(client, params, last_run, 1000, 'audit', [])
+    last_run, all_events = fetch_events(client, params, last_run, 1000, 'audit', [], max_results, limit)
 
     calls = list(mock_search_events.call_args_list)
     first_call_limit = calls[0][0][0]  # Limit in the first call

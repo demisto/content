@@ -13,7 +13,7 @@ configuration:
   defaultvalue: "https://portal.zeronetworks.com"
   section: Connect
 - displaypassword: API Key
-  additionalinfo: The API Key to use for connection
+  additionalinfo: The API key to use for connection.
   name: credentials
   required: true
   hiddenusername: true
@@ -31,7 +31,7 @@ configuration:
   - Network Activities
 - defaultvalue: '[{"id":"dstRiskLevel","includeValues":["2"]}]'
   display: Network Activity Filters
-  additionalinfo: Using filters is necessary to reduce amount of events
+  additionalinfo: Use filters to reduce amount of events.
   name: network_activity_filters
   type: 0
   required: false
@@ -77,6 +77,10 @@ script:
       description: Date from which to get events.
       name: from_date
       required: false
+    - description: Maximum audit events to fetch
+      name: max_fetch_audit
+    - description: Maximum network activities events to fetch
+      name: max_fetch_network
     description: Gets events from Zero Networks Segment.
     name: zero-networks-segment-get-events
   runonce: false

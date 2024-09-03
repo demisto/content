@@ -11,7 +11,7 @@ urllib3.disable_warnings()
 ''' CONSTANTS '''
 
 ISO_8601_FORMAT = "%Y-%m-%dT%H:%M:%S.000Z"
-
+VALID_EVENT_TITLES = ['Audit', 'Network Activities']
 VENDOR = 'ZeroNetworks'
 PRODUCT = 'Segment'
 FIRST_FETCH = 'one minute'
@@ -19,8 +19,8 @@ MAX_RESULTS_FOR_LOG_TYPE = {'audit': 10000, 'network_activities': 2000}
 MAX_CALLS_FOR_LOG_TYPE = {'audit': 10000, 'network_activities': 400}
 URL = {'audit': '/audit', 'network_activities': '/activities/network'}
 MAX_FETCH_PARAM_NAME = {'audit': 'max_fetch_audit', 'network_activities': 'max_fetch_network'}
-AUDIT_TYPE = 'audit'
-NETWORK_ACTIVITIES_TYPE = 'network_activities'
+AUDIT = 'audit'
+NETWORK_ACTIVITIES = 'network_activities'
 TYPES_TO_TITLES = {'audit': 'Audit', 'network_activities': 'Network Activities'}
 TITLES_TO_TYPES = {'Audit': 'audit', 'Network Activities': 'network_activities'}
 
@@ -52,7 +52,7 @@ class Client(BaseClient):
         Returns:
             Dict[str, Any]: A dictionary containing the search results.
         """
-        if log_type == NETWORK_ACTIVITIES_TYPE:
+        if log_type == NETWORK_ACTIVITIES:
             params = remove_empty_elements({"_limit": limit, "order": "asc", "_cursor": cursor, "_filters": filters})
         else:
             params = remove_empty_elements({"_limit": limit, "order": "asc", "_cursor": cursor})
@@ -85,12 +85,13 @@ def handle_log_types(event_types_to_fetch: list) -> list:
         if log_type := TITLES_TO_TYPES.get(type_title):
             log_types.append(log_type)
         else:
-            raise DemistoException(f"Event type title '{type_title}' is not valid.")
+            raise DemistoException(
+                f"'{type_title}' is not valid event type, please select from the following list: {VALID_EVENT_TITLES}")
 
     return log_types
 
 
-def initialize_start_timestamp(last_run: dict[str, Any], log_type: str, arg_from=None) -> int:
+def initialize_start_timestamp(last_run: dict[str, Any], log_type: str) -> int:
     """
     Initialize the start timestamp for fetching logs based on provided parameters.
 
@@ -102,9 +103,6 @@ def initialize_start_timestamp(last_run: dict[str, Any], log_type: str, arg_from
     Returns:
         int: The start timestamp for fetching logs.
     """
-    if arg_from:
-        return arg_from
-
     start_timestamp = last_run.get(log_type, {}).get("last_fetch")
     if not start_timestamp:
         start_date = dateparser.parse(FIRST_FETCH).strftime(ISO_8601_FORMAT)  # type: ignore[union-attr]
@@ -113,7 +111,7 @@ def initialize_start_timestamp(last_run: dict[str, Any], log_type: str, arg_from
     return start_timestamp
 
 
-def get_max_results_and_limit(params: dict[str, Any], log_type: str) -> tuple[int, int]:
+def get_max_results_and_limit(params: dict[str, Any], log_type: str, args={}) -> tuple[int, int]:
     """
     Determine the maximum number of results and the limit for fetching logs based on input parameters.
 
@@ -126,7 +124,8 @@ def get_max_results_and_limit(params: dict[str, Any], log_type: str) -> tuple[in
             - max_results (int): The maximum number of results to fetch.
             - limit (int): The limit for fetching results, adjusted to be at least 20.
     """
-    max_results = arg_to_number(params.get(MAX_FETCH_PARAM_NAME[log_type])) or MAX_RESULTS_FOR_LOG_TYPE[log_type]
+    max_results = arg_to_number(args.get(MAX_FETCH_PARAM_NAME[log_type])) \
+        or arg_to_number(params.get(MAX_FETCH_PARAM_NAME[log_type])) or MAX_RESULTS_FOR_LOG_TYPE[log_type]
     limit = min(max_results, MAX_CALLS_FOR_LOG_TYPE[log_type])
     if limit < 20:
         limit = 20
@@ -166,12 +165,12 @@ def create_id(event: dict, log_type: str) -> str:
         str: A unique ID generated for the event, represented as a SHA-256 hash.
     """
     timestamp = event.get("timestamp")
-    if log_type == AUDIT_TYPE:
+    if log_type == AUDIT:
         reported_object_id = event.get("reportedObjectId", "")
-        performed_by_name = event.get("performed_by", {}).get("id", "")
+        performed_by_name = event.get("performedBy", {}).get("id", "")
         combined_string = f"{timestamp}-{reported_object_id}-{performed_by_name}"
 
-    elif log_type == NETWORK_ACTIVITIES_TYPE:
+    elif log_type == NETWORK_ACTIVITIES:
         src_asset_id = event.get("src", {}).get("assetId", "")
         dst_asset_id = event.get("dst", {}).get("assetId", "")
         combined_string = f"{timestamp}-{src_asset_id}-{dst_asset_id}"
@@ -205,7 +204,7 @@ def process_events(events: list, previous_ids: list, last_event_time: int, max_r
             break
 
         if event_id not in previous_ids:
-            event['_TIME'] = timestamp_to_datestring(event.get('timestamp'), is_utc=True)
+            event['_TIME'] = event.get('timestamp')
             event['source_log_type'] = log_type
             new_events.append(event)
             event_timestamp = event.get("timestamp")
@@ -225,9 +224,9 @@ def process_events(events: list, previous_ids: list, last_event_time: int, max_r
 
 
 def fetch_events(client: Client, params: dict, last_run: dict, start_timestamp: int, log_type: str,
-                 filters: list) -> tuple[dict, list]:
+                 filters: list, max_results: int, limit: int) -> tuple[dict, list]:
     """
-    Fetches audit logs from ZeroNetworks API for a specific log type.
+    Fetches events from ZeroNetworks API by log type.
 
     Args:
         client (Client): The client instance used to interact with the ZeroNetworks API.
@@ -243,11 +242,10 @@ def fetch_events(client: Client, params: dict, last_run: dict, start_timestamp: 
     """
     cursor = last_event_time = start_timestamp
     collected_events: list = []
-    max_results, limit = get_max_results_and_limit(params, log_type)
     previous_ids = last_run.get(log_type, {}).get("previous_ids", [])
 
     while len(collected_events) < max_results:
-        demisto.debug(f"Fetching events for log type '{log_type}' with cursor '{cursor}' and limit '{limit}'")
+        demisto.debug(f"Fetching events for {log_type=} with {cursor=} and {limit=}")
         response = client.search_events(limit, cursor=cursor, log_type=log_type, filters=filters)
 
         if not response:
@@ -284,7 +282,7 @@ def fetch_events(client: Client, params: dict, last_run: dict, start_timestamp: 
 
     last_run = update_last_run(last_run, log_type, last_event_time, previous_ids)
     demisto.debug(
-        f"Updated last_run for log type '{log_type}' with last_event_time '{last_event_time}' and previous_ids '{previous_ids}'")
+        f"Updated last_run for {log_type=} with {last_event_time=} and previous_ids {previous_ids=}")
 
     return last_run, collected_events
 
@@ -305,18 +303,20 @@ def get_events(client: Client, args: dict, last_run: dict, params: dict, log_typ
     """
     all_events: list = []
     filters = params.get("network_activity_filters", [])
-    final_hr = ""
+    hr = ""
     for log_type in log_types:
         if arg_from := args.get("from_date"):
             start_timestamp = date_to_timestamp(arg_from, ISO_8601_FORMAT)
         else:
-            start_timestamp = initialize_start_timestamp(last_run, log_type, arg_from=None)
+            start_timestamp = initialize_start_timestamp(last_run, log_type)
 
-        last_run, collected_events = fetch_events(client, params, last_run, start_timestamp, log_type, filters)
-        final_hr += tableToMarkdown(name=f'{TYPES_TO_TITLES[log_type]} Events', t=collected_events)
+        max_results, limit = get_max_results_and_limit(params, log_type, args)
+        last_run, collected_events = fetch_events(client, params, last_run, start_timestamp,
+                                                  log_type, filters, max_results, limit)
+        hr += tableToMarkdown(name=f'{TYPES_TO_TITLES[log_type]} Events', t=collected_events)
         all_events.extend(collected_events)
 
-    return all_events, CommandResults(readable_output=final_hr)
+    return all_events, CommandResults(readable_output=hr)
 
 
 def fetch_all_events(client: Client, params: dict, last_run: dict, log_types: list) -> tuple[dict, list]:
@@ -335,8 +335,10 @@ def fetch_all_events(client: Client, params: dict, last_run: dict, log_types: li
     all_events: list = []
     filters = params.get("network_activity_filters", [])
     for log_type in log_types:
-        start_timestamp = initialize_start_timestamp(last_run, log_type, arg_from=None)
-        last_run, collected_events = fetch_events(client, params, last_run, start_timestamp, log_type, filters)
+        start_timestamp = initialize_start_timestamp(last_run, log_type)
+        max_results, limit = get_max_results_and_limit(params, log_type)
+        last_run, collected_events = fetch_events(client, params, last_run, start_timestamp,
+                                                  log_type, filters, max_results, limit)
         all_events.extend(collected_events)
 
     return last_run, all_events
@@ -356,7 +358,7 @@ def test_module(client: Client) -> str:
 
     try:
         start_timestamp = initialize_start_timestamp({}, "")
-        client.search_events(limit=1, cursor=start_timestamp, log_type=AUDIT_TYPE)
+        client.search_events(limit=1, cursor=start_timestamp, log_type=AUDIT)
     except Exception as e:
         if 'Unauthorized' in str(e):
             return 'Authorization Error: make sure the API Key is correctly set'
@@ -418,8 +420,8 @@ def main() -> None:
         elif command == 'fetch-events':
             last_run = demisto.getLastRun() or {}
             next_run, events = fetch_all_events(client, params, last_run, log_types)
-            demisto.setLastRun(next_run)
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+            demisto.setLastRun(next_run)
 
     # Log exceptions and return errors
     except Exception as e:
