@@ -2666,7 +2666,7 @@ def edit_classification_job_command(client: Client, import_id: str = None, data:
         raise DemistoException('Import Session Approval Failed.')
     '''
     return CommandResults(
-        readable_output=readable_output,
+        readable_output='The import session was successfully approved.',
         raw_response=res,
     )
 
