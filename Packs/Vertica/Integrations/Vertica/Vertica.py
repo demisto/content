@@ -15,7 +15,7 @@ class FixGetPass():
             # getuser() fails on some systems. Provide a sane default.
             user = 'vertica'
             try:
-                if self.getpass_getuser_org:  # type: ignore[truthy-function]
+                if self.getpass_getuser_org:
                     user = self.getpass_getuser_org()
             except (NameError, KeyError):
                 pass
@@ -23,7 +23,7 @@ class FixGetPass():
         getpass.getuser = getuser_no_fail
 
     def __del__(self):
-        if self.getpass_getuser_org and getpass:  # type: ignore[truthy-function]
+        if self.getpass_getuser_org and getpass:
             getpass.getuser = self.getpass_getuser_org
 
 
