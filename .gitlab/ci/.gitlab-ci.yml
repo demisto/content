@@ -5,4 +5,3 @@ include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
     ref: pre-post-instance-testing
     project: "${CI_PROJECT_NAMESPACE}/infra"
-
