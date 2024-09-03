@@ -2629,9 +2629,8 @@ def clone_ioc_command(client: Client, indicator_id: str = None) -> CommandResult
         (CommandResults).
     """
 
-    res = client.http_request("POST", F"v2/intelligence/{indicator_id}/clone/", resp_type='response')
+    res = client.http_request("POST", F"v2/intelligence/{indicator_id}/clone/")
 
-    res_json = res.json()
 
     # append the indocator ID being used in the clone
     res_json["indicator_id"] = indicator_id
