@@ -2,13 +2,8 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import sys
 from datetime import datetime, timedelta
-
-
 import requests
 
-
-''' CONSTANTS '''
-DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
 VERIFY_SSL = not demisto.params().get('insecure', False)
 
@@ -71,8 +66,6 @@ def extractVulnDetails(requestfromconnection):
         'CVSS Confidentiality Impact': ['cvssData.confidentialityImpact', 'confidentialityImpact'],
         'CVSS Integrity Impact': ['cvssData.integrityImpact', 'integrityImpact'],
         'CVSS Availability Impact': ['cvssData.availabilityImpact', 'availabilityImpact']
-
-        # Add other keys and their possible locations
     }
 
     if (not ('vulns') in req):
@@ -104,24 +97,6 @@ def extractVulnDetails(requestfromconnection):
                     cvssmetricslist.append(cvssmetricsdict)
 
             pretty_dict['metrics'] = cvssmetricslist
-
-            """if (('configurations') in i):
-                cpe23UriString = ''
-                for l in i['configurations']['nodes']:
-                    if(('children') in l):
-                        for m in l['children']:
-                            cpe23Uri = []
-                            for n in m['cpe_match']:
-                                cpe23Uri += n['cpe23Uri']+ '\n' #+ n['vulnerable']
-                                #pretty_dict['vulnerable'] = n['vulnerable']
-                                #pretty_dict['cpe23Uri'] = n['cpe23Uri']
-                        pretty_dict['configurations'] = cpe23UriString
-                    elif(('cpe_match') in l):
-                        for m in l['cpe_match']:
-                            cpe23UriString += m['cpe23Uri'] + '\n' #+ m['vulnerable']
-                            #pretty_dict['vulnerable'] = m['vulnerable']
-                            #pretty_dict['cpe23Uri'] = m['cpe23Uri']
-                        pretty_dict['configurations'] = cpe23UriString"""
             pretty_list.append(pretty_dict)
     elif ('vulns') in req:
         if (not len(req['vulns'])):
@@ -142,9 +117,7 @@ def generalSearch():
     end_date = datetime.today().strftime('%Y-%m-%dT%H:%M:%S.000')
     startIndex = demisto.args().get('startIndex')
     resultsPerPage = demisto.args().get('resultsPerPage')
-    # additional_parameters = '?lastModStartDate=' + start_date + '+00:00' + \
-    #     '&startIndex=' + str(startIndex) + '&resultsPerPage=' + str(resultsPerPage)
-    additional_parameters = {"lastModStartDate": f"{start_date}+00:00", "lastModEndDate": f"{end_date}+00:00",
+    additional_parameters = {"lastModStartDate": f"{start_date}+00:00", "lastModEndDate": f"{end_date}+00:00", \
                              "startIndex": f"{startIndex}", "resultsPerPage": f"{resultsPerPage}"}
 
     generalSearchRequest = connection(base_url, additional_parameters)
@@ -174,8 +147,6 @@ def keywordSearch():
     last_time = datetime.today() - timedelta(days=int(time))
     start_date = last_time.strftime('%Y-%m-%dT%H:%M:%S%z')
     end_date = datetime.today().strftime('%Y-%m-%dT%H:%M:%S.000')
-    # modEndDate_date =   datetime.today()
-    # modEndDate= modEndDate_date.strftime('%Y-%m-%dT%H:%M:%S.000')
     startIndex = demisto.args().get('startIndex')
     resultsPerPage = demisto.args().get('resultsPerPage')
     additional_parameters = {"lastModStartDate": f"{start_date}+00:00", "lastModEndDate": f"{end_date}+00:00", \
@@ -248,7 +219,7 @@ def cweSearch():
     startIndex = demisto.args().get('startIndex')
     resultsPerPage = demisto.args().get('resultsPerPage')
 
-    additional_parameters = {"lastModStartDate": f"{start_date}+00:00", "lastModEndDate": f"{end_date}+00:00",
+    additional_parameters = {"lastModStartDate": f"{start_date}+00:00", "lastModEndDate": f"{end_date}+00:00", \
                              "cweId": f"{cweId}", "startIndex": f"{startIndex}", "resultsPerPage": f"{resultsPerPage}"}
     generalSearchRequest = connection(base_url, additional_parameters)
     generalVulnerabilityList = extractVulnDetails(generalSearchRequest)
