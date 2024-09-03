@@ -1,7 +1,6 @@
 commonfields:
   id: SigmaConverttoQuery
-  version: 16
-vcShouldKeepItemLegacyProdMachine: false
+  version: -1
 name: SigmaConverttoQuery
 script: ''
 type: python
@@ -12,8 +11,9 @@ enabled: true
 args:
 - name: indicator
   required: true
-  description: The sigma rule indicator to convert to a query
+  description: The sigma rule indicator to convert to a queryץ.
 - name: SIEM
+  description: The SIEM to convert the sigma rule to.
   required: true
   auto: PREDEFINED
   predefined:
@@ -26,9 +26,10 @@ args:
   - Elastic
 scripttarget: 0
 subtype: python3
-pswd: ''
 runonce: false
 dockerimage: devdemisto/pysigma:1.0.0.108216
 runas: DBotWeakRole
 engineinfo: {}
-mainengineinfo: {}
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

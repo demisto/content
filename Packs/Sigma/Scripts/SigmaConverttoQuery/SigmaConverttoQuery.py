@@ -93,5 +93,5 @@ def main() -> None:
                                   readable_output=query))
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
     main()
