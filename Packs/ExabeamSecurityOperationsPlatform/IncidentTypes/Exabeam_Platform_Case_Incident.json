@@ -1,0 +1,29 @@
+{
+    "id": "Exabeam Platform Case",
+    "version": -1,
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "Exabeam Platform Case",
+    "prevName": "Exabeam Platform Case",
+    "color": "#9FA8DA",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": false,
+    "disabled": false,
+    "layout": "Exabeam Platform Case",
+    "reputationCalc": 0,
+    "onChangeRepAlg": 0,
+    "detached": false,
+    "extractSettings": {
+        "mode": "Specific",
+        "fieldCliNameToExtractSettings": {}
+    },
+    "fromVersion": "6.10.0"
+}
