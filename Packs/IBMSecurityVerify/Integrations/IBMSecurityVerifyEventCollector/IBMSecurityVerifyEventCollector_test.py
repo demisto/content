@@ -98,7 +98,7 @@ def test_search_events(mocker, mock_client):
     sort_order = "asc"
     last_item = {"last_id": "123", "after_time": "456"}
 
-    events = mock_client.search_events(limit, sort_order, last_item)
+    _, events = mock_client.search_events(limit, sort_order, last_item)
 
     expected_events = [
         {"indexed_at": "2", "tenantname": "Test Event 2", "id": "123"}
@@ -125,7 +125,7 @@ def test_get_events_command(mocker, mock_client):
     """
     args = {"limit": 2, "sort_order": "Desc", "last_id": "123", "last_time": "456"}
 
-    search_events = mocker.patch.object(mock_client, "search_events")
+    search_events = mocker.patch.object(mock_client, "search_events", return_value=({}, []))
     get_events_command(mock_client, args)
 
     search_events.assert_called_with(
@@ -139,7 +139,7 @@ def test_fetch_events(mocker, mock_client):
     """
     """
     # First fetch
-    search_events = mocker.patch.object(mock_client, "search_events", return_value=EVENTS)
+    search_events = mocker.patch.object(mock_client, "search_events", return_value=({}, EVENTS))
     last_run = {}
 
     # Verify the first fetch initializes last_run with the latest event

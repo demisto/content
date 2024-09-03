@@ -85,7 +85,7 @@ class Client(BaseClient):
         token_data = {"access_token": new_token, "expiry_time_utc": expiry_time_utc.isoformat()}
         return token_data
 
-    def search_events(self, limit: int, sort_order: str, last_item: dict = {}) -> list:
+    def search_events(self, limit: int, sort_order: str, last_item: dict = {}) -> tuple[dict[str, str], list]:
         """
         Searches and returns a list of events based on the specified criteria.
 
@@ -104,8 +104,10 @@ class Client(BaseClient):
             url_suffix="events",
             params=params,
         )
-        events = response.get("response", {}).get("events", {}).get("events", [])
-        return events
+        response_events = response.get("response", {}).get("events", {})
+        events_list = response_events.get("events", [])
+        search_after = response_events.get("search_after", {})
+        return search_after, events_list
 
 
 def test_module(client: Client, params) -> str:
@@ -133,7 +135,7 @@ def get_events_command(client: Client, args: dict) -> list[dict]:
     if limit > MAX_EVENTS_API_CALL or limit < MIN_FETCH:
         raise DemistoException(f"The maximum number of events per fetch should be between {MIN_FETCH} - {MAX_EVENTS_API_CALL}")
 
-    events = client.search_events(limit=limit, sort_order=sort_order, last_item=last_item)
+    _, events = client.search_events(limit=limit, sort_order=sort_order, last_item=last_item)
     events = format_record_keys(events)
     return events
 
@@ -157,21 +159,21 @@ def fetch_events(client: Client, last_run: dict[str, str], limit: int) -> tuple[
     if not last_time or not last_id:  # If this is a first run
         demisto.debug('Last run data is missing. Fetching initial last_run.')
 
-        first_event = client.search_events(limit=1, sort_order="desc")
+        search_after, first_event = client.search_events(limit=1, sort_order="desc")
         if not first_event:
             demisto.debug('No events found in the initial fetch.')
             return {}, []
 
         last_run = {
-            "last_time": first_event[0].get("indexed_at"),
-            "last_id": first_event[0].get("id")
+            "last_time": search_after.get("time", ""),
+            "last_id": search_after.get("id", "")
         }
         demisto.debug(f'Initial last_run set to: {last_run}')
 
     collected_events: list[dict] = []
     while len(collected_events) < limit:
         limit_for_request = min(limit - len(collected_events), MAX_EVENTS_API_CALL)
-        events = client.search_events(
+        search_after, events = client.search_events(
             limit=limit_for_request,
             sort_order="asc",
             last_item=last_run
@@ -181,8 +183,8 @@ def fetch_events(client: Client, last_run: dict[str, str], limit: int) -> tuple[
 
         demisto.debug(f'In the call get {len(collected_events)} events')
         last_run = {
-            "last_time": events[-1].get("indexed_at"),
-            "last_id": events[-1].get("id")
+            "last_time": search_after.get("time", ""),
+            "last_id": search_after.get("id", "")
         }
         collected_events.extend(events)
 
