@@ -385,7 +385,7 @@ def sync(client: Client):
     Creates the initial sync between xdr and xsoar iocs.
     """
     demisto.info("executing sync")
-    temp_file_path: str = get_temp_file()
+    temp_file_path: str = get_temp_file() 
     try:
         sync_time = datetime.now(timezone.utc)
         create_file_sync(temp_file_path)  # may end up empty
