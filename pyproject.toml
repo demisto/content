@@ -54,24 +54,8 @@ types-PyYAML = "6.0.12.20240311"
 types-emoji = "2.1.0.3"
 
 [tool.ruff]
-select = [
-    "UP015"
-]
 fix = true
-ignore = [
-    "E402", # module-import-not-at-top-of-file
-
-    "F403", # undefined-local-with-import-star
-    "F405", # undefined-local-with-import-star-usage
-
-    "W605", # invalid-escape-sequence
-]
 extend-exclude = ["CommonServerPython", "test_data", "conftest.py", "demistomock.py"]
-
-unfixable = [
-    "RUF001"  # ambiguous-unicode-character-string
-]
-
 line-length = 130
 target-version = "py310"
 src = [
@@ -80,9 +64,27 @@ src = [
     "Packs/ApiModules/Scripts/*",
 ]
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint]
+select = [
+    "UP015"
+]
+ignore = [
+    "E402", # module-import-not-at-top-of-file
+
+    "F403", # undefined-local-with-import-star
+    "F405", # undefined-local-with-import-star-usage
+
+    "W605", # invalid-escape-sequence
+]
+
+unfixable = [
+    "RUF001"  # ambiguous-unicode-character-string
+]
+
+
+[tool.ruff.lint.per-file-ignores]
 "**/*_test.py" = []
-# Ignore any Python update in ApiModules, until we can proprtly determine their desired version.
+# Ignore any Python update in ApiModules, until we can properly determine their desired version.
 "**/*ApiModule.py"  = [ "UP" ]
 [tool.mypy]
 python_version = "3.10"
