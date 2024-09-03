@@ -600,12 +600,6 @@ def tim_insert_jsons(client: Client):
                     validation_errors.extend(errors)
                 except Exception as exc:
                     demisto.error(f'Batch #{batch_index} generated an exception: {exc}')
-        # for i, single_batch_iocs in enumerate(batch_iocs(iocs, batch_size=4000)):
-        #    demisto.debug(f'pushing IOCs to XDR: batch #{i} with {len(single_batch_iocs)} IOCs')
-        #    requests_kwargs: dict = get_requests_kwargs(_json=list(
-        #        map(demisto_ioc_to_xdr, single_batch_iocs)), validate=True)
-        #    response = client.http_request(url_suffix=path, requests_kwargs=requests_kwargs)
-        #    validation_errors.extend(response.get('reply', {}).get('validation_errors'))
     else:
         demisto.info("pushing IOCs to XDR: found no matching IOCs")
     if validation_errors:
