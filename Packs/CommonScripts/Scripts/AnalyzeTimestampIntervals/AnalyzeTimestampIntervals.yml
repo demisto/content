@@ -1,8 +1,8 @@
 commonfields:
   id: AnalyzeTimestampIntervals
-  version: 17
-vcShouldKeepItemLegacyProdMachine: false
+  version: -1
 name: AnalyzeTimestampIntervals
+comment: Analyze a list of Unix timestamps in milliseconds, to detect simple patterns of consistency or high frequency. The script can aid in the investigation of multi-event alerts that contain a list of timestamps.
 script: ''
 type: python
 tags: []
@@ -44,9 +44,10 @@ outputs:
   type: boolean
 scripttarget: 0
 subtype: python3
-pswd: ''
 runonce: false
 dockerimage: demisto/python3:3.11.9.107902
 runas: DBotWeakRole
 engineinfo: {}
-mainengineinfo: {}
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
