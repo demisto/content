@@ -114,7 +114,7 @@ script:
     - contextPath: MISP.Event.I
       description: MISP event ID
       type: string
-    - contextPath: MISP.Event.Distribution
+    - contextPath: MISP.Event.Distributio
       description: MISP event distribution.
       type: string
     - contextPath: MISP.Event.ThreatLevelID
@@ -2701,7 +2701,7 @@ script:
     description: Display role names and role IDs.
     name: misp-get-role-info
     outputs:
-    - contextPath: MISP.Role.role_id
+    - contextPath: MISP.Role.role_i
       description: MISP role ID.
       type: string
     - contextPath: MISP.Role.role_name
