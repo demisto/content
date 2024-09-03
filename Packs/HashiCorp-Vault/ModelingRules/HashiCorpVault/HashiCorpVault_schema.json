@@ -3,26 +3,6 @@
         "_raw_log": {
             "type": "string",
             "is_array": false
-        },
-        "auth": {
-            "type": "string",
-            "is_array": false
-        },
-        "error": {
-            "type": "string",
-            "is_array": false
-        },
-        "request": {
-            "type": "string",
-            "is_array": false
-        },
-        "response": {
-            "type": "string",
-            "is_array": false
-        },
-        "type": {
-            "type": "string",
-            "is_array": false
         }
     }
 }
