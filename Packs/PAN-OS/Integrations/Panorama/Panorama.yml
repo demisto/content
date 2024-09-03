@@ -300,7 +300,7 @@ script:
   - arguments:
     - description: The firewall managed by Panorama from which to retrieve the predefined threats.
       name: target
-    description: Gets the predefined threats list from a firewall or Panorama and stores it as a JSON file in the context.
+    description: Gets the predefined threats list from a firewall or Panorama and stores it as a JSON file in the context.f
     deprecated: true
     name: panorama-get-predefined-threats-list
     outputs:
