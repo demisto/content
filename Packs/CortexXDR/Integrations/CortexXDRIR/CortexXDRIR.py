@@ -837,7 +837,6 @@ def resolve_xsoar_close_reason(xdr_close_reason: str):
 
 def handle_incoming_closing_incident(incident_data) -> dict:
     incident_id = incident_data.get("incident_id")
-    # MAIMORAG
     demisto.debug(f"handle_incoming_closing_incident {incident_data=} {incident_id=}")
     closing_entry = {}  # type: Dict
 
