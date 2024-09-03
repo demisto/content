@@ -13,6 +13,7 @@ import urllib3
 urllib3.disable_warnings()
 
 '''CONSTANTS'''
+URL = demisto.params().get('url')
 ASM_URI = "/graph/v1.0/api"
 ASM_RISK_QUERY = '''
                     id
@@ -594,6 +595,10 @@ def format_JSON_for_risk(risk: dict[str, Any]) -> dict[str, Any]:
                 new_json[key] = comments
         else:
             new_json[key] = risk[key]
+    decoded_risk_id = decode_asm_id(risk['id'])
+    decoded_asset_id = decode_asm_id(risk['asset']['id'])
+    new_json['risk_url'] = f'{URL}/app/#/detail/direct-risks/{decoded_asset_id}?risk_id={decoded_risk_id}'
+    new_json['asset']['asset_url'] = f'{URL}/app/#/detail/overview/{decoded_asset_id}'
     return new_json
 
 
@@ -624,7 +629,7 @@ def format_JSON_for_asset(asset: dict[str, Any]) -> dict[str, Any]:
             else:
                 risks = {risk["id"]: risk["title"] for risk in asset[key]}
                 new_json[key] = risks
-        elif key in ['fqdns', 'technologies', 'registeredDomain']:
+        elif key in ['fqdns', 'technologies']:
             if asset[key] is None:
                 new_json[key] = {}
             else:
@@ -638,6 +643,8 @@ def format_JSON_for_asset(asset: dict[str, Any]) -> dict[str, Any]:
                 new_json[key] = addresses
         else:
             new_json[key] = asset[key]
+    decoded_asset_id = decode_asm_id(asset['id'])
+    new_json['asset_url'] = f'{URL}/app/#/detail/overview/{decoded_asset_id}'
     return new_json
 
 
@@ -655,6 +662,18 @@ def _compute_xsoar_severity(security_rating: str) -> int:
     if security_rating in ['f']:
         return 4
     return 1
+
+
+def decode_asm_id(id: str):
+    """Given a base64 encoded ASM ID returns the decoded id.
+    Works for both Risk and Asset IDs.
+    :type id: ``str``
+    :param id: Base64 encoded ASM ID.
+    :return: Decoded ID of ASM object used in UI.
+    :rtype: ``str``
+    """
+    decoded = str(base64.b64decode(id), encoding='utf-8').split(':')[1]
+    return decoded
 
 
 """*****COMMAND FUNCTIONS****"""
@@ -816,7 +835,9 @@ def post_asm_comment_command(client: Client, args: dict[str, Any]) -> str:
 
     if response.get("success", False):
         comment_dict = response.get("comment", {})
-        readable_output = f'Comment successful. Comment ID: {comment_dict.get("id", "Failed to get comment ID.")}'
+        readable_output = 'Comment successful.\n'\
+            f'Comment ID: {comment_dict.get("id", "Failed to get comment ID.")}\n'\
+            f'Comment Text: {comment_dict.get("text", "Failed to get comment text.")}'
     else:
         errors = [error.get("message", '') for error in response.get("errors", {})]
         errors_string = '\n'.join(errors)
@@ -833,7 +854,9 @@ def edit_asm_comment_command(client: Client, args: dict[str, Any]) -> str:
 
     if response.get("success", False):
         comment_dict = response.get("comment", {})
-        readable_output = f'Comment successfully edited. Comment ID: {comment_dict.get("id", "Failed to get comment ID.")}'
+        readable_output = 'Comment successfully edited.\n'\
+            f'Comment ID: {comment_dict.get("id", "Failed to get comment ID.")}\n'\
+            f'Comment Text: {comment_dict.get("text", "Failed to get comment text.")}'
     else:
         errors = [error.get("message", '') for error in response.get("errors", {})]
         errors_string = '\n'.join(errors)

@@ -9161,7 +9161,7 @@ class Topology:
 
         return topology
 
-    def get_direct_device(self, firewall: Firewall) -> PanDevice:
+    def get_direct_device(self, firewall: Firewall, ip_address: Optional[str] = None) -> PanDevice:
         """
         Given a firewall object that's proxied via Panorama, create a device that uses a direct API connection
         instead. Used by any command that can't be routed via Panorama.
@@ -9171,7 +9171,7 @@ class Topology:
             # If it's already a direct connection
             return firewall
 
-        ip_address = (firewall.show_system_info().get("system") or {}).get("ip-address")
+        ip_address = ip_address or (firewall.show_system_info().get("system") or {}).get("ip-address")
 
         return PanDevice.create_from_device(
             hostname=ip_address,
@@ -9901,7 +9901,7 @@ def dataclass_from_dict(device: Union[Panorama, Firewall], object_dict: dict, cl
     result_dict = {}
     for key, value in object_dict.items():
         d_key = key.replace("-", "_")
-        dataclass_field = next((x for x in fields(class_type) if x.name == d_key), None)
+        dataclass_field = next((x for x in fields(class_type) if x.name == d_key), None)  # type: ignore[arg-type]
         if dataclass_field:
             result_dict[d_key] = value
 
@@ -9921,7 +9921,7 @@ def flatten_xml_to_dict(element, object_dict: dict, class_type: Callable):
 
         # Replace hyphens in tags with underscores to match python attributes
         tag = tag.replace("-", "_")
-        dataclass_field = next((x for x in fields(class_type) if x.name == tag), None)
+        dataclass_field = next((x for x in fields(class_type) if x.name == tag), None)  # type: ignore[arg-type]
         if dataclass_field:
             object_dict[tag] = child_element.text
 
@@ -9951,7 +9951,7 @@ def dataclass_from_element(device: Union[Panorama, Firewall], class_type: Callab
 
     # Handle the XML attributes, if any and if they match dataclass field
     for attr_name, attr_value in element.attrib.items():
-        dataclass_field = next((x for x in fields(class_type) if x.name == attr_name), None)
+        dataclass_field = next((x for x in fields(class_type) if x.name == attr_name), None)  # type: ignore[arg-type]
         if dataclass_field:
             object_dict[attr_name] = attr_value
 
@@ -10966,6 +10966,7 @@ class UniversalCommand:
     """Command list for commands that are consistent between PANORAMA and NGFW"""
     SYSTEM_INFO_COMMAND = "show system info"
     SHOW_JOBS_COMMAND = "show jobs all"
+    SHOW_JOBS_ID_PREFIX = "show jobs id \"{}\""
 
     @staticmethod
     def get_system_info(
@@ -11123,7 +11124,9 @@ class UniversalCommand:
         """
         result_data = []
         for device in topology.all(filter_string=device_filter_str, target=target):
-            response = run_op_command(device, UniversalCommand.SHOW_JOBS_COMMAND)
+            command = UniversalCommand.SHOW_JOBS_ID_PREFIX.format(id) if id else UniversalCommand.SHOW_JOBS_COMMAND
+            response = run_op_command(device, command)
+
             for job in response.findall("./result/job"):
                 result_data_obj: ShowJobsAllResultData = dataclass_from_element(device, ShowJobsAllResultData,
                                                                                 job)
@@ -11133,7 +11136,6 @@ class UniversalCommand:
                 # Filter the result data
                 result_data = [x for x in result_data if x.status == status or not status]
                 result_data = [x for x in result_data if x.type == job_type or not job_type]
-                result_data = [x for x in result_data if x.id == id or not id]
 
         # The below is very important for XSOAR to de-duplicate the returned key. If there is only one obj
         # being returned, return it as a dict instead of a list.
@@ -11246,17 +11248,19 @@ class FirewallCommand:
         )
 
     @staticmethod
-    def get_device_state(topology: Topology, target: str):
+    def get_device_state(topology: Topology, target: str, ip_address: Optional[str] = None):
         """
         Returns an exported device state, as binary data. Note that this will attempt to connect directly to the target
         firewall, as it cannot be exported via the Panorama proxy. If there are network issues that prevent that, this command
         will time out.
         :param topology: `Topology` instance.
         :param target: The target serial number to retrieve the device state from.
+        :param ip_address: An ip address to use for service route enabled firewalls.
         """
+
         for firewall in topology.firewalls(target=target):
             # Connect directly to the firewall
-            direct_firewall_connection = topology.get_direct_device(firewall)
+            direct_firewall_connection = topology.get_direct_device(firewall, ip_address)
             direct_firewall_connection.xapi.export(category="device-state")
             return direct_firewall_connection.xapi.export_result.get("content")
 
@@ -11909,13 +11913,14 @@ def get_object(
     )
 
 
-def get_device_state(topology: Topology, target: str, filename: str = None) -> dict:
+def get_device_state(topology: Topology, target: str, filename: str = None, ip_address: Optional[str] = None) -> dict:
     """
     Get the device state from the provided device target (serial number). Note that this will attempt to connect directly to the
     firewall as there is no way to get the device state for a firewall via Panorama.
 
     :param topology: `Topology` instance !no-auto-argument
     :param target: String to filter to only show specific hostnames or serial numbers.
+    :param ip_address: Manually determined ip address of a Service Route firewall.
     """
     if not filename:
         file_name = f"{target}_device_state.tar.gz"
@@ -11924,7 +11929,7 @@ def get_device_state(topology: Topology, target: str, filename: str = None) -> d
 
     return fileResult(
         filename=file_name,
-        data=FirewallCommand.get_device_state(topology, target),
+        data=FirewallCommand.get_device_state(topology, target, ip_address),
         file_type=EntryType.ENTRY_INFO_FILE
     )
 
@@ -14270,6 +14275,7 @@ def corr_incident_entry_to_incident_context(incident_entry: Dict[str, Any]) -> D
     Returns:
         dict[str,any]: context formatted incident entry represented by a dictionary
     """
+    incident_entry['type'] = 'CORRELATION'
     match_time = incident_entry.get('match_time', '')
     occurred = (
         occurred_datetime.strftime(DATE_FORMAT)
@@ -14281,7 +14287,6 @@ def corr_incident_entry_to_incident_context(incident_entry: Dict[str, Any]) -> D
         'name': f"Correlation {incident_entry.get('@logid')}",
         'occurred': occurred,
         'rawJSON': json.dumps(incident_entry),
-        'type': 'CORRELATION'
     }
 
 
@@ -14305,7 +14310,6 @@ def incident_entry_to_incident_context(incident_entry: Dict[str, Any]) -> Dict[s
         'name': f"{incident_entry.get('device_name')} {incident_entry.get('seqno')}",
         'occurred': occurred,
         'rawJSON': json.dumps(incident_entry),
-        'type': incident_entry.get('type')
     }
 
 
@@ -14330,7 +14334,7 @@ def get_fetch_start_datetime_dict(last_fetch_dict: LastFetchTimes,
 
     # add new log types to last_fetch_dict
     if queries_dict:
-        last_fetch_dict |= {  # type: ignore[assignment]
+        last_fetch_dict |= {  # type: ignore[assignment, typeddict-item]
             log_type: ''
             for log_type in queries_dict
             if log_type not in last_fetch_dict
@@ -14367,7 +14371,7 @@ def log_types_queries_to_dict(params: dict[str, str]) -> QueryMap:
     if log_types := params.get('log_types'):
         # if 'All' is chosen in Log Type (log_types) parameter then all query parameters are used, else only the chosen query parameters are used.
         active_log_type_queries = FETCH_INCIDENTS_LOG_TYPES if 'All' in log_types else log_types
-        queries_dict |= {
+        queries_dict |= {  # type: ignore[assignment]
             log_type: log_type_query
             for log_type in active_log_type_queries
             if (log_type_query := params.get(f'{log_type.lower()}_query'))
@@ -14507,7 +14511,8 @@ def main():  # pragma: no cover
             configured_max_fetch = arg_to_number(params['max_fetch'])
             queries = log_types_queries_to_dict(params)
             fetch_max_attempts = arg_to_number(params['fetch_job_polling_max_num_attempts'])
-            max_fetch = cast(MaxFetch, dict.fromkeys(queries, configured_max_fetch) | last_run.get('max_fetch_dict', {}))
+            max_fetch = cast(MaxFetch, dict.fromkeys(queries, configured_max_fetch)
+                             | last_run.get('max_fetch_dict', {}))  # type: ignore[arg-type, operator]
 
             new_last_run, incident_entries = fetch_incidents(
                 last_run, first_fetch, queries, max_fetch, fetch_max_attempts)  # type: ignore[arg-type]
