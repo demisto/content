@@ -1,5 +1,6 @@
 from CommonServerPython import *
-from ProofpointThreatResponseEventCollector import fetch_events_command, TIME_FORMAT, Client, list_incidents_command
+from ProofpointThreatResponseEventCollector import fetch_events_command, TIME_FORMAT, Client, list_incidents_command, \
+    find_and_remove_large_entry, remove_large_events
 
 
 def test_fetch_events_command(requests_mock):
@@ -53,3 +54,37 @@ def test_list_incidents_command(requests_mock):
     args = {'limit': 2}
     incidents, human_readable, raw_response = list_incidents_command(client, args)
     assert 'List Incidents Results:' in human_readable
+
+
+def test_find_and_remove_large_entry():
+    test_event = {
+        'key1': 'large value' * 1250000,  # Each repetition adds around 1 MB
+        'key2': {
+            'nested_key': 'small value',
+            'nested_big_key': 'large value' * 1250000  # Each repetition adds around 1 MB
+        }
+    }
+
+    find_and_remove_large_entry(test_event)
+
+    assert test_event['key1'] == ''
+    assert test_event['key2']['nested_big_key'] == ''
+    assert test_event['key2']['nested_key'] == 'small value'
+
+
+def test_remove_large_events():
+    test_event = {
+        'key1': 'large value' * 1250000,  # Each repetition adds around 1 MB
+        'key2': {
+            'nested_key': 'small value',
+            'nested_big_key': 'large value' * 1250000  # Each repetition adds around 1 MB
+        }
+    }
+    test_events = [test_event]
+
+    remove_large_events(test_events)
+
+    assert len(test_events) == 1
+    assert test_event['key1'] == ''
+    assert test_event['key2']['nested_big_key'] == ''
+    assert test_event['key2']['nested_key'] == 'small value'

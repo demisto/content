@@ -1,3 +1,5 @@
+import json
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import copy
@@ -49,6 +51,40 @@ def test_module(client, first_fetch):
 
     client.get_incidents_request(query_params)
     return 'ok'
+
+
+def find_and_remove_large_entry(event):
+    """
+        Finds and removes all large size values.
+    """
+    keys_to_remove = []
+
+    for key, value in list(event.items()):
+        if isinstance(value, dict):
+            find_and_remove_large_entry(value)
+        elif isinstance(value, str) and sys.getsizeof(value) > XSIAM_EVENT_CHUNK_SIZE_LIMIT:
+            demisto.debug(f'Found key {key} with None as its value exceeded chunk size limit, its size is {sys.getsizeof(value)}')
+            keys_to_remove.append(key)
+        else:
+            demisto.debug('Value is not dict nor str, trying to convert')
+            value_str = str(value)
+            if sys.getsizeof(value_str) > XSIAM_EVENT_CHUNK_SIZE_LIMIT:
+                keys_to_remove.append(key)
+
+    for key in keys_to_remove:
+        demisto.debug(f'Replacing {key} with None as its value exceeded chunk size limit')
+        event[key] = ""
+
+
+def remove_large_events(events):
+    """
+        Removing keys with large values from events.
+    """
+    for event in events:
+        event_str = json.dumps(event)
+        if sys.getsizeof(event_str) > XSIAM_EVENT_CHUNK_SIZE_LIMIT:
+            demisto.debug('found event with value larger than allowed')
+            find_and_remove_large_entry(event)
 
 
 def create_incidents_human_readable(human_readable_message, incidents_list):
@@ -315,6 +351,10 @@ def fetch_events_command(client, first_fetch, last_run, fetch_limit, fetch_delta
     demisto.debug(f'Fetched {len(incidents)} events')
 
     events = get_events_from_incidents(incidents)
+    demisto.debug("Removing all large size values from events")
+    remove_large_events(events)
+    demisto.debug("Finished removing all large size values from events")
+
     return events, last_run
 
 
