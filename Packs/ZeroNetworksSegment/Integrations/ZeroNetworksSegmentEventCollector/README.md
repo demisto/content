@@ -1,8 +1,8 @@
 This is the Zero Networks event collector integration for Cortex XSIAM.
 
-## Configure Zero Networks Segment Event Collector on Cortex XSOAR
+## Configure Zero Networks Segment Event Collector on Cortex XSIAM
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+1. Navigate to **Settings** > **Configurations** > **Data Collection** > **Automation & Feed Integrations**.
 2. Search for Zero Networks Segment Event Collector.
 3. Click **Add instance** to create and configure a new integration instance.
 
