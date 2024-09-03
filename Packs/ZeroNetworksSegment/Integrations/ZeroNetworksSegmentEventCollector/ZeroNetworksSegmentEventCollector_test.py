@@ -389,7 +389,7 @@ def test_fetch_events_limit_logic(mocker):
     last_run = {}
     client = Client("", False, False, {})
 
-    last_run, all_events = fetch_events(client, last_run, 1000, 'audit', [], max_results, limit)
+    fetch_events(client, last_run, 1000, 'audit', [], max_results, limit)
 
     calls = list(mock_search_events.call_args_list)
     first_call_limit = calls[0][0][0]  # Limit in the first call

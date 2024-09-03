@@ -10,19 +10,15 @@ urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 
+AUDIT = 'audit'
+NETWORK_ACTIVITIES = 'network_activities'
 ISO_8601_FORMAT = "%Y-%m-%dT%H:%M:%S.000Z"
 VALID_EVENT_TITLES = ['Audit', 'Network Activities']
 VENDOR = 'ZeroNetworks'
 PRODUCT = 'Segment'
 FIRST_FETCH = 'one minute'
-MAX_RESULTS_FOR_LOG_TYPE = {'audit': 10000, 'network_activities': 2000}
-MAX_CALLS_FOR_LOG_TYPE = {'audit': 10000, 'network_activities': 400}
-URL = {'audit': '/audit', 'network_activities': '/activities/network'}
-MAX_FETCH_PARAM_NAME = {'audit': 'max_fetch_audit', 'network_activities': 'max_fetch_network'}
-AUDIT = 'audit'
-NETWORK_ACTIVITIES = 'network_activities'
-TYPES_TO_TITLES = {'audit': 'Audit', 'network_activities': 'Network Activities'}
-TITLES_TO_TYPES = {'Audit': 'audit', 'Network Activities': 'network_activities'}
+MAX_CALLS_FOR_LOG_TYPE = {AUDIT: 10000, NETWORK_ACTIVITIES: 400}
+URL = {AUDIT: '/audit', NETWORK_ACTIVITIES: '/activities/network'}
 
 
 ''' CLIENT CLASS '''
@@ -73,16 +69,17 @@ def handle_log_types(event_types_to_fetch: list) -> list:
         event_types_to_fetch (list of str): A list of event type titles to be converted to log types.
 
     Raises:
-        InvalidEventTypeError: If any of the event type titles are not found in the `TITLES_TO_TYPES` mapping.
+        InvalidEventTypeError: If any of the event type titles are not found in the titles_to_types mapping.
 
     Returns:
         list: A list of log types corresponding to the provided event type titles.
-              The list contains log types that have a matching title in the `TITLES_TO_TYPES` mapping.
+              The list contains log types that have a matching title in the titles_to_types mapping.
               If an event type title is not found, an exception is raised.
     """
     log_types = []
+    titles_to_types = {'Audit': AUDIT, 'Network Activities': NETWORK_ACTIVITIES}
     for type_title in event_types_to_fetch:
-        if log_type := TITLES_TO_TYPES.get(type_title):
+        if log_type := titles_to_types.get(type_title):
             log_types.append(log_type)
         else:
             raise DemistoException(
@@ -124,8 +121,10 @@ def get_max_results_and_limit(params: dict[str, Any], log_type: str, args={}) ->
             - max_results (int): The maximum number of results to fetch.
             - limit (int): The limit for fetching results, adjusted to be at least 20.
     """
-    max_results = arg_to_number(args.get(MAX_FETCH_PARAM_NAME[log_type])) \
-        or arg_to_number(params.get(MAX_FETCH_PARAM_NAME[log_type])) or MAX_RESULTS_FOR_LOG_TYPE[log_type]
+    max_results_for_log_type = {AUDIT: 10000, NETWORK_ACTIVITIES: 2000}
+    max_fetch_param_name = {AUDIT: 'max_fetch_audit', NETWORK_ACTIVITIES: 'max_fetch_network'}
+    max_results = arg_to_number(args.get(max_fetch_param_name[log_type])) \
+        or arg_to_number(params.get(max_fetch_param_name[log_type])) or max_results_for_log_type[log_type]
     limit = min(max_results, MAX_CALLS_FOR_LOG_TYPE[log_type])
     if limit < 20:
         limit = 20
@@ -300,6 +299,7 @@ def get_events(client: Client, args: dict, last_run: dict, params: dict, log_typ
         events (list): List of fetched events.
         CommandResults: An object containing the formatted results for output.
     """
+    types_to_titles = {AUDIT: 'Audit', NETWORK_ACTIVITIES: 'Network Activities'}
     all_events: list = []
     filters = params.get("network_activity_filters", [])
     hr = ""
@@ -312,7 +312,7 @@ def get_events(client: Client, args: dict, last_run: dict, params: dict, log_typ
         max_results, limit = get_max_results_and_limit(params, log_type, args)
         last_run, collected_events = fetch_events(client, last_run, start_timestamp,
                                                   log_type, filters, max_results, limit)
-        hr += tableToMarkdown(name=f'{TYPES_TO_TITLES[log_type]} Events', t=collected_events)
+        hr += tableToMarkdown(name=f'{types_to_titles[log_type]} Events', t=collected_events)
         all_events.extend(collected_events)
 
     return all_events, CommandResults(readable_output=hr)
