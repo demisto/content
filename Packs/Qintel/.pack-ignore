@@ -12,3 +12,7 @@ ignore=RM113
 
 [file:QintelPMI.yml]
 ignore=IN154
+
+# GR103 is temporary, see CIAC-11656
+[file:layoutscontainer-Qintel_-_QWatch_Alert.json]
+ignore=GR103
