@@ -290,7 +290,7 @@ script:
       description: ID of the resource group. Run the "fortisiem-get-lists" command to get the ID. command.
     - name: object-info
       required: true
-      description: 'CSV list of key-value pairs of attributes, for example: name=SomeName,lowIp=192.168.1.1,highIp=192.168.1.2.'
+      description: 'CSV list of key-value pairs of attributes (for example: name=SomeName,lowIp=192.168.1.1,highIp=192.168.1.2).'
     - name: resource_type
       required: true
       auto: PREDEFINED
