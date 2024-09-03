@@ -9889,7 +9889,7 @@ def dataclass_from_dict(device: Union[Panorama, Firewall], object_dict: dict, cl
     result_dict = {}
     for key, value in object_dict.items():
         d_key = key.replace("-", "_")
-        dataclass_field = next((x for x in fields(class_type) if x.name == d_key), None)
+        dataclass_field = next((x for x in fields(class_type) if x.name == d_key), None)  # type: ignore[arg-type]
         if dataclass_field:
             result_dict[d_key] = value
 
@@ -9909,7 +9909,7 @@ def flatten_xml_to_dict(element: ET.Element, object_dict: dict, class_type: type
 
         # Replace hyphens in tags with underscores to match python attributes
         tag = tag.replace("-", "_")
-        dataclass_field = next((x for x in fields(class_type) if x.name == tag), None)
+        dataclass_field = next((x for x in fields(class_type) if x.name == tag), None)  # type: ignore[arg-type]
         if dataclass_field:
             object_dict[tag] = child_element.text
 
@@ -9939,7 +9939,7 @@ def dataclass_from_element(device: Union[Panorama, Firewall], class_type: type, 
 
     # Handle the XML attributes, if any and if they match dataclass field
     for attr_name, attr_value in element.attrib.items():
-        dataclass_field = next((x for x in fields(class_type) if x.name == attr_name), None)
+        dataclass_field = next((x for x in fields(class_type) if x.name == attr_name), None)  # type: ignore[arg-type]
         if dataclass_field:
             object_dict[attr_name] = attr_value
 
@@ -14325,7 +14325,7 @@ def get_fetch_start_datetime_dict(last_fetch_dict: LastFetchTimes,
 
     # add new log types to last_fetch_dict
     if queries_dict:
-        last_fetch_dict |= {  # type: ignore[assignment]
+        last_fetch_dict |= {  # type: ignore[assignment, typeddict-item]
             log_type: ''
             for log_type in queries_dict
             if log_type not in last_fetch_dict
@@ -14502,7 +14502,8 @@ def main():  # pragma: no cover
             configured_max_fetch = arg_to_number(params['max_fetch'])
             queries = log_types_queries_to_dict(params)
             fetch_max_attempts = arg_to_number(params['fetch_job_polling_max_num_attempts'])
-            max_fetch = cast(MaxFetch, dict.fromkeys(queries, configured_max_fetch) | last_run.get('max_fetch_dict', {}))
+            max_fetch = cast(MaxFetch, dict.fromkeys(queries, configured_max_fetch)
+                             | last_run.get('max_fetch_dict', {}))  # type: ignore[arg-type, operator]
 
             new_last_run, incident_entries = fetch_incidents(
                 last_run, first_fetch, queries, max_fetch, fetch_max_attempts)  # type: ignore[arg-type]
