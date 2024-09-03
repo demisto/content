@@ -15,7 +15,4 @@ To obtain the **Client ID** and **Client Secret**, follow these steps:
    - **Manage reports**
    - **Read reports**
 
-- ![Creating an API Client](../../doc_files/Creating_an_API_Client.gif)
-
-
 By following these steps, you will ensure that you are in the correct administrative mode before accessing the API credentials, which are essential for connecting and interacting with the IBM Security Verify Event Collector. Keeping the **Client ID** and **Client Secret** secure is critical to preventing unauthorized access and potential security breaches.

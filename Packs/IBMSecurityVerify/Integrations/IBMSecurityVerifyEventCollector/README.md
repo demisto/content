@@ -1,5 +1,19 @@
 IBM Security Verify provides a secure and scalable solution for collecting and managing security events from IBM Security Verify, offering advanced threat detection and response capabilities for protecting identities, applications, and data.
 
+## Set up the Third Party System
+To obtain the **Client ID** and **Client Secret**, follow these steps:
+
+1. **Log in to the IBM Security Verify UI**.
+2. **Click on the profile icon** located at the top right corner of the interface.
+3. **Select "Switch to admin"** to access administrative settings.
+4. Navigate to **Security > API Access**.
+5. Click on **Add API Client** to generate the necessary credentials.
+6. After clicking on **Add API Client**, make sure to assign the following permissions to the API client:
+   - **Manage reports**
+   - **Read reports**
+
+- ![Creating an API Client](../../doc_files/Creating_an_API_Client.gif)
+
 ## Configure IBM Security Verify Event Collector on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -35,11 +49,11 @@ Retrieves events from IBM Security Verify.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| should_push_events | If set to 'True', the command will create events; otherwise, it will only display them. Possible values are: True, False. Default is False. | Optional | 
-| limit | Maximum number of results to return. Default is 1000. | Optional | 
-| last_id | The ID of the last event retrieved. Use together with `last_time` for pagination to get events after this ID. Example: 1234abcd-5678-90ef-1234-567890abcdef. | Optional | 
-| last_time | The timestamp of the last event retrieved. Use together with `last_id` for pagination to get events after this time. Example: 1672531200000. | Optional | 
-| sort_order | Order to sort events by: 'Desc' or 'Asc'. Possible values are: Desc, Asc. Default is Desc. | Optional | 
+| should_push_events | If set to 'True', the command will create events; otherwise, it will only display them. Possible values are: True, False. Default is False. | Optional |
+| limit | Maximum number of results to return. Default is 1000. | Optional |
+| last_id | The ID of the last event retrieved. Use together with `last_time` for pagination to get events after this ID. Example: 1234abcd-5678-90ef-1234-567890abcdef. | Optional |
+| last_time | The timestamp of the last event retrieved. Use together with `last_id` for pagination to get events after this time. Example: 1672531200000. | Optional |
+| sort_order | Order to sort events by: 'Desc' or 'Asc'. Possible values are: Desc, Asc. Default is Desc. | Optional |
 
 #### Context Output
 
