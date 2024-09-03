@@ -27,12 +27,6 @@ class KProducer(Producer):
     """Empty inheritance class for C-typed class in order to make mocking work."""
     pass
 
-
-class Handler:
-    @staticmethod
-    def write(msg: str):
-        demisto.info(msg)
-
 class KafkaCommunicator:
     """Client class to interact with Kafka."""
     conf_producer: Optional[Dict[str, Any]] = None
@@ -75,9 +69,7 @@ class KafkaCommunicator:
                               'session.timeout.ms': self.SESSION_TIMEOUT,
                               'auto.offset.reset': offset,
                               'group.id': group_id,
-                              'enable.auto.commit': False,
-                              'log_level': 7,
-                              'debug': 'all'}
+                              'enable.auto.commit': False}
 
         self.kafka_logger = kafka_logger
 
@@ -470,7 +462,6 @@ def print_topics(kafka: KafkaCommunicator, demisto_args: dict) -> Union[CommandR
     demisto.debug("[test] in print_topics, preparing to get topics.")
     kafka_topics = kafka.get_topics().values()
     demisto.debug(f"[test] in print_topics, {kafka_topics=}")
-    counter = 0
     if kafka_topics:
         topics = []
         for topic in kafka_topics:
@@ -481,19 +472,11 @@ def print_topics(kafka: KafkaCommunicator, demisto_args: dict) -> Union[CommandR
                     try:
                         partition_output['EarliestOffset'], partition_output['OldestOffset'] = kafka.get_partition_offsets(
                             topic=topic.topic, partition=int(partition.id))
-                        demisto.info(f"[test] got success for {topics=} with {partition.id=}")
-                    except Exception as e:
-                        demisto.info(f"[test] failed with {topics=} with {partition.id=}\n{e}")
                     except KafkaException as e:
                         # Sometimes listing topics can return uninitialized partitions.
                         # If that's the case, ignore them and continue.
                         if 'Unknown partition' not in str(e):
                             raise e
-                counter += 1
-                if counter == 10:
-                    break
-            if counter == 10:
-                break
                 partitions.append(partition_output)
 
             topics.append({
