@@ -122,7 +122,7 @@ def test_module(client: Client, params) -> str:
     return "ok"
 
 
-def get_events_command(client: Client, args: dict) -> list[dict]:
+def get_events_command(client: Client, args: dict) -> tuple[list[dict], str]:
     """
     Retrieves events using the client based on the provided arguments.
     """
@@ -136,8 +136,8 @@ def get_events_command(client: Client, args: dict) -> list[dict]:
         raise DemistoException(f"The maximum number of events per fetch should be between {MIN_FETCH} - {MAX_EVENTS_API_CALL}")
 
     _, events = client.search_events(limit=limit, sort_order=sort_order, last_item=last_item)
-    events = format_record_keys(events)
-    return events
+    hr = tableToMarkdown(f"{VENDOR.title()} - {PRODUCT.title()} Events:", format_record_keys(events))
+    return events, hr
 
 
 def fetch_events(client: Client, last_run: dict[str, str], limit: int) -> tuple[Dict, List[Dict]]:
@@ -183,7 +183,7 @@ def fetch_events(client: Client, last_run: dict[str, str], limit: int) -> tuple[
 
         demisto.debug(f'In the call get {len(collected_events)} events')
         last_run = {
-            "last_time": search_after.get("time", ""),
+            "last_time": search_after.get("time", ""), # Contains the 'indexed_at' of the last event
             "last_id": search_after.get("id", "")
         }
         collected_events.extend(events)
@@ -261,9 +261,9 @@ def main() -> None:  # pragma: no cover
             return_results(test_module(client, params))
 
         elif command == 'ibm-security-verify-get-events':
-            events = get_events_command(client, args)
-            return_results(CommandResults(readable_output=tableToMarkdown(
-                f"{VENDOR.title()} - {PRODUCT.title()} Events:", events)))
+            events, hr = get_events_command(client, args)
+            return_results(CommandResults(readable_output=hr))
+
             should_push_events = argToBoolean(args.get('should_push_events'))
             if should_push_events:
                 add_time_to_events(events)
