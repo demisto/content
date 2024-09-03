@@ -2,6 +2,7 @@ id: dadf8d27-cdb0-42ad-8e19-4f659a1a6038
 version: 7
 vcShouldKeepItemLegacyProdMachine: false
 name: SecurityScorecard Event
+description: SecurityScorecard Event
 starttaskid: "0"
 tasks:
   "0":
@@ -10,6 +11,7 @@ tasks:
     type: start
     task:
       id: 36954ed2-4d7c-4527-8f77-55bf3a362474
+      description: Start
       version: -1
       name: ""
       iscommand: false
@@ -84,6 +86,7 @@ tasks:
       id: d920080a-469d-43e9-8a01-7e5328cde84d
       version: -1
       name: Finding is Valid
+      description: Finding is Valid
       type: condition
       iscommand: false
       brand: ""
@@ -135,6 +138,7 @@ tasks:
       id: 7742bde3-f649-499f-8fc5-00ea045eefe6
       version: -1
       name: Done
+      description: Done
       type: title
       iscommand: false
       brand: ""
@@ -162,6 +166,7 @@ tasks:
       id: 14216db3-c8a6-4a8c-8667-190ba838458f
       version: -1
       name: securityscorecard-company-findings-get
+      description: Retrieve an issue_type's historical findings in a scorecard.
       script: SecurityScorecard|||securityscorecard-company-findings-get
       type: regular
       iscommand: true
@@ -224,3 +229,4 @@ inputs:
   description: ""
   playbookInputQuery: null
 outputs: []
+fromversion: 6.0.0

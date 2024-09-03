@@ -1,5 +1,6 @@
 id: 5c4dd719-35cf-453a-8712-9b755e3057dc
 version: 9
+description: Sync SecurityScorecard data
 vcShouldKeepItemLegacyProdMachine: false
 name: SecurityScorecard Sync
 starttaskid: "0"
@@ -12,6 +13,7 @@ tasks:
       id: 04a3cbb5-c900-468d-8465-07c8b012cd4f
       version: -1
       name: ""
+      description: Start
       iscommand: false
       brand: ""
     nexttasks:
@@ -41,6 +43,7 @@ tasks:
       id: 21fcc2a7-c1a1-4d3d-8489-c88d736560a7
       version: -1
       name: Done
+      description: Done
       type: title
       iscommand: false
       brand: ""
@@ -68,6 +71,7 @@ tasks:
       id: 7925cdbc-30b3-4668-8f21-161b21e07d79
       version: -1
       name: SecurityScorecard Events
+      description: SecurityScorecard Events
       playbookName: SecurityScorecard Events
       type: playbook
       iscommand: false
@@ -154,3 +158,4 @@ inputs:
   description: ""
   playbookInputQuery: null
 outputs: []
+fromversion: 6.0.0

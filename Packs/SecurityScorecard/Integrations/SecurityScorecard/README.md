@@ -1,5 +1,5 @@
-Provides scorecards for domains.
-This integration was integrated and tested with version xx of SecurityScorecard.
+Provides commands to access SecurityScorecard's API.
+This integration was integrated and tested with the latest version of SecurityScorecard's API as of August 2024.
 
 ## Configure SecurityScorecard on Cortex XSOAR
 

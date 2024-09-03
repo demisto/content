@@ -2,6 +2,7 @@ id: e6419daf-3516-491f-856f-7b66e2880a43
 version: 7
 vcShouldKeepItemLegacyProdMachine: false
 name: SecurityScorecard Events
+description: Get SecurityScorecard events
 starttaskid: "0"
 tasks:
   "0":
@@ -12,6 +13,7 @@ tasks:
       id: 59b4a7c3-ff37-448b-84f3-0a0d6c217338
       version: -1
       name: ""
+      description: Start
       iscommand: false
       brand: ""
     nexttasks:
@@ -41,6 +43,7 @@ tasks:
       id: d54bc47e-6496-4d7e-8cc4-2ecc42dff8cf
       version: -1
       name: SecurityScorecard Event
+      description: Get SecurityScorecard events
       playbookName: SecurityScorecard Event
       type: playbook
       iscommand: false
@@ -81,6 +84,7 @@ tasks:
       id: 1a27569e-bb50-46e3-8b2b-16ded951ece5
       version: -1
       name: Done
+      description: Done
       type: title
       iscommand: false
       brand: ""
@@ -108,6 +112,7 @@ tasks:
       id: 91c31e0f-a675-4a36-87a1-39cf73d1510c
       version: -1
       name: securityscorecard-company-events-get
+      description: Retrieve an issue_type's historical events in a scorecard.
       script: SecurityScorecard|||securityscorecard-company-events-get
       type: regular
       iscommand: true
@@ -162,3 +167,4 @@ inputs:
   description: ""
   playbookInputQuery: null
 outputs: []
+fromversion: 6.0.0
