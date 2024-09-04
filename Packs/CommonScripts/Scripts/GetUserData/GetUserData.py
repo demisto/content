@@ -8,22 +8,6 @@ from collections.abc import Callable
 SHARED_CONTEXT = {}
 
 
-def prepare_readable_output(
-    command: str, args: dict, status: bool, response: dict
-) -> CommandResults:
-    command = f'!{command} {" ".join([f"{arg}={value}" for arg, value in args.items() if value])}'
-    if status:
-        readable_output = response["HumanReadable"]
-        result_message = f"#### Result for {command}\n{readable_output}"
-        result = CommandResults(readable_output=result_message)
-    else:
-        result_message = f"#### Error for {command}\n{response}"
-        result = CommandResults(
-            readable_output=result_message, entry_type=EntryType.ERROR
-        )
-    return result
-
-
 def create_account(
     id: Optional[str] = None,
     username: Optional[str] = None,
@@ -37,6 +21,7 @@ def create_account(
     is_enabled: Optional[bool] = None,
     manager_email: Optional[str] = None,
     manager_display_name: Optional[str] = None,
+    risk_level: Optional[str] = None,
 ) -> dict[str, Any]:
     account = {
         "id": id,
@@ -51,9 +36,10 @@ def create_account(
         "is_enabled": is_enabled,
         "manager_email": manager_email,
         "manager_display_name": manager_display_name,
+        "risk_level": risk_level,
     }
     for key, value in account.items():
-        if isinstance(value, list) and value:
+        if isinstance(value, list) and len(value) == 1:
             account[key] = value[0]
 
     return remove_empty_elements(account)
@@ -108,7 +94,7 @@ class Command:
                 output = self.output_function(context)
             else:
                 demisto.debug(
-                    f"Output key {self.output_key} not found in entry context: {entry_context}"
+                    f"Output key {self.output_key} not found in entry context keys: {list(entry_context.keys())}"
                 )
 
         return output
@@ -117,18 +103,20 @@ class Command:
         self, response: dict, is_error: bool = False
     ) -> CommandResults:
         command = f'!{self.name} {" ".join([f"{arg}={value}" for arg, value in self.args.items() if value])}'
+        tag = ["get-user-data"]
         if not is_error:
             readable_output = response["HumanReadable"]
             result_message = f"#### Result for {command}\n{readable_output}"
-            result = CommandResults(readable_output=result_message)
+            result = CommandResults(readable_output=result_message, mark_as_note=True, tags=tag)
         else:
             result_message = f"#### Error for {command}\n{response}"
             result = CommandResults(
-                readable_output=result_message, entry_type=EntryType.ERROR
+                readable_output=result_message, entry_type=EntryType.ERROR, mark_as_note=True, tags=tag
             )
         return result
 
     def update_command_args(self, args: dict):
+        self.args.update(args)
         self.command.args_lst = [args]
 
     def execute(self) -> tuple[bool, list[CommandResults], list[dict]]:
@@ -287,7 +275,7 @@ def setup_commands(playbook: PlaybookGraph) -> dict[str, Command]:
     user_email = playbook.args["user_email"]
     domain = playbook.args["domain"]
     return {
-        "identityiq_search_identities_command": Command(
+        "identityiq_search_identities_task": Command(
             name="identityiq-search-identities",
             brand="SailPointIdentityIQ",
             args={
@@ -303,7 +291,7 @@ def setup_commands(playbook: PlaybookGraph) -> dict[str, Command]:
                 is_enabled=entry_context.get("active"),
             ),
         ),
-        "identitynow_get_accounts_command": Command(
+        "identitynow_get_accounts_task": Command(
             name="identitynow-get-accounts",
             brand="SailPointIdentityNow",
             args={
@@ -317,7 +305,7 @@ def setup_commands(playbook: PlaybookGraph) -> dict[str, Command]:
                 is_enabled=not entry_context.get("disabled"),
             ),
         ),
-        "ad_get_user_command": Command(
+        "ad_get_user_task": Command(
             name="ad-get-user",
             brand="Active Directory Query v2",
             args={
@@ -338,13 +326,13 @@ def setup_commands(playbook: PlaybookGraph) -> dict[str, Command]:
                 SHARED_CONTEXT.update(
                     {
                         "ad_get_user_task": {
-                            "manager": entry_context.get("manager", [])[0]
+                            "manager": (entry_context.get("manager") or [None])[0]
                         }
                     }
                 ),
             )[0],
         ),
-        "ad_get_user_manager_command": Command(
+        "ad_get_user_manager_task": Command(
             name="ad-get-user",
             brand="Active Directory Query v2",
             args={},
@@ -357,7 +345,7 @@ def setup_commands(playbook: PlaybookGraph) -> dict[str, Command]:
                 "dn": SHARED_CONTEXT.get("ad_get_user_task", {}).get("manager")
             },
         ),
-        "pingone_get_user_command": Command(
+        "pingone_get_user_task": Command(
             name="pingone-get-user",
             brand="PingOne",
             args={
@@ -373,7 +361,7 @@ def setup_commands(playbook: PlaybookGraph) -> dict[str, Command]:
                 is_enabled=entry_context.get("Enabled"),
             ),
         ),
-        "okta_get_user_command": Command(
+        "okta_get_user_task": Command(
             name="okta-get-user",
             brand="Okta v2",
             args={
@@ -390,7 +378,7 @@ def setup_commands(playbook: PlaybookGraph) -> dict[str, Command]:
                 is_enabled=entry_context.get("Status") == "ACTIVE",
             ),
         ),
-        "aws_iam_get_user_command": Command(
+        "aws_iam_get_user_task": Command(
             name="aws-iam-get-user",
             brand="AWS - IAM",
             args={
@@ -402,7 +390,7 @@ def setup_commands(playbook: PlaybookGraph) -> dict[str, Command]:
                 username=entry_context.get("UserName"),
             ),
         ),
-        "msgraph_user_get_command": Command(
+        "msgraph_user_get_task": Command(
             name="msgraph-user-get",
             brand="Microsoft Graph User",
             args={
@@ -420,7 +408,7 @@ def setup_commands(playbook: PlaybookGraph) -> dict[str, Command]:
                 type=entry_context.get("Type"),
             ),
         ),
-        "msgraph_user_get_manager_command": Command(
+        "msgraph_user_get_manager_task": Command(
             name="msgraph-user-get-manager",
             brand="Microsoft Graph User",
             args={
@@ -434,49 +422,46 @@ def setup_commands(playbook: PlaybookGraph) -> dict[str, Command]:
                 manager_email=entry_context.get("Manager", {}).get("Mail"),
             ),
         ),
-        "xdr_list_risky_users_command": Command(
+        "xdr_list_risky_users_task": Command(
             name="xdr-list-risky-users",
             brand="Cortex XDR - IR",
-            args={"user_id": user_id},
+            args={"user_id": user_name},
             output_key="PaloAltoNetworksXDR.RiskyUser",
             output_function=lambda entry_context: create_account(
                 id=entry_context.get("id"),
                 type=entry_context.get("type"),
+                risk_level=entry_context.get("risk_level"),
             ),
         ),
-        # TODO: Update the outputs
-        "iam_get_user_command": Command(
+        "iam_get_user_task": Command(
             name="iam-get-user",
             args={
-                "user-profile": {"id": user_id}
-                if user_id
-                else {"email": f"{user_name}@{domain}"}
-                if domain and user_name
-                else {"username": user_name}
-                if user_name
-                else {"email": user_email}
-                if user_email
-                else None,
+                "user-profile": {
+                    "id": user_id,
+                    "email": user_email,
+                    "username": f"{user_name}{domain if domain else ''}",
+                }
             },
             is_generic=True,
-            output_key="Account",
+            output_key="IAM.Vendor",
             output_function=lambda entry_context: create_account(
                 id=entry_context.get("id"),
-                type=entry_context.get("type"),
-            ),
+                username=entry_context.get("username"),
+                email_address=entry_context.get("email"),
+                is_enabled=entry_context.get("active"),
+            ) if entry_context.get("success") else {},
         ),
     }
 
 
 def setup_tasks(playbook: PlaybookGraph, commands: Dict[str, Command]):
     playbook.add_task(Task("start_task"))
-    for command_name, command in commands.items():
-        task_name = command_name.replace("_command", "_task")
+    for task_name, command in commands.items():
         playbook.add_task(Task(task_name, command))
 
 
 def setup_connections(playbook: PlaybookGraph):
-    is_domain_in_user_name = "/" in playbook.args["user_name"]
+    is_domain_in_user_name = "\\" in playbook.args["user_name"]
     playbook.add_connection(
         playbook.tasks["start_task"],
         playbook.tasks["identityiq_search_identities_task"],
