@@ -1,0 +1,29 @@
+category: Vulnerability Management
+sectionOrder:
+- Connect
+- Collect
+commonfields:
+  id: assets_test
+  version: -1
+configuration:
+- additionalinfo: The fetch interval. It is recommended to set it to 24 hours, and the minimum interval is 1 hour.
+  defaultvalue: 1440
+  display: Assets and Vulnerabilities Fetch Interval
+  name: assetsFetchInterval
+  type: 19
+  section: Collect
+  advanced: true
+  required: false
+description: Qualys Vulnerability Management lets you create, run, manage reports and to fetch Activity Logs, Assets and Vulnerabilities, launch and manage vulnerability and compliance scans, and manage the host assets you want to scan for vulnerabilities and compliance.
+display: assets test
+name: assets_test
+script:
+  dockerimage: demisto/python3:3.11.9.104957
+  isfetchassets: true
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 5.5.0
+tests:
+- QualysVulnerabilityManagement-Test

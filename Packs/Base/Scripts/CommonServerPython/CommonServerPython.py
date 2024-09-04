@@ -11914,6 +11914,7 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
             snapshot_id = str(round(time.time() * 1000))
         headers['snapshot-id'] = instance_name + snapshot_id
         headers['total-items-count'] = str(items_count)
+        demisto.debug(f'{headers["snapshot-id"]=}  {headers["total-items-count"]=}')
 
     header_msg = 'Error sending new {data_type} into XSIAM.\n'.format(data_type=data_type)
 
