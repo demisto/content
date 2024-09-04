@@ -2,13 +2,12 @@ from bs4 import BeautifulSoup
 import bs4
 import pytest
 import CiscoWebExFeed
-import io
 import json
 from CommonServerPython import *  # noqa: F401
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -39,13 +38,20 @@ HTML_IP_SECTION = '''<div class="panel-collapse collapse" id="id_135011">
 
 
 FETCH_INDICATORS_INPUT_1 = {'CIDR': ['ipmock'], 'DOMAIN': ['domainmock']}
-FETCH_INDICATORS_UOTPUT_1 = [{'value': 'ipmock', 'type': 'Domain', 'fields': {'tags': ('very_good', 'very_bad'),
+FETCH_INDICATORS_OUTPUT_1 = [{'value': 'ipmock', 'type': 'Domain', 'fields': {'tags': ('very_good', 'very_bad'),
                                                                               'trafficlightprotocol': 'very_yellow'}},
                              {'value': 'domainmock', 'type': 'Domain', 'fields': {'tags': ('very_good', 'very_bad'),
                                                                                   'trafficlightprotocol': 'very_yellow'}}]
 
+FETCH_INDICATORS_NO_ENRICH_OUTPUT_1 = [{'value': 'ipmock', 'type': 'Domain',
+                                        'fields': {'tags': ('very_good', 'very_bad'),
+                                                   'trafficlightprotocol': 'very_yellow'}, 'enrichmentExcluded': True},
+                                       {'value': 'domainmock', 'type': 'Domain',
+                                        'fields': {'tags': ('very_good', 'very_bad'),
+                                                   'trafficlightprotocol': 'very_yellow'}, 'enrichmentExcluded': True}]
+
 FETCH_INDICATORS_INPUT_2 = {'CIDR': ['ipmock1', 'ipmock2'], 'DOMAIN': ['domainmock1', 'domainmock2']}
-FETCH_INDICATORS_UOTPUT_2 = [{'value': 'ipmock1', 'type': 'Domain', 'fields': {'tags': ('very_good', 'very_bad'),
+FETCH_INDICATORS_OUTPUT_2 = [{'value': 'ipmock1', 'type': 'Domain', 'fields': {'tags': ('very_good', 'very_bad'),
                                                                                'trafficlightprotocol': 'very_yellow'}},
                              {'value': 'ipmock2', 'type': 'Domain', 'fields': {'tags': ('very_good', 'very_bad'),
                                                                                'trafficlightprotocol': 'very_yellow'}},
@@ -178,8 +184,8 @@ def test_get_indicators_command__wrong_indicator_type(mocker):
     assert e.value.message == 'The indicator_type argument must be one of the following: Both, CIDR, DOMAIN'
 
 
-@pytest.mark.parametrize('input, expected', [(FETCH_INDICATORS_INPUT_1, FETCH_INDICATORS_UOTPUT_1),
-                                             (FETCH_INDICATORS_INPUT_2, FETCH_INDICATORS_UOTPUT_2)])
+@pytest.mark.parametrize('input, expected', [(FETCH_INDICATORS_INPUT_1, FETCH_INDICATORS_OUTPUT_1),
+                                             (FETCH_INDICATORS_INPUT_2, FETCH_INDICATORS_OUTPUT_2)])
 def test_fetch_indicators_command__different_sizes_of_inputs(mocker, input, expected):
     """
     Given:
@@ -196,6 +202,31 @@ def test_fetch_indicators_command__different_sizes_of_inputs(mocker, input, expe
                         return_value=input)
     expected_result = expected
     assert fetch_indicators_command(client=client, tags=("very_good", "very_bad"), tlp_color="very_yellow") == expected_result
+
+
+def test_fetch_indicators_command__exclude_enrichment(mocker):
+    """
+    Given:
+        - Exclude enrichment parameter is used
+    When:
+        - Calling the fetch_indicators_command
+    Then:
+        - The indicators should include the enrichmentExcluded field if exclude is True.
+    """
+    from CiscoWebExFeed import fetch_indicators_command, Client
+
+    input = FETCH_INDICATORS_INPUT_1
+    expected_result = FETCH_INDICATORS_NO_ENRICH_OUTPUT_1
+
+    client = MockedClient(Client)
+    mocker.patch.object(Client, 'all_raw_data', return_value='gg')
+    mocker.patch.object(CiscoWebExFeed, 'parse_indicators_from_response',
+                        return_value=input)
+
+    assert fetch_indicators_command(client=client,
+                                    tags=("very_good", "very_bad"),
+                                    tlp_color="very_yellow",
+                                    enrichment_excluded=True) == expected_result
 
 
 def test_parse_indicators_from_response__fail_to_parse(mocker, requests_mock):
