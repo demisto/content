@@ -1034,10 +1034,11 @@ def search_indicator(indicator_type, indicator_value, client=None):
         'includeTags': 'true',
     }
 
-    demisto.debug(f'search_indicator {indicator_value=}')
+    demisto.debug(f'search_indicator: {indicator_value=}')
 
     try:
         if client:
+            demisto.debug('search_indicator: using the client')
             result = client.get_url_enrichment(headers, params)
         else:
             result = requests.request(

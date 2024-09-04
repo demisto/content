@@ -589,7 +589,7 @@ def test_search_url_command__no_indicator(mocker, autofocusv2_client):
     mocker.patch.object(autofocusv2_client, 'get_url_enrichment', return_value=response)
 
     # run
-    result = search_url_command(autofocusv2_client,'test_url', 'B - Usually reliable', True)
+    result = search_url_command(autofocusv2_client, 'test_url', 'B - Usually reliable', True)
 
     # validate
     assert 'test_url was not found in AutoFocus' in result[0].readable_output
