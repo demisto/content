@@ -63,6 +63,7 @@ LOG_TYPE_TO_REQUEST = {
     'Wildfire': 'wildfire',
     'Decryption': 'decryption'}
 FETCH_RANGE = range(1, 5001)
+FETCH_MAX_AMOUNT = 5000
 
 XPATH_SECURITY_RULES = ''
 DEVICE_GROUP = ''
@@ -14216,13 +14217,11 @@ def filter_fetched_entries(entries_dict: dict[str, list[dict[str, Any]]], id_dic
 
 
 def update_max_fetch_dict(max_fetch_dict: MaxFetch,
-                          last_fetch_dict: LastFetchTimes,
-                          new_incident_entries: dict) -> MaxFetch:
+                          last_fetch_dict: LastFetchTimes) -> MaxFetch:
     """ This function updates the max fetch value for each log type according to the last fetch timestamp.
     Args:
         max_fetch_dict (MaxFetch): a dictionary of log type and its max fetch value
         last_fetch_dict (LastFetchTimes): a dictionary of log type and its last fetch timestamp
-        new_incident_entries (dict): a dictionary of log type and its raw entries without entries that have already been fetched in the previous fetch cycle.
     Returns:
         max_fetch_dict (MaxFetch): a dictionary of log type and its updated max fetch value
     """
@@ -14231,9 +14230,10 @@ def update_max_fetch_dict(max_fetch_dict: MaxFetch,
     # If the latest timestamp of the current fetch is the same as the previous fetch timestamp,
     # that means we did not get all logs for that timestamp, in such a case, we will increase the limit to be last limit + configured limit.
     new_max_fetch = {
-        log_type: max_fetch_dict[log_type] + configured_max_fetch  # type: ignore[literal-required]
+        # max amount allowed for log_type by the API is 5000
+        log_type: min(max_fetch_dict[log_type] + configured_max_fetch, FETCH_MAX_AMOUNT)  # type: ignore[literal-required]
         for log_type, last_fetch in last_fetch_dict.items()
-        if new_incident_entries.get(log_type) and previous_last_fetch.get(log_type) == last_fetch
+        if previous_last_fetch.get(log_type) and previous_last_fetch.get(log_type) == last_fetch
     }
     demisto.debug(f"{new_max_fetch=}")
     return cast(MaxFetch, new_max_fetch)
@@ -14455,7 +14455,7 @@ def fetch_incidents(last_run: LastRun, first_fetch: str,
         unique_incident_entries_dict, last_fetch_dict, last_id_dict)  # type: ignore[arg-type]
 
     next_max_fetch = update_max_fetch_dict(max_fetch_dict, last_fetch_dict,  # type: ignore[arg-type]
-                                           unique_incident_entries_dict)  # type: ignore[arg-type]
+                                           incident_entries_dict)  # type: ignore[arg-type]
     new_last_run = LastRun(last_fetch_dict=last_fetch_dict, last_id_dict=last_id_dict,  # type: ignore[typeddict-item]
                            max_fetch_dict=next_max_fetch)  # type: ignore[typeddict-item]
 
