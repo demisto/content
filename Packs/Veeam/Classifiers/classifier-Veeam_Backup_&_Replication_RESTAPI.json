@@ -1,5 +1,4 @@
 {
-    "defaultIncidentType": "Unclassified",
     "description": "",
     "feed": false,
     "id": "Veeam Backup \u0026 Replication Incidents Classifier",

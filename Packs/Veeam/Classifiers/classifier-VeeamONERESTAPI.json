@@ -1,5 +1,4 @@
 {
-    "defaultIncidentType": "Unclassified",
     "description": "",
     "feed": false,
     "id": "Veeam One Incidents Classifier",
