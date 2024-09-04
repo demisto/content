@@ -555,7 +555,7 @@ class Parser:
 
     def parse_virtual_server_item(
         self, virtual_server_item: dict[str, Any]
-    ) -> dict[str, Any]:
+    ):
         pass
 
     @abstractmethod
@@ -2726,7 +2726,6 @@ class Client(BaseClient):
         Raises:
             ValueError: Errors that help the user to insert the required arguments.
         """
-        pass
 
     def validate_virtual_server_item(self, args: dict[str, Any]):
         """Virtual server item args validator.
@@ -2737,7 +2736,6 @@ class Client(BaseClient):
         Raises:
             ValueError: Errors that help the user to insert the required arguments.
         """
-        pass
 
     def validate_server_pool_group(self, args: dict[str, Any], action: str):
         """Virtual server pool group args validator.
@@ -2748,7 +2746,6 @@ class Client(BaseClient):
         Raises:
             ValueError: Errors that help the user to insert the required arguments.
         """
-        pass
 
     def validate_server_pool_rule(self, args: dict[str, Any], group_type: str, command_action: str):
         """Virtual server pool rule args validator.
@@ -5675,12 +5672,11 @@ class ClientV2(Client):
                     and args["request_url"][0] != "/"
                 ):
                     raise ValueError(ErrorMessage.REQUEST_URL.value)
-        if member_type == "Header Field":
-            if args.get("header_name_type") and args["header_name_type"] not in [
-                "Simple String",
-                "Regular Expression",
-            ]:
-                raise ValueError(ErrorMessage.HEADER_NAME_TYPE.value)
+        if member_type == "Header Field" and args.get("header_name_type") and args["header_name_type"] not in [
+            "Simple String",
+            "Regular Expression",
+        ]:
+            raise ValueError(ErrorMessage.HEADER_NAME_TYPE.value)
 
     def validate_virtual_server_item(self, args: dict[str, Any]):
         """Virtaul server item args validator.
@@ -10462,9 +10458,7 @@ def get_object_data_before_update(
         by_key = (
             "_id"
             if client.version == ClientV1.API_VER
-            else "id"
-            if not by_key
-            else by_key
+            else by_key if by_key else "id"
         )
         old_args = get_object_data(
             client.version, by_key, value, get_request, object_id
