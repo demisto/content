@@ -3975,7 +3975,7 @@ def handle_incoming_resolved_issue(issue: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def issue_get_forms_command(client: JiraBaseClient, args: Dict[str, Any]) -> List[CommandResults]:
-    """Pulls down all forms with their questions and answers for a given issue
+    """Retrieves all forms, including corresponding questions and answers, for a specified issue.
 
     :param client: The Jira client to use for making the API calls
     :type client: JiraBaseClient
