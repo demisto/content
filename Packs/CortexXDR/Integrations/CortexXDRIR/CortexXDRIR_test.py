@@ -792,14 +792,14 @@ def test_get_incident_extra_data(mocker):
                          [
                              ("Known Issue=Other,Duplicate Incident=Duplicate,False Positive=False Positive,"
                               "True Positive=Resolved,Security Testing=Other,Other=Other",
-                              ["Other", "Duplicate", "Duplicate", "False Positive", "Resolved", "Other", "Other", "Resolved"]),
+                              ["Other", "Duplicate", "Duplicate", "False Positive", "Resolved", "Other", "Other", "Resolved", "Resolved"]),
 
                              ("Known Issue=Other,Duplicate Incident=Other,False Positive=False Positive,"
                               "True Positive=Resolved,Security Testing=Other,Other=Other",
-                              ["Other", "Other", "Duplicate", "False Positive", "Resolved", "Other", "Other", "Resolved"]),
+                              ["Other", "Other", "Duplicate", "False Positive", "Resolved", "Other", "Other", "Resolved", "Resolved"]),
 
                              ("Duplicate Incident=Other,Security Testing=Other,Other=Other",
-                              ["Other", "Other", "Duplicate", "False Positive", "Resolved", "Other", "Other", "Resolved"]),
+                              ["Other", "Other", "Duplicate", "False Positive", "Resolved", "Other", "Other", "Resolved", "Resolved"]),
 
                              # Expecting default mapping to be used when no mapping provided.
                              ("", list(XDR_RESOLVED_STATUS_TO_XSOAR.values())),
@@ -815,7 +815,7 @@ def test_get_incident_extra_data(mocker):
                              # Expecting default mapping to be used for when improper key-value pair *format* is provided.
                              ("Duplicate Incident=Other, False Positive=Other True Positive=Other",
                               ["Other", "Other", "Duplicate", "False Positive", "Resolved", "Security Testing", "Other",
-                               "Resolved"]),
+                               "Resolved", "Resolved"]),
 
                          ],
                          ids=["case-1", "case-2", "case-3", "empty-case", "improper-input-case-1", "improper-input-case-2",
