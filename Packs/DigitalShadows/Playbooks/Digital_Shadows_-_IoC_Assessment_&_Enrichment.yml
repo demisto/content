@@ -5,7 +5,7 @@ contentitemexportablefields:
 name: Digital Shadows - IoC Assessment & Enrichment
 description: Enrich indicators by providing intelligence and more associated indicators based on confirmed reporting in Digital Shadows SearchLight.
 starttaskid: "0"
-fromversion: 6.10.0
+fromversion: 6.0.0
 tasks:
   "0":
     id: "0"

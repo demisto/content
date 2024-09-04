@@ -1,27 +1,24 @@
-id: Digital Shadows- CVE_IoC Assessment & Enrichment
+id: Digital Shadows - CVE_IoC Assessment & Enrichment
 version: -1
-contentitemexportablefields:
-  contentitemfields: {}
 name: Digital Shadows - CVE_IoC Assessment & Enrichment
 description: Enrichment of CVE IOC types - sub-playbook for IOC Assessment & Enrichment playbook.
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: 32dabdab-88b2-4433-8198-8a8d7e4984b7
     type: start
     task:
       id: 32dabdab-88b2-4433-8198-8a8d7e4984b7
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "18"
+      - '18'
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -36,8 +33,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "13":
-    id: "13"
+    continueonerrortype: ""
+  '13':
+    id: '13'
     taskid: d13911d2-7aac-456f-890b-defcbf43969b
     type: title
     task:
@@ -46,10 +44,9 @@ tasks:
       name: End
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -64,8 +61,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "18":
-    id: "18"
+    continueonerrortype: ""
+  '18':
+    id: '18'
     taskid: c52bbc2c-ed1f-4d1b-854b-3db522ff75dc
     type: regular
     task:
@@ -79,7 +77,7 @@ tasks:
       brand: ReliaQuest GreyMatter DRP Incidents
     nexttasks:
       '#none#':
-      - "19"
+      - '19'
       - "35"
     scriptarguments:
       extend-context:
@@ -87,7 +85,6 @@ tasks:
       query:
         simple: ${inputs.IoC_CVE}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -102,8 +99,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "19":
-    id: "19"
+    continueonerrortype: ""
+  '19':
+    id: '19'
     taskid: 924d5566-1e8f-4d28-8fda-a5508c97020f
     type: regular
     task:
@@ -115,14 +113,13 @@ tasks:
       scriptName: AddEvidence
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     scriptarguments:
       desc:
         simple: Confirmed Malicious Activity Count
       description:
         simple: ${CVE Confirmed Activity}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -137,8 +134,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "20":
-    id: "20"
+    continueonerrortype: ""
+  '20':
+    id: '20'
     taskid: 9074af8c-19d3-449f-8425-6a0beaa7c8f4
     type: regular
     task:
@@ -152,7 +150,7 @@ tasks:
       brand: ReliaQuest GreyMatter DRP Incidents
     nexttasks:
       '#none#':
-      - "21"
+      - '21'
       - "31"
     scriptarguments:
       extend-context:
@@ -160,7 +158,6 @@ tasks:
       query:
         simple: ${inputs.IoC_CVE}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -175,8 +172,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "21":
-    id: "21"
+    continueonerrortype: ""
+  '21':
+    id: '21'
     taskid: b9c8e600-8626-4e24-8857-e0726806cee5
     type: regular
     task:
@@ -188,14 +186,13 @@ tasks:
       scriptName: AddEvidence
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     scriptarguments:
       desc:
         simple: Associated TTPs
       description:
         simple: ${CVE TTP Profiles}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -210,8 +207,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "22":
-    id: "22"
+    continueonerrortype: ""
+  '22':
+    id: '22'
     taskid: 0a490609-9fb9-493a-8fb2-d47b99468283
     type: regular
     task:
@@ -225,7 +223,7 @@ tasks:
       brand: ReliaQuest GreyMatter DRP Incidents
     nexttasks:
       '#none#':
-      - "23"
+      - '23'
       - "34"
     scriptarguments:
       extend-context:
@@ -233,7 +231,6 @@ tasks:
       query:
         simple: ${inputs.IoC_CVE}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -248,8 +245,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "23":
-    id: "23"
+    continueonerrortype: ""
+  '23':
+    id: '23'
     taskid: e7b5bb61-eefb-4c7a-8515-0ce179825b7e
     type: regular
     task:
@@ -261,14 +259,13 @@ tasks:
       scriptName: AddEvidence
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     scriptarguments:
       desc:
         simple: Profiles
       description:
         simple: ${CVE Profile Name}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -283,8 +280,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "24":
-    id: "24"
+    continueonerrortype: ""
+  '24':
+    id: '24'
     taskid: 476e4b9b-a3d9-4f13-8fc7-b2b1adde2157
     type: regular
     task:
@@ -298,7 +296,7 @@ tasks:
       brand: ReliaQuest GreyMatter DRP Incidents
     nexttasks:
       '#none#':
-      - "25"
+      - '25'
       - "33"
     scriptarguments:
       extend-context:
@@ -306,7 +304,6 @@ tasks:
       query:
         simple: ${inputs.IoC_CVE}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -321,8 +318,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "25":
-    id: "25"
+    continueonerrortype: ""
+  '25':
+    id: '25'
     taskid: 2be029dd-5efd-43cf-8a89-a229a6ab088d
     type: regular
     task:
@@ -334,14 +332,13 @@ tasks:
       scriptName: AddEvidence
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     scriptarguments:
       desc:
         simple: Summary
       description:
         simple: ${CVE Intel Summary}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -356,8 +353,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "26":
-    id: "26"
+    continueonerrortype: ""
+  '26':
+    id: '26'
     taskid: c83975b0-c78c-46bf-82d4-f8519005a3f4
     type: regular
     task:
@@ -371,14 +369,13 @@ tasks:
       brand: ReliaQuest GreyMatter DRP Incidents
     nexttasks:
       '#none#':
-      - "27"
+      - '27'
     scriptarguments:
       extend-context:
         simple: CVE Associated Indicators=content.entity.indicators.title
       query:
         simple: ${inputs.IoC_CVE}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -393,8 +390,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "27":
-    id: "27"
+    continueonerrortype: ""
+  '27':
+    id: '27'
     taskid: 2ff62656-99f5-4a99-8d41-a07e74f1fc24
     type: condition
     task:
@@ -403,30 +401,29 @@ tasks:
       name: is Associated Indicators blank?
       type: condition
       iscommand: false
-      brand: ""
-      description: ""
+      brand: ''
+      description: ''
     nexttasks:
-      "no":
-      - "30"
-      "yes":
-      - "13"
+      no:
+      - '30'
+      yes:
+      - '13'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isEmpty
           left:
             value:
               simple: ${CVE Associated Indicators}
             iscontext: true
-    - label: "no"
+    - label: no
       condition:
       - - operator: isNotEmpty
           left:
             value:
               simple: ${CVE Associated Indicators}
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -441,8 +438,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "30":
-    id: "30"
+    continueonerrortype: ""
+  '30':
+    id: '30'
     taskid: 7da0fb45-51bc-456a-8e4c-8228d0b9d3a4
     type: regular
     task:
@@ -453,12 +451,11 @@ tasks:
       scriptName: Print
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     scriptarguments:
       value:
         simple: ${CVE Associated Indicators}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -473,6 +470,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "31":
     id: "31"
     taskid: 0bb1f9eb-882d-46e4-80c7-e6f93d7acaa5
@@ -643,6 +641,8 @@ outputs:
 - contextPath: DBotScore.Type
   description: Indicator Type.
   type: string
-fromversion: 6.10.0
 tests:
 - No tests (auto formatted)
+fromversion: 6.10.0
+contentitemexportablefields:
+  contentitemfields: {}
