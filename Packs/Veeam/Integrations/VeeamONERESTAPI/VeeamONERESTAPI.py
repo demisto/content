@@ -542,7 +542,7 @@ def get_api_key(client: Client) -> str:
     username: str = credentials.get('identifier', '')
     password: str = credentials.get('password', '')
     token = update_token(client, username, password)
-    api_key = 'Bearer ' + token
+    api_key = f'Bearer {token}'
     return api_key
 
 
