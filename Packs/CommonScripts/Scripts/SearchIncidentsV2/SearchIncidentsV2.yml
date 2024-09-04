@@ -71,7 +71,6 @@ args:
   - "false"
   - "true"
   hidden:
-  - xpanse
   - xsoar
 - description: A comma seperated list of fields to add to context when using summarized version, (default- id,name,type,severity,status,owner,created,closed).
   name: add_fields_to_summarize_context
