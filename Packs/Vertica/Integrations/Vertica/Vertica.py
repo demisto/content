@@ -21,7 +21,7 @@ class FixGetPass():
             user = 'vertica'
             try:
                 # Check if the getpass_getuser_org function exists and was not overriden after init.
-                if self.getpass_getuser_org:
+                if self.getpass_getuser_org:  # type: ignore[truthy-function]
                     # If so, obtain the user by calling it.
                     user = self.getpass_getuser_org()
             except (NameError, KeyError):
@@ -33,7 +33,7 @@ class FixGetPass():
 
     def __del__(self):
         # If the getpass_getuser_org and getpass objects are still intact
-        if self.getpass_getuser_org and getpass:
+        if self.getpass_getuser_org and getpass:  # type: ignore[truthy-function]
             # return the state to as it was before the override.
             getpass.getuser = self.getpass_getuser_org
 
@@ -75,7 +75,7 @@ def connect_db():
         connection = vertica_python.connect(**DB_PARAMS)
         return connection
     except vertica_python.errors.ConnectionError as err:
-        return_error('Could not connect to DB, re-check DB params. Error: {}'.format(err))
+        return_error(f'Could not connect to DB, re-check DB params. Error: {err}')
 
 
 ''' COMMANDS + QUERY FUNCTIONS '''
@@ -170,7 +170,7 @@ def main():
             try:
                 connection.close()
             except Exception as ex:
-                demisto.error("Vertica failed connection.close(): {}".format(ex))
+                demisto.error(f"Vertica failed connection.close(): {ex}")
 
 
 # python2 uses __builtin__ python3 uses builtins
