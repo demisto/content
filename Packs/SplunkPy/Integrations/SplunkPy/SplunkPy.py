@@ -2150,7 +2150,7 @@ def rawToDict(raw):
                         result[key_and_val[0]] = key_and_val[1]
                     else:
                         # If there are multiple values for a key, append them.
-                        result[key_and_val[0]] = ",".join([result[key_and_val[0]],key_and_val[1]])
+                        result[key_and_val[0]] = ",".join([result[key_and_val[0]], key_and_val[1]])
 
     if REPLACE_FLAG:
         result = replace_keys(result)
