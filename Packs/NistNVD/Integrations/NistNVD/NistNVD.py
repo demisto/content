@@ -93,7 +93,8 @@ def extractVulnDetails(requestfromconnection):
 
                     for key, locations in key_locations.items():
                         cvssmetricsdict[key] = next((get_value_from_hierarchy(cvssmetric, loc) \
-                                                    for loc in locations if get_value_from_hierarchy(cvssmetric, loc) is not None), None)
+                                                    for loc in locations if get_value_from_hierarchy(cvssmetric, loc) is not None)
+                                                    , None)
                     cvssmetricslist.append(cvssmetricsdict)
 
             pretty_dict['metrics'] = cvssmetricslist
@@ -187,7 +188,8 @@ def cvssSearch():
     resultsPerPage = demisto.args().get('resultsPerPage')
 
     additional_parameters = {"lastModStartDate": f"{start_date}+00:00", "lastModEndDate": f"{end_date}+00:00", \
-                             f"{searchParameters}": f"{value}", "startIndex": f"{startIndex}", "resultsPerPage": f"{resultsPerPage}"}
+                             f"{searchParameters}": f"{value}", "startIndex": f"{startIndex}",
+                             "resultsPerPage": f"{resultsPerPage}"}
     generalSearchRequest = connection(base_url, additional_parameters)
     generalVulnerabilityList = extractVulnDetails(generalSearchRequest)
 
@@ -249,7 +251,8 @@ def cpeSearch():
     resultsPerPage = demisto.args().get('resultsPerPage')
 
     additional_parameters = {"lastModStartDate": f"{start_date}+00:00", "lastModEndDate": f"{end_date}+00:00", \
-                             "cpeName": f"{cpeName}", "startIndex": f"{str(startIndex)}", "resultsPerPage": f"{str(resultsPerPage)}"}
+                             "cpeName": f"{cpeName}", "startIndex": f"{str(startIndex)}",
+                             "resultsPerPage": f"{str(resultsPerPage)}"}
     generalSearchRequest = connection(base_url, additional_parameters)
     generalVulnerabilityList = extractVulnDetails(generalSearchRequest)
 
