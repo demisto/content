@@ -1929,18 +1929,18 @@ def test_recovery_lastrun(mocker):
 def test_qradar_reference_set_value_upsert_command_quiet_mode(mocker, quiet_mode):
     """
     Given:
-        - A reference set with id=1234
+        - A reference set with data
     When:
-        - Running the qradar-reference-set-value-upsert command with quiet_mode once true and once false
+        - Running qradar-reference-set-value-upsert with quiet_mode, once set to true and once to false
         - The polling status is "completed" (i.e. the results should be returned in the current interval)
     Then:
         - Ensure the command does not output the reference set data iff quiet_mode=true
         - Ensure the data is always in the raw response
     """
-    mocker.patch.object(QRadar_v3.ScheduledCommand, "raise_error_if_not_supported")
-    mocker.patch.object(client, "reference_set_entries", return_value={"id": 1234})
-    mocker.patch.object(client, "get_reference_data_bulk_task_status", return_value={"status": "COMPLETED"})
     args = {"ref_name": "test_ref", "value": "value1", "task_id": "test", "quiet_mode": quiet_mode}
+
+    mocker.patch.object(QRadar_v3.ScheduledCommand, "raise_error_if_not_supported")
+    mocker.patch.object(client, "get_reference_data_bulk_task_status", return_value={"status": "COMPLETED"})
     mock_response = command_test_data["reference_set_bulk_load"]['response'] | {"data": ["some_data"]}
     mocker.patch.object(client, "reference_sets_list", return_value=mock_response)
 
