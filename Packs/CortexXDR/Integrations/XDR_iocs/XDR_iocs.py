@@ -43,6 +43,7 @@ demisto_score_to_xdr: dict[int, str] = {
 }
 CURRENT_BATCH_LAST_MODIFIED_TIME: str = ''
 
+
 def create_validation_errors_response(validation_errors):
     if not validation_errors:
         return ''
@@ -469,7 +470,7 @@ def sync_for_fetch(client: Client, batch_size: int = 200, is_first_stage_sync: b
             demisto.debug(f"Fetched {len(request_data)} indicators from xsoar. last_modified_that_was_synced "
                           f"{CURRENT_BATCH_LAST_MODIFIED_TIME}, {request_data[-1].get('indicator')}, "
                           f"search_after {integration_context.get('search_after')}")
-            last_sync_time = integration_context.get('time','')
+            last_sync_time = integration_context.get('time', '')
             if len(request_data) < MAX_INDICATORS_TO_SYNC:
                 demisto.debug(f"{last_sync_time=}, {CURRENT_BATCH_LAST_MODIFIED_TIME=}")
                 # is the update_sync_time_with_date_string nessary (to ask judith)
@@ -770,7 +771,7 @@ def xdr_iocs_sync_command(client: Client,
         if called_from_fetch:
             sync_for_fetch(client, batch_size=4000, is_first_stage_sync=True)
         else:
-        # the sync is the large operation including the data and the get_integration_context is fill in the sync
+            # the sync is the large operation including the data and the get_integration_context is fill in the sync
             sync(client, batch_size=4000)
     else:
         pass

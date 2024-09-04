@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: Cortex XDR - IOC
+  id: Cortex XDR - IOC rewrite sync
   version: -1
 configuration:
 - display: Server URL (e.g. https://example.net)
@@ -163,8 +163,8 @@ configuration:
   type: 8
   required: false
 description: Use the Cortex XDR - IOCs feed integration to sync indicators from Cortex XSOAR to Cortex XDR and back to Cortex XSOAR. Cortex XDR is the world's first detection and response app that natively integrates network, endpoint and cloud data to stop sophisticated attacks.
-display: Cortex XDR - IOC
-name: Cortex XDR - IOC
+display: Cortex XDR - IOC rewrite sync
+name: Cortex XDR - IOC rewrite sync
 script:
   commands:
   - description: Create a file with all the IOCs that are going to sync to Cortex XDR.
