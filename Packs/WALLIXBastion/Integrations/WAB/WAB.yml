@@ -1275,6 +1275,9 @@ script:
     - type: Number
       contextPath: WAB.approval_assignment_notify_post_response.emails_count
       description: Number of e-mails sent to approvers.
+    - type: String
+      contextPath: WAB.approval_assignment_notify_post_response.approval_assignment_notify_post_id
+      description: the approval_assignment_notify_post_id.
   - name: wab-get-approval-request-pending-for-user
     description: 'Get the approval request pending for this user (by default the user logged on the REST API), or the approval request with the given id.'
     arguments:
@@ -1418,6 +1421,9 @@ script:
     - type: Number
       contextPath: WAB.approval_request_notify_post_response.emails_count
       description: 'Number of e-mails sent to approvers.'
+    - type: String
+      contextPath: WAB.approval_request_notify_post_response.approval_request_notify_post_id
+      description: the approval_request_notify_post_id.
   - name: wab-check-if-approval-is-required-for-target
     description: Check if an approval is required for this target (optionally for a given date in future).
     arguments:
@@ -4243,6 +4249,9 @@ script:
     - type: String
       contextPath: WAB.sessionrights_get.last_connection
       description: 'The date of the last connection (format: "yyyy-mm-dd hh:mm:ss"). Usable in the "sort" parameter.'
+    - type: String
+      contextPath: WAB.sessionrights_get.user_name
+      description: the user_name.
   - name: wab-generate-remote-application-token
     description: Generate a remote application token.
     arguments:
@@ -5256,6 +5265,9 @@ script:
     - type: String
       contextPath: WAB.targetpasswords_get_checkout.deconnection_time
       description: The date/time of automatic deconnection when the account is used in a proxy session.
+    - type: String
+      contextPath: WAB.targetpasswords_get_checkout.account_name
+      description: the account_name.
   - name: wab-extend-duration-time-to-get-passwords-for-target
     description: Extend the duration time to get the passwords for a given target.
     arguments:
