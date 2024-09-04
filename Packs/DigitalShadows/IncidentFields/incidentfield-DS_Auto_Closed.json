@@ -17,7 +17,7 @@
     "required": false,
     "sla": 0,
     "associatedTypes": [
-        "DS Incident Types"
+        "Reliaquest GreyMatter DRP Incident"
     ],
     "system": false,
     "threshold": 72,
