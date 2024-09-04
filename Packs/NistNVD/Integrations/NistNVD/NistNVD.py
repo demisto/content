@@ -121,7 +121,6 @@ def generalSearch():
                              "startIndex": f"{startIndex}", "resultsPerPage": f"{resultsPerPage}"}
 
     generalSearchRequest = connection(base_url, additional_parameters)
-    demisto.results(generalSearchRequest)
     generalVulnerabilityList = extractVulnDetails(generalSearchRequest)
 
     headers = ['CVE ID', 'Description', 'Published Date', 'Last Modified Date', 'References']
@@ -176,7 +175,6 @@ def cvssSearch():
     base_url = urljoin(demisto.params()['url'], '/rest/json/cves/2.0')
     time = int(demisto.args().get('time'))
     last_time = datetime.today() - timedelta(days=int(time))
-    # last_time = datetime.today() - relativedelta(months=int(time))
     start_date = last_time.strftime('%Y-%m-%dT%H:%M:%S.000')
     end_date = datetime.today().strftime('%Y-%m-%dT%H:%M:%S.000')
 
@@ -243,7 +241,6 @@ def cpeSearch():
     base_url = urljoin(demisto.params()['url'], '/rest/json/cves/2.0')
     time = int(demisto.args().get('time'))
     last_time = datetime.today() - timedelta(days=int(time))
-    # last_time = datetime.today() - relativedelta(months=int(time))
     start_date = last_time.strftime('%Y-%m-%dT%H:%M:%S.000')
     end_date = datetime.today().strftime('%Y-%m-%dT%H:%M:%S.000')
 
@@ -306,7 +303,7 @@ def main() -> None:
     demisto.debug(f'Command being called is {demisto.command()}')
 
     ''' EXECUTION '''
-    LOG('command is %s' % (demisto.command(), ))
+    demisto.info('command is %s' % (demisto.command(), ))
     try:
         if demisto.command() == 'test-module':
             demisto.results(test_module())
