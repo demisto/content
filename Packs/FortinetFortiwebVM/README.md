@@ -1,4 +1,4 @@
-# Fortinet Fortiweb VM Pack
+# Fortinet Fortiweb Pack
 Fortiweb VM integration enables you to manage WAF policies and block cookies, URLs, and hostnames.
 
 ## What does this pack do?
