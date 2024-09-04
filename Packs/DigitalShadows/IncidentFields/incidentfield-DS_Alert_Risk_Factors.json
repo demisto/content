@@ -23,8 +23,8 @@
     "threshold": 72,
     "type": "shortText",
     "unmapped": false,
-    "unsearchable": false,
     "useAsKpi": false,
+    "unsearchable": true,
     "version": -1,
     "fromVersion": "6.10.0"
 }

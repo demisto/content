@@ -513,9 +513,9 @@ tasks:
     task:
       id: 47064a4f-0817-43e9-855e-5f696d054c6f
       version: -1
-      name: Digital Shadows - URL_IoC Assessment & Enrichment_url
+      name: Digital Shadows - URL_IoC Assessment & Enrichment
       description: Enrichment of URL IOC types - sub-playbook for IOC Assessment & Enrichment playbook
-      playbookName: Digital Shadows - URL_IoC Assessment & Enrichment_url
+      playbookName: Digital Shadows - URL_IoC Assessment & Enrichment
       type: playbook
       iscommand: false
       brand: ""

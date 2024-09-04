@@ -5,7 +5,7 @@ contentitemexportablefields:
 name: Digital Shadows - IP_IoC Assessment & Enrichment
 description: Enrichment of IP IOC types - sub-playbook for IOC Assessment & Enrichment playbook.
 starttaskid: "0"
-fromversion: 6.10.0
+fromversion: 6.0.0
 tasks:
   "0":
     id: "0"
