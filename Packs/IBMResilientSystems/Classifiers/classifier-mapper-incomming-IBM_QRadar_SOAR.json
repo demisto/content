@@ -12,6 +12,9 @@
                 "Breach Confirmation": {
                     "simple": "confirmed"
                 },
+                "IBM QRadar Phase": {
+                    "simple": "phase"
+                },
                 "City": {
                     "simple": "city"
                 },

@@ -426,7 +426,16 @@
 						"w": 1,
 						"x": 0,
 						"y": 3
-					},{
+					}
+                ],
+				"type": "custom"
+			},
+            {
+				"id": "notes",
+				"name": "Notes",
+				"type": "custom",
+				"sections": [
+                    {
                         "h": 3,
                         "i": "incident-notes",
                         "items": [],
@@ -474,12 +483,29 @@
                         "moved": false,
                         "name": "Add note",
                         "static": false,
-                        "w": 1,
+                        "w": 3,
                         "x": 2,
                         "y": 8
                     }
-                ],
-				"type": "custom"
+                ]
+			},
+			{
+				"id": "tasks",
+				"name": "Tasks",
+				"type": "custom",
+				"sections": []
+			},
+			{
+				"id": "attachments",
+				"name": "Attachments",
+				"type": "custom",
+				"sections": []
+			},
+			{
+				"id": "artifacts",
+				"name": "Artifacts",
+				"type": "custom",
+				"sections": []
 			},
 			{
 				"id": "warRoom",

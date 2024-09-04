@@ -493,6 +493,8 @@ def process_raw_incident(client: SimpleClient, incident: dict) -> dict:
 
     if isinstance(incident.get("description"), str):
         incident["description"] = incident["description"]
+    elif isinstance(incident.get("description"), dict):
+        incident["description"] = incident["description"]["content"]
 
     incident["discovered_date"] = normalize_timestamp(incident.get("discovered_date"))
     incident["create_date"] = normalize_timestamp(incident.get("create_date"))
@@ -503,6 +505,7 @@ def process_raw_incident(client: SimpleClient, incident: dict) -> dict:
     tasks = get_tasks(client, incident_id)
     incident["tasks"] = prettify_tasks(tasks)
 
+    incident["phase"] = get_phase_name(client, incident['phase_id'])
     incident.update(get_mirroring_data())
     return incident
 
@@ -524,7 +527,7 @@ def resolve_field_value(field: str, raw_value: Any) -> dict:
         return {"text": raw_value}
 
     elif field in ["resolution_summary", "description"]:
-        return {"textarea": {"format": "html", "content": raw_value}}
+        return {"textarea": {"format": "text", "content": raw_value}}
 
     elif field in ["incident_type_ids", "nist_attack_vectors"]:
         return {"ids": raw_value}
@@ -899,9 +902,15 @@ def get_users(client):
     return response
 
 
+def get_phase_name(client: SimpleClient, phase_id: str) -> str:
+    response = client.get(f'/phases/{phase_id}')
+    return response.get('name')
+
+
 def get_phases(client):
     response = client.get('/phases')
     return response
+
 
 def prettify_tasks(tasks: list[dict]) -> list[dict]:
     """
@@ -1754,13 +1763,18 @@ def update_remote_system_command(client: SimpleClient, args: dict, comment_tag_t
         demisto.debug(
             f"Skipping updating remote incident fields [{remote_args.remote_incident_id}] as it is not new nor changed"
         )
+    _entries_tryout = demisto.executeCommand("getEntries", "")
+    demisto.debug(f'update_remote_system_command {_entries_tryout=}')
+
     entries = remote_args.entries
+    demisto.debug(f'update_remote_system_command {entries=}')
     if entries:
         for entry in entries:
             demisto.debug(f'update_remote_system_command {entry=}')
             entry_type = entry.get('type', '')
             entry_tags = entry.get('tags', [])
             if entry_type == EntryType.NOTE and comment_tag_to_ibm in entry_tags:
+                demisto.debug(f'update_remote_system {entry_type=} | {comment_tag_to_ibm=}')
                 add_note(client, incident_id, entry.get('Contents'))
 
     return incident_id
