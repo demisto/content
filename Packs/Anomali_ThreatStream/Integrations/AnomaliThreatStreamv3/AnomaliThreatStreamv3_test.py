@@ -12,7 +12,7 @@ from AnomaliThreatStreamv3 import main, get_indicators, \
     create_investigation_command, update_investigation_command, delete_investigation_command, add_investigation_element_command, \
     approve_import_job_command, search_threat_model_command, create_element_list, \
     add_threat_model_association_command, validate_values_search_threat_model, validate_investigation_action, \
-    return_params_of_pagination_or_limit, create_indicators_list, add_indicator_tag_command, remove_indicator_tag_command,\
+    return_params_of_pagination_or_limit, create_indicators_list, add_indicator_tag_command, remove_indicator_tag_command, \
     clone_ioc_command, edit_classification_job_command
 from CommonServerPython import *
 import pytest
