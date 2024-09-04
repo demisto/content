@@ -438,6 +438,24 @@ def test_generate_sas_signature():
                                   'test', ) == 'sp=test&st=test&se=test&sip=test&spr=https&sv=test&sr=test&sig=pyUQ25%2BIijJ2TstI5Q6Sre3jJWI0b4qwvRg2LtD9uhc%3D'  # noqa
 
 
+def test_generate_sas_signature_no_key(mocker):
+    """
+    Given:
+     - User hasn't provided an account key to create the SAS token.
+    When:
+     - azure-storage-container-sas-create called.
+    Then:
+     - Ensure command raises an exception.
+    """
+    from AzureStorageContainer import generate_sas_token_command, Client
+    mocker.patch.object(demisto, "params", return_value={})
+    client = Client(server_url=BASE_URL, verify=False, proxy=False,
+                    account_sas_token=SAS_TOKEN,
+                    storage_account_name=ACCOUNT_NAME, api_version=API_VERSION)
+    with pytest.raises(DemistoException):
+        generate_sas_token_command(client, {"signed_permissions": "c"})
+
+
 def test_check_valid_permission():
     from AzureStorageContainer import check_valid_permission
     assert check_valid_permission('cr', 'c')
