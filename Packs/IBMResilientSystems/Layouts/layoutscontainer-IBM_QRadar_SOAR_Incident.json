@@ -79,12 +79,32 @@
 								"sectionItemType": "field",
 								"startCol": 0
 							},
+                            {
+								"endCol": 2,
+								"fieldId": "ibmqradarresolution",
+								"height": 53,
+								"id": "f01e9ad0-4a63-11ef-a450-29f69179b85b",
+								"index": 6,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "ibmqradarresolutionsummary",
+								"height": 106,
+								"id": "e0066d30-4a63-11ef-a450-29f69179b85b",
+								"index": 7,
+								"listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
 							{
 								"endCol": 2,
 								"fieldId": "owner",
 								"height": 26,
 								"id": "dd227990-62ed-11ef-9c1f-a7d53581a093",
-								"index": 6,
+								"index": 8,
 								"sectionItemType": "field",
 								"startCol": 0
 							}
@@ -249,26 +269,6 @@
 								"height": 53,
 								"id": "c9422df0-4a63-11ef-a450-29f69179b85b",
 								"index": 1,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "ibmqradarresolution",
-								"height": 53,
-								"id": "f01e9ad0-4a63-11ef-a450-29f69179b85b",
-								"index": 2,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"dropEffect": "move",
-								"endCol": 2,
-								"fieldId": "ibmqradarresolutionsummary",
-								"height": 106,
-								"id": "e0066d30-4a63-11ef-a450-29f69179b85b",
-								"index": 3,
-								"listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -493,7 +493,60 @@
 				"id": "tasks",
 				"name": "Tasks",
 				"type": "custom",
-				"sections": []
+				"sections": [
+                    {
+                        "h": 3,
+                        "i": "incident-tasks",
+                        "items": [],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "IBM QRadar SOAR Task",
+                        "query": "IbmConvertCommentsToTable",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 3,
+                        "x": 0,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 1,
+                        "hideName": false,
+                        "i": "add-task",
+                        "items": [
+                            {
+                                "args": {
+                                    "tags": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    }
+                                },
+                                "buttonClass": "warning",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 22,
+                                "id": "Press to add a note to IBM QRadar SOAR incident",
+                                "index": 0,
+                                "name": "Press to add a note to IBM QRadar SOAR incident",
+                                "scriptId": "IbmAddNote",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 4,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Add note",
+                        "static": false,
+                        "w": 3,
+                        "x": 2,
+                        "y": 8
+                    }
+                ]
 			},
 			{
 				"id": "attachments",
