@@ -315,7 +315,6 @@ repos:
   #   - '100'
   #   needs:
   #   - pytest-in-docker
-
   - id: mypy-in-docker
     name: mypy-in-docker
     copy_files: #TODO avoid
@@ -332,15 +331,9 @@ repos:
     - --show-error-codes
     - --allow-redefinition
     - --cache-dir=/tmp/.mypy_cache  #TODO add comment
-    - --install-types
-    - --non-interactive
     - --implicit-optional  # TODO add comment
     pass_docker_extra_args:ci: --rm=false
     pass_docker_extra_args:nightly: --rm=false
-    env:
-      # PIP_ROOT: "/tmp/mypy_types"
-      PIP_USER: "true"
-      PIP_NO_CACHE_DIR: "off"
     
 #   - id: pytest-in-docker
 #     name: pytest-in-docker
