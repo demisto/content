@@ -1080,7 +1080,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-      description: If 'true', does not output the updated reference set data.
+      description: If true, does not output the updated reference set data. This argument helps avoid large outputs when the reference set is large.
     polling: true
   - name: qradar-reference-set-value-delete
     description: Removes a value from a reference set.
