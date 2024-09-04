@@ -676,7 +676,7 @@ class Client(BaseClient):
         )
 
     def reference_sets_list(self, range_: Optional[str] = None, ref_name: Optional[str] = None,
-                            filter_: Optional[str] = None, fields: Optional[str] = None) -> dict:
+                            filter_: Optional[str] = None, fields: Optional[str] = None):
         name_suffix = f'/{parse.quote(ref_name, safe="")}' if ref_name else ''
         params = assign_params(filter=filter_, fields=fields)
         additional_headers = {'Range': range_}
@@ -1057,7 +1057,7 @@ def insert_values_to_reference_set_polling(client: Client,
             response = client.reference_sets_list(ref_name=ref_name)
         key_replace_dict = {
             k: v for k, v in REFERENCE_SETS_RAW_FORMATTED.items()
-            if k != "data" or not argToBoolean(args.get("quite_mode") or False)
+            if k != "data" or not argToBoolean(args.get("quiet_mode") or False)
         }
         outputs = sanitize_outputs(response, key_replace_dict)
 
