@@ -1025,7 +1025,7 @@ def validate_no_multiple_indicators_for_search(arg_dict):
     return used_arg
 
 
-def search_indicator(client, indicator_type, indicator_value):
+def search_indicator(indicator_type, indicator_value, client=None):
     headers = HEADERS | {'apiKey': API_KEY}
 
     params = {
@@ -1645,7 +1645,7 @@ def search_url_command(client, url, reliability, create_relationships):
     relationships = []
 
     for url_name in url_list:
-        raw_res = search_indicator(client, 'url', convert_url_to_ascii_character(url_name))
+        raw_res = search_indicator('url', convert_url_to_ascii_character(url_name), client)
 
         indicator = raw_res.get('indicator')
         if indicator:
