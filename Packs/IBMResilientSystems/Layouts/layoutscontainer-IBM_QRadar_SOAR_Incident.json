@@ -63,7 +63,7 @@
 							},
 							{
 								"endCol": 2,
-								"fieldId": "phase",
+								"fieldId": "ibmqradarphase",
 								"height": 26,
 								"id": "5809a6e0-4a63-11ef-a450-29f69179b85b",
 								"index": 4,
@@ -502,8 +502,8 @@
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
-                        "name": "IBM QRadar SOAR Task",
-                        "query": "IbmConvertCommentsToTable",
+                        "name": "IBM QRadar SOAR Tasks",
+                        "query": "IbmConvertTasksToTable",
                         "queryType": "script",
                         "static": false,
                         "type": "dynamic",
@@ -524,14 +524,14 @@
                                         "userMarkedRequired": true
                                     }
                                 },
-                                "buttonClass": "warning",
+                                "buttonClass": "primary",
                                 "endCol": 2,
                                 "fieldId": "",
                                 "height": 22,
-                                "id": "Press to add a note to IBM QRadar SOAR incident",
+                                "id": "Press to add a task to the IBM QRadar SOAR incident",
                                 "index": 0,
-                                "name": "Press to add a note to IBM QRadar SOAR incident",
-                                "scriptId": "IbmAddNote",
+                                "name": "Press to add a task to the IBM QRadar SOAR incident",
+                                "scriptId": "IbmAddNTask",
                                 "sectionItemType": "button",
                                 "startCol": 0
                             }

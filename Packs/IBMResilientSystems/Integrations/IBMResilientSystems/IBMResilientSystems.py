@@ -463,7 +463,7 @@ def get_mirroring_data() -> dict:
 
     mirror_direction = params.get("mirror_direction")
     demisto.debug(f"get_mirroring_data {mirror_direction=} | {params=} ")
-    mirror_tags = [params.get('comment_tag_from_ibm'), params.get('comment_tag_to_ibm')]  # TODO - Utilize this
+    mirror_tags = [params.get('note_tag_from_ibm'), params.get('note_tag_to_ibm')]
     return {
         "mirror_direction": mirror_direction,
         "mirror_instance": demisto.integrationInstance(),
@@ -503,7 +503,7 @@ def process_raw_incident(client: SimpleClient, incident: dict) -> dict:
     incident["notes"] = prettify_incident_notes(notes)
 
     tasks = get_tasks(client, incident_id)
-    incident["tasks"] = prettify_tasks(tasks)
+    incident["tasks"] = prettify_incident_tasks(tasks)
 
     incident["phase"] = get_phase_name(client, incident['phase_id'])
     incident.update(get_mirroring_data())
@@ -912,7 +912,7 @@ def get_phases(client):
     return response
 
 
-def prettify_tasks(tasks: list[dict]) -> list[dict]:
+def prettify_incident_tasks(tasks: list[dict]) -> list[dict]:
     """
     Format tasks to a more readable format.
 
@@ -924,7 +924,7 @@ def prettify_tasks(tasks: list[dict]) -> list[dict]:
     """
     def format_task(task):
         return {
-            # TODO - Introduce field enums.
+            # TODO - Introduce field ENUMS.
             'IncidentName': task['inc_name'],
             'ID': task['id'],
             'Name': task['name'],
@@ -937,8 +937,9 @@ def prettify_tasks(tasks: list[dict]) -> list[dict]:
             'Category': task['cat_name'],
             'Instructions': task.get('instr_text')
         }
-
-    return [format_task(task) for task in tasks]
+    formatted_tasks = [format_task(task) for task in tasks]
+    demisto.debug(f'prettify_incident_tasks {formatted_tasks=}')
+    return formatted_tasks
 
 def get_tasks(client, incident_id):
     response = client.get(f'/incidents/{incident_id}/tasks?text_content_output_format=objects_convert_text')
@@ -947,7 +948,7 @@ def get_tasks(client, incident_id):
 
 def get_tasks_command(client, incident_id):
     tasks = get_tasks(client, incident_id)
-    tasks = prettify_tasks(tasks)
+    tasks = prettify_incident_tasks(tasks)
     for tasks in tasks:
         incident_name = tasks.get('IncidentName', '')
         ec = {
@@ -1686,20 +1687,17 @@ def handle_incoming_incident_reopening(incident_id: str) -> dict:
     return reopening_entry
 
 
-def get_remote_data_command(client: SimpleClient, args: dict, comment_tag_from_ibm: str) -> GetRemoteDataResponse:
+def get_remote_data_command(client: SimpleClient,
+                            args: dict,
+                            note_tag_from_ibm: str,
+                            task_tag_from_ibm: str
+                            ) -> GetRemoteDataResponse:
     """
     Args:
         client (SimpleClient): The IBM Resillient client.
-        comment_tag_from_ibm (str): The comment tag, to tag the mirrored comments.
-        # TODO - Complete
+        note_tag_from_ibm (str): The note tag, to tag the mirrored notes.
+        task_tag_from_ibm (str): The task tag, to tag the mirrored tasks.
         attachments_tag (str): The attachment tag, to tag the mirrored attachments.
-        fetch_attachments (bool): Whether to fetch the attachments or not.
-        fetch_notes (bool): Whether to fetch the comments or not.
-        mirror_resolved_issue (bool): Whether to mirror Jira issues that have been resolved, or have the status `Done`.
-        args:
-            id: Remote incident id.
-            lastUpdate: Server last sync time with remote server.
-
     Returns:
         GetRemoteDataResponse: Structured incident response.
     """
@@ -1721,7 +1719,7 @@ def get_remote_data_command(client: SimpleClient, args: dict, comment_tag_from_i
             'Contents':
                 f"{note_entry.get('text').get('content')}\n"
                 f"Added By: {note_entry.get('created_by', '')}\n",
-            'Tags': [comment_tag_from_ibm],
+            'Tags': [note_tag_from_ibm],
             'Note': True
         })
 
@@ -1749,7 +1747,7 @@ def get_remote_data_command(client: SimpleClient, args: dict, comment_tag_from_i
     return GetRemoteDataResponse(mirrored_object=incident, entries=entries)
 
 
-def update_remote_system_command(client: SimpleClient, args: dict, comment_tag_to_ibm: str) -> str:
+def update_remote_system_command(client: SimpleClient, args: dict, note_tag_to_ibm: str) -> str:
     remote_args = UpdateRemoteSystemArgs(args)
     incident_id = remote_args.remote_incident_id
     demisto.debug(
@@ -1773,8 +1771,8 @@ def update_remote_system_command(client: SimpleClient, args: dict, comment_tag_t
             demisto.debug(f'update_remote_system_command {entry=}')
             entry_type = entry.get('type', '')
             entry_tags = entry.get('tags', [])
-            if entry_type == EntryType.NOTE and comment_tag_to_ibm in entry_tags:
-                demisto.debug(f'update_remote_system {entry_type=} | {comment_tag_to_ibm=}')
+            if entry_type == EntryType.NOTE and note_tag_to_ibm in entry_tags:
+                demisto.debug(f'update_remote_system {entry_type=} | {note_tag_to_ibm=}')
                 add_note(client, incident_id, entry.get('Contents'))
 
     return incident_id
@@ -1850,11 +1848,21 @@ def main():     # pragma: no cover
 
     LOG(f"command is {demisto.command()}")
 
-    comment_tag_to_ibm = params.get('comment_tag_to_ibm', 'comment tag to IBM')
-    comment_tag_from_ibm = params.get('comment_tag_from_ibm', 'comment tag from IBM')
-    if comment_tag_to_ibm == comment_tag_from_ibm:
-        raise DemistoException('Comment Entry Tag to IBM and Comment Entry Tag '
-                               'from IBM cannot have the same value.')
+    note_tag_to_ibm = params.get('note_tag_to_ibm')
+    note_tag_from_ibm = params.get('note_tag_from_ibm')
+    if note_tag_to_ibm == note_tag_from_ibm:
+        raise DemistoException(f'Note Entry Tag to IBM ({note_tag_to_ibm=})and Note Entry Tag from IBM ({note_tag_from_ibm=}) cannot have the same value.')
+
+    task_tag_to_ibm = params.get('task_tag_to_ibm')
+    task_tag_from_ibm = params.get('task_tag_from_ibm')
+    if task_tag_to_ibm == task_tag_from_ibm:
+        raise DemistoException('Task Entry Tag to IBM and Task Entry Tag from IBM cannot have the same value.')
+
+    # attachment_tag_to_ibm = params.get('attachment_tag_to_ibm')
+    # attachment_tag_from_ibm = params.get('attachment_tag_from_ibm')
+    # if attachment_tag_to_ibm == attachment_tag_from_ibm:
+    #     raise DemistoException(
+    #         'Attachment Entry Tag to IBM and Attachment Entry Tag from IBM cannot have the same value.')
 
     try:
         command = demisto.command()
@@ -1929,9 +1937,9 @@ def main():     # pragma: no cover
         elif command == "get-modified-remote-data":
             return_results(get_modified_remote_data_command(client, args))
         elif command == "get-remote-data":
-            return_results(get_remote_data_command(client, args, comment_tag_from_ibm))
+            return_results(get_remote_data_command(client, args, note_tag_from_ibm, task_tag_from_ibm))
         elif command == "update-remote-system":
-            return_results(update_remote_system_command(client, args, comment_tag_to_ibm))
+            return_results(update_remote_system_command(client, args, note_tag_to_ibm))
         elif command == "get-mapping-fields":
             return_results(get_mapping_fields_command())
     except Exception as e:

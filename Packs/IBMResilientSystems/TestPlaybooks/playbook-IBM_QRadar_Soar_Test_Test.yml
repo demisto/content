@@ -1,0 +1,1808 @@
+id: IBM_QRadar_Soar_Test
+name: IBM_QRadar_Soar_Test
+version: -1
+fromversion: 4.5.0
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: '0'
+    type: start
+    task:
+      id: '0'
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: '{"position":{"x":50,"y":50}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '1':
+    id: 1
+    taskid: '1'
+    type: regular
+    task:
+      id: '1'
+      version: -1
+      name: DeleteContext
+      description: ''
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    view: '{"position":{"x":50,"y":200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '2':
+    id: 2
+    taskid: '2'
+    type: regular
+    task:
+      id: '2'
+      version: -1
+      name: update-remote-system
+      description: ''
+      script: IBM Resilient Systems|||update-remote-system
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '3':
+    id: 3
+    taskid: '3'
+    type: regular
+    task:
+      id: '3'
+      version: -1
+      name: get-mapping-fields
+      description: ''
+      script: IBM Resilient Systems|||get-mapping-fields
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '4'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '4':
+    id: 4
+    taskid: '4'
+    type: regular
+    task:
+      id: '4'
+      version: -1
+      name: get-remote-data
+      description: ''
+      script: IBM Resilient Systems|||get-remote-data
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '5':
+    id: 5
+    taskid: '5'
+    type: regular
+    task:
+      id: '5'
+      version: -1
+      name: get-modified-remote-data
+      description: ''
+      script: IBM Resilient Systems|||get-modified-remote-data
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '6'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":1000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '6':
+    id: 6
+    taskid: '6'
+    type: regular
+    task:
+      id: '6'
+      version: -1
+      name: rs-search-incidents
+      description: ''
+      script: IBM Resilient Systems|||rs-search-incidents
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":1200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '7':
+    id: '7'
+    taskid: '7'
+    type: condition
+    task:
+      id: '7'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '8'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.Incidents.CreateDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.Incidents.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.Incidents.DiscoveredDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.Incidents.Id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.Incidents.Phase
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.Incidents.Severity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.Incidents.Description
+            iscontext: true
+    view: '{"position":{"x":50,"y":1400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '8':
+    id: 8
+    taskid: '8'
+    type: regular
+    task:
+      id: '8'
+      version: -1
+      name: rs-update-incident
+      description: ''
+      script: IBM Resilient Systems|||rs-update-incident
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '9'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":1600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '9':
+    id: 9
+    taskid: '9'
+    type: regular
+    task:
+      id: '9'
+      version: -1
+      name: rs-incidents-get-members
+      description: ''
+      script: IBM Resilient Systems|||rs-incidents-get-members
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '10'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":1800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '10':
+    id: '10'
+    taskid: '10'
+    type: condition
+    task:
+      id: '10'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '11'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.Incidents.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.Incidents.Members.FirstName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.Incidents.Members.LastName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.Incidents.Members.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.Incidents.Members.Email
+            iscontext: true
+    view: '{"position":{"x":50,"y":2000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '11':
+    id: 11
+    taskid: '11'
+    type: regular
+    task:
+      id: '11'
+      version: -1
+      name: rs-get-incident
+      description: ''
+      script: IBM Resilient Systems|||rs-get-incident
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '12'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":2200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '12':
+    id: '12'
+    taskid: '12'
+    type: condition
+    task:
+      id: '12'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '13'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.Incidents.CreateDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.Incidents.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.Incidents.Resolution
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.Incidents.DiscoveredDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.Incidents.ResolutionSummary
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.Incidents.Id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.Incidents.Phase
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.Incidents.Severity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.Incidents.Description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.Incidents.Confirmed
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.Incidents.NegativePr
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.Incidents.DateOccurred
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.Incidents.Reporter
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.Incidents.NistAttackVectors
+            iscontext: true
+    view: '{"position":{"x":50,"y":2400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '13':
+    id: 13
+    taskid: '13'
+    type: regular
+    task:
+      id: '13'
+      version: -1
+      name: rs-incidents-update-member
+      description: ''
+      script: IBM Resilient Systems|||rs-incidents-update-member
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '14'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":2600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '14':
+    id: 14
+    taskid: '14'
+    type: regular
+    task:
+      id: '14'
+      version: -1
+      name: rs-get-users
+      description: ''
+      script: IBM Resilient Systems|||rs-get-users
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '15'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":2800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '15':
+    id: 15
+    taskid: '15'
+    type: regular
+    task:
+      id: '15'
+      version: -1
+      name: rs-close-incident
+      description: ''
+      script: IBM Resilient Systems|||rs-close-incident
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '16'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":3000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '16':
+    id: 16
+    taskid: '16'
+    type: regular
+    task:
+      id: '16'
+      version: -1
+      name: rs-create-incident
+      description: ''
+      script: IBM Resilient Systems|||rs-create-incident
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '17'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":3200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '17':
+    id: '17'
+    taskid: '17'
+    type: condition
+    task:
+      id: '17'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '18'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.Incidents.Id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.Incidents.Name
+            iscontext: true
+    view: '{"position":{"x":50,"y":3400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '18':
+    id: 18
+    taskid: '18'
+    type: regular
+    task:
+      id: '18'
+      version: -1
+      name: rs-incident-artifacts
+      description: ''
+      script: IBM Resilient Systems|||rs-incident-artifacts
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '19'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":3600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '19':
+    id: '19'
+    taskid: '19'
+    type: condition
+    task:
+      id: '19'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '20'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.Incidents.Id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.Incidents.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.Incidents.Artifacts.CreatedDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.Incidents.Artifacts.Creator
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.Incidents.Artifacts.Description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.Incidents.Artifacts.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.Incidents.Artifacts.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.Incidents.Artifacts.Value
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.Incidents.Artifacts.Attachments.ContentType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.Incidents.Artifacts.Attachments.CreatedDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.Incidents.Artifacts.Attachments.Creator
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.Incidents.Artifacts.Attachments.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.Incidents.Artifacts.Attachments.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.Incidents.Artifacts.Attachments.Size
+            iscontext: true
+    view: '{"position":{"x":50,"y":3800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '20':
+    id: 20
+    taskid: '20'
+    type: regular
+    task:
+      id: '20'
+      version: -1
+      name: rs-incident-attachments
+      description: ''
+      script: IBM Resilient Systems|||rs-incident-attachments
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '21'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":4000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '21':
+    id: '21'
+    taskid: '21'
+    type: condition
+    task:
+      id: '21'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '22'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.Incidents.Id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.Incidents.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.Incidents.Owner
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.Incidents.Attachments.ContentType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.Incidents.Attachments.CreatedDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.Incidents.Attachments.Creator
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.Incidents.Attachments.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.Incidents.Attachments.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.Incidents.Attachments.Size
+            iscontext: true
+    view: '{"position":{"x":50,"y":4200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '22':
+    id: 22
+    taskid: '22'
+    type: regular
+    task:
+      id: '22'
+      version: -1
+      name: rs-related-incidents
+      description: ''
+      script: IBM Resilient Systems|||rs-related-incidents
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '23'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":4400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '23':
+    id: '23'
+    taskid: '23'
+    type: condition
+    task:
+      id: '23'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '24'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.Incidents.Id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.Incidents.Related.CreatedDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.Incidents.Related.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.Incidents.Related.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.Incidents.Related.Status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.Incidents.Related.Artifacts.CreatedDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.Incidents.Related.Artifacts.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.Incidents.Related.Artifacts.Creator
+            iscontext: true
+    view: '{"position":{"x":50,"y":4600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '24':
+    id: 24
+    taskid: '24'
+    type: regular
+    task:
+      id: '24'
+      version: -1
+      name: rs-incidents-get-tasks
+      description: ''
+      script: IBM Resilient Systems|||rs-incidents-get-tasks
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '25'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":4800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '25':
+    id: '25'
+    taskid: '25'
+    type: condition
+    task:
+      id: '25'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '26'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.Incidents.Id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.Incidents.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.Incidents.Tasks.Category
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.Incidents.Tasks.Creator
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.Incidents.Tasks.DueDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.Incidents.Tasks.Form
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.Incidents.Tasks.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.Incidents.Tasks.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.Incidents.Tasks.Required
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.Incidents.Tasks.Status
+            iscontext: true
+    view: '{"position":{"x":50,"y":5000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '26':
+    id: 26
+    taskid: '26'
+    type: regular
+    task:
+      id: '26'
+      version: -1
+      name: rs-add-note
+      description: ''
+      script: IBM Resilient Systems|||rs-add-note
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '27'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":5200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '27':
+    id: '27'
+    taskid: '27'
+    type: condition
+    task:
+      id: '27'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '28'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.IncidentNote.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.IncidentNote.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.IncidentNote.parent_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.IncidentNote.user_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.IncidentNote.user_fname
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.IncidentNote.user_lname
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.IncidentNote.text
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.IncidentNote.create_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.IncidentNote.modify_date
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Resilient.IncidentNote.is_deleted
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.IncidentNote.modify_user.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.IncidentNote.modify_user.first_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.IncidentNote.modify_user.last_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.IncidentNote.inc_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.IncidentNote.inc_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.IncidentNote.task_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.IncidentNote.task_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.IncidentNote.task_custom
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.IncidentNote.task_members
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.IncidentNote.task_at_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.IncidentNote.inc_owner
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.IncidentNote.user_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.IncidentNote.modify_principal.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.IncidentNote.modify_principal.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.IncidentNote.modify_principal.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.IncidentNote.modify_principal.display_name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Resilient.IncidentNote.comment_perms.update
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Resilient.IncidentNote.comment_perms.delete
+            iscontext: true
+    view: '{"position":{"x":50,"y":5400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '28':
+    id: 28
+    taskid: '28'
+    type: regular
+    task:
+      id: '28'
+      version: -1
+      name: rs-add-artifact
+      description: ''
+      script: IBM Resilient Systems|||rs-add-artifact
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '29'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":5600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '29':
+    id: '29'
+    taskid: '29'
+    type: condition
+    task:
+      id: '29'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '30'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.IncidentArtifact.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.IncidentArtifact.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.IncidentArtifact.value
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.IncidentArtifact.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.IncidentArtifact.attachment
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.IncidentArtifact.parent_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.IncidentArtifact.creator.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.IncidentArtifact.creator.fname
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.IncidentArtifact.creator.lname
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.IncidentArtifact.creator.display_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.IncidentArtifact.creator.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.IncidentArtifact.creator.email
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.IncidentArtifact.creator.phone
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.IncidentArtifact.creator.cell
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.IncidentArtifact.creator.title
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Resilient.IncidentArtifact.creator.locked
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Resilient.IncidentArtifact.creator.password_changed
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Resilient.IncidentArtifact.creator.is_external
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.IncidentArtifact.creator.ui_theme
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.IncidentArtifact.inc_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.IncidentArtifact.inc_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.IncidentArtifact.inc_owner
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.IncidentArtifact.created
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.IncidentArtifact.last_modified_time
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.IncidentArtifact.last_modified_by.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.IncidentArtifact.last_modified_by.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.IncidentArtifact.last_modified_by.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.IncidentArtifact.last_modified_by.display_name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Resilient.IncidentArtifact.perms.read
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Resilient.IncidentArtifact.perms.write
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Resilient.IncidentArtifact.perms.delete
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.IncidentArtifact.properties
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.IncidentArtifact.hash
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Resilient.IncidentArtifact.relating
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.IncidentArtifact.creator_principal.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.IncidentArtifact.creator_principal.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.IncidentArtifact.creator_principal.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.IncidentArtifact.creator_principal.display_name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Resilient.IncidentArtifact.ip.source
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Resilient.IncidentArtifact.ip.destination
+            iscontext: true
+    view: '{"position":{"x":50,"y":5800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '30':
+    id: 30
+    taskid: '30'
+    type: regular
+    task:
+      id: '30'
+      version: -1
+      name: rs-list-scripts
+      description: ''
+      script: IBM Resilient Systems|||rs-list-scripts
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '31'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":6000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '31':
+    id: '31'
+    taskid: '31'
+    type: condition
+    task:
+      id: '31'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '32'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.Script
+            iscontext: true
+    view: '{"position":{"x":50,"y":6200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '32':
+    id: 32
+    taskid: '32'
+    type: regular
+    task:
+      id: '32'
+      version: -1
+      name: rs-upload-incident-attachment
+      description: ''
+      script: IBM Resilient Systems|||rs-upload-incident-attachment
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '33'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":6400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '33':
+    id: 33
+    taskid: '33'
+    type: regular
+    task:
+      id: '33'
+      version: -1
+      name: rs-delete-incidents
+      description: ''
+      script: IBM Resilient Systems|||rs-delete-incidents
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '34'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":6600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '34':
+    id: 34
+    taskid: '34'
+    type: regular
+    task:
+      id: '34'
+      version: -1
+      name: rs-list-incident-notes
+      description: ''
+      script: IBM Resilient Systems|||rs-list-incident-notes
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '35'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":6800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '35':
+    id: '35'
+    taskid: '35'
+    type: condition
+    task:
+      id: '35'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '36'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.IncidentNotes
+            iscontext: true
+    view: '{"position":{"x":50,"y":7000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '36':
+    id: 36
+    taskid: '36'
+    type: regular
+    task:
+      id: '36'
+      version: -1
+      name: rs-update-incident-note
+      description: ''
+      script: IBM Resilient Systems|||rs-update-incident-note
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '37'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":7200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '37':
+    id: 37
+    taskid: '37'
+    type: regular
+    task:
+      id: '37'
+      version: -1
+      name: rs-add-custom-incident-task
+      description: ''
+      script: IBM Resilient Systems|||rs-add-custom-incident-task
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '38'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":7400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '38':
+    id: 38
+    taskid: '38'
+    type: regular
+    task:
+      id: '38'
+      version: -1
+      name: rs-list-tasks
+      description: ''
+      script: IBM Resilient Systems|||rs-list-tasks
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '39'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":7600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '39':
+    id: '39'
+    taskid: '39'
+    type: condition
+    task:
+      id: '39'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '40'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.Tasks
+            iscontext: true
+    view: '{"position":{"x":50,"y":7800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '40':
+    id: 40
+    taskid: '40'
+    type: regular
+    task:
+      id: '40'
+      version: -1
+      name: rs-get-task-members
+      description: ''
+      script: IBM Resilient Systems|||rs-get-task-members
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '41'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":8000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '41':
+    id: '41'
+    taskid: '41'
+    type: condition
+    task:
+      id: '41'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '42'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.Task
+            iscontext: true
+    view: '{"position":{"x":50,"y":8200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '42':
+    id: 42
+    taskid: '42'
+    type: regular
+    task:
+      id: '42'
+      version: -1
+      name: rs-delete-tasks
+      description: ''
+      script: IBM Resilient Systems|||rs-delete-tasks
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '43'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":8400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '43':
+    id: 43
+    taskid: '43'
+    type: regular
+    task:
+      id: '43'
+      version: -1
+      name: rs-delete-task-members
+      description: ''
+      script: IBM Resilient Systems|||rs-delete-task-members
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '44'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":8600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '44':
+    id: 44
+    taskid: '44'
+    type: regular
+    task:
+      id: '44'
+      version: -1
+      name: rs-list-task-instructions
+      description: ''
+      script: IBM Resilient Systems|||rs-list-task-instructions
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '45'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":8800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '45':
+    id: '45'
+    taskid: '45'
+    type: condition
+    task:
+      id: '45'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '46'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Resilient.Task
+            iscontext: true
+    view: '{"position":{"x":50,"y":9000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '46':
+    id: '46'
+    taskid: '46'
+    type: title
+    task:
+      id: '46'
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: '{"position":{"x":50,"y":9200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+view: '{"linkLabelsPosition":{},"paper":{"dimensions":{"height":200,"width":380,"x":50,"y":50}}}'
+inputs: []
+outputs: []

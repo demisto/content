@@ -2,6 +2,7 @@ args:
 - description: Task to be added to the IBM QRadar incident.
   name: task
   required: true
+  type: longText
 - auto: PREDEFINED
   defaultValue: task tag
   description: The task tag. Use the task entry tag (defined in your instance configuration) to mirror the task to IBM QRadar SOAR.
