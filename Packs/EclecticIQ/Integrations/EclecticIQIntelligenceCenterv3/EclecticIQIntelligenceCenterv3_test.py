@@ -261,7 +261,7 @@ def test_parse_reputation_results(mocker):
 
 def test_parse_reputation_results_empty_reply(mocker):
     response = parse_reputation_results(None, "test.com", "domain", "low", "Domain")
-    assert response[0].raw_response["result"] == 'Observable not found in EcelcticIQ IC.'
+    assert response[0].raw_response["result"] == 'Observable not found in EclecticIQ IC.'
 
 
 def test_domain_command(mocker):

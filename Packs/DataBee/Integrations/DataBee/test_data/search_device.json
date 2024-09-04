@@ -1,0 +1,257 @@
+{
+    "count": 2014,
+    "next": "secret",
+    "previous": null,
+    "results": [
+        {
+            "hypervisor": "yet",
+            "is_compliant": false,
+            "modified_time": "results[0]_modified_time",
+            "risk_score": 55,
+            "uid": "secret",
+            "backtrace": {
+                "ip": {
+                    "feed": "secret feed",
+                    "provider": "secret provider",
+                    "source": "secret source"
+                },
+                "mac": {
+                    "feed": "secret feed",
+                    "provider": "secret provider",
+                    "source": "secret source"
+                },
+                "type": {
+                    "feed": "secret feed",
+                    "provider": "secret provider",
+                    "source": "secret source"
+                }
+            },
+            "domain": "secret domain",
+            "id": 50,
+            "is_managed": false,
+            "name": "SWNO2-FAKE",
+            "selected_owner": {
+                "selected_on": "results[0]_selected_owner_selected_on",
+                "user_email": "secret mail",
+                "user_id": 50
+            },
+            "uid_alt": "seem",
+            "end_time": "results[0]_end_time",
+            "image": {
+                "id": 317,
+                "labels": [
+                    "hour",
+                    "talk"
+                ],
+                "name": "myself",
+                "path": "range",
+                "tag": "ok",
+                "uid": "its"
+            },
+            "is_personal": false,
+            "network_interfaces": [
+                {
+                    "hostname": "secret hostname",
+                    "id": 245,
+                    "ip": "secret ip",
+                    "mac": "secret mac",
+                    "name": "bed",
+                    "namespace": "tree",
+                    "subnet_prefix": 896,
+                    "type": "relate",
+                    "type_id": 2,
+                    "uid": "rate"
+                }
+            ],
+            "start_time": "results[0]_start_time",
+            "vlan_uid": "create",
+            "desc": "town",
+            "environment": "Staging",
+            "imei": null,
+            "is_trusted": false,
+            "org": {
+                "name": "Engineering"
+            },
+            "subnet": "secret subnet",
+            "vpc_uid": "one",
+            "first_seen_time": "results[0]_first_seen_time",
+            "instance_uid": "vote",
+            "os": {
+                "build": "BCZK64D1ZD",
+                "language": "ne",
+                "name": "Android",
+                "type": "Android",
+                "type_id": 201,
+                "version": "9.4"
+            },
+            "owner": null,
+            "subnet_uid": "eat",
+            "interface_name": "threat",
+            "hid": 15302,
+            "groups": [
+                {
+                    "name": "Marketing"
+                }
+            ],
+            "last_seen_time": "results[0]_last_seen_time",
+            "region": "secret",
+            "type": "secret",
+            "autoscale_uid": "secret",
+            "hostname": "secret hostname",
+            "interface_uid": "allow",
+            "location": {
+                "city": "Fitchburg",
+                "continent": "na",
+                "coordinates": [
+                    42.58342,
+                    -71.8023
+                ],
+                "country": "us",
+                "desc": "box",
+                "is_on_premises": true,
+                "isp": "sport",
+                "postal_code": "84428",
+                "provider": "secret provider",
+                "region": "ins"
+            },
+            "risk_level": "Medium",
+            "type_id": 2,
+            "additional_owners": [],
+            "created_time": "results[0]_created_time",
+            "hw_info": {
+                "bios_date": "results[0]_hw_info_bios_date",
+                "bios_manufacturer": "secret",
+                "bios_version": "1.2",
+                "serial_number": "secret"
+            },
+            "ip": "secret ip",
+            "mac": "secret mac",
+            "risk_level_id": 2
+        },
+        {
+            "hypervisor": "yet",
+            "is_compliant": false,
+            "modified_time": "results[1]_modified_time",
+            "risk_score": 55,
+            "uid": "secret",
+            "backtrace": {
+                "ip": {
+                    "feed": "secret feed",
+                    "provider": "secret provider",
+                    "source": "secret source"
+                },
+                "mac": {
+                    "feed": "secret feed",
+                    "provider": "secret provider",
+                    "source": "secret source"
+                },
+                "type": {
+                    "feed": "secret feed",
+                    "provider": "secret provider",
+                    "source": "secret source"
+                }
+            },
+            "domain": "secret domain",
+            "id": 50,
+            "is_managed": false,
+            "name": "SWNO2-FAKE",
+            "selected_owner": {
+                "selected_on": "results[1]_selected_owner_selected_on",
+                "user_email": "secret mail",
+                "user_id": 50
+            },
+            "uid_alt": "seem",
+            "end_time": "results[1]_end_time",
+            "image": {
+                "id": 317,
+                "labels": [
+                    "hour",
+                    "talk"
+                ],
+                "name": "myself",
+                "path": "range",
+                "tag": "ok",
+                "uid": "its"
+            },
+            "is_personal": false,
+            "network_interfaces": [
+                {
+                    "hostname": "secret hostname",
+                    "id": 245,
+                    "ip": "secret ip",
+                    "mac": "secret mac",
+                    "name": "bed",
+                    "namespace": "tree",
+                    "subnet_prefix": 896,
+                    "type": "relate",
+                    "type_id": 2,
+                    "uid": "rate"
+                }
+            ],
+            "start_time": "results[1]_start_time",
+            "vlan_uid": "create",
+            "desc": "town",
+            "environment": "Staging",
+            "imei": null,
+            "is_trusted": false,
+            "org": {
+                "name": "Engineering"
+            },
+            "subnet": "secret subnet",
+            "vpc_uid": "one",
+            "first_seen_time": "results[1]_first_seen_time",
+            "instance_uid": "vote",
+            "os": {
+                "build": "BCZK64D1ZD",
+                "language": "ne",
+                "name": "Android",
+                "type": "Android",
+                "type_id": 201,
+                "version": "9.4"
+            },
+            "owner": null,
+            "subnet_uid": "eat",
+            "interface_name": "threat",
+            "hid": 15302,
+            "groups": [
+                {
+                    "name": "Marketing"
+                }
+            ],
+            "last_seen_time": "results[1]_last_seen_time",
+            "region": "secret",
+            "type": "secret",
+            "autoscale_uid": "secret",
+            "hostname": "secret hostname",
+            "interface_uid": "allow",
+            "location": {
+                "city": "Fitchburg",
+                "continent": "na",
+                "coordinates": [
+                    42.58342,
+                    -71.8023
+                ],
+                "country": "us",
+                "desc": "box",
+                "is_on_premises": true,
+                "isp": "sport",
+                "postal_code": "84428",
+                "provider": "secret provider",
+                "region": "ins"
+            },
+            "risk_level": "Medium",
+            "type_id": 2,
+            "additional_owners": [],
+            "created_time": "results[1]_created_time",
+            "hw_info": {
+                "bios_date": "results[1]_hw_info_bios_date",
+                "bios_manufacturer": "secret",
+                "bios_version": "1.2",
+                "serial_number": "secret"
+            },
+            "ip": "secret ip",
+            "mac": "secret mac",
+            "risk_level_id": 2
+        }
+    ]
+}
