@@ -530,8 +530,7 @@ def test_search_domain_command(mock_response, domain):
 
 
 @pytest.mark.parametrize(argnames='ioc_type, ioc_val',
-                         argvalues=[('url', 'test_url'),
-                                    ('domain', 'test_domain'),
+                         argvalues=[('domain', 'test_domain'),
                                     ('ipv4_address', 'test_ipv4_address'),
                                     ('filehash', '123456789012345678901234567890ab'),
                                     ])
@@ -548,9 +547,8 @@ def test_search_indicator_command__no_indicator(requests_mock, ioc_type, ioc_val
     """
 
     # prepare
-    from AutofocusV2 import search_url_command, search_ip_command, search_domain_command, search_file_command
+    from AutofocusV2 import search_ip_command, search_domain_command, search_file_command
     ioc_type_to_command = {
-        'url': search_url_command,
         'domain': search_domain_command,
         'ipv4_address': search_ip_command,
         'filehash': search_file_command,
