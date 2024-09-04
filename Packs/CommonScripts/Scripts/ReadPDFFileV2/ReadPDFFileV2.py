@@ -287,7 +287,7 @@ def build_readpdf_entry_object(entry_id: str, metadata: dict, text: str, urls: l
             results.append(file)
     all_pdf_data = ""
     if metadata:
-        for k, v in metadata.items():
+        for _, v in metadata.items():
             all_pdf_data += str(v)
     if text:
         all_pdf_data += text
@@ -492,7 +492,7 @@ def get_urls_and_emails_from_pdf_annots(file_path: str) -> tuple[set, set]:
                 page_object = page_sliced.get_object()
 
                 # Extracts the PDF's Annots (Annotations and Commenting):
-                if annots := page_object.get('/Annots'):
+                if annots := page_object.get('/Annots'):  # type: ignore[union-attr]
                     if not isinstance(annots, PyPDF2.generic.ArrayObject):
                         annots = [annots]
 
