@@ -98,8 +98,20 @@ class Client(BaseClient):
 
         cybertotal_result = self._http_request(
             method='GET',
-            url_suffix=f'/_api/search/url/basic?q={url}'
+            url_suffix=f'/_api/search/url/basic/q={url}',
+            ok_codes=(200, 400),
+            resp_type='response'
         )
+
+        status_code = cybertotal_result.status_code
+        cybertotal_result = cybertotal_result.json()
+
+        if status_code == 400 and cybertotal_result.get('non_field_errors'):
+            return {'non_field_errors': cybertotal_result.get('non_field_errors')}
+
+        if status_code == 400:
+            raise DemistoException(f'Error in API call [{status_code}] - {cybertotal_result}')
+
         if 'task_state' in cybertotal_result:
             return {'task_state': cybertotal_result['task_state'], 'message': 'this search is in progress, try again later...'}
 
