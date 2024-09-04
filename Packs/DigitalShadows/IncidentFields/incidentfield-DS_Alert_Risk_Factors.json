@@ -1,17 +1,19 @@
 {
     "associatedToAll": true,
+    "associatedTypes": [
+        "DS Incident Types"
+    ],
     "caseInsensitive": true,
-    "cliName": "dsrisktype",
+    "cliName": "dsalertriskfactors",
     "closeForm": false,
     "content": true,
     "editForm": true,
-    "fromVersion": "6.10.0",
     "group": 0,
     "hidden": false,
-    "id": "incident_dsrisktype",
+    "id": "incident_dsalertriskfactors",
     "isReadOnly": false,
     "locked": false,
-    "name": "DS Risk Type",
+    "name": "DS Alert Risk Factors",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,
@@ -21,7 +23,8 @@
     "threshold": 72,
     "type": "shortText",
     "unmapped": false,
-    "unsearchable": true,
+    "unsearchable": false,
     "useAsKpi": false,
-    "version": -1
+    "version": -1,
+    "fromVersion": "6.10.0"
 }

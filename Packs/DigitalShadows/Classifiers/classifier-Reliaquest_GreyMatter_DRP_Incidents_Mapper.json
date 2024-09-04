@@ -1,28 +1,19 @@
 {
     "description": "",
     "feed": false,
-    "fromVersion": "6.10.0",
     "id": "Reliaquest GreyMatter DRP Incidents Mapper",
     "mapping": {
         "dbot_classification_incident_type_all": {
             "dontMapEventToLabels": true,
             "internalMapping": {
+                "Alert ID": {
+                    "simple": "alert.id"
+                },
                 "Alert Name": {
                     "simple": "alert.title"
                 },
                 "Classification": {
                     "simple": "triage_item.classification"
-                },
-                "Comment": {
-                    "complex": {
-                        "filters": [],
-                        "root": "comments",
-                        "transformers": [
-                            {
-                                "operator": "ArrayToCSV"
-                            }
-                        ]
-                    }
                 },
                 "DS Alert Description": {
                     "simple": "alert.description"
@@ -30,29 +21,37 @@
                 "DS Alert Email": {
                     "simple": "alert.email"
                 },
-                "Alert ID": {
-                    "simple": "alert.id"
-                },
                 "DS Alert Password": {
                     "simple": "alert.password"
                 },
-                "DS Assets": {
+                "DS Alert Risk Factors": {
                     "complex": {
-                        "accessor": "[0]",
+                        "accessor": "risk-factors",
                         "filters": [],
-                        "root": "assets",
+                        "root": "alert",
                         "transformers": [
                             {
-                                "operator": "ArrayToCSV"
+                                "operator": "toUpperCase"
                             }
                         ]
                     }
                 },
-                "State": {
-                    "simple": "triage_item.state"
+                "DS Assets": {
+                    "complex": {
+                        "filters": [],
+                        "root": "assets",
+                        "transformers": []
+                    }
                 },
                 "DS Auto Closed": {
                     "simple": "auto-closed"
+                },
+                "DS Comments": {
+                    "complex": {
+                        "filters": [],
+                        "root": "comments",
+                        "transformers": []
+                    }
                 },
                 "DS Event Action": {
                     "simple": "event.event-action"
@@ -75,37 +74,6 @@
                 "DS Incident Updated Date": {
                     "simple": "incident.updated"
                 },
-                "DS Mitre Mapping": {
-                    "complex": {
-                        "accessor": "mitre-attack-mapping",
-                        "filters": [],
-                        "root": "incident",
-                        "transformers": [
-                            {
-                                "operator": "StringToArray"
-                            }
-                        ]
-                    }
-                },
-                "DS Risk Factors": {
-                    "complex": {
-                        "accessor": "risk-factors",
-                        "filters": [],
-                        "root": "incident",
-                        "transformers": [
-                            {
-                                "operator": "ArrayToCSV"
-                            },
-                            {
-                                "args": {
-                                    "item": {},
-                                    "raw": {}
-                                },
-                                "operator": "AppendIfNotEmpty"
-                            }
-                        ]
-                    }
-                },
                 "DS Risk Level": {
                     "simple": "triage_item.risk-level"
                 },
@@ -121,8 +89,99 @@
                 "Event Type": {
                     "simple": "triage_item.risk-type"
                 },
+                "MITRE Tactic ID": {
+                    "complex": {
+                        "accessor": "tactics",
+                        "filters": [],
+                        "root": "alert.mitre-attack-mapping",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "field": {
+                                        "value": {
+                                            "simple": "id"
+                                        }
+                                    }
+                                },
+                                "operator": "getField"
+                            },
+                            {
+                                "operator": "ArrayToCSV"
+                            }
+                        ]
+                    }
+                },
+                "MITRE Tactic Name": {
+                    "complex": {
+                        "accessor": "tactics",
+                        "filters": [],
+                        "root": "alert.mitre-attack-mapping",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "field": {
+                                        "value": {
+                                            "simple": "id"
+                                        }
+                                    }
+                                },
+                                "operator": "getField"
+                            },
+                            {
+                                "operator": "ArrayToCSV"
+                            }
+                        ]
+                    }
+                },
+                "MITRE Technique ID": {
+                    "complex": {
+                        "accessor": "techniques",
+                        "filters": [],
+                        "root": "alert.mitre-attack-mapping.tactics",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "field": {
+                                        "value": {
+                                            "simple": "id"
+                                        }
+                                    }
+                                },
+                                "operator": "getField"
+                            },
+                            {
+                                "operator": "ArrayToCSV"
+                            }
+                        ]
+                    }
+                },
+                "MITRE Technique Name": {
+                    "complex": {
+                        "accessor": "techniques",
+                        "filters": [],
+                        "root": "alert.mitre-attack-mapping.tactics",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "field": {
+                                        "value": {
+                                            "simple": "name"
+                                        }
+                                    }
+                                },
+                                "operator": "getField"
+                            },
+                            {
+                                "operator": "ArrayToCSV"
+                            }
+                        ]
+                    }
+                },
                 "Source Create time": {
                     "simple": "triage_item.raised"
+                },
+                "State": {
+                    "simple": "triage_item.state"
                 },
                 "dbotMirrorDirection": {
                     "simple": "Both"
@@ -141,5 +200,6 @@
     },
     "name": "Reliaquest GreyMatter DRP Incidents Mapper",
     "type": "mapping-incoming",
-    "version": -1
+    "version": -1,
+    "fromVersion": "6.10.0"
 }

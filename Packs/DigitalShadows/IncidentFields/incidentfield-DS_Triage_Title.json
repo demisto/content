@@ -17,6 +17,9 @@
     "ownerOnly": false,
     "required": false,
     "sla": 0,
+    "associatedTypes": [
+        "DS Incident Types"
+    ],
     "system": false,
     "threshold": 72,
     "type": "longText",

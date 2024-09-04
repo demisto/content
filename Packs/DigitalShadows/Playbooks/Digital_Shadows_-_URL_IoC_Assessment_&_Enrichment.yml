@@ -1,9 +1,9 @@
-id: Digital Shadows - URL_IoC Assessment & Enrichment_url
+id: Digital Shadows - URL_IoC Assessment & Enrichment
 version: -1
 contentitemexportablefields:
   contentitemfields: {}
 fromversion: 6.10.0
-name: Digital Shadows - URL_IoC Assessment & Enrichment_url
+name: Digital Shadows - URL_IoC Assessment & Enrichment
 description: Enrichment of URL IOC types - sub-playbook for IOC Assessment & Enrichment playbook.
 starttaskid: "0"
 tasks:

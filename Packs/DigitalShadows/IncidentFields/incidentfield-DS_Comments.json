@@ -4,11 +4,11 @@
         "DS Incident Types"
     ],
     "caseInsensitive": true,
-    "cliName": "dsassets",
+    "cliName": "dscomments",
     "closeForm": false,
     "columns": [
         {
-            "displayName": "Id",
+            "displayName": "ID",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
@@ -21,11 +21,11 @@
             "width": 150
         },
         {
-            "displayName": "type",
+            "displayName": "Content",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "type",
+            "key": "content",
             "orgType": "shortText",
             "required": false,
             "script": "",
@@ -34,11 +34,11 @@
             "width": 150
         },
         {
-            "displayName": "approval state",
+            "displayName": "Userid",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "approvalstate",
+            "key": "userid",
             "orgType": "shortText",
             "required": false,
             "script": "",
@@ -47,24 +47,11 @@
             "width": 150
         },
         {
-            "displayName": "labels",
+            "displayName": "Username",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "labels",
-            "orgType": "shortText",
-            "required": false,
-            "script": "",
-            "selectValues": [],
-            "type": "shortText",
-            "width": 150
-        },
-        {
-            "displayName": "archived",
-            "fieldCalcScript": "",
-            "isDefault": true,
-            "isReadOnly": false,
-            "key": "archived",
+            "key": "username",
             "orgType": "shortText",
             "required": false,
             "script": "",
@@ -73,7 +60,7 @@
             "width": 150
         },
         {
-            "displayName": "created",
+            "displayName": "Created",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
@@ -82,11 +69,11 @@
             "required": false,
             "script": "",
             "selectValues": null,
-            "type": "shortText",
+            "type": "date",
             "width": 150
         },
         {
-            "displayName": "updated",
+            "displayName": "Updated",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
@@ -95,20 +82,7 @@
             "required": false,
             "script": "",
             "selectValues": null,
-            "type": "shortText",
-            "width": 150
-        },
-        {
-            "displayName": "display value",
-            "fieldCalcScript": "",
-            "isDefault": true,
-            "isReadOnly": false,
-            "key": "displayvalue",
-            "orgType": "shortText",
-            "required": false,
-            "script": "",
-            "selectValues": null,
-            "type": "shortText",
+            "type": "date",
             "width": 150
         }
     ],
@@ -121,10 +95,10 @@
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_dsassets",
+    "id": "incident_dscomments",
     "isReadOnly": false,
     "locked": false,
-    "name": "DS Assets",
+    "name": "DS Comments",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,

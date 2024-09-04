@@ -117,12 +117,6 @@ configuration:
   name: incidentFetchInterval
   required: false
   type: 19
-- additionalinfo: Since when want to fetch the data with given format(%Y-%m-%dT%H:%M:%SZ)
-  defaultvalue: "2020-01-20T00:00:00Z"
-  display: Start date
-  name: sinceDate
-  required: true
-  type: 0
 - display: Incident type
   name: incidentType
   type: 13
@@ -145,7 +139,7 @@ script:
   script: ''
   subtype: python3
   type: python
-fromversion: 6.10.0
+fromversion: 6.0.0
 supportlevelheader: xsoar
 defaultmapperin: Reliaquest GreyMatter DRP Incidents Mapper
 defaultclassifier: Reliaquest GreyMatter DRP Incidents Classifier

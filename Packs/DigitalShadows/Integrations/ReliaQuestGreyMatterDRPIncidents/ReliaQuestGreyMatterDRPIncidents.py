@@ -629,6 +629,14 @@ def search_find(request_handler: Client, args):
 '''SearchLightTriagePoller'''
 
 
+def flatten_comments(comments):
+    """
+    This method will flatten up the comments
+    """
+    return [{"id": x["id"], "content": x['content'], "userid": x['user']['id'] if x['user'] else None, "username": x['user']['name'] if x['user'] else None,
+             "created": x['created'], "updated": x['updated']} for x in comments]
+
+
 class SearchLightTriagePoller:
     """
     SearchLight triage poller polls calls various api, merge data and prepare incident object
@@ -706,9 +714,7 @@ class SearchLightTriagePoller:
             data_item = {TRIAGE_ITEM: triage_item, ASSETS: [], EVENT: event}
 
             if triage_item[ID] in comment_map:
-                comments = [{"id": x["id"], "content": x['content'], "userid": x['user']['id'], "username": x['user']['name'],
-                             "created": x['created'], "updated": x['updated']} for x in comment_map[triage_item[ID]]]
-                data_item[COMMENTS] = comments
+                data_item[COMMENTS] = flatten_comments(comment_map[triage_item[ID]])
 
             alert_or_incident = None
             if ALERT_ID in triage_item[SOURCE] and triage_item[SOURCE][ALERT_ID]:
@@ -716,7 +722,6 @@ class SearchLightTriagePoller:
                 if triage_item[SOURCE][ALERT_ID] not in alert_map:
                     continue
                 alert = alert_map[triage_item[SOURCE][ALERT_ID]]
-                alert = self.stringyfyAlert(alert)
                 data_item[ALERT] = alert
                 alert_or_incident = alert
             elif INCIDENT_ID in triage_item[SOURCE] and triage_item[SOURCE][INCIDENT_ID]:
@@ -732,7 +737,10 @@ class SearchLightTriagePoller:
                     # assets can be missing if deleted
                     asset = asset_map.get(asset_id_holder[ID], None)
                     if asset:
-                        data_item[ASSETS].append(json.dumps(asset))
+                        approval_state = asset["approval-state"]
+                        display_value = asset["display-value"]
+                        asset.update({"approvalstate": approval_state, "displayvalue": display_value})
+                        data_item[ASSETS].append(asset)
             # a new boolean field “auto-closed”, is added → where the triage-event indicates that the triage item is\
             # auto-rejected, this is set to true. Otherwise, it is false
             # based on event-action="create" and status="rejected" on the triage item event
@@ -742,15 +750,6 @@ class SearchLightTriagePoller:
             data_item = removing_unwanted_data(data_item)
             data.append(data_item)
         return data
-
-    def stringyfyAlert(self, alert):
-        if alert.get('risk-factors'):
-            alert.update({'risk-factors': json.dumps(alert.get('risk-factors'))})
-        if alert.get('mitre-attack-mapping'):
-            alert.update({'mitre-attack-mapping': json.dumps(alert.get('mitre-attack-mapping'))})
-        if alert.get('validation'):
-            alert.update({'validation': json.dumps(alert.get('validation'))})
-        return alert
 
     def poll_triage(self, event_created_after, event_num_start=0, limit=100, alert_risk_types=[RISK_TYPE_ALL],
                     risk_level=[RISK_LEVEL_ALL], should_ingest_closed=True):
