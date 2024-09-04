@@ -1,8 +1,7 @@
-id: dadf8d27-cdb0-42ad-8e19-4f659a1a6038
-version: 7
-vcShouldKeepItemLegacyProdMachine: false
+id: SecurityScorecard Event
+version: -1
 name: SecurityScorecard Event
-description: SecurityScorecard Event
+description: SecurityScorecard Event.
 starttaskid: "0"
 tasks:
   "0":
@@ -227,6 +226,8 @@ inputs:
   value: {}
   required: true
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
-fromversion: 6.0.0
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

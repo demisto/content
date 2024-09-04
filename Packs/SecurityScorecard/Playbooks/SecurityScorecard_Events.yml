@@ -1,8 +1,7 @@
-id: e6419daf-3516-491f-856f-7b66e2880a43
-version: 7
-vcShouldKeepItemLegacyProdMachine: false
+id: SecurityScorecard Events
+version: -1
 name: SecurityScorecard Events
-description: Get SecurityScorecard events
+description: Get SecurityScorecard events.
 starttaskid: "0"
 tasks:
   "0":
@@ -159,12 +158,14 @@ inputs:
     simple: .com
   required: true
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: date
   value:
     simple: "2023-06-01T00:00:00.000Z"
   required: true
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
-fromversion: 6.0.0
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

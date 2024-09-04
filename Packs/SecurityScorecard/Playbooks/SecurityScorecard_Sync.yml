@@ -1,7 +1,6 @@
-id: 5c4dd719-35cf-453a-8712-9b755e3057dc
-version: 9
-description: Sync SecurityScorecard data
-vcShouldKeepItemLegacyProdMachine: false
+id: SecurityScorecard Sync
+version: -1
+description: Sync SecurityScorecard data.
 name: SecurityScorecard Sync
 starttaskid: "0"
 tasks:
@@ -156,6 +155,8 @@ inputs:
     simple: cb118cfa-f654-59ab-9e9e-937f6c86aa41
   required: true
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
-fromversion: 6.0.0
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
