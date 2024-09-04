@@ -2280,13 +2280,13 @@ def test_create_x509_certificate_object():
     [
         pytest.param("[domain-name:value = 'www.example.com']", 'www.example.com', id='case: domain'),
         pytest.param("[file:hashes.'SHA-256' = '0000000000000000000000000000000000000000000000000000000000000000']",
-         '0000000000000000000000000000000000000000000000000000000000000000', id='case: file hashed with SHA-256'),
+                     '0000000000000000000000000000000000000000000000000000000000000000', id='case: file hashed with SHA-256'),
         pytest.param("[file:hashes.'MD5' = '00000000000000000000000000000000']", '00000000000000000000000000000000',
                      id='case: file hashed with MD5'),
         pytest.param("A regular name with no pattern", 'A regular name with no pattern', id='A regular name with no pattern'),
         pytest.param(
             ("([ipv4-addr:value = '1.1.1.1/32' OR ipv4-addr:value = '8.8.8.8/32'] "
-            "FOLLOWEDBY [domain-name:value = 'example.com']) WITHIN 600 SECONDS"),
+             "FOLLOWEDBY [domain-name:value = 'example.com']) WITHIN 600 SECONDS"),
             '1.1.1.1/32', id='Complex pattern with multiple values'
         ),
     ],
