@@ -1950,8 +1950,6 @@ script:
         predefined:
           - "true"
           - "false"
-      - name: start
-        description: The starting index of the returned records.
       - name: start_date
         description: Filters the results to the records on or after the start date. The start date must be specified as epoch time in milliseconds.
       - name: limit

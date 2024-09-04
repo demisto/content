@@ -1454,17 +1454,15 @@ def get_events(client: Client, args: dict) -> tuple[list[Dict], CommandResults]:
             if events:
                 break
 
-        demisto.debug(f'searching events with start date: {start_date}, end date: {end_date} and page size: {PAGE_SIZE}')
         response = run_fetch_mechanism(client, next_link, start_date, end_date)
-        demisto.info(f'Found {response["size"]} events between {start_date} and {end_date}')
         demisto.info(json.dumps(response, indent=4))
         next_link = response['_links'].get('next', None)
         events.extend(response['results'])
 
     if events:
-        demisto.debug('Type of a single event: {}'.format(type(events[0])))
         demisto.debug('Finished paging, events: {}'.format(events))
     if len(events) > fetch_limit:
+        demisto.debug('Fetched events exceed the limit, trimming to the limit')
         events = events[:fetch_limit]
     return events, CommandResults(readable_output=tableToMarkdown('Events', t=events, removeNull=True))
 
