@@ -1141,7 +1141,7 @@ class JiraOnPremClient(JiraBaseClient):
         )
 
     def issue_get_forms(self, issue_id: str) -> List:
-        """Makes an API call to pull down all forms their data for an issue
+        """Retrieve forms' data for a specified issue_id
 
         :param issue_id: Issue to pull forms for
         :type issue_id: str
