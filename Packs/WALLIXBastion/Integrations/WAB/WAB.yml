@@ -5363,7 +5363,7 @@ script:
       description: 'The name of the external group (LDAP/AD: Distinguished Name, Azure AD: name or ID), "*" means fallback mapping.'
       required: true
     - name: usergroup_mapping_post_profile
-      description: The name of the domain for which the mapping is defined.
+      description: The name of the profile for which the mapping is defined.
       required: true
   - name: wab-edit-mappings-of-user-group
     description: Edit mappings of a user group.
@@ -5378,7 +5378,7 @@ script:
       description: 'The name of the external group (LDAP/AD: Distinguished Name, Azure AD: name or ID), "*" means fallback mapping.'
       required: true
     - name: usergroup_mapping_post_profile
-      description: The name of the domain for which the mapping is defined.
+      description: The name of the profile for which the mapping is defined.
       required: true
   - name: wab-get-mapping-of-user-group
     description: Get the mapping of a user group.
@@ -5423,7 +5423,7 @@ script:
       description: 'The name of the external group (LDAP/AD: Distinguished Name, Azure AD: name or ID), "*" means fallback mapping.'
       required: true
     - name: usergroup_mapping_post_profile
-      description: The name of the domain for which the mapping is defined.
+      description: The name of the profile for which the mapping is defined.
       required: true
   - name: wab-delete-mapping-of-user-group
     description: Delete the mapping of the given user group.
