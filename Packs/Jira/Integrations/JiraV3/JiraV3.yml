@@ -1484,7 +1484,7 @@ script:
       name: username
       required: false
     - description: The user's accountId (Cloud only).
-      name: accountId
+      name: account_id
       required: false
     description: Get's information about the specified user.
     name: jira-get-user-info
