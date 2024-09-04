@@ -12,6 +12,7 @@ import threading
 import time
 import traceback
 import websocket
+import json
 from concurrent.futures import ThreadPoolExecutor
 from enum import Enum
 from threading import Event
@@ -59,8 +60,6 @@ TAB_CLOSE_WAIT_TIME = 1
 DEFAULT_RETRIES_COUNT = 3
 DEFAULT_RETRY_WAIT_IN_SECONDS = 2
 PAGES_LIMITATION = 20
-
-# rasterize struct
 
 try:
     env_max_rasterizations_count = os.getenv('MAX_RASTERIZATIONS_COUNT', '500')
@@ -289,7 +288,7 @@ def read_file(filename):
         with open(filename) as file:
             ret_value = file.read()
             demisto.info(f"File '{filename}' contents: {ret_value}.")
-            return ret_value
+            return ret_value.
     except FileNotFoundError:
         demisto.info(f"File '{filename}' does not exist")
         return None
@@ -359,8 +358,14 @@ def start_chrome_headless(chrome_port, instance_id, chrome_options, chrome_binar
             time.sleep(DEFAULT_RETRY_WAIT_IN_SECONDS)  # pylint: disable=E9003
             browser = get_chrome_browser(chrome_port)
             if browser:
-                new_row = f"{chrome_port}\t{instance_id}\t{chrome_options}\trasterizetion_count"
-                write_file(CHROME_INSTANCES_FILE_PATH, new_row)
+                new_port_ = {
+                    chrome_port: {
+                        'instance_id': instance_id,
+                        'chrome_options': chrome_options,
+                        'chrome_total_connection': '1'
+                    }
+                }
+                write_file(CHROME_INSTANCES_FILE_PATH, new_port_)
             else:
                 process.kill()
                 return None, None
@@ -453,32 +458,16 @@ def chrome_manager() -> tuple[Any | None, str | None]:
         get_chrome_instances_contents_dictionaries(chrome_instances_contents)
 
     if not chrome_instances_contents or instance_id not in instances_id:
-        # the file is empty or the conf doesn't exists or this is a new instane
-        previous_rasterizations_counter_from_file = read_file(RASTERIZATIONS_COUNTER_FILE_PATH)
-        if previous_rasterizations_counter_from_file:
-            total_rasterizations_count = int(previous_rasterizations_counter_from_file)
-            demisto.debug(f"chrome_manager: Checking if Chrome should be terminated, received, {total_rasterizations_count=},"
-                          f" {MAX_RASTERIZATIONS_COUNT=}")
-            if total_rasterizations_count == MAX_RASTERIZATIONS_COUNT:
-                demisto.info(f"Max resterizations count achieved with {total_rasterizations_count=}, terminating Chrome.")
-                if instance_id_to_port:
-                    terminate_chrome(chrome_port=instance_id_to_port)
-                write_file(CHROME_INSTANCES_FILE_PATH, "", overwrite=True)
-                write_file(RASTERIZATIONS_COUNTER_FILE_PATH, "0", overwrite=True)
-                demisto.debug('chrome_manager COND previous_rasterizations_counter_from_file succeeded')
         return generate_new_chrome_instance(instance_id, chrome_options)
 
     elif chrome_options != instance_id_to_chrome_options.get(instance_id):
         chrome_port = instance_id_to_port.get(instance_id, '')
-        demisto.debug(f'chrome_options changed, terminating {chrome_port=} {instance_id=} {chrome_options=}\
-            and starting a new chrome')
         delete_row_with_old_chrome_configurations_from_chrome_instances_file(chrome_instances_contents, instance_id, chrome_port)
         terminate_chrome(chrome_port=chrome_port)
         return generate_new_chrome_instance(instance_id, chrome_options)
 
     chrome_port = instance_id_to_port.get(instance_id, '')
     browser = get_chrome_browser(chrome_port)
-    demisto.debug(f'chrome_manager {chrome_port=}')
     return browser, chrome_port
 
 
@@ -574,6 +563,11 @@ def delete_row_with_old_chrome_configurations_from_chrome_instances_file(chrome_
         del splitted_chrome_instances_contents[index_to_delete]
         chrome_instances_contents = '\n'.join(splitted_chrome_instances_contents)
         write_file(CHROME_INSTANCES_FILE_PATH, chrome_instances_contents, overwrite=True)
+
+def edit_chrome_file_configurations(chrome_ports_configurations: str, chrome_port: str, key_configuration: str = '', _configurations:dict = {}):
+    for chrome_port_configurations in chrome_ports_configurations:
+        
+        
 
 
 def setup_tab_event(browser: pychrome.Browser, tab: pychrome.Tab) -> tuple[PychromeEventHandler, Event]:
@@ -843,7 +837,17 @@ def perform_rasterize(path: str | list[str],
                 total_rasterizations_count = int(previous_rasterizations_counter_from_file) + len(rasterization_threads)
             else:
                 total_rasterizations_count = len(rasterization_threads)
-            write_file(RASTERIZATIONS_COUNTER_FILE_PATH, str(total_rasterizations_count), overwrite=True)
+            demisto.debug(f"Should Chrome be terminated?, {total_rasterizations_count=},"
+                          f" {MAX_RASTERIZATIONS_COUNT=}, {len(browser.list_tab())=}")
+            if total_rasterizations_count > MAX_RASTERIZATIONS_COUNT and chrome_port:
+                demisto.info(f"Max resterizations count achieved with {total_rasterizations_count=}, terminating Chrome.")
+                demisto.info(f"Terminating Chrome after {total_rasterizations_count} rasterizations")
+                terminate_chrome(chrome_port=chrome_port)
+                write_file(CHROME_INSTANCES_FILE_PATH, "", overwrite=True)
+                demisto.info(f"Terminated Chrome after {total_rasterizations_count} rasterizations")
+                write_file(RASTERIZATIONS_COUNTER_FILE_PATH, "0", overwrite=True)
+            else:
+                write_file(RASTERIZATIONS_COUNTER_FILE_PATH, str(total_rasterizations_count), overwrite=True)
 
             # Get the results
             for current_thread in rasterization_threads:
