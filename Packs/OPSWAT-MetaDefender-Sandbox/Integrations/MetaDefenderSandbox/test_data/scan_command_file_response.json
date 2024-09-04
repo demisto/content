@@ -193,8 +193,8 @@
                         {
                             "strength": 0.1,
                             "isStrictlyBasedOnInputData": false,
-                            "signalReadable": "OSINT provider \"OFFLINE_URL_REPUTATION\" detected resource \"http://yl.ml.md\" as \"NO_THREAT\"",
-                            "additionalInfo": "http://yl.ml.md",
+                            "signalReadable": "OSINT provider \"OFFLINE_URL_REPUTATION\" detected resource \"asdf\" as \"NO_THREAT\"",
+                            "additionalInfo": "asdf",
                             "originPath": "osint.results.verdict",
                             "originType": "INPUT_FILE",
                             "originIdentifier": "b280719e9f2dd010260e6a023e0d69c64fbee8b6cbb8669c722a1da8142d3325",
