@@ -7901,7 +7901,7 @@ script:
       type: String
       description: The host ID.
     - contextPath: PANOS.JobStatus.id
-      description: The ID of the job. For failed jobs, the ID will be "null".
+      description: The ID of the job.
       type: Number
     - contextPath: PANOS.JobStatus.type
       description: The job type.
