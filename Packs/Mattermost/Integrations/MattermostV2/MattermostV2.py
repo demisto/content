@@ -57,6 +57,10 @@ DEFAULT_OPTIONS: Dict[str, Any] = {
 }
 GUID_REGEX = r'(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}'
 ENTITLEMENT_REGEX = fr'{GUID_REGEX}@(({GUID_REGEX})|(?:[\d_]+))_*(\|\S+)?\b'
+PERMITTED_NOTIFICATION_TYPES = [MIRROR_TYPE, 'incidentOpened', 'incidentChanged', 'investigationClosed', 'investigationDeleted',
+                                'taskCompleted', 'incidentStatusChanged', 'incidentReminderSLA', 'mentionOld', 'mentionNew',
+                                'assign', 'incidentAssigned']
+INCIDENT_NOTIFICATION_CHANNEL = 'incidentNotificationChannel'
 ''' CLIENT CLASS '''
 
 
@@ -829,7 +833,7 @@ async def handle_posts(payload):
         answer_text = post.get('message', '')
         root_id = post.get('root_id', '')
         entitlement_reply = await check_and_handle_entitlement(answer_text, root_id, username)
-        demisto.debug(f"MM: {entitlement_reply=}")
+        demisto.debug(f"MM: Got {entitlement_reply=}")
         if entitlement_reply:
             process_entitlement_reply(entitlement_reply, root_id, username, answer_text)
 
@@ -1512,7 +1516,7 @@ def send_notification(client: HTTPClient, **args):
     """
     Sends notification for a MatterMost channel
     """
-    demisto.debug(f'MM: {args=}')
+    demisto.debug(f'MM: Sending notification with {args=}')
     to = args.get('to', '')
     entry = args.get('entry')
     channel_name = args.get('channel', '')
@@ -1543,13 +1547,22 @@ def send_notification(client: HTTPClient, **args):
     if entry_object:
         investigation_id = entry_object.get('investigationId')  # From server, available from demisto v6.1 and above
 
-    if message_type and message_type != MIRROR_TYPE:
+    if message_type and (message_type not in PERMITTED_NOTIFICATION_TYPES):
+        demisto.debug(f'MM: Will not mirror the message type: {message_type}')
         return (f"Message type is not in permitted options. Received: {message_type}")
 
-    if message_type == MIRROR_TYPE and original_message.find(MESSAGE_FOOTER) != -1:
+    if message_type and message_type == MIRROR_TYPE and original_message.find(MESSAGE_FOOTER) != -1:
         # return so there will not be a loop of messages
         return ("Message already mirrored")
 
+    if channel_name == INCIDENT_NOTIFICATION_CHANNEL:
+        if client.notification_channel:
+            # change the notification channel to the one in the configuration
+            channel_name = client.notification_channel
+        else:
+            demisto.debug('MM: No notification channel was configured, ' \
+                          f'will send notification to {INCIDENT_NOTIFICATION_CHANNEL}')
+        
     if not ignore_add_url:
         investigation = demisto.investigation()
         server_links = demisto.demistoUrls()
