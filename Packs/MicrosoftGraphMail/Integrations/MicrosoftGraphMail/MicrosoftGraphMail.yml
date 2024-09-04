@@ -745,8 +745,8 @@ script:
       - complete
       - flagged
     - auto: PREDEFINED
-      defaultValue: Normal
-      description: 'The importance of the draft. Can be: "Low", "Normal", or "High". The default is Normal.'
+      defaultValue: Low
+      description: 'The importance of the draft. Can be: "Low", "Normal", or "High". The default is Low.'
       name: importance
       predefined:
       - Low
