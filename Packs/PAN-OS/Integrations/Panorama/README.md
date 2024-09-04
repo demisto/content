@@ -6185,7 +6185,7 @@ Get all the jobs from the devices in the environment, or a single job when ID is
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | PANOS.JobStatus.hostid | String | Host ID. | 
-| PANOS.JobStatus.id | String | ID of job. | 
+| PANOS.JobStatus.id | Number | ID of job. | 
 | PANOS.JobStatus.type | String | Job type. | 
 | PANOS.JobStatus.tfin | String | Time finished. | 
 | PANOS.JobStatus.status | String | Status of the job. | 
