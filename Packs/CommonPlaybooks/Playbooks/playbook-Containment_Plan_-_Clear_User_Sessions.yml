@@ -5,7 +5,7 @@ description: |-
   ## Containment Plan - Clear User Sessions
 
   This playbook is a sub-playbook within the containment plan playbook.
-  The playbook clears the users' sessions using Okta integration. (currently, the playbook supports only Okta)
+  The playbook uses the 'Okta v2' and 'MSGraph User' integrations to clear user sessions.
 starttaskid: "0"
 tasks:
   "0":
@@ -45,7 +45,7 @@ tasks:
     task:
       id: 965b6bb7-8584-4ee9-86be-705ca7951fba
       version: -1
-      name: Auto clear user sessions
+      name: Okta clear user sessions
       description: |-
         Removes all active identity provider sessions. This forces the user to authenticate on the next operation. Optionally revokes OpenID Connect and OAuth refresh and access tokens issued to the user.
         For more information and examples:
@@ -67,8 +67,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 770,
-          "y": 745
+          "x": 530,
+          "y": 985
         }
       }
     note: false
@@ -96,7 +96,7 @@ tasks:
       {
         "position": {
           "x": 770,
-          "y": 1150
+          "y": 1320
         }
       }
     note: false
@@ -121,18 +121,17 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "25"
     scriptarguments:
       username:
-        complex:
-          root: UsersSessionToClear
+        simple: ${OktaUsersSessionToClear}
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 770,
-          "y": 575
+          "x": 530,
+          "y": 590
         }
       }
     note: false
@@ -170,8 +169,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 770,
-          "y": 920
+          "x": 530,
+          "y": 1145
         }
       }
     note: false
@@ -188,7 +187,7 @@ tasks:
     task:
       id: cceb9ed8-97d2-4b2a-8688-c02b46be05a6
       version: -1
-      name: Set users to clear the session
+      name: Set users to clear the session with Okta
       description: Set a value in context under the key you entered.
       scriptName: Set
       type: regular
@@ -199,7 +198,7 @@ tasks:
       - "7"
     scriptarguments:
       key:
-        simple: UsersSessionToClear
+        simple: OktaUsersSessionToClear
       value:
         complex:
           root: inputs.Username
@@ -224,30 +223,13 @@ tasks:
               ignorecase: true
           transformers:
           - operator: uniq
-          - operator: RegexExtractAll
-            args:
-              error_if_no_match: {}
-              ignore_case: {}
-              multi_line: {}
-              period_matches_newline: {}
-              regex:
-                value:
-                  simple: '[^\\]+$'
-              unpack_matches: {}
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: inputs.IAMUserDomain
-                iscontext: true
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 770,
-          "y": 400
+          "x": 530,
+          "y": 410
         }
       }
     note: false
@@ -278,15 +260,13 @@ tasks:
     scriptarguments:
       brandname:
         simple: Okta v2
-    results:
-    - brandInstances
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 770,
-          "y": 200
+          "x": 530,
+          "y": 210
         }
       }
     note: false
@@ -313,6 +293,7 @@ tasks:
       - "2"
       "yes":
       - "15"
+      - "18"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -348,18 +329,328 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 64c30075-eba8-4222-8251-cf075b841898
+    type: condition
+    task:
+      id: 64c30075-eba8-4222-8251-cf075b841898
+      version: -1
+      name: Is MsGraphUser enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "27"
+    scriptarguments:
+      brandname:
+        simple: Microsoft Graph User
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1010,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: f0ed1f31-5552-423b-8d43-44a4e3b69879
+    type: regular
+    task:
+      id: f0ed1f31-5552-423b-8d43-44a4e3b69879
+      version: -1
+      name: Get MsGraph user ID
+      description: |-
+        Retrieves the properties and relationships of a user object. For more information, visit: https://docs.microsoft.com/en-us/graph/api/user-update?view=graph-rest-1.0).
+        Permissions: - User.Read (Delegated) - User.Read.All (Application).
+      script: '|||msgraph-user-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      user:
+        simple: ${MsGraphUsersSessionToClear}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1010,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: c82fc95c-577d-407a-8e4c-127b17c05843
+    type: regular
+    task:
+      id: c82fc95c-577d-407a-8e4c-127b17c05843
+      version: -1
+      name: MSGraph clear user sessions
+      description: |-
+        Revoke a user session - Invalidates all the refresh tokens issued to applications for a user.
+        Permission: Directory.AccessAsUser.All(Delegated).
+      script: '|||msgraph-user-session-revoke'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      user:
+        simple: ${MSGraphUser.ID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1010,
+          "y": 985
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: aaafcc54-e334-42a5-8a5c-f4dea1d0c158
+    type: regular
+    task:
+      id: aaafcc54-e334-42a5-8a5c-f4dea1d0c158
+      version: -1
+      name: Set the username to the Incident context
+      description: commands.local.cmd.set.parent.incident.context
+      script: Builtin|||setParentIncidentContext
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      key:
+        simple: UsersSessionCleared
+      value:
+        simple: ${MSGraphUser.UserPrincipalName}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1010,
+          "y": 1145
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 4655db74-8104-4510-88b0-d9a081911b34
+    type: condition
+    task:
+      id: 4655db74-8104-4510-88b0-d9a081911b34
+      version: -1
+      name: Does the username exist?
+      description: Verify that the user exists.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: MSGraphUser.ID
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1010,
+          "y": 785
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: c1ba5bf5-e37f-41ee-8392-7709acc40e8f
+    type: condition
+    task:
+      id: c1ba5bf5-e37f-41ee-8392-7709acc40e8f
+      version: -1
+      name: Does the username exist?
+      description: Verify that the user exists.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Account
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Account.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Okta
+                    ignorecase: true
+                accessor: ID
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 530,
+          "y": 785
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 2fd929ed-f77b-49d3-8ec5-9ac7e37a2a47
+    type: regular
+    task:
+      id: 2fd929ed-f77b-49d3-8ec5-9ac7e37a2a47
+      version: -1
+      name: Set users to clear the session with MsGraph
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      key:
+        simple: MsGraphUsersSessionToClear
+      value:
+        complex:
+          root: inputs.Username
+          filters:
+          - - operator: notContainsGeneral
+              left:
+                value:
+                  simple: inputs.Username
+                iscontext: true
+              right:
+                value:
+                  simple: administrator
+              ignorecase: true
+          - - operator: notContainsGeneral
+              left:
+                value:
+                  simple: inputs.Username
+                iscontext: true
+              right:
+                value:
+                  simple: system
+              ignorecase: true
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1010,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
       "15_2_#default#": 0.15,
       "17_15_yes": 0.48,
-      "17_2_#default#": 0.11
+      "17_2_#default#": 0.11,
+      "18_2_#default#": 0.16,
+      "23_2_#default#": 0.25,
+      "25_1_yes": 0.45,
+      "25_2_#default#": 0.33
     },
     "paper": {
       "dimensions": {
-        "height": 1365,
-        "width": 380,
-        "x": 770,
+        "height": 1535,
+        "width": 860,
+        "x": 530,
         "y": -150
       }
     }
@@ -369,7 +660,7 @@ inputs:
   value:
     simple: "True"
   required: false
-  description: Set to 'True' to clear the user active Okta sessions.
+  description: Set to 'True' to clear the user active sessions.
   playbookInputQuery:
 - key: Username
   value: {}
@@ -381,6 +672,17 @@ inputs:
   required: false
   description: The Okta IAM users domain. The domain will be appended to the username. E.g., username@IAMUserDomain.
   playbookInputQuery:
+inputSections:
+- inputs:
+  - ClearUserSessions
+  - Username
+  - IAMUserDomain
+  name: General (Inputs group)
+  description: Generic group for inputs.
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs
 outputs: []
 tests:
 - No tests (auto formatted)

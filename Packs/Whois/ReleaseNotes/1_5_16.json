@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Commands <code>domain</code> and <code>whois</code> will now return a dictionary instead of a string when 'Use legacy context' is not enabled. "
+}
