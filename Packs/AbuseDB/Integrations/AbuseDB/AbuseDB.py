@@ -7,7 +7,7 @@ import os
 import urllib3
 import requests
 import ipaddress
-
+import re
 # disable insecure warnings
 urllib3.disable_warnings()
 
@@ -30,6 +30,8 @@ BLACKLIST_CMD = 'blacklist'
 ANALYSIS_TITLE = "AbuseIPDB Analysis"
 BLACKLIST_TITLE = "AbuseIPDB Blacklist"
 REPORT_SUCCESS = "IP address reported successfully."
+INTEGRATION_NAME = "AbuseIPDB"
+INTEGRATION_CONTEXT_NAME = 'AbuseIPDB'
 
 API_QUOTA_REACHED_MESSAGE = 'Too many requests (possibly bad API key). Status code: 429'
 
@@ -100,8 +102,8 @@ session = requests.session()
 ''' HELPER FUNCTIONS '''
 
 
-def http_request(method, url_suffix, params=None, headers=HEADERS, threshold=THRESHOLD):
-    LOG('running request with url=%s' % (SERVER + url_suffix))
+def http_request(method, url_suffix, params=None, headers=HEADERS, threshold=THRESHOLD) -> (Dict[str, Any]):
+    demisto.debug('running request with url={server}{url_suffix}')
     try:
         analysis = session.request(method, SERVER + url_suffix, headers=headers, params=params, verify=not INSECURE)
 
@@ -109,14 +111,12 @@ def http_request(method, url_suffix, params=None, headers=HEADERS, threshold=THR
             return_error('Bad connection attempt. Status code: ' + str(analysis.status_code))
         if analysis.status_code == 429:
             if demisto.params().get('disregard_quota'):
-                return API_QUOTA_REACHED_MESSAGE
+                demisto.debug(API_QUOTA_REACHED_MESSAGE)
             else:
-                return_error(API_QUOTA_REACHED_MESSAGE)
-
-        return REPORT_SUCCESS if url_suffix == REPORT_CMD else analysis.json()
+                raise DemistoException(API_QUOTA_REACHED_MESSAGE)
+        return analysis.json()
     except Exception as e:
-        LOG(e)
-        return_error(str(e))
+        raise DemistoException(e)
 
 
 def format_privte_ips(private_ips):
@@ -253,6 +253,16 @@ def createEntry(context_ip, context_ip_generic, human_readable, dbot_scores, tim
     }
     return entry
 
+def create_dbot_Score(domain: dict, reliability: str) -> Common.DBotScore:
+    """
+        Creates DBotScore DOMAIN indicator, for get_ip_malicious_domains_command.
+    """
+    return Common.DBotScore(indicator=domain.get('name'),
+                            indicator_type=DBotScoreType.DOMAIN,
+                            integration_name=INTEGRATION_NAME,
+                            score=Common.DBotScore.NONE,
+                            reliability=reliability)
+    
 
 ''' FUNCTIONS '''
 
@@ -294,6 +304,105 @@ def check_ip_command(
     return entry_list
 
 
+def ip_command(
+    reliability,
+    ips,
+    override_private_lookup="False",
+    days=MAX_AGE,
+    verbose=VERBOSE,
+    threshold=THRESHOLD,
+    disable_private_ip_lookup=DISABLE_PRIVATE_IP_LOOKUP,
+) -> List[CommandResults]:
+    """
+    Args:
+        client: iDefense client
+        args: arguments obtained with the command representing the indicator value to search
+        reliability: reliability of the source
+    Returns: CommandResults containing the indicator, the response and a readable output
+    """
+    ips_list = argToList(ips)
+    private_ips = []
+    params = {
+        "maxAgeInDays": days
+    }
+    title = f'{INTEGRATION_NAME} - Results for ips query'
+    command_results: List[CommandResults] = []
+
+    for ip in ips_list:
+        if (
+            disable_private_ip_lookup
+            and ipaddress.ip_address(ip).is_private
+            and not argToBoolean(override_private_lookup)
+        ):
+            private_ips.append(ip)
+            continue
+        params["ipAddress"] = ip
+        raw_response = http_request("GET", url_suffix=CHECK_CMD, params=params)
+        if raw_response:
+            analysis_data = raw_response.get("data", {})
+            # entry_list.append(analysis_to_entry(analysis_data, reliability, verbose=verbose, threshold=threshold))
+            abuse_ec = {
+                "IP": {
+                    "Address": analysis_data.get("ipAddress"),
+                    "Geo": {
+                        "Country": analysis_data.get("countryName"),
+                        "CountryCode": analysis_data.get("countryCode")
+                    },
+                    "AbuseConfidenceScore": analysis_data.get('abuseConfidenceScore'),
+                    "TotalReports": analysis_data.get("totalReports") or raw_response.get("numReports") or 0,
+                    "ISP": analysis_data.get("isp"),
+                    "UsageType": analysis_data.get("usageType"),
+                    "Domain": analysis_data.get("domain"),
+                    "Hostnames": analysis_data.get("hostnames"),
+                    "IpVersion": analysis_data.get("ipVersion"),
+                    "IsPublic": analysis_data.get("isPublic"),
+                    "IsTor": analysis_data.get("isTor"),
+                    "IsWhitelisted": analysis_data.get("isWhitelisted"),
+                    "LastReportedAt": analysis_data.get("lastReportedAt"),
+                    "NumDistinctUsers": analysis_data.get("numDistinctUsers")
+                }
+            }
+            dbot_score = Common.DBotScore(indicator=ip, indicator_type=DBotScoreType.IP,
+                                          integration_name=INTEGRATION_NAME,
+                                          score=getDBotScore(raw_response, threshold=threshold),
+                                          reliability=reliability)
+
+            ip_object = Common.IP(ip=ip, dbot_score=dbot_score,
+                                  asn=analysis_data.get('asn'),
+                                  geo_description=analysis_data.get("countryName"),
+                                  geo_country=analysis_data.get("countryCode"),
+                                  )
+
+            context = {
+                'Reputation': analysis_data.get('reputation'),
+                'IP': ip
+            }
+
+            human_readable_context = {
+                'Address': ip_object.to_context().get('IP(val.Address && val.Address == obj.Address)').get('Address'),
+                'Geo': ip_object.to_context().get('IP(val.Address && val.Address == obj.Address)').get('Geo')
+            }
+
+            human_readable = tableToMarkdown(
+                name=title,
+                t=human_readable_context)
+
+            command_results.append(CommandResults(
+                readable_output=human_readable,
+                outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.IP(val.IP && val.IP === obj.IP)',
+                outputs={'IP': context},
+                indicator=ip_object,
+                raw_response=raw_response,
+            ))
+        else:
+            command_results.append(create_indicator_result_with_dbotscore_unknown(indicator=ip,
+                                                                                  indicator_type=DBotScoreType.IP,
+                                                                                  reliability=reliability))
+    if not command_results:
+        return [CommandResults(f'{INTEGRATION_NAME} - Could not find any results for given query.')]
+    return command_results
+
+
 def check_block_command(reliability, network, limit, days=MAX_AGE, threshold=THRESHOLD):
     params = {
         "network": network,
@@ -310,7 +419,11 @@ def report_ip_command(ip, categories):
         "categories": ",".join([CATEGORIES_ID[c] if c in CATEGORIES_ID else c for c in categories.split()])
     }
     analysis = http_request("POST", url_suffix=REPORT_CMD, params=params)
-    return analysis
+    
+    return CommandResults(
+        readable_output="IP address reported successfully." if analysis else "The IP address failed to be reported.",
+    )
+
 
 
 def get_blacklist_command(limit, days, confidence, saveToContext):
@@ -345,29 +458,30 @@ def get_categories_command():
     }
     return entry
 
-
-try:
+def main():
     reliability = demisto.params().get('integrationReliability', 'C - Fairly reliable')
-
     if DBotScoreReliability.is_valid_type(reliability):
         reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
     else:
         raise Exception("Please provide a valid value for the Source Reliability parameter.")
+    try:
+        if demisto.command() == 'test-module':
+            # Tests connectivity and credentials on login
+            test_module(reliability)
+        elif demisto.command() == 'ip':
+            return_results(check_ip_command(reliability, **demisto.args()))
+        elif demisto.command() == 'abuseipdb-check-cidr-block':
+            return_results(check_block_command(reliability, **demisto.args()))
+        elif demisto.command() == 'abuseipdb-report-ip':
+            return_results(report_ip_command(**demisto.args()))
+        elif demisto.command() == 'abuseipdb-get-blacklist':
+            return_results(get_blacklist_command(**demisto.args()))
+        elif demisto.command() == 'abuseipdb-get-categories':
+            return_results(get_categories_command(**demisto.args()))  # type:ignore
 
-    if demisto.command() == 'test-module':
-        # Tests connectivity and credentails on login
-        test_module(reliability)
-    elif demisto.command() == 'ip':
-        demisto.results(check_ip_command(reliability, **demisto.args()))
-    elif demisto.command() == 'abuseipdb-check-cidr-block':
-        demisto.results(check_block_command(reliability, **demisto.args()))
-    elif demisto.command() == 'abuseipdb-report-ip':
-        demisto.results(report_ip_command(**demisto.args()))
-    elif demisto.command() == 'abuseipdb-get-blacklist':
-        demisto.results(get_blacklist_command(**demisto.args()))
-    elif demisto.command() == 'abuseipdb-get-categories':
-        demisto.results(get_categories_command(**demisto.args()))  # type:ignore
+    except Exception as e:
+        # pragma: no cover
+        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')  # pragma: no cover
 
-except Exception as e:
-    LOG.print_log()
-    return_error(str(e))
+if __name__ in ('__main__', '__builtin__', 'builtins'):
+    main()
