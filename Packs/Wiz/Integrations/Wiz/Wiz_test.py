@@ -4,6 +4,7 @@ import random
 import pytest
 from unittest.mock import patch
 import demistomock as demisto
+
 from CommonServerPython import DemistoException
 
 integration_params = {
@@ -660,24 +661,26 @@ def test_get_issue_evidence_failure(checkAPIerrors, _get_issue, capfd):
 
 
 test_get_issue_evidence_tdr_response = {
-   "data": {
-      "issues": {
-         "nodes": [
-            {
-               "type": "THREAT_DETECTION",
-               "evidenceQuery": {
+    "data": {
+        "issues": {
+            "nodes": [
+                {
+                    "type": "THREAT_DETECTION",
+                    "evidenceQuery": {
 
-               },
-               "threatDetectionDetails": {
-                  "data": "data"
-               }
-            }
-         ]
-      }
-   }
+                    },
+                    "threatDetectionDetails": {
+                        "data": "data"
+                    }
+                }
+            ]
+        }
+    }
 }
+
+
 @patch('Wiz._get_issue', return_value=test_get_issue_evidence_tdr_response)
-@patch('Wiz.checkAPIerrors',  return_value=test_get_issue_evidence_tdr_response)
+@patch('Wiz.checkAPIerrors', return_value=test_get_issue_evidence_tdr_response)
 def test_get_issue_evidence_tdr(checkAPIerrors, _get_issue):
     from Wiz import get_issue_evidence
     res = get_issue_evidence('12345678-1234-1234-1234-d25e16359c19')
@@ -981,3 +984,27 @@ def test_build_incidents_none(capfd):
 
         res = build_incidents(test_build_incidents_response)
         assert res == {}
+
+
+test_copy_to_forensics_account_response = {
+    "data": {
+        "copyResourceForensicsToExternalAccount": {
+            "systemActivityGroupId": "16dee032-9a56-4331-aca5-0df2a9d47745"
+        }
+    }
+}
+
+
+@patch('Wiz.checkAPIerrors', return_value=test_copy_to_forensics_account_response)
+def test_copy_to_forensics_account(checkAPIerrors):
+    from Wiz import copy_to_forensics_account
+    res = copy_to_forensics_account('12345678-1234-1234-1234-d25e16359c19')
+    assert res == test_copy_to_forensics_account_response
+
+
+def test_copy_to_forensics_account_invalid_uuid(mocker, capfd):
+    from Wiz import copy_to_forensics_account
+    with capfd.disabled():
+        mocker.patch('Wiz.checkAPIerrors', return_value=test_copy_to_forensics_account_response)
+        issue = copy_to_forensics_account(resource_id='invalid_uuid')
+        assert issue == 'You should pass a valid UUID.'

@@ -10,7 +10,7 @@ WIZ_HTTP_QUERIES_LIMIT = 500  # Request limit during run
 WIZ_API_LIMIT = 500  # limit number of returned records from the Wiz API
 WIZ = 'wiz'
 
-WIZ_VERSION = '1.2.12'
+WIZ_VERSION = '1.3.2'
 INTEGRATION_GUID = '8864e131-72db-4928-1293-e292f0ed699f'
 
 
@@ -577,9 +577,6 @@ fragment ProcessResourceGraphEntity on GraphEntity {
   id
   name
   type
-  kubernetesPaths(first: 0) {
-    totalCount
-  }
 }
 
 fragment CloudEventAdmissionReviewDetails on CloudEventAdmissionReviewDetails {
@@ -839,14 +836,6 @@ fragment CloudEventCICDScanDetails on CloudEventCICDScanDetails {
         properties
       }
     }
-    analytics {
-      cloudKeyCount
-      dbConnectionStringCount
-      gitCredentialCount
-      passwordCount
-      privateKeyCount
-      totalCount
-    }
   }
   iacDetails {
     ruleMatches {
@@ -931,18 +920,6 @@ fragment CloudEventCICDScanDetails on CloudEventCICDScanDetails {
       }
       detectionMethod
     }
-    analytics {
-      vulnerabilities {
-        infoCount
-        lowCount
-        mediumCount
-        highCount
-        criticalCount
-        totalCount
-      }
-      filesScannedCount
-      directoriesScannedCount
-    }
   }
   dataDetails {
     dataFindingsWithFullClassifierInfo: findings {
@@ -975,49 +952,6 @@ fragment CloudEventCICDScanDetails on CloudEventCICDScanDetails {
       __typename
     }
   }
-  analytics {
-    vulnerabilityScanResultAnalytics {
-      infoCount
-      lowCount
-      mediumCount
-      highCount
-      criticalCount
-    }
-    dataScanResultAnalytics {
-      infoCount
-      lowCount
-      mediumCount
-      highCount
-      criticalCount
-    }
-    iacScanResultAnalytics {
-      infoCount: infoMatches
-      lowCount: lowMatches
-      mediumCount: mediumMatches
-      highCount: highMatches
-      criticalCount: criticalMatches
-    }
-    secretScanResultAnalytics {
-      cloudKeyCount
-      dbConnectionStringCount
-      gitCredentialCount
-      passwordCount
-      privateKeyCount
-      saasAPIKeyCount
-      infoCount
-      lowCount
-      mediumCount
-      highCount
-      criticalCount
-      totalCount
-    }
-  }
-  infoMatches
-  lowMatches
-  mediumMatches
-  highMatches
-  criticalMatches
-  totalMatches
 }
 
 fragment CICDScanCLIDetailsFragment on CICDScanCLIDetails {
@@ -1060,22 +994,6 @@ fragment HostConfigurationDetails on CICDHostConfigurationScanResult {
       name
     }
     matches {
-      analytics {
-        severity {
-          infoCount
-          lowCount
-          mediumCount
-          highCount
-          criticalCount
-        }
-        status {
-          passCount
-          failCount
-          errorCount
-          notAssessedCount
-          totalCount
-        }
-      }
       policyMatch {
         policy {
           id
@@ -2514,7 +2432,7 @@ def copy_to_forensics_account(resource_id):
 
     if not is_valid_uuid(resource_id):
         demisto.error("You should pass a valid UUID.")
-        return "You should pass a valid UUID."
+        return 'You should pass a valid UUID.'
 
     copy_to_forensics_account_mutation = """
         mutation CopyResourceForensicsToExternalAccount($input: CopyResourceForensicsToExternalAccountInput!) {
@@ -2534,9 +2452,10 @@ def copy_to_forensics_account(resource_id):
 
     if not response_json["data"]["copyResourceForensicsToExternalAccount"]["systemActivityGroupId"]:
         demisto.info(f"Resource with ID {resource_id} was not copied to Forensics Account.")
-        return None
+        return {}
     else:
         return response_json
+
 
 def is_valid_uuid(uuid_string):
     if not isinstance(uuid_string, str):
