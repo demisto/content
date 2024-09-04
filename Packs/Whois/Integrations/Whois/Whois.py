@@ -9086,7 +9086,7 @@ def whois_and_domain_command(command: str, reliability: str) -> list[CommandResu
                         headers=hr_headers,
                         removeNull=True,
                     ),
-                    raw_response=str(domain_data),
+                    raw_response=dict(domain_data),
                 )
             )
         except Exception as e:
