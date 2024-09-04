@@ -5,6 +5,7 @@ import requests_mock
 import demistomock as demisto
 from pytest_mock import MockerFixture
 from CommonServerPython import *
+from AutofocusV2 import Client
 
 IP_ADDRESS = '127.0.0.1'
 
@@ -206,9 +207,27 @@ def init_tests(mocker):
     mocker.patch.object(demisto, 'params', return_value=params)
 
 
+@pytest.fixture
+def autofocusv2_client():
+    return Client(url='url', verify=False)
+
+
 def util_load_json(path):
     with open(path) as f:
         return json.loads(f.read())
+
+
+class ResMocker:
+    def __init__(self, http_response, status_code):
+        self.http_response = http_response
+        self.status_code = status_code
+        self.ok = False
+
+    def json(self):
+        return self.http_response
+
+    def raise_for_status(self):
+        return
 
 
 def test_parse_indicator_response():
@@ -414,7 +433,7 @@ def test_convert_url_to_ascii_character(url, result):
     assert converted == result
 
 
-def test_search_url_command(requests_mock):
+def test_search_url_command(mocker, autofocusv2_client):
     from AutofocusV2 import search_url_command
 
     mock_response = {
@@ -426,10 +445,11 @@ def test_search_url_command(requests_mock):
         'tags': []
     }
 
-    requests_mock.get('https://autofocus.paloaltonetworks.com/api/v1.0/tic?indicatorType=url&indicatorValue=www.xn'
-                      '--28j2a3ar1p.com&includeTags=true', json=mock_response)
+    status_code = 200
+    response = ResMocker(mock_response, status_code)
+    mocker.patch.object(autofocusv2_client, 'get_url_enrichment', return_value=response)
 
-    result = search_url_command("www.こんにちは.com", 'B - Usually reliable', True)
+    result = search_url_command(autofocusv2_client, "www.こんにちは.com", 'B - Usually reliable', True)
 
     assert result[0].indicator.url == "www.こんにちは.com"
     assert result[0].raw_response["indicator"]["indicatorValue"] == mock_response["indicator"]["indicatorValue"]
@@ -547,6 +567,34 @@ def test_search_indicator_command__no_indicator(requests_mock, ioc_type, ioc_val
 
     # validate
     assert f'{ioc_val} was not found in AutoFocus' in result[0].readable_output
+
+
+def test_search_url_command__no_indicator(mocker, autofocusv2_client):
+    """
+    Given:
+        - url not exist in AutoFocus
+
+    When:
+        - Run the reputation command
+
+    Then:
+        - Validate the expected result is return with detailed information
+    """
+
+    # prepare
+    from AutofocusV2 import search_url_command
+    no_indicator_response = {
+        'tags': []
+    }
+    status_code = 200
+    response = ResMocker(no_indicator_response, status_code)
+    mocker.patch.object(autofocusv2_client, 'get_url_enrichment', return_value=response)
+
+    # run
+    result = search_url_command(autofocusv2_client,'test_url', 'B - Usually reliable', True)
+
+    # validate
+    assert 'test_url was not found in AutoFocus' in result[0].readable_output
 
 
 @pytest.mark.parametrize('range_num,res_count', [(98, 1), (250, 3)])
