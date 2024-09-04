@@ -208,7 +208,7 @@ def get_iocs_generator(size=200, query=None, is_first_stage_sync=False) -> Itera
     try:
         search_after_array = None
         search_after = get_integration_context().get('search_after', None)
-        for batch in IndicatorsSearcher(size=size,
+        for batch in searchInElastic(size=size,
                                         query=full_query,
                                         search_after=search_after,
                                         sort=[{"field": "modified", "asc": True},
@@ -560,7 +560,7 @@ def get_indicators(indicators: str) -> list:
         iocs: list = []
         not_found = []
         for indicator in argToList(indicators):
-            search_indicators = IndicatorsSearcher()
+            search_indicators = searchInElastic()
             data = search_indicators.search_indicators_by_version(value=indicator).get('iocs')
             if data:
                 iocs.extend(data)
@@ -834,7 +834,7 @@ def get_indicator_xdr_score(indicator: str, xdr_server: int):
     xdr_local: int = 0
     score = 0
     if indicator:
-        search_indicators = IndicatorsSearcher()
+        search_indicators = searchInElastic()
         ioc = search_indicators.search_indicators_by_version(value=indicator).get('iocs')
         if ioc:
             ioc = ioc[0]
@@ -953,7 +953,7 @@ if __name__ in ('__main__', 'builtins'):
     main()
 
 
-class IndicatorsSearcher:
+class searchInElastic:
     """Used in order to search indicators by the paging or serachAfter param
     :type page: ``int``
     :param page: the number of page from which we start search indicators from.
