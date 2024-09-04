@@ -3,7 +3,8 @@ from CommonServerPython import *  # noqa: F401
 
 ''' IMPORTS '''
 from http import HTTPStatus
-from typing import Callable, Dict, Any
+from typing import Any
+from collections.abc import Callable
 from dateutil import parser
 from datetime import datetime
 import json
@@ -524,7 +525,7 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def create_malware_event_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def create_malware_event_command(client: Client, args: dict[str, Any]) -> CommandResults:
     detectiontimeutc = str(args.get('detectiontimeutc', ''))
     validate_time(detectiontimeutc)
     machine_fqdn = str(args.get('machine_fqdn', ''))
@@ -559,7 +560,7 @@ def create_malware_event_command(client: Client, args: Dict[str, Any]) -> Comman
     return command_results
 
 
-def get_all_malware_events_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_all_malware_events_command(client: Client, args: dict[str, Any]) -> CommandResults:
     skip = str(args.get('skip', ''))
     try_cast_to_int(skip)
     limit = str(args.get('limit', ''))
@@ -596,7 +597,7 @@ def get_all_malware_events_command(client: Client, args: Dict[str, Any]) -> Comm
     return command_results
 
 
-def get_all_repository_states_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_all_repository_states_command(client: Client, args: dict[str, Any]) -> CommandResults:
     skip = str(args.get('skip', ''))
     try_cast_to_int(skip)
     limit = str(args.get('limit', ''))
@@ -629,7 +630,7 @@ def get_all_repository_states_command(client: Client, args: Dict[str, Any]) -> C
     return command_results
 
 
-def get_all_restore_points_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_all_restore_points_command(client: Client, args: dict[str, Any]) -> CommandResults:
     skip = str(args.get('skip', ''))
     try_cast_to_int(skip)
     limit = str(args.get('limit', ''))
@@ -667,7 +668,7 @@ def get_all_restore_points_command(client: Client, args: Dict[str, Any]) -> Comm
     return command_results
 
 
-def get_backup_object_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_backup_object_command(client: Client, args: dict[str, Any]) -> CommandResults:
     id_ = str(args.get('id_', ''))
     validate_uuid(id_)
 
@@ -686,7 +687,7 @@ def get_backup_object_command(client: Client, args: Dict[str, Any]) -> CommandRe
     return command_results
 
 
-def get_configuration_backup_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_configuration_backup_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
     response = client.get_configuration_backup_request()
     command_results = CommandResults(
@@ -699,7 +700,7 @@ def get_configuration_backup_command(client: Client, args: Dict[str, Any]) -> Co
     return command_results
 
 
-def get_inventory_objects_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_inventory_objects_command(client: Client, args: dict[str, Any]) -> CommandResults:
     resetCache = str(args.get('resetCache', ''))
     try_cast_to_bool(resetCache)
     hostname = str(args.get('hostname', ''))
@@ -749,7 +750,7 @@ def get_inventory_objects_command(client: Client, args: Dict[str, Any]) -> Comma
     return command_results
 
 
-def get_session_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_session_command(client: Client, args: dict[str, Any]) -> CommandResults:
     id_ = str(args.get('id_', ''))
     validate_uuid(id_)
 
@@ -765,7 +766,7 @@ def get_session_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     return command_results
 
 
-def start_configuration_backup_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def start_configuration_backup_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
     response = client.start_configuration_backup_request()
     command_results = CommandResults(
@@ -778,7 +779,7 @@ def start_configuration_backup_command(client: Client, args: Dict[str, Any]) -> 
     return command_results
 
 
-def start_instant_recovery_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def start_instant_recovery_command(client: Client, args: dict[str, Any]) -> CommandResults:
     restorePointId = str(args.get('restorePointId', ''))
     validate_uuid(restorePointId)
     restore_type = MODE_ORIGINAL_LOCATION
@@ -814,7 +815,7 @@ def start_instant_recovery_command(client: Client, args: Dict[str, Any]) -> Comm
     return command_results
 
 
-def start_instant_recovery_customized_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def start_instant_recovery_customized_command(client: Client, args: dict[str, Any]) -> CommandResults:
     restorePointId = str(args.get('restorePointId', ''))
     validate_uuid(restorePointId)
     restore_type = MODE_CUSTOMIZED
@@ -914,7 +915,7 @@ def validate_ipv4(ipv4: str) -> None:
         except (ipaddress.AddressValueError, ipaddress.NetmaskValueError):
             try:
                 socket.inet_pton(socket.AF_INET, ipv4)
-            except socket.error as e:
+            except OSError as e:
                 raise ValueError(f"Invalid IPv4 address: '{ipv4}'. Exception: {str(e)}")
 
 
@@ -925,7 +926,7 @@ def validate_ipv6(ipv6: str) -> None:
         except (ipaddress.AddressValueError, ipaddress.NetmaskValueError):
             try:
                 socket.inet_pton(socket.AF_INET6, ipv6)
-            except socket.error as e:
+            except OSError as e:
                 raise ValueError(f"Invalid IPv6 address: '{ipv6}'. Exception: {str(e)}")
 
 
@@ -995,7 +996,7 @@ def update_token(client: Client, username: str, password: str) -> str:
 
 def search_with_paging(
     method: Callable[..., Any],
-    args: Dict[str, Any] = {},
+    args: dict[str, Any] = {},
     page_size=DEFAULT_PAGE_SIZE,
     size_limit=DEFAULT_SIZE_LIMIT
 ) -> list[dict]:
@@ -1082,24 +1083,23 @@ def get_malware_incidents(
         event_severity: str = str(event.get('severity'))
         severity = SEVERITY_MAP.get(event_severity)
 
-        if source_exist and type_exist and severity:
-            if event_id not in existed_ids:
-                hostname = event['machine'].get('displayName')
-                details = f"{event['details']}; Hostname: {hostname}"
-                incident_name = f"Veeam - Malware activity detected on {hostname}"
-                event['description'] = details
-                event['incident_type'] = type_
-                event['type_description'] = type_exist
-                event['source_description'] = source_exist
-                incident = {
-                    'name': incident_name,
-                    'occurred': event['detectionTimeUtc'],
-                    'rawJSON': json.dumps(event),
-                    'severity': severity
-                }
-                new_ids.add(event_id)
-                incidents.append(incident)
-                last_fetch_time = overwrite_last_fetch_time(last_fetch_time, event)
+        if source_exist and type_exist and severity and event_id not in existed_ids:
+            hostname = event['machine'].get('displayName')
+            details = f"{event['details']}; Hostname: {hostname}"
+            incident_name = f"Veeam - Malware activity detected on {hostname}"
+            event['description'] = details
+            event['incident_type'] = type_
+            event['type_description'] = type_exist
+            event['source_description'] = source_exist
+            incident = {
+                'name': incident_name,
+                'occurred': event['detectionTimeUtc'],
+                'rawJSON': json.dumps(event),
+                'severity': severity
+            }
+            new_ids.add(event_id)
+            incidents.append(incident)
+            last_fetch_time = overwrite_last_fetch_time(last_fetch_time, event)
 
     if not new_ids:
         new_ids = existed_ids
@@ -1111,7 +1111,7 @@ def get_configuration_backup_incident(
     client: Client, last_successful_backup_date: str, backup_older_then_days: int
 ) -> tuple[dict, str]:
 
-    last_successful_backup_date = '' if not last_successful_backup_date else last_successful_backup_date
+    last_successful_backup_date = last_successful_backup_date if last_successful_backup_date else ''
     if last_successful_backup_date:
         last_successful_backup_datetime = parser.isoparse(last_successful_backup_date)
 
@@ -1174,7 +1174,7 @@ def get_repository_space_incidents(
         if repository['freeGB'] < free_space_less_then and repository['capacityGB'] > 0:
 
             hostname = repository.get('hostName', '')
-            hostname = NOT_APPLICABLE if not hostname else hostname
+            hostname = hostname if hostname else NOT_APPLICABLE
 
             if repository_id not in incident_repository_ids:
                 details = (
@@ -1414,6 +1414,7 @@ def process_command(command: Any, client: Client, first_fetch_time: datetime,
 
         demisto.setLastRun(next_run)
         demisto.incidents(incidents)
+        return None
 
     elif command in commands:
         result = handle_command_with_token_refresh(commands[command], {'client': client, 'args': args}, client, max_attempts)
@@ -1423,7 +1424,7 @@ def process_command(command: Any, client: Client, first_fetch_time: datetime,
 
 
 def get_api_key(client: Client) -> str:
-    credentials: Dict[str, str] = demisto.params().get('credentials')
+    credentials: dict[str, str] = demisto.params().get('credentials')
     username: str = credentials.get('identifier', '')
     password: str = credentials.get('password', '')
     token = update_token(client, username, password)
@@ -1468,8 +1469,8 @@ def handle_command_with_token_refresh(command: Callable, command_params: dict, c
 
 def main() -> None:
 
-    params: Dict[str, Any] = demisto.params()
-    args: Dict[str, Any] = demisto.args()
+    params: dict[str, Any] = demisto.params()
+    args: dict[str, Any] = demisto.args()
     url: str = params.get('url', '')
     verify_certificate: bool = not params.get('insecure', False)
     proxy: bool = params.get('proxy', False)
@@ -1505,14 +1506,14 @@ def main() -> None:
         return_results(result)
 
     except Exception as e:
-        error_message: Union[str, Dict[str, Any]] = str(e)
+        error_message: Union[str, dict[str, Any]] = str(e)
         res = getattr(e, 'res', None)
         status_code = getattr(res, 'status_code', None)
         if res is not None and status_code:
             error_dict = res.__dict__
             content = convert_to_json(error_dict['_content'])
             message = content.get('message')
-            message = str(e) if not message else message
+            message = message if message else str(e)
             error_message = {'status_code': status_code, 'message': message}
 
         return_error(error_message)

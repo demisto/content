@@ -3,7 +3,8 @@ from CommonServerPython import *  # noqa: F401
 
 ''' IMPORTS '''
 from http import HTTPStatus
-from typing import Callable, Dict, Any
+from typing import Any
+from collections.abc import Callable
 from dateutil import parser
 from datetime import datetime
 from distutils.version import LooseVersion
@@ -237,7 +238,7 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def get_triggered_alarms_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_triggered_alarms_command(client: Client, args: dict[str, Any]) -> CommandResults:
     Offset = args.get('Offset', None)
     try_cast_to_int(Offset)
     Limit = args.get('Limit', None)
@@ -258,7 +259,7 @@ def get_triggered_alarms_command(client: Client, args: Dict[str, Any]) -> Comman
     return command_results
 
 
-def resolve_triggered_alarms_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def resolve_triggered_alarms_command(client: Client, args: dict[str, Any]) -> CommandResults:
     triggeredAlarmIds_str = args.get('triggeredAlarmIds', '')
     triggeredAlarmIds = convert_to_list(triggeredAlarmIds_str)
     comment = str(args.get('comment', ''))
@@ -337,7 +338,7 @@ def update_token(client: Client, username: str, password: str) -> str:
 
 def search_with_paging(
     method: Callable[..., Any],
-    args: Dict[str, Any] = {},
+    args: dict[str, Any] = {},
     page_size=DEFAULT_PAGE_SIZE,
     size_limit=DEFAULT_SIZE_LIMIT
 ) -> list[dict]:
@@ -527,6 +528,7 @@ def process_command(command: Any, client: Client, first_fetch_time: datetime,
 
         demisto.setLastRun(next_run)
         demisto.incidents(incidents)
+        return None
 
     elif command in commands:
         result = handle_command_with_token_refresh(commands[command], {'client': client, 'args': args}, client, max_attempts)
@@ -536,7 +538,7 @@ def process_command(command: Any, client: Client, first_fetch_time: datetime,
 
 
 def get_api_key(client: Client) -> str:
-    credentials: Dict[str, str] = demisto.params().get('credentials')
+    credentials: dict[str, str] = demisto.params().get('credentials')
     username: str = credentials.get('identifier', '')
     password: str = credentials.get('password', '')
     token = update_token(client, username, password)
@@ -585,8 +587,8 @@ def handle_command_with_token_refresh(command: Callable, command_params: dict, c
 
 def main() -> None:
 
-    params: Dict[str, Any] = demisto.params()
-    args: Dict[str, Any] = demisto.args()
+    params: dict[str, Any] = demisto.params()
+    args: dict[str, Any] = demisto.args()
     url: str = params.get('url', '')
     verify_certificate: bool = not params.get('insecure', False)
     proxy: bool = params.get('proxy', False)
@@ -621,7 +623,7 @@ def main() -> None:
         return_results(result)
 
     except Exception as e:
-        error_message: Union[str, Dict[str, Any]] = str(e)
+        error_message: Union[str, dict[str, Any]] = str(e)
         res = getattr(e, 'res', None)
         status_code = getattr(res, 'status_code', None)
         if res is not None and status_code:

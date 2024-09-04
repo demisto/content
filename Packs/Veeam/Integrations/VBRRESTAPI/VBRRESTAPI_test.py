@@ -1,5 +1,4 @@
 import pytest
-import io
 import json
 from datetime import datetime
 from unittest.mock import Mock
@@ -35,7 +34,7 @@ class ApiMock:
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -940,7 +939,7 @@ def test_fetch_repository_space_incidents(
     [
         (
             {'repository_ids': [1, 2, 3]}, 10, {'error_count_in_free_space_incidents': 1},
-            ([{'type': 'incident_on_error'}], set([1, 2, 3]))
+            ([{'type': 'incident_on_error'}], {1, 2, 3})
         ),
     ]
 )

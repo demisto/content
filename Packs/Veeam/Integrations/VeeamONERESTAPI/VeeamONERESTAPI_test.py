@@ -1,5 +1,4 @@
 import pytest
-import io
 import json
 from unittest.mock import Mock
 from datetime import datetime
@@ -30,7 +29,7 @@ class ApiMock:
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -314,7 +313,7 @@ def test_fetch_converted_incidents(
     [
         (
             {'alarms_ids': [1, 2, 3]}, '2022-01-01T00:00:00Z', 10, {'error_in_triggered_alarms': 1},
-            ([{'type': 'incident_on_error'}], set([1, 2, 3]), '2022-01-01T00:00:00Z')
+            ([{'type': 'incident_on_error'}], {1, 2, 3}, '2022-01-01T00:00:00Z')
         ),
     ]
 )
