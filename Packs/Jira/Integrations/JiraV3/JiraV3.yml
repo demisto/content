@@ -1486,7 +1486,7 @@ script:
     - description: The user's accountId (Cloud only).
       name: account_id
       required: false
-    description: Get's information about the specified user.
+    description: Retrieves information about a specified Jira user. For On-Premises instances, you should use the user's key and username to retrieve their details. For Cloud instances, user's `account_id` is required. if no identifier is supplied, information for the user the API credentials belong to is returned.
     name: jira-get-user-info
     outputs:
     - contextPath: Jira.Users.Key
