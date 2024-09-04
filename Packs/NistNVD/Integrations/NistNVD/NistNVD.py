@@ -153,7 +153,8 @@ def keywordSearch():
                              "keywordSearch": keyword, "startIndex": f"{startIndex}", "resultsPerPage": f"{resultsPerPage}"}
     if isExactMatch:
         additional_parameters["keywordExactMatch"] = None
-        additional_parameters = '&'.join([k if v is None else f"{k}={v}" for k, v in additional_parameters.items()])
+        additional_parameters = '&'.join([k if v is None else
+                                          f"{k}={v}" for k, v in additional_parameters.items()])  # type: ignore
     generalSearchRequest = connection(base_url, additional_parameters)
     generalVulnerabilityList = extractVulnDetails(generalSearchRequest)
 
