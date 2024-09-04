@@ -1,3 +1,5 @@
+from requests import Response
+
 from CommonServerPython import *
 
 ''' IMPORTS '''
@@ -282,6 +284,31 @@ class RateLimitExceededError(BaseException):
     def __init__(self, api_res: dict) -> None:
         super().__init__()
         self.api_res = api_res
+
+
+''' CLIENT CLASS '''
+
+
+class Client(BaseClient):
+    def __init__(self, url: str, verify: bool = True):
+        super().__init__(base_url=url, verify=verify)
+
+    def get_url_enrichment(self, headers: dict, params: dict) -> Response:
+        """ Get more information about a URL.
+        Args:
+            headers: dict - the headers of the request
+            params: dict = the parameters of the request
+        Returns:
+            A response object.
+        """
+        return self._http_request(
+            method='GET',
+            url_suffix='/tic',
+            headers=headers,
+            params=params,
+            retries=3,
+            resp_type='response'
+        )
 
 
 def return_metrics():
@@ -998,7 +1025,7 @@ def validate_no_multiple_indicators_for_search(arg_dict):
     return used_arg
 
 
-def search_indicator(indicator_type, indicator_value):
+def search_indicator(client, indicator_type, indicator_value):
     headers = HEADERS | {'apiKey': API_KEY}
 
     params = {
@@ -1010,14 +1037,8 @@ def search_indicator(indicator_type, indicator_value):
     demisto.debug(f'search_indicator {indicator_value=}')
 
     try:
-        result = requests.request(
-            method='GET',
-            url=f'{BASE_URL}/tic',
-            verify=USE_SSL,
-            headers=headers,
-            params=params
-        )
-        demisto.debug(f'search_indicator: {result.status_code=}')
+        result = client.get_url_enrichment(headers, params)
+        demisto.debug(f'search_indicator: {result.status_code=} {result=}')
 
         result_json = result.json()
         demisto.debug(f'search_indicator {result_json=}')
@@ -1616,7 +1637,7 @@ def search_domain_command(domain, reliability, create_relationships):
     return command_results
 
 
-def search_url_command(url, reliability, create_relationships):
+def search_url_command(client, url, reliability, create_relationships):
     indicator_type = 'URL'
     url_list = argToList(url)
 
@@ -1624,7 +1645,7 @@ def search_url_command(url, reliability, create_relationships):
     relationships = []
 
     for url_name in url_list:
-        raw_res = search_indicator('url', convert_url_to_ascii_character(url_name))
+        raw_res = search_indicator(client, 'url', convert_url_to_ascii_character(url_name))
 
         indicator = raw_res.get('indicator')
         if indicator:
@@ -1935,6 +1956,7 @@ def main():
     else:
         raise Exception("AutoFocus error: Please provide a valid value for the Source Reliability parameter")
 
+    client = Client(url=BASE_URL, verify=USE_SSL)
     # Remove proxy if not set to true in params
     handle_proxy()
     args = demisto.args() | {
@@ -1983,7 +2005,7 @@ def main():
         elif command == 'domain':
             return_results(search_domain_command(**args))
         elif command == 'url':
-            return_results(search_url_command(**args))
+            return_results(search_url_command(client, **args))
         elif command == 'file':
             return_results(search_file_command(**args))
         else:
