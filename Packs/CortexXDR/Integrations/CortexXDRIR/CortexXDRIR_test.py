@@ -792,14 +792,17 @@ def test_get_incident_extra_data(mocker):
                          [
                              ("Known Issue=Other,Duplicate Incident=Duplicate,False Positive=False Positive,"
                               "True Positive=Resolved,Security Testing=Other,Other=Other",
-                              ["Other", "Duplicate", "Duplicate", "False Positive", "Resolved", "Other", "Other", "Resolved", "Resolved"]),
+                              ["Other", "Duplicate", "Duplicate", "False Positive", "Resolved", "Other", "Other",
+                               "Resolved", "Resolved"]),
 
                              ("Known Issue=Other,Duplicate Incident=Other,False Positive=False Positive,"
                               "True Positive=Resolved,Security Testing=Other,Other=Other",
-                              ["Other", "Other", "Duplicate", "False Positive", "Resolved", "Other", "Other", "Resolved", "Resolved"]),
+                              ["Other", "Other", "Duplicate", "False Positive", "Resolved", "Other", "Other",
+                               "Resolved", "Resolved"]),
 
                              ("Duplicate Incident=Other,Security Testing=Other,Other=Other",
-                              ["Other", "Other", "Duplicate", "False Positive", "Resolved", "Other", "Other", "Resolved", "Resolved"]),
+                              ["Other", "Other", "Duplicate", "False Positive", "Resolved", "Other", "Other",
+                               "Resolved", "Resolved"]),
 
                              # Expecting default mapping to be used when no mapping provided.
                              ("", list(XDR_RESOLVED_STATUS_TO_XSOAR.values())),
