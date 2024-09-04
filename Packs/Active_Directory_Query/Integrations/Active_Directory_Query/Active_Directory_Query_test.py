@@ -874,7 +874,7 @@ def test_search_users_with_msDSUserAccountControlComputed(mocker):
         def entry_to_json(self):
             return (
                 '{"attributes": {"displayName": [], "mail": [], "manager": [], "memberOf": ["memberOf"], '
-                '"name": ["Guest"], "sAMAccountName": ["Guest"], "userAccountControl": [], \
+                '"name": ["Guest"], "sAMAccountName": ["Guest"], "userAccountControl": [0], \
                    "msDS-User-Account-Control-Computed": [0]},"dn": "test_dn"}'
             )
 
@@ -886,13 +886,23 @@ def test_search_users_with_msDSUserAccountControlComputed(mocker):
             time.sleep(1)
 
     mocker.patch.object(demisto, "args", return_value={"page-size": "1"})
+    mocker.patch.object(demisto, "results")
     mocker_msDSUserAccountControlComputed = mocker.patch.object(
         Active_Directory_Query,
         "user_account_to_boolean_fields_msDS_user_account_control_computed",
-        return_value={},
+        return_value={"PASSWORD_EXPIRED": True, "LOCKOUT": True},
     )
 
     Active_Directory_Query.connection = ConnectionMocker()
 
     Active_Directory_Query.search_users("dc", 1)
     mocker_msDSUserAccountControlComputed.assert_called_once()
+    assert "msDS-User-Account-Control-Computed" in demisto.results.call_args[0][0][
+        "Contents"
+    ][0].get("attributes")
+    assert (
+        demisto.results.call_args[0][0]["EntryContext"]
+        .get("ActiveDirectory.Users(obj.dn == val.dn)", {})[0]
+        .get("userAccountControlFields")
+        .get("PASSWORD_EXPIRED") is True
+    )

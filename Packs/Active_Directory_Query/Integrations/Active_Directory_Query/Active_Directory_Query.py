@@ -201,6 +201,7 @@ def user_account_to_boolean_fields_msDS_user_account_control_computed(user_accou
     """
     return {
         'PASSWORD_EXPIRED': bool(user_account_control & 0x800000),
+        'LOCKOUT': bool(user_account_control & 0x0010),
     }
 
 
@@ -695,13 +696,15 @@ def search_users(default_base_dn, page_size):
                 user_account_control = user.get('userAccountControl')[0]
                 user['userAccountControlFields'] = user_account_to_boolean_fields(user_account_control)
 
+                # display a literal translation of the numeric account control flag
+                if args.get('user-account-control-out', '') == 'true':
+                    user['userAccountControl'] = COMMON_ACCOUNT_CONTROL_FLAGS.get(
+                        user_account_control) or user_account_control
+
             if user.get("msDS-User-Account-Control-Computed"):
                 user_account_control = user.get("msDS-User-Account-Control-Computed")[0]
-                user_account_to_boolean_dict = (
-                    user_account_to_boolean_fields_msDS_user_account_control_computed(
-                        user_account_control
-                    )
-                )
+                user_account_to_boolean_dict = user_account_to_boolean_fields_msDS_user_account_control_computed(
+                    user_account_control)
                 if user.get("userAccountControlFields"):
                     user["userAccountControlFields"].update(
                         user_account_to_boolean_dict
@@ -709,10 +712,6 @@ def search_users(default_base_dn, page_size):
                 else:
                     user["userAccountControlFields"] = user_account_to_boolean_dict
 
-                # display a literal translation of the numeric account control flag
-                if args.get('user-account-control-out', '') == 'true':
-                    user['userAccountControl'] = COMMON_ACCOUNT_CONTROL_FLAGS.get(
-                        user_account_control) or user_account_control
     entry_context = {
         'ActiveDirectory.Users(obj.dn == val.dn)': entries['flat'],
         # 'backward compatability' with ADGetUser script
