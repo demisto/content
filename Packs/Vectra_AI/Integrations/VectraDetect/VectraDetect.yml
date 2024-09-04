@@ -1222,10 +1222,10 @@ script:
       description: Whether the group is managed by Cognito or not.
       type: Boolean
   - arguments:
-    - description: Specify Group ID to assign members.
+    - description: "Specify Group ID to assign members.\n\nNote: User can get the group_id by executing the \"vectra-group-list\" command."
       name: group_id
       required: true
-    - description: "Member values based on the group type. Supports comma-separated values.\n\n Note: \nIf the group type is host, then the \"Host IDs\". \nIf the group type is account, then \"Account Names\".\nIf the group type is ip, then the list of \"IPs\".\nIf the group type is domain, then the list of \"Domains\"."
+    - description: "Member values based on the group type. Supports comma-separated values.\n\nNote:\nUser can get the members by executing the \"vectra-group-list\" command.\nIf the group type is host, then the \"Host IDs\".\nIf the group type is account, then \"Account Names\".\nIf the group type is ip, then the list of \"IPs\".\nIf the group type is domain, then the list of \"Domains\"."
       isArray: true
       name: members
       required: true
@@ -1275,10 +1275,10 @@ script:
       description: Description of the rule.
       type: String
   - arguments:
-    - description: Specify Group ID to unassign members.
+    - description: "Specify Group ID to unassign members.\n\nNote: User can get the group_id by executing the \"vectra-group-list\" command."
       name: group_id
       required: true
-    - description: "Member values based on the group type. Supports comma-separated values.\n\n Note: \nIf the group type is host, then the \"Host IDs\". \nIf the group type is account, then \"Account Names\".\nIf the group type is ip, then the list of \"IPs\".\nIf the group type is domain, then the list of \"Domains\"."
+    - description: "Member values based on the group type. Supports comma-separated values.\n\nNote:\nUser can get the members by executing the \"vectra-group-list\" command.\nIf the group type is host, then the \"Host IDs\".\nIf the group type is account, then \"Account Names\".\nIf the group type is ip, then the list of \"IPs\".\nIf the group type is domain, then the list of \"Domains\"."
       isArray: true
       name: members
       required: true

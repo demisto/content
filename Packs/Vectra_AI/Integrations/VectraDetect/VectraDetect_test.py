@@ -1881,6 +1881,35 @@ def test_update_remote_system_command_when_note_mirror(client, mocker):
     assert update_remote_system_command(client) == '1-account'
 
 
+def test_update_remote_system_command_when_incident_reopened(client, mocker, requests_mock):
+    """
+    Given:
+    - A client object.
+    - Mocked arguments specifying a remote ID and delta of tags.
+    - Mocked requests to Vectra API.
+
+    When:
+    - Calling the 'update_remote_system_command' function with the provided client and arguments.
+
+    Then:
+    - Assert that the ID of the updated remote entity is returned.
+    """
+    mocker.patch.object(demisto, 'args', return_value={
+        'remoteId': '1-account',
+        'delta': {'closingUserId': '', 'runStatus': 'waiting'},
+        'entries': [],
+        'data': {'id': '1'}
+    })
+
+    mocker.patch.object(client, 'add_note_request', return_value={})
+    mocker.patch.object(client, 'update_entity_tags_request', return_value={})
+    mocker.patch.object(client, 'list_entity_tags_request', return_value={})
+    mocker.patch.object(client, 'list_assignments_request', return_value={'id': 1})
+    requests_mock.delete(f'{API_URL}{API_ENDPOINT_ASSIGNMENTS}/1', json={}, status_code=200)
+
+    assert update_remote_system_command(client) == '1-account'
+
+
 def test_update_remote_system_command_when_closing_note_mirror(client, mocker):
     """
     Given:
@@ -1975,6 +2004,23 @@ def test_markall_detections_asfixed_command_for_account_when_success(client, req
 
     assert result.readable_output == 'The active detections of the provided account have been successfully marked as fixed.'
     assert result.raw_response == response
+
+
+def test_markall_detections_asfixed_command_for_account_when_no_detection(client, requests_mock, mocker):
+    """
+    Tests markall_detections_asfixed_command command function when no detection in account.
+    """
+    account_id = '36'
+
+    account_data = load_test_data('single_account.json')
+    account_data['detection_summaries'] = []
+
+    requests_mock.get(f'{API_URL}{API_ENDPOINT_ACCOUNT}/{account_id}', json=account_data, status_code=200)
+
+    result = markall_detections_asfixed_command(client=client, type='account', account_id=account_id)
+
+    assert result.readable_output == 'There are no active detections present.'
+    assert result.raw_response == {}
 
 
 def test_markall_detections_asfixed_command_for_host_when_host_id_missing(client, mocker):

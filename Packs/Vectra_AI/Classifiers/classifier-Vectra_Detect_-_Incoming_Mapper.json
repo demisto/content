@@ -112,6 +112,18 @@
                         "transformers": []
                     }
                 },
+                "Vectra Detection Count": {
+                    "complex": {
+                        "accessor": "detection_id",
+                        "filters": [],
+                        "root": "detection_summaries",
+                        "transformers": [
+                            {
+                                "operator": "count"
+                            }
+                        ]
+                    }
+                },
                 "Vectra Detection Details": {
                     "complex": {
                         "filters": [],
@@ -425,6 +437,18 @@
                         "filters": [],
                         "root": "certainty",
                         "transformers": []
+                    }
+                },
+                "Vectra Detection Count": {
+                    "complex": {
+                        "accessor": "detection_id",
+                        "filters": [],
+                        "root": "detection_summaries",
+                        "transformers": [
+                            {
+                                "operator": "count"
+                            }
+                        ]
                     }
                 },
                 "Vectra Detection Details": {

@@ -55,6 +55,9 @@ ignore=IF115
 [file:incidentfield-Vectra-Detection-Profile.json]
 ignore=IF115
 
+[file:incidentfield-Vectra-Detection-Count.json]
+ignore=IF115
+
 [file:incidentfield-Vectra-Assignment-Resolved-Date.json]
 ignore=IF115
 

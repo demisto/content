@@ -49,6 +49,7 @@ To fetch Vectra Account or Vectra Host follow the next steps:
 - New notes from the Vectra Account or Vectra Host will be created as notes in the XSOAR incident. Updates to existing notes in the Vectra Account or Vectra Host will create new notes in the XSOAR incident.
 - If a closed XSOAR incident is tied to a specific Account or Vectra Host and new detections for that Account or Vectra Host arise or existing detections become active again, the incident will be automatically reopened.
 - When a XSOAR incident is closed but there are still active detections on the Vectra side, and the Account or Vectra Host is subsequently updated, the corresponding XSOAR incident for that entity will be reopened.
+- If a XSOAR incident is reopened and the corresponding entity has an assignment in Vectra, the assignment will be removed from Vectra.
 - If you want to use the mirror mechanism and you're using custom mappers, then the incoming mapper must contain the following fields: dbotMirrorDirection, dbotMirrorId, dbotMirrorInstance, and dbotMirrorTags.
 - To use a custom mapper, you must first duplicate the mapper and update the fields in the copy of the mapper. (Refer to the "Create a custom mapper consisting of the default Vectra Detect - Incoming Mapper" section for more information.)
 - Following new fields are introduced in the response of the incident to enable the mirroring:

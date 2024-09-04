@@ -75,12 +75,18 @@ To fetch Vectra Account or Vectra Host follow the next steps:
 - New notes from the Vectra Account or Vectra Host will be created as notes in the XSOAR incident. Updates to existing notes in the Vectra Account or Vectra Host will create new notes in the XSOAR incident.
 - If a closed XSOAR incident is tied to a specific Account or Vectra Host and new detections for that Account or Vectra Host arise or existing detections become active again, the incident will be automatically reopened.
 - When a XSOAR incident is closed but there are still active detections on the Vectra side, and the Account or Vectra Host is subsequently updated, the corresponding XSOAR incident for that entity will be reopened.
+- If a XSOAR incident is reopened and the corresponding entity has an assignment in Vectra, the assignment will be removed from Vectra.
 - If you want to use the mirror mechanism and you're using custom mappers, then the incoming mapper must contain the following fields: dbotMirrorDirection, dbotMirrorId, dbotMirrorInstance, and dbotMirrorTags.
 - To use a custom mapper, you must first duplicate the mapper and update the fields in the copy of the mapper. (Refer to the "Create a custom mapper consisting of the default Vectra Detect - Incoming Mapper" section for more information.)
 - Following new fields are introduced in the response of the incident to enable the mirroring:
   - **mirror_direction:** This field determines the mirroring direction for the incident. It is a required field for XSOAR to enable mirroring support.
   - **mirror_tags:** This field determines what would be the tag needed to mirror the XSOAR entry out to Vectra. It is a required field for XSOAR to enable mirroring support.
   - **mirror_instance:** This field determines from which instance the XSOAR incident was created. It is a required field for XSOAR to enable mirroring support.
+
+#### Cleanup Duplicate Incidents
+
+- Use the ***Close All Duplicate XSOAR Incidents - Vectra Detect*** playbook to clean up duplicate incidents. You can use ***VectraDetectCloseDuplicateIncidents*** script individually to clean up duplicate incidents.
+- You can also schedule a job with ***Close All Duplicate XSOAR Incidents - Vectra Detect*** playbook in XSOAR to clean up incidents periodically. Refer to [this XSOAR documentation](https://xsoar.pan.dev/docs/incidents/incident-jobs) for more information.
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
@@ -1629,8 +1635,8 @@ Assign members to the specified group.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| group_id | Specify Group ID to assign members. | Required | 
-| members | Member values based on the group type. Supports comma-separated values.<br/><br/> Note: <br/>If the group type is host, then the "Host IDs". <br/>If the group type is account, then "Account Names".<br/>If the group type is ip, then the list of "IPs".<br/>If the group type is domain, then the list of "Domains". | Required | 
+| group_id | Specify Group ID to assign members.<br/><br/>Note: User can get the group_id by executing the \"vectra-group-list\" command. | Required | 
+| members | Member values based on the group type. Supports comma-separated values.<br/><br/>Note:<br/>User can get the members by executing the \"vectra-group-list\" command.<br/>If the group type is host, then the "Host IDs".<br/>If the group type is account, then "Account Names".<br/>If the group type is ip, then the list of "IPs".<br/>If the group type is domain, then the list of "Domains". | Required | 
 
 #### Context Output
 
@@ -1705,8 +1711,8 @@ Unassign members from the specified group.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| group_id | Specify Group ID to unassign members. | Required | 
-| members | Member values based on the group type. Supports comma-separated values.<br/><br/> Note: <br/>If the group type is host, then the "Host IDs". <br/>If the group type is account, then "Account Names".<br/>If the group type is ip, then the list of "IPs".<br/>If the group type is domain, then the list of "Domains". | Required | 
+| group_id | Specify Group ID to unassign members.<br/><br/>Note: User can get the group_id by executing the \"vectra-group-list\" command. | Required | 
+| members | Member values based on the group type. Supports comma-separated values.<br/><br/>Note:<br/>User can get the members by executing the \"vectra-group-list\" command.<br/>If the group type is host, then the "Host IDs".<br/>If the group type is account, then "Account Names".<br/>If the group type is ip, then the list of "IPs".<br/>If the group type is domain, then the list of "Domains". | Required | 
 
 #### Context Output
 

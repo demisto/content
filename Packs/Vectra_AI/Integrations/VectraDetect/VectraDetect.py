@@ -794,6 +794,20 @@ class Client(BaseClient):
             json_data=json_payload
         )
 
+    def delete_assignment(self, assignment_id: str = ''):  # type: ignore
+        """
+        Delete the assignment.
+
+        - params:
+            - assignment_id: The existing assignment ID associated with the targeted Entity.
+        - returns:
+            Vectra API call result.
+        """
+        if assignment_id:
+            url_addon = f'/{assignment_id}'
+            return self.http_request(method='DELETE', url_suffix=f'{API_ENDPOINT_ASSIGNMENT}{url_addon}',
+                                     resp_type='response')
+
     def markasfixed_by_detection_ids(self, ids_list: list):
         """
         Mark a list of detections as fixed.
@@ -2783,23 +2797,57 @@ def update_remote_system_command(client: Client) -> str:
         client.update_entity_tags_request(entity_id=mirror_entity_id, entity_type=remote_entity_type,
                                           tag_list=xsoar_tags)
 
-    # For Closing notes
-    delta_keys = delta.keys()
-    if 'closingUserId' in delta_keys and parsed_args.incident_changed and parsed_args.inc_status == IncidentStatus.DONE:
-        close_notes = data.get('closeNotes', '')
-        close_reason = data.get('closeReason', '')
-        close_user_id = data.get('closingUserId', '')
-
-        closing_note = (
-            f'[Mirrored From XSOAR] XSOAR Incident ID: {xsoar_incident_id}\n\n'
-            f'Close Reason: {close_reason}\n\n'
-            f'Closed By: {close_user_id}\n\n'
-            f'Close Notes: {close_notes}'
-        )
-        demisto.debug(f'Closing Comment: {closing_note}')
-        client.add_note_request(entity_id=mirror_entity_id, entity_type=remote_entity_type, note=closing_note)
+    # For closing notes if the XSOAR incident is closed.
+    send_close_notes(client, data, xsoar_incident_id, remote_entity_id, remote_entity_type,
+                     mirror_entity_id, delta, parsed_args)
 
     return remote_entity_id
+
+
+def send_close_notes(client: Client, data: Dict, xsoar_incident_id: str, remote_entity_id: str,
+                     remote_entity_type: str, mirror_entity_id: int, delta: Dict,
+                     parsed_args: UpdateRemoteSystemArgs):
+    """
+    Send close notes to Vectra and also remove the assignment when the XSOAR incident is reopened.
+
+    Args:
+        data (dict): A dictionary of data from Vectra.
+        xsoar_incident_id (str): The ID of the XSOAR incident.
+        delta (dict): A dictionary of changes in the XSOAR incident.
+    """
+    delta_keys = delta.keys()
+    closing_user_id = delta.get('closingUserId')
+    if 'closingUserId' in delta_keys and parsed_args.incident_changed:
+        # For Closing notes
+        if parsed_args.inc_status == IncidentStatus.DONE:
+            close_notes = data.get('closeNotes', '')
+            close_reason = data.get('closeReason', '')
+            close_user_id = data.get('closingUserId', '')
+
+            closing_note = (
+                f'[Mirrored From XSOAR] XSOAR Incident ID: {xsoar_incident_id}\n\n'
+                f'Close Reason: {close_reason}\n\n'
+                f'Closed By: {close_user_id}\n\n'
+                f'Close Notes: {close_notes}'
+            )
+            demisto.debug(f'Closing Comment: {closing_note}')
+            client.add_note_request(entity_id=mirror_entity_id, entity_type=remote_entity_type, note=closing_note)
+        # Remove assignment in Vectra if incident is reopened.
+        elif parsed_args.inc_status == IncidentStatus.ACTIVE and closing_user_id == '':
+            api_response = {}
+            if 'account' in remote_entity_type:
+                api_response = client.list_assignments_request(accounts=mirror_entity_id, page_size=1)  # type: ignore
+            elif 'host' in remote_entity_type:
+                api_response = client.list_assignments_request(hosts=mirror_entity_id, page_size=1)  # type: ignore
+
+            assignment_details = api_response.get('results', [])
+            assignment = assignment_details[0] if assignment_details else {}
+            if assignment:
+                assignment_id = assignment.get('id', '')
+                if not assignment.get("resolved_by"):
+                    demisto.debug(f'Removing assignment with the ID: {assignment_id} for the incident having'
+                                  f' remote entity ID: {remote_entity_id} as incident in XSOAR is reopened.')
+                    client.delete_assignment(assignment_id)
 
 
 def vectra_search_accounts_command(client: Client, **kwargs) -> CommandResults:
@@ -3807,15 +3855,19 @@ def markall_detections_asfixed_command(client: Client, type: str, account_id: st
     detections_ids = [str(detection.get('detection_id')) for detection in entity_data.get('detection_summaries')
                       if detection.get('state') == 'active']
 
-    api_response = {}
     if detections_ids:
         api_response = client.markasfixed_by_detection_ids(ids_list=detections_ids)
 
-    # 404 API error will be raised by the Client class
-    command_result = CommandResults(
-        readable_output=f'The active detections of the provided {type} have been successfully marked as fixed.',
-        raw_response=api_response
-    )
+        # 404 API error will be raised by the Client class
+        command_result = CommandResults(
+            readable_output=f'The active detections of the provided {type} have been successfully marked as fixed.',
+            raw_response=api_response
+        )
+    else:
+        command_result = CommandResults(
+            readable_output='There are no active detections present.',
+            raw_response={}
+        )
 
     return command_result
 
