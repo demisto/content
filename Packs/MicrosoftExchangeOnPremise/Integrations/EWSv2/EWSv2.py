@@ -1461,10 +1461,11 @@ def fetch_attachments_for_message(item_id, target_mailbox=None, attachment_ids=N
         else:
             entries.append(get_entry_for_item_attachment(item_id, attachment, account.primary_smtp_address))
             if attachment.item.mime_content:
+                attached_email = cast_mime_item_to_message(attachment.item)
                 entries.append(fileResult(get_attachment_name(attachment.name,
                                                               content_id=attachment.content_id,
                                                               is_inline=attachment.is_inline) + ".eml",
-                                          attachment.item.mime_content))
+                                          attached_email.as_string()))
 
     return entries
 
