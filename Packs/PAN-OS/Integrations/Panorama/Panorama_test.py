@@ -6842,12 +6842,8 @@ class TestFetchIncidentsFlows:
         assert new_last_run['last_id_dict'].get('Y_log_type', '') == {'dummy_device2': '000000003'}
 
 
-@pytest.mark.parametrize('new_incident_entries, expected_res',
-                         [
-                             ({}, {}),
-                             ({'log_type1': [{'test_data': 1}]}, {'log_type1': 15})
-                         ])
-def test_update_max_fetch_dict(mocker, new_incident_entries, expected_res):
+
+def test_update_max_fetch_dict(mocker):
     """
     Given:
     - new_incident_entries - the fateched enties or empty dict
@@ -6864,9 +6860,8 @@ def test_update_max_fetch_dict(mocker, new_incident_entries, expected_res):
     mocker.patch('demistomock.getLastRun',
                  return_value={"last_fetch_dict": {"log_type1": "2023-05-01 07:22:08", "log_type2": "2023-05-01 07:22:00"}})
     res = update_max_fetch_dict(max_fetch_dict={"log_type1": 10, "log_type2": 15},
-                                last_fetch_dict={"log_type1": "2023-05-01 07:22:08", "log_type2": "2023-05-01 07:22:08"},
-                                new_incident_entries=new_incident_entries)
-    assert res == expected_res
+                                last_fetch_dict={"log_type1": "2023-05-01 07:22:08", "log_type2": "2023-05-01 07:22:08"})
+    assert res == {"log_type1": 15}
 
 
 def test_find_largest_id_per_device(mocker):
