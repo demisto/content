@@ -98,18 +98,6 @@
 						"y": 0
 					},
 					{
-						"h": 2,
-						"i": "caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
-						"maxW": 3,
-						"moved": false,
-						"name": "Notes",
-						"static": false,
-						"type": "notes",
-						"w": 1,
-						"x": 1,
-						"y": 2
-					},
-					{
 						"displayType": "ROW",
 						"h": 2,
 						"i": "caseinfoid-4a31afa0-98ba-11e9-a519-93a53c759fe0",
@@ -438,50 +426,59 @@
 						"w": 1,
 						"x": 0,
 						"y": 3
-					},
-					{
-						"h": 2,
-						"i": "caseinfoid-c374f3c0-5fd1-11ef-b6aa-d188fb64f8da",
-						"items": [],
-						"maxW": 3,
-						"minH": 1,
-						"moved": false,
-						"name": "To-Do Tasks",
-						"query": null,
-						"static": false,
-						"type": "todoTasks",
-						"w": 1,
-						"x": 1,
-						"y": 6
-					},
-					{
-						"displayType": "CARD",
-						"h": 2,
-						"hideItemTitleOnlyOne": true,
-						"hideName": false,
-						"i": "caseinfoid-593d1d60-60d6-11ef-9663-11323c2c3548",
-						"items": [
-							{
-								"endCol": 2,
-								"fieldId": "incidentnotes",
-								"height": 26,
-								"id": "72d14580-60d6-11ef-9663-11323c2c3548",
-								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 0
-							}
-						],
-						"maxW": 3,
-						"minH": 1,
-						"moved": false,
-						"name": "Remote Incident Notes",
-						"static": false,
-						"w": 1,
-						"wrapLabels": false,
-						"x": 1,
-						"y": 4
-					}
-				],
+					},{
+                        "h": 3,
+                        "i": "incident-notes",
+                        "items": [],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "IBM QRadar SOAR Notes",
+                        "query": "IbmConvertCommentsToTable",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 3,
+                        "x": 0,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 1,
+                        "hideName": false,
+                        "i": "add-note",
+                        "items": [
+                            {
+                                "args": {
+                                    "tags": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    }
+                                },
+                                "buttonClass": "warning",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 22,
+                                "id": "Press to add a note to IBM QRadar SOAR incident",
+                                "index": 0,
+                                "name": "Press to add a note to IBM QRadar SOAR incident",
+                                "scriptId": "IbmAddNote",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 4,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Add note",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 8
+                    }
+                ],
 				"type": "custom"
 			},
 			{

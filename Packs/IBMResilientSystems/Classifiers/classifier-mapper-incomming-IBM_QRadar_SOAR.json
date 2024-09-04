@@ -189,17 +189,12 @@
                         ]
                     }
                 },
-				"Incident Notes": {
-					"complex": {
-						"filters": [],
-						"root": "notes",
-						"transformers": [
-							{
-								"operator": "ParseJSON"
-							}
-						]
-					}
-				},
+                "IBM QRadar Notes": {
+                    "simple": "notes"
+                },
+                "IBM QRadar Tasks": {
+                    "simple": "tasks"
+                },
                 "dbotMirrorDirection": {
                     "simple": "mirror_direction"
                 },

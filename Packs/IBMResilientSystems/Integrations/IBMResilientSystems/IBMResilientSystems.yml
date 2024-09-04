@@ -117,6 +117,22 @@ configuration:
   required: false
   additionalinfo: When selected, closing the Cortex XSOAR incident will close the incident in IBM Resilient
 
+- display: Comment tag from IBM Qradar SOAR
+  name: comment_tag_from_ibm
+  defaultvalue: FROM IBM
+  type: 0
+  required: false
+  additionalinfo: Add this tag to an entry to mirror it as a note from IBM Qradar SOAR.
+  section: Collect
+
+- display: Comment tag to IBM QRadar SOAR
+  name: comment_tag_to_ibm
+  defaultvalue: FROM XSOAR
+  type: 0
+  required: false
+  additionalinfo: Add this tag to an entry to mirror it as a comment to IBM Qradar SOAR.
+  section: Collect
+
 script:
   commands:
   - name: update-remote-system

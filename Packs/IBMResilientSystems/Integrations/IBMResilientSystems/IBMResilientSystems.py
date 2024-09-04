@@ -8,7 +8,6 @@ import logging
 import time
 
 import urllib3
-import re
 import resilient
 from resilient.co3 import SimpleClient, SimpleHTTPException
 
@@ -275,7 +274,7 @@ def prettify_incident_notes(notes: list[dict]) -> list[dict]:
         demisto.debug(f"prettify_incident_notes {note=}")
         new_note_obj = {
             "id": note.get("id", ""),
-            "text": note.get("text", {}).get('content'),
+            "text": note.get("text", ""),
             "created_by": f"{note.get('user_fname', '')} {note.get('user_lname', '')}",
             "create_date": normalize_timestamp(note.get("create_date")),
         }
@@ -464,7 +463,7 @@ def get_mirroring_data() -> dict:
 
     mirror_direction = params.get("mirror_direction")
     demisto.debug(f"get_mirroring_data {mirror_direction=} | {params=} ")
-    mirror_tags = []  # TODO - Utilize this
+    mirror_tags = [params.get('comment_tag_from_ibm'), params.get('comment_tag_to_ibm')]  # TODO - Utilize this
     return {
         "mirror_direction": mirror_direction,
         "mirror_instance": demisto.integrationInstance(),
@@ -499,22 +498,11 @@ def process_raw_incident(client: SimpleClient, incident: dict) -> dict:
     incident["create_date"] = normalize_timestamp(incident.get("create_date"))
 
     notes = get_incident_notes(client, incident_id)
-    for note in prettify_incident_notes(notes):
-        # TODO - Maintain notes.
-        if note:
-            pass
-            # return_outputs(
-            #     {
-            #         'ContentsFormat': EntryFormat.MARKDOWN,
-            #         'Type': EntryType.NOTE,
-            #         'Contents':
-            #             f"Added By: {note.get('created_by', '')}\n"
-            #             f"Added At: {note.get('created_at', '')}\n"
-            #             f"Note Content:{note.get('text', '')}\n"
-            #             f"ID:{note.get('id', '')}",
-            #         'Note': True
-            #     }
-            # )
+    incident["notes"] = prettify_incident_notes(notes)
+
+    tasks = get_tasks(client, incident_id)
+    incident["tasks"] = prettify_tasks(tasks)
+
     incident.update(get_mirroring_data())
     return incident
 
@@ -915,29 +903,44 @@ def get_phases(client):
     response = client.get('/phases')
     return response
 
+def prettify_tasks(tasks: list[dict]) -> list[dict]:
+    """
+    Format tasks to a more readable format.
+
+    Args:
+        tasks (list): A list of task dictionaries.
+
+    Returns:
+        list: A list of formatted task dictionaries.
+    """
+    def format_task(task):
+        return {
+            # TODO - Introduce field enums.
+            'IncidentName': task['inc_name'],
+            'ID': task['id'],
+            'Name': task['name'],
+            'DueDate': normalize_timestamp(task['due_date']) if task['due_date'] else None,
+            'Status': 'Open' if task['status'] == 'O' else 'Closed',
+            'Required': task['required'],
+            'Form': task.get('form'),
+            'UserNotes': task.get('user_notes'),
+            'Creator': task.get('creator_principal', {}).get('display_name'),
+            'Category': task['cat_name'],
+            'Instructions': task.get('instr_text')
+        }
+
+    return [format_task(task) for task in tasks]
+
+def get_tasks(client, incident_id):
+    response = client.get(f'/incidents/{incident_id}/tasks?text_content_output_format=objects_convert_text')
+    return response
+
 
 def get_tasks_command(client, incident_id):
-    response = get_tasks(client, incident_id)
-    if response:
-        tasks = []
-        for task in response:
-            task_object = {}
-            incident_name = task['inc_name']
-            task_object['ID'] = task['id']
-            task_object['Name'] = task['name']
-            if task['due_date']:
-                task_object['DueDate'] = normalize_timestamp(task['due_date'])
-            task_object['Status'] = 'Open' if task['status'] == 'O' else 'Closed'
-            task_object['Required'] = task['required']
-            if task['form']:
-                task_object['Form'] = task['form']
-            if task['user_notes']:
-                task_object['UserNotes'] = task['user_notes']
-            task_object['Creator'] = task.get('creator_principal', {}).get('display_name')
-            task_object['Category'] = task['cat_name']
-            if task['instr_text']:
-                task_object['Instructions'] = task['instr_text']
-            tasks.append(task_object)
+    tasks = get_tasks(client, incident_id)
+    tasks = prettify_tasks(tasks)
+    for tasks in tasks:
+        incident_name = tasks.get('IncidentName', '')
         ec = {
             'Resilient.Incidents(val.Id && val.Id === obj.Id)': {
                 'Id': incident_id,
@@ -948,7 +951,7 @@ def get_tasks_command(client, incident_id):
         title = 'Incident ' + incident_id + ' tasks'
         entry = {
             'Type': entryTypes['note'],
-            'Contents': response,
+            'Contents': tasks,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown(title, tasks,
@@ -959,11 +962,6 @@ def get_tasks_command(client, incident_id):
         return entry
     else:
         return 'No tasks found for this incident.'
-
-
-def get_tasks(client, incident_id):
-    response = client.get('/incidents/' + incident_id + '/tasks')
-    return response
 
 
 def set_member_command(client, incident_id, members):
@@ -1184,7 +1182,7 @@ def incident_attachments(client, incident_id):
 
 
 def get_incident_notes(client: SimpleClient, incident_id: str) -> list:
-    response = client.get(f'/incidents/{incident_id}/comments')
+    response = client.get(f"/incidents/{incident_id}/comments?text_content_output_format=objects_convert_text")
     return response
 
 
@@ -1277,7 +1275,7 @@ def fetch_incidents(client, first_fetch_time: str):
             if not incident.get('end_date') and incident.get('plan_status') == 'A':  # 'A' stands for 'Active'
                 demisto.debug(f'fetch_incidents {incident=}')
                 incident = process_raw_incident(client, incident)
-                demisto_incident = {}
+                demisto_incident = dict()
                 demisto_incident['name'] = f'IBM QRadar SOAR incident ID {str(incident["id"])}'
                 demisto_incident['occurred'] = incident['create_date']
                 demisto_incident['rawJSON'] = json.dumps(incident)
@@ -1311,16 +1309,21 @@ def execute_script(client: SimpleClient, incident_id: str, script_id: str) -> di
     return client.post(EXECUTE_SCRIPT_ENDPOINT, payload)
 
 
-def add_note_command(client, incident_id, note):
+def add_note(client: SimpleClient, incident_id: str, note_content: str):
+    """
+    Adds a note to the specified incident.
+    """
     body = {
         'text': {
             'format': 'text',
-            'content': note
+            'content': note_content
         }
     }
+    return client.post(f'/incidents/{str(incident_id)}/comments', body)
 
-    response = client.post('/incidents/' + str(incident_id) + '/comments', body)
 
+def add_note_command(client, incident_id, note):
+    response = add_note(client, str(incident_id), note)
     ec = {
         'Resilient.incidentNote(val.Id && val.Id === obj.Id)': response
     }
@@ -1443,7 +1446,7 @@ def list_incident_notes_command(client: SimpleClient, args: dict) -> CommandResu
     incident_id = args.get("incident_id")
     demisto.debug(f"list_incident_notes_command {incident_id=}")
 
-    response = client.get(f"/incidents/{incident_id}/comments?text_content_output_format=objects_convert_text")
+    response = get_incident_notes(client, incident_id)
     human_readable: str = tableToMarkdown(
         f"Incident {incident_id} Notes", t=prettify_incident_notes(response)
     )
@@ -1674,13 +1677,13 @@ def handle_incoming_incident_reopening(incident_id: str) -> dict:
     return reopening_entry
 
 
-def get_remote_data_command(client: SimpleClient, args: dict) -> GetRemoteDataResponse:
+def get_remote_data_command(client: SimpleClient, args: dict, comment_tag_from_ibm: str) -> GetRemoteDataResponse:
     """
     Args:
         client (SimpleClient): The IBM Resillient client.
+        comment_tag_from_ibm (str): The comment tag, to tag the mirrored comments.
         # TODO - Complete
         attachments_tag (str): The attachment tag, to tag the mirrored attachments.
-        notes_tag (str): The comment tag, to tag the mirrored comments.
         fetch_attachments (bool): Whether to fetch the attachments or not.
         fetch_notes (bool): Whether to fetch the comments or not.
         mirror_resolved_issue (bool): Whether to mirror Jira issues that have been resolved, or have the status `Done`.
@@ -1700,6 +1703,19 @@ def get_remote_data_command(client: SimpleClient, args: dict) -> GetRemoteDataRe
     demisto.debug(f"get-remote-data {incident=}")
     entries = []
 
+    # Create note entries.
+    note_entries = incident["notes"]
+    for note_entry in note_entries:
+        entries.append({
+            'ContentsFormat': EntryFormat.TEXT,
+            'Type': EntryType.NOTE,
+            'Contents':
+                f"{note_entry.get('text').get('content')}\n"
+                f"Added By: {note_entry.get('created_by', '')}\n",
+            'Tags': [comment_tag_from_ibm],
+            'Note': True
+        })
+
     # Handling remote incident resolution.
     if incident.get("end_date") and incident.get("plan_status") == "C":  # 'C' stands for 'Closed'
         if DEMISTO_PARAMS.get('close_xsoar_incident', True):
@@ -1717,14 +1733,14 @@ def get_remote_data_command(client: SimpleClient, args: dict) -> GetRemoteDataRe
         reopening_entry = handle_incoming_incident_reopening(incident_id=incident_id)
         entries.append(reopening_entry)
 
-    mirrored_data = {}
+    mirrored_data = dict()
     mirrored_data["rawJSON"] = json.dumps(incident)
 
-    # TODO - Handle tags for attachments, tasks, notes
+    # TODO - Handle tags for attachments, tasks
     return GetRemoteDataResponse(mirrored_object=incident, entries=entries)
 
 
-def update_remote_system_command(client: SimpleClient, args: dict) -> str:
+def update_remote_system_command(client: SimpleClient, args: dict, comment_tag_to_ibm: str) -> str:
     remote_args = UpdateRemoteSystemArgs(args)
     incident_id = remote_args.remote_incident_id
     demisto.debug(
@@ -1738,6 +1754,15 @@ def update_remote_system_command(client: SimpleClient, args: dict) -> str:
         demisto.debug(
             f"Skipping updating remote incident fields [{remote_args.remote_incident_id}] as it is not new nor changed"
         )
+    entries = remote_args.entries
+    if entries:
+        for entry in entries:
+            demisto.debug(f'update_remote_system_command {entry=}')
+            entry_type = entry.get('type', '')
+            entry_tags = entry.get('tags', [])
+            if entry_type == EntryType.NOTE and comment_tag_to_ibm in entry_tags:
+                add_note(client, incident_id, entry.get('Contents'))
+
     return incident_id
 
 
@@ -1810,6 +1835,12 @@ def main():     # pragma: no cover
     integration_logger.propagate = False
 
     LOG(f"command is {demisto.command()}")
+
+    comment_tag_to_ibm = params.get('comment_tag_to_ibm', 'comment tag to IBM')
+    comment_tag_from_ibm = params.get('comment_tag_from_ibm', 'comment tag from IBM')
+    if comment_tag_to_ibm == comment_tag_from_ibm:
+        raise DemistoException('Comment Entry Tag to IBM and Comment Entry Tag '
+                               'from IBM cannot have the same value.')
 
     try:
         command = demisto.command()
@@ -1884,9 +1915,9 @@ def main():     # pragma: no cover
         elif command == "get-modified-remote-data":
             return_results(get_modified_remote_data_command(client, args))
         elif command == "get-remote-data":
-            return_results(get_remote_data_command(client, args))
+            return_results(get_remote_data_command(client, args, comment_tag_from_ibm))
         elif command == "update-remote-system":
-            return_results(update_remote_system_command(client, args))
+            return_results(update_remote_system_command(client, args, comment_tag_to_ibm))
         elif command == "get-mapping-fields":
             return_results(get_mapping_fields_command())
     except Exception as e:
