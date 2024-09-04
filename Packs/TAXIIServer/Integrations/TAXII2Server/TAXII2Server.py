@@ -639,7 +639,8 @@ def parse_manifest_and_object_args() -> tuple:
             datetime.strptime(added_after, UTC_DATE_FORMAT)
     except ValueError:
         try:
-            datetime.strptime(added_after, STIX_DATE_FORMAT)
+            if added_after:
+                datetime.strptime(added_after, STIX_DATE_FORMAT)
         except Exception as e:
             raise Exception(f'Added after time format should be YYYY-MM-DDTHH:mm:ss.[s+]Z. {e}')
 

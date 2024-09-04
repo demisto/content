@@ -156,9 +156,10 @@ configuration:
   name: fetch_job_polling_max_num_attempts
   additionalinfo: "The maximum number of attempts to try and pull results for each log type from a job that was created by its query. Each attempt takes around 1 second. Increasing this value is useful in case there are many logs to pull from a given log type.\nNote: When increasing this number, in case fetching more than 4 logs types together, it is recommended to split different log types for different integration instances"
   type: 0
-  defaultvalue: 10
+  defaultvalue: '10'
   advanced: true
   section: Collect
+  required: false
 - display: Traffic Log Type Query
   name: traffic_query
   additionalinfo: "Traffic Log Type query example: (addr.src in {source}) and (addr.dst in {destination}) and (action eq {action}).\nIn case of multiple devices, for the sake of speed it is recommended to narrow the query to a specific device. \nFor example:(device_name eq dummy_device)"
@@ -220,6 +221,12 @@ configuration:
   type: 13
   section: Connect
   required: false
+- defaultvalue: '1'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  section: Collect
+  type: 19
 description: Manage Palo Alto Networks Firewall and Panorama. Use this pack to manage Prisma Access through Panorama. For more information, see the Panorama documentation.
 display: Palo Alto Networks PAN-OS
 name: Panorama
@@ -881,8 +888,8 @@ script:
       isArray: true
       name: tags
     description: >
-     Creates a service.
-     Note: overrides the service if it already exists.
+      Creates a service.
+      Note: overrides the service if it already exists.
     deprecated: true
     name: panorama-create-service
     outputs:
@@ -8440,6 +8447,8 @@ script:
       required: true
     - description: Name of the file for the state file to be saved. Default will use the hostname as the filename.
       name: filename
+    - description: The IP Address of a Panorama managed firewall. Default will use Panorama-supplied IP Address.
+      name: ip_address
     description: Get the device state from the provided device. Note; This will attempt to connect directly to the provided target to get the device state. If the IP address as reported in "show system info" is unreachable, this command will fail.
     name: pan-os-platform-get-device-state
     outputs:
@@ -9495,7 +9504,187 @@ script:
     - contextPath: Panorama.AuditComment.rule_type
       description: The rule type.
       type: String
-  dockerimage: demisto/pan-os-python:1.0.0.99653
+  - name: pan-os-add-profile-exception
+    description: Add an exception to a Vulnerability Protection profile or Anti Spyware profile.
+    arguments:
+    - description: The profile name.
+      name: profile_name
+      required: true
+    - description: "The requested threat name/CVE/ID to add."
+      name: threat
+      required: true
+    - description: The profile type.
+      name: profile_type
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - Vulnerability Protection Profile
+      - Anti Spyware Profile
+    - description: The action type of the exception. Default value is 'default'. 
+      name: action
+      auto: PREDEFINED
+      required: false
+      predefined:
+      - Alert
+      - Allow
+      - Block IP
+      - Drop
+      - Reset Both
+      - Reset Client
+      - Reset Server
+    - description: To configure the firewall to take a packet capture when it detects a threat.
+      name: packet_capture
+      required: false
+      auto: PREDEFINED
+      predefined: 
+      - Disable
+      - Single Packet
+      - Extended Capture
+    - description: An IP address. Configure an exempt IP address to enforce a threat exception only when the associated
+        session has either a matching source or destination IP address; for all other sessions, the threat
+        is enforced based on the default signature action.
+      name: exempt_ip
+      required: false
+    - description: Device group. This will override any configured device group or vsys.
+      name: device_group
+      required: false
+    - description: Specify whether to Track By and block the IP address using the IP source or the IP source and destination. If action = Block IP , this argument is mandatory.
+      name: ip_track_by
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - Source
+      - Source And Destination
+    - description: Specify the time period (in seconds) after which to trigger the action. If action = Block IP , this argument is mandatory.
+      name: ip_duration_sec
+      required: false
+  - name: pan-os-edit-profile-exception
+    description: Edit an exception to a Vulnerability Protection profile or Anti Spyware profile.
+    arguments:
+    - description: The profile name.
+      name: profile_name
+      required: true
+    - description: "The requested threat name/CVE/ID to edit."
+      name: threat
+      required: true
+    - description: The profile type.
+      name: profile_type
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - Vulnerability Protection Profile
+      - Anti Spyware Profile
+    - description: The action type of the exception. Default value is 'default'. 
+      name: action
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - Alert
+      - Allow
+      - Block IP
+      - Drop
+      - Reset Both
+      - Reset Client
+      - Reset Server
+    - description: To configure the firewall to take a packet capture when it detects a threat.
+      name: packet_capture
+      required: false
+      auto: PREDEFINED
+      predefined: 
+      - Disable
+      - Single Packet
+      - Extended Capture
+    - description: An IP address. Configure an exempt IP address to enforce a threat exception only when the associated
+        session has either a matching source or destination IP address; for all other sessions, the threat
+        is enforced based on the default signature action.
+      name: exempt_ip
+      required: false
+    - description: Device group. This will override any configured device group or vsys.
+      name: device_group
+      required: false
+    - description: Specify whether to Track By and block the IP address using the IP source or the IP source and destination. If action = Block IP , this argument is mandatory.
+      name: ip_track_by
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - Source
+      - Source And Destination
+    - description: Specify the time period (in seconds) after which to trigger the action. If action = Block IP , this argument is mandatory.
+      name: ip_duration_sec
+      required: false
+  - name: pan-os-delete-profile-exception
+    description: Delete an exception to a Vulnerability Protection profile or Anti Spyware profile.
+    arguments:
+    - description: The profile name.
+      name: profile_name
+      required: true
+    - description: "The requested threat name/CVE/ID to delete."
+      name: threat
+      required: true
+    - description: The profile type.
+      name: profile_type
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - Vulnerability Protection Profile
+      - Anti Spyware Profile
+  - name: pan-os-list-profile-exception
+    description: List the exceptions in a Vulnerability Protection profile or Anti Spyware profile.
+    arguments:
+    - description: The profile name.
+      name: profile_name
+      required: true
+    - description: The profile type.
+      name: profile_type
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - Vulnerability Protection Profile
+      - Anti Spyware Profile
+    outputs:
+    - contextPath: Panorama.Vulnerability.Name
+      description: The profile name.
+      type: String
+    - contextPath: Panorama.Vulnerability.Exception.name
+      description: The exception name.
+      type: String
+    - contextPath: Panorama.Vulnerability.Exception.id
+      description: The exception ID.
+      type: String
+    - contextPath: Panorama.Vulnerability.Exception.CVE
+      description: The exception CVE if exist.
+      type: String
+    - contextPath: Panorama.Vulnerability.Exception.action
+      description: The exception action.
+      type: String
+    - contextPath: Panorama.Vulnerability.Exception.exempt-id
+      description: The exception exempt ID.
+      type: String
+    - contextPath: Panorama.Vulnerability.Exception.packet-capture
+      description: The exception packet capture.
+      type: String
+    - contextPath: Panorama.Spyware.Name
+      description: The profile name.
+      type: String
+    - contextPath: Panorama.Spyware.Exception.name
+      description: The exception name.
+      type: String
+    - contextPath: Panorama.Spyware.Exception.id
+      description: The exception ID.
+      type: String
+    - contextPath: Panorama.Spyware.Exception.CVE
+      description: The exception CVE if exist.
+      type: String
+    - contextPath: Panorama.Spyware.Exception.action
+      description: The exception action.
+      type: String
+    - contextPath: Panorama.Spyware.Exception.exempt-id
+      description: The exception exempt ID.
+      type: String
+    - contextPath: Panorama.Spyware.Exception.packet-capture
+      description: The exception packet capture.
+      type: String
+  dockerimage: demisto/pan-os-python:1.0.0.108041
   isfetch: true
   runonce: false
   script: ''
@@ -9507,5 +9696,6 @@ tests:
 - palo_alto_panorama_test_pb
 - PAN-OS-firewall-topology-test-pb
 - PAN-OS-panorama-topology-test-pb
+- test_playbook_pan_os_firewall_exceptions_commands
 defaultmapperin: Panorama Mapper
 defaultclassifier: Panorama Classifier

@@ -7540,29 +7540,32 @@ Searches and returns a reference for the given object type and name. If no name 
 
 
 ### pan-os-platform-get-device-state
-***
-Get the device state from the provided device. Note: This will attempt to connect directly to the provided target to get the device state. If the IP address as reported in 'show system info' is unreachable, this command will fail.
 
+***
+Get the device state from the provided device. Note; This will attempt to connect directly to the provided target to get the device state. If the IP address as reported in "show system info" is unreachable, this command will fail.
 
 #### Base Command
 
 `pan-os-platform-get-device-state`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| target | String by which to filter to only show specific hostnames or serial numbers. | Required | 
-
+| target | Serial number of the device from which to fetch the device state. | Required | 
+| filename | Name of the file for the state file to be saved. Default will use the hostname as the filename. | Optional | 
+| ip_address | The IP Address of a Panorama managed firewall. Default will use Panorama-supplied IP Address. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| InfoFile.Name | String | Filename | 
-| InfoFile.EntryID | String | Entry ID | 
-| InfoFile.Size | String | Size of file | 
-| InfoFile.Type | String | Type of file | 
-| InfoFile.Info | String | Basic information of file | 
+| InfoFile.Name | String | Filename. | 
+| InfoFile.EntryID | String | Entry ID. | 
+| InfoFile.Size | String | Size of the file. | 
+| InfoFile.Type | String | Type of the file. | 
+| InfoFile.Info | String | Basic information of the file. | 
+
 ### pan-os-push-to-template
 ***
 Pushes the given PAN-OS template to the given devices or all devices that belong to the template.
@@ -9219,3 +9222,122 @@ Gets the audit comment of a rule.
 >|Comment|Rule Name|Rule Type|
 >|---|---|---|
 >| some comment | test | Security Rule |
+### pan-os-add-profile-exception
+
+***
+Add an exception to a Vulnerability Protection profile or Anti Spyware profile.
+
+#### Base Command
+
+`pan-os-add-profile-exception`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| profile_name | The profile name. | Required | 
+| threat | The requested threat name/CVE/ID to add. | Required | 
+| profile_type | The profile type. Possible values are: Vulnerability Protection Profile, Anti Spyware Profile. | Optional | 
+| action | The action type of the exception. Default value is 'default'. Possible values are: Alert, Allow, Block IP, Drop, Reset Both, Reset Client, Reset Server. | Optional | 
+| packet_capture | To configure the firewall to take a packet capture when it detects a threat. Possible values are: Disable, Single Packet, Extended Capture. | Optional | 
+| exempt_ip | An IP address. Configure an exempt IP address to enforce a threat exception only when the associated session has either a matching source or destination IP address; for all other sessions, the threat is enforced based on the default signature action. | Optional | 
+| device_group | Device group. This will override any configured device group or vsys. | Optional | 
+| ip_track_by | Specify whether to Track By and block the IP address using the IP source or the IP source and destination. If action = Block IP , this argument is mandatory. Possible values are: Source, Source And Destination. | Optional | 
+| ip_duration_sec | Specify the time period (in seconds) after which to trigger the action. If action = Block IP , this argument is mandatory. | Optional | 
+
+#### Command example
+```!pan-os-add-profile-exception profile_name="test1" threat="10002" action="Drop"```
+
+#### Context Output
+
+There is no context output for this command.
+### pan-os-list-profile-exception
+
+***
+List the exceptions in a Vulnerability Protection profile or Anti Spyware profile.
+
+#### Base Command
+
+`pan-os-list-profile-exception`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| profile_name | The profile name. | Required | 
+| profile_type | The profile type. Possible values are: Vulnerability Protection Profile, Anti Spyware Profile. | Optional | 
+
+#### Command example
+```!pan-os-list-profile-exception profile_name="test1" profile_type="Vulnerability Protection Profile"```
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.Vulnerability.Name | String | The profile name. | 
+| Panorama.Vulnerability.Exception.name | String | The exception name. | 
+| Panorama.Vulnerability.Exception.id | String | The exception ID. | 
+| Panorama.Vulnerability.Exception.CVE | String | The exception CVE if exist. | 
+| Panorama.Vulnerability.Exception.action | String | The exception action. | 
+| Panorama.Vulnerability.Exception.exempt-id | String | The exception exempt ID. | 
+| Panorama.Vulnerability.Exception.packet-capture | String | The exception packet capture. | 
+| Panorama.Spyware.Name | String | The profile name. | 
+| Panorama.Spyware.Exception.name | String | The exception name. | 
+| Panorama.Spyware.Exception.id | String | The exception ID. | 
+| Panorama.Spyware.Exception.CVE | String | The exception CVE if exist. | 
+| Panorama.Spyware.Exception.action | String | The exception action. | 
+| Panorama.Spyware.Exception.exempt-id | String | The exception exempt ID. | 
+| Panorama.Spyware.Exception.packet-capture | String | The exception packet capture. | 
+
+### pan-os-delete-profile-exception
+
+***
+Delete an exception to a Vulnerability Protection profile or Anti Spyware profile.
+
+#### Base Command
+
+`pan-os-delete-profile-exception`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| profile_name | The profile name. | Required | 
+| threat | The requested threat name/CVE/ID to delete. | Required | 
+| profile_type | The profile type. Possible values are: Vulnerability Protection Profile, Anti Spyware Profile. | Optional | 
+
+#### Command example
+```!pan-os-delete-profile-exception profile_name="test2" threat="10005" profile_type="Vulnerability Protection Profile"```
+
+#### Context Output
+
+There is no context output for this command.
+### pan-os-edit-profile-exception
+
+***
+Edit an exception to a Vulnerability Protection profile or Anti Spyware profile.
+
+#### Base Command
+
+`pan-os-edit-profile-exception`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| profile_name | The profile name. | Required | 
+| threat | The requested threat name/CVE/ID to edit. | Required | 
+| profile_type | The profile type. Possible values are: Vulnerability Protection Profile, Anti Spyware Profile. | Optional | 
+| action | The action type of the exception. Default value is 'default'. Possible values are: Alert, Allow, Block IP, Drop, Reset Both, Reset Client, Reset Server. | Optional | 
+| packet_capture | To configure the firewall to take a packet capture when it detects a threat. Possible values are: Disable, Single Packet, Extended Capture. | Optional | 
+| exempt_ip | An IP address. Configure an exempt IP address to enforce a threat exception only when the associated session has either a matching source or destination IP address; for all other sessions, the threat is enforced based on the default signature action. | Optional | 
+| device_group | Device group. This will override any configured device group or vsys. | Optional | 
+| ip_track_by | Specify whether to Track By and block the IP address using the IP source or the IP source and destination. If action = Block IP , this argument is mandatory. Possible values are: Source, Source And Destination. | Optional | 
+| ip_duration_sec | Specify the time period (in seconds) after which to trigger the action. If action = Block IP , this argument is mandatory. | Optional | 
+
+#### Command example
+```!pan-os-edit-profile-exception profile_name="test1" threat="10002" action="Drop"```
+
+#### Context Output
+
+There is no context output for this command.

@@ -1,3 +1,4 @@
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *
 
@@ -278,7 +279,7 @@ CS_FALCON_INCIDENT_OUTGOING_ARGS = {'tag': 'A tag that have been added or remove
 LEGACY_CS_FALCON_DETECTION_INCOMING_ARGS = ['status', 'severity', 'behaviors.tactic', 'behaviors.scenario', 'behaviors.objective',
                                             'behaviors.technique', 'device.hostname', 'detection_id', 'behaviors.display_name']
 CS_FALCON_DETECTION_INCOMING_ARGS = ['status', 'severity', 'tactic', 'scenario', 'objective',
-                                     'technique', 'device.hostname', "composite_id", 'display_name']
+                                     'technique', 'device.hostname', "composite_id", 'display_name', 'tags']
 CS_FALCON_INCIDENT_INCOMING_ARGS = ['state', 'fine_score', 'status', 'tactics', 'techniques', 'objectives',
                                     'tags', 'hosts.hostname', 'incident_id']
 
@@ -295,6 +296,11 @@ HOST_STATUS_DICT = {
     'unknown': 'Unknown'
 }
 
+
+QUARANTINE_FILES_OUTPUT_HEADERS = ['id', 'aid', 'cid', 'sha256', 'paths', 'state', 'detect_ids', 'alert_ids', 'hostname',
+                                   'username', 'date_updated', 'date_created', 'extracted',
+                                   'release_path_for_removable_media', 'primary_module', 'is_on_removable_disk',
+                                   'sandbox_report_id', 'sandbox_report_state']
 
 CPU_UTILITY_INT_TO_STR_KEY_MAP = {
     1: 'Lowest',
@@ -1998,7 +2004,7 @@ def search_device(filter_operator='AND'):
     if not device_ids:
         return None
     demisto.debug(f"number of devices returned from the api call is: {len(device_ids)}")
-    return http_request('POST', '/devices/entities/devices/v2', params={'ids': device_ids})
+    return http_request('POST', '/devices/entities/devices/v2', json={'ids': device_ids})
 
 
 def behavior_to_entry_context(behavior):
@@ -2026,14 +2032,15 @@ def get_username_uuid(username: str):
     return resources[0]
 
 
-def resolve_detection(ids, status, assigned_to_uuid, show_in_ui, comment):
+def resolve_detection(ids, status, assigned_to_uuid, show_in_ui, comment, tag):
     """
         Sends a resolve detection request
-        :param ids: Single or multiple ids in an array string format
-        :param status: New status of the detection
-        :param assigned_to_uuid: uuid to assign the detection to
-        :param show_in_ui: Boolean flag in string format (true/false)
-        :param comment: Optional comment to add to the detection
+        :param ids: Single or multiple ids in an array string format.
+        :param status: New status of the detection.
+        :param assigned_to_uuid: uuid to assign the detection to.
+        :param show_in_ui: Boolean flag in string format (true/false).
+        :param comment: Optional comment to add to the detection.
+        :param The tag to add.
         :return: Resolve detection response json
     """
     payload = {
@@ -2051,9 +2058,11 @@ def resolve_detection(ids, status, assigned_to_uuid, show_in_ui, comment):
         demisto.debug(f"in resolve_detection: {LEGACY_VERSION =} and {payload=}")
         # modify the payload to match the Raptor API
         ids = payload.pop('ids')
-        payload["assign_to_user_id"] = payload.pop("assigned_to_uuid") if "assigned_to_uuid" in payload else None
+        payload["assign_to_uuid"] = payload.pop("assigned_to_uuid") if "assigned_to_uuid" in payload else None
         payload["update_status"] = payload.pop("status") if "status" in payload else None
         payload["append_comment"] = payload.pop("comment") if "comment" in payload else None
+        if tag:
+            payload["add_tag"] = tag
 
         data = json.dumps(resolve_detections_prepare_body_request(ids, payload))
     else:
@@ -2213,7 +2222,7 @@ def update_detection_request(ids: list[str], status: str) -> dict:
     if status not in DETECTION_STATUS:
         raise DemistoException(f'CrowdStrike Falcon Error: '
                                f'Status given is {status} and it is not in {DETECTION_STATUS}')
-    return resolve_detection(ids=ids, status=status, assigned_to_uuid=None, show_in_ui=None, comment=None)
+    return resolve_detection(ids=ids, status=status, assigned_to_uuid=None, show_in_ui=None, comment=None, tag=None)
 
 
 def update_idp_or_mobile_detection_request(ids: list[str], status: str) -> dict:
@@ -3986,24 +3995,18 @@ def search_device_command():
         :return: EntryObject of search device command
     """
     raw_res = search_device()
+    device_ids = []
     if not raw_res:
         return create_entry_object(hr='Could not find any devices.')
     devices = raw_res.get('resources')
     extended_data = argToBoolean(demisto.args().get('extended_data', False))
+    for device in devices:
+        device_id = device.get("device_id")
+        device_ids.append(device_id)
+    state_data = get_status(device_ids)
     command_results = []
     for single_device in devices:
-        # demisto.debug(f"single device info: {single_device}")
-        # status, is_isolated = generate_status_fields(single_device.get('status'), single_device.get("device_id"))
-        endpoint = Common.Endpoint(
-            id=single_device.get('device_id'),
-            hostname=single_device.get('hostname'),
-            ip_address=single_device.get('local_ip'),
-            os=single_device.get('platform_name'),
-            os_version=single_device.get('os_version'),
-            status=get_status(single_device.get("device_id")),
-            is_isolated=get_isolation_status(single_device.get('status')),
-            mac_address=single_device.get('mac_address'),
-            vendor=INTEGRATION_NAME)
+        endpoint = generate_endpoint_by_contex_standard(single_device, state_data)
         if not extended_data:
             entry = get_trasnformed_dict(single_device, SEARCH_DEVICE_KEY_MAP)
             headers = ['ID', 'Hostname', 'OS', 'MacAddress', 'LocalIP', 'ExternalIP', 'FirstSeen', 'LastSeen', 'Status']
@@ -4053,13 +4056,29 @@ def enrich_groups(all_group_ids) -> dict[str, Any]:
     return result
 
 
-def get_status(device_id):
-    raw_res = http_request('GET', '/devices/entities/online-state/v1', params={'ids': device_id})
-    state = raw_res.get('resources')[0].get('state', '')
-    if state == 'unknown':
-        demisto.debug(f"Device with id: {device_id} returned an unknown state, which indicates that the host has not"
-                      f" been seen recently and we are not confident about its current state")
-    return HOST_STATUS_DICT[state]
+def get_status(device_ids):
+    """
+    Get the online status for one or more hosts by specifying each host’s unique ID (up to 100 max).
+    The status can be online, offline, or unknown.
+    Args:
+        device_ids: list of device ids.
+
+    Returns: dictionary contains the id:state
+
+    """
+    state_data = {}
+    batch_size = 100
+    for i in range(0, len(device_ids), batch_size):
+        batch = device_ids[i:i + batch_size]
+        raw_res = http_request('GET', '/devices/entities/online-state/v1', params={'ids': batch})
+        for res in raw_res.get('resources'):
+            state = res.get('state', '')
+            device_id = res.get('id', '')
+            if state == 'unknown':
+                demisto.debug(f"Device with id: {device_id} returned an unknown state, which indicates that the host has not"
+                              f" been seen recently and we are not confident about its current state")
+            state_data[device_id] = HOST_STATUS_DICT[state]
+    return state_data
 
 
 def get_isolation_status(endpoint_status):
@@ -4076,22 +4095,19 @@ def get_isolation_status(endpoint_status):
     return is_isolated
 
 
-def generate_endpoint_by_contex_standard(devices):
-    standard_endpoints = []
-    for single_device in devices:
-        # status, is_isolated = generate_status_fields(single_device.get('status'), single_device.get("device_id"))
-        endpoint = Common.Endpoint(
-            id=single_device.get('device_id'),
-            hostname=single_device.get('hostname'),
-            ip_address=single_device.get('local_ip'),
-            os=single_device.get('platform_name'),
-            os_version=single_device.get('os_version'),
-            status=get_status(single_device.get("device_id")),
-            is_isolated=get_isolation_status(single_device.get('status')),
-            mac_address=single_device.get('mac_address'),
-            vendor=INTEGRATION_NAME)
-        standard_endpoints.append(endpoint)
-    return standard_endpoints
+def generate_endpoint_by_contex_standard(single_device, state_data):
+    device_id = single_device.get('device_id')
+    endpoint = Common.Endpoint(
+        id=device_id,
+        hostname=single_device.get('hostname'),
+        ip_address=single_device.get('local_ip'),
+        os=single_device.get('platform_name'),
+        os_version=single_device.get('os_version'),
+        status=state_data.get(device_id),
+        is_isolated=get_isolation_status(single_device.get('status')),
+        mac_address=single_device.get('mac_address'),
+        vendor=INTEGRATION_NAME)
+    return endpoint
 
 
 def get_endpoint_command():
@@ -4109,13 +4125,20 @@ def get_endpoint_command():
     if not raw_res:
         return create_entry_object(hr='Could not find any devices.')
     devices = raw_res.get('resources')
+    device_ids = []
+    for device in devices:
+        device_id = device.get("device_id")
+        device_ids.append(device_id)
+    state_data = get_status(device_ids)
 
     # filter hostnames that will match the exact hostnames including case-sensitive
     if hostnames := argToList(args.get('hostname')):
         lowercase_hostnames = {hostname.lower() for hostname in hostnames}
         devices = [device for device in devices if (device.get('hostname') or '').lower() in lowercase_hostnames]
 
-    standard_endpoints = generate_endpoint_by_contex_standard(devices)
+    standard_endpoints = []
+    for single_device in devices:
+        standard_endpoints.append(generate_endpoint_by_contex_standard(single_device, state_data))
 
     command_results = []
     for endpoint in standard_endpoints:
@@ -4213,10 +4236,13 @@ def resolve_detection_command():
         assigned_to_uuid = get_username_uuid(username)
 
     status = args.get('status')
+    tag = args.get('tag')
     show_in_ui = args.get('show_in_ui')
-    if not (username or assigned_to_uuid or comment or status or show_in_ui):
+    if not (username or assigned_to_uuid or comment or status or show_in_ui or tag):
         raise DemistoException("Please provide at least one argument to resolve the detection with.")
-    raw_res = resolve_detection(ids, status, assigned_to_uuid, show_in_ui, comment)
+    if LEGACY_VERSION and tag:
+        raise DemistoException("tag argument is only relevant when running with API V3.")
+    raw_res = resolve_detection(ids, status, assigned_to_uuid, show_in_ui, comment, tag)
     args.pop('ids')
     hr = f"Detection {str(ids)[1:-1]} updated\n"
     hr += 'With the following values:\n'
@@ -5914,8 +5940,18 @@ def list_quarantined_file_command(args: dict) -> CommandResults:
         )
 
     files = list_quarantined_files(ids).get('resources')
-    human_readable = tableToMarkdown('CrowdStrike Falcon Quarantined File', files, is_auto_json_transform=True,
-                                     headerTransform=underscoreToCamelCase, sort_headers=False, removeNull=True)
+    if isinstance(files, list):
+        for file in files:
+            if isinstance(file, dict) and 'composite_ids' in file:
+                file['detect_ids'] = file.pop('composite_ids')
+
+    human_readable = tableToMarkdown('CrowdStrike Falcon Quarantined File',
+                                     t=files,
+                                     headers=QUARANTINE_FILES_OUTPUT_HEADERS,
+                                     is_auto_json_transform=True,
+                                     headerTransform=underscoreToCamelCase,
+                                     sort_headers=False,
+                                     removeNull=True)
 
     return CommandResults(
         outputs_prefix='CrowdStrike.QuarantinedFile',
@@ -6568,7 +6604,7 @@ def create_gql_client(url_suffix="identity-protection/combined/graphql/v1"):
                     "Accept": "application/json",
                     "Content-Type": "application/json"}
     }
-    transport = RequestsHTTPTransport(**kwargs)
+    transport = RequestsHTTPTransport(**kwargs)  # type: ignore[arg-type]
     client = Client(
         transport=transport,
         fetch_schema_from_transport=True,
