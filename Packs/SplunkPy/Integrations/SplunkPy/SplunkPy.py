@@ -2146,7 +2146,11 @@ def rawToDict(raw):
 
                 if '=' in key_value:
                     key_and_val = key_value.split('=', 1)
-                    result[key_and_val[0]] = key_and_val[1]
+                    if key_and_val[0] not in result.keys():
+                        result[key_and_val[0]] = key_and_val[1]
+                    else:
+                        # If there are multiple values for a key, append them.
+                        result[key_and_val[0]] = ",".join([result[key_and_val[0]],key_and_val[1]])
 
     if REPLACE_FLAG:
         result = replace_keys(result)
