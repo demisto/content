@@ -317,11 +317,14 @@ repos:
   #   - pytest-in-docker
   - id: mypy-in-docker
     name: mypy-in-docker
-    copy_files: #TODO avoid
+    copy_files:  #TODO avoid
     - Packs/Base/Scripts/CommonServerPython/CommonServerPython.py 
     - Tests/demistomock/demistomock.py
     description: Run mypy on the code in content packs
-    docker_image: from-yml  # TODO native
+    docker_image:nightly: native:ga,native:maintenance,from-yml,native:candidate
+    docker_image:native: native:ga,from-yml,native:dev,native:maintenance
+    docker_image:ci: native:ga,from-yml,native:dev,native:maintenance
+    docker_image: from-yml
     entry: mypy
     files: Packs\/.*\.py$
     exclude: test_data|tests_data|.venv|.*_test.py$|infrastructure_tests|.vulture_whitelist.py|demistomock.py|Templates|conftest.py|Utils/download_packs_and_docker_images.py
@@ -330,8 +333,8 @@ repos:
     - --check-untyped-defs
     - --show-error-codes
     - --allow-redefinition
-    - --cache-dir=/tmp/.mypy_cache  #TODO add comment
-    - --implicit-optional  # TODO add comment
+    - --cache-dir=/tmp/.mypy_cache
+    - --implicit-optional
     pass_docker_extra_args:ci: --rm=false
     pass_docker_extra_args:nightly: --rm=false
     
