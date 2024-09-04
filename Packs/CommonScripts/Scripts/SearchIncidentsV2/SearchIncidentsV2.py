@@ -8,11 +8,13 @@ DEFAULT_PAGE_SIZE = 100
 STARTING_PAGE_NUMBER = 1
 
 
-
 INCLUDEINFORMATIONAL_SUPPORT_VERSION = '8.6.0'
 INCLUDEINFORMATIONAL_SUPPORT_NUMBER = '992980'
-ENABLE_INCLUDEINFORMATIONAL_ARG = is_xsiam() and is_demisto_version_ge(version=INCLUDEINFORMATIONAL_SUPPORT_VERSION,
-                                                             build_number=INCLUDEINFORMATIONAL_SUPPORT_NUMBER) and not is_using_engine()
+ENABLE_INCLUDEINFORMATIONAL_ARG = (is_xsiam() and is_demisto_version_ge(version=INCLUDEINFORMATIONAL_SUPPORT_VERSION,
+                                                                        build_number=INCLUDEINFORMATIONAL_SUPPORT_NUMBER) and
+                                   not is_using_engine())
+
+
 class AlertSeverity(Enum):
     UNKNOWN = 0
     INFO = 0.5
