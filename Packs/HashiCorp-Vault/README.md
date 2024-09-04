@@ -20,7 +20,7 @@ See also:
 
 ### Configuration on Cortex XSIAM 
   
-1. Install the HashiCorp Vault content pack from the Cortex XSIAM marketplace. 
+1. Install the HashiCorp Vault content pack from Cortex XSIAM Marketplace. 
 2. Configure an [XDR Collector](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Manage-XDR-Collectors):
    1. Create an XDR Collector installation package as described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Create-an-XDR-Collector-installation-package).
    2. Install the XDR Collector created installation package on the HashiCorp Vault server: 
