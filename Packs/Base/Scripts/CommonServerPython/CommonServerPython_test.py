@@ -6302,6 +6302,7 @@ class TestCommonTypes:
             user_id='test_user_id',
             manager_email='test_manager_email@test.com',
             manager_display_name='test_manager_display_name',
+            risk_level='test_risk_level'
         )
 
         results = CommandResults(
@@ -6343,7 +6344,8 @@ class TestCommonTypes:
                      'Manager': {
                          'Email': 'test_manager_email@test.com',
                          'DisplayName': 'test_manager_display_name'
-                     }
+                     },
+                     'RiskLevel': 'test_risk_level'
                      }
                 ],
                 'DBotScore(val.Indicator && val.Indicator == obj.Indicator &&'

@@ -4934,7 +4934,7 @@ class Common(object):
                      department=None, country=None, state=None, city=None, street=None, is_enabled=None,
                      dbot_score=None, relationships=None, blocked=None, community_notes=None, creation_date=None,
                      description=None, stix_id=None, tags=None, traffic_light_protocol=None, user_id=None,
-                     manager_email=None, manager_display_name=None):
+                     manager_email=None, manager_display_name=None, risk_level=None):
 
             self.id = id
             self.type = type
@@ -4963,6 +4963,7 @@ class Common(object):
             self.relationships = relationships
             self.manager_email_address = manager_email
             self.manager_display_name = manager_display_name
+            self.risk_level = risk_level
 
             if dbot_score and not isinstance(dbot_score, Common.DBotScore):
                 raise ValueError('dbot_score must be of type DBotScore')
