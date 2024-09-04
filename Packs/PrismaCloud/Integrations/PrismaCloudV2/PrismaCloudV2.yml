@@ -124,6 +124,29 @@ script:
     - name: page_size
       description: Number of results in a page. Maximum is 1000.
       type: integer
+    - name: benchmarks
+      description: benchmark names or identifiers to filter the results. Supports comma separated values.
+      isArray: true
+      auto: PREDEFINED
+      predefined:
+      - IS KUBERNETES V1.5
+      - CIS AWS V1.2
+      - CIS AZURE V1.1
+      - PCI-DSS V3.2
+      - NIST-800-53
+      - ISO27001
+      - SOC2
+      - CIS GCP V1.1
+      - HIPAA
+      - FEDRAMP (MODERATE)
+      - PCI-DSS V3.2.1
+      - CIS AWS V1.3
+      - CIS AZURE V1.3 
+      - CIS DOCKER V1.2
+      - CIS EKS V1.1
+      - CIS GKE V1.1
+      - CIS KUBERNETES V1.6
+      - SLSA
     - description: Names of git users. Supports comma separated values.
       isArray: true
       name: git_users
@@ -142,6 +165,16 @@ script:
       - Vulnerabilities
       - Licenses
       - Secrets
+      - BuildIntegrityRepo
+      - BuildIntegrityOrg
+      - BuildIntegrity  
+      - Weaknesses
+    - name: cwes
+      description: Common Weakness Enumeration (CWE) identifier to filter the results.
+      isArray: false
+    - name: owasp
+      description: A list of OWASP (Open Web Application Security Project) categories or identifiers to filter the results.
+      isArray: true
     - description: Different categories related to Infrastructure-as-Code (IaC) issues to filter by. Supports comma separated values.
       isArray: true
       name: iac_categories
@@ -156,6 +189,29 @@ script:
       - Public
       - Drift
       - Compute
+      - Vulnerabilities
+      - BuildIntegrity
+      - Licenses 
+      - Logging
+      - Serverless
+      - Elasticsearch 
+      - VCS 
+      - Policy3D 
+      - Sast 
+      - Artifact Integrity Validation
+      - Cider Kill Chain
+      - Credential Hygiene      
+      - Data Protection
+      - Dependency Chain Abuse
+      - Dependency Chains
+      - Flow Control Mechanisms
+      - Input Validation
+      - Patches & Updates
+      - Pipeline-Based Access Controls (PBAC)
+      - Pipeline Flow Control
+      - Poisoned Pipeline Execution (PPE)
+      - System Configuration
+      - Supply Chain
     - description: labels associated with Infrastructure-as-Code (IaC). Supports comma separated values.
       name: iac_labels
       isArray: true
@@ -168,33 +224,72 @@ script:
       isArray: true
       auto: PREDEFINED
       predefined:
-      - yml
-      - yaml
-      - json
-      - template
-      - py
-      - js
-      - properties
-      - pem
-      - php
-      - xml
-      - ts
-      - env
+      - build.gradle
+      - gradle.properties
+      - build.gradle.kts
+      - pom.xml 
+      - requirements.txt
+      - package-lock.json
+      - package.json
+      - bower.json 
+      - go.sum 
+      - go.mod
+      - tf
+      - json 
+      - yml    
+      - yaml 
+      - Template
+      - .checkov.baseline 
+      - Hcl
       - Dockerfile
-      - java
-      - rb
-      - sum
-      - mod
-      - cs
-      - txt
-      - bicep
-      - hcl
-      - gradle
-      - kts
-      - lock
-      - config
-      - csproj
-      - dependencies
+      - gradle-wrapper.properties
+      - METADATA 
+      - Bicep
+      - Pipfile.lock
+      - Pipfile   
+      - Yarn.lock
+      - Gemfile 
+      - Gemfile.lock
+      - gemspec
+      - env
+      - settings.py
+      - main.py 
+      - application.py
+      - config.py
+      - app.js
+      - config.js
+      - dev.js
+      - db.properties
+      - application.properties
+      - private.pem
+      - privatekey.pem
+      - Index.php
+      - config.php
+      - config.xml
+      - strings.xml 
+      - app.module.ts
+      - environment.ts
+      - tpl 
+      - tfvars
+      - unknown 
+      - csproj 
+      - packages.config
+      - Directory.Packages.props
+      - paket.dependencies
+      - paket.references
+      - paket.lock
+      - sln
+      - config      
+      - composer.json
+      - composer.lock
+    - name: sast_labels
+      description: s label associated with Static Application Security Testing (SAST) results to filter the output.
+      auto: PREDEFINED
+      predefined:
+      - CustomPolicy
+      - CWE top 25
+      - OWASP top 10
+      isArray: false
     - description: Whether to retrieve only fixable issues. Recommended to use this argument with another argument code_categories ,for example.
       name: fixable_only
       type: Boolean
@@ -253,6 +348,10 @@ script:
       - ExploitInTheWild
       - ExploitPOC
       - IsUsed
+      - ReachableFunction
+      - ManifestInRuntime
+      - RepositoryInRuntime
+      - PackageInRuntime
     - description: A keyword or phrase used to narrow down results within specific scopes (like a particular vulnerability). It's needed if you are filtering results by search_scopes.
       name: search_term
       isArray: false
