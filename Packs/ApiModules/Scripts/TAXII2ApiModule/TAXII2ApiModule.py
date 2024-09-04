@@ -928,7 +928,7 @@ class STIX2XSOARParser(BaseClient):
     def get_entity_b_type_and_value(related_obj: str, id_to_object: dict[str, dict[str, Any]],
                                     is_unit42_report: bool = False) -> tuple:
         """
-        Gets the type and the value of the indicator.
+       Gets the type and value of the indicator in entity_b.
 
         Args:
             related_obj: the indicator to get information on.
@@ -945,19 +945,19 @@ class STIX2XSOARParser(BaseClient):
         if indicator_obj.get('type') == "indicator":
             entity_b_value = STIX2XSOARParser.get_ioc_value(related_obj, id_to_object)
         elif indicator_obj.get('type') == "attack-pattern" and is_unit42_report:
-            _, entity_b_value = STIX2XSOARParser.get_attack_id_and_value_from_name(indicator_obj)
+            _, entity_b_value = STIX2XSOARParser.get_mitre_attack_id_and_value_from_name(indicator_obj)
         elif indicator_obj.get('type') == "report" and is_unit42_report:
             entity_b_value = f"[Unit42 ATOM] {indicator_obj.get('name')}"
         return entity_b_obj_type, entity_b_value
 
     @staticmethod
-    def get_attack_id_and_value_from_name(attack_indicator):
+    def get_mitre_attack_id_and_value_from_name(attack_indicator):
         """
         Split indicator name into MITRE ID and indicator value: 'T1108: Redundant Access' -> MITRE ID = T1108,
         indicator value = 'Redundant Access'.
         """
         ind_name = attack_indicator.get('name')
-        separator = ': '
+        separator = ':'
         try:
             partition_result = ind_name.partition(separator)
             if partition_result[1] != separator:
@@ -1169,7 +1169,8 @@ class STIX2XSOARParser(BaseClient):
 
     def create_obj_refs_list(self, obj_refs_list: list):
         """
-        Creates obj refs list
+        Creates a list of object references for a STIX report type and organize it for an XSOAR "object refs" grid field.
+
         :param obj_refs_list: A list of obj refs
         :return: A list of dicts.
         """

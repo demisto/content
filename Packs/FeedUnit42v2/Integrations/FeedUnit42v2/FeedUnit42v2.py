@@ -449,7 +449,7 @@ def create_attack_pattern_indicator(client: Client, attack_indicator_objects, fe
     for attack_indicator_object in attack_indicator_objects:
         attack_indicator_list = client.parse_attack_pattern(attack_indicator_object, ignore_external_id=True)
         attack_indicator = attack_indicator_list[0]
-        mitre_id, value = client.get_attack_id_and_value_from_name(attack_indicator_object)
+        mitre_id, value = client.get_mitre_attack_id_and_value_from_name(attack_indicator_object)
 
         attack_indicator["value"] = value
         attack_indicator["fields"].update({
@@ -569,7 +569,7 @@ def get_ioc_value(ioc, id_to_obj):
         return f"[Unit42 ATOM] {ioc_obj.get('name')}"
 
     elif ioc_obj.get('type') == 'attack-pattern':
-        return STIX2XSOARParser.get_attack_id_and_value_from_name(ioc_obj)[1]
+        return STIX2XSOARParser.get_mitre_attack_id_and_value_from_name(ioc_obj)[1]
 
     for key in ('name', 'pattern'):
         if ioc_value := extract_ioc_value(ioc_obj.get(key, '')):

@@ -2327,7 +2327,7 @@ def test_create_x509_certificate_object():
     }
 
 
-def test_get_attack_id_and_value_from_name_on_invalid_indicator():
+def test_get_mitre_attack_id_and_value_from_name_on_invalid_indicator():
     """
     Given
         - Invalid attack indicator structure
@@ -2339,7 +2339,7 @@ def test_get_attack_id_and_value_from_name_on_invalid_indicator():
         - DemistoException is raised.
     """
     with pytest.raises(DemistoException, match=r"Failed parsing attack indicator"):
-        STIX2XSOARParser.get_attack_id_and_value_from_name({"name": "test"})
+        STIX2XSOARParser.get_mitre_attack_id_and_value_from_name({"name": "test"})
 
 
 @pytest.mark.parametrize('indicator_name, expected_result', [
@@ -2349,14 +2349,14 @@ def test_get_attack_id_and_value_from_name_on_invalid_indicator():
      ("T1564.004", "Hide Artifacts: NTFS File Attributes")),
     ({"name": "T1078: Valid Accounts"}, ("T1078", "Valid Accounts"))
 ])
-def test_get_attack_id_and_value_from_name(indicator_name, expected_result):
+def test_get_mitre_attack_id_and_value_from_name(indicator_name, expected_result):
     """
     Given
     - Indicator with name field
     When
     - we extract this field to ID and value fields
     Then
-    - run the get_attack_id_and_value_from_name
+    - run the get_mitre_attack_id_and_value_from_name
     Validate The ID and value fields extracted successfully.
     """
-    assert STIX2XSOARParser.get_attack_id_and_value_from_name(indicator_name) == expected_result
+    assert STIX2XSOARParser.get_mitre_attack_id_and_value_from_name(indicator_name) == expected_result
