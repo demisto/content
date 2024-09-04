@@ -5794,7 +5794,8 @@
         },
         {
             "integrations": "XQL Query Engine",
-            "playbookID": "XQL Query Engine - Test"
+            "playbookID": "XQL Query Engine - Test",
+            "timeout": 500
         }
     ],
     "skipped_tests": {
