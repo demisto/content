@@ -702,9 +702,9 @@ def search_users(default_base_dn, page_size):
                         user_account_control) or user_account_control
 
             if user.get("msDS-User-Account-Control-Computed"):
-                user_account_control = user.get("msDS-User-Account-Control-Computed")[0]
+                user_account_control_msDS = user.get("msDS-User-Account-Control-Computed")[0]
                 user_account_to_boolean_dict = user_account_to_boolean_fields_msDS_user_account_control_computed(
-                    user_account_control)
+                    user_account_control_msDS)
                 if user.get("userAccountControlFields"):
                     user["userAccountControlFields"].update(
                         user_account_to_boolean_dict
