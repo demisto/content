@@ -5,7 +5,7 @@
 In addition to the [HasiCorp Vault Integration](https://xsoar.pan.dev/docs/reference/integrations/hashi-corp-vault) for managing secrets and credentials on HashiCorp Vault, this pack includes *Cortex Data Modeling (XDM) Rules* and *Parsing Rules* for ingesting and normalizing [HashiCorp Vault Audit Logs](https://support.hashicorp.com/hc/en-us/articles/360001722947-Audit-Device-Notes). 
 
 ## Configuration 
-Follow the steps bellow for configuring ingestion of Hashicorp Vault audit logs into Cortex XSIAM.
+Follow the steps below to configure ingestion of Hashicorp Vault audit logs into Cortex XSIAM.
 
 ### Configuration on HashiCorp Vault 
  
