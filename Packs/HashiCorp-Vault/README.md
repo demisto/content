@@ -24,7 +24,7 @@ See also:
 2. Configure an [XDR Collector](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Manage-XDR-Collectors):
    1. Create an XDR Collector installation package as described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Create-an-XDR-Collector-installation-package).
    2. Install the XDR Collector created installation package on the HashiCorp Vault server: 
-      - For a *Windows* server see [Install the XDR Collector installation package for Windows](https://docs-cortex.paloaltonetworks.com/r/KkeZwTYbDACMoWxJk0COqg/g4A0gTe8mLEmRNXk9hhsbw).
+      - For a *Windows* server see [Install the XDR Collector installation package for Windows](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Install-the-XDR-Collector-installation-package-for-Windows).
       - For a *Linux* server see [Install the XDR Collector installation package for Linux](https://docs-cortex.paloaltonetworks.com/r/KkeZwTYbDACMoWxJk0COqg/upKreUev0g1LzaCpxHJIRA). 
    3. Configure an [XDR Collector Filebeat profile](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/XDR-Collector-profiles):
       - For a *Windows* server see [Add an XDR Collector profile for Windows](https://docs-cortex.pawloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Add-an-XDR-Collector-profile-for-Windows).
