@@ -73,6 +73,7 @@ script:
       - 'true'
       - 'false'
       required: true
+      hidden: true
     - default: false
       description: Date from which to get events.
       name: from_date
