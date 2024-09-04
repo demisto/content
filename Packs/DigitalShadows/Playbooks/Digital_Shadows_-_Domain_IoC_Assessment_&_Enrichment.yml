@@ -651,6 +651,6 @@ outputs:
 - contextPath: DBotScore.Type
   description: Indicator Type.
   type: string
-fromversion: 6.10.0
+fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
