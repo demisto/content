@@ -299,3 +299,24 @@ def test_return_indicator_entry(mocker):
     indicator = FindEmailCampaign.return_indicator_entry(incidents)
     assert indicator["id"].values[0] == "1"
     assert indicator["relatedIncCount"].values[0] == 1
+
+
+CONTENT_ENTRY = {'Contents': '[]', 'Type': 1}
+NON_CONTENT_ENTRY1 = {'Contents': '', 'Type': 16}
+NON_CONTENT_ENTRY2 = {'NotContents': '', 'Type': 16}
+
+
+def test_return_non_content_entries(mocker):
+    """
+    Given: a content entry and non-content entries as a response to the executeCommand.
+    When: Running the scipt (usually happens with debug-mode=true)
+    Then: assert the non-content entries are returned.
+    """
+    import FindEmailCampaign
+    mocker.patch.object(FindEmailCampaign.demisto, "args", return_value={})
+    mocker.patch.object(FindEmailCampaign.demisto, "executeCommand", return_value=[CONTENT_ENTRY, NON_CONTENT_ENTRY1,
+                                                                                   NON_CONTENT_ENTRY2])
+
+    return_results_mock = mocker.patch("FindEmailCampaign.return_results")
+    FindEmailCampaign.main()
+    return_results_mock.assert_called_with([NON_CONTENT_ENTRY1, NON_CONTENT_ENTRY2])

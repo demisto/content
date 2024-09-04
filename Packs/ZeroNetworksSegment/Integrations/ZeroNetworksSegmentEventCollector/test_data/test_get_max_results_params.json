@@ -1,0 +1,39 @@
+{
+    "test_cases": [
+        {
+            "params": {"max_fetch_audit": "50"},
+            "log_type": "audit",
+            "expected": [50, 50]
+        },
+        {
+            "params": {"max_fetch_audit": "20000"},
+            "log_type": "audit",
+            "expected": [20000, 10000]
+        },
+        {
+            "params": {},
+            "log_type": "audit",
+            "expected": [10000, 10000]
+        },
+        {
+            "params": {"max_fetch_network": "1000"},
+            "log_type": "network_activities",
+            "expected": [1000, 400]
+        },
+        {
+            "params": {"max_fetch_network": "300"},
+            "log_type": "network_activities",
+            "expected": [300, 300]
+        },
+        {
+            "params": {},
+            "log_type": "network_activities",
+            "expected": [2000, 400]
+        },
+        {
+            "params": {"max_fetch_audit": "1"},
+            "log_type": "audit",
+            "expected": [1, 20]
+        }
+    ]
+}
