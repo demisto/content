@@ -2632,9 +2632,9 @@ def clone_ioc_command(client: Client, indicator_id: str = None) -> CommandResult
     res_json = client.http_request("POST", F"v2/intelligence/{indicator_id}/clone/")
 
     # append the indocator ID being used in the clone
-    res_json["indicator_id"] = indicator_id
+    res_json["ID"] = indicator_id
 
-    clone_table = tableToMarkdown('Clone operation results', res_json, removeNull=True,
+    clone_table = tableToMarkdown(f'Clone operation results for indicator {indicator_id}', res_json, removeNull=True,
                                   headerTransform=string_to_table_header)
 
     return CommandResults(
