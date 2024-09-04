@@ -1037,7 +1037,16 @@ def search_indicator(indicator_type, indicator_value, client=None):
     demisto.debug(f'search_indicator {indicator_value=}')
 
     try:
-        result = client.get_url_enrichment(headers, params)
+        if client:
+            result = client.get_url_enrichment(headers, params)
+        else:
+            result = requests.request(
+                method='GET',
+                url=f'{BASE_URL}/tic',
+                verify=USE_SSL,
+                headers=headers,
+                params=params
+            )
         demisto.debug(f'search_indicator: {result.status_code=} {result=}')
 
         result_json = result.json()
