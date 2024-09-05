@@ -6,15 +6,15 @@ script: ''
 type: python
 tags:
 - Sigma
-comment: Allows to convert a Sigma Rule indicator into a SIEM query.
+comment: Allows converting a Sigma Rule indicator into a SIEM query.
 description: Convert a Sigma indicator into a query in the selected query language.
 enabled: true
 args:
 - name: indicator
   required: true
-  description: The sigma rule indicator to convert to a query.
+  description: The Sigma Rule indicator to convert to a query.
 - name: SIEM
-  description: The SIEM to convert the sigma rule to.
+  description: The SIEM to convert the Sigma Rule to.
   required: true
   auto: PREDEFINED
   predefined:

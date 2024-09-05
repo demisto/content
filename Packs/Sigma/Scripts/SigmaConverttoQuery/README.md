@@ -1,4 +1,4 @@
-Allows to convert a Sigma Rule indicator into a SIEM query.
+Allows converting a Sigma Rule indicator into a SIEM query.
 
 ## Script Data
 
@@ -15,7 +15,7 @@ Allows to convert a Sigma Rule indicator into a SIEM query.
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| indicator | The sigma rule indicator to convert to a query |
+| indicator | The Sigma Rule indicator to convert to a query |
 | SIEM |  |
 
 ## Outputs

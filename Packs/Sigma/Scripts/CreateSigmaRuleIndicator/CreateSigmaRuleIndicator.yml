@@ -18,7 +18,7 @@ args:
   - "true"
   - "false"
   defaultValue: "true"
-  description: Creates the indicators, if False returns a JSON of them (True by default).
+  description: If true, creates the indicators,. If false, returns a JSON of indicators. (Default is true).
 scripttarget: 0
 subtype: python3
 runonce: false
