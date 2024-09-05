@@ -83,6 +83,7 @@ class Client(object):
 
     def build_indicators(self, args: Dict[str, Any], data: list):
         indicators = []
+        skipped_indicators = 0
         for eachres in data:
             indicator_obj = {
                 "service": "Cyble Feed"
@@ -97,9 +98,11 @@ class Client(object):
                     data_r = self.get_recursively(eachres['observables']['observables'][0], 'value')
                 except Exception:
                     demisto.debug(f'Found indicator without observable field: {eachres}')
+                    skipped_indicators = skipped_indicators + 1
                     continue
 
             if not data_r:
+                skipped_indicators = skipped_indicators + 1
                 continue
 
             if multi_data:
@@ -130,6 +133,8 @@ class Client(object):
             indicator_obj['rawJSON'] = eachres
             indicators.append(indicator_obj)
 
+        demisto.info(f"Total skipped indicators in build indicators: {skipped_indicators}")
+
         return indicators
 
     def parse_to_json(self, content):
@@ -153,6 +158,7 @@ class Client(object):
         taxii_data = []
         save_fetch_time: str = str(args.get('begin'))
         count = 0
+        skipped_indicators = 0
 
         try:
 
@@ -168,6 +174,7 @@ class Client(object):
                 elif response.get('ttps') or False:
                     content = response.get('ttps').get('ttps')
                 else:
+                    skipped_indicators = skipped_indicators + 1
                     continue
 
                 for eachone in content:
@@ -189,6 +196,8 @@ class Client(object):
         except Exception as e:
             demisto.error("Failed to fetch feed details, exception:{}".format(e))
             raise e
+
+        demisto.info(f"Total skipped indicators in get taxii {skipped_indicators}")
 
         return taxii_data, save_fetch_time
 

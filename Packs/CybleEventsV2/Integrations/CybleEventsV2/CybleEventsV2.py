@@ -1,3 +1,4 @@
+import demistomock as demisto
 from CommonServerPython import *
 
 ''' IMPORTS '''
@@ -359,6 +360,8 @@ def cyble_events(client, method, token, url, args, last_run, hide_cvv_expiry, in
 
     """
 
+    demisto.info("Test logs1, Test logs1, Test logs1")
+
     input_params = {}
 
     input_params['order_by'] = args.get('order_by', "asc")
@@ -389,6 +392,8 @@ def cyble_events(client, method, token, url, args, last_run, hide_cvv_expiry, in
         input_params['end_date'] = datetime.utcnow().astimezone().isoformat()
 
     latest_created_time = input_params['start_date']
+
+    demisto.info("Test logs2, Test logs2, Test logs2")
 
     final_input_structure = alert_input_structure(input_params)
 
@@ -463,6 +468,8 @@ def cyble_events(client, method, token, url, args, last_run, hide_cvv_expiry, in
     del timestamp_count
 
     incidents = []
+
+    demisto.info("Test logs3, Test logs3, Test logs3")
 
     if alerts:
 
