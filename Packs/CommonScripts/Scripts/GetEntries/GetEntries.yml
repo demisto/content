@@ -6,7 +6,7 @@ script: ''
 type: python
 tags:
 - Utility
-comment: Collect entries matching to the conditions in the war room
+comment: Collect entries matching to the conditions in the war room.
 enabled: true
 args:
 - name: id

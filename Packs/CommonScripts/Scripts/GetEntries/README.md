@@ -1,4 +1,4 @@
-Collect entries matching to the conditions in the war room
+Collect entries matching to the conditions in the war room.
 
 ## Script Data
 
