@@ -14,7 +14,7 @@ With today's evolving threat landscape, data is under constant risk of data dest
 
 ## Automation Use cases:
 
-- Disable data aging within Commvault Cloud when server compromise is detected to protect backup data
+- Disable data aging within Commvault Cloud when server compromise is detected to protect backup data.
 - Interactive runbook to disable Commvault Cloud user account if suspicious user behavior is detected to avoid exfiltration attempts.
 - Interactive runbook to disable IDP provider configured for Commvault Cloud user authentication to restrict access to backups in the event of a cyber incident to avoid exfiltration attempts.
 - Add a VM to the Cleanroom using the nearest clean recovery point, identified based on the incident time, after a compromise is detected.
