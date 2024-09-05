@@ -12,7 +12,7 @@ filter cat = "audit"
     lowercase_cs3 = lowercase(cs3)
 | alter
 	xdm.observer.version = cefDeviceVersion,
-	xdm.observer.unique_identifier = cefDeviceEventClassId,
+	xdm.observer.unique_identifier = to_string(cefDeviceEventClassId),
 	xdm.alert.name = cefName,
 	xdm.alert.severity = cefSeverity,
 	xdm.observer.type = cat,
@@ -67,7 +67,7 @@ filter cat = "attack"
 	xdm.network.http.url = request,
 	xdm.network.http.method = if(requestMethod = "ACL", XDM_CONST.HTTP_METHOD_ACL, requestMethod = "BASELINE_CONTROL", XDM_CONST.HTTP_METHOD_BASELINE_CONTROL, requestMethod = "BIND", XDM_CONST.HTTP_METHOD_BIND, requestMethod = "CHECKIN", XDM_CONST.HTTP_METHOD_CHECKIN, requestMethod = "CHECKOUT", XDM_CONST.HTTP_METHOD_CHECKOUT, requestMethod = "CONNECT", XDM_CONST.HTTP_METHOD_CONNECT, requestMethod = "COPY", XDM_CONST.HTTP_METHOD_COPY, requestMethod = "DELETE", XDM_CONST.HTTP_METHOD_DELETE, requestMethod = "GET", XDM_CONST.HTTP_METHOD_GET, requestMethod = "HEAD", XDM_CONST.HTTP_METHOD_HEAD, requestMethod = "LABEL", XDM_CONST.HTTP_METHOD_LABEL, requestMethod = "LINK", XDM_CONST.HTTP_METHOD_LINK, requestMethod = "LOCK", XDM_CONST.HTTP_METHOD_LOCK, requestMethod = "MERGE", XDM_CONST.HTTP_METHOD_MERGE, requestMethod = "MKACTIVITY", XDM_CONST.HTTP_METHOD_MKACTIVITY, requestMethod = "MKCALENDAR", XDM_CONST.HTTP_METHOD_MKCALENDAR, requestMethod = "MKCOL", XDM_CONST.HTTP_METHOD_MKCOL, requestMethod = "MKREDIRECTREF", XDM_CONST.HTTP_METHOD_MKREDIRECTREF, requestMethod = "MKWORKSPACE", XDM_CONST.HTTP_METHOD_MKWORKSPACE, requestMethod = "MOVE", XDM_CONST.HTTP_METHOD_MOVE, requestMethod = "OPTIONS", XDM_CONST.HTTP_METHOD_OPTIONS, requestMethod = "ORDERPATCH", XDM_CONST.HTTP_METHOD_ORDERPATCH, requestMethod = "PATCH", XDM_CONST.HTTP_METHOD_PATCH, requestMethod = "POST", XDM_CONST.HTTP_METHOD_POST, requestMethod = "PRI", XDM_CONST.HTTP_METHOD_PRI, requestMethod = "PROPFIND", XDM_CONST.HTTP_METHOD_PROPFIND, requestMethod = "PROPPATCH", XDM_CONST.HTTP_METHOD_PROPPATCH, requestMethod = "PUT", XDM_CONST.HTTP_METHOD_PUT, requestMethod = "REBIND", XDM_CONST.HTTP_METHOD_REBIND, requestMethod = "REPORT", XDM_CONST.HTTP_METHOD_REPORT, requestMethod = "SEARCH", XDM_CONST.HTTP_METHOD_SEARCH, requestMethod = "TRACE", XDM_CONST.HTTP_METHOD_TRACE, requestMethod = "UNBIND", XDM_CONST.HTTP_METHOD_UNBIND, requestMethod = "UNCHECKOUT", XDM_CONST.HTTP_METHOD_UNCHECKOUT, requestMethod = "UNLINK", XDM_CONST.HTTP_METHOD_UNLINK, requestMethod = "UNLOCK", XDM_CONST.HTTP_METHOD_UNLOCK, requestMethod = "UPDATE", XDM_CONST.HTTP_METHOD_UPDATE, requestMethod = "UPDATEREDIRECTREF", XDM_CONST.HTTP_METHOD_UPDATEREDIRECTREF, requestMethod = "VERSION_CONTROL", XDM_CONST.HTTP_METHOD_VERSION_CONTROL, requestMethod = null, null, to_string(requestMethod)),
 	xdm.source.user_agent = requestClientApplication,
-	xdm.network.rule = cn3,
+	xdm.network.rule = to_string(cn3),
 	xdm.alert.original_threat_name = cs6,
 	xdm.event.description = msg;
 
