@@ -12,7 +12,7 @@ args:
 - name: id
   description: Optional incident ID to fetch entries from. If not specified, current incident is used.
 - name: tags
-  description: The list of tags
+  description: The list of tags.
   isArray: true
 - name: categories
   description: The list of categories. (commandAndResults, playbookTaskResult, playbookTaskStartAndDone, playbookErrors, justFound, deleted, incidentInfo, chats, evidence, notes, attachments).
@@ -40,17 +40,17 @@ args:
   description: The ID of the parent entry.
 outputs:
 - contextPath: Entry.ID
-  description: Entry ID
+  description: Entry ID.
 - contextPath: Entry.Type
-  description: Entry Type
+  description: Entry Type.
 - contextPath: Entry.Tags
-  description: Tags associated with the entry
+  description: Tags associated with the entry.
 - contextPath: Entry.Category
-  description: Entry categories
+  description: Entry categories.
 - contextPath: Entry.Created
-  description: Creation time of the entry
+  description: Creation time of the entry.
 - contextPath: Entry.Modified
-  description: Last modified time of the entry
+  description: Last modified time of the entry.
 scripttarget: 0
 subtype: python3
 dockerimage: demisto/python3:3.11.9.109226
