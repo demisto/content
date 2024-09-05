@@ -1768,7 +1768,7 @@ Automate a remote script's execution cycle and return the script's results.
 
 
 ***
-Automate a power query and return the query results.
+Automate a power query and return the query results. (The maximum timeout of 300 seconds is allowed.)
 
 #### Base Command
 

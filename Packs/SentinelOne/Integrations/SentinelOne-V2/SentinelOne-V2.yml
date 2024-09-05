@@ -2535,7 +2535,7 @@ script:
       name: timeout
     - name: query_id
       description: "QueryId. Example: pq3be5e2747f716cxxxxxxxxxxxxx20a0."
-    description: Automate a power query and return the query results.
+    description: Automate a power query and return the query results. (The maximum timeout of 300 seconds is allowed.)
     name: sentinelone-get-power-query-results
     outputs: []
     polling: true
