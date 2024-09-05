@@ -40,7 +40,7 @@ class Client(BaseClient):
     def get_incident_url(self, inc_id: str):
         return urljoin(self._base_url, f'respond/incident/{inc_id}')
 
-    def _http_request(self, method, url_suffix='', **kwargs):
+    def _http_request(self, method, url_suffix='', **kwargs):  # type: ignore[override]
         """Http request wrapper, handles authentication in case token expires.
 
            Args:
