@@ -8789,7 +8789,7 @@ class URLFilteringProfile(VersionedPanObject):
         )
 
 
-def run_op_command(device: Union[Panorama, Firewall], cmd: str, **kwargs):
+def run_op_command(device: Union[Panorama, Firewall], cmd: str, **kwargs) -> ET.Element:
     """
     Run OP command.
 
@@ -9711,6 +9711,7 @@ class ShowJobsAllResultData(ResultData):
     stoppable: str
     positionInQ: int
     progress: int
+    warnings: Any = None
     description: str = ""
 
     _output_prefix = OUTPUT_PREFIX + "JobStatus"
@@ -9719,19 +9720,6 @@ class ShowJobsAllResultData(ResultData):
 
     def __post_init__(self):
         self.id = int(self.id)
-
-
-@dataclass
-class ShowJobsAllCommandResult:
-    summary_data: List[ShowJobsAllSummaryData]
-    result_data: List[ShowJobsAllResultData]
-
-    _output_prefix = OUTPUT_PREFIX + "JobStatus"
-    _title = "PAN-OS Job Status"
-
-    _summary_cls = ShowJobsAllSummaryData
-    _result_cls = ShowJobsAllResultData
-    _outputs_key_field = "id"
 
 
 @dataclass
@@ -9914,7 +9902,7 @@ def dataclass_from_dict(device: Union[Panorama, Firewall], object_dict: dict, cl
     return class_type(**result_dict)
 
 
-def flatten_xml_to_dict(element, object_dict: dict, class_type: Callable):
+def flatten_xml_to_dict(element: ET.Element, object_dict: dict, class_type: type):
     """
     Given an XML element, a dictionary, and a class, flattens the XML into the class.
     This is a recursive function that will resolve child elements.
@@ -9937,7 +9925,7 @@ def flatten_xml_to_dict(element, object_dict: dict, class_type: Callable):
     return object_dict
 
 
-def dataclass_from_element(device: Union[Panorama, Firewall], class_type: Callable, element):
+def dataclass_from_element(device: Union[Panorama, Firewall], class_type: type, element: Optional[ET.Element]):
     """
     Turns an XML `Element` Object into an instance of the provided dataclass. Dataclass parameters must match
     element: Optional[Element]
@@ -9961,7 +9949,11 @@ def dataclass_from_element(device: Union[Panorama, Firewall], class_type: Callab
         if dataclass_field:
             object_dict[attr_name] = attr_value
 
-    return class_type(**flatten_xml_to_dict(element, object_dict, class_type))
+    try:
+        return class_type(**flatten_xml_to_dict(element, object_dict, class_type))
+    except TypeError as error:  # catch cases where values are missing from the element
+        demisto.debug(f'{class_type.__name__!r} cannot be instantiated with element: {elem2json(element, "")}\n{error=}')
+        return
 
 
 def resolve_host_id(device: PanDevice):
@@ -11119,7 +11111,7 @@ class UniversalCommand:
         status=None,
         id: Optional[int] = None,
         target: Optional[str] = None
-    ) -> List[ShowJobsAllResultData]:
+    ) -> Union[list[ShowJobsAllResultData], ShowJobsAllResultData]:
         """
         Returns all jobs running on the system.
         :param topology: `Topology` instance.
@@ -11134,14 +11126,14 @@ class UniversalCommand:
             response = run_op_command(device, command)
 
             for job in response.findall("./result/job"):
-                result_data_obj: ShowJobsAllResultData = dataclass_from_element(device, ShowJobsAllResultData,
-                                                                                job)
+                result_data_obj: ShowJobsAllResultData = dataclass_from_element(device, ShowJobsAllResultData, job)
 
-                result_data.append(result_data_obj)
-
-                # Filter the result data
-                result_data = [x for x in result_data if x.status == status or not status]
-                result_data = [x for x in result_data if x.type == job_type or not job_type]
+                if (
+                    result_data_obj is not None
+                    and (result_data_obj.status == status or not status)
+                    and (result_data_obj.type == job_type or not job_type)
+                ):
+                    result_data.append(result_data_obj)
 
         # The below is very important for XSOAR to de-duplicate the returned key. If there is only one obj
         # being returned, return it as a dict instead of a list.
@@ -11535,7 +11527,7 @@ def get_jobs(
     job_type: Optional[str] = None,
     id: Optional[str] = None,
     target: Optional[str] = None
-) -> List[ShowJobsAllResultData]:
+) -> Union[list[ShowJobsAllResultData], ShowJobsAllResultData]:
     """
     Get all the jobs from the devices in the environment, or a single job when ID is specified.
 
@@ -14507,7 +14499,6 @@ def get_query_by_job_id_request(log_type: str, query: str, max_fetch: int) -> st
     """
     params = assign_params(key=API_KEY, type='log',
                            log_type=LOG_TYPE_TO_REQUEST[log_type], query=query, nlogs=max_fetch, dir='forward')
-    demisto.debug(f'{params=}')
     response = http_request(URL, 'GET', params=params)
     return dict_safe_get(response, ('response', 'result', 'job'))  # type: ignore
 
