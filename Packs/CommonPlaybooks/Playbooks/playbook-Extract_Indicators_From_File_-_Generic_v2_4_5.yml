@@ -22,6 +22,7 @@ description: |-
   - XLSB
   - DOT
   - PPSM.
+  The playbook does not support encrypted / password-protected files such as XLSB. Such files will be skipped.
 starttaskid: "0"
 tasks:
   "0":

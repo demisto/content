@@ -18,6 +18,7 @@ Supported file types:
 - XLSB
 - DOT
 - PPSM.
+The playbook does not support encrypted / password-protected files such as XLSB. Such files will be skipped.
 
 ## Dependencies
 
@@ -33,18 +34,18 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* SetAndHandleEmpty
+* ExtractIndicatorsFromWordFile
 * ExtractHyperlinksFromOfficeFiles
 * ExtractIndicatorsFromTextFile
-* ExtractIndicatorsFromWordFile
 * ReadQRCode
-* ReadPDFFileV2
 * ConvertFile
+* SetAndHandleEmpty
+* ReadPDFFileV2
 
 ### Commands
 
-* rasterize-pdf
 * image-ocr-extract-text
+* rasterize-pdf
 
 ## Playbook Inputs
 
