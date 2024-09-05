@@ -18,7 +18,7 @@ args:
   description: The list of categories. (commandAndResults, playbookTaskResult, playbookTaskStartAndDone, playbookErrors, justFound, deleted, incidentInfo, chats, evidence, notes, attachments).
   isArray: true
 - name: page_size
-  description: The number of entries to return, Maximum is 1000.
+  description: The number of entries to return. Maximum is 1000.
 - name: last_id
   description: Return entries starting from the specified entry ID and backward.
 - name: first_id
@@ -29,13 +29,13 @@ args:
   description: Return entries with the specified users.
   isArray: true
 - name: tags_and_operator
-  description: Return entries that include all specified tags.
+  description: Whether to return entries that include all specified tags.
   defaultValue: 'false'
   predefined:
   - 'true'
   - 'false'
 - name: from_time
-  description: Return entries from this time and forward, Format is ISO8601 (i.e. '2020-04-30T10:35:00.000Z').
+  description: Return entries from this time and forward. Format is ISO8601 (i.e., '2020-04-30T10:35:00.000Z').
 - name: parent_id
   description: The ID of the parent entry.
 outputs:
