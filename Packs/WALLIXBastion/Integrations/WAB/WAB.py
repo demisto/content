@@ -32,6 +32,13 @@ def add_key_to_outputs(outputs: dict, key_name: str, key_val):
         outputs[key_name] = str(key_val)
 
 
+def to_markdown(name, t):
+    try:
+        return tableToMarkdown(name, t)
+    except Exception as e:
+        return "Success (failed to format output: %s)" % str(e)
+
+
 class Client(BaseClient):
     def __init__(self, auth_key, auth_user, is_password, server_url, verify, proxy, timeout):
         self._auth_key = auth_key
@@ -186,7 +193,11 @@ class Client(BaseClient):
         response = self._http_request("get", f"/accounts/{account_id}/references", params=params)
 
         return CommandResults(
-            outputs_prefix="WAB.account_reference_get", outputs_key_field="id", outputs=response, raw_response=response
+            outputs_prefix="WAB.account_reference_get",
+            outputs_key_field="id",
+            outputs=response,
+            readable_output=to_markdown("wab-get-account-references", response),
+            raw_response=response,
         )
 
     def get_account_reference(self, args: Dict[str, Any]):
@@ -198,7 +209,11 @@ class Client(BaseClient):
         response = self._http_request("get", f"/accounts/{account_id}/references/{reference_id}", params=params)
 
         return CommandResults(
-            outputs_prefix="WAB.account_reference_get", outputs_key_field="id", outputs=response, raw_response=response
+            outputs_prefix="WAB.account_reference_get",
+            outputs_key_field="id",
+            outputs=response,
+            readable_output=to_markdown("wab-get-account-reference", response),
+            raw_response=response,
         )
 
     def get_all_accounts(self, args: Dict[str, Any]):
@@ -227,7 +242,13 @@ class Client(BaseClient):
         )
         response = self._http_request("get", "/accounts", params=params)
 
-        return CommandResults(outputs_prefix="WAB.account_get", outputs_key_field="id", outputs=response, raw_response=response)
+        return CommandResults(
+            outputs_prefix="WAB.account_get",
+            outputs_key_field="id",
+            outputs=response,
+            readable_output=to_markdown("wab-get-all-accounts", response),
+            raw_response=response,
+        )
 
     def get_one_account(self, args: Dict[str, Any]):
         account_id = str_arg(args, "account_id")
@@ -248,7 +269,13 @@ class Client(BaseClient):
         )
         response = self._http_request("get", f"/accounts/{account_id}", params=params)
 
-        return CommandResults(outputs_prefix="WAB.account_get", outputs_key_field="id", outputs=response, raw_response=response)
+        return CommandResults(
+            outputs_prefix="WAB.account_get",
+            outputs_key_field="id",
+            outputs=response,
+            readable_output=to_markdown("wab-get-one-account", response),
+            raw_response=response,
+        )
 
     def delete_account(self, args: Dict[str, Any]):
         account_id = str_arg(args, "account_id")
@@ -270,7 +297,11 @@ class Client(BaseClient):
         response = self._http_request("get", f"/applications/{application_id}/localdomains/{domain_id}/accounts", params=params)
 
         return CommandResults(
-            outputs_prefix="WAB.app_account_get", outputs_key_field="id", outputs=response, raw_response=response
+            outputs_prefix="WAB.app_account_get",
+            outputs_key_field="id",
+            outputs=response,
+            readable_output=to_markdown("wab-get-application-accounts", response),
+            raw_response=response,
         )
 
     def add_account_to_local_domain_of_application(self, args: Dict[str, Any]):
@@ -309,7 +340,11 @@ class Client(BaseClient):
         )
 
         return CommandResults(
-            outputs_prefix="WAB.app_account_get", outputs_key_field="id", outputs=response, raw_response=response
+            outputs_prefix="WAB.app_account_get",
+            outputs_key_field="id",
+            outputs=response,
+            readable_output=to_markdown("wab-get-application-account", response),
+            raw_response=response,
         )
 
     def edit_account_on_local_domain_of_application(self, args: Dict[str, Any]):
@@ -363,7 +398,11 @@ class Client(BaseClient):
         response = self._http_request("get", "/applications", params=params)
 
         return CommandResults(
-            outputs_prefix="WAB.application_get", outputs_key_field="id", outputs=response, raw_response=response
+            outputs_prefix="WAB.application_get",
+            outputs_key_field="id",
+            outputs=response,
+            readable_output=to_markdown("wab-get-applications", response),
+            raw_response=response,
         )
 
     def get_application(self, args: Dict[str, Any]):
@@ -374,7 +413,11 @@ class Client(BaseClient):
         response = self._http_request("get", f"/applications/{application_id}", params=params)
 
         return CommandResults(
-            outputs_prefix="WAB.application_get", outputs_key_field="id", outputs=response, raw_response=response
+            outputs_prefix="WAB.application_get",
+            outputs_key_field="id",
+            outputs=response,
+            readable_output=to_markdown("wab-get-application", response),
+            raw_response=response,
         )
 
     def edit_application(self, args: Dict[str, Any]):
@@ -414,7 +457,13 @@ class Client(BaseClient):
         params = assign_params(approval_id=approval_id, q=q, sort=sort, offset=offset, limit=limit, fields=fields)
         response = self._http_request("get", "/approvals", params=params)
 
-        return CommandResults(outputs_prefix="WAB.approval_get", outputs_key_field="id", outputs=response, raw_response=response)
+        return CommandResults(
+            outputs_prefix="WAB.approval_get",
+            outputs_key_field="id",
+            outputs=response,
+            readable_output=to_markdown("wab-get-approvals", response),
+            raw_response=response,
+        )
 
     def get_approvals_for_all_approvers(self, args: Dict[str, Any]):
         q = str_arg(args, "q")
@@ -426,7 +475,13 @@ class Client(BaseClient):
         params = assign_params(q=q, sort=sort, offset=offset, limit=limit, fields=fields)
         response = self._http_request("get", "/approvals/assignments", params=params)
 
-        return CommandResults(outputs_prefix="WAB.approval_get", outputs_key_field="id", outputs=response, raw_response=response)
+        return CommandResults(
+            outputs_prefix="WAB.approval_get",
+            outputs_key_field="id",
+            outputs=response,
+            readable_output=to_markdown("wab-get-approvals-for-all-approvers", response),
+            raw_response=response,
+        )
 
     def reply_to_approval_request(self, args: Dict[str, Any]):
         approval_assignment_post_id = str_arg(args, "approval_assignment_post_id")
@@ -461,7 +516,13 @@ class Client(BaseClient):
         params = assign_params(q=q, sort=sort, offset=offset, limit=limit, fields=fields)
         response = self._http_request("get", f"/approvals/assignments/{user_name}", params=params)
 
-        return CommandResults(outputs_prefix="WAB.approval_get", outputs_key_field="id", outputs=response, raw_response=response)
+        return CommandResults(
+            outputs_prefix="WAB.approval_get",
+            outputs_key_field="id",
+            outputs=response,
+            readable_output=to_markdown("wab-get-approvals-for-approver", response),
+            raw_response=response,
+        )
 
     def cancel_accepted_approval(self, args: Dict[str, Any]):
         approval_assignment_cancel_post_id = str_arg(args, "approval_assignment_cancel_post_id")
@@ -484,6 +545,7 @@ class Client(BaseClient):
             outputs_prefix="WAB.approval_assignment_notify_post_response",
             outputs_key_field="approval_assignment_notify_post_id",
             outputs=response,
+            readable_output=to_markdown("wab-notify-approvers-linked-to-approval-assignment", response),
             raw_response=response,
         )
 
@@ -499,7 +561,13 @@ class Client(BaseClient):
         params = assign_params(user=user, q=q, sort=sort, offset=offset, limit=limit, fields=fields, approval_id=approval_id)
         response = self._http_request("get", "/approvals/requests", params=params)
 
-        return CommandResults(outputs_prefix="WAB.approval_get", outputs_key_field="id", outputs=response, raw_response=response)
+        return CommandResults(
+            outputs_prefix="WAB.approval_get",
+            outputs_key_field="id",
+            outputs=response,
+            readable_output=to_markdown("wab-get-approval-request-pending-for-user", response),
+            raw_response=response,
+        )
 
     def make_new_approval_request_to_access_target(self, args: Dict[str, Any]):
         approval_request_post_target_name = str_arg(args, "approval_request_post_target_name")
@@ -533,6 +601,7 @@ class Client(BaseClient):
             outputs_prefix="WAB.approval_request_post_response_ok",
             outputs_key_field="id",
             outputs=response,
+            readable_output=to_markdown("wab-make-new-approval-request-to-access-target", response),
             raw_response=response,
         )
 
@@ -556,6 +625,7 @@ class Client(BaseClient):
             outputs_prefix="WAB.approval_request_notify_post_response",
             outputs_key_field="approval_request_notify_post_id",
             outputs=response,
+            readable_output=to_markdown("wab-notify-approvers-linked-to-approval-request", response),
             raw_response=response,
         )
 
@@ -568,7 +638,11 @@ class Client(BaseClient):
         response = self._http_request("get", f"/approvals/requests/target/{target_name}", params=params)
 
         return CommandResults(
-            outputs_prefix="WAB.approval_request_target_get", outputs_key_field="id", outputs=response, raw_response=response
+            outputs_prefix="WAB.approval_request_target_get",
+            outputs_key_field="id",
+            outputs=response,
+            readable_output=to_markdown("wab-check-if-approval-is-required-for-target", response),
+            raw_response=response,
         )
 
     def get_auth_domains(self, args: Dict[str, Any]):
@@ -582,7 +656,11 @@ class Client(BaseClient):
         response = self._http_request("get", "/authdomains", params=params)
 
         return CommandResults(
-            outputs_prefix="WAB.auth_domain_get", outputs_key_field="id", outputs=response, raw_response=response
+            outputs_prefix="WAB.auth_domain_get",
+            outputs_key_field="id",
+            outputs=response,
+            readable_output=to_markdown("wab-get-auth-domains", response),
+            raw_response=response,
         )
 
     def get_auth_domain(self, args: Dict[str, Any]):
@@ -593,7 +671,11 @@ class Client(BaseClient):
         response = self._http_request("get", f"/authdomains/{domain_id}", params=params)
 
         return CommandResults(
-            outputs_prefix="WAB.auth_domain_get", outputs_key_field="id", outputs=response, raw_response=response
+            outputs_prefix="WAB.auth_domain_get",
+            outputs_key_field="id",
+            outputs=response,
+            readable_output=to_markdown("wab-get-auth-domain", response),
+            raw_response=response,
         )
 
     def get_authentications(self, args: Dict[str, Any]):
@@ -612,7 +694,11 @@ class Client(BaseClient):
         response = self._http_request("get", "/authentications", params=params)
 
         return CommandResults(
-            outputs_prefix="WAB.authentication_get", outputs_key_field="id", outputs=response, raw_response=response
+            outputs_prefix="WAB.authentication_get",
+            outputs_key_field="id",
+            outputs=response,
+            readable_output=to_markdown("wab-get-authentications", response),
+            raw_response=response,
         )
 
     def get_authentication(self, args: Dict[str, Any]):
@@ -626,7 +712,11 @@ class Client(BaseClient):
         response = self._http_request("get", f"/authentications/{auth_id}", params=params)
 
         return CommandResults(
-            outputs_prefix="WAB.authentication_get", outputs_key_field="id", outputs=response, raw_response=response
+            outputs_prefix="WAB.authentication_get",
+            outputs_key_field="id",
+            outputs=response,
+            readable_output=to_markdown("wab-get-authentication", response),
+            raw_response=response,
         )
 
     def get_authorizations(self, args: Dict[str, Any]):
@@ -640,7 +730,11 @@ class Client(BaseClient):
         response = self._http_request("get", "/authorizations", params=params)
 
         return CommandResults(
-            outputs_prefix="WAB.authorization_get", outputs_key_field="id", outputs=response, raw_response=response
+            outputs_prefix="WAB.authorization_get",
+            outputs_key_field="id",
+            outputs=response,
+            readable_output=to_markdown("wab-get-authorizations", response),
+            raw_response=response,
         )
 
     def add_authorization(self, args: Dict[str, Any]):
@@ -701,7 +795,11 @@ class Client(BaseClient):
         response = self._http_request("get", f"/authorizations/{authorization_id}", params=params)
 
         return CommandResults(
-            outputs_prefix="WAB.authorization_get", outputs_key_field="id", outputs=response, raw_response=response
+            outputs_prefix="WAB.authorization_get",
+            outputs_key_field="id",
+            outputs=response,
+            readable_output=to_markdown("wab-get-authorization", response),
+            raw_response=response,
         )
 
     def edit_authorization(self, args: Dict[str, Any]):
@@ -771,7 +869,11 @@ class Client(BaseClient):
         response = self._http_request("get", "/checkoutpolicies", params=params)
 
         return CommandResults(
-            outputs_prefix="WAB.checkoutpolicy_get", outputs_key_field="id", outputs=response, raw_response=response
+            outputs_prefix="WAB.checkoutpolicy_get",
+            outputs_key_field="id",
+            outputs=response,
+            readable_output=to_markdown("wab-get-checkout-policies", response),
+            raw_response=response,
         )
 
     def get_checkout_policy(self, args: Dict[str, Any]):
@@ -782,14 +884,23 @@ class Client(BaseClient):
         response = self._http_request("get", f"/checkoutpolicies/{checkout_policy_id}", params=params)
 
         return CommandResults(
-            outputs_prefix="WAB.checkoutpolicy_get", outputs_key_field="id", outputs=response, raw_response=response
+            outputs_prefix="WAB.checkoutpolicy_get",
+            outputs_key_field="id",
+            outputs=response,
+            readable_output=to_markdown("wab-get-checkout-policy", response),
+            raw_response=response,
         )
 
     def getx509_configuration_infos(self, args: Dict[str, Any]):
 
         response = self._http_request("get", "/config/x509")
 
-        return CommandResults(outputs_prefix="WAB.config_x509_get", outputs=response, raw_response=response)
+        return CommandResults(
+            outputs_prefix="WAB.config_x509_get",
+            outputs=response,
+            readable_output=to_markdown("wab-getx509-configuration-infos", response),
+            raw_response=response,
+        )
 
     def uploadx509_configuration(self, args: Dict[str, Any]):
         config_x509_post_ca_certificate = str_arg(args, "config_x509_post_ca_certificate")
@@ -833,7 +944,12 @@ class Client(BaseClient):
 
         response = self._http_request("get", "/confignumber")
 
-        return CommandResults(outputs_prefix="WAB.confignumber_get", outputs=response, raw_response=response)
+        return CommandResults(
+            outputs_prefix="WAB.confignumber_get",
+            outputs=response,
+            readable_output=to_markdown("wab-get-current-serial-configuration-number-of-bastion", response),
+            raw_response=response,
+        )
 
     def get_all_accounts_on_device_local_domain(self, args: Dict[str, Any]):
         device_id = str_arg(args, "device_id")
@@ -849,7 +965,11 @@ class Client(BaseClient):
         response = self._http_request("get", f"/devices/{device_id}/localdomains/{domain_id}/accounts", params=params)
 
         return CommandResults(
-            outputs_prefix="WAB.device_account_get", outputs_key_field="id", outputs=response, raw_response=response
+            outputs_prefix="WAB.device_account_get",
+            outputs_key_field="id",
+            outputs=response,
+            readable_output=to_markdown("wab-get-all-accounts-on-device-local-domain", response),
+            raw_response=response,
         )
 
     def add_account_to_local_domain_on_device(self, args: Dict[str, Any]):
@@ -893,7 +1013,11 @@ class Client(BaseClient):
         )
 
         return CommandResults(
-            outputs_prefix="WAB.device_account_get", outputs_key_field="id", outputs=response, raw_response=response
+            outputs_prefix="WAB.device_account_get",
+            outputs_key_field="id",
+            outputs=response,
+            readable_output=to_markdown("wab-get-one-account-on-device-local-domain", response),
+            raw_response=response,
         )
 
     def edit_account_on_local_domain_of_device(self, args: Dict[str, Any]):
@@ -951,7 +1075,12 @@ class Client(BaseClient):
         params = assign_params(q=q, sort=sort, offset=offset, limit=limit, fields=fields)
         response = self._http_request("get", f"/devices/{device_id}/certificates", params=params)
 
-        return CommandResults(outputs_prefix="WAB.device_certificates_get", outputs=response, raw_response=response)
+        return CommandResults(
+            outputs_prefix="WAB.device_certificates_get",
+            outputs=response,
+            readable_output=to_markdown("wab-get-certificates-on-device", response),
+            raw_response=response,
+        )
 
     def get_certificate_on_device(self, args: Dict[str, Any]):
         device_id = str_arg(args, "device_id")
@@ -967,7 +1096,12 @@ class Client(BaseClient):
         params = assign_params(q=q, sort=sort, offset=offset, limit=limit, fields=fields)
         response = self._http_request("get", f"/devices/{device_id}/certificates/{cert_type}/{address}/{port}", params=params)
 
-        return CommandResults(outputs_prefix="WAB.device_certificates_get", outputs=response, raw_response=response)
+        return CommandResults(
+            outputs_prefix="WAB.device_certificates_get",
+            outputs=response,
+            readable_output=to_markdown("wab-get-certificate-on-device", response),
+            raw_response=response,
+        )
 
     def revoke_certificate_of_device(self, args: Dict[str, Any]):
         device_id = str_arg(args, "device_id")
@@ -990,7 +1124,13 @@ class Client(BaseClient):
         params = assign_params(q=q, sort=sort, offset=offset, limit=limit, fields=fields)
         response = self._http_request("get", f"/devices/{device_id}/services", params=params)
 
-        return CommandResults(outputs_prefix="WAB.service_get", outputs_key_field="id", outputs=response, raw_response=response)
+        return CommandResults(
+            outputs_prefix="WAB.service_get",
+            outputs_key_field="id",
+            outputs=response,
+            readable_output=to_markdown("wab-get-services-of-device", response),
+            raw_response=response,
+        )
 
     def add_service_in_device(self, args: Dict[str, Any]):
         device_id = str_arg(args, "device_id")
@@ -1023,7 +1163,13 @@ class Client(BaseClient):
         params = assign_params(fields=fields)
         response = self._http_request("get", f"/devices/{device_id}/services/{service_id}", params=params)
 
-        return CommandResults(outputs_prefix="WAB.service_get", outputs_key_field="id", outputs=response, raw_response=response)
+        return CommandResults(
+            outputs_prefix="WAB.service_get",
+            outputs_key_field="id",
+            outputs=response,
+            readable_output=to_markdown("wab-get-service-of-device", response),
+            raw_response=response,
+        )
 
     def edit_service_of_device(self, args: Dict[str, Any]):
         device_id = str_arg(args, "device_id")
@@ -1059,7 +1205,13 @@ class Client(BaseClient):
         params = assign_params(q=q, sort=sort, offset=offset, limit=limit, fields=fields)
         response = self._http_request("get", "/devices", params=params)
 
-        return CommandResults(outputs_prefix="WAB.device_get", outputs_key_field="id", outputs=response, raw_response=response)
+        return CommandResults(
+            outputs_prefix="WAB.device_get",
+            outputs_key_field="id",
+            outputs=response,
+            readable_output=to_markdown("wab-get-devices", response),
+            raw_response=response,
+        )
 
     def add_device(self, args: Dict[str, Any]):
         device_post_device_name = str_arg(args, "device_post_device_name")
@@ -1084,7 +1236,13 @@ class Client(BaseClient):
         params = assign_params(fields=fields)
         response = self._http_request("get", f"/devices/{device_id}", params=params)
 
-        return CommandResults(outputs_prefix="WAB.device_get", outputs_key_field="id", outputs=response, raw_response=response)
+        return CommandResults(
+            outputs_prefix="WAB.device_get",
+            outputs_key_field="id",
+            outputs=response,
+            readable_output=to_markdown("wab-get-device", response),
+            raw_response=response,
+        )
 
     def edit_device(self, args: Dict[str, Any]):
         device_id = str_arg(args, "device_id")
@@ -1125,7 +1283,11 @@ class Client(BaseClient):
         response = self._http_request("get", f"/domains/{domain_id}/accounts", params=params)
 
         return CommandResults(
-            outputs_prefix="WAB.domain_account_get", outputs_key_field="id", outputs=response, raw_response=response
+            outputs_prefix="WAB.domain_account_get",
+            outputs_key_field="id",
+            outputs=response,
+            readable_output=to_markdown("wab-get-accounts-of-global-domain", response),
+            raw_response=response,
         )
 
     def add_account_in_global_domain(self, args: Dict[str, Any]):
@@ -1164,7 +1326,11 @@ class Client(BaseClient):
         response = self._http_request("get", f"/domains/{domain_id}/accounts/{account_id}", params=params)
 
         return CommandResults(
-            outputs_prefix="WAB.domain_account_get", outputs_key_field="id", outputs=response, raw_response=response
+            outputs_prefix="WAB.domain_account_get",
+            outputs_key_field="id",
+            outputs=response,
+            readable_output=to_markdown("wab-get-account-of-global-domain", response),
+            raw_response=response,
         )
 
     def edit_account_in_global_domain(self, args: Dict[str, Any]):
@@ -1226,7 +1392,13 @@ class Client(BaseClient):
         params = assign_params(q=q, sort=sort, offset=offset, limit=limit, fields=fields)
         response = self._http_request("get", "/domains", params=params)
 
-        return CommandResults(outputs_prefix="WAB.domain_get", outputs_key_field="id", outputs=response, raw_response=response)
+        return CommandResults(
+            outputs_prefix="WAB.domain_get",
+            outputs_key_field="id",
+            outputs=response,
+            readable_output=to_markdown("wab-get-global-domains", response),
+            raw_response=response,
+        )
 
     def get_global_domain(self, args: Dict[str, Any]):
         domain_id = str_arg(args, "domain_id")
@@ -1235,7 +1407,13 @@ class Client(BaseClient):
         params = assign_params(fields=fields)
         response = self._http_request("get", f"/domains/{domain_id}", params=params)
 
-        return CommandResults(outputs_prefix="WAB.domain_get", outputs_key_field="id", outputs=response, raw_response=response)
+        return CommandResults(
+            outputs_prefix="WAB.domain_get",
+            outputs_key_field="id",
+            outputs=response,
+            readable_output=to_markdown("wab-get-global-domain", response),
+            raw_response=response,
+        )
 
     def get_ldap_users_of_domain(self, args: Dict[str, Any]):
         domain = str_arg(args, "domain")
@@ -1249,7 +1427,11 @@ class Client(BaseClient):
         response = self._http_request("get", f"/ldapusers/{domain}", params=params)
 
         return CommandResults(
-            outputs_prefix="WAB.ldapuser_get", outputs_key_field=["domain", "user_name"], outputs=response, raw_response=response
+            outputs_prefix="WAB.ldapuser_get",
+            outputs_key_field=["domain", "user_name"],
+            outputs=response,
+            readable_output=to_markdown("wab-get-ldap-users-of-domain", response),
+            raw_response=response,
         )
 
     def get_ldap_user_of_domain(self, args: Dict[str, Any]):
@@ -1262,14 +1444,23 @@ class Client(BaseClient):
         response = self._http_request("get", f"/ldapusers/{domain}/{user_name}", params=params)
 
         return CommandResults(
-            outputs_prefix="WAB.ldapuser_get", outputs_key_field=["domain", "user_name"], outputs=response, raw_response=response
+            outputs_prefix="WAB.ldapuser_get",
+            outputs_key_field=["domain", "user_name"],
+            outputs=response,
+            readable_output=to_markdown("wab-get-ldap-user-of-domain", response),
+            raw_response=response,
         )
 
     def get_information_about_wallix_bastion_license(self, args: Dict[str, Any]):
 
         response = self._http_request("get", "/licenseinfo")
 
-        return CommandResults(outputs_prefix="WAB.licenseinfo_get", outputs=response, raw_response=response)
+        return CommandResults(
+            outputs_prefix="WAB.licenseinfo_get",
+            outputs=response,
+            readable_output=to_markdown("wab-get-information-about-wallix-bastion-license", response),
+            raw_response=response,
+        )
 
     def post_logsiem(self, args: Dict[str, Any]):
         logsiem_post_application = str_arg(args, "logsiem_post_application")
@@ -1290,7 +1481,11 @@ class Client(BaseClient):
         response = self._http_request("get", "/notifications", params=params)
 
         return CommandResults(
-            outputs_prefix="WAB.notification_get", outputs_key_field="id", outputs=response, raw_response=response
+            outputs_prefix="WAB.notification_get",
+            outputs_key_field="id",
+            outputs=response,
+            readable_output=to_markdown("wab-get-notifications", response),
+            raw_response=response,
         )
 
     def add_notification(self, args: Dict[str, Any]):
@@ -1321,7 +1516,11 @@ class Client(BaseClient):
         response = self._http_request("get", f"/notifications/{notification_id}")
 
         return CommandResults(
-            outputs_prefix="WAB.notification_get", outputs_key_field="id", outputs=response, raw_response=response
+            outputs_prefix="WAB.notification_get",
+            outputs_key_field="id",
+            outputs=response,
+            readable_output=to_markdown("wab-get-notification", response),
+            raw_response=response,
         )
 
     def edit_notification(self, args: Dict[str, Any]):
@@ -1371,7 +1570,11 @@ class Client(BaseClient):
         response = self._http_request("get", "/onboarding_objects", params=params)
 
         return CommandResults(
-            outputs_prefix="WAB.onboarding_objects_get", outputs_key_field="id", outputs=response, raw_response=response
+            outputs_prefix="WAB.onboarding_objects_get",
+            outputs_key_field="id",
+            outputs=response,
+            readable_output=to_markdown("wab-get-object-to-onboard", response),
+            raw_response=response,
         )
 
     def get_profiles(self, args: Dict[str, Any]):
@@ -1384,7 +1587,13 @@ class Client(BaseClient):
         params = assign_params(q=q, sort=sort, offset=offset, limit=limit, fields=fields)
         response = self._http_request("get", "/profiles", params=params)
 
-        return CommandResults(outputs_prefix="WAB.profile_get", outputs_key_field="id", outputs=response, raw_response=response)
+        return CommandResults(
+            outputs_prefix="WAB.profile_get",
+            outputs_key_field="id",
+            outputs=response,
+            readable_output=to_markdown("wab-get-profiles", response),
+            raw_response=response,
+        )
 
     def get_profile(self, args: Dict[str, Any]):
         profile_id = str_arg(args, "profile_id")
@@ -1393,7 +1602,13 @@ class Client(BaseClient):
         params = assign_params(fields=fields)
         response = self._http_request("get", f"/profiles/{profile_id}", params=params)
 
-        return CommandResults(outputs_prefix="WAB.profile_get", outputs_key_field="id", outputs=response, raw_response=response)
+        return CommandResults(
+            outputs_prefix="WAB.profile_get",
+            outputs_key_field="id",
+            outputs=response,
+            readable_output=to_markdown("wab-get-profile", response),
+            raw_response=response,
+        )
 
     def get_scanjobs(self, args: Dict[str, Any]):
         q = str_arg(args, "q")
@@ -1405,7 +1620,13 @@ class Client(BaseClient):
         params = assign_params(q=q, sort=sort, offset=offset, limit=limit, fields=fields)
         response = self._http_request("get", "/scanjobs", params=params)
 
-        return CommandResults(outputs_prefix="WAB.scanjob_get", outputs_key_field="id", outputs=response, raw_response=response)
+        return CommandResults(
+            outputs_prefix="WAB.scanjob_get",
+            outputs_key_field="id",
+            outputs=response,
+            readable_output=to_markdown("wab-get-scanjobs", response),
+            raw_response=response,
+        )
 
     def start_scan_job_manually(self, args: Dict[str, Any]):
         scanjob_post_scan_id = str_arg(args, "scanjob_post_scan_id")
@@ -1422,7 +1643,13 @@ class Client(BaseClient):
         params = assign_params(fields=fields)
         response = self._http_request("get", f"/scanjobs/{scanjob_id}", params=params)
 
-        return CommandResults(outputs_prefix="WAB.scanjob_get", outputs_key_field="id", outputs=response, raw_response=response)
+        return CommandResults(
+            outputs_prefix="WAB.scanjob_get",
+            outputs_key_field="id",
+            outputs=response,
+            readable_output=to_markdown("wab-get-scanjob", response),
+            raw_response=response,
+        )
 
     def cancel_scan_job(self, args: Dict[str, Any]):
         scanjob_id = str_arg(args, "scanjob_id")
@@ -1441,7 +1668,13 @@ class Client(BaseClient):
         params = assign_params(q=q, sort=sort, offset=offset, limit=limit, fields=fields)
         response = self._http_request("get", "/scans", params=params)
 
-        return CommandResults(outputs_prefix="WAB.scan_get", outputs_key_field="id", outputs=response, raw_response=response)
+        return CommandResults(
+            outputs_prefix="WAB.scan_get",
+            outputs_key_field="id",
+            outputs=response,
+            readable_output=to_markdown("wab-get-scans", response),
+            raw_response=response,
+        )
 
     def get_scan(self, args: Dict[str, Any]):
         scan_id = str_arg(args, "scan_id")
@@ -1450,7 +1683,13 @@ class Client(BaseClient):
         params = assign_params(fields=fields)
         response = self._http_request("get", f"/scans/{scan_id}", params=params)
 
-        return CommandResults(outputs_prefix="WAB.scan_get", outputs_key_field="id", outputs=response, raw_response=response)
+        return CommandResults(
+            outputs_prefix="WAB.scan_get",
+            outputs_key_field="id",
+            outputs=response,
+            readable_output=to_markdown("wab-get-scan", response),
+            raw_response=response,
+        )
 
     def get_sessionrights(self, args: Dict[str, Any]):
         count = bool_arg(args, "count")
@@ -1466,7 +1705,12 @@ class Client(BaseClient):
         )
         response = self._http_request("get", "/sessionrights", params=params)
 
-        return CommandResults(outputs_prefix="WAB.sessionrights_get", outputs=response, raw_response=response)
+        return CommandResults(
+            outputs_prefix="WAB.sessionrights_get",
+            outputs=response,
+            readable_output=to_markdown("wab-get-sessionrights", response),
+            raw_response=response,
+        )
 
     def get_sessionrights_user_name(self, args: Dict[str, Any]):
         user_name = str_arg(args, "user_name")
@@ -1480,7 +1724,11 @@ class Client(BaseClient):
         add_key_to_outputs(response, "user_name", user_name)
 
         return CommandResults(
-            outputs_prefix="WAB.sessionrights_get", outputs_key_field="user_name", outputs=response, raw_response=response
+            outputs_prefix="WAB.sessionrights_get",
+            outputs_key_field="user_name",
+            outputs=response,
+            readable_output=to_markdown("wab-get-sessionrights-user-name", response),
+            raw_response=response,
         )
 
     def generate_remote_application_token(self, args: Dict[str, Any]):
@@ -1529,7 +1777,13 @@ class Client(BaseClient):
         )
         response = self._http_request("get", "/sessions", params=params)
 
-        return CommandResults(outputs_prefix="WAB.session_get", outputs_key_field="id", outputs=response, raw_response=response)
+        return CommandResults(
+            outputs_prefix="WAB.session_get",
+            outputs_key_field="id",
+            outputs=response,
+            readable_output=to_markdown("wab-get-sessions", response),
+            raw_response=response,
+        )
 
     def edit_session(self, args: Dict[str, Any]):
         session_id = str_arg(args, "session_id")
@@ -1549,7 +1803,12 @@ class Client(BaseClient):
         params = assign_params(session_ids=session_ids, download=download)
         response = self._http_request("get", "/sessions/metadata", params=params)
 
-        return CommandResults(outputs_prefix="WAB.session_metadata_get", outputs=response, raw_response=response)
+        return CommandResults(
+            outputs_prefix="WAB.session_metadata_get",
+            outputs=response,
+            readable_output=to_markdown("wab-get-session-metadata", response),
+            raw_response=response,
+        )
 
     def get_session_sharing_requests(self, args: Dict[str, Any]):
         request_id = str_arg(args, "request_id")
@@ -1559,7 +1818,11 @@ class Client(BaseClient):
         response = self._http_request("get", "/sessions/requests", params=params)
 
         return CommandResults(
-            outputs_prefix="WAB.session_request_get", outputs_key_field="id", outputs=response, raw_response=response
+            outputs_prefix="WAB.session_request_get",
+            outputs_key_field="id",
+            outputs=response,
+            readable_output=to_markdown("wab-get-session-sharing-requests", response),
+            raw_response=response,
         )
 
     def create_session_request(self, args: Dict[str, Any]):
@@ -1595,7 +1858,11 @@ class Client(BaseClient):
         response = self._http_request("get", f"/sessions/traces/{session_id}", params=params)
 
         return CommandResults(
-            outputs_prefix="WAB.session_trace_get", outputs_key_field="session_id", outputs=response, raw_response=response
+            outputs_prefix="WAB.session_trace_get",
+            outputs_key_field="session_id",
+            outputs=response,
+            readable_output=to_markdown("wab-get-status-of-trace-generation", response),
+            raw_response=response,
         )
 
     def generate_trace_for_session(self, args: Dict[str, Any]):
@@ -1617,7 +1884,12 @@ class Client(BaseClient):
         params = assign_params(from_date=from_date, to_date=to_date)
         response = self._http_request("get", "/statistics", params=params)
 
-        return CommandResults(outputs_prefix="WAB.statistics_get", outputs=response, raw_response=response)
+        return CommandResults(
+            outputs_prefix="WAB.statistics_get",
+            outputs=response,
+            readable_output=to_markdown("wab-get-wallix-bastion-usage-statistics", response),
+            raw_response=response,
+        )
 
     def get_target_groups(self, args: Dict[str, Any]):
         device = str_arg(args, "device")
@@ -1635,7 +1907,11 @@ class Client(BaseClient):
         response = self._http_request("get", "/targetgroups", params=params)
 
         return CommandResults(
-            outputs_prefix="WAB.targetgroups_get", outputs_key_field="id", outputs=response, raw_response=response
+            outputs_prefix="WAB.targetgroups_get",
+            outputs_key_field="id",
+            outputs=response,
+            readable_output=to_markdown("wab-get-target-groups", response),
+            raw_response=response,
         )
 
     def add_target_group(self, args: Dict[str, Any]):
@@ -1658,7 +1934,11 @@ class Client(BaseClient):
         response = self._http_request("get", f"/targetgroups/{group_id}", params=params)
 
         return CommandResults(
-            outputs_prefix="WAB.targetgroups_get", outputs_key_field="id", outputs=response, raw_response=response
+            outputs_prefix="WAB.targetgroups_get",
+            outputs_key_field="id",
+            outputs=response,
+            readable_output=to_markdown("wab-get-target-group", response),
+            raw_response=response,
         )
 
     def edit_target_group(self, args: Dict[str, Any]):
@@ -1700,7 +1980,11 @@ class Client(BaseClient):
         response = self._http_request("get", "/usergroups", params=params)
 
         return CommandResults(
-            outputs_prefix="WAB.usergroups_get", outputs_key_field="id", outputs=response, raw_response=response
+            outputs_prefix="WAB.usergroups_get",
+            outputs_key_field="id",
+            outputs=response,
+            readable_output=to_markdown("wab-get-user-groups", response),
+            raw_response=response,
         )
 
     def get_user_group(self, args: Dict[str, Any]):
@@ -1711,7 +1995,11 @@ class Client(BaseClient):
         response = self._http_request("get", f"/usergroups/{group_id}", params=params)
 
         return CommandResults(
-            outputs_prefix="WAB.usergroups_get", outputs_key_field="id", outputs=response, raw_response=response
+            outputs_prefix="WAB.usergroups_get",
+            outputs_key_field="id",
+            outputs=response,
+            readable_output=to_markdown("wab-get-user-group", response),
+            raw_response=response,
         )
 
     def get_users(self, args: Dict[str, Any]):
@@ -1726,7 +2014,11 @@ class Client(BaseClient):
         response = self._http_request("get", "/users", params=params)
 
         return CommandResults(
-            outputs_prefix="WAB.user_get", outputs_key_field="user_name", outputs=response, raw_response=response
+            outputs_prefix="WAB.user_get",
+            outputs_key_field="user_name",
+            outputs=response,
+            readable_output=to_markdown("wab-get-users", response),
+            raw_response=response,
         )
 
     def add_user(self, args: Dict[str, Any]):
@@ -1780,7 +2072,11 @@ class Client(BaseClient):
         response = self._http_request("get", f"/users/{name}", params=params)
 
         return CommandResults(
-            outputs_prefix="WAB.user_get", outputs_key_field="user_name", outputs=response, raw_response=response
+            outputs_prefix="WAB.user_get",
+            outputs_key_field="user_name",
+            outputs=response,
+            readable_output=to_markdown("wab-get-user", response),
+            raw_response=response,
         )
 
     def get_password_for_target(self, args: Dict[str, Any]):
@@ -1799,6 +2095,7 @@ class Client(BaseClient):
             outputs_prefix="WAB.targetpasswords_get_checkout",
             outputs_key_field="account_name",
             outputs=response,
+            readable_output=to_markdown("wab-get-password-for-target", response),
             raw_response=response,
         )
 
@@ -1836,7 +2133,11 @@ class Client(BaseClient):
         response = self._http_request("get", f"/targets/{target_type}", params=params)
 
         return CommandResults(
-            outputs_prefix="WAB.getTargetByType", outputs_key_field="id", outputs=response, raw_response=response
+            outputs_prefix="WAB.getTargetByType",
+            outputs_key_field="id",
+            outputs=response,
+            readable_output=to_markdown("wab-get-target-by-type", response),
+            raw_response=response,
         )
 
     def get_mappings_of_user_group(self, args: Dict[str, Any]):
@@ -1851,7 +2152,11 @@ class Client(BaseClient):
         response = self._http_request("get", f"/usergroups/{group_id}/mappings", params=params)
 
         return CommandResults(
-            outputs_prefix="WAB.authdomain_mapping_get", outputs_key_field="id", outputs=response, raw_response=response
+            outputs_prefix="WAB.authdomain_mapping_get",
+            outputs_key_field="id",
+            outputs=response,
+            readable_output=to_markdown("wab-get-mappings-of-user-group", response),
+            raw_response=response,
         )
 
     def add_mapping_in_group(self, args: Dict[str, Any]):
@@ -1893,7 +2198,11 @@ class Client(BaseClient):
         response = self._http_request("get", f"/usergroups/{group_id}/mappings/{mapping_id}", params=params)
 
         return CommandResults(
-            outputs_prefix="WAB.authdomain_mapping_get", outputs_key_field="id", outputs=response, raw_response=response
+            outputs_prefix="WAB.authdomain_mapping_get",
+            outputs_key_field="id",
+            outputs=response,
+            readable_output=to_markdown("wab-get-mapping-of-user-group", response),
+            raw_response=response,
         )
 
     def edit_mapping_of_user_group(self, args: Dict[str, Any]):
