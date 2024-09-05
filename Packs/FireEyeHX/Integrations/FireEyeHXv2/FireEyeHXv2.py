@@ -1276,6 +1276,9 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
+print("Hi this is empty test")
+test = "http://test_test"
+
 def get_alerts(client: Client, args: Dict[str, Any]) -> List:
     offset = 0
     alerts = []  # type: List[Dict[str, str]]
