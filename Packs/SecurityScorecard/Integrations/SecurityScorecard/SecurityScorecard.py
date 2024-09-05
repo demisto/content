@@ -4,7 +4,6 @@ import requests
 import traceback
 from typing import Dict, Any, Optional, List
 import urllib3
-import datetime
 
 # Disable insecure warnings
 urllib3.disable_warnings()
