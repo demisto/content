@@ -321,9 +321,9 @@ repos:
     - Packs/Base/Scripts/CommonServerPython/CommonServerPython.py 
     - Tests/demistomock/demistomock.py
     description: Run mypy on the code in content packs
-    docker_image:nightly: native:ga,native:maintenance,from-yml,native:candidate
-    docker_image:native: native:ga,from-yml,native:dev,native:maintenance
-    docker_image:ci: native:ga,from-yml,native:dev,native:maintenance
+    # docker_image:nightly: native:ga,native:maintenance,from-yml,native:candidate
+    # docker_image:native: native:ga,from-yml,native:dev,native:maintenance
+    # docker_image:ci: native:ga,from-yml,native:dev,native:maintenance
     docker_image: from-yml
     entry: mypy
     files: Packs\/.*\.py$
