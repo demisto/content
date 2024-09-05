@@ -158,6 +158,11 @@ LICENSE_TYPES = ['OSI_APACHE', 'OSI_ARTISTIC', 'OSI_BSD', 'OSI_EFL', 'OSI_FDL', 
                 'Parity-7.0.0', 'OLDAP-1.1', 'AFL-1.1', 'Artistic-1.0-cl8', 'FTL', 'Dotseqn', 'CC-BY-NC-ND-2.5',
                 'GFDL-1.2-no-invariants-only', 'PHP-3.0', 'CC-BY-SA-2.0-UK', 'BSD-3-Clause-Modification', 'LAL-1.3', 'gSOAP-1.3b',
                 'StandardML-NJ', 'NPOSL-3.0', 'LGPL-3.0', 'Artistic-1.0-Perl', 'OLDAP-2.5', 'BSD-2-Clause-Views']
+
+MAX_LIMIT_FOR_CODE_ISSUES = 1000
+INT_DEFAULT_LIMIT = 50
+DEFAULT_PAGE = 0
+
 ''' CLIENT CLASS '''
 
 
@@ -192,44 +197,7 @@ class Client(BaseClient):
         self._headers[REQUEST_CSPM_AUTH_HEADER] = token
 
     
-    def code_issues_list_request(self, owasp:Optional[List[str]]=[], sast_labels:Optional[str]=None, cwes:Optional[str]=None,
-                                 benchmarks:Optional[List[str]]=[], fixable_only:Optional[bool]=None,
-                                 search_scopes:Optional[List[str]]=[], search_term:Optional[str]=None,
-                                 branch:Optional[str]=None, check_status:Optional[str]=None, git_users:Optional[List[str]]=[],
-                                 iac_categories:Optional[List[str]]=[], iac_labels:Optional[List[str]]=[],
-                                 file_types:Optional[List[str]]=[],  repositories:Optional[List[str]]=[],
-                                 secrets_risk_factors:Optional[List[str]]=[], severities:Optional[List[str]]=[],
-                                 vulnerability_risk_factors:Optional[List[str]]=[], iac_tags:Optional[List[str]]=[],
-                                 license_type:Optional[List[str]]=[], code_categories:Optional[List[str]]=[],
-                                 limit:Optional[float]=50, offset:Optional[float]=0):
-        body = assign_params(
-            filters=assign_params(
-            benchmarks=benchmarks,
-            branch=branch,
-            checkStatus=check_status,
-            codeCategories=code_categories,
-            cwes=cwes,
-            fileTypes=file_types,
-            fixableOnly=fixable_only,
-            gitUsers=git_users,
-            iacCategories=iac_categories,
-            iacLabels=iac_labels,
-            iacTags=iac_tags,
-            licenseType=license_type,
-            owasp=owasp,
-            repositories=repositories,
-            sastLabels=sast_labels,
-            secretsRiskFactors=secrets_risk_factors,
-            severities=severities,
-            vulnerabilityRiskFactors=vulnerability_risk_factors
-        ),
-        search=assign_params(
-            scopes=search_scopes,
-            term=search_term),
-        limit=limit,
-        offset=offset
-        )
-
+    def code_issues_list_request(self, body):
         return self._http_request('POST', '/code/api/v2/code-issues/branch_scan', json_data=body)
     
     
@@ -2248,6 +2216,7 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
 
 def validate_code_issues_list_args(args):
     license_type = args.get('license_type')
+    term = args.get('term')
     search_scopes = args.get('search_scopes')
     search_term = args.get('search_term')
     page = args.get('page')
@@ -2256,11 +2225,11 @@ def validate_code_issues_list_args(args):
     if page and not page_size or page_size and not page:
         raise DemistoException("Both `page` and `page_size` must be specified together. If one is provided, the other must be as well.")
     
-    if page_size and page_size>1000:
-        raise DemistoException("`Page_size argument can't be more than 1000")
+    if page_size and page_size>MAX_LIMIT_FOR_CODE_ISSUES:
+        raise DemistoException("`Page_size` argument can't be more than 1000")
     
     if license_type and license_type not in LICENSE_TYPES:
-        raise DemistoException('Invalid license type. For the list of valid license types go to- https://pan.dev/prisma-cloud/api/code/get-periodic-findings/#request')  #TODO we need to tell the user witch ones he can use
+        raise DemistoException('Invalid license type. For the list of valid license types go to- https://pan.dev/prisma-cloud/api/code/get-periodic-findings/#request')
     
     if search_scopes and not search_term:
         raise DemistoException('The `search_term` argument is required when specifying `search_scopes`.')
@@ -2294,6 +2263,45 @@ def get_labels(labels)->Optional[List]:
     return None
 
 
+def code_issues_list_request_body(owasp:Optional[List[str]]=[], sast_labels:Optional[str]=None, cwes:Optional[str]=None,
+                                 benchmarks:Optional[List[str]]=[], fixable_only:Optional[bool]=None,
+                                 search_scopes:Optional[List[str]]=[], search_term:Optional[str]=None,
+                                 branch:Optional[str]=None, check_status:Optional[str]=None, git_users:Optional[List[str]]=[],
+                                 iac_categories:Optional[List[str]]=[], iac_labels:Optional[List[str]]=[],
+                                 file_types:Optional[List[str]]=[],  repositories:Optional[List[str]]=[],
+                                 secrets_risk_factors:Optional[List[str]]=[], severities:Optional[List[str]]=[],
+                                 vulnerability_risk_factors:Optional[List[str]]=[], iac_tags:Optional[List[str]]=[],
+                                 license_type:Optional[List[str]]=[], code_categories:Optional[List[str]]=[],
+                                 limit:Optional[float]=50, offset:Optional[float]=0):
+        return assign_params(
+            filters=assign_params(
+            benchmarks=benchmarks,
+            branch=branch,
+            checkStatus=check_status,
+            codeCategories=code_categories,
+            cwes=cwes,
+            fileTypes=file_types,
+            fixableOnly=fixable_only,
+            gitUsers=git_users,
+            iacCategories=iac_categories,
+            iacLabels=iac_labels,
+            iacTags=iac_tags,
+            licenseType=license_type,
+            owasp=owasp,
+            repositories=repositories,
+            sastLabels=sast_labels,
+            secretsRiskFactors=secrets_risk_factors,
+            severities=severities,
+            vulnerabilityRiskFactors=vulnerability_risk_factors
+        ),
+        search=assign_params(
+            scopes=search_scopes,
+            term=search_term),
+        limit=limit,
+        offset=offset
+        )
+
+
 def code_issues_list_command(client, args):
     
     validate_code_issues_list_args(args)
@@ -2318,14 +2326,11 @@ def code_issues_list_command(client, args):
     iac_tags = argToList(args.get('iac_tags'))
     license_type = argToList(args.get('license_type'))
     code_categories = argToList(args.get('code_categories'))
-    limit = arg_to_number(args.get('limit')) or 50
-    page = arg_to_number(args.get('page')) or 0
+    limit = arg_to_number(args.get('limit')) or INT_DEFAULT_LIMIT
+    page = arg_to_number(args.get('page')) or DEFAULT_PAGE
     page_size = arg_to_number(args.get('page_size'))
 
-    
-    limit_for_request = limit
-    if limit>1000:
-        limit_for_request = 1000
+    limit_for_request = min(limit, MAX_LIMIT_FOR_CODE_ISSUES)
         
     # pagination
     if page_size:
@@ -2340,8 +2345,7 @@ def code_issues_list_command(client, args):
     res_issues = []
     issues_for_readable_output = []
     while len(res_issues)<limit and has_next:
-        
-        response = client.code_issues_list_request(owasp=owasp, sast_labels=sast_labels, cwes=cwes, benchmarks=benchmarks, fixable_only=fixable_only, search_scopes=search_scopes,
+        body = code_issues_list_request_body(owasp=owasp, sast_labels=sast_labels, cwes=cwes, benchmarks=benchmarks, fixable_only=fixable_only, search_scopes=search_scopes,
                                                    search_term=search_term, branch=branch, check_status=check_status,
                                                    git_users=git_users, iac_categories=iac_categories, iac_labels=iac_labels,
                                                    file_types=file_types, repositories=repositories,
@@ -2349,6 +2353,9 @@ def code_issues_list_command(client, args):
                                                    vulnerability_risk_factors=vulnerability_risk_factors, iac_tags=iac_tags,
                                                    license_type=license_type, code_categories=code_categories,
                                                    limit=limit_for_request, offset=offset)
+        
+        response = client.code_issues_list_request(body)
+                                                   
         res_issues.extend(response['data'])
         
         for issue in response['data']:

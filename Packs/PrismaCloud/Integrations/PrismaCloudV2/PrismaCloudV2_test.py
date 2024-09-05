@@ -1631,7 +1631,7 @@ invalid_args = [
     ({'page_size': 50, 'some_filter': 'value1'}, DemistoException,
      "Both `page` and `page_size` must be specified together. If one is provided, the other must be as well."),
     ({'page_size': 1001, 'page': 40, 'some_filter': 'value1'}, DemistoException,
-     "`Page_size argument can't be more than 1000")
+     "`Page_size` argument can't be more than 1000")
 ]
 
 @pytest.mark.parametrize('given', valid_args)
@@ -1737,11 +1737,13 @@ def test_code_issues_list_command_single_page_no_pagination(mocker, prisma_cloud
         The number of issues returned is exactly the number of issues that exist.
     """
     from PrismaCloudV2 import code_issues_list_command
-    mocker.patch.object(prisma_cloud_v2_client, '_http_request', return_value=lower_limit_data)
+    m = mocker.patch.object(prisma_cloud_v2_client, '_http_request', return_value=lower_limit_data)
     result = code_issues_list_command(prisma_cloud_v2_client, {'limit': 5, 'fixable_only': True})
     assert isinstance(result.outputs, list)
     assert len(result.outputs) == 1  # Only one result returned
     assert 'repo1' in result.readable_output
+    assert m.call_count == 1
+    assert m.call_args.kwargs['json_data']['offset'] == 0
     
     
 code_issues_list_request_data = [
@@ -1821,25 +1823,27 @@ def test_code_issues_list_request(mocker, given_params, expected_body, prisma_cl
     )
 
 user_pagination_data = [
-    ({'fixable_only': True, 'page': 100, 'page_size': 1, 'limit': 50}, 1),  # case `page` and `page_size` with limit arguments witch needs to be ignored
-    ({'fixable_only': True, 'page': 100, 'page_size': 1}, 1),  # case `page` and `page_size`
-    ({'fixable_only': True, 'limit': 2}, 2)  # case `limit` (no pagination)
+    ({'fixable_only': True, 'page': 3, 'page_size': 1, 'limit': 50}, 1, 3),  # case `page` and `page_size` with limit arguments witch needs to be ignored
+    ({'fixable_only': True, 'page': 3, 'page_size': 2}, 1, 6),  # case `page` and `page_size`
 ]
-@pytest.mark.parametrize("args, expected_call_count", user_pagination_data)
-def test_code_issues_list_command__user_pagination(mocker, args, expected_call_count, prisma_cloud_v2_client):
+@pytest.mark.parametrize("args, expected_call_count, expected_offset", user_pagination_data)
+def test_code_issues_list_command__user_pagination(mocker, args, expected_call_count, expected_offset, prisma_cloud_v2_client):
     """
     Given
-        has_next feild from api response.
+        arguments with pagination arguments.
     When
         Running code_issues_list_command function.
     Then
-        The api is called in the right amount of times.
+        The api is called only once and the offset is set correctly.
     """
     from PrismaCloudV2 import code_issues_list_command
     m = mocker.patch.object(prisma_cloud_v2_client, '_http_request',
-                            side_effect=[{'data': [{'firstDetected':'some_date', 'policy': 'policy1', 'severity': 'severity1',
-                                                    'labels': ['label1']}], 'hasNext': True},
+                            side_effect=[{'data': [{'firstDetected':'some_date1', 'policy': 'policy1', 'severity': 'severity1',
+                                                    'labels': ['label1']},
+                                                   {'firstDetected':'some_date2', 'policy': 'policy2', 'severity': 'severity2',
+                                                    'labels': ['label2']}], 'hasNext': True},
                                          {'data': [{'firstDetected':'some_date', 'policy': 'policy1', 'severity': 'severity1',
                                                     'labels': ['label1']}], 'hasNext': False}])
     code_issues_list_command(prisma_cloud_v2_client, args)
     assert m.call_count == expected_call_count
+    assert m.call_args.kwargs['json_data']['offset'] == expected_offset

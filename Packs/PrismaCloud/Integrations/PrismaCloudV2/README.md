@@ -1631,86 +1631,8 @@ Search networks inventory on the Prisma Cloud platform using RQL language. Use t
 ### prisma-cloud-error-file-list
 
 ***
-Lists scanned files that contain errors. In order to use this command, the "Code Security" module needs to be enabled and accessible in the Prisma Cloud UI.
+Deprecated, use *prisma-cloud-code-issues-list* command instead.
 
-#### Base Command
-
-`prisma-cloud-error-file-list`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| cicd_run_id | ID number of the CICD run. | Optional | 
-| authors | Comma-separated list of authors of the files. | Optional | 
-| branch | Branch of the files. | Optional | 
-| categories | Comma-separated list of categories of the files. Available options are: IAM, Compute, Monitoring, Networking, Kubernetes, General, Storage, Secrets, Public, Vulnerabilities, Drift, BuildIntegrity, Licenses. | Optional | 
-| code_status | The code status. Possible values are: hasFix. | Optional | 
-| file_types | Comma-separated list of file types of the files. Available options are: tf, json, yml, yaml, template, .checkov.baseline, hcl, Dockerfile, package.json, package-lock.json, bower.json, pom.xml, build.gradle, build.gradle.kts, gradle.properties, gradle-wrapper.properties, go.sum, go.mod, requirements.txt, METADATA, bicep, Pipfile.lock, Pipfile, yarn.lock, Gemfile, Gemfile.lock, gemspec, env, settings.py, main.py, application.py, config.py, app.js, config.js, dev.js, db.properties, application.properties, private.pem, privatekey.pem, index.php, config.php, config.xml, strings.xml, app.module.ts, environment.ts, tpl, tfvars, unknown. | Optional | 
-| repository | Repository of the files. | Required | 
-| repository_id | Repository ID of the files. | Optional | 
-| search_options | Comma-separated list of search options of the files. Available options are: path, code. | Optional | 
-| search_text | Search text in the files. | Optional | 
-| search_title | Search title of the files. Possible values are: title, constructive_title, descriptive_title. | Optional | 
-| severities | Comma-separated list of severities of the files. Available options are: CRITICAL, HIGH, MEDIUM, LOW, INFO. | Optional | 
-| source_types | Comma-separated list of source types of the files. Available options are: Github, Bitbucket, Gitlab, AzureRepos, cli, AWS, Azure, GCP, Docker, githubEnterprise, gitlabEnterprise, bitbucketEnterprise, terraformCloud, githubActions, circleci, codebuild, jenkins, tfcRunTasks, admissionController, terraformEnterprise. | Required | 
-| tags | Comma-separated list of tag key and value, in the following format: tagkey1=tagvalue1,tagkey2=tagvalue2,etc. | Optional | 
-| statuses | Comma-separated list of statuses of the files. Available options are: Errors, Suppressed, Passed, Fixed. | Optional | 
-| limit | Maximum number of entries to return. Default is 50. | Optional | 
-| all_results | Whether to retrieve all results. The "limit" argument will be ignored. Possible values are: true, false. | Optional | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| PrismaCloud.ErrorFile.filePath | String | Error file path. | 
-| PrismaCloud.ErrorFile.suppressedErrorsCount | Number | The number of error file suppressed errors. | 
-| PrismaCloud.ErrorFile.passedCount | Number | The number of error files passed. | 
-| PrismaCloud.ErrorFile.openErrorsCount | Number | The number of error file open errors. | 
-| PrismaCloud.ErrorFile.errorsCount | Number | The number of error file errors. | 
-| PrismaCloud.ErrorFile.fixedCount | Number | The number of error files fixed. | 
-| PrismaCloud.ErrorFile.type | String | Error file type. | 
-
-#### Command example
-```!prisma-cloud-error-file-list repository=chanduusc/AWS-GWLB-VMSeries source_types=Github limit=2```
-#### Context Example
-```json
-{
-    "PrismaCloud": {
-        "ErrorFile": [
-            {
-                "awaitingRemediationCount": 0,
-                "errorsCount": 0,
-                "filePath": "/ttt/stack/tt.tf",
-                "fixedCount": 0,
-                "openErrorsCount": 0,
-                "passedCount": 2,
-                "suppressedErrorsCount": 0,
-                "type": "violation"
-            },
-            {
-                "awaitingRemediationCount": 0,
-                "errorsCount": 6,
-                "filePath": "/ttt/stack/sg.tf",
-                "fixedCount": 0,
-                "openErrorsCount": 6,
-                "passedCount": 10,
-                "suppressedErrorsCount": 0,
-                "type": "violation"
-            }
-        ]
-    }
-}
-```
-
-#### Human Readable Output
-
->Showing 2 of 17 results:
->### Files Error Details:
->|File Path|Suppressed Errors Count|Passed Count|Open Errors Count|Errors Count|Fixed Count|Type|
->|---|---|---|---|---|---|---|
->| /ttt/stack/tt.tf | 0 | 2 | 0 | 0 | 0 | violation |
->| /ttt/stack/sg.tf | 0 | 10 | 6 | 6 | 0 | violation |
 
 
 ### prisma-cloud-trigger-scan
