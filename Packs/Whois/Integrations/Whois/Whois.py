@@ -8335,11 +8335,18 @@ def get_whois(domain: str, is_recursive=True):
 
 # Drops the mic disable-secrets-detection-end
 
-def get_domain_from_query(query):
+def get_domain_from_query(query: str):
 
     demisto.debug(f"Attempting to get domain from query '{query}'...")
 
     try:
+        # remove everything after the first appearance of one of "/", "?" or "#"
+        idx_to_split = min(
+            i for i in [query.find("#"), query.find("?"), query.replace("://", ":$$").find("/"), len(query)]
+            if i > -1
+        )
+        query = query[:idx_to_split]
+
         # checks for largest matching suffix inside tlds dictionary
         suffix_len = max([len(suffix) for suffix in tlds if query.endswith('.{}'.format(suffix))] or [0])
         # if suffix(TLD) was found increase the length by one in order to add the dot before it. --> .com instead of com

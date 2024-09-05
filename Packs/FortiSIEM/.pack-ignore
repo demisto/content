@@ -1,3 +1,6 @@
 [file:FortiSIEM.yml]
 ignore=IN126,BA124
 
+# GR103 is temporary, see CIAC-11705
+[file:classifier-mapper-incoming-FortiSIEM_v2.json]
+ignore=GR103
