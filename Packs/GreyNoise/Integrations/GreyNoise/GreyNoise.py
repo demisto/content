@@ -5,7 +5,7 @@ import traceback
 import requests
 import re
 import copy
-from typing import Any, Dict, Tuple
+from typing import Any
 from greynoise import GreyNoise, exceptions, util  # type: ignore
 
 # Disable insecure warnings
@@ -117,7 +117,7 @@ STATS_H_KEY = {
     "asn": "ASN",
     "count": "Count",
 }
-QUERY_OUTPUT_PREFIX: Dict[str, str] = {
+QUERY_OUTPUT_PREFIX: dict[str, str] = {
     "IP": "GreyNoise.IP(val.address && val.address == obj.address)",
     "QUERY": "GreyNoise.Query(val.query && val.query == obj.query)",
 }
@@ -208,7 +208,7 @@ def exception_handler(func: Any) -> Any:
     return inner_func
 
 
-def parse_code_and_body(message: str) -> Tuple[int, str]:
+def parse_code_and_body(message: str) -> tuple[int, str]:
     """Parse status code and body
 
     Parses code and body from the Exception raised by GreyNoise SDK.
@@ -267,7 +267,7 @@ def get_ip_context_data(responses: list) -> list:
     return ip_context_responses
 
 
-def get_ip_reputation_score(classification: str) -> Tuple[int, str]:
+def get_ip_reputation_score(classification: str) -> tuple[int, str]:
     """Get DBot score and human-readable of score.
 
     :type classification: ``str``
@@ -348,7 +348,7 @@ def test_module(client: Client) -> str:
 
 @exception_handler
 @logger
-def ip_quick_check_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def ip_quick_check_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Check whether a given IP address is Internet Background Noise,
     or has been observed scanning or attacking devices across the internet.
         :type client: ``Client``
