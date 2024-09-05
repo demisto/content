@@ -167,22 +167,22 @@ script:
       description: 'Whether GreyNoise has seen activity.'
       type: Boolean
     - contextPath: GreyNoise.CVE.exploitation_activity.benign_ip_count_1d
-      description: 'The total number of benign IP addresses GreyNoise has seen exercising (Scanning || Exploiting) this vulnerability in the last day.'
+      description: 'The total number of benign IP addresses GreyNoise has seen exercising (Scanning or Exploiting) this vulnerability in the last day.'
       type: Number
     - contextPath: GreyNoise.CVE.exploitation_activity.benign_ip_count_10d
-      description: 'The total number of benign IP addresses GreyNoise has seen exercising (Scanning || Exploiting) this vulnerability in the last 10 days.'
+      description: 'The total number of benign IP addresses GreyNoise has seen exercising (Scanning or Exploiting) this vulnerability in the last 10 days.'
       type: Number
     - contextPath: GreyNoise.CVE.exploitation_activity.benign_ip_count_30d
-      description: 'The total number of benign IP addresses GreyNoise has seen exercising (Scanning || Exploiting) this vulnerability in the last 30 days.'
+      description: 'The total number of benign IP addresses GreyNoise has seen exercising (Scanning or Exploiting) this vulnerability in the last 30 days.'
       type: Number
     - contextPath: GreyNoise.CVE.exploitation_activity.threat_ip_count_1d
-      description: 'The total number of threat IP addresses GreyNoise has seen exercising (Scanning || Exploiting) this vulnerability in the last day.'
+      description: 'The total number of threat IP addresses GreyNoise has seen exercising (Scanning or Exploiting) this vulnerability in the last day.'
       type: Number
     - contextPath: GreyNoise.CVE.exploitation_activity.threat_ip_count_10d
-      description: 'The total number of threat IP addresses GreyNoise has seen exercising (Scanning || Exploiting) this vulnerability in the last 10 days.'
+      description: 'The total number of threat IP addresses GreyNoise has seen exercising (Scanning or Exploiting) this vulnerability in the last 10 days.'
       type: Number
     - contextPath: GreyNoise.CVE.exploitation_activity.threat_ip_count_30d
-      description: 'The total number of threat IP addresses GreyNoise has seen exercising (Scanning || Exploiting) this vulnerability in the last 30 days.'
+      description: 'The total number of threat IP addresses GreyNoise has seen exercising (Scanning or Exploiting) this vulnerability in the last 30 days.'
       type: Number
     - contextPath: DBotScore.Indicator
       description: 'The indicator that was tested.'
