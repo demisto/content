@@ -19,7 +19,7 @@ Collect entries matching to the conditions in the war room
 | id | Optional incident ID to fetch entries from. If not specified, current incident is used.                                                                                          |
 | tags | The list of tags                                                                                                                                                                 |
 | categories | The list of categories. (commandAndResults, playbookTaskResult, playbookTaskStartAndDone, playbookErrors, justFound, deleted, incidentInfo, chats, evidence, notes, attachments) |
-| page_size | The number of entries to return.                                                                                                                                                 |
+| page_size | The number of entries to return, Maximum is 1000.                                                                                                                                |
 | last_id | Return entries starting from the specified entry ID and backward.                                                                                                                |
 | first_id | Return entries starting from the specified entry ID and forward.                                                                                                                 |
 | selected_entry_id | Return entries before and after the specified entry ID.                                                                                                                          |

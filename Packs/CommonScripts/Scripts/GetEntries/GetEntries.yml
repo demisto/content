@@ -18,7 +18,7 @@ args:
   description: The list of categories. (commandAndResults, playbookTaskResult, playbookTaskStartAndDone, playbookErrors, justFound, deleted, incidentInfo, chats, evidence, notes, attachments).
   isArray: true
 - name: page_size
-  description: The number of entries to return.
+  description: The number of entries to return, Maximum is 1000.
 - name: last_id
   description: Return entries starting from the specified entry ID and backward.
 - name: first_id
