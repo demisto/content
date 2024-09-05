@@ -7,7 +7,7 @@ import requests  # type: ignore
 from requests.auth import HTTPBasicAuth  # type: ignore
 
 import urllib3
-from typing import Any, List
+from typing import Any
 import re
 import hashlib
 import time
@@ -418,7 +418,7 @@ def check_slack_notification_lifetime():
 
 
 def validate_parameter_list_and_equal(
-    param_name: str, param_in: str, param_equal: str, supported_list: List[str]
+    param_name: str, param_in: str, param_equal: str, supported_list: list[str]
 ):
     if param_in:
         param_list = [item.strip() for item in param_in.split(",") if item.strip()]
@@ -469,7 +469,7 @@ def test_module(client: Client) -> str:
 
 def get_risk_findings_command(
     client: Client, args: dict[str, Any], page: int
-) -> List[dict]:
+) -> list[dict]:
     # Validate and process cloudProvider parameters
     cloudProviderIn = args.get("cloudProviderIn", "")
     cloudProviderEqual = args.get("cloudProviderEqual", "")
@@ -581,7 +581,7 @@ def get_risk_finding_by_id_command(
     )
 
 
-def get_list_of_assets(client: Client, args: dict[str, Any], page: int) -> List[dict]:
+def get_list_of_assets(client: Client, args: dict[str, Any], page: int) -> list[dict]:
     # Validate and process cloudProvider parameters
     cloudProviderIn = args.get("cloudProviderIn", "")
     cloudProviderEqual = args.get("cloudProviderEqual", "")
@@ -679,31 +679,39 @@ def get_asset_files_by_id(client: Client, args: dict[str, Any]) -> CommandResult
     if not asset_id:
         raise ValueError("Asset ID not specified")
 
-    # pageNumber = 0
-    # if pageNumber < 0:
-    #     raise ValueError('Page parameter value should be greature than 0.')
-
-    # pageSize = MAX_PAGE_SIZE
-    # if pageSize < 0:
-    #     raise ValueError('Size parameter value should be greature than 0.')
+    page_number = 1
+    page_size = 50  # You can adjust the page size as needed
+    all_files = []
 
     while True:
         params = {
             "id": asset_id,
-            # "page": pageNumber,
-            # "size": pageSize
+            "page": page_number,
+            "size": page_size
         }
 
+        # Fetch the asset files for the current page
         response = client.get_asset_files(params)
-
         files = response.get("files", [])
-        files_count = response.get("filesCount", 0)
 
-        return CommandResults(
-            outputs_prefix="DSPM.AssetFiles",
-            outputs_key_field="filename",
-            outputs={"files": files, "filesCount": files_count},
-        )
+        if not files:
+            break  # Stop when there are no more files to retrieve
+
+        # Append the files to the total list of files
+        all_files.extend(files)
+
+        # Increment page number for the next fetch
+        page_number += 1
+
+    files_count = len(all_files)
+
+    # Return the result without formatting the files structure
+    return CommandResults(
+        outputs_prefix="DSPM.AssetFiles",
+        outputs_key_field="filename",
+        outputs={"files": all_files, "filesCount": files_count},
+        readable_output=f"Total Files: {files_count}\nFiles: {all_files}"
+    )
 
 
 def get_data_types_command(client: Client) -> CommandResults:
@@ -714,12 +722,12 @@ def get_data_types_command(client: Client) -> CommandResults:
     ]
 
     if data_types_formatted:
-        readable_output = "### Data Types\n" "| No | Key  |\n" "|----|------|\n"
+        readable_output = "### Data Types\n | No | Key  |\n |----|------|\n"
         for item in data_types_formatted:
             readable_output += f"| {item['No']}  | {item['Key']} |\n"
     else:
         readable_output = (
-            "### Data Types\n" "| No | Key |\n" "|----|-----|\n" "**No entries.**\n"
+            "### Data Types\n | No | Key |\n |----|-----|\n **No entries.**\n"
         )
 
     return CommandResults(
@@ -732,7 +740,7 @@ def get_data_types_command(client: Client) -> CommandResults:
 
 def get_data_type_findings(
     client: Client, args: dict[str, Any], page: int
-) -> List[dict]:
+) -> list[dict]:
     """Fetch data type findings for a specific page."""
     # check supported cloud providers
     cloudProviderIn = args.get("cloudProviderIn", "")
@@ -977,205 +985,7 @@ def get_slack_msg_lifetime(client, sleep_time):
     time.sleep(10)
     return in_seconds
 
-""" Mirroring Functions """
 
-# def get_remote_incident_data(client: Client, remote_incident_id: str, last_update) -> dict[str, Any]:
-#     """
-#     Called every time get-remote-data command runs on an incident.
-#     Gets the relevant incident entity from the remote system (DSPM). The remote system returns the incident
-#     entity as a dictionary. We take from this entity only the relevant incoming mirroring fields, in order to do the mirroring.
-
-#     :param client: The client object with an authenticated session.
-#     :param remote_incident_id: The ID of the remote incident.
-#     :return: The incident data to be mirrored.
-#     """
-#     mirrored_data = client.get_risk_information(remote_incident_id)
-#     mirrored_data["incident_type"] = "DSPM Risk Findings"
-#     return mirrored_data
-
-# def get_remote_data_command(client: Client, args: dict, params: dict) -> GetRemoteDataResponse:
-#     """
-#     get-remote-data command: Returns an updated remote incident.
-#     Args:
-#         args:
-#             id: incident id to retrieve.
-#             lastUpdate: when was the last time we retrieved data.
-
-#     Returns:
-#         GetRemoteDataResponse object, which contains the incident data to update.
-#     """
-#     demisto.debug("inside get_remote_data_command")
-#     remote_args = GetRemoteDataArgs(args)
-#     remote_incident_id = remote_args.remote_incident_id
-#     last_update = remote_args.last_update
-#     mirrored_data = {}
-#     entries: list = []
-#     try:
-#         demisto.debug(
-#             f"Performing get-remote-data command with incident id: {remote_incident_id} "
-#             f"and last_update: {remote_args.last_update}"
-#         )
-#         mirrored_data = get_remote_incident_data(client, remote_incident_id, last_update)
-#         demisto.debug("mirror data fetch ")
-#         demisto.debug(mirrored_data)
-#         if mirrored_data:
-#             demisto.debug("Successfully fetched the remote incident data")
-#             close_xsoar_incident = params.get("close_xsoar_incident", False)
-#             entries = set_xsoar_incident_entries(mirrored_data, entries, remote_incident_id, close_xsoar_incident)
-#         else:
-#             demisto.debug(f"No delta was found for incident {remote_incident_id}.")
-
-#         return GetRemoteDataResponse(mirrored_object=mirrored_data, entries=entries)
-
-#     except Exception as e:
-#         demisto.debug(
-#             f"Error in DSPM incoming mirror for incident: {remote_incident_id}\n"
-#             f"Error message: {str(e)}"
-#         )
-
-#         if not mirrored_data:
-#             mirrored_data = {"id": remote_incident_id}
-#         mirrored_data["in_mirror_error"] = str(e)
-
-#         return GetRemoteDataResponse(mirrored_object=mirrored_data, entries=[])
-
-# def set_xsoar_incident_entries(mirrored_data: dict[str, Any], entries: list, incident_id: str, close_incident: bool) -> list:
-#     """
-#     Process the mirrored data and set XSOAR incident entries accordingly.
-
-#     :param mirrored_data: The data fetched from the remote incident.
-#     :param entries: The current list of entries.
-#     :param incident_id: The ID of the incident.
-#     :param close_incident: Boolean flag to close the incident if needed.
-#     :return: Updated list of entries.
-#     """
-#     demisto.debug(f"Setting XSOAR incident entries for incident ID {incident_id} with mirrored data: {mirrored_data}")
-
-#     # fields_to_update = {
-#     #     'Name': mirrored_data.get('ruleName', ''),
-#     #     'Severity': mirrored_data.get('severity', ''),
-#     #     'Asset Name': mirrored_data.get('asset', {}).get('name', ''),
-#     #     'Asset ID': mirrored_data.get('asset', {}).get('assetId', ''),
-#     #     'Status': map_status(mirrored_data.get('status', '')),
-#     #     'Project ID': mirrored_data.get('projectId', ''),
-#     #     'Cloud Provider': mirrored_data.get('cloudProvider', ''),
-#     #     'Cloud Environment': mirrored_data.get('cloudEnvironment', ''),
-#     #     'First Discovered': mirrored_data.get('firstDiscovered', ''),
-#     #     'Compliance Standards': mirrored_data.get('complianceStandards', {}),
-#     #     'dbotMirrorId': mirrored_data.get('id', ''),
-#     #     'Details': mirrored_data.get('asset', {}).get('name', '')
-#     # }
-#     demisto.debug(f"Mirror id {mirrored_data.get('id', '')} and status is : {mirrored_data.get('status', '')}")
-#     if (mirrored_data.get('status') == "CLOSED"
-#         or mirrored_data.get('status') == "INVESTIGATING"
-#             or mirrored_data.get('status') == "HANDLED"):
-#         demisto.debug(f"Incident is closed: {incident_id}")
-#         entries.append(
-#             {
-#                 "Type": EntryType.NOTE,
-#                 "Contents": {
-#                     "dbotIncidentClose": True,
-#                     "closeReason": "Incident was closed on DSPM",
-#                 },
-#                 "Tags": ["closed"],
-#                 "ContentsFormat": EntryFormat.JSON,
-#             }
-#         )
-#         return entries
-
-#     entry = {
-#         "Type": 1,  # Note type
-#         "Contents": f"Mirrored data fetched for incident ID {incident_id}.",
-#         "ContentsFormat": "json",
-#         "Tags": ["mirrored"],
-#         "Note": True
-#     }
-
-#     # for key, value in fields_to_update.items():
-#     #     entry[key] = value
-
-#     entries.append(entry)
-
-#     # if close_incident:
-#     #     entries.append({
-#     #         "Type": 1,
-#     #         "Contents": f"Incident {incident_id} closed as per remote status.",
-#     #         "ContentsFormat": "text",
-#     #         "Tags": ["closed"],
-#     #         "Note": True
-#     #     })
-
-#     return entries
-
-# def update_remote_system_command(client: Client, args: dict) -> str:
-#     """update-remote-system command: pushes local changes to the remote system
-#     :type client: ``Client``
-#     :param client: XSOAR client to use
-#     :type args: ``Dict[str, Any]``
-#     :param args:
-#         all command arguments, usually passed from ``demisto.args()``.
-#         ``args['data']`` the data to send to the remote system
-#         ``args['entries']`` the entries to send to the remote system
-#         ``args['incidentChanged']`` boolean telling us if the local incident indeed changed or not
-#         ``args['remoteId']`` the remote incident id
-#     :return:
-#         ``str`` containing the remote incident id - really important if the incident is newly created remotely
-#     :rtype: ``str``
-#     """
-#     parsed_args = UpdateRemoteSystemArgs(args)
-#     delta = parsed_args.delta
-#     remote_incident_id = parsed_args.remote_incident_id
-#     demisto.debug(f'Got the following data {parsed_args.data}, and delta {delta}.')
-
-#     try:
-#         if parsed_args.incident_changed:
-#             status = delta.get("status", None)
-#             if status:
-#                 third_party_status = map_to_third_party_status(status)
-#                 client.update_risk_status(remote_incident_id, third_party_status)
-#     except Exception as e:
-#         demisto.error(f'Error updating incident {remote_incident_id} on the remote system. '
-#                       f'Error message: {str(e)}')
-
-#     return remote_incident_id
-
-# def get_modified_remote_data_command(client: Client, args: dict) -> GetModifiedRemoteDataResponse:
-#     """
-#     Gets the modified remote incidents.
-#     Args:
-#         args:
-#             last_update: the last time we retrieved modified incidents.
-
-#     Returns:
-#         GetModifiedRemoteDataResponse object, which contains a list of the retrieved incidents IDs.
-#     """
-#     demisto.debug("inside get_modified_remote_data_command :")
-#     remote_args = GetModifiedRemoteDataArgs(args)
-
-#     last_update_utc = dateparser.parse(
-#         remote_args.last_update, settings={"TIMEZONE": "UTC"}
-#     )  # convert to utc format
-#     assert last_update_utc is not None, f"could not parse {remote_args.last_update}"
-
-#     demisto.debug(f"Remote arguments last_update in UTC is {last_update_utc}")
-#     modified_ids_to_mirror = []
-#     last_update_utc = last_update_utc.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
-#     demisto.debug("On line 582 , last_update_utc :", last_update_utc)
-#     raw_risks = client.fetch_risk_findings({})
-
-#     for finding in raw_risks:
-#         modified_ids_to_mirror.append(finding.get("id"))
-
-#     demisto.debug(f"All ids to mirror in are: {modified_ids_to_mirror}")
-
-#     return GetModifiedRemoteDataResponse(modified_ids_to_mirror)
-
-# def get_mapping_fields() -> dict[str, Any]:
-#     mapping_fields: dict[str, Any] = {}
-#     # Pull the remote schema for incident types and their fields
-#     # Example:
-#     # mapping_fields = query_mapping_fields()
-#     return mapping_fields
 """ MAIN FUNCTION """
 
 
@@ -1213,7 +1023,7 @@ def main() -> None:
                 findings = get_risk_findings_command(client, demisto.args(), page)
                 if not findings:
                     if page == 0:
-                        readable_output = "### Risk Findings\n" "**No entries.**\n"
+                        readable_output = "### Risk Findings\n **No entries.**\n"
                         return_results(
                             CommandResults(
                                 outputs_prefix="DSPM.RiskFindings",
@@ -1239,7 +1049,7 @@ def main() -> None:
                 assets = get_list_of_assets(client, demisto.args(), page)
                 if not assets:
                     if page == 0:
-                        readable_output = "### List of assets\n" "**No entries.**\n"
+                        readable_output = "### List of assets\n **No entries.**\n"
                         return_results(
                             CommandResults(
                                 outputs_prefix="DSPM.Assets",
@@ -1300,7 +1110,7 @@ def main() -> None:
                     for index, dt in enumerate(data_type_findings)
                 ]
 
-                readable_output = "### Data Types\n" "| No | Key  |\n" "|----|------|\n"
+                readable_output = "### Data Types\n | No | Key  |\n |----|------|\n"
                 for item in data_type_findings_formatted:
                     readable_output += f"| {item['No']}  | {item['Key']} |\n"
 
@@ -1320,17 +1130,6 @@ def main() -> None:
             sleep_time = demisto.params().get("slackMsgLifetime", "")
             in_seconds = get_slack_msg_lifetime(client, sleep_time)
             return_results(f"Sleep for {in_seconds} seconds")
-        # elif demisto.command() == 'get-modified-remote-data':
-        #     modified_incidents = get_modified_remote_data_command(client, demisto.args())
-        #     return_results(modified_incidents)
-        # elif demisto.command() == 'get-remote-data':
-        #     remote_data = get_remote_data_command(client, demisto.args(), demisto.params())
-        #     return_results(remote_data)
-        # elif demisto.command() == 'update-remote-system':
-        #     update_remote_system_command(client, demisto.args())
-        # elif demisto.command() == 'get-mapping-fields':
-        #     mapping_fields = get_mapping_fields()
-        #     return_results(mapping_fields)
 
     except Exception as e:
         return_error(

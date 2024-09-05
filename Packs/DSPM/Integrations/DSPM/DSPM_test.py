@@ -93,11 +93,11 @@ def test_get_risk_findings_command_with_valid_args(client):
     assert isinstance(result, List)
     assert len(result) >= 1
 
+
 def test_get_slack_msg_lifetime(client):
     sleep_time = 2
     result = get_slack_msg_lifetime(client, sleep_time)
     assert isinstance(result, str)
-
 
 
 def test_get_list_of_assets_with_valid_args(client):

@@ -59,23 +59,6 @@ configuration:
   name: isFetch
   type: 8
   required: false
-# - additionalinfo: 'Choose the direction to mirror the incident: Incoming (from SentinelOne to Cortex XSOAR), Outgoing (from Cortex XSOAR to SentinelOne), or Incoming and Outgoing (from/to Cortex XSOAR and SentinelOne).'
-#   defaultvalue: None
-#   display: Incident Mirroring Direction
-#   name: mirror_direction
-#   type: 15
-#   required: false
-#   options:
-#   - None
-#   - Incoming
-#   - Outgoing
-#   - Incoming And Outgoing
-# - additionalinfo: When selected, closing the DSPM ticket is mirrored in Cortex XSOAR.
-#   defaultvalue: 'false'
-#   display: Close Mirrored XSOAR Incident
-#   name: close_xsoar_incident
-#   type: 8
-#   required: false
 description: |
   This integration fetches risk findings from Dig Security, allowing users to monitor and manage security risks identified by Dig Security in their cloud environments.
 display: DSPM
@@ -173,17 +156,6 @@ script:
       name: sort
       required: false
       secret: false
-    # - description: Page
-    #   isArray: false
-    #   isOptional: true
-    #   name: page
-    #   required: false
-    # - description: 'Page size'
-    #   isArray: false
-    #   isOptional: true
-    #   name: size
-    #   required: false
-    #   secret: false
     description: Retrieves risk findings matching the input criteria.
     name: dspm-get-risk-findings
     outputs:
@@ -258,18 +230,6 @@ script:
       name: sort
       required: false
       secret: false
-    # - description: Page
-    #   isArray: false
-    #   isOptional: true
-    #   name: page
-    #   required: false
-    #   secret: false
-    # - description: Page size
-    #   isArray: false
-    #   isOptional: true
-    #   name: size
-    #   required: false
-    #   secret: false
     description: for retrieve list of assets for company.
     name: dspm-get-list-of-assets
     outputs:
@@ -290,16 +250,6 @@ script:
     - description: ID of the asset to retrieve details for.
       name: asset_id
       required: true
-    # - description: Page
-    #   isArray: false
-    #   isOptional: true
-    #   name: page
-    #   required: false
-    # - description: size
-    #   isArray: false
-    #   isOptional: true
-    #   name: size
-    #   required: false
     description: Retrieves asset file details for the provided asset ID.
     name: dspm-get-asset-files-by-id
     outputs:
@@ -381,27 +331,12 @@ script:
       name: sort
       required: false
       secret: false
-    # - description: Page
-    #   isArray: false
-    #   isOptional: true
-    #   name: page
-    #   required: false
-    #   secret: false
-    # - description: Page size
-    #   isArray: false
-    #   isOptional: true
-    #   name: size
-    #   required: false
-    #   secret: false
     description: for retrieve list of data type findings for company.
     name: dspm-get-data-types-findings
     outputs:
     - contextPath: DSPM.DataTypeFindings
       description: List of data type findings for company.
       type: String
-  # - arguments: []
-  #   description: Pushes local changes to the remote system.
-  #   name: update-remote-system
   - arguments: []
     description: for testing the fetch-handle method.
     name: fetch-incidents
@@ -415,21 +350,6 @@ script:
   - name: dspm-get-lifetime-for-slack
     arguments: []
     description: waiting time for user response
-  # - arguments:
-  #   - description: The incident ID.
-  #     name: id
-  #     required: true
-  #   - description: Retrieve entries that were created after lastUpdate.
-  #     name: lastUpdate
-  #     required: true
-  #   description: Get remote data from a remote incident. This method does not update the current incident, and should be used for debugging purposes.
-  #   name: get-remote-data
-  # - arguments:
-  #   - description: Retrieve entries that were created after lastUpdate.
-  #     name: last_update
-  #     required: false
-  #   description: Gets the list of incidents that were modified since the last update time. Note that this method is here for debugging purposes. The get-modified-remote-data command is used as part of a Mirroring feature, which is available from version 6.1.
-  #   name: get-modified-remote-data
   - arguments:
     - description: 'Risk Finding ID'
       isArray: false
