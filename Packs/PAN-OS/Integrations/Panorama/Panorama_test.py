@@ -6841,29 +6841,6 @@ class TestFetchIncidentsFlows:
         assert new_last_run['last_fetch_dict'].get('Y_log_type', '') == '2022-01-01 13:00:00'
         assert new_last_run['last_id_dict'].get('Y_log_type', '') == {'dummy_device2': '000000003'}
 
-
-
-def test_update_max_fetch_dict(mocker):
-    """
-    Given:
-    - new_incident_entries - the fateched enties or empty dict
-    - max_fetch_dict - dictionary with the maximum number of incidents to fetch per log type.
-    - last_fetch_dict - dictionary with the last fetch time per log type.
-    When:
-        - update_max_fetch_dict is called.
-        - max_fetch_dict has a log type that is not in last_fetch_dict.
-    Then:
-        - The max_fetch_dict is updated with the maximum number of incidents to fetch per log type, only if new incident fetched.
-    """
-    from Panorama import update_max_fetch_dict
-    mocker.patch('demistomock.params', return_value={'max_fetch': 5})
-    mocker.patch('demistomock.getLastRun',
-                 return_value={"last_fetch_dict": {"log_type1": "2023-05-01 07:22:08", "log_type2": "2023-05-01 07:22:00"}})
-    res = update_max_fetch_dict(max_fetch_dict={"log_type1": 10, "log_type2": 15},
-                                last_fetch_dict={"log_type1": "2023-05-01 07:22:08", "log_type2": "2023-05-01 07:22:08"})
-    assert res == {"log_type1": 15}
-
-
 def test_find_largest_id_per_device(mocker):
     """
     Given:
@@ -7463,3 +7440,61 @@ def test_fetch_incidents_correlation(mocker: MockerFixture):
         last_run, '2024/04/08 07:22:54', QueryMap(Correlation='query'), max_fetch_dict, 1
     )
     assert entries[0]["name"] == "Correlation 1"
+
+def test_fetch_incidents_correlation(mocker: MockerFixture):
+    '''
+    Given:
+        -
+    When:
+        -
+    Then:
+        -
+    '''
+    from Panorama import fetch_incidents, LastIDs, LastFetchTimes, LastRun, MaxFetch, QueryMap, Offset
+    corr_logs = load_json('test_data/corr_logs_time_dif.json')
+    mock_get_query_entries = mocker.patch('Panorama.get_query_entries')
+
+    last_fetch_dict = LastFetchTimes(Correlation='2024/04/08 07:22:54')
+    last_id_dict = LastIDs()
+    max_fetch_dict = MaxFetch(Correlation=5)
+    offset_dict = Offset(Correlation=0)
+
+    last_run = LastRun(
+        last_fetch_dict=last_fetch_dict,
+        last_id_dict=last_id_dict,
+        max_fetch_dict=max_fetch_dict,
+        offset_dict=offset_dict
+    )
+
+    # assert duplicates are removed:
+
+    mock_get_query_entries.return_value = corr_logs[:5]
+    new_last_run, entries = fetch_incidents(
+        last_run, '2024/04/08 07:22:54', QueryMap(Correlation='query'), max_fetch_dict, 1
+    )
+
+    assert entries[0]["name"] == "Correlation 1"
+    assert "CORRELATION" in entries[0]["rawJSON"]
+    assert mock_get_query_entries.call_args_list[0].args == (
+        "Correlation", "query and (match_time geq '2024/04/08 07:22:54')", 5, 1, 0
+    )  # asserting that "match_time" is used instead of "time_generated".
+    assert last_fetch_dict == LastFetchTimes(Correlation="2024-04-08 07:22:54")  # the max date
+    assert last_id_dict == LastIDs(Correlation=5)
+    assert max_fetch_dict == MaxFetch(Correlation=5)
+    assert offset_dict == Offset(Correlation=5)
+
+    mock_get_query_entries.return_value = corr_logs[5:]
+    new_last_run, entries = fetch_incidents(
+        new_last_run, '2024/04/08 07:22:54', QueryMap(Correlation='query'), max_fetch_dict, 1
+    )
+
+    assert entries[0]["name"] == "Correlation 6"
+    assert "CORRELATION" in entries[0]["rawJSON"]
+    assert mock_get_query_entries.call_args_list[1].args == (
+        "Correlation", "query and (match_time geq '2024/04/08 07:22:54')", 5, 1, 5
+    )  # asserting that "match_time" is used instead of "time_generated".
+    assert last_fetch_dict == LastFetchTimes(Correlation="2024-04-08 07:22:55")  # the max date
+    assert last_id_dict == LastIDs(Correlation=10)
+    assert max_fetch_dict == MaxFetch(Correlation=5)
+    assert offset_dict == Offset(Correlation=2)
+
