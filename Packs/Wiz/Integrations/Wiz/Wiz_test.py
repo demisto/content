@@ -21,7 +21,7 @@ TEST_TOKEN = '123456789'
 SIMILAR_COMMANDS = ['wiz-issue-in-progress', 'wiz-reopen-issue', 'wiz-reject-issue', 'wiz-get-issues',
                     'wiz-get-resource', 'wiz-get-issue',
                     'wiz-set-issue-note', 'wiz-clear-issue-note', 'wiz-get-issue-evidence', 'wiz-set-issue-due-date',
-                    'wiz-clear-issue-due-date', 'wiz-rescan-machine-disk', 'wiz-get-project-team', 'wiz-resolve-issue']
+                    'wiz-clear-issue-due-date', 'wiz-get-project-team', 'wiz-resolve-issue', 'wiz-copy-to-forensics-account']
 
 
 @pytest.fixture(autouse=True)
@@ -485,18 +485,6 @@ def test_get_project_team(mocker, capfd):
         mocker.patch('Wiz.checkAPIerrors', side_effect=DemistoException('demisto exception'))
         project = get_project_team('test_project')
         assert not project
-
-
-def test_rescan_machine_disk(mocker, capfd):
-    from Wiz import rescan_machine_disk
-    with capfd.disabled():
-        mocker.patch('Wiz.checkAPIerrors', return_value=VALID_RESPONSE_JSON)
-        machine_disk = rescan_machine_disk('test_id_1234')
-        assert machine_disk
-
-        mocker.patch('Wiz.checkAPIerrors', side_effect=DemistoException('demisto exception'))
-        machine_disk = rescan_machine_disk('test_id_1234')
-        assert not machine_disk
 
 
 @pytest.mark.parametrize("severity", ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW', 'INFORMATIONAL'])

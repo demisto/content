@@ -2233,94 +2233,6 @@ def get_issue_evidence(issue_id):
         return response['data']['graphSearch']['nodes'][0].get('entities', {})
 
 
-def rescan_machine_disk(vm_id):
-    """
-    Rescan a VM disk in Wiz
-    """
-
-    demisto.debug("rescan_machine_disk, enter")
-
-    if not vm_id:
-        demisto.error("You should pass a VM ID.")
-        return "You should pass a VM ID."
-
-    # find VM on the graph
-    vm_variables = {
-        "projectId": "*",
-        "query": {
-            "type": [
-                "VIRTUAL_MACHINE"
-            ],
-            "where": {
-                "providerUniqueId": {
-                    "EQUALS": [
-                        vm_id
-                    ]
-                }
-            }
-        }
-    }
-    vm_query = (  # pragma: no cover
-        """
-        query GraphEntityResourceFilterAutosuggest(
-            $query: GraphEntityQueryInput
-            $projectId: String!
-            ) {
-            graphSearch(
-                first: 100, query: $query, quick: true, projectId: $projectId
-            ) {
-                nodes {
-                    entities {
-                        id
-                        name
-                        type
-                    }
-                }
-            }
-        }
-    """)
-
-    try:
-        vm_response = checkAPIerrors(vm_query, vm_variables)
-    except DemistoException:
-        demisto.debug(f"could not find VM with ID {vm_id}")
-        return {}
-
-    # Run the rescan query
-    if not vm_response.get('data', {}).get('graphSearch', {}).get('nodes', []):
-        demisto.error(f"could not find VM with ID {vm_id}")
-        return f"could not find VM with ID {vm_id}"
-
-    else:
-        vm_id_wiz = vm_response['data']['graphSearch']['nodes'][0]['entities'][0]['id']
-        demisto.info(f"Found VM with ID {vm_id}")
-
-    variables = {
-        'input': {
-            'id': vm_id_wiz,
-            'type': 'VIRTUAL_MACHINE'
-        }
-    }
-    query = (  # pragma: no cover
-        """
-        mutation RequestResourceScan($input: RequestConnectorEntityScanInput!) {
-          requestConnectorEntityScan(input: $input) {
-            success
-            reason
-          }
-        }
-    """)
-
-    demisto.info(f"Running scan on VM ID {vm_id}")
-    try:
-        response = checkAPIerrors(query, variables)
-    except DemistoException:
-        demisto.debug(f"could not find run scan on VM ID {vm_id}")
-        return {}
-
-    demisto.info(f"Scan on VM ID {vm_id} submitted successfully.")
-    return response
-
 
 def get_project_team(project_name):
     """
@@ -2630,15 +2542,6 @@ def main():
             resource_id = demisto_args.get(WizInputParam.ISSUE_ID)
             copy_mutation_response = clear_issue_due_date(
                 issue_id=resource_id
-            )
-            command_result = CommandResults(readable_output=copy_mutation_response, raw_response=copy_mutation_response)
-            return_results(command_result)
-
-        elif command == 'wiz-rescan-machine-disk':
-            demisto_args = demisto.args()
-            vm_id = demisto_args.get(WizInputParam.VM_ID)
-            copy_mutation_response = rescan_machine_disk(
-                vm_id=vm_id
             )
             command_result = CommandResults(readable_output=copy_mutation_response, raw_response=copy_mutation_response)
             return_results(command_result)
