@@ -298,7 +298,7 @@ def main() -> None:  # pragma: no cover
     else:
         packs = []
 
-    pack_version = "1.3.0"
+    pack_version = "1.4.0"
     if isinstance(packs, list):
         for pack in packs:
             if pack["name"] == "GreyNoise":
