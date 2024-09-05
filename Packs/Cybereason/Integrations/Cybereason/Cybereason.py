@@ -1477,13 +1477,25 @@ def malop_to_incident(malop: str) -> dict:
     if not isinstance(malop, dict):
         raise ValueError("Cybereason raw response is not valid, malop is not dict")
 
+    status = 0
+    if malop.get('status', ''):
+        malopStatus = malop.get('status', '')
+    else:
+        malopStatus = malop.get('simpleValues', '').get('managementStatus', '').get('values', '')[0]
+    if (malopStatus == "Active") or (malopStatus == "UNREAD"):
+        status = 0
+    elif (malopStatus == "Remediated") or (malopStatus == "TODO"):
+        status = 1
+    elif (malopStatus == "Closed") or (malopStatus == "RESOLVED"):
+        status = 2
     guid_string = malop.get('guidString', '')
     if not guid_string:
         guid_string = malop.get('guid', '')
     incident = {
         'rawJSON': json.dumps(malop),
         'name': 'Cybereason Malop ' + guid_string,
-        'labels': [{'type': 'GUID', 'value': guid_string}]}
+        'labels': [{'type': 'GUID', 'value': guid_string}],
+        'status': status }
 
     return incident
 
