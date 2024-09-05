@@ -270,25 +270,6 @@ Get the evidence from an Issue.
 !wiz-get-issue-evidence issue_id="12345678-1234-1234-1234-cc0a24716e0b"
 ```
 
-### wiz-rescan-machine-disk
-***
-Rescan a VM disk in Wiz.
-
-<h4> Base Command </h4>
-
-`wiz-rescan-machine-disk`
-
-<h4> Input </h4>
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| vm_id | VM Cloud Provider id | Required | 
-
-#### Command Example
-```
-!wiz-rescan-machine-disk vm_id="arn:aws:ec2:us-east-2:123456789098:instance/i-1234abcd123456789"
-```
-
 ### wiz-set-issue-due-date
 ***
 Set a due date for an Issue.
@@ -345,4 +326,23 @@ Clear a due date for an Issue.
 #### Command Example
 ```
 !wiz-get-project-team project_name="project1"
+```
+
+### wiz-copy-to-forensics-account
+***
+Copy VM's Volumes to a Forensics Account
+
+<h4> Base Command </h4>
+
+`wiz-copy-to-forensics-account`
+
+<h4> Input </h4>
+
+| **Argument Name** | **Description** | **Required** |
+| --- |-----------------| --- |
+| resource_id | Resource Id     | Required | 
+
+#### Command Example
+```
+!wiz-copy-to-forensics-account resource_id="12345678-1234-1234-1234-cc0a24716e0b"
 ```
