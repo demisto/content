@@ -15,7 +15,7 @@ def main():
                                    firstID=args.get('first_id'),
                                    selectedEntryID=args.get('selected_entry_id'),
                                    users=argToList(args.get('users')),
-                                   tagsAndOperator=argToBoolean(args.get('tags_and_operator')),
+                                   tagsAndOperator=argToBoolean(args.get('tags_and_operator', False)),
                                    fromTime=args.get('from_time'),
                                    parentID=args.get('parent_id')
         ))
