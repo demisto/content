@@ -633,7 +633,8 @@ def flatten_comments(comments):
     """
     This method will flatten up the comments
     """
-    return [{"id": x["id"], "content": x['content'], "userid": x['user']['id'] if x['user'] else None, "username": x['user']['name'] if x['user'] else None,
+    return [{"id": x["id"], "content": x['content'], "userid": x['user']['id'] if x.get('user') else None,
+             "username": x['user']['name'] if x.get('user') else None,
              "created": x['created'], "updated": x['updated']} for x in comments]
 
 
@@ -776,7 +777,7 @@ class SearchLightTriagePoller:
         if not events:
             demisto.info("No events were fetched. Event num start: {}, Event created after: {}, Limit:"
                          " {}, risk_level: {}, alert_risk_types: {}".format(
-                             event_num_start, event_created_after, limit, risk_level, alert_risk_types))
+                event_num_start, event_created_after, limit, risk_level, alert_risk_types))
             return RQPollResult(event_num_start, [])
 
         else:
@@ -913,8 +914,7 @@ def main() -> None:
     if not isinstance(first_fetch_datetime, datetime):
         raise ValueError("Failed to get first fetch time.")
 
-    first_fetch_time = first_fetch_datetime
-    if first_fetch_time > datetime.now():
+    if first_fetch_datetime > datetime.now():
         raise DemistoException("Since date should not be greate than current date")
     demisto.info(f'Command being called is {demisto.command()}')
     try:
@@ -933,7 +933,7 @@ def main() -> None:
             return_results(test_module(rq_client))
         elif demisto.command() == 'fetch-incidents':
             next_run, incidents = fetch_incidents(fetchLimit, demisto.getLastRun(), ingestClosed, riskLevel, riskTypes, rq_client,
-                                                  first_fetch_time)
+                                                  first_fetch_datetime)
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
         elif demisto.command() == 'ds-search':

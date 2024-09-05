@@ -2,8 +2,7 @@ from __future__ import annotations
 import hashlib
 import random
 
-from Packs.DigitalShadows.Integrations.ReliaQuestGreyMatterDRPIncidents.ReliaQuestGreyMatterDRPIncidents import parse_date, \
-    search_find
+from Packs.DigitalShadows.Integrations.ReliaQuestGreyMatterDRPIncidents.ReliaQuestGreyMatterDRPIncidents import search_find
 
 import pytest
 
@@ -189,7 +188,9 @@ def create_assets(asset_ids: List[str]) -> List[Dict]:
     return [
         {
             "id": _id,
-            "type": f"asset-{_id}"
+            "type": f"asset-{_id}",
+            "approval-state": "accepted",
+            "display-value": "test"
 
         } for _id in asset_ids
     ]
@@ -201,7 +202,9 @@ def create_comments(comment_ids):
             "id": _id,
             "triage-item-id": _id,
             "content": f"test content-{_id}",
-            "updated": "2020-04-01T08:30:00Z"
+            "updated": "2020-04-01T08:30:00Z",
+            "created": "2020-04-01T08:30:00Z",
+            "user": None
         } for _id in comment_ids
     ]
 
@@ -226,7 +229,7 @@ def test_fetch_incidents_command(mocker, client: Client):
     )
 
     sinceDate = "2009-01-20T00:00:00Z"
-    sinceDate = parse_date(sinceDate)
+    sinceDate = arg_to_datetime(sinceDate)
     last_run = {"incidents": {"last_fetch": 0}}
     next_run, events = fetch_incidents(100, last_run, True, ["high"], [], client, sinceDate)
     assert len(events) == 100
