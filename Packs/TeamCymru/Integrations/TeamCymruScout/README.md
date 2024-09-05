@@ -1,12 +1,12 @@
 ## Overview
 
-The Team Cymru Scout integration enables getting immediate insight on IP addresses and domains for threat investigations.
+Team Cymru's Scout integration with Palo Alto XSOAR helps streamline incident triage and accelerate threat response by providing domain and threat intelligence data.
 This integration was integrated and tested with API of Team Cymru Scout.
 
 ### Key Features
 
-- Explore the communication data to identify commonalities between IPs, identify compromised hosts, and uncover other indications of an attack.
-- Access to NetFlow communications, Whois information, PDNS, X509 certificates, and fingerprinting details.
+- Leverage communication data to identify correlations between IP addresses, identify compromised hosts, and uncover other indications of an attack.
+- Access a quick summary of NetFlow communications, Whois information, PDNS, X509 certificates, and fingerprinting details.
 - Supports both IPv4 and IPv6 address queries.
 - Provides real-time threat intelligence and helps in identifying and mitigating potential security threats.
 - Offers extensive documentation and support resources to assist with setup, configuration, and troubleshooting.
