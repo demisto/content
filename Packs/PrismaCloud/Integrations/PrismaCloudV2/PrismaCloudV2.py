@@ -2330,7 +2330,7 @@ def code_issues_list_command(client, args):
     # pagination
     if page_size:
         limit_for_request = page_size
-        offset = page
+        offset = page * page_size
         limit = page_size
     else:
         offset = 0
