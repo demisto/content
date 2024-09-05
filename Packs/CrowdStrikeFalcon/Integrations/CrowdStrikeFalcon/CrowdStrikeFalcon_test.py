@@ -2369,8 +2369,8 @@ class TestFetch:
                                                {'incident_id': 'ldt:2', 'start': '2020-09-04T09:16:11Z'}]})
         requests_mock.get(f'{SERVER_URL}/alerts/queries/alerts/v1', json={'resources': ['a:ind:1', 'a:ind:2']})
         requests_mock.post(f'{SERVER_URL}/alerts/entities/alerts/v1',
-                           json={'resources': [{'composite_id': 'a:ind:1', 'start_time': '2020-09-04T09:16:11.000Z'},
-                                               {'composite_id': 'a:ind:2', 'start_time': '2020-09-04T09:16:11.000Z'}]})
+                           json={'resources': [{'composite_id': 'a:ind:1', 'start_time': '2020-09-04T09:16:11.000Z', "created_timestamp": "2020-09-04T09:16:11.000Z"},
+                                               {'composite_id': 'a:ind:2', 'start_time': '2020-09-04T09:16:11.000Z', "created_timestamp": "2020-09-04T09:16:11.000Z"}]})
 
         mocker.patch.object(
             demisto,
