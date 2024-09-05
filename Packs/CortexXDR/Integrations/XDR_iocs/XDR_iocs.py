@@ -375,7 +375,9 @@ def get_iocs_generator(size=200, query=None, is_first_stage_sync=False) -> Itera
     full_query = query or Client.query
     ioc_count = 0
     try:
-        filter_fields = 'value,indicator_type,score,expiration,modified,aggregatedReliability,moduleToFeedMap,comments,id,CustomFields' if is_xsiam_or_xsoar_saas() else None
+        filter_fields = ('value,indicator_type,score,expiration,modified,aggregatedReliability,moduleToFeedMap,comments,id,CustomFields'
+                         if is_xsiam_or_xsoar_saas()
+                         else None)
         search_after_array = None
         search_after = get_integration_context().get('search_after', None)
         for batch in searchInElastic(size=size,
