@@ -46,3 +46,6 @@ sourceuser
 [file:PanoramaCVECoverage.yml]
 ignore=BA124
 
+# GR103 is temporary, see CIAC-11705
+[file:classifier-Panorama_Classifier.json]
+ignore=GR103
