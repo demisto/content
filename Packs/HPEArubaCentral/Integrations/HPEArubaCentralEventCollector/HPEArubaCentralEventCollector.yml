@@ -11,26 +11,35 @@ configuration:
   required: true
   type: 0
   section: Connect
-- display: Client id
-  name: client_id
+- name: credentials
+  display: Client ID
   required: true
+  defaultvalue:
   type: 9
+  displaypassword: Client Secret
   section: Connect
-- display: Client secret
-  name: client_secret
+  hiddenusername: false
+- name: user
+  display: HPE User Name
   required: true
+  defaultvalue:
   type: 9
+  displaypassword: HPE User Password 
   section: Connect
-- display: Customer id
-  name: customer_id
+  hiddenusername: false
+- name: customer_id
   required: true
+  defaultvalue:
   type: 9
+  displaypassword: Customer ID
   section: Connect
+  hiddenusername: true
 - display: Fetch networking events
+  name: fetch_networking_events
   type: 8
   required: false
   section: Collect
-- defaultvalue: 10000
+- defaultvalue: 100
   section: Collect
   display: The maximum number of audit events per fetch (Max. allowed - 50,000)
   name: max_audit_events_per_fetch
