@@ -72,7 +72,8 @@ def main() -> None:
         return_error('You must provide an indicator.')
 
     try:
-        siem = SIEMS[demisto.args()['SIEM'].lower()]
+        siem_name = demisto.args()['SIEM'].lower()
+        siem = SIEMS[siem_name]
         demisto.debug(f'SIEM selected: {demisto.args()["SIEM"].lower()}')
 
     except KeyError:
@@ -89,7 +90,7 @@ def main() -> None:
         query = f'ERROR:\n{e}'
 
     return_results(CommandResults(outputs_prefix="Sigma",
-                                  outputs={"query": query, "name": rule.title},
+                                  outputs={"query": query, "name": rule.title, "format": f"{siem_name}"},
                                   readable_output=query))
 
 

@@ -7,11 +7,12 @@ type: python
 tags:
 - Sigma
 comment: Allows to convert a Sigma Rule indicator into a SIEM query.
+description: Convert a Sigma indicator into a query in the selected query language.
 enabled: true
 args:
 - name: indicator
   required: true
-  description: The sigma rule indicator to convert to a queryץ.
+  description: The sigma rule indicator to convert to a query.
 - name: SIEM
   description: The SIEM to convert the sigma rule to.
   required: true
@@ -24,6 +25,16 @@ args:
   - Microsoft_Defender
   - Carbon_Black
   - Elastic
+outputs:
+- contextPath: Sigma.query
+  description: The Sigma query in the correct format.
+  type: string
+- contextPath: Sigma.name
+  description: The Sigma query name.
+  type: string
+- contextPath: Sigma.format
+  description: The format in which the query was created.
+  type: string
 scripttarget: 0
 subtype: python3
 runonce: false
