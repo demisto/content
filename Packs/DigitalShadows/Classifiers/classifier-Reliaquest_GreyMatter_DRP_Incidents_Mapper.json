@@ -25,17 +25,24 @@
                     "simple": "alert.password"
                 },
                 "DS Alert Risk Factors": {
-                    "complex": {
-                        "accessor": "risk-factors",
-                        "filters": [],
-                        "root": "alert",
-                        "transformers": [
-                            {
-                                "operator": "toUpperCase"
-                            }
-                        ]
-                    }
-                },
+					"complex": {
+						"accessor": "risk-factors",
+						"filters": [],
+						"root": "alert",
+						"transformers": [
+							{
+								"args": {
+									"separator": {
+										"value": {
+											"simple": ", "
+										}
+									}
+								},
+								"operator": "join"
+							}
+						]
+					}
+				},
                 "DS Assets": {
                     "complex": {
                         "filters": [],
