@@ -1035,7 +1035,7 @@ def search_indicator(indicator_type, indicator_value, client=None):
     }
 
     demisto.debug(f'search_indicator: {indicator_value=}')
-
+    result = Response()
     try:
         if client:
             demisto.debug('search_indicator: using the client')
