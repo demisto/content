@@ -262,7 +262,7 @@ def test_raw_to_dict():
         'drilldown_search': 'key IN (test1,test2)'}
     assert splunk.rawToDict('123456, sample_account="sample1", '
                             'sample_account="sample2", sample_account="sample3",'
-                            ' distinct_count_ac="5"') == {'sample_account': 'sample1,sample2,sample3',
+                            ' distinct_count_ac="5"') == {'sample_account': 'sample1, sample2, sample3',
                                                           'distinct_count_ac': '5'}
 
 
