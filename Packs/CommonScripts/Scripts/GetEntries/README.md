@@ -1,6 +1,7 @@
 Collect entries matching to the conditions in the war room
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,15 +11,25 @@ Collect entries matching to the conditions in the war room
 | Cortex XSOAR Version | 6.5.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
 | --- | --- |
 | id | Optional incident ID to fetch entries from. If not specified, current incident is used. |
 | tags | The list of tags |
-| categories | The list of categories. {commandAndResults, playbookTaskResult, playbookTaskStartAndDone, playbookErrors, justFound, deleted, incidentInfo, chats, evidence, notes, attachments} |
+| categories | The list of categories |
+| page_size | The number of entries to return. |
+| last_id | Return entries starting from the specified entry ID and backward. |
+| first_id | Return entries starting from the specified entry ID and forward. |
+| selected_entry_id | Return entries before and after the specified entry ID. |
+| users | Return entries with the specified users. |
+| tags_and_operator | Return entries that include all specified tags. |
+| from_time | Return entries from this time and forward, Format is ISO8601 \(i.e. '2020-04-30T10:35:00.000Z'\). |
+| parent_id | The ID of the parent entry. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
