@@ -375,6 +375,7 @@ def get_iocs_generator(size=200, query=None, is_first_stage_sync=False) -> Itera
     full_query = query or Client.query
     ioc_count = 0
     try:
+        filter_fields = 'value,indicator_type,score,expiration,modified,aggregatedReliability,moduleToFeedMap,comments,id,CustomFields' if is_demisto_version_ge(6.12) else None
         search_after_array = None
         search_after = get_integration_context().get('search_after', None)
         for batch in searchInElastic(size=size,
@@ -382,7 +383,7 @@ def get_iocs_generator(size=200, query=None, is_first_stage_sync=False) -> Itera
                                         search_after=search_after,
                                         sort=[{"field": "modified", "asc": True},
                                               {"field": "id", "asc": True}],
-                                        filter_fields='value,indicator_type,score,expiration,modified,aggregatedReliability,moduleToFeedMap,comments,id,CustomFields'):
+                                        filter_fields=filter_fields):
             search_after_array = batch.get('searchAfter', [])
             for ioc in batch.get('iocs', []):
                 ioc_count += 1
@@ -511,7 +512,7 @@ def parse_demisto_single_comments(ioc: dict, comment_field_name: list[str] | str
 
 def demisto_ioc_to_xdr(ioc: dict) -> dict:
     try:
-        demisto.debug(f'Raw outgoing IOC: {ioc}')  # uncomment to debug, otherwise spams the log
+        # demisto.debug(f'Raw outgoing IOC: {ioc}')  # uncomment to debug, otherwise spams the log
         global CURRENT_BATCH_LAST_MODIFIED_TIME
         CURRENT_BATCH_LAST_MODIFIED_TIME = ioc.get('modified')
         xdr_ioc: dict = {
