@@ -169,3 +169,7 @@ txt
 retries
 Registerserver
 gcb
+
+# GR103 is temporary, see CIAC-11656
+[file:layoutscontainer-Chronicle_User_Alert_Incident.json]
+ignore=GR103
