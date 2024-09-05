@@ -21,6 +21,39 @@ This integration was integrated and tested with version 21.2 of Cybereason
 
 4. Click **Test** to validate the URLs, token, and connection.
 
+## Cybereason MalOp to XSOAR Incident Map
+
+This involves the mapping of response fields to XSOAR incidents, enhancing the ability to manage and track security incidents effectively.
+
+### Overview
+
+1. **Incident Mapping:** The integration maps specific response fields to corresponding incident fields within XSOAR, ensuring that all relevant information is captured accurately.
+2. **Custom Fields:** In addition to standard incident fields, custom fields have been introduced to accommodate unique data requirements specific to our workflow. These fields provide flexibility and enhance the granularity of the incident information.
+
+- `malopcreationtime`
+- `malopupdatetime`
+- `maloprootcauseelementname`
+- `maloprootcauseelementtype`
+- `malopseverity`
+- `malopdetectiontype`
+- `malopedr`
+- `malopurl`
+- `malopgroup`
+
+These custom fields provide flexibility and enhance the granularity of the incident information.
+
+### Fetchin MalOps
+
+The functionality for fetching MalOps is implemented through the `fetch_incidents` function. This function is responsible for retrieving MalOps and subsequently converting them into XSOAR incidents.
+
+- **Conversion Process:** The conversion from MalOps to incidents is handled by the `malop_to_incident` function. This function processes MalOps one by one, ensuring each is correctly mapped to its corresponding incident structure.
+
+### Usage
+
+1. **Configure Custom Fields:** Ensure that all custom fields are properly set up in XSOAR before running the fetch function.
+2. **Run Fetch Incidents:** Execute the `fetch_incidents` function to initiate the retrieval and conversion process.
+3. **Monitor Incidents:** Once the MalOps are converted, they will appear as incidents in XSOAR, allowing for effective incident management.
+
 ## Commands
 
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
@@ -1633,6 +1666,14 @@ Get the results related to machines.
 | Cybereason.Malops.LastUpdatedTime | string | Last updated time of malop | 
 | Cybereason.Malops.InvolvedHash | string | List of file hashes involved in this Malop | 
 | Cybereason.Malops.Status | string | Malop managemant status | 
+| Cybereason.Malops.MalopCloserName | string | List of Malop Closer Name involved in this Malop |
+| Cybereason.Malops.Machines | string | List of Machines involved in this Malop |
+| Cybereason.Malops.Severity | string | Severity of Malop |
+| Cybereason.Malops.MitreTechniques | string | List of Mitre Techniques involved in this Malop |
+| Cybereason.Malops.Users | string | List of Users involved in this Malop |
+| Cybereason.Malops.DetectionTypes | string | List of Detection Types involved in this Malop |
+| Cybereason.Malops.DecisionStatuses | string | List of Decision Statuses involved in this Malop |
+| Cybereason.Malops.DetectionEngines | string | List of Detection Engines involved in this Malop |
 
 #### Command example
 

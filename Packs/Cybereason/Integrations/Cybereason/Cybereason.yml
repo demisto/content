@@ -387,6 +387,30 @@ script:
     - contextPath: Cybereason.Malops.Status
       description: Malop managemant status.
       type: string
+    - contextPath: Cybereason.Malops.Severity
+      description: Severity of Malop.
+      type: string
+    - contextPath: Cybereason.Malops.Machines
+      description: List of Machines involved in this Malop.
+      type: string
+    - contextPath: Cybereason.Malops.Users
+      description: List of Users involved in this Malop.
+      type: string
+    - contextPath: Cybereason.Malops.DecisionStatuses
+      description: List of Decision Statuses involved in this Malop.
+      type: string
+    - contextPath: Cybereason.Malops.DetectionTypes
+      description: List of Detection Types involved in this Malop.
+      type: string
+    - contextPath: Cybereason.Malops.DetectionEngines
+      description: List of Detection Engines involved in this Malop.
+      type: string
+    - contextPath: Cybereason.Malops.MitreTechniques
+      description: List of Mitre Techniques involved in this Malop.
+      type: string
+    - contextPath: Cybereason.Malops.MalopCloserName
+      description: List of Malop Closer Name involved in this Malop.
+      type: string
   - arguments:
     - description: processGuid of the Cybereason Malop (can accept multiple guids separated by comma).
       name: processGuid
