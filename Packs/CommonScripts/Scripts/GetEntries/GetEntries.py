@@ -18,7 +18,7 @@ def main():
                                    tagsAndOperator=argToBoolean(args.get('tags_and_operator')),
                                    fromTime=args.get('from_time'),
                                    parentID=args.get('parent_id')
-                               ))
+        ))
 
         ents = demisto.executeCommand('getEntries', params)
         if not ents:
