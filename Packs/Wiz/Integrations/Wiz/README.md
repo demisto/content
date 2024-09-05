@@ -51,12 +51,13 @@ Get the issues on cloud resources
 
 <h4> Input </h4>
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| issue_type | The type of Issue to get. | Optional | 
-| resource_id | Get Issues of a specific resource_id.<br />Expected input: `providerId` | Optional | 
-| severity | Get Issues of a specific severuty.<br />Expected input: `CRITICAL`, `HIGH`, `MEDIUM`, `LOW` or `INFORMATIONAL`.<br />The chosen severity and above will be fetched  | Optional | 
-*Either `issue_type` or `resource_id` are required.*
+| **Argument Name** | **Description**                                                                                                                                                  | **Required** |
+|-------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| issue_type        | The type of Issue to get<br />Expected input: `TOXIC_COMBINATION`, `THREAT_DETECTION`, `CLOUD_CONFIGURATION`.<br />The chosen type will be fetched  .            | Optional | 
+| entity_type       | The type of entity to get issues for.                                                                                                                            | Optional | 
+| resource_id       | Get Issues of a specific resource_id.<br />Expected input: `providerId`                                                                                          | Optional | 
+| severity          | Get Issues of a specific severuty.<br />Expected input: `CRITICAL`, `HIGH`, `MEDIUM`, `LOW` or `INFORMATIONAL`.<br />The chosen severity and above will be fetched | Optional | 
+*`entity_type` and `resource_id` are mutually exclusive.*
 
 <h4> Context Output </h4>
 
@@ -67,7 +68,8 @@ Get the issues on cloud resources
 
 #### Command Example
 ```
-!wiz-get-issues issue_type="VIRTUAL_MACHINE"
+!wiz-get-issues entity_type="VIRTUAL_MACHINE"
+!wiz-get-issues issues_type="THREAT_DETECTION"
 !wiz-get-issues resource_id="arn:aws:ec2:us-east-2:123456789098:instance/i-0g03j4h5gd123d456"
 !wiz-get-issues resource_id="arn:aws:ec2:us-east-2:123456789098:instance/i-0g03j4h5gd123d456" severity=HIGH
 ```
@@ -345,4 +347,5 @@ Copy VM's Volumes to a Forensics Account
 #### Command Example
 ```
 !wiz-copy-to-forensics-account resource_id="12345678-1234-1234-1234-cc0a24716e0b"
+!wiz-copy-to-forensics-account resource_id="arn:aws:ec2:us-east-1:452225563321:instance/i-05r662bfb9708a4e8"
 ```

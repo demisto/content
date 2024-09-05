@@ -46,8 +46,8 @@ name: Wiz
 script:
   commands:
   - arguments:
-    - description: Type of Issue to get.
-      name: issue_type
+    - description: Type of entity to get issues for.
+      name: entity_type
       predefined:
       - ACCESS_ROLE
       - ACCESS_ROLE_BINDING
@@ -148,6 +148,13 @@ script:
       - LOW
       - INFORMATIONAL
       description: Get Issues of a specific severity and above.
+    - name: issue_type
+      auto: PREDEFINED
+      predefined:
+      - TOXIC_COMBINATION
+      - THREAT_DETECTION
+      - CLOUD_CONFIGURATION
+      description: Get Issues of a specific type.
     description: Get the Issues on cloud resources.
     name: wiz-get-issues
     outputs:
@@ -312,7 +319,7 @@ script:
     description: Copy VM's Volumes to a Forensics Account.
     arguments:
       - name: resource_id
-        description: ID of the resource to copy its Volumes.
+        description: ID of the resource to copy its Volumes. Can be Wiz ID or provider's ID.
         required: true
   dockerimage: demisto/python3:3.11.9.107902
   isfetch: true

@@ -84,7 +84,7 @@ def test_get_filtered_issues(checkAPIerrors):
         }
     ]
 
-    res = get_filtered_issues('virtualMachine', '', 'CRITICAL', 500)
+    res = get_filtered_issues('virtualMachine', '', 'CRITICAL', '', 500)
     assert res == result_response
 
 
@@ -495,7 +495,7 @@ def test_get_filtered_issues_good_severity(mocker, capfd, severity):
         valid_json_paging['data']['issues']['pageInfo']['hasNextPage'] = True
         valid_json_paging['data']['issues']['pageInfo']['endCursor'] = 'test'
         mocker.patch('Wiz.checkAPIerrors', side_effect=[valid_json_paging, VALID_RESPONSE_JSON])
-        get_filtered_issues(issue_type='virtualMachine', resource_id='', severity=severity, limit=500)
+        get_filtered_issues(entity_type='virtualMachine', resource_id='', severity=severity, issue_type='', limit=500)
 
 
 @pytest.mark.parametrize("severity", ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW', 'INFORMATIONAL'])
@@ -506,19 +506,19 @@ def test_get_filtered_issues_good_severity_resource(mocker, capfd, severity):
         valid_json_paging['data']['issues']['pageInfo']['hasNextPage'] = True
         valid_json_paging['data']['issues']['pageInfo']['endCursor'] = 'test'
         mocker.patch('Wiz.checkAPIerrors', side_effect=[valid_json_paging, VALID_RESPONSE_JSON])
-        get_filtered_issues(issue_type='', resource_id='test_resource', severity=severity, limit=500)
+        get_filtered_issues(entity_type='', resource_id='test_resource', severity=severity, issue_type='', limit=500)
 
 
 def test_get_filtered_issues_bad_arguments(mocker, capfd):
     from Wiz import get_filtered_issues
     with capfd.disabled():
         mocker.patch('Wiz.checkAPIerrors', return_value=VALID_RESPONSE_JSON)
-        issue = get_filtered_issues(issue_type='virtualMachine', resource_id='test', severity='BAD', limit=500)
-        assert issue == 'You cannot pass issue_type and resource_id together\n'
-        issue = get_filtered_issues(issue_type='', resource_id='', severity='', limit=500)
-        assert issue == 'You should pass (at least) one of the following parameters:\n\tissue_type\n\tresource_id' \
-                        '\n\tseverity\n'
-        issue = get_filtered_issues(issue_type='virtualMachine', resource_id='', severity='BAD', limit=500)
+        issue = get_filtered_issues(entity_type='virtualMachine', resource_id='test', severity='BAD', issue_type='', limit=500)
+        assert issue == 'You cannot pass entity_type and resource_id together\n'
+        issue = get_filtered_issues(entity_type='', resource_id='', severity='', issue_type='', limit=500)
+        assert issue == "You should pass (at least) one of the following parameters:\n\tentity_type\n\tresource_id" \
+                    "\n\tseverity\n\tissue_type\n"
+        issue = get_filtered_issues(entity_type='virtualMachine', resource_id='', severity='BAD', issue_type='', limit=500)
         assert issue == 'You should only use these severity types: CRITICAL, HIGH, MEDIUM, LOW or ' \
                         'INFORMATIONAL in upper or lower case.'
 
@@ -990,9 +990,39 @@ def test_copy_to_forensics_account(checkAPIerrors):
     assert res == test_copy_to_forensics_account_response
 
 
-def test_copy_to_forensics_account_invalid_uuid(mocker, capfd):
+test_get_resource_id_using_arn_response = {
+    "data": {
+        "cloudResources": {
+            "nodes": [
+                {
+                    "id": "12345678-1234-1234-1234-d25e16359c19"
+                }
+            ]
+        }
+    }
+}
+
+
+def test_copy_to_forensics_account_provider_id(mocker):
+    from Wiz import copy_to_forensics_account
+    mocker.patch('Wiz.checkAPIerrors', return_value=VALID_RESPONSE_JSON, side_effect=[test_get_resource_id_using_arn_response,
+                                                                                      test_copy_to_forensics_account_response])
+    res = copy_to_forensics_account('arn:aws:ec2:us-east-1:452225563321:instance/i-05r662bfb9708a4e8')
+    assert res == test_copy_to_forensics_account_response
+
+
+test_get_resource_id_using_arn_response_error = {
+    "data": None,
+    "errors": {
+        "message": "Resource not found",
+    }
+}
+
+
+def test_copy_to_forensics_account_invalid_id(mocker, capfd):
     from Wiz import copy_to_forensics_account
     with capfd.disabled():
-        mocker.patch('Wiz.checkAPIerrors', return_value=test_copy_to_forensics_account_response)
+        mocker.patch('Wiz.checkAPIerrors', side_effect=[test_get_resource_id_using_arn_response,
+                                                        test_get_resource_id_using_arn_response_error])
         issue = copy_to_forensics_account(resource_id='invalid_uuid')
-        assert issue == 'You should pass a valid UUID.'
+        assert issue == "Resource with ID 12345678-1234-1234-1234-d25e16359c19 was not copied to Forensics Account. error: {'message': 'Resource not found'}"

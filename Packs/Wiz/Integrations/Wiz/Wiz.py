@@ -1495,6 +1495,19 @@ PULL_RESOURCES_QUERY = ("""
                 }
             }
     """)
+PULL_RESOURCES_ID_NATIVE_QUERY = """
+query CloudResourceSearch($filterBy: CloudResourceFilters, $first: Int, $after: String) {
+  cloudResources(filterBy: $filterBy, first: $first, after: $after) {
+    nodes {
+      id
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+"""
 PULL_RESOURCES_VARIABLES = {
     "fetchPublicExposurePaths": True,
     "fetchInternalExposurePaths": False,
@@ -1520,6 +1533,7 @@ PULL_RESOURCES_VARIABLES = {
 class WizInputParam:
     ISSUE_ID = 'issue_id'
     ISSUE_TYPE = 'issue_type'
+    ENTITY_TYPE = 'entity_type'
     RESOURCE_ID = 'resource_id'
     SEVERITY = 'severity'
     REJECT_REASON = 'reject_reason'
@@ -1749,21 +1763,22 @@ def get_issue(issue_id):
     return issues
 
 
-def get_filtered_issues(issue_type, resource_id, severity, limit):
+def get_filtered_issues(entity_type, resource_id, severity, issue_type, limit):
     """
     Retrieves Filtered Issues
     """
-    demisto.info(f"Issue type is {issue_type}\n"
+    demisto.info(f"Entity type is {entity_type}\n"
                  f"Resource ID is {resource_id}\n"
-                 f"Severity is {severity}")
+                 f"Severity is {severity}\n"
+                 f"Issue type is {issue_type}")
     error_msg = ''
 
-    if not severity and not issue_type and not resource_id:
-        error_msg = "You should pass (at least) one of the following parameters:\n\tissue_type\n\tresource_id" \
-                    "\n\tseverity\n"
+    if not severity and not entity_type and not resource_id and not issue_type:
+        error_msg = "You should pass (at least) one of the following parameters:\n\tentity_type\n\tresource_id" \
+                    "\n\tseverity\n\tissue_type\n"
 
-    if issue_type and resource_id:
-        error_msg = f"{error_msg}You cannot pass issue_type and resource_id together\n"
+    if entity_type and resource_id:
+        error_msg = f"{error_msg}You cannot pass entity_type and resource_id together\n"
 
     if error_msg:
         demisto.error(error_msg)
@@ -1772,7 +1787,7 @@ def get_filtered_issues(issue_type, resource_id, severity, limit):
     issue_variables = {}
     query = PULL_ISSUES_QUERY
 
-    if issue_type:
+    if entity_type:
         issue_variables = {
             "first": limit,
             "filterBy": {
@@ -1780,9 +1795,11 @@ def get_filtered_issues(issue_type, resource_id, severity, limit):
                     "OPEN",
                     "IN_PROGRESS"
                 ],
-                "type": [
-                    issue_type
-                ]
+                "relatedEntity": {
+                    "type": [
+                        entity_type
+                    ]
+                },
             },
             "orderBy": {
                 "field":
@@ -1857,6 +1874,13 @@ def get_filtered_issues(issue_type, resource_id, severity, limit):
                          "in upper or lower case.")
             return ("You should only use these severity types: CRITICAL, HIGH, MEDIUM, LOW or INFORMATIONAL in "
                     "upper or lower case.")
+
+    if issue_type:
+        if 'filterBy' not in issue_variables.keys():
+            issue_variables['filterBy'] = {}
+            issue_variables['first'] = limit
+
+        issue_variables['filterBy']['type'] = [issue_type]
 
     demisto.info(f"Query is {query}")
     demisto.info(f"Issue variables is {issue_variables}")
@@ -2343,8 +2367,18 @@ def copy_to_forensics_account(resource_id):
     demisto.debug("copy_to_forensics_account, enter")
 
     if not is_valid_uuid(resource_id):
-        demisto.error("You should pass a valid UUID.")
-        return 'You should pass a valid UUID.'
+        variables = {
+            "first": 1,
+            "filterBy": {
+                "providerUniqueId": [resource_id]
+            }
+        }
+        resource_id_response = checkAPIerrors(PULL_RESOURCES_ID_NATIVE_QUERY, variables)
+        if not resource_id_response['data']['cloudResources']['nodes']:
+            demisto.error(f"Resource with ID {resource_id} not found.")
+            return f"Resource with ID {resource_id} not found."
+        else:
+            resource_id = resource_id_response['data']['cloudResources']['nodes'][0]['id']
 
     copy_to_forensics_account_mutation = """
         mutation CopyResourceForensicsToExternalAccount($input: CopyResourceForensicsToExternalAccountInput!) {
@@ -2362,7 +2396,10 @@ def copy_to_forensics_account(resource_id):
     response_json = checkAPIerrors(copy_to_forensics_account_mutation, copy_to_forensics_account_variables)
     demisto.debug(f"The API response is {response_json}")
 
-    if not response_json["data"]["copyResourceForensicsToExternalAccount"]["systemActivityGroupId"]:
+    if response_json["data"] is None and response_json["errors"] is not None:
+        demisto.error(f"Resource with ID {resource_id} was not copied to Forensics Account.")
+        return f"Resource with ID {resource_id} was not copied to Forensics Account. error: {response_json['errors']}"
+    elif not response_json["data"]["copyResourceForensicsToExternalAccount"]["systemActivityGroupId"]:
         demisto.info(f"Resource with ID {resource_id} was not copied to Forensics Account.")
         return {}
     else:
@@ -2422,10 +2459,12 @@ def main():
             issue_type = demisto_args.get(WizInputParam.ISSUE_TYPE)
             resource_id = demisto_args.get(WizInputParam.RESOURCE_ID)
             severity = demisto_args.get(WizInputParam.SEVERITY)
+            entity_type = demisto_args.get(WizInputParam.ENTITY_TYPE)
             issues = get_filtered_issues(
                 issue_type=issue_type,
                 resource_id=resource_id,
                 severity=severity,
+                entity_type=entity_type,
                 limit=WIZ_API_LIMIT,
             )
             if isinstance(issues, str):
