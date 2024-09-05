@@ -47,9 +47,11 @@ jobs:
         LABEL_NAMES=$(echo '${{ toJson(github.event.pull_request.labels) }}' | jq -r '.[].name')
         if echo "$LABEL_NAMES" | grep -q "Contribution"; then
             echo "Label 'Contribution' found!"
+            export IS_CONTRIBUTION=true
         else
           echo "Label 'Contribution' not found."
         fi
+
         source .venv/bin/activate
         if [[ "$BRANCH_NAME" =~ ^AUD-demisto/.* ]]; then
           echo "In docker auto update branch, pre commit on docker_autoupdate mode."
