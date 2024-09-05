@@ -352,6 +352,6 @@ def test_get_api_key_invalid_key(mocker):
     mocker.patch.object(demisto, 'results')
 
     # Get the client that was instantiated
-    with raises(SystemExit):
+    with pytest.raises(SystemExit):
         GreyNoise.main()
     assert demisto.results.call_args[0][0]['Contents'] == 'Please provide a valid API token'
