@@ -7902,7 +7902,7 @@ script:
       description: The host ID.
     - contextPath: PANOS.JobStatus.id
       description: The ID of the job.
-      type: String
+      type: Number
     - contextPath: PANOS.JobStatus.type
       description: The job type.
       type: String
@@ -7933,6 +7933,9 @@ script:
     - contextPath: PANOS.JobStatus.progress
       type: String
       description: The numerical progress of the job.
+    - contextPath: PANOS.JobStatus.warnings
+      type: String
+      description: The warnings of the job.
   - arguments:
     - description: The software version to upgrade to, for example, 9.1.2.
       name: version
