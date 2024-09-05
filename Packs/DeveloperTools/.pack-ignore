@@ -35,6 +35,7 @@ ignore=BA124
 
 [file:Hey.yml]
 ignore=SC101
+
 # GR103 is temporary, see CIAC-11656
 [file:indicatorfield-DeveloperTools_Param1.json]
 ignore=GR103
