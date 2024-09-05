@@ -57,3 +57,7 @@ ignore=RN113,RN114
 
 [file:1_6_36.md]
 ignore=RN116
+
+# GR103 is temporary, see CIAC-11705
+[file:layoutscontainer-Rapid_Breach_Response.json]
+ignore=GR103

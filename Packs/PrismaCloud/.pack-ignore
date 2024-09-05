@@ -63,3 +63,10 @@ ignore=BA101
 [file:PrismaCloud.yml]
 ignore=PR101,MR108
 
+# GR103 is temporary, see CIAC-11705
+[file:incidenttype-Azure_AKS_Misconfiguration.json]
+ignore=GR103
+[file:incidenttype-Azure_Network_Misconfiguration.json]
+ignore=GR103
+[file:incidenttype-Azure_SQL_Misconfiguration.json]
+ignore=GR103

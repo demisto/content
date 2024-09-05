@@ -2029,12 +2029,15 @@ def slack_send_file(_channel: str | None = None, _channel_id: str = '', _entry_i
         'name': file_path['name'],
         'comment': comment
     }
-
-    response = slack_send_request(to, channel, group, thread_id=thread_id, file_dict=file_dict, channel_id=channel_id)
-    if response:
-        demisto.results('File sent to Slack successfully.')
-    else:
-        demisto.results('Could not send the file to Slack.')
+    try:
+        response = slack_send_request(to, channel, group, thread_id=thread_id, file_dict=file_dict, channel_id=channel_id)
+        if response:
+            demisto.results('File sent to Slack successfully.')
+        else:
+            demisto.results('Could not send the file to Slack.')
+    except SlackApiError as e:
+        if 'method_deprecated' in str(e):
+            raise DemistoException('Command slack-send-file isn\'t available for newly created apps (from May 8, 2024).')
 
 
 def handle_tags_in_message_sync(message: str) -> str:
