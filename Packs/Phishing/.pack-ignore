@@ -66,6 +66,8 @@ UseOldHTMLFields
 QR
 
 [file:LinkToPhishingCampaign.yml]
-ignore=BA124# GR103 is temporary, see CIAC-11705
+ignore=BA124
+
+# GR103 is temporary, see CIAC-11705
 [file:incidentfield-bclscore.json]
 ignore=GR103
