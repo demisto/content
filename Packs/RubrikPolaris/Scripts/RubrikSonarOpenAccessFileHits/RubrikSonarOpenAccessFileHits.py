@@ -30,7 +30,7 @@ def main() -> None:
     except KeyError:
         html = f"<div style={DIV_HTML_STYLE}><h1 style={ORANGE_HTML_STYLE}No Results Found</h1></div>"
 
-    demisto.results({
+    return_results({
         'ContentsFormat': formats['html'],
         'Type': entryTypes['note'],
         'Contents': html
