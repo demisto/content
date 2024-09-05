@@ -44,12 +44,11 @@ jobs:
         DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
         BRANCH_NAME: ${{ github.head_ref }}
       run: |
-        LABELS_JSON=$(echo '${{ toJson(github.event.pull_request.labels) }}')
-        LABEL_NAMES=$(echo "$LABELS_JSON" | jq -r '.[].name')
-        if echo "$LABEL_NAMES" | grep -q "my-label"; then
-            echo "Label 'my-label' found!"
+        LABEL_NAMES=$(echo '${{ toJson(github.event.pull_request.labels) }}' | jq -r '.[].name')
+        if echo "$LABEL_NAMES" | grep -q "Contribution"; then
+            echo "Label 'Contribution' found!"
         else
-          echo "Label 'my-label' not found."
+          echo "Label 'Contribution' not found."
         fi
         source .venv/bin/activate
         if [[ "$BRANCH_NAME" =~ ^AUD-demisto/.* ]]; then
