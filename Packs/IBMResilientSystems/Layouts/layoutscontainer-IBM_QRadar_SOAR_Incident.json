@@ -436,23 +436,6 @@
 				"type": "custom",
 				"sections": [
                     {
-                        "h": 3,
-                        "i": "incident-notes",
-                        "items": [],
-                        "maxH": null,
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "IBM QRadar SOAR Notes",
-                        "query": "IbmConvertCommentsToTable",
-                        "queryType": "script",
-                        "static": false,
-                        "type": "dynamic",
-                        "w": 3,
-                        "x": 0,
-                        "y": 2
-                    },
-                    {
                         "displayType": "ROW",
                         "h": 1,
                         "hideName": false,
@@ -485,8 +468,26 @@
                         "static": false,
                         "w": 3,
                         "x": 2,
-                        "y": 8
+                        "y": 2
+                    },
+                    {
+                        "h": 3,
+                        "i": "incident-notes",
+                        "items": [],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "IBM QRadar SOAR Notes",
+                        "query": "IbmConvertCommentsToTable",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 3,
+                        "x": 0,
+                        "y": 3
                     }
+
                 ]
 			},
 			{
@@ -494,23 +495,6 @@
 				"name": "Tasks",
 				"type": "custom",
 				"sections": [
-                    {
-                        "h": 3,
-                        "i": "incident-tasks",
-                        "items": [],
-                        "maxH": null,
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "IBM QRadar SOAR Tasks",
-                        "query": "IbmConvertTasksToTable",
-                        "queryType": "script",
-                        "static": false,
-                        "type": "dynamic",
-                        "w": 3,
-                        "x": 0,
-                        "y": 2
-                    },
                     {
                         "displayType": "ROW",
                         "h": 1,
@@ -524,14 +508,14 @@
                                         "userMarkedRequired": true
                                     }
                                 },
-                                "buttonClass": "primary",
+                                "buttonClass": "success",
                                 "endCol": 2,
                                 "fieldId": "",
                                 "height": 22,
                                 "id": "Press to add a task to the IBM QRadar SOAR incident",
                                 "index": 0,
                                 "name": "Press to add a task to the IBM QRadar SOAR incident",
-                                "scriptId": "IbmAddNTask",
+                                "scriptId": "IbmAddTask",
                                 "sectionItemType": "button",
                                 "startCol": 0
                             }
@@ -540,11 +524,28 @@
                         "maxW": 4,
                         "minH": 1,
                         "moved": false,
-                        "name": "Add note",
+                        "name": "Add task",
                         "static": false,
                         "w": 3,
                         "x": 2,
-                        "y": 8
+                        "y": 2
+                    },
+                    {
+                        "h": 6,
+                        "i": "incident-tasks",
+                        "items": [],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "IBM QRadar SOAR Tasks",
+                        "query": "IbmConvertTasksToTable",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 3,
+                        "x": 0,
+                        "y": 3
                     }
                 ]
 			},

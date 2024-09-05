@@ -33,7 +33,7 @@ DEMISTO_PARAMS = (demisto.params()
                       'api_key_id': os.getenv('API_KEY_ID'),
                       'api_key_secret': os.getenv('API_KEY_SECRET'),
                       'fetch_time': '2020-02-02T19:00:00Z'
-})
+                  })
 
 if not DEMISTO_PARAMS['proxy']:
     for var in ['HTTP_PROXY', 'HTTPS_PROXY', 'http_proxy', 'https_proxy']:
@@ -188,32 +188,38 @@ EXECUTE_SCRIPT_ENDPOINT = "/scripts/executions"
 ''' HELPER FUNCTIONS '''
 
 
-def validate_fetch_time(fetch_time: str) -> str:
+def validate_iso_time_format(iso_time: str) -> str:
     """
-    Ensures the input timestamp string ends with a 'Z' to denote Zulu time (UTC).
+    Ensures the input time string does not contain the milliseconds part and the time string
+    ends with a 'Z' to denote Zulu time (UTC).
 
     Args:
-    fetch_time (str): The timestamp string to check and modify if needed.
+    iso_time (str): Time in ISO format to check and modify if needed.
 
     Returns:
-    str: The modified timestamp string with a 'Z' suffix if it wasn't already present.
+    str: The modified iso_time string with a 'Z' suffix if it wasn't already present.
     """
-    if fetch_time:
-        return fetch_time if fetch_time.endswith("Z") else fetch_time + "Z"
-    else:
-        return fetch_time
+
+    # Remove milliseconds from the time string.
+    iso_time = iso_time.split('.')[0]
+
+    if not iso_time.endswith('Z'):
+        iso_time += 'Z'
+    return iso_time
 
 
 def normalize_timestamp(timestamp):
     """
     Converts epoch timestamp to human readable timestamp.
     """
+    if timestamp is None:
+        return timestamp
     return datetime.fromtimestamp(timestamp / 1000.0).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
 def prettify_incidents(client, incidents):
     users = get_users(client)
-    phases = get_phases(client).get('entities', [])
+    phases = get_phases(client)
     for incident in incidents:
         incident['id'] = str(incident['id'])
         if isinstance(incident['description'], str):
@@ -277,9 +283,36 @@ def prettify_incident_notes(notes: list[dict]) -> list[dict]:
             "text": note.get("text", ""),
             "created_by": f"{note.get('user_fname', '')} {note.get('user_lname', '')}",
             "create_date": normalize_timestamp(note.get("create_date")),
+            "modify_date": note.get("modify_date")
         }
         formatted_notes.append(new_note_obj)
     return formatted_notes
+
+
+def prettify_incident_tasks(client: SimpleClient, tasks: list[dict]) -> list[dict]:
+    """
+    Formats and enriches tasks to a more readable data.
+    """
+
+    def update_task(task):
+        task.update({
+            # TODO - Introduce field ENUMS.
+            'Phase': get_phase_name(client, task['phase_id']),
+            'ID': task['id'],
+            'Name': task['name'],
+            'Description': task['description'],
+            'DueDate': normalize_timestamp(task['due_date']) if task['due_date'] else 'No due date',
+            'Status': 'Open' if task['status'] == 'O' else 'Closed',
+            'Required': task['required'],
+            'Creator': task.get('creator_principal', {}).get('display_name'),
+            'Instructions': task.get('instr_text'),
+            'Owner': f"{task.get('owner_fname', '')} {task.get('owner_lname')}"
+        })
+        return task
+
+    formatted_tasks = [update_task(task) for task in tasks]
+    demisto.debug(f'prettify_incident_tasks {formatted_tasks=}')
+    return formatted_tasks
 
 
 def prepare_search_query_data(args: dict) -> dict:
@@ -483,10 +516,13 @@ def process_raw_incident(client: SimpleClient, incident: dict) -> dict:
         dict: The processed incident dictionary.
     """
     incident_id = str(incident.get("id"))
+
+    # TODO - Configure enabling/disabling artifacts fetching for reduced fetch times.
     artifacts = incident_artifacts(client, incident_id)  # TODO Check types
     if artifacts:
         incident["artifacts"] = artifacts
 
+    # TODO - Configure enabling/disabling attachment fetching for reduced fetch times.
     attachments = incident_attachments(client, incident_id)
     if attachments:
         incident["attachments"] = attachments
@@ -499,11 +535,15 @@ def process_raw_incident(client: SimpleClient, incident: dict) -> dict:
     incident["discovered_date"] = normalize_timestamp(incident.get("discovered_date"))
     incident["create_date"] = normalize_timestamp(incident.get("create_date"))
 
+    # TODO - Configure enabling/disabling notes fetching for reduced fetch times.
     notes = get_incident_notes(client, incident_id)
+    demisto.debug(f"process_raw_incident retrieved notes {notes=}")
     incident["notes"] = prettify_incident_notes(notes)
+    demisto.debug(f"process_raw_incident new incident notes: {incident['notes']=}")
 
+    # TODO - Configure enabling/disabling tasks fetching for reduced fetch times.
     tasks = get_tasks(client, incident_id)
-    incident["tasks"] = prettify_incident_tasks(tasks)
+    incident["tasks"] = prettify_incident_tasks(client, tasks)
 
     incident["phase"] = get_phase_name(client, incident['phase_id'])
     incident.update(get_mirroring_data())
@@ -653,6 +693,26 @@ def extract_data_form_other_fields_argument(other_fields, incident, changes):
         )
 
 
+def get_users(client):
+    response = client.get('/users')
+    return response
+
+
+def get_phase_name(client: SimpleClient, phase_id: str) -> str:
+    response = client.get(f'/phases/{phase_id}')
+    return response.get('name')
+
+
+def get_phases(client: SimpleClient):
+    response = client.get('/phases')
+    return response.get('entities', [])
+
+
+def get_tasks(client: SimpleClient, incident_id: str):
+    response = client.get(f'/incidents/{incident_id}/tasks?text_content_output_format=objects_convert_text')
+    return response
+
+
 ''' COMMAND FUNCTIONS '''
 
 
@@ -662,7 +722,7 @@ def search_incidents_command(client, args):
         pretty_incidents = prettify_incidents(client, incidents)
 
         result_incidents = createContext(pretty_incidents, id=None,
-                                         keyTransform=underscoreToCamelCase, removeNull=True)    # pragma: no cover
+                                         keyTransform=underscoreToCamelCase, removeNull=True)  # pragma: no cover
         ec = {
             'Resilient.Incidents(val.Id && val.Id === obj.Id)': result_incidents
         }
@@ -678,7 +738,7 @@ def search_incidents_command(client, args):
                     result_incidents,
                     headers=['Id', 'Name', 'PlanStatus', 'CreatedDate', 'DiscoveredDate', 'Owner', 'Phase'],
                     removeNull=True
-            ),
+                ),
 
             'EntryContext': ec
         }
@@ -775,7 +835,7 @@ def update_incident_command(client, args):
     demisto.debug(f'update_incident_command {str(response)=}')
     if response.status_code == 200:
         return f'Incident {incident_id} was updated successfully.'
-    else:   # pragma: no cover
+    else:  # pragma: no cover
         return f'Failed to update incident {incident_id}'
 
 
@@ -827,7 +887,7 @@ def get_incident_command(client, incident_id):
 def get_incident(client: SimpleClient, incident_id, content_format=False):
     url = '/incidents/' + str(incident_id)
     if content_format:
-        url += '?text_content_output_format=objects_convert_html'
+        url += '?text_content_output_format=objects_convert_text'
     response = client.get(url)
     return response
 
@@ -897,58 +957,9 @@ def get_users_command(client):
     return entry
 
 
-def get_users(client):
-    response = client.get('/users')
-    return response
-
-
-def get_phase_name(client: SimpleClient, phase_id: str) -> str:
-    response = client.get(f'/phases/{phase_id}')
-    return response.get('name')
-
-
-def get_phases(client):
-    response = client.get('/phases')
-    return response
-
-
-def prettify_incident_tasks(tasks: list[dict]) -> list[dict]:
-    """
-    Format tasks to a more readable format.
-
-    Args:
-        tasks (list): A list of task dictionaries.
-
-    Returns:
-        list: A list of formatted task dictionaries.
-    """
-    def format_task(task):
-        return {
-            # TODO - Introduce field ENUMS.
-            'IncidentName': task['inc_name'],
-            'ID': task['id'],
-            'Name': task['name'],
-            'DueDate': normalize_timestamp(task['due_date']) if task['due_date'] else None,
-            'Status': 'Open' if task['status'] == 'O' else 'Closed',
-            'Required': task['required'],
-            'Form': task.get('form'),
-            'UserNotes': task.get('user_notes'),
-            'Creator': task.get('creator_principal', {}).get('display_name'),
-            'Category': task['cat_name'],
-            'Instructions': task.get('instr_text')
-        }
-    formatted_tasks = [format_task(task) for task in tasks]
-    demisto.debug(f'prettify_incident_tasks {formatted_tasks=}')
-    return formatted_tasks
-
-def get_tasks(client, incident_id):
-    response = client.get(f'/incidents/{incident_id}/tasks?text_content_output_format=objects_convert_text')
-    return response
-
-
 def get_tasks_command(client, incident_id):
     tasks = get_tasks(client, incident_id)
-    tasks = prettify_incident_tasks(tasks)
+    tasks = prettify_incident_tasks(client, tasks)
     for tasks in tasks:
         incident_name = tasks.get('IncidentName', '')
         ec = {
@@ -1270,7 +1281,7 @@ def fetch_incidents(client, first_fetch_time: str):
 
     if not last_fetched_timestamp:
         last_fetched_timestamp = to_timestamp(first_fetch_time)
-    args = {'date-created-after': last_fetched_timestamp}    # Fetch incident from the last fetched timestamp.
+    args = {'date-created-after': last_fetched_timestamp}  # Fetch incident from the last fetched timestamp.
     resilient_incidents = search_incidents(client, args)
 
     demisto_incidents = []
@@ -1319,7 +1330,7 @@ def execute_script(client: SimpleClient, incident_id: str, script_id: str) -> di
     return client.post(EXECUTE_SCRIPT_ENDPOINT, payload)
 
 
-def add_note(client: SimpleClient, incident_id: str, note_content: str):
+def add_note(client: SimpleClient, incident_id: str, note_content: str) -> dict:
     """
     Adds a note to the specified incident.
     """
@@ -1330,6 +1341,37 @@ def add_note(client: SimpleClient, incident_id: str, note_content: str):
         }
     }
     return client.post(f'/incidents/{str(incident_id)}/comments', body)
+
+
+def add_custom_task(client: SimpleClient,
+                    incident_id: str,
+                    task_name: str,
+                    phase: str,
+                    due_date: int,
+                    description: str,
+                    instructions: str,
+                    owner_id: str) -> dict:
+    """
+    Adds a custom task to the incident.
+    If task creation was successful, task ID is returned.
+    """
+    # Initiating with required fields.
+    task_dto = {
+        "name": task_name,
+        "phase_id": {"name": phase},
+        "description": description,
+    }
+    # Optional fields.
+    if due_date:
+        task_dto["due_date"] = due_date
+    if instructions:
+        task_dto["instructions"] = instructions
+    if owner_id.isdigit():
+        task_dto["owner_id"] = {"id": owner_id}
+        demisto.debug(f'add_custom_task {task_dto=}')
+    else:
+        raise DemistoException("Owner ID must be an integer number.")
+    return client.post(f"incidents/{incident_id}/tasks?text_content_output_format=objects_convert_text", payload=task_dto)
 
 
 def add_note_command(client, incident_id, note):
@@ -1390,7 +1432,7 @@ def list_scripts_command(client: SimpleClient, args: dict) -> CommandResults:
     if not script_id and len(scripts_to_process) > 1:  # Multiple script to retrieve info for.
         for script in scripts_to_process:
             _script_id = script.get('id')
-            script = get_scripts(client, _script_id)    # Enriching script's data.
+            script = get_scripts(client, _script_id)  # Enriching script's data.
             script_ids.append(_script_id)
 
     demisto.info(f"list_scripts_command received script ids: {str(script_ids)}")
@@ -1637,14 +1679,29 @@ def execute_remote_script_command(client: SimpleClient, args: dict) -> CommandRe
     )
 
 
+def add_custom_task_command(client: SimpleClient, args: dict) -> CommandResults:
+    """
+    Adds a custom task to the specified incident.
+    """
+    incident_id = args.get("incident_id")
+    name = args.get("name")
+    owner_id = args.get("owner_id")
+    description = args.get("description")
+    instructions = args.get("instructions")
+    phase = args.get("phase")
+    due_date = to_timestamp(validate_iso_time_format(args.get("due_date")))
+
+    response = add_custom_task(client, incident_id, name, phase, due_date, description, instructions, owner_id)
+    demisto.debug(f"add_custom_task_command {response=}")
+    if task_id := response.get('id'):
+        return CommandResults(
+            readable_output=f"Successfully created new task for incident with ID {incident_id}. Task ID: {task_id}")
+    return CommandResults(readable_output=f"Could not create a new task: {response.get('message')}")
+
+
 def get_modified_remote_data_command(client: SimpleClient, args: dict) -> GetModifiedRemoteDataResponse:
     remote_args = GetModifiedRemoteDataArgs(args)
-    last_update = (
-        remote_args.last_update
-    )  # In the first run, this value will be set to 1 minute earlier
-    last_update = (
-        last_update.split(".")[0] + "Z"
-    )  # Truncate milliseconds to match the format expected by the API.
+    last_update = validate_iso_time_format(remote_args.last_update)  # In the first run, this value will be set to 1 minute earlier
     demisto.debug(f"get-modified-remote-data command {last_update=}")
 
     incidents = search_incidents(client, args={"last-modified-after": last_update})
@@ -1689,12 +1746,14 @@ def handle_incoming_incident_reopening(incident_id: str) -> dict:
 
 def get_remote_data_command(client: SimpleClient,
                             args: dict,
+                            note_tag_to_ibm: str,
                             note_tag_from_ibm: str,
                             task_tag_from_ibm: str
                             ) -> GetRemoteDataResponse:
     """
     Args:
         client (SimpleClient): The IBM Resillient client.
+        note_tag_to_ibm (str): The note tag from the mirrored notes.
         note_tag_from_ibm (str): The note tag, to tag the mirrored notes.
         task_tag_from_ibm (str): The task tag, to tag the mirrored tasks.
         attachments_tag (str): The attachment tag, to tag the mirrored attachments.
@@ -1702,6 +1761,10 @@ def get_remote_data_command(client: SimpleClient,
         GetRemoteDataResponse: Structured incident response.
     """
     remote_args = GetRemoteDataArgs(args)
+    # In the first run, this value will be set to 1 minute earlier.
+    last_update_iso = validate_iso_time_format(remote_args.last_update)
+    last_update_timestamp = to_timestamp(last_update_iso)
+
     incident_id = remote_args.remote_incident_id
     demisto.debug(f"get-remote-data {incident_id=}")
 
@@ -1713,15 +1776,20 @@ def get_remote_data_command(client: SimpleClient,
     # Create note entries.
     note_entries = incident["notes"]
     for note_entry in note_entries:
-        entries.append({
-            'ContentsFormat': EntryFormat.TEXT,
-            'Type': EntryType.NOTE,
-            'Contents':
-                f"{note_entry.get('text').get('content')}\n"
-                f"Added By: {note_entry.get('created_by', '')}\n",
-            'Tags': [note_tag_from_ibm],
-            'Note': True
-        })
+        note_modify_date_timestamp = note_entry.get('modify_date')
+        demisto.debug(f'get_remote_data_command {type(note_modify_date_timestamp)=} | {note_modify_date_timestamp=} | {type(last_update_timestamp)=} | {last_update_timestamp=}')
+        if (note_tag_to_ibm not in note_entry.get('text')
+                and note_modify_date_timestamp
+                and note_modify_date_timestamp >= last_update_timestamp):
+            entries.append({
+                'ContentsFormat': EntryFormat.TEXT,
+                'Type': EntryType.NOTE,
+                'Contents':
+                    f"{note_entry.get('text').get('content')}\n"
+                    f"Added By: {note_entry.get('created_by', '')}\n",
+                'Tags': [note_tag_from_ibm],
+                'Note': True
+            })
 
     # Handling remote incident resolution.
     if incident.get("end_date") and incident.get("plan_status") == "C":  # 'C' stands for 'Closed'
@@ -1743,7 +1811,8 @@ def get_remote_data_command(client: SimpleClient,
     mirrored_data = dict()
     mirrored_data["rawJSON"] = json.dumps(incident)
 
-    # TODO - Handle tags for attachments, tasks
+    # TODO - Handle tags for attachments, artifacts
+    demisto.debug(f"get_remote_data_command mirrored_object={incident}")
     return GetRemoteDataResponse(mirrored_object=incident, entries=entries)
 
 
@@ -1761,11 +1830,7 @@ def update_remote_system_command(client: SimpleClient, args: dict, note_tag_to_i
         demisto.debug(
             f"Skipping updating remote incident fields [{remote_args.remote_incident_id}] as it is not new nor changed"
         )
-    _entries_tryout = demisto.executeCommand("getEntries", "")
-    demisto.debug(f'update_remote_system_command {_entries_tryout=}')
-
     entries = remote_args.entries
-    demisto.debug(f'update_remote_system_command {entries=}')
     if entries:
         for entry in entries:
             demisto.debug(f'update_remote_system_command {entry=}')
@@ -1837,9 +1902,9 @@ def get_client():  # pragma: no cover
     return resilient_client
 
 
-def main():     # pragma: no cover
+def main():  # pragma: no cover
     params = demisto.params()
-    fetch_time = validate_fetch_time(params.get("fetch_time", ""))
+    fetch_time = validate_iso_time_format(params.get("fetch_time", ""))
     client = get_client()
 
     # Disable SDK logging warning messages
@@ -1851,7 +1916,8 @@ def main():     # pragma: no cover
     note_tag_to_ibm = params.get('note_tag_to_ibm')
     note_tag_from_ibm = params.get('note_tag_from_ibm')
     if note_tag_to_ibm == note_tag_from_ibm:
-        raise DemistoException(f'Note Entry Tag to IBM ({note_tag_to_ibm=})and Note Entry Tag from IBM ({note_tag_from_ibm=}) cannot have the same value.')
+        raise DemistoException(
+            f'Note Entry Tag to IBM ({note_tag_to_ibm=})and Note Entry Tag from IBM ({note_tag_from_ibm=}) cannot have the same value.')
 
     task_tag_to_ibm = params.get('task_tag_to_ibm')
     task_tag_from_ibm = params.get('task_tag_from_ibm')
@@ -1934,10 +2000,12 @@ def main():     # pragma: no cover
             return_results(list_task_instructions_command(client, args))
         elif command == "rs-execute-remote-script":
             return_results(execute_remote_script_command(client, args))
+        elif command == "rs-add-custom-task":
+            return_results(add_custom_task_command(client, args))
         elif command == "get-modified-remote-data":
             return_results(get_modified_remote_data_command(client, args))
         elif command == "get-remote-data":
-            return_results(get_remote_data_command(client, args, note_tag_from_ibm, task_tag_from_ibm))
+            return_results(get_remote_data_command(client, args, note_tag_to_ibm, note_tag_from_ibm, task_tag_from_ibm))
         elif command == "update-remote-system":
             return_results(update_remote_system_command(client, args, note_tag_to_ibm))
         elif command == "get-mapping-fields":

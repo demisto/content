@@ -15,10 +15,14 @@ def convert_to_table():
         for data in tasks:
             parsed_data = json.loads(data)
             new_task_entry = {
+                'Phase': parsed_data.get('Phase', ''),
+                'ID': parsed_data.get('ID', ''),
                 'Name': parsed_data.get('Name', ''),
                 'Status': parsed_data.get('Status', ''),
                 'Instructions': parsed_data.get('Instructions', ''),
-                'DueDate': parsed_data.get('DueDate', '')
+                'DueDate': parsed_data.get('DueDate', ''),
+                'Owner': parsed_data.get('Owner', ''),
+                'Required': parsed_data.get('Required', '')
             }
             task_entries.append(new_task_entry)
     if not task_entries:

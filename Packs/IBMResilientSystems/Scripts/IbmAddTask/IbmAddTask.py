@@ -3,17 +3,24 @@ from CommonServerPython import *  # noqa: F401
 
 
 def add_task(args: Dict[str, Any]) -> CommandResults:
-    task_instructions = args.get('task', '')
-    tags = argToList(args.get('tags', ''))
     remote_incident_id = demisto.incident()['dbotMirrorId']
-    demisto.debug(f'add_task {task_instructions=} | {remote_incident_id}')
-    response = demisto.executeCommand('rs-add-note', args={
-        'note': task_instructions,
-        'incident-id': remote_incident_id
-    })
+    demisto.debug(f'add_task {args=} | {remote_incident_id}')
+
+    # Updating arguments according to expected command arguments.
+    tags = argToList(args.pop('tags', ''))
+    args["incident_id"] = remote_incident_id
+    response = demisto.executeCommand('rs-add-custom-task', args)
     demisto.debug(f"add_task {response=}")
+
+    readable_output = tableToMarkdown("New task created", {
+        "Name": args.get('name'),
+        "Phase": args.get('phase'),
+        "Due date": args.get('due_date'),
+        "Description": args.get('description'),
+        "Instructions": args.get('instructions')
+    })
     return CommandResults(
-        readable_output=task_instructions, mark_as_note=False, tags=tags or None
+        readable_output=readable_output, mark_as_note=False, tags=tags or None
     )
 
 
@@ -23,7 +30,7 @@ def main():  # pragma: no cover
         return_results(res)
 
     except Exception as ex:
-        return_error(f'Failed to execute IbmAddNTask. Error: {str(ex)}')
+        return_error(f'Failed to execute IbmAddTask. Error: {str(ex)}')
 
 
 if __name__ in ["__builtin__", "builtins", '__main__']:

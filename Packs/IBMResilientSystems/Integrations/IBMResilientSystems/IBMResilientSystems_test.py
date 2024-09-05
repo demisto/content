@@ -204,10 +204,10 @@ def test_test_module_fetch_time(fetch_time, expected_result, mocker):
     mocker.patch.object(demisto, 'params', return_value={
         'server': 'example.com:80', 'org': 'example', 'proxy': True, 'max_fetch': DEFAULT_MAX_FETCH
     })
-    from IBMResilientSystems import test_module, SimpleClient, validate_fetch_time
+    from IBMResilientSystems import test_module, SimpleClient, validate_iso_time_format
     client = SimpleClient()
     mocker.patch.object(client, 'get', return_value={})
-    fetch_time = validate_fetch_time(fetch_time)
+    fetch_time = validate_iso_time_format(fetch_time)
     if expected_result == 'fail':
         with raises(DemistoException):
             test_module(client, fetch_time)
