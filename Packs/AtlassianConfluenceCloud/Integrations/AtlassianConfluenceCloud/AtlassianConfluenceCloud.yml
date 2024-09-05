@@ -44,6 +44,8 @@ configuration:
   name: max_events_per_fetch
   required: false
   type: 0
+  hidden:
+  - xsoar
 - display: Fetch Events
   name: isFetchEvents
   type: 8
