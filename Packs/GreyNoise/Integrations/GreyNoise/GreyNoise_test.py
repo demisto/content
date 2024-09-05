@@ -2,7 +2,6 @@ import pytest
 import json
 import GreyNoise
 import demistomock as demisto
-from pytest import raises
 from test_data.input_data import (  # type: ignore
     parse_code_and_body_data,
     get_ip_reputation_score_data,
