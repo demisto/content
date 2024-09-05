@@ -266,10 +266,8 @@ ignore=BA101,GR103
 [file:layoutscontainer-EmailV2.json]
 ignore=BA101,GR103
 
-
 [file:layoutscontainer-FileV2.json]
 ignore=BA101,GR103
-
 
 [file:layoutscontainer-IPV2.json]
 ignore=BA101,GR103
