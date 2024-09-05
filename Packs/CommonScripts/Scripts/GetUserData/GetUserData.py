@@ -1,6 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 
+import itertools
 from typing import Any
 from collections.abc import Callable
 
@@ -107,11 +108,16 @@ class Command:
         if not is_error:
             readable_output = response["HumanReadable"]
             result_message = f"#### Result for {command}\n{readable_output}"
-            result = CommandResults(readable_output=result_message, mark_as_note=True, tags=tag)
+            result = CommandResults(
+                readable_output=result_message, mark_as_note=True, tags=tag
+            )
         else:
             result_message = f"#### Error for {command}\n{response}"
             result = CommandResults(
-                readable_output=result_message, entry_type=EntryType.ERROR, mark_as_note=True, tags=tag
+                readable_output=result_message,
+                entry_type=EntryType.ERROR,
+                mark_as_note=True,
+                tags=tag,
             )
         return result
 
@@ -156,7 +162,7 @@ class Task:
         """Base class for all tasks."""
         self.task_id = task_id
         self.command = command
-        self.status = False
+        self.status: Optional[bool] = None
 
     def execute(self) -> tuple[list[CommandResults], list[dict]]:
         results: list[CommandResults] = []
@@ -429,7 +435,6 @@ def setup_commands(playbook: PlaybookGraph) -> dict[str, Command]:
             output_key="PaloAltoNetworksXDR.RiskyUser",
             output_function=lambda entry_context: create_account(
                 id=entry_context.get("id"),
-                type=entry_context.get("type"),
                 risk_level=entry_context.get("risk_level"),
             ),
         ),
@@ -449,7 +454,9 @@ def setup_commands(playbook: PlaybookGraph) -> dict[str, Command]:
                 username=entry_context.get("username"),
                 email_address=entry_context.get("email"),
                 is_enabled=entry_context.get("active"),
-            ) if entry_context.get("success") else {},
+            )
+            if entry_context.get("success")
+            else {},
         ),
     }
 
@@ -517,7 +524,7 @@ def setup_connections(playbook: PlaybookGraph):
     playbook.add_connection(
         playbook.tasks["msgraph_user_get_task"],
         playbook.tasks["msgraph_user_get_manager_task"],
-        lambda: playbook.tasks["msgraph_user_get_task"].status,
+        lambda: bool(playbook.tasks["msgraph_user_get_task"].status),
     )
     playbook.start_task_id = playbook.tasks["start_task"].task_id
 
@@ -543,40 +550,55 @@ def setup_playbook_graph(
 def main():
     try:
         args = demisto.args()
-        user_id = args.get("user_id", "")
-        user_name = args.get("user_name", "")
-        user_email = args.get("user_email", "")
+        users_ids = argToList(args.get("user_id", []))
+        users_names = argToList(args.get("user_name", []))
+        users_emails = argToList(args.get("user_email", []))
         domain = args.get("domain", "")
 
-        if not any((user_id, user_name, user_email)):
-            raise ValueError(
-                "At least one of the following arguments must be specified: user_id, user_name or user_email."
-            )
-        if domain and not user_name:
+        if domain and not users_names:
             raise ValueError(
                 "When specifying the domain argument, the user_name argument must also be provided."
             )
 
-        playbook = PlaybookGraph()
-        setup_playbook_graph(playbook, user_id, user_name, user_email, domain)
-        playbook.run()
-        results = playbook.results
+        for user_id, user_name, user_email in list(
+            itertools.zip_longest(users_ids, users_names, users_emails, fillvalue="")
+        ):
+            try:
+                if not any((user_id, user_name, user_email)):
+                    raise ValueError(
+                        "At least one of the following arguments must be specified: user_id, user_name or user_email."
+                    )
 
-        merged_output = merge_accounts(playbook.outputs)
-        if merged_output:
-            results.append(
-                CommandResults(
-                    outputs_prefix="Account",
-                    outputs_key_field="Id",
-                    outputs=merged_output,
-                    readable_output=tableToMarkdown(
-                        name="User Data", t=merged_output, sort_headers=False
-                    ),
+                playbook = PlaybookGraph()
+                setup_playbook_graph(playbook, user_id, user_name, user_email, domain)
+                playbook.run()
+                results = playbook.results
+
+                merged_output = merge_accounts(playbook.outputs)
+                if merged_output:
+                    results.append(
+                        CommandResults(
+                            outputs_prefix="Account",
+                            outputs_key_field="Id",
+                            outputs=merged_output,
+                            readable_output=tableToMarkdown(
+                                name="User Data", t=merged_output, sort_headers=False
+                            ),
+                        )
+                    )
+                else:
+                    results.append(
+                        CommandResults(readable_output="No user data found.")
+                    )
+                return_results(results)
+            except Exception as e:
+                return_results(
+                    CommandResults(
+                        readable_output=("An error occurred while running the 'get-user-data' command with the arg values: "
+                                         f"{user_id=}, {user_name=}, {user_email=}, {domain=}. Error: {str(e)}"),
+                        entry_type=EntryType.ERROR,
+                    )
                 )
-            )
-        else:
-            results.append(CommandResults(readable_output="No user data found."))
-        return_results(results)
     except Exception as e:
         return_error(f"Failed to execute get-user-data. Error: {str(e)}")
 

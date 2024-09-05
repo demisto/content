@@ -1,12 +1,16 @@
 args:
 - description: The user ID of the user to retrieve.
   name: user_id
+  isArray: true
 - description: The user name of the user to retrieve.
   name: user_name
+  isArray: true
 - description:  The user email of the user to retrieve.
   name: user_email
+  isArray: true
 - description: The user domain of the user to retrieve, required for the iam-get-user command.
   name: domain
+  isArray: true
 comment: Returns the user data.
 commonfields:
   id: get-user-data
