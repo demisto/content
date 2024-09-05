@@ -775,9 +775,10 @@ class SearchLightTriagePoller:
         events = get_triage_item_events(self.request_handler, event_created_after=event_created_after,
                                         risk_types=risk_types_filter, event_num_after=event_num_start, limit=limit)
         if not events:
-            demisto.info("No events were fetched. Event num start: {}, Event created after: {}, Limit:"
-                         " {}, risk_level: {}, alert_risk_types: {}".format(
-                event_num_start, event_created_after, limit, risk_level, alert_risk_types))
+            demisto.info(
+                "No events were fetched. Event num start: {}, Event created after: {}, Limit: {}, "
+                "risk_level: {}, alert_risk_types: {}".format(
+                    event_num_start, event_created_after, limit, risk_level, alert_risk_types))
             return RQPollResult(event_num_start, [])
 
         else:
