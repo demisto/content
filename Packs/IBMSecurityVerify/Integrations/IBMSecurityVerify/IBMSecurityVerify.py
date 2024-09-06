@@ -63,7 +63,7 @@ class Client(BaseClient):
 
     def _get_new_token(self):
         """
-        Checks if the access token is valid and not expired.
+        Retrieves a new access token using client credentials and calculates its expiration time.
         """
         data = {
             "client_id": self.client_id,
