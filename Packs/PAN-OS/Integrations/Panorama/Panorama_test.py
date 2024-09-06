@@ -3269,6 +3269,7 @@ class TestUniversalCommand:
     SHOW_SYSTEM_INFO_XML = "test_data/show_system_info.xml"
     SHOW_JOB_XML = "test_data/show_jobs_all.xml"
     SHOW_COMMIT_JOB_XML = "test_data/show_commit_jobs_all.xml"
+    SHOW_JOB_WITH_FAILED_XML = "test_data/show_jobs_with_failed.xml"
 
     @patch("Panorama.run_op_command")
     def test_get_system_info(self, patched_run_op_command, mock_topology):
@@ -3311,8 +3312,41 @@ class TestUniversalCommand:
         for result_dataclass in result:
             for key, value in result_dataclass.__dict__.items():
                 # Nullable Values
-                if key not in ["description", "user"]:
+                if key not in ["description", "user", "details", "warnings"]:
                     assert value
+
+    @patch("Panorama.run_op_command")
+    @patch("Panorama.demisto.debug")
+    def test_get_jobs_with_failed(self, patched_debug, patched_run_op_command):
+        """Given the output XML for show jobs with a failed job, assert it is skipped."""
+        from Panorama import UniversalCommand, ShowJobsAllResultData, Panorama
+
+        patched_run_op_command.return_value = load_xml_root_from_test_file(TestUniversalCommand.SHOW_JOB_WITH_FAILED_XML)
+        MockTopology = type('MockTopology', (), {'all': lambda *x, **y: [Panorama(hostname='123')]})
+
+        result = UniversalCommand.show_jobs(MockTopology())
+
+        assert patched_debug.call_args_list[0].args[0] == (
+            '\'ShowJobsAllResultData\' cannot be instantiated with element: '
+            '{"job": {"type": "Failed-Job", "details": {"line": "job failed because of configd restart"}, "warnings": null}}'
+            '\nerror=TypeError("ShowJobsAllResultData.__init__() missing 9 required positional arguments: '
+            "'id', 'tfin', 'status', 'result', 'user', 'tenq', 'stoppable', 'positionInQ', and 'progress'\")")
+        assert isinstance(result, ShowJobsAllResultData)
+        assert result.__dict__ == {
+            'description': 'description',
+            'hostid': '123',
+            'id': 7,
+            'positionInQ': '0',
+            'progress': '100',
+            'result': 'OK',
+            'status': 'FIN',
+            'stoppable': 'no',
+            'tenq': '2024/08/25 22:07:53',
+            'tfin': '2024/08/25 22:09:00',
+            'type': 'Job Type',
+            'user': None,
+            'warnings': None
+        }
 
     def test_download_software(self, mock_topology):
         """
@@ -7420,6 +7454,413 @@ def test_pan_os_delete_security_profile_group_command(mocker):
     command_results = Panorama.pan_os_delete_security_profile_group_command({"group_name": "test_spg"})
     assert command_results.raw_response == {'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
     assert command_results.readable_output == 'Successfully deleted Security Profile Group: "test_spg"'
+
+
+@pytest.mark.parametrize(
+    "profile_name, profile_type, device_group, action, threat_id, expected_xpath",
+    [
+        # test cases for device_group
+        (
+            'name',
+            'vulnerability',
+            'device_group',
+            'set',
+            '1000',
+            (
+                "/config/devices/entry[@name='localhost.localdomain']"
+                "/device-group/entry[@name='device_group']"
+                "/profiles/vulnerability/entry[@name='name']/threat-exception"
+            )
+        ),
+        (
+            'name',
+            'spyware',
+            'device_group',
+            'set',
+            '1000',
+            (
+                "/config/devices/entry[@name='localhost.localdomain']"
+                "/device-group/entry[@name='device_group']"
+                "/profiles/spyware/entry[@name='name']/threat-exception"
+            )
+        ),
+        # test case for VSYS
+        (
+            'name',
+            'vulnerability',
+            None,
+            'set',
+            '1000',
+            (
+                "/config/devices/entry[@name='localhost.localdomain']"
+                "/vsys/entry[@name='vsys']"
+                "/profiles/vulnerability/entry[@name='name']/threat-exception"
+            )
+        ),
+        (
+            'name',
+            'spyware',
+            None,
+            'set',
+            '1000',
+            (
+                "/config/devices/entry[@name='localhost.localdomain']"
+                "/vsys/entry[@name='vsys']"
+                "/profiles/spyware/entry[@name='name']/threat-exception"
+            )
+        ),
+        # test case for EDIT action type
+        (
+            'name',
+            'spyware',
+            'device_group',
+            'edit',
+            '1000',
+            (
+                "/config/devices/entry[@name='localhost.localdomain']"
+                "/device-group/entry[@name='device_group']"
+                "/profiles/spyware/entry[@name='name']/threat-exception"
+                "/entry[@name='1000']"
+            )
+        ),
+        (
+            'name',
+            'vulnerability',
+            'device_group',
+            'edit',
+            '1000',
+            (
+                "/config/devices/entry[@name='localhost.localdomain']"
+                "/device-group/entry[@name='device_group']"
+                "/profiles/vulnerability/entry[@name='name']/threat-exception"
+                "/entry[@name='1000']"
+            )
+        ),
+        # test case for DELETE action type
+        (
+            'name',
+            'vulnerability',
+            'device_group',
+            'delete',
+            '1000',
+            (
+                "/config/devices/entry[@name='localhost.localdomain']"
+                "/device-group/entry[@name='device_group']"
+                "/profiles/vulnerability/entry[@name='name']/threat-exception"
+                "/entry[@name='1000']"
+            )
+        ),
+        (
+            'name',
+            'spyware',
+            'device_group',
+            'delete',
+            '1000',
+            (
+                "/config/devices/entry[@name='localhost.localdomain']"
+                "/device-group/entry[@name='device_group']"
+                "/profiles/spyware/entry[@name='name']/threat-exception"
+                "/entry[@name='1000']"
+            )
+        ),
+        (
+            'name',
+            'spyware',
+            None,
+            'delete',
+            '1000',
+            (
+                "/config/devices/entry[@name='localhost.localdomain']"
+                "/vsys/entry[@name='vsys']"
+                "/profiles/spyware/entry[@name='name']/threat-exception"
+                "/entry[@name='1000']"
+            )
+        ),
+    ]
+)
+def test_pan_os_xpath_creation_for_exception_crud(profile_name, profile_type, device_group, action, threat_id, expected_xpath):
+    """
+    Given:
+        - A profile name, profile type, device group name, action, and threat ID.
+    When:
+        - Running build_xpath_for_profile_exception_commands function to generate the XPath.
+    Then:
+        - Ensure the returned XPath is correctly constructed for both Vulnerability Protection and Anti Spyware profiles.
+    """
+    import Panorama
+    Panorama.VSYS = 'vsys'
+
+    result = Panorama.build_xpath_for_profile_exception_commands(
+        profile_name, profile_type, device_group, action, threat_id
+    )
+    assert result == expected_xpath
+
+
+def test_pan_os_check_profile_type_by_given_profile_name(mocker):
+    """
+    Given:
+        - A profile name that could exist in either 'Vulnerability Protection Profile' or 'Anti Spyware Profile'.
+    When:
+        - Checking the profile type by the given profile name.
+    Then:
+        - Ensure the correct profile type is returned or an appropriate exception is raised.
+    """
+    import Panorama
+
+    mocker.patch('Panorama.get_all_profile_names_from_profile_type', side_effect=[
+        ['profile_1', 'profile_2'],
+        ['profile_3', 'profile_4'],
+        [],
+        ['profile_3'],
+        ['profile_5'],
+        ['profile_5'],
+        [],
+        []
+    ])
+
+    result = Panorama.check_profile_type_by_given_profile_name('profile_1', 'device_group')
+    assert result == 'vulnerability'
+
+    result = Panorama.check_profile_type_by_given_profile_name('profile_3', None)
+    assert result == 'spyware'
+
+    with pytest.raises(DemistoException, match="Profile name was found both in Vulnerability Protection Profiles "
+                       "and in Anti Spyware Profiles. Please specify profile_type."):
+        Panorama.check_profile_type_by_given_profile_name('profile_5', 'device_group')
+
+    with pytest.raises(DemistoException, match="Profile name was not found in Vulnerability Protection Profiles "
+                       "or in Anti Spyware Profiles."):
+        Panorama.check_profile_type_by_given_profile_name('profile_6', 'device_group')
+
+
+def test_pan_os_get_threat_id_from_predefined_threats(mocker):
+    """
+    Given:
+        - A threat name that may match a threat name, ID, or CVE in the predefined threats list.
+    When:
+        - Searching for the threat ID using the provided threat name.
+    Then:
+        - Ensure the correct threat ID, name, and CVEs are returned, or an appropriate exception is raised.
+    """
+    import Panorama
+
+    mock_predefined_threats = [
+        {
+            "@name": "10003",
+            "threatname": "Test Threat 1",
+            "cve": {"member": ["CVE-2023-1234"]}
+        },
+        {
+            "@name": "10004",
+            "threatname": "Test Threat 2",
+            "cve": {"member": ["CVE-2023-5678"]}
+        },
+        {
+            "@name": "10005",
+            "threatname": "Test Threat 3",
+            "cve": {"member": ["CVE-2023-9012"]}
+        }
+    ]
+
+    mocker.patch.object(Panorama, 'get_predefined_threats_list', return_value=mock_predefined_threats)
+
+    result = Panorama.get_threat_id_from_predefined_threats('Test Threat 1')
+    assert result == ("10003", "Test Threat 1", ["CVE-2023-1234"])
+
+    result = Panorama.get_threat_id_from_predefined_threats('10004')
+    assert result == ("10004", "Test Threat 2", ["CVE-2023-5678"])
+
+    result = Panorama.get_threat_id_from_predefined_threats('CVE-2023-9012')
+    assert result == ("10005", "Test Threat 3", ["CVE-2023-9012"])
+
+    with pytest.raises(DemistoException, match="Threat was not found."):
+        Panorama.get_threat_id_from_predefined_threats('Nonexistent Threat')
+
+
+def test_pan_os_add_profile_exception(mocker):
+    """
+    Given:
+        - A profile name, profile type, threat name, and device group.
+    When:
+        - Running the `pan_os_add_profile_exception_command` to add an exception to a security profile.
+    Then:
+        - Ensure the returned response indicates the successful creation of the exception with the correct threat name and ID.
+    """
+    import Panorama
+
+    mock_response = {'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
+    mocker.patch.object(Panorama, 'http_request', return_value=mock_response)
+    mocker.patch.object(Panorama, 'get_threat_id_from_predefined_threats', return_value=('1000', 'threatname', 'cve'))
+
+    command_results = Panorama.pan_os_add_profile_exception_command(args={"profile_name": "test_spg",
+                                                                          "threat_name": '1000',
+                                                                          "profile_type": "Vulnerability Protection Profile",
+                                                                          "device_group": 'device_group'})
+    assert command_results.raw_response == {'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
+    assert command_results.readable_output == (
+        'Successfully created exception "threatname" with threat ID 1000 in the "test_spg" '
+        'profile of type "vulnerability".'
+    )
+
+
+def test_pan_os_edit_profile_exception(mocker):
+    """
+    Given:
+        - A profile name, profile type, threat name, and device group.
+    When:
+        - Running the `pan_os_edit_profile_exception_command` to edit an exception in a security profile.
+    Then:
+        - Ensure the returned response indicates the successful editing of the exception with the correct threat name and ID.
+    """
+    import Panorama
+    Panorama.URL = 'https://1.1.1.1:443/'
+    Panorama.API_KEY = 'thisisabogusAPIKEY!'
+    Panorama.DEVICE_GROUP = 'device_group'
+
+    mock_response = {'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
+    mocker.patch.object(Panorama, 'http_request', return_value=mock_response)
+    mocker.patch.object(Panorama, 'get_threat_id_from_predefined_threats', return_value=('1000', 'threatname', 'cve'))
+    command_results = Panorama.pan_os_edit_profile_exception_command(args={"profile_name": "test_spg",
+                                                                           "threat_name": '1000',
+                                                                           "profile_type": "Vulnerability Protection Profile",
+                                                                           "device_group": 'device_group'})
+    assert command_results.raw_response == {'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
+    assert command_results.readable_output == (
+        'Successfully edited exception "threatname" with threat ID 1000 in the "test_spg" '
+        'profile of type "vulnerability".'
+    )
+
+
+def test_pan_os_delete_profile_exception(mocker):
+    """
+    Given:
+        - A profile name, profile type, threat name, and device group.
+    When:
+        - Running the `pan_os_delete_profile_exception_command` to delete an exception from a security profile.
+    Then:
+        - Ensure the returned response indicates the successful deletion of the exception with the correct threat name and ID.
+    """
+    import Panorama
+
+    mock_response = {'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
+    mocker.patch.object(Panorama, 'http_request', return_value=mock_response)
+    mocker.patch.object(Panorama, 'get_threat_id_from_predefined_threats', return_value=('1000', 'threatname', 'cve'))
+
+    command_results = Panorama.pan_os_delete_profile_exception_command(args={"profile_name": "test_spg",
+                                                                             "threat_name": '1000',
+                                                                             "profile_type": "Vulnerability Protection Profile",
+                                                                             "device_group": 'device_group'})
+    assert command_results.raw_response == {'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
+    assert command_results.readable_output == (
+        'Successfully deleted exception "threatname" with threat ID 1000 in the "test_spg" '
+        'profile of type "vulnerability".'
+    )
+
+
+def test_pan_os_list_profile_exception(mocker):
+    """
+    Given:
+        - A profile name and profile type.
+    When:
+        - Running the `pan_os_list_profile_exception_command` to list exceptions in a security profile.
+    Then:
+        - Ensure the returned response is of type `CommandResults` and the readable output lists the correct profile exceptions.
+    """
+    import Panorama
+    Panorama.URL = 'https://1.1.1.1:443/'
+    Panorama.API_KEY = 'thisisabogusAPIKEY!'
+    Panorama.DEVICE_GROUP = 'device_group'
+    mocker.patch.object(
+        Panorama,
+        'profile_exception_crud_requests',
+        return_value=({'raw_response': {
+            'response': {
+                'result': {
+                    'threat-exception': {
+                        'entry': [
+                            {
+                                '@name': '10003',
+                                'action': {'block': {}},
+                                'exempt-ip': {'entry': {'@name': '192.168.1.1'}},
+                                'packet-capture': 'yes',
+                                '@admin': 'admin1',
+                                '@dirtyId': 'dirty1',
+                                '@time': '2024-08-14T12:00:00'
+                            },
+                            {
+                                '@name': '10002',
+                                'action': {'allow': {}},
+                                'packet-capture': 'no',
+                                '@admin': 'admin2',
+                                '@dirtyId': 'dirty2',
+                                '@time': '2024-08-14T12:00:00'
+                            }
+                        ]
+                    }
+                }
+            },
+        },
+            'exception_id': 'id',
+            'exception_name': 'name',
+            'profile_type': 'vulnerability'})
+    )
+
+    mocker.patch.object(Panorama, 'get_threat_id_from_predefined_threats', return_value=('test', 'threatname', 'cve'))
+
+    args = {"profile_name": "test_profile", "profile_type": "Vulnerability Protection Profile"}
+    result = Panorama.pan_os_list_profile_exception_command(args)
+
+    assert isinstance(result, CommandResults)
+
+    expected_hr = [
+        {
+            "ID": "10003",
+            "Name": 'threatname',
+            "CVE": 'cve',
+            "Action": "block",
+            "Exempt IP": "192.168.1.1",
+            "Packet Capture": "yes",
+        },
+        {
+            "ID": "10002",
+            "Name": 'threatname',
+            "CVE": 'cve',
+            "Action": "allow",
+            "Exempt IP": "",
+            "Packet Capture": "no",
+        },
+    ]
+
+    expected_output = {
+        'Name': 'test_profile',
+        'Exception': [
+            {
+                'id': '10003',
+                'name': 'threatname',
+                'CVE': 'cve',
+                'action': 'block',
+                'packet-capture': 'yes',
+                'exempt-ip': '192.168.1.1'
+            },
+            {
+                'id': '10002',
+                'name': 'threatname',
+                'CVE': 'cve',
+                'action': 'allow',
+                'packet-capture': 'no',
+            },
+        ]
+    }
+
+    assert "Profile Exceptions" in result.readable_output
+
+    for hr_entry in expected_hr:
+        for _, value in hr_entry.items():
+            assert value in result.readable_output
+
+    assert result.outputs == expected_output
+    assert result.outputs_prefix == 'Panorama.Vulnerability'
+    assert result.outputs_key_field == 'Name'
 
 
 def test_fetch_incidents_correlation(mocker: MockerFixture):
