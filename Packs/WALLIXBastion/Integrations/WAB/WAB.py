@@ -2298,11 +2298,11 @@ def main() -> None:
     proxy = params.get("proxy", False)
     timeout = params.get("timeout", False)
 
-    if timeout is not False:
+    if timeout:
         try:
             timeout = int(timeout)
         except ValueError:
-            raise ValueError("timeout must be a positive integer, got " + timeout)
+            raise ValueError("timeout must be a positive integer, got " + str(timeout))
         if timeout <= 0:
             raise ValueError("timeout must be a positive integer, got " + str(timeout))
 

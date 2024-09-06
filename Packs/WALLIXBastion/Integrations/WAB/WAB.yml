@@ -45,7 +45,8 @@ configuration:
   type: 0
   required: false
 - name: timeout
-  display: API requests timeout in seconds. The default value if not provided is 60 seconds.
+  display: API requests timeout in seconds. The default value is 60 seconds.
+  defaultvalue: '60'
   type: 0
   required: false
 script:
