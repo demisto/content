@@ -12,7 +12,13 @@ def add_task(args: Dict[str, Any]) -> CommandResults:
     response = demisto.executeCommand('rs-add-custom-task', args)
     demisto.debug(f"add_task {response=}")
 
-    readable_output = tableToMarkdown("New task created", {
+    table_name = response[0]["HumanReadable"]\
+        if (isinstance(response, list)
+            and len(response) > 0
+            and response[0]["HumanReadable"])\
+        else "New task created"
+
+    readable_output = tableToMarkdown(table_name, {
         "Name": args.get('name'),
         "Phase": args.get('phase'),
         "Due date": args.get('due_date'),

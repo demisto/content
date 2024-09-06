@@ -24,21 +24,23 @@ except Exception:
     pass
 
 ''' GLOBAL VARS '''
-DEMISTO_PARAMS = (demisto.params()
+DEMISTO_PARAMS = demisto.params()
                   # TODO delete
-                  or {
-                      'proxy': False,
-                      'server': os.getenv('SERVER'),
-                      'org': os.getenv('org'),
-                      'api_key_id': os.getenv('API_KEY_ID'),
-                      'api_key_secret': os.getenv('API_KEY_SECRET'),
-                      'fetch_time': '2020-02-02T19:00:00Z'
-                  })
+# DEMISTO_PARAMS =  {
+#                       'proxy': False,
+#                       'server': os.getenv('SERVER'),
+#                       'org': os.getenv('org'),
+#                       'api_key_id': os.getenv('API_KEY_ID'),
+#                       'api_key_secret': os.getenv('API_KEY_SECRET'),
+#                       'fetch_time': '2020-02-02T19:00:00Z'
+#                   }
 
 if not DEMISTO_PARAMS['proxy']:
     for var in ['HTTP_PROXY', 'HTTPS_PROXY', 'http_proxy', 'https_proxy']:
-        if os.environ.get(var):
-            del os.environ[var]
+        pass
+        # TODO - Bring back
+        # if os.environ.get(var):
+            # del os.environ[var]
 
 URL = DEMISTO_PARAMS['server'][:-1] if DEMISTO_PARAMS['server'].endswith('/') else DEMISTO_PARAMS['server']
 # Remove the http/s from the url (It's added automatically later)
@@ -1366,12 +1368,13 @@ def add_custom_task(client: SimpleClient,
         task_dto["due_date"] = due_date
     if instructions:
         task_dto["instructions"] = instructions
-    if owner_id.isdigit():
-        task_dto["owner_id"] = {"id": owner_id}
-        demisto.debug(f'add_custom_task {task_dto=}')
-    else:
+    if owner_id and owner_id.isdigit():
+        task_dto["owner_id"] = int(owner_id)
+    elif owner_id:
         raise DemistoException("Owner ID must be an integer number.")
-    return client.post(f"incidents/{incident_id}/tasks?text_content_output_format=objects_convert_text", payload=task_dto)
+
+    demisto.debug(f"{task_dto=}")
+    return client.post(uri=f"/incidents/{incident_id}/tasks", payload=task_dto)
 
 
 def add_note_command(client, incident_id, note):
@@ -1683,13 +1686,14 @@ def add_custom_task_command(client: SimpleClient, args: dict) -> CommandResults:
     """
     Adds a custom task to the specified incident.
     """
+    demisto.debug(f"add_custom_task_command {args=}")
     incident_id = args.get("incident_id")
     name = args.get("name")
     owner_id = args.get("owner_id")
     description = args.get("description")
     instructions = args.get("instructions")
     phase = args.get("phase")
-    due_date = to_timestamp(validate_iso_time_format(args.get("due_date")))
+    due_date = to_timestamp(validate_iso_time_format(args.get("due_date"))) if args.get("due_date") else None
 
     response = add_custom_task(client, incident_id, name, phase, due_date, description, instructions, owner_id)
     demisto.debug(f"add_custom_task_command {response=}")
@@ -1701,7 +1705,8 @@ def add_custom_task_command(client: SimpleClient, args: dict) -> CommandResults:
 
 def get_modified_remote_data_command(client: SimpleClient, args: dict) -> GetModifiedRemoteDataResponse:
     remote_args = GetModifiedRemoteDataArgs(args)
-    last_update = validate_iso_time_format(remote_args.last_update)  # In the first run, this value will be set to 1 minute earlier
+    last_update = validate_iso_time_format(remote_args.last_update)  # In the first run, this value will be set to 1 minute
+    # earlier
     demisto.debug(f"get-modified-remote-data command {last_update=}")
 
     incidents = search_incidents(client, args={"last-modified-after": last_update})
@@ -1768,7 +1773,7 @@ def get_remote_data_command(client: SimpleClient,
     incident_id = remote_args.remote_incident_id
     demisto.debug(f"get-remote-data {incident_id=}")
 
-    incident = get_incident(client, incident_id)
+    incident = get_incident(client, incident_id, content_format=True)
     incident = process_raw_incident(client, incident)
     demisto.debug(f"get-remote-data {incident=}")
     entries = []
@@ -1933,6 +1938,7 @@ def main():  # pragma: no cover
     try:
         command = demisto.command()
         args = demisto.args()
+
         if command == "test-module":
             # Checks if there is an authenticated session
             return_results(test_module(client, fetch_time))

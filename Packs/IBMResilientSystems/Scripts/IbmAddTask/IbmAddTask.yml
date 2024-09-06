@@ -14,35 +14,36 @@ args:
   type: longText
   required: true
 
-- description: Task due date in ISO format e.g. "2020-02-02T19:00:00Z. Empty date indicates that the task has no assigned due date.
-  name: due_date
+- name: due_date
+  description: Task due date in ISO format e.g. "2020-02-02T19:00:00Z. Empty date indicates that the task has no assigned due date.
   required: true
 
-- auto: PREDEFINED
-  defaultValue: task tag
-  description: The task tag. Use the task entry tag (defined in your instance configuration) to mirror the task to IBM QRadar SOAR.
-  name: tags
-  predefined:
-  - task tag
-  isArray: true
+- name: owner_id
+  description: The owner of the task (ID or name as appears in IBM QRadar SOAR). Leave empty if the task has no owner.
 
-- auto: PREDEFINED
-  defaultValue: Initial
+#- auto: PREDEFINED
+#  defaultValue: task tag
+#  description: The task tag. Use the task entry tag (defined in your instance configuration) to mirror the task to IBM QRadar SOAR.
+#  name: tags
+#  predefined:
+#  - task tag
+#  isArray: true
+
+- name: phase
+  auto: PREDEFINED
+  defaultValue: task
   description: Task to be added to the IBM QRadar incident.
-  name: phase
+  required: true
   predefined:
   - Initial
   - Engage
   - Detect/Analyze
   - Respond
-  - Post Incident
+  - Post-Incident
   - Custom
   - Complete
-  isArray: false
 
-- name: owner_id
-  description: The owner of the task (ID or name as appears in IBM QRadar SOAR). Leave empty if the task has no owner.
-  required: true
+
 comment: Use this script to add a task with a tag (the "Task tag to IBM" defined in the instance configuration) as an entry in XSOAR, which will then be mirrored as a task to an IBM QRadar SOAR incident. This script should be run within an incident.
 commonfields:
   id: IbmAddTask

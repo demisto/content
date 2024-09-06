@@ -503,9 +503,16 @@
                         "items": [
                             {
                                 "args": {
-                                    "tags": {
+                                    "phase": {
                                         "simple": "",
                                         "userMarkedRequired": true
+                                    },
+                                    "due_date": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    },
+                                    "owner_id": {
+                                        "simple": ""
                                     }
                                 },
                                 "buttonClass": "success",

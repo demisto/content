@@ -117,6 +117,12 @@ configuration:
   required: false
   additionalinfo: When selected, closing the Cortex XSOAR incident will close the incident in IBM Resilient
 
+- display: Mirror notes
+  name: mirror_notes
+  type: 8
+  section: Collect
+  additionalInfo: Whether incident notes shall be fetched. Disable to reduce fetch times.
+
 - display: Note tag from IBM Qradar SOAR
   name: note_tag_from_ibm
   defaultvalue: NOTE FROM IBM
@@ -132,6 +138,12 @@ configuration:
   required: false
   additionalinfo: Add this tag to an entry to mirror it as a note to IBM Qradar SOAR.
   section: Collect
+
+- display: Mirror tasks
+  name: mirror_tasks
+  type: 8
+  section: Collect
+  additionalInfo: Whether incident tasks shall be fetched. Disable to reduce fetch times.
 
 - display: Task tag from IBM Qradar SOAR
   name: task_tag_from_ibm
@@ -770,7 +782,7 @@ script:
           - Engage
           - Detect/Analyze
           - Respond
-          - Post Incident
+          - Post-Incident
           - Custom
           - Complete
         defaultValue: Initial
