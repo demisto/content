@@ -192,7 +192,7 @@ Get information about a domain from Mandiant.
 | DBotScore.Indicator | String | The indicator that was tested |
 | DBotScore.Type | string | The indicator type |
 | DBotScore.Reliability | string | The reliability definition of the vendor used to calculate the score as defined in the integration settings |
-| Domain.name | string | The domain name |
+| Domain.Name | string | The domain name |
 | Domain.Campaign | string | A comma separated list of any campaigns associated with the indicator |
 | Domain.TrafficLightProtocol | string | The traffic light protocol color associated with the indicator |
 | Domain.MalwareFamily | string | A comma separated list of any Malware Families associated with the indicator |

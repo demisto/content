@@ -3,7 +3,7 @@ display: Mandiant Feed
 description: Collect a feed of Indicators from Mandiant Advantage.
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: FeedMandiant
+  id: FeedMandiant_v_1_1
   version: -1
 configuration:
 - defaultvalue: 'true'
@@ -99,12 +99,12 @@ configuration:
   - interval
   - indicatorType
   - suddenDeath
-  type: '17'
+  type: 17
   required: false
 - name: feedExpirationInterval
   display: 'Feed Expiration Interval'
   additionalinfo: ''
-  type: '1'
+  type: 1
   required: false
 - defaultvalue: '240'
   display: Feed Fetch Interval
