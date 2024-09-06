@@ -537,15 +537,15 @@ def process_raw_incident(client: SimpleClient, incident: dict) -> dict:
     incident["discovered_date"] = normalize_timestamp(incident.get("discovered_date"))
     incident["create_date"] = normalize_timestamp(incident.get("create_date"))
 
-    # TODO - Configure enabling/disabling notes fetching for reduced fetch times.
-    notes = get_incident_notes(client, incident_id)
-    demisto.debug(f"process_raw_incident retrieved notes {notes=}")
-    incident["notes"] = prettify_incident_notes(notes)
-    demisto.debug(f"process_raw_incident new incident notes: {incident['notes']=}")
+    if DEMISTO_PARAMS.get('mirror_notes'):
+        notes = get_incident_notes(client, incident_id)
+        demisto.debug(f"process_raw_incident retrieved notes {notes=}")
+        incident["notes"] = prettify_incident_notes(notes)
+        demisto.debug(f"process_raw_incident new incident notes: {incident['notes']=}")
 
-    # TODO - Configure enabling/disabling tasks fetching for reduced fetch times.
-    tasks = get_tasks(client, incident_id)
-    incident["tasks"] = prettify_incident_tasks(client, tasks)
+    if DEMISTO_PARAMS.get('mirror_tasks'):
+        tasks = get_tasks(client, incident_id)
+        incident["tasks"] = prettify_incident_tasks(client, tasks)
 
     incident["phase"] = get_phase_name(client, incident['phase_id'])
     incident.update(get_mirroring_data())
@@ -1909,6 +1909,7 @@ def get_client():  # pragma: no cover
 
 def main():  # pragma: no cover
     params = demisto.params()
+    demisto.debug(f"main {params=}")
     fetch_time = validate_iso_time_format(params.get("fetch_time", ""))
     client = get_client()
 
