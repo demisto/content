@@ -58,6 +58,8 @@ MESSAGE_TYPES: dict = {
     'status_changed': 'incidentStatusChanged'
 }
 
+NEW_INCIDENT_WELCOME_MESSAGE: str = "Successfully created incident <incident_name>. View it on: <incident_link>"
+
 if '@' in BOT_ID:
     demisto.debug("setting tenant id in the integration context")
     BOT_ID, tenant_id, service_url = BOT_ID.split('@')
@@ -318,6 +320,11 @@ def process_incident_create_message(demisto_user: dict, message: str, request_bo
         server_link: str = server_links.get('server', '')
         server_link = server_link + '/#' if not is_demisto_version_ge('8.0.0') else server_link
         newIncidentWelcomeMessage = demisto.params().get('new_incident_welcome_message', '')
+        if not newIncidentWelcomeMessage:
+            newIncidentWelcomeMessage = NEW_INCIDENT_WELCOME_MESSAGE
+        elif "no_welcome_message" == newIncidentWelcomeMessage:
+            newIncidentWelcomeMessage = ""
+        
         if newIncidentWelcomeMessage and ('<incident_name>' in newIncidentWelcomeMessage) and ('<incident_link>' in newIncidentWelcomeMessage):
             newIncidentWelcomeMessage = newIncidentWelcomeMessage.replace('<incident_name>', f"{created_incident.get('name', '')}").replace(
                 '<incident_link>', f"{server_link}/WarRoom/{created_incident.get('id', '')}")
