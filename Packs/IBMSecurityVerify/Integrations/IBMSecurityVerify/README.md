@@ -3,9 +3,9 @@ IBM Security Verify provides a secure and scalable solution for collecting and m
 ## Set up the Third Party System
 To obtain the **Client ID** and **Client Secret**, follow these steps:
 
-1. **Log in to the IBM Security Verify UI**.
-2. **Click on the profile icon** located at the top right corner of the interface.
-3. **Select "Switch to admin"** to access administrative settings.
+1. Log in to the IBM Security Verify UI.  
+2. Click the profile icon located at the top right corner of the interface.
+3. Select **Switch to admin** to access administrative settings.
 4. Navigate to **Security** > **API Access**.  
 5. Click **Add API Client** to generate the necessary credentials.
 6. After clicking **Add API Client**, make sure to assign the following permissions to the API client:

@@ -114,11 +114,12 @@ def test_module(client: Client, params) -> str:
     """
     'ok' if test passed, anything else will raise an exception and will fail the test.
     """
+    if argToBoolean(params.get('isFetchEvents')):
+        max_limit_validation(arg_to_number(params.get('max_fetch')))
+
     args = {"limit": 1}
     get_events_command(client, args)
 
-    if argToBoolean(params.get('isFetchEvents')):
-        max_limit_validation(arg_to_number(params.get('max_fetch')))
     return "ok"
 
 
@@ -130,6 +131,9 @@ def get_events_command(client: Client, args: dict) -> tuple[list[dict], str]:
     last_id = args.get("last_id")
     last_time = args.get("last_time")
     last_item = {"last_id": last_id, "last_time": last_time}
+    if bool(last_id) != bool(last_time):
+        raise DemistoException("Both 'last_id' and 'last_time' must be provided together or not at all.")
+
     limit = arg_to_number(args.get("limit")) or MAX_EVENTS_API_CALL
     sort_order = args.get("sort_order", "desc").lower()
     if limit > MAX_EVENTS_API_CALL or limit < MIN_FETCH:
@@ -181,7 +185,7 @@ def fetch_events(client: Client, last_run: dict[str, str], limit: int) -> tuple[
         if not events:
             break
 
-        demisto.debug(f'In the call get {len(events)} events')
+        demisto.debug(f'Got {len(events)} events from api')
         last_run = {
             "last_time": search_after.get("time", ""),  # Contains the 'indexed_at' of the last event
             "last_id": search_after.get("id", "")
