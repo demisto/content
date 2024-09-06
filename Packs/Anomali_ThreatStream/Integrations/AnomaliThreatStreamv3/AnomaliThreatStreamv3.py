@@ -435,6 +435,18 @@ class Client(BaseClient):
         url_suffix = f'v1/importsession/{import_id}/approve_all/'
         return self.http_request('PATCH', url_suffix)
 
+    def edit_classification_job_request(self, import_id: str = None, data: str = None) -> dict:
+        """
+        Edit observables in an import job
+        Args:
+            import_id (Str):  The id of a specific import entry.
+            data (Str): The json array of edits to make to cloned observable
+        Returns:
+                A response object in a form of a dictionary.
+        """
+        url_suffix = f'v1/importsession/{import_id}/edit_classification/'
+        return self.http_request('PATCH', url_suffix, data=data)
+
     def search_threat_model_request(self, params: dict) -> dict:
         """
         Gets list of threat model according to search parameters
@@ -2602,6 +2614,61 @@ def remove_indicator_tag_command(client: Client, **kwargs) -> CommandResults:
     )
 
 
+def clone_ioc_command(client: Client, indicator_id: str = None) -> CommandResults:
+    """
+    Clone already imported indicator to be used with adding to a Trusted Circle
+    - Clone will fail with 403 if indicator value is not cloneable (403 not in ok_codes)
+    - ThreatStream - Error in API call 403 - {"message": "The entity <ip> is not cloneable"}
+    - You cannot clone
+        - type=string
+        - status=pending
+        - owner_organization_id=<your own org id>
+    Args:
+        indicator_id: Client to perform calls to Anomali ThreatStream service.
+    Returns:
+        (CommandResults).
+    """
+
+    res_json = client.http_request("POST", F"v2/intelligence/{indicator_id}/clone/")
+
+    # append the indocator ID being used in the clone
+    res_json["ID"] = indicator_id
+
+    clone_table = tableToMarkdown(f'Clone operation results for indicator {indicator_id}', res_json, removeNull=True,
+                                  headerTransform=string_to_table_header)
+
+    return CommandResults(
+        outputs_prefix=f'{THREAT_STREAM}.Clone',
+        outputs=res_json,
+        readable_output=clone_table,
+        raw_response=res_json
+    )
+
+
+def edit_classification_job_command(client: Client, import_id: str = None, data: str = None) -> CommandResults:
+    """
+    Edit cloned observables in an import job
+    Args:
+        client: Client to perform calls to Anomali ThreatStream service.
+        import_id:  The id of a specific import entry.
+        data: The json data for fields to be edited for a cloned observable
+    Returns:
+        (CommandResults).
+    """
+    res = client.edit_classification_job_request(import_id, data)
+
+    if res.get("status") != 'errors':
+
+        readable_output = 'The import session was successfully approved.'
+    else:
+        raise DemistoException('Import Session Approval Failed.')
+
+    return CommandResults(
+        readable_output=readable_output,
+        raw_response=res,
+    )
+
+
 def main():
     """
     Initiate integration command
@@ -2632,6 +2699,8 @@ def main():
 
         'threatstream-import-indicator-with-approval': import_ioc_with_approval,
         'threatstream-import-indicator-without-approval': import_ioc_without_approval,
+        'threatstream-clone-imported-indicator': clone_ioc_command,
+        'threatstream-edit-classification': edit_classification_job_command,
 
         'threatstream-get-analysis-status': get_submission_status,
         'threatstream-get-passive-dns': get_passive_dns,

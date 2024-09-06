@@ -200,6 +200,9 @@ script:
     - contextPath: SentinelOne.Agents.ComputerName
       description: Name of agent computer.
       type: string
+    - contextPath: SentinelOne.Agents.MachineType
+      description: Machine type.
+      type: string
     - contextPath: SentinelOne.Agents.Domain
       description: Domain name of the agent.
       type: string
@@ -585,6 +588,9 @@ script:
       type: string
     - contextPath: SentinelOne.Agent.ComputerName
       description: Name of the agent computer.
+      type: string
+    - contextPath: SentinelOne.Agent.MachineType
+      description: Machine type.
       type: string
     - contextPath: SentinelOne.Agent.Domain
       description: Domain name of the agent.
@@ -1928,14 +1934,16 @@ script:
       description: Events created before or at this timestamp.
     - name: limit
       description: Limit number of returned items (1-100000).
-    description: Start a Deep Visibility Power query to get back status and potential results (ping afterwards using the queryId if query has not finished). Relevant for API version 2.1.
+    description: Deprecated. Use ***sentinelone-get-power-query-results*** instead. Start a Deep Visibility Power query to get back status and potential results (ping afterwards using the queryId if query has not finished). Relevant for API version 2.1.
     name: sentinelone-create-power-query
+    deprecated: true
   - arguments:
     - name: queryId
       required: true
       description: QueryId.
-    description: Ping a Deep Visibility Power query using the queryId argument if results have not returned from an initial Power query or a previous ping. Relevant for API version 2.1.
+    description: Deprecated. Use ***sentinelone-get-power-query-results*** instead. Ping a Deep Visibility Power query using the queryId argument if results have not returned from an initial Power query or a previous ping. Relevant for API version 2.1.
     name: sentinelone-ping-power-query
+    deprecated: true
   - arguments:
     - name: status
       required: true
@@ -2500,6 +2508,36 @@ script:
     - contextPath: SentinelOne.RemoteScriptResults.downloadUrl
       description: Download URL.
       type: string
+    polling: true
+  - arguments:
+    - name: account_ids
+      description: A comma-separated list of account IDs.
+      isArray: true
+    - name: site_ids
+      description: A comma-separated list of site IDs on which the query should run.
+      isArray: true
+    - name: query
+      required: true
+      description: Events matching the query search term will be returned.
+    - name: from_date
+      required: true
+      description: "Events created after this date. Example: '2018-02-27T04:49:26.257525Z'."
+    - name: to_date
+      required: true
+      description: "Events created before or at this date. Example: '2018-02-27T04:49:26.257525Z'."
+    - name: limit
+      description: Limit number of returned items (1-100000).
+    - defaultValue: '10'
+      description: Indicates how long to wait between command execution (in seconds) when 'polling' argument is true. Minimum value is 10 seconds.
+      name: interval
+    - defaultValue: '300'
+      description: Indicates the time in seconds until the polling sequence timeouts.
+      name: timeout
+    - name: query_id
+      description: "QueryId. Example: pq3be5e2747f716cxxxxxxxxxxxxx20a0."
+    description: Automate a power query and return the query results. (The maximum timeout of 300 seconds is allowed.)
+    name: sentinelone-get-power-query-results
+    outputs: []
     polling: true
   - arguments: []
     description: Returns the list of fields for an incident type.
