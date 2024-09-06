@@ -1,0 +1,8 @@
+!dspm-get-asset-details asset_id="arn:aws:s3:::appcomposer-ci0jq3kgvjnccdfp-us-east-1"
+!dspm-get-asset-files-by-id asset_id="arn:aws:s3:::appcomposer-ci0jq3kgvjnccdfp-us-east-1"
+!dspm-get-data-types
+!dspm-get-data-types-findings cloudProviderEqual=AWS
+!dspm-get-list-of-assets cloudProviderEqual=AWS serviceTypeEqual=S3
+!dspm-get-risk-finding-by-id finding_id="a0492d8d-7447-4f99-9e22-616843b6b19e"
+!dspm-get-risk-findings
+!dspm-update-risk-finding-status riskFindingId="a0492d8d-7447-4f99-9e22-616843b6b19e" status=INVESTIGATING
