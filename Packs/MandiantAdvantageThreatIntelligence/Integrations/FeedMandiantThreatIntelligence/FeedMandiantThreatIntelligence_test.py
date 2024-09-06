@@ -1,4 +1,4 @@
-import FeedMandiant
+import FeedMandiantThreatIntelligence
 import pytest
 
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
@@ -307,13 +307,13 @@ def config():
 @pytest.fixture
 def client(config):
     """Fixture to create a MandiantClient instance with mock config."""
-    return FeedMandiant.MandiantClient(config)
+    return FeedMandiantThreatIntelligence.MandiantClient(config)
 
 
 @pytest.fixture
 def mock_http_request(mocker):
     """Fixture to mock the _http_request method."""
-    return mocker.patch.object(FeedMandiant.MandiantClient, "_http_request", autospec=True)
+    return mocker.patch.object(FeedMandiantThreatIntelligence.MandiantClient, "_http_request", autospec=True)
 
 
 def test_mandiant_client_init(client, config):
@@ -370,7 +370,7 @@ def test_yield_indicators(client, mock_http_request):
     ],
 )
 def test_is_osint(indicator, expected_result):
-    result = FeedMandiant.is_osint(indicator)
+    result = FeedMandiantThreatIntelligence.is_osint(indicator)
     assert result == expected_result
 
 
@@ -384,7 +384,7 @@ def test_is_osint(indicator, expected_result):
     ],
 )
 def test_get_threat_score(indicator, expected_result):
-    result = FeedMandiant.get_threat_score(indicator)
+    result = FeedMandiantThreatIntelligence.get_threat_score(indicator)
     assert result == expected_result
 
 
@@ -400,7 +400,7 @@ def test_get_threat_score(indicator, expected_result):
     ],
 )
 def test_include_in_feed(indicator, exclude_osint, min_threat_score, expected):
-    result = FeedMandiant.include_in_feed(indicator, exclude_osint, min_threat_score)
+    result = FeedMandiantThreatIntelligence.include_in_feed(indicator, exclude_osint, min_threat_score)
     assert result == expected
 
 
@@ -427,7 +427,7 @@ def test_include_in_feed(indicator, exclude_osint, min_threat_score, expected):
     ],
 )
 def test_get_hash_value(indicator, hash_type, expected_hash_value):
-    assert FeedMandiant.get_hash_value(indicator, hash_type) == expected_hash_value
+    assert FeedMandiantThreatIntelligence.get_hash_value(indicator, hash_type) == expected_hash_value
 
 
 @pytest.mark.parametrize(
@@ -454,7 +454,7 @@ def test_get_hash_value(indicator, hash_type, expected_hash_value):
     ],
 )
 def test_get_categories(sources, expected_categories):
-    result = FeedMandiant.get_categories(sources)
+    result = FeedMandiantThreatIntelligence.get_categories(sources)
     assert sorted(result) == sorted(expected_categories)
 
 
@@ -511,13 +511,13 @@ def test_get_categories(sources, expected_categories):
     ],
 )
 def test_build_indicator_relationships(value_, indicator, expected_relationships):
-    relationships = FeedMandiant.build_indicator_relationships(value_, indicator)
+    relationships = FeedMandiantThreatIntelligence.build_indicator_relationships(value_, indicator)
     assert relationships == expected_relationships
 
 
 def test_fetch_indicators_command(client, mock_http_request):
     mock_http_request.return_value = MOCK_INDICATORS
-    result = FeedMandiant.fetch_indicators_command(client)
+    result = FeedMandiantThreatIntelligence.fetch_indicators_command(client)
     assert isinstance(result, List)
     assert result[0].get("value") == "1.2.3.4"
     assert "rawJSON" in result[0]

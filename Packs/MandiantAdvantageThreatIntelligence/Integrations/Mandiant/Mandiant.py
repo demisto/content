@@ -1,7 +1,6 @@
-from collections.abc import Callable
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
-from collections.abc import Generator
+from collections.abc import Callable, Generator
 
 
 # Disable insecure warnings
