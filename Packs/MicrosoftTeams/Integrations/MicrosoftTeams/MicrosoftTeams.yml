@@ -143,9 +143,9 @@ configuration:
   type: 13
   section: Connect
   required: false
-- additionalinfo: 'Optional - Welcome message when creating new incidents using the bot. (Default: Successfully created incident <incident_name>. View it on: <incident_link>).'
+- additionalinfo: 'Optional - Welcome message when creating new incidents using the bot. If left empty (default option) the current default welcome message will be used, i.e. "Successfully created incident <incident_name>. View it on: <incident_link>". If the parameter is set to "no_welcome_message" value, no message will be displayed. Lastly, any non-empty string value set will be used as the custom new incident welcome message.'
   defaultvalue: 'Successfully created incident <incident_name>. View it on: <incident_link>'
-  display: New Incident Welcome Message
+  display: Custom New Incident Welcome Message
   name: new_incident_welcome_message
   required: false
   type: 0
