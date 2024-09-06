@@ -1,4 +1,4 @@
-name: FeedMandiant
+name: FeedMandiantThreatIntelligence
 display: Mandiant Feed
 description: Collect a feed of Indicators from Mandiant Advantage.
 category: Data Enrichment & Threat Intelligence
@@ -102,8 +102,7 @@ configuration:
   type: 17
   required: false
 - name: feedExpirationInterval
-  display: 'Feed Expiration Interval'
-  additionalinfo: ''
+  display: ''
   type: 1
   required: false
 - defaultvalue: '240'
