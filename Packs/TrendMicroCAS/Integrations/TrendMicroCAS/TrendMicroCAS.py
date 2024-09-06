@@ -1,5 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
+
 import dateparser
 import urllib3
 
@@ -602,7 +604,8 @@ def main() -> None:
         'Japan': 'https://api.tmcas.trendmicro.co.jp/v1/',
         'Australia and New Zealand': 'https://api-au.tmcas.trendmicro.com/v1/',
         'UK': 'https://api.tmcas.trendmicro.co.uk/v1/',
-        'Canada': 'https://api-ca.tmcas.trendmicro.com/v1/'
+        'Canada': 'https://api-ca.tmcas.trendmicro.com/v1/',
+        'India': 'https://api-in.tmcas.trendmicro.com/v1/'
     }
     params = demisto.params()
     token = params.get('credentials_token', {}).get('password') or params.get('token')

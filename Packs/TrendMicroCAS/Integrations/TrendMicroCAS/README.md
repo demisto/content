@@ -2,22 +2,26 @@ Use Trend Micro Cloud App Security integration to protect against ransomware, ph
 ## Configure TrendMicro Cloud App Security on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for TrendMicro Cloud App Security.
+2. Search for Trend Micro Cloud App Security.
 3. Click **Add instance** to create and configure a new integration instance.
 
-| **Parameter** | **Description** | **Required** |
-| --- | --- | --- |
-| serviceURL | Service URL | True |
-| token | Token | True |
-| isFetch | Fetch incidents | False |
-| service | Service event to fetch | False |
-| event_type | Event type to fetch | False |
-| max_fetch | Maximum number of incidents per fetch | False |
-| first_fetch | First fetch time | False |
-| insecure | Trust any certificate \(not secure\) | False |
-| proxy | Use system proxy settings | False |
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | Service URL | The place where your Cloud App Security service is hosted | True |
+    | Token |  | False |
+    | Token |  | False |
+    | Service event to fetch |  | False |
+    | Event type to fetch |  | False |
+    | Maximum number of incidents per fetch |  | False |
+    | First fetch time |  | False |
+    | Trust any certificate (not secure) |  | False |
+    | Use system proxy settings |  | False |
+    | Incident type |  | False |
+    | Fetch incidents |  | False |
+    | Incidents Fetch Interval |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
@@ -552,58 +556,26 @@ Queries the results of actions taken for email messages.
 
 
 ### trendmicro-cas-blocked-lists-get
+
 ***
 Retrieves all blocked senders, URLs, and SHA-1 hash values that have been configured to quarantine Exchange Online email messages.
-
 
 #### Base Command
 
 `trendmicro-cas-blocked-lists-get`
+
 #### Input
 
-There are no input arguments for this command.
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TrendMicroCAS.BlockedList.filehashes | String | A list of blocked configured SHA\-1 hash values. | 
+| TrendMicroCAS.BlockedList.filehashes | String | A list of blocked configured SHA-1 hash values. | 
 | TrendMicroCAS.BlockedList.senders | String | A list of configured blocked senders. | 
 | TrendMicroCAS.BlockedList.urls | String | A list of blocked configured URLs. | 
-
-
-#### Command Example
-```!trendmicro-cas-blocked-lists-get```
-
-#### Context Example
-```
-{
-    "TrendMicroCAS": {
-        "BlockedList": {
-            "filehashes": [
-                "f3cdddb37f6a933d6a256bd98b4bc703a448c621"
-            ],
-            "senders": [
-                "456@gmail.com",
-                "123@gmail.com"
-            ],
-            "urls": [
-                "fttg.com/",
-                "ubb.com/",
-                "ggyu.com/"
-            ]
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Blocked List
->|filehashes|senders|urls|
->|---|---|---|
->| f3cdddb37f6a933d6a256bd98b4bc703a448c621 | 456@gmail.com,<br/>123@gmail.com | fttg.com/,<br/>ubb.com/,<br/>ggyu.com/ |
-
 
 ### trendmicro-cas-blocked-lists-update
 ***
@@ -662,4 +634,3 @@ Adds or removes senders, URLs, SHA-1 hash values to or from blocked lists. You m
 >|filehashes|senders|urls|
 >|---|---|---|
 >| f3cdddb37f6a933d6a256bd98b4bc703a448c621 | 123@gmail.com,<br/>456@gmail.com | ubb.com,<br/>ggyu.com |
-
