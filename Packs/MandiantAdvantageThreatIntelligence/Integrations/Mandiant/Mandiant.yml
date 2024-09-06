@@ -1,6 +1,6 @@
 name: Mandiant
 display: Mandiant Enrich
-description: 'Enrich Indicators of Compromise, and fetch information about Actors, Malware Families, and Campaigns from Mandiant Advantage.'
+description: Enrich Indicators of Compromise, and fetch information about Actors, Malware Families, and Campaigns from Mandiant Advantage.
 category: Data Enrichment & Threat Intelligence
 commonfields:
   id: Mandiant
@@ -69,103 +69,103 @@ script:
       isArray: true
     outputs:
     - contextPath: DBotScore.Score
-      description: The actual score calculated using the Mandiant Threat Score
+      description: 'The actual score.'
       type: number
     - contextPath: DBotScore.Vendor
-      description: The vendor used to calculate the score
+      description: 'The vendor used to calculate the score.'
       type: string
     - contextPath: DBotScore.Indicator
-      description: The indicator that was tested
+      description: 'The indicator that was tested.'
       type: String
     - contextPath: DBotScore.Type
-      description: The indicator type
+      description: 'The indicator type.'
       type: string
     - contextPath: DBotScore.Reliability
-      description: The reliability definition of the vendor used to calculate the score as defined in the integration settings
+      description: The reliability definition of the vendor used to calculate the score as defined in the integration settings.
       type: string
     - contextPath: File.SHA1
-      description: The SHA1 hash of the file
+      description: The SHA1 hash of the file.
       type: string
     - contextPath: File.SHA256
-      description: The SHA256 hash of the file
+      description: The SHA256 hash of the file.
       type: string
     - contextPath: File.MD5
-      description: The MD5 hash of the file
+      description: The MD5 hash of the file.
       type: string
     - contextPath: File.name
-      description: The name of the indicator
+      description: The name of the indicator.
       type: string
     - contextPath: File.Campaign
-      description: A comma separated list of any campaigns associated with the indicator
+      description: A comma separated list of any campaigns associated with the indicator.
       type: string
     - contextPath: File.TrafficLightProtocol
-      description: The traffic light protocol color associated with the indicator
+      description: The traffic light protocol color associated with the indicator.
       type: string
     - contextPath: File.Malicious.description
-      description: A description of why the file is malicious
+      description: A description of why the file is malicious.
       type: string
     - contextPath: File.Malicious.vendor
-      description: The vendor providing the description
+      description: The vendor providing the description.
       type: string
     - contextPath: File.MalwareFamily
-      description: A comma separated list of any Malware Families associated with the indicator
+      description: A comma separated list of any Malware Families associated with the indicator.
       type: string
     - contextPath: File.Relationships
-      description: A list of relationship objects associated with the indicator
+      description: A list of relationship objects associated with the indicator.
       type: list
     - contextPath: File.Hashes
-      description: A list of hash objects associated with the indicator
+      description: A list of hash objects associated with the indicator.
       type: list
     - contextPath: Mandiant.File.threat_rating.confidence_level
-      description: The confidence level of the indicator's threat rating
+      description: The confidence level of the indicator's threat rating.
       type: string
     - contextPath: Mandiant.File.threat_rating.confidence_score
-      description: The confidence score of the indicator's threat rating
+      description: The confidence score of the indicator's threat rating.
       type: number
     - contextPath: Mandiant.File.threat_rating.severity_level
-      description: The severity level of the indicator
+      description: The severity level of the indicator.
       type: string
     - contextPath: Mandiant.File.threat_rating.severity_reason
-      description: A list of severity reasons that contribute to the severity level of the indicator
+      description: A list of severity reasons that contribute to the severity level of the indicator.
       type: list
     - contextPath: Mandiant.File.threat_rating.threat_score
-      description: The threat score of the indicator
+      description: The threat score of the indicator.
       type: number
     - contextPath: Mandiant.File.campaigns
-      description: A list of campaign objects associated with the indicator
+      description: A list of campaign objects associated with the indicator.
       type: list
     - contextPath: Mandiant.File.last_seen
-      description: The date and time that the indicator was last seen
+      description: The date and time that the indicator was last seen.
       type: date
     - contextPath: Mandiant.File.first_seen
-      description: The date and time that the indicator was first seen
+      description: The date and time that the indicator was first seen.
       type: date
     - contextPath: Mandiant.File.mscore
-      description: The confidence score of the indicator
+      description: The confidence score of the indicator.
       type: number
     - contextPath: Mandiant.File.attributed_associations
-      description: A list of attribution objects (Threat Actors, Malware Families) associated with the indicator
+      description: A list of attribution objects (Threat Actors, Malware Families) associated with the indicator.
       type: list
     - contextPath: Mandiant.File.value
-      description: The value of the indicator
+      description: The value of the indicator.
       type: string
     - contextPath: Mandiant.File.last_updated
-      description: The date and time that the indicator was last updated by Mandiant
+      description: The date and time that the indicator was last updated by Mandiant.
       type: date
     - contextPath: Mandiant.File.associated_hashes
-      description: A list of file hashes associated with the indicator (MD5, SHA1, SHA256)
+      description: A list of file hashes associated with the indicator (MD5, SHA1, SHA256).
       type: list
     - contextPath: Mandiant.File.sources
-      description: A list of source objects associated with the indicator
+      description: A list of source objects associated with the indicator.
       type: list
     - contextPath: Mandiant.File.type
-      description: The indicator's type
+      description: The indicator's type.
       type: string
     - contextPath: Mandiant.File.id
-      description: The indicator's Mandiant ID
+      description: The indicator's Mandiant ID.
       type: string
     - contextPath: Mandiant.File.reports
-      description: A list of Mandiant reports associated with the indicator
+      description: A list of Mandiant reports associated with the indicator.
       type: list
   - name: ip
     description: Get information about an IP address from Mandiant.
@@ -176,88 +176,88 @@ script:
       isArray: true
     outputs:
     - contextPath: DBotScore.Score
-      description: The actual score calculated using the Mandiant Threat Score
+      description: 'The actual score.'
       type: number
     - contextPath: DBotScore.Vendor
-      description: The vendor used to calculate the score
+      description: 'The vendor used to calculate the score.'
       type: string
     - contextPath: DBotScore.Indicator
-      description: The indicator that was tested
+      description: 'The indicator that was tested.'
       type: String
     - contextPath: DBotScore.Type
-      description: The indicator type
+      description: 'The indicator type.'
       type: string
     - contextPath: DBotScore.Reliability
-      description: The reliability definition of the vendor used to calculate the score as defined in the integration settings
+      description: The reliability definition of the vendor used to calculate the score as defined in the integration settings.
       type: string
     - contextPath: IP.Address
-      description: The IP address value
+      description: The IP address value.
       type: string
     - contextPath: IP.Campaign
-      description: A comma separated list of any campaigns associated with the indicator
+      description: A comma separated list of any campaigns associated with the indicator.
       type: string
     - contextPath: IP.TrafficLightProtocol
-      description: The traffic light protocol color associated with the indicator
+      description: The traffic light protocol color associated with the indicator.
       type: string
     - contextPath: IP.MalwareFamily
-      description: A comma separated list of any Malware Families associated with the indicator
+      description: A comma separated list of any Malware Families associated with the indicator.
       type: string
     - contextPath: IP.Relationships
-      description: A list of relationship objects associated with the indicator
+      description: A list of relationship objects associated with the indicator.
       type: list
     - contextPath: IP.STIXID
-      description: The stix id of the CVE
+      description: The stix id of the CVE.
       type: string
     - contextPath: IP.Publications
-      description: A list of report objects associated with the indicator
+      description: A list of report objects associated with the indicator.
       type: list
     - contextPath: Mandiant.IP.threat_rating.confidence_level
-      description: The confidence level of the indicator's threat rating
+      description: The confidence level of the indicator's threat rating.
       type: string
     - contextPath: Mandiant.IP.threat_rating.confidence_score
-      description: The confidence score of the indicator's threat rating
+      description: The confidence score of the indicator's threat rating.
       type: number
     - contextPath: Mandiant.IP.threat_rating.severity_level
-      description: The severity level of the indicator
+      description: The severity level of the indicator.
       type: string
     - contextPath: Mandiant.IP.threat_rating.severity_reason
-      description: A list of severity reasons that contribute to the severity level of the indicator
+      description: A list of severity reasons that contribute to the severity level of the indicator.
       type: list
     - contextPath: Mandiant.IP.threat_rating.threat_score
-      description: The threat score of the indicator
+      description: The threat score of the indicator.
       type: number
     - contextPath: Mandiant.IP.campaigns
-      description: A list of campaign objects associated with the indicator
+      description: A list of campaign objects associated with the indicator.
       type: list
     - contextPath: Mandiant.IP.last_seen
-      description: The date and time that the indicator was last seen
+      description: The date and time that the indicator was last seen.
       type: date
     - contextPath: Mandiant.IP.first_seen
-      description: The date and time that the indicator was first seen
+      description: The date and time that the indicator was first seen.
       type: date
     - contextPath: Mandiant.IP.mscore
-      description: The confidence score of the indicator
+      description: The confidence score of the indicator.
       type: number
     - contextPath: Mandiant.IP.attributed_associations
-      description: A list of attribution objects (Threat Actors, Malware Families) associated with the indicator
+      description: A list of attribution objects (Threat Actors, Malware Families) associated with the indicator.
       type: list
     - contextPath: Mandiant.IP.value
-      description: The value of the indicator
+      description: The value of the indicator.
       type: string
     - contextPath: Mandiant.IP.last_updated
-      description: The date and time that the indicator was last updated by Mandiant
+      description: The date and time that the indicator was last updated by Mandiant.
       type: date
     - contextPath: Mandiant.IP.sources
-      description: A list of source objects associated with the indicator
+      description: A list of source objects associated with the indicator.
       type: list
     - contextPath: Mandiant.IP.type
-      description: The indicator's type
+      description: The indicator's type.
       type: string
     - contextPath: Mandiant.IP.id
-      description: The indicator's Mandiant ID
+      description: The indicator's Mandiant ID.
       type: string
     - contextPath: Mandiant.IP.reports
-      description: A list of Mandiant reports associated with the indicator
+      description: A list of Mandiant reports associated with the indicator.
       type: list
   - name: url
     description: Get information about a URL from Mandiant.
@@ -268,85 +268,85 @@ script:
       isArray: true
     outputs:
     - contextPath: DBotScore.Score
-      description: The actual score calculated using the Mandiant Threat Score
+      description: 'The actual score.'
       type: number
     - contextPath: DBotScore.Vendor
-      description: The vendor used to calculate the score
+      description: 'The vendor used to calculate the score.'
       type: string
     - contextPath: DBotScore.Indicator
-      description: The indicator that was tested
+      description: 'The indicator that was tested.'
       type: String
     - contextPath: DBotScore.Type
-      description: The indicator type
+      description: 'The indicator type.'
       type: string
     - contextPath: DBotScore.Reliability
-      description: The reliability definition of the vendor used to calculate the score as defined in the integration settings
+      description: The reliability definition of the vendor used to calculate the score as defined in the integration settings.
       type: string
     - contextPath: URL.Data
-      description: The URL value
+      description: The URL value.
       type: string
     - contextPath: URL.Campaign
-      description: A comma separated list of any campaigns associated with the indicator
+      description: A comma separated list of any campaigns associated with the indicator.
       type: string
     - contextPath: URL.TrafficLightProtocol
-      description: The traffic light protocol color associated with the indicator
+      description: The traffic light protocol color associated with the indicator.
       type: string
     - contextPath: URL.MalwareFamily
-      description: A comma separated list of any Malware Families associated with the indicator
+      description: A comma separated list of any Malware Families associated with the indicator.
       type: string
     - contextPath: URL.Relationships
-      description: A list of relationship objects associated with the indicator
+      description: A list of relationship objects associated with the indicator.
       type: list
     - contextPath: URL.STIXID
-      description: The stix id of the CVE
+      description: The stix id of the CVE.
       type: string
     - contextPath: Mandiant.URL.threat_rating.confidence_level
-      description: The confidence level of the indicator's threat rating
+      description: The confidence level of the indicator's threat rating.
       type: string
     - contextPath: Mandiant.URL.threat_rating.confidence_score
-      description: The confidence score of the indicator's threat rating
+      description: The confidence score of the indicator's threat rating.
       type: number
     - contextPath: Mandiant.URL.threat_rating.severity_level
-      description: The severity level of the indicator
+      description: The severity level of the indicator.
       type: string
     - contextPath: Mandiant.URL.threat_rating.severity_reason
-      description: A list of severity reasons that contribute to the severity level of the indicator
+      description: A list of severity reasons that contribute to the severity level of the indicator.
       type: list
     - contextPath: Mandiant.URL.threat_rating.threat_score
-      description: The threat score of the indicator
+      description: The threat score of the indicator.
       type: number
     - contextPath: Mandiant.URL.campaigns
-      description: A list of campaign objects associated with the indicator
+      description: A list of campaign objects associated with the indicator.
       type: list
     - contextPath: Mandiant.URL.last_seen
-      description: The date and time that the indicator was last seen
+      description: The date and time that the indicator was last seen.
       type: date
     - contextPath: Mandiant.URL.first_seen
-      description: The date and time that the indicator was first seen
+      description: The date and time that the indicator was first seen.
       type: date
     - contextPath: Mandiant.URL.mscore
-      description: The confidence score of the indicator
+      description: The confidence score of the indicator.
       type: number
     - contextPath: Mandiant.URL.attributed_associations
-      description: A list of attribution objects (Threat Actors, Malware Families) associated with the indicator
+      description: A list of attribution objects (Threat Actors, Malware Families) associated with the indicator.
       type: list
     - contextPath: Mandiant.URL.value
-      description: The value of the indicator
+      description: The value of the indicator.
       type: string
     - contextPath: Mandiant.URL.last_updated
-      description: The date and time that the indicator was last updated by Mandiant
+      description: The date and time that the indicator was last updated by Mandiant.
       type: date
     - contextPath: Mandiant.URL.sources
-      description: A list of source objects associated with the indicator
+      description: A list of source objects associated with the indicator.
       type: list
     - contextPath: Mandiant.URL.type
-      description: The indicator's type
+      description: The indicator's type.
       type: string
     - contextPath: Mandiant.URL.id
-      description: The indicator's Mandiant ID
+      description: The indicator's Mandiant ID.
       type: string
     - contextPath: Mandiant.URL.reports
-      description: A list of Mandiant reports associated with the indicator
+      description: A list of Mandiant reports associated with the indicator.
       type: list
   - name: domain
     description: Get information about a domain from Mandiant.
@@ -357,85 +357,85 @@ script:
       isArray: true
     outputs:
     - contextPath: DBotScore.Score
-      description: The actual score calculated using the Mandiant Threat Score
+      description: 'The actual score.'
       type: number
     - contextPath: DBotScore.Vendor
-      description: The vendor used to calculate the score
+      description: 'The vendor used to calculate the score.'
       type: string
     - contextPath: DBotScore.Indicator
-      description: The indicator that was tested
+      description: 'The indicator that was tested.'
       type: String
     - contextPath: DBotScore.Type
-      description: The indicator type
+      description: 'The indicator type.'
       type: string
     - contextPath: DBotScore.Reliability
-      description: The reliability definition of the vendor used to calculate the score as defined in the integration settings
+      description: The reliability definition of the vendor used to calculate the score as defined in the integration settings.
       type: string
-    - contextPath: Domain.name
-      description: The domain name
+    - contextPath: Domain.Name
+      description: The domain name.
       type: string
     - contextPath: Domain.Campaign
-      description: A comma separated list of any campaigns associated with the indicator
+      description: A comma separated list of any campaigns associated with the indicator.
       type: string
     - contextPath: Domain.TrafficLightProtocol
-      description: The traffic light protocol color associated with the indicator
+      description: The traffic light protocol color associated with the indicator.
       type: string
     - contextPath: Domain.MalwareFamily
-      description: A comma separated list of any Malware Families associated with the indicator
+      description: A comma separated list of any Malware Families associated with the indicator.
       type: string
     - contextPath: Domain.Relationships
-      description: A list of relationship objects associated with the indicator
+      description: A list of relationship objects associated with the indicator.
       type: list
     - contextPath: Domain.STIXID
-      description: The stix id of the CVE
+      description: The stix id of the CVE.
       type: string
     - contextPath: Mandiant.Domain.threat_rating.confidence_level
-      description: The confidence level of the indicator's threat rating
+      description: The confidence level of the indicator's threat rating.
       type: string
     - contextPath: Mandiant.Domain.threat_rating.confidence_score
-      description: The confidence score of the indicator's threat rating
+      description: The confidence score of the indicator's threat rating.
       type: number
     - contextPath: Mandiant.Domain.threat_rating.severity_level
-      description: The severity level of the indicator
+      description: The severity level of the indicator.
       type: string
     - contextPath: Mandiant.Domain.threat_rating.severity_reason
-      description: A list of severity reasons that contribute to the severity level of the indicator
+      description: A list of severity reasons that contribute to the severity level of the indicator.
       type: list
     - contextPath: Mandiant.Domain.threat_rating.threat_score
-      description: The threat score of the indicator
+      description: The threat score of the indicator.
       type: number
     - contextPath: Mandiant.Domain.campaigns
-      description: A list of campaign objects associated with the indicator
+      description: A list of campaign objects associated with the indicator.
       type: list
     - contextPath: Mandiant.Domain.last_seen
-      description: The date and time that the indicator was last seen
+      description: The date and time that the indicator was last seen.
       type: date
     - contextPath: Mandiant.Domain.first_seen
-      description: The date and time that the indicator was first seen
+      description: The date and time that the indicator was first seen.
       type: date
     - contextPath: Mandiant.Domain.mscore
-      description: The confidence score of the indicator
+      description: The confidence score of the indicator.
       type: number
     - contextPath: Mandiant.Domain.attributed_associations
-      description: A list of attribution objects (Threat Actors, Malware Families) associated with the indicator
+      description: A list of attribution objects (Threat Actors, Malware Families) associated with the indicator.
       type: list
     - contextPath: Mandiant.Domain.value
-      description: The value of the indicator
+      description: The value of the indicator.
       type: string
     - contextPath: Mandiant.Domain.last_updated
-      description: The date and time that the indicator was last updated by Mandiant
+      description: The date and time that the indicator was last updated by Mandiant.
       type: date
     - contextPath: Mandiant.Domain.sources
-      description: A list of source objects associated with the indicator
+      description: A list of source objects associated with the indicator.
       type: list
     - contextPath: Mandiant.Domain.type
-      description: The indicator's type
+      description: The indicator's type.
       type: string
     - contextPath: Mandiant.Domain.id
-      description: The indicator's Mandiant ID
+      description: The indicator's Mandiant ID.
       type: string
     - contextPath: Mandiant.Domain.reports
-      description: A list of Mandiant reports associated with the indicator
+      description: A list of Mandiant reports associated with the indicator.
       type: list
   - name: cve
     description: Get information about a CVE from Mandiant.
@@ -446,154 +446,154 @@ script:
       isArray: true
     outputs:
     - contextPath: CVE.VulnerableConfigurations
-      description: A list of CPE objects
+      description: A list of CPE objects.
       type: list
     - contextPath: CVE.Publications
-      description: A list of reports associated with the CVE
+      description: A list of reports associated with the CVE.
       type: list
     - contextPath: CVE.Modified
-      description: The date that the CVE was last modified
+      description: The date that the CVE was last modified.
       type: date
     - contextPath: CVE.STIXID
-      description: The stix id of the CVE
+      description: The stix id of the CVE.
       type: string
     - contextPath: CVE.VulnerableProducts
-      description: A list of CPE objects
+      description: A list of CPE objects.
       type: list
     - contextPath: CVE.Published
-      description: The date that the CVE was last published
+      description: The date that the CVE was last published.
       type: date
     - contextPath: CVE.TrafficLightProtocol
-      description: The traffic light protocol color associated with the CVE    
+      description: The traffic light protocol color associated with the CVE.
       type: string
     - contextPath: CVE.CVSS.score
-      description: The CVSS score of the CVE
+      description: The CVSS score of the CVE.
       type: number
     - contextPath: CVE.CVSS.Vector
-      description: The CVSS Vector of the CVE
+      description: The CVSS Vector of the CVE.
       type: string
     - contextPath: CVE.CVSS.Version
-      description: The CVSS version of the CVE
+      description: The CVSS version of the CVE.
       type: number
     - contextPath: CVE.ID
-      description: The CVE ID
+      description: The CVE ID.
       type: string
     - contextPath: CVE.Description
-      description: A description of the CVE
+      description: A description of the CVE.
       type: string
     - contextPath: DBotScore.Score
-      description: The actual score calculated using the CVSS score
+      description: 'The actual score.'
       type: number
     - contextPath: DBotScore.Vendor
-      description: The vendor used to calculate the score
+      description: 'The vendor used to calculate the score.'
       type: string
     - contextPath: DBotScore.Indicator
-      description: The indicator that was tested
+      description: 'The indicator that was tested.'
       type: String
     - contextPath: DBotScore.Type
-      description: The indicator type
+      description: 'The indicator type.'
       type: string
     - contextPath: DBotScore.Reliability
-      description: The reliability definition of the vendor used to calculate the score as defined in the integration settings
+      description: The reliability definition of the vendor used to calculate the score as defined in the integration settings.
       type: string
     - contextPath: Mandiant.CVE.is_predicted
-      description: If the risk rating was predicted (True) or set by an analyst (False)
+      description: If the risk rating was predicted (True) or set by an analyst (False).
       type: bool
     - contextPath: Mandiant.CVE.date_of_disclosure
-      description: The date and time that the CVE was disclosed
+      description: The date and time that the CVE was disclosed.
       type: date
     - contextPath: Mandiant.CVE.associated_reports
-      description: A list of reports associated with the CVE
+      description: A list of reports associated with the CVE.
       type: list
     - contextPath: Mandiant.CVE.exploits
-      description: A list of exploits associated with the CVE
+      description: A list of exploits associated with the CVE.
       type: list
     - contextPath: Mandiant.CVE.cve_id
-      description: The CVE ID of the CVE
+      description: The CVE ID of the CVE.
       type: string
     - contextPath: Mandiant.CVE.workarounds_list
-      description: A list of workarounds associated with the CVE
+      description: A list of workarounds associated with the CVE.
       type: list
     - contextPath: Mandiant.CVE.vendor_fix_references
-      description: A list of vendor fix references associated with the CVE
+      description: A list of vendor fix references associated with the CVE.
       type: list
     - contextPath: Mandiant.CVE.version_history
-      description: A list of history objects containing links to detail about each version of the CVE
+      description: A list of history objects containing links to detail about each version of the CVE.
       type: list
     - contextPath: Mandiant.CVE.risk_rating
-      description: The risk rating associated with the CVE
+      description: The risk rating associated with the CVE.
       type: list
     - contextPath: Mandiant.CVE.first_publish_date
-      description: The date and time that the CVE was fist published
+      description: The date and time that the CVE was fist published.
       type: date
     - contextPath: Mandiant.CVE.exploitation_consequence
-      description: The exploitation consequence associated with the CVE
+      description: The exploitation consequence associated with the CVE.
       type: string
     - contextPath: Mandiant.CVE.vulnerable_cpes
-      description: A list of vulnerable cpe objects associated with the CVE
+      description: A list of vulnerable cpe objects associated with the CVE.
       type: list
     - contextPath: Mandiant.CVE.updated_date
-      description: The date and time that the CVE was last updated
+      description: The date and time that the CVE was last updated.
       type: date
     - contextPath: Mandiant.CVE.workarounds
-      description: A summary of any workarounds associated with the CVE
+      description: A summary of any workarounds associated with the CVE.
       type: string
     - contextPath: Mandiant.CVE.available_mitigation
-      description: A list of mitigations associated with the CVE
+      description: A list of mitigations associated with the CVE.
       type: list
     - contextPath: Mandiant.CVE.associated_actors
-      description: A list of Threat Actor objects associated with the CVE
+      description: A list of Threat Actor objects associated with the CVE.
       type: list
     - contextPath: Mandiant.CVE.title
-      description: The title of the CVE
+      description: The title of the CVE.
       type: string
     - contextPath: Mandiant.CVE.common_vulnerability_scores
-      description: An object containing common vulnerability score objects associated with the CVE
+      description: An object containing common vulnerability score objects associated with the CVE.
       type: object
     - contextPath: Mandiant.CVE.sources
-      description: A list of sources associated with the CVE
+      description: A list of sources associated with the CVE.
       type: list
     - contextPath: Mandiant.CVE.type
-      description: The type of indicator
+      description: The type of indicator.
       type: string
     - contextPath: Mandiant.CVE.vulnerable_products
-      description: A summary of any vulnerable products associated with the CVE
+      description: A summary of any vulnerable products associated with the CVE.
       type: list
     - contextPath: Mandiant.CVE.exploitation_vectors
-      description: A list of exploitation vectors associated with the CVE
+      description: A list of exploitation vectors associated with the CVE.
       type: list
     - contextPath: Mandiant.CVE.id
-      description: The Mandiant ID of the CVE
+      description: The Mandiant ID of the CVE.
       type: string
     - contextPath: Mandiant.CVE.last_modified_date
-      description: The date and time that the CVE was last modified
+      description: The date and time that the CVE was last modified.
       type: date
     - contextPath: Mandiant.CVE.observed_in_the_wild
-      description: If the CVE was observed in the wild (True) of not (False)
+      description: If the CVE was observed in the wild (True) of not (False).
       type: bool
     - contextPath: Mandiant.CVE.was_zero_day
-      description: If the CVE was determined to be a zero day exploit (True) of not (False)
+      description: If the CVE was determined to be a zero day exploit (True) of not (False).
       type: bool
     - contextPath: Mandiant.CVE.exploitation_state
-      description: The current exploitation state of the CVE
+      description: The current exploitation state of the CVE.
       type: string
     - contextPath: Mandiant.CVE.associated_malware
-      description: A list of Malware Family objects associated with the CVE
+      description: A list of Malware Family objects associated with the CVE.
       type: list
     - contextPath: Mandiant.CVE.description
-      description: A description of the CVE
+      description: A description of the CVE.
       type: string
     - contextPath: Mandiant.CVE.cpe_ranges
-      description: A list of CPE objects objects associated with the CVE
+      description: A list of CPE objects objects associated with the CVE.
       type: list
     - contextPath: Mandiant.CVE.mve_id
-      description: The Mandiant Vulnerability ID of the CVE
+      description: The Mandiant Vulnerability ID of the CVE.
       type: string
     - contextPath: Mandiant.CVE.publish_date
-      description: The date and time that the CVE was published
+      description: The date and time that the CVE was published.
       type: date
     - contextPath: Mandiant.CVE.aliases
-      description: A list of alias objects associated with the CVE
+      description: A list of alias objects associated with the CVE.
       type: list
   - name: mati-get-actor
     arguments:
@@ -603,88 +603,88 @@ script:
       required: true
     outputs:
     - contextPath: Mandiant.Actor.associated_uncs
-      description: UNC Threat Actors associated with the fetched Threat Actor
+      description: UNC Threat Actors associated with the fetched Threat Actor.
       type: list
     - contextPath: Mandiant.Actor.counts.aliases
-      description: The number of alternate names the fetched Threat Actor is known as
+      description: The number of alternate names the fetched Threat Actor is known as.
       type: number
     - contextPath: Mandiant.Actor.counts.associated_uncs
-      description: The number of UNC Threat Actors associated with the fetched Threat Actor
+      description: The number of UNC Threat Actors associated with the fetched Threat Actor.
       type: number
     - contextPath: Mandiant.Actor.counts.attack_patterns
-      description: The number of Attack Patterns associated with the fetched Threat Actor
+      description: The number of Attack Patterns associated with the fetched Threat Actor.
       type: number
     - contextPath: Mandiant.Actor.counts.cve
-      description: The number of vulnerabilities associated with the fetched Threat Actor
+      description: The number of vulnerabilities associated with the fetched Threat Actor.
       type: number
     - contextPath: Mandiant.Actor.counts.industries
-      description: The number of industries targeted by the fetched Threat Actor
+      description: The number of industries targeted by the fetched Threat Actor.
       type: number
     - contextPath: Mandiant.Actor.counts.malware
-      description: The number of Malware Families associated with the fetched Threat Actor
+      description: The number of Malware Families associated with the fetched Threat Actor.
       type: number
     - contextPath: Mandiant.Actor.counts.reports
-      description: The number of finished intelligence reports associated with the fetched Threat Actor
+      description: The number of finished intelligence reports associated with the fetched Threat Actor.
       type: number
     - contextPath: Mandiant.Actor.audience
-      description: A list of audience objects describing who can read the Threat Actor information
+      description: A list of audience objects describing who can read the Threat Actor information.
       type: list
     - contextPath: Mandiant.Actor.observed
-      description: A list of observed objects describing when the Threat Actor was first and last seen
+      description: A list of observed objects describing when the Threat Actor was first and last seen.
       type: list
     - contextPath: Mandiant.Actor.name
-      description: The name of the Threat Actor
+      description: The name of the Threat Actor.
       type: string
     - contextPath: Mandiant.Actor.value
-      description: The name of the Threat Actor
+      description: The name of the Threat Actor.
       type: string
     - contextPath: Mandiant.Actor.last_updated
-      description: The date and time that the Threat Actor object was last updated by Mandiant
+      description: The date and time that the Threat Actor object was last updated by Mandiant.
       type: date
     - contextPath: Mandiant.Actor.cve
-      description: A list of vulnerability objects associated with the Threat Actor
+      description: A list of vulnerability objects associated with the Threat Actor.
       type: list
     - contextPath: Mandiant.Actor.last_activity_time
-      description: The date and time that the Threat Actor object was last active
+      description: The date and time that the Threat Actor object was last active.
       type: date
     - contextPath: Mandiant.Actor.malware
-      description: A list of Malware Family objects associated with the Threat Actor
+      description: A list of Malware Family objects associated with the Threat Actor.
       type: list
     - contextPath: Mandiant.Actor.suspected_attribution
-      description: A list of Intel objects suspected to be associated with the Threat Actor
+      description: A list of Intel objects suspected to be associated with the Threat Actor.
       type: list
     - contextPath: Mandiant.Actor.type
-      description: The Type of XSOAR indicator
+      description: The Type of XSOAR indicator.
       type: string
     - contextPath: Mandiant.Actor.id
-      description: The Mandiant ID of the Threat Actor
+      description: The Mandiant ID of the Threat Actor.
       type: string
     - contextPath: Mandiant.Actor.tools
-      description: A list of tool objects associated with the Threat Actor
+      description: A list of tool objects associated with the Threat Actor.
       type: list
     - contextPath: Mandiant.Actor.industries
-      description: A list of industry objects associated with the Threat Actor
+      description: A list of industry objects associated with the Threat Actor.
       type: list
     - contextPath: Mandiant.Actor.description
-      description: A description of the Threat Actor
+      description: A description of the Threat Actor.
       type: string
     - contextPath: Mandiant.Actor.motivations
-      description: A list of motivation objects associated with the Threat Actor
+      description: A list of motivation objects associated with the Threat Actor.
       type: list
     - contextPath: Mandiant.Actor.aliases
-      description: A list of alias objects describing alternate names associated with the Threat Actor
+      description: A list of alias objects describing alternate names associated with the Threat Actor.
       type: list
     - contextPath: Mandiant.Actor.locations.source
-      description: A list of source location objects describing the country that the Threat Actor originates from
+      description: A list of source location objects describing the country that the Threat Actor originates from.
       type: list
     - contextPath: Mandiant.Actor.locations.target
-      description: A list of target country objects describing the countries that the Threat Actor targets
+      description: A list of target country objects describing the countries that the Threat Actor targets.
       type: list
     - contextPath: Mandiant.Actor.locations.target_region
-      description: A list of target region objects describing the regions that the Threat Actor targets
+      description: A list of target region objects describing the regions that the Threat Actor targets.
       type: list
     - contextPath: Mandiant.Actor.locations.target_sub_region
-      description: A list of target sub-region objects describing the sub-regions that the Threat Actor targets
+      description: A list of target sub-region objects describing the sub-regions that the Threat Actor targets.
       type: list
     description: Get information about a Threat Actor from Mandiant.
   - name: mati-get-malware
@@ -695,79 +695,79 @@ script:
       required: true
     outputs:
     - contextPath: Mandiant.Malware.counts.detections
-      description: The number of detections associated with the Malware Family
+      description: The number of detections associated with the Malware Family.
       type: number
     - contextPath: Mandiant.Malware.counts.cve
-      description: The number of vulnerabilities associated with the Malware Family
+      description: The number of vulnerabilities associated with the Malware Family.
       type: number
     - contextPath: Mandiant.Malware.counts.malware
-      description: The number of Malware Families associated with the Malware Family
+      description: The number of Malware Families associated with the Malware Family.
       type: number
     - contextPath: Mandiant.Malware.counts.capabilities
-      description: The number of capabilities associated with the Malware Family
+      description: The number of capabilities associated with the Malware Family.
       type: number
     - contextPath: Mandiant.Malware.counts.attack_patterns
-      description: The number of Attack Patterns associated with the Malware Family
+      description: The number of Attack Patterns associated with the Malware Family.
       type: number
     - contextPath: Mandiant.Malware.counts.industries
-      description: The number of industries targeted by the Malware Family
+      description: The number of industries targeted by the Malware Family.
       type: number
     - contextPath: Mandiant.Malware.counts.actors
-      description: The number of Threat Actors associated with the Malware Family
+      description: The number of Threat Actors associated with the Malware Family.
       type: number
     - contextPath: Mandiant.Malware.counts.aliases
-      description: The number of alternate names associated with the Malware Family
+      description: The number of alternate names associated with the Malware Family.
       type: number
     - contextPath: Mandiant.Malware.counts.reports
-      description: The number of finished intelligence reports associated with the Malware Family
+      description: The number of finished intelligence reports associated with the Malware Family.
       type: number
     - contextPath: Mandiant.Malware.audience
-      description: A list of audience objects describing who can read the Malware Family information
+      description: A list of audience objects describing who can read the Malware Family information.
       type: list
     - contextPath: Mandiant.Malware.operating_systems
-      description: A list of operating systems that the Malware Family is known to impact
+      description: A list of operating systems that the Malware Family is known to impact.
       type: list
     - contextPath: Mandiant.Malware.name
-      description: The name of the Malware Family 
+      description: The name of the Malware Family.
       type: string
     - contextPath: Mandiant.Malware.detections
-      description: A list of detections associated with the Malware Family
+      description: A list of detections associated with the Malware Family.
       type: list
     - contextPath: Mandiant.Malware.value
-      description: The name of the Malware Family 
+      description: The name of the Malware Family.
       type: string
     - contextPath: Mandiant.Malware.last_updated
-      description: The date and time that the Malware Family object was last updated by Mandiant
+      description: The date and time that the Malware Family object was last updated by Mandiant.
       type: date
     - contextPath: Mandiant.Malware.cve
-      description: A list of vulnerability objects associated with the Malware Family
+      description: A list of vulnerability objects associated with the Malware Family.
       type: list
     - contextPath: Mandiant.Malware.last_activity_time
-      description: The date and time that the Malware Family object was last active
+      description: The date and time that the Malware Family object was last active.
       type: date
     - contextPath: Mandiant.Malware.malware
-      description: A list of Malware Family objects associated with the Malware Family
+      description: A list of Malware Family objects associated with the Malware Family.
       type: list
     - contextPath: Mandiant.Malware.capabilities
-      description: A list of capability objects associated with the Malware Family
+      description: A list of capability objects associated with the Malware Family.
       type: list
     - contextPath: Mandiant.Malware.yara
-      description: A list of yara rule objects associated with the Malware Family
+      description: A list of yara rule objects associated with the Malware Family.
       type: list
     - contextPath: Mandiant.Malware.industries
-      description: A list of industry objects targeted by the Malware Family
+      description: A list of industry objects targeted by the Malware Family.
       type: list
     - contextPath: Mandiant.Malware.roles
-      description: A list of roles associated with the Malware Family
+      description: A list of roles associated with the Malware Family.
       type: list
     - contextPath: Mandiant.Malware.actors
-      description: A list of Threat Actor objects associated with the Malware Family
+      description: A list of Threat Actor objects associated with the Malware Family.
       type: list
     - contextPath: Mandiant.Malware.aliases
-      description: A list of alias objects describing alternate names associated with the Malware Family
+      description: A list of alias objects describing alternate names associated with the Malware Family.
       type: list
     - contextPath: Mandiant.Malware.inherently_malicious
-      description: If 1, the object should be considered a Malware Family, if 0 the object is a Tool
+      description: If 1, the object should be considered a Malware Family, if 0 the object is a Tool.
       type: number
     description: Get information about a Malware Family from Mandiant.
   - name: mati-get-campaign
@@ -778,85 +778,85 @@ script:
       required: true
     outputs:
     - contextPath: Mandiant.Campaign.counts.timeline
-      description: The number of events in the Campaign timeline
+      description: The number of events in the Campaign timeline.
       type: number
     - contextPath: Mandiant.Campaign.counts.campaigns
-      description: The number of other Campaigns associated with the Campaign
+      description: The number of other Campaigns associated with the Campaign.
       type: number
     - contextPath: Mandiant.Campaign.counts.malware
-      description: The number of Malware Families associated with the Campaign
+      description: The number of Malware Families associated with the Campaign.
       type: number
     - contextPath: Mandiant.Campaign.counts.actor_collaborations
-      description: The number of Threat Actor Collaborations associated with the Campaign
+      description: The number of Threat Actor Collaborations associated with the Campaign.
       type: number
     - contextPath: Mandiant.Campaign.counts.vulnerabilities
-      description: The number of Vulnerabilities associated with the Campaign
+      description: The number of Vulnerabilities associated with the Campaign.
       type: number
     - contextPath: Mandiant.Campaign.counts.tools
-      description: The number of Tools associated with the Campaign
+      description: The number of Tools associated with the Campaign.
       type: number
     - contextPath: Mandiant.Campaign.counts.industries
-      description: The number of target industries associated with the Campaign
+      description: The number of target industries associated with the Campaign.
       type: number
     - contextPath: Mandiant.Campaign.counts.actors
-      description: The number of Threat Actors associated with the Campaign
+      description: The number of Threat Actors associated with the Campaign.
       type: number
     - contextPath: Mandiant.Campaign.counts.reports
-      description: The number of finished intelligence reports associated with the Campaign
+      description: The number of finished intelligence reports associated with the Campaign.
       type: number
     - contextPath: Mandiant.Campaign.profile_update
-      description: The date and time that the profile of the Campaign was last updated
+      description: The date and time that the profile of the Campaign was last updated.
       type: date
     - contextPath: Mandiant.Campaign.campaign_type
-      description: The type of the Campaign
+      description: The type of the Campaign.
       type: string
     - contextPath: Mandiant.Campaign.name
-      description: The name of the Campaign
+      description: The name of the Campaign.
       type: string
     - contextPath: Mandiant.Campaign.short_name
-      description: The short name / ID of the Campaign
+      description: The short name / ID of the Campaign.
       type: string
     - contextPath: Mandiant.Campaign.target_locations.countries
-      description: A list of country objects that the Campaign targets
+      description: A list of country objects that the Campaign targets.
       type: list
     - contextPath: Mandiant.Campaign.target_locations.regions
-      description: A list of region objects that the Campaign targets
+      description: A list of region objects that the Campaign targets.
       type: list
     - contextPath: Mandiant.Campaign.target_locations.sub_regions
-      description: A list of sub-region objects that the Campaign targets
+      description: A list of sub-region objects that the Campaign targets.
       type: list
     - contextPath: Mandiant.Campaign.value
-      description: The short name / ID of the Campaign
+      description: The short name / ID of the Campaign.
       type: string
     - contextPath: Mandiant.Campaign.last_activity_time
-      description: The date and time that the Campaign was last known to be active
+      description: The date and time that the Campaign was last known to be active.
       type: date
     - contextPath: Mandiant.Campaign.malware
-      description: A list of Malware Family objects associated with the Campaign
+      description: A list of Malware Family objects associated with the Campaign.
       type: list
     - contextPath: Mandiant.Campaign.actor_collaborations
-      description: A list of Actor Collaboration objects associated with the Campaign
+      description: A list of Actor Collaboration objects associated with the Campaign.
       type: list
     - contextPath: Mandiant.Campaign.vulnerabilities
-      description: A list of Vulnerability objects associated with the Campaign
+      description: A list of Vulnerability objects associated with the Campaign.
       type: list
     - contextPath: Mandiant.Campaign.type
-      description: The indicator type
+      description: 'The indicator type.'
       type: string
     - contextPath: Mandiant.Campaign.tools
-      description: A list of tool objects associated with the Campaign
+      description: A list of tool objects associated with the Campaign.
       type: list
     - contextPath: Mandiant.Campaign.industries
-      description: A list of target industry objects associated with the Campaign
+      description: A list of target industry objects associated with the Campaign.
       type: list
     - contextPath: Mandiant.Campaign.actors
-      description: A list of Threat Actor objects associated with the Campaign
+      description: A list of Threat Actor objects associated with the Campaign.
       type: list
     - contextPath: Mandiant.Campaign.aliases
-      description: A list of alias objects associated with the Campaign
+      description: A list of alias objects associated with the Campaign.
       type: list
     description: Retrieve information about a Campaign from Mandiant.
-  dockerimage: demisto/python3:3.10.13.84405
+  dockerimage: demisto/python3:3.11.9.107902
   feed: false
   runonce: false
   script: '-'

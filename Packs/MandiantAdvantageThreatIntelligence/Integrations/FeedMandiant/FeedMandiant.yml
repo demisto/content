@@ -1,6 +1,6 @@
 name: FeedMandiant
 display: Mandiant Feed
-description: 'Collect a feed of Indicators from Mandiant Advantage.'
+description: Collect a feed of Indicators from Mandiant Advantage.
 category: Data Enrichment & Threat Intelligence
 commonfields:
   id: FeedMandiant
@@ -92,19 +92,19 @@ configuration:
   type: 0
   required: false
 - name: feedExpirationPolicy
-  display: 'Feed Expiration Policy'
+  display: ''
   additionalinfo: Defines how expiration for an indicator created by the Feed will be managed
   options:
   - never
   - interval
   - indicatorType
   - suddenDeath
-  type: 17
+  type: '17'
   required: false
 - name: feedExpirationInterval
   display: 'Feed Expiration Interval'
-  additionalinfo: 'Defines the expiration date based on the number of days after an indicator is created / updated when the Feed Expiration Policy is set to `interval`'
-  type: 1
+  additionalinfo: ''
+  type: '1'
   required: false
 - defaultvalue: '240'
   display: Feed Fetch Interval
@@ -126,7 +126,7 @@ script:
     - description: The maximum number of indicators to fetch.
       name: limit
     description: Fetch indicators.
-  dockerimage: demisto/python3:3.10.13.84405
+  dockerimage: demisto/python3:3.11.9.107902
   feed: true
   runonce: false
   script: '-'
