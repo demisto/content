@@ -3,13 +3,11 @@ args:
   name: note
   required: true
 - auto: PREDEFINED
-  defaultValue: note tag
   description: The note tag. Use the note entry tag (defined in your instance configuration) to mirror the note to IBM QRadar SOAR.
   name: tags
-  predefined:
-  - note tag
+  required: true
   isArray: true
-comment: Use this script to add a note with a tag (the "Note tag to IBM " defined in the instance configuration) as an entry in XSOAR, which will then be mirrored as a note to an IBM QRadar SOAR incident. This script should be run within an incident.
+comment: Use this script to add a note entry in XSOAR, which will then be mirrored as a note to an IBM QRadar SOAR incident. This script should be run within an incident.
 commonfields:
   id: IbmAddNote
   version: -1

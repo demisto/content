@@ -560,7 +560,32 @@
 				"id": "attachments",
 				"name": "Attachments",
 				"type": "custom",
-				"sections": []
+				"sections": [
+                    {
+                        "h": 4,
+                        "i": "doslr3nm7o-ae2a3c40-6ca2-11ef-82f4-4d3bf40ccefd",
+                        "items": [],
+                        "maxW": 12,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Incident Files",
+                        "query": {
+                            "categories": [
+                                "attachments"
+                            ],
+                            "lastId": "",
+                            "pageSize": 100,
+                            "tags": [],
+                            "users": []
+                        },
+                        "queryType": "warRoomFilter",
+                        "static": false,
+                        "type": "invTimeline",
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    }
+                ]
 			},
 			{
 				"id": "artifacts",

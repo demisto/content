@@ -119,46 +119,72 @@ configuration:
 
 - display: Mirror notes
   name: mirror_notes
+  additionalInfo: Whether incident notes shall be fetched. Disable to reduce fetch times.
   type: 8
   section: Collect
-  additionalInfo: Whether incident notes shall be fetched. Disable to reduce fetch times.
 
 - display: Note tag from IBM Qradar SOAR
   name: note_tag_from_ibm
+  additionalinfo: Add this tag to an entry to mirror it as a note from IBM Qradar SOAR.
   defaultvalue: NOTE FROM IBM
   type: 0
   required: false
-  additionalinfo: Add this tag to an entry to mirror it as a note from IBM Qradar SOAR.
   section: Collect
+  advanced: true
 
 - display: Note tag to IBM QRadar SOAR
   name: note_tag_to_ibm
+  additionalinfo: Add this tag to an entry to mirror it as a note to IBM Qradar SOAR.
   defaultvalue: NOTE FROM XSOAR
   type: 0
   required: false
-  additionalinfo: Add this tag to an entry to mirror it as a note to IBM Qradar SOAR.
   section: Collect
+  advanced: true
 
 - display: Mirror tasks
   name: mirror_tasks
+  additionalInfo: Whether incident tasks shall be fetched. Disable to reduce fetch times.
   type: 8
   section: Collect
-  additionalInfo: Whether incident tasks shall be fetched. Disable to reduce fetch times.
+  advanced: true
 
 - display: Task tag from IBM Qradar SOAR
   name: task_tag_from_ibm
+  additionalinfo: Add this tag to an entry to mirror it as a task from IBM Qradar SOAR.
   defaultvalue: TASK FROM IBM
   type: 0
   required: false
-  additionalinfo: Add this tag to an entry to mirror it as a task from IBM Qradar SOAR.
   section: Collect
 
 - display: Task tag to IBM QRadar SOAR
   name: task_tag_to_ibm
+  additionalinfo: Add this tag to an entry to mirror it as a task to IBM Qradar SOAR.
   defaultvalue: TASK FROM XSOAR
   type: 0
   required: false
-  additionalinfo: Add this tag to an entry to mirror it as a task to IBM Qradar SOAR.
+  section: Collect
+
+- display: Mirror attachments
+  name: mirror_attachments
+  additionalInfo: Whether incident attachments shall be fetched.  # TODO - Decide if really impacts fetch time . Disable to reduce fetch times.
+  type: 8
+  section: Collect
+  advanced: true
+
+- display: Attachment tag from IBM Qradar SOAR
+  name: attachment_tag_from_ibm
+  additionalinfo: Add this tag to an entry to mirror it as a task from IBM Qradar SOAR.
+  defaultvalue: ATTACHMENT FROM IBM
+  type: 0
+  required: false
+  section: Collect
+
+- display: Attachment tag to IBM QRadar SOAR
+  name: attachment_tag_to_ibm
+  additionalinfo: Add this tag to an entry to mirror it as an attachment to IBM Qradar SOAR.
+  defaultvalue: ATTACHMENT FROM XSOAR
+  type: 0
+  required: false
   section: Collect
 
 script:
@@ -592,6 +618,17 @@ script:
     - contextPath: Resilient.Incidents.Attachments.Size
       description: Attachment size.
       type: number
+
+  - name: rs-get-attachment
+    description: Gets incident attachment's name and contents as a file by its ID.
+    arguments:
+    - description: Incident ID to get attachments from.
+      name: incident_id
+      required: true
+    - description: Attachment ID to get.
+      name: attachment_id
+      required: true
+
 
   - name: rs-related-incidents
     description: Gets related incidents.

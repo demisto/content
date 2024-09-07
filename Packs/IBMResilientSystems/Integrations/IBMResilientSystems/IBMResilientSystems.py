@@ -25,7 +25,7 @@ except Exception:
 
 ''' GLOBAL VARS '''
 DEMISTO_PARAMS = demisto.params()
-                  # TODO delete
+# TODO delete
 # DEMISTO_PARAMS =  {
 #                       'proxy': False,
 #                       'server': os.getenv('SERVER'),
@@ -40,7 +40,7 @@ if not DEMISTO_PARAMS['proxy']:
         pass
         # TODO - Bring back
         # if os.environ.get(var):
-            # del os.environ[var]
+        # del os.environ[var]
 
 URL = DEMISTO_PARAMS['server'][:-1] if DEMISTO_PARAMS['server'].endswith('/') else DEMISTO_PARAMS['server']
 # Remove the http/s from the url (It's added automatically later)
@@ -53,10 +53,9 @@ PASSWORD = DEMISTO_PARAMS.get('credentials', {}).get('password')
 API_KEY_ID = DEMISTO_PARAMS.get('credentials_api_key', {}).get('identifier') or DEMISTO_PARAMS.get('api_key_id')
 API_KEY_SECRET = DEMISTO_PARAMS.get('credentials_api_key', {}).get('password') or DEMISTO_PARAMS.get('api_key_secret')
 USE_SSL = not DEMISTO_PARAMS.get('insecure', False)
-
+MAX_FETCH = DEMISTO_PARAMS.get('max_fetch', '1000')
 TIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
-MAX_FETCH = DEMISTO_PARAMS.get('max_fetch', '1000')
 
 INCIDENT_TYPE_DICT = {
     'CommunicationError': 17,
@@ -178,6 +177,7 @@ IBM_QRADAR_INCIDENT_FIELDS = {
 }
 
 """ CONSTANTS """
+FILE_DOWNLOAD_ERROR_MESSAGE = "<html><head><title>Download error</title></head><body>Download error</body></html>"
 SCRIPT_ENTITIES = "entities"
 DEFAULT_RETURN_LEVEL = "full"
 DEFAULT_RETRIES = 1
@@ -498,7 +498,7 @@ def get_mirroring_data() -> dict:
 
     mirror_direction = params.get("mirror_direction")
     demisto.debug(f"get_mirroring_data {mirror_direction=} | {params=} ")
-    mirror_tags = [params.get('note_tag_from_ibm'), params.get('note_tag_to_ibm')]
+    mirror_tags = [params.get('note_tag_from_ibm'), params.get('task_tag_from_ibm'), params.get('attachment_tag_from_ibm')]
     return {
         "mirror_direction": mirror_direction,
         "mirror_instance": demisto.integrationInstance(),
@@ -524,10 +524,8 @@ def process_raw_incident(client: SimpleClient, incident: dict) -> dict:
     if artifacts:
         incident["artifacts"] = artifacts
 
-    # TODO - Configure enabling/disabling attachment fetching for reduced fetch times.
-    attachments = incident_attachments(client, incident_id)
-    if attachments:
-        incident["attachments"] = attachments
+    if DEMISTO_PARAMS.get('mirror_notes'):
+        incident["attachments"] = incident_attachments(client, incident_id)
 
     if isinstance(incident.get("description"), str):
         incident["description"] = incident["description"]
@@ -569,7 +567,7 @@ def resolve_field_value(field: str, raw_value: Any) -> dict:
         return {"text": raw_value}
 
     elif field in ["resolution_summary", "description"]:
-        return {"textarea": {"format": "text", "content": raw_value}}
+        return {"textarea": {"format": "html", "content": raw_value}}
 
     elif field in ["incident_type_ids", "nist_attack_vectors"]:
         return {"ids": raw_value}
@@ -597,7 +595,7 @@ def prepare_incident_update_dto_for_mirror(client: SimpleClient, incident_id: st
         incident_id (str): The ID of the incident to be updated.
         delta (dict): A dictionary containing the fields and their new values to be updated.
     """
-    incident = get_incident(client, incident_id, content_format=True)
+    incident = get_incident(client, incident_id)
     demisto.debug(f"prepare_incident_update_dto_for_mirror {delta=} | {incident=}")
 
     changes = []
@@ -694,6 +692,24 @@ def extract_data_form_other_fields_argument(other_fields, incident, changes):
             }
         )
 
+def get_attachment(client: SimpleClient, incident_id: str, attachment_id: str) -> tuple[str, str]:
+    """
+    Retrieves the name and the contents of an incident's attachment with ID `attachment_id`.
+    """
+    response = client.get(f'/incidents/{incident_id}/attachments/{attachment_id}')
+    demisto.debug(f"get_attachment {response}")
+    if isinstance(response, dict) and 'name' in response:
+        attachment_name = response['name']
+    else:
+        raise DemistoException(f'Could not retrieve a file with ID {attachment_id}')
+
+    response: requests.Response = client.get(f'/incidents/{incident_id}/attachments/{attachment_id}/contents', get_response_object=True)
+    contents = str(response.content)
+    demisto.debug(f"get_attachment {contents}")
+    if FILE_DOWNLOAD_ERROR_MESSAGE in contents:
+        raise DemistoException(f'Could not retrieve a file with ID {attachment_id}')
+
+    return attachment_name, contents
 
 def get_users(client):
     response = client.get('/users')
@@ -715,7 +731,80 @@ def get_tasks(client: SimpleClient, incident_id: str):
     return response
 
 
+def search_incidents(client: SimpleClient, args: dict) -> list | dict:
+    """
+    Search and get IBM QRadar incidents according to filters and pagination parameters.
+    :return: List of IBM QRadar incidents matching the search query.
+    """
+    search_query_data = prepare_search_query_data(args)
+
+    return_level = args.get('return_level', DEFAULT_RETURN_LEVEL)
+    endpoint = f'{SEARCH_INCIDENTS_ENDPOINT}?text_content_output_format=objects_convert_text&return_level={return_level}'
+
+    response = client.post(endpoint, search_query_data)
+    demisto.debug(f'search_incidents {response}')
+    return response['data']
+
+
+def update_incident(client, incident_id, data):
+    response = client.patch('/incidents/' + str(incident_id), data)
+    return response
+
+
+def get_incident(client: SimpleClient, incident_id, content_format=False):
+    url = '/incidents/' + str(incident_id)
+    if content_format:
+        url += '?text_content_output_format=objects_convert_text'
+    response = client.get(url)
+    return response
+
+
+def list_open_incidents(client):
+    response = client.get('/incidents/open')
+    return response
+
+
 ''' COMMAND FUNCTIONS '''
+
+
+def get_incident_command(client, incident_id):
+    incident = get_incident(client, incident_id)
+    wanted_keys = ['create_date', 'discovered_date', 'description', 'due_date', 'id', 'name', 'owner_id',
+                   'phase_id', 'severity_code', 'confirmed', 'employee_involved', 'negative_pr_likely',
+                   'confirmed', 'start_date', 'due_date', 'negative_pr_likely', 'reporter', 'exposure_type_id',
+                   'nist_attack_vectors']
+    pretty_incident = {k: incident[k] for k in wanted_keys if k in incident}
+    if incident['resolution_id']:
+        pretty_incident['resolution'] = RESOLUTION_DICT.get(incident['resolution_id'], incident['resolution_id'])
+    if incident['resolution_summary']:
+        pretty_incident['resolution_summary'] = incident['resolution_summary'].replace('<div>', '').replace('</div>',
+                                                                                                            '')
+    pretty_incident = prettify_incidents(client, [pretty_incident])
+    result_incident = createContext(pretty_incident, id=None, keyTransform=underscoreToCamelCase, removeNull=True)
+    ec = {
+        'Resilient.Incidents(val.Id && val.Id === obj.Id)': result_incident
+    }
+    hr_incident = result_incident[:]
+    if hr_incident[0].get('NistAttackVectors'):
+        nist_vectors_str = ''
+        for vector in hr_incident[0].get('NistAttackVectors', []):
+            nist_vectors_str += vector + '\n'
+        hr_incident[0]['NistAttackVectors'] = nist_vectors_str
+    title = 'IBM QRadar SOAR incident ID ' + str(incident_id)
+    entry = {
+        'Type': entryTypes['note'],
+        'Contents': incident,
+        'ContentsFormat': formats['json'],
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown(title, hr_incident,
+                                         headers=['Id', 'Name', 'Description', 'NistAttackVectors', 'Phase',
+                                                  'Resolution', 'ResolutionSummary', 'Owner',
+                                                  'CreatedDate', 'DateOccurred', 'DiscoveredDate', 'DueDate',
+                                                  'NegativePr', 'Confirmed', 'ExposureType',
+                                                  'Severity', 'Reporter']),
+        'EntryContext': ec
+    }
+    return entry
 
 
 def search_incidents_command(client, args):
@@ -747,21 +836,6 @@ def search_incidents_command(client, args):
         return entry
     else:
         return 'No results found.'
-
-
-def search_incidents(client: SimpleClient, args: dict) -> list | dict:
-    """
-    Search and get IBM QRadar incidents according to filters and pagination parameters.
-    :return: List of IBM QRadar incidents matching the search query.
-    """
-    search_query_data = prepare_search_query_data(args)
-
-    return_level = args.get('return_level', DEFAULT_RETURN_LEVEL)
-    endpoint = f'{SEARCH_INCIDENTS_ENDPOINT}?text_content_output_format=objects_convert_text&return_level={return_level}'
-
-    response = client.post(endpoint, search_query_data)
-    demisto.debug(f'search_incidents {response}')
-    return response['data']
 
 
 def update_incident_command(client, args):
@@ -839,64 +913,6 @@ def update_incident_command(client, args):
         return f'Incident {incident_id} was updated successfully.'
     else:  # pragma: no cover
         return f'Failed to update incident {incident_id}'
-
-
-def update_incident(client, incident_id, data):
-    response = client.patch('/incidents/' + str(incident_id), data)
-    return response
-
-
-def get_incident_command(client, incident_id):
-    incident = get_incident(client, incident_id)
-    wanted_keys = ['create_date', 'discovered_date', 'description', 'due_date', 'id', 'name', 'owner_id',
-                   'phase_id', 'severity_code', 'confirmed', 'employee_involved', 'negative_pr_likely',
-                   'confirmed', 'start_date', 'due_date', 'negative_pr_likely', 'reporter', 'exposure_type_id',
-                   'nist_attack_vectors']
-    pretty_incident = {k: incident[k] for k in wanted_keys if k in incident}
-    if incident['resolution_id']:
-        pretty_incident['resolution'] = RESOLUTION_DICT.get(incident['resolution_id'], incident['resolution_id'])
-    if incident['resolution_summary']:
-        pretty_incident['resolution_summary'] = incident['resolution_summary'].replace('<div>', '').replace('</div>',
-                                                                                                            '')
-    pretty_incident = prettify_incidents(client, [pretty_incident])
-    result_incident = createContext(pretty_incident, id=None, keyTransform=underscoreToCamelCase, removeNull=True)
-    ec = {
-        'Resilient.Incidents(val.Id && val.Id === obj.Id)': result_incident
-    }
-    hr_incident = result_incident[:]
-    if hr_incident[0].get('NistAttackVectors'):
-        nist_vectors_str = ''
-        for vector in hr_incident[0].get('NistAttackVectors', []):
-            nist_vectors_str += vector + '\n'
-        hr_incident[0]['NistAttackVectors'] = nist_vectors_str
-    title = 'IBM QRadar SOAR incident ID ' + str(incident_id)
-    entry = {
-        'Type': entryTypes['note'],
-        'Contents': incident,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(title, hr_incident,
-                                         headers=['Id', 'Name', 'Description', 'NistAttackVectors', 'Phase',
-                                                  'Resolution', 'ResolutionSummary', 'Owner',
-                                                  'CreatedDate', 'DateOccurred', 'DiscoveredDate', 'DueDate',
-                                                  'NegativePr', 'Confirmed', 'ExposureType',
-                                                  'Severity', 'Reporter']),
-        'EntryContext': ec
-    }
-    return entry
-
-
-def get_incident(client: SimpleClient, incident_id, content_format=False):
-    url = '/incidents/' + str(incident_id)
-    if content_format:
-        url += '?text_content_output_format=objects_convert_text'
-    response = client.get(url)
-    return response
-
-
-def list_open_incidents(client):
-    response = client.get('/incidents/open')
-    return response
 
 
 def get_members_command(client, incident_id):
@@ -1204,6 +1220,27 @@ def incident_attachments(client, incident_id):
     return response
 
 
+def upload_incident_attachment(client: SimpleClient, incident_id: str, entry_id: str):
+    """
+        Uploads a file from XSOAR to the IBM QRadar SOAR incident with ID `incident_id`.
+    """
+    try:
+        file_path_obj = demisto.getFilePath(entry_id)
+    except ValueError:
+        return CommandResults(
+            entry_type=EntryType.ERROR,
+            readable_output=f"Could not find a file with entry ID: {entry_id}",
+        )
+
+    file_path, file_name = file_path_obj.get("path"), file_path_obj.get("name")
+
+    response = client.post_attachment(
+        uri=f"/incidents/{incident_id}/attachments",
+        filepath=file_path,
+        filename=file_name,
+    )
+    demisto.debug(f"upload_incident_attachment_command {response=}")
+
 def get_incident_notes(client: SimpleClient, incident_id: str) -> list:
     response = client.get(f"/incidents/{incident_id}/comments?text_content_output_format=objects_convert_text")
     return response
@@ -1448,32 +1485,26 @@ def list_scripts_command(client: SimpleClient, args: dict) -> CommandResults:
     )
 
 
+def get_attachment_command(client: SimpleClient, args: dict) -> dict:
+    """
+    Retrieves an attachment with ID: `args['attachment_id']` from IBM QRadar SOAR.
+    """
+    name, contents = get_attachment(client, args.get('incident_id'), args.get('attachment_id'))
+    demisto.debug(f"get_attachments_command {name=}")
+    return fileResult(name, contents)
+
+
 def upload_incident_attachment_command(
-    client: SimpleClient, args: dict
+    client: SimpleClient, args: dict, attachment_tag_to_ibm: str
 ) -> CommandResults:
     """
     Uploads a file from XSOAR to an IBM QRadar SOAR incident.
     """
     incident_id = args.get("incident_id")
     entry_id = args.get("entry_id")
-    try:
-        file_path_obj = demisto.getFilePath(entry_id)
-    except ValueError:
-        return CommandResults(
-            entry_type=EntryType.ERROR,
-            readable_output=f"Could not find a file with entry ID: {entry_id}",
-        )
-
-    file_path, file_name = file_path_obj.get("path"), file_path_obj.get("name")
-
-    response = client.post_attachment(
-        uri=f"/incidents/{incident_id}/attachments",
-        filepath=file_path,
-        filename=file_name,
-    )
-    demisto.debug(f"upload_incident_attachment_command {response=}")
+    upload_incident_attachment(client, incident_id, entry_id)
     return CommandResults(
-        readable_output=f"File was uploaded successfully to {incident_id}."
+        readable_output=f"File was uploaded successfully to {incident_id}.",
     )
 
 
@@ -1773,6 +1804,9 @@ def get_remote_data_command(client: SimpleClient,
     incident_id = remote_args.remote_incident_id
     demisto.debug(f"get-remote-data {incident_id=}")
 
+    # TODO - Check if remote changes were actually changes from XSOAR - and if so, skip the update
+    # get_incident_newsfeed(incident_id)
+
     incident = get_incident(client, incident_id, content_format=True)
     incident = process_raw_incident(client, incident)
     demisto.debug(f"get-remote-data {incident=}")
@@ -1782,10 +1816,11 @@ def get_remote_data_command(client: SimpleClient,
     note_entries = incident["notes"]
     for note_entry in note_entries:
         note_modify_date_timestamp = note_entry.get('modify_date')
-        demisto.debug(f'get_remote_data_command {type(note_modify_date_timestamp)=} | {note_modify_date_timestamp=} | {type(last_update_timestamp)=} | {last_update_timestamp=}')
+        demisto.debug(
+            f'get_remote_data_command {type(note_modify_date_timestamp)=} | {note_modify_date_timestamp=} | {type(last_update_timestamp)=} | {last_update_timestamp=}')
         if (note_tag_to_ibm not in note_entry.get('text')
-                and note_modify_date_timestamp
-                and note_modify_date_timestamp >= last_update_timestamp):
+            and note_modify_date_timestamp
+            and note_modify_date_timestamp >= last_update_timestamp):
             entries.append({
                 'ContentsFormat': EntryFormat.TEXT,
                 'Type': EntryType.NOTE,
@@ -1821,7 +1856,7 @@ def get_remote_data_command(client: SimpleClient,
     return GetRemoteDataResponse(mirrored_object=incident, entries=entries)
 
 
-def update_remote_system_command(client: SimpleClient, args: dict, note_tag_to_ibm: str) -> str:
+def update_remote_system_command(client: SimpleClient, args: dict, note_tag_to_ibm: str, attachment_tag_to_ibm: str) -> str:
     remote_args = UpdateRemoteSystemArgs(args)
     incident_id = remote_args.remote_incident_id
     demisto.debug(
@@ -1839,12 +1874,14 @@ def update_remote_system_command(client: SimpleClient, args: dict, note_tag_to_i
     if entries:
         for entry in entries:
             demisto.debug(f'update_remote_system_command {entry=}')
+            entry_id = entry.get('id', '')
             entry_type = entry.get('type', '')
             entry_tags = entry.get('tags', [])
+            demisto.debug(f'update_remote_system {entry_id=} | {entry_type=} | {entry_tags=}')
             if entry_type == EntryType.NOTE and note_tag_to_ibm in entry_tags:
-                demisto.debug(f'update_remote_system {entry_type=} | {note_tag_to_ibm=}')
                 add_note(client, incident_id, entry.get('Contents'))
-
+            elif entry_type == EntryType.FILE and attachment_tag_to_ibm in entry_tags:
+                upload_incident_attachment(client, incident_id, entry_id)
     return incident_id
 
 
@@ -1930,11 +1967,12 @@ def main():  # pragma: no cover
     if task_tag_to_ibm == task_tag_from_ibm:
         raise DemistoException('Task Entry Tag to IBM and Task Entry Tag from IBM cannot have the same value.')
 
-    # attachment_tag_to_ibm = params.get('attachment_tag_to_ibm')
-    # attachment_tag_from_ibm = params.get('attachment_tag_from_ibm')
-    # if attachment_tag_to_ibm == attachment_tag_from_ibm:
-    #     raise DemistoException(
-    #         'Attachment Entry Tag to IBM and Attachment Entry Tag from IBM cannot have the same value.')
+    attachment_tag_to_ibm = params.get('attachment_tag_to_ibm')
+    attachment_tag_from_ibm = params.get('attachment_tag_from_ibm')
+    demisto.debug(f"nonsense {attachment_tag_from_ibm=} | {attachment_tag_to_ibm=}")
+    if attachment_tag_from_ibm == attachment_tag_to_ibm:
+        raise DemistoException(
+            'Attachment Entry Tag to IBM and Attachment Entry Tag from IBM cannot have the same value.')
 
     try:
         command = demisto.command()
@@ -1969,6 +2007,10 @@ def main():  # pragma: no cover
             return_results(incident_artifacts_command(client, args["incident-id"]))
         elif command == "rs-incident-attachments":
             return_results(incident_attachments_command(client, args["incident-id"]))
+        elif command == "rs-get-attachment":
+            return_results(get_attachment_command(client, args))
+        elif command == "rs-upload-incident-attachment":
+            return_results(upload_incident_attachment_command(client, args, attachment_tag_to_ibm))
         elif command == "rs-related-incidents":
             return_results(related_incidents_command(client, args["incident-id"]))
         elif command == "rs-add-note":
@@ -1985,8 +2027,7 @@ def main():  # pragma: no cover
             )
         elif command == "rs-list-scripts":
             return_results(list_scripts_command(client, args))
-        elif command == "rs-upload-incident-attachment":
-            return_results(upload_incident_attachment_command(client, args))
+
         elif command == "rs-delete-incidents":
             return_results(delete_incidents_command(client, args))
         elif command == "rs-list-incident-notes":
@@ -2014,7 +2055,7 @@ def main():  # pragma: no cover
         elif command == "get-remote-data":
             return_results(get_remote_data_command(client, args, note_tag_to_ibm, note_tag_from_ibm, task_tag_from_ibm))
         elif command == "update-remote-system":
-            return_results(update_remote_system_command(client, args, note_tag_to_ibm))
+            return_results(update_remote_system_command(client, args, note_tag_to_ibm, attachment_tag_to_ibm))
         elif command == "get-mapping-fields":
             return_results(get_mapping_fields_command())
     except Exception as e:

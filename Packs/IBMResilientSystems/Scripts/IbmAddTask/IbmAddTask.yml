@@ -44,7 +44,7 @@ args:
   - Complete
 
 
-comment: Use this script to add a task with a tag (the "Task tag to IBM" defined in the instance configuration) as an entry in XSOAR, which will then be mirrored as a task to an IBM QRadar SOAR incident. This script should be run within an incident.
+comment: Use this script to add a task to an IBM QRadar SOAR incident.
 commonfields:
   id: IbmAddTask
   version: -1
