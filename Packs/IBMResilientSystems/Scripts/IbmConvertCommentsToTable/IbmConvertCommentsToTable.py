@@ -10,6 +10,7 @@ def convert_to_table():
                          "from context but returned None")
     demisto.debug(f'ibm_convert_comments_to_table {incident=}')
     fields = incident.get('CustomFields', [])
+    mirror_tags = incident.get('dbotMirrorTags', [])
 
     if fields:
         ibm_qradar_notes = fields.get('ibmqradarnotes', [])
@@ -18,8 +19,14 @@ def convert_to_table():
             comment_entry = {
                 'Comment': parsed_data.get('text', {}).get('content', ''),
                 'Created at': parsed_data.get('create_date', ''),
-                'Created by': parsed_data.get('created_by', '')
-            }
+                'Created by': parsed_data.get('created_by', ''),
+                'tags': []}
+            # Extract mirror tags from message content
+            for tag in mirror_tags:
+                if tag in comment_entry['Comment']:
+                    comment_entry['Comment'] = comment_entry['Comment'].replace(tag, '')
+                    comment_entry['tags'].append(tag)
+
             comments.append(comment_entry)
     if not comments:
         return CommandResults(readable_output='No comments were found in the notable')

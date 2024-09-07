@@ -56,7 +56,6 @@ USE_SSL = not DEMISTO_PARAMS.get('insecure', False)
 MAX_FETCH = DEMISTO_PARAMS.get('max_fetch', '1000')
 TIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
-
 INCIDENT_TYPE_DICT = {
     'CommunicationError': 17,
     'DenialOfService': 21,
@@ -469,7 +468,13 @@ def prepare_search_query_data(args: dict) -> dict:
     data = {
         'filters': [{
             'conditions': conditions
-        }]
+        }],
+        'sorts': [
+            {
+                "field_name": "date-created-after",
+
+            }
+        ]
     }
 
     # Pagination mechanism.
@@ -498,7 +503,14 @@ def get_mirroring_data() -> dict:
 
     mirror_direction = params.get("mirror_direction")
     demisto.debug(f"get_mirroring_data {mirror_direction=} | {params=} ")
-    mirror_tags = [params.get('note_tag_from_ibm'), params.get('task_tag_from_ibm'), params.get('attachment_tag_from_ibm')]
+    mirror_tags = [
+        params.get('note_tag_from_ibm'),
+        params.get('note_tag_to_ibm'),
+        params.get('task_tag_from_ibm'),
+        params.get('task_tag_to_ibm'),
+        params.get('attachment_tag_from_ibm'),
+        params.get('attachment_tag_to_ibm')
+    ]
     return {
         "mirror_direction": mirror_direction,
         "mirror_instance": demisto.integrationInstance(),
@@ -692,6 +704,7 @@ def extract_data_form_other_fields_argument(other_fields, incident, changes):
             }
         )
 
+
 def get_attachment(client: SimpleClient, incident_id: str, attachment_id: str) -> tuple[str, str]:
     """
     Retrieves the name and the contents of an incident's attachment with ID `attachment_id`.
@@ -703,13 +716,15 @@ def get_attachment(client: SimpleClient, incident_id: str, attachment_id: str) -
     else:
         raise DemistoException(f'Could not retrieve a file with ID {attachment_id}')
 
-    response: requests.Response = client.get(f'/incidents/{incident_id}/attachments/{attachment_id}/contents', get_response_object=True)
+    response: requests.Response = client.get(f'/incidents/{incident_id}/attachments/{attachment_id}/contents',
+                                             get_response_object=True)
     contents = str(response.content)
     demisto.debug(f"get_attachment {contents}")
     if FILE_DOWNLOAD_ERROR_MESSAGE in contents:
         raise DemistoException(f'Could not retrieve a file with ID {attachment_id}')
 
     return attachment_name, contents
+
 
 def get_users(client):
     response = client.get('/users')
@@ -1241,6 +1256,7 @@ def upload_incident_attachment(client: SimpleClient, incident_id: str, entry_id:
     )
     demisto.debug(f"upload_incident_attachment_command {response=}")
 
+
 def get_incident_notes(client: SimpleClient, incident_id: str) -> list:
     response = client.get(f"/incidents/{incident_id}/comments?text_content_output_format=objects_convert_text")
     return response
@@ -1314,7 +1330,7 @@ def get_scripts(client: SimpleClient, script_id: str) -> dict[str, Any]:
     return response
 
 
-def fetch_incidents(client, first_fetch_time: str):
+def fetch_incidents(client, first_fetch_time: str, fetch_closed: bool):
     last_fetched_timestamp = demisto.getLastRun() and demisto.getLastRun().get('time')
     demisto.debug(f'fetch_incidents {last_fetched_timestamp=}')
 
@@ -1331,8 +1347,9 @@ def fetch_incidents(client, first_fetch_time: str):
             [_incident.get("create_date") for _incident in resilient_incidents]
         )
         for incident in resilient_incidents:
-            # Only fetching non-resolved incidents.
-            if not incident.get('end_date') and incident.get('plan_status') == 'A':  # 'A' stands for 'Active'
+
+            # Only fetching non-resolved incidents if `fetch_closed` is disabled.
+            if fetch_closed or (not incident.get('end_date') and incident.get('plan_status') == 'A'):  # 'A' stands for 'Active'
                 demisto.debug(f'fetch_incidents {incident=}')
                 incident = process_raw_incident(client, incident)
                 demisto_incident = dict()
@@ -1342,6 +1359,7 @@ def fetch_incidents(client, first_fetch_time: str):
                 demisto_incidents.append(demisto_incident)
 
     # Increasing by one millisecond in order not to fetch the same incident in the next run.
+
     demisto.setLastRun({'time': last_incident_creation_time + 1})
     demisto.incidents(demisto_incidents)
 
@@ -1414,20 +1432,17 @@ def add_custom_task(client: SimpleClient,
     return client.post(uri=f"/incidents/{incident_id}/tasks", payload=task_dto)
 
 
-def add_note_command(client, incident_id, note):
-    response = add_note(client, str(incident_id), note)
-    ec = {
-        'Resilient.incidentNote(val.Id && val.Id === obj.Id)': response
-    }
-    entry = {
-        'Type': entryTypes['note'],
-        'Contents': response,
-        'ContentsFormat': formats['json'],
-        'EntryContext': ec,
-        'ReadableContentsFormat': formats['text'],
-        'HumanReadable': f'The note was added successfully to incident {incident_id}'
-    }
-    return entry
+def add_note_command(client, incident_id, note: str, note_tag_to_ibm: str):
+    response = add_note(client, str(incident_id), '\n'.join((note, note_tag_to_ibm)))
+
+    return CommandResults(
+        mark_as_note=True,
+        entry_type=EntryType.NOTE,
+        tags=[note_tag_to_ibm],
+        outputs_prefix="Resilient.incidentNote",
+        outputs=response,
+        readable_output=f'The note was added successfully to incident {incident_id}\n\n{note} '
+    )
 
 
 def add_artifact_command(client, incident_id, artifact_type, artifact_value, artifact_description):
@@ -1504,7 +1519,7 @@ def upload_incident_attachment_command(
     entry_id = args.get("entry_id")
     upload_incident_attachment(client, incident_id, entry_id)
     return CommandResults(
-        readable_output=f"File was uploaded successfully to {incident_id}.",
+        readable_output=f"File was uploaded successfully to {incident_id}."
     )
 
 
@@ -1802,25 +1817,26 @@ def get_remote_data_command(client: SimpleClient,
     last_update_timestamp = to_timestamp(last_update_iso)
 
     incident_id = remote_args.remote_incident_id
-    demisto.debug(f"get-remote-data {incident_id=}")
+    demisto.debug(f"get_remote_data_command {incident_id=}")
 
     # TODO - Check if remote changes were actually changes from XSOAR - and if so, skip the update
     # get_incident_newsfeed(incident_id)
 
     incident = get_incident(client, incident_id, content_format=True)
     incident = process_raw_incident(client, incident)
-    demisto.debug(f"get-remote-data {incident=}")
+    demisto.debug(f"get_remote_data_command {incident=}")
     entries = []
 
     # Create note entries.
     note_entries = incident["notes"]
     for note_entry in note_entries:
+        demisto.debug(f'get_remote_data_command {note_entry=}')
         note_modify_date_timestamp = note_entry.get('modify_date')
         demisto.debug(
             f'get_remote_data_command {type(note_modify_date_timestamp)=} | {note_modify_date_timestamp=} | {type(last_update_timestamp)=} | {last_update_timestamp=}')
-        if (note_tag_to_ibm not in note_entry.get('text')
-            and note_modify_date_timestamp
-            and note_modify_date_timestamp >= last_update_timestamp):
+        if (note_tag_to_ibm not in note_entry.get('text').get('content')
+                and note_modify_date_timestamp
+                and note_modify_date_timestamp >= last_update_timestamp):
             entries.append({
                 'ContentsFormat': EntryFormat.TEXT,
                 'Type': EntryType.NOTE,
@@ -1982,7 +1998,7 @@ def main():  # pragma: no cover
             # Checks if there is an authenticated session
             return_results(test_module(client, fetch_time))
         elif command == "fetch-incidents":
-            fetch_incidents(client, fetch_time)
+            fetch_incidents(client, fetch_time, params.get('fetch_closed', False))
         elif command == "rs-search-incidents":
             return_results(search_incidents_command(client, args))
         elif command == "rs-update-incident":
@@ -2014,7 +2030,7 @@ def main():  # pragma: no cover
         elif command == "rs-related-incidents":
             return_results(related_incidents_command(client, args["incident-id"]))
         elif command == "rs-add-note":
-            return_results(add_note_command(client, args["incident-id"], args["note"]))
+            return_results(add_note_command(client, args["incident-id"], args["note"], note_tag_to_ibm))
         elif command == "rs-add-artifact":
             demisto.results(
                 add_artifact_command(

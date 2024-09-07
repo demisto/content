@@ -12,4 +12,9 @@ ___________
 
 Default classifiers & mappers are provided for incoming and outgoing incidents.
 
-It's important to configure the desired mirroring direction and pick whether to close mirrored incidents on both sides for an improved experience.
+It's important to configure the desired mirroring direction and pick whether to close mirrored incidents (Within the advanced settings) on both sides for an improved experience.
+
+Additionally, incident **notes**, **tasks**, **attachments** and **artifacts** are available for mirroring as well, make sure to check the corresponding check-box in the 'Collect' section.
+Beware, fetching this extra data pieces is time-consuming, and increases fetch times (depends on the amount of extra data to be fetched). 
+
+There are editable tags, that allow distinguishing between incoming and outgoing notes, tasks, attachments and artifacts.

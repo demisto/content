@@ -75,6 +75,13 @@ configuration:
   required: false
   section: Collect
 
+- display: Fetch closed incidents
+  name: fetch_closed
+  type: 8
+  required: false
+  defaultvalue:
+  section: Collect
+
 - name: fetch_time
   display: 'First fetch timestamp (YYYY-MM-DDTHH:MM:SSZ). For example: 2020-02-02T19:00:00Z'
   type: 0
@@ -146,7 +153,6 @@ configuration:
   additionalInfo: Whether incident tasks shall be fetched. Disable to reduce fetch times.
   type: 8
   section: Collect
-  advanced: true
 
 - display: Task tag from IBM Qradar SOAR
   name: task_tag_from_ibm
@@ -155,6 +161,7 @@ configuration:
   type: 0
   required: false
   section: Collect
+  advanced: true
 
 - display: Task tag to IBM QRadar SOAR
   name: task_tag_to_ibm
@@ -163,13 +170,13 @@ configuration:
   type: 0
   required: false
   section: Collect
+  advanced: true
 
 - display: Mirror attachments
   name: mirror_attachments
   additionalInfo: Whether incident attachments shall be fetched.  # TODO - Decide if really impacts fetch time . Disable to reduce fetch times.
   type: 8
   section: Collect
-  advanced: true
 
 - display: Attachment tag from IBM Qradar SOAR
   name: attachment_tag_from_ibm
@@ -178,6 +185,7 @@ configuration:
   type: 0
   required: false
   section: Collect
+  advanced: true
 
 - display: Attachment tag to IBM QRadar SOAR
   name: attachment_tag_to_ibm
@@ -186,6 +194,7 @@ configuration:
   type: 0
   required: false
   section: Collect
+  advanced: true
 
 script:
   commands:

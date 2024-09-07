@@ -79,12 +79,21 @@
 								"sectionItemType": "field",
 								"startCol": 0
 							},
-                            {
+							{
+								"endCol": 2,
+								"fieldId": "ibmqradarphase",
+								"height": 26,
+								"id": "eefcaa70-6d1d-11ef-9e38-4186d90d9e91",
+								"index": 6,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
 								"endCol": 2,
 								"fieldId": "ibmqradarresolution",
-								"height": 53,
+								"height": 26,
 								"id": "f01e9ad0-4a63-11ef-a450-29f69179b85b",
-								"index": 6,
+								"index": 7,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -92,9 +101,9 @@
 								"dropEffect": "move",
 								"endCol": 2,
 								"fieldId": "ibmqradarresolutionsummary",
-								"height": 106,
+								"height": 52,
 								"id": "e0066d30-4a63-11ef-a450-29f69179b85b",
-								"index": 7,
+								"index": 8,
 								"listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
 								"sectionItemType": "field",
 								"startCol": 0
@@ -104,7 +113,7 @@
 								"fieldId": "owner",
 								"height": 26,
 								"id": "dd227990-62ed-11ef-9c1f-a7d53581a093",
-								"index": 8,
+								"index": 9,
 								"sectionItemType": "field",
 								"startCol": 0
 							}
@@ -116,34 +125,6 @@
 						"w": 1,
 						"x": 0,
 						"y": 0
-					},
-					{
-						"displayType": "ROW",
-						"h": 2,
-						"i": "caseinfoid-4a31afa0-98ba-11e9-a519-93a53c759fe0",
-						"maxW": 3,
-						"moved": false,
-						"name": "Evidence",
-						"static": false,
-						"type": "evidence",
-						"w": 1,
-						"x": 2,
-						"y": 6
-					},
-					{
-						"displayType": "ROW",
-						"h": 2,
-						"i": "caseinfoid-7ce69dd0-a07f-11e9-936c-5395a1acf11e",
-						"maxW": 3,
-						"moved": false,
-						"name": "Indicators",
-						"query": "",
-						"queryType": "input",
-						"static": false,
-						"type": "indicators",
-						"w": 3,
-						"x": 0,
-						"y": 8
 					},
 					{
 						"displayType": "CARD",
@@ -201,12 +182,12 @@
 						"name": "Timeline Information",
 						"static": false,
 						"w": 1,
-						"x": 1,
-						"y": 0
+						"x": 0,
+						"y": 4
 					},
 					{
 						"displayType": "ROW",
-						"h": 2,
+						"h": 1,
 						"i": "caseinfoid-88e6bf70-a0b1-11e9-b27f-13ae1773d289",
 						"isVisible": true,
 						"items": [
@@ -246,7 +227,7 @@
 						"static": false,
 						"w": 1,
 						"x": 0,
-						"y": 6
+						"y": 3
 					},
 					{
 						"displayType": "CARD",
@@ -335,20 +316,22 @@
 								"startCol": 0
 							},
 							{
-								"endCol": 2,
-								"fieldId": "displayname",
-								"height": 26,
-								"id": "217fb510-4a63-11ef-a450-29f69179b85b",
-								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
+								"dropEffect": "move",
 								"endCol": 2,
 								"fieldId": "department",
 								"height": 26,
 								"id": "435f9510-4a63-11ef-a450-29f69179b85b",
 								"index": 1,
+								"listId": "caseinfoid-d20220e0-4a62-11ef-a450-29f69179b85b",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "displayname",
+								"height": 26,
+								"id": "217fb510-4a63-11ef-a450-29f69179b85b",
+								"index": 2,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -357,7 +340,7 @@
 								"fieldId": "firstname",
 								"height": 26,
 								"id": "0e98b000-4a63-11ef-a450-29f69179b85b",
-								"index": 2,
+								"index": 3,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -366,7 +349,7 @@
 								"fieldId": "lastname",
 								"height": 26,
 								"id": "12eca0d0-4a63-11ef-a450-29f69179b85b",
-								"index": 3,
+								"index": 4,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -375,7 +358,7 @@
 								"fieldId": "email",
 								"height": 26,
 								"id": "25d309a0-4a63-11ef-a450-29f69179b85b",
-								"index": 4,
+								"index": 5,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -384,7 +367,7 @@
 								"fieldId": "phonenumber",
 								"height": 26,
 								"id": "29825600-4a63-11ef-a450-29f69179b85b",
-								"index": 5,
+								"index": 6,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -394,7 +377,7 @@
 								"fieldId": "mobilephone",
 								"height": 26,
 								"id": "32bd4fe0-4a63-11ef-a450-29f69179b85b",
-								"index": 6,
+								"index": 7,
 								"listId": "caseinfoid-d20220e0-4a62-11ef-a450-29f69179b85b",
 								"sectionItemType": "field",
 								"startCol": 0
@@ -404,7 +387,7 @@
 								"fieldId": "streetaddress",
 								"height": 26,
 								"id": "387f2890-4a63-11ef-a450-29f69179b85b",
-								"index": 7,
+								"index": 8,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -413,7 +396,7 @@
 								"fieldId": "city",
 								"height": 26,
 								"id": "3d603e30-4a63-11ef-a450-29f69179b85b",
-								"index": 8,
+								"index": 9,
 								"sectionItemType": "field",
 								"startCol": 0
 							}
@@ -424,174 +407,266 @@
 						"name": "Reporter Details",
 						"static": false,
 						"w": 1,
-						"x": 0,
+						"x": 1,
+						"y": 0
+					},
+					{
+						"displayType": "ROW",
+						"h": 3,
+						"hideName": false,
+						"i": "caseinfoid-2c345b90-6d1e-11ef-9e38-4186d90d9e91",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "ibmqradarcriminalactivity",
+								"height": 26,
+								"id": "3d356290-6d1e-11ef-9e38-4186d90d9e91",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "ibmqradarexposuretype",
+								"height": 26,
+								"id": "40b8e400-6d1e-11ef-9e38-4186d90d9e91",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "ibmqradarnegativepr",
+								"height": 26,
+								"id": "456729d0-6d1e-11ef-9e38-4186d90d9e91",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Implications",
+						"static": false,
+						"w": 1,
+						"x": 1,
 						"y": 3
 					}
-                ],
+				],
 				"type": "custom"
 			},
-            {
+			{
 				"id": "notes",
 				"name": "Notes",
-				"type": "custom",
 				"sections": [
-                    {
-                        "displayType": "ROW",
-                        "h": 1,
-                        "hideName": false,
-                        "i": "add-note",
-                        "items": [
-                            {
-                                "args": {
-                                    "tags": {
-                                        "simple": "",
-                                        "userMarkedRequired": true
-                                    }
-                                },
-                                "buttonClass": "warning",
-                                "endCol": 2,
-                                "fieldId": "",
-                                "height": 22,
-                                "id": "Press to add a note to IBM QRadar SOAR incident",
-                                "index": 0,
-                                "name": "Press to add a note to IBM QRadar SOAR incident",
-                                "scriptId": "IbmAddNote",
-                                "sectionItemType": "button",
-                                "startCol": 0
-                            }
-                        ],
-                        "maxH": null,
-                        "maxW": 4,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "Add note",
-                        "static": false,
-                        "w": 3,
-                        "x": 2,
-                        "y": 2
-                    },
-                    {
-                        "h": 3,
-                        "i": "incident-notes",
-                        "items": [],
-                        "maxH": null,
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "IBM QRadar SOAR Notes",
-                        "query": "IbmConvertCommentsToTable",
-                        "queryType": "script",
-                        "static": false,
-                        "type": "dynamic",
-                        "w": 3,
-                        "x": 0,
-                        "y": 3
-                    }
-
-                ]
+					{
+						"displayType": "ROW",
+						"h": 1,
+						"hideName": false,
+						"i": "notes-add-note",
+						"items": [
+							{
+								"args": {
+									"tags": {
+										"simple": "",
+										"userMarkedRequired": true
+									}
+								},
+								"buttonClass": null,
+								"dropEffect": "move",
+								"endCol": 6,
+								"fieldId": "",
+								"height": 44,
+								"hexColor": "#ebb963",
+								"id": "Press to add a note to IBM QRadar SOAR incident",
+								"index": 0,
+								"listId": "notes-add-note",
+								"name": "Press to add a note to IBM QRadar SOAR incident",
+								"scriptId": "IbmAddNote",
+								"sectionItemType": "button",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Add note",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 0
+					},
+					{
+						"h": 4,
+						"i": "notes-incident-notes",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "IBM QRadar SOAR Notes",
+						"query": "IbmConvertCommentsToTable",
+						"queryType": "script",
+						"static": false,
+						"type": "dynamic",
+						"w": 2,
+						"x": 1,
+						"y": 0
+					},
+					{
+						"h": 3,
+						"i": "notes-92ca4270-6d1e-11ef-9e38-4186d90d9e91",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "New Notes",
+						"static": false,
+						"type": "notes",
+						"w": 1,
+						"x": 0,
+						"y": 1
+					}
+				],
+				"type": "custom"
 			},
 			{
 				"id": "tasks",
 				"name": "Tasks",
-				"type": "custom",
 				"sections": [
-                    {
-                        "displayType": "ROW",
-                        "h": 1,
-                        "hideName": false,
-                        "i": "add-task",
-                        "items": [
-                            {
-                                "args": {
-                                    "phase": {
-                                        "simple": "",
-                                        "userMarkedRequired": true
-                                    },
-                                    "due_date": {
-                                        "simple": "",
-                                        "userMarkedRequired": true
-                                    },
-                                    "owner_id": {
-                                        "simple": ""
-                                    }
-                                },
-                                "buttonClass": "success",
-                                "endCol": 2,
-                                "fieldId": "",
-                                "height": 22,
-                                "id": "Press to add a task to the IBM QRadar SOAR incident",
-                                "index": 0,
-                                "name": "Press to add a task to the IBM QRadar SOAR incident",
-                                "scriptId": "IbmAddTask",
-                                "sectionItemType": "button",
-                                "startCol": 0
-                            }
-                        ],
-                        "maxH": null,
-                        "maxW": 4,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "Add task",
-                        "static": false,
-                        "w": 3,
-                        "x": 2,
-                        "y": 2
-                    },
-                    {
-                        "h": 6,
-                        "i": "incident-tasks",
-                        "items": [],
-                        "maxH": null,
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "IBM QRadar SOAR Tasks",
-                        "query": "IbmConvertTasksToTable",
-                        "queryType": "script",
-                        "static": false,
-                        "type": "dynamic",
-                        "w": 3,
-                        "x": 0,
-                        "y": 3
-                    }
-                ]
+					{
+						"displayType": "ROW",
+						"h": 1,
+						"hideName": false,
+						"i": "tasks-add-task",
+						"items": [
+							{
+								"args": {
+									"due_date": {
+										"simple": "",
+										"userMarkedRequired": true
+									},
+									"phase": {
+										"simple": "",
+										"userMarkedRequired": true
+									}
+								},
+								"buttonClass": null,
+								"endCol": 4,
+								"fieldId": "",
+								"height": 44,
+								"hexColor": "#3197da",
+								"id": "Press to add a task to the IBM QRadar SOAR incident",
+								"index": 0,
+								"name": "Press to add a task to the IBM QRadar SOAR incident",
+								"scriptId": "IbmAddTask",
+								"sectionItemType": "button",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Add task",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 0
+					},
+					{
+						"h": 6,
+						"i": "tasks-incident-tasks",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "IBM QRadar SOAR Tasks",
+						"query": "IbmConvertTasksToTable",
+						"queryType": "script",
+						"static": false,
+						"type": "dynamic",
+						"w": 2,
+						"x": 1,
+						"y": 0
+					},
+					{
+						"h": 5,
+						"i": "tasks-f13bcf90-6d1e-11ef-9e38-4186d90d9e91",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "To-Do Tasks",
+						"query": null,
+						"static": false,
+						"type": "todoTasks",
+						"w": 1,
+						"x": 0,
+						"y": 1
+					}
+				],
+				"type": "custom"
 			},
 			{
 				"id": "attachments",
-				"name": "Attachments",
-				"type": "custom",
+				"name": "Attachments \u0026 Artifacts",
 				"sections": [
-                    {
-                        "h": 4,
-                        "i": "doslr3nm7o-ae2a3c40-6ca2-11ef-82f4-4d3bf40ccefd",
-                        "items": [],
-                        "maxW": 12,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "Incident Files",
-                        "query": {
-                            "categories": [
-                                "attachments"
-                            ],
-                            "lastId": "",
-                            "pageSize": 100,
-                            "tags": [],
-                            "users": []
-                        },
-                        "queryType": "warRoomFilter",
-                        "static": false,
-                        "type": "invTimeline",
-                        "w": 1,
-                        "x": 0,
-                        "y": 0
-                    }
-                ]
-			},
-			{
-				"id": "artifacts",
-				"name": "Artifacts",
-				"type": "custom",
-				"sections": []
+					{
+						"h": 3,
+						"i": "attachments-doslr3nm7o-ae2a3c40-6ca2-11ef-82f4-4d3bf40ccefd",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Incident Files",
+						"query": {
+							"categories": [
+								"attachments"
+							],
+							"lastId": "",
+							"pageSize": 100,
+							"tags": [],
+							"users": []
+						},
+						"queryType": "warRoomFilter",
+						"static": false,
+						"type": "invTimeline",
+						"w": 3,
+						"x": 0,
+						"y": 0
+					},
+					{
+						"h": 3,
+						"i": "attachments-629d1450-6d1f-11ef-9e38-4186d90d9e91",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Evidence",
+						"static": false,
+						"type": "evidence",
+						"w": 3,
+						"x": 0,
+						"y": 3
+					},
+					{
+						"h": 3,
+						"i": "attachments-6c7d00c0-6d1f-11ef-9e38-4186d90d9e91",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Malicious or Suspicious Indicators",
+						"query": "reputation:Bad or reputation:Suspicious",
+						"queryType": "input",
+						"static": false,
+						"type": "indicators",
+						"w": 3,
+						"x": 0,
+						"y": 6
+					}
+				],
+				"type": "custom"
 			},
 			{
 				"id": "warRoom",
