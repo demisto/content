@@ -279,14 +279,15 @@ def prettify_incident_notes(notes: list[dict]) -> list[dict]:
     while notes_copy:
         note = notes_copy.pop()
         demisto.debug(f"prettify_incident_notes {note=}")
-        new_note_obj = {
-            "id": note.get("id", ""),
-            "text": note.get("text", ""),
-            "created_by": f"{note.get('user_fname', '')} {note.get('user_lname', '')}",
-            "create_date": normalize_timestamp(note.get("create_date")),
-            "modify_date": note.get("modify_date")
-        }
-        formatted_notes.append(new_note_obj)
+        if note.get('text'):
+            new_note_obj = {
+                "id": note.get("id", ""),
+                "text": note.get("text"),
+                "created_by": f"{note.get('user_fname', '')} {note.get('user_lname', '')}",
+                "create_date": normalize_timestamp(note.get("create_date")),
+                "modify_date": note.get("modify_date")
+            }
+            formatted_notes.append(new_note_obj)
     return formatted_notes
 
 
@@ -468,13 +469,7 @@ def prepare_search_query_data(args: dict) -> dict:
     data = {
         'filters': [{
             'conditions': conditions
-        }],
-        'sorts': [
-            {
-                "field_name": "date-created-after",
-
-            }
-        ]
+        }]
     }
 
     # Pagination mechanism.
@@ -549,9 +544,8 @@ def process_raw_incident(client: SimpleClient, incident: dict) -> dict:
 
     if DEMISTO_PARAMS.get('mirror_notes'):
         notes = get_incident_notes(client, incident_id)
-        demisto.debug(f"process_raw_incident retrieved notes {notes=}")
         incident["notes"] = prettify_incident_notes(notes)
-        demisto.debug(f"process_raw_incident new incident notes: {incident['notes']=}")
+        demisto.debug(f"process_raw_incident new incident notes: {[note['text'] for note in incident['notes']]=}")
 
     if DEMISTO_PARAMS.get('mirror_tasks'):
         tasks = get_tasks(client, incident_id)
@@ -1342,6 +1336,7 @@ def fetch_incidents(client, first_fetch_time: str, fetch_closed: bool):
     demisto_incidents = []
     last_incident_creation_time = last_fetched_timestamp
     if resilient_incidents:
+        demisto.debug(f'fetch_incidents {len(resilient_incidents)=}')
         #  Update last_run_time to the latest incident creation time (maximum in milliseconds).
         last_incident_creation_time = max(
             [_incident.get("create_date") for _incident in resilient_incidents]
@@ -1434,7 +1429,7 @@ def add_custom_task(client: SimpleClient,
 
 def add_note_command(client, incident_id, note: str, note_tag_to_ibm: str):
     response = add_note(client, str(incident_id), '\n'.join((note, note_tag_to_ibm)))
-
+    demisto.debug(f'add_note_command {response=}')
     return CommandResults(
         mark_as_note=True,
         entry_type=EntryType.NOTE,
@@ -1834,7 +1829,7 @@ def get_remote_data_command(client: SimpleClient,
         note_modify_date_timestamp = note_entry.get('modify_date')
         demisto.debug(
             f'get_remote_data_command {type(note_modify_date_timestamp)=} | {note_modify_date_timestamp=} | {type(last_update_timestamp)=} | {last_update_timestamp=}')
-        if (note_tag_to_ibm not in note_entry.get('text').get('content')
+        if (note_tag_to_ibm not in str(note_entry['text'])
                 and note_modify_date_timestamp
                 and note_modify_date_timestamp >= last_update_timestamp):
             entries.append({

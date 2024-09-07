@@ -14,6 +14,7 @@ def convert_to_table():
 
     if fields:
         ibm_qradar_notes = fields.get('ibmqradarnotes', [])
+
         for data in ibm_qradar_notes:
             parsed_data = json.loads(data)
             comment_entry = {

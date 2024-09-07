@@ -471,6 +471,10 @@
 									"tags": {
 										"simple": "",
 										"userMarkedRequired": true
+									},
+                                    "note": {
+										"simple": "",
+										"userMarkedRequired": true
 									}
 								},
 								"buttonClass": null,
