@@ -1145,11 +1145,14 @@ def parse_incident_from_item(item, is_fetch):  # pragma: no cover
                                     if (header.name, header.value) not in attached_email_headers \
                                             and header.name != 'Content-Type':
                                         attached_email.add_header(header.name, header.value)
-
+                            try:
+                                formatted_message = attached_email.as_string()
+                            except UnicodeEncodeError:
+                                formatted_message = attached_email.as_bytes()
                             file_result = fileResult(get_attachment_name(attachment_name=attachment.name,
                                                                          content_id=attachment.content_id,
                                                                          is_inline=attachment.is_inline) + ".eml",
-                                                     attached_email.as_string())
+                                                     formatted_message)
 
                         if file_result:
                             # check for error
