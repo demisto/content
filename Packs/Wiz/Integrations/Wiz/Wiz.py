@@ -1529,6 +1529,15 @@ PULL_RESOURCES_VARIABLES = {
     "quick": True
 }
 
+# Copy to forensics account
+COPY_TO_FORENSICS_ACCOUNT_MUTATION = """
+        mutation CopyResourceForensicsToExternalAccount($input: CopyResourceForensicsToExternalAccountInput!) {
+          copyResourceForensicsToExternalAccount(input: $input) {
+            systemActivityGroupId
+          }
+        }
+    """
+
 
 class WizInputParam:
     ISSUE_ID = 'issue_id'
@@ -2379,20 +2388,13 @@ def copy_to_forensics_account(resource_id):
         else:
             resource_id = resource_id_response['data']['cloudResources']['nodes'][0]['id']
 
-    copy_to_forensics_account_mutation = """
-        mutation CopyResourceForensicsToExternalAccount($input: CopyResourceForensicsToExternalAccountInput!) {
-          copyResourceForensicsToExternalAccount(input: $input) {
-            systemActivityGroupId
-          }
-        }
-    """
     copy_to_forensics_account_variables = {
         "input": {
             "id": resource_id
         }
     }
 
-    response_json = checkAPIerrors(copy_to_forensics_account_mutation, copy_to_forensics_account_variables)
+    response_json = checkAPIerrors(COPY_TO_FORENSICS_ACCOUNT_MUTATION, copy_to_forensics_account_variables)
     demisto.debug(f"The API response is {response_json}")
 
     if response_json["data"] is None and response_json["errors"] is not None:
@@ -2482,106 +2484,106 @@ def main():
 
         elif command == 'wiz-reject-issue':
             demisto_args = demisto.args()
-            resource_id = demisto_args.get(WizInputParam.ISSUE_ID)
+            issue_id = demisto_args.get(WizInputParam.ISSUE_ID)
             resolution_reason = demisto_args.get(WizInputParam.REJECT_REASON)
             resolution_note = demisto_args.get(WizInputParam.REJECT_NOTE)
-            copy_mutation_response = reject_issue(
-                issue_id=resource_id,
+            issue_response = reject_issue(
+                issue_id=issue_id,
                 reject_reason=resolution_reason,
                 reject_comment=resolution_note
             )
-            command_result = CommandResults(readable_output=copy_mutation_response, raw_response=copy_mutation_response)
+            command_result = CommandResults(readable_output=issue_response, raw_response=issue_response)
             return_results(command_result)
 
         elif command == 'wiz-reopen-issue':
             demisto_args = demisto.args()
-            resource_id = demisto_args.get(WizInputParam.ISSUE_ID)
+            issue_id = demisto_args.get(WizInputParam.ISSUE_ID)
             reopen_note = demisto_args.get(WizInputParam.REOPEN_NOTE)
-            copy_mutation_response = reopen_issue(
-                issue_id=resource_id,
+            issue_response = reopen_issue(
+                issue_id=issue_id,
                 reopen_note=reopen_note
             )
-            command_result = CommandResults(readable_output=copy_mutation_response, raw_response=copy_mutation_response)
+            command_result = CommandResults(readable_output=issue_response, raw_response=issue_response)
             return_results(command_result)
 
         elif command == 'wiz-resolve-issue':
             demisto_args = demisto.args()
-            resource_id = demisto_args.get(WizInputParam.ISSUE_ID)
+            issue_id = demisto_args.get(WizInputParam.ISSUE_ID)
             resolution_reason = demisto_args.get(WizInputParam.RESOLUTION_REASON)
             resolution_note = demisto_args.get(WizInputParam.RESOLUTION_NOTE)
-            copy_mutation_response = resolve_issue(
-                issue_id=resource_id,
+            issue_response = resolve_issue(
+                issue_id=issue_id,
                 resolution_reason=resolution_reason,
                 resolution_note=resolution_note
             )
-            command_result = CommandResults(readable_output=copy_mutation_response, raw_response=copy_mutation_response)
+            command_result = CommandResults(readable_output=issue_response, raw_response=issue_response)
             return_results(command_result)
 
         elif command == 'wiz-get-issue':
             demisto_args = demisto.args()
-            resource_id = demisto_args.get(WizInputParam.ISSUE_ID)
+            issue_id = demisto_args.get(WizInputParam.ISSUE_ID)
             issue_result = get_issue(
-                issue_id=resource_id,
+                issue_id=issue_id,
             )
             command_result = CommandResults(readable_output=issue_result, raw_response=issue_result)
             return_results(command_result)
 
         elif command == 'wiz-issue-in-progress':
             demisto_args = demisto.args()
-            resource_id = demisto_args.get(WizInputParam.ISSUE_ID)
-            copy_mutation_response = issue_in_progress(
-                issue_id=resource_id
+            issue_id = demisto_args.get(WizInputParam.ISSUE_ID)
+            issue_response = issue_in_progress(
+                issue_id=issue_id
             )
-            command_result = CommandResults(readable_output=copy_mutation_response, raw_response=copy_mutation_response)
+            command_result = CommandResults(readable_output=issue_response, raw_response=issue_response)
             return_results(command_result)
 
         elif command == 'wiz-set-issue-note':
             demisto_args = demisto.args()
-            resource_id = demisto_args.get(WizInputParam.ISSUE_ID)
+            issue_id = demisto_args.get(WizInputParam.ISSUE_ID)
             note = demisto_args.get(WizInputParam.NOTE)
-            copy_mutation_response = set_issue_comment(
-                issue_id=resource_id,
+            issue_response = set_issue_comment(
+                issue_id=issue_id,
                 comment=note
             )
-            command_result = CommandResults(readable_output=copy_mutation_response, raw_response=copy_mutation_response)
+            command_result = CommandResults(readable_output=issue_response, raw_response=issue_response)
             return_results(command_result)
 
         elif command == 'wiz-clear-issue-note':
             demisto_args = demisto.args()
-            resource_id = demisto_args.get(WizInputParam.ISSUE_ID)
-            copy_mutation_response = clear_issue_note(
-                issue_id=resource_id
+            issue_id = demisto_args.get(WizInputParam.ISSUE_ID)
+            issue_response = clear_issue_note(
+                issue_id=issue_id
             )
-            command_result = CommandResults(readable_output=copy_mutation_response, raw_response=copy_mutation_response)
+            command_result = CommandResults(readable_output=issue_response, raw_response=issue_response)
             return_results(command_result)
 
         elif command == 'wiz-get-issue-evidence':
             demisto_args = demisto.args()
-            resource_id = demisto_args.get(WizInputParam.ISSUE_ID)
-            copy_mutation_response = get_issue_evidence(
-                issue_id=resource_id
+            issue_id = demisto_args.get(WizInputParam.ISSUE_ID)
+            issue_response = get_issue_evidence(
+                issue_id=issue_id
             )
-            command_result = CommandResults(readable_output=copy_mutation_response, raw_response=copy_mutation_response)
+            command_result = CommandResults(readable_output=issue_response, raw_response=issue_response)
             return_results(command_result)
 
         elif command == 'wiz-set-issue-due-date':
             demisto_args = demisto.args()
-            resource_id = demisto_args.get(WizInputParam.ISSUE_ID)
+            issue_id = demisto_args.get(WizInputParam.ISSUE_ID)
             due_at = demisto_args.get('due_at')
-            copy_mutation_response = set_issue_due_date(
-                issue_id=resource_id,
+            issue_response = set_issue_due_date(
+                issue_id=issue_id,
                 due_at=due_at
             )
-            command_result = CommandResults(readable_output=copy_mutation_response, raw_response=copy_mutation_response)
+            command_result = CommandResults(readable_output=issue_response, raw_response=issue_response)
             return_results(command_result)
 
         elif command == 'wiz-clear-issue-due-date':
             demisto_args = demisto.args()
-            resource_id = demisto_args.get(WizInputParam.ISSUE_ID)
-            copy_mutation_response = clear_issue_due_date(
-                issue_id=resource_id
+            issue_id = demisto_args.get(WizInputParam.ISSUE_ID)
+            issue_response = clear_issue_due_date(
+                issue_id=issue_id
             )
-            command_result = CommandResults(readable_output=copy_mutation_response, raw_response=copy_mutation_response)
+            command_result = CommandResults(readable_output=issue_response, raw_response=issue_response)
             return_results(command_result)
 
         elif command == 'wiz-get-project-team':

@@ -22,10 +22,10 @@
 !wiz-set-issue-due-date issue_id="12345678-1234-1234-1234-cc0a24716e0b" due_at="2022-01-20"
 
 !wiz-clear-issue-due-date issue_id="12345678-1234-1234-1234-cc0a24716e0b"
-!wiz-copy-to-forensics-account resource_id="arn:aws:ec2:us-east-1:452225563321:instance/i-05r662bfb9708a4e8"
 
 !wiz-get-project-team project_name="project1"
 
 !wiz-resolve-issue issue_id="12345678-1234-1234-1234-cc0a24716e0b" resolution_note="won't fix this issue as this is low priority" resolution_reason="WONT_FIX"
 
 !wiz-copy-to-forensics-account resource_id="12345678-1234-1234-1234-cc0a24716e0b"
+!wiz-copy-to-forensics-account resource_id="arn:aws:ec2:us-east-1:123455563321:instance/i-05r662bfb9708a4e8"

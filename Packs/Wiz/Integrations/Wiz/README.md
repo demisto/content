@@ -69,7 +69,7 @@ Get the issues on cloud resources
 #### Command Example
 ```
 !wiz-get-issues entity_type="VIRTUAL_MACHINE"
-!wiz-get-issues issues_type="THREAT_DETECTION"
+!wiz-get-issues issue_type="THREAT_DETECTION"
 !wiz-get-issues resource_id="arn:aws:ec2:us-east-2:123456789098:instance/i-0g03j4h5gd123d456"
 !wiz-get-issues resource_id="arn:aws:ec2:us-east-2:123456789098:instance/i-0g03j4h5gd123d456" severity=HIGH
 ```
@@ -351,5 +351,5 @@ Copy VM's Volumes to a Forensics Account
 #### Command Example
 ```
 !wiz-copy-to-forensics-account resource_id="12345678-1234-1234-1234-cc0a24716e0b"
-!wiz-copy-to-forensics-account resource_id="arn:aws:ec2:us-east-1:452225563321:instance/i-05r662bfb9708a4e8"
+!wiz-copy-to-forensics-account resource_id="arn:aws:ec2:us-east-1:123455563321:instance/i-05r662bfb9708a4e8"
 ```
