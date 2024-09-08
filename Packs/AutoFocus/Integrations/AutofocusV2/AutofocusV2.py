@@ -293,11 +293,12 @@ class Client(BaseClient):
     def __init__(self, url: str, verify: bool = True):
         super().__init__(base_url=url, verify=verify)
 
-    def get_url_enrichment(self, headers: dict, params: dict) -> Response:
+    def get_url_enrichment(self, headers: dict, params: dict, ok_codes: tuple) -> Response:
         """ Get more information about a URL.
         Args:
             headers: dict - the headers of the request
-            params: dict = the parameters of the request
+            params: dict - the parameters of the request
+            ok_codes: list - a list of status codes that we want to handle in the code and not raise automatic exception about.
         Returns:
             A response object.
         """
@@ -307,7 +308,8 @@ class Client(BaseClient):
             headers=headers,
             params=params,
             retries=3,
-            resp_type='response'
+            resp_type='response',
+            ok_codes=ok_codes
         )
 
 
@@ -1039,7 +1041,9 @@ def search_indicator(indicator_type, indicator_value, client=None):
     try:
         if client:
             demisto.debug('search_indicator: using the client')
-            result = client.get_url_enrichment(headers, params)
+            # 404, 409, 503 a list of status codes that we want to handle in the code and not raise automatic exception about.
+            ok_codes = (200, 404, 409, 503)
+            result = client.get_url_enrichment(headers, params, ok_codes)
         else:
             result = requests.request(
                 method='GET',
@@ -1050,7 +1054,10 @@ def search_indicator(indicator_type, indicator_value, client=None):
             )
         demisto.debug(f'search_indicator: {result.status_code=} {result=}')
 
-        result_json = result.json()
+        try:
+            result_json = result.json()
+        except ValueError:
+            result_json = {}
         demisto.debug(f'search_indicator {result_json=}')
 
         save_api_metrics(result_json)
@@ -1073,7 +1080,7 @@ def search_indicator(indicator_type, indicator_value, client=None):
         demisto.debug(f'search_indicator: Unexpected errors {err}')
         EXECUTION_METRICS.general_error += 1
         try:
-            if demisto.params().get('handle_error', True) and result.status_code == 404:
+            if demisto.params().get('handle_error', True) and (result.status_code == 404 or result.status_code == 409):
                 return {
                     'indicator': {
                         'indicatorType': indicator_type,
