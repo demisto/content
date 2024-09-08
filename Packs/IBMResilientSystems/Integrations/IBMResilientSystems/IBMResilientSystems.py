@@ -37,10 +37,8 @@ DEMISTO_PARAMS = demisto.params()
 
 if not DEMISTO_PARAMS['proxy']:
     for var in ['HTTP_PROXY', 'HTTPS_PROXY', 'http_proxy', 'https_proxy']:
-        pass
-        # TODO - Bring back
-        # if os.environ.get(var):
-        # del os.environ[var]
+        if os.environ.get(var):
+            del os.environ[var]
 
 URL = DEMISTO_PARAMS['server'][:-1] if DEMISTO_PARAMS['server'].endswith('/') else DEMISTO_PARAMS['server']
 # Remove the http/s from the url (It's added automatically later)
@@ -469,6 +467,10 @@ def prepare_search_query_data(args: dict) -> dict:
     data = {
         'filters': [{
             'conditions': conditions
+        }],
+        'sorts': [{
+            'field_name': 'create_date',
+            'type': "asc"
         }]
     }
 
@@ -1374,7 +1376,7 @@ def get_scripts(client: SimpleClient, script_id: str) -> dict[str, Any]:
 
 def fetch_incidents(client, first_fetch_time: str, fetch_closed: bool):
     last_fetched_timestamp = demisto.getLastRun() and demisto.getLastRun().get('time')
-    demisto.debug(f'fetch_incidents {last_fetched_timestamp=}')
+    demisto.info(f'fetch_incidents {last_fetched_timestamp=} | {first_fetch_time=}')
 
     if not last_fetched_timestamp:
         last_fetched_timestamp = to_timestamp(first_fetch_time)
@@ -1384,11 +1386,13 @@ def fetch_incidents(client, first_fetch_time: str, fetch_closed: bool):
     demisto_incidents = []
     last_incident_creation_time = last_fetched_timestamp
     if resilient_incidents:
-        demisto.debug(f'fetch_incidents {len(resilient_incidents)=}')
+        demisto.info(f'fetch_incidents retrieved {len(resilient_incidents)=} | '
+                     f'with IDs: {[incident.get("id") for incident in resilient_incidents]}')
         #  Update last_run_time to the latest incident creation time (maximum in milliseconds).
-        last_incident_creation_time = max(
+        last_fetched_timestamp = last_incident_creation_time = max(
             [_incident.get("create_date") for _incident in resilient_incidents]
         )
+        demisto.debug(f'fetch_incidents {last_incident_creation_time=}')
         for incident in resilient_incidents:
 
             # Only fetching non-resolved incidents if `fetch_closed` is disabled.
@@ -1397,13 +1401,13 @@ def fetch_incidents(client, first_fetch_time: str, fetch_closed: bool):
                 incident = process_raw_incident(client, incident)
                 demisto_incident = dict()
                 demisto_incident['name'] = f'IBM QRadar SOAR incident ID {str(incident["id"])}'
-                demisto_incident['occurred'] = incident['create_date']
+                demisto_incident['occurred'] = incident.get('discovered_date', None) or incident['create_date']
                 demisto_incident['rawJSON'] = json.dumps(incident)
                 demisto_incidents.append(demisto_incident)
 
     # Increasing by one millisecond in order not to fetch the same incident in the next run.
 
-    demisto.setLastRun({'time': last_incident_creation_time + 1})
+    demisto.setLastRun({'time': last_fetched_timestamp + 1})
     demisto.incidents(demisto_incidents)
 
 
