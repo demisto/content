@@ -739,7 +739,7 @@ script:
       name: path
     - description: File download ID.
       name: id
-    description: Gets the metadata of a file download. You must supply either the `path` or `id` agument for the command to run successfully.
+    description: Gets the metadata of a file download. You must supply either the `path` or `id` argument for the command to run successfully.
     name: tanium-tr-get-file-download-info
     outputs:
     - contextPath: Tanium.FileDownload.Size
