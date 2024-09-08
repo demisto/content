@@ -8,11 +8,8 @@ DEFAULT_PAGE_SIZE = 100
 STARTING_PAGE_NUMBER = 1
 
 
-INCLUDEINFORMATIONAL_SUPPORT_VERSION = '8.6.0'
-INCLUDEINFORMATIONAL_SUPPORT_NUMBER = '992980'
-ENABLE_INCLUDEINFORMATIONAL_ARG = (is_xsiam() and is_demisto_version_ge(version=INCLUDEINFORMATIONAL_SUPPORT_VERSION,
-                                                                        build_number=INCLUDEINFORMATIONAL_SUPPORT_NUMBER) and
-                                   not is_using_engine())
+INCLUDEINFORMATIONAL_SUPPORT_VERSION = '8.8'
+ENABLE_INCLUDEINFORMATIONAL_ARG = (is_xsiam() and is_demisto_version_ge(version=INCLUDEINFORMATIONAL_SUPPORT_VERSION))
 
 
 class AlertSeverity(Enum):
@@ -152,6 +149,8 @@ def search_incidents(args: Dict):  # pragma: no cover
     if args.get('includeinformational'):
         if not ENABLE_INCLUDEINFORMATIONAL_ARG:
             raise ValueError('The includeinformational argument supported only in XSIAM from version x.x.x.')
+        if not args.get('fromDate') and not args.get('toDate'):
+            raise ValueError('The includeinformational argument requires fromDate and toDate arguments.')
         args['includeinformational'] = argToBoolean(args.get('includeinformational', False))
 
     # handle list of ids

@@ -64,7 +64,7 @@ args:
   predefined:
   - "false"
   - "true"
-- description: When the value is set to  'True', informational severity alerts will return as part of the results. Default is false.
+- description: When the value is set to 'True', informational severity alerts will return as part of the results. The ‘fromDate’ and ‘toDate’ arguments must be provided to use this argument. Default is false.
   name: includeinformational
   auto: PREDEFINED
   predefined:
