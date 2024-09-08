@@ -201,6 +201,9 @@
                 "IBM QRadar Attachments": {
                     "simple": "attachments"
                 },
+                "IBM QRadar Artifacts": {
+                    "simple": "artifacts"
+                },
                 "dbotMirrorDirection": {
                     "simple": "mirror_direction"
                 },

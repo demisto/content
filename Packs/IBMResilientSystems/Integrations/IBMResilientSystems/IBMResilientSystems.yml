@@ -125,7 +125,7 @@ configuration:
 
 - display: Mirror notes
   name: mirror_notes
-  additionalInfo: Whether incident notes shall be fetched. Disable to reduce fetch times.
+  additionalInfo: Whether incident notes shall be mirrored.
   type: 8
   section: Collect
 
@@ -149,7 +149,7 @@ configuration:
 
 - display: Mirror tasks
   name: mirror_tasks
-  additionalInfo: Whether incident tasks shall be fetched. Disable to reduce fetch times.
+  additionalInfo: Whether incident tasks shall be mirrored.
   type: 8
   section: Collect
 
@@ -173,7 +173,7 @@ configuration:
 
 - display: Mirror attachments
   name: mirror_attachments
-  additionalInfo: Whether incident attachments shall be fetched.  # TODO - Decide if really impacts fetch time . Disable to reduce fetch times.
+  additionalInfo: Whether incident attachments shall be mirrored.
   type: 8
   section: Collect
 
@@ -194,6 +194,12 @@ configuration:
   required: false
   section: Collect
   advanced: true
+
+- display: Mirror artifacts
+  name: mirror_artifacts
+  additionalInfo: Whether incident artifacts shall be mirrored.
+  type: 8
+  section: Collect
 
 script:
   commands:

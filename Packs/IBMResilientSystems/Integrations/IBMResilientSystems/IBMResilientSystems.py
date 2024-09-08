@@ -6,7 +6,7 @@ from CommonServerPython import *  # noqa: F401
 import json
 import logging
 import time
-
+import asyncio
 import urllib3
 import resilient
 from resilient.co3 import SimpleClient, SimpleHTTPException
@@ -526,13 +526,6 @@ def process_raw_incident(client: SimpleClient, incident: dict) -> dict:
     """
     incident_id = str(incident.get("id"))
 
-    artifacts = incident_artifacts(client, incident_id)  # TODO Check types
-    if artifacts:
-        incident["artifacts"] = artifacts
-
-    if DEMISTO_PARAMS.get('mirror_notes'):
-        incident["attachments"] = incident_attachments(client, incident_id)
-
     if isinstance(incident.get("description"), str):
         incident["description"] = incident["description"]
     elif isinstance(incident.get("description"), dict):
@@ -562,6 +555,17 @@ def process_raw_incident(client: SimpleClient, incident: dict) -> dict:
             for attachment in attachments_metadata
         ]
         demisto.debug(f'process_raw_incident {incident["attachments"]=}')
+
+    if DEMISTO_PARAMS.get('mirror_artifacts'):
+        artifacts = incident_artifacts(client, incident_id)  # TODO Check types
+        incident['artifacts'] = [
+            {
+                'ID': artifact.get('id'),
+                'Type': get_artifact_type(client, artifact.get('type')),
+                'Value': artifact.get('value'),    # Timestamp in milliseconds.
+            }
+            for artifact in artifacts
+        ]
     incident["phase"] = get_phase_name(client, incident['phase_id'])
     incident.update(get_mirroring_data())
     return incident

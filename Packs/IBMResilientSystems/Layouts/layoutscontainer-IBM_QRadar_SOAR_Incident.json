@@ -669,13 +669,13 @@
 				"name": "Attachments \u0026 Artifacts",
 				"sections": [
 					{
-						"h": 3,
+						"h": 5,
 						"i": "attachments-doslr3nm7o-ae2a3c40-6ca2-11ef-82f4-4d3bf40ccefd",
 						"items": [],
 						"maxW": 3,
 						"minH": 1,
 						"moved": false,
-						"name": "Incident Files",
+						"name": "New Incident Files",
 						"query": {
 							"categories": [
 								"attachments"
@@ -688,23 +688,9 @@
 						"queryType": "warRoomFilter",
 						"static": false,
 						"type": "invTimeline",
-						"w": 3,
+						"w": 1,
 						"x": 0,
 						"y": 0
-					},
-					{
-						"h": 3,
-						"i": "attachments-629d1450-6d1f-11ef-9e38-4186d90d9e91",
-						"items": [],
-						"maxW": 3,
-						"minH": 1,
-						"moved": false,
-						"name": "Evidence",
-						"static": false,
-						"type": "evidence",
-						"w": 3,
-						"x": 0,
-						"y": 3
 					},
 					{
 						"h": 3,
@@ -720,7 +706,35 @@
 						"type": "indicators",
 						"w": 3,
 						"x": 0,
-						"y": 6
+						"y": 8
+					},
+					{
+						"displayType": "ROW",
+						"h": 3,
+						"i": "artifacts",
+						"moved": false,
+						"name": "IBM QRadar SOAR Artifacts",
+						"query": "IbmConvertArtifactsToTable",
+						"queryType": "script",
+						"static": false,
+						"type": "dynamic",
+						"w": 3,
+						"x": 0,
+						"y": 5
+					},
+					{
+						"displayType": "ROW",
+						"h": 5,
+						"i": "attachments",
+						"moved": false,
+						"name": "IBM QRadar SOAR Attachments",
+						"query": "IbmConvertAttachmentsToTable",
+						"queryType": "script",
+						"static": false,
+						"type": "dynamic",
+						"w": 2,
+						"x": 1,
+						"y": 0
 					}
 				],
 				"type": "custom"
