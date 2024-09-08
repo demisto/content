@@ -265,12 +265,16 @@ Get the evidence from an Issue.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| issue_id | Issue id | Required | 
+| issue_id | Issue id | Required |
 
 #### Command Example
 ```
 !wiz-get-issue-evidence issue_id="12345678-1234-1234-1234-cc0a24716e0b"
 ```
+
+### wiz-rescan-machine-disk
+***
+Deprecated
 
 ### wiz-set-issue-due-date
 ***
