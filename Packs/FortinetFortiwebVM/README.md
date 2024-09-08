@@ -22,7 +22,7 @@ Fortinet Fortiweb enables you to manage WAF policies, block cookies, URLs, hostn
 This pack contains an integration, whose main purpose is to perform controlled changes on hosted web applications.
 
 ## Collect Events from Vendor
-In order to receive logs, use the [Broker VM](#broker-vm) option.
+In order to receive logs, use the [Broker VM](#broker-vm) option. <br>
 For Traffic logs type via Fortiweb Cloud, you are required to send the logs with [Amazon S3](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Ingest-Generic-Logs-from-Amazon-S3) services.
 
 ### Fortiweb Cloud
@@ -32,7 +32,7 @@ For Traffic logs type via Fortiweb Cloud, you are required to send the logs with
 **_Audit_ Logs**
 1. Go to **Global** &rarr; **System Settings** &rarr; **Settings**.
 2. Enable **Audit Logs Export**.
-3. Configure the following mandatory settings:
+3. Configure the following mandatory settings: <br>
 | Field Name | Value |
 | :---------------- | :------: |
 | Server Type | Syslog |
@@ -47,7 +47,7 @@ For Traffic logs type via Fortiweb Cloud, you are required to send the logs with
 1. Go to **Log Settings**.
 2. Enable **Attack Log Export**.
 3. Click **Add Log Server**.
-4. Configure the following mandatory settings:
+4. Configure the following mandatory settings: <br>
 | Field Name | Value |
 | :---------------- | :------: |
 | Server Type | Syslog |
@@ -59,7 +59,7 @@ For Traffic logs type via Fortiweb Cloud, you are required to send the logs with
 **_Traffic_ Logs (AWS S3)**
 1. Go to **Log Settings**.
 2. Enable **Traffic Log Export**.
-3. Configure the following mandatory settings:
+3. Configure the following mandatory settings: <br>
 | Field Name | Value |
 | :---------------- | :------: |
 | Server Type | AWS S3 |
@@ -90,7 +90,7 @@ For Traffic logs type via Fortiweb Cloud, you are required to send the logs with
 
 **Configure Log Settings**
 1. Go ti **Log&Report** &rarr; **Log Config** &rarr; **Global Log Settings**.
-2. Configure and enable a **SIEM** setting option:
+2. Configure and enable a **SIEM** setting option: <br>
 | Field Name | Value |
 | :---------------- | :------: |
 | Log Level | Select the severity level that a log message must equal or exceed in order to be recorded to this storage location. |
