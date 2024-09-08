@@ -63,7 +63,7 @@ class TAXII2Server:
             types_for_indicator_sdo: The list of stix types to provide indicator stix domain objects.
         """
         self._url_scheme = url_scheme
-        self._host = host.replace('.xdr.', '.crtx.')
+        self._host = host.replace('.xdr', '.crtx')
         self._port = port
         self._certificate = certificate
         self._private_key = private_key
