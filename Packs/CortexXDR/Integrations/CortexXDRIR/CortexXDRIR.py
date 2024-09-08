@@ -905,6 +905,7 @@ def get_modified_remote_data_command(client, args, mirroring_last_update: str = 
     # Format with milliseconds as string, truncate microseconds
     last_run_mirroring_str = last_run_mirroring.replace(tzinfo=pytz.UTC).strftime(  # type: ignore
         '%Y-%m-%d %H:%M:%S.%f')[:-3] + '+02:00'  # type: ignore
+    
     modified_incident_ids = []
     for raw_incident in raw_incidents:
         incident_id = raw_incident.get('incident_id')
@@ -946,7 +947,9 @@ def get_remote_data_command(client, args):
                 sync_incoming_incident_owners(incident_data)
 
             # handle closed issue in XDR and handle outgoing error entry
-            entries = [handle_incoming_closing_incident(incident_data)]
+            entries = []
+            if client._params.get('close_cortex_incident', True):
+                entries = [handle_incoming_closing_incident(incident_data)]
 
             reformatted_entries = []
             for entry in entries:
@@ -1026,7 +1029,7 @@ def update_remote_system_command(client, args):
             remote_is_already_closed = current_remote_status in XDR_RESOLVED_STATUS_TO_XSOAR
             demisto.debug(f"{remote_is_already_closed=}")
             
-            close_xdr_incident = client._params.get("close_xdr_incident", False)
+            close_xdr_incident = client._params.get("close_xdr_incident", True)
             
             # Skip closing in XDR if close_xdr_incident is False
             if not close_xdr_incident and is_closed:

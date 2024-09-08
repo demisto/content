@@ -56,7 +56,7 @@ configuration:
   - Outgoing
   - Both
 
-- additionalinfo: When selected, closing the Cortex XDR ticket is mirrored in Cortex XSOAR.
+- additionalinfo: When selected, closing the Cortex XDR incident is mirrored in Cortex XSOAR.
   defaultvalue: true
   display: Close Mirrored XSOAR Incident
   name: close_cortex_incident
