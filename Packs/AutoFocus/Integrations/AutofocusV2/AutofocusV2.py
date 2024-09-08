@@ -1040,9 +1040,9 @@ def search_indicator(indicator_type, indicator_value, client=None):
     result = Response()
     try:
         if client:
-            demisto.debug('search_indicator: using the client')
             # 404, 409, 503 a list of status codes that we want to handle in the code and not raise automatic exception about.
             ok_codes = (200, 404, 409, 503)
+            demisto.debug(f'search_indicator: using the client with {ok_codes=}')
             result = client.get_url_enrichment(headers, params, ok_codes)
         else:
             result = requests.request(
