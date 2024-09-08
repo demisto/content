@@ -1,7 +1,7 @@
 [INGEST:vendor="fortinet", product="fortiweb", target_dataset="fortinet_fortiweb_raw", no_hit=keep]
 filter to_string(log_timestamp) ~= "\d{10,}" or to_string(rt) ~= "\d{10,}"
 | alter
-	tmp_get_epoch = coalesce(rt, log_timestamp),
+	tmp_get_epoch = coalesce(rt, log_timestamp)
 | alter	
 	tmp_len = len(to_string(tmp_get_epoch))
 | alter _time = if( 
