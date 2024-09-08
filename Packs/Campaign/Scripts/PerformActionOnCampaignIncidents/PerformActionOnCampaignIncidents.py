@@ -1,7 +1,7 @@
 from more_itertools import always_iterable
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-
+from enum import Enum
 
 ALL_OPTION = "All"
 NO_CAMPAIGN_INCIDENTS_MSG = "There is no Campaign Incidents in the Context"
@@ -17,9 +17,16 @@ SELECT_CAMPAIGN_INCIDENTS_FIELD_NAME = "selectcampaignincidents"
 SELECT_CAMPAIGN_LOWER_INCIDENTS_FIELD_NAME = "selectlowsimilarityincidents"
 RECIPIENT_FIELDS = ["CustomFields.emailto", "CustomFields.emailcc", "CustomFields.emailbcc"]
 
+REMOVED_FROM_CAMPAIGNS_FIELD_NAME = "CustomFields.removedfromcampaigns"
+
 # this list of 'fields to display' got from the default value of the fieldsToDisplay argument
 # in `Detect & Manage Phishing Campaigns` playbook
 FIELDS_TO_DISPLAY = ["id", "name", "similarity", "emailfrom", "recipients", "severity", "status", "occurred"]
+
+
+class ACTIONS(Enum):
+    REMOVE = 'remove',
+    ADD = 'add'
 
 
 def _set_involved_incidents_count(campaign_id: str, count: int) -> None:
@@ -58,6 +65,41 @@ def _set_part_of_campaign_field(incident_id: str, campaign_id: str | None) -> No
     if isError(res):
         return_error(
             f"Error occurred while trying to set the partofcampaign field on the incident: {get_error(res)}"
+        )
+
+
+def _set_removed_from_campaigns_field(incident_id: str, campaign_id: str, action: ACTIONS) -> None:
+    """
+    Sets or removes the specified campaign ID from the 'removedfromcampaigns' field of the incident.
+
+    Args:
+        incident_id (str): The ID of the incident to update. Required.
+        campaign_id (str): The ID of the campaign to set or remove from the 'removedfromcampaigns' field.
+            Required.
+        action (str): The action to perform. Should be either 'add' to associate the incident with the
+            campaign or 'remove' to disassociate it. Required.
+
+    Raises:
+        RuntimeError: If an error occurs while trying to set the 'removedfromcampaigns' field on the incident.
+    """
+    incident_context = _get_incident(incident_id)
+    campaign_ids_removed = _get_data_from_incident(incident_context, REMOVED_FROM_CAMPAIGNS_FIELD_NAME)
+    if not campaign_ids_removed:
+        campaign_ids_removed = []
+
+    set_campaign_ids_removed: set = set(campaign_ids_removed)
+
+    if action == ACTIONS.ADD:
+        set_campaign_ids_removed.add(campaign_id)
+    else:
+        set_campaign_ids_removed.discard(campaign_id)
+
+    res = demisto.executeCommand(
+        "setIncident", {"id": incident_id, "removedfromcampaigns": sorted(set_campaign_ids_removed)}
+    )
+    if isError(res):
+        raise DemistoException(
+            f"Error occurred while trying to set the removedfromcampaigns field on the incident: {get_error(res)}"
         )
 
 
@@ -355,6 +397,7 @@ def perform_add_to_campaign(ids: list[str], action: str) -> str:
     involved_incidents_count += len(ids_to_add_to_campaign)
 
     for id_ in ids_to_add_to_campaign:
+        _set_removed_from_campaigns_field(id_, campaign_id, ACTIONS.REMOVE)
         _set_part_of_campaign_field(id_, campaign_id)
 
     campaign_incidents_context = [_parse_incident_context_to_valid_incident_campaign_context(
@@ -398,6 +441,7 @@ def perform_remove_from_campaign(ids: list[str], action: str) -> str:
         incident for incident in campaign_incidents_context if incident['id'] not in ids_to_remove_from_campaign]
 
     for id_ in ids_to_remove_from_campaign:
+        _set_removed_from_campaigns_field(id_, campaign_id, ACTIONS.ADD)
         _set_part_of_campaign_field(id_, "None")
     _set_incidents_to_campaign(campaign_id, campaign_incidents_context)
     _link_or_unlink_between_incidents(campaign_id, ids_to_remove_from_campaign, "unlink")

@@ -1,0 +1,19 @@
+{
+    "nameserver1.com": {
+        "domains": [
+            {
+                "current": false,
+                "domain": "example.com"
+            },
+            {
+                "current": false,
+                "domain": "example.com"
+            }
+        ],
+        "limit": 500,
+        "moreDataAvailable": false,
+        "offset": 0,
+        "sortField": "updated",
+        "totalResults": 5
+    }
+}
