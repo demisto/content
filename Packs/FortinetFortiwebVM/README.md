@@ -33,13 +33,15 @@ For Traffic logs type via Fortiweb Cloud, you are required to send the logs with
 1. Go to **Global** &rarr; **System Settings** &rarr; **Settings**.
 2. Enable **Audit Logs Export**.
 3. Configure the following mandatory settings: <br>
+
 | Field Name | Value |
 | :---------------- | :------: |
 | Server Type | Syslog |
 | IP/Domain and Port | <IP> and <Port>  |
 | Protocol | TCP |
 | Log Format | CEF |
-1. Click **Save**. 
+
+4. Click **Save**. 
 
 * [How-To export Attack and Traffic logs to a log server](https://docs.fortinet.com/document/fortiweb-cloud/23.3.0/user-guide/367276/audit-logs).
 
@@ -48,18 +50,21 @@ For Traffic logs type via Fortiweb Cloud, you are required to send the logs with
 2. Enable **Attack Log Export**.
 3. Click **Add Log Server**.
 4. Configure the following mandatory settings: <br>
+
 | Field Name | Value |
 | :---------------- | :------: |
 | Server Type | Syslog |
 | IP/Domain and Port | <IP> and <Port>  |
 | Protocol | TCP |
 | Log Format | CEF |
-1. Click **OK**. 
+
+5. Click **OK**. 
 
 **_Traffic_ Logs (AWS S3)**
 1. Go to **Log Settings**.
 2. Enable **Traffic Log Export**.
 3. Configure the following mandatory settings: <br>
+
 | Field Name | Value |
 | :---------------- | :------: |
 | Server Type | AWS S3 |
@@ -68,6 +73,7 @@ For Traffic logs type via Fortiweb Cloud, you are required to send the logs with
 | Access Key ID	| Enter the access key ID of the S3 bucket. |
 | Secret Key ID	| Enter the secret key ID of the S3 bucket. |
 | Prefix / Folder | Enter the prefix / folder to store the traffic log. |
+
 4. Click **Save**.
 
 ### Fortiweb VM
