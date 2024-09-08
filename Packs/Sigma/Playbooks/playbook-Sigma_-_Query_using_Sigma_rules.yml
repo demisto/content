@@ -46,7 +46,7 @@ tasks:
       id: bef77971-71c6-41e5-82e0-821d89393da8
       version: -1
       name: Convert Sigma to XQL query
-      description: Allows to convert a Sigma Rule indicator into a SIEM query.
+      description: Allows converting a Sigma Rule indicator into a SIEM query.
       scriptName: SigmaConverttoQuery
       type: regular
       iscommand: false
@@ -95,9 +95,9 @@ tasks:
       version: -1
       name: Set rules to context
       description: |-
-        Searches Cortex XSOAR Indicators.
+        Searches Cortex XSOAR indicators.
 
-        Search for XSOAR Indicators and returns the id, indicator_type, value, and score/verdict.
+        Search for Cortex XSOAR indicators and returns the ID, indicator_type, value, and score/verdict.
 
         You can add additional fields from the indicators using the add_field_to_context argument.
       scriptName: SearchIndicator
@@ -433,7 +433,7 @@ tasks:
       id: 8db15a39-794e-49db-884b-cfae38318761
       version: -1
       name: Convert Sigma to Splunk query
-      description: Allows to convert a Sigma Rule indicator into a SIEM query.
+      description: Allows converting a Sigma Rule indicator into a SIEM query.
       scriptName: SigmaConverttoQuery
       type: regular
       iscommand: false
@@ -511,7 +511,7 @@ tasks:
       id: 9baeaaf9-d28a-4b81-8522-f4f029ba4187
       version: -1
       name: Convert Sigma to Elastic query
-      description: Allows to convert a Sigma Rule indicator into a SIEM query.
+      description: Allows converting a Sigma Rule indicator into a SIEM query.
       scriptName: SigmaConverttoQuery
       type: regular
       iscommand: false
@@ -681,7 +681,7 @@ tasks:
       id: ac997a21-dbde-4952-8ca8-fd1af5314bc6
       version: -1
       name: Convert Sigma to Sentinel One query
-      description: Allows to convert a Sigma Rule indicator into a SIEM query.
+      description: Allows converting a Sigma Rule indicator into a SIEM query.
       scriptName: SigmaConverttoQuery
       type: regular
       iscommand: false
@@ -899,7 +899,7 @@ tasks:
       id: 150f60e0-4710-44e5-88e0-56bcb0b6b4a8
       version: -1
       name: Convert Sigma to Qradar query
-      description: Allows to convert a Sigma Rule indicator into a SIEM query.
+      description: Allows converting a Sigma Rule indicator into a SIEM query.
       scriptName: SigmaConverttoQuery
       type: regular
       iscommand: false
@@ -1072,7 +1072,7 @@ tasks:
       id: 69e7f5e7-dfbe-461f-8c38-b28c2c8d5d27
       version: -1
       name: Convert Sigma to Carbon Black query
-      description: Allows to convert a Sigma Rule indicator into a SIEM query.
+      description: Allows converting a Sigma Rule indicator into a SIEM query.
       scriptName: SigmaConverttoQuery
       type: regular
       iscommand: false
@@ -1336,11 +1336,11 @@ inputSections:
 - inputs:
   - Query
   name: General (Inputs group)
-  description: Generic group for inputs
+  description: Generic group for inputs.
 outputSections:
 - outputs: []
   name: General (Outputs group)
-  description: Generic group for outputs
+  description: Generic group for outputs.
 outputs: []
 quiet: true
 dirtyInputs: true
