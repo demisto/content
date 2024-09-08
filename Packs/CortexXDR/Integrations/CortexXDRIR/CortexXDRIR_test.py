@@ -1580,3 +1580,33 @@ def test_get_xsoar_close_reasons(mocker):
     }
     mocker.patch.object(demisto, 'internalHttpRequest', return_value=mock_response)
     assert get_xsoar_close_reasons() == list(XSOAR_RESOLVED_STATUS_TO_XDR.keys()) + ['CustomReason1', 'CustomReason 2', 'Foo']
+
+
+def test_update_remote_system_command_updating_closed_incident(mocker):
+    """
+    Given:
+        - an XDR client
+        - arguments (incident fields)
+    When
+        - update_alerts_in_xdr_request is called
+    Then
+        - response is not in format-  raise an error
+    """
+    from CortexXDRIR import update_remote_system_command, Client
+    # get_update_args didn't include reason.
+    # UpdateRemoteSystemArgs(args) remote_data include reason.
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False)
+    args = {
+        'remoteId': 'remote_id',
+        'data': {'status': 'resolved_true_positive'},
+        'entries': [],
+        'incidentChanged': True,
+        'delta': {'CortexXDRIRstatus': 'resolved_False_positive', 'closeNotes': 'closed'},
+        'status': 2,
+    }
+    mocker.patch('CoreIRApiModule.get_update_args', return_value={})
+    mocker.patch('CortexXDRIR.update_incident_command', return_value=None)
+    mocker_debug = mocker.patch.object(demisto, 'debug')
+    update_remote_system_command(client, args)
+    assert 'updating the status to other' not in mocker_debug.call_args[0][0]
