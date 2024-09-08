@@ -44,7 +44,7 @@ Get the details for a Wiz Issue ID.
 
 ### wiz-get-issues
 ***
-Get the issues on cloud resources
+Get the issues on cloud resources. Limited to 500 results.
 <h4> Base Command </h4>
 
 `wiz-get-issues`
@@ -76,7 +76,8 @@ Get the issues on cloud resources
 
 ### wiz-get-resource
 ***
-Get Details of a resource.
+Get Details of a resource. You should pass exactly one of `resource_id`, `resource_name`.
+When searching by name, results are limited to 500 records.
 
 <h4> Base Command </h4>
 
@@ -85,8 +86,9 @@ Get Details of a resource.
 <h4> Input </h4>
 
 | **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| resource_id | Resource provider id | Required | 
+|-------------------| --- |--------------|
+| resource_id       | Resource provider id | optional     | 
+| resource_name     | search by name or external ID | optional     | 
 
 
 <h4> Context Output </h4>
@@ -99,6 +101,8 @@ Get Details of a resource.
 #### Command Example
 ```
 !wiz-get-resource resource_id="arn:aws:ec2:us-east-2:123456789098:instance/i-0g03j4h5gd123d456"
+!wiz-get-resource resource_name="i-0g03j4h5gd123d456"
+!wiz-get-resource resource_name="test_vm"
 ```
 
 ### wiz-issue-in-progress

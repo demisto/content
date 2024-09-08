@@ -180,9 +180,12 @@ script:
       description: Wiz Issue note.
       type: String
   - arguments:
-    - description: resource external id.
+    - description: resource provider unique id.
       name: resource_id
-      required: true
+      optional: true
+    - description: search by name or external ID.
+      name: resource_name
+      optional: true
     description: Get details of a resource.
     name: wiz-get-resource
     outputs:

@@ -146,7 +146,7 @@ test_get_resource_response = {
 
 
 @patch('Wiz.checkAPIerrors', return_value=test_get_resource_response)
-def test_get_resource(checkAPIerrors):
+def test_get_resource_by_id(checkAPIerrors):
     from Wiz import get_resource
     result_response = {
         "id": "12345678-2222-3333-1111-ff5fa2ff7f78",
@@ -157,8 +157,41 @@ def test_get_resource(checkAPIerrors):
         }
     }
 
-    res = get_resource('i_am_an_id')
+    res = get_resource(resource_id='i_am_an_id', resource_name='')
     assert res == result_response
+
+
+test_get_resource_response_search = {
+    "data": {
+        "cloudResources": {
+            "nodes": [
+                {
+                    "id": "16da9341-6c72-46ba-948c-f0c057643e60",
+                    "name": "test_name_vm",
+                    "type": "VIRTUAL_MACHINE"
+                }
+            ]
+        }
+    }
+}
+
+
+@patch('Wiz.checkAPIerrors', return_value=test_get_resource_response_search)
+def test_get_resource_by_search(checkAPIerrors):
+    from Wiz import get_resource
+    res = get_resource(resource_id='', resource_name='test_name_vm')
+    assert res == test_get_resource_response_search
+
+
+def test_get_resource_fail(capfd):
+    with capfd.disabled():
+        from Wiz import get_resource
+
+        res = get_resource(resource_id='', resource_name='')
+        assert res == "You should pass exactly one of resource_name or resource_id"
+
+        res = get_resource(resource_id='12345678-2222-3333-1111-ff5fa2ff7f78', resource_name='test_name_vm')
+        assert res == "You should pass exactly one of resource_name or resource_id"
 
 
 test_reject_issue_response = {
@@ -429,7 +462,8 @@ DEMISTO_ARGS = {
     'issue_id': 123456,
     'reject_reason': 'reject_reason_test',
     'reopen_note': 'reopen_note_test',
-    'note': 'test-note'
+    'note': 'test-note',
+    'resource_name': 'resource_name'
 }
 
 

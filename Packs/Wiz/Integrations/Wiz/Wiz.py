@@ -1508,6 +1508,35 @@ query CloudResourceSearch($filterBy: CloudResourceFilters, $first: Int, $after: 
   }
 }
 """
+PULL_CLOUD_RESOURCES_NATIVE_QUERY = """
+query CloudResourceSearch($filterBy: CloudResourceFilters, $first: Int, $after: String) {
+  cloudResources(filterBy: $filterBy, first: $first, after: $after) {
+    nodes {
+      id
+      name
+      type
+      subscriptionId
+      subscriptionExternalId
+      graphEntity {
+        id
+        providerUniqueId
+        name
+        type
+        projects {
+          id
+        }
+        properties
+        firstSeen
+        lastSeen
+      }
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+"""
 PULL_RESOURCES_VARIABLES = {
     "fetchPublicExposurePaths": True,
     "fetchInternalExposurePaths": False,
@@ -1544,6 +1573,7 @@ class WizInputParam:
     ISSUE_TYPE = 'issue_type'
     ENTITY_TYPE = 'entity_type'
     RESOURCE_ID = 'resource_id'
+    RESOURCE_NAME = 'resource_name'
     SEVERITY = 'severity'
     REJECT_REASON = 'reject_reason'
     REJECT_NOTE = 'reject_note'
@@ -1911,12 +1941,39 @@ def get_filtered_issues(entity_type, resource_id, severity, issue_type, limit):
     return issues
 
 
-def get_resource(resource_id):
+def get_resource(resource_id, resource_name):
     """
     Retrieves Resource Details
     """
 
     demisto.debug("get_resource, enter")
+
+    if resource_name and resource_id:
+        demisto.error("You cannot pass both resource_name and resource_id together")
+        return "You should pass exactly one of resource_name or resource_id"
+
+    if not resource_name and not resource_id:
+        demisto.error("You must pass either resource_name or resource_id")
+        return "You should pass exactly one of resource_name or resource_id"
+
+    if resource_name:
+        variables = {
+            "first": WIZ_API_LIMIT,
+            "filterBy": {
+                "search": resource_name
+            }
+        }
+        try:
+            response_json = checkAPIerrors(PULL_CLOUD_RESOURCES_NATIVE_QUERY, variables)
+        except DemistoException:
+            demisto.debug(f"could not find resource with this resource_name {resource_name}")
+            return {}
+
+        if response_json['data']['cloudResources']['nodes'] is None or not response_json['data']['cloudResources']['nodes']:
+            demisto.info("Resource Not Found")
+            return "Resource Not Found"
+        else:
+            return response_json
 
     variables = {
         "fetchPublicExposurePaths": True,
@@ -2477,9 +2534,15 @@ def main():
             return_results(command_result)
 
         elif command == "wiz-get-resource":
-            resource = get_resource(resource_id=demisto.args()[WizInputParam.RESOURCE_ID])
-            command_result = CommandResults(outputs_prefix="Wiz.Manager.Resource", outputs=resource,
-                                            raw_response=resource)
+            demisto_args = demisto.args()
+            resource_id = demisto_args.get(WizInputParam.RESOURCE_ID)
+            resource_name = demisto_args.get(WizInputParam.RESOURCE_NAME)
+            resource = get_resource(resource_id=resource_id, resource_name=resource_name)
+            if resource_id:
+                command_result = CommandResults(outputs_prefix="Wiz.Manager.Resource", outputs=resource,
+                                                raw_response=resource)
+            else:
+                command_result = CommandResults(readable_output=resource, raw_response=resource)
             return_results(command_result)
 
         elif command == 'wiz-reject-issue':
