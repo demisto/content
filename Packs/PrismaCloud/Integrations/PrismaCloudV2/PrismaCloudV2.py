@@ -2263,8 +2263,7 @@ def get_labels(labels)->Optional[List]:
     return None
 
 
-def code_issues_list_request_body(owasp:Optional[List[str]]=[], sast_labels:Optional[str]=None, cwes:Optional[str]=None,
-                                 benchmarks:Optional[List[str]]=[], fixable_only:Optional[bool]=None,
+def code_issues_list_request_body(fixable_only:Optional[bool]=None,
                                  search_scopes:Optional[List[str]]=[], search_term:Optional[str]=None,
                                  branch:Optional[str]=None, check_status:Optional[str]=None, git_users:Optional[List[str]]=[],
                                  iac_categories:Optional[List[str]]=[], iac_labels:Optional[List[str]]=[],
@@ -2275,11 +2274,9 @@ def code_issues_list_request_body(owasp:Optional[List[str]]=[], sast_labels:Opti
                                  limit:Optional[float]=50, offset:Optional[float]=0):
         return assign_params(
             filters=assign_params(
-            benchmarks=benchmarks,
             branch=branch,
             checkStatus=check_status,
             codeCategories=code_categories,
-            cwes=cwes,
             fileTypes=file_types,
             fixableOnly=fixable_only,
             gitUsers=git_users,
@@ -2287,9 +2284,7 @@ def code_issues_list_request_body(owasp:Optional[List[str]]=[], sast_labels:Opti
             iacLabels=iac_labels,
             iacTags=iac_tags,
             licenseType=license_type,
-            owasp=owasp,
             repositories=repositories,
-            sastLabels=sast_labels,
             secretsRiskFactors=secrets_risk_factors,
             severities=severities,
             vulnerabilityRiskFactors=vulnerability_risk_factors
@@ -2306,10 +2301,6 @@ def code_issues_list_command(client, args):
     
     validate_code_issues_list_args(args)
     
-    owasp = args.get('owasp')
-    sast_labels = args.get('sast_labels')
-    cwes = args.get('cwes')
-    benchmarks = argToList(args.get('benchmarks'))
     fixable_only = argToBoolean(args.get('fixable_only', False))
     search_scopes = argToList(args.get('search_scopes'))
     search_term = args.get('search_term')
@@ -2345,7 +2336,7 @@ def code_issues_list_command(client, args):
     res_issues = []
     issues_for_readable_output = []
     while len(res_issues)<limit and has_next:
-        body = code_issues_list_request_body(owasp=owasp, sast_labels=sast_labels, cwes=cwes, benchmarks=benchmarks, fixable_only=fixable_only, search_scopes=search_scopes,
+        body = code_issues_list_request_body(fixable_only=fixable_only, search_scopes=search_scopes,
                                                    search_term=search_term, branch=branch, check_status=check_status,
                                                    git_users=git_users, iac_categories=iac_categories, iac_labels=iac_labels,
                                                    file_types=file_types, repositories=repositories,

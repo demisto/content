@@ -1814,8 +1814,10 @@ def test_code_issues_list_request(mocker, given_params, expected_body, prisma_cl
     Then
         The http request is called once with the right body.
     """
+    from PrismaCloudV2 import code_issues_list_request_body
     m = mocker.patch.object(prisma_cloud_v2_client, '_http_request')
-    prisma_cloud_v2_client.code_issues_list_request(**given_params)
+    body = code_issues_list_request_body(**given_params)
+    prisma_cloud_v2_client.code_issues_list_request(body)
     m.assert_called_once_with(
         'POST',
         '/code/api/v2/code-issues/branch_scan',
