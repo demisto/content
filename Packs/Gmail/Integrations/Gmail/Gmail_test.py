@@ -823,7 +823,7 @@ def test_get_date_isoformat_server():
     from Gmail import get_date_isoformat_server
     date = get_date_isoformat_server(datetime.datetime(2022, 11, 9, 22, 45, 44,
                                                        tzinfo=datetime.timezone(datetime.timedelta(days=-1, seconds=68400))))
-    assert date == '2022-11-10T05:45:44Z'
+    assert date == '2022-11-10T03:45:44Z'
 
 
 def test_parse_date_isoformat_server():
