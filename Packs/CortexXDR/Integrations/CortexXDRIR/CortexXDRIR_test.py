@@ -1588,9 +1588,10 @@ def test_update_remote_system_command_updating_closed_incident(mocker):
         - an XDR client
         - arguments (incident fields)
     When
-        - update_alerts_in_xdr_request is called
+        - Runnint update_remote_system_command.
     Then
-        - response is not in format-  raise an error
+        - Verify that closed incident status doesn't change to the defaulted one- resolve_other,
+        when the final 'update-remote-system' called before mirroring is closed.
     """
     from CortexXDRIR import update_remote_system_command, Client
     # get_update_args didn't include reason.
