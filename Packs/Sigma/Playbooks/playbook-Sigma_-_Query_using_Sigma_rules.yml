@@ -1,9 +1,7 @@
-id: fc9bf5c6-9ed5-472c-833f-8a7b21618bec
-version: 88
-vcShouldKeepItemLegacyProdMachine: false
+id: Sigma - Query using Sigma rules
+version: -1
 name: Sigma - Query using Sigma rules
-description: An example playbook on how to query Sigma rules from within TIM and query
-  a SIEM/EDR.
+description: An example playbook on how to query Sigma rules from within TIM and query a SIEM/EDR.
 tags:
 - Sigma
 - SIEM
@@ -19,6 +17,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -205,8 +204,7 @@ tasks:
       id: 537d271b-051a-4dac-8862-2dace961c759
       version: -1
       name: Is XDR installed
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'.
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -243,8 +241,7 @@ tasks:
       id: f597b6d8-faee-4778-8313-7e8cd1248a8d
       version: -1
       name: Is Splunk installed
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'.
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -284,6 +281,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "10"
@@ -316,10 +314,7 @@ tasks:
       id: 51edbbc9-0d2b-4adc-8454-6ee6fccddc4f
       version: -1
       name: Send Query to Splunk
-      description: Searches Splunk for events. For human readable output, the table
-        command is supported in the query argument. For example, `query=" * | table
-        field1 field2 field3"` will generate a table with field1, field2, and field3
-        as headers.
+      description: Searches Splunk for events. For human readable output, the table command is supported in the query argument. For example, `query=" * | table field1 field2 field3"` will generate a table with field1, field2, and field3 as headers.
       script: '|||splunk-search'
       type: regular
       iscommand: true
@@ -376,6 +371,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "6"
@@ -406,6 +402,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "5"
@@ -484,6 +481,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "14"
@@ -559,8 +557,7 @@ tasks:
       id: 063b8055-dfe0-4954-8dc9-c3654a3d630e
       version: -1
       name: Is Elastic installed
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'.
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -654,6 +651,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "18"
@@ -729,8 +727,7 @@ tasks:
       id: 7fc3d614-4d33-4419-8fea-b396dec2bed0
       version: -1
       name: Is Sentinel One installed
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'.
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -767,8 +764,7 @@ tasks:
       id: 7e93c394-a0bd-4999-8865-01b724472206
       version: -1
       name: Send Query to Sentinel One
-      description: Runs a Deep Visibility query and returns the queryId. You can use
-        the queryId for all other commands, such as the sentinelone-get-events command.
+      description: Runs a Deep Visibility query and returns the queryId. You can use the queryId for all other commands, such as the sentinelone-get-events command.
       script: '|||sentinelone-create-query'
       type: regular
       iscommand: true
@@ -872,6 +868,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "23"
@@ -947,8 +944,7 @@ tasks:
       id: 5cd94a92-d4c3-4859-8044-5ec1c3590a43
       version: -1
       name: Is Qradar installed
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'.
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -985,10 +981,7 @@ tasks:
       id: 6d8c5071-a9bc-4be2-80f8-cf88fc54f9c4
       version: -1
       name: Send Query to Qradar
-      description: Creates a new asynchronous Ariel search. Returns the search ID.
-        Search status and results can be polled by sending the search ID to the 'qradar-search-status-get'
-        and 'qradar-search-results-get' commands. Accepts SELECT query expressions
-        only.
+      description: Creates a new asynchronous Ariel search. Returns the search ID. Search status and results can be polled by sending the search ID to the 'qradar-search-status-get' and 'qradar-search-results-get' commands. Accepts SELECT query expressions only.
       script: '|||qradar-search-create'
       type: regular
       iscommand: true
@@ -1045,6 +1038,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "27"
@@ -1120,8 +1114,7 @@ tasks:
       id: 76019c32-f4b6-4b9e-8b70-3ecb4c4a5f02
       version: -1
       name: Is Carbon Black installed
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'.
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -1158,8 +1151,7 @@ tasks:
       id: 1025d4d5-33db-4747-8c17-e0c801b9e7b3
       version: -1
       name: Send Query to Carbon Black
-      description: Gets alert details, including alert metadata and the event associated
-        with the alert.
+      description: Gets alert details, including alert metadata and the event associated with the alert.
       script: Carbon Black Endpoint Standard v3|||cbd-alerts-search
       type: regular
       iscommand: true
@@ -1216,6 +1208,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1243,6 +1236,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1270,6 +1264,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1297,6 +1292,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1331,7 +1327,7 @@ inputs:
     simple: type:"Sigma Rule"
   required: false
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 inputSections:
 - inputs:
   - Query
@@ -1343,4 +1339,6 @@ outputSections:
   description: Generic group for outputs.
 outputs: []
 quiet: true
-dirtyInputs: true
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0
