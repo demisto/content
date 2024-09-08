@@ -559,7 +559,7 @@ def process_raw_incident(client: SimpleClient, incident: dict) -> dict:
         demisto.debug(f'process_raw_incident {incident["attachments"]=}')
 
     if DEMISTO_PARAMS.get('mirror_artifacts'):
-        artifacts = incident_artifacts(client, incident_id)  # TODO Check types
+        artifacts = incident_artifacts(client, incident_id)
         incident['artifacts'] = [
             {
                 'ID': artifact.get('id'),
