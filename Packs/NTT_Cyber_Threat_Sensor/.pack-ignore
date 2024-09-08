@@ -4,8 +4,10 @@ ignore=PA116
 [file:NTT_Cyber_Threat_Sensor.yml]
 ignore=IN126,BA108,BA109
 
+# GR103 is temporary, see CIAC-11656
 [file:classifier-mapper-incoming-NTT_Cyber_Threat_Sensor.json]
-ignore=BA101
+ignore=BA101,GR103
+
 
 [file:NTT_Cyber_Threat_Sensor_image.png]
 ignore=IM111
