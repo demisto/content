@@ -905,7 +905,7 @@ def get_modified_remote_data_command(client, args, mirroring_last_update: str = 
     # Format with milliseconds as string, truncate microseconds
     last_run_mirroring_str = last_run_mirroring.replace(tzinfo=pytz.UTC).strftime(  # type: ignore
         '%Y-%m-%d %H:%M:%S.%f')[:-3] + '+02:00'  # type: ignore
-    
+
     modified_incident_ids = []
     for raw_incident in raw_incidents:
         incident_id = raw_incident.get('incident_id')
@@ -1029,15 +1029,11 @@ def update_remote_system_command(client, args):
             remote_is_already_closed = current_remote_status in XDR_RESOLVED_STATUS_TO_XSOAR
             demisto.debug(f"{remote_is_already_closed=}")
             
-            close_xdr_incident = client._params.get("close_xdr_incident", True)
-            
-            # Skip closing in XDR if close_xdr_incident is False
-            if not close_xdr_incident and is_closed:
-                demisto.debug(f"Skipping XDR incident closure because close_xdr_incident is set to False")
-                return remote_args.remote_incident_id
+            close_xdr_incident = argToBoolean(client._params.get("close_xdr_incident", True))
 
-            if is_closed and closed_without_status and not remote_is_already_closed:
+            if is_closed and close_xdr_incident and closed_without_status and not remote_is_already_closed:
                 update_args['status'] = XSOAR_RESOLVED_STATUS_TO_XDR.get('Other')
+                
             demisto.debug(f"After checking status {update_args=}")
             update_incident_command(client, update_args)
 
@@ -1045,7 +1041,7 @@ def update_remote_system_command(client, args):
             
             # Check all relevant fields for an incident being closed in XSOAR UI
             demisto.debug(f"Defining whether to close related alerts by: {is_closed=} {close_alerts_in_xdr=}")
-            if is_closed and close_alerts_in_xdr and remote_is_already_closed:
+            if is_closed and close_alerts_in_xdr and closed_without_status and remote_is_already_closed:
                 update_args['status'] = current_remote_status
             if close_alerts_in_xdr and is_closed:
                 update_related_alerts(client, update_args)
