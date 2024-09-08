@@ -1,7 +1,40 @@
 {
-    "native_images":{
-        "native:8.6":{
-            "supported_docker_images":[
+    "native_images": {
+        "native:8.7": {
+            "supported_docker_images": [
+                "python3",
+                "python3-deb",
+                "python3-ubi",
+                "py3-tools",
+                "py3-tools-ubi",
+                "crypto",
+                "readpdf",
+                "parse-emails",
+                "docxpy",
+                "sklearn",
+                "pandas",
+                "ippysocks-py3",
+                "oauthlib",
+                "unzip",
+                "py3ews",
+                "taxii2",
+                "pan-os-python",
+                "slackv3",
+                "google-api-py3",
+                "boto3py3",
+                "pyjwt3",
+                "joe-security",
+                "slack",
+                "office-utils",
+                "chromium",
+                "tesseract",
+                "netutils",
+                "auth-utils"
+            ],
+            "docker_ref": "demisto/py3-native:8.7.0.107893"
+        },
+        "native:8.6": {
+            "supported_docker_images": [
                 "python3",
                 "python3-deb",
                 "python3-ubi",
@@ -33,8 +66,8 @@
             ],
             "docker_ref": "demisto/py3-native:8.6.0.88771"
         },
-        "native:dev":{
-            "supported_docker_images":[
+        "native:dev": {
+            "supported_docker_images": [
                 "python3",
                 "python3-deb",
                 "yarapy",
@@ -64,8 +97,8 @@
                 "tesseract"
             ]
         },
-        "native:candidate":{
-            "supported_docker_images":[
+        "native:candidate": {
+            "supported_docker_images": [
                 "python3",
                 "python3-deb",
                 "python3-ubi",
@@ -95,59 +128,60 @@
                 "netutils",
                 "auth-utils"
             ],
-            "docker_ref": "demisto/py3-native:8.7.0.107893"
+            "docker_ref": "demisto/py3-native:8.8.0.108569"
         }
     },
-    "ignored_content_items":[
+    "ignored_content_items": [
         {
-            "id":"Json2HtmlTable",
-            "reason":"Add json2html to py3-tools: Ignore due to this contribution PR: https://github.com/demisto/dockerfiles/pull/29877.",
-            "ignored_native_images":[
-                "native:8.6"
-
-            ]
-        },
-        {
-            "id":"EWSO365",
-            "reason":"Issue: CIAC-10245 - Microsoft broke their API, and it was fixed in a newer version of the exchangelib package.",
-            "ignored_native_images":[
+            "id": "Json2HtmlTable",
+            "reason": "Add json2html to py3-tools: Ignore due to this contribution PR: https://github.com/demisto/dockerfiles/pull/29877.",
+            "ignored_native_images": [
                 "native:8.6"
             ]
         },
         {
-            "id":"Rasterize",
-            "reason":"Issue: CRTX-72338 and CIAC-7694",
-            "ignored_native_images":[
+            "id": "EWSO365",
+            "reason": "Issue: CIAC-10245 - Microsoft broke their API, and it was fixed in a newer version of the exchangelib package.",
+            "ignored_native_images": [
                 "native:8.6"
             ]
         },
         {
-            "id":"Intezer v2",
-            "reason":"Issue: CIAC-10263",
-            "ignored_native_images":[
+            "id": "Rasterize",
+            "reason": "Issue: CRTX-72338 and CIAC-7694",
+            "ignored_native_images": [
                 "native:8.6"
             ]
         },
         {
-            "id":"ConvertFile",
-            "reason":"Issue: CIAC-7625",
-            "ignored_native_images":[
+            "id": "Intezer v2",
+            "reason": "Issue: CIAC-10263",
+            "ignored_native_images": [
                 "native:8.6"
             ]
         },
         {
-            "id":"DockerHardeningCheck",
-            "reason":"This script is supposed to run inside a container, does not support podman",
-            "ignored_native_images":[
+            "id": "ConvertFile",
+            "reason": "Issue: CIAC-7625",
+            "ignored_native_images": [
+                "native:8.6"
+            ]
+        },
+        {
+            "id": "DockerHardeningCheck",
+            "reason": "This script is supposed to run inside a container, does not support podman",
+            "ignored_native_images": [
+                "native:8.7",
                 "native:8.6",
                 "native:dev",
                 "native:candidate"
             ]
         },
         {
-            "id":"ParseEmailFilesV2",
-            "reason":"Script uses an updated openssl lib than native, see CIAC-11469",
-            "ignored_native_images":[
+            "id": "ParseEmailFilesV2",
+            "reason": "Script uses an updated openssl lib than native, see CIAC-11469",
+            "ignored_native_images": [
+                "native:8.7",
                 "native:8.6",
                 "native:dev",
                 "native:candidate"
@@ -161,9 +195,9 @@
             ]
         },
         {
-            "id":"CyrenThreatInDepthRenderRelated",
+            "id": "CyrenThreatInDepthRenderRelated",
             "reason": "CIAC-11186, This integration support only from python 3.11",
-            "ignored_native_images":[
+            "ignored_native_images": [
                 "native:8.6"
             ]
         },
@@ -187,11 +221,19 @@
             "ignored_native_images": [
                 "native:8.6"
             ]
+        },
+        {
+            "id": "FireEyeNX",
+            "reason": "CIAC-11186, This integration support only from python 3.11",
+            "ignored_native_images": [
+                "native:8.6"
+            ]
         }
     ],
-    "flags_versions_mapping":{
-        "native:dev":"native:dev",
-        "native:ga":"native:8.6",
-        "native:candidate":"native:candidate"
+    "flags_versions_mapping": {
+        "native:dev": "native:dev",
+        "native:maintenance": "native:8.6",
+        "native:ga": "native:8.7",
+        "native:candidate": "native:candidate"
     }
 }
