@@ -18,6 +18,7 @@ def convert_to_table():
         for data in ibm_qradar_notes:
             parsed_data = json.loads(data)
             comment_entry = {
+                'ID': parsed_data.get('id', ''),
                 'Comment': parsed_data.get('text', {}).get('content', ''),
                 'Created at': parsed_data.get('create_date', ''),
                 'Created by': parsed_data.get('created_by', ''),

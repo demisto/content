@@ -462,17 +462,17 @@
 				"sections": [
 					{
 						"displayType": "ROW",
-						"h": 1,
+						"h": 2,
 						"hideName": false,
 						"i": "notes-add-note",
 						"items": [
 							{
 								"args": {
-									"tags": {
+									"note": {
 										"simple": "",
 										"userMarkedRequired": true
 									},
-                                    "note": {
+									"tags": {
 										"simple": "",
 										"userMarkedRequired": true
 									}
@@ -482,12 +482,41 @@
 								"endCol": 6,
 								"fieldId": "",
 								"height": 44,
-								"hexColor": "#ebb963",
-								"id": "Press to add a note to IBM QRadar SOAR incident",
+								"hexColor": "#dba039",
+								"id": "Add a note to IBM QRadar SOAR incident",
 								"index": 0,
 								"listId": "notes-add-note",
-								"name": "Press to add a note to IBM QRadar SOAR incident",
+								"name": "Add a note to IBM QRadar SOAR incident",
 								"scriptId": "IbmAddNote",
+								"sectionItemType": "button",
+								"startCol": 0
+							},
+							{
+								"args": {
+									"note_body": {
+										"simple": "",
+										"userMarkedRequired": true
+									},
+									"note_id": {
+										"simple": "",
+										"userMarkedRequired": true
+									},
+									"tags": {
+										"simple": "",
+										"userMarkedRequired": true
+									}
+								},
+								"buttonClass": null,
+								"dropEffect": "move",
+								"endCol": 6,
+								"fieldId": "",
+								"height": 44,
+								"hexColor": "#1e88e5",
+								"id": "Update a note",
+								"index": 0,
+								"listId": "notes-update-note",
+								"name": "Update a note",
+								"scriptId": "IbmUpdateNote",
 								"sectionItemType": "button",
 								"startCol": 0
 							}
@@ -495,14 +524,14 @@
 						"maxW": 3,
 						"minH": 1,
 						"moved": false,
-						"name": "Add note",
+						"name": "Buttons",
 						"static": false,
 						"w": 1,
 						"x": 0,
 						"y": 0
 					},
 					{
-						"h": 4,
+						"h": 7,
 						"i": "notes-incident-notes",
 						"items": [],
 						"maxW": 3,
@@ -518,7 +547,7 @@
 						"y": 0
 					},
 					{
-						"h": 3,
+						"h": 5,
 						"i": "notes-92ca4270-6d1e-11ef-9e38-4186d90d9e91",
 						"items": [],
 						"maxW": 3,
@@ -529,7 +558,7 @@
 						"type": "notes",
 						"w": 1,
 						"x": 0,
-						"y": 1
+						"y": 2
 					}
 				],
 				"type": "custom"
@@ -540,9 +569,9 @@
 				"sections": [
 					{
 						"displayType": "ROW",
-						"h": 1,
+						"h": 3,
 						"hideName": false,
-						"i": "tasks-add-task",
+						"i": "tasks-buttons",
 						"items": [
 							{
 								"args": {
@@ -566,12 +595,51 @@
 								"scriptId": "IbmAddTask",
 								"sectionItemType": "button",
 								"startCol": 0
+							},
+                            {
+								"args": {
+									"task_id": {
+										"simple": "",
+										"userMarkedRequired": true
+									},
+                                    "name": {
+										"simple": "",
+										"userMarkedRequired": true
+									},
+                                    "owner_id": {
+										"simple": "",
+										"userMarkedRequired": true
+									},
+                                    "due_date": {
+										"simple": "",
+										"userMarkedRequired": true
+									},
+                                    "phase": {
+										"simple": "",
+										"userMarkedRequired": true
+									},
+                                    "status": {
+										"simple": "",
+										"userMarkedRequired": true
+									}
+								},
+								"buttonClass": null,
+								"endCol": 4,
+								"fieldId": "",
+								"height": 44,
+								"hexColor": "#28A745",
+								"id": "Update task",
+								"index": 0,
+								"name": "Update task",
+								"scriptId": "IbmUpdateTask",
+								"sectionItemType": "button",
+								"startCol": 0
 							}
 						],
 						"maxW": 3,
 						"minH": 1,
 						"moved": false,
-						"name": "Add task",
+						"name": "Buttons",
 						"static": false,
 						"w": 1,
 						"x": 0,
@@ -592,21 +660,6 @@
 						"w": 2,
 						"x": 1,
 						"y": 0
-					},
-					{
-						"h": 5,
-						"i": "tasks-f13bcf90-6d1e-11ef-9e38-4186d90d9e91",
-						"items": [],
-						"maxW": 3,
-						"minH": 1,
-						"moved": false,
-						"name": "To-Do Tasks",
-						"query": null,
-						"static": false,
-						"type": "todoTasks",
-						"w": 1,
-						"x": 0,
-						"y": 1
 					}
 				],
 				"type": "custom"

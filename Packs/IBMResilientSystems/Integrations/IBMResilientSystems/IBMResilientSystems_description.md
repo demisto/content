@@ -7,6 +7,13 @@ Capture the generated _API Key ID_ and _API Key Secret_, and provide it to the i
 
 **Notice**: credentials authentication (username & password) is deprecated and should no longer be used. 
 
+
+___________
+**Fetch**
+
+If new incident fetching is desired, make sure to check the 'Fetch Incidents' box. 
+By default, closed incident won't be fetched, check the 'Fetch closed incidents' box if this is desired.
+
 ___________
 **Mirroring**
 

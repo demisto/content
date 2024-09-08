@@ -79,7 +79,6 @@ configuration:
   name: fetch_closed
   type: 8
   required: false
-  defaultvalue:
   section: Collect
 
 - name: fetch_time
@@ -638,7 +637,6 @@ script:
       name: attachment_id
       required: true
 
-
   - name: rs-related-incidents
     description: Gets related incidents.
     arguments:
@@ -834,6 +832,7 @@ script:
         defaultValue: Initial
       - name: due_date
         description: Task due date in ISO format e.g. "2020-02-02T19:00:00Z. Empty date indicates that the task has no assigned due date.
+
   - name: rs-add-artifact
     description: Add an artifact to an incident.
     arguments:
@@ -1081,6 +1080,37 @@ script:
     - contextPath: Resilient.Tasks
       description: List of open tasks.
       type: Dictionary
+
+  - name: rs-update-task
+    description: Update an incident's task fields.
+    arguments:
+      - name: task_id
+        description: ID of task to update.
+        required: true
+      - name: name
+        description: Task name. Technically required, copy original task name if no changes are desired.
+        required: true
+      - name: owner_id
+        description: User ID of the new owner.
+      - name: due_date
+        description: Task due date in ISO format e.g. "2020-02-02T19:00:00Z. Empty date indicates that the task has no assigned due date.
+      - name: phase
+        description: The phase to which this task belongs.
+        auto: PREDEFINED
+        predefined:
+          - Initial
+          - Engage
+          - Detect/Analyze
+          - Respond
+          - Post-Incident
+          - Custom
+          - Complete
+      - name: status
+        description: Changing the status field, completes or re-openes the task.
+        auto: PREDEFINED
+        predefined:
+          - Open
+          - Completed
 
   - name: rs-get-task-members
     description: Get the members of a task. Private tasks will have the returned "members" property set. Non-private tasks will have a null "members" property.

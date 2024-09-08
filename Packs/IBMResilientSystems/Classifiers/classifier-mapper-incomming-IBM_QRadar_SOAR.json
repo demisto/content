@@ -198,6 +198,9 @@
                 "IBM QRadar Tasks": {
                     "simple": "tasks"
                 },
+                "IBM QRadar Attachments": {
+                    "simple": "attachments"
+                },
                 "dbotMirrorDirection": {
                     "simple": "mirror_direction"
                 },

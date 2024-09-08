@@ -296,7 +296,7 @@ def prettify_incident_tasks(client: SimpleClient, tasks: list[dict]) -> list[dic
     Formats and enriches tasks to a more readable data.
     """
 
-    def update_task(task):
+    def format_task(task):
         task.update({
             # TODO - Introduce field ENUMS.
             'Phase': get_phase_name(client, task['phase_id']),
@@ -312,7 +312,7 @@ def prettify_incident_tasks(client: SimpleClient, tasks: list[dict]) -> list[dic
         })
         return task
 
-    formatted_tasks = [update_task(task) for task in tasks]
+    formatted_tasks = [format_task(task) for task in tasks]
     demisto.debug(f'prettify_incident_tasks {formatted_tasks=}')
     return formatted_tasks
 
@@ -526,7 +526,6 @@ def process_raw_incident(client: SimpleClient, incident: dict) -> dict:
     """
     incident_id = str(incident.get("id"))
 
-    # TODO - Configure enabling/disabling artifacts fetching for reduced fetch times.
     artifacts = incident_artifacts(client, incident_id)  # TODO Check types
     if artifacts:
         incident["artifacts"] = artifacts
@@ -545,12 +544,24 @@ def process_raw_incident(client: SimpleClient, incident: dict) -> dict:
     if DEMISTO_PARAMS.get('mirror_notes'):
         notes = get_incident_notes(client, incident_id)
         incident["notes"] = prettify_incident_notes(notes)
-        demisto.debug(f"process_raw_incident new incident notes: {[note['text'] for note in incident['notes']]=}")
+        demisto.debug(f"process_raw_incident {[note['text'] for note in incident['notes']]=}")
 
     if DEMISTO_PARAMS.get('mirror_tasks'):
         tasks = get_tasks(client, incident_id)
         incident["tasks"] = prettify_incident_tasks(client, tasks)
 
+    if DEMISTO_PARAMS.get('mirror_attachments'):
+        attachments_metadata = incident_attachments(client, incident_id)
+        incident['attachments'] = [
+            {
+                'ID': attachment.get('id'),
+                'Name': attachment.get('name'),
+                'Create Time': attachment.get('created'),    # Timestamp in milliseconds.
+                'Size': attachment.get('size')
+            }
+            for attachment in attachments_metadata
+        ]
+        demisto.debug(f'process_raw_incident {incident["attachments"]=}')
     incident["phase"] = get_phase_name(client, incident['phase_id'])
     incident.update(get_mirroring_data())
     return incident
@@ -739,6 +750,13 @@ def get_tasks(client: SimpleClient, incident_id: str):
     response = client.get(f'/incidents/{incident_id}/tasks?text_content_output_format=objects_convert_text')
     return response
 
+
+def update_task(client: SimpleClient, task_id: str, task_dto: dict):
+    """
+    Updating a remote task with ID `task_id` according to the updated values in `task_dto`.
+    """
+    response = client.put(f'/tasks/{task_id}', payload=task_dto)
+    return response
 
 def search_incidents(client: SimpleClient, args: dict) -> list | dict:
     """
@@ -1012,6 +1030,30 @@ def get_tasks_command(client, incident_id):
         return 'No tasks found for this incident.'
 
 
+def update_task_command(client: SimpleClient, args: dict) -> CommandResults:
+    task_id = args.get('task_id')
+
+    task_dto = {}
+    if task_name := args.get('name'):
+        task_dto['name'] = task_name
+    if owner_id := args.get('owner_id'):
+        task_dto['inc_owner_id']: int(owner_id)
+    if due_date := args.get('due_date'):
+        task_dto['due_date'] = to_timestamp(due_date)
+    if phase := args.get('phase'):
+        task_dto['phase_id'] = phase
+    if instructions := args.get('instructions'):
+        task_dto['instructions'] = instructions
+    if "Open" == args.get('status'):
+        task_dto['status'] = 'O'
+    elif "Completed" == args.get('status'):
+        task_dto['status'] = 'C'
+
+    demisto.debug(f'update_task_command {task_dto=}')
+    update_task(client, task_id, task_dto)
+    return CommandResults(readable_output=f'Task {task_id} updated successfully.')
+
+
 def set_member_command(client, incident_id, members):
     members = [int(x) for x in members.split(',')]
     incident = get_incident(client, incident_id)
@@ -1229,7 +1271,7 @@ def incident_attachments(client, incident_id):
     return response
 
 
-def upload_incident_attachment(client: SimpleClient, incident_id: str, entry_id: str):
+def upload_incident_attachment(client: SimpleClient, incident_id: str, entry_id: str, attachment_tag_to_ibm: str):
     """
         Uploads a file from XSOAR to the IBM QRadar SOAR incident with ID `incident_id`.
     """
@@ -1242,7 +1284,9 @@ def upload_incident_attachment(client: SimpleClient, incident_id: str, entry_id:
         )
 
     file_path, file_name = file_path_obj.get("path"), file_path_obj.get("name")
-
+    if '.' in file_name:
+        tagged_file_name, extension = file_name.split('.')[0], file_name.split('.')[1]
+        file_name = f'{tagged_file_name}_{attachment_tag_to_ibm}.{extension}'
     response = client.post_attachment(
         uri=f"/incidents/{incident_id}/attachments",
         filepath=file_path,
@@ -1512,7 +1556,7 @@ def upload_incident_attachment_command(
     """
     incident_id = args.get("incident_id")
     entry_id = args.get("entry_id")
-    upload_incident_attachment(client, incident_id, entry_id)
+    upload_incident_attachment(client, incident_id, entry_id, attachment_tag_to_ibm)
     return CommandResults(
         readable_output=f"File was uploaded successfully to {incident_id}."
     )
@@ -1794,7 +1838,7 @@ def get_remote_data_command(client: SimpleClient,
                             args: dict,
                             note_tag_to_ibm: str,
                             note_tag_from_ibm: str,
-                            task_tag_from_ibm: str
+                            attachment_tag_to_ibm: str
                             ) -> GetRemoteDataResponse:
     """
     Args:
@@ -1823,12 +1867,10 @@ def get_remote_data_command(client: SimpleClient,
     entries = []
 
     # Create note entries.
-    note_entries = incident["notes"]
+    note_entries = incident.get('notes', [])
     for note_entry in note_entries:
         demisto.debug(f'get_remote_data_command {note_entry=}')
         note_modify_date_timestamp = note_entry.get('modify_date')
-        demisto.debug(
-            f'get_remote_data_command {type(note_modify_date_timestamp)=} | {note_modify_date_timestamp=} | {type(last_update_timestamp)=} | {last_update_timestamp=}')
         if (note_tag_to_ibm not in str(note_entry['text'])
                 and note_modify_date_timestamp
                 and note_modify_date_timestamp >= last_update_timestamp):
@@ -1841,6 +1883,18 @@ def get_remote_data_command(client: SimpleClient,
                 'Tags': [note_tag_from_ibm],
                 'Note': True
             })
+
+    # Create file entries
+    attachment_entries = incident.get('attachments', [])
+    for attachment_entry in attachment_entries:
+        demisto.debug(f'get_remote_data_command {attachment_entry=}')
+        attachment_create_time = attachment_entry.get('Create Time')
+        if (attachment_tag_to_ibm not in attachment_entry.get('Name')
+                and attachment_create_time
+                and attachment_create_time >= last_update_timestamp):
+            file_name, content = get_attachment(client, incident_id, attachment_entry.get('ID'))
+            file_entry = fileResult(filename=file_name, data=content, file_type=EntryType.ENTRY_INFO_FILE)
+            entries.append(file_entry)
 
     # Handling remote incident resolution.
     if incident.get("end_date") and incident.get("plan_status") == "C":  # 'C' stands for 'Closed'
@@ -1892,7 +1946,7 @@ def update_remote_system_command(client: SimpleClient, args: dict, note_tag_to_i
             if entry_type == EntryType.NOTE and note_tag_to_ibm in entry_tags:
                 add_note(client, incident_id, entry.get('Contents'))
             elif entry_type == EntryType.FILE and attachment_tag_to_ibm in entry_tags:
-                upload_incident_attachment(client, incident_id, entry_id)
+                upload_incident_attachment(client, incident_id, entry_id, attachment_tag_to_ibm)
     return incident_id
 
 
@@ -2038,7 +2092,6 @@ def main():  # pragma: no cover
             )
         elif command == "rs-list-scripts":
             return_results(list_scripts_command(client, args))
-
         elif command == "rs-delete-incidents":
             return_results(delete_incidents_command(client, args))
         elif command == "rs-list-incident-notes":
@@ -2049,6 +2102,8 @@ def main():  # pragma: no cover
             return_results(add_custom_incident_task_command(client, args))
         elif command == "rs-list-tasks":
             return_results(list_tasks_command(client))
+        elif command == "rs-update-task":
+            return_results(update_task_command(client, args))
         elif command == "rs-get-task-members":
             return_results(get_task_members_command(client, args))
         elif command == "rs-delete-tasks":
@@ -2064,7 +2119,7 @@ def main():  # pragma: no cover
         elif command == "get-modified-remote-data":
             return_results(get_modified_remote_data_command(client, args))
         elif command == "get-remote-data":
-            return_results(get_remote_data_command(client, args, note_tag_to_ibm, note_tag_from_ibm, task_tag_from_ibm))
+            return_results(get_remote_data_command(client, args, note_tag_to_ibm, note_tag_from_ibm, attachment_tag_to_ibm))
         elif command == "update-remote-system":
             return_results(update_remote_system_command(client, args, note_tag_to_ibm, attachment_tag_to_ibm))
         elif command == "get-mapping-fields":

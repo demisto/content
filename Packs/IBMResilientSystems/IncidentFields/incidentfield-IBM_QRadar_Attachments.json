@@ -1,0 +1,33 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "IBM QRadar SOAR Incident"
+    ],
+    "caseInsensitive": true,
+    "cliName": "ibmqradarattachments",
+    "closeForm": false,
+    "content": true,
+    "description": "Incident attachments",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_ibmqradarattachments",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "IBM QRadar Attachments",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "multiSelect",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}
