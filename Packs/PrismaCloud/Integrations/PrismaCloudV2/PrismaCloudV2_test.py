@@ -1561,7 +1561,7 @@ def test_remove_additional_resource_fields(prisma_cloud_v2_client):
     remove_additional_resource_fields(input_dict=input)
 
     assert input == expected
-    
+
 
 code_issues_list_request_data = [
     # case 'fixable_only', 'scopes' with one value, 'term', 'branch' and 'limit'.
@@ -1572,6 +1572,8 @@ code_issues_list_request_data = [
     ({'search_scopes': ['Secrets', 'Licenses']},
      {'search': {'scopes': ['Secrets', 'Licenses']}, 'limit': 50, 'offset': 10})
 ]
+
+
 @pytest.mark.parametrize('args, expected', code_issues_list_request_data)
 def test_code_issues_list_request(mocker, prisma_cloud_v2_client, args, expected):
     """
@@ -1585,7 +1587,7 @@ def test_code_issues_list_request(mocker, prisma_cloud_v2_client, args, expected
     http_request = mocker.patch.object(prisma_cloud_v2_client, '_http_request', return_value={})
     prisma_cloud_v2_client.code_issues_list_request(**args)
     assert http_request.call_args.kwargs['json_data'] == expected
-    
+
 
 labels_data = [
     ([{'metadata': {'imageName': 'weaveworksdemos/front-end:0.3.12'}, 'label': 'Image Referencer'}],  # case one dict
@@ -1597,6 +1599,8 @@ labels_data = [
     ([],  # case empty list
      None)  # expected
 ]
+
+
 @pytest.mark.parametrize('labels, expected', labels_data)
 def test_get_labels(labels, expected):
     """
@@ -1610,8 +1614,8 @@ def test_get_labels(labels, expected):
     from PrismaCloudV2 import get_labels
     res = get_labels(labels)
     assert res == expected
-    
-    
+
+
 valid_args = [
     ({'license_type': 'OSI_APACHE', 'some_filter': 'value1', 'search_scopes': 'scope1', 'search_term': 'term1'}),
     ({'license_type': 'OSI_APACHE', 'some_filter': 'value1', 'search_scopes': 'scope1', 'limit': 20, 'search_term': 'term1'}),
@@ -1634,6 +1638,7 @@ invalid_args = [
      "`Page_size` argument can't be more than 1000")
 ]
 
+
 @pytest.mark.parametrize('given', valid_args)
 def test_valid_cases(given):
     """
@@ -1646,6 +1651,7 @@ def test_valid_cases(given):
     """
     from PrismaCloudV2 import validate_code_issues_list_args
     validate_code_issues_list_args(given)
+
 
 @pytest.mark.parametrize('given, expected_exception, expected_message', invalid_args)
 def test_invalid_cases(given, expected_exception, expected_message):
@@ -1661,7 +1667,7 @@ def test_invalid_cases(given, expected_exception, expected_message):
     with pytest.raises(expected_exception) as exc_info:
         validate_code_issues_list_args(given)
     assert str(exc_info.value) == expected_message
-    
+
 
 def test_code_issues_list_command__has_next(mocker, prisma_cloud_v2_client):
     """
@@ -1674,34 +1680,36 @@ def test_code_issues_list_command__has_next(mocker, prisma_cloud_v2_client):
     """
     from PrismaCloudV2 import code_issues_list_command
     m = mocker.patch.object(prisma_cloud_v2_client, '_http_request',
-                            side_effect=[{'data': [{'firstDetected':'some_date', 'policy': 'policy1', 'severity': 'severity1',
+                            side_effect=[{'data': [{'firstDetected': 'some_date', 'policy': 'policy1', 'severity': 'severity1',
                                                     'labels': ['label1']}], 'hasNext': True},
-                                         {'data': [{'firstDetected':'some_date', 'policy': 'policy1', 'severity': 'severity1',
+                                         {'data': [{'firstDetected': 'some_date', 'policy': 'policy1', 'severity': 'severity1',
                                                     'labels': ['label1']}], 'hasNext': False}])
     code_issues_list_command(prisma_cloud_v2_client, {'check_status': 'Passed'})
     assert m.call_count == 2
-    
+
 
 limit_reached_data = [
-        {
-            'data': [
-                {'repository': 'repo1', 'firstDetected': '2024-01-01', 'policy': 'policy1',
-                 'severity': 'high', 'labels': [], 'repositorySource': 'source1'},
-                {'repository': 'repo2', 'firstDetected': '2024-01-02', 'policy': 'policy2',
-                 'severity': 'medium', 'labels': [], 'repositorySource': 'source2'}
-            ],
-            'hasNext': True
-        },
-        {
-            'data': [
-                {'repository': 'repo3', 'firstDetected': '2024-01-03', 'policy': 'policy3',
-                 'severity': 'low', 'labels': [], 'repositorySource': 'source3'},
-                {'repository': 'repo4', 'firstDetected': '2024-01-04', 'policy': 'policy4',
-                 'severity': 'critical', 'labels': [], 'repositorySource': 'source4'}
-            ],
-            'hasNext': False
-        }
-    ]
+    {
+        'data': [
+            {'repository': 'repo1', 'firstDetected': '2024-01-01', 'policy': 'policy1',
+             'severity': 'high', 'labels': [], 'repositorySource': 'source1'},
+            {'repository': 'repo2', 'firstDetected': '2024-01-02', 'policy': 'policy2',
+             'severity': 'medium', 'labels': [], 'repositorySource': 'source2'}
+        ],
+        'hasNext': True
+    },
+    {
+        'data': [
+            {'repository': 'repo3', 'firstDetected': '2024-01-03', 'policy': 'policy3',
+             'severity': 'low', 'labels': [], 'repositorySource': 'source3'},
+            {'repository': 'repo4', 'firstDetected': '2024-01-04', 'policy': 'policy4',
+             'severity': 'critical', 'labels': [], 'repositorySource': 'source4'}
+        ],
+        'hasNext': False
+    }
+]
+
+
 def test_code_issues_list_command_pagination_limit_reached(mocker, prisma_cloud_v2_client):
     """
     Given
@@ -1721,12 +1729,15 @@ def test_code_issues_list_command_pagination_limit_reached(mocker, prisma_cloud_
     assert 'repo3' in result.readable_output
     assert 'repo4' not in result.readable_output  # This item should not be included
 
+
 lower_limit_data = {
-        'data': [
-            {'repository': 'repo1', 'firstDetected': '2024-01-01', 'policy': 'policy1',
-             'severity': 'high', 'labels': [], 'repositorySource': 'source1'}],
-        'hasNext': False
-    }
+    'data': [
+        {'repository': 'repo1', 'firstDetected': '2024-01-01', 'policy': 'policy1',
+         'severity': 'high', 'labels': [], 'repositorySource': 'source1'}],
+    'hasNext': False
+}
+
+
 def test_code_issues_list_command_single_page_no_pagination(mocker, prisma_cloud_v2_client):
     """
     Given
@@ -1744,8 +1755,8 @@ def test_code_issues_list_command_single_page_no_pagination(mocker, prisma_cloud
     assert 'repo1' in result.readable_output
     assert m.call_count == 1
     assert m.call_args.kwargs['json_data']['offset'] == 0
-    
-    
+
+
 code_issues_list_request_data = [
     # Test case with some filters set and default values
     (
@@ -1804,6 +1815,8 @@ code_issues_list_request_data = [
         }
     ),
 ]
+
+
 @pytest.mark.parametrize("given_params, expected_body", code_issues_list_request_data)
 def test_code_issues_list_request(mocker, given_params, expected_body, prisma_cloud_v2_client):
     """
@@ -1824,10 +1837,14 @@ def test_code_issues_list_request(mocker, given_params, expected_body, prisma_cl
         json_data=expected_body
     )
 
+
 user_pagination_data = [
-    ({'fixable_only': True, 'page': 3, 'page_size': 1, 'limit': 50}, 1, 3),  # case `page` and `page_size` with limit arguments witch needs to be ignored
+    # case `page` and `page_size` with limit arguments witch needs to be ignored
+    ({'fixable_only': True, 'page': 3, 'page_size': 1, 'limit': 50}, 1, 3),
     ({'fixable_only': True, 'page': 3, 'page_size': 2}, 1, 6),  # case `page` and `page_size`
 ]
+
+
 @pytest.mark.parametrize("args, expected_call_count, expected_offset", user_pagination_data)
 def test_code_issues_list_command__user_pagination(mocker, args, expected_call_count, expected_offset, prisma_cloud_v2_client):
     """
@@ -1840,11 +1857,11 @@ def test_code_issues_list_command__user_pagination(mocker, args, expected_call_c
     """
     from PrismaCloudV2 import code_issues_list_command
     m = mocker.patch.object(prisma_cloud_v2_client, '_http_request',
-                            side_effect=[{'data': [{'firstDetected':'some_date1', 'policy': 'policy1', 'severity': 'severity1',
+                            side_effect=[{'data': [{'firstDetected': 'some_date1', 'policy': 'policy1', 'severity': 'severity1',
                                                     'labels': ['label1']},
-                                                   {'firstDetected':'some_date2', 'policy': 'policy2', 'severity': 'severity2',
+                                                   {'firstDetected': 'some_date2', 'policy': 'policy2', 'severity': 'severity2',
                                                     'labels': ['label2']}], 'hasNext': True},
-                                         {'data': [{'firstDetected':'some_date', 'policy': 'policy1', 'severity': 'severity1',
+                                         {'data': [{'firstDetected': 'some_date', 'policy': 'policy1', 'severity': 'severity1',
                                                     'labels': ['label1']}], 'hasNext': False}])
     code_issues_list_command(prisma_cloud_v2_client, args)
     assert m.call_count == expected_call_count
