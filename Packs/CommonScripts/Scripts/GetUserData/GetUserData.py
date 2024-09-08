@@ -205,7 +205,7 @@ class Command:
             )
         return result
 
-    def update_command_args(self, args: dict):
+    def _update_command_args(self, args: dict):
         """
         Update the command arguments with the provided dictionary.
 
@@ -215,7 +215,7 @@ class Command:
         This method updates the existing arguments dictionary and replaces the
         command's argument list with the new arguments.
         """
-        self.args.update(args)
+        self.args = args
         self.command.args_lst = [args]
 
     def execute(self) -> tuple[bool, list[CommandResults], list[dict]]:
@@ -234,6 +234,8 @@ class Command:
         status = False
         return_results = []
         return_outputs = []
+        if self.update_args_fun:
+            self._update_command_args(self.update_args_fun())
         if not self.is_enabled:
             demisto.debug(f"Skipping command {self.name} since it is disabled.")
         elif not self._verify_args():
@@ -242,8 +244,6 @@ class Command:
             )
         else:
             demisto.debug(f"Running command {self.name}")
-            if self.update_args_fun:
-                self.update_command_args(self.update_args_fun())
             results, errors = CommandRunner.execute_commands(
                 command=self.command, extract_contents=False
             )
