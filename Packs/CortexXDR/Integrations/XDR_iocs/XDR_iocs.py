@@ -764,7 +764,7 @@ def tim_insert_jsons(client: Client):
         demisto.info(f"pushing IOCs to XDR: pushing {len(iocs)} IOCs to the {path} endpoint")
         with ThreadPoolExecutor(max_workers=math.ceil(len(iocs) / MAX_INDICATORS_TO_SYNC)) as executor:
             futures = {executor.submit(push_iocs_to_xdr, i, batch, client, path): i for i, batch in
-                       enumerate(batch_iocs(generator=iocs, batch_size=4000))}
+                       enumerate(batch_iocs(generator=iocs, batch_size=MAX_INDICATORS_TO_SYNC))}
 
             for future in as_completed(futures.keys()):
                 batch_index = futures[future]
