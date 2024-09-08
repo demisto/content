@@ -1384,7 +1384,6 @@ def fetch_incidents(client, first_fetch_time: str, fetch_closed: bool):
     resilient_incidents = search_incidents(client, args)
 
     demisto_incidents = []
-    last_incident_creation_time = last_fetched_timestamp
     if resilient_incidents:
         demisto.info(f'fetch_incidents retrieved {len(resilient_incidents)=} | '
                      f'with IDs: {[incident.get("id") for incident in resilient_incidents]}')
