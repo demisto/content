@@ -1039,7 +1039,7 @@ def update_remote_system_command(client, args):
             demisto.debug(f"Defining whether to close related alerts by: {is_closed=} {close_alerts_in_xdr=}")
             if is_closed and close_xdr_incident and close_alerts_in_xdr and remote_is_already_closed:
                 update_args['status'] = current_remote_status
-            if close_alerts_in_xdr and is_closed:
+            if close_alerts_in_xdr and is_closed and close_xdr_incident:
                 update_related_alerts(client, update_args)
 
         else:
