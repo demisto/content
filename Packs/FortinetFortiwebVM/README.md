@@ -23,9 +23,13 @@ Fortinet Fortiweb enables you to manage WAF policies, block cookies, URLs, hostn
 
 This pack contains an integration, whose main purpose is to perform controlled changes on hosted web applications.
 
+---
+
 ## Collect Events from Vendor
 In order to receive logs, use the [Broker VM](#broker-vm) option. <br>
 For Traffic logs type via Fortiweb Cloud, you are required to send the logs with [Amazon S3](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Ingest-Generic-Logs-from-Amazon-S3) services.
+
+---
 
 ### Fortiweb Cloud
 
@@ -44,6 +48,8 @@ For Traffic logs type via Fortiweb Cloud, you are required to send the logs with
 | Log Format | CEF |
 
 4. Click **Save**. 
+
+***
 
 * [How-To export Attack and Traffic logs to a log server](https://docs.fortinet.com/document/fortiweb-cloud/23.3.0/user-guide/367276/audit-logs).
 
@@ -77,6 +83,8 @@ For Traffic logs type via Fortiweb Cloud, you are required to send the logs with
 | Prefix / Folder | Enter the prefix / folder to store the traffic log. |
 
 4. Click **Save**.
+
+---
 
 ### Fortiweb VM
 
