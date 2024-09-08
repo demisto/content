@@ -47,6 +47,7 @@
         "CommonScripts"
     ],
     "marketplaces": [
-        "xsoar"
+        "xsoar",
+        "marketplacev2"
     ]
 }
