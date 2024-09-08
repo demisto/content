@@ -1,6 +1,8 @@
 # Fortinet Fortiweb Pack
 Fortinet Fortiweb enables you to manage WAF policies, block cookies, URLs, hostnames.
 
+---
+
 ## What does this pack do?
 
 ### Fortiweb Cloud
