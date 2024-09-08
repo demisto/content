@@ -2455,7 +2455,7 @@ def validate_code_issues_list_args(args):
     if not filtered_args:
         raise DemistoException(
             "At least one filtering argument is required, excluding `search_scopes`, `search_term`, and `limit`. For example, \
-                `fixable_only` or 'branch`"
+            `fixable_only` or 'branch`"
         )
 
 
