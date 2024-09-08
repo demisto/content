@@ -7,6 +7,9 @@ args:
 - description: A comma-separated list of accounts to exclude.
   name: exclude_accounts
   isArray: true
+- description: The maximum number of accounts to retrieve.
+  name: max_accounts
+  defaultValue: '50'
 comment: Update an AWS - EC2 instance with a list of accounts in an AWS organization, which will allow EC2 commands to run in all of them.
 commonfields:
   id: AwsEC2SyncAccounts
