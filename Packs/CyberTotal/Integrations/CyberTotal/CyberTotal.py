@@ -68,7 +68,7 @@ class Client(BaseClient):
         cybertotal_result = self._http_request(
             method='GET',
             url_suffix=f'/_api/search/ip/basic/{ip}',
-            ok_codes=(200, 400),
+            ok_codes=(200, 201, 400),
             resp_type='response'
         )
 
@@ -99,7 +99,7 @@ class Client(BaseClient):
         cybertotal_result = self._http_request(
             method='GET',
             url_suffix=f'/_api/search/url/basic/q={url}',
-            ok_codes=(200, 400),
+            ok_codes=(200, 201, 400),
             resp_type='response'
         )
 
