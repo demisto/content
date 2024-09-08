@@ -7045,7 +7045,7 @@ def test_http_request_get_token_request(mocker):
     retries = 5
     status_list_to_retry = [429]
     valid_status_codes = [200, 201, 202, 204]
-    int_timeout = 10
+    int_timeout = 60
     headers = {'Content-Type': 'application/x-www-form-urlencoded'}
     method = 'POST'
     url_suffix = '/oauth2/token'
