@@ -43,3 +43,4 @@ filter source_log_type = "Admin Audit Events" or source_log_type = "Security Aud
         xdm.auth.auth_method = data -> authenticationMethod,
         xdm.source.process.command_line = data -> commandKey,
         xdm.network.rule = data -> ruleTitle;
+
