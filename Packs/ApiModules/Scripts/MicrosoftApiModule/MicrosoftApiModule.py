@@ -185,7 +185,8 @@ class AzureCloudEndpoints:  # pylint: disable=too-few-public-methods,too-many-in
                  synapse_analytics_resource_id=None,
                  attestation_resource_id=None,
                  portal=None,
-                 keyvault=None):
+                 keyvault=None,
+                 exchange_online=None):
         # Attribute names are significant. They are used when storing/retrieving clouds from config
         self.management = management
         self.resource_manager = resource_manager
@@ -207,6 +208,7 @@ class AzureCloudEndpoints:  # pylint: disable=too-few-public-methods,too-many-in
         self.attestation_resource_id = attestation_resource_id
         self.portal = portal
         self.keyvault = keyvault
+        self.exchange_online = exchange_online
 
     def has_endpoint_set(self, endpoint_name):
         try:
@@ -304,6 +306,7 @@ AZURE_WORLDWIDE_CLOUD = AzureCloud(
         attestation_resource_id='https://attest.azure.net',
         portal='https://portal.azure.com',
         keyvault='https://vault.azure.net',
+        exchange_online='https://outlook.office365.com'
     ),
     suffixes=AzureCloudSuffixes(
         storage_endpoint='core.windows.net',
@@ -343,6 +346,7 @@ AZURE_US_GCC_CLOUD = AzureCloud(
         synapse_analytics_resource_id='https://dev.azuresynapse.usgovcloudapi.net',
         portal='https://portal.azure.us',
         keyvault='https://vault.usgovcloudapi.net',
+        exchange_online='https://outlook.office365.com'
     ),
     suffixes=AzureCloudSuffixes(
         storage_endpoint='core.usgovcloudapi.net',
@@ -379,6 +383,7 @@ AZURE_US_GCC_HIGH_CLOUD = AzureCloud(
         synapse_analytics_resource_id='https://dev.azuresynapse.usgovcloudapi.net',
         portal='https://portal.azure.us',
         keyvault='https://vault.usgovcloudapi.net',
+        exchange_online='https://outlook.office365.us'
     ),
     suffixes=AzureCloudSuffixes(
         storage_endpoint='core.usgovcloudapi.net',
@@ -415,6 +420,8 @@ AZURE_DOD_CLOUD = AzureCloud(
         synapse_analytics_resource_id='https://dev.azuresynapse.usgovcloudapi.net',
         portal='https://portal.azure.us',
         keyvault='https://vault.usgovcloudapi.net',
+        exchange_online='https://outlook-dod.office365.us'
+
     ),
     suffixes=AzureCloudSuffixes(
         storage_endpoint='core.usgovcloudapi.net',
@@ -447,7 +454,7 @@ AZURE_GERMAN_CLOUD = AzureCloud(
         media_resource_id='https://rest.media.cloudapi.de',
         ossrdbms_resource_id='https://ossrdbms-aad.database.cloudapi.de',
         portal='https://portal.microsoftazure.de',
-        keyvault='https://vault.microsoftazure.de'
+        keyvault='https://vault.microsoftazure.de',
     ),
     suffixes=AzureCloudSuffixes(
         storage_endpoint='core.cloudapi.de',
@@ -481,6 +488,7 @@ AZURE_CHINA_CLOUD = AzureCloud(
         synapse_analytics_resource_id='https://dev.azuresynapse.azure.cn',
         portal='https://portal.azure.cn',
         keyvault='https://vault.azure.cn',
+        exchange_online='https://partner.outlook.cn'
     ),
     suffixes=AzureCloudSuffixes(
         storage_endpoint='core.chinacloudapi.cn',
@@ -684,6 +692,7 @@ class MicrosoftClient(BaseClient):
             command_prefix: The prefix for all integration commands.
         """
         self.command_prefix = command_prefix
+        demisto.debug(f'Initializing MicrosoftClient with: {endpoint=} | {azure_cloud.abbreviation}')
         if endpoint != "__NA__":
             # Backward compatible.
             self.azure_cloud = AZURE_CLOUDS.get(endpoint, AZURE_WORLDWIDE_CLOUD)
@@ -1496,8 +1505,8 @@ def generate_login_url(client: MicrosoftClient,
                                f"Missing:{','.join(missing)}")
 
     login_url = urljoin(login_url, f'{client.tenant_id}/oauth2/v2.0/authorize?'
-                                   f'response_type=code&scope=offline_access%20{client.scope.replace(" ", "%20")}'
-                                   f'&client_id={client.client_id}&redirect_uri={client.redirect_uri}')
+                        f'response_type=code&scope=offline_access%20{client.scope.replace(" ", "%20")}'
+                        f'&client_id={client.client_id}&redirect_uri={client.redirect_uri}')
 
     result_msg = f"""### Authorization instructions
 1. Click on the [login URL]({login_url}) to sign in and grant Cortex XSOAR permissions for your Azure Service Management.
@@ -1505,7 +1514,7 @@ You will be automatically redirected to a link with the following structure:
 ```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
 2. Copy the `AUTH_CODE` (without the `code=` prefix, and the `session_state` parameter)
 and paste it in your instance configuration under the **Authorization code** parameter.
-    """
+ """
     return CommandResults(readable_output=result_msg)
 
 
