@@ -2544,7 +2544,7 @@ def code_issues_list_command(client, args):
 
     has_next = True
 
-    res_issues = []
+    res_issues: List[Dict] = []
     issues_for_readable_output = []
     while len(res_issues) < limit and has_next:
         body = code_issues_list_request_body(fixable_only=fixable_only, search_scopes=search_scopes,
