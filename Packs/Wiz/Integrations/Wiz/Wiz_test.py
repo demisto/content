@@ -404,6 +404,19 @@ VALID_RESPONSE_JSON = {
                 "projectOwners": "owner-test",
                 "securityChampions": "champion-test"
             }]
+        },
+        "cloudResources": {
+            "nodes": [{
+                "id": "test_id",
+                "name": "test_name",
+                "type": "test_type",
+                "properties": {
+                    "test": "test"
+                }
+            }]
+        },
+        "copyResourceForensicsToExternalAccount": {
+            "systemActivityGroupId": "test_id"
         }
     }
 }
@@ -517,7 +530,7 @@ def test_get_filtered_issues_bad_arguments(mocker, capfd):
         assert issue == 'You cannot pass entity_type and resource_id together\n'
         issue = get_filtered_issues(entity_type='', resource_id='', severity='', issue_type='', limit=500)
         assert issue == "You should pass (at least) one of the following parameters:\n\tentity_type\n\tresource_id" \
-                    "\n\tseverity\n\tissue_type\n"
+            "\n\tseverity\n\tissue_type\n"
         issue = get_filtered_issues(entity_type='virtualMachine', resource_id='', severity='BAD', issue_type='', limit=500)
         assert issue == 'You should only use these severity types: CRITICAL, HIGH, MEDIUM, LOW or ' \
                         'INFORMATIONAL in upper or lower case.'
@@ -1025,4 +1038,5 @@ def test_copy_to_forensics_account_invalid_id(mocker, capfd):
         mocker.patch('Wiz.checkAPIerrors', side_effect=[test_get_resource_id_using_arn_response,
                                                         test_get_resource_id_using_arn_response_error])
         issue = copy_to_forensics_account(resource_id='invalid_uuid')
-        assert issue == "Resource with ID 12345678-1234-1234-1234-d25e16359c19 was not copied to Forensics Account. error: {'message': 'Resource not found'}"
+        assert issue == ("Resource with ID 12345678-1234-1234-1234-d25e16359c19 was not copied to Forensics Account. "
+                         "error: {'message': 'Resource not found'}")

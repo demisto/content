@@ -2257,7 +2257,6 @@ def get_issue_evidence(issue_id):
         return response['data']['graphSearch']['nodes'][0].get('entities', {})
 
 
-
 def get_project_team(project_name):
     """
     Get the Project Owners and Security Champions details
@@ -2374,7 +2373,7 @@ def copy_to_forensics_account(resource_id):
             }
         }
         resource_id_response = checkAPIerrors(PULL_RESOURCES_ID_NATIVE_QUERY, variables)
-        if not resource_id_response['data']['cloudResources']['nodes']:
+        if resource_id_response['data'] is None or not resource_id_response['data']['cloudResources']['nodes']:
             demisto.error(f"Resource with ID {resource_id} not found.")
             return f"Resource with ID {resource_id} not found."
         else:
@@ -2593,6 +2592,10 @@ def main():
             )
             command_result = CommandResults(readable_output=projects_response, raw_response=projects_response)
             return_results(command_result)
+
+        elif command == 'wiz-rescan-machine-disk':
+            return_results(CommandResults(readable_output="This command is deprecated",
+                           raw_response="This command is deprecated"))
 
         elif command == 'wiz-copy-to-forensics-account':
             demisto_args = demisto.args()

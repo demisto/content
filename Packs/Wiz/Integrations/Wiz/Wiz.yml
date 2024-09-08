@@ -310,7 +310,7 @@ script:
       description: project name.
       required: true
   - name: wiz-rescan-machine-disk
-    description: Rescan a VM disk in Wiz.
+    description: DEPRECATED
     arguments:
     - name: vm_id
       description: vm cloud provider id.
