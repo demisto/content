@@ -102,6 +102,11 @@ STIX_2_TYPES_TO_CORTEX_TYPES = {       # pragma: no cover
     "x509-certificate": FeedIndicatorType.X509,
 }
 
+STIX_NOT_SUPPORTED_TYPES = {
+    "file:name": True
+}
+
+
 MITRE_CHAIN_PHASES_TO_DEMISTO_FIELDS = {       # pragma: no cover
     'build-capabilities': ThreatIntel.KillChainPhases.BUILD_CAPABILITIES,
     'privilege-escalation': ThreatIntel.KillChainPhases.PRIVILEGE_ESCALATION,
@@ -920,10 +925,59 @@ class STIX2XSOARParser(BaseClient):
         return indicator
 
     @staticmethod
+    def get_entity_b_type_and_value(related_obj: str, id_to_object: dict[str, dict[str, Any]],
+                                    is_unit42_report: bool = False) -> tuple:
+        """
+       Gets the type and value of the indicator in entity_b.
+
+        Args:
+            related_obj: the indicator to get information on.
+            id_to_object: a dict in the form of - id: stix_object.
+            is_unit42_report: represents whether unit42 report or not.
+
+        Returns:
+            tuple. the indicator type and value.
+        """
+        indicator_obj = id_to_object.get(related_obj, {})
+        entity_b_value = indicator_obj.get('name', '')
+        entity_b_obj_type = STIX_2_TYPES_TO_CORTEX_TYPES.get(indicator_obj.get('type', ''),
+                                                             STIX2XSOARParser.get_ioc_type(related_obj, id_to_object))
+        if indicator_obj.get('type') == "indicator":
+            entity_b_value = STIX2XSOARParser.get_ioc_value(related_obj, id_to_object)
+        elif indicator_obj.get('type') == "attack-pattern" and is_unit42_report:
+            _, entity_b_value = STIX2XSOARParser.get_mitre_attack_id_and_value_from_name(indicator_obj)
+        elif indicator_obj.get('type') == "report" and is_unit42_report:
+            entity_b_value = f"[Unit42 ATOM] {indicator_obj.get('name')}"
+        return entity_b_obj_type, entity_b_value
+
+    @staticmethod
+    def get_mitre_attack_id_and_value_from_name(attack_indicator):
+        """
+        Split indicator name into MITRE ID and indicator value: 'T1108: Redundant Access' -> MITRE ID = T1108,
+        indicator value = 'Redundant Access'.
+        """
+        ind_name = attack_indicator.get('name')
+        separator = ':'
+        try:
+            partition_result = ind_name.partition(separator)
+            if partition_result[1] != separator:
+                raise DemistoException(f"Failed parsing attack indicator {ind_name}")
+        except ValueError:
+            raise DemistoException(f"Failed parsing attack indicator {ind_name}")
+        ind_id = partition_result[0]
+        value = partition_result[2].strip()
+
+        if attack_indicator.get('x_mitre_is_subtechnique'):
+            value = attack_indicator.get('x_panw_parent_technique_subtechnique')
+
+        return ind_id, value
+
+    @staticmethod
     def parse_report_relationships(report_obj: dict[str, Any],
                                    id_to_object: dict[str, dict[str, Any]],
                                    relationships_prefix: str = '',
-                                   ignore_reports_relationships: bool = False) \
+                                   ignore_reports_relationships: bool = False,
+                                   is_unit42_report: bool = False) \
             -> Tuple[list[dict[str, Any]], list[dict[str, Any]]]:
         obj_refs = report_obj.get('object_refs', [])
         relationships: list[dict[str, Any]] = []
@@ -935,15 +989,19 @@ class STIX2XSOARParser(BaseClient):
                 if ignore_reports_relationships and related_obj.startswith('report--'):
                     continue
                 obj_refs_excluding_relationships_prefix.append(related_obj)
-                if (entity_b_obj := id_to_object.get(related_obj, {})):
-                    entity_b_type = STIX_2_TYPES_TO_CORTEX_TYPES.get(entity_b_obj.get('type', ''), '')
+                if id_to_object.get(related_obj):
+                    entity_b_obj_type, entity_b_value = STIX2XSOARParser.get_entity_b_type_and_value(related_obj, id_to_object,
+                                                                                                     is_unit42_report)
+                    if not entity_b_obj_type:
+                        demisto.debug(f"Could not find the type of {related_obj} skipping.")
+                        continue
                     relationships.append(
                         EntityRelationship(
                             name='related-to',
                             entity_a=f"{relationships_prefix}{report_obj.get('name')}",
                             entity_a_type=ThreatIntel.ObjectsNames.REPORT,
-                            entity_b=entity_b_obj.get('name'),
-                            entity_b_type=entity_b_type
+                            entity_b=entity_b_value,
+                            entity_b_type=entity_b_obj_type
                         ).to_indicator()
                     )
         return relationships, obj_refs_excluding_relationships_prefix
@@ -965,9 +1023,24 @@ class STIX2XSOARParser(BaseClient):
         pattern = indicator_obj.get('pattern', '')
         for stix_type in STIX_2_TYPES_TO_CORTEX_TYPES:
             if pattern.startswith(f'[{stix_type}'):
-                ioc_type = STIX_2_TYPES_TO_CORTEX_TYPES.get(stix_type)  # type: ignore
-                break
+                if STIX2XSOARParser.is_supported_iocs_type(pattern):
+                    ioc_type = STIX_2_TYPES_TO_CORTEX_TYPES.get(stix_type, '')  # type: ignore
+                    break
+                demisto.debug(f"Indicator {indicator_obj.get('id')} is not supported indicator.")
         return ioc_type
+
+    @staticmethod
+    def is_supported_iocs_type(pattern: str):
+        """
+        Get pattern and check if the type is supported by XSOAR.
+
+        Args:
+            pattern: the indicator pattern.
+
+        Returns:
+            bool.
+        """
+        return all(not pattern.startswith(f"[{key}") for key in STIX_NOT_SUPPORTED_TYPES)
 
     @staticmethod
     def get_tlp(indicator_json: dict) -> str:
@@ -1094,9 +1167,26 @@ class STIX2XSOARParser(BaseClient):
 
         return [attack_pattern]
 
+    def create_obj_refs_list(self, obj_refs_list: list):
+        """
+        Creates a list of object references for a STIX report type and organize it for an XSOAR "object refs" grid field.
+
+        :param obj_refs_list: A list of obj refs
+        :return: A list of dicts.
+        """
+        # remove duplicates
+        obj_refs_list_result = []
+        obj_refs_list_without_dup = list(dict.fromkeys(obj_refs_list))
+        omitted_object_number = len(obj_refs_list) - len(obj_refs_list_without_dup)
+        demisto.debug(f"Omitting {omitted_object_number} object ref form the report")
+        if obj_refs_list:
+            obj_refs_list_result.extend([{'objectstixid': object} for object in obj_refs_list_without_dup])
+        return obj_refs_list_result
+
     def parse_report(self, report_obj: dict[str, Any],
                      relationships_prefix: str = '',
-                     ignore_reports_relationships: bool = False) -> list[dict[str, Any]]:
+                     ignore_reports_relationships: bool = False,
+                     is_unit42_report: bool = False) -> list[dict[str, Any]]:
         """
         Parses a single report object
         :param report_obj: report object
@@ -1126,10 +1216,11 @@ class STIX2XSOARParser(BaseClient):
 
         relationships, obj_refs_excluding_relationships_prefix = self.parse_report_relationships(report_obj, self.id_to_object,
                                                                                                  relationships_prefix,
-                                                                                                 ignore_reports_relationships)
+                                                                                                 ignore_reports_relationships,
+                                                                                                 is_unit42_report)
         report['relationships'] = relationships
         if obj_refs_excluding_relationships_prefix:
-            fields['Report Object References'] = [{'objectstixid': object} for object in obj_refs_excluding_relationships_prefix]
+            fields['Report Object References'] = self.create_obj_refs_list(obj_refs_excluding_relationships_prefix)
         report["fields"] = fields
         return [report]
 
@@ -1853,32 +1944,32 @@ class STIX2XSOARParser(BaseClient):
     @staticmethod
     def get_ioc_value(ioc, id_to_obj):
         """
-        Get IOC value from the indicator name field.
+        Get IOC value from the indicator name/value/pattern field.
 
         Args:
             ioc: the indicator to get information on.
             id_to_obj: a dict in the form of - id: stix_object.
 
         Returns:
-            str. the IOC value. if its reports we add to it [Unit42 ATOM] prefix,
+            str. the IOC value.
             if its attack pattern remove the id from the name.
         """
         ioc_obj = id_to_obj.get(ioc)
         if ioc_obj:
-            name = ioc_obj.get('name', '') or ioc_obj.get('value', '')
-            if "file:hashes.'SHA-256' = '" in name:
-                return Taxii2FeedClient.get_ioc_value_from_ioc_name(ioc_obj)
-            else:
-                return name
+            for key in ('name', 'value', 'pattern'):
+                if ("file:hashes.'SHA-256' = '" in ioc_obj.get(key, '')) and \
+                        (ioc_value := Taxii2FeedClient.extract_ioc_value(ioc_obj, key)):
+                    return ioc_value
+            return ioc_obj.get('name') or ioc_obj.get('value')
         return None
 
     @staticmethod
-    def get_ioc_value_from_ioc_name(ioc_obj):
+    def extract_ioc_value(ioc_obj, key: str = "name"):
         """
-        Extract SHA-256 from string:
+        Extract SHA-256 from specific key, default key is name.
         ([file:name = 'blabla' OR file:name = 'blabla'] AND [file:hashes.'SHA-256' = '1111'])" -> 1111
         """
-        ioc_value = ioc_obj.get('name', '')
+        ioc_value = ioc_obj.get(key, '')
         try:
             ioc_value_groups = re.search("(?<='SHA-256' = ').*?(?=')", ioc_value)
             if ioc_value_groups:
