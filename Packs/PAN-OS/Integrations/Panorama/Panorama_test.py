@@ -6841,6 +6841,7 @@ class TestFetchIncidentsFlows:
         assert new_last_run['last_fetch_dict'].get('Y_log_type', '') == '2022-01-01 13:00:00'
         assert new_last_run['last_id_dict'].get('Y_log_type', '') == {'dummy_device2': '000000003'}
 
+
 def test_find_largest_id_per_device(mocker):
     """
     Given:
@@ -7441,7 +7442,8 @@ def test_fetch_incidents_correlation(mocker: MockerFixture):
     )
     assert entries[0]["name"] == "Correlation 1"
 
-def test_fetch_incidents_correlation(mocker: MockerFixture):
+
+def test_fetch_incidents_offset(mocker: MockerFixture):
     '''
     Given:
         -
@@ -7497,4 +7499,3 @@ def test_fetch_incidents_correlation(mocker: MockerFixture):
     assert last_id_dict == LastIDs(Correlation=10)
     assert max_fetch_dict == MaxFetch(Correlation=5)
     assert offset_dict == Offset(Correlation=2)
-
