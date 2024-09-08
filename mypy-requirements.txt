@@ -1,4 +1,4 @@
-# This file specifies the Python dependencies required for the mypy-in-docker hook.
+# This file specifies the stub lib dependencies required for the mypy-in-docker hook.
 # These dependencies will be installed in the Docker container.
 cachetools
 cffi
@@ -33,4 +33,3 @@ types-six
 types-tabulate
 types-ujson
 ujson
-a
