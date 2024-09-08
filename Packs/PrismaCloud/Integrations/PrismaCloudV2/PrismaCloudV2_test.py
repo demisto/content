@@ -1733,10 +1733,10 @@ invalid_args = [
      'Invalid license type. For the list of valid license types go to- https://pan.dev/prisma-cloud/api/code/get-periodic-findings/#request'),
     ({'search_scopes': 'scope1', 'search_term': 'term1', 'limit': 10}, DemistoException,
      "At least one filtering argument is required, excluding `search_scopes`, `search_term`, and `limit`. For example, \
-         `fixable_only` or 'branch`"),
+    `fixable_only` or 'branch`"),
     ({}, DemistoException,
      "At least one filtering argument is required, excluding `search_scopes`, `search_term`, and `limit`. For example, \
-         `fixable_only` or 'branch`"),
+    `fixable_only` or 'branch`"),
     ({'search_scopes': 'scope1', 'some_filter': 'value1'}, DemistoException,
      'The `search_term` argument is required when specifying `search_scopes`.'),
     ({'page': 40, 'some_filter': 'value1'}, DemistoException,
