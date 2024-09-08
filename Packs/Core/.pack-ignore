@@ -20,3 +20,7 @@ ignore=BA101
 
 [file:playbook-XCloud_Cryptomining.yml]
 ignore=BA101
+
+# GR103 is temporary, see CIAC-11705
+[file:layoutscontainer-Default.json]
+ignore=GR103
