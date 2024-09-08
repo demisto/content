@@ -1,0 +1,999 @@
+id: test_playbook_pan_os_firewall_exceptions_commands
+version: -1
+name: test_playbook_pan_os_firewall_exceptions_commands
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: a6d2d73d-bca5-4dcf-8cbe-a00a828bcc00
+    type: start
+    task:
+      id: a6d2d73d-bca5-4dcf-8cbe-a00a828bcc00
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+      - "4"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 2b9ab613-8856-494b-8810-935cae5d9077
+    type: regular
+    task:
+      id: 2b9ab613-8856-494b-8810-935cae5d9077
+      version: -1
+      name: get_spyware_profiles_names
+      description: Gets information for the specified security profile.
+      script: '|||pan-os-get-security-profiles'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      security_profile:
+        simple: spyware
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: fd6e1cd7-0f4c-4f06-8a5c-16b15ff46288
+    type: regular
+    task:
+      id: fd6e1cd7-0f4c-4f06-8a5c-16b15ff46288
+      version: -1
+      name: add_exception_to_spyware_profile
+      description: Add an exception to a Vulnerability Protection profile or Anti
+        Spyware profile.
+      script: '|||pan-os-add-profile-exception'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      profile_name:
+        complex:
+          root: Panorama.Spyware
+          accessor: Name
+          transformers:
+          - operator: FirstArrayElement
+      profile_type:
+        simple: Anti Spyware Profile
+      threat:
+        simple: "10003"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: e3673a8e-b67e-4619-8bcc-68696ffa15d0
+    type: regular
+    task:
+      id: e3673a8e-b67e-4619-8bcc-68696ffa15d0
+      version: -1
+      name: get_all_exceptions_from_spyware_profile
+      description: List the exceptions in a Vulnerability Protection profile or Anti
+        Spyware profile.
+      script: '|||pan-os-list-profile-exception'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      profile_name:
+        complex:
+          root: Panorama.Spyware
+          accessor: Name
+          transformers:
+          - operator: FirstArrayElement
+      profile_type:
+        simple: Anti Spyware Profile
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 79c4f41c-a0d4-4e67-89d7-f1e74c34d7a6
+    type: regular
+    task:
+      id: 79c4f41c-a0d4-4e67-89d7-f1e74c34d7a6
+      version: -1
+      name: get_vulnerability_profiles_names
+      description: Gets information for the specified security profile.
+      script: '|||pan-os-get-security-profiles'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      security_profile:
+        simple: vulnerability
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 45c41ebf-72f2-42fa-8d5d-71979a9acc0d
+    type: regular
+    task:
+      id: 45c41ebf-72f2-42fa-8d5d-71979a9acc0d
+      version: -1
+      name: add_exception_to_vulnerability_profile
+      description: Add an exception to a Vulnerability Protection profile or Anti
+        Spyware profile.
+      script: '|||pan-os-add-profile-exception'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      profile_name:
+        complex:
+          root: Panorama.Vulnerability
+          accessor: Name
+          transformers:
+          - operator: FirstArrayElement
+      profile_type:
+        simple: Vulnerability Protection Profile
+      threat:
+        simple: "10003"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 896e9e73-b6f7-42b3-8819-1b019800842a
+    type: regular
+    task:
+      id: 896e9e73-b6f7-42b3-8819-1b019800842a
+      version: -1
+      name: get_all_exceptions_from_vulnerability_profile
+      description: List the exceptions in a Vulnerability Protection profile or Anti
+        Spyware profile.
+      script: '|||pan-os-list-profile-exception'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      profile_name:
+        complex:
+          root: Panorama.Vulnerability
+          accessor: Name
+          transformers:
+          - operator: FirstArrayElement
+      profile_type:
+        simple: Vulnerability Protection Profile
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 87ab8d10-f8ac-477c-84a9-ec2156a267c3
+    type: condition
+    task:
+      id: 87ab8d10-f8ac-477c-84a9-ec2156a267c3
+      version: -1
+      name: Verify Results - exception_exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Panorama.Spyware.Exception.id
+            iscontext: true
+          right:
+            value:
+              simple: "10003"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 459b4a6c-b539-43de-8dd4-7bbb7b898c6b
+    type: regular
+    task:
+      id: 459b4a6c-b539-43de-8dd4-7bbb7b898c6b
+      version: -1
+      name: closeInvestigation
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      id:
+        simple: ${incident.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 6bf64a84-bbcf-4bb5-8176-8739b8a77f6d
+    type: condition
+    task:
+      id: 6bf64a84-bbcf-4bb5-8176-8739b8a77f6d
+      version: -1
+      name: Verify Results - exception_exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Panorama.Vulnerability.Exception.id
+            iscontext: true
+          right:
+            value:
+              simple: "10003"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: e795a773-fcba-40ef-8a7c-d843677c6951
+    type: regular
+    task:
+      id: e795a773-fcba-40ef-8a7c-d843677c6951
+      version: -1
+      name: edit_exception_in_vulnerability_profile
+      description: Edit an exception to a Vulnerability Protection profile or Anti
+        Spyware profile.
+      script: '|||pan-os-edit-profile-exception'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      action:
+        simple: Drop
+      profile_name:
+        complex:
+          root: Panorama.Vulnerability
+          accessor: Name
+          transformers:
+          - operator: FirstArrayElement
+      profile_type:
+        simple: Vulnerability Protection Profile
+      threat:
+        simple: "10003"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: b95627ba-f4f2-41e9-80c8-d9d8ee9fad57
+    type: regular
+    task:
+      id: b95627ba-f4f2-41e9-80c8-d9d8ee9fad57
+      version: -1
+      name: get_all_exceptions_from_vulnerability_profile
+      description: List the exceptions in a Vulnerability Protection profile or Anti
+        Spyware profile.
+      script: '|||pan-os-list-profile-exception'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      profile_name:
+        complex:
+          root: Panorama.Vulnerability
+          accessor: Name
+          transformers:
+          - operator: FirstArrayElement
+      profile_type:
+        simple: Vulnerability Protection Profile
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 6c6981a3-e2e1-4bd7-8df8-74229d300c2e
+    type: condition
+    task:
+      id: 6c6981a3-e2e1-4bd7-8df8-74229d300c2e
+      version: -1
+      name: Verify Results - exception_not_exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: notIn
+          left:
+            value:
+              simple: "10003"
+          right:
+            value:
+              simple: Panorama.Vulnerability.Exception.id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 0ffe2cdc-d213-475e-8e9f-a376e88f4c49
+    type: regular
+    task:
+      id: 0ffe2cdc-d213-475e-8e9f-a376e88f4c49
+      version: -1
+      name: delete_exception_to_vulnerability_profile
+      description: Delete an exception to a Vulnerability Protection profile or Anti
+        Spyware profile.
+      script: '|||pan-os-delete-profile-exception'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      profile_name:
+        complex:
+          root: Panorama.Vulnerability
+          accessor: Name
+          transformers:
+          - operator: FirstArrayElement
+      profile_type:
+        simple: Vulnerability Protection Profile
+      threat:
+        simple: "10003"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 2540b648-844f-484a-8095-ccf4fde15f1d
+    type: condition
+    task:
+      id: 2540b648-844f-484a-8095-ccf4fde15f1d
+      version: -1
+      name: Verify Results - exception_was_edited
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Panorama.Vulnerability.Exception.action
+            iscontext: true
+          right:
+            value:
+              simple: drop
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: cdb15b1e-b738-4a3a-8f17-ba20cac2256c
+    type: regular
+    task:
+      id: cdb15b1e-b738-4a3a-8f17-ba20cac2256c
+      version: -1
+      name: get_all_exceptions_from_vulnerability_profile
+      description: List the exceptions in a Vulnerability Protection profile or Anti
+        Spyware profile.
+      script: '|||pan-os-list-profile-exception'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      profile_name:
+        complex:
+          root: Panorama.Vulnerability
+          accessor: Name
+          transformers:
+          - operator: FirstArrayElement
+      profile_type:
+        simple: Vulnerability Protection Profile
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 378203ca-626d-41cb-8bff-2724f1c79ef7
+    type: regular
+    task:
+      id: 378203ca-626d-41cb-8bff-2724f1c79ef7
+      version: -1
+      name: edit_exception_in_spyware_profile
+      description: Edit an exception to a Vulnerability Protection profile or Anti
+        Spyware profile.
+      script: '|||pan-os-edit-profile-exception'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      action:
+        simple: Drop
+      profile_name:
+        complex:
+          root: Panorama.Spyware
+          accessor: Name
+          transformers:
+          - operator: FirstArrayElement
+      profile_type:
+        simple: Anti Spyware Profile
+      threat:
+        simple: "10003"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 49608c14-5c1e-4ab9-8829-64d9017336aa
+    type: condition
+    task:
+      id: 49608c14-5c1e-4ab9-8829-64d9017336aa
+      version: -1
+      name: Verify Results - exception_was_edited
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Panorama.Spyware.Exception.action
+            iscontext: true
+          right:
+            value:
+              simple: drop
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: c66af92f-9980-4c66-85d2-123ff373cdac
+    type: regular
+    task:
+      id: c66af92f-9980-4c66-85d2-123ff373cdac
+      version: -1
+      name: delete_exception_to_vulnerability_profile
+      description: Delete an exception to a Vulnerability Protection profile or Anti
+        Spyware profile.
+      script: '|||pan-os-delete-profile-exception'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      profile_name:
+        complex:
+          root: Panorama.Spyware
+          accessor: Name
+          transformers:
+          - operator: FirstArrayElement
+      profile_type:
+        simple: Anti Spyware Profile
+      threat:
+        simple: "10003"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: edb5377a-23ad-4852-8937-cf9ea6a26618
+    type: regular
+    task:
+      id: edb5377a-23ad-4852-8937-cf9ea6a26618
+      version: -1
+      name: get_all_exceptions_from_spyware_profile
+      description: List the exceptions in a Vulnerability Protection profile or Anti
+        Spyware profile.
+      script: '|||pan-os-list-profile-exception'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      profile_name:
+        complex:
+          root: Panorama.Spyware
+          accessor: Name
+          transformers:
+          - operator: FirstArrayElement
+      profile_type:
+        simple: Anti Spyware Profile
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: bec08d19-a006-4506-8d7e-e352b513617f
+    type: condition
+    task:
+      id: bec08d19-a006-4506-8d7e-e352b513617f
+      version: -1
+      name: Verify Results - exception_not_exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: notIn
+          left:
+            value:
+              simple: "10003"
+          right:
+            value:
+              simple: Panorama.Spyware.Exception.id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: a5111e98-0484-4345-82ff-c5b372cb36dd
+    type: regular
+    task:
+      id: a5111e98-0484-4345-82ff-c5b372cb36dd
+      version: -1
+      name: get_all_exceptions_from_spyware_profile
+      description: List the exceptions in a Vulnerability Protection profile or Anti
+        Spyware profile.
+      script: '|||pan-os-list-profile-exception'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      profile_name:
+        complex:
+          root: Panorama.Spyware
+          accessor: Name
+          transformers:
+          - operator: FirstArrayElement
+      profile_type:
+        simple: Anti Spyware Profile
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 8fc87a34-33d9-424c-847e-dc095aa063bb
+    type: condition
+    task:
+      id: 8fc87a34-33d9-424c-847e-dc095aa063bb
+      version: -1
+      name: check_empty_profiles_list
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              simple: Panorama.Vulnerability.Name
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 5b6d99bc-0baf-4145-8546-9bbc63fd30c9
+    type: condition
+    task:
+      id: 5b6d99bc-0baf-4145-8546-9bbc63fd30c9
+      version: -1
+      name: check_empty_profiles_list
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              simple: Panorama.Spyware.Name
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2165,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.10.0
+description: ''
