@@ -55,3 +55,6 @@ ignore=BA124
 [file:JobCreator.yml]
 ignore=BA124
 
+# GR103 is temporary, see CIAC-11705
+[file:layoutscontainer-configuration_setup.json]
+ignore=GR103
