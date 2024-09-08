@@ -28,7 +28,8 @@ XDR_RESOLVED_STATUS_TO_XSOAR = {
     'resolved_true_positive': 'Resolved',
     'resolved_security_testing': 'Security Testing',
     'resolved_other': 'Other',
-    'resolved_auto': 'Resolved'
+    'resolved_auto': 'Resolved',
+    'resolved_auto_resolve': 'Resolved'
 }
 
 ALERT_GENERAL_FIELDS = {
@@ -162,7 +163,7 @@ class CoreClient(BaseClient):
         self.timeout = timeout
         # For Xpanse tenants requiring direct use of the base client HTTP request instead of the _apiCall,
 
-    def _http_request(self, method, url_suffix='', full_url=None, headers=None, json_data=None,
+    def _http_request(self, method, url_suffix='', full_url=None, headers=None, json_data=None,  # type: ignore[override]
                       params=None, data=None, timeout=None, raise_on_status=False, ok_codes=None,
                       error_handler=None, with_metrics=False, resp_type='json'):
         '''

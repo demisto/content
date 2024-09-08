@@ -4,3 +4,6 @@ ignore=BA108,BA109
 [file:Cisco-umbrella-investigate_image.png]
 ignore=IM111
 
+# GR103 is temporary, see CIAC-11705
+[file:playbook-Cisco-Umbrella-Python-Test.yml]
+ignore=GR103
