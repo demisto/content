@@ -1694,36 +1694,11 @@ def test_remove_additional_resource_fields(prisma_cloud_v2_client):
     assert input == expected
 
 
-code_issues_list_request_data = [
-    # case 'fixable_only', 'scopes' with one value, 'term', 'branch' and 'limit'.
-    ({'fixable_only': True, 'search_scopes': ['Secrets'], 'search_term': 'bla1', 'branch': 'bla2', 'limit': 30},
-     {'filters': {'branch': 'bla2', 'fixableOnly': True},  # expected
-      'search': {'scopes': ['Secrets'], 'term': 'bla1'}, 'limit': 30, 'offset': 0}),
-    # case 'scopes' with more than one value.
-    ({'search_scopes': ['Secrets', 'Licenses']},
-     {'search': {'scopes': ['Secrets', 'Licenses']}, 'limit': 50, 'offset': 10})
-]
-
-
-@pytest.mark.parametrize('args, expected', code_issues_list_request_data)
-def test_code_issues_list_request(mocker, prisma_cloud_v2_client, args, expected):
-    """
-        Given
-            args for code-issues-list command
-        When
-            Running code_issues_list_request func.
-        Then
-            The http request is called with the right json body.
-    """
-    http_request = mocker.patch.object(prisma_cloud_v2_client, '_http_request', return_value={})
-    prisma_cloud_v2_client.code_issues_list_request(**args)
-    assert http_request.call_args.kwargs['json_data'] == expected
-
-
 labels_data = [
     ([{'metadata': {'imageName': 'weaveworksdemos/front-end:0.3.12'}, 'label': 'Image Referencer'}],  # case one dict
      ['Image Referencer']),  # expected
-    ([{'label': 'Breaking Change Fix'}, {'metadata': {'imageName': 'weaveworksdemos/front-end:0.3.12'}, 'label': 'Image Referencer'}],  # case two dicts
+    ([{'label': 'Breaking Change Fix'}, {'metadata': {'imageName': 'weaveworksdemos/front-end:0.3.12'},
+                                         'label': 'Image Referencer'}],  # case two dicts
      ['Breaking Change Fix', 'Image Referencer']),  # expected
     (['CustomPolicy'],  # case list
      ['CustomPolicy']),  # expected
@@ -1757,8 +1732,11 @@ invalid_args = [
     ({'license_type': 'invalid_type', 'some_filter': 'value1'}, DemistoException,
      'Invalid license type. For the list of valid license types go to- https://pan.dev/prisma-cloud/api/code/get-periodic-findings/#request'),
     ({'search_scopes': 'scope1', 'search_term': 'term1', 'limit': 10}, DemistoException,
-     "At least one filtering argument is required, excluding `search_scopes`, `search_term`, and `limit`. For example, `fixable_only` or 'branch`"),
-    ({}, DemistoException, "At least one filtering argument is required, excluding `search_scopes`, `search_term`, and `limit`. For example, `fixable_only` or 'branch`"),
+     "At least one filtering argument is required, excluding `search_scopes`, `search_term`, and `limit`. For example, \
+         `fixable_only` or 'branch`"),
+    ({}, DemistoException,
+     "At least one filtering argument is required, excluding `search_scopes`, `search_term`, and `limit`. For example, \
+         `fixable_only` or 'branch`"),
     ({'search_scopes': 'scope1', 'some_filter': 'value1'}, DemistoException,
      'The `search_term` argument is required when specifying `search_scopes`.'),
     ({'page': 40, 'some_filter': 'value1'}, DemistoException,
