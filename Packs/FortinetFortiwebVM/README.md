@@ -91,10 +91,12 @@ For Traffic logs type via Fortiweb Cloud, you are required to send the logs with
 **Configure Log Settings**
 1. Go ti **Log&Report** &rarr; **Log Config** &rarr; **Global Log Settings**.
 2. Configure and enable a **SIEM** setting option: <br>
+
 | Field Name | Value |
 | :---------------- | :------: |
 | Log Level | Select the severity level that a log message must equal or exceed in order to be recorded to this storage location. |
 | SIEM Policy | Select the policy to use when storing log messages remotely. |
+
 3. Click **Apply**.
 
 
