@@ -255,28 +255,30 @@ ignore=BA101
 [file:layoutscontainer-Threat_ActorV2.json]
 ignore=BA101
 
-[file:layoutscontainer-URLV2.json]
-ignore=BA101
-
 [file:layoutscontainer-Attack_PatternV2.json]
 ignore=BA101
 
+# GR103 is temporary, see CIAC-11705
+[file:layoutscontainer-URLV2.json]
+ignore=BA101,GR103
+
+
 [file:layoutscontainer-EmailV2.json]
-ignore=BA101
+ignore=BA101,GR103
 
 [file:layoutscontainer-FileV2.json]
-ignore=BA101
+ignore=BA101,GR103
 
 [file:layoutscontainer-IPV2.json]
-ignore=BA101
+ignore=BA101,GR103
+
+[file:layoutscontainer-DomainV2.json]
+ignore=BA101,GR103
 
 [file:layoutscontainer-AccountV2.json]
 ignore=BA101
 
 [file:layoutscontainer-MalwareV2.json]
-ignore=BA101
-
-[file:layoutscontainer-DomainV2.json]
 ignore=BA101
 
 [file:layoutscontainer-ReportV2.json]
@@ -343,4 +345,36 @@ DN
 PEM
 SPKI
 subkeys
-formatter
+formatter# GR103 is temporary, see CIAC-11705
+[file:incidentfield-Last_Modified_By.json]
+ignore=GR103
+# GR103 is temporary, see CIAC-11705
+[file:incidentfield-Detected_External_IPs.json]
+ignore=GR103
+# GR103 is temporary, see CIAC-11705
+[file:incidentfield-Detected_Internal_Hosts.json]
+ignore=GR103
+# GR103 is temporary, see CIAC-11705
+[file:incidentfield-Detected_Users.json]
+ignore=GR103
+# GR103 is temporary, see CIAC-11705
+[file:incidentfield-Detected_Internal_IPs.json]
+ignore=GR103
+# GR103 is temporary, see CIAC-11705
+[file:incidentfield-Detected_External_Hosts.json]
+ignore=GR103
+# GR103 is temporary, see CIAC-11705
+[file:incidentfield-osversion.json]
+ignore=GR103
+# GR103 is temporary, see CIAC-11705
+[file:incidentfield-hostname.json]
+ignore=GR103
+# GR103 is temporary, see CIAC-11705
+[file:incidentfield-description.json]
+ignore=GR103
+# GR103 is temporary, see CIAC-11705
+[file:incidentfield-shortdescription.json]
+ignore=GR103
+# GR103 is temporary, see CIAC-11705
+[file:incidentfield-Last_Modified_On.json]
+ignore=GR103

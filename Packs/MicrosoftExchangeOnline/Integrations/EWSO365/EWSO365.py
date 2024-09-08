@@ -450,7 +450,7 @@ class MarkAsJunk(EWSAccountService):
 
     def get_payload(self, item_id, move_item):  # pragma: no cover
         junk = create_element(
-            f"m: {self.SERVICE_NAME}",
+            f"m:{self.SERVICE_NAME}",
             {"IsJunk": "true", "MoveItem": "true" if move_item else "false"},
         )
 
@@ -498,7 +498,7 @@ class GetSearchableMailboxes(EWSService):
         ]
 
     def get_payload(self):
-        element = create_element(f"m: {self.SERVICE_NAME}")
+        element = create_element(f"m:{self.SERVICE_NAME}")
         return element
 
 
@@ -536,7 +536,7 @@ class ExpandGroup(EWSService):
             sys.exit()
 
     def get_payload(self, email_address):
-        element = create_element(f"m: {self.SERVICE_NAME}")
+        element = create_element(f"m:{self.SERVICE_NAME}")
         mailbox_element = create_element("m:Mailbox")
         add_xml_child(mailbox_element, "t:EmailAddress", email_address)
         element.append(mailbox_element)
