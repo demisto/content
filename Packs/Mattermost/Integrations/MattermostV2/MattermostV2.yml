@@ -36,6 +36,7 @@ configuration:
   required: false
   type: 0
   section: Connect - Advanced
+  additionalinfo: If Notifications Channel name is not specified, will send notification to incidentNotificationChannel channel.
 - defaultvalue: 'true'
   display: Enable Incident Mirroring
   name: mirroring
@@ -48,6 +49,26 @@ configuration:
   section: Collect
   advanced: true
   required: false
+- display: Types of Notifications to Send
+  name: permitted_notifications
+  type: 16
+  section: Collect
+  options:
+  - incidentAssigned
+  - assign
+  - incidentOpened
+  - incidentChanged
+  - investigationClosed
+  - investigationDeleted
+  - incidentReminderSLA
+  - taskCompleted
+  - incidentStatusChanged
+  - failedFetchIncidents
+  - mentionNew
+  - mentionOld
+  advanced: true
+  required: false
+  additionalinfo: By default, externalFormSubmit is enabled in order to allow Ask tasks to be sent correctly.
 - defaultvalue: 'true'
   display: Long running instance. Required for investigation mirroring and direct messages.
   name: longRunning
