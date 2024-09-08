@@ -63,7 +63,6 @@ LOG_TYPE_TO_REQUEST = {
     'Wildfire': 'wildfire',
     'Decryption': 'decryption'}
 FETCH_RANGE = range(1, 5001)
-FETCH_MAX_AMOUNT = 5000
 
 XPATH_SECURITY_RULES = ''
 DEVICE_GROUP = ''
