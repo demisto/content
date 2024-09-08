@@ -53,7 +53,7 @@ script:
       - 'False'
     - name: limit
       description: Maximum number of results to return.
-      defaultValue: 1000
+      defaultValue: 1_000
     - name: last_id
       description: "The ID of the last event retrieved. Use together with `last_time` to get events after this ID. Example: 1234abcd-5678-90ef-1234-567890abcdef."
     - name: last_time
