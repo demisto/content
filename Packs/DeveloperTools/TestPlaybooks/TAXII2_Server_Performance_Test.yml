@@ -119,14 +119,14 @@ tasks:
         simple: ${inputs.n}
       url:
         complex:
-          root: ServerURL
+          root: TAXIIServer.ServerInfo.api_roots
           transformers:
           - operator: concat
             args:
               prefix: {}
               suffix:
                 value:
-                  simple: threatintel/collections/
+                  simple: collections/
           - operator: concat
             args:
               prefix: {}
@@ -181,14 +181,14 @@ tasks:
     scriptarguments:
       url:
         complex:
-          root: ServerURL
+          root: TAXIIServer.ServerInfo.api_roots
           transformers:
           - operator: concat
             args:
               prefix: {}
               suffix:
                 value:
-                  simple: threatintel/collections/
+                  simple: collections/
           - operator: concat
             args:
               prefix: {}
@@ -301,14 +301,14 @@ tasks:
     scriptarguments:
       url:
         complex:
-          root: ServerURL
+          root: TAXIIServer.ServerInfo.api_roots
           transformers:
           - operator: concat
             args:
               prefix: {}
               suffix:
                 value:
-                  simple: threatintel/collections/
+                  simple: collections/
           - operator: concat
             args:
               prefix: {}
@@ -1075,7 +1075,28 @@ tasks:
       method:
         simple: GET
       url:
-        simple: ${TAXIIServer.ServerInfo.api_roots}
+        complex:
+          root: TAXIIServer.ServerInfo.api_roots
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: collections/
+          - operator: concat
+            args:
+              prefix: { }
+              suffix:
+                value:
+                  simple: TAXIIServer.Collection.id
+                iscontext: true
+          - operator: concat
+            args:
+              prefix: { }
+              suffix:
+                value:
+                    simple: /objects/?limit=10000&match[type]=url
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1160,14 +1181,14 @@ tasks:
         simple: GET
       url:
         complex:
-          root: ServerURL
+          root: TAXIIServer.ServerInfo.api_roots
           transformers:
           - operator: concat
             args:
               prefix: {}
               suffix:
                 value:
-                  simple: threatintel/collections/
+                  simple: collections/
           - operator: concat
             args:
               prefix: {}
@@ -1341,14 +1362,14 @@ tasks:
         simple: GET
       url:
         complex:
-          root: ServerURL
+          root: TAXIIServer.ServerInfo.api_roots
           transformers:
           - operator: concat
             args:
               prefix: {}
               suffix:
                 value:
-                  simple: threatintel/collections/
+                  simple: collections/
           - operator: concat
             args:
               prefix: {}
@@ -1446,14 +1467,14 @@ tasks:
         simple: GET
       url:
         complex:
-          root: ServerURL
+          root: TAXIIServer.ServerInfo.api_roots
           transformers:
           - operator: concat
             args:
               prefix: {}
               suffix:
                 value:
-                  simple: threatintel/collections/
+                  simple: collections/
           - operator: concat
             args:
               prefix: {}
@@ -1589,14 +1610,14 @@ tasks:
         simple: GET
       url:
         complex:
-          root: ServerURL
+          root: TAXIIServer.ServerInfo.api_roots
           transformers:
           - operator: concat
             args:
               prefix: {}
               suffix:
                 value:
-                  simple: threatintel/collections/
+                  simple: collections/
           - operator: concat
             args:
               prefix: {}
@@ -1732,14 +1753,14 @@ tasks:
         simple: GET
       url:
         complex:
-          root: ServerURL
+          root: TAXIIServer.ServerInfo.api_roots
           transformers:
           - operator: concat
             args:
               prefix: {}
               suffix:
                 value:
-                  simple: threatintel/collections/
+                  simple: collections/
           - operator: concat
             args:
               prefix: {}
@@ -1837,14 +1858,14 @@ tasks:
         simple: GET
       url:
         complex:
-          root: ServerURL
+          root: TAXIIServer.ServerInfo.api_roots
           transformers:
           - operator: concat
             args:
               prefix: {}
               suffix:
                 value:
-                  simple: threatintel/collections/
+                  simple: collections/
           - operator: concat
             args:
               prefix: {}
@@ -1980,14 +2001,14 @@ tasks:
         simple: GET
       url:
         complex:
-          root: ServerURL
+          root: TAXIIServer.ServerInfo.api_roots
           transformers:
           - operator: concat
             args:
               prefix: {}
               suffix:
                 value:
-                  simple: threatintel/collections/
+                  simple: collections/
           - operator: concat
             args:
               prefix: {}
@@ -2123,14 +2144,14 @@ tasks:
         simple: GET
       url:
         complex:
-          root: ServerURL
+          root: TAXIIServer.ServerInfo.api_roots
           transformers:
           - operator: concat
             args:
               prefix: {}
               suffix:
                 value:
-                  simple: threatintel/collections/
+                  simple: collections/
           - operator: concat
             args:
               prefix: {}
