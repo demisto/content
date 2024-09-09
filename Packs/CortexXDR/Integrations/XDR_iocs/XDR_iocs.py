@@ -378,6 +378,7 @@ def get_iocs_generator(size=200, query=None, is_first_stage_sync=False) -> Itera
         filter_fields = ('value,indicator_type,score,expiration,modified,aggregatedReliability,moduleToFeedMap,comments,id,CustomFields'
                          if is_xsiam_or_xsoar_saas()
                          else None)
+        # demisto.debug(f"{filter_fields=}")
         search_after_array = None
         search_after = get_integration_context().get('search_after', None)
         for batch in searchInElastic(size=size,
@@ -388,6 +389,7 @@ def get_iocs_generator(size=200, query=None, is_first_stage_sync=False) -> Itera
                                         filter_fields=filter_fields):
             search_after_array = batch.get('searchAfter', [])
             for ioc in batch.get('iocs', []):
+                # demisto.debug(f"{ioc.get('indicator_type')=}")
                 ioc_count += 1
                 yield ioc
                 if is_first_stage_sync and ioc_count >= MAX_INDICATORS_TO_SYNC:
@@ -514,7 +516,7 @@ def parse_demisto_single_comments(ioc: dict, comment_field_name: list[str] | str
 
 def demisto_ioc_to_xdr(ioc: dict) -> dict:
     try:
-        demisto.debug(f'Raw outgoing IOC: {ioc.get("indicator_type")=}, {ioc.get("expiration")=}')  # uncomment to debug, otherwise spams the log
+        # demisto.debug(f'Raw outgoing IOC: {ioc.get("indicator_type")=}, {ioc.get("expiration")=}')  # uncomment to debug, otherwise spams the log
         global CURRENT_BATCH_LAST_MODIFIED_TIME
         CURRENT_BATCH_LAST_MODIFIED_TIME = ioc.get('modified')
         xdr_ioc: dict = {
@@ -629,7 +631,6 @@ def sync_for_fetch(client: Client, batch_size: int = 200, is_first_stage_sync: b
     demisto.info("executing sync")
     request_data: List[Any] = []
     try:
-        # demisto.debug(f"time_before_query_is {datetime.now(timezone.utc).strftime(DEMISTO_TIME_FORMAT)}")
         full_query = Client.query
         if is_first_stage_sync:
             full_query = create_query_with_end_time(to_date=get_integration_context().get('time'))
@@ -637,14 +638,12 @@ def sync_for_fetch(client: Client, batch_size: int = 200, is_first_stage_sync: b
                                                                        is_first_stage_sync=is_first_stage_sync,
                                                                        query=full_query)))
         if request_data:
-            # demisto.debug(f"time_after_query_is {datetime.now(timezone.utc).strftime(DEMISTO_TIME_FORMAT)}")
             integration_context = get_integration_context()
             demisto.debug(f"Fetched {len(request_data)} indicators from xsoar. last_modified_that_was_synced "
-                          f"{CURRENT_BATCH_LAST_MODIFIED_TIME}, {request_data[-1].get('indicator')}, "
+                          f"{CURRENT_BATCH_LAST_MODIFIED_TIME}, with indicator {request_data[-1].get('indicator')}, "
                           f"search_after {integration_context.get('search_after')}")
             last_sync_time = integration_context.get('time', '')
             if len(request_data) < MAX_INDICATORS_TO_SYNC:
-                demisto.debug(f"{last_sync_time=}, {CURRENT_BATCH_LAST_MODIFIED_TIME=}")
                 # is the update_sync_time_with_date_string nessary (to ask judith)
                 update_integration_context(update_is_first_sync_phase='false',
                                            update_sync_time_with_date_string=CURRENT_BATCH_LAST_MODIFIED_TIME
@@ -654,13 +653,11 @@ def sync_for_fetch(client: Client, batch_size: int = 200, is_first_stage_sync: b
             requests_kwargs: dict = get_requests_kwargs(_json=request_data, validate=True)
             path: str = 'tim_insert_jsons'
             response = client.http_request(path, requests_kwargs)
-            demisto.debug(f"{response=}")
             if response.get('reply', {}).get('success') is not True:
                 raise DemistoException("Response status was not success")
             if validation_errors := response.get('reply', {}).get('validation_errors'):
                 errors = create_validation_errors_response(validation_errors)
                 demisto.debug('pushing IOCs to XDR:' + errors.replace('\n', '. '))
-                return_warning(errors)
         else:
             demisto.debug("request_data is empty, no indicators to sync")
             update_integration_context(update_is_first_sync_phase='false')
@@ -901,6 +898,9 @@ def get_changes(client: Client):
 
 
 def module_test(client: Client):
+    params = demisto.params()
+    if params.get('feed') and params.get('feedFetchInterval') and arg_to_number(params.get('feedFetchInterval')) < 20:
+        raise DemistoException("'Feed Fetch Interval' parameter should be 20 or larger.")
     ts = int(datetime.now(timezone.utc).timestamp() * 1000) - 1
     path, requests_kwargs = prepare_get_changes(ts)
     requests_kwargs: dict = get_requests_kwargs(_json=requests_kwargs)
@@ -947,7 +947,7 @@ def xdr_iocs_sync_command(client: Client,
             sync(client, batch_size=4000)
     else:
         pass
-        # iocs_to_keep(client)
+        iocs_to_keep(client)
 
 
 def set_new_iocs_to_keep_time():
@@ -1077,6 +1077,8 @@ def validate_fix_severity_value(severity: str, indicator_value: str | None = Non
 
 def main():  # pragma: no cover
     params = demisto.params()
+    if params.get('feed') and params.get('feedFetchInterval') and arg_to_number(params.get('feedFetchInterval')) < 20:
+        demisto.debug("If feedFetchInterval parameter is set to less then 20, it could lead to external error from xdr side.")
     # In this integration, parameters are set in the *class level*, the defaults are in the class definition.
     Client.severity = params.get('severity', '')
     Client.override_severity = argToBoolean(params.get('override_severity', True))
