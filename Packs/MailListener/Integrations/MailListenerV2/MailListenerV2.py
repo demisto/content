@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa: F401
 import re
 import ssl
 import email
-import datetime as timezone
+from datetime import timezone
 from typing import Any
 from email.message import Message
 from dateparser import parse
@@ -52,7 +52,7 @@ class Email:
         self.headers = email_object.headers
         self.raw_body = email_object.body if include_raw_body else None
         # According to the mailparser documentation the datetime object is in utc
-        self.date = email_object.date.replace(tzinfo=timezone.UTC) if email_object.date else None
+        self.date = email_object.date.replace(tzinfo=timezone.utc) if email_object.date else None
         self.raw_json = self.generate_raw_json()
         self.save_eml_file = save_file
         self.labels = self._generate_labels()
@@ -196,13 +196,13 @@ class Email:
         date = self.date
         if not date:
             demisto.info(f'Could not identify date for mail with ID {self.id}. Setting its date to be now.')
-            date = datetime.now(timezone.UTC).isoformat()
+            date = datetime.now(timezone.utc).isoformat()
         else:
             date = self.date.isoformat()
         return {
             'labels': self._generate_labels(),
             'occurred': date,
-            'created': datetime.now(timezone.UTC).isoformat(),
+            'created': datetime.now(timezone.utc).isoformat(),
             'details': self.text or self.html,
             'name': self.subject,
             'attachment': self.parse_attachments(),
@@ -524,7 +524,7 @@ def list_emails(client: IMAPClient,
                                       permitted_from_domains=permitted_from_domains,
                                       limit=_limit)
     results = [{'Subject': email.subject,
-                'Date': email.date.isoformat() if email.date else datetime.now(timezone.UTC).isoformat(),
+                'Date': email.date.isoformat() if email.date else datetime.now(timezone.utc).isoformat(),
                 'To': email.to,
                 'From': email.from_,
                 'ID': email.id} for email in mails_fetched]
