@@ -1,0 +1,23 @@
+{
+    "demisto/ansible-runner": {
+        "content_items": [
+            "Packs/AnsibleAlibabaCloud/Integrations/AnsibleAlibabaCloud/AnsibleAlibabaCloud.yml",
+            "Packs/AnsibleAzure/Integrations/AnsibleAzure/AnsibleAzure.yml",
+            "Packs/AnsibleCiscoIOS/Integrations/AnsibleCiscoIOS/AnsibleCiscoIOS.yml",
+            "Packs/AnsibleCiscoNXOS/Integrations/AnsibleCiscoNXOS/AnsibleCiscoNXOS.yml",
+            "Packs/AnsibleHetznerCloud/Integrations/AnsibleHCloud/AnsibleHCloud.yml",
+            "Packs/AnsibleKubernetes/Integrations/AnsibleKubernetes/AnsibleKubernetes.yml",
+            "Packs/AnsibleLinux/Integrations/AnsibleDNS/AnsibleDNS.yml",
+            "Packs/AnsibleLinux/Integrations/AnsibleACME/AnsibleACME.yml",
+            "Packs/AnsibleLinux/Integrations/AnsibleOpenSSL/AnsibleOpenSSL.yml",
+            "Packs/AnsibleLinux/Integrations/AnsibleLinux/AnsibleLinux.yml",
+            "Packs/AnsibleMicrosoftWindows/Integrations/AnsibleMicrosoftWindows/AnsibleMicrosoftWindows.yml",
+            "Packs/AnsibleVMware/Integrations/AnsibleVMware/AnsibleVMware.yml"
+        ],
+        "pr_labels": [
+            "auto-update-docker"
+        ],
+        "target_tag": "1.0.0.110653",
+        "coverage": "0-100"
+    }
+}
