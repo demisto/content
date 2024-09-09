@@ -2484,6 +2484,12 @@ def message_handler(integration_context: dict, request_body: dict, channel_data:
                         return
 
 
+@APP.route('/health', methods=['GET'])
+def health_check():
+    demisto.debug("Microsoft Teams Integration received a local health check")
+    return Response('Microsoft Teams long running integration server is up.', status=200, mimetype='text/plain')
+
+
 @APP.route('/', methods=['POST'])
 def messages() -> Response:
     """
