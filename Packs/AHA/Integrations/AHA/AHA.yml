@@ -162,7 +162,7 @@ script:
       description: The idea status description.
       type: String
     - contextPath: AHA.Idea.description
-      description: The idea description.
+      description: The idea description this a example content for the idea description.
       type: String
     - contextPath: AHA.Idea.created_at
       description: The idea creation date.
