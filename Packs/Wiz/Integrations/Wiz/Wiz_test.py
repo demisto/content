@@ -722,6 +722,114 @@ def test_get_issue_evidence_tdr(checkAPIerrors, _get_issue):
     assert res == test_get_issue_evidence_tdr_response['data']['issues']['nodes'][0]['threatDetectionDetails']
 
 
+test_get_issue_evidence_control_response = {
+    "data": {
+        "issues": {
+            "nodes": [
+                {
+                    "type": "TOXIC_COMBINATION",
+                    "evidenceQuery": {
+                        "data": "data"
+                    },
+                    "threatDetectionDetails": None
+                }
+            ]
+        }
+    }
+}
+
+test_get_evidence_control_response = {
+    "data": {
+        "graphSearch": {
+            "nodes": [
+                {
+                    "entities": [
+                        {
+                            "id": "12345678-222"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}
+
+
+@patch('Wiz._get_issue', return_value=test_get_issue_evidence_control_response)
+@patch('Wiz.checkAPIerrors', return_value=test_get_evidence_control_response)
+def test_get_issue_evidence_control(checkAPIerrors, _get_issue):
+    from Wiz import get_issue_evidence
+    res = get_issue_evidence('12345678-1234-1234-1234-d25e16359c19')
+    assert res == test_get_evidence_control_response['data']['graphSearch']['nodes'][0]['entities']
+
+
+test_get_issue_empty_issue_response = {
+    "data": {
+        "issues": {
+            "nodes": []
+        }
+    }
+}
+
+
+@patch('Wiz._get_issue', return_value=test_get_issue_empty_issue_response)
+def test_get_issue_evidence_no_issue(_get_issue):
+    from Wiz import get_issue_evidence
+    res = get_issue_evidence('12345678-1234-1234-1234-d25e16359c19')
+    assert res == "Issue not found: 12345678-1234-1234-1234-d25e16359c19"
+
+
+test_get_issue_response_query_exists = {
+    "data": {
+        "issues": {
+            "nodes": [
+                {
+                    "type": "TOXIC_COMBINATION",
+                    "evidenceQuery": {
+                        "data": "data"
+                    },
+                    "threatDetectionDetails": {
+                    }
+                }
+            ]
+        }
+    }
+}
+
+test_get_evidence_empty = {
+    "data": {
+        "graphSearch": {
+            "nodes": [
+            ]
+        }
+    }
+}
+
+test_get_evidence_empty_none = {
+    "data": {
+        "graphSearch": {
+            "nodes": None
+        }
+    }
+}
+
+
+@patch('Wiz._get_issue', return_value=test_get_issue_response_query_exists)
+@patch('Wiz.checkAPIerrors', return_value=test_get_evidence_empty)
+def test_get_issue_evidence_no_evidence(checkAPIerrors, _get_issue):
+    from Wiz import get_issue_evidence
+    res = get_issue_evidence('12345678-1234-1234-1234-d25e16359c19')
+    assert res == "No Evidence Found"
+
+
+@patch('Wiz._get_issue', return_value=test_get_issue_response_query_exists)
+@patch('Wiz.checkAPIerrors', return_value=test_get_evidence_empty_none)
+def test_get_issue_evidence_no_resource(checkAPIerrors, _get_issue):
+    from Wiz import get_issue_evidence
+    res = get_issue_evidence('12345678-1234-1234-1234-d25e16359c19')
+    assert res == "Resource Not Found"
+
+
 test_set_issue_due_data_response = {
     "data": {
         "updateIssue": {
