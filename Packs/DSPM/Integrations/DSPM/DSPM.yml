@@ -8,8 +8,8 @@ configuration:
   name: dspmBaseUrl
   required: true
   type: 0
-- displaypassword: API Key
-  additionalinfo: The API Key to use for connection
+- displaypassword: DSPM API Key
+  additionalinfo: API key to use for the connection
   name: dspmApiKey
   required: true
   hiddenusername: true
@@ -22,8 +22,8 @@ configuration:
   name: jiraEmail
   required: true
   type: 0
-- displaypassword: API Token
-  additionalinfo: The API Token to use for jira connection
+- displaypassword: JIRA API Token
+  additionalinfo: API token for Jira connection
   name: jiraApiToken
   required: true
   hiddenusername: true
@@ -33,7 +33,7 @@ configuration:
   required: true
   type: 0
 - displaypassword: Azure Storage Shared Key
-  additionalinfo: The Shared API Key that is available in Azure Storage Account
+  additionalinfo: The shared API key available in the Azure Storage Account
   name: azureSharedKey
   required: true
   hiddenusername: true
@@ -163,10 +163,10 @@ script:
       description: List of risk findings matching the input criteria.
       type: String
   - arguments:
-    - description: ID of the risk to retrieve details for.
+    - description: ID of the risk for which to retrieve details.
       name: finding_id
       required: true
-    description: Retrieves risk details for the provided risk ID.
+    description: Retrieves the details of a risk for the provided risk ID.
     name: dspm-get-risk-finding-by-id
     outputs:
     - contextPath: DSPM.RiskFinding
@@ -230,27 +230,27 @@ script:
       name: sort
       required: false
       secret: false
-    description: for retrieve list of assets for company.
+    description: Retrieves a list of assets for the company.
     name: dspm-get-list-of-assets
     outputs:
     - contextPath: DSPM.Assets
-      description: List of assets for company.
+      description: List of assets for the company.
       type: String
   - arguments:
-    - description: ID of the asset to retrieve details for.
+    - description: ID of the asset for which to retrieve details.
       name: asset_id
       required: true
-    description: Retrieves asset details for the provided asset ID.
+    description: Retrieves details for the specified asset ID.
     name: dspm-get-asset-details
     outputs:
     - contextPath: DSPM.AssetDetails
       description: Details of the asset for the provided ID.
       type: String
   - arguments:
-    - description: ID of the asset to retrieve details for.
+    - description: ID of the asset for which to retrieve file details.
       name: asset_id
       required: true
-    description: Retrieves asset file details for the provided asset ID.
+    description: Retrieves file details for the specified asset ID.
     name: dspm-get-asset-files-by-id
     outputs:
     - contextPath: DSPM.AssetFiles
@@ -263,7 +263,7 @@ script:
       description: List of data types for company.
       type: String
   - arguments:
-    - description: List of regions (comma separated values)
+    - description: List of regions (comma-separated values)
       isArray: false
       isOptional: true
       name: regionIn
@@ -331,17 +331,17 @@ script:
       name: sort
       required: false
       secret: false
-    description: for retrieve list of data type findings for company.
+    description: Retrieves a list of data type findings for the company.
     name: dspm-get-data-types-findings
     outputs:
     - contextPath: DSPM.DataTypeFindings
-      description: List of data type findings for company.
+      description: List of data type findings for the company.
       type: String
   - arguments: []
     description: for testing the fetch-handle method.
     name: fetch-incidents
   - arguments: []
-    description: for getting integration config.
+    description: Retrieves integration configuration.
     name: dspm-get-integration-cofig
     outputs:
     - contextPath: DSPM.configs
@@ -349,7 +349,7 @@ script:
       type: String
   - name: dspm-get-lifetime-for-slack
     arguments: []
-    description: waiting time for user response
+    description: Retrieves the waiting time for user response on Slack
   - arguments:
     - description: 'Risk Finding ID'
       isArray: false

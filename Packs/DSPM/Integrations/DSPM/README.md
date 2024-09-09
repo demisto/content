@@ -13,7 +13,7 @@ This integration was integrated and tested with version xx of DSPM.
     | Your DSPM server URL |  | True |
     | DSPM API Key | API key to use for the connection | True |
     | Your Jira server URL |  | True |
-    | Your Jira user name (email). |  | True |
+    | Your Jira user name (email) |  | True |
     | JIRA API Token | API token for Jira connection | True |
     | Azure Storage Account name |  | True |
     | Azure Storage Shared Key | The shared API key available in the Azure Storage Account | True |
@@ -68,7 +68,7 @@ Retrieves risk findings matching the input criteria.
 ### dspm-get-risk-finding-by-id
 
 ***
-Retrieves risk details for the provided risk ID.
+Retrieves the details of a risk for the provided risk ID.
 
 #### Base Command
 
@@ -78,7 +78,7 @@ Retrieves risk details for the provided risk ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| finding_id | ID of the risk to retrieve details for. | Required | 
+| finding_id | ID of the risk for which to retrieve details. | Required | 
 
 #### Context Output
 
@@ -89,7 +89,7 @@ Retrieves risk details for the provided risk ID.
 ### dspm-get-list-of-assets
 
 ***
-for retrieve list of assets for company.
+Retrieves a list of assets for the company.
 
 #### Base Command
 
@@ -99,7 +99,7 @@ for retrieve list of assets for company.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| regionIn | List of regions (comma separated values). | Optional | 
+| regionIn | List of regions (comma-separated values). | Optional | 
 | regionEqual | Exact region. | Optional | 
 | cloudProviderIn | List of cloud providers ["AWS", "AZURE", "GCP", "SNOWFLAKE", "FILE_SHARE", "O365"] (comma separated values). | Optional | 
 | cloudProviderEqual | Exact cloud provider ["AWS", "AZURE", "GCP", "SNOWFLAKE", "FILE_SHARE", "O365"]. | Optional | 
@@ -113,12 +113,12 @@ for retrieve list of assets for company.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DSPM.Assets | String | List of assets for company. | 
+| DSPM.Assets | String | List of assets for the company. | 
 
 ### dspm-get-asset-details
 
 ***
-Retrieves asset details for the provided asset ID.
+Retrieves details for the specified asset ID
 
 #### Base Command
 
@@ -128,7 +128,7 @@ Retrieves asset details for the provided asset ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| asset_id | ID of the asset to retrieve details for. | Required | 
+| asset_id | ID of the asset for which to retrieve details. | Required | 
 
 #### Context Output
 
@@ -139,7 +139,7 @@ Retrieves asset details for the provided asset ID.
 ### dspm-get-asset-files-by-id
 
 ***
-Retrieves asset file details for the provided asset ID.
+Retrieves file details for the specified asset ID.
 
 #### Base Command
 
@@ -149,7 +149,7 @@ Retrieves asset file details for the provided asset ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| asset_id | ID of the asset to retrieve details for. | Required | 
+| asset_id | ID of the asset for which to retrieve file details. | Required | 
 
 #### Context Output
 
@@ -178,7 +178,7 @@ There are no input arguments for this command.
 ### dspm-get-data-types-findings
 
 ***
-for retrieve list of data type findings for company.
+Retrieves a list of data type findings for the company.
 
 #### Base Command
 
@@ -188,7 +188,7 @@ for retrieve list of data type findings for company.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| regionIn | List of regions (comma separated values). | Optional | 
+| regionIn | List of regions (comma-separated values). | Optional | 
 | regionEqual | Exact region. | Optional | 
 | cloudProviderIn | List of cloud providers ["AWS", "AZURE", "GCP", "SNOWFLAKE", "FILE_SHARE", "O365"]. | Optional | 
 | cloudProviderEqual | Exact cloud provider ["AWS", "AZURE", "GCP", "SNOWFLAKE", "FILE_SHARE", "O365"]. | Optional | 
@@ -204,7 +204,7 @@ for retrieve list of data type findings for company.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DSPM.DataTypeFindings | String | List of data type findings for company. | 
+| DSPM.DataTypeFindings | String | List of data type findings for the company. | 
 
 ### fetch-incidents
 
@@ -226,7 +226,7 @@ There is no context output for this command.
 ### dspm-get-integration-cofig
 
 ***
-for getting integration config.
+Retrieves integration configuration.
 
 #### Base Command
 
@@ -246,7 +246,7 @@ for getting integration config.
 ### dspm-get-lifetime-for-slack
 
 ***
-waiting time for user response
+Retrieves the waiting time for user response on Slack.
 
 #### Base Command
 
