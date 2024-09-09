@@ -197,33 +197,6 @@ def filter_incidents(incidents_list):
     return filtered_incidents_list
 
 
-def get_time_delta(fetch_delta):
-    """Gets the time delta from a string that is combined with a number and a string of (minute/hour)
-    Args:
-        fetch_delta(str): The fetch delta param.
-    Returns:
-        The time delta.
-    """
-    fetch_delta_split = fetch_delta.strip().split(' ')
-    if len(fetch_delta_split) != 2:
-        raise Exception(
-            'The fetch_delta is invalid. Please make sure to insert both the number and the unit of the fetch delta.')
-
-    unit = fetch_delta_split[1].lower()
-    number = int(fetch_delta_split[0])
-
-    if unit not in ['minute', 'minutes',
-                    'hour', 'hours',
-                    ]:
-        raise Exception('The unit of fetch_delta is invalid. Possible values are "minutes" or "hours".')
-
-    if 'hour' in unit:
-        time_delta = timedelta(hours=number)  # batch by hours
-    else:
-        time_delta = timedelta(minutes=number)  # batch by minutes
-    return time_delta
-
-
 def get_new_incidents(client, request_params, last_fetched_id):
     """Perform an API request to get incidents from ProofPoint , filters then according to params, order them and
     return only the new incidents.
