@@ -45,7 +45,9 @@ display: Wiz
 name: Wiz
 script:
   commands:
-  - arguments:
+  - name: wiz-get-issues
+    description: Get the Issues on cloud resources.
+    arguments:
     - description: Type of entity to get issues for.
       name: entity_type
       predefined:
@@ -155,8 +157,6 @@ script:
       - THREAT_DETECTION
       - CLOUD_CONFIGURATION
       description: Get Issues of a specific type.
-    description: Get the Issues on cloud resources.
-    name: wiz-get-issues
     outputs:
     - contextPath: Wiz.Manager.Issues.entitySnapshot
       description: All resource details.
@@ -179,15 +179,15 @@ script:
     - contextPath: Wiz.Manager.Issues.note
       description: Wiz Issue note.
       type: String
-  - arguments:
-    - description: resource provider unique id.
-      name: resource_id
-      optional: true
-    - description: search by name or external ID.
-      name: resource_name
-      optional: true
+  - name: wiz-get-resource
+    arguments:
+      - description: resource provider unique id.
+        name: resource_id
+        optional: true
+      - description: search by name or external ID.
+        name: resource_name
+        optional: true
     description: Get details of a resource.
-    name: wiz-get-resource
     outputs:
     - contextPath: Wiz.Manager.Resource.id
       description: Resource ID in Wiz.
