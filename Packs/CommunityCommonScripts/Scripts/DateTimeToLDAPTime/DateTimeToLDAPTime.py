@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa: F401
 import dateparser
 
 
-def convert_time_command(time):
+def convert_time(time_to_convert: datetime):
     # ((current time - epoch start date) in seconds + seconds since 1/1/1601) * 10000000 (to get nanoseconds)
     ldap_time = ((time_to_convert - datetime(1970, 1, 1, tzinfo=timezone.utc)).total_seconds() + 11644473600) * 10000000
     return str(int(ldap_time))
