@@ -2,6 +2,6 @@ variables:
   CURRENT_BRANCH_NAME: "upload-flow-after-nightly"
 
 include:
-  - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
+  - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml" 
     ref: "upload-flow-after-nightly"
     project: "${CI_PROJECT_NAMESPACE}/infra"
