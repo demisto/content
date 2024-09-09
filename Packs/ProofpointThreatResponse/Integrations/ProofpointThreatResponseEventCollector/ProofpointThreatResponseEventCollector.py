@@ -242,66 +242,36 @@ def get_new_incidents(client, request_params, last_fetched_id):
     return list(filter(lambda incident: int(incident.get('id')) > last_fetched_id, ordered_incidents))
 
 
-def get_incidents_batch_by_time_request(client, params):
-    """Perform an API request to get incidents from ProofPoint in batches to prevent a timeout.
+def get_incidents_per_state(client, params):
+    """Perform an API request to get incidents from ProofPoint by state.
 
     As the api does not return the results in an specific order, we query the api on specific time frames using
-    created_before and created_after using the fetch delta parameter.
+    created_before and created_after.
     Args:
         params(dict): The params of the request
 
     Returns:
         list. The incidents returned from the API call
     """
-    incidents_list = []  # type:list
 
-    fetch_delta = params.get('fetch_delta', '6 hours')
     fetch_limit = arg_to_number(params.get('fetch_limit', '100'))
     last_fetched_id = arg_to_number(params.get('last_fetched_id', '0'))
 
     current_time = datetime.now()
 
-    time_delta = get_time_delta(fetch_delta)
-
     created_after = datetime.strptime(params.get('created_after'), TIME_FORMAT)
-    created_before = created_after + time_delta
 
     request_params = {
         'state': params.get('state'),
         'created_after': created_after.isoformat().split('.')[0] + 'Z',
-        'created_before': created_before.isoformat().split('.')[0] + 'Z'
+        'created_before': current_time.isoformat().split('.')[0] + 'Z'
     }
 
-    # while loop relevant for fetching old incidents
-    while created_before < current_time and len(incidents_list) < fetch_limit:  # type: ignore[operator]
-        demisto.info(
-            f"Entered the batch loop , with fetch_limit {fetch_limit} and events list "
-            f"{[incident.get('id') for incident in incidents_list]} and event length {len(incidents_list)} "
-            f"with created_after {request_params['created_after']} and "
-            f"created_before {request_params['created_before']}")
+    demisto.debug(f"Fetching incidents, with fetch_limit {fetch_limit}"
+                  f"with created_after {request_params['created_after']} and"
+                  f"created_before {request_params['created_before']}")
 
-        new_incidents = get_new_incidents(client, request_params, last_fetched_id)
-        incidents_list.extend(new_incidents)
-
-        # advancing fetch time by given fetch delta time
-        created_after = created_before
-        created_before = created_before + time_delta
-
-        # updating params according to the new times
-        request_params['created_after'] = created_after.isoformat().split('.')[0] + 'Z'
-        request_params['created_before'] = created_before.isoformat().split('.')[0] + 'Z'
-        demisto.debug(f"End of the current batch loop with {str(len(incidents_list))} events")
-
-    # fetching the last batch when created_before is bigger then current time = fetching new events
-    if len(incidents_list) < fetch_limit:  # type: ignore[operator]
-        # fetching the last batch
-        request_params['created_before'] = current_time.isoformat().split('.')[0] + 'Z'
-        new_incidents = get_new_incidents(client, request_params, last_fetched_id)
-        incidents_list.extend(new_incidents)
-
-        demisto.debug(
-            f"Finished the last batch, with fetch_limit {fetch_limit} and events list:"
-            f" {[incident.get('id') for incident in incidents_list]} and event length {len(incidents_list)}")
+    incidents_list = get_new_incidents(client, request_params, last_fetched_id)
 
     incidents_list_limit = incidents_list[:fetch_limit]
     return incidents_list_limit
@@ -322,6 +292,7 @@ def fetch_events_command(client, first_fetch, last_run, fetch_limit, fetch_delta
 
     incidents = []
     for state in incidents_states:
+        demisto.debug(f"Fetching incidents for state {state}")
         request_params = {
             'created_after': last_fetch[state],
             'last_fetched_id': last_fetched_id[state],
@@ -330,15 +301,19 @@ def fetch_events_command(client, first_fetch, last_run, fetch_limit, fetch_delta
             'fetch_limit': fetch_limit
         }
         id = last_fetched_id[state]
-        incidents_list = get_incidents_batch_by_time_request(client, request_params)
+        incidents_list = get_incidents_per_state(client, request_params)
         incidents.extend(incidents_list)
 
         if incidents:
+            demisto.debug(f"found {len(incidents)} incidents")
             id = incidents[-1].get('id')
             last_fetch_time = incidents[-1]['created_at']
             last_fetch[state] = \
                 (datetime.strptime(last_fetch_time, TIME_FORMAT) - timedelta(minutes=1)).isoformat().split('.')[0] + 'Z'
             last_fetched_id[state] = id
+        else:
+            demisto.debug(f"No incidents were fetched, setting next run for state {state} to be now.")
+            last_fetch[state] = (datetime.now() - timedelta(minutes=2)).isoformat().split('.')[0] + 'Z'
 
     demisto.debug(f"End of current fetch function with last_fetch {str(last_fetch)} and last_fetched_id"
                   f" {str(last_fetched_id)}")

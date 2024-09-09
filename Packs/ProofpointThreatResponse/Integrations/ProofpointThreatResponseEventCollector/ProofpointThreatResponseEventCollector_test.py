@@ -1,3 +1,5 @@
+from freezegun import freeze_time
+
 from CommonServerPython import *
 from ProofpointThreatResponseEventCollector import fetch_events_command, TIME_FORMAT, Client, list_incidents_command, \
     find_and_remove_large_entry, remove_large_events
@@ -31,6 +33,31 @@ def test_fetch_events_command(requests_mock):
                                               incidents_states=['open'])
     assert events == expected_result
 
+@freeze_time("2023-01-01T01:00:00")
+def test_fetch_events_command_empty_response(requests_mock):
+    """
+    Given:
+    - fetch events command
+
+    When:
+    - Running fetch-events command and no incidents in the given time
+
+    Then:
+    - Ensure last fetch is set to now minus 2 minutes.
+    """
+    base_url = 'https://server_url/'
+
+    requests_mock.get(f'{base_url}api/incidents', json={})
+    client = Client(base_url=base_url,
+                    verify=True,
+                    headers={},
+                    proxy=False)
+    first_fetch, _ = parse_date_range('2 hours', date_format=TIME_FORMAT)
+    events, last_fetch = fetch_events_command(client=client, first_fetch=first_fetch, last_run={},
+                                              fetch_limit='100',
+                                              fetch_delta='6 hours',
+                                              incidents_states=['open'])
+    assert last_fetch.get('last_fetch') == {'open': '2023-01-01T00:58:00Z'}
 
 def test_list_incidents_command(requests_mock):
     """
