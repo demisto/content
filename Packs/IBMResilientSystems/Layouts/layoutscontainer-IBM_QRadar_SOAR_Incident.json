@@ -183,11 +183,11 @@
 						"static": false,
 						"w": 1,
 						"x": 0,
-						"y": 4
+						"y": 5
 					},
 					{
 						"displayType": "ROW",
-						"h": 1,
+						"h": 2,
 						"i": "caseinfoid-88e6bf70-a0b1-11e9-b27f-13ae1773d289",
 						"isVisible": true,
 						"items": [
@@ -231,7 +231,7 @@
 					},
 					{
 						"displayType": "CARD",
-						"h": 6,
+						"h": 3,
 						"i": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
 						"isVisible": true,
 						"items": [
@@ -412,7 +412,7 @@
 					},
 					{
 						"displayType": "ROW",
-						"h": 3,
+						"h": 2,
 						"hideName": false,
 						"i": "caseinfoid-2c345b90-6d1e-11ef-9e38-4186d90d9e91",
 						"items": [
@@ -449,6 +449,20 @@
 						"moved": false,
 						"name": "Implications",
 						"static": false,
+						"w": 1,
+						"x": 2,
+						"y": 3
+					},
+					{
+						"h": 4,
+						"i": "caseinfoid-d32e6b80-6eb7-11ef-9ad0-fbeee90bca04",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Notes",
+						"static": false,
+						"type": "notes",
 						"w": 1,
 						"x": 1,
 						"y": 3
@@ -569,7 +583,7 @@
 				"sections": [
 					{
 						"displayType": "ROW",
-						"h": 3,
+						"h": 2,
 						"hideName": false,
 						"i": "tasks-buttons",
 						"items": [
@@ -585,51 +599,55 @@
 									}
 								},
 								"buttonClass": null,
-								"endCol": 4,
+								"dropEffect": "move",
+								"endCol": 6,
 								"fieldId": "",
 								"height": 44,
 								"hexColor": "#3197da",
 								"id": "Press to add a task to the IBM QRadar SOAR incident",
 								"index": 0,
+								"listId": "tasks-buttons",
 								"name": "Press to add a task to the IBM QRadar SOAR incident",
 								"scriptId": "IbmAddTask",
 								"sectionItemType": "button",
 								"startCol": 0
 							},
-                            {
+							{
 								"args": {
+									"due_date": {
+										"simple": "",
+										"userMarkedRequired": true
+									},
+									"name": {
+										"simple": "",
+										"userMarkedRequired": true
+									},
+									"owner_id": {
+										"simple": "",
+										"userMarkedRequired": true
+									},
+									"phase": {
+										"simple": "",
+										"userMarkedRequired": true
+									},
+									"status": {
+										"simple": "",
+										"userMarkedRequired": true
+									},
 									"task_id": {
-										"simple": "",
-										"userMarkedRequired": true
-									},
-                                    "name": {
-										"simple": "",
-										"userMarkedRequired": true
-									},
-                                    "owner_id": {
-										"simple": "",
-										"userMarkedRequired": true
-									},
-                                    "due_date": {
-										"simple": "",
-										"userMarkedRequired": true
-									},
-                                    "phase": {
-										"simple": "",
-										"userMarkedRequired": true
-									},
-                                    "status": {
 										"simple": "",
 										"userMarkedRequired": true
 									}
 								},
 								"buttonClass": null,
-								"endCol": 4,
+								"dropEffect": "move",
+								"endCol": 6,
 								"fieldId": "",
 								"height": 44,
 								"hexColor": "#28A745",
 								"id": "Update task",
-								"index": 0,
+								"index": 1,
+								"listId": "tasks-buttons",
 								"name": "Update task",
 								"scriptId": "IbmUpdateTask",
 								"sectionItemType": "button",
@@ -641,7 +659,7 @@
 						"moved": false,
 						"name": "Buttons",
 						"static": false,
-						"w": 1,
+						"w": 3,
 						"x": 0,
 						"y": 0
 					},
@@ -657,9 +675,9 @@
 						"queryType": "script",
 						"static": false,
 						"type": "dynamic",
-						"w": 2,
-						"x": 1,
-						"y": 0
+						"w": 3,
+						"x": 0,
+						"y": 2
 					}
 				],
 				"type": "custom"
