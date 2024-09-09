@@ -1,3 +1,5 @@
+import tempfile
+
 from XDR_iocs import *
 import pytest
 from freezegun import freeze_time
@@ -180,17 +182,6 @@ class TestCreateFile:
         ('File_iocs', 'File_iocs_to_keep_file')
     ]
 
-    @classmethod
-    def setup_method(cls):
-        # creates the file
-        with open(TestCreateFile.path, 'w') as _file:
-            _file.write('')
-
-    @classmethod
-    def teardown_method(cls):
-        # removes the file when done
-        os.remove(TestCreateFile.path)
-
     @staticmethod
     def get_file(path):
         with open(path) as _file:
@@ -221,8 +212,9 @@ class TestCreateFile:
                 - Verify sync file data.
         """
         mocker.patch.object(demisto, 'searchIndicators', return_value={"total": 0})
-        create_file_sync(TestCreateFile.path)
-        data = self.get_file(TestCreateFile.path)
+        with tempfile.NamedTemporaryFile(mode='w') as temp_file:
+            create_file_sync(temp_file.name)
+            data = self.get_file(temp_file.name)
         expected_data = ''
         assert data == expected_data, f'create_file_sync with no iocs\n\tcreates: {data}\n\tinstead: {expected_data}'
 
@@ -237,8 +229,9 @@ class TestCreateFile:
                 - Verify sync file data.
         """
         mocker.patch.object(demisto, 'searchIndicators', return_value=json.loads(self.get_file(f'test_data/{in_iocs}.json')))  # noqa: E501
-        create_file_sync(TestCreateFile.path)
-        data = self.get_file(TestCreateFile.path)
+        with tempfile.NamedTemporaryFile(mode='w') as temp_file:
+            create_file_sync(temp_file.name)
+            data = self.get_file(temp_file.name)
         expected_data = self.get_file(f'test_data/{out_iocs}.txt')
         assert data == expected_data, f'create_file_sync with {in_iocs} iocs\n\tcreates: {data}\n\tinstead: {expected_data}'
 
@@ -253,8 +246,9 @@ class TestCreateFile:
         """
         all_iocs, expected_data = self.get_all_iocs(self.data_test_create_file_sync, 'txt')
         mocker.patch.object(demisto, 'searchIndicators', return_value=all_iocs)
-        create_file_sync(TestCreateFile.path)
-        data = self.get_file(TestCreateFile.path)
+        with tempfile.NamedTemporaryFile(mode='w') as temp_file:
+            create_file_sync(temp_file.name)
+            data = self.get_file(temp_file.name)
         assert data == expected_data, f'create_file_sync with all iocs\n\tcreates: {data}\n\tinstead: {expected_data}'
 
     data_test_create_file_with_empty_indicators = [
@@ -277,8 +271,9 @@ class TestCreateFile:
         all_iocs['iocs'].append(defective_indicator)
         all_iocs['total'] += 1
         mocker.patch.object(demisto, 'searchIndicators', return_value=all_iocs)
-        create_file_sync(TestCreateFile.path)
-        data = self.get_file(TestCreateFile.path)
+        with tempfile.NamedTemporaryFile(mode='w') as temp_file:
+            create_file_sync(temp_file.name)
+            data = self.get_file(temp_file.name)
         assert data == expected_data, f'create_file_sync with all iocs\n\tcreates: {data}\n\tinstead: {expected_data}'
 
     def test_create_file_iocs_to_keep_without_iocs(self, mocker):
@@ -292,8 +287,9 @@ class TestCreateFile:
         """
 
         mocker.patch.object(demisto, 'searchIndicators', return_value={"total": 0})
-        create_file_iocs_to_keep(TestCreateFile.path)
-        data = self.get_file(TestCreateFile.path)
+        with tempfile.NamedTemporaryFile(mode='w') as temp_file:
+            create_file_iocs_to_keep(temp_file.name)
+            data = self.get_file(temp_file.name)
         expected_data = ' '
         assert data == expected_data, f'create_file_iocs_to_keep with no iocs\n\tcreates: {data}\n\tinstead: {expected_data}'
 
@@ -309,8 +305,9 @@ class TestCreateFile:
         """
         mocker.patch.object(demisto, 'searchIndicators', return_value=json.loads(
             self.get_file(f'test_data/{in_iocs}.json')))
-        create_file_iocs_to_keep(TestCreateFile.path)
-        data = self.get_file(TestCreateFile.path)
+        with tempfile.NamedTemporaryFile(mode='w') as temp_file:
+            create_file_iocs_to_keep(temp_file.name)
+            data = self.get_file(temp_file.name)
         expected_data = self.get_file(f'test_data/{out_iocs}.txt')
         assert data == expected_data, f'create_file_iocs_to_keep with {in_iocs} iocs\n\tcreates: {data}\n\tinstead: {expected_data}'    # noqa: E501
 
@@ -325,8 +322,9 @@ class TestCreateFile:
         """
         all_iocs, expected_data = self.get_all_iocs(self.data_test_create_file_iocs_to_keep, 'txt')
         mocker.patch.object(demisto, 'searchIndicators', return_value=all_iocs)
-        create_file_iocs_to_keep(TestCreateFile.path)
-        data = self.get_file(TestCreateFile.path)
+        with tempfile.NamedTemporaryFile('w') as temp_file:
+            create_file_iocs_to_keep(temp_file.name)
+            data = self.get_file(temp_file.name)
         assert data == expected_data, f'create_file_iocs_to_keep with all iocs\n\tcreates: {data}\n\tinstead: {expected_data}'
 
 
