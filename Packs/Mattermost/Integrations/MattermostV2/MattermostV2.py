@@ -612,6 +612,7 @@ def get_username_by_id(client: HTTPClient, user_id: str) -> str:
     result = client.get_user_request(user_id)
     return result.get('username', '')
 
+
 def get_team_id_from_team_name(client: HTTPClient, team_name: str):
     """
     Gets a id from the team_name
@@ -620,6 +621,7 @@ def get_team_id_from_team_name(client: HTTPClient, team_name: str):
     """
     result = client.get_team_request(team_name)
     return result.get('id', '')
+
 
 def fetch_context(force_refresh: bool = False) -> dict:
     """
@@ -694,9 +696,9 @@ def get_channel_id_to_send_notif(client: HTTPClient, to: str, channel_name: str 
                     try:
                         demisto.debug(f'MM: Creating a {INCIDENT_NOTIFICATION_CHANNEL} channel to send notification to')
                         params = {'team_id': get_team_id_from_team_name(client, client.team_name),
-                                    'name': INCIDENT_NOTIFICATION_CHANNEL,
-                                    'display_name': INCIDENT_NOTIFICATION_CHANNEL,
-                                    'type': "O"}
+                                  'name': INCIDENT_NOTIFICATION_CHANNEL,
+                                  'display_name': INCIDENT_NOTIFICATION_CHANNEL,
+                                  'type': "O"}
                         channel_details = client.create_channel_request(params)
                         channel_id = channel_details.get('id', '')
                     except Exception as sec_e:
@@ -1583,9 +1585,9 @@ def send_notification(client: HTTPClient, **args):
             # change the notification channel to the one in the configuration
             channel_name = client.notification_channel
         else:
-            demisto.debug('MM: No notification channel was configured, ' \
+            demisto.debug('MM: No notification channel was configured, '
                           f'will send notification to {INCIDENT_NOTIFICATION_CHANNEL}')
-        
+
     if not ignore_add_url:
         investigation = demisto.investigation()
         server_links = demisto.demistoUrls()
