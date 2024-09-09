@@ -286,7 +286,7 @@ def fetch_events_command(client, first_fetch, last_run, fetch_limit, fetch_delta
             last_fetched_id[state] = id
         else:
             demisto.debug(f"No incidents were fetched, setting next run for state {state} to be now.")
-            last_fetch[state] = (datetime.now() - timedelta(minutes=2)).isoformat().split('.')[0] + 'Z'
+            last_fetch[state] = (datetime.now() - timedelta(minutes=1)).isoformat().split('.')[0] + 'Z'
 
     demisto.debug(f"End of current fetch function with last_fetch {str(last_fetch)} and last_fetched_id"
                   f" {str(last_fetched_id)}")
