@@ -8,7 +8,7 @@
                     "pr_labels": [
                         "auto-update-docker"
                     ],
-                    "only_nightly": true,
+                    "only_nightly": false,
                     "support": [
                         "xsoar"
                     ]
