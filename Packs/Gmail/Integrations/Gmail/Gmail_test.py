@@ -1064,20 +1064,20 @@ def test_send_mail_sender_display_name(mocker, display_name):
     inReplyTo = None
     references = None
     force_handle_htmlBody = False
-    
+
     mock_service = MagicMock()
     mocker.patch.object(Gmail, 'get_service', return_value=mock_service)
     mock_service.users().messages().send().execute.return_value = {'id': 'mock_id'}
 
     send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody, replyTo, file_names,
-                        attach_cid, transientFile, transientFileContent, transientFileCID, manualAttachObj,
-                        additional_headers, templateParams, sender_display_name, inReplyTo, references, force_handle_htmlBody)
+              attach_cid, transientFile, transientFileContent, transientFileCID, manualAttachObj,
+              additional_headers, templateParams, sender_display_name, inReplyTo, references, force_handle_htmlBody)
 
-   
     message = mock_service.users().messages().send.call_args[1]['body']['raw']
     decoded_message = base64.urlsafe_b64decode(message.encode()).decode()
     if display_name:
         expected_from_header = f"{display_name} <{emailfrom}>"
     else:
         expected_from_header = emailfrom
+        
     assert f"from: {expected_from_header}" in decoded_message
