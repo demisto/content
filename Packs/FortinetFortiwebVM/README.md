@@ -29,6 +29,9 @@ This pack contains an integration, whose main purpose is to perform controlled c
 In order to receive logs, use the [Broker VM](#broker-vm) option. <br>
 For Traffic logs via Fortiweb Cloud, you are required to send the logs with [Amazon S3](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Ingest-Generic-Logs-from-Amazon-S3) services.
 
+<br>
+<br>
+
 ### Fortiweb Cloud
 
 **_Audit_ Logs**
@@ -46,7 +49,8 @@ For Traffic logs via Fortiweb Cloud, you are required to send the logs with [Ama
 
 4. Click **Save**. 
 
-***
+<br>
+<br>
 
 **_Attack_ Logs**
 * [How to export Attack and Traffic logs to a log server](https://docs.fortinet.com/document/fortiweb-cloud/23.3.0/user-guide/681595/log-settings).
@@ -82,6 +86,9 @@ For Traffic logs via Fortiweb Cloud, you are required to send the logs with [Ama
 4. Click **Save**.
 
 ---
+
+<br>
+<br>
 
 ### Fortiweb VM
 
