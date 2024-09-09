@@ -13,3 +13,10 @@ ignore=RM106
 [file:Code42FileEventsToMarkdownTable.yml]
 ignore=BA124
 
+# GR103 is temporary, see CIAC-11705
+[file:layoutscontainer-Code42_Security_Alert.json]
+ignore=GR103
+[file:classifier-mapper-incoming-Code42.json]
+ignore=GR103
+[file:playbook-Code42_Get_Code42_Employee_Information.yml]
+ignore=GR103
