@@ -32,7 +32,7 @@ For Traffic logs via Fortiweb Cloud, you are required to send the logs with [Ama
 ### Fortiweb Cloud
 
 **_Audit_ Logs**
-* [How-To export Audit logs to a log server](https://docs.fortinet.com/document/fortiweb-cloud/23.3.0/user-guide/367276/audit-logs).
+* [How to export Audit logs to a log server](https://docs.fortinet.com/document/fortiweb-cloud/23.3.0/user-guide/367276/audit-logs).
 1. Go to **Global** &rarr; **System Settings** &rarr; **Settings**.
 2. Enable **Audit Logs Export**.
 3. Configure the following mandatory settings: <br>
