@@ -944,7 +944,7 @@ class STIX2XSOARParser(BaseClient):
         entity_b_obj_type = STIX_2_TYPES_TO_CORTEX_TYPES.get(indicator_obj.get('type', ''),
                                                              STIX2XSOARParser.get_ioc_type(related_obj, id_to_object))
         if indicator_obj.get('type') == "indicator":
-            entity_b_value = STIX2XSOARParser.get_single_pattern_value(id_to_object.get(related_obj, {}).get('pattern'))
+            entity_b_value = STIX2XSOARParser.get_single_pattern_value(id_to_object.get(related_obj, {}).get('pattern'))  # type: ignore
         elif indicator_obj.get('type') == "attack-pattern" and is_unit42_report:
             _, entity_b_value = STIX2XSOARParser.get_mitre_attack_id_and_value_from_name(indicator_obj)
         elif indicator_obj.get('type') == "report" and is_unit42_report:
@@ -1106,7 +1106,8 @@ class STIX2XSOARParser(BaseClient):
             str. the value in the pattern.
         """
         try:
-            return next(iter(Pattern(pattern).inspect().comparisons.values()))[0][-1].strip("'")
+            comparison_values = Pattern(pattern).inspect().comparisons.values()
+            return next(iter(comparison_values))[0][-1].strip("'")
         except Exception as error:
             demisto.debug(f'Unable to parse {pattern=}, {error=}')
             return pattern
