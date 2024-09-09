@@ -102,7 +102,7 @@ For Traffic logs via Fortiweb Cloud, you are required to send the logs with [Ama
 6.  Click **OK**.
 
 **Configure Log Settings**
-1. Go ti **Log&Report** &rarr; **Log Config** &rarr; **Global Log Settings**.
+1. Go to **Log&Report** &rarr; **Log Config** &rarr; **Global Log Settings**.
 2. Configure and enable a **SIEM** setting option: <br>
 
 | Field Name | Value |
