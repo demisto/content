@@ -931,7 +931,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "28"
+      - "62"
     scriptarguments:
       all:
         simple: "yes"
@@ -1053,84 +1053,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "27":
-    id: "27"
-    taskid: cdd30184-abc9-47b2-8a5a-07ed7d7aaa1e
-    type: regular
-    task:
-      id: cdd30184-abc9-47b2-8a5a-07ed7d7aaa1e
-      version: -1
-      name: Set URL
-      description: Set a value in context under the key you entered.
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
-    scriptarguments:
-      key:
-        simple: ServerURL
-      value:
-        complex:
-          root: ServerURL
-          accessor: URL
-          transformers:
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: /instance/execute/taxii2server/
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2645
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "28":
-    id: "28"
-    taskid: 38277ffb-60a7-4bfe-88d6-b8356b3c86d7
-    type: regular
-    task:
-      id: 38277ffb-60a7-4bfe-88d6-b8356b3c86d7
-      version: -1
-      name: Get Server URL
-      description: Get the Server URL.
-      scriptName: GetServerURL
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "27"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2470
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "29":
     id: "29"
     taskid: dc963372-3942-43f0-87e2-2d88f8d314a2
@@ -1153,28 +1075,7 @@ tasks:
       method:
         simple: GET
       url:
-        complex:
-          root: ServerURL
-          transformers:
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: threatintel/collections/
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: TAXIIServer.Collection.id
-                iscontext: true
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: /objects/?limit=10000&match[type]=url
+        simple: ${TAXIIServer.ServerInfo.api_roots}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2506,6 +2407,38 @@ tasks:
         "position": {
           "x": 50,
           "y": 2950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "62":
+    id: "62"
+    taskid: 9ba7745c-aed4-4a4b-88b3-6ad41a4de9c7
+    type: regular
+    task:
+      id: 9ba7745c-aed4-4a4b-88b3-6ad41a4de9c7
+      version: -1
+      name: taxii-server-info
+      description: Returns the TAXII server info, default URL, title, etc.
+      script: '|||taxii-server-info'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2560
         }
       }
     note: false
