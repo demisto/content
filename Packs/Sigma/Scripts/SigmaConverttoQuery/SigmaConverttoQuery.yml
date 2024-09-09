@@ -2,7 +2,6 @@ commonfields:
   id: SigmaConverttoQuery
   version: -1
 name: SigmaConverttoQuery
-description: The script converts a Sigma Rule Cortex XSOAR indicator into a query for the chosen query language.
 script: ''
 type: python
 tags:
