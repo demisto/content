@@ -1,8 +1,31 @@
-## BaseIntegration Help
+## DSPM
 
-Markdown file for integration configuration  help snippet. In this file add:
+##### Details for DSPM workflow
 
-- Brief information about how to retrieve the API key of your product
-- Other useful information on how to configure your integration in XSOAR
+Configure the instance by providing following mandatory details:
+### DSPM
+- Name of the instance
+- Your DSPM server URL
+- DSPM API Key
+### Jira
+- Your Jira server URL
+- Your Jira user name (email)
+- Jira API Token
+### Azure
+- Azure Storage Account name
+- Azure Storage Shared Key
+### GCP
+- GCP Service Account JSON
+- Lifetime for slack notification ( in hours)
 
-Since this is a Markdown file, we encourage you to use MD formatting for sections, sub-sections, lists, etc.
+### How to obtain required informations of the following platforms?
+#### DSPM
+#### Azure
+#### GCP
+
+
+## Test Configuration
+
+After providing the mandatory details, please test the configuration using the Test button.
+
+---

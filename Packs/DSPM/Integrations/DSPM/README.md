@@ -11,19 +11,19 @@ This integration was integrated and tested with version xx of DSPM.
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Your DSPM server URL |  | True |
-    | API Key | The API Key to use for connection | True |
+    | DSPM API Key | API key to use for the connection | True |
     | Your Jira server URL |  | True |
     | Your Jira user name (email). |  | True |
-    | API Token | The API Token to use for jira connection | True |
+    | JIRA API Token | API token for Jira connection | True |
     | Azure Storage Account name |  | True |
-    | Azure Storage Shared Key | The Shared API Key that is available in Azure Storage Account | True |
+    | Azure Storage Shared Key | The shared API key available in the Azure Storage Account | True |
     | GCP Service Account JSON |  | True |
     | Lifetime for slack notification ( in hours) |  | True |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
     | Fetch incidents |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
+4. Click **Test** to validate the URLs, tokens, and connection.
 
 ## Commands
 
