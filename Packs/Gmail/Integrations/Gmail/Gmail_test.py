@@ -1043,41 +1043,18 @@ def test_parse_mail_parts_use_legacy_name(monkeypatch, part, expected_result):
 def test_send_mail_sender_display_name(mocker, display_name):
     import Gmail
     from Gmail import send_mail
-    emailto = ["recipient@example.com"]
-    emailfrom = "sender@example.com"
-    subject = "Test Subject"
-    body = "Test Body"
-    entry_ids = []
-    cc = []
-    bcc = []
-    htmlBody = None
-    replyTo = "reply@example.com"
-    file_names = []
-    attach_cid = []
-    transientFile = []
-    transientFileContent = []
-    transientFileCID = None
-    manualAttachObj = []
-    additional_headers = []
-    templateParams = None
-    sender_display_name = display_name
-    inReplyTo = None
-    references = None
-    force_handle_htmlBody = False
-
     mock_service = MagicMock()
     mocker.patch.object(Gmail, 'get_service', return_value=mock_service)
     mock_service.users().messages().send().execute.return_value = {'id': 'mock_id'}
 
-    send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody, replyTo, file_names,
-              attach_cid, transientFile, transientFileContent, transientFileCID, manualAttachObj,
-              additional_headers, templateParams, sender_display_name, inReplyTo, references, force_handle_htmlBody)
+    send_mail([], "sender@example.com", "", "", [], [], [], None, "", [],
+              [], [], [], None, [], [], None, display_name, None, None, False)
 
     message = mock_service.users().messages().send.call_args[1]['body']['raw']
     decoded_message = base64.urlsafe_b64decode(message.encode()).decode()
     if display_name:
-        expected_from_header = f"{display_name} <{emailfrom}>"
+        expected_from_header = f"{display_name} <sender@example.com>"
     else:
-        expected_from_header = emailfrom
+        expected_from_header = "sender@example.com"
 
     assert f"from: {expected_from_header}" in decoded_message
