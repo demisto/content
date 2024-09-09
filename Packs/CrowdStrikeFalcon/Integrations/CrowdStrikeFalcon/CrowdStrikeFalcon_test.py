@@ -88,7 +88,7 @@ def test_incident_to_incident_context():
 
 def test_detection_to_incident_context():
     from CrowdStrikeFalcon import detection_to_incident_context
-    res = detection_to_incident_context(input_data.response_idp_detection.copy(), "IDP Detection")
+    res = detection_to_incident_context(input_data.response_idp_detection.copy(), "IDP Detection", 'created_timestamp')
     assert res == input_data.context_idp_detection
 
 
@@ -7494,3 +7494,32 @@ def test_get_status(mocker):
                        '046761c46ec84f40b27b6f79ce7c6543': 'Online',
                        '8ed44198a6f64f9fabd0479c30989876': 'Online',
                        'd4210a0957e640f18c237a2fa1141122': 'Online'}
+
+
+def test_fix_time_field():
+    """
+    Given:
+        - A detection, a string representing the key of the time we want to fix.
+    When:
+        - Running fetch_incidents command
+    Then:
+        - Validate that the value of the given key in the detection was updated correctly.
+    """
+    from CrowdStrikeFalcon import fix_time_field
+    detection_1 = {
+        'created_timestamp': '2023-04-20T11:13:10.424647194Z'
+    }
+    detection_2 = {
+        'created_timestamp': '2023-04-20T11:13:10.424647Z'
+    }
+    detection_3 = {
+        'created_timestamp': '2023-04-20T11:13:10.424Z'
+    }
+
+    fix_time_field(detection_1, 'created_timestamp')
+    fix_time_field(detection_2, 'created_timestamp')
+    fix_time_field(detection_3, 'created_timestamp')
+
+    assert detection_1['created_timestamp'] == '2023-04-20T11:13:10.424647Z'
+    assert detection_2['created_timestamp'] == '2023-04-20T11:13:10.424647Z'
+    assert detection_3['created_timestamp'] == '2023-04-20T11:13:10.424Z'
