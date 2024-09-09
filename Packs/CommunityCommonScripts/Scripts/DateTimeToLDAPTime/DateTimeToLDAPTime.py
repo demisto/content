@@ -22,7 +22,7 @@ def main():
         return_results(convert_time_command(time=utc_time))
 
     except Exception as e:
-        return_error(f'Convert DateTimeToLDAPTime to LDAP Time command failed. Error: {e}')
+        return_error(f'Convert DateTimeToLDAPTime to LDAP Time command failed. Error: {str(e)}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
