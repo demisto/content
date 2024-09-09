@@ -1079,5 +1079,5 @@ def test_send_mail_sender_display_name(mocker, display_name):
         expected_from_header = f"{display_name} <{emailfrom}>"
     else:
         expected_from_header = emailfrom
-        
+
     assert f"from: {expected_from_header}" in decoded_message
