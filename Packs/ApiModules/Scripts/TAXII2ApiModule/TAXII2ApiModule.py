@@ -944,7 +944,7 @@ class STIX2XSOARParser(BaseClient):
         entity_b_obj_type = STIX_2_TYPES_TO_CORTEX_TYPES.get(indicator_obj.get('type', ''),
                                                              STIX2XSOARParser.get_ioc_type(related_obj, id_to_object))
         if indicator_obj.get('type') == "indicator":
-            entity_b_value = STIX2XSOARParser.get_ioc_value(related_obj, id_to_object)
+            entity_b_value = STIX2XSOARParser.get_single_pattern_value(id_to_object.get(related_obj, {}).get('pattern'))
         elif indicator_obj.get('type') == "attack-pattern" and is_unit42_report:
             _, entity_b_value = STIX2XSOARParser.get_mitre_attack_id_and_value_from_name(indicator_obj)
         elif indicator_obj.get('type') == "report" and is_unit42_report:
