@@ -2,12 +2,12 @@ commonfields:
   id: SigmaConverttoQuery
   version: -1
 name: SigmaConverttoQuery
+description: The script converts a Sigma Rule Cortex XSOAR indicator into a query for the chosen query language.
 script: ''
 type: python
 tags:
 - Sigma
 comment: Allows converting a Sigma Rule indicator into a SIEM query.
-description: Convert a Sigma indicator into a query in the selected query language.
 enabled: true
 args:
 - name: indicator

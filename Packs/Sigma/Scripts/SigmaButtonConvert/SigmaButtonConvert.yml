@@ -9,6 +9,7 @@ tags:
 enabled: true
 args:
 - name: SIEM
+  description: The 3rd party application language the Sigma rule will be converted to.
   required: true
   auto: PREDEFINED
   predefined:
