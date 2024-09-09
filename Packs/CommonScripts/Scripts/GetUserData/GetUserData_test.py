@@ -660,7 +660,7 @@ def test_add_connection_with_custom_condition():
     task2 = Task("task2")
     playbook.add_task(task1)
     playbook.add_task(task2)
-    custom_condition = lambda: False
+    def custom_condition(): return False
 
     playbook.add_connection(task1, task2, custom_condition)
 
@@ -751,7 +751,7 @@ def test_playbook_graph_run_successful_execution(mocker: MockerFixture):
     mock_debug.assert_any_call("Current task: task1")
     mock_debug.assert_any_call("Current task: task2")
     mock_debug.assert_any_call("Current task: task3")
-    mock_debug.assert_called_with("All tasks executed: {'task1', 'task2', 'task3'}")
+    mock_debug.assert_called_with("All tasks executed: ['task1', 'task2', 'task3']")
 
 
 def test_playbook_graph_run_with_condition(mocker: MockerFixture):
