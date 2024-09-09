@@ -1579,7 +1579,7 @@ inputs:
     simple: Reopen And Close
   required: false
   description: |-
-    Determines what to  do when incidents are found as part of a phishing campaign, but the corresponding campaign incident is already closed. Possible values and their explanations are:
+    Determines what to do when incidents are found as part of a phishing campaign, but the corresponding campaign incident is already closed. Possible values and their explanations are:
 
     "Reopen And Leave Open" - Reopens the phishing campaign incident,  adds the new phishing incident to it and leaves the phishing campaign incident open.
 
