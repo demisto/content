@@ -183,10 +183,10 @@ script:
     arguments:
       - description: resource provider unique id.
         name: resource_id
-        optional: true
+        required: false
       - description: search by name or external ID.
         name: resource_name
-        optional: true
+        required: false
     description: Get details of a resource.
     outputs:
     - contextPath: Wiz.Manager.Resource.id
