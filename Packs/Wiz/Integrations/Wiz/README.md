@@ -44,7 +44,7 @@ Get the details for a Wiz Issue ID.
 
 ### wiz-get-issues
 ***
-Get the issues on cloud resources. Limited to 500 results.
+Get the issues on cloud resources.
 <h4> Base Command </h4>
 
 `wiz-get-issues`

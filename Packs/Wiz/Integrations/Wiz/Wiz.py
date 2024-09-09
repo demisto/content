@@ -2292,6 +2292,9 @@ def get_issue_evidence(issue_id):
     # Getting the Issue Evidence Query
     issue_object = _get_issue(issue_id, is_evidence=True)
 
+    if issue_object['data']['issues']['nodes'] is None or not issue_object['data']['issues']['nodes']:
+        return f"Issue not found: {issue_id}"
+
     issue_type = issue_object['data']['issues']['nodes'][0]['type']
 
     if issue_type == 'THREAT_DETECTION':
@@ -2319,6 +2322,8 @@ def get_issue_evidence(issue_id):
 
     if response.get('data', {}).get('graphSearch', {}).get('nodes') is None:
         return "Resource Not Found"
+    elif len(response.get('data', {}).get('graphSearch', {}).get('nodes')) == 0:
+        return "No Evidence Found"
     else:
         return response['data']['graphSearch']['nodes'][0].get('entities', {})
 
