@@ -4,7 +4,7 @@ commonfields:
 name: Hudsonrock
 display: Hudsonrock
 category: Data Enrichment & Threat Intelligence
-description: "Enrichment from Hudsonrock OSINT tools at https://cavalier.hudsonrock.com/api/json/v2/osint-tools/ Supports: IP, Email and Username"
+description: "Enrichment from Hudsonrock OSINT tools at https://cavalier.hudsonrock.com/api/json/v2/osint-tools/ Supports: IP, Email and Username."
 configuration:
 - display: Server URL (e.g. https://cavalier.hudsonrock.com/)
   name: url
