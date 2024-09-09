@@ -274,6 +274,27 @@ def test_taxii20_get_server_info(mocker, taxii2_server_v20):
     assert result.outputs == integration_context['server_info']
 
 
+def test_taxii20_get_server_info_demisto_version(mocker):
+    """
+        Given
+            TAXII Server v2.0, Integration context.
+        When
+            Calling get-server-info command
+        Then
+            Validate that the correct default URL is returned
+
+    """
+    from TAXII2Server import get_server_info_command
+    integration_context = {}
+    integration_context['server_info'] = {'api_roots': ["https://www.example.com/path/to/resource"],
+                                          'default': "https://www.example.com/path/to/resource"}
+    mocker.patch('CommonServerPython.get_demisto_version', return_value={'version': '8.1.0', 'buildNumber': '12345'})
+
+    results = get_server_info_command(integration_context=integration_context)
+
+    assert results.outputs['default'] == 'https://ext-www.example.com/xsoar/path/to/resource'
+
+
 def test_taxii21_collection(mocker, taxii2_server_v21):
     """
         Given

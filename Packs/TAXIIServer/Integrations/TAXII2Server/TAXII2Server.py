@@ -167,13 +167,13 @@ class TAXII2Server:
             calling_context = get_calling_context()
             instance_name = calling_context.get('IntegrationInstance', '')
             endpoint = requote_uri(os.path.join('/instance', 'execute', instance_name))
-            if is_xsiam_or_xsoar_saas():
+            if is_xsiam_or_xsoar_saas() and not instance_execute:
                 service_address = f'{self._url_scheme}://ext-{self._host}/xsoar{endpoint}'
             else:
                 service_address = f'{self._url_scheme}://{self._host}{endpoint}'
         else:
             endpoint = f':{self._port}'
-            if is_xsiam_or_xsoar_saas():
+            if is_xsiam_or_xsoar_saas() and not instance_execute:
                 service_address = f'{self._url_scheme}://ext-{self._host}/xsoar{endpoint}'
             else:
                 service_address = f'{self._url_scheme}://{self._host}{endpoint}'
@@ -891,9 +891,40 @@ def test_module(params: dict) -> str:
     return 'ok'
 
 
+def edit_server_info(server_info: dict) -> dict:
+    """Edits the server info dictionary if the server version >= 8.0.0
+
+    Args:
+        server_info (dict): The server info
+    """
+    if is_demisto_version_ge('8.0.0'):
+        altered_api_roots = []
+        for api_root in server_info.get('api_roots', []):
+            altered_api_roots.append(alter_url(api_root))
+        server_info['api_roots'] = altered_api_roots
+        server_info['default'] = alter_url(server_info['default'])
+
+    return server_info
+
+
+def alter_url(url: str) -> str:
+    """Alters the URL's netloc with the "ext-" prefix, and the path with the "/xsoar" path.
+
+    Args:
+        url (str): The URL to alter.
+    """
+    parsed_url = urlparse(url)
+    new_netloc = "ext-" + parsed_url.netloc
+    new_path = '/xsoar' + parsed_url.path
+    new_url = f'{parsed_url.scheme}://{new_netloc}{new_path}'
+
+    return new_url
+
+
 def get_server_info_command(integration_context):
     server_info = integration_context.get('server_info', None)
 
+    server_info = edit_server_info(server_info)
     metadata = '**In case the default/api_roots URL is incorrect, you can override it by setting' \
                '"TAXII2 Service URL Address" field in the integration configuration**\n\n'
     hr = tableToMarkdown('Server Info', server_info, metadata=metadata)
