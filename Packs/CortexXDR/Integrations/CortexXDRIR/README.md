@@ -247,7 +247,7 @@ Builtin Roles with this permission includes: "Investigator", "Responder", "Privi
 | sort_by_creation_time | Sorts returned incidents by the date/time that the incident was created ("asc" - ascending, "desc" - descending). Possible values are: asc, desc.                                                                          | Optional | 
 | page | Page number (for pagination). The default is 0 (the first page). Default is 0.                                                                                                                                             | Optional | 
 | limit | Maximum number of incidents to return per page. The default and maximum is 100. Default is 100.                                                                                                                            | Optional | 
-| status | Filters only incidents in the specified status. The options are: new, under_investigation, resolved_known_issue, resolved_false_positive, resolved_true_positive resolved_security_testing, resolved_other, resolved_auto. | Optional | 
+| status | Filters only incidents in the specified status. The options are: new, under_investigation, resolved_known_issue, resolved_false_positive, resolved_true_positive resolved_security_testing, resolved_other, resolved_auto, resolved_auto_resolve. | Optional | 
 | starred | Whether the incident is starred (Boolean value: true or false). Possible values are: true, false.                                                                                                                          | Optional | 
 | starred_incidents_fetch_window | Starred fetch window timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). Default is 3 days.                                                                                                              | Optional | 
 
@@ -3514,7 +3514,7 @@ There is no context output for this command.
 
 >Role was removed successfully for 1 user.
 
-## xdr-script-run
+### xdr-script-run
 
 ***
 Initiates a new endpoint script execution action using a script from the script library and returns the results.
@@ -3860,7 +3860,7 @@ Update one or more alerts. You can update up to 100 alerts per request. Missing 
 | --- | --- | --- |
 | alert_ids | Comma-separated list of alert IDs. | Required | 
 | severity | Severity of the incident which was closed. Possible values are: critical, high, medium, low. | Optional | 
-| status | New status for updated alerts. Possible values are: new, resolved_threat_handled, under_investigation, resolved_security_testing, resolved_auto, resolved_known_issue, resolved_duplicate, resolved_other, resolved_false_positive, resolved_true_positive. | Optional | 
+| status | New status for updated alerts. Possible values are: new, resolved_threat_handled, under_investigation, resolved_security_testing, resolved_auto, resolved_auto_resolve, resolved_known_issue, resolved_duplicate, resolved_other, resolved_false_positive, resolved_true_positive. | Optional | 
 | comment | Comment to append to updated alerts. | Optional | 
 
 #### Context Output
