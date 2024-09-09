@@ -416,7 +416,7 @@ def main() -> None:
     # fetch params
     max_fetch = int(params.get('max_fetch', '50'))
     first_fetch = params.get('first_fetch', '3 days').strip()
-    info_level = params.get('info_level', 'concise')
+    info_level = params.get('info_level') or 'concise'
 
     command = demisto.command()
     args = demisto.args()
