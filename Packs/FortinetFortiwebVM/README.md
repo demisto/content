@@ -73,7 +73,7 @@ For Traffic logs via Fortiweb Cloud, you are required to send the logs with [Ama
 | Field Name | Value |
 | :---------------- | :------: |
 | Server Type | AWS S3 |
-| Bucket Name | Enter the AWS S3 bucket name |
+| Bucket Name | Enter the AWS S3 bucket name. |
 | Region | Enter the region code, for example, ap-southeast-1. |
 | Access Key ID	| Enter the access key ID of the S3 bucket. |
 | Secret Key ID	| Enter the secret key ID of the S3 bucket. |
