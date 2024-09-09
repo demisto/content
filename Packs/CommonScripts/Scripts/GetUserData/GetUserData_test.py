@@ -4,7 +4,14 @@ from pytest_mock import MockerFixture
 import demistomock as demisto
 from CommonServerPython import *
 
-from GetUserData import create_account, Command, Task
+from GetUserData import (
+    create_account,
+    Command,
+    Task,
+    PlaybookGraph,
+    update_enabled_commands,
+    merge_accounts,
+)
 
 
 def test_create_account_with_all_fields():
@@ -560,3 +567,420 @@ def test_execute_task_without_command():
     assert task.status is True
     assert results == []
     assert outputs == []
+
+
+def test_add_task():
+    """
+    Given:
+        A PlaybookGraph instance and a Task.
+
+    When:
+        The add_task method is called with the Task.
+
+    Then:
+        The Task should be added to the tasks dictionary and an empty list should be initialized for its connections.
+    """
+    playbook = PlaybookGraph()
+    task = Task("test_task")
+
+    playbook.add_task(task)
+
+    assert playbook.tasks["test_task"] == task
+    assert playbook.connections["test_task"] == []
+
+
+def test_add_multiple_tasks():
+    """
+    Given:
+        A PlaybookGraph instance and multiple Tasks.
+
+    When:
+        The add_task method is called multiple times with different Tasks.
+
+    Then
+        All Tasks should be added to the tasks dictionary and each should have an empty list initialized for its connections.
+    """
+    playbook = PlaybookGraph()
+    task1 = Task("task1")
+    task2 = Task("task2")
+    task3 = Task("task3")
+
+    playbook.add_task(task1)
+    playbook.add_task(task2)
+    playbook.add_task(task3)
+
+    assert len(playbook.tasks) == 3
+    assert playbook.tasks["task1"] == task1
+    assert playbook.tasks["task2"] == task2
+    assert playbook.tasks["task3"] == task3
+    assert playbook.connections["task1"] == []
+    assert playbook.connections["task2"] == []
+    assert playbook.connections["task3"] == []
+
+
+def test_add_connection_basic():
+    """
+    Given:
+        A PlaybookGraph instance and two Task instances.
+
+    When:
+        add_connection is called with these tasks and no condition.
+
+    Then:
+        A connection should be added between the tasks with a default condition.
+    """
+    playbook = PlaybookGraph()
+    task1 = Task("task1")
+    task2 = Task("task2")
+    playbook.add_task(task1)
+    playbook.add_task(task2)
+
+    playbook.add_connection(task1, task2)
+
+    assert len(playbook.connections[task1.task_id]) == 1
+    assert playbook.connections[task1.task_id][0][0] == task2.task_id
+    assert playbook.connections[task1.task_id][0][
+        1
+    ]()  # Default condition should return True
+
+
+def test_add_connection_with_custom_condition():
+    """
+    Given:
+        A PlaybookGraph instance, two Task instances, and a custom condition.
+
+    When:
+        add_connection is called with these tasks and the custom condition.
+
+    Then:
+        A connection should be added between the tasks with the custom condition.
+    """
+    playbook = PlaybookGraph()
+    task1 = Task("task1")
+    task2 = Task("task2")
+    playbook.add_task(task1)
+    playbook.add_task(task2)
+    custom_condition = lambda: False
+
+    playbook.add_connection(task1, task2, custom_condition)
+
+    assert len(playbook.connections[task1.task_id]) == 1
+    assert playbook.connections[task1.task_id][0][0] == task2.task_id
+    assert playbook.connections[task1.task_id][0][1] == custom_condition
+    assert not playbook.connections[task1.task_id][0][
+        1
+    ]()  # Custom condition should return False
+
+
+def test_add_multiple_connections():
+    """
+    Given:
+        A PlaybookGraph instance and multiple Task instances.
+
+    When:
+        add_connection is called multiple times with different tasks.
+
+    Then:
+        Multiple connections should be added correctly.
+    """
+    playbook = PlaybookGraph()
+    task1 = Task("task1")
+    task2 = Task("task2")
+    task3 = Task("task3")
+    playbook.add_task(task1)
+    playbook.add_task(task2)
+    playbook.add_task(task3)
+
+    playbook.add_connection(task1, task2)
+    playbook.add_connection(task1, task3, lambda: False)
+
+    assert len(playbook.connections[task1.task_id]) == 2
+    assert playbook.connections[task1.task_id][0][0] == task2.task_id
+    assert playbook.connections[task1.task_id][1][0] == task3.task_id
+    assert playbook.connections[task1.task_id][0][
+        1
+    ]()  # Default condition should return True
+    assert not playbook.connections[task1.task_id][1][
+        1
+    ]()  # Custom condition should return False
+
+
+def test_playbook_graph_run_successful_execution(mocker: MockerFixture):
+    """
+    Given:
+        A PlaybookGraph with three tasks and connections between them.
+
+    When:
+        The run method is called on the PlaybookGraph.
+
+    Then:
+        All tasks are executed in the correct order, and their results and outputs are collected.
+    """
+    # Setup
+    playbook = PlaybookGraph()
+
+    task1 = Task("task1", Command("cmd1", {}, "output1", lambda x: x))
+    task2 = Task("task2", Command("cmd2", {}, "output2", lambda x: x))
+    task3 = Task("task3", Command("cmd3", {}, "output3", lambda x: x))
+
+    playbook.add_task(task1)
+    playbook.add_task(task2)
+    playbook.add_task(task3)
+
+    playbook.add_connection(task1, task2)
+    playbook.add_connection(task1, task3)
+
+    playbook.start_task_id = "task1"
+
+    def mock_execute(task: Task):
+        task.status = True
+        return ([f"result {task.task_id}"], [f"output {task.task_id}"])
+
+    mocker.patch.object(task1, "execute", side_effect=lambda: mock_execute(task1))
+    mocker.patch.object(task2, "execute", side_effect=lambda: mock_execute(task2))
+    mocker.patch.object(task3, "execute", side_effect=lambda: mock_execute(task3))
+
+    mock_debug = mocker.patch.object(demisto, "debug")
+
+    # Execute
+    playbook.run()
+
+    # Assert
+    assert playbook.results == ["result task1", "result task2", "result task3"]
+    assert playbook.outputs == ["output task1", "output task2", "output task3"]
+    mock_debug.assert_any_call("Current task: task1")
+    mock_debug.assert_any_call("Current task: task2")
+    mock_debug.assert_any_call("Current task: task3")
+    mock_debug.assert_called_with("All tasks executed: {'task1', 'task2', 'task3'}")
+
+
+def test_playbook_graph_run_with_condition(mocker: MockerFixture):
+    """
+    Given:
+        A PlaybookGraph with three tasks and a conditional connection.
+
+    When:
+        The run method is called on the PlaybookGraph.
+
+    Then:
+        Only tasks that meet the condition are executed, and their results and outputs are collected.
+    """
+    # Setup
+    playbook = PlaybookGraph()
+
+    task1 = Task("task1", Command("cmd1", {}, "output1", lambda x: x))
+    task2 = Task("task2", Command("cmd2", {}, "output2", lambda x: x))
+    task3 = Task("task3", Command("cmd3", {}, "output3", lambda x: x))
+
+    playbook.add_task(task1)
+    playbook.add_task(task2)
+    playbook.add_task(task3)
+
+    playbook.add_connection(task1, task2, lambda: True)
+    playbook.add_connection(task1, task3, lambda: False)
+
+    playbook.start_task_id = "task1"
+
+    def mock_execute(task: Task):
+        task.status = True
+        return ([f"result {task.task_id}"], [f"output {task.task_id}"])
+
+    mocker.patch.object(task1, "execute", side_effect=lambda: mock_execute(task1))
+    mocker.patch.object(task2, "execute", side_effect=lambda: mock_execute(task2))
+    mocker.patch.object(task3, "execute", side_effect=lambda: mock_execute(task3))
+
+    mock_debug = mocker.patch.object(demisto, "debug")
+
+    # Execute
+    playbook.run()
+
+    # Assert
+    assert playbook.results == ["result task1", "result task2"]
+    assert playbook.outputs == ["output task1", "output task2"]
+    mock_debug.assert_any_call("Current task: task1")
+    mock_debug.assert_any_call("Current task: task2")
+    mock_debug.assert_any_call("Skipping task task3 since condition check failed.")
+    mock_debug.assert_called_with("All tasks executed: ['task1', 'task2']")
+
+
+def test_playbook_graph_run_with_missing_task(mocker: MockerFixture):
+    """
+    Given:
+        A PlaybookGraph with a connection to a non-existent task.
+
+    When:
+        The run method is called on the PlaybookGraph.
+
+    Then:
+        The execution continues without error, skipping the missing task and logging a debug message.
+    """
+    # Setup
+    playbook = PlaybookGraph()
+
+    task1 = Task("task1", Command("cmd1", {}, "output1", lambda x: x))
+
+    playbook.add_task(task1)
+    playbook.add_connection(task1, Task("non_existent_task"))
+
+    playbook.start_task_id = "task1"
+
+    def mock_execute(task: Task):
+        task.status = True
+        return ([f"result {task.task_id}"], [f"output {task.task_id}"])
+
+    mocker.patch.object(task1, "execute", side_effect=lambda: mock_execute(task1))
+
+    mock_debug = mocker.patch.object(demisto, "debug")
+
+    # Execute
+    playbook.run()
+
+    # Assert
+    assert playbook.results == ["result task1"]
+    assert playbook.outputs == ["output task1"]
+    mock_debug.assert_any_call("Current task: task1")
+    mock_debug.assert_any_call("Task non_existent_task not found.")
+    mock_debug.assert_called_with("All tasks executed: ['task1']")
+
+
+def test_update_enabled_commands(mocker: MockerFixture):
+    """
+    Given:
+        A dictionary of Command objects with different brands and generic status.
+
+    When:
+        The update_enabled_commands function is called.
+
+    Then:
+        The is_enabled attribute of each Command is correctly updated based on brand availability and generic status.
+    """
+    mock_execute_command = mocker.patch(
+        "GetUserData.execute_command", return_value=["yes", "no", "yes"]
+    )
+
+    mock_debug = mocker.patch.object(demisto, "debug")
+
+    commands = {
+        "cmd1": Command("cmd1", {}, "output1", lambda x: x, brand="Brand1"),
+        "cmd2": Command("cmd2", {}, "output2", lambda x: x, brand="Brand2"),
+        "cmd3": Command("cmd3", {}, "output3", lambda x: x, brand="Brand3"),
+        "cmd4": Command("cmd4", {}, "output4", lambda x: x, is_generic=True),
+    }
+
+    update_enabled_commands(commands)
+
+    # Assert execute_command was called correctly
+    mock_execute_command.assert_called_once_with(
+        command="IsIntegrationAvailable",
+        args={"brandname": ["Brand1", "Brand2", "Brand3"]},
+    )
+
+    # Assert is_enabled attributes are set correctly
+    assert commands["cmd1"].is_enabled is True
+    assert commands["cmd2"].is_enabled is False
+    assert commands["cmd3"].is_enabled is True
+    assert commands["cmd4"].is_enabled is True
+
+    # Assert debug message was called
+    mock_debug.assert_called_once_with("Enabled commands: ['cmd1', 'cmd3', 'cmd4']")
+
+
+def test_merge_accounts_with_no_conflicts(mocker: MockerFixture):
+    """
+    Given:
+        A list of account dictionaries with no conflicting values.
+
+    When:
+        merge_accounts is called with these dictionaries.
+
+    Then:
+        It should return a merged dictionary with all unique key-value pairs.
+    """
+    mock_account = mocker.Mock()
+    mock_account.to_context.return_value = {
+        "Account": {"id": "123", "name": "John Doe", "email": "john@example.com"}
+    }
+    mocker.patch.object(Common, "Account", return_value=mock_account)
+    mocker.patch.object(Common.Account, "CONTEXT_PATH", "Account")
+
+    accounts = [{"id": "123"}, {"name": "John Doe"}, {"email": "john@example.com"}]
+
+    result = merge_accounts(accounts)
+
+    assert result == {"id": "123", "name": "John Doe", "email": "john@example.com"}
+
+
+def test_merge_accounts_with_conflicts(mocker: MockerFixture):
+    """
+    Given:
+        A list of account dictionaries with conflicting values.
+
+    When:
+        merge_accounts is called with these dictionaries.
+
+    Then:
+        It should return a merged dictionary with the first encountered value
+        for conflicting keys and log debug messages for conflicts.
+    """
+    mock_account = mocker.Mock()
+    mock_account.to_context.return_value = {
+        "Account": {"id": "123", "name": "John Doe", "email": "john@example.com"}
+    }
+    mocker.patch.object(Common, "Account", return_value=mock_account)
+    mocker.patch.object(Common.Account, "CONTEXT_PATH", "Account")
+    mock_debug = mocker.patch.object(demisto, "debug")
+
+    accounts = [
+        {"id": "123", "name": "John Doe"},
+        {"id": "456", "email": "john@example.com"},
+        {"name": "Jane Doe"},
+    ]
+
+    result = merge_accounts(accounts)
+
+    assert result == {"id": "123", "name": "John Doe", "email": "john@example.com"}
+    mock_debug.assert_any_call("Conflicting values for key 'id': '123' vs '456'")
+    mock_debug.assert_any_call(
+        "Conflicting values for key 'name': 'John Doe' vs 'Jane Doe'"
+    )
+
+
+def test_merge_accounts_with_empty_list(mocker):
+    """
+    Given:
+        An empty list of account dictionaries.
+
+    When:
+        merge_accounts is called with this empty list.
+
+    Then:
+        It should return an empty dictionary.
+    """
+    result = merge_accounts([])
+
+    assert result == {}
+
+
+def test_merge_accounts_with_single_account(mocker):
+    """
+    Given:
+        A list containing a single account dictionary.
+
+    When:
+        merge_accounts is called with this list.
+
+    Then:
+        It should return a dictionary with the same key-value pairs as the input account.
+    """
+    mock_account = mocker.Mock()
+    mock_account.to_context.return_value = {
+        "Account": {"id": "123", "name": "John Doe"}
+    }
+    mocker.patch.object(Common, "Account", return_value=mock_account)
+    mocker.patch.object(Common.Account, "CONTEXT_PATH", "Account")
+
+    accounts = [{"id": "123", "name": "John Doe"}]
+
+    result = merge_accounts(accounts)
+
+    assert result == {"id": "123", "name": "John Doe"}

@@ -369,7 +369,7 @@ class PlaybookGraph:
         collected data from each executed task.
         """
         current_task_ids = [self.start_task_id]
-        executed_task_ids = set()
+        executed_task_ids = []
 
         while current_task_ids:
             next_task_ids = []
@@ -382,7 +382,7 @@ class PlaybookGraph:
                 results, outputs = task.execute()
                 self.results.extend(results)
                 self.outputs.extend(outputs)
-                executed_task_ids.add(task.task_id)
+                executed_task_ids.append(task.task_id)
                 next_tasks = self.connections.get(task.task_id, [])
                 if task.status:
                     for next_task_id, condition in next_tasks:
@@ -779,7 +779,7 @@ def setup_playbook_graph(
 """ MAIN FUNCTION """
 
 
-def main():
+def main():  # pragma: no cover
     try:
         args = demisto.args()
         users_ids = argToList(args.get("user_id", []))
