@@ -89,7 +89,7 @@ For Traffic logs via Fortiweb Cloud, you are required to send the logs with [Ama
 
 ### Fortiweb VM
 
-* [How-To export Attack, Traffic and Event logs to a log server](https://docs.fortinet.com/document/fortiweb/7.6.0/administration-guide/303842/logging).
+* [How to export Attack, Traffic and Event logs to a log server](https://docs.fortinet.com/document/fortiweb/7.6.0/administration-guide/303842/logging).
 
 **Enable Logging**
 1.  First, configure a SIEM Policy. Before you can log the resource, you enable logging for the log type that you want to use as a trigger.
