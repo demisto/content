@@ -219,16 +219,12 @@ def test_module(client: Client):
     if datetime.now() - timedelta(days=7) - timedelta(minutes=5) >= user_input_fetch_start_date:
         raise DemistoException('Error: first fetch time delta should not be over one week.')
 
-    if client.ms_client.managed_identities_client_id:
-        client.get_access_token_data()
-        return 'ok'
-
-    if params.get('self_deployed') and (not params.get('auth_code') or not params.get('redirect_uri')):
-        raise DemistoException('Error: in the self_deployed authentication flow the authentication code parameter and '
-                               'redirect uri cannot be empty.')
-    raise DemistoException('The basic parameters are ok, authentication cannot be checked using the test module. '
-                           'Please run ms-management-activity-list-subscriptions to test your credentials.')
-
+    if params.get('self_deployed'):
+        raise DemistoException("The *Test* button is not available for the `self-deployed - Authorization Code Flow`.\n "
+                               "Use the !ms-management-activity-list-subscriptions command instead "
+                               "once all relevant parameters have been entered.")
+    client.list_subscriptions_request()
+    return 'ok'
 
 def get_start_or_stop_subscription_human_readable(content_type, start_or_stop):
     if start_or_stop == 'start':

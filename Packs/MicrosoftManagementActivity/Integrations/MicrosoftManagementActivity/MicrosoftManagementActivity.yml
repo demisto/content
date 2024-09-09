@@ -87,15 +87,15 @@ configuration:
   section: Connect
   advanced: true
   required: false
-- display: The authentication code you got for the service
-  additionalinfo: For instructions on how to receive it, see the Help tab.
+- display: Authorization code (for self-deployed mode)
+  additionalinfo: Run the !ms-management-activity-generate-login-url command to generate the Authorization code.
   name: auth_code
   type: 4
   section: Connect
   hidden: true
   required: false
-- displaypassword: The authentication code you got for the service
-  additionalinfo: For instructions on how to receive it, see the Help tab.
+- displaypassword: Authorization code (for self-deployed mode)
+  additionalinfo: Run the !ms-management-activity-generate-login-url command to generate the Authorization code.
   name: credentials_auth_code
   hiddenusername: true
   type: 9
