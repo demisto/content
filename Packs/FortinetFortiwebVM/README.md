@@ -95,7 +95,7 @@ For Traffic logs via Fortiweb Cloud, you are required to send the logs with [Ama
 
 **Configure a SIEM Policy**
 1.  Before you can log to the resource, you enable logging for the log type that you want to use as a trigger.
-2.  Go to **Log&Report** **>** **Log Policy** &rarr; **SIEM Policy**.
+2.  Go to **Log&Report** &rarr; **Log Policy** &rarr; **SIEM Policy**.
 3.  For **Policy Name**, enter a unique name that other parts of the configuration can reference.
 4.  Click **Create New**, set the **Policy Type** to **ArcSight CEF**.
 5.  Input an IP address and port for the server.
