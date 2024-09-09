@@ -266,6 +266,7 @@ Delete an alert.
 #### Context Output
 
 There is no context output for this command.
+
 ### securityscorecard-alerts-list
 
 ***
@@ -369,6 +370,7 @@ Retrieve an issue_type's historical findings in a scorecard.
 #### Context Output
 
 There is no context output for this command.
+
 ### securityscorecard-issue-metadata
 
 ***

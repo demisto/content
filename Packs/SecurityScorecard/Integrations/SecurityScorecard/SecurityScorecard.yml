@@ -25,7 +25,7 @@ configuration:
 - name: incidentFetchInterval
   display: Incidents Fetch Interval
   additionalinfo: SecurityScorecard is updated on a daily basis therefore there's no need to modify this value.
-  defaultvalue: '1440'
+  defaultvalue: "1440"
   type: 19
   required: false
 - name: max_fetch
@@ -99,25 +99,25 @@ script:
       description: Grade filter. To filter multiple grades, comma-separate them, e.g. A,B.
       auto: PREDEFINED
       predefined:
-      - A
-      - B
-      - C
-      - D
-      - E
-      - F
+      - "A"
+      - "B"
+      - "C"
+      - "D"
+      - "E"
+      - "F"
     - name: industry
       description: Industry filter. To filter multiple industries, comma-separate them, e.g. education,financial_services.
       auto: PREDEFINED
       predefined:
-      - education
-      - financial_services
-      - food
-      - government
-      - healthcare
-      - information_services
-      - manufacturing
-      - retail
-      - technology
+      - "education"
+      - "financial_services"
+      - "food"
+      - "government"
+      - "healthcare"
+      - "information_services"
+      - "manufacturing"
+      - "retail"
+      - "technology"
     - name: vulnerability
       description: Vulnerability filter.
     - name: issue_type
@@ -234,8 +234,8 @@ script:
       description: Timing granularity.
       auto: PREDEFINED
       predefined:
-      - daily
-      - weekly
+      - "daily"
+      - "weekly"
     outputs:
     - contextPath: SecurityScorecard.Company.ScoreHistory.domain
       description: Company domain.
@@ -260,9 +260,9 @@ script:
       description: Timing granularity. or "monthly".
       auto: PREDEFINED
       predefined:
-      - daily
-      - weekly
-      - monthly
+      - "daily"
+      - "weekly"
+      - "monthly"
     outputs:
     - contextPath: SecurityScorecard.Company.FactorHistory.domain
       description: Company domain.
@@ -284,8 +284,8 @@ script:
       required: true
       auto: PREDEFINED
       predefined:
-      - rises
-      - drops
+      - "rises"
+      - "drops"
     - name: score_types
       isArray: true
       description: Comma-separated list of risk factors to monitor. Possible values are 'overall', 'any_factor_score', 'network_security', 'dns_health', 'patching_cadence', 'endpoint_security', 'ip_reputation', 'application_security', 'cubit_score', 'hacker_chatter', 'leaked_information', 'social_engineering'.
@@ -294,8 +294,8 @@ script:
       description: What do you want to monitor with this alert. This argument is required if the `portfolios` argument is not specified.
       auto: PREDEFINED
       predefined:
-      - my_scorecard
-      - any_followed_company
+      - "my_scorecard"
+      - "any_followed_company"
     - name: portfolios
       isArray: true
       description: A comma-separated list of Portfolios. to use as a target for the alert. This argument is require if the `target` argument is not specified. You can get a list of portfolios by running `!securityscorecard-portfolios-list`.
@@ -311,8 +311,8 @@ script:
       required: true
       auto: PREDEFINED
       predefined:
-      - rises_above
-      - drops_below
+      - "rises_above"
+      - "drops_below"
     - name: threshold
       description: The numeric score used as the threshold to trigger the alert.
       required: true
@@ -324,8 +324,8 @@ script:
       description: What do you want to monitor with this alert. This argument is required if the `portfolios` argument is not specified.
       auto: PREDEFINED
       predefined:
-      - my_scorecard
-      - any_followed_company
+      - "my_scorecard"
+      - "any_followed_company"
     - name: portfolios
       isArray: true
       description: A comma-separated list of Portfolios. to use as a target for the alert. This argument is require if the `target` argument is not specified. You can get a list of portfolios by running `!securityscorecard-portfolios-list`.
@@ -344,8 +344,8 @@ script:
       required: true
       auto: PREDEFINED
       predefined:
-      - score
-      - grade
+      - "score"
+      - "grade"
   - name: securityscorecard-alerts-list
     description: List alerts triggered in the last week.
     arguments:
@@ -455,7 +455,7 @@ script:
     outputs:
     - contextPath: SecurityScorecard.Metadata.Issues.key
       type: string
-      description: Key representing issue type, e.g. api_key_exposed.      
+      description: Key representing issue type, e.g. api_key_exposed.
     - contextPath: SecurityScorecard.Metadata.Issues.severity
       type: string
       description: issue severity.
