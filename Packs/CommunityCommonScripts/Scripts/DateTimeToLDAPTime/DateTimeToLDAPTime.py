@@ -19,7 +19,7 @@ def main():
         utc_time = dateparser.parse(str_utc_time)
 
         # Convert to LDAP time
-        return_results(convert_time_command(time=utc_time))
+        return_results(convert_time(time_to_convert=utc_time))
 
     except Exception as e:
         return_error(f'Convert DateTimeToLDAPTime to LDAP Time command failed. Error: {str(e)}')
