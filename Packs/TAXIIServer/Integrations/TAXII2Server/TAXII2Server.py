@@ -924,7 +924,7 @@ def alter_url(url: str) -> str:
 def get_server_info_command(integration_context):
     server_info = integration_context.get('server_info', None)
 
-    server_info = edit_server_info(server_info)
+    # server_info = edit_server_info(server_info)
     metadata = '**In case the default/api_roots URL is incorrect, you can override it by setting' \
                '"TAXII2 Service URL Address" field in the integration configuration**\n\n'
     hr = tableToMarkdown('Server Info', server_info, metadata=metadata)
