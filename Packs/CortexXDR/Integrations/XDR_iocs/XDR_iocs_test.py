@@ -1,3 +1,4 @@
+from unittest.mock import patch
 from XDR_iocs import *
 import pytest
 from freezegun import freeze_time
@@ -1098,3 +1099,74 @@ def test_parse_demisto_list_of_comments_default(mocker):
         comment_field_name=['indicator_link', Client.xsoar_comments_field],
         comments_as_tags=False
     ) == [f'url/#/indicator/{inc_id}, {comment_value}']
+
+
+@patch('XDR_iocs.demisto')
+@patch('XDR_iocs.Client')
+@patch('XDR_iocs.module_test')
+def test_xsoar_comment_field_empty(mock_module_test, mock_client, mock_demisto):
+    """
+    Given   params and args for main()
+    When    xsoar_comments_field is empty
+    Then    xsoar_comments_field should set to 'comments'
+    """
+    mock_module_test.return_value = None
+    mock_client.return_value = client
+    mock_demisto.params.return_value = {
+        'xsoar_comments_field': '',
+        'severity': 'low',
+        'override_severity': 'true',
+        'tlp_color': 'red',
+        'comments_as_tags': 'false'
+    }
+    mock_demisto.command.return_value = 'test-module'
+    mock_demisto.args.return_value = {}
+    main()
+    assert Client.xsoar_comments_field == 'comments'
+
+
+@patch('XDR_iocs.demisto')
+@patch('XDR_iocs.Client')
+@patch('XDR_iocs.module_test')
+def test_xsoar_comment_field_list_one_element(mock_module_test, mock_client, mock_demisto):
+    """
+    Given   params and args for main()
+    When    xsoar_comments_field is list with one element
+    Then    xsoar_comments_field should set to 'comment1'
+    """
+    mock_module_test.return_value = None
+    mock_client.return_value = client
+    mock_demisto.params.return_value = {
+        'xsoar_comments_field': ['comment1'],
+        'severity': 'low',
+        'override_severity': 'true',
+        'tlp_color': 'red',
+        'comments_as_tags': 'false'
+    }
+    mock_demisto.command.return_value = 'test-module'
+    mock_demisto.args.return_value = {}
+    main()
+    assert client.xsoar_comments_field == 'comment1'
+
+
+@patch('XDR_iocs.demisto')
+@patch('XDR_iocs.Client')
+@patch('XDR_iocs.module_test')
+def test_xsoar_comment_field_list_two_elements(mock_module_test, mock_client, mock_demisto):
+    """
+    Given   params and args for main()
+    When    xsoar_comments_field is list with one element
+    Then    xsoar_comments_field should raise an error
+    """
+    mock_demisto.params.return_value = {
+        'xsoar_comments_field': ['comment1', 'comment2'],
+        'severity': 'low',
+        'override_severity': 'true',
+        'tlp_color': 'red',
+        'comments_as_tags': 'false'
+    }
+    mock_demisto.command.return_value = 'test-module'
+    mock_demisto.args.return_value = {}
+    with pytest.raises(DemistoException) as e:
+        main()
+    assert 'Ensure the XSOAR comment field exported to XDR contains either one value or remains empty.' in e.value.message
