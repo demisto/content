@@ -30,7 +30,6 @@ In order to receive logs, use the [Broker VM](#broker-vm) option. <br>
 For Traffic logs via Fortiweb Cloud, you are required to send the logs with [Amazon S3](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Ingest-Generic-Logs-from-Amazon-S3) services.
 
 <br>
-<br>
 
 ### Fortiweb Cloud
 
@@ -49,7 +48,6 @@ For Traffic logs via Fortiweb Cloud, you are required to send the logs with [Ama
 
 4. Click **Save**. 
 
-<br>
 <br>
 
 **_Attack_ Logs**
@@ -87,7 +85,6 @@ For Traffic logs via Fortiweb Cloud, you are required to send the logs with [Ama
 
 ---
 
-<br>
 <br>
 
 ### Fortiweb VM
