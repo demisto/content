@@ -126,16 +126,26 @@ MIRROR_STATUS_DICT = {
 }
 
 XSOAR_CLOSE_REASON_MAPPING = {
-    'Other': 'Unresolved',
-    'Duplicate': 'Duplicate',
-    'False Positive': 'Not an Issue',
-    'Resolved': 'Resolved'
+    'Other': 7,
+    'Duplicate': 8,
+    'False Positive': 9,
+    'Resolved': 10
 }
 
 EXP_TYPE_ID_DICT = {
     1: 'Unknown',
     2: 'ExternalParty',
     3: 'Individual'
+}
+
+OBJECT_ACTION_TYPE_TO_ID = {
+    'Incident': 0,
+    'Task': 1,
+    'Note': 2,
+    'Milestone': 3,
+    'Artifact': 4,
+    'Attachment': 5,
+    'Email Message': 13
 }
 
 IBM_QRADAR_INCIDENT_FIELDS = {
@@ -295,6 +305,7 @@ def prettify_incident_tasks(client: SimpleClient, tasks: list[dict]) -> list[dic
     """
 
     def format_task(task):
+
         task.update({
             # TODO - Introduce field ENUMS.
             'Phase': get_phase_name(client, task['phase_id']),
@@ -304,10 +315,16 @@ def prettify_incident_tasks(client: SimpleClient, tasks: list[dict]) -> list[dic
             'DueDate': normalize_timestamp(task['due_date']) if task['due_date'] else 'No due date',
             'Status': 'Open' if task['status'] == 'O' else 'Closed',
             'Required': task['required'],
-            'Creator': task.get('creator_principal', {}).get('display_name'),
-            'Instructions': task.get('instr_text'),
-            'Owner': f"{task.get('owner_fname', '')} {task.get('owner_lname')}"
+            'Owner': f"{task.get('owner_fname', '')} {task.get('owner_lname')}",
+            'Creator': '',
+            'Instructions': ''
         })
+
+        if creator := task.get('creator_principal'):
+            task['Creator'] = creator.get('display_name', '')
+        if instructions := task.get('instructions'):
+            task['Instructions'] = instructions.get('content', '')
+
         return task
 
     formatted_tasks = [format_task(task) for task in tasks]
@@ -536,38 +553,36 @@ def process_raw_incident(client: SimpleClient, incident: dict) -> dict:
     incident["discovered_date"] = normalize_timestamp(incident.get("discovered_date"))
     incident["create_date"] = normalize_timestamp(incident.get("create_date"))
 
-    if DEMISTO_PARAMS.get('mirror_notes'):
+    if DEMISTO_PARAMS.get('fetch_notes'):
         notes = get_incident_notes(client, incident_id)
         incident["notes"] = prettify_incident_notes(notes)
         demisto.debug(f"process_raw_incident {[note['text'] for note in incident['notes']]=}")
 
-    if DEMISTO_PARAMS.get('mirror_tasks'):
+    if DEMISTO_PARAMS.get('fetch_tasks'):
         tasks = get_tasks(client, incident_id)
         incident["tasks"] = prettify_incident_tasks(client, tasks)
 
-    if DEMISTO_PARAMS.get('mirror_attachments'):
-        attachments_metadata = incident_attachments(client, incident_id)
-        incident['attachments'] = [
-            {
-                'ID': attachment.get('id'),
-                'Name': attachment.get('name'),
-                'Create Time': attachment.get('created'),    # Timestamp in milliseconds.
-                'Size': attachment.get('size')
-            }
-            for attachment in attachments_metadata
-        ]
-        demisto.debug(f'process_raw_incident {incident["attachments"]=}')
+    attachments_metadata = incident_attachments(client, incident_id)
+    incident['attachments'] = [
+        {
+            'ID': attachment.get('id'),
+            'Name': attachment.get('name'),
+            'Create Time': attachment.get('created'),    # Timestamp in milliseconds.
+            'Size': attachment.get('size')
+        }
+        for attachment in attachments_metadata
+    ]
+    demisto.debug(f'process_raw_incident {incident["attachments"]=}')
 
-    if DEMISTO_PARAMS.get('mirror_artifacts'):
-        artifacts = incident_artifacts(client, incident_id)
-        incident['artifacts'] = [
-            {
-                'ID': artifact.get('id'),
-                'Type': get_artifact_type(client, artifact.get('type')),
-                'Value': artifact.get('value'),    # Timestamp in milliseconds.
-            }
-            for artifact in artifacts
-        ]
+    artifacts = incident_artifacts(client, incident_id)
+    incident['artifacts'] = [
+        {
+            'ID': artifact.get('id'),
+            'Type': get_artifact_type(client, artifact.get('type')),
+            'Value': artifact.get('value'),    # Timestamp in milliseconds.
+        }
+        for artifact in artifacts
+    ]
     incident["phase"] = get_phase_name(client, incident['phase_id'])
     incident.update(get_mirroring_data())
     return incident
@@ -623,14 +638,9 @@ def prepare_incident_update_dto_for_mirror(client: SimpleClient, incident_id: st
 
     changes = []
     for field, new_value in delta.items():
-        changes.append(
-            get_field_changes_entry(
-                field=field, old_value=incident[field], new_value=new_value
-            )
-        )
         # `resolution_id` is updated once the incident is closed or re-opened and requires additional treatment.
         if field == 'resolution_id':
-            new_resolution_id = new_value
+            new_resolution_id = new_value = XSOAR_CLOSE_REASON_MAPPING.get(new_value)
             remote_status = incident["plan_status"]
 
             # Handling remote incident reopening.
@@ -640,6 +650,12 @@ def prepare_incident_update_dto_for_mirror(client: SimpleClient, incident_id: st
             # Remote incident closure handling.
             else:
                 changes.append(get_field_changes_entry("plan_status", remote_status, "C"))
+
+        changes.append(
+            get_field_changes_entry(
+                field=field, old_value=incident[field], new_value=new_value
+            )
+        )
 
     dto = {"changes": changes}
     demisto.debug(f"prepare_incident_update_dto_for_mirror {dto=}")
@@ -1410,13 +1426,14 @@ def fetch_incidents(client, first_fetch_time: str, fetch_closed: bool):
     demisto.incidents(demisto_incidents)
 
 
-def execute_script(client: SimpleClient, incident_id: str, script_id: str) -> dict:
+def execute_script(client: SimpleClient, script_id: str, object_id: str, object_type_id: int) -> dict:
     """
     Executes a script by the given script_id and returns the script execution result.
     Args:
         client (SimpleClient): The SimpleClient instance.
-        incident_id (str): The incident ID to execute the script for.
+        object_id (str): The ID of the object to run the script against.
         script_id (str): ID of script to be executed.
+        object_type_id (int): ID of object type to execute the script against.
 
     Returns:
         dict: The script execution result.
@@ -1426,8 +1443,8 @@ def execute_script(client: SimpleClient, incident_id: str, script_id: str) -> di
     payload = {
         "script_text": script_data.get('script_text'),
         "script_language": script_data.get('language'),
-        "object_type_id": 0,
-        "object_id": incident_id
+        "object_type_id": object_type_id,
+        "object_id": object_id
     }
     demisto.debug(f'execute_script {payload=}')
     return client.post(EXECUTE_SCRIPT_ENDPOINT, payload)
@@ -1763,12 +1780,18 @@ def execute_remote_script_command(client: SimpleClient, args: dict) -> CommandRe
     """
     Given a remote script id, executes it on the remote IBM QRadar SOAR platform.
     """
-    script_id = args.get("script_id")
-    incident_id = args.get("incident_id")
-    execute_script_response = execute_script(client, incident_id, script_id)
+    script_id = args.pop('script_id')
+    object_id = args.pop('object_id')
+    object_type = args.pop('object_type')
+    object_type_id = OBJECT_ACTION_TYPE_TO_ID.get(object_type, None)
+    demisto.debug(f'execute_remote_script_command {object_type=} | {object_type_id=} | {OBJECT_ACTION_TYPE_TO_ID=}')
+    if object_type_id is None:
+        raise DemistoException('Could not resolve object type.')
+
+    execute_script_response = execute_script(client, script_id, object_id, object_type_id)
 
     return CommandResults(
-        readable_output=f"Successfully executed remote script with ID {script_id} on incident {incident_id}.",
+        readable_output=f"Successfully executed remote script with ID {script_id}.",
         outputs_prefix="Resilient.RemoteScriptExecution",
         outputs=execute_script_response,
     )
@@ -2119,8 +2142,6 @@ def main():  # pragma: no cover
             return_results(delete_task_members_command(client, args))
         elif command == "rs-list-task-instructions":
             return_results(list_task_instructions_command(client, args))
-        elif command == "rs-execute-remote-script":
-            return_results(execute_remote_script_command(client, args))
         elif command == "rs-add-custom-task":
             return_results(add_custom_task_command(client, args))
         elif command == "get-modified-remote-data":

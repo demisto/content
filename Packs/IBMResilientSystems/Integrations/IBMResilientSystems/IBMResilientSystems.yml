@@ -81,6 +81,18 @@ configuration:
   required: false
   section: Collect
 
+- display: Fetch notes
+  name: fetch_notes
+  additionalInfo: Whether incident notes shall be fetched.
+  type: 8
+  section: Collect
+
+- display: Fetch tasks
+  name: fetch_tasks
+  additionalInfo: Whether incident tasks shall be fetched.
+  type: 8
+  section: Collect
+
 - name: fetch_time
   display: 'First fetch timestamp (YYYY-MM-DDTHH:MM:SSZ). For example: 2020-02-02T19:00:00Z'
   type: 0
@@ -90,7 +102,7 @@ configuration:
 - name: max_fetch
   display: Maximum incidents to fetch.
   additionalinfo: Maximum number of incidents per fetch. The maximum is 1000.
-  defaultvalue: 1000
+  defaultvalue: 50
   type: 0
   required: false
   section: Collect
@@ -123,12 +135,6 @@ configuration:
   required: false
   additionalinfo: When selected, closing the Cortex XSOAR incident will close the incident in IBM Resilient
 
-- display: Mirror notes
-  name: mirror_notes
-  additionalInfo: Whether incident notes shall be mirrored.
-  type: 8
-  section: Collect
-
 - display: Note tag from IBM Qradar SOAR
   name: note_tag_from_ibm
   additionalinfo: Add this tag to an entry to mirror it as a note from IBM Qradar SOAR.
@@ -146,12 +152,6 @@ configuration:
   required: false
   section: Collect
   advanced: true
-
-- display: Mirror tasks
-  name: mirror_tasks
-  additionalInfo: Whether incident tasks shall be mirrored.
-  type: 8
-  section: Collect
 
 - display: Task tag from IBM Qradar SOAR
   name: task_tag_from_ibm
@@ -171,12 +171,6 @@ configuration:
   section: Collect
   advanced: true
 
-- display: Mirror attachments
-  name: mirror_attachments
-  additionalInfo: Whether incident attachments shall be mirrored.
-  type: 8
-  section: Collect
-
 - display: Attachment tag from IBM Qradar SOAR
   name: attachment_tag_from_ibm
   additionalinfo: Add this tag to an entry to mirror it as a task from IBM Qradar SOAR.
@@ -194,12 +188,6 @@ configuration:
   required: false
   section: Collect
   advanced: true
-
-- display: Mirror artifacts
-  name: mirror_artifacts
-  additionalInfo: Whether incident artifacts shall be mirrored.
-  type: 8
-  section: Collect
 
 script:
   commands:
@@ -1154,19 +1142,6 @@ script:
       description: Task instructions.
       type: Dictionary
 
-  - name: rs-execute-remote-script
-    description: Execute a custom script on the IBM Resilient platform.
-    arguments:
-      - name: incident_id
-        description: The incident ID to execute the script for.
-        required: true
-      - name: script_id
-        description: Remote ID of the script to execute.
-        required: true
-    outputs:
-    - contextPath: Resilient.RemoteScriptExecution
-      description: Script execution results.
-      type: Dictionary
 
   dockerimage: demisto/resilient:2.0.0.86430
   isfetch: true

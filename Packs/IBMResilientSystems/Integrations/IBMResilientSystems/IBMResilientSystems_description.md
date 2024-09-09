@@ -14,14 +14,14 @@ ___________
 If new incident fetching is desired, make sure to check the 'Fetch Incidents' box. 
 By default, closed incident won't be fetched, check the 'Fetch closed incidents' box if this is desired.
 
+Starting from pack version: 1.2.0 , incident **notes**, **tasks**, **attachments** and **artifacts** are also getting fetched.
+Beware, fetching this extra data pieces is time-consuming, and increases fetch times (depends on the amount of extra data to be fetched). We suggest reducing the maximum incidents fetch count to mitigate extended fetch times.
+
 ___________
 **Mirroring**
 
 Default classifiers & mappers are provided for incoming and outgoing incidents.
 
 It's important to configure the desired mirroring direction and pick whether to close mirrored incidents (Within the advanced settings) on both sides for an improved experience.
-
-Additionally, incident **notes**, **tasks**, **attachments** and **artifacts** are available for mirroring as well, make sure to check the corresponding check-box in the 'Collect' section.
-Beware, fetching this extra data pieces is time-consuming, and increases fetch times (depends on the amount of extra data to be fetched). 
 
 There are editable tags, that allow distinguishing between incoming and outgoing notes, tasks, attachments and artifacts.
