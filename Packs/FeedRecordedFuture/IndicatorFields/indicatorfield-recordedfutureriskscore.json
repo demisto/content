@@ -34,5 +34,6 @@
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,
-    "fromVersion": "6.10.0"
+    "fromVersion": "6.0.0",
+    "toVersion": "6.9.0"
 }
