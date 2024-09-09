@@ -1,0 +1,236 @@
+{
+    "ibm_security_verify_raw": {
+        "data": {
+            "type": "string",
+            "is_array": false
+        },
+        "origin": {
+            "type": "string",
+            "is_array": false
+        },
+        "result": {
+            "type": "string",
+            "is_array": false
+        },
+        "geoip": {
+            "type": "string",
+            "is_array": false
+        },
+        "continent_name": {
+            "type": "string",
+            "is_array": false
+        },
+        "as_org": {
+            "type": "string",
+            "is_array": false
+        },
+        "city_name": {
+            "type": "string",
+            "is_array": false
+        },
+        "country_name": {
+            "type": "string",
+            "is_array": false
+        },
+        "region_name": {
+            "type": "string",
+            "is_array": false
+        },
+        "location": {
+            "type": "string",
+            "is_array": false
+        },
+        "lon": {
+            "type": "string",
+            "is_array": false
+        },
+        "lat": {
+            "type": "string",
+            "is_array": false
+        },
+        "asn": {
+            "type": "string",
+            "is_array": false
+        },
+        "event_type": {
+            "type": "string",
+            "is_array": false
+        },
+        "id": {
+            "type": "string",
+            "is_array": false
+        },
+        "devicetype": {
+            "type": "string",
+            "is_array": false
+        },
+        "tenantname": {
+            "type": "string",
+            "is_array": false
+        },
+        "servicename": {
+            "type": "string",
+            "is_array": false
+        },
+        "tenantid": {
+            "type": "string",
+            "is_array": false
+        },
+        "performedby_username": {
+            "type": "string",
+            "is_array": false
+        },
+        "username": {
+            "type": "string",
+            "is_array": false
+        },
+        "dict_op": {
+            "type": "string",
+            "is_array": false
+        },
+        "action": {
+            "type": "string",
+            "is_array": false
+        },
+        "applicationname": {
+            "type": "string",
+            "is_array": false
+        },
+        "cause": {
+            "type": "string",
+            "is_array": false
+        },
+        "modified": {
+            "type": "string",
+            "is_array": false
+        },
+        "messageid": {
+            "type": "string",
+            "is_array": false
+        },
+        "mfamethod": {
+            "type": "string",
+            "is_array": false
+        },
+        "performedby": {
+            "type": "string",
+            "is_array": false
+        },
+        "performedby_clientname": {
+            "type": "string",
+            "is_array": false
+        },
+        "entitlementid": {
+            "type": "string",
+            "is_array": false
+        },
+        "entitlementname": {
+            "type": "string",
+            "is_array": false
+        },
+        "entitlementsubtype": {
+            "type": "string",
+            "is_array": false
+        },
+        "entitlementtype": {
+            "type": "string",
+            "is_array": false
+        },
+        "entitlementcategory": {
+            "type": "string",
+            "is_array": false
+        },
+        "resource": {
+            "type": "string",
+            "is_array": false
+        },
+        "entitlements": {
+            "type": "string",
+            "is_array": false
+        },
+        "subtype": {
+            "type": "string",
+            "is_array": false
+        },
+        "userid": {
+            "type": "string",
+            "is_array": false
+        },
+        "deviceid": {
+            "type": "string",
+            "is_array": false
+        },
+        "sourcetype": {
+            "type": "string",
+            "is_array": false
+        },
+        "subject": {
+            "type": "string",
+            "is_array": false
+        },
+        "target": {
+            "type": "string",
+            "is_array": false
+        },
+        "mfadevice": {
+            "type": "string",
+            "is_array": false
+        },
+        "messageId": {
+            "type": "string",
+            "is_array": false
+        },
+        "usersessionid": {
+            "type": "string",
+            "is_array": false
+        },
+        "logoutresultdetail": {
+            "type": "string",
+            "is_array": false
+        },
+        "approver_username": {
+            "type": "string",
+            "is_array": false
+        },
+        "requestor_username": {
+            "type": "string",
+            "is_array": false
+        },
+        "beneficiary_username": {
+            "type": "string",
+            "is_array": false
+        },
+        "status": {
+            "type": "string",
+            "is_array": false
+        },
+        "approver": {
+            "type": "string",
+            "is_array": false
+        },
+        "requestor": {
+            "type": "string",
+            "is_array": false
+        },
+        "beneficiary": {
+            "type": "string",
+            "is_array": false
+        },
+        "entitlement_name": {
+            "type": "string",
+            "is_array": false
+        },
+        "entitlement_rights": {
+            "type": "string",
+            "is_array": false
+        },
+        "entitlement_type": {
+            "type": "string",
+            "is_array": false
+        },
+        "request": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+}
