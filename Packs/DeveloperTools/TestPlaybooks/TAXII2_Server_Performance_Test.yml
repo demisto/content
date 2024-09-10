@@ -1856,7 +1856,6 @@ tasks:
         simple: Accept:application/taxii+json,Authorization:Basic YWRtaW46YWRtaW4=
       method:
         simple: GET
-      password:
       url:
         complex:
           root: TAXIIServer.ServerInfo.api_roots
