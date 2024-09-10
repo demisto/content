@@ -19,22 +19,16 @@ configuration:
   hidden: true
   additionalinfo: The custom key to use for the connection.
   required: false
-- displaypassword: Custom Key
-  name: credentials_custom_key
-  hiddenusername: true
-  type: 9
-  additionalinfo: The custom key to use for the connection.
-  required: false
 - display: Custom ID
   name: custom_id
   type: 4
   hidden: true
   additionalinfo: The custom ID to use for the connection.
   required: false
-- displaypassword: Custom ID
+- displaypassword: Custom Key
   name: credentials_custom_id
-  hiddenusername: true
   type: 9
+  display: Custom ID
   additionalinfo: The custom ID to use for the connection.
   required: false
 - display: Organization Key
