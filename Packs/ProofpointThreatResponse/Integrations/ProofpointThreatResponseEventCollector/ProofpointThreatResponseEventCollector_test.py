@@ -32,6 +32,7 @@ def test_fetch_events_command(requests_mock):
                                               fetch_delta='6 hours',
                                               incidents_states=['open'])
     assert events == expected_result
+    assert last_fetch.get('last_fetch') == {'open': '2018-06-01T17:56:09Z'}
 
 @freeze_time("2023-01-01T01:00:00")
 def test_fetch_events_command_empty_response(requests_mock):
