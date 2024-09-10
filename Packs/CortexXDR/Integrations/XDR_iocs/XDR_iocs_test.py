@@ -1140,6 +1140,11 @@ def test_xdr_iocs_sync_command_sync_for_fetch(mock_update_integration_context,
                                               mock_http_request,
                                               mock_get_iocs_generator,
                                               mock_get_integration_context):
+    """
+    Given   xdr_iocs_sync_command function is called with a valid IOC example,
+    When   the http_request is successful,
+    Then   the update_integration_context function should be called with update_is_first_sync_phase='false'
+    """
     xdr_iocs_sync_command(client, is_first_stage_sync=True, called_from_fetch=True)
     mock_update_integration_context.assert_called_with(update_is_first_sync_phase='false')
 
@@ -1154,6 +1159,11 @@ def test_xdr_iocs_sync_command_sync_for_fetch_fails(mock_update_integration_cont
                                                     mock_http_request,
                                                     mock_get_iocs_generator,
                                                     mock_get_integration_context):
+    """
+    Given   that the xdr_iocs_sync_command function is called with a valid IOC example
+    When    the http_request fails
+    Then    Raises DemistoException
+    """
     with pytest.raises(DemistoException) as e:
         xdr_iocs_sync_command(client, is_first_stage_sync=True, called_from_fetch=True)
     mock_update_integration_context.assert_called_with(update_is_first_sync_phase='false')
@@ -1175,6 +1185,12 @@ def test_xdr_iocs_sync_command_sync_for_fetch_with_validation_errors(
         mock_http_request,
         mock_get_iocs_generator,
         mock_get_integration_context):
+    """
+    Given that the xdr_iocs_sync_command function is called with a valid IOC example
+    When  There are validation errors in the response
+    Then update_integration_context should be called with update_is_first_sync_phase='false',
+    and a debug message should be logged indicating the validation errors.
+    """
     xdr_iocs_sync_command(client, is_first_stage_sync=True, called_from_fetch=True)
     mock_update_integration_context.assert_called_with(update_is_first_sync_phase='false')
     mock_demisto_debug.assert_called_with('pushing IOCs to XDR:The following 2 IOCs were not pushed due to following errors:123: '
