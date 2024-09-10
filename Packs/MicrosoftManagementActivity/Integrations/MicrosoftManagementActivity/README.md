@@ -2,14 +2,23 @@ The Microsoft Management Activity API integration enables you to subscribe or un
 
 This integration was integrated and tested with version 1.0 of Microsoft Management Activity API (O365 Azure Events).
 
-## Grant Cortex XSOAR Authorization in Microsoft Management Activity API
-To allow Cortex XSOAR access to the Microsoft Management Activity API you will be required to give authorization to access it.
+# Authentication
 
-1. To grant authorization, click [HERE](https://oproxy.demisto.ninja/ms-management-api).
-2. After you click the link, click the **Start Authorization Process** button.
-3. When prompted, accept the Microsoft authorization request for the required permissions.
-You will get an ID, Token, and Key, which you need to enter in the corresponding fields when configuring an integration instance.
+There are two application authentication methods available:
 
+ * [Cortex XSOAR Application](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#cortex-xsoar-application)
+ * [Self-Deployed Application - Authorization Code flow](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#authorization-code-flow)
+
+## Self-Deployed Azure App
+1. To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. To add the registration, refer to the following [Microsoft documentation](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app).
+2. Make sure the following permissions are granted for the app registration:
+    - `User.Read ` of type `Delegated`
+    - `ActivityFeed.Read` of type `Delegated`
+    - `ActivityFeed.Read` of type `Application`
+    - `ActivityFeed.ReadDlp` of type `Delegated`
+    - `ActivityFeed.ReadDlp` of type `Application`
+    - `ServiceHealth.Read` of type `Delegated`
+    - `ServiceHealth.Read` of type `Application`
 
 ## Configure Microsoft Management Activity API (O365 Azure Events) on Cortex XSOAR
 
