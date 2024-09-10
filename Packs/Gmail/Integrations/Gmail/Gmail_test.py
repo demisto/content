@@ -1,11 +1,9 @@
-import base64
 import uuid
 from freezegun import freeze_time
 import demistomock as demisto
 import pytest
 from test_data import input_data
 import datetime
-# from unittest.mock import MagicMock
 
 MOCK_MAIL_NO_LABELS = {
     'internalDate': '1572251535000',
@@ -1048,7 +1046,7 @@ def test_send_mail_sender_display_name(mocker, display_name):
     mock_b64encode = mocker.patch("base64.urlsafe_b64encode")
     send_mail([], "sender@example.com", "", "", [], [], [], None, "", [],
               [], [], [], None, [], [], None, display_name, None, None, False)
-    
+
     args, _ = mock_b64encode.call_args
     encoded_bytes = args[0]  # This is the bytes before encoding
     message_str = encoded_bytes.decode('utf-8')
