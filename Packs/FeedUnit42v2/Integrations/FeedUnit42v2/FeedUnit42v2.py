@@ -128,13 +128,16 @@ def parse_indicators(indicator_objects: list, feed_tags: Optional[list] = None,
     indicators = []
     if indicator_objects:
         for indicator_object in indicator_objects:
+            pattern_value = Client.get_single_pattern_value(pattern)
+            if not pattern_value:
+                continue
             raw_name = indicator_object.get('name', '')
             pattern = indicator_object.get('pattern') or ''
 
             for key in UNIT42_TYPES_TO_DEMISTO_TYPES:
                 if pattern.startswith(f'[{key}'):  # retrieve only Demisto indicator types
                     indicator_obj = {
-                        "value": Client.get_single_pattern_value(pattern),
+                        "value": pattern_value,
                         "type": UNIT42_TYPES_TO_DEMISTO_TYPES.get(key),
                         "score": DEFAULT_INDICATOR_SCORE,  # default verdict of fetched indicators is malicious
                         "rawJSON": indicator_object,
@@ -146,12 +149,8 @@ def parse_indicators(indicator_objects: list, feed_tags: Optional[list] = None,
                             "reportedby": 'Unit42',
                         }
                     }
-                    if "file:hashes.'SHA-256' = '" in pattern:
-                        if ioc_value := extract_ioc_value(pattern):
-                            indicator_obj['value'] = ioc_value
-
-                        if raw_name and raw_name != ioc_value:
-                            indicator_obj['fields']['associatedfilenames'] = indicator_object['name']
+                    if "file:hashes" in pattern and raw_name != indicator_obj['value']:
+                        indicator_obj['fields']['associatedfilenames'] = raw_name
 
                     if tlp_color:
                         indicator_obj['fields']['trafficlightprotocol'] = tlp_color

@@ -1089,9 +1089,9 @@ class STIX2XSOARParser(BaseClient):
         return custom_fields, score
 
     @staticmethod
-    def get_single_pattern_value(pattern: str) -> str:
+    def get_single_pattern_value(pattern: str) -> str | None:
         """
-        Parses a pattern with a single single comparison and extracts the right hand value of the comparison.
+        Parses a pattern with a single comparison and extracts the right hand value of the comparison.
         If the pattern is invalid, the pattern itself will be returned.
 
         For Example:
@@ -1110,7 +1110,7 @@ class STIX2XSOARParser(BaseClient):
             return next(iter(comparison_values))[0][-1].strip("'")
         except Exception as error:
             demisto.debug(f'Unable to parse {pattern=}, {error=}')
-            return pattern
+            return None
 
     def parse_indicator(self, indicator_obj: dict[str, Any]) -> list[dict[str, Any]]:
         """
