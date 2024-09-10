@@ -296,7 +296,6 @@ def get_last_run(
     last_run: str = demisto.getLastRun().get("last_run"),
     first_fetch: str = demisto.params().get("first_fetch", "2 days")
 ) -> datetime:
-
     """
     Helper function to return the last incident fetch runtime as a `datetime` object.
     It uses the datetime of last_run from the demisto instance and first_fetch parameter.
@@ -427,7 +426,7 @@ def test_module(
 
     client.fetch_alerts(page_size=1, page=1)
     demisto.debug("Test module successful")
-    return('ok')
+    return ('ok')
 
 # region Methods
 # ---------------
@@ -653,7 +652,6 @@ def company_factor_score_get_command(
 
 
 def company_history_score_get_command(client: SecurityScorecardClient, args: Dict[str, str]) -> CommandResults:
-
     """Retrieve company historical scores
 
     See https://securityscorecard.readme.io/reference/get_companies-scorecard-identifier-history-score
@@ -735,7 +733,8 @@ def company_events_get_command(
     markdown = tableToMarkdown(
         f"Domain {domain} Events",
         events,
-        headers=['ssc_event_id','date','status','factor','issue_type','severity','issue_count','score_impact','ssc_detail_url']
+        headers=['ssc_event_id', 'date', 'status', 'factor', 'issue_type',
+                 'severity', 'issue_count', 'score_impact', 'ssc_detail_url']
     )
 
     results = CommandResults(
@@ -785,7 +784,6 @@ def company_event_findings_get_command(
         else:
             domain = ""
 
-
         if "ip" in entry:
             ip = entry.get("ip")
         elif "src_ip" in entry:
@@ -833,7 +831,8 @@ def company_event_findings_get_command(
     markdown = tableToMarkdown(
         f"Domain {domain} Findings for {issue_type}",
         events,
-        headers=['parent_domain','issue_type','count','status','first_seen_time','last_seen_time','port','domain_name','ip_address','protocol','observations']
+        headers=['parent_domain', 'issue_type', 'count', 'status', 'first_seen_time',
+                 'last_seen_time', 'port', 'domain_name', 'ip_address', 'protocol', 'observations']
     )
 
     results = CommandResults(
@@ -845,7 +844,6 @@ def company_event_findings_get_command(
     )
 
     return results
-
 
 
 def company_history_factor_score_get_command(client: SecurityScorecardClient, args: Dict[str, str]) -> CommandResults:
@@ -1182,7 +1180,6 @@ def company_services_get_command(client: SecurityScorecardClient, args: Dict[str
 
 
 def fetch_alerts(client: SecurityScorecardClient):
-
     """
     Fetch incidents/alerts from SecurityScorecard API
 
@@ -1364,4 +1361,3 @@ def main() -> None:
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
-
