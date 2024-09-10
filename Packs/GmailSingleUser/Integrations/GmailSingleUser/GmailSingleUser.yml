@@ -11,61 +11,60 @@ configuration:
   name: email
   required: true
   type: 0
-  defaultvalue:
-  additionalinfo:
+  defaultvalue: null
+  additionalinfo: null
   section: Connect
 - display: Send as
   name: send_as
   type: 0
-  defaultvalue:
+  defaultvalue: null
   additionalinfo: Allows you to specify the e-mail address from which to send e-mails from.
   section: Connect
   advanced: true
   required: false
-- display: "Client ID"
+- display: Client ID
   name: credentials
   type: 9
   section: Connect
-  displaypassword: "Client Secret"
+  displaypassword: Client Secret
   required: false
-- display: "Client ID"
+- display: Client ID
   name: client_id
   type: 0
-  defaultvalue:
-  additionalinfo: "Required. Not relevant for deprecated GSuite Apps setup - see Help section"
+  defaultvalue: null
+  additionalinfo: Required. Not relevant for deprecated GSuite Apps setup - see Help section
   hidden: true
   section: Connect
   advanced: true
-
   required: false
-- display: "Client Secret"
+- display: Client Secret
   name: client_secret
   type: 4
-  defaultvalue:
-  additionalinfo: "Required. Not relevant for deprecated GSuite Apps setup - see Help section"
+  defaultvalue: null
+  additionalinfo: Required. Not relevant for deprecated GSuite Apps setup - see Help section
   hidden: true
   section: Connect
   required: false
-- display: "Auth Redirect URI"
+- display: Auth Redirect URI
   name: redirect_uri
   type: 0
   section: Connect
   defaultvalue: https://oproxy.demisto.ninja/authcode
-  additionalinfo: "Requited. Not relevant for deprecated GSuite Apps setup - see Help section"
+  additionalinfo: Requited. Not relevant for deprecated GSuite Apps setup - see Help section
   required: false
 - display: ''
   name: auth_code_creds
   type: 9
-  displaypassword: "Auth Code (run the !gmail-auth-link command to start the auth flow - see Help section)"
+  displaypassword: Auth Code (run the !gmail-auth-link command to start the auth flow - see Help section)
   hiddenusername: true
   section: Connect
   required: false
-- display: "Auth Code (run the !gmail-auth-link command to start the auth flow - see Help section)"
+- display: Auth Code (run the !gmail-auth-link command to start the auth flow - see Help section)
   name: code
   type: 4
   hidden: true
-  defaultvalue:
-  additionalinfo:
+  defaultvalue: null
+  additionalinfo: null
   section: Connect
   advanced: true
   required: false
@@ -83,12 +82,12 @@ configuration:
   name: fetch_time
   type: 0
   defaultvalue: 1 days
-  additionalinfo:
+  additionalinfo: null
   section: Collect
   required: false
-- defaultvalue:
+- defaultvalue: null
   display: Events query (e.g., "from:example@demisto.com")
-  additionalinfo:
+  additionalinfo: null
   name: query
   type: 0
   section: Collect
@@ -103,14 +102,14 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
-  additionalinfo:
+  additionalinfo: null
   section: Connect
   advanced: true
   required: false
 - name: proxy
   display: Use system proxy settings
   type: 8
-  additionalinfo:
+  additionalinfo: null
   section: Connect
   advanced: true
   required: false
@@ -157,32 +156,25 @@ script:
       name: htmlBody
     - description: Address that needs to be used to reply to the message.
       name: replyTo
-    - description: |-
-        A comma-separated list of new names used to rename attachments corresponding to the order in which they were attached to the email.
-                Examples - To rename the first and third file: attachNames=new_fileName1,,new_fileName3
-                To rename the second and fifth files: attachNames=,new_fileName2,,,new_fileName5.
+    - description: "A comma-separated list of new names used to rename attachments corresponding to the order in which they were attached to the email.\n        Examples - To rename the first and third file: attachNames=new_fileName1,,new_fileName3\n        To rename the second and fifth files: attachNames=,new_fileName2,,,new_fileName5."
       isArray: true
       name: attachNames
     - description: A comma-separated list of CID images to embed as attachments inside the email.
       isArray: true
       name: attachCIDs
-    - description: |-
-        Textual name for an attached file. Multiple files are supported as a comma-separated list. For example, transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz".
+    - description: Textual name for an attached file. Multiple files are supported as a comma-separated list. For example, transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz".
       isArray: true
       name: transientFile
-    - description: |-
-        Content for the attached file. Multiple files are supported as a comma-separated list. For example, transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz".
+    - description: Content for the attached file. Multiple files are supported as a comma-separated list. For example, transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz".
       isArray: true
       name: transientFileContent
-    - description: |-
-        CID image for an attached file to include within the email body. Multiple files are supported as a comma-separated list. For example, transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz".
+    - description: CID image for an attached file to include within the email body. Multiple files are supported as a comma-separated list. For example, transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz".
       isArray: true
       name: transientFileCID
     - description: 'A comma-separated list of additional headers in the format: headerName=headerValue. For example: "headerName1=headerValue1,headerName2=headerValue2".'
       isArray: true
       name: additionalHeader
-    - description: |-
-        'Replaces {varname} variables with values from this parameter. Expected values are in the form of a JSON document. For example, {"varname" :{"value" "some value", "key": "context key"}}. Each var name can either be provided with the value or a context key to retrieve the value. Note that only context data is accessible for this argument, while incident fields are not.'
+    - description: '''Replaces {varname} variables with values from this parameter. Expected values are in the form of a JSON document. For example, {"varname" :{"value" "some value", "key": "context key"}}. Each var name can either be provided with the value or a context key to retrieve the value. Note that only context data is accessible for this argument, while incident fields are not.'''
       name: templateParams
     - auto: PREDEFINED
       defaultValue: Text
@@ -253,47 +245,25 @@ script:
       name: htmlBody
     - description: The email address used to reply to the message.
       name: replyTo
-    - description: >-
-        A comma-separated list of new names to rename for existing attachments, which relates to the order that they were attached to the email.
-                For example, rename the first and third file attachNames=new_fileName1,,new_fileName3
-                To rename the second and fifth files, attachNames=,new_fileName2,,,new_fileName5.
+    - description: "A comma-separated list of new names to rename for existing attachments, which relates to the order that they were attached to the email.\n        For example, rename the first and third file attachNames=new_fileName1,,new_fileName3\n        To rename the second and fifth files, attachNames=,new_fileName2,,,new_fileName5."
       isArray: true
       name: attachNames
     - description: A comma-separated list of CID images to embed attachments in to the email.
       isArray: true
       name: attachCIDs
-    - description: >-
-        The textual name for an attached file. Multiple files are supported
-        as a
-                comma-separated list. For example, transientFile="t1.txt,temp.txt,t3.txt"
-        transientFileContent="test
-                2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz".
+    - description: "The textual name for an attached file. Multiple files are supported as a\n        comma-separated list. For example, transientFile=\"t1.txt,temp.txt,t3.txt\"\ntransientFileContent=\"test\n        2,temporary file content,third file content\" transientFileCID=\"t1.txt@xxx.yyy,t2.txt@xxx.zzz\"."
       isArray: true
       name: transientFile
-    - description: >-
-        The content for the attached file. Multiple files are supported as a
-        comma-separated
-                list. For example, transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test
-                2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz".
+    - description: "The content for the attached file. Multiple files are supported as a comma-separated\n        list. For example, transientFile=\"t1.txt,temp.txt,t3.txt\" transientFileContent=\"test\n        2,temporary file content,third file content\" transientFileCID=\"t1.txt@xxx.yyy,t2.txt@xxx.zzz\"."
       isArray: true
       name: transientFileContent
-    - description: |-
-        The CID image for an attached file to include within the email body. Multiple files are
-                supported as comma-separated list. For example, transientFile="t1.txt,temp.txt,t3.txt"
-                transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz".
+    - description: "The CID image for an attached file to include within the email body. Multiple files are\n        supported as comma-separated list. For example, transientFile=\"t1.txt,temp.txt,t3.txt\"\n        transientFileContent=\"test 2,temporary file content,third file content\" transientFileCID=\"t1.txt@xxx.yyy,t2.txt@xxx.zzz\"."
       isArray: true
       name: transientFileCID
     - description: 'A comma-separated list of additional headers in the format: headerName=headerValue. For example, "headerName1=headerValue1,headerName2=headerValue2".'
       isArray: true
       name: additionalHeader
-    - description: >-
-        'Replaces {varname} variables with values from this parameter.
-        Expected
-               values are in the form of a JSON document. For example, {"varname"
-        :{"value" "some
-               value", "key": "context key"}}. Each var name can either be provided
-        with
-               the value or a context key to retrieve the value.'
+    - description: "'Replaces {varname} variables with values from this parameter. Expected\n       values are in the form of a JSON document. For example, {\"varname\"\n:{\"value\" \"some\n       value\", \"key\": \"context key\"}}. Each var name can either be provided\nwith\n       the value or a context key to retrieve the value.'"
       name: templateParams
     - auto: PREDEFINED
       defaultValue: Text
@@ -354,7 +324,7 @@ script:
       required: true
     description: Retrieves attachments from a sent Gmail message.
     name: gmail-get-attachments
-  dockerimage: demisto/google-api-py3:1.0.0.98645
+  dockerimage: demisto/google-api-py3:1.0.0.110173
   isfetch: true
   runonce: false
   script: '-'
