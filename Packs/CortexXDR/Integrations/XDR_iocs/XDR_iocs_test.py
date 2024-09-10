@@ -1189,7 +1189,7 @@ def test_xdr_iocs_sync_command_sync_for_fetch_with_validation_errors(
     Given that the xdr_iocs_sync_command function is called with a valid IOC example
     When  There are validation errors in the response
     Then update_integration_context should be called with update_is_first_sync_phase='false',
-    and a debug message should be logged indicating the validation errors.
+        and a debug message should be logged indicating the validation errors.
     """
     xdr_iocs_sync_command(client, is_first_stage_sync=True, called_from_fetch=True)
     mock_update_integration_context.assert_called_with(update_is_first_sync_phase='false')
@@ -1202,6 +1202,16 @@ def test_xdr_iocs_sync_command_sync_for_fetch_with_validation_errors(
                                                          'search_after': ['1234', '098765']})
 @patch('XDR_iocs.set_integration_context')
 def test_update_integration_context(mock_set_integration_context, mock_get_integration_context):
+    """
+    Given integration_context has some values
+    When  update_integration_context (of XDR_iocs) is being called with all args
+    Then  The integration context is being changed
+    """
     fixed_datetime = datetime(2024, 9, 10, 12, 0, 0, tzinfo=timezone.utc)
-    update_integration_context(update_sync_time_with_datetime=fixed_datetime, update_is_first_sync_phase='false', update_search_after_array=['765', '000'])
-    mock_set_integration_context.assert_called_with({'time': '2024-09-10T12:00:00Z', 'ts': 1725969600000, 'is_first_sync_phase': False, 'search_after': ['765', '000']})
+    update_integration_context(update_sync_time_with_datetime=fixed_datetime,
+                               update_is_first_sync_phase='false',
+                               update_search_after_array=['765', '000'])
+    mock_set_integration_context.assert_called_with({'time': '2024-09-10T12:00:00Z',
+                                                     'ts': 1725969600000,
+                                                     'is_first_sync_phase': False,
+                                                     'search_after': ['765', '000']})
