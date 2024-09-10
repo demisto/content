@@ -1,12 +1,9 @@
-import os
-from typing import Any
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import json
 import logging
 import time
-import asyncio
 import urllib3
 import resilient
 from resilient.co3 import SimpleClient, SimpleHTTPException
@@ -25,16 +22,6 @@ except Exception:
 
 ''' GLOBAL VARS '''
 DEMISTO_PARAMS = demisto.params()
-# TODO delete
-# DEMISTO_PARAMS =  {
-#                       'proxy': False,
-#                       'server': os.getenv('SERVER'),
-#                       'org': os.getenv('org'),
-#                       'api_key_id': os.getenv('API_KEY_ID'),
-#                       'api_key_secret': os.getenv('API_KEY_SECRET'),
-#                       'fetch_time': '2020-02-02T19:00:00Z'
-#                   }
-
 if not DEMISTO_PARAMS['proxy']:
     for var in ['HTTP_PROXY', 'HTTPS_PROXY', 'http_proxy', 'https_proxy']:
         if os.environ.get(var):
@@ -307,7 +294,6 @@ def prettify_incident_tasks(client: SimpleClient, tasks: list[dict]) -> list[dic
     def format_task(task):
 
         task.update({
-            # TODO - Introduce field ENUMS.
             'Phase': get_phase_name(client, task['phase_id']),
             'ID': task['id'],
             'Name': task['name'],
@@ -1880,9 +1866,6 @@ def get_remote_data_command(client: SimpleClient,
     incident_id = remote_args.remote_incident_id
     demisto.debug(f"get_remote_data_command {incident_id=}")
 
-    # TODO - Check if remote changes were actually changes from XSOAR - and if so, skip the update
-    # get_incident_newsfeed(incident_id)
-
     incident = get_incident(client, incident_id, content_format=True)
     incident = process_raw_incident(client, incident)
     demisto.debug(f"get_remote_data_command {incident=}")
@@ -1938,7 +1921,6 @@ def get_remote_data_command(client: SimpleClient,
     mirrored_data = dict()
     mirrored_data["rawJSON"] = json.dumps(incident)
 
-    # TODO - Handle tags for attachments, artifacts
     demisto.debug(f"get_remote_data_command mirrored_object={incident}")
     return GetRemoteDataResponse(mirrored_object=incident, entries=entries)
 
