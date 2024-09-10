@@ -2174,21 +2174,6 @@ class Client(BaseClient):
 
         return CommandResults(readable_output="Success!", raw_response=response)
 
-    def edit_mappings_of_user_group(self, args: Dict[str, Any]):
-        group_id = str_arg(args, "group_id")
-        usergroup_mapping_post_domain = str_arg(args, "usergroup_mapping_post_domain")
-        usergroup_mapping_post_external_group = str_arg(args, "usergroup_mapping_post_external_group")
-        usergroup_mapping_post_profile = str_arg(args, "usergroup_mapping_post_profile")
-
-        body = assign_params(
-            domain=usergroup_mapping_post_domain,
-            external_group=usergroup_mapping_post_external_group,
-            profile=usergroup_mapping_post_profile,
-        )
-        response = self._http_request("put", f"/usergroups/{group_id}/mappings", json_data=body)
-
-        return CommandResults(readable_output="Success!", raw_response=response)
-
     def get_mapping_of_user_group(self, args: Dict[str, Any]):
         group_id = str_arg(args, "group_id")
         mapping_id = str_arg(args, "mapping_id")
@@ -2450,7 +2435,6 @@ def main() -> None:
             "wab-get-target-by-type": client.get_target_by_type,
             "wab-get-mappings-of-user-group": client.get_mappings_of_user_group,
             "wab-add-mapping-in-group": client.add_mapping_in_group,
-            "wab-edit-mappings-of-user-group": client.edit_mappings_of_user_group,
             "wab-get-mapping-of-user-group": client.get_mapping_of_user_group,
             "wab-edit-mapping-of-user-group": client.edit_mapping_of_user_group,
             "wab-delete-mapping-of-user-group": client.delete_mapping_of_user_group,

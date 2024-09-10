@@ -1,5 +1,5 @@
 Centralized Control and Monitoring of Privileged Access to Sensitive Assets.
-This integration was integrated and tested with version 10 of WALLIX Bastion.
+This integration was integrated and tested with version 12 of WALLIX Bastion.
 
 ## Configure WALLIX Bastion on Cortex XSOAR
 
@@ -16,7 +16,7 @@ This integration was integrated and tested with version 10 of WALLIX Bastion.
     | Trust any certificate (not secure) | False |
     | Use system proxy settings | False |
     | API version to use. Leave the field empty to use the latest API version available. | False |
-    | API requests timeout in seconds. The default value if not provided is 60 seconds. | False |
+    | API requests timeout in seconds. The default value is 60 seconds. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -28,7 +28,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### wab-add-session-target-to-target-group
 
 ***
-Add a target account to a target group.
+Add a target account to a target group
 
 #### Base Command
 
@@ -54,7 +54,7 @@ There is no context output for this command.
 ### wab-add-password-target-to-target-group
 
 ***
-Add a password checkout account to a target group.
+Add a password checkout account to a target group
 
 #### Base Command
 
@@ -78,7 +78,7 @@ There is no context output for this command.
 ### wab-add-restriction-to-target-group
 
 ***
-Add a restriction to a target group.
+Add a restriction to a target group
 
 #### Base Command
 
@@ -100,7 +100,7 @@ There is no context output for this command.
 ### wab-get-account-references
 
 ***
-Get account references.
+Get account references
 
 #### Base Command
 
@@ -135,7 +135,7 @@ Get account references.
 ### wab-get-account-reference
 
 ***
-Get account reference.
+Get account reference
 
 #### Base Command
 
@@ -167,7 +167,7 @@ Get account reference.
 ### wab-get-all-accounts
 
 ***
-Get all accounts.
+Get all accounts
 
 #### Base Command
 
@@ -235,7 +235,7 @@ Get all accounts.
 ### wab-get-one-account
 
 ***
-Get one account.
+Get one account
 
 #### Base Command
 
@@ -300,7 +300,7 @@ Get one account.
 ### wab-delete-account
 
 ***
-Delete an account.
+Delete an account
 
 #### Base Command
 
@@ -319,7 +319,7 @@ There is no context output for this command.
 ### wab-get-application-accounts
 
 ***
-Get the application accounts.
+Get the application accounts
 
 #### Base Command
 
@@ -371,7 +371,7 @@ Get the application accounts.
 ### wab-add-account-to-local-domain-of-application
 
 ***
-Add an account to a local domain of an application.
+Add an account to a local domain of an application
 
 #### Base Command
 
@@ -398,7 +398,7 @@ There is no context output for this command.
 ### wab-get-application-account
 
 ***
-Get the application account.
+Get the application account
 
 #### Base Command
 
@@ -447,7 +447,7 @@ Get the application account.
 ### wab-edit-account-on-local-domain-of-application
 
 ***
-Edit an account on a local domain of an application.
+Edit an account on a local domain of an application
 
 #### Base Command
 
@@ -477,7 +477,7 @@ There is no context output for this command.
 ### wab-delete-account-from-local-domain-of-application
 
 ***
-Delete an account from a local domain of an application.
+Delete an account from a local domain of an application
 
 #### Base Command
 
@@ -498,7 +498,7 @@ There is no context output for this command.
 ### wab-get-applications
 
 ***
-Get the applications.
+Get the applications
 
 #### Base Command
 
@@ -543,7 +543,7 @@ Get the applications.
 ### wab-get-application
 
 ***
-Get the application.
+Get the application
 
 #### Base Command
 
@@ -585,7 +585,7 @@ Get the application.
 ### wab-edit-application
 
 ***
-Edit an application.
+Edit an application
 
 #### Base Command
 
@@ -610,7 +610,7 @@ There is no context output for this command.
 ### wab-delete-application
 
 ***
-Delete an application.
+Delete an application
 
 #### Base Command
 
@@ -629,7 +629,7 @@ There is no context output for this command.
 ### wab-get-approvals
 
 ***
-Get the approvals.
+Get the approvals
 
 #### Base Command
 
@@ -680,7 +680,7 @@ Get the approvals.
 ### wab-get-approvals-for-all-approvers
 
 ***
-Get the approvals for a given approver.
+Get the approvals for a given approver
 
 #### Base Command
 
@@ -730,7 +730,7 @@ Get the approvals for a given approver.
 ### wab-reply-to-approval-request
 
 ***
-Reply to an approval request (approve/reject it). Note: you can answer to an approval request only if you are in approvers groups of authorization.
+Reply to an approval request (approve/reject it). Note: you can answer to an approval request only if you are in approvers groups of authorization
 
 #### Base Command
 
@@ -755,7 +755,7 @@ There is no context output for this command.
 ### wab-get-approvals-for-approver
 
 ***
-Get the approvals for a given approver.
+Get the approvals for a given approver
 
 #### Base Command
 
@@ -806,7 +806,7 @@ Get the approvals for a given approver.
 ### wab-cancel-accepted-approval
 
 ***
-Cancel an accepted approval. Note: you can cancel an approval only if you are in approvers groups of authorization and the end date is still not reached.
+Cancel an accepted approval. Note: you can cancel an approval only if you are in approvers groups of authorization and the end date is still not reached
 
 #### Base Command
 
@@ -826,7 +826,7 @@ There is no context output for this command.
 ### wab-notify-approvers-linked-to-approval-assignment
 
 ***
-Notify approvers linked to an approval request by sending them an email.
+Notify approvers linked to an approval request by sending them an email
 
 #### Base Command
 
@@ -848,7 +848,7 @@ Notify approvers linked to an approval request by sending them an email.
 ### wab-get-approval-request-pending-for-user
 
 ***
-Get the approval request pending for this user (by default the user logged on the REST API), or the approval request with the given id.
+Get the approval request pending for this user (by default the user logged on the REST API), or the approval request with the given id
 
 #### Base Command
 
@@ -900,7 +900,7 @@ Get the approval request pending for this user (by default the user logged on th
 ### wab-make-new-approval-request-to-access-target
 
 ***
-Make a new approval request to access a target. Note: depending on the authorization settings, the fields "ticket" and "comment" may be required.
+Make a new approval request to access a target. Note: depending on the authorization settings, the fields "ticket" and "comment" may be required
 
 #### Base Command
 
@@ -931,7 +931,7 @@ Make a new approval request to access a target. Note: depending on the authoriza
 ### wab-cancel-approval-request
 
 ***
-Cancel an approval request.
+Cancel an approval request
 
 #### Base Command
 
@@ -950,7 +950,7 @@ There is no context output for this command.
 ### wab-notify-approvers-linked-to-approval-request
 
 ***
-Notify approvers linked to an approval request by sending them an email.
+Notify approvers linked to an approval request by sending them an email
 
 #### Base Command
 
@@ -972,7 +972,7 @@ Notify approvers linked to an approval request by sending them an email.
 ### wab-check-if-approval-is-required-for-target
 
 ***
-Check if an approval is required for this target (optionally for a given date in future).
+Check if an approval is required for this target (optionally for a given date in future)
 
 #### Base Command
 
@@ -997,7 +997,7 @@ Check if an approval is required for this target (optionally for a given date in
 ### wab-get-auth-domains
 
 ***
-Get the auth domains.
+Get the auth domains
 
 #### Base Command
 
@@ -1036,7 +1036,7 @@ Get the auth domains.
 ### wab-get-auth-domain
 
 ***
-Get the auth domain.
+Get the auth domain
 
 #### Base Command
 
@@ -1072,7 +1072,7 @@ Get the auth domain.
 ### wab-get-authentications
 
 ***
-Get the authentications.
+Get the authentications
 
 #### Base Command
 
@@ -1108,7 +1108,7 @@ Get the authentications.
 ### wab-get-authentication
 
 ***
-Get the authentication.
+Get the authentication
 
 #### Base Command
 
@@ -1141,7 +1141,7 @@ Get the authentication.
 ### wab-get-authorizations
 
 ***
-Get the authorizations.
+Get the authorizations
 
 #### Base Command
 
@@ -1188,7 +1188,7 @@ Get the authorizations.
 ### wab-add-authorization
 
 ***
-Add an authorization.
+Add an authorization
 
 #### Base Command
 
@@ -1227,7 +1227,7 @@ There is no context output for this command.
 ### wab-get-authorization
 
 ***
-Get the authorization.
+Get the authorization
 
 #### Base Command
 
@@ -1271,7 +1271,7 @@ Get the authorization.
 ### wab-edit-authorization
 
 ***
-Edit an authorization.
+Edit an authorization
 
 #### Base Command
 
@@ -1310,7 +1310,7 @@ There is no context output for this command.
 ### wab-delete-authorization
 
 ***
-Delete an authorization.
+Delete an authorization
 
 #### Base Command
 
@@ -1329,7 +1329,7 @@ There is no context output for this command.
 ### wab-get-checkout-policies
 
 ***
-Get the checkout policies.
+Get the checkout policies
 
 #### Base Command
 
@@ -1362,7 +1362,7 @@ Get the checkout policies.
 ### wab-get-checkout-policy
 
 ***
-Get the checkout policy.
+Get the checkout policy
 
 #### Base Command
 
@@ -1392,7 +1392,7 @@ Get the checkout policy.
 ### wab-getx509-configuration-infos
 
 ***
-Get the X509 configuration infos.
+Get the X509 configuration infos
 
 #### Base Command
 
@@ -1415,7 +1415,7 @@ There are no input arguments for this command.
 ### wab-uploadx509-configuration
 
 ***
-Upload X509 configuration.
+Upload X509 configuration
 
 #### Base Command
 
@@ -1437,7 +1437,7 @@ There is no context output for this command.
 ### wab-updatex509-configuration
 
 ***
-Update X509 Configuration.
+Update X509 Configuration
 
 #### Base Command
 
@@ -1459,7 +1459,7 @@ There is no context output for this command.
 ### wab-resetx509-configuration
 
 ***
-Reset X509 configuration.
+Reset X509 configuration
 
 #### Base Command
 
@@ -1476,7 +1476,7 @@ There is no context output for this command.
 ### wab-get-current-serial-configuration-number-of-bastion
 
 ***
-Get current serial configuration number of the Bastion. This number can be used to know if the Bastion configuration was changed.
+Get current serial configuration number of the Bastion. This number can be used to know if the Bastion configuration was changed
 
 #### Base Command
 
@@ -1495,7 +1495,7 @@ There are no input arguments for this command.
 ### wab-get-all-accounts-on-device-local-domain
 
 ***
-Get all accounts on a device local domain.
+Get all accounts on a device local domain
 
 #### Base Command
 
@@ -1557,7 +1557,7 @@ Get all accounts on a device local domain.
 ### wab-add-account-to-local-domain-on-device
 
 ***
-Add an account to a local domain on a device.
+Add an account to a local domain on a device
 
 #### Base Command
 
@@ -1586,7 +1586,7 @@ There is no context output for this command.
 ### wab-get-one-account-on-device-local-domain
 
 ***
-Get one account on a device local domain.
+Get one account on a device local domain
 
 #### Base Command
 
@@ -1645,7 +1645,7 @@ Get one account on a device local domain.
 ### wab-edit-account-on-local-domain-of-device
 
 ***
-Edit an account on a local domain of a device.
+Edit an account on a local domain of a device
 
 #### Base Command
 
@@ -1677,7 +1677,7 @@ There is no context output for this command.
 ### wab-delete-account-from-local-domain-of-device
 
 ***
-Delete an account from a local domain of a device.
+Delete an account from a local domain of a device
 
 #### Base Command
 
@@ -1698,7 +1698,7 @@ There is no context output for this command.
 ### wab-get-certificates-on-device
 
 ***
-Get the certificates on a device.
+Get the certificates on a device
 
 #### Base Command
 
@@ -1730,7 +1730,7 @@ Get the certificates on a device.
 ### wab-get-certificate-on-device
 
 ***
-Get the certificate on a device.
+Get the certificate on a device
 
 #### Base Command
 
@@ -1765,7 +1765,7 @@ Get the certificate on a device.
 ### wab-revoke-certificate-of-device
 
 ***
-Revoke a certificate of a device.
+Revoke a certificate of a device
 
 #### Base Command
 
@@ -1787,7 +1787,7 @@ There is no context output for this command.
 ### wab-get-services-of-device
 
 ***
-Get the services of a device.
+Get the services of a device
 
 #### Base Command
 
@@ -1819,7 +1819,7 @@ Get the services of a device.
 ### wab-add-service-in-device
 
 ***
-Add a service in a device.
+Add a service in a device
 
 #### Base Command
 
@@ -1845,7 +1845,7 @@ There is no context output for this command.
 ### wab-get-service-of-device
 
 ***
-Get the service of a device.
+Get the service of a device
 
 #### Base Command
 
@@ -1874,7 +1874,7 @@ Get the service of a device.
 ### wab-edit-service-of-device
 
 ***
-Edit a service of a device.
+Edit a service of a device
 
 #### Base Command
 
@@ -1898,7 +1898,7 @@ There is no context output for this command.
 ### wab-delete-service-from-device
 
 ***
-Delete a service from a device.
+Delete a service from a device
 
 #### Base Command
 
@@ -1918,7 +1918,7 @@ There is no context output for this command.
 ### wab-get-devices
 
 ***
-Get the devices.
+Get the devices
 
 #### Base Command
 
@@ -1982,7 +1982,7 @@ Get the devices.
 ### wab-add-device
 
 ***
-Add a device.
+Add a device
 
 #### Base Command
 
@@ -2004,7 +2004,7 @@ There is no context output for this command.
 ### wab-get-device
 
 ***
-Get the device.
+Get the device
 
 #### Base Command
 
@@ -2065,7 +2065,7 @@ Get the device.
 ### wab-edit-device
 
 ***
-Edit a device.
+Edit a device
 
 #### Base Command
 
@@ -2090,7 +2090,7 @@ There is no context output for this command.
 ### wab-delete-device
 
 ***
-Delete a device.
+Delete a device
 
 #### Base Command
 
@@ -2109,7 +2109,7 @@ There is no context output for this command.
 ### wab-get-accounts-of-global-domain
 
 ***
-Get the accounts of a global domain.
+Get the accounts of a global domain
 
 #### Base Command
 
@@ -2168,7 +2168,7 @@ Get the accounts of a global domain.
 ### wab-add-account-in-global-domain
 
 ***
-Add an account in a global domain.
+Add an account in a global domain
 
 #### Base Command
 
@@ -2196,7 +2196,7 @@ There is no context output for this command.
 ### wab-get-account-of-global-domain
 
 ***
-Get the account of a global domain.
+Get the account of a global domain
 
 #### Base Command
 
@@ -2253,7 +2253,7 @@ Get the account of a global domain.
 ### wab-edit-account-in-global-domain
 
 ***
-Edit an account in a global domain.
+Edit an account in a global domain
 
 #### Base Command
 
@@ -2284,7 +2284,7 @@ There is no context output for this command.
 ### wab-delete-account-from-global-domain
 
 ***
-Delete an account from a global domain.
+Delete an account from a global domain
 
 #### Base Command
 
@@ -2304,7 +2304,7 @@ There is no context output for this command.
 ### wab-delete-resource-from-global-domain-account
 
 ***
-delete a resource from the global domain account.
+delete a resource from the global domain account
 
 #### Base Command
 
@@ -2325,7 +2325,7 @@ There is no context output for this command.
 ### wab-get-global-domains
 
 ***
-Get the global domains.
+Get the global domains
 
 #### Base Command
 
@@ -2365,7 +2365,7 @@ Get the global domains.
 ### wab-get-global-domain
 
 ***
-Get the global domain.
+Get the global domain
 
 #### Base Command
 
@@ -2402,7 +2402,7 @@ Get the global domain.
 ### wab-get-ldap-users-of-domain
 
 ***
-Get the LDAP users of a given domain.
+Get the LDAP users of a given domain
 
 #### Base Command
 
@@ -2438,7 +2438,7 @@ Get the LDAP users of a given domain.
 ### wab-get-ldap-user-of-domain
 
 ***
-Get the LDAP user of a given domain.
+Get the LDAP user of a given domain
 
 #### Base Command
 
@@ -2472,7 +2472,7 @@ Get the LDAP user of a given domain.
 ### wab-get-information-about-wallix-bastion-license
 
 ***
-Get information about the WALLIX Bastion license.
+Get information about the WALLIX Bastion license
 
 #### Base Command
 
@@ -2524,7 +2524,7 @@ There are no input arguments for this command.
 ### wab-post-logsiem
 
 ***
-Write a message in /var/log/wabaudit.log and send it to the SIEM (if configured).
+Write a message in /var/log/wabaudit.log and send it to the SIEM (if configured)
 
 #### Base Command
 
@@ -2544,7 +2544,7 @@ There is no context output for this command.
 ### wab-get-notifications
 
 ***
-Get the notifications.
+Get the notifications
 
 #### Base Command
 
@@ -2576,7 +2576,7 @@ Get the notifications.
 ### wab-add-notification
 
 ***
-Add a notification.
+Add a notification
 
 #### Base Command
 
@@ -2601,7 +2601,7 @@ There is no context output for this command.
 ### wab-get-notification
 
 ***
-Get the notification.
+Get the notification
 
 #### Base Command
 
@@ -2630,7 +2630,7 @@ Get the notification.
 ### wab-edit-notification
 
 ***
-Edit a notification.
+Edit a notification
 
 #### Base Command
 
@@ -2657,7 +2657,7 @@ There is no context output for this command.
 ### wab-delete-notification
 
 ***
-Delete a notification.
+Delete a notification
 
 #### Base Command
 
@@ -2676,7 +2676,7 @@ There is no context output for this command.
 ### wab-get-object-to-onboard
 
 ***
-Get object to onboard, by type (either devices with their linked accounts or global accounts alone).
+Get object to onboard, by type (either devices with their linked accounts or global accounts alone)
 
 #### Base Command
 
@@ -2718,7 +2718,7 @@ Get object to onboard, by type (either devices with their linked accounts or glo
 ### wab-get-profiles
 
 ***
-Get the profiles.
+Get the profiles
 
 #### Base Command
 
@@ -2771,12 +2771,12 @@ Get the profiles.
 | WAB.profile_get.target_access | Boolean | Target access. | 
 | WAB.profile_get.dashboards | String | Ordered list of dashboards names. Usable in the "q" parameter. | 
 | WAB.profile_get.url | String | The API URL to the resource. | 
-| WAB.profile_get.gui_features.dashboards | String | deprecated: unused field. | 
+| WAB.profile_get.gui_features.dashboards | String | deprecated: unused field | 
 
 ### wab-get-profile
 
 ***
-Get the profile.
+Get the profile
 
 #### Base Command
 
@@ -2826,12 +2826,12 @@ Get the profile.
 | WAB.profile_get.target_access | Boolean | Target access. | 
 | WAB.profile_get.dashboards | String | Ordered list of dashboards names. Usable in the "q" parameter. | 
 | WAB.profile_get.url | String | The API URL to the resource. | 
-| WAB.profile_get.gui_features.dashboards | String | deprecated: unused field. | 
+| WAB.profile_get.gui_features.dashboards | String | deprecated: unused field | 
 
 ### wab-get-scanjobs
 
 ***
-Get the scanjobs.
+Get the scanjobs
 
 #### Base Command
 
@@ -2861,7 +2861,7 @@ Get the scanjobs.
 ### wab-start-scan-job-manually
 
 ***
-Start a scan job manually.
+Start a scan job manually
 
 #### Base Command
 
@@ -2880,7 +2880,7 @@ There is no context output for this command.
 ### wab-get-scanjob
 
 ***
-Get the scanjob.
+Get the scanjob
 
 #### Base Command
 
@@ -2907,7 +2907,7 @@ Get the scanjob.
 ### wab-cancel-scan-job
 
 ***
-Cancel a scan job.
+Cancel a scan job
 
 #### Base Command
 
@@ -2926,7 +2926,7 @@ There is no context output for this command.
 ### wab-get-scans
 
 ***
-Get the scans.
+Get the scans
 
 #### Base Command
 
@@ -2962,7 +2962,7 @@ Get the scans.
 ### wab-get-scan
 
 ***
-Get the scan.
+Get the scan
 
 #### Base Command
 
@@ -2995,7 +2995,7 @@ Get the scan.
 ### wab-get-sessionrights
 
 ***
-Get current user's or the user 'user_name' session rights (connections via proxies).
+Get current user's or the user 'user_name' session rights (connections via proxies)
 
 #### Base Command
 
@@ -3037,7 +3037,7 @@ Get current user's or the user 'user_name' session rights (connections via proxi
 ### wab-get-sessionrights-user-name
 
 ***
-Get current user's or the user 'user_name' session rights (connections via proxies).
+Get current user's or the user 'user_name' session rights (connections via proxies)
 
 #### Base Command
 
@@ -3077,7 +3077,7 @@ Get current user's or the user 'user_name' session rights (connections via proxi
 ### wab-generate-remote-application-token
 
 ***
-Generate a remote application token.
+Generate a remote application token
 
 #### Base Command
 
@@ -3100,7 +3100,7 @@ There is no context output for this command.
 ### wab-get-sessions
 
 ***
-Get the sessions.
+Get the sessions
 
 #### Base Command
 
@@ -3191,7 +3191,7 @@ Get the sessions.
 ### wab-edit-session
 
 ***
-Edit a session.
+Edit a session
 
 #### Base Command
 
@@ -3212,7 +3212,7 @@ There is no context output for this command.
 ### wab-get-session-metadata
 
 ***
-Get the metadata of one or multiple sessions.
+Get the metadata of one or multiple sessions
 
 #### Base Command
 
@@ -3235,7 +3235,7 @@ Get the metadata of one or multiple sessions.
 ### wab-get-session-sharing-requests
 
 ***
-Get session sharing requests.
+Get session sharing requests
 
 #### Base Command
 
@@ -3265,7 +3265,7 @@ Get session sharing requests.
 ### wab-create-session-request
 
 ***
-Create a session request.
+Create a session request
 
 #### Base Command
 
@@ -3285,7 +3285,7 @@ There is no context output for this command.
 ### wab-delete-pending-or-live-session-request
 
 ***
-Delete a pending or a live session request.
+Delete a pending or a live session request
 
 #### Base Command
 
@@ -3304,7 +3304,7 @@ There is no context output for this command.
 ### wab-get-latest-snapshot-of-running-session
 
 ***
-Get the latest snapshot of a running session.
+Get the latest snapshot of a running session
 
 #### Base Command
 
@@ -3323,7 +3323,7 @@ There is no context output for this command.
 ### wab-get-status-of-trace-generation
 
 ***
-Get the status of a trace generation.
+Get the status of a trace generation
 
 #### Base Command
 
@@ -3353,7 +3353,7 @@ Get the status of a trace generation.
 ### wab-generate-trace-for-session
 
 ***
-Generate a trace for a session.
+Generate a trace for a session
 
 #### Base Command
 
@@ -3374,7 +3374,7 @@ There is no context output for this command.
 ### wab-get-wallix-bastion-usage-statistics
 
 ***
-Get the WALLIX Bastion usage statistics. If no from_date or to_date are supplied it will return the statistics for the last full calendar month.
+Get the WALLIX Bastion usage statistics. If no from_date or to_date are supplied it will return the statistics for the last full calendar month
 
 #### Base Command
 
@@ -3409,7 +3409,7 @@ Get the WALLIX Bastion usage statistics. If no from_date or to_date are supplied
 ### wab-get-target-groups
 
 ***
-Get the target groups.
+Get the target groups
 
 #### Base Command
 
@@ -3471,7 +3471,7 @@ Get the target groups.
 ### wab-add-target-group
 
 ***
-Add a target group.
+Add a target group
 
 #### Base Command
 
@@ -3491,7 +3491,7 @@ There is no context output for this command.
 ### wab-get-target-group
 
 ***
-Get the target group.
+Get the target group
 
 #### Base Command
 
@@ -3550,7 +3550,7 @@ Get the target group.
 ### wab-edit-target-group
 
 ***
-Edit a target group.
+Edit a target group
 
 #### Base Command
 
@@ -3572,7 +3572,7 @@ There is no context output for this command.
 ### wab-delete-target-group
 
 ***
-Delete a target group.
+Delete a target group
 
 #### Base Command
 
@@ -3591,7 +3591,7 @@ There is no context output for this command.
 ### wab-delete-target-from-group
 
 ***
-Delete a target from a group.
+Delete a target from a group
 
 #### Base Command
 
@@ -3612,7 +3612,7 @@ There is no context output for this command.
 ### wab-get-user-groups
 
 ***
-Get the user groups.
+Get the user groups
 
 #### Base Command
 
@@ -3649,7 +3649,7 @@ Get the user groups.
 ### wab-get-user-group
 
 ***
-Get the user group.
+Get the user group
 
 #### Base Command
 
@@ -3683,7 +3683,7 @@ Get the user group.
 ### wab-get-users
 
 ***
-Get the users.
+Get the users
 
 #### Base Command
 
@@ -3726,7 +3726,7 @@ Get the users.
 ### wab-add-user
 
 ***
-Add a user.
+Add a user
 
 #### Base Command
 
@@ -3761,7 +3761,7 @@ There is no context output for this command.
 ### wab-get-user
 
 ***
-Get the user.
+Get the user
 
 #### Base Command
 
@@ -3801,7 +3801,7 @@ Get the user.
 ### wab-get-password-for-target
 
 ***
-Get the password for a given target.
+Get the password for a given target
 
 #### Base Command
 
@@ -3837,7 +3837,7 @@ Get the password for a given target.
 ### wab-extend-duration-time-to-get-passwords-for-target
 
 ***
-Extend the duration time to get the passwords for a given target.
+Extend the duration time to get the passwords for a given target
 
 #### Base Command
 
@@ -3857,7 +3857,7 @@ There is no context output for this command.
 ### wab-release-passwords-for-target
 
 ***
-Release the passwords for a given target.
+Release the passwords for a given target
 
 #### Base Command
 
@@ -3879,7 +3879,7 @@ There is no context output for this command.
 ### wab-get-target-by-type
 
 ***
-Get the target by type.
+Get the target by type
 
 #### Base Command
 
@@ -3913,7 +3913,7 @@ Get the target by type.
 ### wab-get-mappings-of-user-group
 
 ***
-Get the mappings of a user group.
+Get the mappings of a user group
 
 #### Base Command
 
@@ -3943,7 +3943,7 @@ Get the mappings of a user group.
 ### wab-add-mapping-in-group
 
 ***
-Add a mapping in a group and set mapping fallback. If the field "external_group" is set to "*", it is used as the fallback mapping, which allows mapping of users in the domain that do not belong to the external_group to be mapped to the user group by default.
+Add a mapping in a group and set mapping fallback. If the field "external_group" is set to "*", it is used as the fallback mapping, which allows mapping of users in the domain that do not belong to the external_group to be mapped to the user group by default
 
 #### Base Command
 
@@ -3962,32 +3962,10 @@ Add a mapping in a group and set mapping fallback. If the field "external_group"
 
 There is no context output for this command.
 
-### wab-edit-mappings-of-user-group
-
-***
-Edit mappings of a user group.
-
-#### Base Command
-
-`wab-edit-mappings-of-user-group`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| group_id | A group id or name. | Required | 
-| usergroup_mapping_post_domain | The name of the domain for which the mapping is defined. | Required | 
-| usergroup_mapping_post_external_group | The name of the external group (LDAP/AD: Distinguished Name, Azure AD: name or ID), "*" means fallback mapping. | Required | 
-| usergroup_mapping_post_profile | The name of the profile for which the mapping is defined. | Required | 
-
-#### Context Output
-
-There is no context output for this command.
-
 ### wab-get-mapping-of-user-group
 
 ***
-Get the mapping of a user group.
+Get the mapping of a user group
 
 #### Base Command
 
@@ -4014,7 +3992,7 @@ Get the mapping of a user group.
 ### wab-edit-mapping-of-user-group
 
 ***
-Edit a mapping of a user group.
+Edit a mapping of a user group
 
 #### Base Command
 
@@ -4037,7 +4015,7 @@ There is no context output for this command.
 ### wab-delete-mapping-of-user-group
 
 ***
-Delete the mapping of the given user group.
+Delete the mapping of the given user group
 
 #### Base Command
 

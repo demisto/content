@@ -53,7 +53,7 @@ script:
   script: ""
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.11.9.109226
+  dockerimage: demisto/python3:3.11.10.110725
   commands:
   - name: wab-add-session-target-to-target-group
     description: Add a target account to a target group.
@@ -5365,21 +5365,6 @@ script:
       description: The API URL to the resource.
   - name: wab-add-mapping-in-group
     description: Add a mapping in a group and set mapping fallback. If the field "external_group" is set to "*", it is used as the fallback mapping, which allows mapping of users in the domain that do not belong to the external_group to be mapped to the user group by default.
-    arguments:
-    - name: group_id
-      description: A group id or name.
-      required: true
-    - name: usergroup_mapping_post_domain
-      description: The name of the domain for which the mapping is defined.
-      required: true
-    - name: usergroup_mapping_post_external_group
-      description: 'The name of the external group (LDAP/AD: Distinguished Name, Azure AD: name or ID), "*" means fallback mapping.'
-      required: true
-    - name: usergroup_mapping_post_profile
-      description: The name of the profile for which the mapping is defined.
-      required: true
-  - name: wab-edit-mappings-of-user-group
-    description: Edit mappings of a user group.
     arguments:
     - name: group_id
       description: A group id or name.
