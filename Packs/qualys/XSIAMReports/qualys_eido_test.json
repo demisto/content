@@ -1,0 +1,160 @@
+{
+    "fromVersion": "8.4.0",
+    "templates_data": [
+      {
+        "report_name": "Eido's Report",
+        "report_description": "Test",
+        "layout": [
+          {
+            "id": "Row 1",
+            "data": [
+              {
+                "key": "xql_1687779507172",
+                "data": {
+                  "type": "Custom XQL",
+                  "width": 50,
+                  "height": 400,
+                  "phrase": "datamodel dataset = google_workspace_chrome_raw \n|filter xdm.event.type != \"\"\n| bin _time span = 24h\n| comp count() as count by _time\n| sort asc _time\n| view graph type = line xaxis = _time yaxis = count ",
+                  "time_frame": {
+                    "relativeTime": 86400000
+                  },
+                  "viewOptions": {
+                    "type": "line",
+                    "commands": [
+                      {
+                        "command": {
+                          "op": "=",
+                          "name": "xaxis",
+                          "value": "_time"
+                        }
+                      },
+                      {
+                        "command": {
+                          "op": "=",
+                          "name": "yaxis",
+                          "value": "count"
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "key": "header",
+                "data": {
+                  "name": "Eido's Report",
+                  "type": "",
+                  "width": 50,
+                  "height": 400,
+                  "tenantId": "9997194883028",
+                  "description": "Test",
+                  "customerName": "e2e test 2"
+                }
+              }
+            ]
+          },
+          {
+            "id": "row-8658",
+            "data": [
+              {
+                "key": "xql_1687770114700",
+                "data": {
+                  "type": "Custom XQL",
+                  "width": 100,
+                  "height": 400,
+                  "phrase": "datamodel dataset = google_workspace_chrome_raw \n| filter xdm.source.user.username != \"\"\n| filter xdm.source.user.username != \"-\"\n| comp values(xdm.source.user.username) as `DEVICE_USER` by xdm.source.host.hostname\n| filter DEVICE_USER != null",
+                  "time_frame": {
+                    "relativeTime": 86400000
+                  },
+                  "viewOptions": {
+                    "type": "table",
+                    "commands": []
+                  },
+                  "gridRawStorageInfo": {
+                    "sort": null,
+                    "coldefs": {},
+                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                    "columnWidth": null
+                  }
+                }
+              }
+            ]
+          }
+        ],
+        "default_template_id": 1,
+        "time_frame": {
+          "relativeTime": 86400000
+        },
+        "global_id": "fc82f27f009c411081e99cb77a901525",
+        "time_offset": 10800,
+        "metadata": "{\"params\": []}"
+      }
+    ],
+    "widgets_data": [
+      {
+        "widget_key": "xql_1687770114700",
+        "title": "Chrome Device Username and Device Name Mapping",
+        "creation_time": 1725191187480,
+        "description": "This widget displays device users by their related device names.",
+        "data": {
+          "phrase": "datamodel dataset = google_workspace_chrome_raw \n| filter xdm.source.user.username != \"\"\n| filter xdm.source.user.username != \"-\"\n| comp values(xdm.source.user.username) as `DEVICE_USER` by xdm.source.host.hostname\n| filter DEVICE_USER != null",
+          "time_frame": {
+            "relativeTime": 86400000
+          },
+          "viewOptions": {
+            "type": "table",
+            "commands": []
+          },
+          "gridRawStorageInfo": {
+            "sort": null,
+            "coldefs": {},
+            "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+            "columnWidth": null
+          }
+        },
+        "support_time_range": true,
+        "additional_info": {
+          "query_tables": [],
+          "query_uses_library": false
+        },
+        "creator_mail": "N/A"
+      },
+      {
+        "widget_key": "xql_1687779507172",
+        "title": "Chrome Events over Time",
+        "creation_time": 1725191187843,
+        "description": "This widget displays chrome security events' trend.",
+        "data": {
+          "phrase": "datamodel dataset = google_workspace_chrome_raw \n|filter xdm.event.type != \"\"\n| bin _time span = 24h\n| comp count() as count by _time\n| sort asc _time\n| view graph type = line xaxis = _time yaxis = count ",
+          "time_frame": {
+            "relativeTime": 604800000
+          },
+          "viewOptions": {
+            "type": "line",
+            "commands": [
+              {
+                "command": {
+                  "op": "=",
+                  "name": "xaxis",
+                  "value": "_time"
+                }
+              },
+              {
+                "command": {
+                  "op": "=",
+                  "name": "yaxis",
+                  "value": "count"
+                }
+              }
+            ]
+          }
+        },
+        "support_time_range": true,
+        "additional_info": {
+          "query_tables": [],
+          "query_uses_library": false
+        },
+        "creator_mail": "N/A"
+      }
+    ]
+  }
