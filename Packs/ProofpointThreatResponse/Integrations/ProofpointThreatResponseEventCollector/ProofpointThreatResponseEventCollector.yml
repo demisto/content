@@ -31,6 +31,7 @@ configuration:
   type: 0
   section: Collect
   required: false
+  hidden: true
 - defaultvalue: '6 hours'
   additionalinfo: The time range between create_after and created_before that is sent to the API when fetching older incidents. If timeout errors occur, consider changing this value.
   display: Fetch delta - The delta time in each batch. e.g., 1 hour, 3 minutes.
