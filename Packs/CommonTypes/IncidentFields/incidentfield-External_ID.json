@@ -22,7 +22,8 @@
     "associatedTypes": [
         "Symantec DLP Discover Incident",
         "Symantec DLP Endpoint Incident",
-        "Symantec DLP Network Incident"
+        "Symantec DLP Network Incident",
+        "Exabeam Platform Case"
     ],
     "unmapped": false,
     "unsearchable": true,
