@@ -4253,29 +4253,11 @@ script:
     - type: String
       contextPath: WAB.sessionrights_get.user_name
       description: the user_name.
-  - name: wab-generate-remote-application-token
-    description: Generate a remote application token.
-    arguments:
-    - name: sessionrights_post_user
-      description: The user cn.
-      required: true
-    - name: sessionrights_post_account
-      description: 'The account name.'
-      required: true
-    - name: sessionrights_post_authorization
-      description: 'The authorization name.'
-      required: true
-    - name: sessionrights_post_application
-      description: The application name.
-      required: true
-    - name: sessionrights_post_authorization_approval
-      description: Authorization as approval.
-      required: true
   - name: wab-get-sessions
     description: Get the sessions.
     arguments:
     - name: session_id
-      description: 'A session id. If specified, only this session is returned.'
+      description: A session id. If specified, only this session is returned.
     - name: otp
       description: 'User''s OTP (One Time Password) If specified, only the session initiated with the provided OTP is returned.'
     - name: status
@@ -4299,7 +4281,7 @@ script:
     outputs:
     - type: String
       contextPath: WAB.session_get.id
-      description: 'The session id. Usable in the "q" parameter. Usable in the "sort" parameter.'
+      description: The session id. Usable in the "q" parameter. Usable in the "sort" parameter.
     - type: String
       contextPath: WAB.session_get.begin
       description: 'The beginning date/time of the session (format: "yyyy-mm-dd hh:mm:ss"). Usable in the "q" parameter. Usable in the "sort" parameter.'
@@ -4481,10 +4463,10 @@ script:
       contextPath: WAB.session_get.url
       description: The API URL to the resource.
   - name: wab-edit-session
-    description: 'Edit a session.'
+    description: Edit a session.
     arguments:
     - name: session_id
-      description: The session id to edit.
+      description: 'The session id to edit.'
       required: true
     - name: action
       description: 'The action on the session: ''edit'' to edit the session (default), ''kill'' to kill the session.'
@@ -4492,13 +4474,13 @@ script:
       description: The new session description.
       required: true
   - name: wab-get-session-metadata
-    description: Get the metadata of one or multiple sessions.
+    description: 'Get the metadata of one or multiple sessions.'
     arguments:
     - name: session_ids
-      description: "The session id, multiple IDs can be separated by commas."
+      description: The session id, multiple IDs can be separated by commas.
       required: true
     - name: download
-      description: The default value is false. When it is set to true, the session metadata is sent as a file instead of JSON (recommended for large metadata). The download is possible only with a single session id.
+      description: 'The default value is false. When it is set to true, the session metadata is sent as a file instead of JSON (recommended for large metadata). The download is possible only with a single session id.'
     outputs:
     - type: String
       contextPath: WAB.session_metadata_get.session_id
@@ -4507,10 +4489,10 @@ script:
       contextPath: WAB.session_metadata_get.metadata
       description: The session metadata content.
   - name: wab-get-session-sharing-requests
-    description: "Get session sharing requests."
+    description: Get session sharing requests.
     arguments:
     - name: request_id
-      description: A request id. If specified, only this request is returned.
+      description: "A request id. If specified, only this request is returned."
     - name: session_id
       description: A session id. If specified, only the request linked to this session is returned.
     outputs:
@@ -4542,7 +4524,7 @@ script:
       contextPath: WAB.session_request_get.guest_id
       description: A Guest ID (random if unknown invited guest) or a username (if known Bastion user). Usable in the "sort" parameter.
   - name: wab-create-session-request
-    description: Create a session request.
+    description: "Create a session request."
     arguments:
     - name: session_request_post_session_id
       description: The session id.
@@ -4566,7 +4548,7 @@ script:
     description: Get the status of a trace generation.
     arguments:
     - name: session_id
-      description: 'The session id.'
+      description: The session id.
       required: true
     - name: date
       description: 'Generate the trace from this date/time (format: "yyyy-mm-dd hh:mm:ss").'
@@ -4577,7 +4559,7 @@ script:
     outputs:
     - type: String
       contextPath: WAB.session_trace_get.session_id
-      description: 'The session id.'
+      description: The session id.
     - type: String
       contextPath: WAB.session_trace_get.date
       description: 'The starting date/time (format: "yyyy-mm-dd hh:mm:ss").'
@@ -4600,7 +4582,7 @@ script:
     description: Generate a trace for a session.
     arguments:
     - name: session_trace_post_session_id
-      description: The session id.
+      description: 'The session id.'
       required: true
     - name: session_trace_post_date
       description: 'The starting date/time (format: "yyyy-mm-dd hh:mm:ss").'
@@ -4634,7 +4616,7 @@ script:
       description: Lowest simultaneous objects.
     - type: Number
       contextPath: WAB.statistics_get.secondary_connections.average
-      description: Average simultaneous objects.
+      description: 'Average simultaneous objects.'
     - type: Number
       contextPath: WAB.statistics_get.secondary_connections.max
       description: Maximum simultaneous objects.
@@ -4916,7 +4898,7 @@ script:
       description: The group id or name to edit.
       required: true
     - name: force
-      description: 'The default value is false. When it is set to true the values of the targets are replaced, otherwise the values are added to the existing ones.'
+      description: The default value is false. When it is set to true the values of the targets are replaced, otherwise the values are added to the existing ones.
     - name: targetgroups_put_group_name
       description: The target group name.
     - name: targetgroups_put_description
@@ -4947,11 +4929,11 @@ script:
     - name: sort
       description: 'Comma-separated list of fields used to sort results; a field starting "-" reverses the order. The default sort for this resource is: ''group_name''.'
     - name: offset
-      description: 'The index of first item to retrieve (starts and defaults to 0).'
+      description: The index of first item to retrieve (starts and defaults to 0).
     - name: limit
       description: 'The number of items to retrieve (100 by default, -1 = no limit). Note: this default value of 100 can be changed in the REST API configuration option.'
     - name: fields
-      description: 'The list of fields to return (separated by commas). By default all fields are returned.'
+      description: The list of fields to return (separated by commas). By default all fields are returned.
     outputs:
     - type: String
       contextPath: WAB.usergroups_get.id
@@ -4964,7 +4946,7 @@ script:
       description: The group profile.
     - type: String
       contextPath: WAB.usergroups_get.description
-      description: 'The group description. Usable in the "q" parameter. Usable in the "sort" parameter.'
+      description: The group description. Usable in the "q" parameter. Usable in the "sort" parameter.
     - type: String
       contextPath: WAB.usergroups_get.timeframes
       description: The group timeframe(s).
@@ -5012,7 +4994,7 @@ script:
       description: The group profile.
     - type: String
       contextPath: WAB.usergroups_get.description
-      description: The group description. Usable in the "q" parameter. Usable in the "sort" parameter.
+      description: 'The group description. Usable in the "q" parameter. Usable in the "sort" parameter.'
     - type: String
       contextPath: WAB.usergroups_get.timeframes
       description: The group timeframe(s).
@@ -5114,12 +5096,12 @@ script:
     description: Add a user.
     arguments:
     - name: password_hash
-      description: 'Set password hash if true. In Configuration Options menu > REST API then Advanced options, you should set User password hash and change the default Data encryption key.'
+      description: Set password hash if true. In Configuration Options menu > REST API then Advanced options, you should set User password hash and change the default Data encryption key.
     - name: user_post_user_name
-      description: 'The user name. /:*?"<>| are forbidden.'
+      description: The user name. /:*?"<>| are forbidden.
       required: true
     - name: user_post_display_name
-      description: 'The displayed name.'
+      description: The displayed name.
     - name: user_post_email
       description: The email address.
       required: true
@@ -5160,9 +5142,9 @@ script:
       description: 'A user name. If specified, only this user is returned.'
       required: true
     - name: password_hash
-      description: Export password hash if true. In Configuration Options menu > REST API then Advanced options, you should set User password hash and change the default Data encryption key.
+      description: 'Export password hash if true. In Configuration Options menu > REST API then Advanced options, you should set User password hash and change the default Data encryption key.'
     - name: fields
-      description: The list of fields to return (separated by commas). By default all fields are returned.
+      description: 'The list of fields to return (separated by commas). By default all fields are returned.'
     outputs:
     - type: String
       contextPath: WAB.user_get.user_name

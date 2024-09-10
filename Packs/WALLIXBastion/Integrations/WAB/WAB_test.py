@@ -288,7 +288,6 @@ command_names = [
     "wab-edit-session",
     "wab-edit-target-group",
     "wab-extend-duration-time-to-get-passwords-for-target",
-    "wab-generate-remote-application-token",
     "wab-generate-trace-for-session",
     "wab-get-account-of-global-domain",
     "wab-get-account-reference",

@@ -1731,24 +1731,6 @@ class Client(BaseClient):
             raw_response=response,
         )
 
-    def generate_remote_application_token(self, args: Dict[str, Any]):
-        sessionrights_post_user = str_arg(args, "sessionrights_post_user")
-        sessionrights_post_account = str_arg(args, "sessionrights_post_account")
-        sessionrights_post_authorization = str_arg(args, "sessionrights_post_authorization")
-        sessionrights_post_application = str_arg(args, "sessionrights_post_application")
-        sessionrights_post_authorization_approval = bool_arg(args, "sessionrights_post_authorization_approval")
-
-        body = assign_params(
-            user=sessionrights_post_user,
-            account=sessionrights_post_account,
-            authorization=sessionrights_post_authorization,
-            application=sessionrights_post_application,
-            authorization_approval=sessionrights_post_authorization_approval,
-        )
-        response = self._http_request("post", "/sessionrights/token", json_data=body)
-
-        return CommandResults(readable_output="Success!", raw_response=response)
-
     def get_sessions(self, args: Dict[str, Any]):
         session_id = str_arg(args, "session_id")
         otp = str_arg(args, "otp")
@@ -2407,7 +2389,6 @@ def main() -> None:
             "wab-get-scan": client.get_scan,
             "wab-get-sessionrights": client.get_sessionrights,
             "wab-get-sessionrights-user-name": client.get_sessionrights_user_name,
-            "wab-generate-remote-application-token": client.generate_remote_application_token,
             "wab-get-sessions": client.get_sessions,
             "wab-edit-session": client.edit_session,
             "wab-get-session-metadata": client.get_session_metadata,

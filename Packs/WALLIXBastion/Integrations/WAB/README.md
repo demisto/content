@@ -3074,29 +3074,6 @@ Get current user's or the user 'user_name' session rights (connections via proxi
 | WAB.sessionrights_get.last_connection | String | The date of the last connection \(format: "yyyy-mm-dd hh:mm:ss"\). Usable in the "sort" parameter. | 
 | WAB.sessionrights_get.user_name | String | the user_name. | 
 
-### wab-generate-remote-application-token
-
-***
-Generate a remote application token
-
-#### Base Command
-
-`wab-generate-remote-application-token`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| sessionrights_post_user | The user cn. | Required | 
-| sessionrights_post_account | The account name. | Required | 
-| sessionrights_post_authorization | The authorization name. | Required | 
-| sessionrights_post_application | The application name. | Required | 
-| sessionrights_post_authorization_approval | Authorization as approval. | Required | 
-
-#### Context Output
-
-There is no context output for this command.
-
 ### wab-get-sessions
 
 ***
