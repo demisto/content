@@ -1966,7 +1966,7 @@ script:
         description: The displayName of the author who created this event
         type: String
       - contextPath: ConfluenceCloud.Event.author.operations
-        description: ''
+        description: Nullable. Author's operations.
         type:
       - contextPath: ConfluenceCloud.Event.author.username
         description: Username of the author of this event.
