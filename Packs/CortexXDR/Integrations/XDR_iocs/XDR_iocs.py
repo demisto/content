@@ -407,19 +407,19 @@ def set_sync_time(timestamp: datetime) -> None:
 
 
 def update_integration_context(update_sync_time_with_datetime: datetime | None = None,
-                               update_sync_time_with_date_string: str | None = None,
+                               #    update_sync_time_with_date_string: str | None = None,
                                update_is_first_sync_phase: str | None = None,
                                update_search_after_array: List[Any] | None = None):
     updated_integration_context = get_integration_context() or {}
     if update_sync_time_with_datetime:
         updated_integration_context['ts'] = int(update_sync_time_with_datetime.timestamp()) * 1000
         updated_integration_context['time'] = update_sync_time_with_datetime.strftime(DEMISTO_TIME_FORMAT)
-    if update_sync_time_with_date_string:
-        truncated_timestamp = update_sync_time_with_date_string[:19] + 'Z'
-        date_time = datetime.strptime(truncated_timestamp, DEMISTO_TIME_FORMAT)
-        parsed_time = date_time.replace(tzinfo=timezone.utc)
-        updated_integration_context['ts'] = int(parsed_time.timestamp()) * 1000
-        updated_integration_context['time'] = truncated_timestamp
+    # if update_sync_time_with_date_string:
+    #     truncated_timestamp = update_sync_time_with_date_string[:19] + 'Z'
+    #     date_time = datetime.strptime(truncated_timestamp, DEMISTO_TIME_FORMAT)
+    #     parsed_time = date_time.replace(tzinfo=timezone.utc)
+    #     updated_integration_context['ts'] = int(parsed_time.timestamp()) * 1000
+    #     updated_integration_context['time'] = truncated_timestamp
     if update_is_first_sync_phase:
         updated_integration_context['is_first_sync_phase'] = argToBoolean(update_is_first_sync_phase)
     if update_search_after_array:
@@ -468,13 +468,14 @@ def sync_for_fetch(client: Client, batch_size: int = 200, is_first_stage_sync: b
             demisto.debug(f"Fetched {len(request_data)} indicators from xsoar. last_modified_that_was_synced "
                           f"{CURRENT_BATCH_LAST_MODIFIED_TIME}, with indicator {request_data[-1].get('indicator')}, "
                           f"search_after {integration_context.get('search_after')}")
-            last_sync_time = integration_context.get('time', '')
+            # last_sync_time = integration_context.get('time', '')
             if len(request_data) < MAX_INDICATORS_TO_SYNC:
                 # is the update_sync_time_with_date_string necessary (to ask judith)
-                update_integration_context(update_is_first_sync_phase='false',
-                                           update_sync_time_with_date_string=CURRENT_BATCH_LAST_MODIFIED_TIME
-                                           if last_sync_time > CURRENT_BATCH_LAST_MODIFIED_TIME
-                                           else None)
+                # update_integration_context(update_is_first_sync_phase='false',
+                #                            update_sync_time_with_date_string=CURRENT_BATCH_LAST_MODIFIED_TIME
+                #                            if last_sync_time > CURRENT_BATCH_LAST_MODIFIED_TIME
+                #                            else None)
+                update_integration_context(update_is_first_sync_phase='false')
                 demisto.debug(f"updated integration_context to {get_integration_context()=}")
             requests_kwargs: dict = get_requests_kwargs(_json=request_data, validate=True)
             path: str = 'tim_insert_jsons'
@@ -483,12 +484,12 @@ def sync_for_fetch(client: Client, batch_size: int = 200, is_first_stage_sync: b
                 raise DemistoException("Response status was not success")
             if validation_errors := response.get('reply', {}).get('validation_errors'):
                 errors = create_validation_errors_response(validation_errors)
-                demisto.debug('pushing IOCs to XDR:' + errors.replace('\n', '. '))
+                demisto.debug('pushing IOCs to XDR:' + errors.replace('\n', ''))
         else:
             demisto.debug("request_data is empty, no indicators to sync")
             update_integration_context(update_is_first_sync_phase='false')
     except Exception as e:
-        raise DemistoException(f"Failed to sync indicators with error {e}")
+        raise DemistoException(f"Failed to sync indicators with error {e}.")
 
 
 def iocs_to_keep(client: Client):

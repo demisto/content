@@ -1099,7 +1099,7 @@ def test_parse_demisto_list_of_comments_default(mocker):
     ) == [f'url/#/indicator/{inc_id}, {comment_value}']
 
 
-@patch('XDR_iocs.demisto.params', return_value={'feed':True, 'feedFetchInterval':'15'})
+@patch('XDR_iocs.demisto.params', return_value={'feed': True, 'feedFetchInterval': '15'})
 def test_module_fail_with_fetch_interval(mocker):
     """
     Given   The demisto.params() returns parameters with feed set to True and feedFetchInterval set to '15'.
@@ -1112,5 +1112,70 @@ def test_module_fail_with_fetch_interval(mocker):
     assert e.value.message == "'Feed Fetch Interval' parameter should be 20 or larger."
 
 
-def test_xdr_iocs_sync_command_sync_for_fetch(mocker):
-    xdr_iocs_sync_command(client, is_first_stage_sync=True)
+ioc_example = {
+    'value': 'malicious.com',
+    'modified': '2023-09-09T12:00:00Z',
+    'indicator_type': 'Domain',
+    'score': 3,
+    'expiration': '2024-09-09T12:00:00Z',
+    'aggregatedReliability': ['A'],
+    'moduleToFeedMap': {
+        'FeedA': {'reliability': 'A'}
+    },
+    'CustomFields': {
+        'threattypes': [{'threatcategory': 'Malware'}],
+        'xdrstatus': 'enabled',
+        'sourceoriginalseverity': 'high',
+    }
+}
+
+
+@patch('XDR_iocs.get_integration_context', return_value={'time': '2024-09-10T12:13:57Z'})
+@patch('XDR_iocs.get_iocs_generator', return_value=[ioc_example])
+@patch('XDR_iocs.Client.http_request', return_value={'reply': {'success': True}})
+@patch('XDR_iocs.set_integration_context', return_value={})
+@patch('XDR_iocs.update_integration_context', return_value={})
+def test_xdr_iocs_sync_command_sync_for_fetch(mock_update_integration_context,
+                                              mock_set_integration_context,
+                                              mock_http_request,
+                                              mock_get_iocs_generator,
+                                              mock_get_integration_context):
+    xdr_iocs_sync_command(client, is_first_stage_sync=True, called_from_fetch=True)
+    mock_update_integration_context.assert_called_with(update_is_first_sync_phase='false')
+
+
+@patch('XDR_iocs.get_integration_context', return_value={'time': '2024-09-10T12:13:57Z'})
+@patch('XDR_iocs.get_iocs_generator', return_value=[ioc_example])
+@patch('XDR_iocs.Client.http_request', return_value={'reply': {'success': False}})
+@patch('XDR_iocs.set_integration_context', return_value={})
+@patch('XDR_iocs.update_integration_context', return_value={})
+def test_xdr_iocs_sync_command_sync_for_fetch_fails(mock_update_integration_context,
+                                                    mock_set_integration_context,
+                                                    mock_http_request,
+                                                    mock_get_iocs_generator,
+                                                    mock_get_integration_context):
+    with pytest.raises(DemistoException) as e:
+        xdr_iocs_sync_command(client, is_first_stage_sync=True, called_from_fetch=True)
+    mock_update_integration_context.assert_called_with(update_is_first_sync_phase='false')
+    assert e.value.message == 'Failed to sync indicators with error Response status was not success.'
+
+
+@patch('XDR_iocs.get_integration_context', return_value={'time': '2024-09-10T12:13:57Z'})
+@patch('XDR_iocs.get_iocs_generator', return_value=[ioc_example])
+@patch('XDR_iocs.Client.http_request', return_value={'reply': {'success': True, 'validation_errors': [
+    {'indicator': '123', 'error': 'error1'},
+    {'indicator': '456', 'error': 'error2'}]}})
+@patch('XDR_iocs.set_integration_context', return_value={})
+@patch('XDR_iocs.update_integration_context', return_value={})
+@patch('XDR_iocs.demisto.debug')
+def test_xdr_iocs_sync_command_sync_for_fetch_with_validation_errors(
+        mock_demisto_debug,
+        mock_update_integration_context,
+        mock_set_integration_context,
+        mock_http_request,
+        mock_get_iocs_generator,
+        mock_get_integration_context):
+    xdr_iocs_sync_command(client, is_first_stage_sync=True, called_from_fetch=True)
+    mock_update_integration_context.assert_called_with(update_is_first_sync_phase='false')
+    mock_demisto_debug.assert_called_with('pushing IOCs to XDR:The following 2 IOCs were not pushed due to following errors:123: '
+                                          'error1.456: error2.')
