@@ -135,55 +135,19 @@ configuration:
   required: false
   additionalinfo: When selected, closing the Cortex XSOAR incident will close the incident in IBM Resilient
 
-- display: Note tag from IBM Qradar SOAR
-  name: note_tag_from_ibm
-  additionalinfo: Add this tag to an entry to mirror it as a note from IBM Qradar SOAR.
-  defaultvalue: NOTE FROM IBM
+- display: Tag from IBM Qradar SOAR
+  name: tag_from_ibm
+  additionalinfo: Add this tag to an entry to mirror it from IBM Qradar SOAR.
+  defaultvalue: FROM IBM
   type: 0
   required: false
   section: Collect
   advanced: true
 
-- display: Note tag to IBM QRadar SOAR
-  name: note_tag_to_ibm
-  additionalinfo: Add this tag to an entry to mirror it as a note to IBM Qradar SOAR.
-  defaultvalue: NOTE FROM XSOAR
-  type: 0
-  required: false
-  section: Collect
-  advanced: true
-
-- display: Task tag from IBM Qradar SOAR
-  name: task_tag_from_ibm
-  additionalinfo: Add this tag to an entry to mirror it as a task from IBM Qradar SOAR.
-  defaultvalue: TASK FROM IBM
-  type: 0
-  required: false
-  section: Collect
-  advanced: true
-
-- display: Task tag to IBM QRadar SOAR
-  name: task_tag_to_ibm
-  additionalinfo: Add this tag to an entry to mirror it as a task to IBM Qradar SOAR.
-  defaultvalue: TASK FROM XSOAR
-  type: 0
-  required: false
-  section: Collect
-  advanced: true
-
-- display: Attachment tag from IBM Qradar SOAR
-  name: attachment_tag_from_ibm
-  additionalinfo: Add this tag to an entry to mirror it as a task from IBM Qradar SOAR.
-  defaultvalue: ATTACHMENT FROM IBM
-  type: 0
-  required: false
-  section: Collect
-  advanced: true
-
-- display: Attachment tag to IBM QRadar SOAR
-  name: attachment_tag_to_ibm
-  additionalinfo: Add this tag to an entry to mirror it as an attachment to IBM Qradar SOAR.
-  defaultvalue: ATTACHMENT FROM XSOAR
+- display: Tag to IBM QRadar SOAR
+  name: tag_to_ibm
+  additionalinfo: Add this tag to an entry to mirror it as to IBM Qradar SOAR.
+  defaultvalue: FROM XSOAR
   type: 0
   required: false
   section: Collect

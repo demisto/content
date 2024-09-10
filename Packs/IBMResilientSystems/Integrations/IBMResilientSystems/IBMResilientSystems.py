@@ -518,12 +518,8 @@ def get_mirroring_data() -> dict:
     mirror_direction = params.get("mirror_direction")
     demisto.debug(f"get_mirroring_data {mirror_direction=} | {params=} ")
     mirror_tags = [
-        params.get('note_tag_from_ibm'),
-        params.get('note_tag_to_ibm'),
-        params.get('task_tag_from_ibm'),
-        params.get('task_tag_to_ibm'),
-        params.get('attachment_tag_from_ibm'),
-        params.get('attachment_tag_to_ibm')
+        params.get('tag_from_ibm'),
+        params.get('tag_to_ibm')
     ]
     return {
         "mirror_direction": mirror_direction,
@@ -1293,7 +1289,7 @@ def incident_attachments(client, incident_id):
     return response
 
 
-def upload_incident_attachment(client: SimpleClient, incident_id: str, entry_id: str, attachment_tag_to_ibm: str):
+def upload_incident_attachment(client: SimpleClient, incident_id: str, entry_id: str, tag_to_ibm: str):
     """
         Uploads a file from XSOAR to the IBM QRadar SOAR incident with ID `incident_id`.
     """
@@ -1308,7 +1304,7 @@ def upload_incident_attachment(client: SimpleClient, incident_id: str, entry_id:
     file_path, file_name = file_path_obj.get("path"), file_path_obj.get("name")
     if '.' in file_name:
         tagged_file_name, extension = file_name.split('.')[0], file_name.split('.')[1]
-        file_name = f'{tagged_file_name}_{attachment_tag_to_ibm}.{extension}'
+        file_name = f'{tagged_file_name}_{tag_to_ibm}.{extension}'
     response = client.post_attachment(
         uri=f"/incidents/{incident_id}/attachments",
         filepath=file_path,
@@ -1495,13 +1491,13 @@ def add_custom_task(client: SimpleClient,
     return client.post(uri=f"/incidents/{incident_id}/tasks", payload=task_dto)
 
 
-def add_note_command(client, incident_id, note: str, note_tag_to_ibm: str):
-    response = add_note(client, str(incident_id), '\n'.join((note, note_tag_to_ibm)))
+def add_note_command(client, incident_id, note: str, tag_to_ibm: str):
+    response = add_note(client, str(incident_id), '\n'.join((note, tag_to_ibm)))
     demisto.debug(f'add_note_command {response=}')
     return CommandResults(
         mark_as_note=True,
         entry_type=EntryType.NOTE,
-        tags=[note_tag_to_ibm],
+        tags=[tag_to_ibm],
         outputs_prefix="Resilient.incidentNote",
         outputs=response,
         readable_output=f'The note was added successfully to incident {incident_id}\n\n{note} '
@@ -1573,14 +1569,14 @@ def get_attachment_command(client: SimpleClient, args: dict) -> dict:
 
 
 def upload_incident_attachment_command(
-    client: SimpleClient, args: dict, attachment_tag_to_ibm: str
+    client: SimpleClient, args: dict, tag_to_ibm: str
 ) -> CommandResults:
     """
     Uploads a file from XSOAR to an IBM QRadar SOAR incident.
     """
     incident_id = args.get("incident_id")
     entry_id = args.get("entry_id")
-    upload_incident_attachment(client, incident_id, entry_id, attachment_tag_to_ibm)
+    upload_incident_attachment(client, incident_id, entry_id, tag_to_ibm)
     return CommandResults(
         readable_output=f"File was uploaded successfully to {incident_id}."
     )
@@ -1680,7 +1676,6 @@ def list_tasks_command(client: SimpleClient) -> CommandResults:
         tasks_list = []
         for incident_tasks_obj in response:
             tasks_list.extend(incident_tasks_obj.get("tasks"))
-        # TODO - Figure out what human readable table to produce here
         human_readable: str = tableToMarkdown(name="Open Tasks", t=tasks_list)
         return CommandResults(
             outputs_prefix="Resilient.Tasks",
@@ -1866,17 +1861,14 @@ def handle_incoming_incident_reopening(incident_id: str) -> dict:
 
 def get_remote_data_command(client: SimpleClient,
                             args: dict,
-                            note_tag_to_ibm: str,
-                            note_tag_from_ibm: str,
-                            attachment_tag_to_ibm: str
+                            tag_to_ibm: str,
+                            tag_from_ibm: str
                             ) -> GetRemoteDataResponse:
     """
     Args:
         client (SimpleClient): The IBM Resillient client.
-        note_tag_to_ibm (str): The note tag from the mirrored notes.
-        note_tag_from_ibm (str): The note tag, to tag the mirrored notes.
-        task_tag_from_ibm (str): The task tag, to tag the mirrored tasks.
-        attachments_tag (str): The attachment tag, to tag the mirrored attachments.
+        tag_to_ibm (str): Mirror in tag.
+        tag_from_ibm (str): Mirror out tag.
     Returns:
         GetRemoteDataResponse: Structured incident response.
     """
@@ -1901,7 +1893,7 @@ def get_remote_data_command(client: SimpleClient,
     for note_entry in note_entries:
         demisto.debug(f'get_remote_data_command {note_entry=}')
         note_modify_date_timestamp = note_entry.get('modify_date')
-        if (note_tag_to_ibm not in str(note_entry['text'])
+        if (tag_to_ibm not in str(note_entry['text'])
                 and note_modify_date_timestamp
                 and note_modify_date_timestamp >= last_update_timestamp):
             entries.append({
@@ -1910,7 +1902,7 @@ def get_remote_data_command(client: SimpleClient,
                 'Contents':
                     f"{note_entry.get('text').get('content')}\n"
                     f"Added By: {note_entry.get('created_by', '')}\n",
-                'Tags': [note_tag_from_ibm],
+                'Tags': [tag_from_ibm],
                 'Note': True
             })
 
@@ -1919,7 +1911,7 @@ def get_remote_data_command(client: SimpleClient,
     for attachment_entry in attachment_entries:
         demisto.debug(f'get_remote_data_command {attachment_entry=}')
         attachment_create_time = attachment_entry.get('Create Time')
-        if (attachment_tag_to_ibm not in attachment_entry.get('Name')
+        if (tag_to_ibm not in attachment_entry.get('Name')
                 and attachment_create_time
                 and attachment_create_time >= last_update_timestamp):
             file_name, content = get_attachment(client, incident_id, attachment_entry.get('ID'))
@@ -1951,7 +1943,7 @@ def get_remote_data_command(client: SimpleClient,
     return GetRemoteDataResponse(mirrored_object=incident, entries=entries)
 
 
-def update_remote_system_command(client: SimpleClient, args: dict, note_tag_to_ibm: str, attachment_tag_to_ibm: str) -> str:
+def update_remote_system_command(client: SimpleClient, args: dict, tag_to_ibm: str) -> str:
     remote_args = UpdateRemoteSystemArgs(args)
     incident_id = remote_args.remote_incident_id
     demisto.debug(
@@ -1973,10 +1965,10 @@ def update_remote_system_command(client: SimpleClient, args: dict, note_tag_to_i
             entry_type = entry.get('type', '')
             entry_tags = entry.get('tags', [])
             demisto.debug(f'update_remote_system {entry_id=} | {entry_type=} | {entry_tags=}')
-            if entry_type == EntryType.NOTE and note_tag_to_ibm in entry_tags:
+            if entry_type == EntryType.NOTE and tag_to_ibm in entry_tags:
                 add_note(client, incident_id, entry.get('Contents'))
-            elif entry_type == EntryType.FILE and attachment_tag_to_ibm in entry_tags:
-                upload_incident_attachment(client, incident_id, entry_id, attachment_tag_to_ibm)
+            elif entry_type == EntryType.FILE and tag_to_ibm in entry_tags:
+                upload_incident_attachment(client, incident_id, entry_id, tag_to_ibm)
     return incident_id
 
 
@@ -2051,21 +2043,10 @@ def main():  # pragma: no cover
 
     LOG(f"command is {demisto.command()}")
 
-    note_tag_to_ibm = params.get('note_tag_to_ibm')
-    note_tag_from_ibm = params.get('note_tag_from_ibm')
-    if note_tag_to_ibm == note_tag_from_ibm:
-        raise DemistoException(
-            f'Note Entry Tag to IBM ({note_tag_to_ibm=})and Note Entry Tag from IBM ({note_tag_from_ibm=}) cannot have the same value.')
-
-    task_tag_to_ibm = params.get('task_tag_to_ibm')
-    task_tag_from_ibm = params.get('task_tag_from_ibm')
-    if task_tag_to_ibm == task_tag_from_ibm:
-        raise DemistoException('Task Entry Tag to IBM and Task Entry Tag from IBM cannot have the same value.')
-
-    attachment_tag_to_ibm = params.get('attachment_tag_to_ibm')
-    attachment_tag_from_ibm = params.get('attachment_tag_from_ibm')
-    demisto.debug(f"nonsense {attachment_tag_from_ibm=} | {attachment_tag_to_ibm=}")
-    if attachment_tag_from_ibm == attachment_tag_to_ibm:
+    tag_to_ibm = params.get('tag_to_ibm')
+    tag_from_ibm = params.get('tag_from_ibm')
+    demisto.debug(f"nonsense {tag_from_ibm=} | {tag_to_ibm=}")
+    if tag_from_ibm == tag_to_ibm:
         raise DemistoException(
             'Attachment Entry Tag to IBM and Attachment Entry Tag from IBM cannot have the same value.')
 
@@ -2105,11 +2086,11 @@ def main():  # pragma: no cover
         elif command == "rs-get-attachment":
             return_results(get_attachment_command(client, args))
         elif command == "rs-upload-incident-attachment":
-            return_results(upload_incident_attachment_command(client, args, attachment_tag_to_ibm))
+            return_results(upload_incident_attachment_command(client, args, tag_to_ibm))
         elif command == "rs-related-incidents":
             return_results(related_incidents_command(client, args["incident-id"]))
         elif command == "rs-add-note":
-            return_results(add_note_command(client, args["incident-id"], args["note"], note_tag_to_ibm))
+            return_results(add_note_command(client, args["incident-id"], args["note"], tag_to_ibm))
         elif command == "rs-add-artifact":
             demisto.results(
                 add_artifact_command(
@@ -2147,9 +2128,9 @@ def main():  # pragma: no cover
         elif command == "get-modified-remote-data":
             return_results(get_modified_remote_data_command(client, args))
         elif command == "get-remote-data":
-            return_results(get_remote_data_command(client, args, note_tag_to_ibm, note_tag_from_ibm, attachment_tag_to_ibm))
+            return_results(get_remote_data_command(client, args, tag_to_ibm, tag_from_ibm))
         elif command == "update-remote-system":
-            return_results(update_remote_system_command(client, args, note_tag_to_ibm, attachment_tag_to_ibm))
+            return_results(update_remote_system_command(client, args, tag_to_ibm))
         elif command == "get-mapping-fields":
             return_results(get_mapping_fields_command())
     except Exception as e:
