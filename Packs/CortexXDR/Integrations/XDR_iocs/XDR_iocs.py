@@ -518,7 +518,7 @@ def parse_demisto_single_comments(ioc: dict, comment_field_name: list[str] | str
 
 def demisto_ioc_to_xdr(ioc: dict) -> dict:
     try:
-        # demisto.debug(f'Raw outgoing IOC: {ioc.get("indicator_type")=}, {ioc.get("expiration")=}')  # uncomment to debug, otherwise spams the log
+        # demisto.debug(f'Raw outgoing IOC: {ioc=}')  # uncomment to debug, otherwise spams the log
         global CURRENT_BATCH_LAST_MODIFIED_TIME
         CURRENT_BATCH_LAST_MODIFIED_TIME = ioc.get('modified')
         xdr_ioc: dict = {
