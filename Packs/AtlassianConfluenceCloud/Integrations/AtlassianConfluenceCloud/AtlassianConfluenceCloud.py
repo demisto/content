@@ -1393,6 +1393,27 @@ def confluence_cloud_group_list_command(client: Client, args: Dict[str, str]) ->
 
 
 def fetch_events(client: Client, last_run: dict[str, Any], fetch_limit: int):
+    """
+    Fetches events from the Atlassian Confluence Cloud API.
+
+    This function implements a pagination mechanism to retrieve events, respecting the fetch limit
+    and handling cleanup of previous batches. It yields batches of events along with pagination
+    information for subsequent calls.
+
+    Args:
+        client (Client): The client object for making API requests.
+        last_run (dict[str, Any]): Dictionary containing information from the last execution.
+        fetch_limit (int): Maximum number of events to fetch.
+
+    Yields:
+        tuple: A tuple containing:
+            - list: A batch of events.
+            - str: The next_link for pagination or an empty string if no more pages.
+            - int: The end_date used for the current fetch operation.
+
+    Note:
+        This function uses debug logging extensively to track its progress and decision-making.
+    """
     demisto.debug(f'Starting fetch_events with last_run: {last_run} and fetch_limit: {fetch_limit}')
     end_date = int((time.time() - 5) * 1000)
     last_end_date = last_run.get('end_date', 0)
