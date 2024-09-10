@@ -3,7 +3,7 @@ from MattermostV2 import (get_team_command, list_channels_command, create_channe
                           remove_channel_member_command, list_users_command, close_channel_command, send_file_command,
                           get_channel_id_to_send_notif, event_handler, handle_text_received_from_mm, get_channel_id_from_context,
                           extract_entitlement, answer_question, handle_posts, create_incidents, get_war_room_url,
-                          mirror_investigation, send_notification)
+                          mirror_investigation, send_notification, INCIDENT_NOTIFICATION_CHANNEL)
 import pytest
 import demistomock as demisto
 from unittest.mock import patch
@@ -371,6 +371,29 @@ def test_send_notification_command_with_not_permitted_notif_type(http_client, mo
                                )
 
     assert result == 'Message type is not in permitted options. Received: not permitted'
+
+
+def test_send_notification_command_with_generic_notif_channel_name(http_client, mocker):
+    """
+    Given -
+        client
+    When -
+        send message to channel
+    Then -
+        Validate that
+    """
+    import MattermostV2
+    MattermostV2.PERMITTED_NOTIFICATION_TYPES = ['incidentOpened']
+    mocker.patch.object(http_client, "send_notification_request", return_value={'id': 'message_id'})
+    mocker.patch.object(MattermostV2, "get_channel_id_from_context", return_value='channel_id')
+    result = send_notification(http_client,
+                               user_id='user1',
+                               message='Hello',
+                               channel=INCIDENT_NOTIFICATION_CHANNEL,
+                               messageType='incidentOpened'
+                               )
+
+    assert result.readable_output == 'Message sent to MatterMost successfully. Message ID is: message_id'
 
 
 def test_send_notification_command(http_client, mocker):
