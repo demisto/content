@@ -7868,7 +7868,7 @@ def test_fetch_incidents_correlation(mocker: MockerFixture):
     assert entries[0]["name"] == "Correlation 1"
     assert "CORRELATION" in entries[0]["rawJSON"]
     assert mock_get_query_entries.call_args_list[0].args == (
-        "Correlation", "query and (match_time geq '2024/04/08 07:22:54')", 10, 1
+        "Correlation", "query and (match_time geq '2024/04/08 07:22:54')", 10, 1, 0
     )  # asserting that "match_time" is used instead of "time_generated".
     assert last_fetch_dict == LastFetchTimes(Correlation="2024-04-09 07:22:54")  # the max date
     assert last_id_dict == LastIDs(Correlation=4)
@@ -7886,12 +7886,12 @@ def test_fetch_incidents_correlation(mocker: MockerFixture):
 
 def test_fetch_incidents_offset(mocker: MockerFixture):
     '''
-    Given:
-        -
-    When:
-        -
-    Then:
-        -
+    Given: Panorama incidents.
+
+    When: Using fetch-incidents command using offset to get the next incidents.
+
+    Then: Assert the correct amount of incidents were fetched and the correct offset value was stored.
+
     '''
     from Panorama import fetch_incidents, LastIDs, LastFetchTimes, LastRun, MaxFetch, QueryMap, Offset
     corr_logs = load_json('test_data/corr_logs_time_dif.json')
