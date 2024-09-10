@@ -14,6 +14,7 @@ from urllib3 import disable_warnings
 import zipfile
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
+
 class searchInElastic:
     """Used in order to search indicators by the paging or serachAfter param
     :type page: ``int``
@@ -120,7 +121,7 @@ class searchInElastic:
         """
         reached_limit = self.limit is not None and self.limit <= self._total_iocs_fetched
         if reached_limit:
-            demisto.debug("IndicatorsSearcher has reached its limit: {}".format(self.limit))
+            demisto.debug(f"IndicatorsSearcher has reached its limit: {self.limit}")
             # update limit to match _total_iocs_fetched value
             if self._total_iocs_fetched > self.limit:
                 self.limit = self._total_iocs_fetched
@@ -167,10 +168,10 @@ class searchInElastic:
         )
         if is_demisto_version_ge('6.6.0'):
             search_args['sort'] = self._sort
-        demisto.debug('IndicatorsSearcher: page {}, search_args: {}'.format(self._page, search_args))
+        demisto.debug(f'IndicatorsSearcher: page {self._page}, search_args: {search_args}')
         res = demisto.searchIndicators(**search_args)
         self._total = res.get('total')
-        demisto.debug('IndicatorsSearcher: page {}, result size: {}'.format(self._page, self._total))
+        demisto.debug(f'IndicatorsSearcher: page {self._page}, result size: {self._total}')
         # when total is None, there is a problem with the server for returning indicators, hence need to restart the container,
         # see XSUP-26699
         if self._total is None:
@@ -182,6 +183,7 @@ class searchInElastic:
             self._page += 1  # advance pages
         self._search_after_param = res.get(self.SEARCH_AFTER_TITLE)
         return res
+
 
 disable_warnings()
 DEMISTO_TIME_FORMAT: str = '%Y-%m-%dT%H:%M:%SZ'
@@ -382,11 +384,11 @@ def get_iocs_generator(size=200, query=None, is_first_stage_sync=False) -> Itera
         search_after_array = None
         search_after = get_integration_context().get('search_after', None)
         for batch in searchInElastic(size=size,
-                                        query=full_query,
-                                        search_after=search_after,
-                                        sort=[{"field": "modified", "asc": True},
-                                              {"field": "id", "asc": True}],
-                                        filter_fields=filter_fields):
+                                     query=full_query,
+                                     search_after=search_after,
+                                     sort=[{"field": "modified", "asc": True},
+                                           {"field": "id", "asc": True}],
+                                     filter_fields=filter_fields):
             search_after_array = batch.get('searchAfter', [])
             for ioc in batch.get('iocs', []):
                 # demisto.debug(f"{ioc.get('indicator_type')=}")
