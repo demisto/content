@@ -741,15 +741,14 @@ def fetch_incidents(kafka: KafkaCommunicator, demisto_params: dict) -> None:
             demisto.debug("Beginning to poll messages from kafka")
 
             fetch_size = 100
-            iterations = (max_messages + fetch_size - 1) // fetch_size
+            total_iterations = (max_messages + fetch_size - 1) // fetch_size
             fetched_messages = []
-            demisto.debug(f"KAFKA DEBUG: consume message start with iterations: {iterations}")
-            for i in range(iterations):
-                start_index = i * fetch_size
-                end_index = min((i + 1) * fetch_size, max_messages)
-                fetch_size = end_index - start_index
-                demisto.debug(f"KAFKA DEBUG: consume message start for {fetch_size} messages anf for {i}")
-                polled_msg = kafka_consumer.consume(timeout = kafka.POLL_TIMEOUT, num_messages=fetch_size)
+            demisto.debug(f"KAFKA DEBUG: consume message start with iterations: {total_iterations}")
+            for iteration in range(total_iterations):
+                last_message_index = min((iteration + 1) * fetch_size, max_messages)
+                num_of_messages = last_message_index - (iteration * fetch_size)
+                demisto.debug(f"KAFKA DEBUG: consume message start for {num_of_messages}")
+                polled_msg = kafka_consumer.consume(timeout = kafka.POLL_TIMEOUT*num_of_messages, num_messages=num_of_messages)
                 fetched_messages.extend(polled_msg)
             demisto.debug(f"KAFKA DEBUG: consume message end, {len(fetched_messages)=}")
             if fetched_messages:
