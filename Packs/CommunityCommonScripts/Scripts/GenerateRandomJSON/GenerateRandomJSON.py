@@ -34,6 +34,18 @@ def serialize_value(value):
     return value
 
 
+def serialize_value(value):
+    if isinstance(value, (datetime, date)):
+        return value.isoformat()
+    elif isinstance(value, Decimal):
+        return float(value)
+    elif isinstance(value, (tuple, list)):
+        return [serialize_value(v) for v in value]
+    elif isinstance(value, dict):
+        return {k: serialize_value(v) for k, v in value.items()}
+    return value
+
+
 def getAllValidProviders(faker):
     random_providers = [provider for provider in dir(faker) if not provider.startswith("_")]
     valid_providers_list: list = []
@@ -52,7 +64,7 @@ def generate_fake_data(category: str, providers: List[str], num_entries: int, ra
     global categories
     fake = Faker()
     fake_data_list = []
-    providers_list = categories.get(f'{category}', [])
+    providers_list = categories.get(category, [])
 
     if not isinstance(providers_list, list):
         raise TypeError(f"Expected a list for category '{category}', but got {type(providers_list).__name__}")
@@ -70,13 +82,10 @@ def generate_fake_data(category: str, providers: List[str], num_entries: int, ra
         else:
             providers = random.sample(providers_list, k=min(10, len(providers_list)))
     else:
-        if not providers:
-            raise ValueError("When category is 'Other', a list of faker providers must be provided.")
         # Check that all providers entered are valid
-        else:
-            missing_providers = [provider for provider in providers if provider not in all_valid_providers]
-            if missing_providers:
-                raise ValueError(f"Providers {missing_providers} are not valid faker providers.")
+        missing_providers = [provider for provider in providers if provider not in all_valid_providers]
+        if missing_providers:
+            raise ValueError(f"Providers {missing_providers} are not valid faker providers.")
 
     for _ in range(num_entries):
         fake_data = {}
@@ -90,26 +99,31 @@ def generate_fake_data(category: str, providers: List[str], num_entries: int, ra
     return fake_data_list
 
 
-def main(args):
+def main():
     try:
+        args = demisto.args()
         num_entries = int(args.get('list_size', 1))
         providers = argToList(args.get('faker_providers'))
         category = args.get('category', 'Random')
         random_size = int(args.get('dict_size', 10))
 
+        if category == 'Other' and not providers:
+            raise ValueError("When category is 'Other', a list of faker providers must be provided.")
+
+
         fake_data_list = generate_fake_data(category, providers, num_entries, random_size)
-        entry = {'Type': entryTypes['note'],
-                 'Contents': fake_data_list,
-                 'ContentsFormat': formats['text'],
-                 'HumanReadable': tableToMarkdown(f"Random JSON of category `{category}`", fake_data_list, headers=list(fake_data_list[0].keys())),
-                 'ReadableContentsFormat': formats['markdown'],
-                 'EntryContext': {"RandomJSON": fake_data_list}
-                 }
-        return_results(entry)
+
+        return_results(CommandResults(
+            readable_output=tableToMarkdown(f"Random JSON of category `{category}`", fake_data_list,
+                                            headers=list(fake_data_list[0].keys())),
+                                            outputs_prefix=f'RandomJSON.{category}',
+                                            outputs=fake_data_list,
+                                            raw_response=fake_data_list
+                                            ))
 
     except Exception as ex:
         return_error(f"Failed to generate a Random JSON object.\nError: {ex}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
-    main(demisto.args())
+    main()
