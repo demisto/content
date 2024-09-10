@@ -1,3 +1,4 @@
+import pprint
 import argparse
 import os
 import subprocess
@@ -9,7 +10,12 @@ def compile_python_path(path: Path):
         if parent.name == "Packs":
             packs = parent
             content_path = packs.parent
-            python_path = [packs / "Base/Scripts/CommonServerPython", content_path / "Tests/demistomock", content_path, path]
+            python_path = [
+                packs / "Base/Scripts/CommonServerPython",
+                content_path / "Tests/demistomock",
+                content_path,
+                path,
+            ]
             api_modules = packs / "ApiModules" / "Scripts"
             if api_modules.exists():
                 python_path.extend(path.absolute() for path in api_modules.iterdir())
@@ -48,7 +54,12 @@ def run_monkeytype(path: Path):
     modules = subprocess.run(
         ["python", "-m", "monkeytype", "list-modules"], text=True, check=True, capture_output=True, cwd=path, env=env
     ).stdout.splitlines()
-    filtered_modules = set(modules).difference(("demistomock", "CommonServerPython"))
+    filtered_modules = set(modules).difference(
+        (
+            "demistomock",
+            # "CommonServerPython",
+        )
+    )
 
     runner_path.write_text("\n".join(f"import {module}\n{module}.main()" for module in filtered_modules))
     for module in filtered_modules:
@@ -57,17 +68,20 @@ def run_monkeytype(path: Path):
     runner_path.unlink()
 
 
-def apply_monkeytype(path: Path):
-    integration_or_script_path = path.parent
-    env = create_env_var_dict(integration_or_script_path)
-
-    for module in path.read_text().splitlines():
-        subprocess.run(
-            ["python", "-m", "monkeytype", "-v", "apply", module],
-            check=True,
-            cwd=integration_or_script_path,
-            env=env,
-        )
+# def apply_monkeytype(path: Path):
+#     integration_or_script_path = path.parent
+#     env = create_env_var_dict(integration_or_script_path)
+#     if (modules_path := path.with_name("modules.txt")).exists():
+#         for module in (modules_path).read_text().splitlines():
+#             result = subprocess.run(
+#                 ["run", "monkeytype", "-v", "apply", module],
+#                 env=env,
+#                 cwd=integration_or_script_path,
+#             )
+#             if result.returncode:
+#                 raise ValueError(f"{result}")
+#     else:
+#         print(f"modules doesn't exist under {path}")
 
 
 if __name__ == "__main__":
@@ -80,7 +94,7 @@ if __name__ == "__main__":
 
     if args.command == "run":
         run_monkeytype(path)
-    elif args.command == "apply":
-        apply_monkeytype(path)
+    # elif args.command == "apply":
+    #     apply_monkeytype(path)
     else:
         raise NotImplementedError("invalid command")

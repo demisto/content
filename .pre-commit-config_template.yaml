@@ -164,6 +164,21 @@ repos:
     - --files
     copy_files:
     - Tests/scripts/dev_envs/pytest/conftest.py
+  # - id: monkeytype-apply
+  #   name: monkeytype-apply
+  #   description: after having run `monkeytype-in-docker`, apply the changes from the sqlite file.
+  #   entry: python
+  #   language: python
+  #   files: Packs\/.*\.py$
+  #   exclude: test_data|Packs/Base/Scripts/CommonServerPython/CommonServerPython_test.py
+  #   args:
+  #     - Tests/scripts/script_runner.py
+  #     - python
+  #     - ../../../../Utils/monkeytype_content.py
+  #     - apply
+  #     - --files
+  #   additional_dependencies: 
+  #     - monkeytype
   - id: pytest-network-in-docker
     name: pytest-network-in-docker
     description: Run pytest with network enabled on the code in content packs
