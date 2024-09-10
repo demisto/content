@@ -1,0 +1,235 @@
+{
+    "flowId": "66cdf54558cbff3e3abdea54",
+    "allFinished": true,
+    "allFilesDownloadFinished": true,
+    "allAdditionalStepsDone": true,
+    "reportsAmount": 1,
+    "priority": "least",
+    "pollPause": 12,
+    "state": "finished",
+    "scanStartedDate": "08/27/2024, 15:48:22",
+    "fileSize": 1293537,
+    "fileReadProgressBytes": 1293537,
+    "reports": {
+        "59277fda-6263-4565-968d-907906fb591c": {
+            "finalVerdict": {
+                "verdict": "NO_THREAT",
+                "threatLevel": 0.1,
+                "confidence": 1
+            },
+            "allTags": [
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "b280719e9f2dd010260e6a023e0d69c64fbee8b6cbb8669c722a1da8142d3325",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "png",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "NO_THREAT",
+                            "threatLevel": 0.1,
+                            "confidence": 1
+                        }
+                    }
+                },
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "b280719e9f2dd010260e6a023e0d69c64fbee8b6cbb8669c722a1da8142d3325",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "data",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "NO_THREAT",
+                            "threatLevel": 0.1,
+                            "confidence": 1
+                        }
+                    }
+                }
+            ],
+            "overallState": "success_partial",
+            "taskReference": {
+                "name": "transform-file",
+                "additionalInfo": {
+                    "submitName": "gabi_bogre.png",
+                    "submitTime": 1724773703264,
+                    "digests": {
+                        "SHA-256": "b280719e9f2dd010260e6a023e0d69c64fbee8b6cbb8669c722a1da8142d3325"
+                    }
+                },
+                "ID": "00bc022e-630a-4f76-ae0b-bfbce8a14a35",
+                "state": "SUCCESS",
+                "resourceReference": {
+                    "type": "TRANSFORM_FILE",
+                    "name": "file",
+                    "ID": "d818e293-408a-447b-82c1-0e0bf66eca9c"
+                },
+                "opcount": 1,
+                "processTime": 2145
+            },
+            "subtaskReferences": [
+                {
+                    "name": "osint",
+                    "additionalInfo": "FILE_HASH_SHA256",
+                    "ID": "7c82d6dc-0d8f-4649-858b-b198e23aeb76",
+                    "state": "SUCCESS",
+                    "resourceReference": {
+                        "type": "OSINT",
+                        "name": "osint",
+                        "ID": "8acb6479-4f47-45be-9e45-f63023307cf5"
+                    },
+                    "opcount": 2,
+                    "processTime": 1021
+                },
+                {
+                    "name": "domain-resolve",
+                    "additionalInfo": 1,
+                    "ID": "c520429b-ea01-44a3-9469-a811376be020",
+                    "state": "SUCCESS",
+                    "resourceReference": {
+                        "type": "DOMAIN_RESOLVE",
+                        "name": "domain-resolve",
+                        "ID": "4822e50f-20d4-40f3-a258-02206e0dfc97"
+                    },
+                    "opcount": 0,
+                    "processTime": 851
+                },
+                {
+                    "name": "file-download",
+                    "additionalInfo": 1,
+                    "ID": "28eaca50-36a1-43a0-af49-80e328924a01",
+                    "state": "SUCCESS_PARTIAL",
+                    "resourceReference": {
+                        "type": "FILE_DOWNLOAD",
+                        "name": "file-download",
+                        "ID": "01555c96-e1e7-40b0-a72e-3e248629592a"
+                    },
+                    "opcount": 1,
+                    "processTime": 846
+                },
+                {
+                    "name": "osint-ex",
+                    "additionalInfo": "URL",
+                    "ID": "dd10b398-3899-4047-bdbf-d896755a3b67",
+                    "state": "SUCCESS",
+                    "resourceReference": {
+                        "type": "OSINT",
+                        "name": "osint",
+                        "ID": "06ab7527-f6fa-4b57-89b8-0d8c303a3814"
+                    },
+                    "opcount": 2,
+                    "processTime": 2019
+                },
+                {
+                    "name": "osint-ex",
+                    "additionalInfo": "DOMAIN",
+                    "ID": "c3290531-175c-467c-8a11-b093d07c552f",
+                    "state": "SUCCESS",
+                    "resourceReference": {
+                        "type": "OSINT",
+                        "name": "osint",
+                        "ID": "68bbb31a-56aa-497e-8f34-85b4fd7b14a7"
+                    },
+                    "opcount": 2,
+                    "processTime": 1011
+                },
+                {
+                    "name": "osint-fuzzyhash",
+                    "additionalInfo": "FILE_HASH_SHA256",
+                    "ID": "6b6fb4a8-d9fc-4d27-8e33-a5ebde473121",
+                    "state": "SUCCESS",
+                    "resourceReference": {
+                        "type": "OSINT",
+                        "name": "osint",
+                        "ID": "4644c792-abeb-4b43-be65-c339edbf6a07"
+                    },
+                    "opcount": 2,
+                    "processTime": 11
+                }
+            ],
+            "allSignalGroups": [
+                {
+                    "identifier": "I001",
+                    "recommendsFullScan": false,
+                    "description": "OSINT source detected benign resource(s)",
+                    "averageSignalStrength": 0.1,
+                    "peakSignalStrength": 0.1,
+                    "finalSignalStrength": 0.1,
+                    "verdict": {
+                        "verdict": "NO_THREAT",
+                        "threatLevel": 0.1,
+                        "confidence": 1
+                    },
+                    "allTags": [],
+                    "signals": [
+                        {
+                            "strength": 0.1,
+                            "isStrictlyBasedOnInputData": false,
+                            "signalReadable": "OSINT provider \"OPSWAT_REPUTATION\" detected resource \"b280719e9f2dd010260e6a023e0d69c64fbee8b6cbb8669c722a1da8142d3325\" as \"NO_THREAT\"",
+                            "additionalInfo": "b280719e9f2dd010260e6a023e0d69c64fbee8b6cbb8669c722a1da8142d3325",
+                            "originPath": "osint.results.verdict",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "b280719e9f2dd010260e6a023e0d69c64fbee8b6cbb8669c722a1da8142d3325",
+                            "impactsFinalVerdict": true
+                        }
+                    ]
+                },
+                {
+                    "identifier": "I001",
+                    "recommendsFullScan": false,
+                    "description": "OSINT source detected benign resource(s)",
+                    "averageSignalStrength": 0.1,
+                    "peakSignalStrength": 0.1,
+                    "finalSignalStrength": 0.1,
+                    "verdict": {
+                        "verdict": "NO_THREAT",
+                        "threatLevel": 0.1,
+                        "confidence": 1
+                    },
+                    "allTags": [],
+                    "signals": [
+                        {
+                            "strength": 0.1,
+                            "isStrictlyBasedOnInputData": false,
+                            "signalReadable": "OSINT provider \"OFFLINE_URL_REPUTATION\" detected resource \"asdf\" as \"NO_THREAT\"",
+                            "additionalInfo": "asdf",
+                            "originPath": "osint.results.verdict",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "b280719e9f2dd010260e6a023e0d69c64fbee8b6cbb8669c722a1da8142d3325",
+                            "impactsFinalVerdict": true
+                        }
+                    ]
+                }
+            ],
+            "file": {
+                "name": "gabi_bogre.png",
+                "hash": "b280719e9f2dd010260e6a023e0d69c64fbee8b6cbb8669c722a1da8142d3325",
+                "type": "other"
+            },
+            "filesDownloadFinished": true,
+            "additionalStepsRunning": [],
+            "additionalStepsDone": true,
+            "created_date": "08/27/2024, 15:48:23",
+            "defaultOptionsUsed": false,
+            "scanOptions": {
+                "scan_mode": "full",
+                "rapid_mode": null,
+                "osint": true,
+                "extended_osint": true,
+                "extracted_files_osint": true,
+                "visualization": true,
+                "files_download": true,
+                "resolve_domains": true,
+                "input_file_yara": true,
+                "extracted_files_yara": true,
+                "whois": true,
+                "ips_meta": true,
+                "images_ocr": true
+            },
+            "estimatedTime": "14",
+            "estimated_progress": 1.0
+        }
+    }
+}
