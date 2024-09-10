@@ -21,7 +21,7 @@ configuration:
   required: true
   type: 9
 - additionalinfo: Specify key algorithm used by TSIG Key Secret
-  defaultvalue: 'hmac-md5'
+  defaultvalue: hmac-md5
   display: Key Algorithm
   name: key_algorithm
   required: true
@@ -35,7 +35,7 @@ configuration:
   - hmac-sha384
   - hmac-sha512
 - additionalinfo: Sets the transport protocol (TCP or UDP). TCP is the recommended and a more robust option.
-  defaultvalue: 'tcp'
+  defaultvalue: tcp
   display: Protocol
   name: protocol
   required: true
@@ -57,7 +57,7 @@ script:
       predefined:
       - present
       - absent
-    - description: 'DNS record will be modified on this `zone`. When omitted DNS will be queried to attempt finding the correct zone. Starting with Ansible 2.7 this parameter is optional.'
+    - description: DNS record will be modified on this `zone`. When omitted DNS will be queried to attempt finding the correct zone. Starting with Ansible 2.7 this parameter is optional.
       name: zone
     - description: Sets the DNS record to modify. When zone is omitted this has to be absolute (ending with a dot).
       name: record
@@ -97,7 +97,7 @@ script:
     - contextPath: DNS.Nsupdate.dns_rc_str
       description: dnspython return code (string representation)
       type: string
-  dockerimage: demisto/ansible-runner:1.0.0.89756
+  dockerimage: demisto/ansible-runner:1.0.0.110653
   script: ''
   subtype: python3
   type: python
