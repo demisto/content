@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "End of support for openCTI version 5.x.x, Added support for openCTI version 6.x.x"
+}
