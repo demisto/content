@@ -618,6 +618,8 @@ def main():
     try:
         # parse inputs
         unranked = demisto.args().get("owners", [])
+        if isinstance(unranked, dict):
+            unranked = [unranked]
         asm_system_ids = demisto.args().get("asmsystemids", [])
 
         # deduplicate/normalize, score, and rank owners
@@ -625,8 +627,12 @@ def main():
         final_owners = justify(rank(score(owners=normalized, asm_system_ids=asm_system_ids)))
 
         # write output to context
-        demisto.executeCommand("setAlert", {"asmserviceowner": final_owners})
-        return_results(CommandResults(readable_output='Service owners ranked and written to asmserviceowner'))
+        
+        if final_owners:
+            demisto.executeCommand("setAlert", {"asmserviceowner": final_owners})
+            return_results(CommandResults(readable_output='Service owners ranked and written to asmserviceowner'))
+        else:
+            return_results(CommandResults(readable_output='No service owners found'))
 
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
