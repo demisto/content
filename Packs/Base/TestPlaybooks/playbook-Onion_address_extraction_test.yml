@@ -1,0 +1,457 @@
+id: Onion address extraction test
+version: -1
+name: Onion address extraction test
+description: Test onion adresses extraction.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 93766f32-97aa-4cef-8c13-536385b80f0b
+    type: start
+    task:
+      id: 93766f32-97aa-4cef-8c13-536385b80f0b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 7fd02fe3-0b92-4599-8680-c61474d97062
+    type: regular
+    task:
+      id: 7fd02fe3-0b92-4599-8680-c61474d97062
+      version: -1
+      name: 'Set Valid Onion Addresses '
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: valid_addresses
+      value:
+        simple: '"abcdefghijklmnop.onion", "pqrstuvwx2yzabcdefghijklmnopqrstufffwx2yzabcde2jklmnopqw.onion"'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 93cf843f-d440-4112-8bce-1d4d338fc852
+    type: regular
+    task:
+      id: 93cf843f-d440-4112-8bce-1d4d338fc852
+      version: -1
+      name: DeleteContext
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 390088a3-c9bc-4109-8590-ed4c8e4a331c
+    type: regular
+    task:
+      id: 390088a3-c9bc-4109-8590-ed4c8e4a331c
+      version: -1
+      name: Print Valid Addresses
+      description: commands.local.cmd.extract.indicators
+      script: Builtin|||extractIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "4"
+      - "6"
+    scriptarguments:
+      text:
+        simple: ${valid_addresses}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 9d4bfdfc-c189-42dc-8875-8989efe5567d
+    type: condition
+    task:
+      id: 9d4bfdfc-c189-42dc-8875-8989efe5567d
+      version: -1
+      name: Check extraction - 16 chars address
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ExtractedIndicators.Onion_Address
+            iscontext: true
+          right:
+            value:
+              simple: abcdefghijklmnop.onion
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 2da4241c-a613-498a-8972-bc49e66bc5e0
+    type: title
+    task:
+      id: 2da4241c-a613-498a-8972-bc49e66bc5e0
+      version: -1
+      name: Check Valid Onion Adressess
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 2f05ac5d-3c12-432d-8b71-4b055ed7e660
+    type: condition
+    task:
+      id: 2f05ac5d-3c12-432d-8b71-4b055ed7e660
+      version: -1
+      name: Check extraction - 56 chars address
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ExtractedIndicators.Onion_Address
+            iscontext: true
+          right:
+            value:
+              simple: pqrstuvwx2yzabcdefghijklmnopqrstufffwx2yzabcde2jklmnopqw.onion
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: c4f42710-6f38-490a-8504-34fb5acdf33e
+    type: title
+    task:
+      id: c4f42710-6f38-490a-8504-34fb5acdf33e
+      version: -1
+      name: Check Non Extraction of invalid Addresses
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: c23b46f0-7f14-4101-8f0f-0361ad90c2aa
+    type: regular
+    task:
+      id: c23b46f0-7f14-4101-8f0f-0361ad90c2aa
+      version: -1
+      name: 'Set Invalid Onion Addresses '
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: invalid_addresses
+      value:
+        simple: '"abcdefghijkmnop.onion", "pqrstuvwx2yzabcdeghijklmnopqrstufffwx2yzabcde2jklmnopqw.onion"'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 0d20e8b1-afb6-4a1a-81f7-9e25e000e267
+    type: title
+    task:
+      id: 0d20e8b1-afb6-4a1a-81f7-9e25e000e267
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 4355663b-cd5b-45b9-8b99-6e8da24e67b2
+    type: regular
+    task:
+      id: 4355663b-cd5b-45b9-8b99-6e8da24e67b2
+      version: -1
+      name: DeleteContext
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1185
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 354b7c68-4cc4-4722-8d91-a55ebbc63072
+    type: condition
+    task:
+      id: 354b7c68-4cc4-4722-8d91-a55ebbc63072
+      version: -1
+      name: Check that no invalid indicators were extracted
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              simple: ExtractedIndicators
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1535
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1725,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.10.0
