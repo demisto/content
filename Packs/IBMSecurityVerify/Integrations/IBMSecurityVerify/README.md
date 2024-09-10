@@ -1,5 +1,6 @@
 IBM Security Verify provides a secure and scalable solution for collecting and managing security events from IBM Security Verify, offering advanced threat detection and response capabilities for protecting identities, applications, and data.
 
+
 ## Set up the Third Party System
 To obtain the **Client ID** and **Client Secret**, follow these steps:
 
