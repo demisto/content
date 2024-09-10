@@ -144,11 +144,7 @@ def pass_sources_list_filter(incident, sources_list):
     if len(sources_list) == 0:
         return True
 
-    for source in sources_list:
-        if source in incident.get("event_sources"):
-            return True
-
-    return False
+    return any(source in incident.get('event_sources') for source in sources_list)
 
 
 def pass_abuse_disposition_filter(incident, abuse_disposition_values):
@@ -165,9 +161,8 @@ def pass_abuse_disposition_filter(incident, abuse_disposition_values):
         return True
 
     for incident_field in incident.get('incident_field_values', []):
-        if incident_field['name'] == 'Abuse Disposition':
-            if incident_field['value'] in abuse_disposition_values:
-                return True
+        if incident_field['name'] == 'Abuse Disposition' and incident_field['value'] in abuse_disposition_values:
+            return True
 
     return False
 
@@ -250,7 +245,7 @@ def get_incidents_per_state(client, params):
     return incidents_list_limit
 
 
-def fetch_events_command(client, first_fetch, last_run, fetch_limit, fetch_delta, incidents_states):
+def fetch_events_command(client, first_fetch, last_run, fetch_limit, incidents_states):
     """
         Fetches incidents from the ProofPoint API.
     """
@@ -269,7 +264,6 @@ def fetch_events_command(client, first_fetch, last_run, fetch_limit, fetch_delta
         request_params = {
             'created_after': last_fetch[state],
             'last_fetched_id': last_fetched_id[state],
-            'fetch_delta': fetch_delta,
             'state': state,
             'fetch_limit': fetch_limit
         }
@@ -363,10 +357,9 @@ def main():  # pragma: no cover
     first_fetch, _ = parse_date_range(params.get('first_fetch', '3 days') or '3 days',
                                       date_format=TIME_FORMAT)
     fetch_limit = params.get('fetch_limit', '100')
-    fetch_delta = params.get('fetch_delta', '6 hours')
     incidents_states = argToList(params.get('states', ['new', 'open', 'assigned', 'closed', 'ignored']))
 
-    demisto.debug('Command being called is {}'.format(command))
+    demisto.debug(f'Command being called is {command}')
 
     try:
         headers = {
@@ -402,7 +395,6 @@ def main():  # pragma: no cover
                 first_fetch,
                 last_run,
                 fetch_limit,
-                fetch_delta,
                 incidents_states,
             )
 
