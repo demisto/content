@@ -2,7 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 """Implementation file for FeedCyCognito."""
 
-from typing import Any, List, Tuple
+from typing import Any
 import urllib3
 import pycountry
 
@@ -47,7 +47,7 @@ class CyCognitoFeedClient(BaseClient):
     """Client class to interact with the service API."""
 
     def get_indicators(self, asset_type: str, count: int = None, search: str = None, offset: int = None,
-                       sort_param: Tuple = None, filters: List[Dict[str, Union[str, List]]] = None) -> Any:
+                       sort_param: tuple = None, filters: list[Dict[str, Union[str, list]]] = None) -> Any:
         """Return the list of assets.
 
         :param asset_type: type of asset
@@ -85,7 +85,7 @@ def trim_spaces_from_args(args):
     return args
 
 
-def convert_countries_to_alpha_3_codes(countries: List[str]):
+def convert_countries_to_alpha_3_codes(countries: list[str]):
     """Convert countries into alpha-3 codes.
 
     :type countries: List[str]
@@ -100,7 +100,7 @@ def convert_countries_to_alpha_3_codes(countries: List[str]):
     converted_country_codes = []
     for country in filter(None, countries):
         try:
-            converted_country_codes.append(pycountry.countries.search_fuzzy(country)[0].alpha_3)
+            converted_country_codes.append(pycountry.countries.search_fuzzy(country)[0].alpha_3)  # type: ignore[attr-defined]
         except LookupError as err:
             demisto.error(f"[+] FeedCyCognito: Error while parsing country name: {country}")
             raise ValueError(ERRORS['INVALID_COUNTRY_ERROR'].format(country)) from err
@@ -108,7 +108,7 @@ def convert_countries_to_alpha_3_codes(countries: List[str]):
     return converted_country_codes
 
 
-def convert_alpha_3_codes_to_country_names(locations: List[str]):
+def convert_alpha_3_codes_to_country_names(locations: list[str]):
     """Convert alpha-3 code location to country name.
 
     :type locations: List[str]
@@ -120,7 +120,7 @@ def convert_alpha_3_codes_to_country_names(locations: List[str]):
     converted_locations = []
     for location in filter(None, locations):
         try:
-            converted_locations.append(pycountry.countries.search_fuzzy(location)[0].name)
+            converted_locations.append(pycountry.countries.search_fuzzy(location)[0].name)  # type: ignore[attr-defined]
         except LookupError as err:
             demisto.error(f"[+] FeedCyCognito: Error while parsing country code: {location}")
             raise ValueError(ERRORS['INVALID_COUNTRY_ERROR'].format(location)) from err
@@ -129,8 +129,8 @@ def convert_alpha_3_codes_to_country_names(locations: List[str]):
 
 
 def validate_get_indicators_arguments(asset_type: str = None, count: Optional[int] = None,
-                                      sort_order: str = None, hosting_type: List[str] = None,
-                                      security_grade: List[str] = None, status: List[str] = None) -> None:
+                                      sort_order: str = None, hosting_type: list[str] = None,
+                                      security_grade: list[str] = None, status: list[str] = None) -> None:
     """Validate parameters for get indicators command.
 
     :param asset_type: type of the asset
@@ -158,18 +158,18 @@ def validate_get_indicators_arguments(asset_type: str = None, count: Optional[in
         raise ValueError(ERRORS['INVALID_MULTI_SELECT_PARAM'].format('hosting_type', AVAILABLE_HOSTING_TYPES))
 
     if not set(security_grade).issubset(AVAILABLE_SECURITY_GRADE):  # type: ignore
-        raise ValueError(ERRORS['INVALID_MULTI_SELECT_PARAM'].format('security_grade', list(
-            map(lambda x: x.upper(), AVAILABLE_SECURITY_GRADE))))
+        raise ValueError(ERRORS['INVALID_MULTI_SELECT_PARAM'].format(
+            'security_grade', [x.upper() for x in AVAILABLE_SECURITY_GRADE]))
 
     if not set(status).issubset(AVAILABLE_STATUS_TYPES):  # type: ignore
         raise ValueError(ERRORS['INVALID_MULTI_SELECT_PARAM'].format('status', AVAILABLE_STATUS_TYPES))
 
 
-def prepare_body_filters_for_get_indicators(asset_type: str = None, organizations: List[str] = None,
-                                            hosting_type: List[str] = None, locations: List[str] = None,
-                                            tags: List[str] = None, first_seen: str = None,
-                                            last_seen: str = None, security_grade: List[str] = None,
-                                            status: List[str] = None, only_alive: bool = False) -> List[Dict]:
+def prepare_body_filters_for_get_indicators(asset_type: str = None, organizations: list[str] = None,
+                                            hosting_type: list[str] = None, locations: list[str] = None,
+                                            tags: list[str] = None, first_seen: str = None,
+                                            last_seen: str = None, security_grade: list[str] = None,
+                                            status: list[str] = None, only_alive: bool = False) -> list[Dict]:
     """Prepare body filters for get indicator command.
 
     :param asset_type: the type of the asset
@@ -261,8 +261,8 @@ def prepare_hr_for_get_indicators(asset_type: str, response: Any) -> str:
     return tableToMarkdown(title, hr_outputs, headers=headers, removeNull=True)
 
 
-def build_iterators(response: List[Dict[str, Any]], feed_tags: List[str], tlp_color: str, default_mapping: bool) -> \
-        List[Dict[str, Any]]:
+def build_iterators(response: list[Dict[str, Any]], feed_tags: list[str], tlp_color: str, default_mapping: bool) -> \
+        list[Dict[str, Any]]:
     """
     Create indicators from response.
 
@@ -385,7 +385,7 @@ def get_indicators_command(client: CyCognitoFeedClient, args: Dict[str, Any]) ->
 
 
 def fetch_indicators_command(client: CyCognitoFeedClient, params: Dict[str, Any], last_run: Dict[str, Any],
-                             is_test: bool = False) -> Tuple[Dict[str, Any], List[Dict[str, Any]]]:
+                             is_test: bool = False) -> tuple[Dict[str, Any], list[Dict[str, Any]]]:
     """Fetch the indicators.
 
     :param client: client object to be used
@@ -398,7 +398,7 @@ def fetch_indicators_command(client: CyCognitoFeedClient, params: Dict[str, Any]
                                             arg_name='First Fetch Time').strftime(DATE_FORMAT)  # type: ignore
     max_fetch = arg_to_number(params.get('max_fetch', DEFAULT_MAX_FETCH), arg_name="Max Fetch")
     organizations = argToList(params.get('organizations'))
-    security_grade = list(map(lambda x: x.split(':')[0].lower(), params.get('security_grade', []))) if params.get(
+    security_grade = [x.split(':')[0].lower() for x in params.get('security_grade', [])] if params.get(
         'security_grade') else []
     hosting_type = params.get('hosting_type', [])
     locations = convert_countries_to_alpha_3_codes(argToList(params.get('locations')))
