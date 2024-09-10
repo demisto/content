@@ -1555,7 +1555,13 @@ tasks:
     taskid: 46805d76-345f-4694-8330-53f721d6b03d
     timertriggers: []
     type: title
-    view: "{\n  \"position\": {\n    \"x\": 750,\n    \"y\": 1010\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 1010
+        }
+      }
   "55":
     id: "55"
     taskid: aee707cb-1fab-477c-8540-b04e3f2edde8
@@ -1691,14 +1697,26 @@ tasks:
         simple: key,value,source
       val1:
         complex:
-          root: AWS.EC2.Instances.Tags
-          accessor: Key
+          root: Azure.Compute
+          accessor: Tags
+          transformers:
+          - operator: jmespath
+            args:
+              expression:
+                value:
+                  simple: keys(@)
       val2:
         complex:
-          root: AWS.EC2.Instances.Tags
-          accessor: Value
+          root: Azure.Compute
+          accessor: Tags
+          transformers:
+          - operator: jmespath
+            args:
+              expression:
+                value:
+                  simple: values(@)
       val3:
-        simple: AWS
+        simple: Azure Compute
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1735,7 +1753,7 @@ tasks:
       append:
         simple: "true"
       key:
-        simple: asm_enrichment_flag_aws
+        simple: asm_enrichment_flag_azure
       value:
         simple: "true"
     separatecontext: false
