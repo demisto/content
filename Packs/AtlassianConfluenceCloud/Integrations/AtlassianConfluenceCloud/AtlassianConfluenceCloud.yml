@@ -1952,89 +1952,90 @@ script:
         predefined:
           - "true"
           - "false"
+        defaultvalue: "false"
       - name: start_date
         description: Filters the results to the records on or after the start date. The start date must be specified as epoch time in milliseconds.
       - name: limit
         description: The maximum number of records to return per page. Note, this may be restricted by fixed system limits.
     name: confluence-cloud-get-events
     outputs:
-      - contextPath: ConfluenceClout.Event.author.type
+      - contextPath: ConfluenceCloud.Event.author.type
         description: The type of author who created this event
         type: String
-      - contextPath: ConfluenceClout.Event.author.displayName
+      - contextPath: ConfluenceCloud.Event.author.displayName
         description: The displayName of the author who created this event
         type: String
-      - contextPath: ConfluenceClout.Event.author.operations
+      - contextPath: ConfluenceCloud.Event.author.operations
         description: ''
-        type: Unknown
-      - contextPath: ConfluenceClout.Event.author.username
+        type:
+      - contextPath: ConfluenceCloud.Event.author.username
         description: Username of the author of this event.
         type: String
-      - contextPath: ConfluenceClout.Event.author.userKey
+      - contextPath: ConfluenceCloud.Event.author.userKey
         description: User key of the author of this event.
         type: String
-      - contextPath: ConfluenceClout.Event.author.accountId
-        description: Account ID of the author of thie event.
+      - contextPath: ConfluenceCloud.Event.author.accountId
+        description: Account ID of the author of this event.
         type: String
-      - contextPath: ConfluenceClout.Event.author.accountType
-        description: ''
+      - contextPath: ConfluenceCloud.Event.author.accountType
+        description: Type of account of the author of this event.
         type: String
-      - contextPath: ConfluenceClout.Event.author.externalCollaborator
-        description: ''
+      - contextPath: ConfluenceCloud.Event.author.externalCollaborator
+        description: Deprecated. Is the author of this event an external collaborator.
         type: Boolean
-      - contextPath: ConfluenceClout.Event.author.isExternalCollaborator
-        description: ''
+      - contextPath: ConfluenceCloud.Event.author.isExternalCollaborator
+        description: Deprecated. Is the author of this event an external collaborator.
         type: Boolean
-      - contextPath: ConfluenceClout.Event.author.publicName
-        description: ''
+      - contextPath: ConfluenceCloud.Event.author.publicName
+        description: The public name of the author of this event.
         type: String
-      - contextPath: ConfluenceClout.Event.remoteAddress
-        description: ''
+      - contextPath: ConfluenceCloud.Event.remoteAddress
+        description: The remote address from which the event was performed.
         type: String
-      - contextPath: ConfluenceClout.Event.creationDate
+      - contextPath: ConfluenceCloud.Event.creationDate
         description: The creation date-time of the audit record, as a timestamp.
         type: Number
-      - contextPath: ConfluenceClout.Event.summary
+      - contextPath: ConfluenceCloud.Event.summary
         description: Summary of the audit.
         type: String
-      - contextPath: ConfluenceClout.Event.description
+      - contextPath: ConfluenceCloud.Event.description
         description: Description of the audit.
         type: String
-      - contextPath: ConfluenceClout.Event.category
+      - contextPath: ConfluenceCloud.Event.category
         description: Category of the event.
         type: String
-      - contextPath: ConfluenceClout.Event.sysAdmin
-        description: ''
+      - contextPath: ConfluenceCloud.Event.sysAdmin
+        description: Was the event created by a system administrator.
         type: Boolean
-      - contextPath: ConfluenceClout.Event.superAdmin
-        description: ''
+      - contextPath: ConfluenceCloud.Event.superAdmin
+        description: Was the event created by a super administrator.
         type: Boolean
-      - contextPath: ConfluenceClout.Event.affectedObject.name
-        description: ''
+      - contextPath: ConfluenceCloud.Event.affectedObject.name
+        description: Name of the object affected by the event.
         type: String
-      - contextPath: ConfluenceClout.Event.affectedObject.objectType
-        description: ''
+      - contextPath: ConfluenceCloud.Event.affectedObject.objectType
+        description: Type of the object affected by the event.
         type: String
-      - contextPath: ConfluenceClout.Event.changedValues.name
-        description: ''
+      - contextPath: ConfluenceCloud.Event.changedValues.name
+        description: Name of the changed value.
         type: String
-      - contextPath: ConfluenceClout.Event.changedValues.oldValue
-        description: ''
+      - contextPath: ConfluenceCloud.Event.changedValues.oldValue
+        description: The old value before the change the event describes.
         type: String
-      - contextPath: ConfluenceClout.Event.changedValues.hiddenOldValue
-        description: ''
+      - contextPath: ConfluenceCloud.Event.changedValues.hiddenOldValue
+        description: The old hidden value before the change the event describes.
         type: String
-      - contextPath: ConfluenceClout.Event.changedValues.newValue
-        description: ''
+      - contextPath: ConfluenceCloud.Event.changedValues.newValue
+        description: The new value after the change the event describes.
         type: String
-      - contextPath: ConfluenceClout.Event.changedValues.hiddenNewValue
-        description: ''
+      - contextPath: ConfluenceCloud.Event.changedValues.hiddenNewValue
+        description: The new hidden value after the change the event describes.
         type: String
-      - contextPath: ConfluenceClout.Event.associatedObjects.name
-        description: ''
+      - contextPath: ConfluenceCloud.Event.associatedObjects.name
+        description: Name of the associated object.
         type: String
-      - contextPath: ConfluenceClout.Event.associatedObjects.objectType
-        description: ''
+      - contextPath: ConfluenceCloud.Event.associatedObjects.objectType
+        description: Type of the associated object.
         type: String
   dockerimage: demisto/python3:3.10.14.91134
   isfetchevents: true
