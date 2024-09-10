@@ -572,12 +572,7 @@ def set_sync_time(timestamp: datetime) -> None:
         "time": timestamp.strftime(DEMISTO_TIME_FORMAT),
     }
     demisto.info(f"setting sync time to integration context: {value}")
-    if integration_context := get_integration_context():
-        integration_context['ts'] = int(timestamp.timestamp()) * 1000
-        integration_context['time'] = timestamp.strftime(DEMISTO_TIME_FORMAT)
-        set_integration_context(integration_context)
-    else:
-        set_integration_context(value)
+    set_integration_context(get_integration_context() | value)  # latter value matters when updating a dict
 
 
 def update_integration_context(update_sync_time_with_datetime: datetime | None = None,
