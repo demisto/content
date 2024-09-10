@@ -1039,6 +1039,14 @@ def test_parse_mail_parts_use_legacy_name(monkeypatch, part, expected_result):
     ]
 )
 def test_send_mail_sender_display_name(mocker, display_name):
+    """
+    Given:
+        - sender_display_name.
+    When:
+        - The send_mail function is called and the email message is constructed.
+    Then:
+        - Ensure that the encoded message contains the correct 'From' field with the sender_display_name.
+    """
     import Gmail
     from Gmail import send_mail
     mocked_get_service = mocker.patch.object(Gmail, 'get_service')
