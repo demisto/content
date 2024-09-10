@@ -223,8 +223,13 @@ def test_module(client: Client):
         raise DemistoException("The *Test* button is not available for the `self-deployed - Authorization Code Flow`.\n "
                                "Use the !ms-management-activity-list-subscriptions command instead "
                                "once all relevant parameters have been entered.")
+
+    access_token, token_data = client.get_access_token_data()
+    client.access_token = access_token
+    client.tenant_id = token_data['tid']
     client.list_subscriptions_request()
     return 'ok'
+
 
 def get_start_or_stop_subscription_human_readable(content_type, start_or_stop):
     if start_or_stop == 'start':
