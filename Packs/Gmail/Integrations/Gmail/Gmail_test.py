@@ -618,7 +618,7 @@ def test_no_date_mail():
     from email.utils import format_datetime
 
     from Gmail import get_email_context
-    expected_date = datetime.datetime(2020, 12, 21, 20, 11, 57, tzinfo=datetime.datetime.timezone.utc)  # noqa: UP017
+    expected_date = datetime.datetime(2020, 12, 21, 20, 11, 57, tzinfo=datetime.timezone.utc)  # noqa: UP017
     context_gmail, _, _, occurred, is_valid = get_email_context(input_data.email_without_date, "some_mail")
     # check that the x-received date was usd
     assert occurred.timestamp() == expected_date.timestamp()
