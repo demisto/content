@@ -1074,6 +1074,10 @@ tasks:
         simple: Accept:application/taxii+json
       method:
         simple: GET
+      password:
+        simple: admin
+      username:
+        simple: admin
       url:
         complex:
           root: TAXIIServer.ServerInfo.api_roots
@@ -1179,6 +1183,10 @@ tasks:
         simple: Accept:application/taxii+json
       method:
         simple: GET
+      password:
+        simple: admin
+      username:
+        simple: admin
       url:
         complex:
           root: TAXIIServer.ServerInfo.api_roots
@@ -1360,6 +1368,10 @@ tasks:
         simple: Accept:application/taxii+json
       method:
         simple: GET
+      password:
+        simple: admin
+      username:
+        simple: admin
       url:
         complex:
           root: TAXIIServer.ServerInfo.api_roots
@@ -1465,6 +1477,10 @@ tasks:
         simple: Accept:application/taxii+json
       method:
         simple: GET
+      password:
+        simple: admin
+      username:
+        simple: admin
       url:
         complex:
           root: TAXIIServer.ServerInfo.api_roots
@@ -1608,6 +1624,10 @@ tasks:
         simple: Accept:application/taxii+json
       method:
         simple: GET
+      password:
+        simple: admin
+      username:
+        simple: admin
       url:
         complex:
           root: TAXIIServer.ServerInfo.api_roots
@@ -1751,6 +1771,10 @@ tasks:
         simple: Accept:application/taxii+json
       method:
         simple: GET
+      password:
+        simple: admin
+      username:
+        simple: admin
       url:
         complex:
           root: TAXIIServer.ServerInfo.api_roots
@@ -1856,6 +1880,10 @@ tasks:
         simple: Accept:application/taxii+json
       method:
         simple: GET
+      password:
+        simple: admin
+      username:
+        simple: admin
       url:
         complex:
           root: TAXIIServer.ServerInfo.api_roots
@@ -1999,6 +2027,10 @@ tasks:
         simple: Accept:application/taxii+json
       method:
         simple: GET
+      password:
+        simple: admin
+      username:
+        simple: admin
       url:
         complex:
           root: TAXIIServer.ServerInfo.api_roots
@@ -2142,6 +2174,10 @@ tasks:
         simple: Accept:application/taxii+json
       method:
         simple: GET
+      password:
+        simple: admin
+      username:
+        simple: admin
       url:
         complex:
           root: TAXIIServer.ServerInfo.api_roots
