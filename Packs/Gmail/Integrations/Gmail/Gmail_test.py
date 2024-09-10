@@ -1033,28 +1033,28 @@ def test_parse_mail_parts_use_legacy_name(monkeypatch, part, expected_result):
     assert result == expected_result
 
 
-# @pytest.mark.parametrize(
-#     "display_name",
-#     [
-#         ("Sender Name"),
-#         (None)
-#     ]
-# )
-# def test_send_mail_sender_display_name(mocker, display_name):
-#     import Gmail
-#     from Gmail import send_mail
-#     mock_service = MagicMock()
-#     mocker.patch.object(Gmail, 'get_service', return_value=mock_service)
-#     mock_service.users().messages().send().execute.return_value = {'id': 'mock_id'}
+@pytest.mark.parametrize(
+    "display_name",
+    [
+        ("Sender Name"),
+        (None)
+    ]
+)
+def test_send_mail_sender_display_name(mocker, display_name):
+    import Gmail
+    from Gmail import send_mail
+    mocked_get_service = mocker.patch.object(Gmail, 'get_service')
+    mocked_get_service().users().messages().list().execute.return_value = {'id': 'mock_id'}
+    mock_b64encode = mocker.patch("base64.urlsafe_b64encode")
+    send_mail([], "sender@example.com", "", "", [], [], [], None, "", [],
+              [], [], [], None, [], [], None, display_name, None, None, False)
+    
+    args, _ = mock_b64encode.call_args
+    encoded_bytes = args[0]  # This is the bytes before encoding
+    message_str = encoded_bytes.decode('utf-8')
+    if display_name:
+        expected_from_header = f"{display_name} <sender@example.com>"
+    else:
+        expected_from_header = "sender@example.com"
 
-#     send_mail([], "sender@example.com", "", "", [], [], [], None, "", [],
-#               [], [], [], None, [], [], None, display_name, None, None, False)
-
-#     message = mock_service.users().messages().send.call_args[1]['body']['raw']
-#     decoded_message = base64.urlsafe_b64decode(message.encode()).decode()
-#     if display_name:
-#         expected_from_header = f"{display_name} <sender@example.com>"
-#     else:
-#         expected_from_header = "sender@example.com"
-
-#     assert f"from: {expected_from_header}" in decoded_message
+    assert f"from: {expected_from_header}" in message_str
