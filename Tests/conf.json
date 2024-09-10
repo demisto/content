@@ -1723,6 +1723,10 @@
             "fromversion": "5.5.0"
         },
         {
+            "playbookID": "Onion address extraction test",
+            "fromversion": "6.10.0"
+        },
+        {
             "playbookID": "Domain extraction test",
             "fromversion": "5.5.0"
         },
