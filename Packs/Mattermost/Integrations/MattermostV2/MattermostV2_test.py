@@ -351,6 +351,28 @@ def test_mirror_investigation_create_new_channel(http_client, mocker):
     assert 'Investigation mirrored successfully' in result.readable_output
 
 
+def test_send_notification_command_with_not_permitted_notif_type(http_client, mocker):
+    """
+    Given -
+        client
+    When -
+        send message to channel
+    Then -
+        Validate that
+    """
+    import MattermostV2
+    MattermostV2.PERMITTED_NOTIFICATION_TYPES = []
+    mocker.patch.object(http_client, "send_notification_request", return_value={'id': 'message_id'})
+    result = send_notification(http_client,
+                               user_id='user1',
+                               message='Hello',
+                               to='channel1',
+                               messageType='not permitted'
+                               )
+
+    assert result == 'Message type is not in permitted options. Received: not permitted'
+
+
 def test_send_notification_command(http_client, mocker):
     """
     Given -
@@ -368,7 +390,6 @@ def test_send_notification_command(http_client, mocker):
                                )
 
     assert result.readable_output == 'Message sent to MatterMost successfully. Message ID is: message_id'
-
 
 ######### async tests #########
 
