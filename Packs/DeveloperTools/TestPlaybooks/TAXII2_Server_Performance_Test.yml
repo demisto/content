@@ -1071,13 +1071,9 @@ tasks:
       - "30"
     scriptarguments:
       headers:
-        simple: Accept:application/taxii+json
+        simple: Accept:application/taxii+json,Authorization=Basic YWRtaW46YWRtaW4=
       method:
         simple: GET
-      password:
-        simple: admin
-      username:
-        simple: admin
       url:
         complex:
           root: TAXIIServer.ServerInfo.api_roots
@@ -1090,17 +1086,17 @@ tasks:
                   simple: collections/
           - operator: concat
             args:
-              prefix: { }
+              prefix: {}
               suffix:
                 value:
                   simple: TAXIIServer.Collection.id
                 iscontext: true
           - operator: concat
             args:
-              prefix: { }
+              prefix: {}
               suffix:
                 value:
-                    simple: /objects/?limit=10000&match[type]=url
+                  simple: /objects/?limit=10000&match[type]=url
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1180,13 +1176,9 @@ tasks:
       - "32"
     scriptarguments:
       headers:
-        simple: Accept:application/taxii+json
+        simple: Accept:application/taxii+json,Authorization=Basic YWRtaW46YWRtaW4=
       method:
         simple: GET
-      password:
-        simple: admin
-      username:
-        simple: admin
       url:
         complex:
           root: TAXIIServer.ServerInfo.api_roots
@@ -1365,13 +1357,9 @@ tasks:
       - "36"
     scriptarguments:
       headers:
-        simple: Accept:application/taxii+json
+        simple: Accept:application/taxii+json,Authorization=Basic YWRtaW46YWRtaW4=
       method:
         simple: GET
-      password:
-        simple: admin
-      username:
-        simple: admin
       url:
         complex:
           root: TAXIIServer.ServerInfo.api_roots
@@ -1474,13 +1462,9 @@ tasks:
       - "39"
     scriptarguments:
       headers:
-        simple: Accept:application/taxii+json
+        simple: Accept:application/taxii+json,Authorization=Basic YWRtaW46YWRtaW4=
       method:
         simple: GET
-      password:
-        simple: admin
-      username:
-        simple: admin
       url:
         complex:
           root: TAXIIServer.ServerInfo.api_roots
@@ -1621,13 +1605,9 @@ tasks:
       - "42"
     scriptarguments:
       headers:
-        simple: Accept:application/taxii+json
+        simple: Accept:application/taxii+json,Authorization=Basic YWRtaW46YWRtaW4=
       method:
         simple: GET
-      password:
-        simple: admin
-      username:
-        simple: admin
       url:
         complex:
           root: TAXIIServer.ServerInfo.api_roots
@@ -1768,13 +1748,9 @@ tasks:
       - "45"
     scriptarguments:
       headers:
-        simple: Accept:application/taxii+json
+        simple: Accept:application/taxii+json,Authorization=Basic YWRtaW46YWRtaW4=
       method:
         simple: GET
-      password:
-        simple: admin
-      username:
-        simple: admin
       url:
         complex:
           root: TAXIIServer.ServerInfo.api_roots
@@ -1877,13 +1853,10 @@ tasks:
       - "49"
     scriptarguments:
       headers:
-        simple: Accept:application/taxii+json
+        simple: Accept:application/taxii+json,Authorization=Basic YWRtaW46YWRtaW4=
       method:
         simple: GET
       password:
-        simple: admin
-      username:
-        simple: admin
       url:
         complex:
           root: TAXIIServer.ServerInfo.api_roots
@@ -2024,13 +1997,9 @@ tasks:
       - "52"
     scriptarguments:
       headers:
-        simple: Accept:application/taxii+json
+        simple: Accept:application/taxii+json,Authorization=Basic YWRtaW46YWRtaW4=
       method:
         simple: GET
-      password:
-        simple: admin
-      username:
-        simple: admin
       url:
         complex:
           root: TAXIIServer.ServerInfo.api_roots
@@ -2171,13 +2140,9 @@ tasks:
       - "55"
     scriptarguments:
       headers:
-        simple: Accept:application/taxii+json
+        simple: Accept:application/taxii+json,Authorization=Basic YWRtaW46YWRtaW4=
       method:
         simple: GET
-      password:
-        simple: admin
-      username:
-        simple: admin
       url:
         complex:
           root: TAXIIServer.ServerInfo.api_roots
