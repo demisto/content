@@ -5,7 +5,7 @@ args:
   required: true
 - description: Password for the file, if encrypted.
   name: userPassword
-- defaultValue: "20"
+- defaultValue: '20'
   description: Maximum number of images to extract from the PDF file.
   name: maxImages
 - auto: PREDEFINED
@@ -15,8 +15,7 @@ args:
   predefined:
   - 'true'
   - 'false'
-comment: |-
-  Load a PDF file's content and metadata into context. Supports extraction of hashes, urls, and emails when available.
+comment: Load a PDF file's content and metadata into context. Supports extraction of hashes, urls, and emails when available.
 commonfields:
   id: ReadPDFFileV2
   version: -1
@@ -122,14 +121,14 @@ outputs:
 - contextPath: Account.Email
   description: The email address of the account.
   type: String
-script: "-"
+script: '-'
 subtype: python3
 tags:
 - Utility
 - ingestion
-timeout: "0"
+timeout: '0'
 type: python
-dockerimage: demisto/readpdf:1.0.0.98214
+dockerimage: demisto/readpdf:1.0.0.110220
 runas: DBotRole
 tests:
 - Extract Indicators From File - Generic v2 - Test
