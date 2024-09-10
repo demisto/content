@@ -744,13 +744,13 @@ reference = "pypi-public"
 
 [[package]]
 name = "demisto-sdk"
-version = "1.31.7"
+version = "1.31.11"
 description = "\"A Python library for the Demisto SDK\""
 optional = false
 python-versions = ">=3.8,<3.12"
 files = [
-    {file = "demisto_sdk-1.31.7-py3-none-any.whl", hash = "sha256:c9c8e14eb61a7d3348674d0d314ce970476625d5c1f2dc843dc7de60fbd5a7d2"},
-    {file = "demisto_sdk-1.31.7.tar.gz", hash = "sha256:8e4969d1048049edc47437a46175a2f2d4663ca33e77c47e835b324ea1dc1058"},
+    {file = "demisto_sdk-1.31.11-py3-none-any.whl", hash = "sha256:8059498e6b4770a0ff505184316416dec4ed986f4f528ecd28c34df94fdbe4b0"},
+    {file = "demisto_sdk-1.31.11.tar.gz", hash = "sha256:0e7a6bebef5a19aa6bf9bfc2082bd809ccd08252e6878f33896d61bbd8f85970"},
 ]
 
 [package.dependencies]
@@ -786,11 +786,11 @@ more-itertools = ">=10.0.0,<11.0.0"
 mypy = ">=0.982,<0.983"
 neo4j = ">=5.14.0,<6.0.0"
 networkx = ">=2.7.1,<3.0.0"
-nltk = ">=3.7,<4.0"
+nltk = "3.8.1"
 ordered-set = ">=4.1.0,<5.0.0"
 orjson = ">=3.8.3,<4.0.0"
 packaging = ">=24.0,<25.0"
-paramiko = ">=2.11,<4.0"
+paramiko = ">=3.4.1,<4.0"
 Pebble = ">=4.6.3,<6.0.0"
 pre-commit = ">=3.5.0,<4.0.0"
 prettytable = ">=3.2.0,<4.0.0"
@@ -2340,26 +2340,24 @@ reference = "pypi-public"
 
 [[package]]
 name = "paramiko"
-version = "2.12.0"
+version = "3.4.1"
 description = "SSH2 protocol library"
 optional = false
-python-versions = "*"
+python-versions = ">=3.6"
 files = [
-    {file = "paramiko-2.12.0-py2.py3-none-any.whl", hash = "sha256:b2df1a6325f6996ef55a8789d0462f5b502ea83b3c990cbb5bbe57345c6812c4"},
-    {file = "paramiko-2.12.0.tar.gz", hash = "sha256:376885c05c5d6aa6e1f4608aac2a6b5b0548b1add40274477324605903d9cd49"},
+    {file = "paramiko-3.4.1-py3-none-any.whl", hash = "sha256:8e49fd2f82f84acf7ffd57c64311aa2b30e575370dc23bdb375b10262f7eac32"},
+    {file = "paramiko-3.4.1.tar.gz", hash = "sha256:8b15302870af7f6652f2e038975c1d2973f06046cb5d7d65355668b3ecbece0c"},
 ]
 
 [package.dependencies]
-bcrypt = ">=3.1.3"
-cryptography = ">=2.5"
-pynacl = ">=1.0.1"
-six = "*"
+bcrypt = ">=3.2"
+cryptography = ">=3.3"
+pynacl = ">=1.5"
 
 [package.extras]
-all = ["bcrypt (>=3.1.3)", "gssapi (>=1.4.1)", "invoke (>=1.3)", "pyasn1 (>=0.1.7)", "pynacl (>=1.0.1)", "pywin32 (>=2.1.8)"]
-ed25519 = ["bcrypt (>=3.1.3)", "pynacl (>=1.0.1)"]
+all = ["gssapi (>=1.4.1)", "invoke (>=2.0)", "pyasn1 (>=0.1.7)", "pywin32 (>=2.1.8)"]
 gssapi = ["gssapi (>=1.4.1)", "pyasn1 (>=0.1.7)", "pywin32 (>=2.1.8)"]
-invoke = ["invoke (>=1.3)"]
+invoke = ["invoke (>=2.0)"]
 
 [package.source]
 type = "legacy"
@@ -4599,4 +4597,4 @@ reference = "pypi-public"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8,<3.11"
-content-hash = "f289ddf337fdd1a64477fef4bc9650de6d6adaca63b85e8d04cdd36650879f4e"
+content-hash = "81489208d6e190254f16fc9cb3b5e458f72c218111bce18cf022847d0c7df378"
