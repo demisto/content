@@ -28,3 +28,8 @@ POSTPOSTPOST
 [file:CBFindIP.yml]
 ignore=BA124
 
+# GR103 is temporary, see CIAC-11705
+[file:layoutscontainer-carbonblackEDR_alerts.json]
+ignore=GR103
+[file:CBEvents.yml]
+ignore=GR103
