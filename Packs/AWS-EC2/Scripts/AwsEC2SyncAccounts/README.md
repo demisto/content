@@ -25,6 +25,7 @@ This script can be run on a schedule to keep an AWS - EC2 instance in sync with 
 | ec2_instance_name | The name of the AWS - EC2 instance integration to update. |
 | org_instance_name | The name of the AWS - Organizations instance to collect account from. If not provided, the primary instance will be used. |
 | exclude_accounts | A comma-separated list of accounts to exclude. |
+| max_accounts | The maximum number of accounts to retrieve. Default is 50. |
 
 ## Outputs
 
