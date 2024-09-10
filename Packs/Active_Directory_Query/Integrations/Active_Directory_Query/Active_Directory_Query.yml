@@ -11,20 +11,20 @@ description: The Active Directory Query integration enables you to access and ma
 configuration:
 - display: Server IP address (for example, 192.168.0.1)
   name: server_ip
-  defaultvalue: ""
+  defaultvalue: ''
   type: 0
   required: true
   section: Connect
 - display: Port. If not specified, the default port is 389, or 636 for LDAPS.
   name: port
-  defaultvalue: ""
+  defaultvalue: ''
   type: 0
   section: Connect
   advanced: true
   required: false
 - display: Username
   name: credentials
-  defaultvalue: ""
+  defaultvalue: ''
   type: 9
   required: true
   section: Connect
@@ -37,13 +37,13 @@ configuration:
   required: false
 - display: Base DN (for example "dc=company,dc=com")
   name: base_dn
-  defaultvalue: ""
+  defaultvalue: ''
   type: 0
   required: true
   section: Connect
 - display: Page size
   name: page_size
-  defaultvalue: "500"
+  defaultvalue: '500'
   type: 0
   required: true
   section: Collect
@@ -58,7 +58,7 @@ configuration:
   - TLS
   - Start TLS
   section: Connect
-- additionalinfo: 'The SSL\TLS version to use in SSL or Start TLS connections types. Default is None. It is recommended to select the TLS_CLIENT option, which auto-negotiate the highest protocol version that both the client and server support, and configure the context client-side connections.'
+- additionalinfo: The SSL\TLS version to use in SSL or Start TLS connections types. Default is None. It is recommended to select the TLS_CLIENT option, which auto-negotiate the highest protocol version that both the client and server support, and configure the context client-side connections.
   defaultvalue: None
   display: SSL Version
   name: ssl_version
@@ -95,7 +95,7 @@ configuration:
   section: Connect
 - display: Group CN for terminated employees
   name: group-cn
-  defaultvalue: ""
+  defaultvalue: ''
   type: 0
   section: Connect
   required: false
@@ -127,7 +127,7 @@ script:
       description: The username (samAccountName) of the user to modify.
     - name: password
       required: true
-      description: 'The initial password to set for the user. The user is requested to change the password after login.'
+      description: The initial password to set for the user. The user is requested to change the password after login.
     - name: user-dn
       required: true
       description: The user DN.
@@ -155,25 +155,25 @@ script:
       description: A CSV list of the object attributes to return. For example, "dn,memberOf". To return all object attributes, specify 'ALL'.
     - name: size-limit
       description: The maximum number of records to return.
-      defaultValue: "50"
+      defaultValue: '50'
     - name: time-limit
       description: The maximum time to pull records (in seconds).
     - name: context-output
       auto: PREDEFINED
       predefined:
-      - "yes"
-      - "no"
-      defaultValue: "yes"
+      - 'yes'
+      - 'no'
+      defaultValue: 'yes'
       description: Whether to output the search results to the context.
     - name: page-size
       description: The page size to query. The size-limit value will be ignored.
     - name: page-cookie
       description: An opaque string received in a paged search, used for requesting subsequent entries.
     outputs:
-    - contextPath: 'ActiveDirectory.Search.dn'
+    - contextPath: ActiveDirectory.Search.dn
       description: The distinguished names that match the query.
       type: string
-    - contextPath: 'ActiveDirectory.Search'
+    - contextPath: ActiveDirectory.Search
       description: The result of the search.
       type: unknown
     - contextPath: ActiveDirectory.SearchPageCookie
@@ -183,7 +183,7 @@ script:
   - name: ad-add-to-group
     arguments:
     - name: username
-      description: "The username of the user to add to the group. If this argument is not specified, the computer name argument must be specified."
+      description: The username of the user to add to the group. If this argument is not specified, the computer name argument must be specified.
     - name: computer-name
       description: The name of the computer to add to the group. If this argument is not specified, the username argument must be specified.
     - name: group-cn
@@ -195,12 +195,12 @@ script:
   - name: ad-remove-from-group
     arguments:
     - name: username
-      description: "The name of the user to remove from the group. If this argument is not specified, the computer name argument must be specified."
+      description: The name of the user to remove from the group. If this argument is not specified, the computer name argument must be specified.
     - name: computer-name
       description: The name of the computer to remove from the group. If this argument is not specified, the username argument must be specified.
     - name: group-cn
       required: true
-      description: "The name of the group to remove the user from."
+      description: The name of the group to remove the user from.
     - name: base-dn
       description: Root. For example, DC=domain,DC=com). By default, the Base DN configured for the instance is used.
     description: Removes an Active Directory user or computer from a group.
@@ -208,7 +208,7 @@ script:
     arguments:
     - name: username
       required: true
-      description: "The username of the account to update (sAMAccountName)."
+      description: The username of the account to update (sAMAccountName).
     - name: attribute-name
       required: true
       description: The name of the attribute to modify. For example, sn, displayName, mail, and so on.
@@ -228,9 +228,9 @@ script:
     arguments:
     - name: contact-dn
       required: true
-      description: "The contact DN."
+      description: The contact DN.
     - name: display-name
-      description: "The contact display name."
+      description: The contact display name.
     - name: description
       description: The short description of the contact.
     - name: email
@@ -246,19 +246,19 @@ script:
     arguments:
     - name: contact-dn
       required: true
-      description: "The contact DN."
+      description: The contact DN.
     - name: attribute-name
       required: true
-      description: "The attribute name to update."
+      description: The attribute name to update.
     - name: attribute-value
       required: true
-      description: "The attribute value to update."
+      description: The attribute value to update.
     description: Updates attributes of an existing Active Directory contact.
   - name: ad-disable-account
     arguments:
     - name: username
       required: true
-      description: "The username of the account to disable (sAMAccountName)."
+      description: The username of the account to disable (sAMAccountName).
     - name: base-dn
       description: Root (e.g., DC=domain,DC=com). By default, the Base DN configured for the instance is used.
     description: Disables an Active Directory user account.
@@ -266,7 +266,7 @@ script:
     arguments:
     - name: username
       required: true
-      description: "The username of the account to enable (sAMAccountName)."
+      description: The username of the account to enable (sAMAccountName).
     - name: base-dn
       description: Root. For example, DC=domain,DC=com). By default, the Base DN configured for the instance is used.
     - name: restore_user
@@ -274,13 +274,13 @@ script:
       predefined:
       - 'true'
       - 'false'
-      description: "If true, the command will enable the user with his restored options."
+      description: If true, the command will enable the user with his restored options.
     description: Enables a previously disabled Active Directory account.
   - name: ad-unlock-account
     arguments:
     - name: username
       required: true
-      description: "The username of the account to unlock (sAMAccountName)."
+      description: The username of the account to unlock (sAMAccountName).
     - name: base-dn
       description: Root. For example, DC=domain,DC=com. By default, the Base DN configured for the instance is used.
     description: Unlocks a previously locked Active Directory user account.
@@ -288,10 +288,10 @@ script:
     arguments:
     - name: username
       required: true
-      description: "The username of the account to disable (sAMAccountName)."
+      description: The username of the account to disable (sAMAccountName).
     - name: password
       required: true
-      description: "The password to set for the user."
+      description: The password to set for the user.
     - name: base-dn
       description: Root. For example, DC=domain,DC=com. Base DN configured for the instance is used as default.
     description: Sets a new password for an Active Directory user. This command requires a secure connection (SSL,TLS).
@@ -299,7 +299,7 @@ script:
     arguments:
     - name: computer-name
       required: true
-      description: "The name of the computer to modify."
+      description: The name of the computer to modify.
     - name: full-superior-dn
       description: Superior DN. For example, OU=computers,DC=domain,DC=com (the specified domain must be the same as the current computer domain).
     description: Modifies the computer organizational unit within a domain.
@@ -307,7 +307,7 @@ script:
     arguments:
     - name: user-name
       required: true
-      description: "The name of the user to modify."
+      description: The name of the user to modify.
     - name: full-superior-dn
       description: Superior DN. For example, OU=users,DC=domain,DC=com (the specified domain must be the same as the current user domain).
     description: Modifies the user organizational unit within a domain.
@@ -335,40 +335,40 @@ script:
     - name: user-account-control-out
       auto: PREDEFINED
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
       description: Whether to include verbose translation for UserAccountControl flags. Default is false.
-      defaultValue: "false"
+      defaultValue: 'false'
     - name: limit
       description: The maximum number of objects to return.
-      defaultValue: "20"
+      defaultValue: '20'
     - name: page-size
       description: The page size to query. The limit value will be ignored.
     - name: page-cookie
       description: An opaque string received in a paged search, used for requesting subsequent entries.
     outputs:
-    - contextPath: 'ActiveDirectory.Users.dn'
+    - contextPath: ActiveDirectory.Users.dn
       description: The user distinguished name.
       type: string
-    - contextPath: 'ActiveDirectory.Users.displayName'
+    - contextPath: ActiveDirectory.Users.displayName
       description: The user display name.
       type: string
-    - contextPath: 'ActiveDirectory.Users.name'
+    - contextPath: ActiveDirectory.Users.name
       description: The user common name.
       type: string
-    - contextPath: 'ActiveDirectory.Users.sAMAccountName'
+    - contextPath: ActiveDirectory.Users.sAMAccountName
       description: The user sAMAccountName.
       type: string
-    - contextPath: 'ActiveDirectory.Users.userAccountControl'
+    - contextPath: ActiveDirectory.Users.userAccountControl
       description: The user account control flag.
       type: number
-    - contextPath: 'ActiveDirectory.Users.mail'
+    - contextPath: ActiveDirectory.Users.mail
       description: The user email address.
       type: string
-    - contextPath: 'ActiveDirectory.Users.manager'
+    - contextPath: ActiveDirectory.Users.manager
       description: The manager of the user.
       type: string
-    - contextPath: 'ActiveDirectory.Users.memberOf'
+    - contextPath: ActiveDirectory.Users.memberOf
       description: Groups in which the user is a member.
       type: string
     - contextPath: ActiveDirectory.Users.userAccountControlFields.SCRIPT
@@ -437,25 +437,25 @@ script:
     - contextPath: ActiveDirectory.Users.userAccountControlFields.PARTIAL_SECRETS_ACCOUNT
       description: Whether the account is a read-only domain controller (RODC).
       type: bool
-    - contextPath: 'ActiveDirectory.UsersPageCookie'
+    - contextPath: ActiveDirectory.UsersPageCookie
       description: An opaque string received in a paged search, used for requesting subsequent entries.
       type: string
-    - contextPath: 'Account.DisplayName'
+    - contextPath: Account.DisplayName
       description: The user display name.
       type: string
-    - contextPath: 'Account.Groups'
-      description: "Groups for which the user is a member."
+    - contextPath: Account.Groups
+      description: Groups for which the user is a member.
       type: string
-    - contextPath: 'Account.Manager'
-      description: "The user manager."
+    - contextPath: Account.Manager
+      description: The user manager.
       type: string
-    - contextPath: 'Account.ID'
+    - contextPath: Account.ID
       description: The user distinguished name.
       type: string
-    - contextPath: 'Account.Username'
+    - contextPath: Account.Username
       description: The user samAccountName.
       type: string
-    - contextPath: 'Account.Email'
+    - contextPath: Account.Email
       description: The user email address.
       type: string
     description: Retrieves detailed information about a user account. The user can be specified by name, email address, or as an Active Directory Distinguished Name (DN). If no filter is specified, all users are returned.
@@ -478,27 +478,27 @@ script:
     - name: page-cookie
       description: An opaque string received in a paged search, used for requesting subsequent entries.
     outputs:
-    - contextPath: 'ActiveDirectory.Computers.dn'
+    - contextPath: ActiveDirectory.Computers.dn
       description: The computer distinguished name.
-    - contextPath: 'ActiveDirectory.Computers.memberOf'
+    - contextPath: ActiveDirectory.Computers.memberOf
       description: Groups for which the computer is listed.
-    - contextPath: 'ActiveDirectory.Computers.name'
+    - contextPath: ActiveDirectory.Computers.name
       description: The computer name.
-    - contextPath: 'Endpoint.ID'
+    - contextPath: Endpoint.ID
       description: The computer DN.
-    - contextPath: 'Endpoint.Hostname'
+    - contextPath: Endpoint.Hostname
       description: The computer host name.
-    - contextPath: 'Endpoint.Groups'
+    - contextPath: Endpoint.Groups
       description: Groups for which the computer is listed as a member.
     - contextPath: ActiveDirectory.ComputersPageCookie
       description: An opaque string received in a paged search, used for requesting subsequent entries.
       type: string
-    description: 'Retrieves detailed information about a computer account. The computer can be specified by name, email address, or as an Active Directory Distinguished Name (DN). If no filters are provided, all computers are returned.'
+    description: Retrieves detailed information about a computer account. The computer can be specified by name, email address, or as an Active Directory Distinguished Name (DN). If no filters are provided, all computers are returned.
   - name: ad-get-group-members
     arguments:
     - name: group-dn
       required: true
-      description: "The Distinguished Name of the Group's Active Directory."
+      description: The Distinguished Name of the Group's Active Directory.
     - name: member-type
       required: true
       auto: PREDEFINED
@@ -530,13 +530,13 @@ script:
     - name: page-cookie
       description: An opaque string received in a paged search, used for requesting subsequent entries.
     outputs:
-    - contextPath: 'ActiveDirectory.Groups.dn'
+    - contextPath: ActiveDirectory.Groups.dn
       description: The group DN.
       type: string
-    - contextPath: 'ActiveDirectory.Groups.members.dn'
+    - contextPath: ActiveDirectory.Groups.members.dn
       description: The group member DN.
       type: string
-    - contextPath: 'ActiveDirectory.Groups.members.category'
+    - contextPath: ActiveDirectory.Groups.members.category
       description: The group members category.
       type: string
     - contextPath: ActiveDirectory.GroupsPageCookie
@@ -624,7 +624,7 @@ script:
     - name: user-profile
       required: true
       description: A User Profile indicator that contains user information, such as name and email address.
-    description: "Retrieves a single user resource."
+    description: Retrieves a single user resource.
     name: iam-get-user
     outputs:
     - contextPath: IAM.UserProfile
@@ -674,7 +674,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-    description: 'Updates an existing user with the data in the User Profile indicator that is passed in the user-profile argument.'
+    description: Updates an existing user with the data in the User Profile indicator that is passed in the user-profile argument.
     name: iam-update-user
     outputs:
     - contextPath: IAM.UserProfile
@@ -716,7 +716,7 @@ script:
   - arguments:
     - name: user-profile
       required: true
-      description: "A User Profile indicator that contains user information, such as name and email address."
+      description: A User Profile indicator that contains user information, such as name and email address.
     description: Disables a user.
     execution: true
     name: iam-disable-user
@@ -786,7 +786,7 @@ script:
       - 'true'
       - 'false'
       description: Value to set "Password Never Expire".
-    description: 'Modifies the AD account attribute "Password Never Expire".'
+    description: Modifies the AD account attribute "Password Never Expire".
     execution: true
   - arguments:
     - description: Username to test. By itself or formatted like SERVER_IP\\USERNAME.
@@ -800,7 +800,7 @@ script:
     outputs:
     - contextPath: ActiveDirectory.ValidCredentials
       description: List of usernames that successfully logged in.
-  dockerimage: demisto/ldap:2.9.1.98188
+  dockerimage: demisto/ldap:2.9.1.110194
   ismappable: true
   isremotesyncout: true
   runonce: false

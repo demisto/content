@@ -1,0 +1,1 @@
+{"demisto/ldap":{"content_items":["Packs/Active_Directory_Query/Integrations/Active_Directory_Query/Active_Directory_Query.yml"],"pr_labels":["auto-update-docker"],"target_tag":"2.9.1.110194","coverage":"0-100"}}
