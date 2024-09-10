@@ -486,7 +486,8 @@ class Taxii11:
             'X-TAXII-Content-Type': content_type,
             'X-TAXII-Accept': accept,
             'X-TAXII-Services': services,
-            'X-TAXII-Protocol': protocol
+            'X-TAXII-Protocol': protocol,
+            'Accept': 'application/xml'
         }
 
     @staticmethod
