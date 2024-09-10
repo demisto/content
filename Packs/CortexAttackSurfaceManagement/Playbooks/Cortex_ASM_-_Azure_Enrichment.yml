@@ -46,7 +46,7 @@ tasks:
       - "4"
       - "7"
       - "25"
-      - "51"
+      - '51'
       - "61"
     separatecontext: false
     continueonerrortype: ""
@@ -325,16 +325,10 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "49"
+      - '49'
     separatecontext: false
     continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 260,
-          "y": 395
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 260,\n    \"y\": 395\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -379,13 +373,7 @@ tasks:
         simple: n/a
     separatecontext: false
     continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 260,
-          "y": 705
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 260,\n    \"y\": 705\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -424,13 +412,7 @@ tasks:
         simple: n/a
     separatecontext: false
     continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 260,
-          "y": 870
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 260,\n    \"y\": 870\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -475,13 +457,7 @@ tasks:
         simple: n/a
     separatecontext: false
     continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 260,
-          "y": 1040
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 260,\n    \"y\": 1040\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -520,13 +496,7 @@ tasks:
         simple: n/a
     separatecontext: false
     continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 260,
-          "y": 1210
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 260,\n    \"y\": 1210\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -625,13 +595,7 @@ tasks:
       - "20"
     separatecontext: false
     continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1290,
-          "y": 395
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 1290,\n    \"y\": 395\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -687,13 +651,7 @@ tasks:
         simple: n/a
     separatecontext: false
     continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1290,
-          "y": 530
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 1290,\n    \"y\": 530\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -732,13 +690,7 @@ tasks:
         simple: n/a
     separatecontext: false
     continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 260,
-          "y": 1380
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 260,\n    \"y\": 1380\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -784,13 +736,7 @@ tasks:
                 accessor: Network
             iscontext: true
     continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1290,
-          "y": 160
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 1290,\n    \"y\": 160\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -862,13 +808,7 @@ tasks:
         simple: "true"
     separatecontext: false
     continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1290,
-          "y": 705
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 1290,\n    \"y\": 705\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -893,13 +833,7 @@ tasks:
       - "44"
     separatecontext: false
     continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 260,
-          "y": 1770
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 260,\n    \"y\": 1770\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -955,13 +889,7 @@ tasks:
       - "44"
     separatecontext: false
     continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1290,
-          "y": 1010
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 1290,\n    \"y\": 1010\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -994,13 +922,7 @@ tasks:
         simple: "true"
     separatecontext: false
     continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 260,
-          "y": 1545
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 260,\n    \"y\": 1545\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1381,13 +1303,7 @@ tasks:
         simple: n/a
     separatecontext: false
     continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 260,
-          "y": 530
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 260,\n    \"y\": 530\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1395,15 +1311,15 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "50":
-    continueonerrortype: ""
-    id: "50"
+  '50':
+    continueonerrortype: ''
+    id: '50'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     note: false
     quietmode: 0
     scriptarguments:
@@ -1423,14 +1339,8 @@ tasks:
     taskid: 552168a5-fe49-4238-8c68-ad255bf6262c
     timertriggers: []
     type: playbook
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": -210
-        }
-      }
-  "51":
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": -210\n  }\n}"
+  '51':
     conditions:
     - condition:
       - - left:
@@ -1439,8 +1349,8 @@ tasks:
               simple: AzureAssetHierarchy
           operator: isNotEmpty
       label: Yes
-    continueonerrortype: ""
-    id: "51"
+    continueonerrortype: ''
+    id: '51'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
@@ -1448,7 +1358,7 @@ tasks:
       '#default#':
       - "55"
       "Yes":
-      - "52"
+      - '52'
     note: false
     quietmode: 0
     separatecontext: false
@@ -1464,28 +1374,22 @@ tasks:
     taskid: 4aa3f4df-e8ba-42c6-80e1-3baf0cb1877e
     timertriggers: []
     type: condition
-    view: |-
-      {
-        "position": {
-          "x": 750,
-          "y": 160
-        }
-      }
-  "52":
-    continueonerrortype: ""
-    id: "52"
+    view: "{\n  \"position\": {\n    \"x\": 750,\n    \"y\": 160\n  }\n}"
+  '52':
+    continueonerrortype: ''
+    id: '52'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "53"
+      - '53'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 4956c946-228d-43ab-8d24-91a18eb5e7d6
       iscommand: false
       name: Hierarchy
@@ -1496,15 +1400,15 @@ tasks:
     timertriggers: []
     type: title
     view: "{\n  \"position\": {\n    \"x\": 750,\n    \"y\": 395\n  }\n}"
-  "53":
+  '53':
     continueonerrortype: ''
-    id: "53"
+    id: '53'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "56"
+      - '56'
     note: false
     quietmode: 0
     scriptarguments:
@@ -1524,22 +1428,16 @@ tasks:
     taskid: d9320f94-6915-4afc-8d7c-c26b75adde72
     timertriggers: []
     type: regular
-    view: |-
-      {
-        "position": {
-          "x": 750,
-          "y": 530
-        }
-      }
-  "54":
-    continueonerrortype: ""
-    id: "54"
+    view: "{\n  \"position\": {\n    \"x\": 750,\n    \"y\": 530\n  }\n}"
+  '54':
+    continueonerrortype: ''
+    id: '54'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "44"
+      - '44'
     note: false
     quietmode: 0
     separatecontext: false
@@ -1555,13 +1453,7 @@ tasks:
     taskid: 46805d76-345f-4694-8330-53f721d6b03d
     timertriggers: []
     type: title
-    view: |-
-      {
-        "position": {
-          "x": 750,
-          "y": 1010
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 750,\n    \"y\": 1010\n  }\n}"
   "55":
     id: "55"
     taskid: aee707cb-1fab-477c-8540-b04e3f2edde8
