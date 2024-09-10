@@ -2,7 +2,7 @@ commonfields:
   id: c02bb7d7-278e-40db-83fc-9a2f5750602f
   version: 5
 vcShouldKeepItemLegacyProdMachine: false
-name: DSPM-Get-Jira-accountId
+name: FetchJiraAccountIDByEmail
 script: |
   import requests
   from requests.auth import HTTPBasicAuth
@@ -30,16 +30,15 @@ script: |
 
 
           response = requests.request("GET", url, headers=headers, params=query, auth=auth)
-          # print(json.dumps(json.loads(response.text), sort_keys=True, indent=4, separators=(",", ": ")))
 
           if response.status_code != 200:
               print(f"Error in API call [{response.status_code}]: {response.text}")
               return email
 
           users = response.json()
-          print(users)
+
           if not users:
-              return_error('No users found for the provided email.')
+              raise Exception('No users found for the provided email.')
 
           # Assuming the first user in the response is the correct one
           return users[0].get('accountId')
@@ -47,25 +46,33 @@ script: |
           return_error(f"Error while fetching account ID: {str(e)}")
 
   def main():
-      email = demisto.args().get('email')
+      try:
+          email = demisto.args().get('email')
 
-      account_id = get_account_id_by_email(email)
+          account_id = get_account_id_by_email(email)
 
-      # Formatting readable output
-      readable_output = f"### Account ID for {email}:\n- **Account ID**: {account_id}"
+          # Formatting readable output
+          readable_output = f"### Account ID for {email}:\n- **Account ID**: {account_id}"
 
-      return_results(CommandResults(
-          readable_output=readable_output,
-          outputs_prefix="AccountInfo",
-          outputs_key_field="AccountID",
-          outputs={"AccountID": account_id}
-      ))
+          return_results(CommandResults(
+              readable_output=readable_output,
+              outputs_prefix="AccountInfo",
+              outputs_key_field="AccountID",
+              outputs={"AccountID": account_id}
+          ))
+      except Exception as e:
+          return_error(f"Failed to execute FetchJiraAccountIDByEmail. Error: {str(e)}")
 
 
   if __name__ in ('__main__', '__builtin__', 'builtins'):
       main()
 type: python
 tags: []
+comment: This automation script retrieves the Jira account ID associated with a provided
+  email address. It queries the Jira API using the email and returns the corresponding
+  account ID. The script is particularly useful for integrating Jira account information
+  into XSOAR workflows, enabling seamless identification and tracking of users within
+  incident management processes.
 enabled: true
 args:
 - name: email
@@ -74,7 +81,7 @@ outputs:
 - contextPath: AccountInfo
 scripttarget: 0
 subtype: python3
-timeout: 362.88ms
+timeout: 360ns
 pswd: ""
 runonce: false
 dockerimage: demisto/python3:3.10.14.99865

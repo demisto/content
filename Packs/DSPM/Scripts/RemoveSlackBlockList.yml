@@ -1,14 +1,11 @@
 commonfields:
   id: 32528dad-d4c2-4fee-88a1-601642b109e8
-  version: 3
+  version: 7
 vcShouldKeepItemLegacyProdMachine: false
 name: RemoveSlackBlockList
 script: |
   register_module_line('RemoveSlackBlockList', 'start', __line__())
   ### pack version: 3.4.14
-
-
-
 
   from typing import Any
   import traceback
@@ -17,9 +14,16 @@ script: |
 
   def remove_block_list_from_xsoar():
       listName = demisto.args().get("list_name")
-      body = {"id": listName}
-      demisto.executeCommand("demisto-api-post", {"uri":"/lists/delete", "body":body})
+      if not listName:
+          return_error("List name not provided.")
 
+      body = {"id": listName}
+      response = demisto.executeCommand("demisto-api-post", {"uri": "/lists/delete", "body": body})
+
+      if isError(response[0]):
+          return_error(f"Failed to remove list '{listName}' from XSOAR: {get_error(response)}")
+
+      return f"Successfully removed block list '{listName}' from XSOAR."
 
 
   ''' MAIN FUNCTION '''
@@ -27,7 +31,8 @@ script: |
 
   def main():  # pragma: no cover
       try:
-          remove_block_list_from_xsoar()
+          result = remove_block_list_from_xsoar()
+          return_results(result)
       except Exception as excep:
           demisto.error(traceback.format_exc())  # print the traceback
           return_error(f'Failed to execute RemoveSlackBlockList. Error: {str(excep)}')
@@ -41,12 +46,15 @@ script: |
   register_module_line('RemoveSlackBlockList', 'end', __line__())
 type: python
 tags: []
+comment: This script is designed to remove a block list from the XSOAR platform, typically
+  used in managing Slack block lists or other similar lists. It uses the Demisto API
+  to delete the specified list by its name, helping in automated list management within
+  XSOAR.
 enabled: true
 args:
 - name: list_name
 scripttarget: 0
 subtype: python3
-timeout: 362.88ms
 pswd: ""
 runonce: false
 dockerimage: demisto/python3:3.11.9.104957

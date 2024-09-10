@@ -1,8 +1,8 @@
 commonfields:
   id: bd8ff7bf-775a-4856-82fa-c226c406e27a
-  version: 10
+  version: 5
 vcShouldKeepItemLegacyProdMachine: false
-name: DSPM_fetch_list_of_jira_project
+name: FetchJiraProjectKeys
 script: |+
   from typing import Dict, Any
   import traceback
@@ -28,8 +28,7 @@ script: |+
               project_keys = [project['key'] for project in projects]
               return project_keys
           else:
-              demisto.error(f"Failed to fetch projects from Jira. Status code: {response.status_code}, Response: {response.text}")
-              return []
+              return_error(f"Failed to fetch projects from Jira. Status code: {response.status_code}, Response: {response.text}")
       except Exception as e:
           demisto.error(f"Error while fetching Jira projects: {str(e)}")
           return []
@@ -38,19 +37,11 @@ script: |+
       try:
           result = demisto.executeCommand("dspm-get-integration-cofig", {})
           integration_conf = result[0].get("Contents",{}).get('integration_config',{})
-          print(integration_conf)
+
           # Extract Jira credentials and URL
           api_key = integration_conf.get('jiraApiToken')
           url = integration_conf.get('jiraServerUrl')
           email = integration_conf.get('jiraEmail')
-          slack_msg_lifetime = integration_conf.get('slackMsgLifetime')
-          slack_msg_lifetime = f"{slack_msg_lifetime} hour"
-          print("api key :",api_key)
-          print("url",url)
-          print("email ",email)
-
-          # set context for slack msg lifetime
-          demisto.setContext("SlackMsgLifetime", slack_msg_lifetime)
 
           # Fetch the list of projects from Jira
           return fetch_jira_projects(email, api_key, url)
@@ -70,7 +61,7 @@ script: |+
           if projects_list:
               demisto.results(f"Projects retrieved successfully: {projects_list}")
           else:
-              demisto.results("No projects found or an error occurred.")
+              raise Exception("No projects found.")
 
           return_results(
               CommandResults(
@@ -85,7 +76,6 @@ script: |+
               )
           )
       except Exception as e:
-          demisto.error(f"Error in main function: {str(e)}")
           return_error(f"Error retrieving Jira Projects: {str(e)}")
 
   ''' ENTRY POINT '''
@@ -95,13 +85,16 @@ script: |+
 
 type: python
 tags: []
+comment: This automation script retrieves a list of project keys from Jira for a given
+  set of credentials. It interacts with the Jira API to pull all available projects
+  and returns their keys. This script is useful for integrating Jira project management
+  capabilities into XSOAR workflows, allowing users to identify and work with specific
+  Jira projects easily.
 enabled: true
 outputs:
 - contextPath: projects_list
-- contextPath: SlackMsgLifetime
 scripttarget: 0
 subtype: python3
-timeout: 362.88ms
 pswd: ""
 runonce: false
 dockerimage: demisto/python3:3.10.14.98471

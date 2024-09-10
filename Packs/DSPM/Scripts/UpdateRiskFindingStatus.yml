@@ -1,8 +1,8 @@
 commonfields:
   id: 208c262f-29a6-4a47-86b7-5f3cc14fe644
-  version: 25
+  version: 29
 vcShouldKeepItemLegacyProdMachine: false
-name: DSPM_risk_status_update
+name: UpdateRiskFindingStatus
 script: |
   from typing import Dict, Any
   import json
@@ -60,18 +60,20 @@ script: |
       main()
 type: python
 tags: []
+comment: This automation script is designed to update the status of a specific risk
+  finding in the Dig Security platform. It uses the provided risk finding ID and status
+  to make a PATCH request to the Dig Security API. The script retrieves API credentials
+  and configuration details from the integration settings within XSOAR.
 enabled: true
 args:
 - name: riskFindingId
   required: true
 - name: status
-  required: true
   defaultValue: INVESTIGATING
 outputs:
 - contextPath: Response
 scripttarget: 0
 subtype: python3
-timeout: 362.88ms
 pswd: ""
 runonce: false
 dockerimage: demisto/python3:3.11.9.103066
