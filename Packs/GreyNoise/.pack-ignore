@@ -4,6 +4,9 @@ ignore=IN136
 [file:GreyNoise_Community.yml]
 ignore=BA108,BA109,BA111
 
+[file:README.md]
+ignore=RM102
+
 [known_words]
 xsoar8
 xsiam
