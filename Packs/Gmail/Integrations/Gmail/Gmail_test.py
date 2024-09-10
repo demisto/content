@@ -618,7 +618,7 @@ def test_no_date_mail():
     from email.utils import format_datetime
 
     from Gmail import get_email_context
-    expected_date = datetime.datetime(2020, 12, 21, 20, 11, 57, tzinfo=datetime.UTC)
+    expected_date = datetime.datetime(2020, 12, 21, 20, 11, 57, tzinfo=datetime.datetime.timezone.utc)  # noqa: UP017
     context_gmail, _, _, occurred, is_valid = get_email_context(input_data.email_without_date, "some_mail")
     # check that the x-received date was usd
     assert occurred.timestamp() == expected_date.timestamp()
@@ -740,15 +740,15 @@ def test_last_run_after_fetch_incidents(mocker):
 
 
 EMAIL_NO_INTERNALDATE = input_data.email_without_date
-EXPECTED_OCCURRED_NO_INTERNALDATE = datetime.datetime(2020, 12, 21, 20, 11, 57, tzinfo=datetime.UTC)
+EXPECTED_OCCURRED_NO_INTERNALDATE = datetime.datetime(2020, 12, 21, 20, 11, 57, tzinfo=datetime.timezone.utc)  # noqa: UP017
 EMAIL_INTERNALDATE_EARLY = input_data.email_with_early_internalDate
-EXPECTED_OCCURRED_INTERNALDATE_EARLY = datetime.datetime(2020, 12, 21, 20, 11, 40, tzinfo=datetime.UTC)
+EXPECTED_OCCURRED_INTERNALDATE_EARLY = datetime.datetime(2020, 12, 21, 20, 11, 40, tzinfo=datetime.timezone.utc)  # noqa: UP017
 EMAIL_HEADER_EARLY = input_data.email_with_internalDate_header_early
-EXPECTED_OCCURRED_HEADER_EARLY = datetime.datetime(2020, 12, 21, 20, 11, 57, tzinfo=datetime.UTC)
+EXPECTED_OCCURRED_HEADER_EARLY = datetime.datetime(2020, 12, 21, 20, 11, 57, tzinfo=datetime.timezone.utc)  # noqa: UP017
 EMAIL_NO_HEADER = input_data.email_no_header
-EXPECTED_OCCURRED_NO_HEADER = datetime.datetime(2020, 12, 21, 20, 11, 58, tzinfo=datetime.UTC)
+EXPECTED_OCCURRED_NO_HEADER = datetime.datetime(2020, 12, 21, 20, 11, 58, tzinfo=datetime.timezone.utc)  # noqa: UP017
 EMAIL_NO_DATE = input_data.email_no_date
-EXPECTED_OCCURRED_NO_DATE = datetime.datetime(2020, 12, 22, 14, 13, 20, tzinfo=datetime.UTC)
+EXPECTED_OCCURRED_NO_DATE = datetime.datetime(2020, 12, 22, 14, 13, 20, tzinfo=datetime.timezone.utc)  # noqa: UP017
 
 
 @pytest.mark.parametrize("email_data, expected_occurred, expected_occurred_is_valid",
@@ -838,7 +838,7 @@ def test_parse_date_isoformat_server():
     """
     from Gmail import parse_date_isoformat_server
     date = parse_date_isoformat_server('2017-10-24T14:13:20Z')
-    assert date == datetime.datetime(2017, 10, 24, 14, 13, 20, tzinfo=datetime.UTC)
+    assert date == datetime.datetime(2017, 10, 24, 14, 13, 20, tzinfo=datetime.timezone.utc)  # noqa: UP017
     assert str(date) == '2017-10-24 14:13:20+00:00'
 
 
