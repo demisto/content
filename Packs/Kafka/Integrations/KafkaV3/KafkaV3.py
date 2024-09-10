@@ -765,7 +765,7 @@ def fetch_incidents(kafka: KafkaCommunicator, demisto_params: dict) -> None:
 
     finally:
         if kafka_consumer:
-                kafka_consumer.close()
+            kafka_consumer.close()
 
     last_run = {'last_fetched_offsets': last_fetched_offsets, 'last_topic': topic}
     demisto.debug(f"Fetching finished, setting last run to {last_run}")
