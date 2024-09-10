@@ -3,7 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: AWS - S3
+  id: Cortex XDR - IR
   version: -1
 configuration:
 - display: Role Arn
