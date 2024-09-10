@@ -1,4 +1,5 @@
 import tempfile
+from unittest.mock import patch
 
 from XDR_iocs import *
 import pytest
@@ -1096,3 +1097,20 @@ def test_parse_demisto_list_of_comments_default(mocker):
         comment_field_name=['indicator_link', Client.xsoar_comments_field],
         comments_as_tags=False
     ) == [f'url/#/indicator/{inc_id}, {comment_value}']
+
+
+@patch('XDR_iocs.demisto.params', return_value={'feed':True, 'feedFetchInterval':'15'})
+def test_module_fail_with_fetch_interval(mocker):
+    """
+    Given   The demisto.params() returns parameters with feed set to True and feedFetchInterval set to '15'.
+    When    The module_test() function is called.
+    Then    Raise a DemistoException with the message: "'Feed Fetch Interval' parameter should be 20 or larger."
+    """
+    from XDR_iocs import module_test
+    with pytest.raises(DemistoException) as e:
+        module_test(client)
+    assert e.value.message == "'Feed Fetch Interval' parameter should be 20 or larger."
+
+
+def test_xdr_iocs_sync_command_sync_for_fetch(mocker):
+    xdr_iocs_sync_command(client, is_first_stage_sync=True)

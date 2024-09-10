@@ -14,177 +14,6 @@ from urllib3 import disable_warnings
 import zipfile
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
-
-class searchInElastic:
-    """Used in order to search indicators by the paging or serachAfter param
-    :type page: ``int``
-    :param page: the number of page from which we start search indicators from.
-
-    :type filter_fields: ``Optional[str]``
-    :param filter_fields: comma separated fields to filter (e.g. "value,type")
-
-    :type from_date: ``Optional[str]``
-    :param from_date: the start date to search from.
-
-    :type query: ``Optional[str]``
-    :param query: indicator search query
-
-    :type to_date: ``Optional[str]``
-    :param to_date: the end date to search until to.
-
-    :type value: ``str``
-    :param value: the indicator value to search.
-
-    :type limit: ``Optional[int]``
-    :param limit: the current upper limit of the search (can be updated after init)
-
-    :type sort: ``List[Dict]``
-    :param sort: An array of sort params ordered by importance. Item structure: {"field": string, "asc": boolean}
-
-    :return: No data returned
-    :rtype: ``None``
-    """
-    SEARCH_AFTER_TITLE = 'searchAfter'
-
-    def __init__(self,
-                 page=0,
-                 filter_fields=None,
-                 from_date=None,
-                 query=None,
-                 size=100,
-                 to_date=None,
-                 value='',
-                 limit=None,
-                 sort=None,
-                 search_after=None
-                 ):
-        # searchAfter is available in searchIndicators from version 6.1.0
-        self._can_use_search_after = True
-        # populateFields merged in https://github.com/demisto/server/pull/18398
-        self._can_use_filter_fields = True
-        self._search_after_param = search_after
-        self._page = page
-        self._filter_fields = filter_fields
-        self._total = None
-        self._from_date = from_date
-        self._query = query
-        self._size = size
-        self._to_date = to_date
-        self._value = value
-        self._limit = limit
-        self._total_iocs_fetched = 0
-        self._sort = sort
-
-    def __iter__(self):
-        return self
-
-    # python2
-    def next(self):
-        return self.__next__()
-
-    def __next__(self):
-        if self.is_search_done():
-            raise StopIteration
-        res = self.search_indicators_by_version(from_date=self._from_date,
-                                                query=self._query,
-                                                size=self._size,
-                                                to_date=self._to_date,
-                                                value=self._value)
-        fetched_len = len(res.get('iocs') or [])
-        if fetched_len == 0:
-            raise StopIteration
-        self._total_iocs_fetched += fetched_len
-        return res
-
-    @property
-    def page(self):
-        return self._page
-
-    @property
-    def total(self):
-        return self._total
-
-    @property
-    def limit(self):
-        return self._limit
-
-    @limit.setter
-    def limit(self, value):
-        self._limit = value
-
-    def is_search_done(self):
-        """
-        Return True if one of these conditions is met (else False):
-        1. self.limit is set, and it's updated to be less or equal to zero - return True
-        2. for search_after if self.total was populated by a previous search, but no self._search_after_param
-        3. for page if self.total was populated by a previous search, but page is too large
-        """
-        reached_limit = self.limit is not None and self.limit <= self._total_iocs_fetched
-        if reached_limit:
-            demisto.debug(f"IndicatorsSearcher has reached its limit: {self.limit}")
-            # update limit to match _total_iocs_fetched value
-            if self._total_iocs_fetched > self.limit:
-                self.limit = self._total_iocs_fetched
-            return True
-        else:
-            if self.total is None:
-                return False
-            no_more_indicators = self.total and self._search_after_param is None
-            if no_more_indicators:
-                demisto.debug("IndicatorsSearcher can not fetch anymore indicators")
-            return no_more_indicators
-
-    def search_indicators_by_version(self, from_date=None, query='', size=100, to_date=None, value=''):
-        """There are 2 cases depends on the sever version:
-        1. Search indicators using paging, raise the page number in each call.
-        2. Search indicators using searchAfter param, update the _search_after_param in each call.
-
-        :type from_date: ``Optional[str]``
-        :param from_date: the start date to search from.
-
-        :type query: ``Optional[str]``
-        :param query: indicator search query
-
-        :type size: ``int``
-        :param size: limit the number of returned results.
-
-        :type to_date: ``Optional[str]``
-        :param to_date: the end date to search until to.
-
-        :type value: ``str``
-        :param value: the indicator value to search.
-
-        :return: object contains the search results
-        :rtype: ``dict``
-        """
-        search_args = assign_params(
-            fromDate=from_date,
-            toDate=to_date,
-            query=query,
-            size=size,
-            value=value,
-            searchAfter=self._search_after_param,
-            populateFields=self._filter_fields,
-        )
-        if is_demisto_version_ge('6.6.0'):
-            search_args['sort'] = self._sort
-        demisto.debug(f'IndicatorsSearcher: page {self._page}, search_args: {search_args}')
-        res = demisto.searchIndicators(**search_args)
-        self._total = res.get('total')
-        demisto.debug(f'IndicatorsSearcher: page {self._page}, result size: {self._total}')
-        # when total is None, there is a problem with the server for returning indicators, hence need to restart the container,
-        # see XSUP-26699
-        if self._total is None:
-            raise SystemExit(
-                "Encountered issue when trying to fetch indicators for integration in instance {integration}. "
-                "Restarting container and trying again.".format(integration=get_integration_instance_name())
-            )
-        if isinstance(self._page, int):
-            self._page += 1  # advance pages
-        self._search_after_param = res.get(self.SEARCH_AFTER_TITLE)
-        return res
-
-
 disable_warnings()
 DEMISTO_TIME_FORMAT: str = '%Y-%m-%dT%H:%M:%SZ'
 MAX_INDICATORS_TO_SYNC: int = 40000
@@ -383,7 +212,7 @@ def get_iocs_generator(size=200, query=None, is_first_stage_sync=False) -> Itera
         # demisto.debug(f"{filter_fields=}")
         search_after_array = None
         search_after = get_integration_context().get('search_after', None)
-        for batch in searchInElastic(size=size,
+        for batch in IndicatorsSearcher(size=size,
                                      query=full_query,
                                      search_after=search_after,
                                      sort=[{"field": "modified", "asc": True},
@@ -641,7 +470,7 @@ def sync_for_fetch(client: Client, batch_size: int = 200, is_first_stage_sync: b
                           f"search_after {integration_context.get('search_after')}")
             last_sync_time = integration_context.get('time', '')
             if len(request_data) < MAX_INDICATORS_TO_SYNC:
-                # is the update_sync_time_with_date_string nessary (to ask judith)
+                # is the update_sync_time_with_date_string necessary (to ask judith)
                 update_integration_context(update_is_first_sync_phase='false',
                                            update_sync_time_with_date_string=CURRENT_BATCH_LAST_MODIFIED_TIME
                                            if last_sync_time > CURRENT_BATCH_LAST_MODIFIED_TIME
@@ -726,7 +555,7 @@ def get_indicators(indicators: str) -> list:
         iocs: list = []
         not_found = []
         for indicator in argToList(indicators):
-            search_indicators = searchInElastic()
+            search_indicators = IndicatorsSearcher()
             data = search_indicators.search_indicators_by_version(value=indicator).get('iocs')
             if data:
                 iocs.extend(data)
@@ -1003,7 +832,7 @@ def get_indicator_xdr_score(indicator: str, xdr_server: int):
     xdr_local: int = 0
     score = 0
     if indicator:
-        search_indicators = searchInElastic()
+        search_indicators = IndicatorsSearcher()
         ioc = search_indicators.search_indicators_by_version(value=indicator).get('iocs')
         if ioc:
             ioc = ioc[0]
