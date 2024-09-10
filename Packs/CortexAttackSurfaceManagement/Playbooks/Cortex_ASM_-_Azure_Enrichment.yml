@@ -46,7 +46,8 @@ tasks:
       - "4"
       - "7"
       - "25"
-      - '51'
+      - "51"
+      - "61"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -189,7 +190,13 @@ tasks:
           right:
             value: {}
     continueonerrortype: ""
-    view: "{\n  \"position\": {\n    \"x\": 1930,\n    \"y\": 160\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 1740,
+          "y": 160
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -318,10 +325,16 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - '49'
+      - "49"
     separatecontext: false
     continueonerrortype: ""
-    view: "{\n  \"position\": {\n    \"x\": 260,\n    \"y\": 395\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": 395
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -366,7 +379,13 @@ tasks:
         simple: n/a
     separatecontext: false
     continueonerrortype: ""
-    view: "{\n  \"position\": {\n    \"x\": 260,\n    \"y\": 705\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": 705
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -405,7 +424,13 @@ tasks:
         simple: n/a
     separatecontext: false
     continueonerrortype: ""
-    view: "{\n  \"position\": {\n    \"x\": 260,\n    \"y\": 870\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": 870
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -450,7 +475,13 @@ tasks:
         simple: n/a
     separatecontext: false
     continueonerrortype: ""
-    view: "{\n  \"position\": {\n    \"x\": 260,\n    \"y\": 1040\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": 1040
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -489,7 +520,13 @@ tasks:
         simple: n/a
     separatecontext: false
     continueonerrortype: ""
-    view: "{\n  \"position\": {\n    \"x\": 260,\n    \"y\": 1210\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": 1210
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -526,7 +563,13 @@ tasks:
         simple: Azure
     separatecontext: false
     continueonerrortype: ""
-    view: "{\n  \"position\": {\n    \"x\": 1930,\n    \"y\": 540\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 1740,
+          "y": 540
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -551,7 +594,13 @@ tasks:
       - "17"
     separatecontext: false
     continueonerrortype: ""
-    view: "{\n  \"position\": {\n    \"x\": 1930,\n    \"y\": 405\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 1740,
+          "y": 395
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -576,7 +625,13 @@ tasks:
       - "20"
     separatecontext: false
     continueonerrortype: ""
-    view: "{\n  \"position\": {\n    \"x\": 1290,\n    \"y\": 395\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 1290,
+          "y": 395
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -632,7 +687,13 @@ tasks:
         simple: n/a
     separatecontext: false
     continueonerrortype: ""
-    view: "{\n  \"position\": {\n    \"x\": 1290,\n    \"y\": 530\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 1290,
+          "y": 530
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -671,7 +732,13 @@ tasks:
         simple: n/a
     separatecontext: false
     continueonerrortype: ""
-    view: "{\n  \"position\": {\n    \"x\": 260,\n    \"y\": 1380\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": 1380
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -693,7 +760,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "43"
+      - "55"
       "yes":
       - "19"
     separatecontext: false
@@ -717,7 +784,13 @@ tasks:
                 accessor: Network
             iscontext: true
     continueonerrortype: ""
-    view: "{\n  \"position\": {\n    \"x\": 1290,\n    \"y\": 160\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 1290,
+          "y": 160
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -750,7 +823,13 @@ tasks:
         simple: "true"
     separatecontext: false
     continueonerrortype: ""
-    view: "{\n  \"position\": {\n    \"x\": 1930,\n    \"y\": 705\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 1740,
+          "y": 705
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -783,7 +862,13 @@ tasks:
         simple: "true"
     separatecontext: false
     continueonerrortype: ""
-    view: "{\n  \"position\": {\n    \"x\": 1290,\n    \"y\": 705\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 1290,
+          "y": 705
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -808,7 +893,13 @@ tasks:
       - "44"
     separatecontext: false
     continueonerrortype: ""
-    view: "{\n  \"position\": {\n    \"x\": 260,\n    \"y\": 1770\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": 1770
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -833,7 +924,13 @@ tasks:
       - "44"
     separatecontext: false
     continueonerrortype: ""
-    view: "{\n  \"position\": {\n    \"x\": 1930,\n    \"y\": 1010\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 1740,
+          "y": 1010
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -858,7 +955,13 @@ tasks:
       - "44"
     separatecontext: false
     continueonerrortype: ""
-    view: "{\n  \"position\": {\n    \"x\": 1290,\n    \"y\": 1010\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 1290,
+          "y": 1010
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -891,7 +994,13 @@ tasks:
         simple: "true"
     separatecontext: false
     continueonerrortype: ""
-    view: "{\n  \"position\": {\n    \"x\": 260,\n    \"y\": 1545\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": 1545
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1024,8 +1133,8 @@ tasks:
       script: Set
     nexttasks:
       '#none#':
-      - "34"
       - "33"
+      - "63"
     scriptarguments:
       append:
         simple: "true"
@@ -1035,7 +1144,13 @@ tasks:
         simple: "false"
     separatecontext: false
     continueonerrortype: ""
-    view: "{\n  \"position\": {\n    \"x\": 1600,\n    \"y\": 830\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 2120,
+          "y": 820
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1266,7 +1381,13 @@ tasks:
         simple: n/a
     separatecontext: false
     continueonerrortype: ""
-    view: "{\n  \"position\": {\n    \"x\": 260,\n    \"y\": 530\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": 530
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1274,15 +1395,15 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '50':
-    continueonerrortype: ''
-    id: '50'
+  "50":
+    continueonerrortype: ""
+    id: "50"
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - '2'
+      - "2"
     note: false
     quietmode: 0
     scriptarguments:
@@ -1302,8 +1423,14 @@ tasks:
     taskid: 552168a5-fe49-4238-8c68-ad255bf6262c
     timertriggers: []
     type: playbook
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": -210\n  }\n}"
-  '51':
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -210
+        }
+      }
+  "51":
     conditions:
     - condition:
       - - left:
@@ -1312,8 +1439,8 @@ tasks:
               simple: AzureAssetHierarchy
           operator: isNotEmpty
       label: Yes
-    continueonerrortype: ''
-    id: '51'
+    continueonerrortype: ""
+    id: "51"
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
@@ -1321,7 +1448,7 @@ tasks:
       '#default#':
       - "55"
       "Yes":
-      - '52'
+      - "52"
     note: false
     quietmode: 0
     separatecontext: false
@@ -1337,22 +1464,28 @@ tasks:
     taskid: 4aa3f4df-e8ba-42c6-80e1-3baf0cb1877e
     timertriggers: []
     type: condition
-    view: "{\n  \"position\": {\n    \"x\": 750,\n    \"y\": 160\n  }\n}"
-  '52':
-    continueonerrortype: ''
-    id: '52'
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 160
+        }
+      }
+  "52":
+    continueonerrortype: ""
+    id: "52"
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - '53'
+      - "53"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
+      brand: ""
       id: 4956c946-228d-43ab-8d24-91a18eb5e7d6
       iscommand: false
       name: Hierarchy
@@ -1363,15 +1496,15 @@ tasks:
     timertriggers: []
     type: title
     view: "{\n  \"position\": {\n    \"x\": 750,\n    \"y\": 395\n  }\n}"
-  '53':
+  "53":
     continueonerrortype: ''
-    id: '53'
+    id: "53"
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - '56'
+      - "56"
     note: false
     quietmode: 0
     scriptarguments:
@@ -1391,16 +1524,22 @@ tasks:
     taskid: d9320f94-6915-4afc-8d7c-c26b75adde72
     timertriggers: []
     type: regular
-    view: "{\n  \"position\": {\n    \"x\": 750,\n    \"y\": 530\n  }\n}"
-  '54':
-    continueonerrortype: ''
-    id: '54'
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 530
+        }
+      }
+  "54":
+    continueonerrortype: ""
+    id: "54"
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - '44'
+      - "44"
     note: false
     quietmode: 0
     separatecontext: false
@@ -1433,6 +1572,7 @@ tasks:
     nexttasks:
       '#none#':
       - "54"
+      - "34"
     scriptarguments:
       append:
         simple: "true"
@@ -1445,7 +1585,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 980,
+          "x": 1010,
           "y": 840
         }
       }
@@ -1495,7 +1635,219 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-view: "{\n  \"linkLabelsPosition\": {\n    \"25_19_yes\": 0.6,\n    \"3_42_#default#\": 0.32,\n    \"3_9_yes\": 0.5,\n    \"4_11_yes\": 0.43,\n    \"4_42_#default#\": 0.31,\n    \"7_18_yes\": 0.5\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 3005,\n      \"width\": 2750,\n      \"x\": -440,\n      \"y\": -360\n    }\n  }\n}"
+  "57":
+    id: "57"
+    taskid: 6843585f-7052-4c19-8be7-8c583d30a82e
+    type: title
+    task:
+      id: 6843585f-7052-4c19-8be7-8c583d30a82e
+      version: -1
+      name: Tags
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "58"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2490,
+          "y": 395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: 1721f6d5-d1fe-48c8-85cc-d799074f2030
+    type: regular
+    task:
+      id: 1721f6d5-d1fe-48c8-85cc-d799074f2030
+      version: -1
+      name: Set tags grid field
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
+        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
+      scriptName: GridFieldSetup
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "60"
+    scriptarguments:
+      gridfield:
+        simple: asmtags
+      keys:
+        simple: key,value,source
+      val1:
+        complex:
+          root: AWS.EC2.Instances.Tags
+          accessor: Key
+      val2:
+        complex:
+          root: AWS.EC2.Instances.Tags
+          accessor: Value
+      val3:
+        simple: AWS
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2490,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: eb1fe3b0-73eb-4ee6-8e01-6ea8c5b21ccf
+    type: regular
+    task:
+      id: eb1fe3b0-73eb-4ee6-8e01-6ea8c5b21ccf
+      version: -1
+      name: Set true flag for completed enrichment
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "63"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: asm_enrichment_flag_aws
+      value:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2490,
+          "y": 705
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "61":
+    id: "61"
+    taskid: f819ff95-46a7-40d7-8c05-2e20677f52b8
+    type: condition
+    task:
+      id: f819ff95-46a7-40d7-8c05-2e20677f52b8
+      version: -1
+      name: Is there Azure tag information?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "43"
+      "yes":
+      - "57"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Azure.Compute.Tags
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2490,
+          "y": 160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "63":
+    id: "63"
+    taskid: ab165c31-9f99-46c1-8366-38351b9498d8
+    type: title
+    task:
+      id: ab165c31-9f99-46c1-8366-38351b9498d8
+      version: -1
+      name: Tags - End
+      description: Set a value in context under the key you entered.
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "44"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2490,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "25_19_yes": 0.6,
+      "25_55_#default#": 0.14,
+      "3_42_#default#": 0.32,
+      "3_9_yes": 0.5,
+      "4_11_yes": 0.43,
+      "4_42_#default#": 0.31,
+      "51_55_#default#": 0.15,
+      "61_43_#default#": 0.16,
+      "7_18_yes": 0.52,
+      "7_43_#default#": 0.15
+    },
+    "paper": {
+      "dimensions": {
+        "height": 3005,
+        "width": 3310,
+        "x": -440,
+        "y": -360
+      }
+    }
+  }
 inputSections:
 - description: Generic group for inputs
   inputs:
