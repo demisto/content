@@ -740,7 +740,7 @@ def test_last_run_after_fetch_incidents(mocker):
 
 
 EMAIL_NO_INTERNALDATE = input_data.email_without_date
-EXPECTED_OCCURRED_NO_INTERNALDATE = datetime.datetime(2020, 12, 21, 20, 11, 57, tzinfo=datetime.timezone.utc)
+EXPECTED_OCCURRED_NO_INTERNALDATE = datetime.datetime(2020, 12, 21, 20, 11, 57, tzinfo=datetime.UTC)
 EMAIL_INTERNALDATE_EARLY = input_data.email_with_early_internalDate
 EXPECTED_OCCURRED_INTERNALDATE_EARLY = datetime.datetime(2020, 12, 21, 20, 11, 40, tzinfo=datetime.UTC)
 EMAIL_HEADER_EARLY = input_data.email_with_internalDate_header_early
