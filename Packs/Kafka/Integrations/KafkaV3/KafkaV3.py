@@ -740,32 +740,33 @@ def fetch_incidents(kafka: KafkaCommunicator, demisto_params: dict) -> None:
 
             demisto.debug("Beginning to poll messages from kafka")
 
-            for i in range(max_messages):
-                demisto.debug(f"KAFKA DEBUG: messages number {i}")
-                polled_msg = kafka_consumer.poll(kafka.POLL_TIMEOUT)
-                demisto.debug("KAFKA DEBUG: polled_msg")
-                if polled_msg:
-                    demisto.debug("Received a message from Kafka.")
-                    incidents.append(create_incident(message=polled_msg, topic=topic))
-                    demisto.debug("KAFKA DEBUG: polled_msg")
-                    demisto.debug("KAFKA DEBUG: polled_msg_partition")
-                    polled_msg_partition=polled_msg.partition()
-                    demisto.debug("KAFKA DEBUG: polled_msg_partition finished")
-                    demisto.debug("KAFKA DEBUG: get offset")
-                    polled_msg_offset =polled_msg.offset()
-                    demisto.debug("KAFKA DEBUG: get offset finish")
+            fetch_size = 100
+            iterations = (max_messages + fetch_size - 1) // fetch_size
+            fetched_messages = []
+            demisto.debug(f"KAFKA DEBUG: consume message start with iterations: {iterations}")
+            for i in range(iterations):
+                start_index = i * fetch_size
+                end_index = min((i + 1) * fetch_size, max_messages)
+                fetch_size = end_index - start_index
+                demisto.debug(f"KAFKA DEBUG: consume message start for {fetch_size} messages anf for {i}")
+                polled_msg = kafka_consumer.consume(timeout = kafka.POLL_TIMEOUT, num_messages=fetch_size)
+                fetched_messages.extend(polled_msg)
+            demisto.debug(f"KAFKA DEBUG: consume message end, {len(fetched_messages)=}")
+            if fetched_messages:
+                for i, message in enumerate(fetched_messages):
+                    incidents.append(create_incident(message=message, topic=topic))
+                    polled_msg_partition=message.partition()
+                    polled_msg_offset =message.offset()
                     last_fetched_offsets[f'{polled_msg_partition}'] = polled_msg_offset
+                    demisto.debug(f"KAFKA DEBUG: create incident number {i}")
+                demisto.debug("KAFKA DEBUG: Finish create incidents")
+            else:
+                demisto.debug("KAFKA DEBUG: Did not get any message")
 
     finally:
-        demisto.debug("KAFKA DEBUG: finally")
         if kafka_consumer:
-            demisto.debug("KAFKA DEBUG: kafka_consumer")
-            try:
                 kafka_consumer.close()
-                demisto.debug("KAFKA DEBUG: kafka_consumer finished")
-            except Exception as e:
-                demisto.debug(f"KAFKA DEBUG: got an error when tried to close kafka_consumer {str(e)}")
-            
+
     last_run = {'last_fetched_offsets': last_fetched_offsets, 'last_topic': topic}
     demisto.debug(f"Fetching finished, setting last run to {last_run}")
     demisto.setLastRun(last_run)
