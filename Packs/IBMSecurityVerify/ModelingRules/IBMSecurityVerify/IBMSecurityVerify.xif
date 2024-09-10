@@ -14,7 +14,7 @@ alter
     xdm.source.asn.as_number = to_integer(geoip -> asn),
     xdm.event.type = event_type,
     xdm.event.id = id,
-    xdm.event.outcome = if(res ~= "[Ss]uccess" OR res = "sent", XDM_CONST.OUTCOME_SUCCESS, res = "failure", XDM_CONST.OUTCOME_FAILED, res = "pending", XDM_CONST.OUTCOME_UNKNOWN, res = "skipped", XDM_CONST.OUTCOME_PARTIAL, res),
+    xdm.event.outcome = if(res ~= "[Ss]uccess" OR res = "sent", XDM_CONST.OUTCOME_SUCCESS, res ~= "fail", XDM_CONST.OUTCOME_FAILED, res IN("pending", "sent"), XDM_CONST.OUTCOME_UNKNOWN, res = "skipped", XDM_CONST.OUTCOME_PARTIAL, res),
     xdm.source.ipv4 = if(incidr(data -> origin, "0.0.0.0/0"), data -> origin),
     xdm.source.ipv6 = src_ipv6,
     xdm.source.user_agent = data -> devicetype,
@@ -28,16 +28,17 @@ Mapping of 'management' event types.
 filter event_type = "management"
 | alter
     src_user1 = arrayindex(regextract(data -> performedby_username, "(.+)\@") ,0), // The username can sometimes appear as a username and other times as an email.
-    src_user2 = arrayindex(regextract(data -> username, "(.+)\@") ,0)
+    src_user2 = arrayindex(regextract(data -> username, "(.+)\@") ,0),
+    mod = if(data -> modified = "[]", null, data -> modified)
 | alter
     xdm.event.operation_sub_type = coalesce(data -> dict_op, data -> action),
     xdm.target.application.name = data -> applicationname,
-    xdm.event.description = if(data -> cause != null AND data -> modified != null, concat(data -> cause, " modified properties: ", data -> modified), coalesce(data -> cause, data -> modified)),
+    xdm.event.description = if(data -> cause != null AND data -> modified != null, concat(rtrim(data -> cause, "."), ". modified properties: ", mod), coalesce(data -> cause, data -> modified)), // Checks if 'cause' and 'modified' are both populated. If so, appends the cause with a list of modified properties. If not, returns whichever field is available.
     xdm.event.original_event_type = data -> messageid,
     xdm.auth.mfa.method = data -> mfamethod,
     xdm.source.user.identifier = if(data -> performedby IN("System", "shared_apikey"), null, data -> performedby),
-    xdm.source.application.name = coalesce(data -> performedby_clientname,if(data -> performedby IN("System", "shared_apikey"), data -> performedby)),
-    xdm.source.user.username = coalesce(src_user2, data -> username, src_user1, data -> performedby_username), //2 possible username fields, performedby_username and username,
+    xdm.source.application.name = coalesce(data -> performedby_clientname, if(data -> performedby IN("System", "shared_apikey"), data -> performedby)),
+    xdm.source.user.username = coalesce(src_user2, data -> username, src_user1, data -> performedby_username), //2 possible username fields, performedby_username and username.
     xdm.source.user.upn = if(src_user2 != null, data -> username ,src_user1 != null, data -> performedby_username),
     xdm.target.resource.id = data -> entitlementid,
     xdm.target.resource.name = data -> entitlementname,
