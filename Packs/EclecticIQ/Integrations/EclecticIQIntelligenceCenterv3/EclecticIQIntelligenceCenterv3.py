@@ -1786,10 +1786,10 @@ def parse_reputation_results(
 
     else:
         human_readable = (
-            "### Observable: " + str(observable_value) + " not found in EcelcticIQ IC."
+            "### Observable: " + str(observable_value) + " not found in EclecticIQ IC."
         )
         raw_result = {
-            "result": "Observable not found in EcelcticIQ IC.",
+            "result": "Observable not found in EclecticIQ IC.",
             "observable": str(observable_value),
         }
 
