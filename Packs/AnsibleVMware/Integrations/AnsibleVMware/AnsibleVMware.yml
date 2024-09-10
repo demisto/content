@@ -27,8 +27,8 @@ configuration:
   required: true
   type: 15
   options:
-  - "False"
-  - "True"
+  - 'False'
+  - 'True'
 description: Manage VMware vSphere Server, Guests, and ESXi Hosts
 display: Ansible VMware
 fromversion: 6.0.0
@@ -47,20 +47,20 @@ script:
       name: category_name
       required: true
     - defaultValue: ''
-      description: 'The category description. This is required only if `state` is set to `present`. This parameter is ignored, when `state` is set to `absent`.'
+      description: The category description. This is required only if `state` is set to `present`. This parameter is ignored, when `state` is set to `absent`.
       name: category_description
     - auto: PREDEFINED
       defaultValue: multiple
-      description: 'The category cardinality. This parameter is ignored, when updating existing category.'
+      description: The category cardinality. This parameter is ignored, when updating existing category.
       name: category_cardinality
       predefined:
       - multiple
       - single
-    - description: 'The new name for an existing category. This value is used while updating an existing category.'
+    - description: The new name for an existing category. This value is used while updating an existing category.
       name: new_category_name
     - auto: PREDEFINED
       defaultValue: present
-      description: 'The state of category. If set to `present` and category does not exists, then category is created. If set to `present` and category exists, then category is updated. If set to `absent` and category exists, then category is deleted. If set to `absent` and category does not exists, no action is taken. Process of updating category only allows name, description change.'
+      description: The state of category. If set to `present` and category does not exists, then category is created. If set to `present` and category exists, then category is updated. If set to `absent` and category exists, then category is deleted. If set to `absent` and category does not exists, no action is taken. Process of updating category only allows name, description change.
       name: state
       predefined:
       - present
@@ -95,12 +95,12 @@ script:
   - arguments:
     - description: Name of ESXi server. This is required only if authentication against a vCenter is done.
       name: esxi_hostname
-    - description: 'The destination where the ESXi configuration bundle will be saved. The `dest` can be a folder or a file. If `dest` is a folder, the backup file will be saved in the folder with the default filename generated from the ESXi server. If `dest` is a file, the backup file will be saved with that filename. The file extension will always be .tgz.'
+    - description: The destination where the ESXi configuration bundle will be saved. The `dest` can be a folder or a file. If `dest` is a folder, the backup file will be saved in the folder with the default filename generated from the ESXi server. If `dest` is a file, the backup file will be saved with that filename. The file extension will always be .tgz.
       name: dest
     - description: The file containing the ESXi configuration that will be restored.
       name: src
     - auto: PREDEFINED
-      description: 'If `saved`, the .tgz backup bundle will be saved in `dest`. If `absent`, the host configuration will be reset to default values. If `loaded`, the backup file in `src` will be loaded to the ESXi host rewriting the hosts settings.'
+      description: If `saved`, the .tgz backup bundle will be saved in `dest`. If `absent`, the host configuration will be reset to default values. If `loaded`, the backup file in `src` will be loaded to the ESXi host rewriting the hosts settings.
       name: state
       predefined:
       - saved
@@ -129,18 +129,18 @@ script:
       description: If set to `yes`, VSAN will not be configured; all explicit and default VSAN related configurations will be ignored.
       name: ignore_vsan
     - defaultValue: 'no'
-      description: 'If set to `yes`, will enable DRS when the cluster is created. Use `enable_drs` of `vmware_cluster_drs` instead. Deprecated option, will be removed in version 2.12.'
+      description: If set to `yes`, will enable DRS when the cluster is created. Use `enable_drs` of `vmware_cluster_drs` instead. Deprecated option, will be removed in version 2.12.
       name: enable_drs
     - auto: PREDEFINED
       defaultValue: 'Yes'
-      description: 'Determines whether DRS Behavior overrides for individual virtual machines are enabled. If set to `True`, overrides `drs_default_vm_behavior`. Use `drs_enable_vm_behavior_overrides` of `vmware_cluster_drs` instead. Deprecated option, will be removed in version 2.12.'
+      description: Determines whether DRS Behavior overrides for individual virtual machines are enabled. If set to `True`, overrides `drs_default_vm_behavior`. Use `drs_enable_vm_behavior_overrides` of `vmware_cluster_drs` instead. Deprecated option, will be removed in version 2.12.
       name: drs_enable_vm_behavior_overrides
       predefined:
       - 'Yes'
       - 'No'
     - auto: PREDEFINED
       defaultValue: fullyAutomated
-      description: 'Specifies the cluster-wide default DRS behavior for virtual machines. If set to `partiallyAutomated`, then vCenter generate recommendations for virtual machine migration and for the placement with a host. vCenter automatically implement placement at power on. If set to `manual`, then vCenter generate recommendations for virtual machine migration and for the placement with a host. vCenter should not implement the recommendations automatically. If set to `fullyAutomated`, then vCenter should automate both the migration of virtual machines and their placement with a host at power on. Use `drs_default_vm_behavior` of `vmware_cluster_drs` instead. Deprecated option, will be removed in version 2.12.'
+      description: Specifies the cluster-wide default DRS behavior for virtual machines. If set to `partiallyAutomated`, then vCenter generate recommendations for virtual machine migration and for the placement with a host. vCenter automatically implement placement at power on. If set to `manual`, then vCenter generate recommendations for virtual machine migration and for the placement with a host. vCenter should not implement the recommendations automatically. If set to `fullyAutomated`, then vCenter should automate both the migration of virtual machines and their placement with a host at power on. Use `drs_default_vm_behavior` of `vmware_cluster_drs` instead. Deprecated option, will be removed in version 2.12.
       name: drs_default_vm_behavior
       predefined:
       - fullyAutomated
@@ -148,7 +148,7 @@ script:
       - partiallyAutomated
     - auto: PREDEFINED
       defaultValue: '3'
-      description: 'Threshold for generated ClusterRecommendations. Use `drs_vmotion_rate` of `vmware_cluster_drs` instead. Deprecated option, will be removed in version 2.12.'
+      description: Threshold for generated ClusterRecommendations. Use `drs_vmotion_rate` of `vmware_cluster_drs` instead. Deprecated option, will be removed in version 2.12.
       name: drs_vmotion_rate
       predefined:
       - '1'
@@ -157,48 +157,48 @@ script:
       - '4'
       - '5'
     - defaultValue: 'no'
-      description: 'If set to `yes` will enable HA when the cluster is created. Use `enable_ha` of `vmware_cluster_ha` instead. Deprecated option, will be removed in version 2.12.'
+      description: If set to `yes` will enable HA when the cluster is created. Use `enable_ha` of `vmware_cluster_ha` instead. Deprecated option, will be removed in version 2.12.
       name: enable_ha
     - auto: PREDEFINED
       defaultValue: enabled
-      description: 'Indicates whether HA restarts virtual machines after a host fails. If set to `enabled`, HA restarts virtual machines after a host fails. If set to `disabled`, HA does not restart virtual machines after a host fails. If `enable_ha` is set to `no`, then this value is ignored. Use `ha_host_monitoring` of `vmware_cluster_ha` instead. Deprecated option, will be removed in version 2.12.'
+      description: Indicates whether HA restarts virtual machines after a host fails. If set to `enabled`, HA restarts virtual machines after a host fails. If set to `disabled`, HA does not restart virtual machines after a host fails. If `enable_ha` is set to `no`, then this value is ignored. Use `ha_host_monitoring` of `vmware_cluster_ha` instead. Deprecated option, will be removed in version 2.12.
       name: ha_host_monitoring
       predefined:
       - enabled
       - disabled
     - auto: PREDEFINED
       defaultValue: vmMonitoringDisabled
-      description: 'Indicates the state of virtual machine health monitoring service. If set to `vmAndAppMonitoring`, HA response to both virtual machine and application heartbeat failure. If set to `vmMonitoringDisabled`, virtual machine health monitoring is disabled. If set to `vmMonitoringOnly`, HA response to virtual machine heartbeat failure. If `enable_ha` is set to `no`, then this value is ignored. Use `ha_vm_monitoring` of `vmware_cluster_ha` instead. Deprecated option, will be removed in version 2.12.'
+      description: Indicates the state of virtual machine health monitoring service. If set to `vmAndAppMonitoring`, HA response to both virtual machine and application heartbeat failure. If set to `vmMonitoringDisabled`, virtual machine health monitoring is disabled. If set to `vmMonitoringOnly`, HA response to virtual machine heartbeat failure. If `enable_ha` is set to `no`, then this value is ignored. Use `ha_vm_monitoring` of `vmware_cluster_ha` instead. Deprecated option, will be removed in version 2.12.
       name: ha_vm_monitoring
       predefined:
       - vmAndAppMonitoring
       - vmMonitoringOnly
       - vmMonitoringDisabled
     - defaultValue: '2'
-      description: 'Number of host failures that should be tolerated, still guaranteeing sufficient resources to restart virtual machines on available hosts. Accepts integer values only. Use `slot_based_admission_control`, `reservation_based_admission_control` or `failover_host_admission_control` of `vmware_cluster_ha` instead. Deprecated option, will be removed in version 2.12.'
+      description: Number of host failures that should be tolerated, still guaranteeing sufficient resources to restart virtual machines on available hosts. Accepts integer values only. Use `slot_based_admission_control`, `reservation_based_admission_control` or `failover_host_admission_control` of `vmware_cluster_ha` instead. Deprecated option, will be removed in version 2.12.
       name: ha_failover_level
     - auto: PREDEFINED
       defaultValue: 'Yes'
-      description: 'Determines if strict admission control is enabled. It is recommended to set this parameter to `True`, please refer documentation for more details. Use `slot_based_admission_control`, `reservation_based_admission_control` or `failover_host_admission_control` of `vmware_cluster_ha` instead. Deprecated option, will be removed in version 2.12.'
+      description: Determines if strict admission control is enabled. It is recommended to set this parameter to `True`, please refer documentation for more details. Use `slot_based_admission_control`, `reservation_based_admission_control` or `failover_host_admission_control` of `vmware_cluster_ha` instead. Deprecated option, will be removed in version 2.12.
       name: ha_admission_control_enabled
       predefined:
       - 'Yes'
       - 'No'
     - defaultValue: '30'
-      description: 'The number of seconds after which virtual machine is declared as failed if no heartbeat has been received. This setting is only valid if `ha_vm_monitoring` is set to, either `vmAndAppMonitoring` or `vmMonitoringOnly`. Unit is seconds. Use `ha_vm_failure_interval` of `vmware_cluster_ha` instead. Deprecated option, will be removed in version 2.12.'
+      description: The number of seconds after which virtual machine is declared as failed if no heartbeat has been received. This setting is only valid if `ha_vm_monitoring` is set to, either `vmAndAppMonitoring` or `vmMonitoringOnly`. Unit is seconds. Use `ha_vm_failure_interval` of `vmware_cluster_ha` instead. Deprecated option, will be removed in version 2.12.
       name: ha_vm_failure_interval
     - defaultValue: '120'
-      description: 'The number of seconds for the virtual machine''s heartbeats to stabilize after the virtual machine has been powered on. This setting is only valid if `ha_vm_monitoring` is set to, either `vmAndAppMonitoring` or `vmMonitoringOnly`. Unit is seconds. Use `ha_vm_min_up_time` of `vmware_cluster_ha` instead. Deprecated option, will be removed in version 2.12.'
+      description: The number of seconds for the virtual machine's heartbeats to stabilize after the virtual machine has been powered on. This setting is only valid if `ha_vm_monitoring` is set to, either `vmAndAppMonitoring` or `vmMonitoringOnly`. Unit is seconds. Use `ha_vm_min_up_time` of `vmware_cluster_ha` instead. Deprecated option, will be removed in version 2.12.
       name: ha_vm_min_up_time
     - defaultValue: '3'
-      description: 'Maximum number of failures and automated resets allowed during the time that `ha_vm_max_failure_window` specifies. This setting is only valid if `ha_vm_monitoring` is set to, either `vmAndAppMonitoring` or `vmMonitoringOnly`. Use `ha_vm_max_failures` of `vmware_cluster_ha` instead. Deprecated option, will be removed in version 2.12.'
+      description: Maximum number of failures and automated resets allowed during the time that `ha_vm_max_failure_window` specifies. This setting is only valid if `ha_vm_monitoring` is set to, either `vmAndAppMonitoring` or `vmMonitoringOnly`. Use `ha_vm_max_failures` of `vmware_cluster_ha` instead. Deprecated option, will be removed in version 2.12.
       name: ha_vm_max_failures
     - defaultValue: '-1'
-      description: 'The number of seconds for the window during which up to `ha_vm_max_failures` resets can occur before automated responses stop. This setting is only valid if `ha_vm_monitoring` is set to, either `vmAndAppMonitoring` or `vmMonitoringOnly`. Unit is seconds. Default specifies no failure window. Use `ha_vm_max_failure_window` of `vmware_cluster_ha` instead. Deprecated option, will be removed in version 2.12.'
+      description: The number of seconds for the window during which up to `ha_vm_max_failures` resets can occur before automated responses stop. This setting is only valid if `ha_vm_monitoring` is set to, either `vmAndAppMonitoring` or `vmMonitoringOnly`. Unit is seconds. Default specifies no failure window. Use `ha_vm_max_failure_window` of `vmware_cluster_ha` instead. Deprecated option, will be removed in version 2.12.
       name: ha_vm_max_failure_window
     - auto: PREDEFINED
       defaultValue: medium
-      description: 'Determines the preference that HA gives to a virtual machine if sufficient capacity is not available to power on all failed virtual machines. This setting is only valid if `ha_vm_monitoring` is set to, either `vmAndAppMonitoring` or `vmMonitoringOnly`. If set to `disabled`, then HA is disabled for this virtual machine. If set to `high`, then virtual machine with this priority have a higher chance of powering on after a failure, when there is insufficient capacity on hosts to meet all virtual machine needs. If set to `medium`, then virtual machine with this priority have an intermediate chance of powering on after a failure, when there is insufficient capacity on hosts to meet all virtual machine needs. If set to `low`, then virtual machine with this priority have a lower chance of powering on after a failure, when there is insufficient capacity on hosts to meet all virtual machine needs. Use `ha_restart_priority` of `vmware_cluster_ha` instead. Deprecated option, will be removed in version 2.12.'
+      description: Determines the preference that HA gives to a virtual machine if sufficient capacity is not available to power on all failed virtual machines. This setting is only valid if `ha_vm_monitoring` is set to, either `vmAndAppMonitoring` or `vmMonitoringOnly`. If set to `disabled`, then HA is disabled for this virtual machine. If set to `high`, then virtual machine with this priority have a higher chance of powering on after a failure, when there is insufficient capacity on hosts to meet all virtual machine needs. If set to `medium`, then virtual machine with this priority have an intermediate chance of powering on after a failure, when there is insufficient capacity on hosts to meet all virtual machine needs. If set to `low`, then virtual machine with this priority have a lower chance of powering on after a failure, when there is insufficient capacity on hosts to meet all virtual machine needs. Use `ha_restart_priority` of `vmware_cluster_ha` instead. Deprecated option, will be removed in version 2.12.
       name: ha_restart_priority
       predefined:
       - disabled
@@ -206,11 +206,11 @@ script:
       - low
       - medium
     - defaultValue: 'no'
-      description: 'If set to `yes` will enable vSAN when the cluster is created. Use `enable_vsan` of `vmware_cluster_vsan` instead. Deprecated option, will be removed in version 2.12.'
+      description: If set to `yes` will enable vSAN when the cluster is created. Use `enable_vsan` of `vmware_cluster_vsan` instead. Deprecated option, will be removed in version 2.12.
       name: enable_vsan
     - auto: PREDEFINED
       defaultValue: 'No'
-      description: 'Determines whether the VSAN service is configured to automatically claim local storage on VSAN-enabled hosts in the cluster. Use `vsan_auto_claim_storage` of `vmware_cluster_vsan` instead. Deprecated option, will be removed in version 2.12.'
+      description: Determines whether the VSAN service is configured to automatically claim local storage on VSAN-enabled hosts in the cluster. Use `vsan_auto_claim_storage` of `vmware_cluster_vsan` instead. Deprecated option, will be removed in version 2.12.
       name: vsan_auto_claim_storage
       predefined:
       - 'Yes'
@@ -237,14 +237,14 @@ script:
       name: enable_drs
     - auto: PREDEFINED
       defaultValue: 'Yes'
-      description: 'Whether DRS Behavior overrides for individual virtual machines are enabled. If set to `True`, overrides `drs_default_vm_behavior`.'
+      description: Whether DRS Behavior overrides for individual virtual machines are enabled. If set to `True`, overrides `drs_default_vm_behavior`.
       name: drs_enable_vm_behavior_overrides
       predefined:
       - 'Yes'
       - 'No'
     - auto: PREDEFINED
       defaultValue: fullyAutomated
-      description: 'Specifies the cluster-wide default DRS behavior for virtual machines. If set to `partiallyAutomated`, vCenter generates recommendations for virtual machine migration and for the placement with a host, then automatically implements placement recommendations at power on. If set to `manual`, then vCenter generates recommendations for virtual machine migration and for the placement with a host, but does not implement the recommendations automatically. If set to `fullyAutomated`, then vCenter automates both the migration of virtual machines and their placement with a host at power on.'
+      description: Specifies the cluster-wide default DRS behavior for virtual machines. If set to `partiallyAutomated`, vCenter generates recommendations for virtual machine migration and for the placement with a host, then automatically implements placement recommendations at power on. If set to `manual`, then vCenter generates recommendations for virtual machine migration and for the placement with a host, but does not implement the recommendations automatically. If set to `fullyAutomated`, then vCenter automates both the migration of virtual machines and their placement with a host at power on.
       name: drs_default_vm_behavior
       predefined:
       - fullyAutomated
@@ -275,14 +275,14 @@ script:
       name: enable_ha
     - auto: PREDEFINED
       defaultValue: enabled
-      description: 'Whether HA restarts virtual machines after a host fails. If set to `enabled`, HA restarts virtual machines after a host fails. If set to `disabled`, HA does not restart virtual machines after a host fails. If `enable_ha` is set to `no`, then this value is ignored.'
+      description: Whether HA restarts virtual machines after a host fails. If set to `enabled`, HA restarts virtual machines after a host fails. If set to `disabled`, HA does not restart virtual machines after a host fails. If `enable_ha` is set to `no`, then this value is ignored.
       name: ha_host_monitoring
       predefined:
       - enabled
       - disabled
     - auto: PREDEFINED
       defaultValue: vmMonitoringDisabled
-      description: 'State of virtual machine health monitoring service. If set to `vmAndAppMonitoring`, HA response to both virtual machine and application heartbeat failure. If set to `vmMonitoringDisabled`, virtual machine health monitoring is disabled. If set to `vmMonitoringOnly`, HA response to virtual machine heartbeat failure. If `enable_ha` is set to `no`, then this value is ignored.'
+      description: State of virtual machine health monitoring service. If set to `vmAndAppMonitoring`, HA response to both virtual machine and application heartbeat failure. If set to `vmMonitoringDisabled`, virtual machine health monitoring is disabled. If set to `vmMonitoringOnly`, HA response to virtual machine heartbeat failure. If `enable_ha` is set to `no`, then this value is ignored.
       name: ha_vm_monitoring
       predefined:
       - vmAndAppMonitoring
@@ -290,36 +290,36 @@ script:
       - vmMonitoringDisabled
     - auto: PREDEFINED
       defaultValue: none
-      description: 'Indicates whether or VMs should be powered off if a host determines that it is isolated from the rest of the compute resource. If set to `none`, do not power off VMs in the event of a host network isolation. If set to `powerOff`, power off VMs in the event of a host network isolation. If set to `shutdown`, shut down VMs guest operating system in the event of a host network isolation.'
+      description: Indicates whether or VMs should be powered off if a host determines that it is isolated from the rest of the compute resource. If set to `none`, do not power off VMs in the event of a host network isolation. If set to `powerOff`, power off VMs in the event of a host network isolation. If set to `shutdown`, shut down VMs guest operating system in the event of a host network isolation.
       name: host_isolation_response
       predefined:
       - none
       - powerOff
       - shutdown
-    - description: 'Configure slot based admission control policy. `slot_based_admission_control`, `reservation_based_admission_control` and `failover_host_admission_control` are mutually exclusive.'
+    - description: Configure slot based admission control policy. `slot_based_admission_control`, `reservation_based_admission_control` and `failover_host_admission_control` are mutually exclusive.
       isArray: true
       name: slot_based_admission_control
-    - description: 'Configure reservation based admission control policy. `slot_based_admission_control`, `reservation_based_admission_control` and `failover_host_admission_control` are mutually exclusive.'
+    - description: Configure reservation based admission control policy. `slot_based_admission_control`, `reservation_based_admission_control` and `failover_host_admission_control` are mutually exclusive.
       isArray: true
       name: reservation_based_admission_control
-    - description: 'Configure dedicated failover hosts. `slot_based_admission_control`, `reservation_based_admission_control` and `failover_host_admission_control` are mutually exclusive.'
+    - description: Configure dedicated failover hosts. `slot_based_admission_control`, `reservation_based_admission_control` and `failover_host_admission_control` are mutually exclusive.
       isArray: true
       name: failover_host_admission_control
     - defaultValue: '30'
-      description: 'The number of seconds after which virtual machine is declared as failed if no heartbeat has been received. This setting is only valid if `ha_vm_monitoring` is set to, either `vmAndAppMonitoring` or `vmMonitoringOnly`. Unit is seconds.'
+      description: The number of seconds after which virtual machine is declared as failed if no heartbeat has been received. This setting is only valid if `ha_vm_monitoring` is set to, either `vmAndAppMonitoring` or `vmMonitoringOnly`. Unit is seconds.
       name: ha_vm_failure_interval
     - defaultValue: '120'
-      description: 'The number of seconds for the virtual machine''s heartbeats to stabilize after the virtual machine has been powered on. Valid only when `ha_vm_monitoring` is set to either `vmAndAppMonitoring` or `vmMonitoringOnly`. Unit is seconds.'
+      description: The number of seconds for the virtual machine's heartbeats to stabilize after the virtual machine has been powered on. Valid only when `ha_vm_monitoring` is set to either `vmAndAppMonitoring` or `vmMonitoringOnly`. Unit is seconds.
       name: ha_vm_min_up_time
     - defaultValue: '3'
-      description: 'Maximum number of failures and automated resets allowed during the time that `ha_vm_max_failure_window` specifies. Valid only when `ha_vm_monitoring` is set to either `vmAndAppMonitoring` or `vmMonitoringOnly`.'
+      description: Maximum number of failures and automated resets allowed during the time that `ha_vm_max_failure_window` specifies. Valid only when `ha_vm_monitoring` is set to either `vmAndAppMonitoring` or `vmMonitoringOnly`.
       name: ha_vm_max_failures
     - defaultValue: '-1'
-      description: 'The number of seconds for the window during which up to `ha_vm_max_failures` resets can occur before automated responses stop. Valid only when `ha_vm_monitoring` is set to either `vmAndAppMonitoring` or `vmMonitoringOnly`. Unit is seconds. Default specifies no failure window.'
+      description: The number of seconds for the window during which up to `ha_vm_max_failures` resets can occur before automated responses stop. Valid only when `ha_vm_monitoring` is set to either `vmAndAppMonitoring` or `vmMonitoringOnly`. Unit is seconds. Default specifies no failure window.
       name: ha_vm_max_failure_window
     - auto: PREDEFINED
       defaultValue: medium
-      description: 'Priority HA gives to a virtual machine if sufficient capacity is not available to power on all failed virtual machines. Valid only if `ha_vm_monitoring` is set to either `vmAndAppMonitoring` or `vmMonitoringOnly`. If set to `disabled`, then HA is disabled for this virtual machine. If set to `high`, then virtual machine with this priority have a higher chance of powering on after a failure, when there is insufficient capacity on hosts to meet all virtual machine needs. If set to `medium`, then virtual machine with this priority have an intermediate chance of powering on after a failure, when there is insufficient capacity on hosts to meet all virtual machine needs. If set to `low`, then virtual machine with this priority have a lower chance of powering on after a failure, when there is insufficient capacity on hosts to meet all virtual machine needs.'
+      description: Priority HA gives to a virtual machine if sufficient capacity is not available to power on all failed virtual machines. Valid only if `ha_vm_monitoring` is set to either `vmAndAppMonitoring` or `vmMonitoringOnly`. If set to `disabled`, then HA is disabled for this virtual machine. If set to `high`, then virtual machine with this priority have a higher chance of powering on after a failure, when there is insufficient capacity on hosts to meet all virtual machine needs. If set to `medium`, then virtual machine with this priority have an intermediate chance of powering on after a failure, when there is insufficient capacity on hosts to meet all virtual machine needs. If set to `low`, then virtual machine with this priority have a lower chance of powering on after a failure, when there is insufficient capacity on hosts to meet all virtual machine needs.
       name: ha_restart_priority
       predefined:
       - disabled
@@ -330,9 +330,9 @@ script:
     name: vmware-cluster-ha
     outputs: []
   - arguments:
-    - description: 'Datacenter to search for cluster/s. This parameter is required, if `cluster_name` is not supplied.'
+    - description: Datacenter to search for cluster/s. This parameter is required, if `cluster_name` is not supplied.
       name: datacenter
-    - description: 'Name of the cluster. If set, information of this cluster will be returned. This parameter is required, if `datacenter` is not supplied.'
+    - description: Name of the cluster. If set, information of this cluster will be returned. This parameter is required, if `datacenter` is not supplied.
       name: cluster_name
     - auto: PREDEFINED
       defaultValue: 'No'
@@ -392,7 +392,7 @@ script:
       name: cluster
     - auto: PREDEFINED
       defaultValue: present
-      description: 'The state of Virtual Machine deployed from template in content library. If set to `present` and VM does not exists, then VM is created. If set to `present` and VM exists, no action is taken. If set to `poweredon` and VM does not exists, then VM is created with powered on state. If set to `poweredon` and VM exists, no action is taken.'
+      description: The state of Virtual Machine deployed from template in content library. If set to `present` and VM does not exists, then VM is created. If set to `present` and VM exists, no action is taken. If set to `poweredon` and VM does not exists, then VM is created with powered on state. If set to `poweredon` and VM exists, no action is taken.
       name: state
       predefined:
       - present
@@ -434,20 +434,20 @@ script:
       name: library_name
       required: true
     - defaultValue: ''
-      description: 'The content library description. This is required only if `state` is set to `present`. This parameter is ignored, when `state` is set to `absent`. Process of updating content library only allows description change.'
+      description: The content library description. This is required only if `state` is set to `present`. This parameter is ignored, when `state` is set to `absent`. Process of updating content library only allows description change.
       name: library_description
     - auto: PREDEFINED
       defaultValue: local
-      description: 'The content library type. This is required only if `state` is set to `present`. This parameter is ignored, when `state` is set to `absent`.'
+      description: The content library type. This is required only if `state` is set to `present`. This parameter is ignored, when `state` is set to `absent`.
       name: library_type
       predefined:
       - local
       - subscribed
-    - description: 'Name of the datastore on which backing content library is created. This is required only if `state` is set to `present`. This parameter is ignored, when `state` is set to `absent`. Currently only datastore backing creation is supported.'
+    - description: Name of the datastore on which backing content library is created. This is required only if `state` is set to `present`. This parameter is ignored, when `state` is set to `absent`. Currently only datastore backing creation is supported.
       name: datastore_name
     - auto: PREDEFINED
       defaultValue: present
-      description: 'The state of content library. If set to `present` and library does not exists, then content library is created. If set to `present` and library exists, then content library is updated. If set to `absent` and library exists, then content library is deleted. If set to `absent` and library does not exists, no action is taken.'
+      description: The state of content library. If set to `present` and library does not exists, then content library is created. If set to `present` and library exists, then content library is updated. If set to `absent` and library exists, then content library is deleted. If set to `absent` and library does not exists, no action is taken.
       name: state
       predefined:
       - present
@@ -480,7 +480,7 @@ script:
     name: vmware-datacenter
     outputs: []
   - arguments:
-    - description: 'The name of the datacenter. You must specify either a `datacenter_name` or a `folder`. Mutually exclusive with `folder` parameter.'
+    - description: The name of the datacenter. You must specify either a `datacenter_name` or a `folder`. Mutually exclusive with `folder` parameter.
       name: datacenter_name
     - description: The name of the datastore cluster.
       name: datastore_cluster_name
@@ -501,22 +501,22 @@ script:
       description: information about datastore cluster operation
       type: string
   - arguments:
-    - description: 'Name of the datastore to match. If set, information of specific datastores are returned.'
+    - description: Name of the datastore to match. If set, information of specific datastores are returned.
       name: name
-    - description: 'Datacenter to search for datastores. This parameter is required, if `cluster` is not supplied.'
+    - description: Datacenter to search for datastores. This parameter is required, if `cluster` is not supplied.
       name: datacenter
-    - description: 'Cluster to search for datastores. If set, information of datastores belonging this clusters will be returned. This parameter is required, if `datacenter` is not supplied.'
+    - description: Cluster to search for datastores. If set, information of datastores belonging this clusters will be returned. This parameter is required, if `datacenter` is not supplied.
       name: cluster
     - auto: PREDEFINED
       defaultValue: 'No'
-      description: 'Gather mount information of NFS datastores. Disabled per default because this slows down the execution if you have a lot of datastores.'
+      description: Gather mount information of NFS datastores. Disabled per default because this slows down the execution if you have a lot of datastores.
       name: gather_nfs_mount_info
       predefined:
       - 'Yes'
       - 'No'
     - auto: PREDEFINED
       defaultValue: 'No'
-      description: 'Gather mount information of VMFS datastores. Disabled per default because this slows down the execution if you have a lot of datastores.'
+      description: Gather mount information of VMFS datastores. Disabled per default because this slows down the execution if you have a lot of datastores.
       name: gather_vmfs_mount_info
       predefined:
       - 'Yes'
@@ -528,15 +528,15 @@ script:
       description: metadata about the available datastores
       type: unknown
   - arguments:
-    - description: 'Name of datastore to manage. If `datastore_cluster` or `cluster_name` are not set, this parameter is required.'
+    - description: Name of datastore to manage. If `datastore_cluster` or `cluster_name` are not set, this parameter is required.
       name: datastore
-    - description: 'Name of the datastore cluster from all child datastores to be managed. If `datastore` or `cluster_name` are not set, this parameter is required.'
+    - description: Name of the datastore cluster from all child datastores to be managed. If `datastore` or `cluster_name` are not set, this parameter is required.
       name: datastore_cluster
-    - description: 'Name of the cluster where datastore is connected to. If multiple datastores are connected to the given cluster, then all datastores will be managed by `state`. If `datastore` or `datastore_cluster` are not set, this parameter is required.'
+    - description: Name of the cluster where datastore is connected to. If multiple datastores are connected to the given cluster, then all datastores will be managed by `state`. If `datastore` or `datastore_cluster` are not set, this parameter is required.
       name: cluster_name
     - auto: PREDEFINED
       defaultValue: present
-      description: 'If set to `present`, then enter datastore into maintenance mode. If set to `present` and datastore is already in maintenance mode, then no action will be taken. If set to `absent` and datastore is in maintenance mode, then exit maintenance mode. If set to `absent` and datastore is not in maintenance mode, then no action will be taken.'
+      description: If set to `present`, then enter datastore into maintenance mode. If set to `present` and datastore is already in maintenance mode, then no action will be taken. If set to `absent` and datastore is in maintenance mode, then exit maintenance mode. If set to `absent` and datastore is not in maintenance mode, then no action will be taken.
       name: state
       predefined:
       - present
@@ -570,18 +570,18 @@ script:
     - description: The name of the group to create or remove.
       name: group_name
       required: true
-    - description: 'List of hosts to create in group. Required only if `vms` is not set.'
+    - description: List of hosts to create in group. Required only if `vms` is not set.
       isArray: true
       name: hosts
     - auto: PREDEFINED
       defaultValue: present
-      description: 'If set to `present` and the group doesn''t exists then the group will be created. If set to `absent` and the group exists then the group will be deleted.'
+      description: If set to `present` and the group doesn't exists then the group will be created. If set to `absent` and the group exists then the group will be deleted.
       name: state
       predefined:
       - present
       - absent
       required: true
-    - description: 'List of vms to create in group. Required only if `hosts` is not set.'
+    - description: List of vms to create in group. Required only if `hosts` is not set.
       isArray: true
       name: vms
     description: "Creates vm/host group in a given cluster.\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_drs_group_module.html"
@@ -591,7 +591,7 @@ script:
       description: Metadata about DRS group created
       type: unknown
   - arguments:
-    - description: 'Cluster to search for VM/Host groups. If set, information of DRS groups belonging this cluster will be returned. Not needed if `datacenter` is set.'
+    - description: Cluster to search for VM/Host groups. If set, information of DRS groups belonging this cluster will be returned. Not needed if `datacenter` is set.
       name: cluster_name
     - description: Datacenter to search for DRS VM/Host groups.
       name: datacenter
@@ -603,9 +603,9 @@ script:
       description: Metadata about DRS group from given cluster / datacenter
       type: unknown
   - arguments:
-    - description: 'Name of the cluster. DRS information for the given cluster will be returned. This is required parameter if `datacenter` parameter is not provided.'
+    - description: Name of the cluster. DRS information for the given cluster will be returned. This is required parameter if `datacenter` parameter is not provided.
       name: cluster_name
-    - description: 'Name of the datacenter. DRS information for all the clusters from the given datacenter will be returned. This is required parameter if `cluster_name` parameter is not provided.'
+    - description: Name of the datacenter. DRS information for all the clusters from the given datacenter will be returned. This is required parameter if `cluster_name` parameter is not provided.
       name: datacenter
     description: "Gathers info about DRS rule on the given cluster\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_drs_rule_info_module.html"
     name: vmware-drs-rule-info
@@ -691,13 +691,13 @@ script:
   - arguments:
     - description: Name of a distributed vSwitch to look for.
       name: dvswitch
-    - description: 'VLAN id can be any number between 1 and 4094. This search criteria will looks into VLAN ranges to find possible matches.'
+    - description: VLAN id can be any number between 1 and 4094. This search criteria will looks into VLAN ranges to find possible matches.
       name: vlanid
-    - description: 'string to check inside the name of the portgroup. Basic containment check using python `in` operation.'
+    - description: string to check inside the name of the portgroup. Basic containment check using python `in` operation.
       name: name
     - auto: PREDEFINED
       defaultValue: 'No'
-      description: 'Show or hide uplink portgroups. Only relevant when `vlanid` is supplied.'
+      description: Show or hide uplink portgroups. Only relevant when `vlanid` is supplied.
       name: show_uplink
       predefined:
       - 'Yes'
@@ -749,13 +749,13 @@ script:
       description: metadata about DVS portgroup configuration
       type: unknown
   - arguments:
-    - description: 'The name of the datacenter that will contain the Distributed Switch. This parameter is optional, if `folder` is provided. Mutually exclusive with `folder` parameter.'
+    - description: The name of the datacenter that will contain the Distributed Switch. This parameter is optional, if `folder` is provided. Mutually exclusive with `folder` parameter.
       name: datacenter_name
     - description: The name of the distribute vSwitch to create or remove.
       name: switch_name
       required: true
     - auto: PREDEFINED
-      description: 'The version of the Distributed Switch to create. Can be 6.0.0, 5.5.0, 5.1.0, 5.0.0 with a vCenter running vSphere 6.0 and 6.5. Can be 6.6.0, 6.5.0, 6.0.0 with a vCenter running vSphere 6.7. The version must match the version of the ESXi hosts you want to connect. The version of the vCenter server is used if not specified. Required only if `state` is set to `present`.'
+      description: The version of the Distributed Switch to create. Can be 6.0.0, 5.5.0, 5.1.0, 5.0.0 with a vCenter running vSphere 6.0 and 6.5. Can be 6.6.0, 6.5.0, 6.0.0 with a vCenter running vSphere 6.7. The version must match the version of the ESXi hosts you want to connect. The version of the vCenter server is used if not specified. Required only if `state` is set to `present`.
       name: switch_version
       predefined:
       - 5.0.0
@@ -765,7 +765,7 @@ script:
       - 6.5.0
       - 6.6.0
     - defaultValue: '1500'
-      description: 'The switch maximum transmission unit. Required parameter for `state` both `present` and `absent`, before Ansible 2.6 version. Required only if `state` is set to `present`, for Ansible 2.6 and onwards. Accepts value between 1280 to 9000 (both inclusive).'
+      description: The switch maximum transmission unit. Required parameter for `state` both `present` and `absent`, before Ansible 2.6 version. Required only if `state` is set to `present`, for Ansible 2.6 and onwards. Accepts value between 1280 to 9000 (both inclusive).
       name: mtu
     - auto: PREDEFINED
       defaultValue: basic
@@ -774,10 +774,10 @@ script:
       predefined:
       - basic
       - snooping
-    - description: 'Quantity of uplink per ESXi host added to the Distributed Switch. The uplink quantity can be increased or decreased, but a decrease will only be successfull if the uplink isn''t used by a portgroup. Required parameter for `state` both `present` and `absent`, before Ansible 2.6 version. Required only if `state` is set to `present`, for Ansible 2.6 and onwards.'
+    - description: Quantity of uplink per ESXi host added to the Distributed Switch. The uplink quantity can be increased or decreased, but a decrease will only be successfull if the uplink isn't used by a portgroup. Required parameter for `state` both `present` and `absent`, before Ansible 2.6 version. Required only if `state` is set to `present`, for Ansible 2.6 and onwards.
       name: uplink_quantity
     - defaultValue: 'Uplink '
-      description: 'The prefix used for the naming of the uplinks. Only valid if the Distributed Switch will be created. Not used if the Distributed Switch is already present. Uplinks are created as Uplink 1, Uplink 2, etc. pp. by default.'
+      description: The prefix used for the naming of the uplinks. Only valid if the Distributed Switch will be created. Not used if the Distributed Switch is already present. Uplinks are created as Uplink 1, Uplink 2, etc. pp. by default.
       name: uplink_prefix
     - auto: PREDEFINED
       defaultValue: cdp
@@ -789,7 +789,7 @@ script:
       - disabled
     - auto: PREDEFINED
       defaultValue: listen
-      description: 'Select the discovery operation. Required parameter for `state` both `present` and `absent`, before Ansible 2.6 version. Required only if `state` is set to `present`, for Ansible 2.6 and onwards.'
+      description: Select the discovery operation. Required parameter for `state` both `present` and `absent`, before Ansible 2.6 version. Required only if `state` is set to `present`, for Ansible 2.6 and onwards.
       name: discovery_operation
       predefined:
       - both
@@ -806,7 +806,7 @@ script:
       name: health_check
     - auto: PREDEFINED
       defaultValue: present
-      description: 'If set to `present` and the Distributed Switch doesn''t exists then the Distributed Switch will be created. If set to `absent` and the Distributed Switch exists then the Distributed Switch will be deleted.'
+      description: If set to `present` and the Distributed Switch doesn't exists then the Distributed Switch will be created. If set to `absent` and the Distributed Switch exists then the Distributed Switch will be deleted.
       name: state
       predefined:
       - present
@@ -872,10 +872,10 @@ script:
     - description: The name of the Distributed Switch.
       name: switch
       required: true
-    - description: 'A list of VLAN IDs that should be configured as Primary PVLANs. If `primary_pvlans` isn''t specified, all PVLANs will be deleted if present. Each member of the list requires primary_pvlan_id (int) set. The secondary promiscuous PVLAN will be created automatically. If `secondary_pvlans` isn''t specified, the primary PVLANs and each secondary promiscuous PVLAN will be created. Please see examples for more information.'
+    - description: A list of VLAN IDs that should be configured as Primary PVLANs. If `primary_pvlans` isn't specified, all PVLANs will be deleted if present. Each member of the list requires primary_pvlan_id (int) set. The secondary promiscuous PVLAN will be created automatically. If `secondary_pvlans` isn't specified, the primary PVLANs and each secondary promiscuous PVLAN will be created. Please see examples for more information.
       isArray: true
       name: primary_pvlans
-    - description: 'A list of VLAN IDs that should be configured as Secondary PVLANs. `primary_pvlans` need to be specified to create any Secondary PVLAN. If `primary_pvlans` isn''t specified, all PVLANs will be deleted if present. Each member of the list requires primary_pvlan_id (int), secondary_pvlan_id (int), and pvlan_type (str) to be set. The type of the secondary PVLAN can be isolated or community. The secondary promiscuous PVLAN will be created automatically. Please see examples for more information.'
+    - description: A list of VLAN IDs that should be configured as Secondary PVLANs. `primary_pvlans` need to be specified to create any Secondary PVLAN. If `primary_pvlans` isn't specified, all PVLANs will be deleted if present. Each member of the list requires primary_pvlan_id (int), secondary_pvlan_id (int), and pvlan_type (str) to be set. The type of the secondary PVLAN can be isolated or community. The secondary promiscuous PVLAN will be created automatically. Please see examples for more information.
       isArray: true
       name: secondary_pvlans
     description: "Manage Private VLAN configuration of a Distributed Switch\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_dvswitch_pvlans_module.html"
@@ -888,7 +888,7 @@ script:
     - description: The name of the Distributed Switch.
       name: switch
       required: true
-    - description: 'The name of the uplink portgroup. The current name will be used if not specified.'
+    - description: The name of the uplink portgroup. The current name will be used if not specified.
       name: name
     - description: The description of the uplink portgroup.
       name: description
@@ -931,7 +931,7 @@ script:
     - description: The name of the cluster to enable or disable EVC mode on.
       name: cluster_name
       required: true
-    - description: 'Required for `state=present`. The EVC mode to enable or disable on the cluster. (intel-broadwell, intel-nehalem, intel-merom, etc.).'
+    - description: Required for `state=present`. The EVC mode to enable or disable on the cluster. (intel-broadwell, intel-nehalem, intel-merom, etc.).
       name: evc_mode
       required: true
     - auto: PREDEFINED
@@ -960,7 +960,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       defaultValue: present
-      description: 'Specify the state the virtual machine should be in. If `state` is set to `present` and virtual machine exists, ensure the virtual machine configurations conforms to task arguments. If `state` is set to `absent` and virtual machine exists, then the specified virtual machine is removed with its associated components. If `state` is set to one of the following `poweredon`, `poweredoff`, `present`, `restarted`, `suspended` and virtual machine does not exists, then virtual machine is deployed with given parameters. If `state` is set to `poweredon` and virtual machine exists with powerstate other than powered on, then the specified virtual machine is powered on. If `state` is set to `poweredoff` and virtual machine exists with powerstate other than powered off, then the specified virtual machine is powered off. If `state` is set to `restarted` and virtual machine exists, then the virtual machine is restarted. If `state` is set to `suspended` and virtual machine exists, then the virtual machine is set to suspended mode. If `state` is set to `shutdownguest` and virtual machine exists, then the virtual machine is shutdown. If `state` is set to `rebootguest` and virtual machine exists, then the virtual machine is rebooted.'
+      description: Specify the state the virtual machine should be in. If `state` is set to `present` and virtual machine exists, ensure the virtual machine configurations conforms to task arguments. If `state` is set to `absent` and virtual machine exists, then the specified virtual machine is removed with its associated components. If `state` is set to one of the following `poweredon`, `poweredoff`, `present`, `restarted`, `suspended` and virtual machine does not exists, then virtual machine is deployed with given parameters. If `state` is set to `poweredon` and virtual machine exists with powerstate other than powered on, then the specified virtual machine is powered on. If `state` is set to `poweredoff` and virtual machine exists with powerstate other than powered off, then the specified virtual machine is powered off. If `state` is set to `restarted` and virtual machine exists, then the virtual machine is restarted. If `state` is set to `suspended` and virtual machine exists, then the virtual machine is set to suspended mode. If `state` is set to `shutdownguest` and virtual machine exists, then the virtual machine is shutdown. If `state` is set to `rebootguest` and virtual machine exists, then the virtual machine is rebooted.
       name: state
       predefined:
       - present
@@ -971,7 +971,7 @@ script:
       - suspended
       - shutdownguest
       - rebootguest
-    - description: 'Name of the virtual machine to work with. Virtual machine names in vCenter are not necessarily unique, which may be problematic, see `name_match`. If multiple virtual machines with same name exists, then `folder` is required parameter to identify uniqueness of the virtual machine. This parameter is required, if `state` is set to `poweredon`, `poweredoff`, `present`, `restarted`, `suspended` and virtual machine does not exists. This parameter is case sensitive.'
+    - description: Name of the virtual machine to work with. Virtual machine names in vCenter are not necessarily unique, which may be problematic, see `name_match`. If multiple virtual machines with same name exists, then `folder` is required parameter to identify uniqueness of the virtual machine. This parameter is required, if `state` is set to `poweredon`, `poweredoff`, `present`, `restarted`, `suspended` and virtual machine does not exists. This parameter is case sensitive.
       name: name
       required: true
     - auto: PREDEFINED
@@ -981,7 +981,7 @@ script:
       predefined:
       - first
       - last
-    - description: 'UUID of the virtual machine to manage if known, this is VMware''s unique identifier. This is required if `name` is not supplied. If virtual machine does not exists, then this parameter is ignored. Please note that a supplied UUID will be ignored on virtual machine creation, as VMware creates the UUID internally.'
+    - description: UUID of the virtual machine to manage if known, this is VMware's unique identifier. This is required if `name` is not supplied. If virtual machine does not exists, then this parameter is ignored. Please note that a supplied UUID will be ignored on virtual machine creation, as VMware creates the UUID internally.
       name: uuid
     - auto: PREDEFINED
       defaultValue: 'No'
@@ -990,10 +990,10 @@ script:
       predefined:
       - 'Yes'
       - 'No'
-    - description: 'Template or existing virtual machine used to create new virtual machine. If this value is not set, virtual machine is created without using a template. If the virtual machine already exists, this parameter will be ignored. This parameter is case sensitive. You can also specify template or VM UUID for identifying source. version_added 2.8. Use `hw_product_uuid` from `vmware_guest_facts` as UUID value. From version 2.8 onwards, absolute path to virtual machine or template can be used.'
+    - description: Template or existing virtual machine used to create new virtual machine. If this value is not set, virtual machine is created without using a template. If the virtual machine already exists, this parameter will be ignored. This parameter is case sensitive. You can also specify template or VM UUID for identifying source. version_added 2.8. Use `hw_product_uuid` from `vmware_guest_facts` as UUID value. From version 2.8 onwards, absolute path to virtual machine or template can be used.
       name: template
     - defaultValue: 'no'
-      description: 'Flag the instance as a template. This will mark the given virtual machine as template.'
+      description: Flag the instance as a template. This will mark the given virtual machine as template.
       name: is_template
     - description: 'Destination folder, absolute path to find an existing guest or create the new guest. The folder should include the datacenter. ESX''s datacenter is ha-datacenter. This parameter is case sensitive. This parameter is required, while deploying new virtual machine. version_added 2.5. If multiple machines are found with same name, this parameter is used to identify uniqueness of the virtual machine. version_added 2.5 Examples: folder: /ha-datacenter/vm folder: ha-datacenter/vm folder: /datacenter1/vm folder: datacenter1/vm folder: /datacenter1/vm/folder1 folder: datacenter1/vm/folder1 folder: /folder1/datacenter1/vm folder: folder1/datacenter1/vm folder: /folder1/datacenter1/vm/folder2'
       name: folder
@@ -1005,35 +1005,35 @@ script:
       name: disk
     - description: 'A CD-ROM configuration for the virtual machine. Or a list of CD-ROMs configuration for the virtual machine. Added in version 2.9. Parameters `controller_type`, `controller_number`, `unit_number`, `state` are added for a list of CD-ROMs configuration support. Valid attributes are: - `type` (string): The type of CD-ROM, valid options are `none`, `client` or `iso`. With `none` the CD-ROM will be disconnected but present. - `iso_path` (string): The datastore path to the ISO file to use, in the form of `[datastore1] path/to/file.iso`. Required if type is set `iso`. - `controller_type` (string): Default value is `ide`. Only `ide` controller type for CD-ROM is supported for now, will add SATA controller type in the future. - `controller_number` (int): For `ide` controller, valid value is 0 or 1. - `unit_number` (int): For CD-ROM device attach to `ide` controller, valid value is 0 or 1. `controller_number` and `unit_number` are mandatory attributes. - `state` (string): Valid value is `present` or `absent`. Default is `present`. If set to `absent`, then the specified CD-ROM will be removed. For `ide` controller, hot-add or hot-remove CD-ROM is not supported.'
       name: cdrom
-    - description: 'Use the given resource pool for virtual machine operation. This parameter is case sensitive. Resource pool should be child of the selected host parent.'
+    - description: Use the given resource pool for virtual machine operation. This parameter is case sensitive. Resource pool should be child of the selected host parent.
       name: resource_pool
     - defaultValue: 'no'
-      description: 'Wait until vCenter detects an IP address for the virtual machine. This requires vmware-tools (vmtoolsd) to properly work after creation. vmware-tools needs to be installed on the given virtual machine in order to work with this parameter.'
+      description: Wait until vCenter detects an IP address for the virtual machine. This requires vmware-tools (vmtoolsd) to properly work after creation. vmware-tools needs to be installed on the given virtual machine in order to work with this parameter.
       name: wait_for_ip_address
     - defaultValue: 'no'
-      description: 'Wait until vCenter detects all guest customizations as successfully completed. When enabled, the VM will automatically be powered on.'
+      description: Wait until vCenter detects all guest customizations as successfully completed. When enabled, the VM will automatically be powered on.
       name: wait_for_customization
     - defaultValue: '0'
-      description: 'If the `state` is set to `shutdownguest`, by default the module will return immediately after sending the shutdown signal. If this argument is set to a positive integer, the module will instead wait for the virtual machine to reach the poweredoff state. The value sets a timeout in seconds for the module to wait for the state change.'
+      description: If the `state` is set to `shutdownguest`, by default the module will return immediately after sending the shutdown signal. If this argument is set to a positive integer, the module will instead wait for the virtual machine to reach the poweredoff state. The value sets a timeout in seconds for the module to wait for the state change.
       name: state_change_timeout
-    - description: 'Name of the existing snapshot to use to create a clone of a virtual machine. This parameter is case sensitive. While creating linked clone using `linked_clone` parameter, this parameter is required.'
+    - description: Name of the existing snapshot to use to create a clone of a virtual machine. This parameter is case sensitive. While creating linked clone using `linked_clone` parameter, this parameter is required.
       name: snapshot_src
     - defaultValue: 'no'
-      description: 'Whether to create a linked clone from the snapshot specified. If specified, then `snapshot_src` is required parameter.'
+      description: Whether to create a linked clone from the snapshot specified. If specified, then `snapshot_src` is required parameter.
       name: linked_clone
     - defaultValue: 'no'
-      description: 'Ignore warnings and complete the actions. This parameter is useful while removing virtual machine which is powered on state. This module reflects the VMware vCenter API and UI workflow, as such, in some cases the `force` flag will be mandatory to perform the action to ensure you are certain the action has to be taken, no matter what the consequence. This is specifically the case for removing a powered on the virtual machine when `state` is set to `absent`.'
+      description: Ignore warnings and complete the actions. This parameter is useful while removing virtual machine which is powered on state. This module reflects the VMware vCenter API and UI workflow, as such, in some cases the `force` flag will be mandatory to perform the action to ensure you are certain the action has to be taken, no matter what the consequence. This is specifically the case for removing a powered on the virtual machine when `state` is set to `absent`.
       name: force
     - defaultValue: ha-datacenter
-      description: 'Destination datacenter for the deploy operation. This parameter is case sensitive.'
+      description: Destination datacenter for the deploy operation. This parameter is case sensitive.
       name: datacenter
-    - description: 'The cluster name where the virtual machine will run. This is a required parameter, if `esxi_hostname` is not set. `esxi_hostname` and `cluster` are mutually exclusive parameters. This parameter is case sensitive.'
+    - description: The cluster name where the virtual machine will run. This is a required parameter, if `esxi_hostname` is not set. `esxi_hostname` and `cluster` are mutually exclusive parameters. This parameter is case sensitive.
       name: cluster
-    - description: 'The ESXi hostname where the virtual machine will run. This is a required parameter, if `cluster` is not set. `esxi_hostname` and `cluster` are mutually exclusive parameters. This parameter is case sensitive.'
+    - description: The ESXi hostname where the virtual machine will run. This is a required parameter, if `cluster` is not set. `esxi_hostname` and `cluster` are mutually exclusive parameters. This parameter is case sensitive.
       name: esxi_hostname
     - description: A note or annotation to include in the virtual machine.
       name: annotation
-    - description: 'Define a list of custom values to set on virtual machine. A custom value object takes two fields `key` and `value`. Incorrect key and values will be ignored.'
+    - description: Define a list of custom values to set on virtual machine. A custom value object takes two fields `key` and `value`. Incorrect key and values will be ignored.
       name: customvalues
     - description: 'A list of networks (in the order of the NICs). Removing NICs is not allowed, while reconfiguring the virtual machine. All parameters and VMware object names are case sensitive. One of the below parameters is required per entry: - `name` (string): Name of the portgroup or distributed virtual portgroup for this interface. When specifying distributed virtual portgroup make sure given `esxi_hostname` or `cluster` is associated with it. - `vlan` (integer): VLAN number for this interface. Optional parameters per entry (used for virtual hardware): - `device_type` (string): Virtual network device (one of `e1000`, `e1000e`, `pcnet32`, `vmxnet2`, `vmxnet3` (default), `sriov`). - `mac` (string): Customize MAC address. - `dvswitch_name` (string): Name of the distributed vSwitch. This value is required if multiple distributed portgroups exists with the same name. version_added 2.7 - `start_connected` (bool): Indicates that virtual network adapter starts with associated virtual machine powers on. version_added: 2.5 Optional parameters per entry (used for OS customization): - `type` (string): Type of IP assignment (either `dhcp` or `static`). `dhcp` is default. - `ip` (string): Static IP address (implies `type: static`). - `netmask` (string): Static netmask required for `ip`. - `gateway` (string): Static gateway. - `dns_servers` (string): DNS servers for this network interface (Windows). - `domain` (string): Domain name for this network interface (Windows). - `wake_on_lan` (bool): Indicates if wake-on-LAN is enabled on this virtual network adapter. version_added: 2.5 - `allow_guest_control` (bool): Enables guest control over whether the connectable device is connected. version_added: 2.5'
       name: networks
@@ -1041,9 +1041,9 @@ script:
       name: customization
     - description: 'A list of vApp properties For full list of attributes and types refer to: `https://github.com/vmware/pyvmomi/blob/master/docs/vim/vApp/PropertyInfo.rst` Basic attributes are: - `id` (string): Property id - required. - `value` (string): Property value. - `type` (string): Value type, string type by default. - `operation`: `remove`: This attribute is required only when removing properties.'
       name: vapp_properties
-    - description: 'Unique name identifying the requested customization specification. This parameter is case sensitive. If set, then overrides `customization` parameter values.'
+    - description: Unique name identifying the requested customization specification. This parameter is case sensitive. If set, then overrides `customization` parameter values.
       name: customization_spec
-    - description: 'Specify datastore or datastore cluster to provision virtual machine. This parameter takes precedence over "disk.datastore" parameter. This parameter can be used to override datastore or datastore cluster setting of the virtual machine when deployed from the template. Please see example for more usage.'
+    - description: Specify datastore or datastore cluster to provision virtual machine. This parameter takes precedence over "disk.datastore" parameter. This parameter can be used to override datastore or datastore cluster setting of the virtual machine when deployed from the template. Please see example for more usage.
       name: datastore
     - auto: PREDEFINED
       description: Specify convert disk type while cloning template or virtual machine.
@@ -1059,11 +1059,11 @@ script:
       description: metadata about the new virtual machine
       type: unknown
   - arguments:
-    - description: 'Name of the VM to work with. This is required if `uuid` or `moid` parameter is not supplied.'
+    - description: Name of the VM to work with. This is required if `uuid` or `moid` parameter is not supplied.
       name: name
-    - description: 'UUID of the instance to manage if known, this is VMware''s BIOS UUID by default. This is required if `name` or `moid` parameter is not supplied.'
+    - description: UUID of the instance to manage if known, this is VMware's BIOS UUID by default. This is required if `name` or `moid` parameter is not supplied.
       name: uuid
-    - description: 'Managed Object ID of the instance to manage if known, this is a unique identifier only within a single vCenter instance. This is required if `name` or `uuid` is not supplied.'
+    - description: Managed Object ID of the instance to manage if known, this is a unique identifier only within a single vCenter instance. This is required if `name` or `uuid` is not supplied.
       name: moid
     - auto: PREDEFINED
       defaultValue: 'No'
@@ -1086,11 +1086,11 @@ script:
       description: metadata about boot order of virtual machine
       type: unknown
   - arguments:
-    - description: 'Name of the VM to work with. This is required if `uuid` or `moid` parameter is not supplied.'
+    - description: Name of the VM to work with. This is required if `uuid` or `moid` parameter is not supplied.
       name: name
-    - description: 'UUID of the instance to manage if known, this is VMware''s BIOS UUID by default. This is required if `name` or `moid` parameter is not supplied.'
+    - description: UUID of the instance to manage if known, this is VMware's BIOS UUID by default. This is required if `name` or `moid` parameter is not supplied.
       name: uuid
-    - description: 'Managed Object ID of the instance to manage if known, this is a unique identifier only within a single vCenter instance. This is required if `name` or `uuid` is not supplied.'
+    - description: Managed Object ID of the instance to manage if known, this is a unique identifier only within a single vCenter instance. This is required if `name` or `uuid` is not supplied.
       name: moid
     - auto: PREDEFINED
       defaultValue: 'No'
@@ -1114,20 +1114,20 @@ script:
       name: boot_delay
     - auto: PREDEFINED
       defaultValue: 'No'
-      description: 'If set to `True`, the virtual machine automatically enters BIOS setup the next time it boots. The virtual machine resets this flag, so that the machine boots proceeds normally.'
+      description: If set to `True`, the virtual machine automatically enters BIOS setup the next time it boots. The virtual machine resets this flag, so that the machine boots proceeds normally.
       name: enter_bios_setup
       predefined:
       - 'Yes'
       - 'No'
     - auto: PREDEFINED
       defaultValue: 'No'
-      description: 'If set to `True`, the virtual machine that fails to boot, will try to boot again after `boot_retry_delay` is expired. If set to `False`, the virtual machine waits indefinitely for user intervention.'
+      description: If set to `True`, the virtual machine that fails to boot, will try to boot again after `boot_retry_delay` is expired. If set to `False`, the virtual machine waits indefinitely for user intervention.
       name: boot_retry_enabled
       predefined:
       - 'Yes'
       - 'No'
     - defaultValue: '0'
-      description: 'Specify the time in milliseconds between virtual machine boot failure and subsequent attempt to boot again. If set, will automatically set `boot_retry_enabled` to `True` as this parameter is required.'
+      description: Specify the time in milliseconds between virtual machine boot failure and subsequent attempt to boot again. If set, will automatically set `boot_retry_enabled` to `True` as this parameter is required.
       name: boot_retry_delay
     - auto: PREDEFINED
       description: Choose which firmware should be used to boot the virtual machine.
@@ -1149,11 +1149,11 @@ script:
       description: metadata about boot order of virtual machine
       type: unknown
   - arguments:
-    - description: 'Name of the custom attribute definition. This is required parameter, if `state` is set to `present` or `absent`.'
+    - description: Name of the custom attribute definition. This is required parameter, if `state` is set to `present` or `absent`.
       name: attribute_key
     - auto: PREDEFINED
       defaultValue: present
-      description: 'Manage definition of custom attributes. If set to `present` and definition not present, then custom attribute definition is created. If set to `present` and definition is present, then no action taken. If set to `absent` and definition is present, then custom attribute definition is removed. If set to `absent` and definition is absent, then no action taken.'
+      description: Manage definition of custom attributes. If set to `present` and definition not present, then custom attribute definition is created. If set to `present` and definition is present, then no action taken. If set to `absent` and definition is present, then custom attribute definition is removed. If set to `absent` and definition is absent, then no action taken.
       name: state
       predefined:
       - present
@@ -1166,19 +1166,19 @@ script:
       description: list of all current attribute definitions
       type: unknown
   - arguments:
-    - description: 'Name of the virtual machine to work with. This is required parameter, if `uuid` or `moid` is not supplied.'
+    - description: Name of the virtual machine to work with. This is required parameter, if `uuid` or `moid` is not supplied.
       name: name
       required: true
     - auto: PREDEFINED
       defaultValue: present
-      description: 'The action to take. If set to `present`, then custom attribute is added or updated. If set to `absent`, then custom attribute is removed.'
+      description: The action to take. If set to `present`, then custom attribute is added or updated. If set to `absent`, then custom attribute is removed.
       name: state
       predefined:
       - present
       - absent
-    - description: 'UUID of the virtual machine to manage if known. This is VMware''s unique identifier. This is required parameter, if `name` or `moid` is not supplied.'
+    - description: UUID of the virtual machine to manage if known. This is VMware's unique identifier. This is required parameter, if `name` or `moid` is not supplied.
       name: uuid
-    - description: 'Managed Object ID of the instance to manage if known, this is a unique identifier only within a single vCenter instance. This is required if `name` or `uuid` is not supplied.'
+    - description: Managed Object ID of the instance to manage if known, this is a unique identifier only within a single vCenter instance. This is required if `name` or `uuid` is not supplied.
       name: moid
     - auto: PREDEFINED
       defaultValue: 'No'
@@ -1187,12 +1187,12 @@ script:
       predefined:
       - 'Yes'
       - 'No'
-    - description: 'Absolute path to find an existing guest. This is required parameter, if `name` is supplied and multiple virtual machines with same name are found.'
+    - description: Absolute path to find an existing guest. This is required parameter, if `name` is supplied and multiple virtual machines with same name are found.
       name: folder
     - description: Datacenter name where the virtual machine is located in.
       name: datacenter
       required: true
-    - description: 'A list of name and value of custom attributes that needs to be manage. Value of custom attribute is not required and will be ignored, if `state` is set to `absent`.'
+    - description: A list of name and value of custom attributes that needs to be manage. Value of custom attribute is not required and will be ignored, if `state` is set to `absent`.
       isArray: true
       name: attributes
     description: "Manage custom attributes from VMware for the given virtual machine\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_custom_attributes_module.html"
@@ -1211,11 +1211,11 @@ script:
       description: metadata about the customization specification
       type: unknown
   - arguments:
-    - description: 'Name of the virtual machine. This is a required parameter, if parameter `uuid` or `moid` is not supplied.'
+    - description: Name of the virtual machine. This is a required parameter, if parameter `uuid` or `moid` is not supplied.
       name: name
-    - description: 'UUID of the instance to gather facts if known, this is VMware''s unique identifier. This is a required parameter, if parameter `name` or `moid` is not supplied.'
+    - description: UUID of the instance to gather facts if known, this is VMware's unique identifier. This is a required parameter, if parameter `name` or `moid` is not supplied.
       name: uuid
-    - description: 'Managed Object ID of the instance to manage if known, this is a unique identifier only within a single vCenter instance. This is required if `name` or `uuid` is not supplied.'
+    - description: Managed Object ID of the instance to manage if known, this is a unique identifier only within a single vCenter instance. This is required if `name` or `uuid` is not supplied.
       name: moid
     - description: 'Destination folder, absolute or relative path to find an existing guest. This is a required parameter, only if multiple VMs are found with same name. The folder should include the datacenter. ESX''s datacenter is ha-datacenter Examples: folder: /ha-datacenter/vm folder: ha-datacenter/vm folder: /datacenter1/vm folder: datacenter1/vm folder: /datacenter1/vm/folder1 folder: datacenter1/vm/folder1 folder: /folder1/datacenter1/vm folder: folder1/datacenter1/vm folder: /folder1/datacenter1/vm/folder2'
       name: folder
@@ -1239,11 +1239,11 @@ script:
       description: metadata about the virtual machine's disks after managing them
       type: unknown
   - arguments:
-    - description: 'Name of the virtual machine. This is required parameter, if parameter `uuid` or `moid` is not supplied.'
+    - description: Name of the virtual machine. This is required parameter, if parameter `uuid` or `moid` is not supplied.
       name: name
-    - description: 'UUID of the instance to gather information if known, this is VMware''s unique identifier. This is required parameter, if parameter `name` or `moid` is not supplied.'
+    - description: UUID of the instance to gather information if known, this is VMware's unique identifier. This is required parameter, if parameter `name` or `moid` is not supplied.
       name: uuid
-    - description: 'Managed Object ID of the instance to manage if known, this is a unique identifier only within a single vCenter instance. This is required if `name` or `uuid` is not supplied.'
+    - description: Managed Object ID of the instance to manage if known, this is a unique identifier only within a single vCenter instance. This is required if `name` or `uuid` is not supplied.
       name: moid
     - auto: PREDEFINED
       defaultValue: 'No'
@@ -1264,9 +1264,9 @@ script:
       description: metadata about the virtual machine's disks
       type: unknown
   - arguments:
-    - description: 'Name of the VM to work with. This is required if `uuid` parameter is not supplied.'
+    - description: Name of the VM to work with. This is required if `uuid` parameter is not supplied.
       name: name
-    - description: 'UUID of the instance to manage if known, this is VMware''s BIOS UUID by default. This is required if `name` parameter is not supplied.'
+    - description: UUID of the instance to manage if known, this is VMware's BIOS UUID by default. This is required if `name` parameter is not supplied.
       name: uuid
     - auto: PREDEFINED
       defaultValue: 'No'
@@ -1275,7 +1275,7 @@ script:
       predefined:
       - 'Yes'
       - 'No'
-    - description: 'Destination datacenter for the find operation. Deprecated in 2.5, will be removed in 2.9 release.'
+    - description: Destination datacenter for the find operation. Deprecated in 2.5, will be removed in 2.9 release.
       name: datacenter
     description: "Find the folder path(s) for a virtual machine by name or UUID\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_find_module.html"
     name: vmware-guest-find
@@ -1284,7 +1284,7 @@ script:
       description: List of folders for user specified virtual machine
       type: unknown
   - arguments:
-    - description: 'Name of the VM to work with This is required if `uuid` or `moid` is not supplied.'
+    - description: Name of the VM to work with This is required if `uuid` or `moid` is not supplied.
       name: name
     - auto: PREDEFINED
       defaultValue: first
@@ -1293,7 +1293,7 @@ script:
       predefined:
       - first
       - last
-    - description: 'UUID of the instance to manage if known, this is VMware''s unique identifier. This is required if `name` or `moid` is not supplied.'
+    - description: UUID of the instance to manage if known, this is VMware's unique identifier. This is required if `name` or `moid` is not supplied.
       name: uuid
     - auto: PREDEFINED
       defaultValue: 'No'
@@ -1302,7 +1302,7 @@ script:
       predefined:
       - 'Yes'
       - 'No'
-    - description: 'Managed Object ID of the instance to manage if known, this is a unique identifier only within a single vCenter instance. This is required if `name` or `uuid` is not supplied.'
+    - description: Managed Object ID of the instance to manage if known, this is a unique identifier only within a single vCenter instance. This is required if `name` or `uuid` is not supplied.
       name: moid
     - description: 'Destination folder, absolute or relative path to find an existing guest. This is required if name is supplied. The folder should include the datacenter. ESX''s datacenter is ha-datacenter Examples: folder: /ha-datacenter/vm folder: ha-datacenter/vm folder: /datacenter1/vm folder: datacenter1/vm folder: /datacenter1/vm/folder1 folder: datacenter1/vm/folder1 folder: /folder1/datacenter1/vm folder: folder1/datacenter1/vm folder: /folder1/datacenter1/vm/folder2'
       name: folder
@@ -1310,11 +1310,11 @@ script:
       name: datacenter
       required: true
     - defaultValue: 'no'
-      description: 'Whether to show tags or not. If set `True`, shows tag information. If set `False`, hides tags information. vSphere Automation SDK and vCloud Suite SDK is required.'
+      description: Whether to show tags or not. If set `True`, shows tag information. If set `False`, hides tags information. vSphere Automation SDK and vCloud Suite SDK is required.
       name: tags
     - auto: PREDEFINED
       defaultValue: summary
-      description: 'Specify the output schema desired. The ''summary'' output schema is the legacy output from the module The ''vsphere'' output schema is the vSphere API class definition which requires pyvmomi>6.7.1'
+      description: Specify the output schema desired. The 'summary' output schema is the legacy output from the module The 'vsphere' output schema is the vSphere API class definition which requires pyvmomi>6.7.1
       name: schema
       predefined:
       - summary
@@ -1329,11 +1329,11 @@ script:
       description: metadata about the virtual machine
       type: unknown
   - arguments:
-    - description: 'Name of the existing virtual machine to move. This is required if `uuid` or `moid` is not supplied.'
+    - description: Name of the existing virtual machine to move. This is required if `uuid` or `moid` is not supplied.
       name: name
-    - description: 'UUID of the virtual machine to manage if known, this is VMware''s unique identifier. This is required if `name` or `moid` is not supplied.'
+    - description: UUID of the virtual machine to manage if known, this is VMware's unique identifier. This is required if `name` or `moid` is not supplied.
       name: uuid
-    - description: 'Managed Object ID of the instance to manage if known, this is a unique identifier only within a single vCenter instance. This is required if `name` or `uuid` is not supplied.'
+    - description: Managed Object ID of the instance to manage if known, this is a unique identifier only within a single vCenter instance. This is required if `name` or `uuid` is not supplied.
       name: moid
     - auto: PREDEFINED
       defaultValue: 'No'
@@ -1362,24 +1362,24 @@ script:
       description: metadata about the virtual machine
       type: unknown
   - arguments:
-    - description: 'Name of the virtual machine. This is a required parameter, if parameter `uuid` or `moid` is not supplied.'
+    - description: Name of the virtual machine. This is a required parameter, if parameter `uuid` or `moid` is not supplied.
       name: name
-    - description: 'UUID of the instance to gather info if known, this is VMware''s unique identifier. This is a required parameter, if parameter `name` or `moid` is not supplied.'
+    - description: UUID of the instance to gather info if known, this is VMware's unique identifier. This is a required parameter, if parameter `name` or `moid` is not supplied.
       name: uuid
-    - description: 'Managed Object ID of the instance to manage if known, this is a unique identifier only within a single vCenter instance. This is required if `name` or `uuid` is not supplied.'
+    - description: Managed Object ID of the instance to manage if known, this is a unique identifier only within a single vCenter instance. This is required if `name` or `uuid` is not supplied.
       name: moid
     - description: 'Destination folder, absolute or relative path to find an existing guest. This is a required parameter, only if multiple VMs are found with same name. The folder should include the datacenter. ESXi server''s datacenter is ha-datacenter. Examples: folder: /ha-datacenter/vm folder: ha-datacenter/vm folder: /datacenter1/vm folder: datacenter1/vm folder: /datacenter1/vm/folder1 folder: datacenter1/vm/folder1 folder: /folder1/datacenter1/vm folder: folder1/datacenter1/vm folder: /folder1/datacenter1/vm/folder2'
       name: folder
-    - description: 'The name of cluster where the virtual machine will run. This is a required parameter, if `esxi_hostname` is not set. `esxi_hostname` and `cluster` are mutually exclusive parameters.'
+    - description: The name of cluster where the virtual machine will run. This is a required parameter, if `esxi_hostname` is not set. `esxi_hostname` and `cluster` are mutually exclusive parameters.
       name: cluster
-    - description: 'The ESXi hostname where the virtual machine will run. This is a required parameter, if `cluster` is not set. `esxi_hostname` and `cluster` are mutually exclusive parameters.'
+    - description: The ESXi hostname where the virtual machine will run. This is a required parameter, if `cluster` is not set. `esxi_hostname` and `cluster` are mutually exclusive parameters.
       name: esxi_hostname
     - defaultValue: ha-datacenter
       description: The datacenter name to which virtual machine belongs to.
       name: datacenter
     - auto: PREDEFINED
       defaultValue: 'No'
-      description: 'If set to `True`, return settings of all network adapters, other parameters are ignored. If set to `False`, will add, reconfigure or remove network adapters according to the parameters in `networks`.'
+      description: If set to `True`, return settings of all network adapters, other parameters are ignored. If set to `False`, will add, reconfigure or remove network adapters according to the parameters in `networks`.
       name: gather_network_info
       predefined:
       - 'Yes'
@@ -1406,7 +1406,7 @@ script:
       - shutdown-guest
       - suspended
       - present
-    - description: 'Name of the virtual machine to work with. Virtual machine names in vCenter are not necessarily unique, which may be problematic, see `name_match`.'
+    - description: Name of the virtual machine to work with. Virtual machine names in vCenter are not necessarily unique, which may be problematic, see `name_match`.
       name: name
     - auto: PREDEFINED
       defaultValue: first
@@ -1415,9 +1415,9 @@ script:
       predefined:
       - first
       - last
-    - description: 'UUID of the instance to manage if known, this is VMware''s unique identifier. This is required if `name` or `moid` is not supplied.'
+    - description: UUID of the instance to manage if known, this is VMware's unique identifier. This is required if `name` or `moid` is not supplied.
       name: uuid
-    - description: 'Managed Object ID of the instance to manage if known, this is a unique identifier only within a single vCenter instance. This is required if `name` or `uuid` is not supplied.'
+    - description: Managed Object ID of the instance to manage if known, this is a unique identifier only within a single vCenter instance. This is required if `name` or `uuid` is not supplied.
       name: moid
     - auto: PREDEFINED
       defaultValue: 'No'
@@ -1428,11 +1428,11 @@ script:
       - 'No'
     - description: 'Destination folder, absolute or relative path to find an existing guest. The folder should include the datacenter. ESX''s datacenter is ha-datacenter Examples: folder: /ha-datacenter/vm folder: ha-datacenter/vm folder: /datacenter1/vm folder: datacenter1/vm folder: /datacenter1/vm/folder1 folder: datacenter1/vm/folder1 folder: /folder1/datacenter1/vm folder: folder1/datacenter1/vm folder: /folder1/datacenter1/vm/folder2'
       name: folder
-    - description: 'Date and time in string format at which specified task needs to be performed. The required format for date and time - ''dd/mm/yyyy hh:mm''. Scheduling task requires vCenter server. A standalone ESXi server does not support this option.'
+    - description: Date and time in string format at which specified task needs to be performed. The required format for date and time - 'dd/mm/yyyy hh:mm'. Scheduling task requires vCenter server. A standalone ESXi server does not support this option.
       name: scheduled_at
-    - description: 'Name of schedule task. Valid only if `scheduled_at` is specified.'
+    - description: Name of schedule task. Valid only if `scheduled_at` is specified.
       name: schedule_task_name
-    - description: 'Description of schedule task. Valid only if `scheduled_at` is specified.'
+    - description: Description of schedule task. Valid only if `scheduled_at` is specified.
       name: schedule_task_description
     - auto: PREDEFINED
       defaultValue: 'Yes'
@@ -1443,33 +1443,33 @@ script:
       - 'No'
     - auto: PREDEFINED
       defaultValue: 'No'
-      description: 'Ignore warnings and complete the actions. This parameter is useful while forcing virtual machine state.'
+      description: Ignore warnings and complete the actions. This parameter is useful while forcing virtual machine state.
       name: force
       predefined:
       - 'Yes'
       - 'No'
     - defaultValue: '0'
-      description: 'If the `state` is set to `shutdown-guest`, by default the module will return immediately after sending the shutdown signal. If this argument is set to a positive integer, the module will instead wait for the VM to reach the poweredoff state. The value sets a timeout in seconds for the module to wait for the state change.'
+      description: If the `state` is set to `shutdown-guest`, by default the module will return immediately after sending the shutdown signal. If this argument is set to a positive integer, the module will instead wait for the VM to reach the poweredoff state. The value sets a timeout in seconds for the module to wait for the state change.
       name: state_change_timeout
     description: "Manages power states of virtual machines in vCenter\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_powerstate_module.html"
     name: vmware-guest-powerstate
     outputs: []
   - arguments:
-    - description: 'Name of the virtual machine. This is a required parameter, if parameter `uuid` or `moid` is not supplied.'
+    - description: Name of the virtual machine. This is a required parameter, if parameter `uuid` or `moid` is not supplied.
       name: name
-    - description: 'UUID of the instance to gather facts if known, this is VMware''s unique identifier. This is a required parameter, if parameter `name` or `moid` is not supplied.'
+    - description: UUID of the instance to gather facts if known, this is VMware's unique identifier. This is a required parameter, if parameter `name` or `moid` is not supplied.
       name: uuid
-    - description: 'Managed Object ID of the instance to manage if known, this is a unique identifier only within a single vCenter instance. This is required if `name` or `uuid` is not supplied.'
+    - description: Managed Object ID of the instance to manage if known, this is a unique identifier only within a single vCenter instance. This is required if `name` or `uuid` is not supplied.
       name: moid
     - description: 'Destination folder, absolute or relative path to find an existing guest. This is a required parameter, only if multiple VMs are found with same name. The folder should include the datacenter. ESXi server''s datacenter is ha-datacenter. Examples: folder: /ha-datacenter/vm folder: ha-datacenter/vm folder: /datacenter1/vm folder: datacenter1/vm folder: /datacenter1/vm/folder1 folder: datacenter1/vm/folder1 folder: /folder1/datacenter1/vm folder: folder1/datacenter1/vm folder: /folder1/datacenter1/vm/folder2'
       name: folder
-    - description: 'The name of cluster where the virtual machine is running. This is a required parameter, if `esxi_hostname` is not set. `esxi_hostname` and `cluster` are mutually exclusive parameters.'
+    - description: The name of cluster where the virtual machine is running. This is a required parameter, if `esxi_hostname` is not set. `esxi_hostname` and `cluster` are mutually exclusive parameters.
       name: cluster
-    - description: 'The ESXi hostname where the virtual machine is running. This is a required parameter, if `cluster` is not set. `esxi_hostname` and `cluster` are mutually exclusive parameters.'
+    - description: The ESXi hostname where the virtual machine is running. This is a required parameter, if `cluster` is not set. `esxi_hostname` and `cluster` are mutually exclusive parameters.
       name: esxi_hostname
     - description: The datacenter name to which virtual machine belongs to.
       name: datacenter
-    - description: 'If `local_path` is not set, the created screenshot file will be kept in the directory of the virtual machine on ESXi host. If `local_path` is set to a valid path on local machine, then the screenshot file will be downloaded from ESXi host to the local directory. If not download screenshot file to local machine, you can open it through the returned file URL in screenshot facts manually.'
+    - description: If `local_path` is not set, the created screenshot file will be kept in the directory of the virtual machine on ESXi host. If `local_path` is set to a valid path on local machine, then the screenshot file will be downloaded from ESXi host to the local directory. If not download screenshot file to local machine, you can open it through the returned file URL in screenshot facts manually.
       name: local_path
     description: "Create a screenshot of the Virtual Machine console.\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_screenshot_module.html"
     name: vmware-guest-screenshot
@@ -1478,23 +1478,23 @@ script:
       description: display the facts of captured virtual machine screenshot file
       type: unknown
   - arguments:
-    - description: 'Name of the virtual machine. This is a required parameter, if parameter `uuid` or `moid` is not supplied.'
+    - description: Name of the virtual machine. This is a required parameter, if parameter `uuid` or `moid` is not supplied.
       name: name
-    - description: 'UUID of the instance to gather facts if known, this is VMware''s unique identifier. This is a required parameter, if parameter `name` or `moid` is not supplied.'
+    - description: UUID of the instance to gather facts if known, this is VMware's unique identifier. This is a required parameter, if parameter `name` or `moid` is not supplied.
       name: uuid
-    - description: 'Managed Object ID of the instance to manage if known, this is a unique identifier only within a single vCenter instance. This is required if `name` or `uuid` is not supplied.'
+    - description: Managed Object ID of the instance to manage if known, this is a unique identifier only within a single vCenter instance. This is required if `name` or `uuid` is not supplied.
       name: moid
     - description: 'Destination folder, absolute or relative path to find an existing guest. This is a required parameter, only if multiple VMs are found with same name. The folder should include the datacenter. ESXi server''s datacenter is ha-datacenter. Examples: folder: /ha-datacenter/vm folder: ha-datacenter/vm folder: /datacenter1/vm folder: datacenter1/vm folder: /datacenter1/vm/folder1 folder: datacenter1/vm/folder1 folder: /folder1/datacenter1/vm folder: folder1/datacenter1/vm folder: /folder1/datacenter1/vm/folder2'
       name: folder
-    - description: 'The name of cluster where the virtual machine is running. This is a required parameter, if `esxi_hostname` is not set. `esxi_hostname` and `cluster` are mutually exclusive parameters.'
+    - description: The name of cluster where the virtual machine is running. This is a required parameter, if `esxi_hostname` is not set. `esxi_hostname` and `cluster` are mutually exclusive parameters.
       name: cluster
-    - description: 'The ESXi hostname where the virtual machine is running. This is a required parameter, if `cluster` is not set. `esxi_hostname` and `cluster` are mutually exclusive parameters.'
+    - description: The ESXi hostname where the virtual machine is running. This is a required parameter, if `cluster` is not set. `esxi_hostname` and `cluster` are mutually exclusive parameters.
       name: esxi_hostname
     - description: The datacenter name to which virtual machine belongs to.
       name: datacenter
-    - description: 'The string will be sent to the virtual machine. This string can contain valid special character, alphabet and digit on the keyboard.'
+    - description: The string will be sent to the virtual machine. This string can contain valid special character, alphabet and digit on the keyboard.
       name: string_send
-    - description: 'The list of the keys will be sent to the virtual machine. Valid values are `ENTER`, `ESC`, `BACKSPACE`, `TAB`, `SPACE`, `CAPSLOCK`, `DELETE`, `CTRL_ALT_DEL`, `CTRL_C` and `F1` to `F12`, `RIGHTARROW`, `LEFTARROW`, `DOWNARROW`, `UPARROW`. If both `keys_send` and `string_send` are specified, keys in `keys_send` list will be sent in front of the `string_send`.'
+    - description: The list of the keys will be sent to the virtual machine. Valid values are `ENTER`, `ESC`, `BACKSPACE`, `TAB`, `SPACE`, `CAPSLOCK`, `DELETE`, `CTRL_ALT_DEL`, `CTRL_C` and `F1` to `F12`, `RIGHTARROW`, `LEFTARROW`, `DOWNARROW`, `UPARROW`. If both `keys_send` and `string_send` are specified, keys in `keys_send` list will be sent in front of the `string_send`.
       isArray: true
       name: keys_send
     description: "Send USB HID codes to the Virtual Machine's keyboard.\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_sendkey_module.html"
@@ -1506,7 +1506,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       defaultValue: present
-      description: 'Manage snapshot(s) attached to a specific virtual machine. If set to `present` and snapshot absent, then will create a new snapshot with the given name. If set to `present` and snapshot present, then no changes are made. If set to `absent` and snapshot present, then snapshot with the given name is removed. If set to `absent` and snapshot absent, then no changes are made. If set to `revert` and snapshot present, then virtual machine state is reverted to the given snapshot. If set to `revert` and snapshot absent, then no changes are made. If set to `remove_all` and snapshot(s) present, then all snapshot(s) will be removed. If set to `remove_all` and snapshot(s) absent, then no changes are made.'
+      description: Manage snapshot(s) attached to a specific virtual machine. If set to `present` and snapshot absent, then will create a new snapshot with the given name. If set to `present` and snapshot present, then no changes are made. If set to `absent` and snapshot present, then snapshot with the given name is removed. If set to `absent` and snapshot absent, then no changes are made. If set to `revert` and snapshot present, then virtual machine state is reverted to the given snapshot. If set to `revert` and snapshot absent, then no changes are made. If set to `remove_all` and snapshot(s) present, then all snapshot(s) will be removed. If set to `remove_all` and snapshot(s) absent, then no changes are made.
       name: state
       predefined:
       - present
@@ -1514,7 +1514,7 @@ script:
       - revert
       - remove_all
       required: true
-    - description: 'Name of the virtual machine to work with. This is required parameter, if `uuid` or `moid` is not supplied.'
+    - description: Name of the virtual machine to work with. This is required parameter, if `uuid` or `moid` is not supplied.
       name: name
     - auto: PREDEFINED
       defaultValue: first
@@ -1523,9 +1523,9 @@ script:
       predefined:
       - first
       - last
-    - description: 'UUID of the instance to manage if known, this is VMware''s BIOS UUID by default. This is required if `name` or `moid` parameter is not supplied.'
+    - description: UUID of the instance to manage if known, this is VMware's BIOS UUID by default. This is required if `name` or `moid` parameter is not supplied.
       name: uuid
-    - description: 'Managed Object ID of the instance to manage if known, this is a unique identifier only within a single vCenter instance. This is required if `name` or `uuid` is not supplied.'
+    - description: Managed Object ID of the instance to manage if known, this is a unique identifier only within a single vCenter instance. This is required if `name` or `uuid` is not supplied.
       name: moid
     - auto: PREDEFINED
       defaultValue: 'No'
@@ -1539,21 +1539,21 @@ script:
     - description: Destination datacenter for the deploy operation.
       name: datacenter
       required: true
-    - description: 'Sets the snapshot name to manage. This param is required only if state is not `remove_all`'
+    - description: Sets the snapshot name to manage. This param is required only if state is not `remove_all`
       name: snapshot_name
     - defaultValue: ''
       description: Define an arbitrary description to attach to snapshot.
       name: description
     - auto: PREDEFINED
       defaultValue: 'No'
-      description: 'If set to `true` and virtual machine is powered on, it will quiesce the file system in virtual machine. Note that VMware Tools are required for this flag. If virtual machine is powered off or VMware Tools are not available, then this flag is set to `false`. If virtual machine does not provide capability to take quiesce snapshot, then this flag is set to `false`.'
+      description: If set to `true` and virtual machine is powered on, it will quiesce the file system in virtual machine. Note that VMware Tools are required for this flag. If virtual machine is powered off or VMware Tools are not available, then this flag is set to `false`. If virtual machine does not provide capability to take quiesce snapshot, then this flag is set to `false`.
       name: quiesce
       predefined:
       - 'Yes'
       - 'No'
     - auto: PREDEFINED
       defaultValue: 'No'
-      description: 'If set to `true`, memory dump of virtual machine is also included in snapshot. Note that memory snapshots take time and resources, this will take longer time to create. If virtual machine does not provide capability to take memory snapshot, then this flag is set to `false`.'
+      description: If set to `true`, memory dump of virtual machine is also included in snapshot. Note that memory snapshots take time and resources, this will take longer time to create. If virtual machine does not provide capability to take memory snapshot, then this flag is set to `false`.
       name: memory_dump
       predefined:
       - 'Yes'
@@ -1576,11 +1576,11 @@ script:
       description: metadata about the virtual machine snapshots
       type: unknown
   - arguments:
-    - description: 'Name of the VM to work with. This is required if `uuid` or `moid` is not supplied.'
+    - description: Name of the VM to work with. This is required if `uuid` or `moid` is not supplied.
       name: name
-    - description: 'UUID of the instance to manage if known, this is VMware''s BIOS UUID by default. This is required if `name` or `moid` parameter is not supplied. The `folder` is ignored, if `uuid` is provided.'
+    - description: UUID of the instance to manage if known, this is VMware's BIOS UUID by default. This is required if `name` or `moid` parameter is not supplied. The `folder` is ignored, if `uuid` is provided.
       name: uuid
-    - description: 'Managed Object ID of the instance to manage if known, this is a unique identifier only within a single vCenter instance. This is required if `name` or `uuid` is not supplied.'
+    - description: Managed Object ID of the instance to manage if known, this is a unique identifier only within a single vCenter instance. This is required if `name` or `uuid` is not supplied.
       name: moid
     - auto: PREDEFINED
       defaultValue: 'No'
@@ -1601,7 +1601,7 @@ script:
       description: metadata about the snapshot information
       type: unknown
   - arguments:
-    - description: 'Name of the virtual machine to work with. This is required if `uuid` or `moid` is not supplied.'
+    - description: Name of the virtual machine to work with. This is required if `uuid` or `moid` is not supplied.
       name: name
     - auto: PREDEFINED
       defaultValue: first
@@ -1610,9 +1610,9 @@ script:
       predefined:
       - first
       - last
-    - description: 'UUID of the instance to manage if known, this is VMware''s unique identifier. This is required if `name` or `moid` is not supplied.'
+    - description: UUID of the instance to manage if known, this is VMware's unique identifier. This is required if `name` or `moid` is not supplied.
       name: uuid
-    - description: 'Managed Object ID of the instance to manage if known, this is a unique identifier only within a single vCenter instance. This is required if `name` or `uuid` is not supplied.'
+    - description: Managed Object ID of the instance to manage if known, this is a unique identifier only within a single vCenter instance. This is required if `name` or `uuid` is not supplied.
       name: moid
     - description: 'Destination folder, absolute or relative path to find an existing guest. This is required, if `name` is supplied. The folder should include the datacenter. ESX''s datacenter is ha-datacenter Examples: folder: /ha-datacenter/vm folder: ha-datacenter/vm folder: /datacenter1/vm folder: datacenter1/vm folder: /datacenter1/vm/folder1 folder: datacenter1/vm/folder1 folder: /folder1/datacenter1/vm folder: folder1/datacenter1/vm folder: /folder1/datacenter1/vm/folder2'
       name: folder
@@ -1623,7 +1623,7 @@ script:
     name: vmware-guest-tools-upgrade
     outputs: []
   - arguments:
-    - description: 'Name of the VM for which to wait until the tools become available. This is required if `uuid` or `moid` is not supplied.'
+    - description: Name of the VM for which to wait until the tools become available. This is required if `uuid` or `moid` is not supplied.
       name: name
     - auto: PREDEFINED
       defaultValue: first
@@ -1634,9 +1634,9 @@ script:
       - last
     - description: 'Destination folder, absolute or relative path to find an existing guest. This is required only, if multiple VMs with same `name` is found. The folder should include the datacenter. ESX''s datacenter is `ha-datacenter`. Examples: folder: /ha-datacenter/vm folder: ha-datacenter/vm folder: /datacenter1/vm folder: datacenter1/vm folder: /datacenter1/vm/folder1 folder: datacenter1/vm/folder1 folder: /folder1/datacenter1/vm folder: folder1/datacenter1/vm folder: /folder1/datacenter1/vm/folder2'
       name: folder
-    - description: 'UUID of the VM  for which to wait until the tools become available, if known. This is VMware''s unique identifier. This is required, if `name` or `moid` is not supplied.'
+    - description: UUID of the VM  for which to wait until the tools become available, if known. This is VMware's unique identifier. This is required, if `name` or `moid` is not supplied.
       name: uuid
-    - description: 'Managed Object ID of the instance to manage if known, this is a unique identifier only within a single vCenter instance. This is required if `name` or `uuid` is not supplied.'
+    - description: Managed Object ID of the instance to manage if known, this is a unique identifier only within a single vCenter instance. This is required if `name` or `uuid` is not supplied.
       name: moid
     - auto: PREDEFINED
       defaultValue: 'No'
@@ -1652,30 +1652,30 @@ script:
       description: metadata about the virtual machine
       type: unknown
   - arguments:
-    - description: 'Name of the virtual machine. This is a required parameter, if parameter `uuid` or `moid` is not supplied.'
+    - description: Name of the virtual machine. This is a required parameter, if parameter `uuid` or `moid` is not supplied.
       name: name
-    - description: 'UUID of the instance to gather facts if known, this is VMware''s unique identifier. This is a required parameter, if parameter `name` or `moid` is not supplied.'
+    - description: UUID of the instance to gather facts if known, this is VMware's unique identifier. This is a required parameter, if parameter `name` or `moid` is not supplied.
       name: uuid
-    - description: 'Managed Object ID of the instance to manage if known, this is a unique identifier only within a single vCenter instance. This is required if `name` or `uuid` is not supplied.'
+    - description: Managed Object ID of the instance to manage if known, this is a unique identifier only within a single vCenter instance. This is required if `name` or `uuid` is not supplied.
       name: moid
     - description: 'Destination folder, absolute or relative path to find an existing guest. This is a required parameter, only if multiple VMs are found with same name. The folder should include the datacenter. ESXi server''s datacenter is ha-datacenter. Examples: folder: /ha-datacenter/vm folder: ha-datacenter/vm folder: /datacenter1/vm folder: datacenter1/vm folder: /datacenter1/vm/folder1 folder: datacenter1/vm/folder1 folder: /folder1/datacenter1/vm folder: folder1/datacenter1/vm folder: /folder1/datacenter1/vm/folder2'
       name: folder
     - defaultValue: ha-datacenter
-      description: 'The datacenter name to which virtual machine belongs to. This parameter is case sensitive.'
+      description: The datacenter name to which virtual machine belongs to. This parameter is case sensitive.
       name: datacenter
     - defaultValue: 'no'
-      description: 'If set to True, return settings of the video card, other attributes are ignored. If set to False, will do reconfiguration and return video card settings.'
+      description: If set to True, return settings of the video card, other attributes are ignored. If set to False, will do reconfiguration and return video card settings.
       name: gather_video_facts
-    - description: 'If set to True, applies common video settings to the guest operating system, attributes `display_number` and `video_memory_mb` are ignored. If set to False, the number of display and the total video memory will be reconfigured using `display_number` and `video_memory_mb`.'
+    - description: If set to True, applies common video settings to the guest operating system, attributes `display_number` and `video_memory_mb` are ignored. If set to False, the number of display and the total video memory will be reconfigured using `display_number` and `video_memory_mb`.
       name: use_auto_detect
     - description: The number of display. Valid value from 1 to 10. The maximum display number is 4 on vCenter 6.0, 6.5 web UI.
       name: display_number
-    - description: 'Valid total MB of video memory range of virtual machine is from 1.172 MB to 256 MB on ESXi 6.7U1, from 1.172 MB to 128 MB on ESXi 6.7 and previous versions. For specific guest OS, supported minimum and maximum video memory are different, please be careful on setting this.'
+    - description: Valid total MB of video memory range of virtual machine is from 1.172 MB to 256 MB on ESXi 6.7U1, from 1.172 MB to 128 MB on ESXi 6.7 and previous versions. For specific guest OS, supported minimum and maximum video memory are different, please be careful on setting this.
       name: video_memory_mb
     - description: Enable 3D for guest operating systems on which VMware supports 3D.
       name: enable_3D
     - auto: PREDEFINED
-      description: 'If set to `automatic`, selects the appropriate option (software or hardware) for this virtual machine automatically. If set to `software`, uses normal CPU processing for 3D calculations. If set to `hardware`, requires graphics hardware (GPU) for faster 3D calculations.'
+      description: If set to `automatic`, selects the appropriate option (software or hardware) for this virtual machine automatically. If set to `software`, uses normal CPU processing for 3D calculations. If set to `hardware`, requires graphics hardware (GPU) for faster 3D calculations.
       name: renderer_3D
       predefined:
       - automatic
@@ -1691,7 +1691,7 @@ script:
       type: unknown
   - arguments:
     - defaultValue: ha-datacenter
-      description: 'Destination datacenter for the deploy operation. This parameter is case sensitive.'
+      description: Destination datacenter for the deploy operation. This parameter is case sensitive.
       name: datacenter
     - auto: PREDEFINED
       defaultValue: present
@@ -1700,7 +1700,7 @@ script:
       predefined:
       - present
       - absent
-    - description: 'Name of the virtual machine to work with. Virtual machine names in vCenter are not necessarily unique, which may be problematic, see `name_match`.'
+    - description: Name of the virtual machine to work with. Virtual machine names in vCenter are not necessarily unique, which may be problematic, see `name_match`.
       name: name
     - auto: PREDEFINED
       defaultValue: first
@@ -1709,20 +1709,20 @@ script:
       predefined:
       - first
       - last
-    - description: 'UUID of the instance to manage if known, this is VMware''s unique identifier. This is required, if `name` or `moid` is not supplied.'
+    - description: UUID of the instance to manage if known, this is VMware's unique identifier. This is required, if `name` or `moid` is not supplied.
       name: uuid
-    - description: 'Managed Object ID of the instance to manage if known, this is a unique identifier only within a single vCenter instance. This is required if `name` or `uuid` is not supplied.'
+    - description: Managed Object ID of the instance to manage if known, this is a unique identifier only within a single vCenter instance. This is required if `name` or `uuid` is not supplied.
       name: moid
-    - description: 'Destination folder, absolute or relative path to find an existing guest. The folder should include the datacenter. ESX''s datacenter is ha-datacenter'
+    - description: Destination folder, absolute or relative path to find an existing guest. The folder should include the datacenter. ESX's datacenter is ha-datacenter
       name: folder
     - defaultValue: 0.0.0.0
-      description: 'Sets an IP for VNC on virtual machine. This is required only when `state` is set to present and will be ignored if `state` is absent.'
+      description: Sets an IP for VNC on virtual machine. This is required only when `state` is set to present and will be ignored if `state` is absent.
       name: vnc_ip
     - defaultValue: '0'
-      description: 'The port that VNC listens on. Usually a number between 5900 and 7000 depending on your config. This is required only when `state` is set to present and will be ignored if `state` is absent.'
+      description: The port that VNC listens on. Usually a number between 5900 and 7000 depending on your config. This is required only when `state` is set to present and will be ignored if `state` is absent.
       name: vnc_port
     - defaultValue: ''
-      description: 'Sets a password for VNC on virtual machine. This is required only when `state` is set to present and will be ignored if `state` is absent.'
+      description: Sets a password for VNC on virtual machine. This is required only when `state` is set to present and will be ignored if `state` is absent.
       name: vnc_password
     description: "Manages VNC remote display on virtual machines in vCenter\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_vnc_module.html"
     name: vmware-guest-vnc
@@ -1737,16 +1737,16 @@ script:
       description: Dictionary describing the VM, including VNC info.
       type: unknown
   - arguments:
-    - description: 'Name of the datacenter to add the host. Aliases added in version 2.6.'
+    - description: Name of the datacenter to add the host. Aliases added in version 2.6.
       name: datacenter_name
       required: true
-    - description: 'Name of the cluster to add the host. If `folder` is not set, then this parameter is required. Aliases added in version 2.6.'
+    - description: Name of the cluster to add the host. If `folder` is not set, then this parameter is required. Aliases added in version 2.6.
       name: cluster_name
     - description: 'Name of the folder under which host to add. If `cluster_name` is not set, then this parameter is required. For example, if there is a datacenter ''dc1'' under folder called ''Site1'' then, this value will be ''/Site1/dc1/host''. Here ''host'' is an invisible folder under VMware Web Client. Another example, if there is a nested folder structure like ''/myhosts/india/pune'' under datacenter ''dc2'', then `folder` value will be ''/dc2/host/myhosts/india/pune''. Other Examples: - ''/Site2/dc2/Asia-Cluster/host'' - ''/dc3/Asia-Cluster/host'''
       name: folder
     - auto: PREDEFINED
       defaultValue: 'Yes'
-      description: 'If set to `True`, then the host should be connected as soon as it is added. This parameter is ignored if state is set to a value other than `present`.'
+      description: If set to `True`, then the host should be connected as soon as it is added. This parameter is ignored if state is set to a value other than `present`.
       name: add_connected
       predefined:
       - 'Yes'
@@ -1754,13 +1754,13 @@ script:
     - description: ESXi hostname to manage.
       name: esxi_hostname
       required: true
-    - description: 'ESXi username. Required for adding a host. Optional for reconnect. If both `esxi_username` and `esxi_password` are used Unused for removing. No longer a required parameter from version 2.5.'
+    - description: ESXi username. Required for adding a host. Optional for reconnect. If both `esxi_username` and `esxi_password` are used Unused for removing. No longer a required parameter from version 2.5.
       name: esxi_username
-    - description: 'ESXi password. Required for adding a host. Optional for reconnect. Unused for removing. No longer a required parameter from version 2.5.'
+    - description: ESXi password. Required for adding a host. Optional for reconnect. Unused for removing. No longer a required parameter from version 2.5.
       name: esxi_password
     - auto: PREDEFINED
       defaultValue: present
-      description: 'If set to `present`, add the host if host is absent. If set to `present`, update the location of the host if host already exists. If set to `absent`, remove the host if host is present. If set to `absent`, do nothing if host already does not exists. If set to `add_or_reconnect`, add the host if it''s absent else reconnect it and update the location. If set to `reconnect`, then reconnect the host if it''s present and update the location.'
+      description: If set to `present`, add the host if host is absent. If set to `present`, update the location of the host if host already exists. If set to `absent`, remove the host if host is present. If set to `absent`, do nothing if host already does not exists. If set to `add_or_reconnect`, add the host if it's absent else reconnect it and update the location. If set to `reconnect`, then reconnect the host if it's present and update the location.
       name: state
       predefined:
       - present
@@ -1772,7 +1772,7 @@ script:
       name: esxi_ssl_thumbprint
     - auto: PREDEFINED
       defaultValue: 'Yes'
-      description: 'Fetch the thumbprint of the host''s SSL certificate. This basically disables the host certificate verification (check if it was signed by a recognized CA). Disable this option if you want to allow only hosts with valid certificates to be added to vCenter. If this option is set to `false` and the certificate can''t be verified, an add or reconnect will fail. Unused when `esxi_ssl_thumbprint` is set. Optional for reconnect, but only used if `esxi_username` and `esxi_password` are used. Unused for removing.'
+      description: Fetch the thumbprint of the host's SSL certificate. This basically disables the host certificate verification (check if it was signed by a recognized CA). Disable this option if you want to allow only hosts with valid certificates to be added to vCenter. If this option is set to `false` and the certificate can't be verified, an add or reconnect will fail. Unused when `esxi_ssl_thumbprint` is set. Optional for reconnect, but only used if `esxi_username` and `esxi_password` are used. Unused for removing.
       name: fetch_ssl_thumbprint
       predefined:
       - 'Yes'
@@ -1786,7 +1786,7 @@ script:
       - 'No'
     - auto: PREDEFINED
       defaultValue: 'Yes'
-      description: 'Reconnect disconnected hosts. This is only used if `state` is set to `present` and if the host already exists.'
+      description: Reconnect disconnected hosts. This is only used if `state` is set to `present` and if the host already exists.
       name: reconnect_disconnected
       predefined:
       - 'Yes'
@@ -1798,19 +1798,19 @@ script:
       description: metadata about the new host system added
       type: string
   - arguments:
-    - description: 'Name of the cluster. Acceptance level of all ESXi host system in the given cluster will be managed. If `esxi_hostname` is not given, this parameter is required.'
+    - description: Name of the cluster. Acceptance level of all ESXi host system in the given cluster will be managed. If `esxi_hostname` is not given, this parameter is required.
       name: cluster_name
-    - description: 'ESXi hostname. Acceptance level of this ESXi host system will be managed. If `cluster_name` is not given, this parameter is required.'
+    - description: ESXi hostname. Acceptance level of this ESXi host system will be managed. If `cluster_name` is not given, this parameter is required.
       name: esxi_hostname
     - auto: PREDEFINED
       defaultValue: list
-      description: 'Set or list acceptance level of the given ESXi host. If set to `list`, then will return current acceptance level of given host system/s. If set to `present`, then will set given acceptance level.'
+      description: Set or list acceptance level of the given ESXi host. If set to `list`, then will return current acceptance level of given host system/s. If set to `present`, then will set given acceptance level.
       name: state
       predefined:
       - list
       - present
     - auto: PREDEFINED
-      description: 'Name of acceptance level. If set to `partner`, then accept only partner and VMware signed and certified VIBs. If set to `vmware_certified`, then accept only VIBs that are signed and certified by VMware. If set to `vmware_accepted`, then accept VIBs that have been accepted by VMware. If set to `community`, then accept all VIBs, even those that are not signed.'
+      description: Name of acceptance level. If set to `partner`, then accept only partner and VMware signed and certified VIBs. If set to `vmware_certified`, then accept only VIBs that are signed and certified by VMware. If set to `vmware_accepted`, then accept VIBs that have been accepted by VMware. If set to `community`, then accept all VIBs, even those that are not signed.
       name: acceptance_level
       predefined:
       - community
@@ -1837,9 +1837,9 @@ script:
       predefined:
       - present
       - absent
-    - description: 'Name of the host system to work with. This parameter is required if `cluster_name` is not specified.'
+    - description: Name of the host system to work with. This parameter is required if `cluster_name` is not specified.
       name: esxi_hostname
-    - description: 'Name of the cluster from which all host systems will be used. This parameter is required if `esxi_hostname` is not specified.'
+    - description: Name of the cluster from which all host systems will be used. This parameter is required if `esxi_hostname` is not specified.
       name: cluster_name
     description: "Joins an ESXi host system to an Active Directory domain or leaves it\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_active_directory_module.html"
     name: vmware-host-active-directory
@@ -1848,9 +1848,9 @@ script:
       description: metadata about host system's AD domain join state
       type: unknown
   - arguments:
-    - description: 'Name of the cluster from all host systems to be used for information gathering. If `esxi_hostname` is not given, this parameter is required.'
+    - description: Name of the cluster from all host systems to be used for information gathering. If `esxi_hostname` is not given, this parameter is required.
       name: cluster_name
-    - description: 'ESXi hostname to gather information from. If `cluster_name` is not given, this parameter is required.'
+    - description: ESXi hostname to gather information from. If `cluster_name` is not given, this parameter is required.
       name: esxi_hostname
     description: "Gathers info about an ESXi host's capability information\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_capability_info_module.html"
     name: vmware-host-capability-info
@@ -1859,9 +1859,9 @@ script:
       description: metadata about host's capability info
       type: unknown
   - arguments:
-    - description: 'Name of the cluster from which the ESXi host belong to. If `esxi_hostname` is not given, this parameter is required.'
+    - description: Name of the cluster from which the ESXi host belong to. If `esxi_hostname` is not given, this parameter is required.
       name: cluster_name
-    - description: 'ESXi hostname to gather information from. If `cluster_name` is not given, this parameter is required.'
+    - description: ESXi hostname to gather information from. If `cluster_name` is not given, this parameter is required.
       name: esxi_hostname
     description: "Gathers info about an ESXi host's advance configuration information\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_config_info_module.html"
     name: vmware-host-config-info
@@ -1870,18 +1870,18 @@ script:
       description: dict with hostname as key and dict with host config information
       type: unknown
   - arguments:
-    - description: 'Name of the cluster. Settings are applied to every ESXi host in given cluster. If `esxi_hostname` is not given, this parameter is required.'
+    - description: Name of the cluster. Settings are applied to every ESXi host in given cluster. If `esxi_hostname` is not given, this parameter is required.
       name: cluster_name
-    - description: 'ESXi hostname. Settings are applied to this ESXi host. If `cluster_name` is not given, this parameter is required.'
+    - description: ESXi hostname. Settings are applied to this ESXi host. If `cluster_name` is not given, this parameter is required.
       name: esxi_hostname
-    - description: 'A dictionary of advanced system settings. Invalid options will cause module to error. Note that the list of advanced options (with description and values) can be found by running `vim-cmd hostsvc/advopt/options`.'
+    - description: A dictionary of advanced system settings. Invalid options will cause module to error. Note that the list of advanced options (with description and values) can be found by running `vim-cmd hostsvc/advopt/options`.
       isArray: true
       name: options
     description: "Manage advanced system settings of an ESXi host\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_config_manager_module.html"
     name: vmware-host-config-manager
     outputs: []
   - arguments:
-    - description: 'Name of the datacenter to add the datastore. The datacenter isn''t used by the API to create a datastore. Will be removed in 2.11.'
+    - description: Name of the datacenter to add the datastore. The datacenter isn't used by the API to create a datastore. Will be removed in 2.11.
       name: datacenter_name
     - description: Name of the datastore to add/remove.
       name: datastore_name
@@ -1894,22 +1894,22 @@ script:
       - nfs41
       - vmfs
       required: true
-    - description: 'NFS host serving nfs datastore. Required if datastore type is set to `nfs`/`nfs41` and state is set to `present`, else unused. Two or more servers can be defined if datastore type is set to `nfs41`'
+    - description: NFS host serving nfs datastore. Required if datastore type is set to `nfs`/`nfs41` and state is set to `present`, else unused. Two or more servers can be defined if datastore type is set to `nfs41`
       name: nfs_server
-    - description: 'Resource path on NFS host. Required if datastore type is set to `nfs`/`nfs41` and state is set to `present`, else unused.'
+    - description: Resource path on NFS host. Required if datastore type is set to `nfs`/`nfs41` and state is set to `present`, else unused.
       name: nfs_path
     - auto: PREDEFINED
       defaultValue: 'No'
-      description: 'ReadOnly or ReadWrite mount. Unused if datastore type is not set to `nfs`/`nfs41` and state is not set to `present`.'
+      description: ReadOnly or ReadWrite mount. Unused if datastore type is not set to `nfs`/`nfs41` and state is not set to `present`.
       name: nfs_ro
       predefined:
       - 'Yes'
       - 'No'
-    - description: 'Name of the device to be used as VMFS datastore. Required for VMFS datastore type and state is set to `present`, else unused.'
+    - description: Name of the device to be used as VMFS datastore. Required for VMFS datastore type and state is set to `present`, else unused.
       name: vmfs_device_name
-    - description: 'VMFS version to use for datastore creation. Unused if datastore type is not set to `vmfs` and state is not set to `present`.'
+    - description: VMFS version to use for datastore creation. Unused if datastore type is not set to `vmfs` and state is not set to `present`.
       name: vmfs_version
-    - description: 'ESXi hostname to manage the datastore. Required when used with a vcenter'
+    - description: ESXi hostname to manage the datastore. Required when used with a vcenter
       name: esxi_hostname
     - auto: PREDEFINED
       defaultValue: present
@@ -1922,9 +1922,9 @@ script:
     name: vmware-host-datastore
     outputs: []
   - arguments:
-    - description: 'Name of the cluster from which the ESXi host belong to. If `esxi_hostname` is not given, this parameter is required.'
+    - description: Name of the cluster from which the ESXi host belong to. If `esxi_hostname` is not given, this parameter is required.
       name: cluster_name
-    - description: 'ESXi hostname to gather information from. If `cluster_name` is not given, this parameter is required.'
+    - description: ESXi hostname to gather information from. If `cluster_name` is not given, this parameter is required.
       name: esxi_hostname
     description: "Gathers info about an ESXi host's DNS configuration information\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_dns_info_module.html"
     name: vmware-host-dns-info
@@ -1933,7 +1933,7 @@ script:
       description: metadata about DNS config from given cluster / host system
       type: unknown
   - arguments:
-    - description: 'ESXi hostname. Host facts about the specified ESXi server will be returned. By specifying this option, you can select which ESXi hostsystem is returned if connecting to a vCenter.'
+    - description: ESXi hostname. Host facts about the specified ESXi server will be returned. By specifying this option, you can select which ESXi hostsystem is returned if connecting to a vCenter.
       name: esxi_hostname
     - auto: PREDEFINED
       defaultValue: 'No'
@@ -1949,9 +1949,9 @@ script:
       description: system info about the host machine
       type: unknown
   - arguments:
-    - description: 'Name of the cluster from all host systems to be used for information gathering. If `esxi_hostname` is not given, this parameter is required.'
+    - description: Name of the cluster from all host systems to be used for information gathering. If `esxi_hostname` is not given, this parameter is required.
       name: cluster_name
-    - description: 'ESXi hostname to gather information from. If `cluster_name` is not given, this parameter is required.'
+    - description: ESXi hostname to gather information from. If `cluster_name` is not given, this parameter is required.
       name: esxi_hostname
     description: "Gathers info about an ESXi host's feature capability information\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_feature_info_module.html"
     name: vmware-host-feature-info
@@ -1960,9 +1960,9 @@ script:
       description: metadata about host's feature capability information
       type: unknown
   - arguments:
-    - description: 'Name of the cluster from which the ESXi host belong to. If `esxi_hostname` is not given, this parameter is required.'
+    - description: Name of the cluster from which the ESXi host belong to. If `esxi_hostname` is not given, this parameter is required.
       name: cluster_name
-    - description: 'ESXi hostname to gather information from. If `cluster_name` is not given, this parameter is required.'
+    - description: ESXi hostname to gather information from. If `cluster_name` is not given, this parameter is required.
       name: esxi_hostname
     description: "Gathers info about an ESXi host's firewall configuration information\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_firewall_info_module.html"
     name: vmware-host-firewall-info
@@ -1971,11 +1971,11 @@ script:
       description: metadata about host's firewall configuration
       type: unknown
   - arguments:
-    - description: 'Name of the cluster. Firewall settings are applied to every ESXi host system in given cluster. If `esxi_hostname` is not given, this parameter is required.'
+    - description: Name of the cluster. Firewall settings are applied to every ESXi host system in given cluster. If `esxi_hostname` is not given, this parameter is required.
       name: cluster_name
-    - description: 'ESXi hostname. Firewall settings are applied to this ESXi host system. If `cluster_name` is not given, this parameter is required.'
+    - description: ESXi hostname. Firewall settings are applied to this ESXi host system. If `cluster_name` is not given, this parameter is required.
       name: esxi_hostname
-    - description: 'A list of Rule set which needs to be managed. Each member of list is rule set name and state to be set the rule. Both rule name and rule state are required parameters. Additional IPs and networks can also be specified Please see examples for more information.'
+    - description: A list of Rule set which needs to be managed. Each member of list is rule set name and state to be set the rule. Both rule name and rule state are required parameters. Additional IPs and networks can also be specified Please see examples for more information.
       isArray: true
       name: rules
     description: "Manage firewall configurations about an ESXi host\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_firewall_manager_module.html"
@@ -1987,14 +1987,14 @@ script:
   - arguments:
     - auto: PREDEFINED
       defaultValue: enabled
-      description: 'Enable or disable Hyperthreading. You need to reboot the ESXi host if you change the configuration. Make sure that Hyperthreading is enabled in the BIOS. Otherwise, it will be enabled, but never activated.'
+      description: Enable or disable Hyperthreading. You need to reboot the ESXi host if you change the configuration. Make sure that Hyperthreading is enabled in the BIOS. Otherwise, it will be enabled, but never activated.
       name: state
       predefined:
       - enabled
       - disabled
-    - description: 'Name of the host system to work with. This parameter is required if `cluster_name` is not specified.'
+    - description: Name of the host system to work with. This parameter is required if `cluster_name` is not specified.
       name: esxi_hostname
-    - description: 'Name of the cluster from which all host systems will be used. This parameter is required if `esxi_hostname` is not specified.'
+    - description: Name of the cluster from which all host systems will be used. This parameter is required if `esxi_hostname` is not specified.
       name: cluster_name
     description: "Enables/Disables Hyperthreading optimization for an ESXi host system\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_hyperthreading_module.html"
     name: vmware-host-hyperthreading
@@ -2005,14 +2005,14 @@ script:
   - arguments:
     - auto: PREDEFINED
       defaultValue: enabled
-      description: 'Enable or disable IPv6 support. You need to reboot the ESXi host if you change the configuration.'
+      description: Enable or disable IPv6 support. You need to reboot the ESXi host if you change the configuration.
       name: state
       predefined:
       - enabled
       - disabled
-    - description: 'Name of the host system to work with. This is required parameter if `cluster_name` is not specified.'
+    - description: Name of the host system to work with. This is required parameter if `cluster_name` is not specified.
       name: esxi_hostname
-    - description: 'Name of the cluster from which all host systems will be used. This is required parameter if `esxi_hostname` is not specified.'
+    - description: Name of the cluster from which all host systems will be used. This is required parameter if `esxi_hostname` is not specified.
       name: cluster_name
     description: "Enables/Disables IPv6 support for an ESXi host system\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_ipv6_module.html"
     name: vmware-host-ipv6
@@ -2021,14 +2021,14 @@ script:
       description: metadata about host system's IPv6 configuration
       type: unknown
   - arguments:
-    - description: 'Name of the ESXi host to work on. This parameter is required if `cluster_name` is not specified.'
+    - description: Name of the ESXi host to work on. This parameter is required if `cluster_name` is not specified.
       name: esxi_hostname
-    - description: 'Name of the VMware cluster to work on. All ESXi hosts in this cluster will be configured. This parameter is required if `esxi_hostname` is not specified.'
+    - description: Name of the VMware cluster to work on. All ESXi hosts in this cluster will be configured. This parameter is required if `esxi_hostname` is not specified.
       name: cluster_name
     - description: Name of the kernel module to be configured.
       name: kernel_module_name
       required: true
-    - description: 'Specified configurations will be applied to the given module. These values are specified in key=value pairs and separated by a space when there are multiple options.'
+    - description: Specified configurations will be applied to the given module. These values are specified in key=value pairs and separated by a space when there are multiple options.
       name: kernel_module_option
       required: true
     description: "Manage kernel module options on ESXi hosts\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_kernel_manager_module.html"
@@ -2038,14 +2038,14 @@ script:
       description: dict with information on what was changed, by ESXi host in scope.
       type: unknown
   - arguments:
-    - description: 'Name of cluster. All host systems from given cluster used to manage lockdown. Required parameter, if `esxi_hostname` is not set.'
+    - description: Name of cluster. All host systems from given cluster used to manage lockdown. Required parameter, if `esxi_hostname` is not set.
       name: cluster_name
-    - description: 'List of ESXi hostname to manage lockdown. Required parameter, if `cluster_name` is not set. See examples for specifications.'
+    - description: List of ESXi hostname to manage lockdown. Required parameter, if `cluster_name` is not set. See examples for specifications.
       isArray: true
       name: esxi_hostname
     - auto: PREDEFINED
       defaultValue: present
-      description: 'State of hosts system If set to `present`, all host systems will be set in lockdown mode. If host system is already in lockdown mode and set to `present`, no action will be taken. If set to `absent`, all host systems will be removed from lockdown mode. If host system is already out of lockdown mode and set to `absent`, no action will be taken.'
+      description: State of hosts system If set to `present`, all host systems will be set in lockdown mode. If host system is already in lockdown mode and set to `present`, no action will be taken. If set to `absent`, all host systems will be removed from lockdown mode. If host system is already out of lockdown mode and set to `absent`, no action will be taken.
       name: state
       predefined:
       - present
@@ -2057,11 +2057,11 @@ script:
       description: metadata about state of Host system lock down
       type: unknown
   - arguments:
-    - description: 'Name of the host system to work with. This parameter is required if `cluster_name` is not specified.'
+    - description: Name of the host system to work with. This parameter is required if `cluster_name` is not specified.
       name: esxi_hostname
-    - description: 'Name of the cluster from which all host systems will be used. This parameter is required if `esxi_hostname` is not specified.'
+    - description: Name of the cluster from which all host systems will be used. This parameter is required if `esxi_hostname` is not specified.
       name: cluster_name
-    - description: 'IP or FQDN of NTP server(s). This accepts a list of NTP servers. For multiple servers, please look at the examples.'
+    - description: IP or FQDN of NTP server(s). This accepts a list of NTP servers. For multiple servers, please look at the examples.
       isArray: true
       name: ntp_servers
       required: true
@@ -2073,7 +2073,7 @@ script:
       - absent
     - auto: PREDEFINED
       defaultValue: 'No'
-      description: 'Verbose output of the configuration change. Explains if an NTP server was added, removed, or if the NTP server sequence was changed.'
+      description: Verbose output of the configuration change. Explains if an NTP server was added, removed, or if the NTP server sequence was changed.
       name: verbose
       predefined:
       - 'Yes'
@@ -2085,9 +2085,9 @@ script:
       description: metadata about host system's NTP configuration
       type: unknown
   - arguments:
-    - description: 'Name of the cluster. NTP config information about each ESXi server will be returned for the given cluster. If `esxi_hostname` is not given, this parameter is required.'
+    - description: Name of the cluster. NTP config information about each ESXi server will be returned for the given cluster. If `esxi_hostname` is not given, this parameter is required.
       name: cluster_name
-    - description: 'ESXi hostname. NTP config information about this ESXi server will be returned. If `cluster_name` is not given, this parameter is required.'
+    - description: ESXi hostname. NTP config information about this ESXi server will be returned. If `cluster_name` is not given, this parameter is required.
       name: esxi_hostname
     description: "Gathers info about NTP configuration on an ESXi host\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_ntp_info_module.html"
     name: vmware-host-ntp-info
@@ -2096,9 +2096,9 @@ script:
       description: dict with hostname as key and dict with NTP infos as value
       type: unknown
   - arguments:
-    - description: 'Name of the cluster. Package information about each ESXi server will be returned for given cluster. If `esxi_hostname` is not given, this parameter is required.'
+    - description: Name of the cluster. Package information about each ESXi server will be returned for given cluster. If `esxi_hostname` is not given, this parameter is required.
       name: cluster_name
-    - description: 'ESXi hostname. Package information about this ESXi server will be returned. If `cluster_name` is not given, this parameter is required.'
+    - description: ESXi hostname. Package information about this ESXi server will be returned. If `cluster_name` is not given, this parameter is required.
       name: esxi_hostname
     description: "Gathers info about available packages on an ESXi host\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_package_info_module.html"
     name: vmware-host-package-info
@@ -2116,9 +2116,9 @@ script:
       - balanced
       - low-power
       - custom
-    - description: 'Name of the host system to work with. This is required parameter if `cluster_name` is not specified.'
+    - description: Name of the host system to work with. This is required parameter if `cluster_name` is not specified.
       name: esxi_hostname
-    - description: 'Name of the cluster from which all host systems will be used. This is required parameter if `esxi_hostname` is not specified.'
+    - description: Name of the cluster from which all host systems will be used. This is required parameter if `esxi_hostname` is not specified.
       name: cluster_name
     description: "Manages the Power Management Policy of an ESXI host system\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_powermgmt_policy_module.html"
     name: vmware-host-powermgmt-policy
@@ -2136,19 +2136,19 @@ script:
       - power-up-from-standby
       - shutdown-host
       - reboot-host
-    - description: 'Name of the host system to work with. This is required parameter if `cluster_name` is not specified.'
+    - description: Name of the host system to work with. This is required parameter if `cluster_name` is not specified.
       name: esxi_hostname
-    - description: 'Name of the cluster from which all host systems will be used. This is required parameter if `esxi_hostname` is not specified.'
+    - description: Name of the cluster from which all host systems will be used. This is required parameter if `esxi_hostname` is not specified.
       name: cluster_name
     - auto: PREDEFINED
       defaultValue: 'No'
-      description: 'This parameter specify if the host should be proceeding with user defined powerstate regardless of whether it is in maintenance mode. If `state` set to `reboot-host` and `force` as `true`, then host system is rebooted regardless of whether it is in maintenance mode. If `state` set to `shutdown-host` and `force` as `true`, then host system is shutdown regardless of whether it is in maintenance mode. If `state` set to `power-down-to-standby` and `force` to `true`, then all powered off VMs will evacuated. Not applicable if `state` set to `power-up-from-standby`.'
+      description: This parameter specify if the host should be proceeding with user defined powerstate regardless of whether it is in maintenance mode. If `state` set to `reboot-host` and `force` as `true`, then host system is rebooted regardless of whether it is in maintenance mode. If `state` set to `shutdown-host` and `force` as `true`, then host system is shutdown regardless of whether it is in maintenance mode. If `state` set to `power-down-to-standby` and `force` to `true`, then all powered off VMs will evacuated. Not applicable if `state` set to `power-up-from-standby`.
       name: force
       predefined:
       - 'Yes'
       - 'No'
     - defaultValue: '600'
-      description: 'This parameter defines timeout for `state` set to `power-down-to-standby` or `power-up-from-standby`. Ignored if `state` set to `reboot-host` or `shutdown-host`. This parameter is defined in seconds.'
+      description: This parameter defines timeout for `state` set to `power-down-to-standby` or `power-up-from-standby`. Ignored if `state` set to `reboot-host` or `shutdown-host`. This parameter is defined in seconds.
       name: timeout
     description: "Manages power states of host systems in vCenter\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_powerstate_module.html"
     name: vmware-host-powerstate
@@ -2175,9 +2175,9 @@ script:
       description: return confirmation of requested host and updated / refreshed storage system
       type: unknown
   - arguments:
-    - description: 'Name of the cluster. Service information about each ESXi server will be returned for given cluster. If `esxi_hostname` is not given, this parameter is required.'
+    - description: Name of the cluster. Service information about each ESXi server will be returned for given cluster. If `esxi_hostname` is not given, this parameter is required.
       name: cluster_name
-    - description: 'ESXi hostname. Service information about this ESXi server will be returned. If `cluster_name` is not given, this parameter is required.'
+    - description: ESXi hostname. Service information about this ESXi server will be returned. If `cluster_name` is not given, this parameter is required.
       name: esxi_hostname
     description: "Gathers info about an ESXi host's services\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_service_info_module.html"
     name: vmware-host-service-info
@@ -2186,13 +2186,13 @@ script:
       description: dict with hostname as key and dict with host service config information
       type: unknown
   - arguments:
-    - description: 'Name of the cluster. Service settings are applied to every ESXi host system/s in given cluster. If `esxi_hostname` is not given, this parameter is required.'
+    - description: Name of the cluster. Service settings are applied to every ESXi host system/s in given cluster. If `esxi_hostname` is not given, this parameter is required.
       name: cluster_name
-    - description: 'ESXi hostname. Service settings are applied to this ESXi host system. If `cluster_name` is not given, this parameter is required.'
+    - description: ESXi hostname. Service settings are applied to this ESXi host system. If `cluster_name` is not given, this parameter is required.
       name: esxi_hostname
     - auto: PREDEFINED
       defaultValue: start
-      description: 'Desired state of service. State value ''start'' and ''present'' has same effect. State value ''stop'' and ''absent'' has same effect.'
+      description: Desired state of service. State value 'start' and 'present' has same effect. State value 'stop' and 'absent' has same effect.
       name: state
       predefined:
       - absent
@@ -2201,13 +2201,13 @@ script:
       - start
       - stop
     - auto: PREDEFINED
-      description: 'Set of valid service policy strings. If set `on`, then service should be started when the host starts up. If set `automatic`, then service should run if and only if it has open firewall ports. If set `off`, then Service should not be started when the host starts up.'
+      description: Set of valid service policy strings. If set `on`, then service should be started when the host starts up. If set `automatic`, then service should run if and only if it has open firewall ports. If set `off`, then Service should not be started when the host starts up.
       name: service_policy
       predefined:
       - automatic
       - 'off'
       - 'on'
-    - description: 'Name of Service to be managed. This is a brief identifier for the service, for example, ntpd, vxsyslogd etc. This value should be a valid ESXi service name.'
+    - description: Name of Service to be managed. This is a brief identifier for the service, for example, ntpd, vxsyslogd etc. This value should be a valid ESXi service name.
       name: service_name
       required: true
     description: "Manage services on a given ESXi host\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_service_manager_module.html"
@@ -2228,10 +2228,10 @@ script:
     - defaultValue: '161'
       description: Port used by the SNMP agent.
       name: snmp_port
-    - description: 'A list of trap targets. You need to use `hostname`, `port`, and `community` for each trap target.'
+    - description: A list of trap targets. You need to use `hostname`, `port`, and `community` for each trap target.
       isArray: true
       name: trap_targets
-    - description: 'A list of trap oids for traps not to be sent by agent, e.g. [ 1.3.6.1.4.1.6876.4.1.1.0, 1.3.6.1.4.1.6876.4.1.1.1 ] Use value `reset` to clear settings.'
+    - description: A list of trap oids for traps not to be sent by agent, e.g. [ 1.3.6.1.4.1.6876.4.1.1.0, 1.3.6.1.4.1.6876.4.1.1.1 ] Use value `reset` to clear settings.
       isArray: true
       name: trap_filter
     - auto: PREDEFINED
@@ -2243,7 +2243,7 @@ script:
       - 'No'
     - auto: PREDEFINED
       defaultValue: indications
-      description: 'Source hardware events from IPMI sensors or CIM Indications. The embedded SNMP agent receives hardware events either from IPMI sensors `sensors` or CIM indications `indications`.'
+      description: Source hardware events from IPMI sensors or CIM Indications. The embedded SNMP agent receives hardware events either from IPMI sensors `sensors` or CIM indications `indications`.
       name: hw_source
       predefined:
       - indications
@@ -2264,9 +2264,9 @@ script:
       description: metadata about host system's SNMP configuration
       type: unknown
   - arguments:
-    - description: 'Name of the cluster. SSL thumbprint information about all ESXi host system in the given cluster will be reported. If `esxi_hostname` is not given, this parameter is required.'
+    - description: Name of the cluster. SSL thumbprint information about all ESXi host system in the given cluster will be reported. If `esxi_hostname` is not given, this parameter is required.
       name: cluster_name
-    - description: 'ESXi hostname. SSL thumbprint information of this ESXi host system will be reported. If `cluster_name` is not given, this parameter is required.'
+    - description: ESXi hostname. SSL thumbprint information of this ESXi host system will be reported. If `cluster_name` is not given, this parameter is required.
       name: esxi_hostname
     description: "Gather info of ESXi host system about SSL\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_ssl_info_module.html"
     name: vmware-host-ssl-info
@@ -2275,9 +2275,9 @@ script:
       description: dict with hostname as key and dict with SSL thumbprint related info
       type: unknown
   - arguments:
-    - description: 'Name of the host system to work with. Vmhba information about this ESXi server will be returned. This parameter is required if `cluster_name` is not specified.'
+    - description: Name of the host system to work with. Vmhba information about this ESXi server will be returned. This parameter is required if `cluster_name` is not specified.
       name: esxi_hostname
-    - description: 'Name of the cluster from which all host systems will be used. Vmhba information about each ESXi server will be returned for the given cluster. This parameter is required if `esxi_hostname` is not specified.'
+    - description: Name of the cluster from which all host systems will be used. Vmhba information about each ESXi server will be returned for the given cluster. This parameter is required if `esxi_hostname` is not specified.
       name: cluster_name
     description: "Gathers info about vmhbas available on the given ESXi host\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_vmhba_info_module.html"
     name: vmware-host-vmhba-info
@@ -2307,15 +2307,15 @@ script:
       predefined:
       - 'Yes'
       - 'No'
-    - description: 'Name of the host system to work with. Vmnic information about this ESXi server will be returned. This parameter is required if `cluster_name` is not specified.'
+    - description: Name of the host system to work with. Vmnic information about this ESXi server will be returned. This parameter is required if `cluster_name` is not specified.
       name: esxi_hostname
-    - description: 'Name of the cluster from which all host systems will be used. Vmnic information about each ESXi server will be returned for the given cluster. This parameter is required if `esxi_hostname` is not specified.'
+    - description: Name of the cluster from which all host systems will be used. Vmnic information about each ESXi server will be returned for the given cluster. This parameter is required if `esxi_hostname` is not specified.
       name: cluster_name
     description: "Gathers info about vmnics available on the given ESXi host\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_vmnic_info_module.html"
     name: vmware-host-vmnic-info
     outputs:
     - contextPath: VMware.VmwareHostVmnicInfo.hosts_vmnics_info
-      description: 'dict with hostname as key and dict with vmnics information as value. for `num_vmnics`, only NICs starting with vmnic are counted. NICs like vusb* are not counted. details about vswitch and dvswitch was added in version 2.7. details about vmnics was added in version 2.8.'
+      description: dict with hostname as key and dict with vmnics information as value. for `num_vmnics`, only NICs starting with vmnic are counted. NICs like vusb* are not counted. details about vswitch and dvswitch was added in version 2.7. details about vmnics was added in version 2.8.
       type: unknown
   - arguments: []
     description: "Gather info about local roles on an ESXi host\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_local_role_info_module.html"
@@ -2328,12 +2328,12 @@ script:
     - description: The local role name to be managed.
       name: local_role_name
       required: true
-    - description: 'The list of privileges that role needs to have. Please see `https://docs.vmware.com/en/VMware-vSphere/6.0/com.vmware.vsphere.security.doc/GUID-ED56F3C4-77D0-49E3-88B6-B99B8B437B62.html`'
+    - description: The list of privileges that role needs to have. Please see `https://docs.vmware.com/en/VMware-vSphere/6.0/com.vmware.vsphere.security.doc/GUID-ED56F3C4-77D0-49E3-88B6-B99B8B437B62.html`
       isArray: true
       name: local_privilege_ids
     - auto: PREDEFINED
       defaultValue: present
-      description: 'Indicate desired state of the role. If the role already exists when `state=present`, the role info is updated.'
+      description: Indicate desired state of the role. If the role already exists when `state=present`, the role info is updated.
       name: state
       predefined:
       - present
@@ -2347,7 +2347,7 @@ script:
       - 'No'
     - auto: PREDEFINED
       defaultValue: set
-      description: 'This parameter is only valid while updating an existing role with privileges. `add` will add the privileges to the existing privilege list. `remove` will remove the privileges from the existing privilege list. `set` will replace the privileges of the existing privileges with user defined list of privileges.'
+      description: This parameter is only valid while updating an existing role with privileges. `add` will add the privileges to the existing privilege list. `remove` will remove the privileges from the existing privilege list. `set` will replace the privileges of the existing privileges with user defined list of privileges.
       name: action
       predefined:
       - add
@@ -2468,9 +2468,9 @@ script:
     - description: The role to be assigned permission.
       name: role
       required: true
-    - description: 'The user to be assigned permission. Required if `group` is not specified.'
+    - description: The user to be assigned permission. Required if `group` is not specified.
       name: principal
-    - description: 'The group to be assigned permission. Required if `principal` is not specified.'
+    - description: The group to be assigned permission. Required if `principal` is not specified.
       name: group
     - description: The object name to assigned permission.
       name: object_name
@@ -2499,7 +2499,7 @@ script:
       - 'No'
     - auto: PREDEFINED
       defaultValue: present
-      description: 'Indicate desired state of the object''s permission. When `state=present`, the permission will be added if it doesn''t already exist. When `state=absent`, the permission is removed if it exists.'
+      description: Indicate desired state of the object's permission. When `state=present`, the permission will be added if it doesn't already exist. When `state=absent`, the permission is removed if it exists.
       name: state
       predefined:
       - present
@@ -2518,7 +2518,7 @@ script:
       name: portgroup
       required: true
     - defaultValue: '0'
-      description: 'VLAN ID to assign to portgroup. Set to 0 (no VLAN tagging) by default.'
+      description: VLAN ID to assign to portgroup. Set to 0 (no VLAN tagging) by default.
       name: vlan_id
     - description: 'Network policy specifies layer 2 security settings for a portgroup such as promiscuous mode, where guest adapter listens to all the packets, MAC address changes and forged transmits. Dict which configures the different security values for portgroup. Valid attributes are: - `promiscuous_mode` (bool): indicates whether promiscuous mode is allowed. (default: None) - `forged_transmits` (bool): indicates whether forged transmits are allowed. (default: None) - `mac_changes` (bool): indicates whether mac changes are allowed. (default: None)'
       isArray: true
@@ -2529,9 +2529,9 @@ script:
     - description: 'Dictionary which configures traffic shaping for the switch. Valid attributes are: - `enabled` (bool): Status of Traffic Shaping Policy. (default: None) - `average_bandwidth` (int): Average bandwidth (kbit/s). (default: None) - `peak_bandwidth` (int): Peak bandwidth (kbit/s). (default: None) - `burst_size` (int): Burst size (KB). (default: None)'
       isArray: true
       name: traffic_shaping
-    - description: 'Name of cluster name for host membership. Portgroup will be created on all hosts of the given cluster. This option is required if `hosts` is not specified.'
+    - description: Name of cluster name for host membership. Portgroup will be created on all hosts of the given cluster. This option is required if `hosts` is not specified.
       name: cluster_name
-    - description: 'List of name of host or hosts on which portgroup needs to be added. This option is required if `cluster_name` is not specified.'
+    - description: List of name of host or hosts on which portgroup needs to be added. This option is required if `cluster_name` is not specified.
       isArray: true
       name: hosts
     - auto: PREDEFINED
@@ -2550,14 +2550,14 @@ script:
   - arguments:
     - auto: PREDEFINED
       defaultValue: 'No'
-      description: 'Gather information about Security, Traffic Shaping, as well as Teaming and failover. The property `ts` stands for Traffic Shaping and `lb` for Load Balancing.'
+      description: Gather information about Security, Traffic Shaping, as well as Teaming and failover. The property `ts` stands for Traffic Shaping and `lb` for Load Balancing.
       name: policies
       predefined:
       - 'Yes'
       - 'No'
-    - description: 'Name of the cluster. Info will be returned for all hostsystem belonging to this cluster name. If `esxi_hostname` is not given, this parameter is required.'
+    - description: Name of the cluster. Info will be returned for all hostsystem belonging to this cluster name. If `esxi_hostname` is not given, this parameter is required.
       name: cluster_name
-    - description: 'ESXi hostname to gather information from. If `cluster_name` is not given, this parameter is required.'
+    - description: ESXi hostname to gather information from. If `cluster_name` is not given, this parameter is required.
       name: esxi_hostname
     description: "Gathers info about an ESXi host's Port Group configuration\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_portgroup_info_module.html"
     name: vmware-portgroup-info
@@ -2586,7 +2586,7 @@ script:
       description: Amount of resource that is guaranteed available to the virtual machine or resource pool.
       name: cpu_reservation
     - defaultValue: '-1'
-      description: 'The utilization of a virtual machine/resource pool will not exceed this limit, even if there are available resources. The default value -1 indicates no limit.'
+      description: The utilization of a virtual machine/resource pool will not exceed this limit, even if there are available resources. The default value -1 indicates no limit.
       name: cpu_limit
     - auto: PREDEFINED
       defaultValue: normal
@@ -2608,7 +2608,7 @@ script:
       description: Amount of resource that is guaranteed available to the virtual machine or resource pool.
       name: mem_reservation
     - defaultValue: '-1'
-      description: 'The utilization of a virtual machine/resource pool will not exceed this limit, even if there are available resources. The default value -1 indicates no limit.'
+      description: The utilization of a virtual machine/resource pool will not exceed this limit, even if there are available resources. The default value -1 indicates no limit.
       name: mem_limit
     - auto: PREDEFINED
       defaultValue: normal
@@ -2644,13 +2644,13 @@ script:
       name: tag_name
       required: true
     - defaultValue: ''
-      description: 'The tag description. This is required only if `state` is set to `present`. This parameter is ignored, when `state` is set to `absent`. Process of updating tag only allows description change.'
+      description: The tag description. This is required only if `state` is set to `present`. This parameter is ignored, when `state` is set to `absent`. Process of updating tag only allows description change.
       name: tag_description
-    - description: 'The unique ID generated by vCenter should be used to. User can get this unique ID from facts module.'
+    - description: The unique ID generated by vCenter should be used to. User can get this unique ID from facts module.
       name: category_id
     - auto: PREDEFINED
       defaultValue: present
-      description: 'The state of tag. If set to `present` and tag does not exists, then tag is created. If set to `present` and tag exists, then tag is updated. If set to `absent` and tag exists, then tag is deleted. If set to `absent` and tag does not exists, no action is taken.'
+      description: The state of tag. If set to `present` and tag does not exists, then tag is created. If set to `present` and tag exists, then tag is updated. If set to `absent` and tag exists, then tag is deleted. If set to `absent` and tag does not exists, no action is taken.
       name: state
       predefined:
       - present
@@ -2683,13 +2683,13 @@ script:
       description: dictionary of tag metadata
       type: unknown
   - arguments:
-    - description: 'List of tag(s) to be managed. You can also specify category name by specifying colon separated value. For example, "category_name:tag_name". You can skip category name if you have unique tag names.'
+    - description: List of tag(s) to be managed. You can also specify category name by specifying colon separated value. For example, "category_name:tag_name". You can skip category name if you have unique tag names.
       isArray: true
       name: tag_names
       required: true
     - auto: PREDEFINED
       defaultValue: add
-      description: 'If `state` is set to `add` or `present` will add the tags to the existing tag list of the given object. If `state` is set to `remove` or `absent` will remove the tags from the existing tag list of the given object. If `state` is set to `set` will replace the tags of the given objects with the user defined list of tags.'
+      description: If `state` is set to `add` or `present` will add the tags to the existing tag list of the given object. If `state` is set to `remove` or `absent` will remove the tags from the existing tag list of the given object. If `state` is set to `set` will replace the tags of the given objects with the user defined list of tags.
       name: state
       predefined:
       - present
@@ -2708,7 +2708,7 @@ script:
       - DistributedVirtualSwitch
       - DistributedVirtualPortgroup
       required: true
-    - description: 'Name of the object to work with. For DistributedVirtualPortgroups the format should be "switch_name:portgroup_name"'
+    - description: Name of the object to work with. For DistributedVirtualPortgroups the format should be "switch_name:portgroup_name"
       name: object_name
       required: true
     - auto: PREDEFINED
@@ -2725,11 +2725,11 @@ script:
       description: metadata about tags related to object configuration
       type: unknown
   - arguments:
-    - description: 'The target id based on order of scsi device. version 2.6 onwards, this parameter is optional.'
+    - description: The target id based on order of scsi device. version 2.6 onwards, this parameter is optional.
       name: target_id
-    - description: 'Name of the cluster. Info about all SCSI devices for all host system in the given cluster is returned. This parameter is required, if `esxi_hostname` is not provided.'
+    - description: Name of the cluster. Info about all SCSI devices for all host system in the given cluster is returned. This parameter is required, if `esxi_hostname` is not provided.
       name: cluster_name
-    - description: 'Name of the ESXi host system. Info about all SCSI devices for the given ESXi host system is returned. This parameter is required, if `cluster_name` is not provided.'
+    - description: Name of the ESXi host system. Info about all SCSI devices for the given ESXi host system is returned. This parameter is required, if `cluster_name` is not provided.
       name: esxi_hostname
     description: "Return canonical (NAA) from an ESXi host system\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_target_canonical_info_module.html"
     name: vmware-target-canonical-info
@@ -2802,7 +2802,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       defaultValue: 'Yes'
-      description: 'If set to `True`, the DRS rule will be an Affinity rule. If set to `False`, the DRS rule will be an Anti-Affinity rule. Effective only if `state` is set to `present`.'
+      description: If set to `True`, the DRS rule will be an Affinity rule. If set to `False`, the DRS rule will be an Anti-Affinity rule. Effective only if `state` is set to `present`.
       name: affinity_rule
       predefined:
       - 'Yes'
@@ -2817,30 +2817,30 @@ script:
       required: true
     - auto: PREDEFINED
       defaultValue: 'No'
-      description: 'If set to `True`, the DRS rule will be enabled. Effective only if `state` is set to `present`.'
+      description: If set to `True`, the DRS rule will be enabled. Effective only if `state` is set to `present`.
       name: enabled
       predefined:
       - 'Yes'
       - 'No'
-    - description: 'Name of Host group to use with rule. Effective only if `state` is set to `present`.'
+    - description: Name of Host group to use with rule. Effective only if `state` is set to `present`.
       name: host_group_name
       required: true
     - auto: PREDEFINED
       defaultValue: 'No'
-      description: 'If set to `True`, the DRS rule will be mandatory. Effective only if `state` is set to `present`.'
+      description: If set to `True`, the DRS rule will be mandatory. Effective only if `state` is set to `present`.
       name: mandatory
       predefined:
       - 'Yes'
       - 'No'
     - auto: PREDEFINED
       defaultValue: present
-      description: 'If set to `present` and the rule doesn''t exists then the rule will be created. If set to `absent` and the rule exists then the rule will be deleted.'
+      description: If set to `present` and the rule doesn't exists then the rule will be created. If set to `absent` and the rule exists then the rule will be deleted.
       name: state
       predefined:
       - present
       - absent
       required: true
-    - description: 'Name of VM group to use with rule. Effective only if `state` is set to `present`.'
+    - description: Name of VM group to use with rule. Effective only if `state` is set to `present`.
       name: vm_group_name
       required: true
     description: "Creates vm/host group in a given cluster\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_vm_host_drs_rule_module.html"
@@ -2849,7 +2849,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       defaultValue: all
-      description: 'If set to `vm`, then information are gathered for virtual machines only. If set to `template`, then information are gathered for virtual machine templates only. If set to `all`, then information are gathered for all virtual machines and virtual machine templates.'
+      description: If set to `vm`, then information are gathered for virtual machines only. If set to `template`, then information are gathered for virtual machine templates only. If set to `all`, then information are gathered for all virtual machines and virtual machine templates.
       name: vm_type
       predefined:
       - all
@@ -2878,9 +2878,9 @@ script:
       description: list of dictionary of virtual machines and their information
       type: unknown
   - arguments:
-    - description: 'The datacenter hosting the virtual machine. If set, it will help to speed up virtual machine search.'
+    - description: The datacenter hosting the virtual machine. If set, it will help to speed up virtual machine search.
       name: datacenter
-    - description: 'The cluster hosting the virtual machine. If set, it will help to speed up virtual machine search.'
+    - description: The cluster hosting the virtual machine. If set, it will help to speed up virtual machine search.
       name: cluster
     - description: 'Destination folder, absolute or relative path to find an existing guest or create the new guest. The folder should include the datacenter. ESX''s datacenter is ha-datacenter. Examples: folder: /ha-datacenter/vm folder: ha-datacenter/vm folder: /datacenter1/vm folder: datacenter1/vm folder: /datacenter1/vm/folder1 folder: datacenter1/vm/folder1 folder: /folder1/datacenter1/vm folder: folder1/datacenter1/vm folder: /folder1/datacenter1/vm/folder2'
       name: folder
@@ -2903,11 +2903,11 @@ script:
     - description: The password used to login-in to the virtual machine.
       name: vm_password
       required: true
-    - description: 'The absolute path to the program to start. On Linux, shell is executed via bash.'
+    - description: The absolute path to the program to start. On Linux, shell is executed via bash.
       name: vm_shell
       required: true
     - defaultValue: ' '
-      description: 'The argument to the program. The characters which must be escaped to the shell also be escaped on the command line provided.'
+      description: The argument to the program. The characters which must be escaped to the shell also be escaped on the command line provided.
       name: vm_shell_args
     - description: Comma separated list of environment variable, specified in the guest OS notation.
       isArray: true
@@ -2922,7 +2922,7 @@ script:
       - 'Yes'
       - 'No'
     - defaultValue: '3600'
-      description: 'Timeout in seconds. If set to positive integers, then `wait_for_process` will honor this parameter and will exit after this timeout.'
+      description: Timeout in seconds. If set to positive integers, then `wait_for_process` will honor this parameter and will exit after this timeout.
       name: timeout
     description: "Run commands in a VMware guest operating system\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_vm_shell_module.html"
     name: vmware-vm-shell
@@ -2941,7 +2941,7 @@ script:
     - description: Desired cluster name where virtual machines are present for the DRS rule.
       name: cluster_name
       required: true
-    - description: 'List of virtual machines name for which DRS rule needs to be applied. Required if `state` is set to `present`.'
+    - description: List of virtual machines name for which DRS rule needs to be applied. Required if `state` is set to `present`.
       isArray: true
       name: vms
     - description: The name of the DRS rule to manage.
@@ -2949,28 +2949,28 @@ script:
       required: true
     - auto: PREDEFINED
       defaultValue: 'No'
-      description: 'If set to `True`, the DRS rule will be enabled. Effective only if `state` is set to `present`.'
+      description: If set to `True`, the DRS rule will be enabled. Effective only if `state` is set to `present`.
       name: enabled
       predefined:
       - 'Yes'
       - 'No'
     - auto: PREDEFINED
       defaultValue: 'No'
-      description: 'If set to `True`, the DRS rule will be mandatory. Effective only if `state` is set to `present`.'
+      description: If set to `True`, the DRS rule will be mandatory. Effective only if `state` is set to `present`.
       name: mandatory
       predefined:
       - 'Yes'
       - 'No'
     - auto: PREDEFINED
       defaultValue: 'Yes'
-      description: 'If set to `True`, the DRS rule will be an Affinity rule. If set to `False`, the DRS rule will be an Anti-Affinity rule. Effective only if `state` is set to `present`.'
+      description: If set to `True`, the DRS rule will be an Affinity rule. If set to `False`, the DRS rule will be an Anti-Affinity rule. Effective only if `state` is set to `present`.
       name: affinity_rule
       predefined:
       - 'Yes'
       - 'No'
     - auto: PREDEFINED
       defaultValue: present
-      description: 'If set to `present`, then the DRS rule is created if not present. If set to `present`, then the DRS rule is already present, it updates to the given configurations. If set to `absent`, then the DRS rule is deleted if present.'
+      description: If set to `present`, then the DRS rule is created if not present. If set to `present`, then the DRS rule is already present, it updates to the given configurations. If set to `absent`, then the DRS rule is deleted if present.
       name: state
       predefined:
       - present
@@ -2992,9 +2992,9 @@ script:
     name: vmware-vm-vss-dvs-migrate
     outputs: []
   - arguments:
-    - description: 'The name of the vSwitch where to add the VMKernel interface. Required parameter only if `state` is set to `present`. Optional parameter from version 2.5 and onwards.'
+    - description: The name of the vSwitch where to add the VMKernel interface. Required parameter only if `state` is set to `present`. Optional parameter from version 2.5 and onwards.
       name: vswitch_name
-    - description: 'The name of the vSphere Distributed Switch (vDS) where to add the VMKernel interface. Required parameter only if `state` is set to `present`. Optional parameter from version 2.8 and onwards.'
+    - description: The name of the vSphere Distributed Switch (vDS) where to add the VMKernel interface. Required parameter only if `state` is set to `present`. Optional parameter from version 2.8 and onwards.
       name: dvswitch_name
     - description: The name of the port group for the VMKernel interface.
       name: portgroup_name
@@ -3003,37 +3003,37 @@ script:
       description: 'A dictionary of network details. The following parameter is required: - `type` (string): Type of IP assignment (either `dhcp` or `static`). The following parameters are required in case of `type` is set to `static`: - `ip_address` (string): Static IP address (implies `type: static`). - `subnet_mask` (string): Static netmask required for `ip_address`. The following parameter is optional in case of `type` is set to `static`: - `default_gateway` (string): Default gateway (Override default gateway for this adapter). The following parameter is optional: - `tcpip_stack` (string): The TCP/IP stack for the VMKernel interface. Can be default, provisioning, vmotion, or vxlan. (default: default)'
       isArray: true
       name: network
-    - description: 'The IP Address for the VMKernel interface. Use `network` parameter with `ip_address` instead. Deprecated option, will be removed in version 2.9.'
+    - description: The IP Address for the VMKernel interface. Use `network` parameter with `ip_address` instead. Deprecated option, will be removed in version 2.9.
       name: ip_address
-    - description: 'The Subnet Mask for the VMKernel interface. Use `network` parameter with `subnet_mask` instead. Deprecated option, will be removed in version 2.9.'
+    - description: The Subnet Mask for the VMKernel interface. Use `network` parameter with `subnet_mask` instead. Deprecated option, will be removed in version 2.9.
       name: subnet_mask
     - defaultValue: '1500'
-      description: 'The MTU for the VMKernel interface. The default value of 1500 is valid from version 2.5 and onwards.'
+      description: The MTU for the VMKernel interface. The default value of 1500 is valid from version 2.5 and onwards.
       name: mtu
-    - description: 'Search VMkernel adapter by device name. The parameter is required only in case of `type` is set to `dhcp`.'
+    - description: Search VMkernel adapter by device name. The parameter is required only in case of `type` is set to `dhcp`.
       name: device
-    - description: 'Enable VSAN traffic on the VMKernel adapter. This option is only allowed if the default TCP/IP stack is used.'
+    - description: Enable VSAN traffic on the VMKernel adapter. This option is only allowed if the default TCP/IP stack is used.
       name: enable_vsan
-    - description: 'Enable vMotion traffic on the VMKernel adapter. This option is only allowed if the default TCP/IP stack is used. You cannot enable vMotion on an additional adapter if you already have an adapter with the vMotion TCP/IP stack configured.'
+    - description: Enable vMotion traffic on the VMKernel adapter. This option is only allowed if the default TCP/IP stack is used. You cannot enable vMotion on an additional adapter if you already have an adapter with the vMotion TCP/IP stack configured.
       name: enable_vmotion
-    - description: 'Enable Management traffic on the VMKernel adapter. This option is only allowed if the default TCP/IP stack is used.'
+    - description: Enable Management traffic on the VMKernel adapter. This option is only allowed if the default TCP/IP stack is used.
       name: enable_mgmt
-    - description: 'Enable Fault Tolerance traffic on the VMKernel adapter. This option is only allowed if the default TCP/IP stack is used.'
+    - description: Enable Fault Tolerance traffic on the VMKernel adapter. This option is only allowed if the default TCP/IP stack is used.
       name: enable_ft
-    - description: 'Enable Provisioning traffic on the VMKernel adapter. This option is only allowed if the default TCP/IP stack is used.'
+    - description: Enable Provisioning traffic on the VMKernel adapter. This option is only allowed if the default TCP/IP stack is used.
       name: enable_provisioning
-    - description: 'Enable vSphere Replication traffic on the VMKernel adapter. This option is only allowed if the default TCP/IP stack is used.'
+    - description: Enable vSphere Replication traffic on the VMKernel adapter. This option is only allowed if the default TCP/IP stack is used.
       name: enable_replication
-    - description: 'Enable vSphere Replication NFC traffic on the VMKernel adapter. This option is only allowed if the default TCP/IP stack is used.'
+    - description: Enable vSphere Replication NFC traffic on the VMKernel adapter. This option is only allowed if the default TCP/IP stack is used.
       name: enable_replication_nfc
     - auto: PREDEFINED
       defaultValue: present
-      description: 'If set to `present`, the VMKernel adapter will be created with the given specifications. If set to `absent`, the VMKernel adapter will be removed. If set to `present` and VMKernel adapter exists, the configurations will be updated.'
+      description: If set to `present`, the VMKernel adapter will be created with the given specifications. If set to `absent`, the VMKernel adapter will be removed. If set to `present` and VMKernel adapter exists, the configurations will be updated.
       name: state
       predefined:
       - present
       - absent
-    - description: 'Name of ESXi host to which VMKernel is to be managed. From version 2.5 onwards, this parameter is required.'
+    - description: Name of ESXi host to which VMKernel is to be managed. From version 2.5 onwards, this parameter is required.
       name: esxi_hostname
       required: true
     description: "Manages a VMware VMkernel Adapter of an ESXi host.\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_vmkernel_module.html"
@@ -3043,9 +3043,9 @@ script:
       description: metadata about VMKernel name
       type: unknown
   - arguments:
-    - description: 'Name of the cluster. VMKernel information about each ESXi server will be returned for the given cluster. If `esxi_hostname` is not given, this parameter is required.'
+    - description: Name of the cluster. VMKernel information about each ESXi server will be returned for the given cluster. If `esxi_hostname` is not given, this parameter is required.
       name: cluster_name
-    - description: 'ESXi hostname. VMKernel information about this ESXi server will be returned. If `cluster_name` is not given, this parameter is required.'
+    - description: ESXi hostname. VMKernel information about this ESXi server will be returned. If `cluster_name` is not given, this parameter is required.
       name: esxi_hostname
     description: "Gathers VMKernel info about an ESXi host\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_vmkernel_info_module.html"
     name: vmware-vmkernel-info
@@ -3067,11 +3067,11 @@ script:
     name: vmware-vmkernel-ip-config
     outputs: []
   - arguments:
-    - description: 'Name of the VM to perform a vMotion on. This is required parameter, if `vm_uuid` is not set. Version 2.6 onwards, this parameter is not a required parameter, unlike the previous versions.'
+    - description: Name of the VM to perform a vMotion on. This is required parameter, if `vm_uuid` is not set. Version 2.6 onwards, this parameter is not a required parameter, unlike the previous versions.
       name: vm_name
-    - description: 'UUID of the virtual machine to perform a vMotion operation on. This is a required parameter, if `vm_name` or `moid` is not set.'
+    - description: UUID of the virtual machine to perform a vMotion operation on. This is a required parameter, if `vm_name` or `moid` is not set.
       name: vm_uuid
-    - description: 'Managed Object ID of the instance to manage if known, this is a unique identifier only within a single vCenter instance. This is required if `vm_name` or `vm_uuid` is not supplied.'
+    - description: Managed Object ID of the instance to manage if known, this is a unique identifier only within a single vCenter instance. This is required if `vm_name` or `vm_uuid` is not supplied.
       name: moid
     - auto: PREDEFINED
       defaultValue: 'No'
@@ -3080,7 +3080,7 @@ script:
       predefined:
       - 'Yes'
       - 'No'
-    - description: 'Name of the destination host the virtual machine should be running on. Version 2.6 onwards, this parameter is not a required parameter, unlike the previous versions.'
+    - description: Name of the destination host the virtual machine should be running on. Version 2.6 onwards, this parameter is not a required parameter, unlike the previous versions.
       name: destination_host
     - description: Name of the destination datastore the virtual machine's vmdk should be moved on.
       name: destination_datastore
@@ -3157,10 +3157,10 @@ script:
     name: vmware-vspan-session
     outputs: []
   - arguments:
-    - description: 'vSwitch name to add. Alias `switch` is added in version 2.4.'
+    - description: vSwitch name to add. Alias `switch` is added in version 2.4.
       name: switch
       required: true
-    - description: 'A list of vmnic names or vmnic name to attach to vSwitch. Alias `nics` is added in version 2.4.'
+    - description: A list of vmnic names or vmnic name to attach to vSwitch. Alias `nics` is added in version 2.4.
       isArray: true
       name: nics
     - defaultValue: '128'
@@ -3185,9 +3185,9 @@ script:
       description: information about performed operation
       type: string
   - arguments:
-    - description: 'Name of the cluster. Info about vswitch belonging to every ESXi host systems under this cluster will be returned. If `esxi_hostname` is not given, this parameter is required.'
+    - description: Name of the cluster. Info about vswitch belonging to every ESXi host systems under this cluster will be returned. If `esxi_hostname` is not given, this parameter is required.
       name: cluster_name
-    - description: 'ESXi hostname to gather information from. If `cluster_name` is not given, this parameter is required.'
+    - description: ESXi hostname to gather information from. If `cluster_name` is not given, this parameter is required.
       name: esxi_hostname
     description: "Gathers info about an ESXi host's vswitch configurations\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_vswitch_info_module.html"
     name: vmware-vswitch-info
@@ -3213,7 +3213,7 @@ script:
       name: timeout
     - auto: PREDEFINED
       defaultValue: file
-      description: 'The state of or the action on the provided path. If `absent`, the file will be removed. If `directory`, the directory will be created. If `file`, more information of the (existing) file will be returned. If `touch`, an empty file will be created if the path does not exist.'
+      description: The state of or the action on the provided path. If `absent`, the file will be removed. If `directory`, the directory will be created. If `file`, more information of the (existing) file will be returned. If `touch`, an empty file will be created if the path does not exist.
       name: state
       predefined:
       - absent
@@ -3279,14 +3279,14 @@ script:
     - description: Name of the datacenter.
       name: datacenter
       required: true
-    - description: 'Name of folder to be managed. This is case sensitive parameter. Folder name should be under 80 characters. This is a VMware restriction.'
+    - description: Name of folder to be managed. This is case sensitive parameter. Folder name should be under 80 characters. This is a VMware restriction.
       name: folder_name
       required: true
-    - description: 'Name of the parent folder under which new folder needs to be created. This is case sensitive parameter. Please specify unique folder name as there is no way to detect duplicate names. If user wants to create a folder under ''/DC0/vm/vm_folder'', this value will be ''vm_folder''.'
+    - description: Name of the parent folder under which new folder needs to be created. This is case sensitive parameter. Please specify unique folder name as there is no way to detect duplicate names. If user wants to create a folder under '/DC0/vm/vm_folder', this value will be 'vm_folder'.
       name: parent_folder
     - auto: PREDEFINED
       defaultValue: vm
-      description: 'This is type of folder. If set to `vm`, then ''VM and Template Folder'' is created under datacenter. If set to `host`, then ''Host and Cluster Folder'' is created under datacenter. If set to `datastore`, then ''Storage Folder'' is created under datacenter. If set to `network`, then ''Network Folder'' is created under datacenter. This parameter is required, if `state` is set to `present` and parent_folder is absent. This option is ignored, if `parent_folder` is set.'
+      description: This is type of folder. If set to `vm`, then 'VM and Template Folder' is created under datacenter. If set to `host`, then 'Host and Cluster Folder' is created under datacenter. If set to `datastore`, then 'Storage Folder' is created under datacenter. If set to `network`, then 'Network Folder' is created under datacenter. This parameter is required, if `state` is set to `present` and parent_folder is absent. This option is ignored, if `parent_folder` is set.
       name: folder_type
       predefined:
       - datastore
@@ -3295,7 +3295,7 @@ script:
       - vm
     - auto: PREDEFINED
       defaultValue: present
-      description: 'State of folder. If set to `present` without parent folder parameter, then folder with `folder_type` is created. If set to `present` with parent folder parameter,  then folder in created under parent folder. `folder_type` is ignored. If set to `absent`, then folder is unregistered and destroyed.'
+      description: State of folder. If set to `present` without parent folder parameter, then folder with `folder_type` is created. If set to `present` with parent folder parameter,  then folder in created under parent folder. `folder_type` is ignored. If set to `absent`, then folder is unregistered and destroyed.
       name: state
       predefined:
       - present
@@ -3308,7 +3308,7 @@ script:
       type: unknown
   - arguments:
     - defaultValue: '{''source'': ''ansible''}'
-      description: 'The optional labels of the license key to manage in vSphere vCenter. This is dictionary with key/value pair.'
+      description: The optional labels of the license key to manage in vSphere vCenter. This is dictionary with key/value pair.
       isArray: true
       name: labels
     - description: The license key to manage in vSphere vCenter.
@@ -3321,7 +3321,7 @@ script:
       predefined:
       - absent
       - present
-    - description: 'The hostname of the ESXi server to which the specified license will be assigned. This parameter is optional.'
+    - description: The hostname of the ESXi server to which the specified license will be assigned. This parameter is optional.
       name: esxi_hostname
     - description: The datacenter name to use for the operation.
       name: datacenter
@@ -3333,7 +3333,7 @@ script:
     - contextPath: VMware.VcenterLicense.licenses
       description: list of license keys after module executed
       type: unknown
-  dockerimage: demisto/ansible-runner:1.0.0.89756
+  dockerimage: demisto/ansible-runner:1.0.0.110653
   script: ''
   subtype: python3
   type: python
