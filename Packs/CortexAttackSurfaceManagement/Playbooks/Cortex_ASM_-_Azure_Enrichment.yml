@@ -1673,6 +1673,7 @@ tasks:
       version: -1
       name: Is there Azure tag information?
       type: condition
+      description: Determines if there is Azure Compute tags to set in the ASM tag field.
       iscommand: false
       brand: ""
     nexttasks:
