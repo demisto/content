@@ -283,7 +283,6 @@ command_names = [
     "wab-edit-authorization",
     "wab-edit-device",
     "wab-edit-mapping-of-user-group",
-    "wab-edit-mappings-of-user-group",
     "wab-edit-notification",
     "wab-edit-service-of-device",
     "wab-edit-session",
