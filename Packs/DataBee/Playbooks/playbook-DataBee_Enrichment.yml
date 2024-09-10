@@ -1,0 +1,703 @@
+id: DataBee Enrichment
+version: -1
+name: DataBee Enrichment
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 8b1626da-3eda-42d8-8d8a-26f5b0be3984
+    type: start
+    task:
+      id: 8b1626da-3eda-42d8-8d8a-26f5b0be3984
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      "#none#":
+        - "11"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 142.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 7507ccb6-eee8-4ff6-88da-bed7366d6418
+    type: regular
+    task:
+      id: 7507ccb6-eee8-4ff6-88da-bed7366d6418
+      version: -1
+      name: Search for Device
+      description: Search for devices based on filters.
+      script: DataBee|||databee-device-search
+      type: regular
+      iscommand: true
+      brand: DataBee
+    nexttasks:
+      "#none#":
+        - "15"
+    scriptarguments:
+      name:
+        simple: ${inputs.SearchTerm}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 12cfcaeb-f0a2-4bf6-8b69-a37c422a4df5
+    type: regular
+    task:
+      id: 12cfcaeb-f0a2-4bf6-8b69-a37c422a4df5
+      version: -1
+      name: Search for User
+      description: Search for users based on filters.
+      script: DataBee|||databee-user-search
+      type: regular
+      iscommand: true
+      brand: DataBee
+    nexttasks:
+      "#none#":
+        - "13"
+    scriptarguments:
+      name:
+        simple: ${inputs.SearchTerm}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 86a9c63e-cd02-47e9-8495-850ca3b2c690
+    type: regular
+    task:
+      id: 86a9c63e-cd02-47e9-8495-850ca3b2c690
+      version: -1
+      name: Search for Finding
+      description: Search for security findings based on filters.
+      script: DataBee|||databee-finding-search
+      type: regular
+      iscommand: true
+      brand: DataBee
+    nexttasks:
+      "#none#":
+        - "14"
+    scriptarguments:
+      analytic_name:
+        simple: ${inputs.SearchTerm}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 76b49a93-f001-4704-8793-df3e9c5c5a56
+    type: regular
+    task:
+      id: 76b49a93-f001-4704-8793-df3e9c5c5a56
+      version: -1
+      name: Convert Device Result to Table
+      description: Accepts a JSON object and returns a markdown.
+      scriptName: JsonToTable
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#none#":
+        - "10"
+    scriptarguments:
+      headers:
+        simple: DataBee Device Search Result
+      value:
+        complex:
+          root: DataBee.Device
+          filters:
+            - - operator: isExists
+                left:
+                  value:
+                    simple: DataBee.Device
+                  iscontext: true
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1052.5,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 129877c8-6a9e-4d10-8220-dbb926bea9b8
+    type: regular
+    task:
+      id: 129877c8-6a9e-4d10-8220-dbb926bea9b8
+      version: -1
+      name: Convert User Result to Table
+      description: Accepts a JSON object and returns a markdown.
+      scriptName: JsonToTable
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#none#":
+        - "8"
+    scriptarguments:
+      headers:
+        simple: DataBee User Search Result
+      value:
+        complex:
+          root: DataBee.User
+          filters:
+            - - operator: isExists
+                left:
+                  value:
+                    simple: DataBee.User
+                  iscontext: true
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 9bf28c29-6cfb-42be-8366-24ab7c83c598
+    type: regular
+    task:
+      id: 9bf28c29-6cfb-42be-8366-24ab7c83c598
+      version: -1
+      name: Convert FInding Result to Table
+      description: Accepts a JSON object and returns a markdown.
+      scriptName: JsonToTable
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#none#":
+        - "9"
+    scriptarguments:
+      headers:
+        simple: DataBee Finding Search Result
+      value:
+        complex:
+          root: DataBee.Finding
+          filters:
+            - - operator: isExists
+                left:
+                  value:
+                    simple: DataBee.Finding
+                  iscontext: true
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 602.5,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: dfbfef79-8361-4179-84ef-299742c64748
+    type: title
+    task:
+      id: dfbfef79-8361-4179-84ef-299742c64748
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 367.5,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: d91a5ccb-8a6c-4b92-8d82-d0ecd0340de9
+    type: regular
+    task:
+      id: d91a5ccb-8a6c-4b92-8d82-d0ecd0340de9
+      version: -1
+      name: Print User Result to War Room
+      description: Prints text to the War Room (markdown supported).
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#none#":
+        - "7"
+    scriptarguments:
+      value:
+        complex:
+          root: DataBee.User
+          filters:
+            - - operator: isExists
+                left:
+                  value:
+                    simple: DataBee.User
+                  iscontext: true
+          transformers:
+            - operator: JsonToTable
+              args:
+                headers: {}
+                is_auto_json_transform: {}
+                json_transform_properties: {}
+                title:
+                  value:
+                    simple: DataBee Users Search Result
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 03db7429-f65f-4100-8e4a-33840d803e83
+    type: regular
+    task:
+      id: 03db7429-f65f-4100-8e4a-33840d803e83
+      version: -1
+      name: Print Finding Result to War Room
+      description: Prints text to the War Room (markdown supported).
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#none#":
+        - "7"
+    scriptarguments:
+      value:
+        complex:
+          root: DataBee.Finding
+          filters:
+            - - operator: isExists
+                left:
+                  value:
+                    simple: DataBee.Finding
+                  iscontext: true
+          transformers:
+            - operator: JsonToTable
+              args:
+                headers: {}
+                is_auto_json_transform: {}
+                json_transform_properties: {}
+                title:
+                  value:
+                    simple: DataBee Findings Search Result
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 602.5,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: a24d0972-0a1a-4e55-8dd3-1be6bf9fb221
+    type: regular
+    task:
+      id: a24d0972-0a1a-4e55-8dd3-1be6bf9fb221
+      version: -1
+      name: Print Device Result to War Room
+      description: Prints text to the War Room (markdown supported).
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#none#":
+        - "7"
+    scriptarguments:
+      value:
+        complex:
+          root: DataBee.Device
+          filters:
+            - - operator: isExists
+                left:
+                  value:
+                    simple: DataBee.Device
+                  iscontext: true
+          transformers:
+            - operator: JsonToTable
+              args:
+                headers: {}
+                is_auto_json_transform: {}
+                json_transform_properties: {}
+                title:
+                  value:
+                    simple: DataBee Device Search Result
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1052.5,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 76276c0b-1021-4fe9-8083-b0c0bf40283b
+    type: condition
+    task:
+      id: 76276c0b-1021-4fe9-8083-b0c0bf40283b
+      version: -1
+      name: Is DataBee Enabled?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      "#default#":
+        - "7"
+      "yes":
+        - "12"
+    separatecontext: false
+    conditions:
+      - label: "yes"
+        condition:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: modules.brand
+                iscontext: true
+              right:
+                value:
+                  simple: DataBee
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: modules.state
+                iscontext: true
+              right:
+                value:
+                  simple: active
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 142.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 95fa9d94-83ae-4d47-8d39-cc105b5abfbc
+    type: condition
+    task:
+      id: 95fa9d94-83ae-4d47-8d39-cc105b5abfbc
+      version: -1
+      name: Is SearchTerm Provided?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      "#default#":
+        - "7"
+      "yes":
+        - "2"
+        - "3"
+        - "1"
+    separatecontext: false
+    conditions:
+      - label: "yes"
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.SearchTerm
+                iscontext: true
+              right:
+                value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 3c7d50fc-a83d-416b-8a6e-5b57030d4e46
+    type: condition
+    task:
+      id: 3c7d50fc-a83d-416b-8a6e-5b57030d4e46
+      version: -1
+      name: Is User Found?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      "#default#":
+        - "7"
+      "yes":
+        - "5"
+    separatecontext: false
+    conditions:
+      - label: "yes"
+        condition:
+          - - operator: isExists
+              left:
+                value:
+                  simple: DataBee.User
+                iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 296d16b5-4e6b-483a-8909-523ea6fac7e5
+    type: condition
+    task:
+      id: 296d16b5-4e6b-483a-8909-523ea6fac7e5
+      version: -1
+      name: Is Finding Found?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      "#default#":
+        - "7"
+      "yes":
+        - "6"
+    separatecontext: false
+    conditions:
+      - label: "yes"
+        condition:
+          - - operator: isExists
+              left:
+                value:
+                  simple: DataBee.Finding
+                iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 86f155b9-7c22-42d1-860f-5f937aef3e25
+    type: condition
+    task:
+      id: 86f155b9-7c22-42d1-860f-5f937aef3e25
+      version: -1
+      name: Is Device Found?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      "#default#":
+        - "7"
+      "yes":
+        - "4"
+    separatecontext: false
+    conditions:
+      - label: "yes"
+        condition:
+          - - operator: isExists
+              left:
+                value:
+                  simple: DataBee.Device
+                iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1260,
+        "width": 1382.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+  - key: SearchTerm
+    value: {}
+    required: true
+    description: Enter a string to be used for enrichment. This string can represent a device name, username, or finding name. The command will search the provided value and return all results that contain the specified string.
+    playbookInputQuery:
+outputs: []
+quiet: true
+tests:
+  - No tests (auto formatted)
+fromversion: 6.10.0
+description: ""
