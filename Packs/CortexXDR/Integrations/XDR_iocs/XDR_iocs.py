@@ -296,7 +296,7 @@ def get_headers(params: dict) -> dict:
     api_key: str = params.get('apikey_creds', {}).get('password', '') or str(params.get('apikey'))
     api_key_id: str = params.get('apikey_id_creds', {}).get('password', '') or str(params.get('apikey_id'))
     nonce: str = "".join([secrets.choice(string.ascii_letters + string.digits) for _ in range(64)])
-    timestamp: str = str(int(datetime.now(timezone.utc).timestamp()) * 1000)
+    timestamp: str = str(int(datetime.now(timezone.utc).timestamp()) * 1000)  # noqa: UP017
     auth_key = f"{api_key}{nonce}{timestamp}"
     auth_key = auth_key.encode("utf-8")
     api_key_hash: str = hashlib.sha256(auth_key).hexdigest()
@@ -410,7 +410,7 @@ def demisto_expiration_to_xdr(expiration) -> int:
         try:
             expiration_date = parse(expiration)
             assert expiration_date is not None, f'could not parse {expiration}'
-            return int(expiration_date.astimezone(timezone.utc).timestamp() * 1000)
+            return int(expiration_date.astimezone(timezone.utc).timestamp() * 1000)  # noqa: UP017
         except (ValueError, AssertionError):
             pass
     return -1
@@ -607,7 +607,7 @@ def sync(client: Client, batch_size: int = 200):
     demisto.info("executing sync")
     temp_file_path: str = get_temp_file()
     try:
-        sync_time = datetime.now(timezone.utc)
+        sync_time = datetime.now(timezone.utc)  # noqa: UP017
         create_file_sync(temp_file_path)  # may end up empty
         requests_kwargs: dict = get_requests_kwargs(file_path=temp_file_path)
         path: str = 'sync_tim_iocs'
@@ -951,7 +951,7 @@ def set_new_iocs_to_keep_time():
     offset = secrets.randbelow(115)
     hour, minute = divmod(offset, 60)
     hour += 1
-    last_ioc_to_keep = datetime.now(timezone.utc)
+    last_ioc_to_keep = datetime.now(timezone.utc)  # noqa: UP017
     last_ioc_to_keep = last_ioc_to_keep.replace(hour=hour, minute=minute) + timedelta(
         days=1
     )
@@ -976,10 +976,10 @@ def is_iocs_to_keep_time():
         set_new_iocs_to_keep_time()
         next_iocs_to_keep_time = get_integration_context().get("next_iocs_to_keep_time")
 
-    time_now = datetime.now(timezone.utc)
+    time_now = datetime.now(timezone.utc)  # noqa: UP017
     if (
         time_now.hour in range(1, 3)
-        and time_now > datetime.strptime(next_iocs_to_keep_time, DEMISTO_TIME_FORMAT).replace(tzinfo=timezone.utc)
+        and time_now > datetime.strptime(next_iocs_to_keep_time, DEMISTO_TIME_FORMAT).replace(tzinfo=timezone.utc)  # noqa: UP017
     ):
         return True
 
@@ -1019,7 +1019,7 @@ def get_indicator_xdr_score(indicator: str, xdr_server: int):
 def get_sync_file(set_time: bool = False, zip: bool = False) -> None:
     temp_file_path = get_temp_file()
 
-    timestamp = datetime.now(timezone.utc)
+    timestamp = datetime.now(timezone.utc)  # noqa: UP017
     demisto.debug(f"creating sync file with {timestamp=!s}")
     try:
         create_file_sync(temp_file_path)

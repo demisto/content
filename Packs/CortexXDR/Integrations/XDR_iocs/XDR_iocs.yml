@@ -111,7 +111,6 @@ configuration:
   - never
   - interval
   - indicatorType
-  - suddenDeath
   required: false
 - display: ''
   name: feedExpirationInterval
@@ -220,7 +219,7 @@ script:
       required: true
     description: Disables IOCs in the XDR server.
     name: xdr-iocs-disable
-  dockerimage: demisto/python3:3.10.13.89009
+  dockerimage: demisto/python3:3.11.9.107902
   feed: true
   runonce: false
   script: '-'
