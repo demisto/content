@@ -9,7 +9,7 @@ from ExtractHyperlinksFromOfficeFiles import extract_hyperlink_by_file_type
     ('test_data/d3.docx', {'https://www.paloaltonetworks.com/', 'http://www.google.com'}),
     ('test_data/e1.Xlsx', {'http://www.google.com', 'http://www.yahoo.de/'}),
     ('test_data/e2.xlsx', set()),
-    ('test_data/e3.Xlsx', {'https://www.paloaltonetworks.com/'}),
+    ('test_data/e3.xlsx', {'https://www.paloaltonetworks.com/'}),
     ('test_data/p1.pptx', {'https://xsoar.pan.dev/', 'https://www.paloaltonetworks.com/'}),
     ('test_data/p2.pptx', set()),
     ('test_data/p3.pptx', {'http://www.google.com'})
