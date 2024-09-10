@@ -6,15 +6,25 @@ import traceback
 
 DEFAULT_PAGE_SIZE = 50
 DEFAULT_NOTE = 'Duplicate. Closed.'
-DEFAULT_INCIDENT_TYPE = 'Vectra Account, Vectra Host'
+DEFAULT_INCIDENT_TYPE = ['Vectra Account', 'Vectra Host']
+
+
+def remove_space_from_args(args):
+    """Remove space from args."""
+    for key in args.keys():
+        if isinstance(args[key], str):
+            args[key] = args[key].strip()
+    return args
 
 
 def main():
     try:
-        args = demisto.args()
+        args = remove_space_from_args(demisto.args())
+        remove_nulls_from_dictionary(args)
+
         page_size: int = arg_to_number(args.get('page_size', DEFAULT_PAGE_SIZE))  # type: ignore
         note = args.get('note', DEFAULT_NOTE)
-        incident_types = argToList(args.get('incident_types', DEFAULT_INCIDENT_TYPE))
+        incident_types = argToList(args.get('incident_types')) or DEFAULT_INCIDENT_TYPE
         incident_type_query = ' or '.join([f'type:"{incident_type}"' for incident_type in incident_types])
         close_in_vectra = argToBoolean(args.get('close_in_vectra', True))
         query = f'state:inactive and -category:job and status:active and ({incident_type_query}) and vectradetectioncount:=0'

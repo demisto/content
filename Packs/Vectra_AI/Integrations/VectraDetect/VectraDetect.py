@@ -745,6 +745,8 @@ class Client(BaseClient):
                 url_suffix=API_ENDPOINT_ASSIGNMENT,
                 json_data=json_payload
             )
+        else:
+            raise ValueError('Either "assignment_id" or "account_id" or "host_id" must be specified.')
 
     def resolve_assignment(self, assignment_id: str, outcome_id: str, note: str = None,  # type: ignore
                            rule_name: str = None, detections_list: str = None):  # type: ignore
@@ -941,7 +943,7 @@ class Client(BaseClient):
         Returns:
             Dict: Response from the API containing the group information.
         """
-        return self.http_request(method='GET', url_suffix="{}/{}".format(API_ENDPOINT_GROUPS, group_id))
+        return self.http_request(method='GET', url_suffix=f"{API_ENDPOINT_GROUPS}/{group_id}")
 
     def update_group_members_request(self, group_id: int = None, members: List = None) -> Dict:  # type: ignore
         """Update members in group.
@@ -956,7 +958,7 @@ class Client(BaseClient):
         body = {
             "members": members
         }
-        return self.http_request(method='PATCH', url_suffix="{}/{}".format(API_ENDPOINT_GROUPS, group_id),
+        return self.http_request(method='PATCH', url_suffix=f"{API_ENDPOINT_GROUPS}/{group_id}",
                                  json_data=body)
 
     def list_assignments_request(self, accounts: Optional[str] = None, hosts: Optional[str] = None,
@@ -2079,7 +2081,7 @@ def get_group_list_command_hr(groups: List):
                         members_list.append((str(member.get('uid'))))  # type: ignore
                     elif member.get('id'):
                         members_list.append(  # type: ignore
-                            '[{}]({})'.format(member.get('id'), forge_entity_url(group.get('type'), member.get('id'))))
+                            f'[{member.get("id")}]({forge_entity_url(group.get("type"), member.get("id"))})')
                 members_hr = ', '.join(members_list)
 
         hr_dict.append({
@@ -2146,7 +2148,7 @@ def get_group_unassign_and_assign_command_hr(group: Dict, changed_members: List,
                     members_list.append((str(member.get('uid'))))  # type: ignore
                 elif member.get('id'):
                     members_list.append(  # type: ignore
-                        "[{}]({})".format(member.get('id'), forge_entity_url(str(group.get('type')), member.get('id'))))
+                        f"[{member.get('id')}]({forge_entity_url(str(group.get('type')), member.get('id'))})")
             members_hr = ', '.join(members_list)
 
     hr_dict.append({
@@ -2169,7 +2171,7 @@ def get_group_unassign_and_assign_command_hr(group: Dict, changed_members: List,
                 ignored_members.append(member)
 
         if ignored_members:
-            return_warning('The following account names were invalid: {}'.format(', '.join(ignored_members)),
+            return_warning(f'The following account names were invalid: {", ".join(ignored_members)}',
                            exit=len(ignored_members) == len(changed_members))
 
         changed_members = new_changed_members

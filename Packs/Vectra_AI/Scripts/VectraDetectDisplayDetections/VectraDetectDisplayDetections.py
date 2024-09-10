@@ -1,5 +1,4 @@
 import json
-import copy
 import traceback
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -65,18 +64,17 @@ def get_detections_list_hr(detections) -> CommandResults:
         CommandResults: An object containing the human-readable output of the detections.
     """
     hr_dict = []
-    detection_list = copy.deepcopy(detections)
-    if not bool(detection_list) or not json.loads(detection_list[0]):
+    if not detections or not json.loads(detections[0]):
         return CommandResults(readable_output="##### Couldn't find any matching entity detections for "
                                               "provided filters.")
     # Process detection_set and create detection_ids field
-    for detection in detection_list:  # type: ignore
+    for detection in detections:  # type: ignore
         # Trim API version from url
         detection = json.loads(detection)
         detection['detection_url'] = trim_api_version(detection.get('url')) if detection.get('url') else None
         # Convert ID into clickable URL
         detection['detection_id'] = f"[{detection.get('id')}]({detection.get('detection_url')})"
-        summary = remove_empty_elements(detection.get('summary'))
+        summary = remove_empty_elements(detection.get('summary', {}))
         summary = convert_to_string(summary)
 
         hr_dict.append({
