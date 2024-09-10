@@ -57,7 +57,7 @@ def test_fetch_events_command_empty_response(requests_mock):
     events, last_fetch = fetch_events_command(client=client, first_fetch=first_fetch, last_run={},
                                               fetch_limit='100',
                                               incidents_states=['open'])
-    assert last_fetch.get('last_fetch') == {'open': '2023-01-01T00:58:00Z'}
+    assert last_fetch.get('last_fetch') == {'open': '2023-01-01T00:59:00Z'}
 
 
 def test_list_incidents_command(requests_mock):
