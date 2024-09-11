@@ -10,25 +10,25 @@ script: |-
 
   ''' STANDALONE FUNCTION '''
 
+  INCIDENT_LIST = "IncidentList"
 
   def create_incident_list(incident_object):
       status = ""
       incident_object = incident_object.get("incident_data")
       if isinstance(incident_object, list):
           incident_object = incident_object[0]
-      # incident_object = json.loads(incident_object)
       incident_id = incident_object.get("incidentId")
       incident_data = {
           "incident_id": incident_id,
           "incident_created": incident_object.get("incidentCreated"),
       }
-      incident_list = demisto.executeCommand("getList", {"listName": "INCIDENT_LIST2"})
+      incident_list = demisto.executeCommand("getList", {"listName": "INCIDENT_LIST"})
       if (
          incident_list[0].get("Contents") == "null"
          or incident_list[0].get("Contents") is None
          or 'Item not found' in incident_list[0].get("Contents")
       ):
-          create_list = demisto.executeCommand("createList", {"listName": "INCIDENT_LIST2","listData":[incident_data]})
+          create_list = demisto.executeCommand("createList", {"listName": "INCIDENT_LIST","listData":[incident_data]})
           status = f"Successfully created incident list with incident id :- {incident_id}"
       else:
           # Check if the value exists in any dictionary
@@ -37,15 +37,13 @@ script: |-
           if exists:
               # Remove the incident_data with the incident_id
               incident_list = [incident for incident in incident_list if incident["incident_id"] != incident_id]
-              delete_incident = demisto.executeCommand("setList", {"listName":"INCIDENT_LIST2","listData": incident_list})
+              delete_incident = demisto.executeCommand("setList", {"listName":"INCIDENT_LIST","listData": incident_list})
               status = f"Deleted incident data with incident id {incident_id} from the list."
           else:
-              print("incident_data", incident_data)
               incident_list.append(incident_data)
-              add_incident = demisto.executeCommand("setList", {"listName":"INCIDENT_LIST2","listData": incident_list})
-              print("add_incident", add_incident)
+              add_incident = demisto.executeCommand("setList", {"listName":"INCIDENT_LIST","listData": incident_list})
               status = f"Successfully added incident data with incident id {incident_id} in the list."
-      incident_list = demisto.executeCommand("getList", {"listName": "INCIDENT_LIST2"})
+      incident_list = demisto.executeCommand("getList", {"listName": "INCIDENT_LIST"})
       return status
 
   ''' MAIN FUNCTION '''

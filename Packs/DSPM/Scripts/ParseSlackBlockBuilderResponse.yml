@@ -13,12 +13,10 @@ script: |
 
   CREATE_JIRA_TICKET = "Create a Jira ticket"
   REMEDIATE_RISK = "Remediate a Risk"
+  INCIDENT_DATA = "IncidentList"
 
-  def get_jira_issue_type_id_and_project_name(issue_type_name, project_id) -> str:
+  def get_jira_issue_type_id_and_project_name(issue_type_name, project_id, integration_conf) -> str:
       try:
-          result = demisto.executeCommand("dspm-get-integration-cofig", {})
-          integration_conf = result[0].get("Contents", {}).get("integration_config", {})
-
           # Extract Jira credentials and URL
           jira_url = integration_conf.get('jiraServerUrl')
           api_key = integration_conf.get('jiraApiToken')
@@ -31,21 +29,20 @@ script: |
           }
 
           response = requests.request("GET", url, headers=headers, auth=auth)
-          print("get_jira_issue_type_id res: ", response.text)
-          res = response.json()
-          project_name = res.get("name")
           if response.status_code == 200:
+              res = response.json()
+              project_name = res.get("name")
               issue_types = res.get('issueTypes', [])
               for issue_type in issue_types:
-                  if issue_type['name'] == issue_type_name:
-                      issue_type_id = issue_type['id']
+                  if issue_type.get('name') == issue_type_name:
+                      issue_type_id = issue_type.get('id')
                       return str(issue_type_id), str(project_name)
           else:
               raise Exception(f"Failed to fetch Jira issue type. HTTP Status Code: {response.status_code}")
       except Exception as e:
           return_error(f"Error while fetching Jira Issue Type: {str(e)}")
 
-  def parse_slack_block_builder_res(SlackBlockState):
+  def parse_slack_block_builder_res(SlackBlockState, integration_conf):
       try:
           if isinstance(SlackBlockState, list):
               SlackBlockState = SlackBlockState[0]
@@ -67,7 +64,7 @@ script: |
               project_key = user_input_data.get("static_select_1", {}).get("static_select-action", {}).get("selected_option", {}).get("value")
               ticket_type = user_input_data.get("static_select_2", {}).get("static_select-action", {}).get("selected_option", {}).get("value")
 
-              ticket_type_id, project_name = get_jira_issue_type_id_and_project_name(ticket_type, project_key)
+              ticket_type_id, project_name = get_jira_issue_type_id_and_project_name(ticket_type, project_key, integration_conf)
               print("ticket_type_id: ", ticket_type_id)
 
               demisto.setContext("User.Action", "jira")
@@ -94,13 +91,13 @@ script: |
           demisto.setContext("User.Action", 'invalid_response')
           return_error(f'Failed to parse Slack block builder response: {str(ex)}')
 
-  def timeDifferenceInHours(given_timestamp):
+  def timeDifferenceInHours(given_timestamp, integration_conf):
       """
         Function will fetch the time difference and
         if the difference is more than 48 hours then
         we will re-open the investigation.
       """
-      time_duration = get_slack_lifetime()
+      time_duration = get_slack_lifetime(integration_conf)
       given_time = datetime.strptime(given_timestamp, "%Y-%m-%d %H:%M:%S.%f")
       current_time = datetime.now()
       difference = current_time - given_time
@@ -109,22 +106,24 @@ script: |
           return True
       return False
 
-  def get_slack_lifetime():
+  def get_config_data():
+      result = demisto.executeCommand("dspm-get-integration-cofig", {})
+      integration_conf = result[0].get("Contents", {}).get("integration_config", {})
+      return integration_conf
+  
+  def get_slack_lifetime(integration_conf):
       time_duration = 48
-      resp = demisto.executeCommand("dspm-get-integration-cofig", {})
-      if resp[0].get("Contents"):
-          integration_config = resp[0].get("Contents",{}).get('integration_config',{})
-          if integration_config:
-              time_duration = integration_config.get("slackMsgLifetime", 48)
+      if integration_config:
+          time_duration = integration_config.get("slackMsgLifetime", 48)
       return time_duration
 
-  def delete_incident_data(args):
+  def delete_incident_data(args, integration_conf):
       status = ""
       incident_object = args.get("incident_data")
       if isinstance(incident_object, list):
           incident_object = incident_object[0]
       incident_id = incident_object.get("incidentId")
-      incident_list = demisto.executeCommand("getList", {"listName": "INCIDENT_LIST2"})
+      incident_list = demisto.executeCommand("getList", {"listName": "INCIDENT_LIST"})
       if (
          incident_list[0].get("Contents") == "null"
          or incident_list[0].get("Contents") is None
@@ -135,24 +134,25 @@ script: |
           # Check if the value exists in any dictionary
           incident_list = json.loads(incident_list[0].get("Contents"))
           exists = any(data.get("incident_id") == incident_id for data in incident_list)
-          differenceInHours = timeDifferenceInHours(incident_object.get("incidentCreated"))
+          differenceInHours = timeDifferenceInHours(incident_object.get("incidentCreated"), integration_conf)
           if exists and differenceInHours:
               # Remove the incident_data with the incident_id
-              incident_list = [incident for incident in incident_list if incident["incident_id"] != incident_id]
-              delete_incident = demisto.executeCommand("setList", {"listName":"INCIDENT_LIST2","listData": incident_list})
+              incident_list = [incident for incident in incident_list if incident.get("incident_id") != incident_id]
+              delete_incident = demisto.executeCommand("setList", {"listName":"INCIDENT_LIST","listData": incident_list})
               status = f"Deleted incident data with incident id {incident_id} from the list."
-      incident_list = demisto.executeCommand("getList", {"listName": "INCIDENT_LIST2"})
+      incident_list = demisto.executeCommand("getList", {"listName": "INCIDENT_LIST"})
       return status
 
   ''' MAIN FUNCTION '''
 
   def main():  # pragma: no cover
       try:
-          delete_incident_data(demisto.args())
+          integration_conf = get_config_data() 
+          delete_incident_data(demisto.args(), integration_conf)
           SlackBlockState = demisto.args().get("SlackBlockState",None)
           if SlackBlockState is None:
               raise AttributeError("SlackBlockState is None")
-          parse_slack_block_builder_res(SlackBlockState)
+          parse_slack_block_builder_res(SlackBlockState, integration_conf)
       except Exception as excep:
           print(traceback.format_exc())  # print the traceback
           demisto.setContext("User.Action", 'no_response')
@@ -178,6 +178,7 @@ outputs:
 - contextPath: User.JiraTicketTypeID
 scripttarget: 0
 subtype: python3
+timeout: 362.88ms
 pswd: ""
 runonce: false
 dockerimage: demisto/python3:3.11.9.104657

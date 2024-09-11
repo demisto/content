@@ -16,7 +16,6 @@ script: |-
       result = demisto.executeCommand("dspm-get-integration-cofig", {})
       integration_conf = result[0].get("Contents",{}).get('integration_config',{})
       sleep_time = integration_conf.get('slackMsgLifetime')
-      print("slackMsgLifetime: ",sleep_time)
 
       in_seconds = int(sleep_time) * 3600
       time.sleep(int(in_seconds))

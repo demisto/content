@@ -6,12 +6,11 @@ name: DSPMExtractRiskDetails
 script: |+
   from typing import Dict, Any
   import traceback
+  from datetime import datetime
 
 
   def get_incident_details_command(args):
       incident_data = args.get("incident_object")
-      print(incident_data)
-
 
       incident_object = {
           "incidentId":incident_data.get('id', 'N/A'),
@@ -26,6 +25,7 @@ script: |+
           "firstDetectedOn": incident_data.get('firstDetectedOn', 'N/A'),
           "riskFindingId":incident_data.get('riskFindingId', 'N/A'),
           "remediateInstruction": incident_data.get('remediateInstruction','N/A'),
+          "incidentCreated": datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S.%f")
       }
       return incident_object
 
