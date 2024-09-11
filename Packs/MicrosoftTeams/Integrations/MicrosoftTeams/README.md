@@ -272,7 +272,7 @@ Note: The [microsoft-teams-ring-user](https://learn.microsoft.com/en-us/graph/ap
     | Trust any certificate (not secure) | Do not check for Cortex XSOAR version 8 | False |
     | Use system proxy settings |  | False |
     | Long running instance |  | False |
-    | Listen port, e.g. 7000 (Required for investigation mirroring and direct messages) |  | False |
+    | Listen port, e.g., 7000 (Required for investigation mirroring and direct messages) |  | False |
     | Incident type |  | False |
     | New Incident Welcome Message | Optional - Welcome message when creating new incidents using the bot. \(Default: Successfully created incident &lt;incident_name&gt;. View it on: &lt;incident_link&gt;\). | False |
 
