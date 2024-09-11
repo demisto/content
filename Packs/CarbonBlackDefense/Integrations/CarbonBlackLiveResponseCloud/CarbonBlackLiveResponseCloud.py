@@ -332,9 +332,9 @@ def main():
 
     params = demisto.params()
     url = params.get('url')
-    cb_custom_key = params.get('credentials_api_token_custom_key', {}).get('password') or params.get('custom_key')
-    cb_custom_id = params.get('credentials_api_token_custom_id', {}).get('password') or params.get('custom_id')
-    cb_org_key = params.get('credentials_api_token_org_key', {}).get('password') or params.get('org_key')
+    cb_custom_key = params.get('credentials_custom_id', {}).get('password') or params.get('custom_key')
+    cb_custom_id = params.get('credentials_custom_id', {}).get('identifier') or params.get('custom_id')
+    cb_org_key = params.get('credentials_org_key', {}).get('password') or params.get('org_key')
     if not (cb_custom_key and cb_custom_id and cb_org_key):
         raise DemistoException('Custom Key, Custom ID and Organization Key must be provided.')
     verify_certificate = not params.get('insecure', True)
