@@ -196,8 +196,8 @@ class TestPollingCommand:
     def test_script_run_command(self, mocker, status_count):
         """
         Given -
-            xdr-script-run command arguments including polling true and is_core is true where each time a different amount of response
-            is returned.
+            xdr-script-run command arguments including polling true and is_core is true where each time a different amount of
+            response is returned.
 
         When -
             Running the xdr-script-run
