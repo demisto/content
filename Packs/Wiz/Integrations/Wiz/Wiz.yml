@@ -314,6 +314,7 @@ script:
       required: true
   - name: wiz-rescan-machine-disk
     description: DEPRECATED
+    deprecated: true
     arguments:
     - name: vm_id
       description: vm cloud provider id.

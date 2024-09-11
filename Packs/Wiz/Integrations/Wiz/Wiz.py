@@ -1974,7 +1974,7 @@ def get_resource(resource_id, resource_name):
             return "Resource Not Found"
         else:
             return response_json
-
+    # to get resource by resource_id
     variables = {
         "fetchPublicExposurePaths": True,
         "fetchInternalExposurePaths": False,
@@ -2292,7 +2292,7 @@ def get_issue_evidence(issue_id):
     # Getting the Issue Evidence Query
     issue_object = _get_issue(issue_id, is_evidence=True)
 
-    if issue_object['data']['issues']['nodes'] is None or not issue_object['data']['issues']['nodes']:
+    if not issue_object['data']['issues']['nodes']:
         return f"Issue not found: {issue_id}"
 
     issue_type = issue_object['data']['issues']['nodes'][0]['type']
