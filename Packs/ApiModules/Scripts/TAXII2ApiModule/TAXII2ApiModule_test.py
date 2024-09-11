@@ -2356,7 +2356,7 @@ def test_get_mitre_attack_id_and_value_from_name(indicator_name, expected_result
                      '0000000000000000000000000000000000000000000000000000000000000000', id='case: file hashed with SHA-256'),
         pytest.param("[file:hashes.'MD5' = '00000000000000000000000000000000']", '00000000000000000000000000000000',
                      id='case: file hashed with MD5'),
-        pytest.param("A regular name with no pattern", 'A regular name with no pattern', id='A regular name with no pattern'),
+        pytest.param("A regular name with no pattern", None, id='A regular name with no pattern'),
         pytest.param(
             ("([ipv4-addr:value = '1.1.1.1/32' OR ipv4-addr:value = '8.8.8.8/32'] "
              "FOLLOWEDBY [domain-name:value = 'example.com']) WITHIN 600 SECONDS"),
@@ -2374,3 +2374,26 @@ def test_get_single_pattern_value(pattern, value):
     - Retrieve the value from the pattern.
     """
     assert STIX2XSOARParser.get_single_pattern_value(pattern) == value
+
+
+def test_get_supported_pattern_comparisons():
+    """
+    Given
+    - A parsed STIX pattern.
+    When
+    - Using a parsed STIX pattern.
+    Then
+    - Retrieve only the supported patterns.
+    """
+    parsed_pattern = {
+        'ipv4-addr': [(['value'], '=', "'1.51.100.1/32'"), (['non-supported-type'], '=', "'203.0.113.33/32'")],
+        'domain-name': [(['value'], '=', "'example.com'")],
+        'non-supported-field': [(['value'], '=', "'example.com'")]
+    }
+
+    res = STIX2XSOARParser.get_supported_pattern_comparisons(parsed_pattern)
+
+    assert res == {
+        'ipv4-addr': [(['value'], '=', "'1.51.100.1/32'")],
+        'domain-name': [(['value'], '=', "'example.com'")]
+    }

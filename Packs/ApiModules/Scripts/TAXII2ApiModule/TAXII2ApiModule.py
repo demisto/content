@@ -102,39 +102,32 @@ STIX_2_TYPES_TO_CORTEX_TYPES = {       # pragma: no cover
     "vulnerability": FeedIndicatorType.CVE,
     "x509-certificate": FeedIndicatorType.X509,
 }
-
-STIX_NOT = {
-    "file:name": True
-}
-
 STIX_SUPPORTED_TYPES = {
-    'url': 'value',
-    'ip': 'value',
-    'domain-name': 'value',
-    'email-addr': 'value',
-    'ipv4-addr': 'value',
-    'ipv6-addr': 'value',
-    'attack-pattern': 'name',
-    'campaign': 'name',
-    'identity': 'name',
-    'infrastructure': 'name',
-    'intrusion-set': 'name',
-    'malware': 'name',
-    'report': 'name',
-    'threat-actor': 'name',
-    'tool': 'name',
-    'vulnerability': 'name',
-    'mutex': 'name',
-    'software': 'name',
-    'autonomous-system': 'number',
-    'file': 'hashes',
-    'user-account': 'user_id',
+    'url': ('value',),
+    'ip': ('value',),
+    'domain-name': ('value',),
+    'email-addr': ('value',),
+    'ipv4-addr': ('value',),
+    'ipv6-addr': ('value',),
+    'attack-pattern': ('name',),
+    'campaign': ('name',),
+    'identity': ('name',),
+    'infrastructure': ('name',),
+    'intrusion-set': ('name',),
+    'malware': ('name',),
+    'report': ('name',),
+    'threat-actor': ('name',),
+    'tool': ('name',),
+    'vulnerability': ('name',),
+    'mutex': ('name',),
+    'software': ('name',),
+    'autonomous-system': ('number',),
+    'file': ('hashes',),
+    'user-account': ('user_id',),
     'location': ('name', 'country'),
     'x509-certificate': ('serial_number', 'issuer'),
     'windows-registry-key': ('key', 'values')
 }
-
-
 MITRE_CHAIN_PHASES_TO_DEMISTO_FIELDS = {       # pragma: no cover
     'build-capabilities': ThreatIntel.KillChainPhases.BUILD_CAPABILITIES,
     'privilege-escalation': ThreatIntel.KillChainPhases.PRIVILEGE_ESCALATION,
@@ -316,6 +309,7 @@ PatternComparisons = dict[str, list[tuple[list[str], str, str]]]
 
 
 class XSOAR2STIXParser:
+
     def __init__(self, namespace_uuid, fields_to_present,
                  types_for_indicator_sdo, server_version=TAXII_VER_2_1):
         self.server_version = server_version
@@ -888,7 +882,7 @@ class XSOAR2STIXParser:
     @staticmethod
     def get_labels_for_indicator(score):
         """Get indicator label based on the DBot score"""
-        {
+        return {
             0: [''],
             1: ['benign'],
             2: ['anomalous-activity'],
@@ -933,11 +927,13 @@ class STIX2XSOARParser(BaseClient):
         >>> STIX2XSOARParser.get_pattern_comparisons(
         >>>     "[ipv4-addr:value = '1.51.100.1/32' "
         >>>     "OR ipv4-addr:value = '203.0.113.33/32' "
-        >>>     "AND domain-name:value = 'example.com']"
+        >>>     "AND domain-name:value = 'example.com' "
+        >>>     "OR file:hashes.'SHA-256' = '13987239847...']"
         >>> )
         {
             'ipv4-addr': [(['value'], '=', "'1.51.100.1/32'"), (['value'], '=', "'203.0.113.33/32'")],
-            'domain-name': [(['value'], '=', "'example.com'")]
+            'domain-name': [(['value'], '=', "'example.com'")],
+            'file': [(['hashes', 'SHA-256'], '=', "'13987239847...'")]
         }
 
         Args:
@@ -952,27 +948,23 @@ class STIX2XSOARParser(BaseClient):
             demisto.debug(f'Unable to parse {pattern=}, {error=}')
             return None
 
-    def remove_unsupported_pattern_fields(parsed: PatternComparisons):
+    def get_supported_pattern_comparisons(parsed: PatternComparisons) -> PatternComparisons:
         """
-        Parses a pattern and comparison and extracts the comparisons as a dictionary.
-        If the pattern is invalid, the return value will be "None".
+        Get the only the patterns supported by XSOAR from a parsed pattern.
 
         Args:
-            pattern: the pattern to extract the value from.
+            parsed: The parsed pattern to extract the supported values from.
 
         Returns:
-            Optional[PatternComparisons]. the value in the pattern.
+            PatternComparisons. the value in the pattern.
         """
-        for field_type in parsed:
-            if field_type not in STIX_SUPPORTED_TYPES:
-                del parsed[field_type]
-            else:
-                parsed[field_type] = [
-                    comp for comp in parsed[field_type]
-                    if (
-                        comp[0]
-                    )
-                ]
+        supported_patterns: PatternComparisons = {}
+        for field_type, comps in parsed.items():
+            if field_type in STIX_SUPPORTED_TYPES:
+                for comp in comps:
+                    if comp[0][0] in STIX_SUPPORTED_TYPES[field_type]:
+                        supported_patterns.setdefault(field_type, []).append(comp)
+        return supported_patterns
 
     @staticmethod
     def get_indicator_publication(indicator: dict[str, Any], ignore_external_id: bool = False):
@@ -1120,7 +1112,13 @@ class STIX2XSOARParser(BaseClient):
         Returns:
             bool.
         """
-        return all(not pattern.startswith(f"[{key}") for key in STIX_NOT_SUPPORTED_TYPES)
+        return any(
+            any(
+                pattern.startswith(f"[{key}:{field}")
+                for field in STIX_SUPPORTED_TYPES[key]
+            )
+            for key in STIX_SUPPORTED_TYPES
+        )
 
     @staticmethod
     def get_tlp(indicator_json: dict) -> str:
@@ -1184,12 +1182,10 @@ class STIX2XSOARParser(BaseClient):
         Returns:
             str. the value in the pattern.
         """
-        try:
-            comparison_values = Pattern(pattern).inspect().comparisons.values()
-            return next(iter(comparison_values))[0][-1].strip("'")
-        except Exception as error:
-            demisto.debug(f'Unable to parse {pattern=}, {error=}')
-            return None
+        comparisons = STIX2XSOARParser.get_pattern_comparisons(pattern) or {}
+        comparisons = STIX2XSOARParser.get_supported_pattern_comparisons(comparisons)
+        if comparisons:
+            return dict_safe_get(tuple(comparisons.values()), [0, 0, -1], '', str).strip("'") or None
 
     def parse_indicator(self, indicator_obj: dict[str, Any]) -> list[dict[str, Any]]:
         """
