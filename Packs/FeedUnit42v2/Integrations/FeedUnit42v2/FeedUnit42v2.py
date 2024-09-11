@@ -149,7 +149,7 @@ def parse_indicators(indicator_objects: list, feed_tags: Optional[list] = None,
                             "reportedby": 'Unit42',
                         }
                     }
-                    if "file:hashes" in pattern and raw_name != indicator_obj['value']:
+                    if "file:hashes" in pattern and raw_name != pattern_value:
                         indicator_obj['fields']['associatedfilenames'] = raw_name
 
                     if tlp_color:
