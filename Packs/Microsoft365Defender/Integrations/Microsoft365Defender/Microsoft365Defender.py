@@ -54,6 +54,7 @@ class Client:
             managed_identities_client_id=managed_identities_client_id,
             managed_identities_resource_uri=Resources.security,
             command_prefix="microsoft-365-defender",
+            retry_on_rate_limit=True
         )
         self.ms_client = MicrosoftClient(**client_args)  # type: ignore
 
@@ -460,6 +461,7 @@ def fetch_incidents(client: Client, first_fetch_time: str, fetch_limit: int, tim
         incidents, new last_run
     """
     start_time = time.time()
+    demisto.debug(f'fetch incidents {start_time=} {fetch_limit=}')
     test_context_for_token(client)
 
     last_run_dict = demisto.getLastRun()
@@ -469,6 +471,7 @@ def fetch_incidents(client: Client, first_fetch_time: str, fetch_limit: int, tim
         first_fetch_date_time = dateparser.parse(first_fetch_time)
         assert first_fetch_date_time is not None, f'could not parse {first_fetch_time}'
         last_run = first_fetch_date_time.strftime(DATE_FORMAT)
+    demisto.debug(f'fetch {last_run=}')
 
     # creates incidents queue
     incidents_queue = last_run_dict.get('incidents_queue', [])
@@ -495,6 +498,7 @@ def fetch_incidents(client: Client, first_fetch_time: str, fetch_limit: int, tim
             # HTTP request
             response = client.incidents_list(from_date=last_run, skip=offset, timeout=timeout)
             raw_incidents = response.get('value')
+            demisto.debug(f'fetched {len(raw_incidents)=}')
             for incident in raw_incidents:
                 incident.update(_get_meta_data_for_incident(incident))
 
@@ -506,6 +510,7 @@ def fetch_incidents(client: Client, first_fetch_time: str, fetch_limit: int, tim
 
             # raw_incidents length is less than MAX_ENTRIES than we fetch all the relevant incidents
             if len(raw_incidents) < int(MAX_ENTRIES):
+                demisto.debug('reached the end of the incidents for now.')
                 break
             offset += int(MAX_ENTRIES)
 
@@ -517,6 +522,8 @@ def fetch_incidents(client: Client, first_fetch_time: str, fetch_limit: int, tim
     new_last_run = incidents_queue[-1]["occurred"] if oldest_incidents else last_run  # newest incident creation time
     demisto.setLastRun({'last_run': new_last_run,
                         'incidents_queue': incidents_queue[fetch_limit:]})
+    demisto.debug(f'The end of fetch incidents. {len(oldest_incidents)=} {new_last_run=} the length of the list of '
+                  f'remaining incidents is {len(incidents_queue) - fetch_limit}')
     return oldest_incidents
 
 
