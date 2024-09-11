@@ -296,13 +296,11 @@ class KafkaCommunicator:
         """
         topic_partitions = []
         if partition != -1 and not isinstance(partition, list):
-            demisto.debug("KAFKA DEBUG: partition is not a list")
             demisto.debug(f"Got single partition {partition}, getting offsets with offset {offset}")
             updated_offset = self.get_offset_for_partition(topic, int(partition), offset)
             topic_partitions = [TopicPartition(topic=topic, partition=int(partition), offset=updated_offset)]
 
         elif isinstance(partition, list):
-            demisto.debug("KAFKA DEBUG: partition is a list")
             demisto.debug(f"Got partition list {partition}, getting offsets with offset {offset}")
             for single_partition in partition:
                 try:
@@ -316,7 +314,6 @@ class KafkaCommunicator:
                         raise e
 
         else:
-            demisto.debug("KAFKA DEBUG: else section")
             topics = self.get_topics(consumer=consumer)
             topic_metadata = topics[topic]
             demisto.debug(f"Got no partition, getting all partitions and offsets with offset {offset}")
@@ -645,7 +642,6 @@ def get_topic_partition_if_relevant(kafka: KafkaCommunicator, topic: str, partit
                           f'{specific_offset} not in [{earliest_offset}, {latest_offset}) \n')
 
     if add_topic_partition:
-        
         return kafka.get_topic_partitions(topic=topic, partition=int(partition), offset=specific_offset, consumer=True)
     return []
 
@@ -706,9 +702,7 @@ def fetch_incidents(kafka: KafkaCommunicator, demisto_params: dict) -> None:
                   f"topic: {topic}, partitions: {partitions}, offset: {offset}, "
                   f"message_max_bytes: {message_max_bytes}, max_messages: {max_messages}\n")
     incidents = []
-    demisto.debug("KAFKA DEBUG: update_conf_for_fetch")
     kafka.update_conf_for_fetch(message_max_bytes=message_max_bytes)
-    demisto.debug("KAFKA DEBUG: get_kafka_consumer")
     kafka_consumer = kafka.get_kafka_consumer()
     demisto.debug('Checking params')
     check_params(kafka, topic, partitions, offset, True, False)
@@ -748,7 +742,7 @@ def fetch_incidents(kafka: KafkaCommunicator, demisto_params: dict) -> None:
                 last_message_index = min((iteration + 1) * fetch_size, max_messages)
                 num_of_messages = last_message_index - (iteration * fetch_size)
                 demisto.debug(f"KAFKA DEBUG: consume message start for {num_of_messages}")
-                polled_msg = kafka_consumer.consume(timeout = kafka.POLL_TIMEOUT * num_of_messages, num_messages=num_of_messages)
+                polled_msg = kafka_consumer.consume(timeout=kafka.POLL_TIMEOUT * num_of_messages, num_messages=num_of_messages)
                 polled_msg = polled_msg if polled_msg else []
                 fetched_messages.extend(polled_msg)
             demisto.debug(f"KAFKA DEBUG: consume message end, {len(fetched_messages)=}")
@@ -759,7 +753,6 @@ def fetch_incidents(kafka: KafkaCommunicator, demisto_params: dict) -> None:
                         polled_msg_partition = message.partition()
                         polled_msg_offset = message.offset()
                         last_fetched_offsets[f'{polled_msg_partition}'] = polled_msg_offset
-                        demisto.debug(f"KAFKA DEBUG: create incident number {i}")
                 demisto.debug("KAFKA DEBUG: Finish create incidents")
             else:
                 demisto.debug("KAFKA DEBUG: Did not get any message")
