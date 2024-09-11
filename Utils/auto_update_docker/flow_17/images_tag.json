@@ -1,0 +1,8 @@
+{
+    "demisto/btfl-soup": "1.0.1.103265",
+    "demisto/crypto": "1.0.0.103269",
+    "demisto/google-api-py3": "1.0.0.103195",
+    "demisto/office-utils": "2.0.0.103232",
+    "demisto/pwsh-exchangev3": "1.0.0.88371",
+    "demisto/xsoar-tools": "1.0.0.103341"
+}

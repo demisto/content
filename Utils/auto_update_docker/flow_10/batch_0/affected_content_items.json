@@ -1,0 +1,34 @@
+{
+    "demisto/ansible-runner": {
+        "content_items": [
+            "Packs/SSLCertificates/Scripts/GenerateCSR/GenerateCSR.yml",
+            "Packs/SSLCertificates/Scripts/SSLVerifierV2/SSLVerifierV2.yml",
+            "Packs/SSLCertificates/Scripts/SSLVerifierV2GenerateEmailBody/SSLVerifierV2GenerateEmailBody.yml"
+        ],
+        "coverage": "0-100",
+        "pr_labels": [
+            "auto-update-docker"
+        ],
+        "target_tag": "1.0.0.102086"
+    },
+    "demisto/bs4": {
+        "content_items": [
+            "Packs/PopularCybersecurityNews/Integrations/PopularNews/PopularNews.yml"
+        ],
+        "coverage": "0-100",
+        "pr_labels": [
+            "auto-update-docker"
+        ],
+        "target_tag": "1.0.0.76921"
+    },
+    "demisto/chromium": {
+        "content_items": [
+            "Packs/CofenseTriage/Integrations/CofenseTriagev2/CofenseTriagev2.yml"
+        ],
+        "coverage": "0-100",
+        "pr_labels": [
+            "auto-update-docker"
+        ],
+        "target_tag": "126.0.6478.102778"
+    }
+}

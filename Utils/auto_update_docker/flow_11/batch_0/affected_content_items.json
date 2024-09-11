@@ -1,0 +1,54 @@
+{
+    "demisto/bs4-py3": {
+        "content_items": [
+            "Packs/CommunityCommonScripts/Scripts/MarkdownToHTML/MarkdownToHTML.yml",
+            "Packs/Use_Case_Builder/Scripts/UseCaseBuilderMarkdownToHTML/UseCaseBuilderMarkdownToHTML.yml",
+            "Packs/WebScraper/Scripts/WebScraper/WebScraper.yml"
+        ],
+        "coverage": "0-100",
+        "pr_labels": [
+            "auto-update-docker"
+        ],
+        "target_tag": "1.0.0.100299"
+    },
+    "demisto/cloudshare": {
+        "content_items": [
+            "Packs/CloudShare/Integrations/CloudShare/CloudShare.yml"
+        ],
+        "coverage": "0-100",
+        "pr_labels": [
+            "auto-update-docker"
+        ],
+        "target_tag": "1.0.0.73056"
+    },
+    "demisto/jq": {
+        "content_items": [
+            "Packs/CommunityCommonScripts/Scripts/Jq/Jq.yml"
+        ],
+        "coverage": "0-100",
+        "pr_labels": [
+            "auto-update-docker"
+        ],
+        "target_tag": "1.0.0.100247"
+    },
+    "demisto/python-phash": {
+        "content_items": [
+            "Packs/CommunityCommonScripts/Scripts/PHash/PHash.yml"
+        ],
+        "coverage": "0-100",
+        "pr_labels": [
+            "auto-update-docker"
+        ],
+        "target_tag": "1.0.0.100267"
+    },
+    "demisto/unzip": {
+        "content_items": [
+            "Packs/XSOARLabUpdates/Scripts/BuildSlackBlocksFromIndex/BuildSlackBlocksFromIndex.yml"
+        ],
+        "coverage": "0-100",
+        "pr_labels": [
+            "auto-update-docker"
+        ],
+        "target_tag": "1.0.0.100283"
+    }
+}

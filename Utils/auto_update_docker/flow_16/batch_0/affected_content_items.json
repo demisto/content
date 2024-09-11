@@ -1,0 +1,107 @@
+{
+    "demisto/googleapi-python3": {
+        "content_items": [
+            "Packs/GoogleCalendar/Integrations/GoogleCalendar/GoogleCalendar.yml",
+            "Packs/GoogleCloudCompute/Integrations/GoogleCloudCompute/GoogleCloudCompute.yml",
+            "Packs/GoogleDocs/Integrations/GoogleDocs/GoogleDocs.yml",
+            "Packs/GoogleDrive/Integrations/GoogleDrive/GoogleDrive.yml",
+            "Packs/GooglePubSub/Integrations/GooglePubSub/GooglePubSub.yml",
+            "Packs/GoogleResourceManager/Integrations/GoogleResourceManager/GoogleResourceManager.yml",
+            "Packs/GoogleSheets/Integrations/GoogleSheets/GoogleSheets.yml",
+            "Packs/GoogleVault/Integrations/GoogleVault/GoogleVault.yml",
+            "Packs/GSuiteAdmin/Integrations/GSuiteAdmin/GSuiteAdmin.yml",
+            "Packs/GsuiteAuditor/Integrations/GsuiteAuditor/GsuiteAuditor.yml",
+            "Packs/GSuiteSecurityAlertCenter/Integrations/GSuiteSecurityAlertCenter/GSuiteSecurityAlertCenter.yml"
+        ],
+        "coverage": "0-100",
+        "pr_labels": [
+            "auto-update-docker"
+        ],
+        "target_tag": "1.0.0.103410"
+    },
+    "demisto/netutils": {
+        "content_items": [
+            "Packs/CommonScripts/Scripts/Dig/Dig.yml",
+            "Packs/CommonScripts/Scripts/GetDomainDNSDetails/GetDomainDNSDetails.yml",
+            "Packs/CommonScripts/Scripts/Ping/Ping.yml",
+            "Packs/FeedPublicDNS/Integrations/FeedPublicDNS/FeedPublicDNS.yml",
+            "Packs/FiltersAndTransformers/Scripts/IPv4Blacklist/IPv4Blacklist.yml",
+            "Packs/FiltersAndTransformers/Scripts/IPv4Whitelist/IPv4Whitelist.yml",
+            "Packs/FiltersAndTransformers/Scripts/IsRFC1918Address/IsRFC1918Address.yml",
+            "Packs/Mattermost/Integrations/MattermostV2/MattermostV2.yml",
+            "Packs/Nmap/Integrations/Nmap/Nmap.yml",
+            "Packs/ProofpointEmailSecurity/Integrations/ProofpointEmailSecurityEventCollector/ProofpointEmailSecurityEventCollector.yml"
+        ],
+        "coverage": "0-100",
+        "pr_labels": [
+            "auto-update-docker"
+        ],
+        "target_tag": "1.0.0.103292"
+    },
+    "demisto/py3-tools": {
+        "content_items": [
+            "Packs/Active_Directory_Query/Scripts/IAMInitADUser/IAMInitADUser.yml",
+            "Packs/ActiveMQ/Integrations/ActiveMQ/ActiveMQ.yml",
+            "Packs/Anomali_ThreatStream/Integrations/AnomaliThreatStreamv3/AnomaliThreatStreamv3.yml",
+            "Packs/CommonScripts/Scripts/DownloadAndArchivePythonLibrary/DownloadAndArchivePythonLibrary.yml",
+            "Packs/CommonScripts/Scripts/ExifRead/ExifRead.yml",
+            "Packs/CommonScripts/Scripts/ExtractDomainAndFQDNFromUrlAndEmail/ExtractDomainAndFQDNFromUrlAndEmail.yml",
+            "Packs/CommonScripts/Scripts/ExtractDomainFromUrlFormat/ExtractDomainFromUrlFormat.yml",
+            "Packs/CommonScripts/Scripts/ExtractFQDNFromUrlAndEmail/ExtractFQDNFromUrlAndEmail.yml",
+            "Packs/CommonScripts/Scripts/FetchIndicatorsFromFile/FetchIndicatorsFromFile.yml",
+            "Packs/CommonScripts/Scripts/LanguageDetect/LanguageDetect.yml",
+            "Packs/CommonScripts/Scripts/ParseExcel/ParseExcel.yml",
+            "Packs/CommonScripts/Scripts/StixCreator/StixCreator.yml",
+            "Packs/CommonScripts/Scripts/ZipFile/ZipFile.yml",
+            "Packs/CommonWidgets/Scripts/RSSWidget/RSSWidget.yml",
+            "Packs/Core/Scripts/impossibleTravelerGetDistance/impossibleTravelerGetDistance.yml",
+            "Packs/CrowdStrikeFalcon/Integrations/CrowdStrikeFalcon/CrowdStrikeFalcon.yml",
+            "Packs/CrowdStrikeFalconStreamingV2/Integrations/CrowdStrikeFalconStreamingV2/CrowdStrikeFalconStreamingV2.yml",
+            "Packs/CyberArkIdentity/Integrations/CyberArkIdentityEventCollector/CyberArkIdentityEventCollector.yml",
+            "Packs/Dropbox/Integrations/DropboxEventCollector/DropboxEventCollector.yml",
+            "Packs/FeedAWS/Integrations/FeedAWS/FeedAWS.yml",
+            "Packs/FeedCSV/Integrations/FeedCSV/FeedCSV.yml",
+            "Packs/FeedFastly/Integrations/FeedFastly/FeedFastly.yml",
+            "Packs/FeedGCPWhitelist/Integrations/FeedGoogleIPRanges/FeedGoogleIPRanges.yml",
+            "Packs/FeedJSON/Integrations/FeedJSON/FeedJSON.yml",
+            "Packs/FeedMalwareBazaar/Integrations/MalwareBazaarFeed/MalwareBazaarFeed.yml",
+            "Packs/FeedPlainText/Integrations/FeedPlainText/FeedPlainText.yml",
+            "Packs/FeedRSS/Integrations/FeedRSS/FeedRSS.yml",
+            "Packs/FiltersAndTransformers/Scripts/Jmespath/Jmespath.yml",
+            "Packs/GitHub/Integrations/GitHubEventCollector/GitHubEventCollector.yml",
+            "Packs/ImpossibleTraveler/Scripts/CalculateGeoDistance/CalculateGeoDistance.yml",
+            "Packs/Jira/Integrations/JiraEventCollector/JiraEventCollector.yml",
+            "Packs/MailListener/Integrations/MailListenerV2/MailListenerV2.yml",
+            "Packs/Mimecast/Integrations/MimecastEventCollector/MimecastEventCollector.yml",
+            "Packs/MongoDB/Integrations/MongoDB/MongoDB.yml",
+            "Packs/MongoDB/Integrations/MongoDBKeyValueStore/MongoDBKeyValueStore.yml",
+            "Packs/MongoDB/Integrations/MongoDBLog/MongoDBLog.yml",
+            "Packs/Okta/Scripts/IAMInitOktaUser/IAMInitOktaUser.yml",
+            "Packs/OpenLDAP/Integrations/OpenLDAP/OpenLDAP.yml",
+            "Packs/ThalesCipherTrustManager/Integrations/ThalesCipherTrustManager/ThalesCipherTrustManager.yml",
+            "Packs/Vertica/Integrations/Vertica/Vertica.yml"
+        ],
+        "coverage": "0-100",
+        "pr_labels": [
+            "auto-update-docker"
+        ],
+        "target_tag": "1.0.0.103307"
+    },
+    "demisto/vendors-sdk": {
+        "content_items": [
+            "Packs/Cloaken/Integrations/Cloaken/Cloaken.yml",
+            "Packs/DuoAdminApi/Integrations/DuoAdminApi/DuoAdminApi.yml",
+            "Packs/DuoAdminApi/Integrations/DuoEventCollector/DuoEventCollector.yml",
+            "Packs/ForcepointSecurityManagementCenter/Integrations/ForcepointSecurityManagementCenter/ForcepointSecurityManagementCenter.yml",
+            "Packs/HashiCorp-Vault/Integrations/HashiCorpVault/HashiCorpVault.yml",
+            "Packs/JoeSecurity/Integrations/JoeSecurityV2/JoeSecurityV2.yml",
+            "Packs/Kafka/Integrations/KafkaV3/KafkaV3.yml",
+            "Packs/TeamCymru/Integrations/TeamCymru/TeamCymru.yml"
+        ],
+        "coverage": "0-100",
+        "pr_labels": [
+            "auto-update-docker"
+        ],
+        "target_tag": "1.0.0.103334"
+    }
+}

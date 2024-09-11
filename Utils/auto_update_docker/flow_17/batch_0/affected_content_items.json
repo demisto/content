@@ -1,0 +1,119 @@
+{
+    "demisto/btfl-soup": {
+        "content_items": [
+            "Packs/CiscoWebExFeed/Integrations/CiscoWebExFeed/CiscoWebExFeed.yml",
+            "Packs/CommonScripts/Scripts/HTMLtoMD/HTMLtoMD.yml",
+            "Packs/CyberArkEPM/Integrations/CyberArkEPMEventCollector/CyberArkEPMEventCollector.yml",
+            "Packs/EmailCommunication/Scripts/DisplayEmailHtmlThread/DisplayEmailHtmlThread.yml",
+            "Packs/FeedAzureADConnectHealth/Integrations/AzureADConnectHealthFeed/AzureADConnectHealthFeed.yml",
+            "Packs/FeedMicrosoftIntune/Integrations/FeedMicrosoftIntune/FeedMicrosoftIntune.yml",
+            "Packs/FeedZoom/Integrations/FeedZoom/FeedZoom.yml",
+            "Packs/jamf/Integrations/jamfV2/jamfV2.yml",
+            "Packs/Jira/Integrations/JiraV3/JiraV3.yml"
+        ],
+        "coverage": "0-100",
+        "pr_labels": [
+            "auto-update-docker"
+        ],
+        "target_tag": "1.0.1.103265"
+    },
+    "demisto/crypto": {
+        "content_items": [
+            "Packs/AzureCompute/Integrations/AzureCompute_v2/AzureCompute_v2.yml",
+            "Packs/AzureDevOps/Integrations/AzureDevOps/AzureDevOps.yml",
+            "Packs/AzureFirewall/Integrations/AzureFirewall/AzureFirewall.yml",
+            "Packs/AzureKeyVault/Integrations/AzureKeyVault/AzureKeyVault.yml",
+            "Packs/AzureKubernetesServices/Integrations/AzureKubernetesServices/AzureKubernetesServices.yml",
+            "Packs/AzureLogAnalytics/Integrations/AzureLogAnalytics/AzureLogAnalytics.yml",
+            "Packs/AzureNetworkSecurityGroups/Integrations/AzureNetworkSecurityGroups/AzureNetworkSecurityGroups.yml",
+            "Packs/AzureRiskyUsers/Integrations/AzureRiskyUsers/AzureRiskyUsers.yml",
+            "Packs/AzureSecurityCenter/Integrations/AzureSecurityCenter_v2/AzureSecurityCenter_v2.yml",
+            "Packs/AzureSecurityCenter/Integrations/MicrosoftDefenderForCloudEventCollector/MicrosoftDefenderForCloudEventCollector.yml",
+            "Packs/AzureSentinel/Integrations/AzureSentinel/AzureSentinel.yml",
+            "Packs/AzureSQLManagement/Integrations/AzureSQLManagement/AzureSQLManagement.yml",
+            "Packs/AzureStorage/Integrations/AzureStorage/AzureStorage.yml",
+            "Packs/AzureWAF/Integrations/AzureWAF/AzureWAF.yml",
+            "Packs/CommonScripts/Scripts/CertificateExtract/CertificateExtract.yml",
+            "Packs/Microsoft365Defender/Integrations/Microsoft365Defender/Microsoft365Defender.yml",
+            "Packs/MicrosoftCloudAppSecurity/Integrations/MicrosoftCloudAppSecurity/MicrosoftCloudAppSecurity.yml",
+            "Packs/MicrosoftDefenderAdvancedThreatProtection/Integrations/MicrosoftDefenderAdvancedThreatProtection/MicrosoftDefenderAdvancedThreatProtection.yml",
+            "Packs/MicrosoftGraphAPI/Integrations/MicrosoftGraphAPI/MicrosoftGraphAPI.yml",
+            "Packs/MicrosoftGraphApplications/Integrations/MicrosoftGraphApplications/MicrosoftGraphApplications.yml",
+            "Packs/MicrosoftGraphCalendar/Integrations/MicrosoftGraphCalendar/MicrosoftGraphCalendar.yml",
+            "Packs/MicrosoftGraphDeviceManagement/Integrations/MicrosoftGraphDeviceManagement/MicrosoftGraphDeviceManagement.yml",
+            "Packs/MicrosoftGraphFiles/Integrations/MicrosoftGraphFiles/MicrosoftGraphFiles.yml",
+            "Packs/MicrosoftGraphGroups/Integrations/MicrosoftGraphGroups/MicrosoftGraphGroups.yml",
+            "Packs/MicrosoftGraphIdentityandAccess/Integrations/MicrosoftGraphIdentityandAccess/MicrosoftGraphIdentityandAccess.yml",
+            "Packs/MicrosoftGraphMail/Integrations/MicrosoftGraphListener/MicrosoftGraphListener.yml",
+            "Packs/MicrosoftGraphMail/Integrations/MicrosoftGraphMail/MicrosoftGraphMail.yml",
+            "Packs/MicrosoftGraphSecurity/Integrations/MicrosoftGraphSecurity/MicrosoftGraphSecurity.yml",
+            "Packs/MicrosoftGraphUser/Integrations/MicrosoftGraphUser/MicrosoftGraphUser.yml",
+            "Packs/MicrosoftTeams/Integrations/MicrosoftTeamsManagement/MicrosoftTeamsManagement.yml",
+            "Packs/Okta/Integrations/Okta_v2/Okta_v2.yml",
+            "Packs/PaloAltoNetworks_Threat_Vault/Integrations/ThreatVaultv2/ThreatVaultv2.yml",
+            "Packs/SymantecMSS/Integrations/SymantecMSS/SymantecMSS.yml"
+        ],
+        "coverage": "0-100",
+        "pr_labels": [
+            "auto-update-docker"
+        ],
+        "target_tag": "1.0.0.103269"
+    },
+    "demisto/google-api-py3": {
+        "content_items": [
+            "Packs/GCP-IAM/Integrations/GCPIAM/GCPIAM.yml",
+            "Packs/Gmail/Integrations/Gmail/Gmail.yml",
+            "Packs/GmailSingleUser/Integrations/GmailSingleUser/GmailSingleUser.yml",
+            "Packs/GoogleCloudFunctions/Integrations/GoogleCloudFunctions/GoogleCloudFunctions.yml",
+            "Packs/GoogleCloudLogging/Integrations/GoogleCloudLogging/GoogleCloudLogging.yml"
+        ],
+        "coverage": "0-100",
+        "pr_labels": [
+            "auto-update-docker"
+        ],
+        "target_tag": "1.0.0.103195"
+    },
+    "demisto/office-utils": {
+        "content_items": [
+            "Packs/CommonScripts/Scripts/ConvertFile/ConvertFile.yml",
+            "Packs/CommonScripts/Scripts/ExtractHyperlinksFromOfficeFiles/ExtractHyperlinksFromOfficeFiles.yml",
+            "Packs/CommonScripts/Scripts/ExtractIndicatorsFromWordFile/ExtractIndicatorsFromWordFile.yml",
+            "Packs/CommonScripts/Scripts/ParseWordDoc/ParseWordDoc.yml"
+        ],
+        "coverage": "0-100",
+        "pr_labels": [
+            "auto-update-docker"
+        ],
+        "target_tag": "2.0.0.103232"
+    },
+    "demisto/pwsh-exchangev3": {
+        "content_items": [
+            "Packs/Microsoft365Defender/Integrations/O365DefenderSafeLinks/O365DefenderSafeLinks.yml",
+            "Packs/MicrosoftExchangeOnline/Integrations/EwsExtensionEXOPowershellV3/EwsExtensionEXOPowershellV3.yml",
+            "Packs/MicrosoftExchangeOnline/Integrations/SecurityAndComplianceV2/SecurityAndComplianceV2.yml",
+            "Packs/Office365AndAzureAuditLog/Integrations/MicrosoftPolicyAndComplianceAuditLog/MicrosoftPolicyAndComplianceAuditLog.yml"
+        ],
+        "coverage": "0-100",
+        "pr_labels": [
+            "auto-update-docker"
+        ],
+        "target_tag": "1.0.0.88371"
+    },
+    "demisto/xsoar-tools": {
+        "content_items": [
+            "Packs/Base/Scripts/ValidateContent/ValidateContent.yml",
+            "Packs/CommonScripts/Scripts/ContentPackInstaller/ContentPackInstaller.yml",
+            "Packs/ContentManagement/Scripts/CommitFiles/CommitFiles.yml",
+            "Packs/ContentManagement/Scripts/ConfigurationSetup/ConfigurationSetup.yml",
+            "Packs/ContentManagement/Scripts/CustomPackInstaller/CustomPackInstaller.yml",
+            "Packs/ContentManagement/Scripts/GetIdsFromCustomContent/GetIdsFromCustomContent.yml",
+            "Packs/ContentManagement/Scripts/JobCreator/JobCreator.yml",
+            "Packs/ContentManagement/Scripts/ListCreator/ListCreator.yml"
+        ],
+        "coverage": "0-100",
+        "pr_labels": [
+            "auto-update-docker"
+        ],
+        "target_tag": "1.0.0.103341"
+    }
+}
