@@ -58,7 +58,7 @@ For Traffic logs via Fortiweb Cloud, you are required to send the logs with [Ama
 | Field Name | Value |
 | :---------------- | :------: |
 | Server Type | Syslog |
-| IP/Domain and Port | <IP> and <Port>  |
+| IP/Domain and Port | IP & Port |
 | Protocol | TCP |
 | Log Format | CEF |
 
