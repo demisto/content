@@ -206,7 +206,8 @@ def get_iocs_generator(size=200, query=None, is_first_stage_sync=False) -> Itera
     full_query = query or Client.query
     ioc_count = 0
     try:
-        filter_fields = ('value,indicator_type,score,expiration,modified,aggregatedReliability,moduleToFeedMap,comments,id,CustomFields'
+        filter_fields = ('value,indicator_type,score,expiration,modified,aggregatedReliability,moduleToFeedMap,'
+                         'comments,id,CustomFields'
                          if is_xsiam_or_xsoar_saas()
                          else None)
         # demisto.debug(f"{filter_fields=}")
