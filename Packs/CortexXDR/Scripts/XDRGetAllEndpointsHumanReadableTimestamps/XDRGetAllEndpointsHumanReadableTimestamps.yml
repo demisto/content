@@ -1,0 +1,94 @@
+args:
+- description: 'All the agents that were last seen before {last_seen_gte}. Supported values: 1579039377301 (time in milliseconds) "3 days" (relative date) "2019-10-21T23:45:00" (date)'
+  name: last_seen_gte
+- description: 'All the agents that were last seen before {last_seen_lte}. Supported values: 1579039377301 (time in milliseconds) "3 days" (relative date) "2019-10-21T23:45:00" (date)'
+  name: last_seen_lte
+- auto: PREDEFINED
+  description: Endpoint status value to filter on
+  name: endpoint_status
+  predefined:
+  - connected
+  - disconnected
+  - lost
+  - uninstalled
+- auto: PREDEFINED
+  description: Endpoint platform value to filter on
+  name: platform
+  predefined:
+  - windows
+  - linux
+  - macos
+  - android
+- description: Endpoint group name to filter for
+  name: group_name
+comment: Iterate through all pages of results to get all XDR endpoints. Convert endpoint timestamp attributes from Unix epoch time to human-readable timestamps. Optionally, filter endpoints by timestamp, status, platform, or group name.
+commonfields:
+  id: 'XDRGetAllEndpointsHumanReadableTimestamps'
+  version: -1
+dockerimage: demisto/python3:3.9.7.24076
+enabled: true
+engineinfo: {}
+mainengineinfo: {}
+name: XDRGetAllEndpointsHumanReadableTimestamps
+outputs:
+- contextPath: PaloAltoNetworksXDR.Endpoint.endpoint_id
+  description: The endpoint ID.
+  type: string
+- contextPath: PaloAltoNetworksXDR.Endpoint.endpoint_name
+  description: The endpoint name.
+  type: string
+- contextPath: PaloAltoNetworksXDR.Endpoint.endpoint_type
+  description: The endpoint type.
+  type: string
+- contextPath: PaloAltoNetworksXDR.Endpoint.endpoint_status
+  description: The status of the endpoint.
+  type: string
+- contextPath: PaloAltoNetworksXDR.Endpoint.os_type
+  description: The endpoint OS type.
+  type: string
+- contextPath: PaloAltoNetworksXDR.Endpoint.ip
+  description: A list of IP addresses.
+- contextPath: PaloAltoNetworksXDR.Endpoint.users
+  description: A list of users.
+- contextPath: PaloAltoNetworksXDR.Endpoint.domain
+  description: The endpoint domain.
+  type: string
+- contextPath: PaloAltoNetworksXDR.Endpoint.alias
+  description: The endpoint's aliases.
+  type: string
+- contextPath: PaloAltoNetworksXDR.Endpoint.first_seen
+  description: First seen date/time in Epoch (milliseconds).
+  type: date
+- contextPath: PaloAltoNetworksXDR.Endpoint.last_seen
+  description: Last seen date/time in Epoch (milliseconds).
+  type: date
+- contextPath: PaloAltoNetworksXDR.Endpoint.content_version
+  description: Content version.
+  type: string
+- contextPath: PaloAltoNetworksXDR.Endpoint.installation_package
+  description: Installation package.
+  type: string
+- contextPath: PaloAltoNetworksXDR.Endpoint.active_directory
+  description: Active directory.
+  type: string
+- contextPath: PaloAltoNetworksXDR.Endpoint.install_date
+  description: Install date in Epoch (milliseconds).
+  type: date
+- contextPath: PaloAltoNetworksXDR.Endpoint.endpoint_version
+  description: Endpoint version.
+  type: string
+- contextPath: PaloAltoNetworksXDR.Endpoint.is_isolated
+  description: Whether the endpoint is isolated.
+  type: string
+- contextPath: PaloAltoNetworksXDR.Endpoint.group_name
+  description: The name of the group to which the endpoint belongs.
+  type: string
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 5.5.0

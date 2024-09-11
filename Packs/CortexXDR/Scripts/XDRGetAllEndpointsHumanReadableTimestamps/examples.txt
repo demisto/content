@@ -1,0 +1,1 @@
+!XDRGetAllEndpointsHumanReadableTimestamps last_seen_gte="7 days" last_seen_lte="0 days"
