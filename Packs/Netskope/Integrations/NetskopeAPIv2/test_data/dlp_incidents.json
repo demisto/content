@@ -1,0 +1,75 @@
+{
+  "ok": 1,
+  "result": [
+    {
+      "_id": "da1ef65598b1461aa3a24292b1c6ebdfd04926f2f0c2e0be1ac7261c2270b332",
+      "access_method": "Client",
+      "acting_user": "benim@qmasters.co",
+      "activity": "Upload",
+      "app": "Microsoft Office 365 OneDrive for Business",
+      "app_session_id": 6089117609268013425,
+      "assignee": "benim@qmasters.co",
+      "connection_id": 1888383367374049276,
+      "dlp_incident_id": 7061311227778495851,
+      "dlp_match_info": [
+        {
+          "dlp_action": "block",
+          "dlp_forensic_id": 7061311227778495851,
+          "dlp_policy": "DLP test policy - Beni",
+          "dlp_profile_name": "test dlp profile -beni",
+          "dlp_rules": [
+            {
+              "dlp_incident_rule_count": 1,
+              "dlp_match_type": "FileFilter",
+              "dlp_rule_name": "test dlp profile - beni",
+              "dlp_rule_severity": "Medium"
+            }
+          ]
+        }
+      ],
+      "dlp_parent_id": 7061311227778495851,
+      "dst_location": "Redmond",
+      "file_lang": "Unknown",
+      "file_size": 10,
+      "file_type": "text/plain",
+      "from_user": "benim@qmasters.co",
+      "instance_id": "qmasters",
+      "md5": "5856a9769bd071a92997237a18d0ae5a",
+      "object": "benitest1.txt",
+      "object_id": "01",
+      "object_type": "File",
+      "severity": "Critical",
+      "site": "Microsoft Office 365 OneDrive for Business",
+      "src_location": "Tel Aviv",
+      "status": "in_progress",
+      "timestamp": 1710928898,
+      "title": "benitest1.txt",
+      "true_obj_category": "Text",
+      "true_obj_type": "Plain Text file",
+      "url": "qmasters-my.sharepoint.com/personal/benim_qmasters_co/_api/SPFileSync/sync/6383c4316a0a4dd29e01b258cca66647/RootFolder",
+      "user": "benim@qmasters.co",
+      "owner_pdl": "",
+      "classification": "",
+      "to_user": "",
+      "cc": "",
+      "owner": "",
+      "destination_site": "",
+      "user_id": "",
+      "instance": "",
+      "channel": "",
+      "bcc": "",
+      "inline_dlp_match_info": [],
+      "exposure": "",
+      "file_path": "",
+      "original_file_snapshot_id": "",
+      "destination_app": "",
+      "latest_incident_id": 0,
+      "dlp_file": "",
+      "zip_file_id": "",
+      "referer": "",
+      "destination_instance_id": ""
+    }
+  ],
+  "wait_time": 1,
+  "timestamp_hwm": 1720513502
+}
