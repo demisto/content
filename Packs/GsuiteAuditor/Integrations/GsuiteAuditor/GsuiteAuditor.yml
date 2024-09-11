@@ -52,10 +52,11 @@ script:
       required: true
     - description: The name of the event being queried. For a list of event names for each application, see the integration documentation.
       name: event_name
-    - description: |-
-        A comma-separated list of event parameters and relational operators. For example-
-        'API_CLIENT_NAME==111,API_SCOPES=aaa'.
-        The relevant 'event name' argument must be supplied to use this argument.
+    - description: 'A comma-separated list of event parameters and relational operators. For example-
+
+        ''API_CLIENT_NAME==111,API_SCOPES=aaa''.
+
+        The relevant ''event name'' argument must be supplied to use this argument.'
       name: filters
     - description: ID of the organizational unit to report on. Activity records will be shown only for users who belong to the specified organizational unit.
       name: org_unit_id
@@ -125,7 +126,7 @@ script:
     - contextPath: GSuite.PageToken.ActivitySearch.nextPageToken
       description: Token to specify the next page in the list.
       type: String
-  dockerimage: demisto/googleapi-python3:1.0.0.89666
+  dockerimage: demisto/googleapi-python3:1.0.0.110187
   runonce: false
   script: '-'
   subtype: python3

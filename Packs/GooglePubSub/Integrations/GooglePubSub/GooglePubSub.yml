@@ -101,7 +101,7 @@ script:
       required: true
     - description: The message data field. If this field is empty, the message must contain at least one attribute.
       name: data
-    - description: 'Attributes for this message. If this field is empty, the message must contain non-empty data. The input format is "key=val" pairs separated by commas.'
+    - description: Attributes for this message. If this field is empty, the message must contain non-empty data. The input format is "key=val" pairs separated by commas.
       name: attributes
     - description: Project ID.
       name: project_id
@@ -229,7 +229,7 @@ script:
       required: true
     - description: A URL indicating the endpoint to which messages should be pushed.
       name: push_endpoint
-    - description: 'Endpoint configuration attributes that can be used to control the message delivery, such as "x-goog-version", that you can use to change the format of the pushed message. The input format is "key=val" pairs separated by commas.'
+    - description: Endpoint configuration attributes that can be used to control the message delivery, such as "x-goog-version", that you can use to change the format of the pushed message. The input format is "key=val" pairs separated by commas.
       name: push_attributes
     - description: The amount of time Pub/Sub waits for the subscriber to acknowledge receipt before resending the message.
       name: ack_deadline_seconds
@@ -242,7 +242,7 @@ script:
       - 'true'
     - description: The amount of time to retain unacknowledged messages in the subscription's backlog. The duration time is in seconds. E.g., "4.2s"
       name: message_retention_duration
-    - description: 'The input format is "key=val" pairs separated by commas.'
+    - description: The input format is "key=val" pairs separated by commas.
       name: labels
     - description: The "time-to-live" duration for the subscription.
       name: expiration_ttl
@@ -271,7 +271,7 @@ script:
       description: Name of the newly created subscription.
       type: String
     - contextPath: GoogleCloudPubSubSubscriptions.labels
-      description: 'An object containing a list of "key=value" pairs.'
+      description: An object containing a list of "key=value" pairs.
       type: String
   - arguments:
     - description: ID of the project the topic will belong to.
@@ -279,16 +279,16 @@ script:
     - description: ID of the newly created topic.
       name: topic_id
       required: true
-    - description: 'The input format is "key=val" pairs separated by commas.'
+    - description: The input format is "key=val" pairs separated by commas.
       name: labels
-    - description: |-
-        A comma-separated list of IDs of GCP regions where messages that are published to the topic may be persisted in storage. E.g., "us-east4,asia-1".
-        https://cloud.google.com/compute/docs/regions-zones#locations.
+    - description: 'A comma-separated list of IDs of GCP regions where messages that are published to the topic may be persisted in storage. E.g., "us-east4,asia-1".
+
+        https://cloud.google.com/compute/docs/regions-zones#locations.'
       isArray: true
       name: allowed_persistence_regions
-    - description: |-
-        The full name of the Cloud KMS CryptoKey to be used to restrict access to messages published on this topic.
-        The full name format is: projects/*/locations/*/keyRings/*/cryptoKeys/*.
+    - description: 'The full name of the Cloud KMS CryptoKey to be used to restrict access to messages published on this topic.
+
+        The full name format is: projects/*/locations/*/keyRings/*/cryptoKeys/*.'
       name: kms_key_name
     description: Create a topic.
     name: gcp-pubsub-topic-create
@@ -319,20 +319,20 @@ script:
     - description: ID of the topic.
       name: topic_id
       required: true
-    - description: 'The input format is "key=val" pairs separated by commas.'
+    - description: The input format is "key=val" pairs separated by commas.
       name: labels
-    - description: |-
-        A comma-separated list of IDs of GCP regions where messages that are published to the topic may be persisted in storage. E.g., "us-east4,asia-1".
-        https://cloud.google.com/compute/docs/regions-zones#locations.
+    - description: 'A comma-separated list of IDs of GCP regions where messages that are published to the topic may be persisted in storage. E.g., "us-east4,asia-1".
+
+        https://cloud.google.com/compute/docs/regions-zones#locations.'
       isArray: true
       name: allowed_persistence_regions
-    - description: |-
-        The full name of the Cloud KMS CryptoKey to be used to restrict access to messages published on this topic.
-        The full name format is: projects/*/locations/*/keyRings/*/cryptoKeys/*.
+    - description: 'The full name of the Cloud KMS CryptoKey to be used to restrict access to messages published on this topic.
+
+        The full name format is: projects/*/locations/*/keyRings/*/cryptoKeys/*.'
       name: kms_key_name
-    - description: |-
-        A comma-separated list of fields that indicates which fields in the provided topic to update.
-        E.g., "labels,messageStoragePolicy".
+    - description: 'A comma-separated list of fields that indicates which fields in the provided topic to update.
+
+        E.g., "labels,messageStoragePolicy".'
       name: update_mask
       required: true
     description: Updates a topic.
@@ -351,9 +351,9 @@ script:
       description: The resource name of the Cloud KMS CryptoKey to be used to restrict access.
       type: String
   - arguments:
-    - description: |-
-        A comma-separated list of fully qualified names of fields that indicates which fields in the provided subscription to update.
-        E.g., "pushConfig.pushEndpoint,ackDeadlineSeconds".
+    - description: 'A comma-separated list of fully qualified names of fields that indicates which fields in the provided subscription to update.
+
+        E.g., "pushConfig.pushEndpoint,ackDeadlineSeconds".'
       name: update_mask
       required: true
     - description: ID of the project from which the subscription is receiving messages.
@@ -366,7 +366,7 @@ script:
       required: true
     - description: A URL indicating the endpoint to which messages should be pushed.
       name: push_endpoint
-    - description: 'Endpoint configuration attributes that can be used to control the message delivery. The input format is "key=val" pairs separated by commas.'
+    - description: Endpoint configuration attributes that can be used to control the message delivery. The input format is "key=val" pairs separated by commas.
       name: push_attributes
     - description: The amount of time Pub/Sub waits for the subscriber to acknowledge receipt before resending the message.
       name: ack_deadline_seconds
@@ -379,7 +379,7 @@ script:
       - 'true'
     - description: How long to retain unacknowledged messages in the subscription's backlog. The duration time is in seconds. E.g., "4.2s"
       name: message_retention_duration
-    - description: 'The input format is "key=val" pairs separated by commas.'
+    - description: The input format is "key=val" pairs separated by commas.
       name: labels
     - description: The "time-to-live" duration for the subscription.
       name: expiration_ttl
@@ -455,7 +455,7 @@ script:
     - description: The subscription whose backlog the snapshot retains.
       name: subscription_id
       required: true
-    - description: 'The input format is "key=val" pairs separated by commas.'
+    - description: The input format is "key=val" pairs separated by commas.
       name: labels
     - description: The ID of the snapshot.
       name: snapshot_id
@@ -478,18 +478,18 @@ script:
   - arguments:
     - description: The ID of the project from which the subscription is receiving messages.
       name: project_id
-    - description: |-
-        The snapshot is guaranteed to exist up until this time. A newly-created snapshot expires no later than 7 days from the time of its creation.
-        The timestamp is in RFC3339 UTC "Zulu" format, accurate to nanoseconds. Example: "2020-04-01T08:01:23.045678910Z"
+    - description: 'The snapshot is guaranteed to exist up until this time. A newly-created snapshot expires no later than 7 days from the time of its creation.
+
+        The timestamp is in RFC3339 UTC "Zulu" format, accurate to nanoseconds. Example: "2020-04-01T08:01:23.045678910Z"'
       name: expire_time
-    - description: 'The input format is "key=val" pairs separated by commas.'
+    - description: The input format is "key=val" pairs separated by commas.
       name: labels
     - description: The ID of the snapshot.
       name: snapshot_id
       required: true
-    - description: |-
-        A comma-separated list of fields that indicates which fields in the provided snapshot to update.
-        Example: "labels,topic,expireTime".
+    - description: 'A comma-separated list of fields that indicates which fields in the provided snapshot to update.
+
+        Example: "labels,topic,expireTime".'
       name: update_mask
       required: true
     - description: The ID of the topic from which this snapshot is retaining messages.
@@ -530,7 +530,7 @@ script:
       required: true
     description: Acknowledge previously pulled message or messages.
     name: gcp-pubsub-topic-ack-messages
-  dockerimage: demisto/googleapi-python3:1.0.0.71902
+  dockerimage: demisto/googleapi-python3:1.0.0.110187
   isfetch: true
   runonce: false
   script: '-'

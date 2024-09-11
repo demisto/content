@@ -8,7 +8,7 @@ description: Integration for Google BigQuery, a data warehouse for querying and 
 configuration:
 - display: Google service account JSON (a credentials JSON generated from Google API Manager or from GCP console)
   name: google_service_creds
-  defaultvalue: ""
+  defaultvalue: ''
   type: 4
   hidden: true
   required: false
@@ -19,7 +19,7 @@ configuration:
   required: false
 - display: First fetch timestamp (<number> <time unit>. For example, 12 hours, 7 days)
   name: first_fetch
-  defaultvalue: '1 days'
+  defaultvalue: 1 days
   type: 0
   required: false
 - display: Incident type
@@ -42,7 +42,7 @@ configuration:
 - display: Fetch time field
   additionalinfo: Will be used for determining the time-specifying field of each row. Default is CreationTime.
   name: fetch_time_field
-  defaultvalue: 'CreationTime'
+  defaultvalue: CreationTime
   type: 0
   required: false
 script:
@@ -59,8 +59,8 @@ script:
     - name: allow_large_results
       auto: PREDEFINED
       predefined:
-      - "True"
-      - "False"
+      - 'True'
+      - 'False'
       description: Allow query results tables larger than 128 MB compressed (legacy SQL only).
     - name: default_dataset
       description: A string of the fully-qualified dataset ID in standard SQL format. The value must include a project ID and dataset ID, separated by periods.
@@ -71,26 +71,26 @@ script:
     - name: dry_run
       auto: PREDEFINED
       predefined:
-      - "True"
-      - "False"
+      - 'True'
+      - 'False'
       description: If "true," BigQuery doesn't run the job. Instead, if the query is valid, BigQuery returns statistics about the job, such as how many bytes would be processed. If the query is invalid, an error is returned. The default value is "false".
     - name: priority
       auto: PREDEFINED
       predefined:
       - BATCH
       - INTERACTIVE
-      description: Priority of the query (“INTERACTIVE” or “BATCH”). A query set as INTERACTIVE will be run on-demand, at the next possible time. A query set as BATCH will start as soon as idle resources are available, and changed to INTERACTIVE priority if it wasn’t started within 24 hours. The default value is “INTERACTIVE”.
+      description: "Priority of the query (\u201CINTERACTIVE\u201D or \u201CBATCH\u201D). A query set as INTERACTIVE will be run on-demand, at the next possible time. A query set as BATCH will start as soon as idle resources are available, and changed to INTERACTIVE priority if it wasn\u2019t started within 24 hours. The default value is \u201CINTERACTIVE\u201D."
     - name: use_query_cache
       auto: PREDEFINED
       predefined:
-      - "True"
-      - "False"
+      - 'True'
+      - 'False'
       description: Whether to look for the query results in the cache.
     - name: use_legacy_sql
       auto: PREDEFINED
       predefined:
-      - "True"
-      - "False"
+      - 'True'
+      - 'False'
       description: Whether to use legacy SQL syntax.
     - name: job_id
       description: The ID of the job. The ID must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), or dashes (-). The maximum length is 1,024 characters.
@@ -109,7 +109,7 @@ script:
       description: The table rows the given query returned.
       type: Unknown
     description: Performs a query on BigQuery.
-  dockerimage: demisto/bigquery:1.0.0.73837
+  dockerimage: demisto/bigquery:1.0.0.110974
   subtype: python3
   isfetch: true
 fromversion: 5.0.0

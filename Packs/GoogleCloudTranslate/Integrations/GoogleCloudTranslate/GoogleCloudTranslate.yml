@@ -25,7 +25,6 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
-
   required: false
 description: A Google API cloud based translation service.
 display: Google Cloud Translate
@@ -67,7 +66,7 @@ script:
     - contextPath: GoogleCloudTranslate.TranslateText.translated_text
       description: The translated text.
       type: String
-  dockerimage: demisto/google-cloud-translate:1.0.0.85793
+  dockerimage: demisto/google-cloud-translate:1.0.0.110178
   runonce: false
   script: '-'
   type: python
