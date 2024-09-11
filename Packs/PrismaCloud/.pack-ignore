@@ -43,6 +43,12 @@ ignore=BA101
 [file:PrismaCloudIAM_image.png]
 ignore=IM111
 
+[file:layoutscontainer-Prisma_Cloud_-_Network_Incident_Layout.json]
+ignore=LO107
+
+[file:layoutscontainer-Prisma_Cloud_V2.json]
+ignore=LO107
+
 [known_words]
 ssh
 misconfiguration
