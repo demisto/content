@@ -34,7 +34,7 @@ if TYPE_CHECKING:
     from typing import TypedDict, NotRequired  # type: ignore[attr-defined]
 else:
     TypedDict = type('TypedDict', (), {'__new__': lambda cls, **kw: kw})
-    NotRequired = list
+    NotRequired = Optional
 
 ''' GLOBALS '''
 URL = ''
