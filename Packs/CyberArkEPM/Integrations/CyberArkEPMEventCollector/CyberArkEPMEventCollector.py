@@ -64,7 +64,8 @@ class Client(BaseClient):
         result = self._http_request('POST', full_url=self.authentication_url, json_data=data)
         demisto.debug(f"result is: {result}")
         if result.get("status", "") != "SUCCESS":
-            return_error(f"Okta password has expired, please update it.")
+            raise DemistoException(f"Retrieving Okta session token returned status: {result.get("status")},"
+                                   f" check your okta credentials please.")
         return result.get('sessionToken')
 
     def get_saml_response(self) -> str:
