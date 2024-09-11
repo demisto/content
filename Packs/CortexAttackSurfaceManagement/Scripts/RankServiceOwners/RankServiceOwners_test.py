@@ -492,7 +492,7 @@ def test_main(mocker, owners, asm_system_ids, expected_out, capfd):
     if demisto_execution_mock.call_args_list:
         assert demisto_execution_mock.call_args_list == expected_calls_to_mock_object
     else:
-        expected_calls_to_mock_object == []
+        assert demisto_execution_mock.call_args_list == []
 
 
 def test_main_error(mocker, capfd):

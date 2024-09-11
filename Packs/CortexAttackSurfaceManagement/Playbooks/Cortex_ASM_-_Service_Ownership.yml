@@ -1,25 +1,34 @@
+description: Identifies and recommends the most likely owners of the service, additionally
+  citing an explanation and ranking score for each.
+dirtyInputs: true
 id: Cortex ASM - Service Ownership
-version: -1
+inputs: []
 name: Cortex ASM - Service Ownership
-description: Identifies and recommends the most likely owners of the service, additionally citing an explanation and ranking score for each.
+outputs: []
 starttaskid: "0"
 tasks:
   "0":
+    continueonerrortype: ""
     id: "0"
-    taskid: cd2f7a88-5f69-46ec-8826-977c7f5ac0d0
-    type: start
-    task:
-      id: cd2f7a88-5f69-46ec-8826-977c7f5ac0d0
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
-      description: ''
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
       - "9"
+    note: false
+    quietmode: 0
     separatecontext: false
-    continueonerrortype: ""
+    skipunavailable: true
+    task:
+      brand: ""
+      id: b8b84a8c-31ee-4daa-884a-5c8fae07434e
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: b8b84a8c-31ee-4daa-884a-5c8fae07434e
+    timertriggers: []
+    type: start
     view: |-
       {
         "position": {
@@ -27,123 +36,125 @@ tasks:
           "y": -150
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "6":
+    continueonerrortype: ""
     id: "6"
-    taskid: a2c60e6b-fb0b-4faf-8396-1e6e36c9d321
-    type: regular
-    task:
-      id: a2c60e6b-fb0b-4faf-8396-1e6e36c9d321
-      version: -1
-      name: Normalize and rank likely service owners
-      description: Recommend most likely service owners from those surfaced by Cortex ASM Enrichment.
-      type: regular
-      iscommand: false
-      brand: ""
-      script: RankServiceOwners
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
       - "10"
+    note: false
+    quietmode: 0
     scriptarguments:
-      owners:
-        complex:
-          root: alert.asmserviceownerunrankedraw
-          filters:
-          - - operator: isNotExists
-              left:
-                value:
-                  simple: alert.asmserviceownerunrankedraw.accounttype
-                iscontext: true
-            - operator: isNotEqualString
-              left:
-                value:
-                  simple: alert.asmserviceownerunrankedraw.accounttype
-                iscontext: true
-              right:
-                value:
-                  simple: SERVICE-ACCOUNT
       asmsystemids:
         complex:
-          root: alert.asmsystemids
           filters:
-          - - operator: containsString
-              left:
+          - - left:
+                iscontext: true
                 value:
                   simple: alert.asmsystemids.type
-                iscontext: true
+              operator: containsString
               right:
                 value:
                   simple: ASSET-NAME
+          root: alert.asmsystemids
           transformers:
-          - operator: getField
-            args:
+          - args:
               field:
                 value:
                   simple: id
+            operator: getField
+      owners:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: alert.asmserviceownerunrankedraw.accounttype
+              operator: isNotExists
+            - left:
+                iscontext: true
+                value:
+                  simple: alert.asmserviceownerunrankedraw.accounttype
+              operator: isNotEqualString
+              right:
+                value:
+                  simple: SERVICE-ACCOUNT
+          root: alert.asmserviceownerunrankedraw
     separatecontext: false
-    continueonerrortype: ""
+    skipunavailable: true
+    task:
+      brand: ""
+      description: Recommend most likely service owners from those surfaced by Cortex
+        ASM Enrichment.
+      id: 36f91bcf-47d2-403f-8036-6371edfdab2a
+      iscommand: false
+      name: Normalize and rank likely service owners
+      script: RankServiceOwners
+      type: regular
+      version: -1
+    taskid: 36f91bcf-47d2-403f-8036-6371edfdab2a
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
           "x": -50,
-          "y": 1180
+          "y": 1000
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "9":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: alert.asmserviceownerunrankedraw
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: alert.asmserviceownerunrankedraw.email
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: alert.asmserviceownerunrankedraw.name
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: alert.asmserviceownerunrankedraw.source
+          operator: isNotEmpty
+      label: unranked raw
+    continueonerrortype: ""
     id: "9"
-    taskid: 4a8ab746-7531-44b5-8447-fd12a3589236
-    type: condition
-    task:
-      id: 4a8ab746-7531-44b5-8447-fd12a3589236
-      version: -1
-      name: Is asmserviceownerunrankedraw populated?
-      description: Determines if the asmserviceowner or asmserviceownerunrankedraw fields have been populated to continue.
-      type: condition
-      iscommand: false
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#default#':
       - "10"
       unranked raw:
       - "17"
+    note: false
+    quietmode: 0
     separatecontext: false
-    conditions:
-    - label: "unranked raw"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: alert.asmserviceownerunrankedraw
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: alert.asmserviceownerunrankedraw.email
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: alert.asmserviceownerunrankedraw.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: alert.asmserviceownerunrankedraw.source
-            iscontext: true
-    continueonerrortype: ""
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Determines if the asmserviceowner or asmserviceownerunrankedraw
+        fields have been populated to continue.
+      id: fc631aab-e26a-46ec-823f-8c32ea5d2b7a
+      iscommand: false
+      name: Is asmserviceownerunrankedraw populated?
+      type: condition
+      version: -1
+    taskid: fc631aab-e26a-46ec-823f-8c32ea5d2b7a
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
@@ -151,70 +162,70 @@ tasks:
           "y": 0
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "10":
+    continueonerrortype: ""
     id: "10"
-    taskid: 6c41a727-a8ae-4676-8345-e60fb2392799
-    type: title
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
     task:
-      id: 6c41a727-a8ae-4676-8345-e60fb2392799
-      version: -1
+      brand: ""
+      id: f0be60f7-946b-484c-8f3f-2fce48393887
+      iscommand: false
       name: Done
       type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    separatecontext: false
-    continueonerrortype: ""
+      version: -1
+    taskid: f0be60f7-946b-484c-8f3f-2fce48393887
+    timertriggers: []
+    type: title
     view: |-
       {
         "position": {
-          "x": 250,
-          "y": 1450
+          "x": 190,
+          "y": 1170
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "15":
-    id: "15"
-    taskid: a550da7c-7d3b-4645-8738-dce7a71e3f0b
-    type: condition
-    task:
-      id: a550da7c-7d3b-4645-8738-dce7a71e3f0b
-      version: -1
-      name: Was there a result?
-      description: Determines if there was a result from the previous command to continue cloud enrichment.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "10"
-      "yes":
-      - "19"
-    separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: ASM.ExternalService
-            iscontext: true
+          operator: isNotEmpty
           right:
             value: {}
+      label: "yes"
     continueonerrortype: ""
+    id: "15"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "19"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Determines if there was a result from the previous command to continue
+        cloud enrichment.
+      id: 9cc9f303-da36-400b-83ed-f1bb106cbe04
+      iscommand: false
+      name: Was there a result?
+      type: condition
+      version: -1
+    taskid: 9cc9f303-da36-400b-83ed-f1bb106cbe04
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
@@ -222,42 +233,42 @@ tasks:
           "y": 640
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "16":
+    continueonerrortype: ""
     id: "16"
-    taskid: 4ec2a65b-0820-49bd-8d92-eed5e19509f6
-    type: regular
-    task:
-      id: 4ec2a65b-0820-49bd-8d92-eed5e19509f6
-      version: -1
-      name: Get external service information
-      description: Get service details according to the service ID.
-      script: Cortex Attack Surface Management|||asm-get-external-service
-      type: regular
-      iscommand: true
-      brand: Cortex Attack Surface Management
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
       - "15"
+    note: false
+    quietmode: 0
     scriptarguments:
       service_id:
         complex:
-          root: alert
           accessor: asmserviceid
+          root: alert
           transformers:
-          - operator: StripChars
-            args:
+          - args:
               chars:
                 value:
                   simple: '[\"]'
+            operator: StripChars
     separatecontext: false
-    continueonerrortype: ""
+    skipunavailable: true
+    task:
+      brand: Cortex Attack Surface Management
+      description: Get service details according to the service ID.
+      id: a1bbef47-dfa9-4e51-8be1-4d0d1d70c470
+      iscommand: true
+      name: Get external service information
+      script: Cortex Attack Surface Management|||asm-get-external-service
+      type: regular
+      version: -1
+    taskid: a1bbef47-dfa9-4e51-8be1-4d0d1d70c470
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -265,60 +276,61 @@ tasks:
           "y": 480
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "17":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Cortex Attack Surface Management
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
     id: "17"
-    taskid: 2018e442-e24d-446c-8e00-3bf2a8f28e21
-    type: condition
-    task:
-      id: 2018e442-e24d-446c-8e00-3bf2a8f28e21
-      version: -1
-      name: Is Cortex ASM enabled?
-      description: Determines if the "Cortex Attack Surface Management" integration instance is configured to continue with cloud enrichment.
-      type: condition
-      iscommand: false
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#default#':
       - "10"
       "yes":
       - "16"
+    note: false
+    quietmode: 0
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Cortex Attack Surface Management
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-            iscontext: true
-          right:
-            value: {}
-    continueonerrortype: ""
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Determines if the "Cortex Attack Surface Management" integration
+        instance is configured to continue with cloud enrichment.
+      id: 62302e49-c1c0-4c9d-8dff-d32b1502daf2
+      iscommand: false
+      name: Is Cortex ASM enabled?
+      type: condition
+      version: -1
+    taskid: 62302e49-c1c0-4c9d-8dff-d32b1502daf2
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
@@ -326,29 +338,17 @@ tasks:
           "y": 200
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "19":
+    continueonerrortype: ""
     id: "19"
-    taskid: adadb903-8fb7-4900-8ef1-dccb92ce4ede
-    type: regular
-    task:
-      id: adadb903-8fb7-4900-8ef1-dccb92ce4ede
-      version: -1
-      name: Look up project owners for service account
-      description: Parse a GCP service account email for the project name, then lookup project owners and add them to a list of potential service owners for ranking.
-      type: regular
-      iscommand: false
-      brand: ""
-      script: GetProjectOwners
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
       - "6"
+    note: false
+    quietmode: 0
     scriptarguments:
       external_service:
         complex:
@@ -356,39 +356,41 @@ tasks:
       owners:
         simple: ${alert.asmserviceownerunrankedraw}
     separatecontext: false
-    continueonerrortype: ""
+    skipunavailable: true
+    task:
+      brand: ""
+      description: Parse a GCP service account email for the project name, then lookup
+        project owners and add them to a list of potential service owners for ranking.
+      id: d99dfe0a-1433-4c4f-8bc3-44bb2c53c3f1
+      iscommand: false
+      name: Look up project owners for service account
+      script: GetProjectOwners
+      type: regular
+      version: -1
+    taskid: d99dfe0a-1433-4c4f-8bc3-44bb2c53c3f1
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
           "x": -50,
-          "y": 1005
+          "y": 825
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
+version: -1
 view: |-
   {
     "linkLabelsPosition": {
-      "15_10_#default#": 0.2,
+      "15_19_yes": 0.36,
       "17_10_#default#": 0.2,
       "9_10_#default#": 0.33
     },
     "paper": {
       "dimensions": {
-        "height": 1665,
-        "width": 680,
+        "height": 1385,
+        "width": 620,
         "x": -50,
         "y": -150
       }
     }
   }
-inputs: []
-outputs: []
-tests:
-- No tests (auto formatted)
-fromversion: 6.8.0

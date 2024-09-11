@@ -627,7 +627,6 @@ def main():
         final_owners = justify(rank(score(owners=normalized, asm_system_ids=asm_system_ids)))
 
         # write output to context
-        
         if final_owners:
             demisto.executeCommand("setAlert", {"asmserviceowner": final_owners})
             return_results(CommandResults(readable_output='Service owners ranked and written to asmserviceowner'))
