@@ -2,8 +2,9 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-from typing import Any, cast
+from typing import Any
 from datetime import datetime, timedelta
+from dateutil import parser
 import ipaddress
 
 import urllib3
@@ -14,6 +15,7 @@ urllib3.disable_warnings()
 DEFAULT_SEARCH_LIMIT = int(demisto.params().get('search_limit', 100))
 MAX_ALERTS = 100  # max alerts per fetch
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
+TIME_FORMAT_Z = "%Y-%m-%dT%H:%M:%SZ"
 V1_URL_SUFFIX = "/public_api/v1"
 V2_URL_SUFFIX = "/public_api/v2"
 PACK_VERSION = get_pack_version()
@@ -1624,10 +1626,23 @@ def domain_command(client: Client, args: dict[str, Any]) -> list[CommandResults]
     return command_results
 
 
+def reset_last_run_command() -> str:
+    """
+    Puts the reset flag inside integration context.
+    Returns:
+        (str): 'fetch-incidents was reset successfully'.
+    """
+    try:
+        demisto.setLastRun([])
+        return 'fetch-incidents was reset successfully.'
+    except DemistoException as e:
+        raise DemistoException(f'Error: fetch-incidents was not reset. Reason: {e}')
+
+
 def fetch_incidents(client: Client, max_fetch: int, last_run: dict[str, int],
                     first_fetch_time: Optional[int], severity: Optional[list],
-                    status: Optional[list], tags: Optional[str]
-                    ) -> tuple[dict[str, int], list[dict]]:
+                    status: Optional[list], tags: Optional[str], look_back: int = 0
+                    ) -> List[Any]:
     """
     This function will execute each interval (default is 1 minute).
 
@@ -1642,53 +1657,95 @@ def fetch_incidents(client: Client, max_fetch: int, last_run: dict[str, int],
         next_run: This will be last_run in the next fetch-incidents
         incidents: Incidents that will be created in Cortex XSOAR
     """
+    next_page_token = last_run.get('next_page_token')
+    xsoar_incidents = []
 
-    last_time_fetched = last_run.get('last_fetch', None)
+    start_xpanse_fetch_time, end_xpanse_fetch_time = get_fetch_run_time_range(
+        last_run=last_run, first_fetch=str(first_fetch_time), look_back=look_back, date_format=TIME_FORMAT_Z
+    )
 
-    last_time_fetched = first_fetch_time if last_time_fetched is None else int(last_time_fetched)
-    latest_created_time = cast(int, last_time_fetched)
+    # Create epoch timestamp for list_alerts_request()
+    parsed_time = parser.isoparse(start_xpanse_fetch_time)
+    look_back_epoch_time = int(parsed_time.timestamp() * 1000)
+    demisto.debug(f"CortexXpanse - last fetched alert timestamp with look back: {look_back_epoch_time}")
 
-    demisto.debug(f"CortexXpanse - last fetched alert timestamp: {str(last_time_fetched)}")
+    request_data: dict = {"request_data": {}}
+    # `server_creation_time` is used to reflect the most accurate timestamp of the creation of Xpanse alerts
+    filters = [
+        {'field': 'alert_source', 'operator': 'in', 'value': ['ASM']},
+        {'field': 'server_creation_time', 'operator': 'gte', 'value': look_back_epoch_time}
+    ]
 
-    incidents = []
+    optional_filters = {
+        "severity": severity,
+        "status": status,
+        "tags": tags.split(',') if tags else None
+    }
 
-    # server_creation_time is used to reflect the creation time of Xpanse alerts
-    filters = [{'field': 'alert_source', 'operator': 'in', 'value': ['ASM']}, {
-        'field': 'server_creation_time', 'operator': 'gte', 'value': latest_created_time + 1}]
-    if severity:
-        filters.append({"field": "severity", "operator": "in", "value": severity})
-    if status:
-        filters.append({"field": "status", "operator": "in", "value": status})
-    if tags:
-        filters.append({"field": "tags", "operator": "in", "value": tags.split(',')})
+    for field, value in optional_filters.items():
+        if value:
+            filters.append({"field": field, "operator": "in", "value": value})
 
-    request_data = {'request_data': {'filters': filters, 'search_from': 0,
-                                     'search_to': max_fetch, 'sort': {'field': 'server_creation_time', 'keyword': 'asc'}}}
+    if next_page_token:
+        request_data["request_data"].update({"next_page_token": next_page_token})
+
+    request_data["request_data"].update({
+        'filters': filters,
+        'search_from': 0,
+        'search_to': max_fetch + 1,  # Alerts indexed higher than this value are not returned in the final results set.
+        'use_page_token': True,
+        'sort': {'field': 'server_creation_time', 'keyword': 'asc'}
+    })
+
+    demisto.debug(f"CortexXpanse - Logger - request data: {request_data}")
 
     raw = client.list_alerts_request(request_data)
 
-    items = raw.get('reply', {}).get('alerts')
-    for item in items:
-        incident_created_time = item['local_insert_ts']  # local_insert_ts is the closest time to alert creation time in Xpanse.
-        incident = {
-            'name': item['name'],
-            'details': item['description'],
-            'occurred': timestamp_to_datestring(incident_created_time),
-            'rawJSON': json.dumps(item),
-            'severity': SEVERITY_DICT[item.get('severity', 'Low')]
+    next_page_token = raw.get('reply', {}).get('next_page_token')
+    alerts = raw.get('reply', {}).get('alerts')
+    if next_page_token:
+        alerts = sorted(alerts, key=lambda alert: alert['local_insert_ts'])  # Sort is not supported when using the use_page_token / next_page_token fields.  # noqa: E501
+
+    filtered_alerts = filter_incidents_by_duplicates_and_limit(
+        incidents_res=alerts, last_run=last_run, fetch_limit=(max_fetch + 1), id_field='alert_id'
+    )
+
+    for alert in filtered_alerts:
+        alert_created_time = datetime.fromtimestamp(alert.get('local_insert_ts') / 1000.0).strftime(TIME_FORMAT_Z)  # local_insert_ts is the closest time to alert creation time in Xpanse.  # noqa: E501
+
+        alert = {
+            'name': alert['name'],
+            'details': alert['description'],
+            'occurred': alert_created_time,  # occurred in XSOAR same time a Xpanse alert was created.
+            'rawJSON': json.dumps(alert),
+            'xpanse_alert_id': alert['alert_id'],
+            'severity': SEVERITY_DICT[alert.get('severity', 'Low')]
         }
+        xsoar_incidents.append(alert)
 
-        incidents.append(incident)
+    demisto.debug(f"CortexXpanse - Logger - Number of incidents: {len(xsoar_incidents)}")
+    if len(xsoar_incidents) > 0:
+        demisto.debug(f"CortexXpanse - Logger - Last fetched alert timestamp: {str(last_run.get('last_fetch', None))}")
+        alert_id_list = [alert['alert_id'] for alert in filtered_alerts]
+        demisto.debug(f"CortexXpanse - Logger - Xpanse alerts ingested: {alert_id_list}")
+        demisto.debug(f"CortexXpanse - Logger - Request data: {request_data}")
 
-        if incident_created_time > latest_created_time:
-            latest_created_time = incident_created_time
+    last_run = update_last_run_object(
+        last_run=last_run,
+        incidents=xsoar_incidents,
+        fetch_limit=max_fetch,
+        start_fetch_time=start_xpanse_fetch_time,
+        end_fetch_time=end_xpanse_fetch_time,
+        look_back=look_back,
+        created_time_field='occurred',
+        id_field='xpanse_alert_id',
+        date_format=TIME_FORMAT_Z
+    )
+    last_run.update({'next_page_token': next_page_token})
+    demisto.debug(f"CortexXpanse - Logger - last_run: {str(last_run)}")
+    demisto.setLastRun(last_run)
 
-    next_run = {'last_fetch': latest_created_time}
-
-    demisto.debug(f"CortexXpanse - Number of incidents: {len(incidents)}")
-    demisto.debug(f"CortexXpanse - Next run after incidents fetching: : {next_run}")
-
-    return next_run, incidents
+    return xsoar_incidents
 
 
 def test_module(client: Client, params: dict[str, Any], first_fetch_time: Optional[int]) -> None:
@@ -1713,11 +1770,16 @@ def test_module(client: Client, params: dict[str, Any], first_fetch_time: Option
             severity = params.get('severity')
             status = params.get('status')
             tags = params.get('tags')
+            look_back = int(params.get('look_back', 0))
             max_fetch = int(params.get('max_fetch', 10))
+
+            if look_back > 720:
+                raise DemistoException('The Look Back value is currently set too high. Please adjust it to 720 minutes or less.')
             fetch_incidents(
                 client=client,
                 max_fetch=max_fetch,
                 last_run={},
+                look_back=look_back,
                 first_fetch_time=first_fetch_time,
                 severity=severity,
                 status=status,
@@ -1751,6 +1813,7 @@ def main() -> None:
         severity = params.get('severity')
         status = params.get('status')
         tags = params.get('tags')
+        look_back = int(params.get('look_back', 0))
         max_fetch = int(params.get('max_fetch', 10))
         creds = params.get('credentials', {})
         api = creds.get('password', '')
@@ -1808,19 +1871,20 @@ def main() -> None:
 
         if command == 'test-module':
             test_module(client, params, first_fetch_timestamp)
-        if command == 'fetch-incidents':
-            next_run, incidents = fetch_incidents(
+        elif command == 'fetch-incidents':
+            incidents = fetch_incidents(
                 client=client,
                 max_fetch=max_fetch,
                 last_run=demisto.getLastRun(),
                 first_fetch_time=first_fetch_timestamp,
                 severity=severity,
                 status=status,
-                tags=tags
+                tags=tags,
+                look_back=look_back
             )
-
-            demisto.setLastRun(next_run)
             demisto.incidents(incidents)
+        elif command == 'asm-reset-last-run':
+            return_results(reset_last_run_command())
         elif command in commands:
             return_results(commands[command](client, args))
         else:

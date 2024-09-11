@@ -442,13 +442,13 @@ inputs:
   value:
     simple: "1"
   required: false
-  description: The duration for executing the polling (in minutes).
+  description: The duration for executing the polling (in seconds).
   playbookInputQuery:
 - key: Timeout
   value:
     simple: "8"
   required: false
-  description: The duration after which to stop polling and to resume the playbook. (in minutes)
+  description: The duration after which to stop polling and to resume the playbook. (in seconds)
   playbookInputQuery:
 - key: ReportFileType
   value: {}
