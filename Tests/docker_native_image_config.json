@@ -228,20 +228,6 @@
             "ignored_native_images": [
                 "native:8.6"
             ]
-        },
-        {
-            "id": "IBMSecurityVerify",
-            "reason": "CIAC-11186, This integration support only from python 3.11",
-            "ignored_native_images": [
-                "native:8.6"
-            ]
-        },
-        {
-            "id":"Gmail",
-            "reason":"CIAC-11080, This integration support only from python 3.11",
-            "ignored_native_images":[
-                "native:8.6"
-            ]
         }
     ],
     "flags_versions_mapping": {
