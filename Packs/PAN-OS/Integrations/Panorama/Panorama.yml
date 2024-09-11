@@ -5396,6 +5396,21 @@ script:
     - contextPath: Panorama.SecurityRule.Target
       description: The target firewall (Panorama instances).
       type: string
+    - contextPath: Panorama.SecurityRule.Category
+      description: The category of the rule.
+      type: string
+    - contextPath: Panorama.SecurityRule.LogForwarding
+      description: The log forwarding of the rule.
+      type: string
+    - contextPath: Panorama.SecurityRule.ProfileSetting
+      description: The profile setting of the rule.
+      type: string
+    - contextPath: Panorama.SecurityRule.SourceUser
+      description: The source user of the rule.
+      type: string
+    - contextPath: Panorama.SecurityRule.AuditComment
+      description: The audit comment of the rule.
+      type: string
     - contextPath: Panorama.SecurityRule.DeviceGroup
       description: The device group for the rule (Panorama instances).
       type: string

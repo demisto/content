@@ -9,13 +9,6 @@ from functools import partial
 import enum
 import html
 
-from typing import TYPE_CHECKING
-if TYPE_CHECKING:
-    from typing import TypedDict, NotRequired  # type: ignore[attr-defined]
-else:
-    TypedDict = type('TypedDict', (), {'__new__': lambda cls, **kw: kw})
-    NotRequired = list
-
 import panos.errors
 
 from panos.base import PanDevice, VersionedPanObject, Root, ENTRY, VersionedParamPath  # type: ignore
@@ -34,9 +27,14 @@ import shutil
 
 ''' IMPORTS '''
 import uuid
-from typing import Any, Dict, List, Optional, Tuple, Union, Callable, ValuesView, Iterator
+from typing import Tuple, Callable, ValuesView, Iterator, TYPE_CHECKING
 from urllib.parse import urlparse
 
+if TYPE_CHECKING:
+    from typing import TypedDict, NotRequired  # type: ignore[attr-defined]
+else:
+    TypedDict = type('TypedDict', (), {'__new__': lambda cls, **kw: kw})
+    NotRequired = list
 
 ''' GLOBALS '''
 URL = ''
@@ -99,7 +97,22 @@ SECURITY_RULE_ARGS = {
     'profile-setting': 'ProfileSetting',
     'audit-comment': 'AuditComment'
 }
-
+ELEM_TO_CONTEXT = {
+    'source': 'Source',
+    'destination': 'Destination',
+    'application': 'Application',
+    'action': 'Action',
+    'category': 'Category',
+    'description': 'Description',
+    'disabled': 'Disabled',
+    'target': 'Target',
+    'log-forwarding': 'LogForwarding',
+    'tag': 'Tags',
+    'profile-setting': 'ProfileSetting',
+    'source-user': 'SourceUser',
+    'service': 'Service',
+    'audit-comment': 'AuditComment'
+}
 PAN_OS_ERROR_DICT = {
     '1': 'Unknown command - The specific config or operational command is not recognized.',
     '2': 'Internal errors - Check with technical support when seeing these errors.',
@@ -231,7 +244,7 @@ class ExceptionCommandType(enum.Enum):
     ADD = 'set'
     EDIT = 'edit'
     DELETE = 'delete'
-    LIST = "get"
+    LIST = 'get'
 
 
 class QueryMap(TypedDict):
@@ -4071,7 +4084,7 @@ def panorama_edit_rule_items(rulename: str, element_to_change: str, element_valu
 
     rule_output = {
         'Name': rulename,
-        SECURITY_RULE_ARGS[element_to_change]: values
+        ELEM_TO_CONTEXT[element_to_change]: values
     }
     if DEVICE_GROUP:
         rule_output['DeviceGroup'] = DEVICE_GROUP
@@ -4127,7 +4140,7 @@ def panorama_edit_rule_command(args: dict):
     if element_to_change == 'target' and not DEVICE_GROUP:
         raise Exception('The target argument is relevant only for a Palo Alto Panorama instance.')
 
-    behaviour = args.get('behaviour') if 'behaviour' in args else 'replace'
+    behaviour = args.get('behaviour', 'replace')
     # in this case of profile-setting add is the same as replace
     behaviour = 'replace' if element_to_change == 'profile-setting' and behaviour == 'add' else behaviour
     if behaviour != 'replace':
@@ -4174,7 +4187,7 @@ def panorama_edit_rule_command(args: dict):
 
         rule_output = {
             'Name': rulename,
-            SECURITY_RULE_ARGS[element_to_change]: element_value
+            ELEM_TO_CONTEXT[element_to_change]: element_value
         }
         if DEVICE_GROUP:
             rule_output['DeviceGroup'] = DEVICE_GROUP
