@@ -1383,8 +1383,13 @@ def organize_search_body_host(client: Client, arg: Tuple, body: Dict):
         body["hosts"] = agentsIds
 
     elif arg[0] == "hostSetName":
-        hostSet = {"_id": client.get_host_set_information_request({"name": arg[1]}, None)["data"]["entries"][0]["_id"]}
-        body["host_set"] = hostSet
+        result = client.get_host_set_information_request({"name": arg[1]}, None)
+        entries = result.get("data", {}).get("entries", [])
+        if entries:
+            host_set = {"_id": entries[0].get("_id")}
+            body["host_set"] = host_set
+        else:
+            raise DemistoException("hostSetName is not valid.")
 
     elif arg[0] == "hostSet":
         hostSet = {"_id": int(arg[1])}
@@ -3120,9 +3125,9 @@ def fetch_incidents(client: Client, args: Dict[str, Any]) -> List:
 def run_polling_command(client, args, cmd, post_func, get_func, t):
     ScheduledCommand.raise_error_if_not_supported()
     interval_in_secs = int(args.get('interval_in_seconds', 60))
+    type_id = TABLE_POLLING_COMMANDS[t]['type']
     _, is_ready, item_id = post_func(client, args)
     if not is_ready:
-        type_id = TABLE_POLLING_COMMANDS[t]['type']
         readable_output = f"{TABLE_POLLING_COMMANDS[t]['message']}{item_id}" if type_id not in args else None
         if not args.get(type_id):
             args[type_id] = item_id
@@ -3134,6 +3139,8 @@ def run_polling_command(client, args, cmd, post_func, get_func, t):
         # result with scheduled_command only - no update to the war room
         return CommandResults(readable_output=readable_output, scheduled_command=scheduled_command)
 
+    if type_id not in args:
+        args[type_id] = item_id
     return get_func(client, args)
 
 
