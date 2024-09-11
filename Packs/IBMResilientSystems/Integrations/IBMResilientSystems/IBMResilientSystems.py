@@ -1705,19 +1705,13 @@ def delete_tasks_command(client: SimpleClient, args: dict) -> CommandResults:
     Deletes a single or multiple tasks.
     """
     task_ids: list = argToList(args.get("task_id"))
-    try:
-        response: dict = client.put("/tasks/delete", payload=task_ids)
-        demisto.debug(f"delete_tasks_command {response=}")
-        human_readable = (
-            f"Tasks with IDs {task_ids} were deleted successfully."
-            if response["success"]
-            else f"{response['message']}"
-        )
-    except SimpleHTTPException as e:
-        return CommandResults(
-            entry_type=EntryType.ERROR,
-            readable_output=f"Could not delete tasks with IDs: {task_ids}. Got error {e.response.text}",
-        )
+    response: dict = client.put("/tasks/delete", payload=task_ids)
+    demisto.debug(f"delete_tasks_command {response=}")
+    human_readable = (
+        f"Tasks with IDs {task_ids} were deleted successfully."
+        if response["success"]
+        else f"{response['message']}"
+    )
     demisto.debug(f"{response=}")
     return CommandResults(readable_output=human_readable)
 
@@ -1727,13 +1721,7 @@ def delete_task_members_command(client: SimpleClient, args: dict) -> CommandResu
     Deletes the members for a given task.
     """
     task_id = args.get("task_id")
-    try:
-        response = client.delete(f"/tasks/{task_id}/members")
-    except SimpleHTTPException as e:
-        return CommandResults(
-            entry_type=EntryType.ERROR,
-            readable_output=f"Could not retrieve instructions for task ID: {task_id}. Got error {e.response.text}",
-        )
+    response = client.delete(f"/tasks/{task_id}/members")
     demisto.debug(f"{response=}")
     return CommandResults(readable_output=response.get("content", ""))
 

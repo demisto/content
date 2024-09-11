@@ -11,6 +11,7 @@ import demistomock as demisto
 from CommonServerPython import DemistoException
 
 DEFAULT_MAX_FETCH = 1000
+TAG_TO_IBM = "FROM XSOAR"
 
 
 def dict_to_response(data, status=200):
@@ -144,13 +145,13 @@ def test_add_note(mocker):
     """
     mocker.patch.object(demisto, 'params', return_value={'server': 'example.com:80', 'org': 'example', 'proxy': True})
     mock_result = mocker.patch.object(MockClient, 'post')
-    expected_result = ('/incidents/1234/comments', {'text': {'format': 'text', 'content': 'This is a new note'}})
+    expected_result = ('/incidents/1234/comments', {'text': {'format': 'text', 'content': f'This is a new note\n{TAG_TO_IBM}'}})
     from IBMResilientSystems import add_note_command
 
-    output = add_note_command(MockClient, "1234", "This is a new note")
+    output = add_note_command(MockClient, "1234", "This is a new note", tag_to_ibm=TAG_TO_IBM)
 
     assert mock_result.call_args.args == expected_result
-    assert '1234' in output.get('HumanReadable')
+    assert '1234' in output.readable_output
 
 
 def test_add_incident_artifact(mocker):
@@ -193,7 +194,7 @@ def test_test_module(mocker):
 @pytest.mark.parametrize('fetch_time, expected_result', [
     ('2024-01-01T00:00:00Z', 'ok'),
     ('2024-01-01T00:00:00', 'ok'),
-    ('', 'ok'),
+    ('', 'fail'),
     ('2024/01/01 00:00:00', 'fail'),
     ('invalid-date', 'fail'),
 ])
@@ -216,25 +217,34 @@ def test_test_module_fetch_time(fetch_time, expected_result, mocker):
 
 
 @pytest.mark.parametrize("args, expected", [
-    ({}, {'filters': [{'conditions': []}], 'length': DEFAULT_MAX_FETCH}),  # Test without any filters or pagination params
+    ({}, {
+        'filters': [{'conditions': []}],
+        'sorts': [{'field_name': 'create_date', 'type': 'asc'}],
+        'length': DEFAULT_MAX_FETCH}),  # Test without any filters or pagination params
+
     ({'severity': 'Low'}, {
         'filters': [{
             'conditions': [{'field_name': 'severity_code', 'method': 'in', 'value': [50]}]
         }],
+        'sorts': [{'field_name': 'create_date', 'type': 'asc'}],
         'length': DEFAULT_MAX_FETCH
     }),
+
     ({'date-created-before': '2022-01-01T10:00:00Z'}, {
         'filters': [{
             'conditions': [{'field_name': 'create_date', 'method': 'lte', 'value': 1641024000000}]
         }],
+        'sorts': [{'field_name': 'create_date', 'type': 'asc'}],
         'length': DEFAULT_MAX_FETCH
     }),
+
     ({'page': 1, 'page_size': 10, 'last-modified-after': '2022-01-01T10:00:00Z'}, {
         'filters': [{'conditions': [{
             'field_name': 'inc_last_modified_date',
             'method': 'gte',
             'value': 1641024000000
         }]}],
+        'sorts': [{'field_name': 'create_date', 'type': 'asc'}],
         'start': 0,
         'length': 10
     })
@@ -258,7 +268,7 @@ def test_prepare_search_query_data(mocker, args, expected):
                 "user_id": 0,
                 "user_fname": "Demisto",
                 "user_lname": "Resilient",
-                "text": "<div class=\"rte\"><div><s>insecure?</s></div></div>",
+                "text": "insecure?",
                 "create_date": 1722424268280,
                 "modify_date": 1722424268280,
                 "children": [],
@@ -290,16 +300,21 @@ def test_prepare_search_query_data(mocker, args, expected):
                     "delete": True
                 }
             }],
-            [{"id": 0, "text": "insecure?", "create_date": "2024-07-31T14:11:08Z"}]
+            [{'create_date': '2024-07-31T14:11:08Z',
+              'created_by': 'Demisto Resilient',
+              'id': 0,
+              'modify_date': 1722424268280,
+              'text': 'insecure?'}]
         ),
         (
-            [{"id": 2, "text": "<div class=\"rte\"></div>", "create_date": 1722424253387}],
-            [{"id": 2, "text": "", "create_date": "2024-07-31T14:10:53Z"}]
-        ),
-        (
-            [{"id": 3, "text": "<div>note1</div><div>note2</div>", "create_date": 1722424253387}],
-            [{"id": 3, "text": "note1note2", "create_date": "2024-07-31T14:10:53Z"}]
-        ),
+            [{"id": 2, "text": " ", "create_date": 1722424253387}],
+            [{'create_date': '2024-07-31T14:10:53Z',
+              'created_by': ' ',
+              'id': 2,
+              'modify_date': None,
+              'text': ' '}]
+        )
+
     ]
 )
 def test_prettify_incident_notes(mocker, input_notes, expected_output):
@@ -348,11 +363,10 @@ def test_search_incidents(mocker, args):
     request_data = request.call_args.kwargs['data']
 
     assert request_url.endswith(
-        f"/rest/orgs/0/incidents/query_paged?return_level={args.get('return_level', DEFAULT_RETURN_LEVEL)}"
+        f"/rest/orgs/0/incidents/query_paged?text_content_output_format=objects_convert_text&return_level={args.get('return_level', DEFAULT_RETURN_LEVEL)}"
     )
     assert request_headers['content-type'] == 'application/json'
-    assert request_data == ('{"filters": [{"conditions": [{"field_name": "create_date", "method": "gte", "value": '
-                            '1577865600000}]}], "length": 10, "start": 0}')
+    assert request_data == ('{"filters": [{"conditions": [{"field_name": "create_date", "method": "gte", "value": 1577865600000}]}], "sorts": [{"field_name": "create_date", "type": "asc"}], "length": 10, "start": 0}')
 
 
 @pytest.mark.parametrize('args, processed_payload', [
@@ -370,16 +384,28 @@ def test_search_incidents(mocker, args):
                      {"field": "incident_type_ids", "old_value": {"ids": [21, 19, 17, 6]},
                       "new_value": {"ids": [21, 19, 17, 6, 19]}},
                      {"field": "nist_attack_vectors", "old_value": {"ids": [4, 2]}, "new_value": {"ids": [4, 2, 2]}},
-                     {"field": "resolution_id", "old_value": {"id": 9}, "new_value": {"id": 9}}, {"field": "resolution_summary",
-                                                                                                  "old_value": {
-                                                                                                      "textarea": {"format": "html",
-                                                                                                                   "content": "This is a test incident."}},
-                                                                                                  "new_value": {
-                                                                                                      "textarea": {"format": "html",
-                                                                                                                   "content": "This is a test incident."}}},
-                     {"field": "description", "old_value": {"textarea": {"format": "html",
-                                                                         "content": "<div class=\"rte\"><div>1111</div><div>2222</div><div>3333</div></div>"}},
-                      "new_value": {"textarea": {"format": "html", "content": "Test incident"}}},
+                     {"field": "resolution_id", "old_value": {"id": 9}, "new_value": {"id": 9}},
+                     {"field": "resolution_summary",
+                      "old_value": {
+                          "textarea": {
+                              "format": "html",
+                              "content": "This is a test incident."
+                          }},
+                      "new_value": {
+                          "textarea": {
+                              "format": "html",
+                              "content": "This is a test incident."
+                          }}
+                      },
+                     {"field": "description",
+                      "old_value": {
+                          "textarea": {
+                              "format": "html",
+                              "content": "1111 2222 3333"
+                          }
+                      },
+                      "new_value": {
+                          "textarea": {"format": "html", "content": "Test incident"}}},
                      {"field": "name", "old_value": {"text": "incident_name"}, "new_value": {"text": "incident-0000"}}]}
     ),
 ])
@@ -422,7 +448,11 @@ def test_update_incident(mocker):
 
 @pytest.mark.parametrize('incident_id, expected_human_readable', [
     ('1000',
-     '### IBM QRadar SOAR incident ID 1000\n|Id|Name|Description|NistAttackVectors|Phase|Resolution|ResolutionSummary|Owner|CreatedDate|DateOccurred|DiscoveredDate|DueDate|NegativePr|Confirmed|ExposureType|Severity|Reporter|\n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n| 1000 | incident_name | 1111<br>2222<br>3333 | E-mail<br>Attrition<br> |  | Not an Issue | This is a test incident. |  | 2024-07-29T14:32:36Z |  | 2024-07-29T14:31:57Z |  | true | true | ExternalParty | 6 |  |'),
+     '### IBM QRadar SOAR incident ID 1000\n|Id|Name|Description|NistAttackVectors|Phase|Resolution|ResolutionSummary|Owner'
+     '|CreatedDate|DateOccurred|DiscoveredDate|DueDate|NegativePr|Confirmed|ExposureType|Severity|Reporter|\n'
+     '|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n| 1000 | incident_name | 1111 2222 3333 | '
+     'E-mail<br>Attrition<br> |  | Not an Issue | This is a test incident. |  | 2024-07-29T14:32:36Z |  | 2024-07-29T14:31:57Z '
+     '|  | true | true | ExternalParty | 6 |  |'),
 ])
 def test_get_incident_command(mocker, incident_id, expected_human_readable):
     mocker.patch.object(demisto, 'params', return_value={
@@ -506,46 +536,37 @@ def test_list_scripts_command(mocker, script_id: str, expected_outputs: list, ex
     assert command_result.outputs == expected_outputs
 
 
-@pytest.mark.parametrize('file_entry_id', ['VALID_ENTRY_ID', 'INVALID_ENTRY_ID'])
+@pytest.mark.parametrize('file_entry_id', ['ENTRY_ID'])
 def test_upload_incident_attachment(mocker, file_entry_id: str):
 
     mocker.patch.object(demisto, 'params', return_value={
         'server': 'example.com:80', 'org': 'example', 'proxy': True
     })
     from IBMResilientSystems import SimpleClient, upload_incident_attachment_command
-    from CommonServerPython import EntryType
     client = SimpleClient()
     client.org_id = 0
     response = {'status_code': 200}
     expected_output = "File was uploaded successfully to 1000."
-    expected_error_output = f"Could not find a file with entry ID: {file_entry_id}"
 
     def mock_get_file_path(entry_id):  # noqa: F811
-        if entry_id == 'VALID_ENTRY_ID':
+        if entry_id == 'ENTRY_ID':
             return {'path': '/path/to/file', 'name': 'filename.txt'}
-        elif entry_id == 'INVALID_ENTRY_ID':
-            raise ValueError("Invalid file path")
-        return None
+
     mocker.patch.object(demisto, 'getFilePath', side_effect=mock_get_file_path)
     post_attachment_request = mocker.patch.object(SimpleClient, 'post_attachment', return_value=response)
 
     args = {'entry_id': file_entry_id, 'incident_id': 1000}
-    result = upload_incident_attachment_command(SimpleClient(), args)
+    result = upload_incident_attachment_command(SimpleClient(), args, tag_to_ibm="FROM XSOAR")
 
-    if file_entry_id == 'VALID_ENTRY_ID':
-        assert result.readable_output == expected_output
-        post_attachment_request.assert_called_once_with(
-            uri=f"/incidents/{args['incident_id']}/attachments",
-            filepath='/path/to/file',
-            filename='filename.txt'
-        )
-    else:
-        assert result.entry_type == EntryType.ERROR
-        assert result.readable_output == expected_error_output
-        post_attachment_request.assert_not_called()
+    assert result.readable_output == expected_output
+    post_attachment_request.assert_called_once_with(
+        uri=f"/incidents/{args['incident_id']}/attachments",
+        filepath='/path/to/file',
+        filename=f'filename_{TAG_TO_IBM}.txt'
+    )
 
 
-def test_delete_incidents_command(mocker, ):
+def test_delete_incidents_command(mocker):
     mocker.patch.object(demisto, 'params', return_value={
         'server': 'example.com:80', 'org': 'example', 'proxy': True
     })
@@ -563,6 +584,19 @@ def test_delete_incidents_command(mocker, ):
     delete_incident_request.assert_called_once_with("/incidents/delete", payload=incident_ids)
 
 
+def test_list_incident_notes_command(mocker):
+    mocker.patch.object(demisto, 'params', return_value={
+        'server': 'example.com:80', 'org': 'example', 'proxy': True
+    })
+    from IBMResilientSystems import SimpleClient, list_incident_notes_command
+
+    client = SimpleClient()
+    client.org_id = 0
+    
+    get_incident_notes_request = mocker.patch.object(SimpleClient, 'get', return_value=load_test_data('./test_data/test_get_incident_notes_reponse.json'))
+    list_incident_notes_command(client, {"incident_id": "2000"})
+
+    get_incident_notes_request.assert_called_once_with(f"/incidents/2000/comments?text_content_output_format=objects_convert_text")
 
 def test_fetch_incidents(mocker):
     # TODO

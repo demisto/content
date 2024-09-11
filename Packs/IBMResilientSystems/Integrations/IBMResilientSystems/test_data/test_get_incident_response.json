@@ -34,7 +34,7 @@
     "tasks": null,
     "artifacts": null,
     "name": "incident_name",
-    "description": "<div class=\"rte\"><div>1111</div><div>2222</div><div>3333</div></div>",
+    "description": "1111 2222 3333",
     "phase_id": 1002,
     "inc_training": false,
     "vers": 19,

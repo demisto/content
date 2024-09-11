@@ -21,21 +21,15 @@ Case management that enables visibility across your tools for continual IR impro
     | Incident type |  | False |
     | Fetch incidents |  | False |
     | Fetch closed incidents |  | False |
-    | First fetch timestamp (YYYY-MM-DDTHH:MM:SSZ). For example: 2020-02-02T19:00:00Z |  | False |
+    | Fetch notes |  |  |
+    | Fetch tasks |  |  |
+    | First fetch timestamp (YYYY-MM-DDTHH:MM:SSZ). For example: 2020-02-02T19:00:00Z |  | True |
     | Maximum incidents to fetch. | Maximum number of incidents per fetch. The maximum is 1000. | False |
     | Incident Mirroring Direction |  | False |
     | Close Mirrored XSOAR Incidents | When selected, closing the IBM Resilient incident with a 'Closed' status, will close the Cortex XSOAR incident. | False |
     | Close Mirrored IBM Resilient Incidents | When selected, closing the Cortex XSOAR incident will close the incident in IBM Resilient | False |
-    | Mirror notes |  |  |
-    | Note tag from IBM Qradar SOAR | Add this tag to an entry to mirror it as a note from IBM Qradar SOAR. | False |
-    | Note tag to IBM QRadar SOAR | Add this tag to an entry to mirror it as a note to IBM Qradar SOAR. | False |
-    | Mirror tasks |  |  |
-    | Task tag from IBM Qradar SOAR | Add this tag to an entry to mirror it as a task from IBM Qradar SOAR. | False |
-    | Task tag to IBM QRadar SOAR | Add this tag to an entry to mirror it as a task to IBM Qradar SOAR. | False |
-    | Mirror attachments |  |  |
-    | Attachment tag from IBM Qradar SOAR | Add this tag to an entry to mirror it as a task from IBM Qradar SOAR. | False |
-    | Attachment tag to IBM QRadar SOAR | Add this tag to an entry to mirror it as an attachment to IBM Qradar SOAR. | False |
-    | Mirror artifacts |  |  |
+    | Tag from IBM Qradar SOAR | Add this tag to an entry to mirror it from IBM Qradar SOAR. | False |
+    | Tag to IBM QRadar SOAR | Add this tag to an entry to mirror it as to IBM Qradar SOAR. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -887,6 +881,145 @@ Add an artifact to an incident.
 #### Human Readable Output
 
 >The artifact was added successfully to incident 1234
+### rs-delete-tasks
+
+***
+Deletes a specified list of tasks. Note that only custom tasks can be deleted.
+
+#### Base Command
+
+`rs-delete-tasks`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| task_ids | A comma-separated list of task IDs to be deleted. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### rs-delete-incidents
+
+***
+Delete multiple incidents.
+
+#### Base Command
+
+`rs-delete-incidents`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| incident_ids | A comma-separated list of incident IDs to be deleted. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### rs-list-scripts
+
+***
+Retrieves the specified script's information or a list of all organization's scripts.
+
+#### Base Command
+
+`rs-list-scripts`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| script_id | Internal ID/name of the script. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Resilient.Scripts | Dictionary | Retrieved script or list of scripts with metadata. | 
+
+### rs-list-tasks
+
+***
+Gets an array of open tasks to which the current user is assigned.
+
+#### Base Command
+
+`rs-list-tasks`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Resilient.Tasks | Dictionary | List of open tasks. | 
+
+### rs-update-task
+
+***
+Update an incident's task fields.
+
+#### Base Command
+
+`rs-update-task`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| task_id | ID of task to update. | Required | 
+| name | Task name. Technically required, copy original task name if no changes are desired. | Required | 
+| owner_id | User ID of the new owner. | Optional | 
+| due_date | Task due date in ISO format e.g. "2020-02-02T19:00:00Z. Empty date indicates that the task has no assigned due date. | Optional | 
+| phase | The phase to which this task belongs. Possible values are: Initial, Engage, Detect/Analyze, Respond, Post-Incident, Custom, Complete. | Optional | 
+| status | Changing the status field, completes or re-openes the task. Possible values are: Open, Completed. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+### rs-get-task-members
+
+***
+Get the members of a task. Private tasks will have the returned "members" property set. Non-private tasks will have a null "members" property.
+
+#### Base Command
+
+`rs-get-task-members`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| task_id | A comma-separated list of task IDs to be deleted. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Resilient.Task | Dictionary | Task members. | 
+
+### rs-upload-incident-attachment
+
+***
+Upload an attachment for an incident.
+
+#### Base Command
+
+`rs-upload-incident-attachment`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| incident_id | Incident ID to update. | Required | 
+| entry_id | EntryID of the file to upload. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
 ### rs-update-incident-note
 
 ***
@@ -926,28 +1059,6 @@ Gets incident attachment's name and contents as a file by its ID.
 #### Context Output
 
 There is no context output for this command.
-### rs-execute-remote-script
-
-***
-Execute a custom script on the IBM Resilient platform.
-
-#### Base Command
-
-`rs-execute-remote-script`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| incident_id | The incident ID to execute the script for. | Required | 
-| script_id | Remote ID of the script to execute. | Required | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Resilient.RemoteScriptExecution | Dictionary | Script execution results. | 
-
 ### rs-delete-task-members
 
 ***
@@ -987,165 +1098,21 @@ Get the task's instructions.
 | --- | --- | --- |
 | Resilient.Task | Dictionary | Task instructions. | 
 
-### rs-list-tasks
+### rs-add-custom-incident-task
 
 ***
-Gets an array of open tasks to which the current user is assigned.
+Add a custom task to the incident.
 
 #### Base Command
 
-`rs-list-tasks`
-
-#### Input
-
-There are no input arguments for this command.
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Resilient.Tasks | Dictionary | List of open tasks. | 
-
-### rs-delete-incidents
-
-***
-Delete multiple incidents.
-
-#### Base Command
-
-`rs-delete-incidents`
+`rs-add-custom-incident-task`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| incident_ids | A comma-separated list of incident IDs to be deleted. | Required | 
-
-#### Context Output
-
-There is no context output for this command.
-### rs-get-task-members
-
-***
-Get the members of a task. Private tasks will have the returned "members" property set. Non-private tasks will have a null "members" property.
-
-#### Base Command
-
-`rs-get-task-members`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| task_id | A comma-separated list of task IDs to be deleted. | Required | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Resilient.Task | Dictionary | Task members. | 
-
-### rs-list-scripts
-
-***
-Retrieves the specified script's information or a list of all organization's scripts.
-
-#### Base Command
-
-`rs-list-scripts`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| script_id | Internal ID/name of the script. | Optional | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Resilient.Scripts | Dictionary | Retrieved script or list of scripts with metadata. | 
-
-### rs-update-task
-
-***
-Update an incident's task fields.
-
-#### Base Command
-
-`rs-update-task`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| task_id | ID of task to update. | Required | 
-| name | Task name. Technically required, copy original task name if no changes are desired. | Required | 
-| owner_id | User ID of the new owner. | Optional | 
-| due_date | Task due date in ISO format e.g. "2020-02-02T19:00:00Z. Empty date indicates that the task has no assigned due date. | Optional | 
-| phase | The phase to which this task belongs. Possible values are: Initial, Engage, Detect/Analyze, Respond, Post-Incident, Custom, Complete. | Optional | 
-| status | Changing the status field, completes or re-openes the task. Possible values are: Open, Completed. | Optional | 
-
-#### Context Output
-
-There is no context output for this command.
-### rs-add-custom-task
-
-***
-Adds a custom task to the incident.
-
-#### Base Command
-
-`rs-add-custom-task`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| incident_id | The ID of the incident to which this task belongs. | Required | 
-| name | The name of the task. | Optional | 
-| owner_id | The owner ID of the task (ID as appears in IBM QRadar SOAR). Leave empty if the task has no owner. | Optional | 
-| description | The description of the task. | Required | 
-| instructions | Textual instructions for the task. This will override the default instructions for the task. | Optional | 
-| phase | The phase to which this task belongs. Possible values are: Initial, Engage, Detect/Analyze, Respond, Post-Incident, Custom, Complete. Default is Initial. | Required | 
-| due_date | Task due date in ISO format e.g. "2020-02-02T19:00:00Z. Empty date indicates that the task has no assigned due date. | Optional | 
-
-#### Context Output
-
-There is no context output for this command.
-### rs-upload-incident-attachment
-
-***
-Upload an attachment for an incident.
-
-#### Base Command
-
-`rs-upload-incident-attachment`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| incident_id | Incident ID to update. | Required | 
-| entry_id | EntryID of the file to upload. | Required | 
-
-#### Context Output
-
-There is no context output for this command.
-### rs-delete-tasks
-
-***
-Deletes a specified list of tasks. Note that only custom tasks can be deleted.
-
-#### Base Command
-
-`rs-delete-tasks`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| task_ids | A comma-separated list of task IDs to be deleted. | Required | 
+| incident_id | Incident ID to add a custom task to. | Required | 
+| Instructions | Task instructions text. | Required | 
 
 #### Context Output
 
@@ -1171,22 +1138,3 @@ Gets all of the top-level comments for an incident.
 | --- | --- | --- |
 | Resilient.IncidentNotes | Dictionary | Top-level comments for incident. | 
 
-### rs-add-custom-incident-task
-
-***
-Add a custom task to the incident.
-
-#### Base Command
-
-`rs-add-custom-incident-task`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| incident_id | Incident ID to add a custom task to. | Required | 
-| Instructions | Task instructions text. | Required | 
-
-#### Context Output
-
-There is no context output for this command.
