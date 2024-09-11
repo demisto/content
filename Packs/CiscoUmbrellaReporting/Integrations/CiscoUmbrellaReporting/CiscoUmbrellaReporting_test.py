@@ -347,7 +347,7 @@ def test_get_activity_by_dns_traffic_type_command(mocker, raw_response,
         get_activity_by_traffic_type_command(client, args)
     assert e.value.args[0] == ('Invalid optional parameter is selected for traffic type dns.\nSupported optional '
                                'parameters for dns traffic type are: traffic_type, limit, from, to, offset,'
-                               ' domains, ip, verdict, threats, threat_types, identity_types, page, page_size.')
+                               ' domains, ip, verdict, threats, threat_types, identity_types, page, page_size, categories.')
 
 
 @pytest.mark.parametrize('raw_response, expected', [(ACTIVITY_DNS_LIST_RESPONSE, ACTIVITY_DNS_LIST_RESPONSE)])
@@ -396,7 +396,7 @@ def test_get_activity_proxy_by_traffic_type(mocker, raw_response, expected):
     assert e.value.args[0] == ('Invalid optional parameter is selected for traffic type proxy.\nSupported optional '
                                'parameters for proxy traffic type are: traffic_type, limit, from, to, offset, domains,'
                                ' ip, verdict, threats, threat_types, urls, ports, identity_types, file_name,'
-                               ' amp_disposition, page, page_size.')
+                               ' amp_disposition, page, page_size, categories.')
 
 
 @pytest.mark.parametrize('raw_response, expected', [(ACTIVITY_DNS_LIST_RESPONSE, ACTIVITY_DNS_LIST_RESPONSE)])
@@ -444,7 +444,7 @@ def test_get_activity_ip_by_traffic_type(mocker, raw_response, expected):
         get_activity_by_traffic_type_command(client, args)
     assert e.value.args[0] == ('Invalid optional parameter is selected for traffic type ip.\nSupported optional'
                                ' parameters for ip traffic type are: traffic_type, limit, from, to, offset, ip, ports,'
-                               ' identity_types, verdict, page, page_size.')
+                               ' identity_types, verdict, page, page_size, categories.')
 
 
 @pytest.mark.parametrize('raw_response, expected', [(ACTIVITY_FIREWALL_LIST_RESPONSE, ACTIVITY_FIREWALL_LIST_RESPONSE)])
@@ -665,7 +665,7 @@ def test_get_category_summary_list(mocker, raw_response, expected):
     assert e.value.args[0] == ('Invalid optional parameter is selected for summary type category.\nSupported '
                                'optional parameters for category summary type are: summary_type, limit, from, to,'
                                ' offset, domains, urls, ip, identity_types, verdict, file_name, threats, threat_types,'
-                               ' amp_disposition, page, page_size.')
+                               ' amp_disposition, page, page_size, categories.')
 
 
 @pytest.mark.parametrize('raw_response, expected', [(DESTINATION_SUMMARY_LIST_RESPONSE,
@@ -709,7 +709,7 @@ def test_get_destination_summary_list(mocker, raw_response, expected):
     assert e.value.args[0] == ('Invalid optional parameter is selected for summary type destination.\nSupported'
                                ' optional parameters for destination summary type are: summary_type, limit, from,'
                                ' to, offset, domains, urls, ip, identity_types, verdict, file_name, threats,'
-                               ' threat_types, amp_disposition, page, page_size.')
+                               ' threat_types, amp_disposition, page, page_size, categories.')
 
 
 @pytest.mark.parametrize('raw_response, expected', [(DESTINATION_SUMMARY_LIST_RESPONSE,
@@ -1023,7 +1023,8 @@ def test_create_cisco_umbrella_args():
         'verdict': None,
         'threats': None,
         'signatures': None,
-        'sha256': None
+        'sha256': None,
+        'categories': []
     }
     result = create_cisco_umbrella_args(50, 1, args)
     assert result == expected_output

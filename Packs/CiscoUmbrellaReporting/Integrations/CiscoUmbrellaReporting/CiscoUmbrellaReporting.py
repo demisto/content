@@ -21,6 +21,7 @@ IP_PARAM = 'ip'
 DOMAIN_PARAM = 'domains'
 URL_PARAM = 'urls'
 SHA256_PARAM = 'sha256'
+CATEGORIES_PARAM = 'categories'
 INTRUSION_ACTION = 'intrusion_action'
 DATE_TIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 PAGE_NUMBER_ERROR_MSG = 'Invalid Input Error: page number should be greater than zero.'
@@ -31,16 +32,16 @@ INVALID_CREDENTIALS_ERROR_MSG = 'Authorization Error: The provided credentials f
 
 ACTIVITY_TRAFFIC_TYPE_DICT = {
     "dns": ["traffic_type", "limit", "from", "to", "offset", "domains", "ip", "verdict",
-            "threats", "threat_types", "identity_types", "page", "page_size"],
+            "threats", "threat_types", "identity_types", "page", "page_size", "categories"],
     "proxy": ["traffic_type", "limit", "from", "to", "offset", "domains",
               "ip", "verdict", "threats", "threat_types", "urls", "ports",
-              "identity_types", "file_name", "amp_disposition", "page", "page_size"],
+              "identity_types", "file_name", "amp_disposition", "page", "page_size", "categories"],
     "firewall": ["traffic_type", "limit", "from", "to", "offset", "ip", "ports", "verdict",
                  "page", "page_size"],
     "intrusion": ["traffic_type", "limit", "from", "to", "offset", "ip", "ports",
                   "signatures", "intrusion_action", "page", "page_size"],
     "ip": ["traffic_type", "limit", "from", "to", "offset", "ip", "ports", "identity_types",
-           "verdict", "page", "page_size"],
+           "verdict", "page", "page_size", "categories"],
     "amp": ["traffic_type", "limit", "from", "to", "offset", "amp_disposition", "sha256",
             "page", "page_size"]
 }
@@ -48,13 +49,13 @@ ACTIVITY_TRAFFIC_TYPE_DICT = {
 SUMMARY_TYPE_DICT = {
     "all": ["summary_type", "limit", "from", "to", "offset", "domains", "urls", "ip",
             "identity_types", "verdict", "file_name", "threats",
-            "threat_types", "amp_disposition", "page", "page_size", "ports"],
+            "threat_types", "amp_disposition", "page", "page_size", "ports", "categories"],
     "category": ["summary_type", "limit", "from", "to", "offset", "domains", "urls", "ip",
                  "identity_types", "verdict", "file_name", "threats",
-                 "threat_types", "amp_disposition", "page", "page_size"],
+                 "threat_types", "amp_disposition", "page", "page_size", "categories"],
     "destination": ["summary_type", "limit", "from", "to", "offset", "domains", "urls", "ip",
                     "identity_types", "verdict", "file_name", "threats",
-                    "threat_types", "amp_disposition", "page", "page_size"],
+                    "threat_types", "amp_disposition", "page", "page_size", "categories"],
     "intrusion_rule": ["summary_type", "limit", "from", "to", "offset", "signatures", "ip",
                        "identity_types", "intrusion_action", "ports", "page",
                        "page_size"]
@@ -227,6 +228,13 @@ def check_valid_indicator_value(indicator_type: str,
             if intrusion not in ["would_block", "blocked", "detected"]:
                 raise ValueError("Invalid input Error: supported values for "
                                  "intrusion_action are: 'would_block', 'blocked' and 'detected'.")
+
+    if indicator_type == CATEGORIES_PARAM:
+        categories = argToList(indicator_value)
+        for category in categories:
+            if not category.isdigit():
+                raise ValueError(
+                    f'Invalid input Error: Categories argument is not a valid list of integers: {indicator_value}')
 
     return True
 
@@ -863,6 +871,8 @@ def create_cisco_umbrella_args(limit: Optional[int], offset: Optional[int], args
         check_valid_indicator_value('urls', urls)
     if intrusion_action := args.get('intrusion_action'):
         check_valid_indicator_value('intrusion_action', intrusion_action)
+    if categories := args.get('categories'):
+        check_valid_indicator_value('categories', categories)
 
     max_limit = arg_to_number(args.get('limit', DEFAULT_PAGE_SIZE), arg_name='limit')
 
@@ -883,6 +893,7 @@ def create_cisco_umbrella_args(limit: Optional[int], offset: Optional[int], args
     cisco_umbrella_args['threats'] = args.get('threats')
     cisco_umbrella_args['signatures'] = args.get('signatures')
     cisco_umbrella_args['sha256'] = sha256
+    cisco_umbrella_args['categories'] = argToList(categories)
 
     return cisco_umbrella_args
 
