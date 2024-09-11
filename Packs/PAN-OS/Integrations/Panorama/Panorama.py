@@ -107,6 +107,7 @@ ELEM_TO_CONTEXT = {
     'disabled': 'Disabled',
     'target': 'Target',
     'log-forwarding': 'LogForwarding',
+    'log-setting': 'LogForwarding',
     'tag': 'Tags',
     'profile-setting': 'ProfileSetting',
     'source-user': 'SourceUser',
