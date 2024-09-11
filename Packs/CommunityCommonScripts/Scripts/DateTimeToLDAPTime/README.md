@@ -1,4 +1,4 @@
-Converts the given time to an LDAP timestamp
+Converts the given time to a LDAP timestamp
 
 ## Script Data
 
