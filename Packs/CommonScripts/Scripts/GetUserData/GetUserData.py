@@ -9,7 +9,7 @@ class Modules:
     def __init__(self, modules: dict[str, Any]):
         self.modules_context = modules
         self._enabled_brands = {
-            module.get("brand", "")
+            module.get("brand")
             for module in self.modules_context.values()
             if module.get("state") == "active"
         }
@@ -122,37 +122,51 @@ def prepare_human_readable(
     return result
 
 
-def get_output_key(output_key: str, outputs: dict[str, Any]) -> str:
+def get_output_key(output_key: str, raw_context: dict[str, Any]) -> str:
     """
-    Retrieves the full output key from the outputs dictionary.
+    Retrieves the full output key from the raw_context dictionary.
 
-    This function searches for the output key in the outputs dictionary. If an exact match is not found,
+    This function searches for the output key in the raw_context dictionary. If an exact match is not found,
     it looks for a key that starts with the given output_key followed by an opening parenthesis.
 
     Args:
         output_key (str): The base output key to search for.
-        outputs (dict[str, Any]): The dictionary containing the outputs.
+        raw_context (dict[str, Any]): The dictionary containing the raw_context.
 
     Returns:
         str: The full output key if found, otherwise an empty string.
+
+    Example:
+        raw_context = {
+            "Account(val.ID == obj.ID)": [
+                {
+                    "Username": "john.doe",
+                    "Email": "john.doe@example.com",
+                    "DisplayName": "John Doe"
+                }
+            ]
+        }
+        output_key = "Account"
+        result = get_outputs(output_key, raw_context)
+        # result will be: "Account(val.Username == obj.Username)"
     """
     full_output_key = ""
-    if outputs:
-        if output_key in outputs:
+    if raw_context:
+        if output_key in raw_context:
             full_output_key = output_key
         else:
-            for key in outputs:
+            for key in raw_context:
                 if key.startswith(f"{output_key}("):
                     full_output_key = key
                     break
         if not full_output_key:
             demisto.debug(
-                f"Output key {output_key} not found in entry context keys: {list(outputs.keys())}"
+                f"Output key {output_key} not found in entry context keys: {list(raw_context.keys())}"
             )
     return full_output_key
 
 
-def get_outputs(raw_context: dict[str, Any], output_key: str) -> dict[str, Any]:
+def get_outputs(output_key: str, raw_context: dict[str, Any]) -> dict[str, Any]:
     """
     Retrieves the output context for a given output key from the raw context.
 
@@ -161,17 +175,36 @@ def get_outputs(raw_context: dict[str, Any], output_key: str) -> dict[str, Any]:
     If the context is a list, it returns the first item.
 
     Args:
-        raw_context (dict[str, Any]): The raw context dictionary to search in.
         output_key (str): The base output key to search for.
+        raw_context (dict[str, Any]): The raw context dictionary to search in.
 
     Returns:
         dict[str, Any]: The extracted context for the given output key,
         or an empty dictionary if not found.
+
+    Example:
+        raw_context = {
+            "Account(val.Username == obj.Username)": [
+                {
+                    "Username": "john.doe",
+                    "Email": "john.doe@example.com",
+                    "DisplayName": "John Doe"
+                }
+            ]
+        }
+        output_key = "Account(val.Username == obj.Username)"
+        result = get_outputs(output_key, raw_context)
+        # result will be:
+        # {
+        #     "Username": "john.doe",
+        #     "Email": "john.doe@example.com",
+        #     "DisplayName": "John Doe"
+        # }
+
     """
-    output_key = get_output_key(output_key, raw_context)
     context = {}
     if raw_context and output_key:
-        context = raw_context[output_key]
+        context = raw_context.get(output_key, {})
         if isinstance(context, list):
             context = context[0]
 
@@ -236,7 +269,7 @@ def run_execute_command(
             prepare_human_readable(command_name, args, get_error(res), is_error=True)
         )
     human_readable = "\n".join([entry.get("HumanReadable", "") for entry in res])
-    entry_context = [entry.get("EntryContext", "") for entry in res]
+    entry_context = [entry.get("EntryContext", {}) for entry in res]
     demisto.debug(f"Finished executing command: {command_name}")
     return entry_context, human_readable, errors_command_results
 
@@ -245,7 +278,6 @@ def identityiq_search_identities_command(
     user_id: str, user_email: str
 ) -> tuple[list[CommandResults], dict[str, Any]]:
     command_name = "identityiq-search-identities"
-    output_key = "IdentityIQ.Identity"
     args = {"id": user_id, "email": user_email}
     readable_outputs_list = []
 
@@ -256,7 +288,8 @@ def identityiq_search_identities_command(
     readable_outputs_list.extend(
         prepare_human_readable(command_name, args, human_readable)
     )
-    outputs = get_outputs(entry_context[0], output_key)
+    output_key = get_output_key("IdentityIQ.Identity", entry_context[0])
+    outputs = get_outputs(output_key, entry_context[0])
     account_output = create_account(
         id=outputs.get("id"),
         username=outputs.get("userName"),
@@ -272,7 +305,6 @@ def identitynow_get_accounts_command(
     user_id: str, user_name: str
 ) -> tuple[list[CommandResults], dict[str, Any]]:
     command_name = "identitynow-get-accounts"
-    output_key = "IdentityNow.Account"
     args = {"id": user_id, "name": user_name}
     readable_outputs_list = []
 
@@ -283,7 +315,8 @@ def identitynow_get_accounts_command(
     readable_outputs_list.extend(
         prepare_human_readable(command_name, args, human_readable)
     )
-    outputs = get_outputs(entry_context[0], output_key)
+    output_key = get_output_key("IdentityNow.Account", entry_context[0])
+    outputs = get_outputs(output_key, entry_context[0])
     account_output = create_account(
         id=outputs.get("id"),
         display_name=outputs.get("name"),
@@ -297,7 +330,6 @@ def ad_get_user_command(
     user_name: str, user_email: str
 ) -> tuple[list[CommandResults], dict[str, Any], str]:
     command_name = "ad-get-user"
-    output_key = "ActiveDirectory.Users"
     args = {"username": user_name, "email": user_email}
     readable_outputs_list = []
 
@@ -309,7 +341,8 @@ def ad_get_user_command(
     readable_outputs_list.extend(
         prepare_human_readable(command_name, args, human_readable)
     )
-    outputs = get_outputs(entry_context[0], output_key)
+    output_key = get_output_key("ActiveDirectory.Users", entry_context[0])
+    outputs = get_outputs(output_key, entry_context[0])
     account_output = create_account(
         id=outputs.get("dn"),
         display_name=outputs.get("displayName"),
@@ -328,7 +361,6 @@ def ad_get_user_manager_command(
     manager_dn: str,
 ) -> tuple[list[CommandResults], dict[str, Any]]:
     command_name = "ad-get-user"
-    output_key = "ActiveDirectory.Users"
     args = {"dn": manager_dn}
     readable_outputs_list = []
 
@@ -339,7 +371,8 @@ def ad_get_user_manager_command(
     readable_outputs_list.extend(
         prepare_human_readable(command_name, args, human_readable)
     )
-    outputs = get_outputs(entry_context[0], output_key)
+    output_key = get_output_key("ActiveDirectory.Users", entry_context[0])
+    outputs = get_outputs(output_key, entry_context[0])
     account_output = create_account(
         manager_display_name=outputs.get("displayName"),
         manager_email=outputs.get("mail"),
@@ -352,7 +385,6 @@ def pingone_get_user_command(
     user_id: str, user_name: str
 ) -> tuple[list[CommandResults], dict[str, Any]]:
     command_name = "pingone-get-user"
-    output_key = "PingOne.Account"
     args = {"userId": user_id, "username": user_name}
     readable_outputs_list = []
 
@@ -363,7 +395,8 @@ def pingone_get_user_command(
     readable_outputs_list.extend(
         prepare_human_readable(command_name, args, human_readable)
     )
-    outputs = get_outputs(entry_context[0], output_key)
+    output_key = get_output_key("PingOne.Account", entry_context[0])
+    outputs = get_outputs(output_key, entry_context[0])
     account_output = create_account(
         id=outputs.get("ID"),
         username=outputs.get("Username"),
@@ -379,7 +412,6 @@ def okta_get_user_command(
     user_id: str, user_name: str
 ) -> tuple[list[CommandResults], dict[str, Any]]:
     command_name = "okta-get-user"
-    output_key = "Account"
     args = {"userId": user_id, "username": user_name}
     readable_outputs_list = []
 
@@ -390,7 +422,8 @@ def okta_get_user_command(
     readable_outputs_list.extend(
         prepare_human_readable(command_name, args, human_readable)
     )
-    outputs = get_outputs(entry_context[0], output_key)
+    output_key = get_output_key("Account", entry_context[0])
+    outputs = get_outputs(output_key, entry_context[0])
     account_output = create_account(
         id=outputs.get("ID"),
         username=outputs.get("Username"),
@@ -407,7 +440,6 @@ def aws_iam_get_user_command(
     user_name: str,
 ) -> tuple[list[CommandResults], dict[str, Any]]:
     command_name = "aws-iam-get-user"
-    output_key = "AWS.IAM.Users"
     args = {"userName": user_name}
     readable_outputs_list = []
 
@@ -418,7 +450,8 @@ def aws_iam_get_user_command(
     readable_outputs_list.extend(
         prepare_human_readable(command_name, args, human_readable)
     )
-    outputs = get_outputs(entry_context[0], output_key)
+    output_key = get_output_key("AWS.IAM.Users", entry_context[0])
+    outputs = get_outputs(output_key, entry_context[0])
     account_output = create_account(
         id=outputs.get("UserId"),
         username=outputs.get("UserName"),
@@ -431,7 +464,6 @@ def msgraph_user_get_command(
     user_name: str,
 ) -> tuple[list[CommandResults], dict[str, Any]]:
     command_name = "msgraph-user-get"
-    output_key = "Account"
     args = {"user": user_name}
     readable_outputs_list = []
 
@@ -442,7 +474,8 @@ def msgraph_user_get_command(
     readable_outputs_list.extend(
         prepare_human_readable(command_name, args, human_readable)
     )
-    outputs = get_outputs(entry_context[0], output_key)
+    output_key = get_output_key("Account", entry_context[0])
+    outputs = get_outputs(output_key, entry_context[0])
     account_output = create_account(
         id=outputs.get("ID"),
         username=outputs.get("Username"),
@@ -461,7 +494,6 @@ def msgraph_user_get_manager_command(
     user_name: str,
 ) -> tuple[list[CommandResults], dict[str, Any]]:
     command_name = "msgraph-user-get-manager"
-    output_key = "MSGraphUserManager"
     args = {"user": user_name}
     readable_outputs_list = []
 
@@ -472,7 +504,8 @@ def msgraph_user_get_manager_command(
     readable_outputs_list.extend(
         prepare_human_readable(command_name, args, human_readable)
     )
-    outputs = get_outputs(entry_context[0], output_key)
+    output_key = get_output_key("MSGraphUserManager", entry_context[0])
+    outputs = get_outputs(output_key, entry_context[0])
     account_output = create_account(
         manager_display_name=outputs.get("Manager", {}).get("DisplayName"),
         manager_email=outputs.get("Manager", {}).get("Mail"),
@@ -485,7 +518,6 @@ def xdr_list_risky_users_command(
     user_name: str,
 ) -> tuple[list[CommandResults], dict[str, Any]]:
     command_name = "xdr-list-risky-users"
-    output_key = "PaloAltoNetworksXDR.RiskyUser"
     args = {"user_id": user_name}
     readable_outputs_list = []
 
@@ -496,7 +528,8 @@ def xdr_list_risky_users_command(
     readable_outputs_list.extend(
         prepare_human_readable(command_name, args, human_readable)
     )
-    outputs = get_outputs(entry_context[0], output_key)
+    output_key = get_output_key("PaloAltoNetworksXDR.RiskyUser", entry_context[0])
+    outputs = get_outputs(output_key, entry_context[0])
     account_output = create_account(
         id=outputs.get("id"),
         risk_level=outputs.get("risk_level"),
@@ -509,7 +542,6 @@ def iam_get_user_command(
     user_id: str, user_name: str, user_email: str, domain: str
 ) -> tuple[list[CommandResults], list[dict[str, Any]]]:
     command_name = "iam-get-user"
-    output_key = "IAM.Vendor"
     args = {
         "user-profile": {
             "id": user_id,
@@ -528,7 +560,8 @@ def iam_get_user_command(
     )
     account_outputs = []
     for output_entry in entry_context:
-        outputs = get_outputs(output_entry, output_key)
+        output_key = get_output_key("IAM.Vendor", output_entry)
+        outputs = get_outputs(output_key, output_entry)
         if outputs.get("success"):
             account_outputs.append(
                 create_account(
@@ -557,6 +590,7 @@ def main():  # pragma: no cover
         users_names = argToList(args.get("user_name", []))
         users_emails = argToList(args.get("user_email", []))
         domain = args.get("domain", "")
+        verbose = argToBoolean(args.get("verbose", False))
         modules = Modules(demisto.getModules())
 
         if domain and not users_names:
@@ -579,6 +613,7 @@ def main():  # pragma: no cover
             ### Running for a single user ###
             #################################
             single_user_outputs = []
+            single_user_readable_outputs = []
             outputs: dict[str, Any] | list[dict[str, Any]]
             if "\\" not in user_name:  # If the user_name does not contain a domain
                 if modules.is_brand_available("SailPointIdentityNow") and any(
@@ -587,7 +622,7 @@ def main():  # pragma: no cover
                     readable_outputs, outputs = identitynow_get_accounts_command(
                         user_id, user_name
                     )
-                    command_results_list.extend(readable_outputs)
+                    single_user_readable_outputs.extend(readable_outputs)
                     single_user_outputs.append(outputs)
                 else:
                     debug_message_skip_command("identitynow-get-accounts")
@@ -597,13 +632,13 @@ def main():  # pragma: no cover
                     readable_outputs, outputs, manager_dn = ad_get_user_command(
                         user_name, user_email
                     )
-                    command_results_list.extend(readable_outputs)
+                    single_user_readable_outputs.extend(readable_outputs)
                     single_user_outputs.append(outputs)
                     if manager_dn:
                         readable_outputs, manager_outputs = ad_get_user_manager_command(
                             manager_dn
                         )
-                        command_results_list.extend(readable_outputs)
+                        single_user_readable_outputs.extend(readable_outputs)
                         single_user_outputs.append(manager_outputs)
                 else:
                     debug_message_skip_command("ad-get-user")
@@ -611,7 +646,7 @@ def main():  # pragma: no cover
                     readable_outputs, outputs = pingone_get_user_command(
                         user_id, user_name
                     )
-                    command_results_list.extend(readable_outputs)
+                    single_user_readable_outputs.extend(readable_outputs)
                     single_user_outputs.append(outputs)
                 else:
                     debug_message_skip_command("pingone-get-user")
@@ -619,25 +654,25 @@ def main():  # pragma: no cover
                     readable_outputs, outputs = okta_get_user_command(
                         user_id, user_name
                     )
-                    command_results_list.extend(readable_outputs)
+                    single_user_readable_outputs.extend(readable_outputs)
                     single_user_outputs.append(outputs)
                 else:
                     debug_message_skip_command("okta-get-user")
                 if modules.is_brand_available("AWS - IAM") and user_name:
                     readable_outputs, outputs = aws_iam_get_user_command(user_name)
-                    command_results_list.extend(readable_outputs)
+                    single_user_readable_outputs.extend(readable_outputs)
                     single_user_outputs.append(outputs)
                 else:
                     debug_message_skip_command("aws-iam-get-user")
                 if modules.is_brand_available("Microsoft Graph User") and user_name:
                     readable_outputs, outputs = msgraph_user_get_command(user_name)
-                    command_results_list.extend(readable_outputs)
+                    single_user_readable_outputs.extend(readable_outputs)
                     single_user_outputs.append(outputs)
                     if outputs:
                         readable_outputs, outputs = msgraph_user_get_manager_command(
                             user_name
                         )
-                        command_results_list.extend(readable_outputs)
+                        single_user_readable_outputs.extend(readable_outputs)
                         single_user_outputs.append(outputs)
                 else:
                     debug_message_skip_command("msgraph-user-get")
@@ -651,13 +686,13 @@ def main():  # pragma: no cover
                 readable_outputs, outputs = identityiq_search_identities_command(
                     user_id, user_email
                 )
-                command_results_list.extend(readable_outputs)
+                single_user_readable_outputs.extend(readable_outputs)
                 single_user_outputs.append(outputs)
             else:
                 debug_message_skip_command("identityiq-search-identities")
             if modules.is_brand_available("Cortex XDR - IR") and user_name:
                 readable_outputs, outputs = xdr_list_risky_users_command(user_name)
-                command_results_list.extend(readable_outputs)
+                single_user_readable_outputs.extend(readable_outputs)
                 single_user_outputs.append(outputs)
             else:
                 debug_message_skip_command("xdr-list-risky-users")
@@ -665,9 +700,11 @@ def main():  # pragma: no cover
             readable_outputs, outputs = iam_get_user_command(
                 user_id, user_name, user_email, domain
             )
-            command_results_list.extend(readable_outputs)
+            single_user_readable_outputs.extend(readable_outputs)
             single_user_outputs.extend(outputs)
 
+            if verbose:
+                command_results_list.extend(single_user_readable_outputs)
             ### Merge single user account data ###
             merged_output = merge_accounts(single_user_outputs)
             if merged_output:
@@ -679,10 +716,10 @@ def main():  # pragma: no cover
         ### Complete for all users ###
         ##############################
         if users_not_found_list:
-            users_not_found_str = ", ".join(users_not_found_list)
+            users_not_found_str = "\n".join(users_not_found_list)
             command_results_list.append(
                 CommandResults(
-                    readable_output=f"The following users were not found: {users_not_found_str}",
+                    readable_output=f"The following user(s) were not found:\n{users_not_found_str}",
                 )
             )
         if account_outputs_list:
@@ -692,7 +729,7 @@ def main():  # pragma: no cover
                     outputs_key_field="Id",
                     outputs=account_outputs_list,
                     readable_output=tableToMarkdown(
-                        name="User Data",
+                        name="User(s) Data",
                         t=account_outputs_list,
                         headers=["Id", "Username", "Email", "IsEnabled", "Message"],
                     ),

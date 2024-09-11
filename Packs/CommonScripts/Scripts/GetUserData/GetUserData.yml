@@ -11,6 +11,12 @@ args:
 - description: The user domain to retrieve users from, available only for the iam-get-user command.
   name: domain
   isArray: true
+- description: Whether to retrieve human readable entry for every command or enly the final result.
+  name: verbose
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
 comment: Returns the user data.
 commonfields:
   id: get-user-data
