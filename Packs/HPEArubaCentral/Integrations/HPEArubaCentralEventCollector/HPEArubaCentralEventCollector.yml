@@ -41,7 +41,7 @@ configuration:
   section: Collect
 - defaultvalue: 100
   section: Collect
-  display: The maximum number of audit events per fetch (Max. allowed - 50,000)
+  display: The maximum number of audit events per fetch (Max. allowed - 1,000)
   name: max_audit_events_per_fetch
   required: false
   type: 0

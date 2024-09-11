@@ -1,7 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 import urllib3
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -48,7 +48,7 @@ class Client(BaseClient):
         expiry_time = integration_context.get('expiry_time', 0)
         refresh_token = integration_context.get('refresh_token')
 
-        if access_token and expiry_time > int(datetime.now().timestamp()):
+        if access_token and expiry_time > int(time.time()):
             demisto.debug('Returning cached access token')
             return access_token
         elif isinstance(refresh_token, str):
@@ -60,7 +60,7 @@ class Client(BaseClient):
 
         integration_context.update({
             'access_token': access_token,
-            'expiry_time': int(datetime.now().timestamp()) + validity_duration,
+            'expiry_time': int(time.time()) + validity_duration,
             'refresh_token': refresh_token
         })
         set_integration_context(integration_context)
@@ -230,7 +230,7 @@ class Client(BaseClient):
             headers=headers,
         )
 
-    def fetch_audit_events(self, start_time: int, end_time: int, amount_to_fetch: int):
+    def fetch_audit_events(self, start_time: int, end_time: int, amount_to_fetch: int, last_run: dict):
         """
         Fetch audit events from Aruba Central API.
 
@@ -238,6 +238,7 @@ class Client(BaseClient):
             start_time (int): Unix timestamp in seconds for the start time of the events to fetch
             end_time (int): Unix timestamp in seconds for the end time of the events to fetch
             amount_to_fetch (int): Amount of events to fetch
+            last_run (dict): Last run object for duplicates filtering
 
         Returns:
             events (list): list of audit events
@@ -250,34 +251,43 @@ class Client(BaseClient):
 
         demisto.debug(f'{amount_to_fetch=}')
         while amount_to_fetch > 0:
-            fetch_size = min(amount_to_fetch, MAX_GET_AUDIT_LIMIT)
             response = self.http_request(
                 method='GET',
                 url_suffix='/auditlogs/v1/events',
                 params={
-                    'limit': fetch_size,
+                    'limit': MAX_GET_AUDIT_LIMIT,
                     'offset': offset,
                     'start_time': start_time,
                     'end_time': end_time,
                 }
             )
+            if response['total'] > amount_to_fetch + offset:
+                # manually skip to the end since the API has no option for ascending sort
+                demisto.debug('Total entries for timeframe are larger than amount to fetch, skipping to get the earliest ones')
+                offset = response['total'] - amount_to_fetch
+                continue
 
-            events.extend(response.get('events', []))
-            amount_to_fetch -= fetch_size
-            offset += fetch_size
+            response_events = response.get('events', [])
+            filtered_events = filter_and_reverse_audit_events(response_events, last_run)
+            filtered_events = filtered_events[:amount_to_fetch]  # filtered_events return in ascending order
+
+            events.extend(filtered_events)
+            offset += len(response_events)
+            amount_to_fetch -= len(filtered_events)
             if not response.get('remaining_records'):
                 break
 
         return events
 
-    def fetch_networking_events(self, start_time: int, end_time: int, amount_to_fetch: int):
+    def fetch_networking_events(self, start_time: int, end_time: int, amount_to_fetch: int, last_run: dict):
         """
         Fetch networking events from Aruba Central API.
 
         Args:
             start_time (int): Unix timestamp in seconds indicating the start of the fetch window
-            end_time (int): Unix timestamp in seconds indicating the end of the fetch window
+            end_time (int): Unix timestamp in seconds for the end time of the events to fetch
             amount_to_fetch (int): Amount of events to fetch
+            last_run (dict): Last run object for duplicates filtering
 
         Returns:
             events (list): list of networking events
@@ -290,26 +300,162 @@ class Client(BaseClient):
 
         demisto.debug(f'{amount_to_fetch=}')
         while amount_to_fetch > 0:
-            fetch_size = min(amount_to_fetch, MAX_GET_EVENTS_LIMIT)
             response = self.http_request(
                 method='GET',
                 url_suffix='/monitoring/v2/events',
                 params={
-                    'limit': fetch_size,
+                    'limit': MAX_GET_EVENTS_LIMIT,
                     'offset': offset,
                     'from_timestamp': start_time,
                     'to_timestamp': end_time,
-                    'calculate_total': True,
+                    'sort': '+timestamp',
                 }
             )
+            response_events = response.get('events', [])
+            filtered_events = filter_networking_events(response_events, last_run)
+            filtered_events = filtered_events[:amount_to_fetch]
 
-            events.extend(response.get('events', []))
-            amount_to_fetch -= fetch_size
-            offset += fetch_size
-            if response.get('count') == response.get('total'):  # Got all records for this time frame
+            events.extend(filtered_events)
+            amount_to_fetch -= len(filtered_events)
+            offset += len(response_events)
+            if len(response_events) < MAX_GET_EVENTS_LIMIT:  # got the last events for this time frame
                 break
 
         return events
+
+
+''' HELPER FUNCTIONS '''
+
+
+def filter_and_reverse_audit_events(events: list[dict], last_run: dict) -> list[dict]:
+    """
+    Check if the audit events contain any of the previous fetch events that had the highest timestamp and filters them.
+
+    Args:
+        events (list[dict]): Newly fetched audit events, in descending timestamp order
+        last_run (dict): last_run object containing candidate duplicate events from the previous fetch and their timestamp
+
+    Returns:
+        events (list[dict]): events list with filtered duplicates, in ascending timestamp order
+    """
+    last_audit_ts = int(last_run.get('last_audit_ts', 0))
+    last_audit_ids = last_run.get('last_audit_event_ids', [])
+
+    if not last_audit_ts or not last_audit_ids:
+        return list(reversed(events))
+
+    filtered_events: list[dict] = []
+    for i, event in reversed(list(enumerate(events))):
+        if event[AUDIT_TS] > last_audit_ts:
+            filtered_events.extend(reversed(events[:i + 1]))
+            break
+
+        if event['id'] not in last_audit_ids:
+            filtered_events.append(event)
+
+    return filtered_events
+
+
+def filter_networking_events(events: list[dict], last_run: dict) -> list[dict]:
+    """
+    Check if the network events contain any of the previous fetch events that had the highest timestamp and filters them.
+
+    Args:
+        events (list[dict]): Newly fetched audit events, in ascending timestamp order
+        last_run (dict): last_run object containing candidate duplicate events from the previous fetch and their timestamp
+
+    Returns:
+        events (list[dict]): events list with filtered duplicates, in ascending timestamp order
+    """
+    last_event_ts_ms = int(last_run.get('last_networking_ts', 0)) * 1000
+    last_event_ids = last_run.get('last_networking_event_ids', [])
+    filtered_events = []
+    for i, event in enumerate(events):
+        if event[NETWORKING_TS] > last_event_ts_ms:
+            filtered_events.extend(events[i + 1:])
+            break
+
+        if event['event_uuid'] not in last_event_ids:
+            filtered_events.append(event)
+
+    return filtered_events
+
+
+def create_next_run(audit_events: list[dict], networking_events: list[dict] | None, end_time: int) -> dict[str, str]:
+    next_run: dict[str, Any] = {}
+    end_time_ms = end_time * 1000
+    if audit_events:
+        last_audit_ts = audit_events[-1].get(AUDIT_TS, end_time)
+        next_run['last_audit_ts'] = str(last_audit_ts)
+        last_audit_event_ids = []
+        for event in reversed(audit_events):
+            if event.get(AUDIT_TS, 0) < last_audit_ts:
+                break
+
+            last_audit_event_ids.append(event.get('id'))
+
+        next_run['last_audit_event_ids'] = last_audit_event_ids
+
+    else:
+        next_run['last_audit_ts'] = str(end_time)
+
+    if networking_events:
+        last_networking_ts = int(networking_events[-1].get(NETWORKING_TS, end_time_ms) / 1000)
+        next_run['last_networking_ts'] = str(last_networking_ts)
+        last_networking_event_ids = []
+        for event in reversed(networking_events):
+            if event.get(NETWORKING_TS, 0) < last_networking_ts:
+                break
+
+            last_networking_event_ids.append(event.get('event_uuid'))
+
+        next_run['last_networking_event_ids'] = last_networking_event_ids
+
+    else:
+        next_run['last_networking_ts'] = str(end_time)
+
+    return next_run
+
+
+def add_time_to_events(events: list[dict] | None, time_arg: str):
+    """
+    Adds the _time key to the events.
+    Args:
+        events: List[Dict] - list of events to add the _time key to.
+    Returns:
+        list: The events with the _time key.
+    """
+    if events:
+        for event in events:
+            create_time = arg_to_datetime(arg=event.get(time_arg))
+            event['_time'] = create_time.strftime(DATE_FORMAT) if create_time else None
+
+
+def push_events(audit_events: list | None, networking_events: list | None):
+    """Push audit and networking events to XSIAM
+
+    Args:
+        audit_events (list): list of fetched audit events
+        networking_events (list): list of fetched networking events
+    """
+    if audit_events:
+        add_time_to_events(audit_events, AUDIT_TS)
+        send_events_to_xsiam(
+            audit_events,
+            vendor=VENDOR,
+            product=PRODUCT
+        )
+
+    if networking_events:
+        add_time_to_events(networking_events, NETWORKING_TS)
+        send_events_to_xsiam(
+            networking_events,
+            vendor=VENDOR,
+            product=f'{PRODUCT}_network_events',
+        )
+
+
+''' COMMAND FUNCTIONS '''
 
 
 def test_module(client: Client, first_fetch_time: int, fetch_networking_events: bool) -> str:
@@ -368,7 +514,7 @@ def get_events(client: Client, fetch_networking_events: bool, args: dict) -> tup
     if 'from_date' in args:
         start_time = date_to_timestamp(args.get('from_date'))
     else:
-        start_time = int((datetime.now() - timedelta(hours=3)).timestamp())
+        start_time = int(time.time()) - timedelta(hours=3).seconds
 
     demisto.debug(f'Running get_events with {start_time=}')
     _, audit_events, networking_events = fetch_events(
@@ -389,7 +535,7 @@ def get_events(client: Client, fetch_networking_events: bool, args: dict) -> tup
 
 
 def fetch_events(client: Client,
-                 last_run: dict[str, str],
+                 last_run: dict,
                  first_fetch_time: int,
                  num_audit_events_to_fetch: int,
                  fetch_networking_events: bool,
@@ -409,39 +555,31 @@ def fetch_events(client: Client,
         audit_events(list): List of fetched audit events.
         networking_events(list): List of fetched networking events.
     """
-    start_time = date_to_timestamp(last_run['last_fetch_time'],
-                                   DATE_FORMAT) if 'last_fetch_time' in last_run else first_fetch_time
-    end_time = int(datetime.now().timestamp())
-    demisto.debug(f'Fetching {num_audit_events_to_fetch} audit events from {start_time} to {end_time}.')
-    audit_events = client.fetch_audit_events(start_time=start_time, end_time=end_time, amount_to_fetch=num_audit_events_to_fetch)
+    audit_start_time = int(last_run.get('last_audit_ts', first_fetch_time))
+    networking_start_time = int(last_run.get('last_networking_ts', first_fetch_time))
+    end_time = int(time.time())
+    demisto.debug(f'Fetching {num_audit_events_to_fetch} audit events from {audit_start_time} to {end_time}.')
+    audit_events = client.fetch_audit_events(start_time=audit_start_time,
+                                             end_time=end_time,
+                                             amount_to_fetch=num_audit_events_to_fetch,
+                                             last_run=last_run)
     demisto.debug(f'Got {len(audit_events)} audit events.')
+
     networking_events = None
     if fetch_networking_events:
-        demisto.debug(f'Fetching {num_networking_events_to_fetch} networking events from {start_time} to {end_time}.')
-        networking_events = client.fetch_networking_events(start_time=start_time, end_time=end_time,
-                                                           amount_to_fetch=num_networking_events_to_fetch)
+        demisto.debug(f'Fetching {num_networking_events_to_fetch} networking events from {networking_start_time} to {end_time}.')
+        networking_events = client.fetch_networking_events(start_time=networking_start_time,
+                                                           end_time=end_time,
+                                                           amount_to_fetch=num_networking_events_to_fetch,
+                                                           last_run=last_run)
         demisto.debug(f'Got {len(networking_events)} networking events.')
 
-    next_run = {'last_fetch_time': timestamp_to_datestring(end_time, DATE_FORMAT)}
+    next_run = create_next_run(audit_events=audit_events, networking_events=networking_events, end_time=end_time)
     demisto.debug(f'Returning {next_run=}.')
     return next_run, audit_events, networking_events
 
 
 ''' MAIN FUNCTION '''
-
-
-def add_time_to_events(events: List[Dict] | None, time_arg: str):
-    """
-    Adds the _time key to the events.
-    Args:
-        events: List[Dict] - list of events to add the _time key to.
-    Returns:
-        list: The events with the _time key.
-    """
-    if events:
-        for event in events:
-            create_time = arg_to_datetime(arg=event.get(time_arg))
-            event['_time'] = create_time.strftime(DATE_FORMAT) if create_time else None
 
 
 def main() -> None:  # pragma: no cover
@@ -464,7 +602,7 @@ def main() -> None:  # pragma: no cover
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
 
-    first_fetch_time = int(datetime.now().timestamp())
+    first_fetch_time = int(time.time())
 
     demisto.debug(f'Command being called is {command}')
     try:
@@ -490,20 +628,7 @@ def main() -> None:  # pragma: no cover
             return_results(results)
 
             if should_push_events:
-                add_time_to_events(audit_events, AUDIT_TS)
-                send_events_to_xsiam(
-                    audit_events,
-                    vendor=VENDOR,
-                    product=PRODUCT
-                )
-
-                if networking_events:
-                    add_time_to_events(networking_events, NETWORKING_TS)
-                    send_events_to_xsiam(
-                        networking_events,
-                        vendor=VENDOR,
-                        product=f'{PRODUCT}_network_events',
-                    )
+                push_events(audit_events, networking_events)
 
         elif command == 'fetch-events':
             last_run = demisto.getLastRun()
@@ -516,21 +641,7 @@ def main() -> None:  # pragma: no cover
                 num_networking_events_to_fetch=max_networking_events_per_fetch,
             )
 
-            add_time_to_events(audit_events, AUDIT_TS)
-            send_events_to_xsiam(
-                audit_events,
-                vendor=VENDOR,
-                product=PRODUCT
-            )
-
-            if networking_events:
-                add_time_to_events(networking_events, NETWORKING_TS)
-                send_events_to_xsiam(
-                    networking_events,
-                    vendor=VENDOR,
-                    product=f'{PRODUCT}_network_events',
-                )
-
+            push_events(audit_events, networking_events)
             demisto.setLastRun(next_run)
 
     # Log exceptions and return errors
