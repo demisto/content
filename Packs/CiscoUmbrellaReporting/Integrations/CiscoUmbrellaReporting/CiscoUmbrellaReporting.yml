@@ -491,6 +491,8 @@ script:
       name: page
     - description: The number of requested results per page. Default is 50.
       name: page_size
+    - description: 'A comma-separated list of category ids to filter on.'
+      name: categories
     description: List all activity entries (dns/proxy/firewall/ip/intrusion/amp) within the time frame.
     name: umbrella-reporting-activity-list
     outputs:
@@ -688,6 +690,8 @@ script:
       name: signatures
     - description: 'Comma-separated list of intrusion actions. Possible values: would_block, blocked, detected.'
       name: intrusion_action
+    - description: 'A comma-separated list of category ids to filter on.'
+      name: categories
     description: |-
       List all entries within a time frame based on the traffic type selected. Valid activity types are dns, proxy, firewall, intrusion, ip, amp.
       Only one activity type can be selected at a time.
