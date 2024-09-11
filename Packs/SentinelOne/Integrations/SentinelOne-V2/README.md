@@ -78,6 +78,7 @@ Returns all agents that match the specified criteria.
 | SentinelOne.Agents.EncryptedApplications | boolean | Whether disk encryption is enabled. | 
 | SentinelOne.Agents.OSName | string | Name of operating system. | 
 | SentinelOne.Agents.ComputerName | string | Name of agent computer. | 
+| SentinelOne.Agents.MachineType | string | Machine type. |
 | SentinelOne.Agents.Domain | string | Domain name of the agent. | 
 | SentinelOne.Agents.CreatedAt | date | Creation time of the agent. | 
 | SentinelOne.Agents.SiteName | string | Site name associated with the agent. | 
@@ -347,6 +348,7 @@ Returns the details of an agent according to the agent ID.
 | SentinelOne.Agent.EncryptedApplications | boolean | Whether disk encryption is enabled. | 
 | SentinelOne.Agent.OSName | string | Name of the operating system. | 
 | SentinelOne.Agent.ComputerName | string | Name of the agent computer. | 
+| SentinelOne.Agent.MachineType | string | Machine type. |
 | SentinelOne.Agent.Domain | string | Domain name of the agent. | 
 | SentinelOne.Agent.CreatedAt | date | Agent creation time. | 
 | SentinelOne.Agent.SiteName | string | Site name associated with the agent. | 
@@ -1322,7 +1324,7 @@ Get the IOCs of a specified account that match the filter. Relevant for API vers
 ### sentinelone-create-power-query
 
 ***
-Start a Deep Visibility Power query to get back status and potential results (ping afterwards using the queryId if query has not finished). Relevant for API version 2.1
+Deprecated. Start a Deep Visibility Power query to get back status and potential results (ping afterwards using the queryId if query has not finished). Relevant for API version 2.1
 
 #### Base Command
 
@@ -1343,7 +1345,7 @@ There is no context output for this command.
 ### sentinelone-ping-power-query
 
 ***
-Ping a Deep Visibility Power query using the queryId argument if results have not returned from an initial Power query or a previous ping. Relevant for API version 2.1.
+Deprecated. Ping a Deep Visibility Power query using the queryId argument if results have not returned from an initial Power query or a previous ping. Relevant for API version 2.1.
 
 #### Base Command
 
@@ -1760,6 +1762,35 @@ Automate a remote script's execution cycle and return the script's results.
 | SentinelOne.RemoteScriptResults.fileName | string | File name. | 
 | SentinelOne.RemoteScriptResults.downloadUrl | string | Download URL. |
 
+
+
+### sentinelone-get-power-query-results
+
+
+***
+Automate a power query and return the query results. (The maximum timeout of 300 seconds is allowed.)
+
+#### Base Command
+
+`sentinelone-get-power-query-results`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_ids | A comma-separated list of account IDs. | Optional | 
+| site_ids | A comma-separated list of site IDs on which the query should run. | Optional | 
+| query | Events matching the query search term will be returned. | Required | 
+| from_date | Events created after this date. Example: '2018-02-27T04:49:26.257525Z'. | Required | 
+| to_date | Events created before or at this date. Example: '2018-02-27T04:49:26.257525Z'. | Required | 
+| limit | Limit number of returned items (1-100000). | Optional | 
+| interval | Indicates how long to wait between command execution (in seconds) when 'polling' argument is true. Minimum value is 10 seconds. | Optional |
+| timeout | Indicates the time in seconds until the polling sequence timeouts. | Optional |
+| query_id | QueryId. Example: pq3be5e2747f716cxxxxxxxxxxxxx20a0. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
 
 
 ### get-mapping-fields

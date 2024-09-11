@@ -7,7 +7,7 @@ from ExtractHyperlinksFromOfficeFiles import extract_hyperlink_by_file_type
      {'https://xsoar.pan.dev/', 'https://www.paloaltonetworks.com/', 'https://jobs.paloaltonetworks.com/en/'}),
     ('test_data/d2.docx', set()),
     ('test_data/d3.docx', {'https://www.paloaltonetworks.com/', 'http://www.google.com'}),
-    ('test_data/e1.xlsx', {'http://www.google.com', 'http://www.yahoo.de/'}),
+    ('test_data/e1.Xlsx', {'http://www.google.com', 'http://www.yahoo.de/'}),
     ('test_data/e2.xlsx', set()),
     ('test_data/e3.xlsx', {'https://www.paloaltonetworks.com/'}),
     ('test_data/p1.pptx', {'https://xsoar.pan.dev/', 'https://www.paloaltonetworks.com/'}),
@@ -42,3 +42,17 @@ def test_basescript_dummy(file_path, expected_output):
     """
     response = extract_hyperlink_by_file_type(file_name=file_path, file_path=file_path)
     assert set(response.raw_response) == expected_output
+
+
+def test_invalid_file_type():
+    """
+    Given:
+        An unsupported file type.
+    When:
+        Extracting hyperlinks from the unsupported file type using `extract_hyperlink_by_file_type` function.
+    Then:
+        Validate that a ValueError is raised with the appropriate message.
+    """
+    file_path = 'test_data/unsupported_file.txt'
+    with pytest.raises(ValueError, match="Unsupported file type. Supported types are: 'xlsx, docx, pptx'"):
+        extract_hyperlink_by_file_type(file_name=file_path, file_path=file_path)
