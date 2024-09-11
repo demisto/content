@@ -748,7 +748,7 @@ def fetch_incidents(kafka: KafkaCommunicator, demisto_params: dict) -> None:
                 last_message_index = min((iteration + 1) * fetch_size, max_messages)
                 num_of_messages = last_message_index - (iteration * fetch_size)
                 demisto.debug(f"KAFKA DEBUG: consume message start for {num_of_messages}")
-                polled_msg = kafka_consumer.consume(timeout = kafka.POLL_TIMEOUT*num_of_messages, num_messages=num_of_messages)
+                polled_msg = kafka_consumer.consume(timeout = kafka.POLL_TIMEOUT * num_of_messages, num_messages=num_of_messages)
                 polled_msg = polled_msg if polled_msg else []
                 fetched_messages.extend(polled_msg)
             demisto.debug(f"KAFKA DEBUG: consume message end, {len(fetched_messages)=}")
@@ -756,8 +756,8 @@ def fetch_incidents(kafka: KafkaCommunicator, demisto_params: dict) -> None:
                 for i, message in enumerate(fetched_messages):
                     if message:
                         incidents.append(create_incident(message=message, topic=topic))
-                        polled_msg_partition=message.partition()
-                        polled_msg_offset =message.offset()
+                        polled_msg_partition = message.partition()
+                        polled_msg_offset = message.offset()
                         last_fetched_offsets[f'{polled_msg_partition}'] = polled_msg_offset
                         demisto.debug(f"KAFKA DEBUG: create incident number {i}")
                 demisto.debug("KAFKA DEBUG: Finish create incidents")
