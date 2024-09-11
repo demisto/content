@@ -1,8 +1,8 @@
 import contextlib
 from json import JSONDecodeError
 from pathlib import Path
-from typing import Any, Literal, NamedTuple
-from collections.abc import Callable, Iterable
+from typing import Literal, NamedTuple
+from collections.abc import Iterable, Callable
 import more_itertools
 from requests import Response
 
@@ -88,7 +88,7 @@ PARENT_OBJECT = Field("parent_object")
 PARENT_OBJECT_ID = Field("parent_object_id")
 TICKET_ID = Field("ticket_id")
 TICKET_STATUS = Field("ticket_status")
-TEXT = Field("text")
+TEXT_HTML = Field("text_html")
 SITE_VISIBLE = Field("site_visible")
 DESCRIPTION = Field("description")
 TICKET_PRIORITY = Field("ticket_priority")
@@ -176,6 +176,9 @@ def create_params_dict(
         field.hda_name: kwargs[field.demisto_name]
         for field in optional_fields
         if field.demisto_name in kwargs
+    } | {
+        # an exception to the rule
+        PROBLEM_HTML.hda_name: kwargs["problem"],
     }
 
 
@@ -356,7 +359,6 @@ class Client(BaseClient):
                 TICKET_TYPE_ID,
                 CONTACT_ID,
                 SUBJECT,
-                PROBLEM,
                 SITE,
             ),
             **kwargs,
@@ -502,7 +504,7 @@ class Client(BaseClient):
                 "data": json.dumps(
                     {
                         TICKET_ID.hda_name: kwargs[TICKET_ID.demisto_name],
-                        TEXT.hda_name: kwargs["comment"],
+                        TEXT_HTML.hda_name: kwargs["comment"],
                         SITE_VISIBLE.hda_name: argToBoolean(
                             kwargs[SITE_VISIBLE.demisto_name]
                         ),

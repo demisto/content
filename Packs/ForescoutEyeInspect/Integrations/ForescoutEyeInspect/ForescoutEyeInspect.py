@@ -1,10 +1,9 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-# type: ignore
-# mypy: ignore-errors
+
 from copy import deepcopy
-from typing import Any, Dict, Tuple, Type
-from urllib.parse import urljoin
+from typing import Any
+from urllib.parse import urljoin  # type: ignore
 
 import urllib3
 
@@ -61,7 +60,7 @@ class Client(BaseClient):
                            last_seen: Optional[str] = None,
                            id_min: Optional[int] = None,
                            sort_field: Optional[str] = None,
-                           sort_ascending: Optional[bool] = None) -> List[Dict[str, Any]]:
+                           sort_ascending: Optional[bool] = None) -> List[dict[str, Any]]:
         """
         Retrieves information about the hosts in the eyeInspect CC database.
 
@@ -99,7 +98,7 @@ class Client(BaseClient):
                            last_seen: Optional[str] = None,
                            id_min: Optional[int] = None,
                            sort_field: Optional[str] = None,
-                           sort_ascending: Optional[bool] = None) -> List[Dict[str, Any]]:
+                           sort_ascending: Optional[bool] = None) -> List[dict[str, Any]]:
         """
         Retrieves information about the links in the eyeInspect CC database.
 
@@ -134,7 +133,7 @@ class Client(BaseClient):
 
         return self._http_request(method='GET', url_suffix='links', params=params)
 
-    def get_vulnerability_info_request(self, cve_id: str) -> Dict[str, Any]:
+    def get_vulnerability_info_request(self, cve_id: str) -> dict[str, Any]:
         """
         Retrieves information about a specific vulnerability stored in the eyeInspect CC database.
 
@@ -161,7 +160,7 @@ class Client(BaseClient):
                             dst_port: Optional[int] = None,
                             src_host_id: Optional[int] = None,
                             dst_host_id: Optional[int] = None,
-                            host_id: Optional[int] = None) -> List[Dict[str, Any]]:
+                            host_id: Optional[int] = None) -> List[dict[str, Any]]:
         """
         Retrieves information about the alerts inside eyeInspect CC.
 
@@ -225,7 +224,7 @@ class Client(BaseClient):
     def list_sensors_request(self,
                              offset: Optional[int] = None,
                              limit: Optional[int] = None,
-                             all_sensors: Optional[bool] = None) -> List[Dict[str, Any]]:
+                             all_sensors: Optional[bool] = None) -> List[dict[str, Any]]:
         """
         Retrieves information about the sensors associated to the eyeInspect CC.
 
@@ -249,7 +248,7 @@ class Client(BaseClient):
     def list_sensor_modules_request(self,
                                     sensor_id: int,
                                     offset: Optional[int] = None,
-                                    limit: Optional[int] = None) -> List[Dict[str, Any]]:
+                                    limit: Optional[int] = None) -> List[dict[str, Any]]:
         """
         Retrieves information about the Modules of the specified Sensor.
 
@@ -274,7 +273,7 @@ class Client(BaseClient):
                                      name: Optional[str] = None,
                                      description: Optional[str] = None,
                                      started: Optional[bool] = None,
-                                     operational_mode: Optional[str] = None) -> Dict[str, Any]:
+                                     operational_mode: Optional[str] = None) -> dict[str, Any]:
         """
         Changes the specified properties of the specified Module.
 
@@ -317,7 +316,7 @@ class Client(BaseClient):
     def get_ip_blacklist_request(self,
                                  sensor_id: int,
                                  offset: Optional[int] = None,
-                                 limit: Optional[int] = None) -> List[Dict[str, Any]]:
+                                 limit: Optional[int] = None) -> List[dict[str, Any]]:
         """
         Retrieves the IP blacklist from the Industrial Threat Library of the specified Sensor.
 
@@ -356,7 +355,7 @@ class Client(BaseClient):
     def get_domain_blacklist_request(self,
                                      sensor_id: int,
                                      offset: Optional[int] = None,
-                                     limit: Optional[int] = None) -> List[Dict[str, Any]]:
+                                     limit: Optional[int] = None) -> List[dict[str, Any]]:
         """
         Retrieves the domain name blacklist from the Industrial Threat Library of the specified Sensor.
 
@@ -399,7 +398,7 @@ class Client(BaseClient):
     def get_ssl_client_blacklist_request(self,
                                          sensor_id: int,
                                          offset: Optional[int] = None,
-                                         limit: Optional[int] = None) -> List[Dict[str, Any]]:
+                                         limit: Optional[int] = None) -> List[dict[str, Any]]:
         """
         Retrieves the SSL client application blacklist from the Industrial Threat Library of the specified Sensor.
 
@@ -447,7 +446,7 @@ class Client(BaseClient):
     def get_file_operation_blacklist_request(self,
                                              sensor_id: int,
                                              offset: Optional[int] = None,
-                                             limit: Optional[int] = None) -> List[Dict[str, str]]:
+                                             limit: Optional[int] = None) -> List[dict[str, str]]:
         """
         Retrieves the file operation blacklist from the Industrial Threat Library of the specified Sensor.
 
@@ -495,7 +494,7 @@ class Client(BaseClient):
                            json_data=body,
                            resp_type='text')
 
-    def get_diagnostics_information_request(self) -> Dict[str, Any]:
+    def get_diagnostics_information_request(self) -> dict[str, Any]:
         """
         Retrieves information about all monitored Command Center resources and their health status excluding the logs.
 
@@ -528,7 +527,7 @@ class Client(BaseClient):
 
     def list_group_policies_request(self,
                                     offset: Optional[int] = None,
-                                    limit: Optional[int] = None) -> List[Dict[str, Any]]:
+                                    limit: Optional[int] = None) -> List[dict[str, Any]]:
         """
         Get all group policies.
 
@@ -545,7 +544,7 @@ class Client(BaseClient):
         return self._http_request(method='GET', url_suffix='group_policy', params=params)
 
     def create_group_policy_request(self, name: str, description: str,
-                                    constraints: List[Dict[str, Any]]) -> Dict[str, Any]:
+                                    constraints: List[dict[str, Any]]) -> dict[str, Any]:
         """
         Create a new group policy.
 
@@ -563,7 +562,7 @@ class Client(BaseClient):
         return self._http_request(method='POST', url_suffix='group_policy', json_data=body)
 
     def update_group_policy_request(self, policy_id: int, name: str, description: str,
-                                    constraints: List[Dict[str, Any]]) -> Dict[str, Any]:
+                                    constraints: List[dict[str, Any]]) -> dict[str, Any]:
         """
         Update a group policy.
 
@@ -596,7 +595,7 @@ class Client(BaseClient):
                            resp_type='text')
 
     def assign_group_policy_hosts_request(self, policy_id: int, filter_type: str,
-                                          filter_value: str) -> Dict[str, Any]:
+                                          filter_value: str) -> dict[str, Any]:
         """
         Add all hosts not assigned to any policy (individual or group) matching the filter to the group policy.
 
@@ -616,7 +615,7 @@ class Client(BaseClient):
                                   json_data=body)
 
     def unassign_group_policy_hosts_request(self, policy_id: int, filter_type: str,
-                                            filter_value: str) -> Dict[str, Any]:
+                                            filter_value: str) -> dict[str, Any]:
         """
         Unassign all hosts assigned to the group policy matching the filter.
 
@@ -637,7 +636,7 @@ class Client(BaseClient):
 
     def list_ip_reuse_domains_request(self,
                                       offset: Optional[int] = None,
-                                      limit: Optional[int] = None) -> List[Dict[str, Any]]:
+                                      limit: Optional[int] = None) -> List[dict[str, Any]]:
         """
         Get all IP reuse domains.
 
@@ -660,7 +659,7 @@ class Client(BaseClient):
                                      start_timestamp: Optional[str] = None,
                                      end_timestamp: Optional[str] = None,
                                      event_type_id: Optional[str] = None,
-                                     event_category: Optional[str] = None) -> List[Dict[str, Any]]:
+                                     event_category: Optional[str] = None) -> List[dict[str, Any]]:
         """
         Retrieves information about the changes of host properties and configuration from the eyeInspect CC database.
 
@@ -696,7 +695,7 @@ class Client(BaseClient):
                       method: str,
                       url_suffix: str = '',
                       full_url: str = None,
-                      headers: Dict[str, str] = None,
+                      headers: dict[str, str] = None,
                       *args,
                       **kwargs):
         if method in ['POST', 'PUT', 'DELETE']:
@@ -723,7 +722,7 @@ class Client(BaseClient):
         return token_response.headers['X-CSRF-Token']
 
 
-def arg_to_type_list(arg: str, item_type: Type[Any]) -> List[Any]:
+def arg_to_type_list(arg: str, item_type: type[Any]) -> List[Any]:
     """
     Converts XSOAR argument to list with certain type.
 
@@ -815,7 +814,7 @@ def matches_one_item(items: List[Any], container_list: List[Any]) -> bool:
     return any(True for item in items if item in container_list)
 
 
-def filter_single_result(result: Dict[str, Any], **fields: List[Any]) -> bool:
+def filter_single_result(result: dict[str, Any], **fields: List[Any]) -> bool:
     """
     Filters a single result of the API, based on the results fields.
 
@@ -841,7 +840,7 @@ def filter_single_result(result: Dict[str, Any], **fields: List[Any]) -> bool:
     return True
 
 
-def filter_results(results: List[Dict[str, Any]], **fields: List[Any]) -> List[Dict[str, Any]]:
+def filter_results(results: List[dict[str, Any]], **fields: List[Any]) -> List[dict[str, Any]]:
     """
     Filters records from the API based on the provided fields.
     This is required due to lack of essential fields inside the API filtering.
@@ -856,7 +855,7 @@ def filter_results(results: List[Dict[str, Any]], **fields: List[Any]) -> List[D
     return [result for result in results if filter_single_result(result, **fields)]
 
 
-def add_alerts_fields(client: Client, alerts: List[Dict[str, Any]]) -> None:
+def add_alerts_fields(client: Client, alerts: List[dict[str, Any]]) -> None:
     """
     Adds additional data to the alerts.
 
@@ -870,7 +869,7 @@ def add_alerts_fields(client: Client, alerts: List[Dict[str, Any]]) -> None:
         alert['xsoar_severity'] = XSOAR_SEVERITY_MAPPING.get(alert['severity'], alert['severity'])
 
 
-def get_pagination_arguments(args: Dict[str, Any]) -> Tuple[int, int, int]:
+def get_pagination_arguments(args: dict[str, Any]) -> tuple[int, int, int]:
     """
     Gets and validates pagination arguments for client (offset and limit).
 
@@ -884,12 +883,12 @@ def get_pagination_arguments(args: Dict[str, Any]) -> Tuple[int, int, int]:
     page = arg_to_number(args.get('page', DEFAULT_PAGE))
     limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
 
-    if page < 1:
+    if page < 1:  # type: ignore[operator]
         raise DemistoException('Page argument must be greater than 1')
-    if not 1 <= limit <= MAX_LIMIT:
+    if not 1 <= limit <= MAX_LIMIT:  # type: ignore[operator]
         raise DemistoException(f'Limit argument must be between 1 to {MAX_LIMIT}')
 
-    return page, (page - 1) * limit, limit
+    return page, (page - 1) * limit, limit  # type: ignore[operator,return-value]
 
 
 def validate_fetch_params(max_fetch: int, first_fetch: str) -> None:
@@ -911,7 +910,7 @@ def validate_fetch_params(max_fetch: int, first_fetch: str) -> None:
             f'The Maximum number of incidents per fetch should not exceed {MAX_FETCH_INCIDENTS}.')
 
 
-def list_hosts_command(client: Client, args: Dict[str, str]) -> CommandResults:
+def list_hosts_command(client: Client, args: dict[str, str]) -> CommandResults:
     """
     Retrieves information about the hosts in the eyeInspect CC database.
 
@@ -935,12 +934,12 @@ def list_hosts_command(client: Client, args: Dict[str, str]) -> CommandResults:
                                          id_min=id_min,
                                          sort_field=sort_field,
                                          sort_ascending=sort_ascending)
-    outputs = response['results']
+    outputs = response['results']  # type: ignore[call-overload]
 
     ip_addresses = argToList(args.get('ip'))
     vlan_ids = argToList(args.get('vlan_id'))
     mac_addresses = argToList(args.get('mac_address'))
-    sensor_ids = arg_to_type_list(args.get('sensor_id'), int)
+    sensor_ids = arg_to_type_list(args.get('sensor_id'), int)  # type: ignore[arg-type]
     outputs = filter_results(outputs,
                              ip=ip_addresses,
                              vlans=vlan_ids,
@@ -962,7 +961,7 @@ def list_hosts_command(client: Client, args: Dict[str, str]) -> CommandResults:
                           raw_response=response)
 
 
-def list_links_command(client: Client, args: Dict[str, str]) -> CommandResults:
+def list_links_command(client: Client, args: dict[str, str]) -> CommandResults:
     """
     Retrieves information about the links in the eyeInspect CC database.
 
@@ -994,7 +993,7 @@ def list_links_command(client: Client, args: Dict[str, str]) -> CommandResults:
                                          id_min=id_min,
                                          sort_field=sort_field,
                                          sort_ascending=sort_ascending)
-    outputs = response['results']
+    outputs = response['results']  # type: ignore[call-overload]
 
     readable_output = tableToMarkdown('Host Links List:',
                                       outputs,
@@ -1010,7 +1009,7 @@ def list_links_command(client: Client, args: Dict[str, str]) -> CommandResults:
                           raw_response=response)
 
 
-def get_vulnerability_info_command(client: Client, args: Dict[str, str]) -> CommandResults:
+def get_vulnerability_info_command(client: Client, args: dict[str, str]) -> CommandResults:
     """
     Retrieves information about a specific vulnerability stored in the eyeInspect CC database.
 
@@ -1039,7 +1038,7 @@ def get_vulnerability_info_command(client: Client, args: Dict[str, str]) -> Comm
                           raw_response=response)
 
 
-def list_alerts_command(client: Client, args: Dict[str, str]) -> CommandResults:
+def list_alerts_command(client: Client, args: dict[str, str]) -> CommandResults:
     """
     Retrieves information about the alerts inside eyeInspect CC.
 
@@ -1071,11 +1070,11 @@ def list_alerts_command(client: Client, args: Dict[str, str]) -> CommandResults:
                                           src_ip=src_ip,
                                           dst_ip=dst_ip,
                                           ip=ip)
-    outputs = response['results']
+    outputs = response['results']  # type: ignore[call-overload]
 
     sensor_names = argToList(args.get('sensor_name'))
     vlan_ids = argToList(args.get('vlan_id'))
-    severities = arg_to_type_list(args.get('severity'), int)
+    severities = arg_to_type_list(args.get('severity'), int)  # type: ignore[arg-type]
     statuses = argToList(args.get('status'))
     outputs = filter_results(outputs,
                              sensor_name=sensor_names,
@@ -1099,7 +1098,7 @@ def list_alerts_command(client: Client, args: Dict[str, str]) -> CommandResults:
                           raw_response=response)
 
 
-def get_alert_pcap_command(client: Client, args: Dict[str, str]) -> Dict[str, Any]:
+def get_alert_pcap_command(client: Client, args: dict[str, str]) -> dict[str, Any]:
     """
     Retrieves the PCAP file associated to a given Alert.
 
@@ -1112,14 +1111,14 @@ def get_alert_pcap_command(client: Client, args: Dict[str, str]) -> Dict[str, An
     """
 
     alert_id = arg_to_number(args['alert_id'])
-    response = client.get_alert_pcap_request(alert_id=alert_id)
+    response = client.get_alert_pcap_request(alert_id=alert_id)  # type: ignore[arg-type]
 
     return fileResult(filename=f'alert_{alert_id}_sniff.pcap',
                       data=response,
                       file_type=EntryType.ENTRY_INFO_FILE)
 
 
-def list_sensors_command(client: Client, args: Dict[str, str]) -> CommandResults:
+def list_sensors_command(client: Client, args: dict[str, str]) -> CommandResults:
     """
     Retrieves information about the sensors associated to the eyeInspect CC.
 
@@ -1135,11 +1134,11 @@ def list_sensors_command(client: Client, args: Dict[str, str]) -> CommandResults
     all_sensors = arg_to_boolean(args.get('all_sensors'))
 
     response = client.list_sensors_request(offset=offset, limit=limit, all_sensors=all_sensors)
-    outputs = response['results']
+    outputs = response['results']  # type: ignore[call-overload]
 
     names = argToList(args.get('name'))
     addresses = argToList(args.get('address'))
-    ports = arg_to_type_list(args.get('port'), int)
+    ports = arg_to_type_list(args.get('port'), int)  # type: ignore[arg-type]
     sensor_types = argToList(args.get('type'))
     states = argToList(args.get('state'))
     outputs = filter_results(outputs,
@@ -1163,7 +1162,7 @@ def list_sensors_command(client: Client, args: Dict[str, str]) -> CommandResults
                           raw_response=response)
 
 
-def list_sensor_modules_command(client: Client, args: Dict[str, str]) -> CommandResults:
+def list_sensor_modules_command(client: Client, args: dict[str, str]) -> CommandResults:
     """
     Retrieves information about the Modules of the specified Sensor.
 
@@ -1178,8 +1177,8 @@ def list_sensor_modules_command(client: Client, args: Dict[str, str]) -> Command
     sensor_id = arg_to_number(args['sensor_id'])
     page, offset, limit = get_pagination_arguments(args)
 
-    response = client.list_sensor_modules_request(sensor_id=sensor_id, offset=offset, limit=limit)
-    outputs = response['results']
+    response = client.list_sensor_modules_request(sensor_id=sensor_id, offset=offset, limit=limit)  # type: ignore[arg-type]
+    outputs = response['results']  # type: ignore[call-overload]
 
     readable_output = tableToMarkdown(f'Sensor {sensor_id} Modules List:',
                                       outputs,
@@ -1195,7 +1194,7 @@ def list_sensor_modules_command(client: Client, args: Dict[str, str]) -> Command
                           raw_response=response)
 
 
-def update_sensor_module_command(client: Client, args: Dict[str, str]) -> CommandResults:
+def update_sensor_module_command(client: Client, args: dict[str, str]) -> CommandResults:
     """
     Changes the specified properties of the specified Module.
 
@@ -1214,8 +1213,8 @@ def update_sensor_module_command(client: Client, args: Dict[str, str]) -> Comman
     started = arg_to_boolean(args.get('started'))
     operational_mode = args.get('operational_mode')
 
-    response = client.update_sensor_module_request(sensor_id=sensor_id,
-                                                   module_id=module_id,
+    response = client.update_sensor_module_request(sensor_id=sensor_id,  # type: ignore[arg-type]
+                                                   module_id=module_id,  # type: ignore[arg-type]
                                                    name=name,
                                                    description=description,
                                                    started=started,
@@ -1233,7 +1232,7 @@ def update_sensor_module_command(client: Client, args: Dict[str, str]) -> Comman
                           raw_response=response)
 
 
-def delete_sensor_module_command(client: Client, args: Dict[str, str]) -> CommandResults:
+def delete_sensor_module_command(client: Client, args: dict[str, str]) -> CommandResults:
     """
     Deletes the specified Module from the specified Sensor and from the eyeInspect CC database.
 
@@ -1248,13 +1247,13 @@ def delete_sensor_module_command(client: Client, args: Dict[str, str]) -> Comman
     sensor_id = arg_to_number(args['sensor_id'])
     module_id = arg_to_number(args['module_id'])
 
-    client.delete_sensor_module_request(sensor_id=sensor_id, module_id=module_id)
+    client.delete_sensor_module_request(sensor_id=sensor_id, module_id=module_id)  # type: ignore[arg-type]
     readable_output = f'## The module {module_id} of sensor {sensor_id} was successfully deleted!'
 
     return CommandResults(readable_output=readable_output)
 
 
-def get_ip_blacklist_command(client: Client, args: Dict[str, str]) -> CommandResults:
+def get_ip_blacklist_command(client: Client, args: dict[str, str]) -> CommandResults:
     """
     Retrieves the IP blacklist from the Industrial Threat Library of the specified Sensor.
 
@@ -1269,9 +1268,9 @@ def get_ip_blacklist_command(client: Client, args: Dict[str, str]) -> CommandRes
     sensor_id = arg_to_number(args['sensor_id'])
     page, offset, limit = get_pagination_arguments(args)
 
-    response = client.get_ip_blacklist_request(sensor_id=sensor_id, offset=offset, limit=limit)
+    response = client.get_ip_blacklist_request(sensor_id=sensor_id, offset=offset, limit=limit)  # type: ignore[arg-type]
 
-    outputs = deepcopy(response['results'])
+    outputs = deepcopy(response['results'])  # type: ignore[call-overload]
     for entry in outputs:
         entry['sensor_id'] = sensor_id
 
@@ -1289,7 +1288,7 @@ def get_ip_blacklist_command(client: Client, args: Dict[str, str]) -> CommandRes
                           raw_response=response)
 
 
-def add_ip_blacklist_command(client: Client, args: Dict[str, str]) -> CommandResults:
+def add_ip_blacklist_command(client: Client, args: dict[str, str]) -> CommandResults:
     """
     Adds a new entry to the IP blacklist from the Industrial Threat Library of the specified Sensor.
 
@@ -1305,7 +1304,7 @@ def add_ip_blacklist_command(client: Client, args: Dict[str, str]) -> CommandRes
     address = args['address']
     comment = args.get('comment', '')
 
-    client.add_ip_blacklist_request(sensor_id=sensor_id, address=address, comment=comment)
+    client.add_ip_blacklist_request(sensor_id=sensor_id, address=address, comment=comment)  # type: ignore[arg-type]
 
     outputs = {'address': address, 'comment': comment}
     readable_output = tableToMarkdown(f'New IP Blacklist Entry of Sensor {sensor_id}:',
@@ -1317,7 +1316,7 @@ def add_ip_blacklist_command(client: Client, args: Dict[str, str]) -> CommandRes
     return CommandResults(readable_output=readable_output)
 
 
-def get_domain_blacklist_command(client: Client, args: Dict[str, str]) -> CommandResults:
+def get_domain_blacklist_command(client: Client, args: dict[str, str]) -> CommandResults:
     """
     Retrieves the domain name blacklist from the Industrial Threat Library of the specified Sensor.
 
@@ -1332,9 +1331,9 @@ def get_domain_blacklist_command(client: Client, args: Dict[str, str]) -> Comman
     sensor_id = arg_to_number(args['sensor_id'])
     page, offset, limit = get_pagination_arguments(args)
 
-    response = client.get_domain_blacklist_request(sensor_id=sensor_id, offset=offset, limit=limit)
+    response = client.get_domain_blacklist_request(sensor_id=sensor_id, offset=offset, limit=limit)  # type: ignore[arg-type]
 
-    outputs = deepcopy(response['results'])
+    outputs = deepcopy(response['results'])  # type: ignore[call-overload]
     for entry in outputs:
         entry['sensor_id'] = sensor_id
 
@@ -1352,7 +1351,7 @@ def get_domain_blacklist_command(client: Client, args: Dict[str, str]) -> Comman
                           raw_response=response)
 
 
-def add_domain_blacklist_command(client: Client, args: Dict[str, str]) -> CommandResults:
+def add_domain_blacklist_command(client: Client, args: dict[str, str]) -> CommandResults:
     """
     Adds a new entry to the domain name blacklist from the Industrial Threat Library of the specified Sensor.
 
@@ -1368,7 +1367,7 @@ def add_domain_blacklist_command(client: Client, args: Dict[str, str]) -> Comman
     domain_name = args['domain_name']
     comment = args.get('comment', '')
 
-    client.add_domain_blacklist_request(sensor_id=sensor_id,
+    client.add_domain_blacklist_request(sensor_id=sensor_id,  # type: ignore[arg-type]
                                         domain_name=domain_name,
                                         comment=comment)
 
@@ -1382,7 +1381,7 @@ def add_domain_blacklist_command(client: Client, args: Dict[str, str]) -> Comman
     return CommandResults(readable_output=readable_output)
 
 
-def get_ssl_client_blacklist_command(client: Client, args: Dict[str, str]) -> CommandResults:
+def get_ssl_client_blacklist_command(client: Client, args: dict[str, str]) -> CommandResults:
     """
     Retrieves the SSL client application blacklist from the Industrial Threat Library of the specified Sensor.
 
@@ -1397,11 +1396,11 @@ def get_ssl_client_blacklist_command(client: Client, args: Dict[str, str]) -> Co
     sensor_id = arg_to_number(args['sensor_id'])
     page, offset, limit = get_pagination_arguments(args)
 
-    response = client.get_ssl_client_blacklist_request(sensor_id=sensor_id,
+    response = client.get_ssl_client_blacklist_request(sensor_id=sensor_id,  # type: ignore[arg-type]
                                                        offset=offset,
                                                        limit=limit)
 
-    outputs = deepcopy(response['results'])
+    outputs = deepcopy(response['results'])  # type: ignore[call-overload]
     for entry in outputs:
         entry['sensor_id'] = sensor_id
 
@@ -1419,7 +1418,7 @@ def get_ssl_client_blacklist_command(client: Client, args: Dict[str, str]) -> Co
                           raw_response=response)
 
 
-def add_ssl_client_blacklist_command(client: Client, args: Dict[str, str]) -> CommandResults:
+def add_ssl_client_blacklist_command(client: Client, args: dict[str, str]) -> CommandResults:
     """
     Adds a new entry to the SSL client application blacklist from the Industrial Threat Library of the specified Sensor.
 
@@ -1436,7 +1435,7 @@ def add_ssl_client_blacklist_command(client: Client, args: Dict[str, str]) -> Co
     ja3_hash = args['ja3_hash']
     comment = args.get('comment', '')
 
-    client.add_ssl_client_blacklist_request(sensor_id=sensor_id,
+    client.add_ssl_client_blacklist_request(sensor_id=sensor_id,  # type: ignore[arg-type]
                                             application_name=application_name,
                                             ja3_hash=ja3_hash,
                                             comment=comment)
@@ -1455,7 +1454,7 @@ def add_ssl_client_blacklist_command(client: Client, args: Dict[str, str]) -> Co
     return CommandResults(readable_output=readable_output)
 
 
-def get_file_operation_blacklist_command(client: Client, args: Dict[str, str]) -> CommandResults:
+def get_file_operation_blacklist_command(client: Client, args: dict[str, str]) -> CommandResults:
     """
     Retrieves the file operation blacklist from the Industrial Threat Library of the specified Sensor.
 
@@ -1470,11 +1469,11 @@ def get_file_operation_blacklist_command(client: Client, args: Dict[str, str]) -
     sensor_id = arg_to_number(args['sensor_id'])
     page, offset, limit = get_pagination_arguments(args)
 
-    response = client.get_file_operation_blacklist_request(sensor_id=sensor_id,
+    response = client.get_file_operation_blacklist_request(sensor_id=sensor_id,  # type: ignore[arg-type]
                                                            offset=offset,
                                                            limit=limit)
 
-    outputs = deepcopy(response['results'])
+    outputs = deepcopy(response['results'])  # type: ignore[call-overload]
     for entry in outputs:
         entry['sensor_id'] = sensor_id
 
@@ -1493,7 +1492,7 @@ def get_file_operation_blacklist_command(client: Client, args: Dict[str, str]) -
                           raw_response=response)
 
 
-def add_file_operation_blacklist_command(client: Client, args: Dict[str, str]) -> CommandResults:
+def add_file_operation_blacklist_command(client: Client, args: dict[str, str]) -> CommandResults:
     """
     Adds entries to the file operation blacklist from the Industrial Threat Library of the specified Sensor.
 
@@ -1511,7 +1510,7 @@ def add_file_operation_blacklist_command(client: Client, args: Dict[str, str]) -
     operation = args['operation']
     comment = args.get('comment', '')
 
-    client.add_file_operation_blacklist_request(sensor_id=sensor_id,
+    client.add_file_operation_blacklist_request(sensor_id=sensor_id,  # type: ignore[arg-type]
                                                 matching_type=matching_type,
                                                 file_or_folder=file_or_folder,
                                                 operation=operation,
@@ -1559,7 +1558,7 @@ def get_diagnostics_information_command(client: Client, *_) -> CommandResults:
                           raw_response=response)
 
 
-def get_diagnostic_logs_command(client: Client, args: Dict[str, str]) -> Dict[str, Any]:
+def get_diagnostic_logs_command(client: Client, args: dict[str, str]) -> dict[str, Any]:
     """
     Download the ZIP file which contains diagnostic logs of the Command Center.
 
@@ -1581,7 +1580,7 @@ def get_diagnostic_logs_command(client: Client, args: Dict[str, str]) -> Dict[st
                       file_type=EntryType.ENTRY_INFO_FILE)
 
 
-def list_group_policies_command(client: Client, args: Dict[str, str]) -> CommandResults:
+def list_group_policies_command(client: Client, args: dict[str, str]) -> CommandResults:
     """
     Get all group policies.
 
@@ -1596,7 +1595,7 @@ def list_group_policies_command(client: Client, args: Dict[str, str]) -> Command
     page, offset, limit = get_pagination_arguments(args)
 
     response = client.list_group_policies_request(offset=offset, limit=limit)
-    outputs = response['results']
+    outputs = response['results']  # type: ignore[call-overload]
 
     readable_output = tableToMarkdown('Group Policies List:',
                                       outputs,
@@ -1614,7 +1613,7 @@ def list_group_policies_command(client: Client, args: Dict[str, str]) -> Command
     )
 
 
-def create_group_policy_command(client: Client, args: Dict[str, str]) -> CommandResults:
+def create_group_policy_command(client: Client, args: dict[str, str]) -> CommandResults:
     """
     Create a group policy.
 
@@ -1655,7 +1654,7 @@ def create_group_policy_command(client: Client, args: Dict[str, str]) -> Command
                           raw_response=response)
 
 
-def update_group_policy_command(client: Client, args: Dict[str, str]) -> CommandResults:
+def update_group_policy_command(client: Client, args: dict[str, str]) -> CommandResults:
     """
     Update a group policy.
 
@@ -1672,7 +1671,7 @@ def update_group_policy_command(client: Client, args: Dict[str, str]) -> Command
     description = args['description']
     constraints = argToList(args['constraints'])
 
-    response = client.update_group_policy_request(policy_id=policy_id,
+    response = client.update_group_policy_request(policy_id=policy_id,  # type: ignore[arg-type]
                                                   name=name,
                                                   description=description,
                                                   constraints=constraints)
@@ -1700,7 +1699,7 @@ def update_group_policy_command(client: Client, args: Dict[str, str]) -> Command
     )
 
 
-def delete_group_policy_command(client: Client, args: Dict[str, str]) -> CommandResults:
+def delete_group_policy_command(client: Client, args: dict[str, str]) -> CommandResults:
     """
     Delete a group policy.
 
@@ -1714,12 +1713,12 @@ def delete_group_policy_command(client: Client, args: Dict[str, str]) -> Command
 
     policy_id = arg_to_number(args['policy_id'])
 
-    client.delete_group_policy_request(policy_id=policy_id)
+    client.delete_group_policy_request(policy_id=policy_id)  # type: ignore[arg-type]
     return CommandResults(
         readable_output=f'## The group policy {policy_id} was successfully deleted!')
 
 
-def assign_group_policy_hosts_command(client: Client, args: Dict[str, str]) -> CommandResults:
+def assign_group_policy_hosts_command(client: Client, args: dict[str, str]) -> CommandResults:
     """
     Add all hosts not assigned to any policy (individual or group) matching the filter to the group policy.
 
@@ -1735,7 +1734,7 @@ def assign_group_policy_hosts_command(client: Client, args: Dict[str, str]) -> C
     filter_type = args['filter_type']
     filter_value = args['filter_value']
 
-    response = client.assign_group_policy_hosts_request(policy_id=policy_id,
+    response = client.assign_group_policy_hosts_request(policy_id=policy_id,  # type: ignore[arg-type]
                                                         filter_type=filter_type,
                                                         filter_value=filter_value)
     readable_output = f'## {response["count"]} Additional Hosts Were Assigned to Group Policy {policy_id}!'
@@ -1743,7 +1742,7 @@ def assign_group_policy_hosts_command(client: Client, args: Dict[str, str]) -> C
     return CommandResults(readable_output=readable_output, raw_response=response)
 
 
-def unassign_group_policy_hosts_command(client: Client, args: Dict[str, str]) -> CommandResults:
+def unassign_group_policy_hosts_command(client: Client, args: dict[str, str]) -> CommandResults:
     """
     Unassign all hosts assigned to the group policy matching the filter.
 
@@ -1759,7 +1758,7 @@ def unassign_group_policy_hosts_command(client: Client, args: Dict[str, str]) ->
     filter_type = args['filter_type']
     filter_value = args['filter_value']
 
-    response = client.unassign_group_policy_hosts_request(policy_id=policy_id,
+    response = client.unassign_group_policy_hosts_request(policy_id=policy_id,  # type: ignore[arg-type]
                                                           filter_type=filter_type,
                                                           filter_value=filter_value)
     readable_output = f'## {response["count"]} Additional Hosts Were Unassigned from Group Policy {policy_id}!'
@@ -1767,7 +1766,7 @@ def unassign_group_policy_hosts_command(client: Client, args: Dict[str, str]) ->
     return CommandResults(readable_output=readable_output, raw_response=response)
 
 
-def list_ip_reuse_domains_command(client: Client, args: Dict[str, str]) -> CommandResults:
+def list_ip_reuse_domains_command(client: Client, args: dict[str, str]) -> CommandResults:
     """
     Get all IP reuse domains.
 
@@ -1782,7 +1781,7 @@ def list_ip_reuse_domains_command(client: Client, args: Dict[str, str]) -> Comma
     page, offset, limit = get_pagination_arguments(args)
 
     response = client.list_ip_reuse_domains_request(offset=offset, limit=limit)
-    outputs = response['results']
+    outputs = response['results']  # type: ignore[call-overload]
 
     readable_output = tableToMarkdown('IP Reuse Domains List:',
                                       outputs,
@@ -1798,7 +1797,7 @@ def list_ip_reuse_domains_command(client: Client, args: Dict[str, str]) -> Comma
                           raw_response=response)
 
 
-def list_hosts_changelog_command(client: Client, args: Dict[str, str]) -> CommandResults:
+def list_hosts_changelog_command(client: Client, args: dict[str, str]) -> CommandResults:
     """
     Retrieves information about the changes of host properties and configuration from the eyeInspect CC database.
 
@@ -1824,7 +1823,7 @@ def list_hosts_changelog_command(client: Client, args: Dict[str, str]) -> Comman
                                                    end_timestamp=end_timestamp,
                                                    event_type_id=event_type_id,
                                                    event_category=event_category)
-    outputs = response['results']
+    outputs = response['results']  # type: ignore[call-overload]
 
     readable_output = tableToMarkdown(
         'Hosts Changes List:',
@@ -1872,7 +1871,7 @@ def test_module(client: Client, should_fetch: bool, first_fetch: str, max_fetch:
 
 
 def fetch_alerts(client: Client, last_time: datetime, max_fetch: int,
-                 last_incident_id: int) -> List[Dict[str, Any]]:
+                 last_incident_id: int) -> List[dict[str, Any]]:
     """
     Fetches alerts with pagination.
     This is essential since the API might return earlier alerts
@@ -1888,11 +1887,11 @@ def fetch_alerts(client: Client, last_time: datetime, max_fetch: int,
         List[Dict[str, Any]]: The new fetched alerts.
     """
 
-    alerts = []
+    alerts = []  # type: ignore[var-annotated]
 
     offset = 0
     while max_fetch > 0:
-        results = client.list_alerts_request(offset=offset,
+        results = client.list_alerts_request(offset=offset,  # type: ignore[union-attr,call-overload]
                                              limit=max_fetch,
                                              start_timestamp=last_time.isoformat())['results']
         offset += len(results)
@@ -1923,10 +1922,10 @@ def fetch_incidents(client: Client, first_fetch: str, max_fetch: int) -> None:
     validate_fetch_params(max_fetch=max_fetch, first_fetch=first_fetch)
 
     last_run = demisto.getLastRun() or {}
-    last_time = arg_to_datetime(last_run.get('time') or first_fetch).astimezone()
+    last_time = arg_to_datetime(last_run.get('time') or first_fetch).astimezone()  # type: ignore[union-attr]
     last_incident_id = last_run.get('incident_id')
 
-    alerts = fetch_alerts(client, last_time, max_fetch, last_incident_id)
+    alerts = fetch_alerts(client, last_time, max_fetch, last_incident_id)  # type: ignore[arg-type]
     add_alerts_fields(client, alerts)
 
     incidents = []
@@ -1957,7 +1956,7 @@ def main():
     client = Client(server_url, username, password, use_ssl, use_proxy)
 
     max_fetch = arg_to_number(params.get('max_fetch', DEFAULT_FETCH_INCIDENTS))
-    max_fetch = min(max_fetch, MAX_FETCH_INCIDENTS)
+    max_fetch = min(max_fetch, MAX_FETCH_INCIDENTS)  # type: ignore[type-var]
     first_fetch = params.get('first_fetch', DEFAULT_FIRST_FETCH)
 
     commands = {
@@ -1994,12 +1993,12 @@ def main():
         command = demisto.command()
 
         if command == 'fetch-incidents':
-            fetch_incidents(client, first_fetch, max_fetch)
+            fetch_incidents(client, first_fetch, max_fetch)  # type: ignore[arg-type]
         elif command == 'test-module':
             should_fetch = arg_to_boolean(params.get('isFetch'))
-            return_results(test_module(client, should_fetch, first_fetch, max_fetch))
+            return_results(test_module(client, should_fetch, first_fetch, max_fetch))  # type: ignore[arg-type]
         elif command in commands:
-            return_results(commands[command](client, demisto.args()))
+            return_results(commands[command](client, demisto.args()))  # type: ignore[operator]
         else:
             raise NotImplementedError(f'The command {command} does not exist!')
     except Exception as e:

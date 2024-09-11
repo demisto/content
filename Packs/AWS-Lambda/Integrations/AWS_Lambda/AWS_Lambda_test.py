@@ -1,8 +1,8 @@
-import io
 import json
 
 import pytest
-from typing import Any, Callable
+from typing import Any
+from collections.abc import Callable
 from AWS_Lambda import (
     _parse_policy_response,
     get_policy_command,
@@ -57,7 +57,7 @@ class MockClient:
 
 
 def util_load_json(path: str):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 

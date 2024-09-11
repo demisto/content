@@ -41,7 +41,8 @@ repos:
     - --config=nightly_ruff.toml
     args:ci:
     - --config=nightly_ruff.toml
-    skip:docker_autoupdate: true
+    args:docker_autoupdate:
+    - --config=nightly_ruff.toml
 - repo: https://github.com/hhatto/autopep8
   rev: v2.3.1
   hooks:
@@ -175,14 +176,12 @@ repos:
     - Tests/scripts/dev_envs/pytest/conftest.py
     skip:commit: true
     run_isolated: true
-    skip:docker_autoupdate: true
     pass_docker_extra_args:ci: --rm=false
     pass_docker_extra_args:nightly: --rm=false
 
   - id: validate-deleted-files
     name: validate-deleted-files
     entry: validate-deleted-files
-    skip:docker_autoupdate: true
     language: system
     require_serial: true
     pass_filenames: false
@@ -194,7 +193,6 @@ repos:
 
   - id: validate-content-paths
     name: validate-content-paths
-    skip:docker_autoupdate: true
     entry: validate-content-path
     language: system
     require_serial: true
@@ -205,14 +203,12 @@ repos:
     -  --skip-markdown
     -  --skip-suffix
 
-
   - id: validate-conf-json
     name: validate-conf-json
     description: validate conf.json
     files: Tests/conf.json
     skip:commit: true
     skip:nightly: true
-    skip:docker_autoupdate: true
     entry: validate-conf-json
     pass_filenames: false
     language: system
@@ -267,6 +263,11 @@ repos:
     args:
     - --skip-pack-dependencies
     - --config-path=validation_config.toml
+    args:packwise:
+    - --skip-pack-dependencies
+    - --config-path=validation_config.toml
+    - --ignore=DO106
+    - --ignore=CJ105
     pass_filenames: false
     language: system
     require_serial: true

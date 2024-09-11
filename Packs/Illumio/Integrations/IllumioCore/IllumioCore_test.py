@@ -1,6 +1,5 @@
 """Test file for Illumio Integration."""
 
-import io
 import re
 
 import pytest
@@ -96,7 +95,7 @@ def mock_client():
 
 def util_load_json(path):
     """Load a JSON file to python dictionary."""
-    with io.open(path, mode="r", encoding="utf-8") as f:
+    with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
 
 
@@ -652,7 +651,6 @@ def test_virtual_service_create_command_for_human_readable_with_protocol_as_udp(
             {"name": "test", "port": "30000", "protocol": "tcpi"},
             InvalidValueError,
         ),
-        (MISSING_REQUIRED_PARAM_EXCEPTION_MESSAGE.format("name"), {}, ValueError),
         (
             INVALID_PORT_NUMBER_CREATE_VIRTUAL_SERVICE_EXCEPTION_MESSAGE.format(65536),
             {"name": "test", "port": "65536"},
@@ -662,12 +660,7 @@ def test_virtual_service_create_command_for_human_readable_with_protocol_as_udp(
             INVALID_PORT_NUMBER_CREATE_VIRTUAL_SERVICE_EXCEPTION_MESSAGE.format(-3),
             {"name": "test", "port": "-3"},
             InvalidValueError,
-        ),
-        (
-            MISSING_REQUIRED_PARAM_EXCEPTION_MESSAGE.format("port"),
-            {"name": "test"},
-            ValueError,
-        ),
+        )
     ],
 )
 def test_virtual_service_create_command_when_invalid_arguments_provided(

@@ -123,7 +123,7 @@ sendMultipart = function (uri, entryID, body) {
             'file'
         );
         tries++;
-    } while (tries < 3 && res.Status.startsWith('timeout while waiting for answer'));
+    } while (tries < 3 && res.Status.startsWith('timeout'));
     logDebug("Ran httpMultipart() " + tries + " time(s)")
 
     if (res.StatusCode < 200 || res.StatusCode >= 300) {
@@ -334,26 +334,14 @@ var installPacks = function(packs_to_install, file_url, entry_id, skip_verify, s
 /**
  * deletes an entry  by entryID by the key_to_delete
 Arguments:
-    @param {String} file_content -- content of the file to upload
-    @param {String} file_name  -- name of the file in the dest incident
-    @param {String} key_to_delete  -- the name of the key to delete
     @param {String} incident_id  -- the incident id
+    @param {String} entry_id  -- the entry ID of the file
 Returns:
     CommandResults
 """
  */
-var uploadFile= function(incident_id, file_content, file_name) {
-    var body = {
-        file:
-        {
-            value: [file_content],
-            options: {
-                filename: [file_name],
-                contentType: 'multipart/form-data'
-            }
-        },
-    };
-    var res = httpMultipart(`/entry/upload/${incident_id}`,file_content ,body);
+var uploadFile= function(incident_id, entry_id) {
+    var res = httpMultipart(`/entry/upload/${incident_id}`, entry_id);
     if (isError(res[0])) {
         throw res[0].Contents;
     }
@@ -434,8 +422,8 @@ var fileUploadCommand = function(incident_id, file_content, file_name, entryID )
     }
     var fileId = '';
     if ((!entryID)) {
-        response = uploadFile(incident_id, file_content, file_name);
         fileId = saveFile(file_content);
+        response = uploadFile(incident_id, fileId);
     } else {
         if (file_name === undefined) {
             file_name = dq(invContext, `File(val.EntryID == ${entryID}).Name`);

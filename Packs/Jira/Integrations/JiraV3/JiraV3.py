@@ -1,15 +1,14 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-
 from abc import ABCMeta
 from collections.abc import Callable
 from collections import defaultdict
 from bs4 import BeautifulSoup
-from datetime import timezone
 import hashlib
 from copy import deepcopy
 from mimetypes import guess_type
+
 # Note: time.time_ns() is used instead of time.time() to avoid the precision loss caused by the float type.
 # Source: https://docs.python.org/3/library/time.html#time.time_ns
 
@@ -1189,19 +1188,19 @@ class JiraIssueFieldsParser:
     @staticmethod
     def get_assignee_context(issue_data: Dict[str, Any]) -> Dict[str, str]:
         assignee = demisto.get(issue_data, 'fields.assignee', {}) or {}
-        return {'Assignee': f'{assignee.get("displayName","")}({assignee.get("emailAddress", "")})'
+        return {'Assignee': f'{assignee.get("displayName", "")}({assignee.get("emailAddress", "")})'
                 if assignee else ''}
 
     @staticmethod
     def get_creator_context(issue_data: Dict[str, Any]) -> Dict[str, str]:
         creator = demisto.get(issue_data, 'fields.creator', {}) or {}
-        return {'Creator': f'{creator.get("displayName","")}({creator.get("emailAddress", "")})'
+        return {'Creator': f'{creator.get("displayName", "")}({creator.get("emailAddress", "")})'
                 if creator else ''}
 
     @staticmethod
     def get_reporter_context(issue_data: Dict[str, Any]) -> Dict[str, str]:
         reporter = demisto.get(issue_data, 'fields.reporter', {}) or {}
-        return {'Reporter': f'{reporter.get("displayName","")}({reporter.get("emailAddress", "")})'
+        return {'Reporter': f'{reporter.get("displayName", "")}({reporter.get("emailAddress", "")})'
                 if reporter else ''}
 
     @staticmethod
@@ -1531,11 +1530,18 @@ def create_issue_fields(client: JiraBaseClient, issue_args: Dict[str, str],
             parsed_value = [{"name": component} for component in argToList(value)]
         elif issue_arg in ['description', 'environment']:
             parsed_value = text_to_adf(value) if isinstance(client, JiraCloudClient) else value
+        elif not (isinstance(value, dict | list)):
+            # If the value is not a list or a dictionary, we will try to parse it as a json object.
+            try:
+                parsed_value = json.loads(value)
+            except (json.JSONDecodeError, TypeError):
+                pass    # Some values should not be in a JSON format so it maks sense for them to fail parsing.
         dotted_string = issue_fields_mapper.get(issue_arg, '')
         if not dotted_string and issue_arg.startswith('customfield'):
             # This is used to deal with the case when the user creates a custom incident field, using
             # the custom fields of Jira.
             dotted_string = f'fields.{issue_arg}'
+
         issue_fields |= create_fields_dict_from_dotted_string(
             issue_fields=issue_fields, dotted_string=dotted_string, value=parsed_value or value)
     return issue_fields
@@ -2622,8 +2628,8 @@ def get_id_by_attribute_command(client: JiraBaseClient, args: Dict[str, str]) ->
 
     elif len(account_ids) > 1:
         return CommandResults(readable_output=f'Multiple account IDs were found for attribute: {attribute}.\n'
-                              f'Please try to provide the other attributes available - Email or DisplayName'
-                              ' (and Name in the case of Jira OnPrem).')
+                                              f'Please try to provide the other attributes available - Email or DisplayName'
+                                              ' (and Name in the case of Jira OnPrem).')
     # If reached here, that means there is only one entry in account_ids that holds the right id for the given attribute
     outputs['AccountId'] = account_ids[0]
     return CommandResults(
@@ -3281,7 +3287,7 @@ def fetch_incidents(client: JiraBaseClient, issue_field_to_fetch_from: str, fetc
                 ' "Issue index to start fetching incidents from" parameter.'
                 if smallest_issue_id
                 else 'The id that was configured does not exist in the Jira instance, '
-                'and the fetch query returned no results, therefore, could not start fetching.'
+                     'and the fetch query returned no results, therefore, could not start fetching.'
             ) from e
     # If we did no progress in terms of time (the created, or updated time stayed the same as the last fetch), we should keep the
     # ids of the last fetch until progress is made, so we exclude them in the next fetch.
@@ -3408,13 +3414,17 @@ def get_comments_entries_for_fetched_incident(
 
 def get_attachments_entries_for_fetched_incident(
         client: JiraBaseClient,
-        attachments_metadata: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        attachments_metadata: List[Dict[str, Any]],
+        incident_modified_date: datetime | None = None,
+        user_timezone_name: str = "") -> List[Dict[str, Any]]:
     """Return the attachments' entries for a fetched and mirrored incident
 
     Args:
         client (JiraBaseClient): The Jira client.
         attachments_metadata (List[str]): The metadata of the attachments, which includes the ids and created time of the
         attachments.
+        incident_modified_date (datetime | None): The modified date of the incident.
+        user_timezone_name (str): The timezone of the user.
 
     Returns:
         List[Dict[str, Any]]: The attachment entries for a fetched or mirrored incident.
@@ -3422,6 +3432,13 @@ def get_attachments_entries_for_fetched_incident(
     attachment_ids: List[str] = []
     attachments_entries: List[Dict[str, Any]] = []
     for attachment_metadata in attachments_metadata:
+        if (incident_modified_date
+            and (attachment_created_date := dateparser.parse(attachment_metadata.get('created', ''),
+                                                             settings={'TIMEZONE': user_timezone_name}))
+                and attachment_created_date <= incident_modified_date):
+            demisto.debug(f"The attachment with the id {attachment_metadata.get('id', '')} was created before the incident"
+                          f" was modified, therefore, it will not be fetched.")
+            continue
         attachment_id = attachment_metadata.get('id', '')
         attachments_entries.append(create_file_info_from_attachment(
             client=client, attachment_id=attachment_id
@@ -3630,7 +3647,7 @@ def get_system_timezone() -> Any:
     """Returns the system's timezone.
     This will also print to the debug console the system timezone.
     """
-    system_timezone = datetime.now(timezone.utc).astimezone().tzinfo
+    system_timezone = datetime.utcnow().astimezone().tzinfo
     demisto.debug(f'Timezone of the system: {system_timezone}')
     return system_timezone
 
@@ -3800,6 +3817,8 @@ def get_updated_remote_data(client: JiraBaseClient, issue: Dict[str, Any], updat
         attachments_entries = get_attachments_entries_for_fetched_incident(
             client=client,
             attachments_metadata=demisto.get(issue, 'fields.attachment') or [],
+            incident_modified_date=incident_modified_date,
+            user_timezone_name=user_timezone_name
         )
         attachments_incident_field = []
         demisto.debug(f'Got the following attachments entries {attachments_entries}')
@@ -3823,10 +3842,9 @@ def get_updated_remote_data(client: JiraBaseClient, issue: Dict[str, Any], updat
                 if (
                     COMMENT_MIRRORED_FROM_XSOAR not in comment_body
                     and incident_modified_date
-                    and comment_updated_date >= incident_modified_date
+                    and comment_updated_date > incident_modified_date
                 ):
-                    # We should only add comments as a Note Entry if the comment's modified date is the same as
-                    # or newer than the incident's modified date.
+                    # We only want to add comments as a Note Entry if it is newer than the incident's modified date.
                     parsed_entries.append({
                         'Type': EntryType.NOTE,
                         'Contents': f'{comment_body}\nJira Author: {comment_entry.get("UpdateUser")}',

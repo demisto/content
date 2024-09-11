@@ -5,7 +5,7 @@ fromversion: 6.0.0
 name: Create-Mock-Feed-Relationships
 display: Create-Mock-Feed-Relationships
 category: Data Enrichment & Threat Intelligence
-description: Mock Feed
+description: Mock Feed.
 configuration:
 - display: Indicator Type
   name: indicator_type
@@ -99,7 +99,6 @@ configuration:
   - never
   - interval
   - indicatorType
-  - suddenDeath
   required: false
 - display: Bypass exclusion list
   name: feedBypassExclusionList
@@ -124,7 +123,7 @@ configuration:
 script:
   script: ''
   type: python
-  dockerimage: demisto/feed-performance-test:1.0.99137
+  dockerimage: demisto/feed-performance-test:1.0.103518
   feed: true
   subtype: python3
 tests:

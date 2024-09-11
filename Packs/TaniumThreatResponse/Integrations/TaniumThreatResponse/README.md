@@ -521,7 +521,6 @@ Returns all local snapshots of a single connection.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Tanium.LocalSnapshot.ConnectionName | String | The snapshot connection name. | 
-| Tanium.LocalSnapshot.Deleted | Boolean | Whether the snapshot has been deleted. | 
 | Tanium.LocalSnapshot.FileName | String | The snapshot file name. | 
 
 
