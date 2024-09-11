@@ -976,7 +976,12 @@ def build_drilldown_search(notable_data, search, raw_dict, is_query_name=False):
     """
     searchable_search: list = []
     start = 0
-
+    try:
+        demisto.info(f"[test]: in build_drilldown_search, got {search=} where {type(search)=}")
+    except Exception as e:
+        demisto.info(f"[test] in build_drilldown_search, got the following error: {e}, trying to case search to str")
+        search = str(search)
+        demisto.info(f"[test]: in build_drilldown_search exception, got {search=} where {type(search)=}")
     for match in re.finditer(DRILLDOWN_REGEX, search):
         groups = match.groups()
         prefix = groups[0]
@@ -1135,6 +1140,7 @@ def drilldown_enrichment(service: client.Service, notable_data, num_enrichment_e
                 earliest_offset, latest_offset = get_drilldown_timeframe(notable_data, raw_dict)
 
             try:
+                demisto.info("[test]: calling build_drilldown_search for the first time.")
                 parsed_query_name = build_drilldown_search(notable_data, query_name, raw_dict, True)
                 if not parsed_query_name:  # if parsing failed - keep original unparsed name
                     demisto.debug(
@@ -1145,7 +1151,8 @@ def drilldown_enrichment(service: client.Service, notable_data, num_enrichment_e
                 demisto.error(
                     f"Caught an exception while parsing the query name, using the original query name instead: {str(e)}")
                 parsed_query_name = query_name
-
+            
+            demisto.info("[test]: calling build_drilldown_search for the second time.")
             if searchable_query := build_drilldown_search(
                 notable_data, query_search, raw_dict
             ):
@@ -1355,6 +1362,7 @@ def submit_notables(service: client.Service, incidents: list, cache_object: Cach
         demisto.debug(f'Enriching {len(notables[:MAX_SUBMIT_NOTABLES])}/{total} fetched notables')
 
     for notable in notables[:MAX_SUBMIT_NOTABLES]:
+        demisto.info(f"[test]: submitting the following {notable=}")
         if submit_notable(
             service, notable, num_enrichment_events
         ):
