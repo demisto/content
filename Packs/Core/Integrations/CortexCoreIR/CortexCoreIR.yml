@@ -2948,10 +2948,10 @@ script:
   - arguments:
     - description: Allows linking the response action to the incident that triggered it.
       name: incident_id
-    - description: A comma-separated list of endpoint IDs. Can be retrieved by running the xdr-get-endpoints command.
+    - description: A comma-separated list of endpoint IDs. Can be retrieved by running the core-get-endpoints command.
       name: endpoint_ids
       required: true
-    - description: Unique identifier of the script. Can be retrieved by running the xdr-get-scripts command.
+    - description: Unique identifier of the script. Can be retrieved by running the core-get-scripts command.
       name: script_uid
       required: true
     - description: Dictionary containing the parameter name as key and its value for this execution as the value. For example, {"param1":"param1_value","param2":"param2_value"}.
