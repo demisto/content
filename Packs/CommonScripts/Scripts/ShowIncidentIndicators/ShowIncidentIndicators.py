@@ -11,6 +11,7 @@ def group_by_type(indicators):
     """
 
     grouped = {}
+    indicators = indicators[0]['Contents']
     for indicator in indicators:
         if indicator['indicator_type'] not in grouped:
             grouped[indicator['indicator_type']] = [indicator['value']]
@@ -30,12 +31,8 @@ def get_indicators_from_incident():
         List of the indicators from the incident.
     """
     incident_id = demisto.incident()['id']
-    indicators_query = {
-        "investigationIDs": incident_id
-    }
-
-    find_indicators_args = {'query': indicators_query}
-    all_indicator_data = execute_command('findIndicators', args=find_indicators_args)
+    indicators_query = "investigationIDs:" + str(incident_id)
+    all_indicator_data = demisto.executeCommand('findIndicators', {'query': indicators_query, 'size': 200})
     return {"hidden": False, "options": group_by_type(all_indicator_data)}
 
 

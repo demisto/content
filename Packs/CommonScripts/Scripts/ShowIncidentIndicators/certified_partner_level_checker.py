@@ -1,0 +1,1 @@
+/home/gabriel/demisto/content/.venv/lib/python3.10/site-packages/demisto_sdk/commands/lint/resources/pylint_plugins/certified_partner_level_checker.py
