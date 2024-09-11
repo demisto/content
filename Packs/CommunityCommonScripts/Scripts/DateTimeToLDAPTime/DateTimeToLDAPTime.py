@@ -3,17 +3,19 @@ from CommonServerPython import *  # noqa: F401
 import dateparser
 
 
-def convert_time(time_to_convert: datetime):
-    # ((current time - epoch start date) in seconds + seconds since 1/1/1601) * 10000000 (to get nanoseconds)
-    ldap_time = ((time_to_convert - datetime(1970, 1, 1, tzinfo=timezone.utc)).total_seconds() + 11644473600) * 10000000
-    return str(int(ldap_time))
+def convert_time(time_to_convert: Optional[datetime]):
+    if time_to_convert:
+        # ((current time - epoch start date) in seconds + seconds since 1/1/1601) * 10000000 (to get nanoseconds)
+        ldap_time = ((time_to_convert - datetime(1970, 1, 1, tzinfo=timezone.utc)).total_seconds() + 11644473600) * 10000000
+        return str(int(ldap_time))
+    return time_to_convert
 
 
 def main():
     try:
         # Get Args
         args = demisto.args()
-        str_utc_time = args.get('value')
+        str_utc_time = args['value']  # direct access, since this argument is required
 
         # Convert UTC time string to a datetime type
         utc_time = dateparser.parse(str_utc_time)
