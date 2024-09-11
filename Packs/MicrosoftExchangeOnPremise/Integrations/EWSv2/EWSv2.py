@@ -5,7 +5,7 @@ import uuid
 
 import dateparser  # type: ignore
 import exchangelib
-
+import more_itertools
 from CommonServerPython import *
 from io import StringIO
 from exchangelib import (BASIC, DELEGATE, DIGEST, IMPERSONATION, NTLM, Account,
@@ -832,13 +832,12 @@ def search_mailboxes(protocol, filter, limit=100, mailbox_search_scope=None, ema
         demisto.debug(f"{INTEGRATION_NAME} DEBUG: mailboxes len is {len(mailboxes)}")
         mailbox_ids = [x[MAILBOX_ID] for x in mailboxes]  # type: ignore
         demisto.debug(f"{INTEGRATION_NAME} DEBUG: mailboxes len is {len(mailbox_ids)}")
-        if len(mailbox_ids) > 20000:
-            demisto.debug(f"{INTEGRATION_NAME} DEBUG: mailboxes len cutting")
-            mailbox_ids = mailbox_ids[:19998]
     try:
-        demisto.debug(f"{INTEGRATION_NAME} DEBUG: try SearchMailboxes for {len(mailbox_ids)}")
-        search_results = SearchMailboxes(protocol=protocol).call(filter, mailbox_ids)
-        demisto.debug(f"{INTEGRATION_NAME} DEBUG: finished SearchMailboxes for {len(mailbox_ids)}")
+        chunk_size = 1000
+        search_results = []
+        for search_chunk in list(more_itertools.chunked(mailbox_ids, chunk_size)):
+            demisto.debug(f"{INTEGRATION_NAME} DEBUG: {len(search_chunk)=}")
+            search_results.extend(SearchMailboxes(protocol=protocol).call(filter, search_chunk))
         search_results = search_results[:limit]
     except TransportError as e:
         if "ItemCount>0<" in str(e):
