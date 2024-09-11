@@ -2243,7 +2243,7 @@ def mail_command(args, subject_prefix='', in_reply_to=None, references=None):
 
 def reply_mail_command():
     args = demisto.args()
-    in_reply_to = argToList(args.get('in_reply_to'))
+    in_reply_to = argToList(args.get('inReplyTo'))
     references = argToList(args.get('references'))
 
     return mail_command(args, 'Re: ', in_reply_to, references)

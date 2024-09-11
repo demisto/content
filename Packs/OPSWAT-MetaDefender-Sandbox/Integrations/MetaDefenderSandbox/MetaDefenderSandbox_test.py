@@ -275,6 +275,37 @@ def test_scan_command_file_polling(mocker, client):
     assert response[2].outputs["file"]["type"] == "other"
 
 
+def test_scan_command_file_polling_no_threat(mocker, client):
+    from CommonServerPython import ScheduledCommand
+
+    args = {"entry_id": "test_entry_id"}
+    raw_response = util_load_json("test_data/scan_command_file_response.json")
+    mocker.patch.object(client, "post_sample", return_value={"flow_id": "1234"})
+    mocker.patch.object(
+        ScheduledCommand, "raise_error_if_not_supported", return_value=None
+    )
+
+    response = MD_Sandbox.scan_command(client, args)
+    assert response.readable_output == 'Waiting for submission "1234" to finish...'
+
+    polling_args = {
+        "flow_id": "1234",
+        "hide_polling_output": True,
+        "continue_to_poll": True,
+        "url": "test.com",
+    }
+    mocker.patch.object(client, "_http_request", return_value=raw_response)
+    response = MD_Sandbox.scan_command(client, polling_args)
+
+    assert (
+        response[0].indicator.dbot_score.indicator
+        == "b280719e9f2dd010260e6a023e0d69c64fbee8b6cbb8669c722a1da8142d3325"
+    )
+    assert response[0].indicator.dbot_score.score == 1
+    assert response[0].indicator.name == "gabi_bogre.png"
+    assert response[0].outputs["finalVerdict"]["verdict"] == "NO_THREAT"
+
+
 def test_scan_command_file_invalid_password(mocker, client):
     from CommonServerPython import ScheduledCommand
 

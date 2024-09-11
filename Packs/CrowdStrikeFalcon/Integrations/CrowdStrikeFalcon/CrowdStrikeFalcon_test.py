@@ -88,7 +88,7 @@ def test_incident_to_incident_context():
 
 def test_detection_to_incident_context():
     from CrowdStrikeFalcon import detection_to_incident_context
-    res = detection_to_incident_context(input_data.response_idp_detection.copy(), "IDP Detection")
+    res = detection_to_incident_context(input_data.response_idp_detection.copy(), "IDP Detection", 'created_timestamp')
     assert res == input_data.context_idp_detection
 
 
@@ -2369,8 +2369,10 @@ class TestFetch:
                                                {'incident_id': 'ldt:2', 'start': '2020-09-04T09:16:11Z'}]})
         requests_mock.get(f'{SERVER_URL}/alerts/queries/alerts/v1', json={'resources': ['a:ind:1', 'a:ind:2']})
         requests_mock.post(f'{SERVER_URL}/alerts/entities/alerts/v1',
-                           json={'resources': [{'composite_id': 'a:ind:1', 'start_time': '2020-09-04T09:16:11.000Z'},
-                                               {'composite_id': 'a:ind:2', 'start_time': '2020-09-04T09:16:11.000Z'}]})
+                           json={'resources': [{'composite_id': 'a:ind:1', 'start_time': '2020-09-04T09:16:11.000Z',
+                                                "created_timestamp": "2020-09-04T09:16:11.000Z"},
+                                               {'composite_id': 'a:ind:2', 'start_time': '2020-09-04T09:16:11.000Z',
+                                                "created_timestamp": "2020-09-04T09:16:11.000Z"}]})
 
         mocker.patch.object(
             demisto,
@@ -3465,11 +3467,11 @@ def test_search_device_command(requests_mock):
     response = {'resources': {'meta': {'query_time': 0.010188508, 'pagination': {'offset': 1, 'limit': 100, 'total': 1},
                                        'powered_by': 'device-api', 'trace_id': 'c876614b-da71-4942-88db-37b939a78eb3'},
                               'resources': ['15dbb9d8f06b45fe9f61eb46e829d986'], 'errors': []}}
-    device_context = {'ID': 'identifier_number', 'ExternalIP': '1.1.1.1', 'MacAddress': '42-01-0a-80-00-07',
+    device_context = {'ID': '15dbb9d8f06b45fe9f61eb46e829d986', 'ExternalIP': '1.1.1.1', 'MacAddress': '42-01-0a-80-00-07',
                       'Hostname': 'FALCON-CROWDSTR', 'FirstSeen': '2020-02-10T12:40:18Z',
                       'LastSeen': '2021-04-05T13:48:12Z', 'LocalIP': '1.1.1.1', 'OS': 'Windows Server 2019',
                       'Status': 'normal'}
-    endpoint_context = {'Hostname': 'FALCON-CROWDSTR', 'ID': 'identifier_number', 'IPAddress': '1.1.1.1',
+    endpoint_context = {'Hostname': 'FALCON-CROWDSTR', 'ID': '15dbb9d8f06b45fe9f61eb46e829d986', 'IPAddress': '1.1.1.1',
                         'MACAddress': '42-01-0a-80-00-07', 'OS': 'Windows', 'OSVersion': 'Windows Server 2019',
                         'Status': 'Offline', 'Vendor': 'CrowdStrike Falcon'}
     status_res = {
@@ -3531,7 +3533,7 @@ def test_get_endpoint_command(requests_mock, mocker):
     response = {'resources': {'meta': {'query_time': 0.010188508, 'pagination': {'offset': 1, 'limit': 100, 'total': 1},
                                        'powered_by': 'device-api', 'trace_id': 'c876614b-da71-4942-88db-37b939a78eb3'},
                               'resources': ['15dbb9d8f06b45fe9f61eb46e829d986'], 'errors': []}}
-    endpoint_context = {'Hostname': 'FALCON-CROWDSTR', 'ID': 'identifier_number', 'IPAddress': '1.1.1.1',
+    endpoint_context = {'Hostname': 'FALCON-CROWDSTR', 'ID': '15dbb9d8f06b45fe9f61eb46e829d986', 'IPAddress': '1.1.1.1',
                         'MACAddress': '42-01-0a-80-00-07', 'OS': 'Windows', 'OSVersion': 'Windows Server 2019',
                         'Status': 'Online', 'Vendor': 'CrowdStrike Falcon'}
 
@@ -7211,7 +7213,7 @@ Test Scenarios:
 
 @pytest.mark.parametrize('Legacy_version, tag, url_suffix, data', [
     (False, "test_tag", "/alerts/entities/alerts/v3",
-     '{"action_parameters": [{"name": "show_in_ui", "value": "True"}, {"name": "assign_to_user_id", "value": "123"}, {"name": "update_status", "value": "resolved"}, {"name": "append_comment", "value": "comment"}, {"name": "add_tag", "value": "test_tag"}], "composite_ids": ["123"]}'),  # noqa: E501
+     '{"action_parameters": [{"name": "show_in_ui", "value": "True"}, {"name": "assign_to_uuid", "value": "123"}, {"name": "update_status", "value": "resolved"}, {"name": "append_comment", "value": "comment"}, {"name": "add_tag", "value": "test_tag"}], "composite_ids": ["123"]}'),  # noqa: E501
     (True, None, '/detects/entities/detects/v2',
      '{"ids": ["123"], "status": "resolved", "assigned_to_uuid": "123", "show_in_ui": "True", "comment": "comment"}')
                                                              ])
@@ -7466,3 +7468,58 @@ def test_resolve_detections_request__url(mocker, Legacy_version, expected_url):
     http_request_mocker = mocker.patch('CrowdStrikeFalcon.http_request')
     resolve_detections_request(ids=["123"])
     assert http_request_mocker.call_args_list[0][1]['url_suffix'] == expected_url
+
+
+def test_get_status(mocker):
+    """
+    Given:
+        - Raw response of get_status_request
+    When:
+        - Running get_status command
+    Then:
+        - Validate that the contains the ids and state
+    """
+    import CrowdStrikeFalcon
+    device_ids = ["0bde2c4645294245aca522971ccc4567", "04a75a2d15b44a5995c9c17200ad1212", "046761c46ec84f40b27b6f79ce7c6543",
+                  "8ed44198a6f64f9fabd0479c30989876", "d4210a0957e640f18c237a2fa1141122"]
+
+    response = load_json('test_data/online_states_response.json')
+
+    mocker.patch.object(CrowdStrikeFalcon, 'http_request', return_value=response)
+
+    results = CrowdStrikeFalcon.get_status(device_ids)
+    assert len(results) == 5
+    assert results == {'0bde2c4645294245aca522971ccc4567': 'Online',
+                       '04a75a2d15b44a5995c9c17200ad1212': 'Online',
+                       '046761c46ec84f40b27b6f79ce7c6543': 'Online',
+                       '8ed44198a6f64f9fabd0479c30989876': 'Online',
+                       'd4210a0957e640f18c237a2fa1141122': 'Online'}
+
+
+def test_fix_time_field():
+    """
+    Given:
+        - A detection, a string representing the key of the time we want to fix.
+    When:
+        - Running fetch_incidents command
+    Then:
+        - Validate that the value of the given key in the detection was updated correctly.
+    """
+    from CrowdStrikeFalcon import fix_time_field
+    detection_1 = {
+        'created_timestamp': '2023-04-20T11:13:10.424647194Z'
+    }
+    detection_2 = {
+        'created_timestamp': '2023-04-20T11:13:10.424647Z'
+    }
+    detection_3 = {
+        'created_timestamp': '2023-04-20T11:13:10.424Z'
+    }
+
+    fix_time_field(detection_1, 'created_timestamp')
+    fix_time_field(detection_2, 'created_timestamp')
+    fix_time_field(detection_3, 'created_timestamp')
+
+    assert detection_1['created_timestamp'] == '2023-04-20T11:13:10.424647Z'
+    assert detection_2['created_timestamp'] == '2023-04-20T11:13:10.424647Z'
+    assert detection_3['created_timestamp'] == '2023-04-20T11:13:10.424Z'

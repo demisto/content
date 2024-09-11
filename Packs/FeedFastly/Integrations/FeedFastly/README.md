@@ -16,6 +16,7 @@ Use Fastly Feed to get assigned CIDRs and add them to your firewall's allow-list
     |  |  | False |
     | Feed Fetch Interval |  | False |
     | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
+    | Enrichment Excluded | Select this option to exclude the fetched indicators from the enrichment process. | False |
     | Tags | Supports CSV values. | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |

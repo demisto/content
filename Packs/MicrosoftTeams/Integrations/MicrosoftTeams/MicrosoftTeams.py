@@ -19,6 +19,7 @@ from gevent.pywsgi import WSGIServer
 from jwt.algorithms import RSAAlgorithm
 from ssl import SSLContext, SSLError, PROTOCOL_TLSv1_2
 from cryptography.hazmat.primitives.asymmetric.rsa import RSAPublicKey
+import urllib.parse
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # type: ignore
@@ -947,8 +948,8 @@ def get_team_aad_id(team_name: str) -> str:
         for team in teams:
             if team_name == team.get('team_name', ''):
                 return team.get('team_aad_id', '')
-    url: str = f"{GRAPH_BASE_URL}/v1.0/groups?$filter=displayName eq '{team_name}' " \
-               "and resourceProvisioningOptions/Any(x:x eq 'Team')"
+    url: str = (f"{GRAPH_BASE_URL}/v1.0/groups?$filter=displayName eq '{urllib.parse.quote(team_name)}' "
+                f"and resourceProvisioningOptions/Any(x:x eq 'Team')")
     response: dict = cast(dict[Any, Any], http_request('GET', url))
     demisto.debug(f'Response {response}')
     teams = response.get('value', [])
@@ -2483,6 +2484,12 @@ def message_handler(integration_context: dict, request_body: dict, channel_data:
                         return
 
 
+@APP.route('/health', methods=['GET'])
+def health_check():
+    demisto.debug("Microsoft Teams Integration received a local health check")
+    return Response('Microsoft Teams long running integration server is up.', status=200, mimetype='text/plain')
+
+
 @APP.route('/', methods=['POST'])
 def messages() -> Response:
     """
@@ -2496,7 +2503,7 @@ def messages() -> Response:
         if validate_auth_header(headers) is False:
             demisto.info(f'Authorization header failed: {str(headers)}')
         else:
-            request_body: dict = request.json
+            request_body: dict = request.json   # type: ignore[assignment]
             integration_context: dict = get_integration_context()
             service_url: str = request_body.get('serviceUrl', '')
             if service_url:

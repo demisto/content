@@ -1995,7 +1995,7 @@ class ResponseReaderWrapper(io.RawIOBase):
     def close(self):
         self.responseReader.close()
 
-    def read(self, n):
+    def read(self, n):  # type: ignore[override]
         return self.responseReader.read(n)
 
     def readinto(self, b):
@@ -2424,6 +2424,32 @@ def parse_batch_of_results(current_batch_of_results, max_results_to_add, app):
     return parsed_batch_results, batch_dbot_scores
 
 
+def raise_error_for_failed_job(job):
+    """
+    Handle the case that the search job failed due to dome reason like parsing issues etc
+    raise DemistoException in case there is a fatal error in the search job.
+    see https://docs.splunk.com/Documentation/Splunk/9.3.0/RESTTUT/RESTsearches#:~:text=the%20results%20returned.-,dispatchState,-dispatchState%20is%20one
+
+    Args:
+        job (Job): the created search job
+
+    Raises:
+        Exception: DemistoException in case there is a fatal error
+    """
+    err_msg = None
+    try:
+        if job and job['dispatchState'] == 'FAILED':
+            messages = job['messages']
+            for err_type in ['fatal', 'error']:
+                if messages.get(err_type):
+                    err_msg = ','.join(messages[err_type])
+                    break
+    except Exception:
+        pass
+    if err_msg:
+        raise DemistoException(f'Failed to run the search in Splunk: {err_msg}')
+
+
 def splunk_search_command(service: client.Service, args: dict) -> CommandResults | list[CommandResults]:
     query = build_search_query(args)
     polling = argToBoolean(args.get("polling", False))
@@ -2436,6 +2462,8 @@ def splunk_search_command(service: client.Service, args: dict) -> CommandResults
         search_job = service.jobs.create(query, **search_kwargs)
         job_sid = search_job["sid"]
         args['sid'] = job_sid
+        raise_error_for_failed_job(search_job)
+
     status_cmd_result: CommandResults | None = None
     if polling:
         status_cmd_result = splunk_job_status(service, args)
