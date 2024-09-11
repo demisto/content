@@ -838,6 +838,7 @@ def search_mailboxes(protocol, filter, limit=100, mailbox_search_scope=None, ema
         for search_chunk in list(more_itertools.chunked(mailbox_ids, chunk_size)):
             demisto.debug(f"{INTEGRATION_NAME} DEBUG: {len(search_chunk)=}")
             search_results.extend(SearchMailboxes(protocol=protocol).call(filter, search_chunk))
+            demisto.debug(f"{INTEGRATION_NAME} DEBUG: finished call to {len(search_chunk)=}")
         search_results = search_results[:limit]
     except TransportError as e:
         if "ItemCount>0<" in str(e):
