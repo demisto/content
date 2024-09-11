@@ -455,6 +455,38 @@ def test_search_url_command(mocker, autofocusv2_client):
     assert result[0].raw_response["indicator"]["indicatorValue"] == mock_response["indicator"]["indicatorValue"]
 
 
+def test_search_url_command_args(mocker, autofocusv2_client):
+    from AutofocusV2 import search_url_command
+
+    mock_response = {
+        'indicator': {
+            'indicatorValue': 'www.test.com',
+            'indicatorType': 'URL',
+            'latestPanVerdicts': {'PAN_DB': 'BENIGN'}
+        },
+        'tags': []
+    }
+
+    status_code = 200
+
+    expected_headers = {'Content-Type': 'application/json', 'apiKey': '1234'}
+    expected_params = {'indicatorType': 'url', 'indicatorValue': 'www.test.com', 'includeTags': 'true'}
+    expected_ok_codes = (200, 404, 409, 503)
+
+    response = ResMocker(mock_response, status_code)
+    http_request = mocker.patch.object(autofocusv2_client, '_http_request', return_value=response)
+
+    search_url_command(autofocusv2_client, "www.test.com", 'B - Usually reliable', True)
+
+    http_request.assert_called_with(method='GET',
+                                    url_suffix='/tic',
+                                    headers=expected_headers,
+                                    params=expected_params,
+                                    retries=3,
+                                    resp_type='response',
+                                    ok_codes=expected_ok_codes)
+
+
 TEST_DATA = [
     (
         'autofocus_md5_response',
