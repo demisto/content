@@ -62,7 +62,8 @@ class Client(BaseClient):
             "password": self.password,
         }
         result = self._http_request('POST', full_url=self.authentication_url, json_data=data)
-        if result.get("status", "") == "PASSWORD_EXPIRED":
+        demisto.debug(f"result is: {result}")
+        if result.get("status", "") != "SUCCESS":
             return_error(f"Okta password has expired, please update it.")
         return result.get('sessionToken')
 
