@@ -50,6 +50,7 @@ Add a target account to a target group.
 #### Context Output
 
 There is no context output for this command.
+
 ### wab-add-password-target-to-target-group
 
 ***
@@ -73,6 +74,7 @@ Add a password checkout account to a target group.
 #### Context Output
 
 There is no context output for this command.
+
 ### wab-add-restriction-to-target-group
 
 ***
@@ -94,6 +96,7 @@ Add a restriction to a target group.
 #### Context Output
 
 There is no context output for this command.
+
 ### wab-get-account-references
 
 ***
@@ -312,6 +315,7 @@ Delete an account.
 #### Context Output
 
 There is no context output for this command.
+
 ### wab-get-application-accounts
 
 ***
@@ -390,6 +394,7 @@ Add an account to a local domain of an application.
 #### Context Output
 
 There is no context output for this command.
+
 ### wab-get-application-account
 
 ***
@@ -468,6 +473,7 @@ Edit an account on a local domain of an application.
 #### Context Output
 
 There is no context output for this command.
+
 ### wab-delete-account-from-local-domain-of-application
 
 ***
@@ -488,6 +494,7 @@ Delete an account from a local domain of an application.
 #### Context Output
 
 There is no context output for this command.
+
 ### wab-get-applications
 
 ***
@@ -599,6 +606,7 @@ Edit an application.
 #### Context Output
 
 There is no context output for this command.
+
 ### wab-delete-application
 
 ***
@@ -617,6 +625,7 @@ Delete an application.
 #### Context Output
 
 There is no context output for this command.
+
 ### wab-get-approvals
 
 ***
@@ -742,6 +751,7 @@ Reply to an approval request (approve/reject it). Note: you can answer to an app
 #### Context Output
 
 There is no context output for this command.
+
 ### wab-get-approvals-for-approver
 
 ***
@@ -812,6 +822,7 @@ Cancel an accepted approval. Note: you can cancel an approval only if you are in
 #### Context Output
 
 There is no context output for this command.
+
 ### wab-notify-approvers-linked-to-approval-assignment
 
 ***
@@ -935,6 +946,7 @@ Cancel an approval request.
 #### Context Output
 
 There is no context output for this command.
+
 ### wab-notify-approvers-linked-to-approval-request
 
 ***
@@ -1211,6 +1223,7 @@ Add an authorization.
 #### Context Output
 
 There is no context output for this command.
+
 ### wab-get-authorization
 
 ***
@@ -1293,6 +1306,7 @@ Edit an authorization.
 #### Context Output
 
 There is no context output for this command.
+
 ### wab-delete-authorization
 
 ***
@@ -1311,6 +1325,7 @@ Delete an authorization.
 #### Context Output
 
 There is no context output for this command.
+
 ### wab-get-checkout-policies
 
 ***
@@ -1418,6 +1433,7 @@ Upload X509 configuration.
 #### Context Output
 
 There is no context output for this command.
+
 ### wab-updatex509-configuration
 
 ***
@@ -1439,6 +1455,7 @@ Update X509 Configuration.
 #### Context Output
 
 There is no context output for this command.
+
 ### wab-resetx509-configuration
 
 ***
@@ -1455,6 +1472,7 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+
 ### wab-get-current-serial-configuration-number-of-bastion
 
 ***
@@ -1564,6 +1582,7 @@ Add an account to a local domain on a device.
 #### Context Output
 
 There is no context output for this command.
+
 ### wab-get-one-account-on-device-local-domain
 
 ***
@@ -1654,6 +1673,7 @@ Edit an account on a local domain of a device.
 #### Context Output
 
 There is no context output for this command.
+
 ### wab-delete-account-from-local-domain-of-device
 
 ***
@@ -1674,6 +1694,7 @@ Delete an account from a local domain of a device.
 #### Context Output
 
 There is no context output for this command.
+
 ### wab-get-certificates-on-device
 
 ***
@@ -1762,6 +1783,7 @@ Revoke a certificate of a device.
 #### Context Output
 
 There is no context output for this command.
+
 ### wab-get-services-of-device
 
 ***
@@ -1819,6 +1841,7 @@ Add a service in a device.
 #### Context Output
 
 There is no context output for this command.
+
 ### wab-get-service-of-device
 
 ***
@@ -1871,6 +1894,7 @@ Edit a service of a device.
 #### Context Output
 
 There is no context output for this command.
+
 ### wab-delete-service-from-device
 
 ***
@@ -1890,6 +1914,7 @@ Delete a service from a device.
 #### Context Output
 
 There is no context output for this command.
+
 ### wab-get-devices
 
 ***
@@ -1975,6 +2000,7 @@ Add a device.
 #### Context Output
 
 There is no context output for this command.
+
 ### wab-get-device
 
 ***
@@ -2060,6 +2086,7 @@ Edit a device.
 #### Context Output
 
 There is no context output for this command.
+
 ### wab-delete-device
 
 ***
@@ -2078,6 +2105,7 @@ Delete a device.
 #### Context Output
 
 There is no context output for this command.
+
 ### wab-get-accounts-of-global-domain
 
 ***
@@ -2164,6 +2192,7 @@ Add an account in a global domain.
 #### Context Output
 
 There is no context output for this command.
+
 ### wab-get-account-of-global-domain
 
 ***
@@ -2251,6 +2280,7 @@ Edit an account in a global domain.
 #### Context Output
 
 There is no context output for this command.
+
 ### wab-delete-account-from-global-domain
 
 ***
@@ -2270,6 +2300,7 @@ Delete an account from a global domain.
 #### Context Output
 
 There is no context output for this command.
+
 ### wab-delete-resource-from-global-domain-account
 
 ***
@@ -2290,6 +2321,7 @@ delete a resource from the global domain account.
 #### Context Output
 
 There is no context output for this command.
+
 ### wab-get-global-domains
 
 ***
@@ -2508,6 +2540,7 @@ Write a message in /var/log/wabaudit.log and send it to the SIEM (if configured)
 #### Context Output
 
 There is no context output for this command.
+
 ### wab-get-notifications
 
 ***
@@ -2564,6 +2597,7 @@ Add a notification.
 #### Context Output
 
 There is no context output for this command.
+
 ### wab-get-notification
 
 ***
@@ -2619,6 +2653,7 @@ Edit a notification.
 #### Context Output
 
 There is no context output for this command.
+
 ### wab-delete-notification
 
 ***
@@ -2637,6 +2672,7 @@ Delete a notification.
 #### Context Output
 
 There is no context output for this command.
+
 ### wab-get-object-to-onboard
 
 ***
@@ -2840,6 +2876,7 @@ Start a scan job manually.
 #### Context Output
 
 There is no context output for this command.
+
 ### wab-get-scanjob
 
 ***
@@ -2885,6 +2922,7 @@ Cancel a scan job.
 #### Context Output
 
 There is no context output for this command.
+
 ### wab-get-scans
 
 ***
@@ -3147,6 +3185,7 @@ Edit a session.
 #### Context Output
 
 There is no context output for this command.
+
 ### wab-get-session-metadata
 
 ***
@@ -3219,6 +3258,7 @@ Create a session request.
 #### Context Output
 
 There is no context output for this command.
+
 ### wab-delete-pending-or-live-session-request
 
 ***
@@ -3237,6 +3277,7 @@ Delete a pending or a live session request.
 #### Context Output
 
 There is no context output for this command.
+
 ### wab-get-latest-snapshot-of-running-session
 
 ***
@@ -3255,6 +3296,7 @@ Get the latest snapshot of a running session.
 #### Context Output
 
 There is no context output for this command.
+
 ### wab-get-status-of-trace-generation
 
 ***
@@ -3305,6 +3347,7 @@ Generate a trace for a session.
 #### Context Output
 
 There is no context output for this command.
+
 ### wab-get-wallix-bastion-usage-statistics
 
 ***
@@ -3421,6 +3464,7 @@ Add a target group.
 #### Context Output
 
 There is no context output for this command.
+
 ### wab-get-target-group
 
 ***
@@ -3501,6 +3545,7 @@ Edit a target group.
 #### Context Output
 
 There is no context output for this command.
+
 ### wab-delete-target-group
 
 ***
@@ -3519,6 +3564,7 @@ Delete a target group.
 #### Context Output
 
 There is no context output for this command.
+
 ### wab-delete-target-from-group
 
 ***
@@ -3539,6 +3585,7 @@ Delete a target from a group.
 #### Context Output
 
 There is no context output for this command.
+
 ### wab-get-user-groups
 
 ***
@@ -3687,6 +3734,7 @@ Add a user.
 #### Context Output
 
 There is no context output for this command.
+
 ### wab-get-user
 
 ***
@@ -3782,6 +3830,7 @@ Extend the duration time to get the passwords for a given target.
 #### Context Output
 
 There is no context output for this command.
+
 ### wab-release-passwords-for-target
 
 ***
@@ -3803,6 +3852,7 @@ Release the passwords for a given target.
 #### Context Output
 
 There is no context output for this command.
+
 ### wab-get-target-by-type
 
 ***
@@ -3888,6 +3938,7 @@ Add a mapping in a group and set mapping fallback. If the field "external_group"
 #### Context Output
 
 There is no context output for this command.
+
 ### wab-get-mapping-of-user-group
 
 ***
@@ -3937,6 +3988,7 @@ Edit a mapping of a user group.
 #### Context Output
 
 There is no context output for this command.
+
 ### wab-delete-mapping-of-user-group
 
 ***
