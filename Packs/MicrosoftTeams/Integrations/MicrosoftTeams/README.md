@@ -850,7 +850,7 @@ Adds a member (user) to a group chat.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | chat | The chat ID or group chat name (topic) to which to add the member. | Required | 
-| member | Display name/mail/UPN of user that should be added to the chat. Can be an array. | Required | 
+| member | Display name/mail/UPN of the user who should be added to the chat. Can be an array. | Required | 
 | share_history | Whether to share the whole history of the chat. Possible values are: true, false. Default is true. | Optional | 
 
 #### Context Output
