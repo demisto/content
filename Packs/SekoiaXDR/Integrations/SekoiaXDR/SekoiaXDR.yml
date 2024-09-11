@@ -1114,9 +1114,6 @@ script:
   isfetch: true
   runonce: false
   subtype: python3
-  ismappable: true
-  isremotesyncin: true
-  isremotesyncout: true
   isFetchSamples: true
 fromversion: 6.10.0
 tests:
