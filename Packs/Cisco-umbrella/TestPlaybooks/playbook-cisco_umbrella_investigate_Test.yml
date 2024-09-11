@@ -1,0 +1,2085 @@
+id: cisco_umbrella_investigate
+name: cisco_umbrella_investigate
+version: -1
+fromversion: 6.10.0
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: "3b2418e6-e1ac-41bf-ba41-6101098d7a00"
+    type: start
+    task:
+      id: "3b2418e6-e1ac-41bf-ba41-6101098d7a00"
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      "#none#":
+        - "1"
+    separatecontext: false
+    view: '{"position":{"x":50,"y":50}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: 1
+    taskid: "3b2418e6-e1ac-41bf-ba41-6101098d7a01"
+    type: regular
+    task:
+      id: "3b2418e6-e1ac-41bf-ba41-6101098d7a01"
+      version: -1
+      name: DeleteContext
+      description: ""
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+        - "2"
+    scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    view: '{"position":{"x":50,"y":200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "2":
+    id: 2
+    taskid: "3b2418e6-e1ac-41bf-ba41-6101098d7a02"
+    type: regular
+    task:
+      id: "3b2418e6-e1ac-41bf-ba41-6101098d7a02"
+      version: -1
+      name: umbrella-domain-categorization
+      description: ""
+      script: Cisco Umbrella Investigate|||umbrella-domain-categorization
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+        - "3"
+    scriptarguments:
+      domain:
+        simple: cisco.com
+    separatecontext: false
+    view: '{"position":{"x":50,"y":400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "3":
+    id: "3"
+    taskid: "3b2418e6-e1ac-41bf-ba41-6101098d7a03"
+    type: condition
+    task:
+      id: "3b2418e6-e1ac-41bf-ba41-6101098d7a03"
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ""
+      brand: ""
+    nexttasks:
+      yes:
+        - "4"
+    separatecontext: false
+    conditions:
+      - label: yes
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Domain.Name
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Domain.SecurityCategories
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Domain.ContentCategories
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: DBotScore.Indicator
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: DBotScore.Vendor
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: DBotScore.Reliability
+                iscontext: true
+    view: '{"position":{"x":50,"y":600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "4":
+    id: 4
+    taskid: "3b2418e6-e1ac-41bf-ba41-6101098d7a04"
+    type: regular
+    task:
+      id: "3b2418e6-e1ac-41bf-ba41-6101098d7a04"
+      version: -1
+      name: umbrella-domain-search
+      description: ""
+      script: Cisco Umbrella Investigate|||umbrella-domain-search
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+        - "5"
+    scriptarguments:
+      regex:
+        simple: ...cis[a-z]o.com
+      limit:
+        simple: "1"
+    separatecontext: false
+    view: '{"position":{"x":50,"y":800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "5":
+    id: "5"
+    taskid: "3b2418e6-e1ac-41bf-ba41-6101098d7a05"
+    type: condition
+    task:
+      id: "3b2418e6-e1ac-41bf-ba41-6101098d7a05"
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ""
+      brand: ""
+    nexttasks:
+      yes:
+        - "6"
+    separatecontext: false
+    conditions:
+      - label: yes
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Domain.Name
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Domain.FirstSeen
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Domain.FirstSeenISO
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Domain.SecurityCategories
+                iscontext: true
+    view: '{"position":{"x":50,"y":1000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "6":
+    id: 6
+    taskid: "3b2418e6-e1ac-41bf-ba41-6101098d7a06"
+    type: regular
+    task:
+      id: "3b2418e6-e1ac-41bf-ba41-6101098d7a06"
+      version: -1
+      name: umbrella-domain-co-occurrences
+      description: ""
+      script: Cisco Umbrella Investigate|||umbrella-domain-co-occurrences
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+        - "7"
+    scriptarguments:
+      domain:
+        simple: cisco.com
+    separatecontext: false
+    view: '{"position":{"x":50,"y":1200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "7":
+    id: "7"
+    taskid: "3b2418e6-e1ac-41bf-ba41-6101098d7a07"
+    type: condition
+    task:
+      id: "3b2418e6-e1ac-41bf-ba41-6101098d7a07"
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ""
+      brand: ""
+    nexttasks:
+      yes:
+        - "8"
+    separatecontext: false
+    conditions:
+      - label: yes
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Domain.Name
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Domain.CoOccurrences.Name
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Domain.CoOccurrences.Score
+                iscontext: true
+    view: '{"position":{"x":50,"y":1400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "8":
+    id: 8
+    taskid: "3b2418e6-e1ac-41bf-ba41-6101098d7a08"
+    type: regular
+    task:
+      id: "3b2418e6-e1ac-41bf-ba41-6101098d7a08"
+      version: -1
+      name: umbrella-domain-related
+      description: ""
+      script: Cisco Umbrella Investigate|||umbrella-domain-related
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+        - "9"
+    scriptarguments:
+      domain:
+        simple: cisco.com
+    separatecontext: false
+    view: '{"position":{"x":50,"y":1600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "9":
+    id: "9"
+    taskid: "3b2418e6-e1ac-41bf-ba41-6101098d7a09"
+    type: condition
+    task:
+      id: "3b2418e6-e1ac-41bf-ba41-6101098d7a09"
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ""
+      brand: ""
+    nexttasks:
+      yes:
+        - "10"
+    separatecontext: false
+    conditions:
+      - label: yes
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Domain.Name
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Domain.Related.Name
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Domain.Related.Score
+                iscontext: true
+    view: '{"position":{"x":50,"y":1800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "10":
+    id: 10
+    taskid: "3b2418e6-e1ac-41bf-ba41-6101098d7a10"
+    type: regular
+    task:
+      id: "3b2418e6-e1ac-41bf-ba41-6101098d7a10"
+      version: -1
+      name: umbrella-domain-security
+      description: ""
+      script: Cisco Umbrella Investigate|||umbrella-domain-security
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+        - "11"
+    scriptarguments:
+      domain:
+        simple: cisco.com
+    separatecontext: false
+    view: '{"position":{"x":50,"y":2000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "11":
+    id: "11"
+    taskid: "3b2418e6-e1ac-41bf-ba41-6101098d7a11"
+    type: condition
+    task:
+      id: "3b2418e6-e1ac-41bf-ba41-6101098d7a11"
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ""
+      brand: ""
+    nexttasks:
+      yes:
+        - "12"
+    separatecontext: false
+    conditions:
+      - label: yes
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Domain.Name
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Domain.Security.DGA
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Domain.Security.Perplexity
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Domain.Security.Entropy
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Domain.Security.SecureRank
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Domain.Security.PageRank
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Domain.Security.ASNScore
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Domain.Security.PrefixScore
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Domain.Security.RipScore
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Domain.Security.Popularity
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Domain.Security.GeoScore
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Domain.Security.KolmoorovSmirnov
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Domain.Security.AttackName
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Domain.Security.ThreatType
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Domain.tld_geodiversity
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Domain.GeodiversityNormalized.score
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Domain.GeodiversityNormalized.country_code
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Domain.Geodiversity.score
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Domain.Geodiversity.country_code
+                iscontext: true
+    view: '{"position":{"x":50,"y":2200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "12":
+    id: 12
+    taskid: "3b2418e6-e1ac-41bf-ba41-6101098d7a12"
+    type: regular
+    task:
+      id: "3b2418e6-e1ac-41bf-ba41-6101098d7a12"
+      version: -1
+      name: umbrella-get-domain-risk-score
+      description: ""
+      script: Cisco Umbrella Investigate|||umbrella-get-domain-risk-score
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+        - "13"
+    scriptarguments:
+      domain:
+        simple: cisco.com
+    separatecontext: false
+    view: '{"position":{"x":50,"y":2400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "13":
+    id: "13"
+    taskid: "3b2418e6-e1ac-41bf-ba41-6101098d7a13"
+    type: condition
+    task:
+      id: "3b2418e6-e1ac-41bf-ba41-6101098d7a13"
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ""
+      brand: ""
+    nexttasks:
+      yes:
+        - "14"
+    separatecontext: false
+    conditions:
+      - label: yes
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Domain.Name
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.Domain.name
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.Domain.risk_score
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.Domain.Indicator.score
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.Domain.Indicator.normalized_score
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.Domain.Indicator.indicator_id
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.Domain.Indicator.indicator
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: DBotScore.Indicator
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: DBotScore.Vendor
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: DBotScore.Reliability
+                iscontext: true
+    view: '{"position":{"x":50,"y":2600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "14":
+    id: 14
+    taskid: "3b2418e6-e1ac-41bf-ba41-6101098d7a14"
+    type: regular
+    task:
+      id: "3b2418e6-e1ac-41bf-ba41-6101098d7a14"
+      version: -1
+      name: umbrella-list-resource-record
+      description: ""
+      script: Cisco Umbrella Investigate|||umbrella-list-resource-record
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+        - "15"
+    scriptarguments:
+      value:
+        simple: cisco.com
+      type:
+        simple: Name
+      limit:
+        simple: "1"
+    separatecontext: false
+    view: '{"position":{"x":50,"y":2800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "15":
+    id: "15"
+    taskid: "3b2418e6-e1ac-41bf-ba41-6101098d7a15"
+    type: condition
+    task:
+      id: "3b2418e6-e1ac-41bf-ba41-6101098d7a15"
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ""
+      brand: ""
+    nexttasks:
+      yes:
+        - "16"
+    separatecontext: false
+    conditions:
+      - label: yes
+        condition:
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.ResourceRecord.value
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.ResourceRecord.last_seen_iso
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.ResourceRecord.first_seen_iso
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.ResourceRecord.content_categories
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.ResourceRecord.security_categories
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.ResourceRecord.type
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.ResourceRecord.name
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Umbrella.ResourceRecord.rr
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.ResourceRecord.last_seen
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.ResourceRecord.first_seen
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.ResourceRecord.max_ttl
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.ResourceRecord.min_ttl
+                iscontext: true
+    view: '{"position":{"x":50,"y":3000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "16":
+    id: 16
+    taskid: "3b2418e6-e1ac-41bf-ba41-6101098d7a16"
+    type: regular
+    task:
+      id: "3b2418e6-e1ac-41bf-ba41-6101098d7a16"
+      version: -1
+      name: umbrella-list-domain-subdomian
+      description: ""
+      script: Cisco Umbrella Investigate|||umbrella-list-domain-subdomian
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+        - "17"
+    scriptarguments:
+      domain:
+        simple: cisco.com
+      limit:
+        simple: "1"
+    separatecontext: false
+    view: '{"position":{"x":50,"y":3200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "17":
+    id: "17"
+    taskid: "3b2418e6-e1ac-41bf-ba41-6101098d7a17"
+    type: condition
+    task:
+      id: "3b2418e6-e1ac-41bf-ba41-6101098d7a17"
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ""
+      brand: ""
+    nexttasks:
+      yes:
+        - "18"
+    separatecontext: false
+    conditions:
+      - label: yes
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Umbrella.Domain.name
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.Domain.SubDomain.name
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.Domain.SubDomain.first_seen
+                iscontext: true
+    view: '{"position":{"x":50,"y":3400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "18":
+    id: 18
+    taskid: "3b2418e6-e1ac-41bf-ba41-6101098d7a18"
+    type: regular
+    task:
+      id: "3b2418e6-e1ac-41bf-ba41-6101098d7a18"
+      version: -1
+      name: umbrella-get-ip-bgp
+      description: ""
+      script: Cisco Umbrella Investigate|||umbrella-get-ip-bgp
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+        - "19"
+    scriptarguments:
+      ip:
+        simple: 8.8.8.8
+    separatecontext: false
+    view: '{"position":{"x":50,"y":3600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "19":
+    id: "19"
+    taskid: "3b2418e6-e1ac-41bf-ba41-6101098d7a19"
+    type: condition
+    task:
+      id: "3b2418e6-e1ac-41bf-ba41-6101098d7a19"
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ""
+      brand: ""
+    nexttasks:
+      yes:
+        - "20"
+    separatecontext: false
+    conditions:
+      - label: yes
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Umbrella.BGPInformation.ip
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.BGPInformation.creation_date
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.BGPInformation.ir
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.BGPInformation.description
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.BGPInformation.asn
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.BGPInformation.cidr
+                iscontext: true
+    view: '{"position":{"x":50,"y":3800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "20":
+    id: 20
+    taskid: "3b2418e6-e1ac-41bf-ba41-6101098d7a20"
+    type: regular
+    task:
+      id: "3b2418e6-e1ac-41bf-ba41-6101098d7a20"
+      version: -1
+      name: umbrella-get-asn-bgp
+      description: ""
+      script: Cisco Umbrella Investigate|||umbrella-get-asn-bgp
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+        - "21"
+    scriptarguments:
+      asn:
+        simple: "3356"
+    separatecontext: false
+    view: '{"position":{"x":50,"y":4000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "21":
+    id: "21"
+    taskid: "3b2418e6-e1ac-41bf-ba41-6101098d7a21"
+    type: condition
+    task:
+      id: "3b2418e6-e1ac-41bf-ba41-6101098d7a21"
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ""
+      brand: ""
+    nexttasks:
+      yes:
+        - "22"
+    separatecontext: false
+    conditions:
+      - label: yes
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Umbrella.BGPInformation.asn
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.BGPInformation.cidr
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.BGPInformation.Geo.country_name
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.BGPInformation.Geo.country_code
+                iscontext: true
+    view: '{"position":{"x":50,"y":4200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "22":
+    id: 22
+    taskid: "3b2418e6-e1ac-41bf-ba41-6101098d7a22"
+    type: regular
+    task:
+      id: "3b2418e6-e1ac-41bf-ba41-6101098d7a22"
+      version: -1
+      name: umbrella-get-whois-for-domain
+      description: ""
+      script: Cisco Umbrella Investigate|||umbrella-get-whois-for-domain
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+        - "23"
+    scriptarguments:
+      domain:
+        simple: cisco.com
+      limit:
+        simple: "1"
+    separatecontext: false
+    view: '{"position":{"x":50,"y":4400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "23":
+    id: "23"
+    taskid: "3b2418e6-e1ac-41bf-ba41-6101098d7a23"
+    type: condition
+    task:
+      id: "3b2418e6-e1ac-41bf-ba41-6101098d7a23"
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ""
+      brand: ""
+    nexttasks:
+      yes:
+        - "24"
+    separatecontext: false
+    conditions:
+      - label: yes
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Umbrella.WHOIS.name
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Umbrella.WHOIS.Domain
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.Data.RegistrarName
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.Data.LastRetrieved
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.Data.Created
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.Data.Updated
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.Data.Expires
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.Data.IANAID
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.Data.LastObserved
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.Data.Nameservers.Name
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.Data.Emails.Name
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Domain.Admin.Country
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Domain.Admin.Email
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Domain.Admin.Name
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Domain.Admin.Phone
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Domain.Registrant.Country
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Domain.Registrant.Email
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Domain.Registrant.Name
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Domain.Registrant.Phone
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Domain.CreationDate
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Domain.DomainStatus
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Domain.UpdatedDate
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Domain.ExpirationDate
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Domain.Registrar.Name
+                iscontext: true
+    view: '{"position":{"x":50,"y":4600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "24":
+    id: 24
+    taskid: "3b2418e6-e1ac-41bf-ba41-6101098d7a24"
+    type: regular
+    task:
+      id: "3b2418e6-e1ac-41bf-ba41-6101098d7a24"
+      version: -1
+      name: umbrella-get-domain-whois-history
+      description: ""
+      script: Cisco Umbrella Investigate|||umbrella-get-domain-whois-history
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+        - "25"
+    scriptarguments:
+      domain:
+        simple: cisco.com
+      limit:
+        simple: "1"
+    separatecontext: false
+    view: '{"position":{"x":50,"y":4800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "25":
+    id: "25"
+    taskid: "3b2418e6-e1ac-41bf-ba41-6101098d7a25"
+    type: condition
+    task:
+      id: "3b2418e6-e1ac-41bf-ba41-6101098d7a25"
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ""
+      brand: ""
+    nexttasks:
+      yes:
+        - "26"
+    separatecontext: false
+    conditions:
+      - label: yes
+        condition:
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.DomainHistory.addresses
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.DomainHistory.administrative_contact_city
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.DomainHistory.administrative_contact_country
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.DomainHistory.administrative_contact_email
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.DomainHistory.administrative_contact_name
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.DomainHistory.administrative_contact_organization
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.DomainHistory.administrative_contact_postal_code
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.DomainHistory.administrative_contact_state
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.DomainHistory.administrative_contact_street
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.DomainHistory.administrative_contact_telephone
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.DomainHistory.audit_updated_date
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.DomainHistory.created
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.DomainHistory.domain_name
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.DomainHistory.emails
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.DomainHistory.expires
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.DomainHistory.has_raw_text
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.DomainHistory.name_servers
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.DomainHistory.record_expired
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.DomainHistory.registrant_city
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.DomainHistory.registrant_country
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.DomainHistory.registrant_email
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.DomainHistory.registrant_name
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.DomainHistory.registrant_organization
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.DomainHistory.registrant_postal_code
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.DomainHistory.registrant_state
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.DomainHistory.registrant_street
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.DomainHistory.registrant_telephone
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.DomainHistory.registrar_iana_id
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.DomainHistory.registrar_name
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.DomainHistory.status
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.DomainHistory.technical_contact_city
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.DomainHistory.technical_contact_country
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.DomainHistory.technical_contact_email
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.DomainHistory.technical_contact_fax
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.DomainHistory.technical_contact_name
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.DomainHistory.technical_contact_organization
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.DomainHistory.technical_contact_postal_code
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.DomainHistory.technical_contact_state
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.DomainHistory.technical_contact_street
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.DomainHistory.technical_contact_telephone
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.DomainHistory.time_of_latest_realtime_check
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.DomainHistory.updated
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.DomainHistory.whois_servers
+                iscontext: true
+    view: '{"position":{"x":50,"y":5000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "26":
+    id: 26
+    taskid: "3b2418e6-e1ac-41bf-ba41-6101098d7a26"
+    type: regular
+    task:
+      id: "3b2418e6-e1ac-41bf-ba41-6101098d7a26"
+      version: -1
+      name: umbrella-get-nameserver-whois
+      description: ""
+      script: Cisco Umbrella Investigate|||umbrella-get-nameserver-whois
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+        - "27"
+    scriptarguments:
+      nameserver:
+        simple: nameserver1.com
+      limit:
+        simple: "1"
+    separatecontext: false
+    view: '{"position":{"x":50,"y":5200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "27":
+    id: "27"
+    taskid: "3b2418e6-e1ac-41bf-ba41-6101098d7a27"
+    type: condition
+    task:
+      id: "3b2418e6-e1ac-41bf-ba41-6101098d7a27"
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ""
+      brand: ""
+    nexttasks:
+      yes:
+        - "28"
+    separatecontext: false
+    conditions:
+      - label: yes
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Umbrella.WHOIS.Nameserver.name
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.Nameserver.Domain.current
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.Nameserver.Domain.domain
+                iscontext: true
+    view: '{"position":{"x":50,"y":5400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "28":
+    id: 28
+    taskid: "3b2418e6-e1ac-41bf-ba41-6101098d7a28"
+    type: regular
+    task:
+      id: "3b2418e6-e1ac-41bf-ba41-6101098d7a28"
+      version: -1
+      name: umbrella-get-email-whois
+      description: ""
+      script: Cisco Umbrella Investigate|||umbrella-get-email-whois
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+        - "29"
+    scriptarguments:
+      email:
+        simple: test@test.com
+      limit:
+        simple: "1"
+    separatecontext: false
+    view: '{"position":{"x":50,"y":5600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "29":
+    id: "29"
+    taskid: "3b2418e6-e1ac-41bf-ba41-6101098d7a29"
+    type: condition
+    task:
+      id: "3b2418e6-e1ac-41bf-ba41-6101098d7a29"
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ""
+      brand: ""
+    nexttasks:
+      yes:
+        - "30"
+    separatecontext: false
+    conditions:
+      - label: yes
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Umbrella.WHOIS.Email.name
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.Email.Domain.current
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.Email.Domain.domain
+                iscontext: true
+    view: '{"position":{"x":50,"y":5800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "30":
+    id: 30
+    taskid: "3b2418e6-e1ac-41bf-ba41-6101098d7a30"
+    type: regular
+    task:
+      id: "3b2418e6-e1ac-41bf-ba41-6101098d7a30"
+      version: -1
+      name: umbrella-get-regex-whois
+      description: ""
+      script: Cisco Umbrella Investigate|||umbrella-get-regex-whois
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+        - "31"
+    scriptarguments:
+      regex:
+        simple: t[a-z]@test.com
+      search_field:
+        simple: Email
+    separatecontext: false
+    view: '{"position":{"x":50,"y":6000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "31":
+    id: "31"
+    taskid: "3b2418e6-e1ac-41bf-ba41-6101098d7a31"
+    type: condition
+    task:
+      id: "3b2418e6-e1ac-41bf-ba41-6101098d7a31"
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ""
+      brand: ""
+    nexttasks:
+      yes:
+        - "32"
+    separatecontext: false
+    conditions:
+      - label: yes
+        condition:
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.Regex.addresses
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.Regex.administrative_contact_city
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.Regex.administrative_contact_country
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.Regex.administrative_contact_email
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.Regex.administrative_contact_name
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.Regex.administrative_contact_organization
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.Regex.administrative_contact_postal_code
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.Regex.administrative_contact_state
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.Regex.administrative_contact_street
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.Regex.administrative_contact_telephone
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.Regex.audit_updated_date
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.Regex.created
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.Regex.domain_name
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.Regex.emails
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.Regex.expires
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.Regex.name_servers
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.Regex.registrant_city
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.Regex.registrant_country
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.Regex.registrant_email
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.Regex.registrant_name
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.Regex.registrant_organization
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.Regex.registrant_postal_code
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.Regex.registrant_state
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.Regex.registrant_street
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.Regex.registrant_telephone
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.Regex.registrar_iana_id
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.Regex.registrar_name
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.Regex.status
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.Regex.technical_contact_city
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.Regex.technical_contact_country
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.Regex.technical_contact_email
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.Regex.technical_contact_fax
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.Regex.technical_contact_name
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.Regex.technical_contact_organization
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.Regex.technical_contact_postal_code
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.Regex.technical_contact_state
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.Regex.technical_contact_street
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.Regex.technical_contact_telephone
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.WHOIS.Regex.updated
+                iscontext: true
+    view: '{"position":{"x":50,"y":6200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "32":
+    id: 32
+    taskid: "3b2418e6-e1ac-41bf-ba41-6101098d7a32"
+    type: regular
+    task:
+      id: "3b2418e6-e1ac-41bf-ba41-6101098d7a32"
+      version: -1
+      name: umbrella-get-top-most-seen-domain
+      description: ""
+      script: Cisco Umbrella Investigate|||umbrella-get-top-most-seen-domain
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+        - "33"
+    scriptarguments:
+      limit:
+        simple: "1"
+    separatecontext: false
+    view: '{"position":{"x":50,"y":6400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "33":
+    id: "33"
+    taskid: "3b2418e6-e1ac-41bf-ba41-6101098d7a33"
+    type: condition
+    task:
+      id: "3b2418e6-e1ac-41bf-ba41-6101098d7a33"
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ""
+      brand: ""
+    nexttasks:
+      yes:
+        - "34"
+    separatecontext: false
+    conditions:
+      - label: yes
+        condition:
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.MostSeenDomain.domain
+                iscontext: true
+    view: '{"position":{"x":50,"y":6600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "34":
+    id: 34
+    taskid: "3b2418e6-e1ac-41bf-ba41-6101098d7a34"
+    type: regular
+    task:
+      id: "3b2418e6-e1ac-41bf-ba41-6101098d7a34"
+      version: -1
+      name: umbrella-get-domain-queryvolume
+      description: ""
+      script: Cisco Umbrella Investigate|||umbrella-get-domain-queryvolume
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+        - "35"
+    scriptarguments:
+      domain:
+        simple: cisco.com
+    separatecontext: false
+    view: '{"position":{"x":50,"y":6800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "35":
+    id: "35"
+    taskid: "3b2418e6-e1ac-41bf-ba41-6101098d7a35"
+    type: condition
+    task:
+      id: "3b2418e6-e1ac-41bf-ba41-6101098d7a35"
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ""
+      brand: ""
+    nexttasks:
+      yes:
+        - "36"
+    separatecontext: false
+    conditions:
+      - label: yes
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Umbrella.QueryVolume.name
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.QueryVolume.Domain
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.QueryVolume.Data.StartDate
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.QueryVolume.Data.StopDate
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.QueryVolume.QueriesInfo.QueryHour
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.QueryVolume.QueriesInfo.Queries
+                iscontext: true
+    view: '{"position":{"x":50,"y":7000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "36":
+    id: 36
+    taskid: "3b2418e6-e1ac-41bf-ba41-6101098d7a36"
+    type: regular
+    task:
+      id: "3b2418e6-e1ac-41bf-ba41-6101098d7a36"
+      version: -1
+      name: umbrella-get-domain-timeline
+      description: ""
+      script: Cisco Umbrella Investigate|||umbrella-get-domain-timeline
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+        - "37"
+    scriptarguments:
+      name:
+        simple: maliciouswebsitetest.com
+      limit:
+        simple: "1"
+    separatecontext: false
+    view: '{"position":{"x":50,"y":7200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "37":
+    id: "37"
+    taskid: "3b2418e6-e1ac-41bf-ba41-6101098d7a37"
+    type: condition
+    task:
+      id: "3b2418e6-e1ac-41bf-ba41-6101098d7a37"
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ""
+      brand: ""
+    nexttasks:
+      yes:
+        - "38"
+    separatecontext: false
+    conditions:
+      - label: yes
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Umbrella.Timeline.Domain
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.Timeline.Data.MalwareCategories
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.Timeline.Data.Timestamp
+                iscontext: true
+    view: '{"position":{"x":50,"y":7400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "38":
+    id: "38"
+    taskid: "3b2418e6-e1ac-41bf-ba41-6101098d7a38"
+    type: regular
+    task:
+      id: "3b2418e6-e1ac-41bf-ba41-6101098d7a38"
+      version: -1
+      name: umbrella-get-url-timeline
+      description: ""
+      script: Cisco Umbrella Investigate|||umbrella-get-url-timeline
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+        - "39"
+    scriptarguments:
+      name:
+        simple: www.maliciouswebsitetest.com
+      limit:
+        simple: "1"
+    separatecontext: false
+    view: '{"position":{"x":50,"y":7600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "39":
+    id: "39"
+    taskid: "3b2418e6-e1ac-41bf-ba41-6101098d7a39"
+    type: condition
+    task:
+      id: "3b2418e6-e1ac-41bf-ba41-6101098d7a39"
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ""
+      brand: ""
+    nexttasks:
+      yes:
+        - "40"
+    separatecontext: false
+    conditions:
+      - label: yes
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Umbrella.Timeline.URL
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.Timeline.Data.MalwareCategories
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.Timeline.Data.Timestamp
+                iscontext: true
+    view: '{"position":{"x":50,"y":7800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "40":
+    id: "40"
+    taskid: "3b2418e6-e1ac-41bf-ba41-6101098d7a40"
+    type: regular
+    task:
+      id: "3b2418e6-e1ac-41bf-ba41-6101098d7a40"
+      version: -1
+      name: umbrella-get-url-timeline
+      description: ""
+      script: Cisco Umbrella Investigate|||umbrella-get-domain-timeline
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+        - "41"
+    scriptarguments:
+      name:
+        simple: 8.8.8.8
+      limit:
+        simple: "1"
+    separatecontext: false
+    view: '{"position":{"x":50,"y":8000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "41":
+    id: "41"
+    taskid: "3b2418e6-e1ac-41bf-ba41-6101098d7a41"
+    type: condition
+    task:
+      id: "3b2418e6-e1ac-41bf-ba41-6101098d7a41"
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ""
+      brand: ""
+    nexttasks:
+      yes:
+        - "42"
+    separatecontext: false
+    conditions:
+      - label: yes
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Umbrella.Timeline.IP
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.Timeline.Data.MalwareCategories
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: Umbrella.Timeline.Data.Timestamp
+                iscontext: true
+    view: '{"position":{"x":50,"y":8200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "42":
+    id: "42"
+    taskid: "3b2418e6-e1ac-41bf-ba41-6101098d7a42"
+    type: title
+    task:
+      id: "3b2418e6-e1ac-41bf-ba41-6101098d7a42"
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    separatecontext: false
+    view: '{"position":{"x":50,"y":8400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+view: '{"linkLabelsPosition":{},"paper":{"dimensions":{"height":200,"width":380,"x":50,"y":50}}}'
+inputs: []
+outputs: []

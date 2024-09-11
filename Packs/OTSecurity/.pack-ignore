@@ -3,3 +3,9 @@ ignore=BA101
 
 [file:1_0_3.md]
 ignore=RN116
+
+# GR103 is temporary, see CIAC-11656
+[file:classifier-mapper-incoming-OTSecurity_API_Incoming_Mapper_v1.json]
+ignore=GR103
+[file:OTSecurity_-_Rogue_Device_Investigation.yml]
+ignore=GR103

@@ -1,0 +1,30 @@
+[
+    {
+        "accountId": "1234567890",
+        "accountName": "Metron Team",
+        "agentComputerName": "MSEDGEWIN10",
+        "agentId": "0987654321",
+        "agentIsActive": true, 
+        "agentIsDecommissioned": false,
+        "agentMachineType": "desktop",
+        "agentOsType": "windows",
+        "agentUuid": "25682583752987932878722323",
+        "createdAt": "2024-07-30T06:43:22.938877Z",
+        "description": "A test get cloud services",
+        "detailedStatus": "Execution completed successfully",
+        "groupId": "12334654321",
+        "groupName": "Default Group",
+        "id": "123456",
+        "initiatedBy": "user",
+        "initiatedById": "099999",
+        "parentTaskId":  "123456789",
+        "scriptResultsSignature": "34324324324324235r24fe2r2333432",
+        "siteId": "99999999",
+        "siteName": "Default site",
+        "status": "completed", 
+        "statusCode": null,
+        "statusDescription": "Completed",
+        "type": "script_execution",
+        "updatedAt": "2024-07-30T06:44:50.881432Z"
+    }
+]

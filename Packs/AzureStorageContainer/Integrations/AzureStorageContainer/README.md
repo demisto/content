@@ -590,7 +590,8 @@ There is no context output for this command.
 
 >Blob xsoar.txt properties successfully updated.
 
-### azure-storage-container-blob-property-get
+### azure-storage-container-sas-create
+
 ***
 Retrieve Blob properties.
 
@@ -607,6 +608,7 @@ Retrieve Blob properties.
 | signed_resources | specifies which resources are accessible via the shared access signature. Options available c(container), b(blob), bv(blob version),bs(blob snapshot),d(directory)                                                                                                                     | Required | 
 | signed_permissions | The permissions that are associated with the shared access signature. The user is restricted to operations that are allowed by the permissions. Possible permission: r = Read, a=access, c=create, w=write. Also must follow the  this order "racwdxltmeop"Example: r,c,a,w,rac, racw. | Required | 
 | signed_ip | specifies a public IP address or a range of public IP addresses from which to accept requests.                                                                                                                                                                                         | Required |
+| account_key | The account key to create the SAS token with.                                                                                                                                                                                         |  |
 
 #### Command Example
-```!azure-storage-container-sas-create expiry_time="1" signed_resources="test signed_permissions="test signed_ip="127.0.0.1"```
+```!azure-storage-container-sas-create account_key="TestAccountKey" expiry_time="1" signed_resources="test signed_permissions="test signed_ip="127.0.0.1"```

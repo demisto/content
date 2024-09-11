@@ -18,3 +18,7 @@ ignore=IM111
 CTF
 
 [file:CortexXDRIR.yml]
+
+# GR103 is temporary, see CIAC-11705
+[file:playbook-Cortex_XDR_Alerts_Handling_CTF.yml]
+ignore=GR103
