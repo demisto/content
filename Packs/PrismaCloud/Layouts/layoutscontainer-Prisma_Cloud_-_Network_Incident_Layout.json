@@ -231,7 +231,7 @@
                         "w": 2,
                         "x": 0,
                         "y": 2
-                                        }
+                    }
                 ],
                 "type": "custom"
             },
@@ -264,7 +264,7 @@
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
-{
+                            {
                                 "endCol": 2,
                                 "fieldId": "userrisklevel",
                                 "height": 26,
@@ -546,7 +546,7 @@
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
-{
+                            {
                                 "endCol": 2,
                                 "fieldId": "userrisklevel",
                                 "height": 26,
@@ -829,6 +829,12 @@
                 "id": "workPlan",
                 "name": "Work Plan",
                 "type": "workPlan"
+            },
+            {
+                "id": "canvas",
+                "name": "Canvas",
+                "type": "canvas",
+                "hidden": false
             }
         ]
     },
