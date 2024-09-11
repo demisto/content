@@ -1,0 +1,56 @@
+{
+    "id": "Sekoia XDR",
+    "version": -1,
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "Sekoia XDR",
+    "prevName": "Sekoia XDR",
+    "color": "#CFD0D0",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": false,
+    "closureScript": "CloseSekoiaAlert",
+    "disabled": false,
+    "reputationCalc": 2,
+    "onChangeRepAlg": 3,
+    "layout": "Sekoia XDR Layout",
+    "detached": false,
+    "extractSettings": {
+        "mode": "Specific",
+        "fieldCliNameToExtractSettings": {
+            "additionalemailaddresses": {
+                "extractAsIsIndicatorTypeId": "emailRep",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "domainname": {
+                "extractAsIsIndicatorTypeId": "domainRepUnified",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "externallink": {
+                "extractAsIsIndicatorTypeId": "urlRep",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "filehash": {
+                "extractAsIsIndicatorTypeId": "unifiedFileRep",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "sourceip": {
+                "extractAsIsIndicatorTypeId": "ipRep",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            }
+        }
+    },
+    "fromVersion": "6.10.0"
+}

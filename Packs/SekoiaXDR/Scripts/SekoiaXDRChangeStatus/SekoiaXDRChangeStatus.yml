@@ -1,0 +1,30 @@
+commonfields:
+  id: SekoiaXDRChangeStatus
+  version: -1
+name: SekoiaXDRChangeStatus
+script: ''
+type: python
+tags:
+- incident-action-button
+comment: This script changes the status of the Sekoia alert.
+enabled: true
+args:
+- name: short_id
+  required: true
+  description: The short ID of the alert.
+- name: status
+  required: true
+  auto: PREDEFINED
+  predefined:
+  - Ongoing
+  - Acknowledged
+  description: Status to change on the Sekoia alert.
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.10.14.97374
+runas: DBotWeakRole
+engineinfo: {}
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

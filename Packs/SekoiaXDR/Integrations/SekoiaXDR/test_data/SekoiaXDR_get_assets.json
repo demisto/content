@@ -1,0 +1,88 @@
+{
+    "items": [
+        {
+            "uuid": "015ea33b-a7a2-4e34",
+            "name": "cortex_asset_test",
+            "category": {
+                "uuid": "1c646cb3-54c3-44cb",
+                "name": "technical"
+            },
+            "description": null,
+            "criticity": {
+                "value": 10,
+                "display": "low"
+            },
+            "asset_type": {
+                "uuid": "65f8ebba-e400-4ef7",
+                "name": "computer"
+            },
+            "community_uuid": "52bd045f-4199-4361",
+            "owners": [],
+            "created_at": "2024-04-17T15:29:49.464479Z",
+            "updated_at": null
+        },
+        {
+            "uuid": "3deb62b1-aeee-4f08",
+            "name": "ydi test",
+            "category": {
+                "uuid": "1c646cb3-54c3-44cb",
+                "name": "technical"
+            },
+            "description": "ydi test fortisoar",
+            "criticity": {
+                "value": 28,
+                "display": "low"
+            },
+            "asset_type": {
+                "uuid": "65f8ebba-e400-4ef7",
+                "name": "computer"
+            },
+            "community_uuid": "52bd045f-4199-4361",
+            "owners": [],
+            "created_at": "2022-12-01T14:35:37.482496Z",
+            "updated_at": null
+        },
+        {
+            "uuid": "dc14148b-8476-4b48",
+            "name": "cortex debug",
+            "category": {
+                "uuid": "87da56fc-1e88-467a",
+                "name": "people"
+            },
+            "description": "cortex debug",
+            "criticity": {
+                "value": 90,
+                "display": "high"
+            },
+            "asset_type": {
+                "uuid": "e47dcc10-7c1d-4922",
+                "name": "person"
+            },
+            "community_uuid": "52bd045f-4199-4361",
+            "owners": [],
+            "created_at": "2022-04-06T07:40:45.908084Z",
+            "updated_at": "2022-04-06T07:41:07.477336Z"
+        },
+        {
+            "uuid": "54d7afbc-f3e5-42df",
+            "name": "ADMIN",
+            "category": {
+                "uuid": "87da56fc-1e88-467a",
+                "name": "people"
+            },
+            "description": "Test People Assets",
+            "criticity": {
+                "value": 90,
+                "display": "high"
+            },
+            "asset_type": {
+                "uuid": "e47dcc10-7c1d-4922",
+                "name": "person"
+            },
+            "community_uuid": "52bd045f-4199-4361",
+            "owners": [],
+            "created_at": "2022-04-06T07:02:59.038731Z",
+            "updated_at": null
+        }
+    ]
+}

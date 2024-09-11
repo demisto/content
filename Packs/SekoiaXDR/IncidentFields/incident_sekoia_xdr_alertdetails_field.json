@@ -1,0 +1,31 @@
+{
+    "id": "incident_sekoiaxdralertdetails",
+    "version": -1,
+    "modified": "2024-07-02T13:34:47.794510655Z",
+    "name": "SekoiaXDR Alert Details",
+    "ownerOnly": false,
+    "cliName": "sekoiaxdralertdetails",
+    "type": "markdown",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Sekoia XDR"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}
