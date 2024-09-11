@@ -979,7 +979,7 @@ Retrieves a list of messages in a chat.
 | MicrosoftTeams.ChatList.messages.lastModifiedDateTime | String | Timestamp when the chat message is created \(initial setting\) or modified, including when a reaction is added or removed. | 
 | MicrosoftTeams.ChatList.messages.lastEditedDateTime | String | Timestamp when edits to the chat message were made. Triggers an "Edited" flag in the Teams UI. If no edits are made the value is null. | 
 | MicrosoftTeams.ChatList.messages.deletedDateTime | String | Timestamp when the chat message was deleted, or null if not deleted. | 
-| MicrosoftTeams.ChatList.messages.subject | String | The subject of the chat message, in plaintext. | 
+| MicrosoftTeams.ChatList.messages.subject | String | The subject of the chat message, in plain text. | 
 | MicrosoftTeams.ChatList.messages.summary | String | Summary text of the chat message that could be used for push notifications and summary views or fall back views. | 
 | MicrosoftTeams.ChatList.messages.chatId | String | If the message was sent in a chat, represents the identity of the chat. | 
 | MicrosoftTeams.ChatList.messages.importance | String | The importance of the chat message. | 
