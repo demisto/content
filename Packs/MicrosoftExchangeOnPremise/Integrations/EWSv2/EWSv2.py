@@ -1156,6 +1156,7 @@ def parse_incident_from_item(item, is_fetch):  # pragma: no cover
                                         except ValueError as err:
                                             if "There may be at most" not in str(err):
                                                 raise err
+                            demisto.debug(f"Attachment Name: {attachment.name}")
                             file_result = fileResult(get_attachment_name(attachment_name=attachment.name,
                                                                          content_id=attachment.content_id,
                                                                          is_inline=attachment.is_inline) + ".eml",
@@ -1459,6 +1460,7 @@ def fetch_attachments_for_message(item_id, target_mailbox=None, attachment_ids=N
                 if str(e) != "must be string or buffer, not None":
                     raise
         else:
+            demisto.debug(f"Attachment Name: {attachment.name}")
             entries.append(get_entry_for_item_attachment(item_id, attachment, account.primary_smtp_address))
             if attachment.item.mime_content:
                 attached_email = cast_mime_item_to_message(attachment.item)
