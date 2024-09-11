@@ -989,7 +989,7 @@ Retrieves a list of messages in a chat.
 | MicrosoftTeams.ChatList.messages.policyViolation | String | Defines the properties of a policy violation set by a data loss prevention \(DLP\) application. | 
 | MicrosoftTeams.ChatList.messages.eventDetail | String | If present, represents details of an event that happened in a chat, a channel, or a team, for example, adding new members. | 
 | MicrosoftTeams.ChatList.messages.from | String | Details of the sender of the chat message. | 
-| MicrosoftTeams.ChatList.messages.body | String | Plaintext/HTML representation of the content of the chat message. Representation is specified by the contentType inside the body. | 
+| MicrosoftTeams.ChatList.messages.body | String | Plain text/HTML representation of the content of the chat message. Representation is specified by the contentType inside the body. | 
 | MicrosoftTeams.ChatList.messages.attachments | String | References to attached objects like files, tabs, meetings, etc. | 
 | MicrosoftTeams.ChatList.messages.mentions | String | List of entities mentioned in the chat message. | 
 | MicrosoftTeams.ChatList.messages.reactions | String | Reactions for this chat message \(for example, Like\). | 
