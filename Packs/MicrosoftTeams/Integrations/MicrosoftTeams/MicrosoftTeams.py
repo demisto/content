@@ -59,7 +59,7 @@ MESSAGE_TYPES: dict = {
     'status_changed': 'incidentStatusChanged'
 }
 
-NEW_INCIDENT_WELCOME_MESSAGE: str = "Successfully created incident <incident_name>. View it on: <incident_link>"
+NEW_INCIDENT_WELCOME_MESSAGE: str = "Successfully created incident <incident_name>.\nView it on: <incident_link>"
 
 if '@' in BOT_ID:
     demisto.debug("setting tenant id in the integration context")
