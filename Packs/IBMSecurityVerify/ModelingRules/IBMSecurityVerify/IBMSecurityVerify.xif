@@ -44,7 +44,7 @@ filter event_type = "management"
     xdm.target.resource.name = data -> entitlementname,
     xdm.target.resource.sub_type = data -> entitlementsubtype,
     xdm.target.resource.type = if(data -> entitlementtype != null AND data -> entitlementcategory != null, concat(data -> entitlementtype, " - ", data -> entitlementcategory), coalesce(data -> entitlementtype, data -> entitlementcategory, data -> resource )), // The "type" field represents the role, while the "category" field specifies the role type, e.g., "role - admin."
-    xdm.source.user.groups = split( trim( data -> entitlements,"[]"), ", ")
+    xdm.source.user.groups = to_json_string(data -> workflow_configuration) -> []
 | call generic_fields_mapping;
 
 /*
