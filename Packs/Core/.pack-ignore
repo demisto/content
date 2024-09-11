@@ -7,14 +7,6 @@ ignore=RM104,RM106
 [file:1_3_23.md]
 ignore=RN115,RN113
 
-[known_words]
-xsiam
-coreirapimodule
-xdrir
-NGFW
-HTTPS
-SMTP
-
 [file:playbook-XCloud_Cryptomining_-_Set_Verdict.yml]
 ignore=BA101
 
@@ -23,4 +15,18 @@ ignore=BA101
 
 # GR103 is temporary, see CIAC-11705
 [file:layoutscontainer-Default.json]
-ignore=GR103
+ignore=GR103,LO107
+
+[file:layoutscontainer-Default_XDR_Alert.json]
+ignore=LO107
+
+[file:layoutscontainer-Identity_Analytics_Alerts.json]
+ignore=LO107
+
+[known_words]
+xsiam
+coreirapimodule
+xdrir
+NGFW
+HTTPS
+SMTP
