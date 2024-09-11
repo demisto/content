@@ -741,6 +741,27 @@ def incident_to_incident_context(incident):
     return incident_context
 
 
+def fix_time_field(detection: dict, time_key: str):
+    """
+        Fix the value of the date to have only 6 figures after the ".".
+        The string representation of the created_timestamp value can contain from 6 to 9 figures after the dot,
+        for example: 2024-02-22T14:16:04.973070837Z. The template supports only 6 digits, so there is a need to remove the extra
+        digits to use datetime.strptime().
+
+        Args:
+            detection (dict): the detection.
+            time_key (str): the key of the wanted date&time field.
+    """
+    demisto.debug(f'fix_time_field {time_key=}')
+    str_date = detection[time_key]
+    split_date = str_date.split('.')
+    relevant_microseconds = split_date[1][:6]
+    # if 'Z' isn't in relevant_microseconds it means that it was removed since there was more than 5 digits in the microseconds.
+    fixed_date = f'{split_date[0]}.{relevant_microseconds}Z' if 'Z' not in relevant_microseconds else str_date
+    demisto.debug(f'fix_time_field, the original value in {time_key=} is {str_date} the updated value is {fixed_date} ')
+    detection[time_key] = fixed_date
+
+
 def detection_to_incident_context(detection, detection_type, start_time_key: str = 'start_time'):
     """
         Creates an incident context of an IDP/Mobile/ODS detection.
@@ -752,6 +773,10 @@ def detection_to_incident_context(detection, detection_type, start_time_key: str
         :rtype ``dict``
     """
     add_mirroring_fields(detection)
+    demisto.debug(f'detection_to_incident_context, {detection_type=}')
+    if detection_type == IDP_DETECTION_FETCH_TYPE:
+        demisto.debug(f'detection_to_incident_context, {detection_type=} calling fix_time_field')
+        fix_time_field(detection, start_time_key)
 
     incident_context = {
         'occurred': detection.get(start_time_key),
@@ -3046,7 +3071,7 @@ def fetch_incidents():
             detections_type=IDP_DETECTION,
             product_type='idp',
             detection_name_prefix=IDP_DETECTION_FETCH_TYPE,
-            start_time_key='start_time')
+            start_time_key='created_timestamp')
 
     if MOBILE_DETECTION_FETCH_TYPE in fetch_incidents_or_detections:
         mobile_detections, current_fetch_info_mobile_detections = fetch_detections_by_product_type(
