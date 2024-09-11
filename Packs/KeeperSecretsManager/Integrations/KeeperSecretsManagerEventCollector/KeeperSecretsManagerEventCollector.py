@@ -95,7 +95,9 @@ def append_to_integration_context(context_to_append: dict[str, Any]):
 class Client:
     class DeviceApproval(LoginStepDeviceApproval):
         """
-        In charge of sending and verifying the code sent to the user's email when registering the device for the first time
+        In charge of sending and verifying the code sent to the user's email when registering the device for the first time.
+        LoginStepDeviceApproval is is an abstract class that must be implemented. Some of the abstract methods
+        are not needed, therefore, we implement them by including a pass segment.
         """
 
         @property
@@ -139,6 +141,8 @@ class Client:
     class PasswordStep(LoginStepPassword):
         """
         In charge of verifying the user's password after verifying the device registration.
+        LoginStepPassword is is an abstract class that must be implemented. Some of the abstract methods
+        are not needed, therefore, we implement them by including a pass segment.
         """
 
         def __init__(self, salt_bytes: bytes, salt_iterations: int):
@@ -277,12 +281,15 @@ class Client:
             salt = api.get_correct_salt(resp.salt)
             password_step = self.PasswordStep(salt_bytes=salt.salt, salt_iterations=salt.iterations)
             verify_password_response = password_step.verify_password(self.keeper_params, encrypted_login_token)
+            # Disabling pylint due to external class declaration
             if verify_password_response.loginState == APIRequest_pb2.LOGGED_IN:  # pylint: disable=no-member
                 LoginV3Flow.post_login_processing(self.keeper_params, verify_password_response)
             else:
                 raise DemistoException(
                     "Unknown login state after verify"
-                    f" password {verify_password_response.loginState}")  # pylint: disable=no-member
+                    # Disabling pylint due to external class declaration
+                    f" password {verify_password_response.loginState}"  # pylint: disable=no-member
+                )
         else:
             raise DemistoException(f"Unknown login state {resp.loginState}")
 
