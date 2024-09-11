@@ -2884,8 +2884,7 @@ script:
       description: The score.
       type: Number
   - arguments:
-    - description: >
-        Unique ID of a specific host.
+    - description: The host name of a specific host.
       name: host_id
     - description: Limit the number of hosts that will appear in the list. (Use limit when no specific host is requested).
       name: limit
