@@ -1196,8 +1196,9 @@ def test_xdr_iocs_sync_command_sync_for_fetch_with_validation_errors(
     mock_demisto_debug.assert_called_with('pushing IOCs to XDR:The following 2 IOCs were not pushed due to following errors:123: '
                                           'error1.456: error2.')
 
-@patch('XDR_iocs.get_integration_context', return_value={'time':'2024-09-10T12:13:57Z',
-                                                         'ts':'1234567',
+
+@patch('XDR_iocs.get_integration_context', return_value={'time': '2024-09-10T12:13:57Z',
+                                                         'ts': '1234567',
                                                          'is_first_sync_phase': True,
                                                          'search_after': ['1234', '098765']})
 @patch('XDR_iocs.set_integration_context')

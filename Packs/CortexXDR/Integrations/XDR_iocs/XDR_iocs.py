@@ -213,11 +213,11 @@ def get_iocs_generator(size=200, query=None, is_first_stage_sync=False) -> Itera
         search_after_array = None
         search_after = get_integration_context().get('search_after', None)
         for batch in IndicatorsSearcher(size=size,
-                                     query=full_query,
-                                     search_after=search_after,
-                                     sort=[{"field": "modified", "asc": True},
-                                           {"field": "id", "asc": True}],
-                                     filter_fields=filter_fields):
+                                        query=full_query,
+                                        search_after=search_after,
+                                        sort=[{"field": "modified", "asc": True},
+                                              {"field": "id", "asc": True}],
+                                        filter_fields=filter_fields):
             search_after_array = batch.get('searchAfter', [])
             for ioc in batch.get('iocs', []):
                 # demisto.debug(f"{ioc.get('indicator_type')=}")
