@@ -1870,6 +1870,7 @@ Returns information about each alert ID.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | alert_ids | A comma-separated list of alert IDs. | Required | 
+| events_from_decider_format | Whether to return events_from_decider context output as a dictionary (the raw API response) or as a list (improved for playbook automation) - relevant only when filter_alert_fields is set to False. | Optional |
 
 
 #### Context Output
@@ -2470,7 +2471,7 @@ Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| host_id | Unique ID of a specific host.<br/>. | Optional | 
+| host_id | The host name of a specific host. | Optional | 
 | limit | Limit the number of hosts that will appear in the list. By default, the limit is 50 hosts.(Use limit when no specific host is requested.). Default is 50. | Optional | 
 
 #### Context Output

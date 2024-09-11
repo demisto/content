@@ -2,6 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 from typing import Any
+from urllib.parse import urlparse
 
 """ CONSTANT VARIABLES """
 
@@ -260,10 +261,25 @@ def reset_fetch_command(client):
     )
 
 
+def is_valid_taxii_url(url: Optional[str]):
+    """
+    Checks the correctness of the url.
+    :param url: str
+    :return: boolean whether the url valid or not.
+    """
+    if url and (parse_result := urlparse(url)):
+        path = parse_result.path
+        if path.endswith(("taxii", "taxii2", "taxii2/", "taxii/")):
+            return True
+    return False
+
+
 def main():  # pragma: no cover
     params = demisto.params()
     args = demisto.args()
     url = params.get("url")
+    if not is_valid_taxii_url(url):
+        demisto.debug("ERROR: Discovery Service URL is NOT VALID, The URL suffix should be taxii or taxii2.")
     collection_to_fetch = params.get("collection_to_fetch")
     credentials = params.get("credentials") or {}
     username = credentials.get("identifier")
