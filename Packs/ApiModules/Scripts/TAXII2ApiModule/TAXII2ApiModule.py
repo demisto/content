@@ -103,8 +103,35 @@ STIX_2_TYPES_TO_CORTEX_TYPES = {       # pragma: no cover
     "x509-certificate": FeedIndicatorType.X509,
 }
 
-STIX_NOT_SUPPORTED_TYPES = {
+STIX_NOT = {
     "file:name": True
+}
+
+STIX_SUPPORTED_TYPES = {
+    'url': 'value',
+    'ip': 'value',
+    'domain-name': 'value',
+    'email-addr': 'value',
+    'ipv4-addr': 'value',
+    'ipv6-addr': 'value',
+    'attack-pattern': 'name',
+    'campaign': 'name',
+    'identity': 'name',
+    'infrastructure': 'name',
+    'intrusion-set': 'name',
+    'malware': 'name',
+    'report': 'name',
+    'threat-actor': 'name',
+    'tool': 'name',
+    'vulnerability': 'name',
+    'mutex': 'name',
+    'software': 'name',
+    'autonomous-system': 'number',
+    'file': 'hashes',
+    'user-account': 'user_id',
+    'location': ('name', 'country'),
+    'x509-certificate': ('serial_number', 'issuer'),
+    'windows-registry-key': ('key', 'values')
 }
 
 
@@ -283,6 +310,9 @@ SCO_DET_ID_NAMESPACE = uuid.UUID('00abedb4-aa42-466c-9c01-fed23315a9b7')
 
 def reached_limit(limit: int, element_count: int):
     return element_count >= limit > -1
+
+
+PatternComparisons = dict[str, list[tuple[list[str], str, str]]]
 
 
 class XSOAR2STIXParser:
@@ -858,15 +888,12 @@ class XSOAR2STIXParser:
     @staticmethod
     def get_labels_for_indicator(score):
         """Get indicator label based on the DBot score"""
-        if int(score) == 0:
-            return ['']
-        elif int(score) == 1:
-            return ['benign']
-        elif int(score) == 2:
-            return ['anomalous-activity']
-        elif int(score) == 3:
-            return ['malicious-activity']
-        return None
+        {
+            0: [''],
+            1: ['benign'],
+            2: ['anomalous-activity'],
+            3: ['malicious-activity']
+        }.get(int(score))
 
 
 class STIX2XSOARParser(BaseClient):
@@ -890,10 +917,62 @@ class STIX2XSOARParser(BaseClient):
             re.compile(CIDR_ISSUBSET_VAL_PATTERN),
             re.compile(CIDR_ISUPPERSET_VAL_PATTERN),
         ]
-        self.field_map = field_map if field_map else {}
+        self.field_map = field_map or {}
         self.update_custom_fields = update_custom_fields
-        self.tags = tags if tags else []
+        self.tags = tags or []
         self.last_fetched_indicator__modified = None
+
+    @staticmethod
+    def get_pattern_comparisons(pattern: str) -> Optional[PatternComparisons]:
+        """
+        Parses a pattern and comparison and extracts the comparisons as a dictionary.
+        If the pattern is invalid, the return value will be "None".
+
+        For Example:
+
+        >>> STIX2XSOARParser.get_pattern_comparisons(
+        >>>     "[ipv4-addr:value = '1.51.100.1/32' "
+        >>>     "OR ipv4-addr:value = '203.0.113.33/32' "
+        >>>     "AND domain-name:value = 'example.com']"
+        >>> )
+        {
+            'ipv4-addr': [(['value'], '=', "'1.51.100.1/32'"), (['value'], '=', "'203.0.113.33/32'")],
+            'domain-name': [(['value'], '=', "'example.com'")]
+        }
+
+        Args:
+            pattern: the pattern to extract the value from.
+
+        Returns:
+            Optional[PatternComparisons]. the value in the pattern.
+        """
+        try:
+            return cast(PatternComparisons, Pattern(pattern).inspect().comparisons)
+        except Exception as error:
+            demisto.debug(f'Unable to parse {pattern=}, {error=}')
+            return None
+
+    def remove_unsupported_pattern_fields(parsed: PatternComparisons):
+        """
+        Parses a pattern and comparison and extracts the comparisons as a dictionary.
+        If the pattern is invalid, the return value will be "None".
+
+        Args:
+            pattern: the pattern to extract the value from.
+
+        Returns:
+            Optional[PatternComparisons]. the value in the pattern.
+        """
+        for field_type in parsed:
+            if field_type not in STIX_SUPPORTED_TYPES:
+                del parsed[field_type]
+            else:
+                parsed[field_type] = [
+                    comp for comp in parsed[field_type]
+                    if (
+                        comp[0]
+                    )
+                ]
 
     @staticmethod
     def get_indicator_publication(indicator: dict[str, Any], ignore_external_id: bool = False):
@@ -1996,7 +2075,7 @@ class STIX2XSOARParser(BaseClient):
         """
         ioc_value = ioc_obj.get(key, '')
         try:
-            ioc_value_groups = re.search("(?<='SHA-256' = ').*?(?=')", ioc_value)
+            ioc_value_groups = re.search("(?<='SHA-256' = ').*?(?=')", ioc_value) # switch to pattern
             if ioc_value_groups:
                 ioc_value = ioc_value_groups.group(0)
         except AttributeError:
