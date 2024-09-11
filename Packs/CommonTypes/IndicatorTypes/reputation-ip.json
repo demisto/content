@@ -254,7 +254,7 @@
         "asowner": {
             "simple": "",
             "complex": {
-                "root": "URL",
+                "root": "IP",
                 "filters": [],
                 "accessor": "ASOwner",
                 "transformers": [

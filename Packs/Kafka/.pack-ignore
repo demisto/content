@@ -7,3 +7,6 @@ ignore=IM111
 [file:Kafka_V2_image.png]
 ignore=IM111
 
+# GR103 is temporary, see CIAC-11705
+[file:playbook-KafkaV3_Test.yml]
+ignore=GR103

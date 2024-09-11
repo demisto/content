@@ -3417,7 +3417,7 @@ script:
       description: The score.
       type: Number
   - arguments:
-    - description: The name of the host.
+    - description: The host name of a specific host.
       name: host_id
     - description: Limit the number of hosts that will appear in the list. By default, the limit is 50 hosts.(Use limit when no specific host is requested.)
       name: limit
