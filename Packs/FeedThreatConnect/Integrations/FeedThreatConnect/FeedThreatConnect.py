@@ -280,7 +280,8 @@ def parse_indicator(indicator: Dict[str, str]) -> Dict[str, Any]:
         "fields": fields,
         "relationships": relationships
     }
-
+    if indicator_type == 'Domain':
+        demisto.debug(f"domain indicator returned: {indicator_obj}")
     return indicator_obj
 
 
@@ -453,8 +454,11 @@ def fetch_indicators_command(client: Client, params: dict, last_run: dict) -> tu
     Returns:
         list: indicator to populate in demisto server.
     """
+    demisto.debug("in fetch indicators command")
     indicators_url = build_url_with_query_params(params, 'indicators', last_run)
+    demisto.debug(f"indicators url with query is: {indicators_url}")
     groups_url = build_url_with_query_params(params, 'groups', last_run)
+    demisto.debug(f"groups url with query is: {groups_url}")
 
     indicators = []
     groups = []
@@ -496,7 +500,8 @@ def fetch_indicators_command(client: Client, params: dict, last_run: dict) -> tu
     except Exception as e:
         demisto.error(
             f'Got an error in the fetch loop. Returning {len(groups)} groups + {len(indicators)} indicators. error: {str(e)}')
-
+    demisto.debug(f"got {len(indicators)} indicators, they are: {indicators}")
+    demisto.debug(f"got {len(groups)} groups, they are: {groups}")
     return indicators, groups
 
 
@@ -515,6 +520,7 @@ def build_url_with_query_params(params: dict, endpoint: str, last_run: dict):
     tql = params.get('indicator_query')
     if not tql:
         tql = set_tql_query(from_date, params, endpoint)
+        demisto.debug(f"query param was empty, now: {tql}")
 
     if tql:
         tql = urllib.parse.quote(tql.encode('utf8'))  # type: ignore
@@ -681,6 +687,7 @@ def main():  # pragma: no cover # noqa
             indicators, groups = fetch_indicators_command(client, params, last_run)
             next_run = get_updated_last_run(indicators, groups, last_run)
             demisto.setLastRun(next_run)
+            demisto.debug(f"new lastrun: {next_run}")
 
             indicators = [parse_indicator(indicator) for indicator in indicators]
             demisto.debug(f'The number of new indicators: {len(indicators)}')
