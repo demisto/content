@@ -2968,10 +2968,14 @@ script:
       defaultValue: '600'
     - description: The action ID for polling use.
       name: action_id
-      deprecated: true
+      hidden: true
     - name: hide_polling_output
-      deprecated: true
+      hidden: true
       description: Whether to hide the polling result (automatically filled by polling).
+    - name: is_core
+      hidden: true
+      description: Is the command being called from a core pack.
+      defaultValue: true
     description: Initiates a new endpoint script execution action using a script from the script library and returns the results.
     name: core-script-run
     polling: true
