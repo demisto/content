@@ -69,7 +69,7 @@ script:
       name: config
     - auto: PREDEFINED
       defaultValue: merge
-      description: 'Specifies the operation to be performed on the BGP process configured on the device. In case of merge, the input configuration will be merged with the existing BGP configuration on the device. In case of replace, if there is a diff between the existing configuration and the input configuration, the existing configuration will be replaced by the input configuration for every option that has the diff. In case of override, all the existing BGP configuration will be removed from the device and replaced with the input configuration. In case of delete the existing BGP configuration will be removed from the device.'
+      description: Specifies the operation to be performed on the BGP process configured on the device. In case of merge, the input configuration will be merged with the existing BGP configuration on the device. In case of replace, if there is a diff between the existing configuration and the input configuration, the existing configuration will be replaced by the input configuration for every option that has the diff. In case of override, all the existing BGP configuration will be removed from the device and replaced with the input configuration. In case of delete the existing BGP configuration will be removed from the device.
       name: operation
       predefined:
       - merge
@@ -169,7 +169,7 @@ script:
       - modified
       - changed
     - auto: PREDEFINED
-      description: 'When using the `ansible-playbook --diff` command line argument the module can generate diffs against different sources. When this option is configure as `startup`, the module will return the diff of the running-config against the startup-config. When this option is configured as `intended`, the module will return the diff of the running-config against the configuration provided in the `intended_config` argument. When this option is configured as `running`, the module will return the before and after diff of the running-config with respect to any changes made to the device configuration.'
+      description: When using the `ansible-playbook --diff` command line argument the module can generate diffs against different sources. When this option is configure as `startup`, the module will return the diff of the running-config against the startup-config. When this option is configured as `intended`, the module will return the diff of the running-config against the configuration provided in the `intended_config` argument. When this option is configured as `running`, the module will return the before and after diff of the running-config with respect to any changes made to the device configuration.
       name: diff_against
       predefined:
       - running
@@ -212,7 +212,7 @@ script:
       name: host
       required: true
     - defaultValue: '!config'
-      description: 'When supplied, this argument restricts the facts collected to a given subset. Possible values for this argument include `all`, `min`, `hardware`, `config`, and `interfaces`. Specify a list of values to include a larger subset. Use a value with an initial `!` to collect all facts except that subset.'
+      description: When supplied, this argument restricts the facts collected to a given subset. Possible values for this argument include `all`, `min`, `hardware`, `config`, and `interfaces`. Specify a list of values to include a larger subset. Use a value with an initial `!` to collect all facts except that subset.
       name: gather_subset
     - description: When supplied, this argument will restrict the facts collected to a given subset. Possible values for this argument include all and the resources like interfaces, vlans etc. Can specify a list of values to include a larger subset. Values can also be used with an initial `M(!`) to specify that a specific subset should not be collected. Valid subsets are 'all', 'interfaces', 'l2_interfaces', 'vlans', 'lag_interfaces', 'lacp', 'lacp_interfaces', 'lldp_global', 'lldp_interfaces', 'l3_interfaces'.
       name: gather_network_resources
@@ -585,7 +585,7 @@ script:
       - monitor
       - buffered
       - trap
-    - description: 'The hostname or IP address of the destination. Required when `dest=host`.'
+    - description: The hostname or IP address of the destination. Required when `dest=host`.
       name: name
     - defaultValue: '4096'
       description: Size of buffer. The acceptable value is in range from 4096 to 4294967295 bytes.
@@ -802,7 +802,7 @@ script:
       name: privilege
     - description: Configures the view for the username in the device running configuration. The argument accepts a string value defining the view name. This argument does not check if the view has been configured on the device.
       name: view
-    - description: 'Specifies one or more SSH public key(s) to configure for the given username. This argument accepts a valid SSH key value.'
+    - description: Specifies one or more SSH public key(s) to configure for the given username. This argument accepts a valid SSH key value.
       name: sshkey
     - description: Defines the username without assigning a password. This will allow the user to login to the system without being authenticated by a password.
       name: nopassword
@@ -922,7 +922,7 @@ script:
     - contextPath: CiscoIOS.IosVrf.delta
       description: The time elapsed to perform all operations.
       type: string
-  dockerimage: demisto/ansible-runner:1.0.0.96928
+  dockerimage: demisto/ansible-runner:1.0.0.110653
   script: ''
   subtype: python3
   type: python
