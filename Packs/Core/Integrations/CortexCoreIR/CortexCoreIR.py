@@ -350,6 +350,9 @@ def main():  # pragma: no cover
         elif command == 'core-run-script':
             return_results(run_script_command(client, args))
 
+        elif command == 'core-script-run':
+            return_results(script_run_polling_command(args, client))
+
         elif command == 'core-run-snippet-code-script':
             return_results(run_polling_command(client=client,
                                                args=args,
