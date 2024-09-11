@@ -526,6 +526,7 @@ def process_raw_incident(client: SimpleClient, incident: dict) -> dict:
         dict: The processed incident dictionary.
     """
     incident_id = str(incident.get("id"))
+    demisto.debug(f'process_raw_incident {incident_id=}')
 
     if isinstance(incident.get("description"), str):
         incident["description"] = incident["description"]
@@ -567,6 +568,7 @@ def process_raw_incident(client: SimpleClient, incident: dict) -> dict:
     ]
     incident["phase"] = get_phase_name(client, incident['phase_id'])
     incident.update(get_mirroring_data())
+    demisto.debug(f'process_raw_incident processed_incident={incident}')
     return incident
 
 
@@ -621,17 +623,19 @@ def prepare_incident_update_dto_for_mirror(client: SimpleClient, incident_id: st
     changes = []
     for field, new_value in delta.items():
         # `resolution_id` is updated once the incident is closed or re-opened and requires additional treatment.
-        if field == 'resolution_id':
-            new_resolution_id = new_value = XSOAR_CLOSE_REASON_MAPPING.get(new_value)
+        if field == 'resolution_id' and DEMISTO_PARAMS.get('close_ibm_incident'):
             remote_status = incident["plan_status"]
 
             # Handling remote incident reopening.
-            if new_resolution_id == '' and remote_status == "C":
+            if new_value == '' and remote_status == "C":
                 changes.append(get_field_changes_entry("plan_status", remote_status, "A"))
 
             # Remote incident closure handling.
             else:
                 changes.append(get_field_changes_entry("plan_status", remote_status, "C"))
+
+        elif field == 'ibmqradarname':  # Excluding this field as the 'name' field is also used and read by XSOAR.
+            field = 'name'
 
         changes.append(
             get_field_changes_entry(
@@ -1403,7 +1407,6 @@ def fetch_incidents(client, first_fetch_time: str, fetch_closed: bool):
                 demisto_incidents.append(demisto_incident)
 
     # Increasing by one millisecond in order not to fetch the same incident in the next run.
-
     demisto.setLastRun({'time': last_fetched_timestamp + 1})
     demisto.incidents(demisto_incidents)
 
@@ -1902,16 +1905,15 @@ def get_remote_data_command(client: SimpleClient,
             entries.append(file_entry)
 
     # Handling remote incident resolution.
-    if incident.get("end_date") and incident.get("plan_status") == "C":  # 'C' stands for 'Closed'
-        if DEMISTO_PARAMS.get('close_xsoar_incident', True):
-            resolution_id = incident.get("resolution_id")
-            closing_entry = handle_incoming_incident_resolution(
-                incident_id=incident_id,
-                resolution_id=resolution_id,
-                resolution_summary=incident.get("resolution_summary", "")
+    if DEMISTO_PARAMS.get('close_xsoar_incident', False) and incident.get("end_date") and incident.get("plan_status") == "C":  # 'C' stands for 'Closed'
+        resolution_id = incident.get("resolution_id")
+        closing_entry = handle_incoming_incident_resolution(
+            incident_id=incident_id,
+            resolution_id=resolution_id,
+            resolution_summary=incident.get("resolution_summary", "")
 
-            )
-            entries.append(closing_entry)
+        )
+        entries.append(closing_entry)
 
     # Handling open and remote incident re-opening.
     elif not incident.get("end_date") and incident.get("plan_status") == "A":
@@ -2015,7 +2017,6 @@ def get_client():  # pragma: no cover
 
 def main():  # pragma: no cover
     params = demisto.params()
-    demisto.debug(f"main {params=}")
     fetch_time = validate_iso_time_format(params.get("fetch_time", ""))
     client = get_client()
 
@@ -2023,18 +2024,18 @@ def main():  # pragma: no cover
     integration_logger = logging.getLogger("resilient")  # type: logging.Logger
     integration_logger.propagate = False
 
-    LOG(f"command is {demisto.command()}")
 
     tag_to_ibm = params.get('tag_to_ibm')
     tag_from_ibm = params.get('tag_from_ibm')
-    demisto.debug(f"nonsense {tag_from_ibm=} | {tag_to_ibm=}")
+    demisto.debug(f"main {tag_from_ibm=} | {tag_to_ibm=}")
     if tag_from_ibm == tag_to_ibm:
         raise DemistoException(
-            'Attachment Entry Tag to IBM and Attachment Entry Tag from IBM cannot have the same value.')
+            'Tag *to* IBM and Tag *from* IBM cannot have the same value.')
 
     try:
         command = demisto.command()
         args = demisto.args()
+        demisto.info(f"main {command=} | {args=}")
 
         if command == "test-module":
             # Checks if there is an authenticated session

@@ -96,7 +96,7 @@ configuration:
 - name: fetch_time
   display: 'First fetch timestamp (YYYY-MM-DDTHH:MM:SSZ). For example: 2020-02-02T19:00:00Z'
   type: 0
-  required: false
+  required: true
   section: Collect
 
 - name: max_fetch
