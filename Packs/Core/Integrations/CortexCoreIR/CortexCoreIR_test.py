@@ -141,7 +141,7 @@ class TestPollingCommand:
     @staticmethod
     def create_mocked_responses(status_count):
 
-        response_queue = [  # xdr-run-script response
+        response_queue = [
             {
                 "reply": {
                     "action_id": 1,
@@ -196,11 +196,11 @@ class TestPollingCommand:
     def test_script_run_command(self, mocker, status_count):
         """
         Given -
-            xdr-script-run command arguments including polling true and is_core is true where each time a different amount of
+            core-script-run command arguments including polling true and is_core is true where each time a different amount of
             response is returned.
 
         When -
-            Running the xdr-script-run
+            Running the core-script-run
 
         Then
             - Make sure the readable output is returned to war-room only once indicating on polling.
