@@ -11636,8 +11636,8 @@ def split_data_to_chunks(data, target_chunk_size):
     :return: An iterable of lists where each list contains events with approx size of chunk size.
     :rtype: ``collections.Iterable[list]``
     """
-    for i in range(0, len(data), XSIAM_EVENT_CHUNK_SIZE):
-        yield data[i:i + XSIAM_EVENT_CHUNK_SIZE]
+    for i in range(0, len(data), target_chunk_size):
+        yield data[i:i + target_chunk_size]
 
 
 def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
