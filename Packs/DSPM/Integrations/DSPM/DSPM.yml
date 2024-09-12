@@ -14,33 +14,19 @@ configuration:
   required: true
   hiddenusername: true
   type: 9
-- display: Your Jira server URL
-  name: jiraServerUrl
-  required: true
-  type: 0
-- display: Your Jira user name (email).
-  name: jiraEmail
-  required: true
-  type: 0
-- displaypassword: JIRA API Token
-  additionalinfo: API token for Jira connection
-  name: jiraApiToken
-  required: true
-  hiddenusername: true
-  type: 9
 - display: Azure Storage Account name
   name: azureStorageName
-  required: true
+  required: false
   type: 0
 - displaypassword: Azure Storage Shared Key
   additionalinfo: The shared API key available in the Azure Storage Account
   name: azureSharedKey
-  required: true
+  required: false
   hiddenusername: true
   type: 9
 - display: GCP Service Account JSON
   name: serviceAccountJson
-  required: true
+  required: false
   type: 0
 - display: Lifetime for slack notification ( in hours)
   name: slackMsgLifetime
@@ -342,14 +328,11 @@ script:
     name: fetch-incidents
   - arguments: []
     description: Retrieves integration configuration.
-    name: dspm-get-integration-cofig
+    name: dspm-get-integration-config
     outputs:
     - contextPath: DSPM.configs
       description: Integration configuration values.
       type: String
-  - name: dspm-get-lifetime-for-slack
-    arguments: []
-    description: Retrieves the waiting time for user response on Slack
   - arguments:
     - description: 'Risk Finding ID'
       isArray: false

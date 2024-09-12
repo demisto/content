@@ -3,17 +3,10 @@ from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *  # noqa: F401
 import json
 from datetime import datetime
-import requests  # type: ignore
-from requests.auth import HTTPBasicAuth  # type: ignore
 
 import urllib3
 from typing import Any
 import re
-import hashlib
-import time
-import hmac
-import base64
-from requests.exceptions import ConnectionError
 from google.oauth2 import service_account
 from google.auth.transport.requests import Request
 
@@ -23,7 +16,7 @@ urllib3.disable_warnings()
 # RISK_FINDINGS = []
 MAX_PAGE_SIZE: int = 50
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
-GET_RISK_FINDINGS_ENDPINT = "/v1/risk-findings"
+GET_RISK_FINDINGS_ENDPOINT = "/v1/risk-findings"
 GET_ASSET_LISTS = "/v1/assets"
 GET_ASSET_DETAILS = "/v1/assets/id?id="
 GET_ASSET_FILES = "/v1/classification/asset-files/id"
@@ -198,7 +191,7 @@ class Client(BaseClient):
     def fetch_risk_findings(self, params: dict[str, Any]):
         demisto.debug(f"all params : {params}")
         return self._http_request(
-            method="GET", url_suffix=GET_RISK_FINDINGS_ENDPINT, params=params
+            method="GET", url_suffix=f"{GET_RISK_FINDINGS_ENDPOINT}", params=params
         )
 
     def get_asset_files(self, params: dict[str, Any]):
@@ -213,18 +206,18 @@ class Client(BaseClient):
 
     def get_asset_lists(self, params: dict[str, Any]):
         return self._http_request(
-            method="GET", url_suffix=GET_ASSET_LISTS, params=params
+            method="GET", url_suffix=f"{GET_ASSET_LISTS}", params=params
         )
 
     def get_data_types(self):
         return self._http_request(
             method="GET",
-            url_suffix=GET_DATA_TYPES_ENDPOINT,
+            url_suffix=f"{GET_DATA_TYPES_ENDPOINT}",
         )
 
     def get_data_type_findings(self, params: dict[str, Any]):
         return self._http_request(
-            method="GET", url_suffix=GET_DATA_TYPE_FINDINGS_ENDPOINT, params=params
+            method="GET", url_suffix=f"{GET_DATA_TYPE_FINDINGS_ENDPOINT}", params=params
         )
 
     def get_risk_information(self, risk_id: str):
@@ -256,12 +249,6 @@ def map_status(status: str):
     return mapped_status
 
 
-# def map_to_third_party_status(status: str) -> str:
-#     mapped_status = RISK_STATUS.get(status, 'open')  # Default to 'open' if the status is not found
-#     demisto.debug(f"Mapping local status '{status}' to third-party status '{mapped_status}'")
-#     return mapped_status
-
-
 def severity_to_dbot_score(severity):
     if severity == "LOW":
         return 1
@@ -272,86 +259,6 @@ def severity_to_dbot_score(severity):
     if severity == "CRITICAL":
         return 4
     return 0
-
-
-def check_jira_credentials():
-    try:
-        jira_server_url = demisto.params().get("jiraServerUrl", "")
-        url = f"https://{jira_server_url}{GET_CURRENT_JIRA_USER_ENDPOINT}"
-        jira_email = demisto.params().get("jiraEmail")
-        api_token = demisto.params().get("jiraApiToken", {}).get("password")
-        auth = HTTPBasicAuth(jira_email, api_token)
-        headers = {"Accept": "application/json"}
-
-        response = requests.request(method="GET", url=url, headers=headers, auth=auth)
-
-        return response
-        demisto.debug("Jira validation response :", response)
-        if response.status_code != 200:
-            raise Exception("Invalid Jira credentials")
-        else:
-            demisto.debug(f"jira validation response : {response}")
-            return None
-    except Exception as e:
-        demisto.debug("Got exception check_jira_credentials")
-        demisto.debug(e)
-
-
-def check_azure_credentials():
-    try:
-        account_name = str(demisto.params().get("azureStorageName"))
-        account_key = str(demisto.params().get("azureSharedKey", {}).get("password"))
-        api_version = "2024-11-04"
-        request_url = f"https://{account_name}.blob.core.windows.net/?comp=list"
-        request_date = datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S GMT")
-
-        # string for API signature
-        string_to_sign = (
-            f"GET\n"  # HTTP Verb
-            f"\n"  # Content-Encoding
-            f"\n"  # Content-Language
-            f"\n"  # Content-Length
-            f"\n"  # Content-MD5
-            f"\n"  # Content-Type
-            f"\n"  # Date
-            f"\n"  # If-Modified-Since
-            f"\n"  # If-Match
-            f"\n"  # If-None-Match
-            f"\n"  # If-Unmodified-Since
-            f"\n"  # Range
-            f"x-ms-date:{request_date}\n"
-            f"x-ms-version:{api_version}\n"
-            f"/{account_name}/\n"
-            "comp:list"
-        )
-
-        # create signature token for API auth
-        decoded_key = base64.b64decode(account_key)
-        signature = hmac.new(
-            decoded_key, string_to_sign.encode("utf-8"), hashlib.sha256
-        ).digest()
-        encoded_signature = base64.b64encode(signature).decode("utf-8")
-
-        authorization_header = f"SharedKey {account_name}:{encoded_signature}"
-        headers = {
-            "x-ms-date": request_date,
-            "x-ms-version": api_version,
-            "Authorization": authorization_header,
-        }
-        response = requests.get(request_url, headers=headers)
-
-        if response.status_code == 200:
-            return True
-        else:
-            return_error(
-                f"The provided Azure shared Key is invalid, Status Code '{response.status_code}'."
-            )
-    except ConnectionError:
-        return_error(
-            f"The provided Azure Storage account name - '{account_name}' is invalid."
-        )
-    except Exception:
-        return_error("The provided Azure shared Key is invalid.")
 
 
 def create_gcp_access_token(gcp_service_account_json):
@@ -382,41 +289,6 @@ def create_gcp_access_token(gcp_service_account_json):
     return access_token
 
 
-def validate_gcp_access_token(access_token):
-    validation_url = (
-        f"https://www.googleapis.com/oauth2/v1/tokeninfo?access_token={access_token}"
-    )
-    response = requests.get(validation_url)
-    return response.status_code == 200
-
-
-def check_gcp_json_credentials():
-    try:
-        # create GCP access token
-        gcp_service_account_json = demisto.params().get("serviceAccountJson")
-        gcp_access_token = create_gcp_access_token(gcp_service_account_json)
-
-        # validate the GCP access token
-        is_access_token_valid = validate_gcp_access_token(gcp_access_token)
-        return is_access_token_valid
-
-    except Exception as err:
-        return_error(f"Failed to validate the GCP credentials, Err: {err}")
-        return False
-
-
-def check_slack_notification_lifetime():
-    max_lifetime = 48
-    try:
-        slackMsgLifetime = int(demisto.params().get("slackMsgLifetime"))  # type: ignore
-        if slackMsgLifetime > max_lifetime:
-            return_error(
-                f"Provided Slack Notification lifetime '{slackMsgLifetime}' is more than {max_lifetime} hours"
-            )
-    except Exception as err:
-        return_error(f"Failed to validate Slack Notification lifetime, Err: {err}")
-
-
 def validate_parameter_list_and_equal(
     param_name: str, param_in: str, param_equal: str, supported_list: list[str]
 ):
@@ -438,23 +310,6 @@ def test_module(client: Client) -> str:
     try:
         # validate dspm creds
         client.get_data_types()
-
-        # validate jira creds
-        response = check_jira_credentials()
-        if response.status_code != 200:
-            raise Exception("Invalid Jira credentials")
-
-        # validate Azure creds
-        is_azure_creds_valid = check_azure_credentials()
-        if not is_azure_creds_valid:
-            raise Exception("Invalid Azure credentials")
-
-        # validate GCP creds
-        is_gcp_creds_valid = check_gcp_json_credentials()
-        if not is_gcp_creds_valid:
-            raise Exception("Invalid GCP credentials")
-
-        check_slack_notification_lifetime()
 
         return "ok"
 
@@ -797,10 +652,6 @@ def update_risk_finding_status_command(client, args):
     if status and status not in SUPPORTED_STATUS:
         raise ValueError(f'This "{status}" cloud provider does not supported')
 
-    # Validate status
-    # if status not in INCIDENT_STATUS:
-    #     raise ValueError(f"Invalid status. Choose from: {', '.join(INCIDENT_STATUS)}")
-
     try:
         response = client.update_risk_status(finding_id, status)
         # Format the response for display
@@ -826,17 +677,6 @@ def update_risk_finding_status_command(client, args):
 
 
 """ FETCH INCIDENTS FUNCTION"""
-
-# def get_mirroring_fields(mirror_direction):
-#     """
-#     Get tickets mirroring.
-#     """
-
-#     return {
-#         "mirror_direction": MIRROR_DIRECTION.get(mirror_direction),
-#         "mirror_instance": demisto.integrationInstance(),
-#         "incident_type": "DSPM Risk Findings",
-#     }
 
 
 def fetch_incidents(client: Client, mirror_direction):
@@ -908,18 +748,6 @@ def fetch_incidents(client: Client, mirror_direction):
                     "rawJSON": json.dumps(finding),
                 }
                 demisto.debug(f"incident details : {incident}")
-                # RISK_FINDINGS.append(
-                #     {
-                #         'risk_id': finding.get('id'),
-                #         'ruleName': finding.get('ruleName'),
-                #         'asset_id': finding.get('asset', {}).get('assetId', ''),
-                #         'asset_name': finding.get('asset', {}).get('name', ''),
-                #         'status': finding.get('status'),
-                #         'remediation_status': 'N/A',
-                #         'remediation_step': REMEDIATE_STEPS.get(finding.get('ruleName'), 'N/A'),
-                #         'cloudProvider': finding.get('cloudProvider')
-                #     }
-                # )
                 incidents.append(incident)
             processed_ids.append(finding_id)  # type: ignore
 
@@ -979,13 +807,6 @@ def get_integration_config_command():
     )
 
 
-def get_slack_msg_lifetime(client, sleep_time):
-    in_seconds = int(sleep_time) * 3600
-    # time.sleep(int(in_seconds))
-    time.sleep(10)
-    return in_seconds
-
-
 """ MAIN FUNCTION """
 
 
@@ -1012,12 +833,11 @@ def main() -> None:
         if demisto.command() == "test-module":
             result = test_module(client)
             return_results(result)
-        elif demisto.command() == "dspm-get-integration-cofig":
+        elif demisto.command() == "dspm-get-integration-config":
             return_results(get_integration_config_command())
         elif demisto.command() == "fetch-incidents":
             fetch_incidents(client, mirror_direction)
         elif demisto.command() == "dspm-get-risk-findings":
-            # get_risk_findings_command(client, demisto.args())
             page = 0
             while True:
                 findings = get_risk_findings_command(client, demisto.args(), page)
@@ -1126,10 +946,6 @@ def main() -> None:
                 page += 1
         elif demisto.command() == "dspm-update-risk-finding-status":
             return_results(update_risk_finding_status_command(client, demisto.args()))
-        elif demisto.command() == "dspm-get-lifetime-for-slack":
-            sleep_time = demisto.params().get("slackMsgLifetime", "")
-            in_seconds = get_slack_msg_lifetime(client, sleep_time)
-            return_results(f"Sleep for {in_seconds} seconds")
 
     except Exception as e:
         return_error(

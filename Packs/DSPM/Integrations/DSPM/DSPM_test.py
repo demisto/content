@@ -11,7 +11,6 @@ from DSPM import (
     update_risk_finding_status_command,
     get_data_types_command,
     get_data_type_findings,
-    get_slack_msg_lifetime,
 )
 
 
@@ -94,12 +93,6 @@ def test_get_risk_findings_command_with_valid_args(client):
     assert len(result) >= 1
 
 
-def test_get_slack_msg_lifetime(client):
-    sleep_time = 2
-    result = get_slack_msg_lifetime(client, sleep_time)
-    assert isinstance(result, str)
-
-
 def test_get_list_of_assets_with_valid_args(client):
     mock_response = [
         {
@@ -179,8 +172,8 @@ def test_get_data_types_command(client):
     assert result.outputs == [{"No": 1, "Key": "Type1"}, {"No": 2, "Key": "Type2"}, {"No": 3, "Key": "Type3"}]
 
     expected_human_readable = (
-        "### Data Types\n"
-        "| No | Key  |\n"
+        "### Data Types\n "
+        "| No | Key  |\n "
         "|----|------|\n"
         "| 1  | Type1 |\n"
         "| 2  | Type2 |\n"
@@ -199,9 +192,9 @@ def test_get_data_types_command_empty(client):
     assert result.outputs == []
 
     expected_human_readable = (
-        "### Data Types\n"
-        "| No | Key |\n"
-        "|----|-----|\n"
+        "### Data Types\n "
+        "| No | Key |\n "
+        "|----|-----|\n "
         "**No entries.**\n"
     )
     assert result.readable_output == expected_human_readable
@@ -217,8 +210,8 @@ def test_get_data_types_command_single_type(client):
     assert result.outputs == [{"No": 1, "Key": "Type1"}]
 
     expected_human_readable = (
-        "### Data Types\n"
-        "| No | Key  |\n"
+        "### Data Types\n "
+        "| No | Key  |\n "
         "|----|------|\n"
         "| 1  | Type1 |\n"
     )
@@ -344,18 +337,24 @@ def test_get_data_type_findings_command_single_string(client):
     # assert result.readable_output == expected_human_readable
 
 
-def test_get_asset_files_by_id(client, mocker):
+def test_get_asset_files_by_id(client):
     # Mock response data
-    mock_response = {
-        "files": [
-            {"filename": "file1.txt", "size": 1234},
-            {"filename": "file2.txt", "size": 5678}
-        ],
-        "filesCount": 2
-    }
+    mock_responses = [
+        {
+            "files": [
+                {"filename": "file1.txt", "size": 1234},
+                {"filename": "file2.txt", "size": 5678}
+            ],
+            "filesCount": 2
+        },
+        {
+            "files": [],
+            "filesCount": 0
+        }
+    ]
 
     # Mock the client method
-    client.get_asset_files = MagicMock(return_value=mock_response)
+    client.get_asset_files = MagicMock(side_effect=[mock_responses[0], mock_responses[1]])
 
     # Define the arguments for the command
     args = {
