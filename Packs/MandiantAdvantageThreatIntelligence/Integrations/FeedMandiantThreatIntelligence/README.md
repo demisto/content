@@ -12,9 +12,9 @@
 
 Version 1.1 supercedes all previous versions of the Mandiant Advantage Threat Intelligence Integration and splits feed and enrichment capabilities into 2 separate integrations. Customers upgrading from earlier versions should follow these steps:
 
-1. Note the instance name of your existing Mandiant Advantage Threat Intelligence integration instance, this is needed in a later step
-2. Remove all instances of existing Mandiant Advatange Threat Intelligence integrations
-3. Optionally, remove the integration from your XSOAR sever
+1. Note the instance name of your existing Mandiant Advantage Threat Intelligence integration instance, this is needed in a later step.
+2. Remove all instances of existing Mandiant Advantage Threat Intelligence integrations.
+3. Optionally, remove the integration from your Cortex XSOAR server.
 4. Remove all indicators created by the previous version. To do this:
     a. Open the Threat Intel page and perform an All Time search using this query `sourceInstances:"<INSTANCE NAME>"`, where `<INSTANCE_NAME>` is the name of your old integration instance collected in step 1
     b. Select all indicators
