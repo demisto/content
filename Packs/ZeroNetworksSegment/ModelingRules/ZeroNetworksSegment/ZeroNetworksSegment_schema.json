@@ -4,6 +4,10 @@
           "type": "int",
           "is_array": false
       },
+      "userRole": {
+          "type": "int",
+          "is_array": false
+      },
       "auditType": {
           "type": "int",
           "is_array": false
