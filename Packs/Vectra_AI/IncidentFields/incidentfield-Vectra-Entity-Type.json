@@ -1,0 +1,33 @@
+{
+    "id": "incident_vectraentitytype",
+    "version": -1,
+    "modified": "2024-07-29T11:11:53.982167359+05:30",
+    "name": "Vectra Entity Type",
+    "ownerOnly": false,
+    "cliName": "vectraentitytype",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Vectra Account",
+        "Vectra Detection",
+        "Vectra Host"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.5.0"
+}
