@@ -6,12 +6,12 @@ commonfields:
   id: Mandiant
   version: -1
 configuration:
-- additionalinfo: Your API Key from Mandiant Advantage Threat Intelligence
+- additionalinfo: Your API Key from Mandiant Advantage Threat Intelligence.
   display: API Key
   name: api_key
   required: true
   type: 0
-- additionalinfo: Your Secret Key from Mandiant Advantage Threat Intelligence
+- additionalinfo: Your Secret Key from Mandiant Advantage Threat Intelligence.
   display: Secret Key
   name: secret_key
   required: true
@@ -53,10 +53,10 @@ configuration:
   type: 0
   required: false
 - name: map_to_mitre_attack
-  display: Map Attack Pattern Relationships to Mitre ATT&CK
+  display: Map Attack Pattern Relationships to Mitre ATT&CK.
   type: 8
   defaultvalue: 'false'
-  additionalinfo: 'When enabled the integration will attempt to map Attack Pattern relationships to Attack Pattern Indicators created by the Mitre ATT&CK Integration'
+  additionalinfo: 'When enabled the integration will attempt to map Attack Pattern relationships to Attack Pattern Indicators created by the Mitre ATT&CK Integration.'
   required: false
 script:
   commands:
@@ -96,7 +96,7 @@ script:
       description: The name of the indicator.
       type: string
     - contextPath: File.Campaign
-      description: A comma separated list of any campaigns associated with the indicator.
+      description: A comma-separated list of any campaigns associated with the indicator.
       type: string
     - contextPath: File.TrafficLightProtocol
       description: The traffic light protocol color associated with the indicator.
@@ -108,7 +108,7 @@ script:
       description: The vendor providing the description.
       type: string
     - contextPath: File.MalwareFamily
-      description: A comma separated list of any Malware Families associated with the indicator.
+      description: A comma-separated list of any Malware Families associated with the indicator.
       type: string
     - contextPath: File.Relationships
       description: A list of relationship objects associated with the indicator.
@@ -172,7 +172,7 @@ script:
     arguments:
     - name: ip
       default: true
-      description: List of IPs.
+      description: List of IP addresses.
       isArray: true
     outputs:
     - contextPath: DBotScore.Score
@@ -194,19 +194,19 @@ script:
       description: The IP address value.
       type: string
     - contextPath: IP.Campaign
-      description: A comma separated list of any campaigns associated with the indicator.
+      description: A comma-separated list of any campaigns associated with the indicator.
       type: string
     - contextPath: IP.TrafficLightProtocol
       description: The traffic light protocol color associated with the indicator.
       type: string
     - contextPath: IP.MalwareFamily
-      description: A comma separated list of any Malware Families associated with the indicator.
+      description: A comma-separated list of any Malware Families associated with the indicator.
       type: string
     - contextPath: IP.Relationships
       description: A list of relationship objects associated with the indicator.
       type: list
     - contextPath: IP.STIXID
-      description: The stix id of the CVE.
+      description: The STIX ID of the CVE.
       type: string
     - contextPath: IP.Publications
       description: A list of report objects associated with the indicator.
@@ -286,19 +286,19 @@ script:
       description: The URL value.
       type: string
     - contextPath: URL.Campaign
-      description: A comma separated list of any campaigns associated with the indicator.
+      description: A comma-separated list of any campaigns associated with the indicator.
       type: string
     - contextPath: URL.TrafficLightProtocol
       description: The traffic light protocol color associated with the indicator.
       type: string
     - contextPath: URL.MalwareFamily
-      description: A comma separated list of any Malware Families associated with the indicator.
+      description: A comma-separated list of any Malware Families associated with the indicator.
       type: string
     - contextPath: URL.Relationships
       description: A list of relationship objects associated with the indicator.
       type: list
     - contextPath: URL.STIXID
-      description: The stix id of the CVE.
+      description: The STIX ID of the CVE.
       type: string
     - contextPath: Mandiant.URL.threat_rating.confidence_level
       description: The confidence level of the indicator's threat rating.
@@ -375,19 +375,19 @@ script:
       description: The domain name.
       type: string
     - contextPath: Domain.Campaign
-      description: A comma separated list of any campaigns associated with the indicator.
+      description: A comma-separated list of any campaigns associated with the indicator.
       type: string
     - contextPath: Domain.TrafficLightProtocol
       description: The traffic light protocol color associated with the indicator.
       type: string
     - contextPath: Domain.MalwareFamily
-      description: A comma separated list of any Malware Families associated with the indicator.
+      description: A comma-separated list of any Malware Families associated with the indicator.
       type: string
     - contextPath: Domain.Relationships
       description: A list of relationship objects associated with the indicator.
       type: list
     - contextPath: Domain.STIXID
-      description: The stix id of the CVE.
+      description: The STIX ID of the CVE.
       type: string
     - contextPath: Mandiant.Domain.threat_rating.confidence_level
       description: The confidence level of the indicator's threat rating.
@@ -455,7 +455,7 @@ script:
       description: The date that the CVE was last modified.
       type: date
     - contextPath: CVE.STIXID
-      description: The stix id of the CVE.
+      description: The STIX ID of the CVE.
       type: string
     - contextPath: CVE.VulnerableProducts
       description: A list of CPE objects.
@@ -470,7 +470,7 @@ script:
       description: The CVSS score of the CVE.
       type: number
     - contextPath: CVE.CVSS.Vector
-      description: The CVSS Vector of the CVE.
+      description: The CVSS vector of the CVE.
       type: string
     - contextPath: CVE.CVSS.Version
       description: The CVSS version of the CVE.
@@ -518,7 +518,7 @@ script:
       description: A list of vendor fix references associated with the CVE.
       type: list
     - contextPath: Mandiant.CVE.version_history
-      description: A list of history objects containing links to detail about each version of the CVE.
+      description: A list of history objects containing links to details about each version of the CVE.
       type: list
     - contextPath: Mandiant.CVE.risk_rating
       description: The risk rating associated with the CVE.
@@ -530,7 +530,7 @@ script:
       description: The exploitation consequence associated with the CVE.
       type: string
     - contextPath: Mandiant.CVE.vulnerable_cpes
-      description: A list of vulnerable cpe objects associated with the CVE.
+      description: A list of vulnerable CPE objects associated with the CVE.
       type: list
     - contextPath: Mandiant.CVE.updated_date
       description: The date and time that the CVE was last updated.
@@ -654,7 +654,7 @@ script:
       description: A list of Intel objects suspected to be associated with the Threat Actor.
       type: list
     - contextPath: Mandiant.Actor.type
-      description: The Type of XSOAR indicator.
+      description: The type of Cortex XSOAR indicator.
       type: string
     - contextPath: Mandiant.Actor.id
       description: The Mandiant ID of the Threat Actor.
@@ -690,7 +690,7 @@ script:
   - name: mati-get-malware
     arguments:
     - default: true
-      description: Name of the malware family to look up.
+      description: Name of the Malware Family to look up.
       name: malware_name
       required: true
     outputs:
@@ -752,7 +752,7 @@ script:
       description: A list of capability objects associated with the Malware Family.
       type: list
     - contextPath: Mandiant.Malware.yara
-      description: A list of yara rule objects associated with the Malware Family.
+      description: A list of YARA rule objects associated with the Malware Family.
       type: list
     - contextPath: Mandiant.Malware.industries
       description: A list of industry objects targeted by the Malware Family.
@@ -844,7 +844,7 @@ script:
       description: 'The indicator type.'
       type: string
     - contextPath: Mandiant.Campaign.tools
-      description: A list of tool objects associated with the Campaign.
+      description: A list of Tool objects associated with the Campaign.
       type: list
     - contextPath: Mandiant.Campaign.industries
       description: A list of target industry objects associated with the Campaign.
