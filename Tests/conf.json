@@ -5942,7 +5942,6 @@
         "FormattedDateToEpochTest": "Issue 26724",
         "CrowdstrikeFalconSandbox2 Test": "Issue 46845",
         "Test ADGetUser Fails with no instances 'Active Directory Query' (old version)": "Issue 44543",
-        "CarbonBlackLiveResponseCloud-Test": "Issue 39282",
         "Panorama Best Practise - Test": "Issue 43826",
         "JsonToTable - Test Playbook": "Issue 44302",
         "Recorded Future Test": "Issue 26741",
