@@ -17,7 +17,7 @@ configuration:
   name: api_key
   required: true
   type: 0
-- additionalinfo: Your Secret Key from Mandiant Advantage Threat Intelligence
+- additionalinfo: Your Secret Key from Mandiant Advantage Threat Intelligence.
   display: Secret Key
   name: secret_key
   required: true
