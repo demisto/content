@@ -63,26 +63,24 @@ def create_account(
     Returns:
         dict[str, Any]: A dictionary containing the non-empty account information.
     """
-    account = {}
-    if id:
-        account = {
-            "id": id,
-            "username": username,
-            "display_name": display_name,
-            "email_address": email_address,
-            "groups": groups,
-            "type": type,
-            "job_title": job_title,
-            "office": office,
-            "telephone_number": telephone_number,
-            "is_enabled": is_enabled,
-            "manager_email": manager_email,
-            "manager_display_name": manager_display_name,
-            "risk_level": risk_level,
-        }
-        for key, value in account.items():
-            if isinstance(value, list) and len(value) == 1:
-                account[key] = value[0]
+    account = {
+        "id": id,
+        "username": username,
+        "display_name": display_name,
+        "email_address": email_address,
+        "groups": groups,
+        "type": type,
+        "job_title": job_title,
+        "office": office,
+        "telephone_number": telephone_number,
+        "is_enabled": is_enabled,
+        "manager_email": manager_email,
+        "manager_display_name": manager_display_name,
+        "risk_level": risk_level,
+    }
+    for key, value in account.items():
+        if isinstance(value, list) and len(value) == 1:
+            account[key] = value[0]
 
     return remove_empty_elements(account)
 
@@ -202,12 +200,12 @@ def get_outputs(output_key: str, raw_context: dict[str, Any]) -> dict[str, Any]:
         # }
 
     """
-    context = {}
     if raw_context and output_key:
         context = raw_context.get(output_key, {})
         if isinstance(context, list):
             context = context[0]
-
+    else:
+        context = {}
     return context
 
 
@@ -235,6 +233,10 @@ def merge_accounts(accounts: list[dict[str, str]]) -> dict[str, Any]:
                 demisto.debug(
                     f"Conflicting values for key '{key}': '{merged_account[key]}' vs '{value}'"
                 )
+    if "id" not in merged_account:
+        demisto.debug(f"No 'id' key found in merged account with keys: {list(merged_account.keys())}")
+        merged_account = {}
+
     return (
         Common.Account(**merged_account).to_context()[Common.Account.CONTEXT_PATH]
         if merged_account
@@ -264,14 +266,19 @@ def run_execute_command(
     demisto.debug(f"Executing command: {command_name}")
     res = demisto.executeCommand(command_name, args)
     errors_command_results = []
-    if is_error(res):
-        errors_command_results.extend(
-            prepare_human_readable(command_name, args, get_error(res), is_error=True)
-        )
-    human_readable = "\n".join([entry.get("HumanReadable", "") for entry in res])
-    entry_context = [entry.get("EntryContext", {}) for entry in res]
+    human_readable_list = []
+    entry_context_list = []
+    for entry in res:
+        entry_context_list.append(entry.get("EntryContext", {}))
+        if is_error(entry):
+            errors_command_results.extend(
+                prepare_human_readable(command_name, args, get_error(entry), is_error=True)
+            )
+        else:
+            human_readable_list.append(entry.get("HumanReadable", ""))
+    human_readable = "\n".join(human_readable_list)
     demisto.debug(f"Finished executing command: {command_name}")
-    return entry_context, human_readable, errors_command_results
+    return entry_context_list, human_readable, errors_command_results
 
 
 def identityiq_search_identities_command(
@@ -317,10 +324,13 @@ def identitynow_get_accounts_command(
     )
     output_key = get_output_key("IdentityNow.Account", entry_context[0])
     outputs = get_outputs(output_key, entry_context[0])
+
+    is_disabled = outputs.get("disabled")
+    is_enabled = (not is_disabled) if isinstance(is_disabled, bool) else None
     account_output = create_account(
         id=outputs.get("id"),
         display_name=outputs.get("name"),
-        is_enabled=not outputs.get("disabled"),
+        is_enabled=is_enabled,
     )
 
     return readable_outputs_list, account_output
@@ -343,14 +353,16 @@ def ad_get_user_command(
     )
     output_key = get_output_key("ActiveDirectory.Users", entry_context[0])
     outputs = get_outputs(output_key, entry_context[0])
+
+    account_disable = outputs.get("userAccountControlFields", {}).get("ACCOUNTDISABLE")
+    is_enabled = (not account_disable) if isinstance(account_disable, bool) else None
     account_output = create_account(
         id=outputs.get("dn"),
+        username=outputs.get("sAMAccountName"),
         display_name=outputs.get("displayName"),
         email_address=outputs.get("mail"),
         groups=outputs.get("memberOf"),
-        is_enabled=not outputs.get("userAccountControlFields", {}).get(
-            "ACCOUNTDISABLE",
-        ),
+        is_enabled=is_enabled,
     )
 
     manager_dn = (outputs.get("manager") or [""])[0]
@@ -430,7 +442,7 @@ def okta_get_user_command(
         display_name=outputs.get("DisplayName"),
         email_address=outputs.get("Email"),
         manager_display_name=outputs.get("Manager"),
-        is_enabled=outputs.get("Status") == "ACTIVE",
+        is_enabled=(outputs.get("Status") == "ACTIVE") if outputs.get("Status") else None,
     )
 
     return readable_outputs_list, account_output
@@ -612,10 +624,11 @@ def main():  # pragma: no cover
             #################################
             ### Running for a single user ###
             #################################
+            demisto.debug(f"Start getting user account data for user: {user_id=}, {user_name=}, {user_email=}")
             single_user_outputs = []
             single_user_readable_outputs = []
             outputs: dict[str, Any] | list[dict[str, Any]]
-            if "\\" not in user_name:  # If the user_name does not contain a domain
+            if "\\" not in (user_name or ""):  # If the user_name does not contain a domain
                 if modules.is_brand_available("SailPointIdentityNow") and any(
                     (user_id, user_name)
                 ):
@@ -668,7 +681,7 @@ def main():  # pragma: no cover
                     readable_outputs, outputs = msgraph_user_get_command(user_name)
                     single_user_readable_outputs.extend(readable_outputs)
                     single_user_outputs.append(outputs)
-                    if outputs:
+                    if outputs.get("id"):
                         readable_outputs, outputs = msgraph_user_get_manager_command(
                             user_name
                         )
@@ -716,10 +729,13 @@ def main():  # pragma: no cover
         ### Complete for all users ###
         ##############################
         if users_not_found_list:
-            users_not_found_str = "\n".join(users_not_found_list)
             command_results_list.append(
                 CommandResults(
-                    readable_output=f"The following user(s) were not found:\n{users_not_found_str}",
+                    readable_output=tableToMarkdown(
+                        name="User(s) not found",
+                        headers=["User ID/Name/Email"],
+                        t=users_not_found_list,
+                    )
                 )
             )
         if account_outputs_list:
@@ -729,9 +745,10 @@ def main():  # pragma: no cover
                     outputs_key_field="Id",
                     outputs=account_outputs_list,
                     readable_output=tableToMarkdown(
-                        name="User(s) Data",
+                        name="User(s) Accounts data",
                         t=account_outputs_list,
-                        headers=["Id", "Username", "Email", "IsEnabled", "Message"],
+                        headers=["Id", "Username", "Email", "IsEnabled", "Manager"],
+                        removeNull=True,
                     ),
                 )
             )
