@@ -7263,17 +7263,19 @@ def test_build_tag_element(mocker, device_group, vsys, args, expected_response):
 
 @pytest.mark.parametrize(
     ("element_to_change, context_element, element_value, current_objects_items, params_element, "
-    "expected_exception, expected_warning, expected_warning_exit"),
+     "expected_exception, expected_warning, expected_warning_exit"),
     [
         ('tag', 'Tags', ['tag3'], ['tag3'], '<tag></tag>', False, False, False),  # Last tag
         ('tag', 'Tags', ['tag2'], ['tag3', 'tag2'], '<tag><member>tag3</member></tag>', False, False, False),  # Not last tag
         ('tag', 'Tags', ['nonexistent_tag'], ['tag1'], '', False, True, True),  # Non-existent tag > exit
-        ('tag', 'Tags', ['nonexistent_tag', 'tag1'], ['tag1'], '<tag></tag>', False, True, False),  # Non-existent tag & existent > warning
+        ('tag', 'Tags', ['nonexistent_tag', 'tag1'], ['tag1'], '<tag></tag>',
+         False, True, False),  # Non-existent tag & existent > warning
         ('source', 'Source', ['source'], ['source'], '', True, False, False)  # raise exception
     ]
 )
-def test_panorama_edit_rule_items_remove(mocker, element_to_change, context_element, element_value, current_objects_items, params_element,
-                                         expected_exception, expected_warning, expected_warning_exit):
+def test_panorama_edit_rule_items_remove(
+        mocker, element_to_change, context_element, element_value, current_objects_items,
+        params_element, expected_exception, expected_warning, expected_warning_exit):
     """
     Given:
      - element_to_change: The element to be changed in the rule.
