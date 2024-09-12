@@ -64,7 +64,7 @@ class Client(BaseClient):
         result = self._http_request('POST', full_url=self.authentication_url, json_data=data)
         demisto.debug(f"result is: {result}")
         if result.get("status", "") != "SUCCESS":
-            raise DemistoException(f"Retrieving Okta session token returned status: {result.get("status")},"
+            raise DemistoException(f"Retrieving Okta session token returned status: {result.get('status')},"
                                    f" check your okta credentials please.")
         return result.get('sessionToken')
 
