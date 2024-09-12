@@ -393,29 +393,29 @@ Retrieve information about a Campaign from Mandiant.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Mandiant.Campaign.counts.timeline | number | The number of events in the Campaign timeline |
-| Mandiant.Campaign.counts.campaigns | number | The number of other Campaigns associated with the Campaign |
-| Mandiant.Campaign.counts.malware | number | The number of Malware Families associated with the Campaign |
-| Mandiant.Campaign.counts.actor_collaborations | number | The number of Threat Actor Collaborations associated with the Campaign |
-| Mandiant.Campaign.counts.vulnerabilities | number | The number of Vulnerabilities associated with the Campaign |
-| Mandiant.Campaign.counts.tools | number | The number of Tools associated with the Campaign |
-| Mandiant.Campaign.counts.industries | number | The number of target industries associated with the Campaign |
-| Mandiant.Campaign.counts.actors | number | The number of Threat Actors associated with the Campaign |
-| Mandiant.Campaign.counts.reports | number | The number of finished intelligence reports associated with the Campaign |
-| Mandiant.Campaign.profile_update | date | The date and time that the profile of the Campaign was last updated |
-| Mandiant.Campaign.campaign_type | string | The type of the Campaign |
-| Mandiant.Campaign.name | string | The name of the Campaign |
-| Mandiant.Campaign.short_name | string | The short name / ID of the Campaign |
-| Mandiant.Campaign.target_locations.countries | list | A list of country objects that the Campaign targets |
-| Mandiant.Campaign.target_locations.regions | list | A list of region objects that the Campaign targets |
-| Mandiant.Campaign.target_locations.sub_regions | list | A list of sub-region objects that the Campaign targets |
-| Mandiant.Campaign.value | string | The short name / ID of the Campaign |
-| Mandiant.Campaign.last_activity_time | date | The date and time that the Campaign was last known to be active |
-| Mandiant.Campaign.malware | list | A list of Malware Family objects associated with the Campaign |
-| Mandiant.Campaign.actor_collaborations | list | A list of Actor Collaboration objects associated with the Campaign |
-| Mandiant.Campaign.vulnerabilities | list | A list of Vulnerability objects associated with the Campaign |
-| Mandiant.Campaign.type | string | The indicator type |
-| Mandiant.Campaign.tools | list | A list of tool objects associated with the Campaign |
-| Mandiant.Campaign.industries | list | A list of target industry objects associated with the Campaign |
-| Mandiant.Campaign.actors | list | A list of Threat Actor objects associated with the Campaign |
-| Mandiant.Campaign.aliases | list | A list of alias objects associated with the Campaign |
+| Mandiant.Campaign.counts.timeline | number | The number of events in the Campaign timeline. |
+| Mandiant.Campaign.counts.campaigns | number | The number of other Campaigns associated with the Campaign. |
+| Mandiant.Campaign.counts.malware | number | The number of Malware Families associated with the Campaign. |
+| Mandiant.Campaign.counts.actor_collaborations | number | The number of Threat Actor Collaborations associated with the Campaign. |
+| Mandiant.Campaign.counts.vulnerabilities | number | The number of Vulnerabilities associated with the Campaign. |
+| Mandiant.Campaign.counts.tools | number | The number of Tools associated with the Campaign. |
+| Mandiant.Campaign.counts.industries | number | The number of target industries associated with the Campaign. |
+| Mandiant.Campaign.counts.actors | number | The number of Threat Actors associated with the Campaign. |
+| Mandiant.Campaign.counts.reports | number | The number of finished intelligence reports associated with the Campaign. |
+| Mandiant.Campaign.profile_update | date | The date and time that the profile of the Campaign was last updated. |
+| Mandiant.Campaign.campaign_type | string | The type of the Campaign. |
+| Mandiant.Campaign.name | string | The name of the Campaign. |
+| Mandiant.Campaign.short_name | string | The short name / ID of the Campaign. |
+| Mandiant.Campaign.target_locations.countries | list | A list of country objects that the Campaign targets. |
+| Mandiant.Campaign.target_locations.regions | list | A list of region objects that the Campaign targets. |
+| Mandiant.Campaign.target_locations.sub_regions | list | A list of sub-region objects that the Campaign targets. |
+| Mandiant.Campaign.value | string | The short name / ID of the Campaign. |
+| Mandiant.Campaign.last_activity_time | date | The date and time that the Campaign was last known to be active. |
+| Mandiant.Campaign.malware | list | A list of Malware Family objects associated with the Campaign. |
+| Mandiant.Campaign.actor_collaborations | list | A list of Actor Collaboration objects associated with the Campaign. |
+| Mandiant.Campaign.vulnerabilities | list | A list of Vulnerability objects associated with the Campaign. |
+| Mandiant.Campaign.type | string | The indicator type. |
+| Mandiant.Campaign.tools | list | A list of tool objects associated with the Campaign. |
+| Mandiant.Campaign.industries | list | A list of target industry objects associated with the Campaign. |
+| Mandiant.Campaign.actors | list | A list of Threat Actor objects associated with the Campaign. |
+| Mandiant.Campaign.aliases | list | A list of alias objects associated with the Campaign. |
