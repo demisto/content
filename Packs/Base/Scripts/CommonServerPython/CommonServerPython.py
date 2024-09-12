@@ -11636,7 +11636,7 @@ def validate_no_oversize_chunks(data: list):
             # We fail the submission process as it will cause errors on the BE side.
             raise DemistoException(
                 f'ERROR: failed splitting data to chunks. Chunk size limit is {XSIAM_EVENT_CHUNK_SIZE_LIMIT} '
-                f'but data contains and item of size: {oversize_item_size}')
+                f'but data contains an item of size: {oversize_item_size}')
 
 
 def split_data_to_chunks(data, target_chunk_size):
