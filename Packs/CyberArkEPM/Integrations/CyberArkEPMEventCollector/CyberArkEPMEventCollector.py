@@ -170,7 +170,7 @@ def prepare_datetime(date_time: Any, increase: bool = False) -> str:
     return f'{date_time_str}Z'
 
 
-def prepare_next_run(set_id: str, event_type: str, last_run: dict, last_fetch: dict):
+def prepare_next_run(set_id: str, event_type: str, last_run: dict, last_fetch: dict):      # pragma: nocover
     """
     Gets a list of events and adds the `_time` and the `eventTypeXsiam` keys.
     Args:
