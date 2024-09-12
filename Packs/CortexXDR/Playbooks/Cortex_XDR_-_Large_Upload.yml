@@ -67,10 +67,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: f8019971-848d-42ea-8092-41468c83a05c
+    taskid: 2864f683-d804-43bb-8946-4d90039fc751
     type: condition
     task:
-      id: f8019971-848d-42ea-8092-41468c83a05c
+      id: 2864f683-d804-43bb-8946-4d90039fc751
       version: -1
       name: Found Results?
       description: Determine if previous false positive incidents have been detected with similar characteristics.
@@ -86,14 +86,16 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isTrue
+      - - operator: isEqualString
           left:
             value:
               complex:
                 root: DBotFindSimilarIncidents
-                accessor: isSimilarIncidentFound
             iscontext: true
           ignorecase: true
+          right:
+            value:
+              simple: "True"
       - - operator: containsGeneral
           left:
             value:
@@ -1822,10 +1824,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "56":
     id: "56"
-    taskid: f48d9fbb-df56-480b-81a9-83d55cc474a5
+    taskid: 6171569a-753b-4669-840f-1929e5f5ad53
     type: playbook
     task:
-      id: f48d9fbb-df56-480b-81a9-83d55cc474a5
+      id: 6171569a-753b-4669-840f-1929e5f5ad53
       version: -1
       name: Cortex XDR - Isolate Endpoint
       description: This playbook accepts an XDR endpoint ID and isolates it using the 'Palo Alto Networks Cortex XDR - Investigation and Response' integration.
@@ -1843,24 +1845,25 @@ tasks:
           accessor: agent_id
           transformers:
           - operator: uniq
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty:
+                value:
+                  simple: "true"
+              defaultValue:
+                value:
+                  simple: Missing endpoint ID.Answers.0
+                iscontext: true
       hostname:
         complex:
-          root: PaloAltoNetworksXDR.Incident.alerts
+          root: inputs.SrcHostname
           transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: PaloAltoNetworksXDR.OriginalAlert._all_events.agent_hostname
-                iscontext: true
           - operator: uniq
-          accessor: host_name
       ip_list:
         complex:
-          root: PaloAltoNetworksXDR.OriginalAlert._all_events
+          root: inputs.SrcIPAddress
           transformers:
           - operator: uniq
-          accessor: action_local_ip
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -2364,10 +2367,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "78":
     id: "78"
-    taskid: f70c3820-f3f8-47d0-89c4-12976b23af85
+    taskid: aeec3291-f750-4743-8442-77286d075ff8
     type: condition
     task:
-      id: f70c3820-f3f8-47d0-89c4-12976b23af85
+      id: aeec3291-f750-4743-8442-77286d075ff8
       version: -1
       name: Check Uploaded Data Volume
       description: Determines if the amount of data uploaded to an external host exceeds the defined threshold amount.
@@ -2395,7 +2398,7 @@ tasks:
                     flags: {}
                     groups:
                       value:
-                        simple: "1"
+                        simple: "2"
                     keys: {}
                     regex:
                       value:
@@ -2404,28 +2407,6 @@ tasks:
           right:
             value:
               simple: GB
-          ignorecase: true
-        - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: PaloAltoNetworksXDR.Incident.alerts
-                accessor: description
-                transformers:
-                - operator: RegexGroups
-                  args:
-                    flags: {}
-                    groups:
-                      value:
-                        simple: "1"
-                    keys: {}
-                    regex:
-                      value:
-                        simple: uploaded\s(.*(MB|GB|TB))
-            iscontext: true
-          right:
-            value:
-              simple: TB
           ignorecase: true
         - operator: greaterThanOrEqual
           left:
@@ -2439,7 +2420,7 @@ tasks:
                     flags: {}
                     groups:
                       value:
-                        simple: "0"
+                        simple: "1"
                     keys: {}
                     regex:
                       value:
@@ -2449,22 +2430,35 @@ tasks:
                     chars:
                       value:
                         simple: MB
-                - operator: RegexGroups
-                  args:
-                    flags: {}
-                    groups:
-                      value:
-                        simple: "0"
-                    keys: {}
-                    regex:
-                      value:
-                        simple: (\d+)\.
+                - operator: SumList
             iscontext: true
           right:
             value:
               complex:
                 root: inputs.Transferred_Data _Threshold
             iscontext: true
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXDR.Incident.alerts
+                accessor: description
+                transformers:
+                - operator: RegexGroups
+                  args:
+                    flags: {}
+                    groups:
+                      value:
+                        simple: "2"
+                    keys: {}
+                    regex:
+                      value:
+                        simple: uploaded\s(.*(MB|GB|TB))
+            iscontext: true
+          right:
+            value:
+              simple: TB
+          ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -2482,14 +2476,19 @@ tasks:
     isautoswitchedtoquietmode: false
   "82":
     id: "82"
-    taskid: 3e44628e-0e46-4b23-8d7a-a71a8d1f10ae
+    taskid: 982ee5dc-7800-48a3-8597-1f23df3a9a05
     type: regular
     task:
-      id: 3e44628e-0e46-4b23-8d7a-a71a8d1f10ae
+      id: 982ee5dc-7800-48a3-8597-1f23df3a9a05
       version: -1
       name: Set Additional Alerts to Context
-      description: Set a value in context under the key you entered.
-      scriptName: Set
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
       brand: ""
@@ -2880,14 +2879,19 @@ tasks:
     isautoswitchedtoquietmode: false
   "107":
     id: "107"
-    taskid: 2bc52b3e-5e56-44c6-8f9e-b32015f195ab
+    taskid: b2bb6cd9-4d66-4b55-80f0-66dc789b8dde
     type: regular
     task:
-      id: 2bc52b3e-5e56-44c6-8f9e-b32015f195ab
+      id: b2bb6cd9-4d66-4b55-80f0-66dc789b8dde
       version: -1
       name: Check Whether The Source Host Is an FTP Server
-      description: Set a value in context under the key you entered.
-      scriptName: Set
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
       brand: ""
@@ -2932,14 +2936,19 @@ tasks:
     isautoswitchedtoquietmode: false
   "109":
     id: "109"
-    taskid: 96de7dc0-b937-4303-8c9d-9ce3ef043a53
+    taskid: 35023b14-4231-447e-835b-8316a0432e19
     type: regular
     task:
-      id: 96de7dc0-b937-4303-8c9d-9ce3ef043a53
+      id: 35023b14-4231-447e-835b-8316a0432e19
       version: -1
       name: Check Whether The Source Host Is an SMTP Server
-      description: Set a value in context under the key you entered.
-      scriptName: Set
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
       brand: ""
@@ -2984,10 +2993,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "112":
     id: "112"
-    taskid: 95e865d5-ec80-49d2-8982-b1db90c547a6
+    taskid: 2e32afa9-757a-4aa0-83b1-2736da8d3bc0
     type: condition
     task:
-      id: 95e865d5-ec80-49d2-8982-b1db90c547a6
+      id: 2e32afa9-757a-4aa0-83b1-2736da8d3bc0
       version: -1
       name: Calculate Verdict
       description: Estimate the verdict for the 'large upload HTTPS' Cortex XDR alerts.
@@ -3168,7 +3177,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: PaloAltoNetworksXDR.OriginalAlert._all_events.causality_actor_primary_normalized_user.username
+                        simple: inputs.Username
                       iscontext: true
                     ignorecase: true
                 accessor: risk_level
@@ -3190,17 +3199,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: PaloAltoNetworksXDR.Incident.alerts.host_name
-                      iscontext: true
-                    ignorecase: true
-                  - operator: isEqualString
-                    left:
-                      value:
-                        simple: PaloAltoNetworksXDR.RiskyHost.id
-                      iscontext: true
-                    right:
-                      value:
-                        simple: PaloAltoNetworksXDR.OriginalAlert._all_events.agent_hostname
+                        simple: inputs.SrcHostname
                       iscontext: true
                     ignorecase: true
                 accessor: 'risk_level '
@@ -3711,10 +3710,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "114":
     id: "114"
-    taskid: 422ddc12-44eb-4b4b-8508-cd59c892834f
+    taskid: 1a69ce4f-fcbe-40e7-8164-c4d8dc304ac4
     type: playbook
     task:
-      id: 422ddc12-44eb-4b4b-8508-cd59c892834f
+      id: 1a69ce4f-fcbe-40e7-8164-c4d8dc304ac4
       version: -1
       name: Entity Enrichment - Generic v3
       description: Enrich entities using one or more integrations.
@@ -3823,34 +3822,6 @@ tasks:
         complex:
           root: PaloAltoNetworksXDR.OriginalAlert._all_events.causality_actor_primary_normalized_user
           accessor: username
-          transformers:
-          - operator: uniq
-      CVE:
-        complex:
-          root: CVE
-          accessor: ID
-      Email:
-        complex:
-          root: Account
-          accessor: Email.Address
-          transformers:
-          - operator: uniq
-      MD5:
-        complex:
-          root: File
-          accessor: MD5
-          transformers:
-          - operator: uniq
-      SHA1:
-        complex:
-          root: File
-          accessor: SHA1
-          transformers:
-          - operator: uniq
-      URL:
-        complex:
-          root: URL
-          accessor: Data
           transformers:
           - operator: uniq
     separatecontext: true
