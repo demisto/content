@@ -718,7 +718,8 @@ def get_changes(client: Client):
         demisto.info(f'pull XDR changes: setting {integration_context} to integration context ')
         demisto.info(f"pull XDR changes: converting {len(iocs)} XDR IOCs to xsoar format, then creating indicators")
         demisto_indicators = list(map(xdr_ioc_to_demisto, iocs))
-        demisto.debug(f"{demisto_indicators=}")
+        # demisto.debug(f"{demisto_indicators=}")
+        demisto.debug(f"finished {len(demisto_indicators)}")
         demisto.createIndicators(demisto_indicators)
         demisto.debug("pull XDR changes: done")
     else:
