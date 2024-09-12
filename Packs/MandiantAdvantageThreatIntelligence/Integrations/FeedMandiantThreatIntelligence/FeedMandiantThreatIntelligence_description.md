@@ -5,8 +5,8 @@ A Mandiant Advantage Threat Intelligence account.
 
 ### Get Credentials
 - Log in to `advantage.mandiant.com`.
-- Navigate to `Settings`, then scroll down to `APIv4 Access and Key`
-- Click `Get Key ID and Secret`
+- Navigate to `Settings`, then scroll down to `APIv4 Access and Key`.
+- Click `Get Key ID and Secret`.
 
 ### Integration Settings
 
