@@ -93,7 +93,7 @@ configuration:
   required: false
 - name: feedExpirationPolicy
   display: ''
-  additionalinfo: Defines how expiration for an indicator created by the Feed will be managed
+  additionalinfo: Defines how expiration of an indicator created by the feed will be managed.
   options:
   - never
   - interval
