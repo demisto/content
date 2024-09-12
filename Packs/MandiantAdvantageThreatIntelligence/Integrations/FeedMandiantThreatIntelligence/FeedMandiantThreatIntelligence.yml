@@ -8,7 +8,7 @@ commonfields:
 configuration:
 - defaultvalue: 'true'
   display: Fetch indicators
-  additionalinfo: 'Defines if the integration should check Mandiant for new indicators'
+  additionalinfo: 'Whether the integration should check Mandiant for new indicators.'
   name: feed
   type: 8
   required: false
