@@ -83,7 +83,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.14.91134
+  dockerimage: demisto/python3:3.11.10.111039
   commands:
   - name: recordedfuture-playbook-alerts-details
     description: Get Playbook alert details by id.
@@ -512,6 +512,16 @@ script:
       - in-progress
       - dismissed
       - resolved
+    - name: comment
+      description: Add comment to all alerts in alert_ids.
+      required: false
+    - name: reopen
+      description: 'Re-open on Significant Changes? The alert can remain resolved, or automatically re-open in significant new assessments. Default behaviour: reopen on significant updates.'
+      required: false
+      auto: PREDEFINED
+      predefined:
+        - never
+        - significant_updates
     outputs:
     - contextPath: RecordedFuture.PlaybookAlerts.playbook_alert_id
       description: Unique id of the playbook alert in Recorded Future.
