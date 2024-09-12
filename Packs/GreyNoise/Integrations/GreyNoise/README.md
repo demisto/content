@@ -624,3 +624,69 @@ Internet Scanner Timeline Details - Daily Activity Summary
 #### Human Readable Output
 
 GreyNoise IP Timeline Returned No Results.
+
+### cve
+
+***
+Queries GreyNoise for CVE Vuln Intelligence.
+
+#### Base Command
+
+`cve`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| cve | A comma-separated list of CVE IDs. | Required | 
+
+#### Context Output
+
+| **Path**                                                                          | **Type** | **Description**                                                                                                                        |
+|-----------------------------------------------------------------------------------| --- |----------------------------------------------------------------------------------------------------------------------------------------|
+| CVE.ID                                                                            | string | CVE ID.                                                                                                                                | 
+| GreyNoise.CVE.details.vulnerability_name                                          | String | The vulnerability name.                                                                                                                | 
+| GreyNoise.CVE.details.vulnerability_description                                   | String | A description of the vulnerability.                                                                                                    | 
+| GreyNoise.CVE.details.cve_cvss_score                                              | Number | The CVSS score.                                                                                                                        | 
+| GreyNoise.CVE.details.product                                                     | String | The vulnerable product.                                                                                                                | 
+| GreyNoise.CVE.details.vendor                                                      | String | The vendor that produces the vulnerable product.                                                                                       | 
+| GreyNoise.CVE.details.published_to_nist_nvd                                       | Boolean | Is this CVE published to NIST NVD?                                                                                                     | 
+| GreyNoise.CVE.timeline.cve_published_date                                         | Date | When was the CVE published.                                                                                                            | 
+| GreyNoise.CVE.timeline.cve_last_updated_date                                      | Date | When was the CVE information last updated.                                                                                             | 
+| GreyNoise.CVE.timeline.first_known_published_date                                 | Date | When first exploit associated with CVE was published.                                                                                  | 
+| GreyNoise.CVE.timeline.cisa_kev_date_added                                        | Date | When the CVE was added to KEV.                                                                                                         | 
+| GreyNoise.CVE.exploitation_details.attack_vector                                  | String | The attack vector category.                                                                                                            | 
+| GreyNoise.CVE.exploitation_details.exploit_found                                  | Boolean | Whether any known exploits are available.                                                                                              | 
+| GreyNoise.CVE.exploitation_details.exploitation_registered_in_kev                 | Boolean | Whether exploitation has been registered in KEV database.                                                                              | 
+| GreyNoise.CVE.exploitation_details.epss_score                                     | Number | EPSS score associated with this exploitation \(Exploit Prediction Scoring System\).                                                    | 
+| GreyNoise.CVE.exploitation_stats.number_of_available_exploits                     | Number | The total number of exploits available \(public \+ commercial\).                                                                       | 
+| GreyNoise.CVE.exploitation_stats.number_of_threat_actors_exploiting_vulnerability | Number | The total number of known threat actors.                                                                                               | 
+| GreyNoise.CVE.exploitation_stats.number_of_botnets_exploiting_vulnerability       | Number | The total number of botnets.                                                                                                           | 
+| GreyNoise.CVE.exploitation_activity.activity_seen                                 | Boolean | Whether GreyNoise has seen activity.                                                                                                   | 
+| GreyNoise.CVE.exploitation_activity.benign_ip_count_1d                            | Number | The total number of benign IP addresses GreyNoise has seen exercising (Scanning or Exploiting) this vulnerability in the last day.     | 
+| GreyNoise.CVE.exploitation_activity.benign_ip_count_10d                           | Number | The total number of benign IP addresses GreyNoise has seen exercising (Scanning or Exploiting) this vulnerability in the last 10 days. | 
+| GreyNoise.CVE.exploitation_activity.benign_ip_count_30d                           | Number | The total number of benign IP addresses GreyNoise has seen exercising (Scanning or Exploiting) this vulnerability in the last 30 days. | 
+| GreyNoise.CVE.exploitation_activity.threat_ip_count_1d                            | Number | The total number of threat IP addresses GreyNoise has seen exercising (Scanning or Exploiting) this vulnerability in the last day.     | 
+| GreyNoise.CVE.exploitation_activity.threat_ip_count_10d                           | Number | The total number of threat IP addresses GreyNoise has seen exercising (Scanning or Exploiting) this vulnerability in the last 10 days. | 
+| GreyNoise.CVE.exploitation_activity.threat_ip_count_30d                           | Number | The total number of threat IP addresses GreyNoise has seen exercising (Scanning or Exploiting) this vulnerability in the last 30 days. | 
+| DBotScore.Indicator                                                               | String | The indicator that was tested.                                                                                                         | 
+| DBotScore.Type                                                                    | String | The indicator type.                                                                                                                    | 
+| DBotScore.Vendor                                                                  | String | The vendor used to calculate the score.                                                                                                | 
+| DBotScore.Score                                                                   | Number | The actual score.                                                                                                                      | 
+
+#### Command Example
+
+``` !cve cve="CVE-1950-12345"```
+
+#### Human Readable Output
+
+CVE: CVE-2021-26086 is found
+GreyNoise CVE Lookup
+
+| key               | value                       |
+|-------------------|-----------------------------|
+| CVE ID	           | CVE-2021-26086              |
+| CVSS	             | 5.3                         |
+| Vendor	           | Atlassian                   |
+| Product	          | Jira Server and Data Center |
+| Published to NVD	 | true                        |

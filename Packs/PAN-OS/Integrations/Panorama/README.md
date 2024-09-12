@@ -6185,7 +6185,7 @@ Get all the jobs from the devices in the environment, or a single job when ID is
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | PANOS.JobStatus.hostid | String | Host ID. | 
-| PANOS.JobStatus.id | String | ID of job. | 
+| PANOS.JobStatus.id | Number | ID of job. | 
 | PANOS.JobStatus.type | String | Job type. | 
 | PANOS.JobStatus.tfin | String | Time finished. | 
 | PANOS.JobStatus.status | String | Status of the job. | 
@@ -6196,6 +6196,7 @@ Get all the jobs from the devices in the environment, or a single job when ID is
 | PANOS.JobStatus.description | String | The job description. | 
 | PANOS.JobStatus.positionInQ | String | The position of the job in the current job queue. | 
 | PANOS.JobStatus.progress | String | The numerical progress of the job. | 
+| PANOS.JobStatus.warnings | String | The warnings of the job. | 
 
 #### Command example
 ```!pan-os-platform-get-jobs```
@@ -6207,7 +6208,7 @@ Get all the jobs from the devices in the environment, or a single job when ID is
             {
                 "description": null,
                 "hostid": "11111111111111",
-                "id": 6,
+                "id": 1,
                 "positionInQ": "0",
                 "progress": "01:02:18",
                 "result": "OK",
@@ -6216,12 +6217,13 @@ Get all the jobs from the devices in the environment, or a single job when ID is
                 "tenq": "2022/03/30 01:02:04",
                 "tfin": "01:02:18",
                 "type": "Downld",
-                "user": null
+                "user": null,
+                "warnings": null
             },
             {
                 "description": null,
-                "hostid": "192.168.1.145",
-                "id": 394,
+                "hostid": "22222222222222",
+                "id": 2,
                 "positionInQ": "0",
                 "progress": "100",
                 "result": "OK",
@@ -6230,7 +6232,8 @@ Get all the jobs from the devices in the environment, or a single job when ID is
                 "tenq": "2022/03/15 14:16:32",
                 "tfin": "14:16:33",
                 "type": "BuildXMLCache",
-                "user": null
+                "user": null,
+                "warnings": null
             }
         ]
     }
@@ -6240,37 +6243,10 @@ Get all the jobs from the devices in the environment, or a single job when ID is
 #### Human Readable Output
 
 >### PAN-OS Job Status
->|hostid|id|positionInQ|progress|result|status|stoppable|tenq|tfin|type|user|
->|---|---|---|---|---|---|---|---|---|---|---|
->| 11111111111111 | 6 | 0 | 01:02:18 | OK | FIN | no | 2022/03/30 01:02:04 | 01:02:18 | Downld |  |
->| 11111111111111 | 5 | 0 | 01:02:15 | OK | FIN | no | 2022/03/23 01:02:04 | 01:02:15 | Downld |  |
->| 11111111111111 | 4 | 0 | 02:10:09 | OK | FIN | no | 2022/03/18 02:06:36 | 02:10:09 | IoT | Auto update agent |
->| 11111111111111 | 3 | 0 | 02:06:35 | OK | FIN | no | 2022/03/18 02:06:34 | 02:06:35 | Downld |  |
->| 11111111111111 | 2 | 0 | 01:02:15 | OK | FIN | no | 2022/03/16 01:02:04 | 01:02:15 | Downld |  |
->| 11111111111111 | 1 | 0 | 100 | OK | FIN | no | 2022/03/15 14:17:16 | 14:18:17 | AutoCom |  |
->| 192.168.1.145 | 430 | 0 | 100 | OK | DeployFin | no | 2022/03/30 01:47:46 | 01:47:47 | RefreshLic |  |
->| 192.168.1.145 | 428 | 0 | 01:02:17 | OK | FIN | no | 2022/03/30 01:02:03 | 01:02:17 | Downld |  |
->| 192.168.1.145 | 427 | 0 | 100 | OK | DeployFin | no | 2022/03/29 01:56:45 | 01:56:46 | RefreshLic |  |
->| 192.168.1.145 | 425 | 0 | 100 | OK | DeployFin | no | 2022/03/28 01:18:44 | 01:18:45 | RefreshLic |  |
->| 192.168.1.145 | 423 | 0 | 100 | OK | DeployFin | no | 2022/03/27 01:31:43 | 01:31:44 | RefreshLic |  |
->| 192.168.1.145 | 421 | 0 | 100 | OK | DeployFin | no | 2022/03/26 01:16:42 | 01:16:43 | RefreshLic |  |
->| 192.168.1.145 | 419 | 0 | 100 | OK | DeployFin | no | 2022/03/25 01:27:41 | 01:27:43 | RefreshLic |  |
->| 192.168.1.145 | 417 | 0 | 100 | OK | DeployFin | no | 2022/03/24 01:22:40 | 01:22:41 | RefreshLic |  |
->| 192.168.1.145 | 415 | 0 | 100 | OK | DeployFin | no | 2022/03/23 01:37:39 | 01:37:40 | RefreshLic |  |
->| 192.168.1.145 | 413 | 0 | 01:02:18 | OK | FIN | no | 2022/03/23 01:02:03 | 01:02:18 | Downld |  |
->| 192.168.1.145 | 412 | 0 | 100 | OK | DeployFin | no | 2022/03/22 01:04:38 | 01:04:39 | RefreshLic |  |
->| 192.168.1.145 | 410 | 0 | 100 | OK | DeployFin | no | 2022/03/21 01:38:37 | 01:38:38 | RefreshLic |  |
->| 192.168.1.145 | 408 | 0 | 100 | OK | DeployFin | no | 2022/03/20 01:36:36 | 01:36:37 | RefreshLic |  |
->| 192.168.1.145 | 406 | 0 | 100 | OK | DeployFin | no | 2022/03/19 01:59:35 | 01:59:37 | RefreshLic |  |
->| 192.168.1.145 | 404 | 0 | 02:08:02 | OK | FIN | no | 2022/03/18 02:06:32 | 02:08:02 | IoT | Auto update agent |
->| 192.168.1.145 | 403 | 0 | 02:06:31 | OK | FIN | no | 2022/03/18 02:06:30 | 02:06:31 | Downld |  |
->| 192.168.1.145 | 402 | 0 | 100 | OK | DeployFin | no | 2022/03/18 01:51:34 | 01:51:35 | RefreshLic |  |
->| 192.168.1.145 | 400 | 0 | 100 | OK | DeployFin | no | 2022/03/17 01:54:33 | 01:54:34 | RefreshLic |  |
->| 192.168.1.145 | 398 | 0 | 100 | OK | DeployFin | no | 2022/03/16 01:05:32 | 01:05:33 | RefreshLic |  |
->| 192.168.1.145 | 396 | 0 | 01:02:18 | OK | FIN | no | 2022/03/16 01:02:03 | 01:02:18 | Downld |  |
->| 192.168.1.145 | 395 | 0 | 100 | OK | FIN | no | 2022/03/15 14:17:02 | 14:17:14 | AutoCom |  |
->| 192.168.1.145 | 394 | 0 | 100 | OK | FIN | no | 2022/03/15 14:16:32 | 14:16:33 | BuildXMLCache |  |
-
+>|hostid|id|positionInQ|progress|result|status|stoppable|tenq|tfin|type|user|warnings|
+>|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 11111111111111 | 1 | 0 | 100 | OK | FIN | no | 2022/03/15 14:17:16 | 14:18:17 | Downld |  |  |
+>| 22222222222222 | 2 | 0 | 01:02:15 | OK | FIN | no | 2022/03/16 01:02:04 | 01:02:15 | BuildXMLCache |  |  |
 
 ### pan-os-platform-download-software
 ***
