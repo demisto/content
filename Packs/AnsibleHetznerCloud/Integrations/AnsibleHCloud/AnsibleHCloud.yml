@@ -31,7 +31,7 @@ script:
     name: hcloud-datacenter-info
     outputs:
     - contextPath: HCloud.HcloudDatacenterInfo.hcloud_datacenter_info
-      description: 'The datacenter info as list This module was called `hcloud_datacenter_facts` before Ansible 2.9, returning `ansible_facts` and `hcloud_datacenter_facts`. Note that the `hcloud_datacenter_info` module no longer returns `ansible_facts` and the value was renamed to `hcloud_datacenter_info`!'
+      description: The datacenter info as list This module was called `hcloud_datacenter_facts` before Ansible 2.9, returning `ansible_facts` and `hcloud_datacenter_facts`. Note that the `hcloud_datacenter_info` module no longer returns `ansible_facts` and the value was renamed to `hcloud_datacenter_info`!
       type: unknown
   - arguments:
     - description: The ID of the Floating IP you want to get.
@@ -77,11 +77,11 @@ script:
       description: The location infos as list
       type: unknown
   - arguments:
-    - description: 'The ID of the Hetzner Cloud Networks to manage. Only required if no Network `name` is given.'
+    - description: The ID of the Hetzner Cloud Networks to manage. Only required if no Network `name` is given.
       name: id
-    - description: 'The Name of the Hetzner Cloud Network to manage. Only required if no Network `id` is given or a Network does not exists.'
+    - description: The Name of the Hetzner Cloud Network to manage. Only required if no Network `id` is given or a Network does not exists.
       name: name
-    - description: 'IP range of the Network. Required if Network does not exists.'
+    - description: IP range of the Network. Required if Network does not exists.
       name: ip_range
     - description: User-defined labels (key-value pairs).
       isArray: true
@@ -119,7 +119,7 @@ script:
     - description: The IP address that should point to `dns_ptr`.
       name: ip_address
       required: true
-    - description: 'The DNS address the `ip_address` should resolve to. Omit the param to reset the reverse DNS entry to the default value.'
+    - description: The DNS address the `ip_address` should resolve to. Omit the param to reset the reverse DNS entry to the default value.
       name: dns_ptr
     - auto: PREDEFINED
       defaultValue: present
@@ -158,23 +158,23 @@ script:
       description: One Route of a Network
       type: unknown
   - arguments:
-    - description: 'The ID of the Hetzner Cloud server to manage. Only required if no server `name` is given'
+    - description: The ID of the Hetzner Cloud server to manage. Only required if no server `name` is given
       name: id
-    - description: 'The Name of the Hetzner Cloud server to manage. Only required if no server `id` is given or a server does not exists.'
+    - description: The Name of the Hetzner Cloud server to manage. Only required if no server `id` is given or a server does not exists.
       name: name
-    - description: 'The Server Type of the Hetzner Cloud server to manage. Required if server does not exists.'
+    - description: The Server Type of the Hetzner Cloud server to manage. Required if server does not exists.
       name: server_type
-    - description: 'List of SSH key names The key names correspond to the SSH keys configured for your Hetzner Cloud account access.'
+    - description: List of SSH key names The key names correspond to the SSH keys configured for your Hetzner Cloud account access.
       isArray: true
       name: ssh_keys
     - description: List of Volumes IDs that should be attached to the server on server creation.
       isArray: true
       name: volumes
-    - description: 'Image the server should be created from. Required if server does not exists.'
+    - description: Image the server should be created from. Required if server does not exists.
       name: image
-    - description: 'Location of Server. Required if no `datacenter` is given and server does not exists.'
+    - description: Location of Server. Required if no `datacenter` is given and server does not exists.
       name: location
-    - description: 'Datacenter of Server. Required of no `location` is given and server does not exists.'
+    - description: Datacenter of Server. Required of no `location` is given and server does not exists.
       name: datacenter
     - auto: PREDEFINED
       defaultValue: 'No'
@@ -185,19 +185,19 @@ script:
       - 'No'
     - auto: PREDEFINED
       defaultValue: 'No'
-      description: 'Resize the disk size, when resizing a server. If you want to downgrade the server later, this value should be False.'
+      description: Resize the disk size, when resizing a server. If you want to downgrade the server later, this value should be False.
       name: upgrade_disk
       predefined:
       - 'Yes'
       - 'No'
     - auto: PREDEFINED
       defaultValue: 'No'
-      description: 'Force the upgrade of the server. Power off the server if it is running on upgrade.'
+      description: Force the upgrade of the server. Power off the server if it is running on upgrade.
       name: force_upgrade
       predefined:
       - 'Yes'
       - 'No'
-    - description: 'User Data to be passed to the server on creation. Only used if server does not exists.'
+    - description: User Data to be passed to the server on creation. Only used if server does not exists.
       name: user_data
     - description: Add the Hetzner rescue system type you want the server to be booted into.
       name: rescue_mode
@@ -271,16 +271,16 @@ script:
       description: The server type infos as list
       type: unknown
   - arguments:
-    - description: 'The ID of the Hetzner Cloud ssh_key to manage. Only required if no ssh_key `name` is given'
+    - description: The ID of the Hetzner Cloud ssh_key to manage. Only required if no ssh_key `name` is given
       name: id
-    - description: 'The Name of the Hetzner Cloud ssh_key to manage. Only required if no ssh_key `id` is given or a ssh_key does not exists.'
+    - description: The Name of the Hetzner Cloud ssh_key to manage. Only required if no ssh_key `id` is given or a ssh_key does not exists.
       name: name
-    - description: 'The Fingerprint of the Hetzner Cloud ssh_key to manage. Only required if no ssh_key `id` or `name` is given.'
+    - description: The Fingerprint of the Hetzner Cloud ssh_key to manage. Only required if no ssh_key `id` or `name` is given.
       name: fingerprint
     - description: User-defined labels (key-value pairs)
       isArray: true
       name: labels
-    - description: 'The Public Key to add. Required if ssh_key does not exists.'
+    - description: The Public Key to add. Required if ssh_key does not exists.
       name: public_key
     - auto: PREDEFINED
       defaultValue: present
@@ -337,23 +337,23 @@ script:
       description: One Subnet of a Network
       type: unknown
   - arguments:
-    - description: 'The ID of the Hetzner Cloud Block Volume to manage. Only required if no volume `name` is given'
+    - description: The ID of the Hetzner Cloud Block Volume to manage. Only required if no volume `name` is given
       name: id
-    - description: 'The Name of the Hetzner Cloud Block Volume to manage. Only required if no volume `id` is given or a volume does not exists.'
+    - description: The Name of the Hetzner Cloud Block Volume to manage. Only required if no volume `id` is given or a volume does not exists.
       name: name
-    - description: 'The size of the Block Volume in GB. Required if volume does not yet exists.'
+    - description: The size of the Block Volume in GB. Required if volume does not yet exists.
       name: size
     - description: Automatically mount the Volume.
       name: automount
     - auto: PREDEFINED
-      description: 'Automatically Format the volume on creation Can only be used in case the Volume does not exists.'
+      description: Automatically Format the volume on creation Can only be used in case the Volume does not exists.
       name: format
       predefined:
       - xfs
       - ext4
-    - description: 'Location of the Hetzner Cloud Volume. Required if no `server` is given and Volume does not exists.'
+    - description: Location of the Hetzner Cloud Volume. Required if no `server` is given and Volume does not exists.
       name: location
-    - description: 'Server Name the Volume should be assigned to. Required if no `location` is given and Volume does not exists.'
+    - description: Server Name the Volume should be assigned to. Required if no `location` is given and Volume does not exists.
       name: server
     - description: User-defined key-value pairs.
       isArray: true
@@ -384,7 +384,7 @@ script:
     - contextPath: HCloud.HcloudVolumeInfo.hcloud_volume_info
       description: The volume infos as list
       type: unknown
-  dockerimage: demisto/ansible-runner:1.0.0.89756
+  dockerimage: demisto/ansible-runner:1.0.0.110653
   script: ''
   subtype: python3
   type: python
