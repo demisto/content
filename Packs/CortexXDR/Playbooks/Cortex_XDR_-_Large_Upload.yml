@@ -3186,7 +3186,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: inputs.Username
+                        simple: PaloAltoNetworksXDR.OriginalAlert._all_events.causality_actor_primary_normalized_user.username
                       iscontext: true
                     ignorecase: true
                 accessor: risk_level
