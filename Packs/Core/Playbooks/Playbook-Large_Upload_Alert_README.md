@@ -1,6 +1,6 @@
-The playbook investigates Cortex XDR alerts involving large upload alerts. 
+The playbook investigates Cortex XDR incidents involving large upload alerts. 
 The playbook consists of the following procedures:
-- Searches for similar previous alerts that were closed as false positives.
+- Searches for similar previous incidents that were closed as false positives.
 - Enrichment and investigation of the initiator and destination hostname and IP address.
 - Enrichment and investigation of the initiator user, process, file, or command if it exists.
 - Detection of related indicators and analysis of the relationship between the detected indicators.
