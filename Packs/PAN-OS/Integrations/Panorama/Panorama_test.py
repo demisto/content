@@ -7261,17 +7261,18 @@ def test_build_tag_element(mocker, device_group, vsys, args, expected_response):
     assert response == expected_response
 
 
-@pytest.mark.parametrize("element_to_change, element_value, current_objects_items, params_element, "
-                         "expected_exception, expected_warning, expected_warning_exit", [
-                             ('tag', ['tag3'], ['tag3'], '<tag></tag>', False, False, False),  # Last tag
-                             ('tag', ['tag2'], ['tag3', 'tag2'], '<tag><member>tag3</member></tag>',
-                              False, False, False),  # Not last tag
-                             ('tag', ['nonexistent_tag'], ['tag1'], '', False, True, True),  # Non-existent tag > exit
-                             ('tag', ['nonexistent_tag', 'tag1'], ['tag1'], '<tag></tag>',
-                              False, True, False),  # Non-existent tag & existent > warning
-                             ('source', ['source'], ['source'], '', True, False, False)  # raise exception
-                         ])
-def test_panorama_edit_rule_items_remove(mocker, element_to_change, element_value, current_objects_items, params_element,
+@pytest.mark.parametrize(
+    ("element_to_change, context_element, element_value, current_objects_items, params_element, "
+    "expected_exception, expected_warning, expected_warning_exit"),
+    [
+        ('tag', 'Tags', ['tag3'], ['tag3'], '<tag></tag>', False, False, False),  # Last tag
+        ('tag', 'Tags', ['tag2'], ['tag3', 'tag2'], '<tag><member>tag3</member></tag>', False, False, False),  # Not last tag
+        ('tag', 'Tags', ['nonexistent_tag'], ['tag1'], '', False, True, True),  # Non-existent tag > exit
+        ('tag', 'Tags', ['nonexistent_tag', 'tag1'], ['tag1'], '<tag></tag>', False, True, False),  # Non-existent tag & existent > warning
+        ('source', 'Source', ['source'], ['source'], '', True, False, False)  # raise exception
+    ]
+)
+def test_panorama_edit_rule_items_remove(mocker, element_to_change, context_element, element_value, current_objects_items, params_element,
                                          expected_exception, expected_warning, expected_warning_exit):
     """
     Given:
@@ -7320,6 +7321,8 @@ def test_panorama_edit_rule_items_remove(mocker, element_to_change, element_valu
             assert request_mock.call_args.kwargs['body']['action'] == 'edit'
             assert request_mock.call_args.kwargs['body']['element'] == params_element
             assert return_results_mock.call_args[0][0]['HumanReadable'] == 'Rule edited successfully.'
+            assert isinstance(return_results_mock.call_args[0][0]['EntryContext'][
+                'Panorama.SecurityRule(val.Name == obj.Name)'][context_element], list)
 
 
 def test_list_device_groups_names(mocker):
