@@ -202,7 +202,7 @@ def create_file_sync(file_path, batch_size: int = 200):
             demisto.info("created sync file without any indicators")
 
 
-def get_iocs_generator(size=200, query=None, is_first_stage_sync=False) -> Iterable:
+def get_iocs_generator(size=200, query=f'expirationStatus:active AND ({Client.query})', is_first_stage_sync=False) -> Iterable:
     full_query = query or Client.query
     ioc_count = 0
     try:
@@ -210,7 +210,6 @@ def get_iocs_generator(size=200, query=None, is_first_stage_sync=False) -> Itera
                          'comments,id,CustomFields'
                          if is_xsiam_or_xsoar_saas()
                          else None)
-        # demisto.debug(f"{filter_fields=}")
         search_after_array = None
         search_after = get_integration_context().get('search_after', None)
         for batch in IndicatorsSearcher(size=size,
@@ -221,7 +220,6 @@ def get_iocs_generator(size=200, query=None, is_first_stage_sync=False) -> Itera
                                         filter_fields=filter_fields):
             search_after_array = batch.get('searchAfter', [])
             for ioc in batch.get('iocs', []):
-                # demisto.debug(f"{ioc.get('indicator_type')=}")
                 ioc_count += 1
                 yield ioc
                 if is_first_stage_sync and ioc_count >= MAX_INDICATORS_TO_SYNC:
@@ -418,7 +416,6 @@ def update_integration_context(update_sync_time_with_datetime: datetime | None =
         updated_integration_context['is_first_sync_phase'] = argToBoolean(update_is_first_sync_phase)
     if update_search_after_array:
         updated_integration_context['search_after'] = update_search_after_array
-    demisto.debug(f"Updating integration context to {updated_integration_context=}")
     set_integration_context(updated_integration_context)
 
 
@@ -710,8 +707,6 @@ def get_changes(client: Client):
         demisto.info(f'pull XDR changes: setting {integration_context} to integration context ')
         demisto.info(f"pull XDR changes: converting {len(iocs)} XDR IOCs to xsoar format, then creating indicators")
         demisto_indicators = list(map(xdr_ioc_to_demisto, iocs))
-        # demisto.debug(f"{demisto_indicators=}")
-        demisto.debug(f"finished {len(demisto_indicators)}")
         demisto.createIndicators(demisto_indicators)
         demisto.debug("pull XDR changes: done")
     else:
@@ -767,7 +762,6 @@ def xdr_iocs_sync_command(client: Client,
             # the sync is the large operation including the data and the get_integration_context is fill in the sync
             sync(client, batch_size=4000)
     else:
-        pass
         iocs_to_keep(client)
 
 
@@ -914,6 +908,7 @@ def main():  # pragma: no cover
     if xsoar_severity_field := params.get('xsoar_severity_field'):
         Client.xsoar_severity_field = to_cli_name(xsoar_severity_field)
     if xsoar_comment_field := params.get('xsoar_comments_field'):
+        #talk with judith
         Client.xsoar_comments_field = xsoar_comment_field[0] if isinstance(xsoar_comment_field, list) else xsoar_comment_field
 
     client = Client(params)
