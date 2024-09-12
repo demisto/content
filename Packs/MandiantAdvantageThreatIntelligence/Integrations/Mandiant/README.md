@@ -343,7 +343,7 @@ Get information about a Malware Family from Mandiant.
 
 | **Argument** | **Description** | **Required** |
 | --- | --- | --- |
-| malware_name | Name of the malware family to look up. | True |
+| malware_name | Name of the Malware Family to look up. | True |
 
 #### Context Output
 
