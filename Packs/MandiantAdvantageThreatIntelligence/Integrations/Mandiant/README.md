@@ -349,31 +349,31 @@ Get information about a Malware Family from Mandiant.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Mandiant.Malware.counts.detections | number | The number of detections associated with the Malware Family |
-| Mandiant.Malware.counts.cve | number | The number of vulnerabilities associated with the Malware Family |
-| Mandiant.Malware.counts.malware | number | The number of Malware Families associated with the Malware Family |
-| Mandiant.Malware.counts.capabilities | number | The number of capabilities associated with the Malware Family |
-| Mandiant.Malware.counts.attack_patterns | number | The number of Attack Patterns associated with the Malware Family |
-| Mandiant.Malware.counts.industries | number | The number of industries targeted by the Malware Family |
-| Mandiant.Malware.counts.actors | number | The number of Threat Actors associated with the Malware Family |
-| Mandiant.Malware.counts.aliases | number | The number of alternate names associated with the Malware Family |
-| Mandiant.Malware.counts.reports | number | The number of finished intelligence reports associated with the Malware Family |
-| Mandiant.Malware.audience | list | A list of audience objects describing who can read the Malware Family information |
-| Mandiant.Malware.operating_systems | list | A list of operating systems that the Malware Family is known to impact |
-| Mandiant.Malware.name | string | The name of the Malware Family |
-| Mandiant.Malware.detections | list | A list of detections associated with the Malware Family |
-| Mandiant.Malware.value | string | The name of the Malware Family |
-| Mandiant.Malware.last_updated | date | The date and time that the Malware Family object was last updated by Mandiant |
-| Mandiant.Malware.cve | list | A list of vulnerability objects associated with the Malware Family |
-| Mandiant.Malware.last_activity_time | date | The date and time that the Malware Family object was last active |
-| Mandiant.Malware.malware | list | A list of Malware Family objects associated with the Malware Family |
-| Mandiant.Malware.capabilities | list | A list of capability objects associated with the Malware Family |
-| Mandiant.Malware.yara | list | A list of yara rule objects associated with the Malware Family |
-| Mandiant.Malware.industries | list | A list of industry objects targeted by the Malware Family |
-| Mandiant.Malware.roles | list | A list of roles associated with the Malware Family |
-| Mandiant.Malware.actors | list | A list of Threat Actor objects associated with the Malware Family |
-| Mandiant.Malware.aliases | list | A list of alias objects describing alternate names associated with the Malware Family |
-| Mandiant.Malware.inherently_malicious | number | If 1, the object should be considered a Malware Family, if 0 the object is a Tool |
+| Mandiant.Malware.counts.detections | number | The number of detections associated with the Malware Family. |
+| Mandiant.Malware.counts.cve | number | The number of vulnerabilities associated with the Malware Family. |
+| Mandiant.Malware.counts.malware | number | The number of Malware Families associated with the Malware Family. |
+| Mandiant.Malware.counts.capabilities | number | The number of capabilities associated with the Malware Family. |
+| Mandiant.Malware.counts.attack_patterns | number | The number of Attack Patterns associated with the Malware Family. |
+| Mandiant.Malware.counts.industries | number | The number of industries targeted by the Malware Family. |
+| Mandiant.Malware.counts.actors | number | The number of Threat Actors associated with the Malware Family. |
+| Mandiant.Malware.counts.aliases | number | The number of alternate names associated with the Malware Family. |
+| Mandiant.Malware.counts.reports | number | The number of finished intelligence reports associated with the Malware Family. |
+| Mandiant.Malware.audience | list | A list of audience objects describing who can read the Malware Family information. |
+| Mandiant.Malware.operating_systems | list | A list of operating systems that the Malware Family is known to impact. |
+| Mandiant.Malware.name | string | The name of the Malware Family. |
+| Mandiant.Malware.detections | list | A list of detections associated with the Malware Family. |
+| Mandiant.Malware.value | string | The name of the Malware Family .|
+| Mandiant.Malware.last_updated | date | The date and time that the Malware Family object was last updated by Mandiant. |
+| Mandiant.Malware.cve | list | A list of vulnerability objects associated with the Malware Family. |
+| Mandiant.Malware.last_activity_time | date | The date and time that the Malware Family object was last active .|
+| Mandiant.Malware.malware | list | A list of Malware Family objects associated with the Malware Family. |
+| Mandiant.Malware.capabilities | list | A list of capability objects associated with the Malware Family. |
+| Mandiant.Malware.yara | list | A list of YARA rule objects associated with the Malware Family. |
+| Mandiant.Malware.industries | list | A list of industry objects targeted by the Malware Family. |
+| Mandiant.Malware.roles | list | A list of roles associated with the Malware Family. |
+| Mandiant.Malware.actors | list | A list of Threat Actor objects associated with the Malware Family. |
+| Mandiant.Malware.aliases | list | A list of alias objects describing alternate names associated with the Malware Family. |
+| Mandiant.Malware.inherently_malicious | number | If 1, the object should be considered a Malware Family, if 0 the object is a Tool. |
 
 ### mati-get-campaign
 
