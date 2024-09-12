@@ -1,8 +1,8 @@
-import json
 import re
 
-from sigma.collection import SigmaCollection
+from sigma.rule import SigmaRule
 from sigma.exceptions import SigmaError
+from sigma.modifiers import reverse_modifier_mapping
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -86,7 +86,7 @@ def create_relationship(indicator_value: str, entity_b: str, entity_b_type: str)
     return relationship
 
 
-def parse_detection_field(detection: dict) -> list:
+def parse_detection_field(rule: SigmaRule) -> list:
     """
     Parses the detection field from the Sigma rule and maps it into a grid field.
 
@@ -96,78 +96,72 @@ def parse_detection_field(detection: dict) -> list:
     Returns:
         list: A list of dictionaries representing the detection grid.
     """
-    detection_grid = []
-    for key, value in detection.items():
-        if key == 'condition':
-            continue
-
-        if isinstance(value, str):
-            value = [value]
-
-        if isinstance(value, list):
-            formatted_values = "\n".join([f"({i+1}) {v}" for i, v in enumerate(value)])
-            modifiers = key.split("|")[1:]
-            detection_grid.append({
-                "selection": key,
-                "key": "",
-                "modifiers": ",".join(modifiers),
-                "values": formatted_values
-            })
-
-        elif isinstance(value, dict):
-            for sub_key, sub_value in value.items():
-                modifiers = sub_key.split("|")[1:]
-                sub_key = sub_key.split("|")[0]
-
-                if isinstance(sub_value, list):
-                    formatted_values = "\n".join([f"({i+1}) {v}" for i, v in enumerate(sub_value)])
-
-                else:
-                    formatted_values = f"(1) {sub_value}"
-
-                detection_grid.append({
-                    "selection": key,
-                    "key": sub_key,
-                    "modifiers": ",".join(modifiers),
-                    "values": formatted_values
-                })
-
-    return detection_grid
+    grid = []
+    row = {}
+    
+    def build_row(selection, data):
+        row['selection'] = selection
+        row['key'] = data.field
+        row['modifiers'] = ','.join([reverse_modifier_mapping[modifier.__name__] for modifier in data.modifiers])
+        row['values'] = '\n'.join([f'({index}){value.to_plain()}' for index, value in enumerate(data.original_value, 1)])
+        return row
 
 
-def parse_tags(tags: list) -> tuple[list[str], list[str], list[str]]:
+    for selection, value in rule.detection.detections.items():
+        for fields in value.detection_items:
+
+            try:
+                for field in fields.detection_items:
+                    row = build_row(selection, field)
+                    grid.append(row)
+                    row = {}
+                
+            except AttributeError:
+                row = build_row(selection, fields)
+                grid.append(row)
+                row = {}
+
+    return grid
+
+
+def parse_tags(tags: list) -> tuple[list[str], list[str], list[str], str]:
     techniques = []
     cves = []
-
+    processed_tags = []
+    tlp = 'CLEAR'
+    
     for tag in tags.copy():
-        if re.match(r"attack.t\d{4}", tag):
-            tags.remove(tag)
-            mitre_id = tag.replace("attack.", "")  # Get only the technique id
-            demisto.debug(f'Searching for the technique {mitre_id} in TIM')
-            mitre_name = get_mitre_technique_name(mitre_id)
+        if tag.namespace == "attack" and re.match(r"t\d{4}", tag.name):
+            demisto.debug(f'Searching for the technique {tag.name} in TIM')
+            mitre_name = get_mitre_technique_name(tag.name)
 
             if mitre_name:
                 techniques.append(mitre_name)
-                tags.append(f'{mitre_id.upper()} - {mitre_name}')
+                processed_tags.append(f'{tag.name.upper()} - {mitre_name}')
 
             else:
-                tags.append(f'{mitre_id.upper()}')
+                processed_tags.append(f'{tag.name.upper()}')
 
-        elif tag.startswith('attack.'):
-            tags.remove(tag)
-            tags.append(tag.replace('attack.', '').replace('-', ' ').title())
+        elif tag.namespace == 'attack':
+            processed_tags.append(tag.name.replace("-", " ").title())
 
-        elif re.match(r"cve[-.]\d{4}", tag):
-            tags.remove(tag)
+        elif tag.namespace == 'cve':
             demisto.debug(f'Found a CVE tag - {tag}')
-            cve = tag.replace(".", "-").upper()
+            cve = tag.name.replace(".", "-").upper()
+            
+            if not cve.startswith('CVE-'):
+                cve = f'CVE-{cve}'
+            
             cves.append(cve)
-            tags.append(cve)
+            processed_tags.append(cve)
+        
+        elif tag.namespace == 'tlp':
+            tlp = tag.name.upper()
 
-    return techniques, cves, tags
+    return techniques, cves, processed_tags, tlp
 
 
-def parse_and_create_indicator(rule_dict: dict) -> dict[str, Any]:
+def parse_and_create_indicator(rule: SigmaRule, raw_rule: str) -> dict[str, Any]:
     """
     Parses the Sigma rule dictionary and creates an indicator in XSOAR.
 
@@ -178,41 +172,42 @@ def parse_and_create_indicator(rule_dict: dict) -> dict[str, Any]:
     # Create fields mapping
     indicator = {
         "type": "Sigma Rule",
-        "value": rule_dict.get("title", ""),
-        "sigmaruleid": rule_dict.get("id", ""),
-        "sigmarulestatus": rule_dict.get("status", ""),
-        "author": rule_dict.get("author", ""),
-        "sigmarulelevel": rule_dict.get("level", ""),
-        "sigmarulelicense": rule_dict.get("license", ""),
-        "description": rule_dict.get("description", ""),
-        "category": rule_dict.get("logsource", {}).get("category", ""),
-        "product": rule_dict.get("logsource", {}).get("product", ""),
-        "service": rule_dict.get("logsource", {}).get("service", ""),
-        "definition": rule_dict.get("logsource", {}).get("definition", ""),
-        "sigmaruleraw": json.dumps(rule_dict),
-        "sigmacondition": [{"condition": rule_dict.get("detection", {}).get("condition", "")}],
-        "sigmadetection": parse_detection_field(rule_dict.get("detection", {})),
-        "sigmafalsepositives": [{"reason": fp} for fp in rule_dict.get("falsepositives", [])],
+        "value": rule.title,
+        "creationdate": f'{rule.date}',
+        "sigmaruleid": f'{rule.id}',
+        "sigmarulestatus": rule.status.name,
+        "author": rule.author,
+        "sigmarulelevel": rule.level.name,
+        #"sigmarulelicense": rule_dict.get("license", ""),
+        "description": rule.description,
+        "category": rule.logsource.category,
+        "product": rule.logsource.product,
+        "service": rule.logsource.service,
+        "sigmaruleraw": raw_rule,
+        "sigmacondition": [{"condition": condition} for condition in rule.detection.condition],
+        "sigmadetection": parse_detection_field(rule),
+        "sigmafalsepositives": [{"reason": fp} for fp in rule.falsepositives],
+        "publications": [{"link": ref,
+                          "source": "Sigma Rule",
+                          "title": rule.title,
+                          "date": f'{rule.date}'} for ref in rule.references]
     }
 
-    # Create publications grid field
-    publications = []
-    if "references" in rule_dict:
-        for ref in rule_dict["references"]:
-            publications.append({
-                "link": ref,
-                "source": "sigma rule",
-                "title": rule_dict.get("title", ""),
-                "date": rule_dict.get("date", "")
-            })
-
-    indicator["publications"] = publications
-    techniques, cves, tags = parse_tags(rule_dict["tags"])
+    try:
+        indicator["definition"] = rule.logsource.custom_attributes["definition"]
+    
+    except AttributeError:
+        pass
+    
+    techniques, cves, tags, tlp = parse_tags(rule.tags)
     indicator["tags"] = tags
+    indicator["tlp"] = tlp
 
-    if indicator["sigmarulelevel"] in ("high", "critical"):
+    if indicator["sigmarulelevel"].lower() in ("high", "critical"):
         indicator["verdict"] = "Malicious"
 
+    indicator = {key: value for key, value in indicator.items() if value is not None}
+    
     return {"indicator": indicator, "techniques": techniques, "cves": cves}
 
 
@@ -243,15 +238,13 @@ def main() -> None:
 
         # Parse the sigma rule
         try:
-            sigma_collection = SigmaCollection.from_yaml(sigma_rule_str)
+            sigma_rule = SigmaRule.from_yaml(sigma_rule_str)
 
         except SigmaError as e:
             return_error(f"Failed to parse Sigma rule: {str(e)}")
             return
 
-        for rule in sigma_collection.rules:
-            rule_dict = rule.to_dict()
-            indicators.append(parse_and_create_indicator(rule_dict))
+        indicators.append(parse_and_create_indicator(sigma_rule, sigma_rule_str))
 
         if create_indicators:
             for indicator in indicators:
@@ -263,7 +256,8 @@ def main() -> None:
                                                indicator["cves"])
 
         else:
-            return_results(json.dumps(indicators))
+            for indicator in indicators:
+                return_results(f'{indicator["indicator"]}')
 
     except Exception as e:
         return_error(f"Failed to import Sigma rule: {str(e)}")

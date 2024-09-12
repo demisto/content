@@ -24,7 +24,7 @@ SIEMS = {
 }
 
 
-def get_sigma_dictionary(indicator: str) -> dict:
+def get_sigma_dictionary(indicator: str) -> str:
     """
     Find the Sigma rule dictionary for a given indicator value.
 
@@ -52,13 +52,12 @@ def get_sigma_dictionary(indicator: str) -> dict:
     indicator = indicators[0]
 
     try:
-        sigma_dict = json.loads(indicator.get('CustomFields', {}).get('sigmaruleraw', ''))
-        demisto.debug('Successfully loaded Sigma dictionary.')
+        sigma = indicator.get('CustomFields', {}).get('sigmaruleraw', '')
 
     except Exception as e:
         return_error(f'Could not load Sigma dictionary - {e}')
 
-    return sigma_dict
+    return sigma
 
 
 def main() -> None:
@@ -80,7 +79,7 @@ def main() -> None:
         return_error(f'Unknown SIEM - "{demisto.callingContext["args"]["SIEM"]}"')
 
     # Convert Sigma rule to SIEM query
-    rule = SigmaRule.from_dict(get_sigma_dictionary(indicator))
+    rule = SigmaRule.from_yaml(get_sigma_dictionary(indicator))
 
     try:
         query = siem.convert_rule(rule)[0]

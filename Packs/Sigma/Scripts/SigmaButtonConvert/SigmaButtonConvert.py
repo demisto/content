@@ -35,9 +35,9 @@ def main():
     except KeyError:
         return_error(f"Unknown SIEM - \"{args['SIEM']}\"")
 
-    rule_dict = json.loads(indicator["CustomFields"]["sigmaruleraw"])
-    rule = SigmaRule.from_dict(rule_dict)
-
+    rule_str = indicator["CustomFields"]["sigmaruleraw"]
+    rule = SigmaRule.from_yaml(rule_str)
+    
     # Set the context
     try:
         query = siem.convert_rule(rule)[0]

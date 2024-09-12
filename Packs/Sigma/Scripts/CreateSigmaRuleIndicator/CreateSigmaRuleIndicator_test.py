@@ -14,7 +14,7 @@ from CreateSigmaRuleIndicator import (
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-
+from sigma.rule import SigmaRuleTag, SigmaRule
 
 def load_file(path: str) -> dict[str, Any]:
     with open(path) as f:
@@ -36,14 +36,15 @@ def test_create_relationship():
 
 
 @pytest.mark.parametrize("input, expected_result", [
-    pytest.param(["attack.t1059"],
-                 (["Command and Scripting Interpreter"], [], ["T1059 - Command and Scripting Interpreter"]),
+    pytest.param([SigmaRuleTag(namespace='attack', name='t1059', source=None)],
+                 (["Command and Scripting Interpreter"], [], ["T1059 - Command and Scripting Interpreter"], 'CLEAR'),
                  id="Tag Creation - MITRE technique"),
-    pytest.param(["attack.resource-development"],
-                 ([], [], ["Resource Development"]),
+    pytest.param([SigmaRuleTag(namespace="attack", name="resource-development"),
+                  SigmaRuleTag(namespace='tlp', name='RED')],
+                 ([], [], ["Resource Development"], "RED"),
                  id="Tag Creation - MITRE tactic"),
-    pytest.param(["cve-2024-3400"],
-                 ([], ["CVE-2024-3400"], ["CVE-2024-3400"]),
+    pytest.param([SigmaRuleTag(namespace='cve', name="2024-3400")],
+                 ([], ["CVE-2024-3400"], ["CVE-2024-3400"], "CLEAR"),
                  id="Tag Creation - CVEs")
 ])
 @patch.object(CreateSigmaRuleIndicator, "get_mitre_technique_name")
@@ -72,48 +73,20 @@ def test_create_indicator_relationships(mock_return_results, mock_create_relatio
 
 
 def test_parse_detection_field():
-    detection = {
-        "condition": "selection",
-        "selection": {
-            "QueryName|contains": ".anonfiles.com"
-        }
-    }
+    
+    with open("test_data/sigma_rule.yml") as f:
+        sigma_rule = SigmaRule.from_yaml(f.read())
 
-    result = [{'selection': 'selection', 'key': 'QueryName', 'modifiers': 'contains', 'values': '(1) .anonfiles.com'}]
-    assert parse_detection_field(detection=detection) == result
-
-    detection = {
-        "condition": "selection and not 1 of filter_main_*",
-        "filter_main_generic": {
-            "RemoteName|contains": [
-                ".azureedge.net/",
-                ".com/",
-                ".sfx.ms/",
-                "download.mozilla.org/"
-            ]
-        },
-        "selection": {
-            "EventID": 16403
-        }
-    }
-
-    result = [{'selection': 'filter_main_generic',
-               'key': 'RemoteName',
-               'modifiers': 'contains',
-               'values': '(1) .azureedge.net/\n(2) .com/\n(3) .sfx.ms/\n(4) download.mozilla.org/'},
-              {'selection': 'selection',
-               'key': 'EventID',
-               'modifiers': '',
-               'values': '(1) 16403'}]
-
-    assert parse_detection_field(detection=detection) == result
+    result = [{'selection': 'selection', 'key': 'displaymessage', 'modifiers': '', 'values': '(1)Max sign in attempts exceeded'}]
+    assert parse_detection_field(sigma_rule) == result
 
 
 def test_parse_and_create_indicator():
-    rule_dict = load_file("test_data/sigma_dict.json")
-    expected_indicator = load_file("test_data/indicator.json")
-    result = parse_and_create_indicator(rule_dict)
-    assert result["indicator"] == expected_indicator
+    with open("test_data/sigma_rule.yml") as f:
+        rule = f.read()
+    expected_indicator = load_file("test_data/expected_indicator.json")
+    result = parse_and_create_indicator(SigmaRule.from_yaml(rule), raw_rule=rule)
+    assert result["indicator"] == expected_indicator["indicator"]
 
 
 @patch.object(demisto, "args")
