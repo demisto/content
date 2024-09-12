@@ -1470,7 +1470,7 @@ script:
     - defaultValue: '600'
       description: The timeout in seconds for this execution.
       name: timeout
-    description: Initiates a new endpoint script execution action using a script from the script library.
+    description: This command will soon be deprecated; run core-script-run instead. Initiates a new endpoint script execution action using a script from the script library.
     name: core-run-script
     outputs:
     - contextPath: Core.ScriptRun.action_id
