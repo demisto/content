@@ -348,11 +348,26 @@ script:
       required: true
     description: Resumes receiving notifications for network alerts that are set off by the specified triggers.
     name: shodan-network-alert-remove-service-from-whitelist
+  - name: shodan-get-events
+    description:
+    arguments:
+    - name: should_push_events
+      description: If set to 'True', the command will create events; otherwise, it will only display them.
+      defaultValue: 'False'
+      auto: PREDEFINED
+      isArray: false
+      predefined:
+      - 'True'
+      - 'False'
+    - name: start_date
+      description: 'Fetch events created after this date. You can also use relative terms like "3 days ago".'
+      defaultValue: "3 days ago"
   dockerimage: demisto/python3:3.10.14.99865
   runonce: false
   script: '-'
   subtype: python3
   type: python
+  isfetchevents: true
 tests:
 - Test-Shodan_v2
 fromversion: 5.0.0

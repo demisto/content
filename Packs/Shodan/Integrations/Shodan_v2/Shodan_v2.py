@@ -8,6 +8,11 @@ import json
 import requests
 import urllib3
 
+
+print(f"{demisto.params()=}")
+print(f"{demisto.args()=}")
+
+
 # Disable insecure warnings
 urllib3.disable_warnings()
 
@@ -22,6 +27,11 @@ API_URL = demisto.params()['api_url'].rstrip('/')
 
 # Should we use SSL
 USE_SSL = not demisto.params().get('insecure', False)
+
+VENDOR = 'shodan'
+PRODUCT = 'banner'
+MAX_EVENTS_API_CALL = 50_000
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 handle_proxy()
 
@@ -81,6 +91,43 @@ def alert_to_demisto_result(alert):
     })
 
 
+def format_record_keys(dict_list):
+    new_list = []
+    for input_dict in dict_list:
+        new_dict = {}
+        for key, value in input_dict.items():
+            new_key = key.replace('_', ' ').title()
+            new_dict[new_key] = value
+        new_list.append(new_dict)
+    return new_list
+
+
+def add_time_to_events(events: list[dict]):
+    """
+    Adds the _time key to the events.
+    Args:
+        events: list[dict] - list of events to add the _time key to.
+    Returns:
+        list: The events with the _time key.
+    """
+    if events:
+        for event in events:
+            create_time = arg_to_datetime(event["created"])
+            event["_time"] = create_time.strftime(DATE_FORMAT)  # type: ignore[union-attr]
+
+
+def filter_events_by_date(events, start_date):
+    """
+    """
+    filtered_events = []
+    for event in events:
+        event_created = datetime.strptime(event['created'], '%Y-%m-%dT%H:%M:%S.%f')
+        if event_created > start_date:
+            filtered_events.append(event)
+
+    return filtered_events
+
+
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
@@ -116,6 +163,10 @@ def test_module():
     Performs basic get request to get item samples
     """
     http_request('GET', '/shodan/ports', {'query': 'test'})
+
+    params = demisto.params()
+    if argToBoolean(params.get('isFetchEvents')):
+        get_events_command()
 
 
 def search_command():
@@ -446,6 +497,61 @@ def shodan_network_alert_remove_service_from_whitelist_command():
     demisto.results(f'Removed service "{service}" for trigger {trigger} in alert {alert_id} from the whitelist')
 
 
+def get_events_command() -> tuple[str, list[dict]]:
+    events = http_request('GET', '/shodan/alert/info')
+    if isinstance(events, dict):
+        events = [events]
+
+    start_date = arg_to_datetime(demisto.args().get("start_date"))
+    filtered_events = filter_events_by_date(events, start_date)
+
+    hr = tableToMarkdown(f"{VENDOR.title()} - {PRODUCT.title()} Events:", format_record_keys(filtered_events))
+    return hr, filtered_events
+
+
+# def fetch_events(last_run: dict[str, str]) -> tuple[Dict, List[Dict]]:
+#     """
+
+#     """
+
+#     last_time = last_run.get("last_time")
+
+#     if not last_time:  # If this is a first run
+#         demisto.debug('Last run data is missing. Fetching initial last_run.')
+
+#         search_after, first_event = http_request()
+#         if not first_event:
+#             demisto.debug('No events found in the initial fetch.')
+#             return {}, []
+
+#         last_run = {
+#             "last_time": search_after.get("time", ""),
+#             "last_id": search_after.get("id", "")
+#         }
+#         demisto.debug(f'Initial last_run set to: {last_run}')
+
+#     collected_events: list[dict] = []
+#     while len(collected_events) < limit:
+#         limit_for_request = min(limit - len(collected_events), MAX_EVENTS_API_CALL)
+#         search_after, events = client.search_events(
+#             limit=limit_for_request,
+#             sort_order="asc",
+#             last_item=last_run
+#         )
+#         if not events:
+#             break
+
+#         demisto.debug(f'Got {len(events)} events from api')
+#         last_run = {
+#             "last_time": search_after.get("time", ""),  # Contains the 'indexed_at' of the last event
+#             "last_id": search_after.get("id", "")
+#         }
+#         collected_events.extend(events)
+
+#     demisto.debug(f'Sum fetched {len(collected_events)} new events')
+#     return last_run, collected_events
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 if demisto.command() == 'test-module':
@@ -480,3 +586,32 @@ elif demisto.command() == 'shodan-network-alert-whitelist-service':
     shodan_network_alert_whitelist_service_command()
 elif demisto.command() == 'shodan-network-alert-remove-service-from-whitelist':
     shodan_network_alert_remove_service_from_whitelist_command()
+elif demisto.command() == 'shodan-get-events':
+    hr, events = get_events_command()
+    return_results(CommandResults(readable_output=hr))
+    args = demisto.args()
+    should_push_events = argToBoolean(args.get('should_push_events'))
+    if should_push_events:
+        add_time_to_events(events)
+        send_events_to_xsiam(
+            events,
+            vendor=VENDOR,
+            product=PRODUCT
+        )
+# elif demisto.command() == 'fetch-events':
+#     last_run = demisto.getLastRun()
+#     demisto.debug(f'Last_run before the fetch: {last_run}')
+#     next_run, events = fetch_events(
+#         client=client,
+#         last_run=last_run,
+#         limit=limit_fetch,
+#     )
+
+#     add_time_to_events(events)
+#     send_events_to_xsiam(
+#         events=events,
+#         vendor=VENDOR,
+#         product=PRODUCT
+#     )
+#     demisto.debug(f'last_run after the fetch {last_run}')
+#     demisto.setLastRun(next_run)

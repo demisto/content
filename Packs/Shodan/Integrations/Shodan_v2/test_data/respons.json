@@ -1,0 +1,34 @@
+[
+    {
+        "name": "test_alert",
+        "created": "2024-08-12T23:03:22.680000",
+        "triggers": {},
+        "has_triggers": false,
+        "expires": 0,
+        "expiration": null,
+        "filters": {
+            "ip": [
+                "1.1.1.1"
+            ]
+        },
+        "notifiers": [],
+        "id": "12345",
+        "size": 1
+    },
+    {
+        "name": "nat-alert",
+        "created": "2024-08-13T08:46:18.012000",
+        "triggers": {},
+        "has_triggers": false,
+        "expires": 0,
+        "expiration": null,
+        "filters": {
+            "ip": [
+                "8.8.8.8"
+            ]
+        },
+        "notifiers": [],
+        "id": "6789",
+        "size": 1
+    }
+]
