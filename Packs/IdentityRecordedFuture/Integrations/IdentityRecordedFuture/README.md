@@ -713,6 +713,8 @@ Update the status of one or multiple Playbook alerts.
 | add_actions_taken    | Add 'actions taken' to all alerts in alert_ids. Can be used only with 'new_status=resolved' or 'new_status=dismissed'. Possible values: enforced_password_reset, placed_in_risky_group, reviewed_incident_report, account_disabled_or_terminated, account_remediated, other.                             | Optional     |
 | remove_actions_taken | Remove 'actions taken' from all alerts in alert_ids. You can specify multiple values by providing a quoted string with values separated by commas. Possible values: enforced_password_reset, placed_in_risky_group, reviewed_incident_report, account_disabled_or_terminated, account_remediated, other. | Optional     |
 | comment              | Add a comment to all alerts in alert_ids.                                                                                                                                                                                                                                                                | Optional     |
+| reopen               | Re-open on Significant Changes? The alert can remain resolved, or automatically re-open in significant new assessments. Default behaviour: reopen on significant updates.                                                                                                                                | Optional     |
+
 
 #### Context Output
 

@@ -103,7 +103,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.14.99474
+  dockerimage: demisto/python3:3.11.10.111039
   commands:
   - name: recordedfuture-identity-search
     description: Search for identities in Recorded Future Identity Dataset.
@@ -758,6 +758,13 @@ script:
       - account_disabled_or_terminated
       - account_remediated
       - other
+    - name: reopen
+      description: 'Re-open on Significant Changes? The alert can remain resolved, or automatically re-open in significant new assessments. Default behaviour: reopen on significant updates.'
+      required: false
+      auto: PREDEFINED
+      predefined:
+        - never
+        - significant_updates
     outputs:
     - contextPath: IdentityRecordedFuture.PlaybookAlerts.playbook_alert_id
       description: Unique id of the playbook alert in Recorded Future.

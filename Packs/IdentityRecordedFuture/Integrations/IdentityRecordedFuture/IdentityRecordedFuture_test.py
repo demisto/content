@@ -5,6 +5,7 @@ from unittest.mock import Mock, patch
 
 import pytest
 import vcr as vcrpy
+
 from CommonServerPython import CommandResults, DemistoException
 from IdentityRecordedFuture import Actions, Client, main
 
@@ -1114,7 +1115,8 @@ def test_test_module_with_boom(mocker):
             f"Failed to execute {demisto.command()} command. Error: Failed due to - "
             "Unknown error. Please verify that the API URL and Token are correctly configured. "
             "RAW Error: Side effect triggered"
-        )
+        ),
+        error=mocker.ANY,
     )
 
 
@@ -1126,8 +1128,17 @@ def test_main_general(
     client_mock: Mock,
     mocked_demisto: Mock,
 ):
-    """Test main function is it runs correctly and calling general things"""
+    """Test main function if it runs correctly and calls general functions"""
+
+    # Mocking a known command to ensure that the 'else' block is not triggered
+    mocked_demisto.command.return_value = "test-module"
+    mocked_demisto.params.return_value = {
+        "server_url": "https://mockurl",
+        "token": "mocktoken",
+    }
+
     main()
+
     client_mock.assert_called_once()
     mocked_demisto.params.assert_called_once_with()
     mocked_demisto.command.assert_called_once_with()
