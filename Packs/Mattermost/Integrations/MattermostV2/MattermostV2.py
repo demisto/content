@@ -691,7 +691,7 @@ def get_channel_id_to_send_notif(client: HTTPClient, to: str, channel_name: str 
             try:
                 channel_details = client.get_channel_by_name_and_team_name_request(client.team_name, channel_name)
                 channel_id = channel_details.get('id', '')
-            except Exception as e:
+            except Exception:
                 if channel_name == INCIDENT_NOTIFICATION_CHANNEL:
                     try:
                         demisto.debug(f'MM: Creating a {INCIDENT_NOTIFICATION_CHANNEL} channel to send notification to.')
@@ -709,7 +709,9 @@ def get_channel_id_to_send_notif(client: HTTPClient, to: str, channel_name: str 
                         else:
                             raise sec_e
                 else:
-                    raise DemistoException(f"Did not find channel with name {channel_name}. Make sure it exists or choose a different one. Error: {e}")
+                    raise DemistoException(
+                        f"Did not find channel with name {channel_name}. Make sure it exists or choose a "
+                        "different one. Error: {e}")
 
     return channel_id
 
