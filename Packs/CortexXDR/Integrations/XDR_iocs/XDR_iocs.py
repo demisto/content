@@ -408,19 +408,12 @@ def set_sync_time(timestamp: datetime) -> None:
 
 
 def update_integration_context(update_sync_time_with_datetime: datetime | None = None,
-                               #    update_sync_time_with_date_string: str | None = None,
                                update_is_first_sync_phase: str | None = None,
                                update_search_after_array: List[Any] | None = None):
     updated_integration_context = get_integration_context() or {}
     if update_sync_time_with_datetime:
         updated_integration_context['ts'] = int(update_sync_time_with_datetime.timestamp()) * 1000
         updated_integration_context['time'] = update_sync_time_with_datetime.strftime(DEMISTO_TIME_FORMAT)
-    # if update_sync_time_with_date_string:
-    #     truncated_timestamp = update_sync_time_with_date_string[:19] + 'Z'
-    #     date_time = datetime.strptime(truncated_timestamp, DEMISTO_TIME_FORMAT)
-    #     parsed_time = date_time.replace(tzinfo=timezone.utc)
-    #     updated_integration_context['ts'] = int(parsed_time.timestamp()) * 1000
-    #     updated_integration_context['time'] = truncated_timestamp
     if update_is_first_sync_phase:
         updated_integration_context['is_first_sync_phase'] = argToBoolean(update_is_first_sync_phase)
     if update_search_after_array:
@@ -469,7 +462,6 @@ def sync_for_fetch(client: Client, batch_size: int = 200, is_first_stage_sync: b
             demisto.debug(f"Fetched {len(request_data)} indicators from xsoar. last_modified_that_was_synced "
                           f"{CURRENT_BATCH_LAST_MODIFIED_TIME}, with indicator {request_data[-1].get('indicator')}, "
                           f"search_after {integration_context.get('search_after')}")
-            # last_sync_time = integration_context.get('time', '')
             if len(request_data) < MAX_INDICATORS_TO_SYNC:
                 # is the update_sync_time_with_date_string necessary (to ask judith)
                 # update_integration_context(update_is_first_sync_phase='false',
@@ -907,7 +899,8 @@ def validate_fix_severity_value(severity: str, indicator_value: str | None = Non
 def main():  # pragma: no cover
     params = demisto.params()
     if params.get('feed') and params.get('feedFetchInterval') and arg_to_number(params.get('feedFetchInterval')) < 20:
-        demisto.debug("If feedFetchInterval parameter is set to less then 20, it could lead to external error from xdr side.")
+        demisto.debug("If feedFetchInterval parameter is set to less then 15 minutes, it could lead to internal error from "
+                      "xdr side.")
     # In this integration, parameters are set in the *class level*, the defaults are in the class definition.
     Client.severity = params.get('severity', '')
     Client.override_severity = argToBoolean(params.get('override_severity', True))
