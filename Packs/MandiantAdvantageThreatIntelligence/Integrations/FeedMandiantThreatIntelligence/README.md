@@ -16,33 +16,33 @@ Version 1.1 supercedes all previous versions of the Mandiant Advantage Threat In
 2. Remove all instances of existing Mandiant Advantage Threat Intelligence integrations.
 3. Optionally, remove the integration from your Cortex XSOAR server.
 4. Remove all indicators created by the previous version. To do this:
-    a. Open the Threat Intel page and perform an All Time search using this query `sourceInstances:"<INSTANCE NAME>"`, where `<INSTANCE_NAME>` is the name of your old integration instance collected in step 1
-    b. Select all indicators
-    c. Click Delete and Exclude
-    d. In the Delete and Exclude pop up check the `Do not add to exclusion list` checkbox and click the Delete and Exclude button
-5. Once the indicator deletion process completes, install the new version of the integration and add an instance of the `FeedMandiant` integration  to re-establish the feed
+    a. Open the Threat Intel page and perform an All Time search using this query `sourceInstances:"<INSTANCE NAME>"`, where `<INSTANCE_NAME>` is the name of your old integration instance collected in step 1.
+    b. Select all indicators.
+    c. Click **Delete and Exclude**.
+    d. In the Delete and Exclude dialog box, check the `Do not add to exclusion list` checkbox and click the **Delete and Exclude** button.
+5. Once the indicator deletion process completes, install the new version of the integration and add an instance of the `FeedMandiant` integration  to re-establish the feed.
 
-**NOTE:** To enable enrichment commands, also add an instance of the `Mandiant` integration
+**NOTE:** To enable enrichment commands, also add an instance of the `Mandiant` integration.
 
 ## Integration Settings
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Fetch indicators | Defines if the integration should check Mandiant for new indicators | False |
-| API Key | Your API Key from Mandiant Advantage Threat Intelligence | True |
-| Secret Key | Your Secret Key from Mandiant Advantage Threat Intelligence | True |
-| Page Size | The number of indicators to request in each page | True |
+| Fetch indicators | Whether the integration should check Mandiant for new indicators. | False |
+| API Key | Your API Key from Mandiant Advantage Threat Intelligence. | True |
+| Secret Key | Your Secret Key from Mandiant Advantage Threat Intelligence. | True |
+| Page Size | The number of indicators to request in each page. | True |
 | Timeout | API calls timeout. | False |
 | Indicator Reputation | Indicators from this integration instance will be marked with this reputation. | False |
 | Source Reliability | Reliability of the source providing the intelligence data. | True |
-| Feed Minimum Threat Score | The minimum Threat Score value to import as part of the feed | True |
+| Feed Minimum Threat Score | The minimum Threat Score value to import as part of the feed. | True |
 | First fetch time | The maximum value allowed is 90 days. | False |
-| Feed Exclude Open Source Intelligence | Whether to exclude Open Source Intelligence as part of the feed | False |
+| Feed Exclude Open Source Intelligence | Whether to exclude Open Source Intelligence as part of the feed. | False |
 | Traffic Light Protocol Color | The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed. | False |
 | Tags | Supports CSV values. | False |
-| Feed Expiration Policy | Defines how expiration for an indicator created by the Feed will be managed | False |
-| Feed Expiration Interval | Defines the expiration date based on the number of days after an indicator is created / updated when the Feed Expiration Policy is set to `interval` | False |
-| Feed Fetch Interval | How frequently the Feed should check Mandiant for new indicators | True |
+| Feed Expiration Policy | Defines how expiration of an indicator created by the feed will be managed. | False |
+| Feed Expiration Interval | Defines the expiration date based on the number of days after an indicator is created / updated when the Feed Expiration Policy is set to `interval`. | False |
+| Feed Fetch Interval | How frequently the feed should check Mandiant for new indicators. | True |
 
 ## Commands
 
