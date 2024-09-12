@@ -21,7 +21,7 @@ DEFAULT_MALICIOUS_THRESHOLD_VALUE: int = 65
 DEFAULT_SUSPICIOUS_THRESHOLD_VALUE: int = 25
 DEFAULT_RISK_SCORE_THRESHOLD_VALUE: int = 0
 INTEGRATION_NAME = 'Recorded Future'
-MINUTES = 60
+SECONDS_IN_MINTUE = 60
 # taken from recorded future docs
 RF_CRITICALITY_LABELS = {
     'Very_Malicious': 90,
@@ -621,7 +621,7 @@ def main():  # pragma: no cover
                 except Exception as e:
                     demisto.error(f'RF: Exception in long-running-execution: {str(e)}')
                 finally:
-                    sleep_time_in_seconds = interval * MINUTES
+                    sleep_time_in_seconds = interval * SECONDS_IN_MINTUE
                     demisto.debug(f"Sleeping for {sleep_time_in_seconds}")
                     sleep(sleep_time_in_seconds)
         elif demisto.command() == 'fetch-indicators':
