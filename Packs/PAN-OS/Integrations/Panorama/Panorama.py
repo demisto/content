@@ -14856,7 +14856,8 @@ def update_offset_dict(incident_entries_dict: dict[str, list[dict[str, Any]]],
             last_fetch_time = dateparser.parse(last_fetch_dict.get(log_type, ''), settings={'TIMEZONE': 'UTC'})  # type: ignore[literal-required]
             for entry in incident_entries:
                 time_field = 'match_time' if log_type == 'Correlation' else 'time_generated'
-                log_time = dateparser.parse(entry.get(time_field, ''), settings={'TIMEZONE': 'UTC'})
+                if not (log_time := dateparser.parse(entry.get(time_field, ''), settings={'TIMEZONE': 'UTC'})):
+                    raise DemistoException(f"{time_field=} is not a valid date in entry of {log_type=}.\n{entry=}")
 
                 if (not log_type in offset_fetch_dict or
                     not last_fetch_time or
