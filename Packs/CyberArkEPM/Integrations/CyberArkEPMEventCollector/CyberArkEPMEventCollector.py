@@ -43,7 +43,7 @@ class Client(BaseClient):
         self.policy_audits_event_type = policy_audits_event_type
         self.raw_events_event_type = raw_events_event_type
 
-    def epm_auth_to_cyber_ark(self):     # pragma: nocover
+    def epm_auth_to_cyber_ark(self):  # pragma: no cover
         data = {
             "Username": self.username,
             "Password": self.password,
@@ -55,7 +55,7 @@ class Client(BaseClient):
         self._base_url = urljoin(result.get('ManagerURL'), '/EPM/API/')
         self._headers['Authorization'] = f"basic {result.get('EPMAuthenticationResult')}"
 
-    def get_session_token(self) -> str:
+    def get_session_token(self) -> str:  # pragma: no cover
         # Reference: https://developer.okta.com/docs/reference/api/authn/#primary-authentication
         data = {
             "username": self.username,
@@ -68,7 +68,7 @@ class Client(BaseClient):
                                    f" check your okta credentials please.")
         return result.get('sessionToken')
 
-    def get_saml_response(self) -> str:
+    def get_saml_response(self) -> str:  # pragma: no cover
         # Reference: https://devforum.okta.com/t/how-to-get-saml-assertion-through-an-api/24580
         full_url = f'{self.application_url}?onetimetoken={self.get_session_token()}'
         result = self._http_request('POST', full_url=full_url, resp_type='response')
@@ -77,7 +77,7 @@ class Client(BaseClient):
 
         return saml_response
 
-    def saml_auth_to_cyber_ark(self):     # pragma: nocover
+    def saml_auth_to_cyber_ark(self):  # pragma: no cover
         # Reference: https://docs.cyberark.com/EPM/Latest/en/Content/WebServices/SAMLAuthentication.htm
         headers = {
             'Content-Type': 'application/x-www-form-urlencoded'
