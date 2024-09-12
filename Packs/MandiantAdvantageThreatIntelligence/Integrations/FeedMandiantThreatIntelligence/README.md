@@ -10,7 +10,7 @@
 
 ## Upgrading from previous versions
 
-Version 1.1 supercedes all previous versions of the Mandiant Advantage Threat Intelligence Integration and splits out feed and enrichment capability into 2 separate integrations. Customers upgrading from earlier versions should follow these steps:
+Version 1.1 supercedes all previous versions of the Mandiant Advantage Threat Intelligence Integration and splits feed and enrichment capabilities into 2 separate integrations. Customers upgrading from earlier versions should follow these steps:
 
 1. Note the instance name of your existing Mandiant Advantage Threat Intelligence integration instance, this is needed in a later step
 2. Remove all instances of existing Mandiant Advatange Threat Intelligence integrations
