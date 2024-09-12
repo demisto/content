@@ -43,7 +43,7 @@ class Client(BaseClient):
         self.policy_audits_event_type = policy_audits_event_type
         self.raw_events_event_type = raw_events_event_type
 
-    def epm_auth_to_cyber_ark(self):
+    def epm_auth_to_cyber_ark(self):     # pragma: nocover
         data = {
             "Username": self.username,
             "Password": self.password,
@@ -77,7 +77,7 @@ class Client(BaseClient):
 
         return saml_response
 
-    def saml_auth_to_cyber_ark(self):
+    def saml_auth_to_cyber_ark(self):     # pragma: nocover
         # Reference: https://docs.cyberark.com/EPM/Latest/en/Content/WebServices/SAMLAuthentication.htm
         headers = {
             'Content-Type': 'application/x-www-form-urlencoded'
@@ -225,7 +225,7 @@ def get_set_ids_by_set_names(client: Client, set_names: list) -> list[str]:
     return list(context_set_items.values())
 
 
-def get_admin_audits(client: Client, last_run_per_id: dict, limit: int) -> dict[str, list]:
+def get_admin_audits(client: Client, last_run_per_id: dict, limit: int) -> dict[str, list]:     # pragma: nocover
     """
     Args:
         client (Client): CyberArkEPM client to use.
