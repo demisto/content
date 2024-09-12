@@ -1,0 +1,210 @@
+{
+    "count": 2,
+    "results": [
+        {
+            "id": 23389,
+            "name": "IP-0.0.0.1",
+            "active_traffic": false,
+            "has_active_traffic": false,
+            "threat": 63,
+            "certainty": 85,
+            "severity": "critical",
+            "last_source": "0.0.0.1",
+            "ip": "0.0.0.1",
+            "previous_ips": [],
+            "last_detection_timestamp": "2024-07-11T07:20:43Z",
+            "key_asset": false,
+            "is_key_asset": false,
+            "state": "active",
+            "targets_key_asset": false,
+            "is_targeting_key_asset": false,
+            "host_artifact_set": [],
+            "sensor": "whx12u9g",
+            "sensor_name": "FGU-lab-vcenter",
+            "tags": [],
+            "note": "new note",
+            "note_modified_by": "cds_xsoar",
+            "note_modified_timestamp": "2024-07-11T13:21:49Z",
+            "last_modified": "2024-07-11T13:20:58Z",
+            "assigned_to": null,
+            "assigned_date": null,
+            "groups": [
+                {
+                    "id": 3558,
+                    "name": "HostBlock",
+                    "description": "",
+                    "last_modified": "2024-07-11T10:49:23Z",
+                    "last_modified_by": "cds_xsoar",
+                    "type": "host"
+                }
+            ],
+            "has_custom_model": false,
+            "privilege_level": null,
+            "privilege_category": null,
+            "probable_owner": null,
+            "detection_profile": "IT Services",
+            "assignment": null,
+            "detection_summaries": [
+                {
+                    "detection_id": 2635,
+                    "detection_type": "Hidden HTTPS Tunnel",
+                    "detection_category": "COMMAND & CONTROL",
+                    "is_targeting_key_asset": false,
+                    "state": "active",
+                    "threat": 0,
+                    "certainty": 0,
+                    "is_triaged": true,
+                    "tags": [],
+                    "summary": {
+                        "dst_ips": [
+                            "0.0.0.10"
+                        ],
+                        "num_sessions": 5,
+                        "bytes_sent": 9101443,
+                        "bytes_received": 10671546,
+                        "description": "This host communicated with an external destination using HTTPS where another protocol was running over the top of the session."
+                    },
+                    "assigned_to": null,
+                    "assigned_date": null,
+                    "filtered_by_ai": true,
+                    "filtered_by_user": false,
+                    "filtered_by_rule": false
+                }
+            ],
+            "campaign_summaries": [],
+            "last_seen": "2024-07-11T06:33:55Z",
+            "suspicious_admin_learnings": {
+                "managers_of_host": [],
+                "host_manages": []
+            },
+            "shell_knocker": [],
+            "has_shell_knocker_learnings": false,
+            "host_session_luids": [
+                "tsd-jubc"
+            ],
+            "host_luid": null,
+            "ldap": null,
+            "_doc_modified_ts": "2024-07-12T06:44:51.664126"
+        },
+        {
+            "id": 23478,
+            "name": "IP-0.0.0.2",
+            "active_traffic": false,
+            "has_active_traffic": false,
+            "threat": 0,
+            "certainty": 0,
+            "severity": null,
+            "last_source": "0.0.0.2",
+            "ip": "0.0.0.2",
+            "previous_ips": [],
+            "last_detection_timestamp": "2024-07-12T01:28:57Z",
+            "key_asset": true,
+            "is_key_asset": true,
+            "state": "inactive",
+            "targets_key_asset": false,
+            "is_targeting_key_asset": false,
+            "host_artifact_set": [],
+            "sensor": "whx12u9g",
+            "sensor_name": "FGU-lab-vcenter",
+            "tags": [
+                "dummy_entity_id: dummy_id"
+            ],
+            "note": null,
+            "note_modified_by": null,
+            "note_modified_timestamp": null,
+            "last_modified": "2024-07-12T05:38:35Z",
+            "assigned_to": "api_workshop",
+            "assigned_date": "2024-07-12T05:50:48Z",
+            "groups": [
+                {
+                    "id": 3546,
+                    "name": "Citrix Systems",
+                    "description": "Hosts running Citrix.",
+                    "last_modified": "2024-07-12T05:35:52Z",
+                    "last_modified_by": "cds_xsoar",
+                    "type": "host"
+                }
+            ],
+            "has_custom_model": false,
+            "privilege_level": null,
+            "privilege_category": null,
+            "probable_owner": null,
+            "detection_profile": null,
+            "assignment": {
+                "id": 16,
+                "assigned_by": {
+                    "id": 52,
+                    "username": "cds_xsoar"
+                },
+                "date_assigned": "2024-07-12T05:50:48Z",
+                "date_resolved": null,
+                "events": [
+                    {
+                        "assignment_id": 16,
+                        "actor": 52,
+                        "event_type": "created",
+                        "datetime": "2024-07-12T05:50:48Z",
+                        "context": {
+                            "to": 51,
+                            "entity_t_score": 0,
+                            "entity_c_score": 0
+                        }
+                    }
+                ],
+                "outcome": null,
+                "resolved_by": null,
+                "triaged_detections": {},
+                "host_id": 23478,
+                "account_id": null,
+                "assigned_to": {
+                    "id": 51,
+                    "username": "api_workshop"
+                }
+            },
+            "detection_summaries": [
+                {
+                    "detection_id": 2657,
+                    "detection_type": "Port Sweep",
+                    "detection_category": "DUMMY_CATEGORY",
+                    "is_targeting_key_asset": false,
+                    "state": "fixed",
+                    "threat": 47,
+                    "certainty": 65,
+                    "is_triaged": false,
+                    "tags": [],
+                    "summary": {
+                        "dst_ports": [
+                            80
+                        ],
+                        "protocols": [
+                            "tcp"
+                        ],
+                        "num_attempts": 600,
+                        "num_successes": 0
+                    },
+                    "assigned_to": "api_workshop",
+                    "assigned_date": "2024-07-12T05:50:48Z",
+                    "filtered_by_ai": false,
+                    "filtered_by_user": false,
+                    "filtered_by_rule": false
+                }
+            ],
+            "campaign_summaries": [],
+            "last_seen": "2024-07-12T03:12:41Z",
+            "suspicious_admin_learnings": {
+                "managers_of_host": [],
+                "host_manages": []
+            },
+            "shell_knocker": [],
+            "has_shell_knocker_learnings": false,
+            "host_session_luids": [
+                "dummy-luids"
+            ],
+            "host_luid": null,
+            "ldap": null,
+            "_doc_modified_ts": "2024-07-12T05:50:49.543122"
+        }
+    ],
+    "previous": null,
+    "next": null
+}
