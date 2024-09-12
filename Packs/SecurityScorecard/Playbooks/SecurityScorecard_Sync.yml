@@ -149,13 +149,6 @@ view: |-
       }
     }
   }
-inputs:
-- key: portfolio_id
-  value:
-    simple: cb118cfa-f654-59ab-9e9e-937f6c86aa41
-  required: true
-  description: ""
-  playbookInputQuery:
 outputs: []
 fromversion: 6.10.0
 tests:
