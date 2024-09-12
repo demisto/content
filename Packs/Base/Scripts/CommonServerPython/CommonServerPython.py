@@ -11636,22 +11636,8 @@ def split_data_to_chunks(data, target_chunk_size):
     :return: An iterable of lists where each list contains events with approx size of chunk size.
     :rtype: ``collections.Iterable[list]``
     """
-    target_chunk_size = min(target_chunk_size, XSIAM_EVENT_CHUNK_SIZE_LIMIT)
-    chunk = []  # type: ignore[var-annotated]
-    chunk_size = 0
-    if isinstance(data, str):
-        data = data.split('\n')
-    for data_part in data:
-        if chunk_size >= target_chunk_size:
-            demisto.debug("reached max chunk size, sending chunk with size: {size}".format(size=chunk_size))
-            yield chunk
-            chunk = []
-            chunk_size = 0
-        chunk.append(data_part)
-        chunk_size += sys.getsizeof(data_part)
-    if chunk_size != 0:
-        demisto.debug("sending the remaining chunk with size: {size}".format(size=chunk_size))
-        yield chunk
+    for i in range(0, len(data), XSIAM_EVENT_CHUNK_SIZE):
+        yield data[i:i + XSIAM_EVENT_CHUNK_SIZE]
 
 
 def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
@@ -11693,6 +11679,7 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
     :return: None
     :rtype: ``None``
     """
+    demisto.debug(f"Sending {len(events)} to dataset {vendor}_{product}_raw")
     send_data_to_xsiam(
         events,
         vendor,
@@ -11948,8 +11935,6 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
     client = BaseClient(base_url=xsiam_url, proxy=add_proxy_to_request)
     data_chunks = split_data_to_chunks(data, chunk_size)
     for data_chunk in data_chunks:
-        data_size += len(data_chunk)
-        data_chunk = '\n'.join(data_chunk)
         zipped_data = gzip.compress(data_chunk.encode('utf-8'))  # type: ignore[AttributeError,attr-defined]
         xsiam_api_call_with_retries(client=client, events_error_handler=data_error_handler,
                                     error_msg=header_msg, headers=headers,
@@ -11957,7 +11942,7 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
                                     zipped_data=zipped_data, is_json_response=True, data_type=data_type)
 
     if should_update_health_module:
-        demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type=data_type): data_size})
+        demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type=data_type): items_count})
 
 
 def comma_separated_mapping_to_dict(raw_text):
