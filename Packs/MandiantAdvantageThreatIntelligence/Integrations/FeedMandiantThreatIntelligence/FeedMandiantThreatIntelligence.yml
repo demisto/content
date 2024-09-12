@@ -62,7 +62,7 @@ configuration:
   display: Feed Minimum Threat Score
   required: true
   defaultvalue: 80
-  additionalinfo: 'The minimum Threat Score value to import as part of the feed'
+  additionalinfo: 'The minimum Threat Score value to import as part of the feed.'
 - additionalinfo: The maximum value allowed is 90 days.
   defaultvalue: 30
   display: First fetch time
