@@ -1,7 +1,5 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-
-
 import copy
 from http import HTTPStatus
 from typing import Any, NamedTuple
