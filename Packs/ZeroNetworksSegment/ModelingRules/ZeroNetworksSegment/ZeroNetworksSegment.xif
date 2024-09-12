@@ -12,9 +12,9 @@ filter source_log_type = "audit"
         xdm.source.user.identifier = json_extract_scalar(performedBy, "$.id"),
         xdm.source.user.username = json_extract_scalar(performedBy, "$.name"),
         xdm.auth.privilege_level = if(useRole_string = "Admin", XDM_CONST.PRIVILEGE_LEVEL_ADMIN, useRole_string in("Viewer", "Regular"), XDM_CONST.PRIVILEGE_LEVEL_USER, null),
-        xdm.target.resource.parent_id = parentObjectId,
-        xdm.target.resource.id = if(reportedObjectId != null, reportedObjectId, reportedObjectId = null, destinationEntityIDs, null),
-        xdm.target.resource.name = if(reportedObjectId = null, destinationEntityNames, null),
+        xdm.target.resource.parent_id = if(parentObjectId != null and parentObjectId != "", parentObjectId, null),
+        xdm.target.resource.id = if(reportedObjectId != null and reportedObjectId != "", reportedObjectId, reportedObjectId = null or reportedObjectId = "", destinationEntityIDs, null),
+        xdm.target.resource.name = if(reportedObjectId = null or reportedObjectId = "", destinationEntityNames, null),
         xdm.source.ipv4 = if(json_extract_scalar(details, "$.publicIp") ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", json_extract_scalar(details, "$.publicIp"), null),
         xdm.source.ipv6 = if(json_extract_scalar(details, "$.publicIp") ~= "(?:[a-fA-F\d]{0,4}\:){1,7}[a-fA-F\d]{0,4}", json_extract_scalar(details, "$.publicIp"), null);
 
