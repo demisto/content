@@ -3514,7 +3514,7 @@ There is no context output for this command.
 
 >Role was removed successfully for 1 user.
 
-## xdr-script-run
+### xdr-script-run
 
 ***
 Initiates a new endpoint script execution action using a script from the script library and returns the results.
