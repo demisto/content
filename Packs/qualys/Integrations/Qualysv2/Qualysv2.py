@@ -2796,6 +2796,20 @@ def add_fields_to_events(events, time_field_path, event_type_field):
             event['event_type'] = event_type_field
 
 
+def check_asset_size(asset):
+    if sys.getsizeof(asset) > XSIAM_EVENT_CHUNK_SIZE_LIMIT:
+        _id = asset.get('ID', 'NO_ID')
+        demisto.debug(f'Host: {_id} has oversize data')
+        for key, val in asset.items():
+            if (val_size := sys.getsizeof(val)) > (2 ** 10):  # 1 MB
+                demisto.debug(f'Data under key "{key}" has size of {val_size}:\n'
+                              f'{str(val[:1000])}...')
+
+        with open(f'oversize_asset_{_id}', 'w') as f:
+            f.write(json.dumps(asset))
+            demisto.debug(f'Wrote file: oversize_asset_{_id}')
+
+
 def get_detections_from_hosts(hosts):
     """
     Parses detections from hosts.
@@ -2827,6 +2841,7 @@ def get_detections_from_hosts(hosts):
     """
     fetched_events = []
     for host in hosts:
+        check_asset_size(host)
         if detections_list := host.get('DETECTION_LIST', {}).get('DETECTION'):
             if isinstance(detections_list, list):
                 for detection in detections_list:
@@ -2834,6 +2849,7 @@ def get_detections_from_hosts(hosts):
                     del new_detection['DETECTION_LIST']
                     new_detection['DETECTION'] = detection
                     fetched_events.append(new_detection)
+
             elif isinstance(detections_list, dict):
                 new_detection = copy.deepcopy(host)
                 new_detection['DETECTION'] = detections_list
@@ -2944,13 +2960,13 @@ def fetch_assets(client, assets_last_run):
     assets, next_run_page = get_host_list_detections_events(client, since_datetime, next_page)
     total_assets += len(assets)
     stage = 'assets' if next_run_page else 'vulnerabilities'
-    amount_to_send = 0 if next_run_page else str(total_assets)  # We declare 0 as long as we have not finished pulling
+    amount_to_report = 0 if next_run_page else str(total_assets)  # We report 0 as long as we have not finished pulling
 
     new_last_run = {'stage': stage, 'next_page': next_run_page, 'total_assets': total_assets,
                     'since_datetime': since_datetime, 'snapshot_id': snapshot_id,
                     'nextTrigger': '0', "type": FETCH_COMMAND.get('assets')}
 
-    return assets, new_last_run, amount_to_send, snapshot_id
+    return assets, new_last_run, amount_to_report, snapshot_id
 
 
 def fetch_vulnerabilities(client, last_run):
@@ -3400,7 +3416,8 @@ def main():  # pragma: no cover
         },
     }
 
-    demisto.debug(f"Command being called is {command}")
+    demisto.debug(f"Command being called is"
+                  f" {command}")
     try:
         headers: dict = {"X-Requested-With": "Cortex"}
         client = Client(
@@ -3459,7 +3476,7 @@ def main():  # pragma: no cover
             if fetch_stage == 'assets':
                 assets, last_run, total_assets, snapshot_id = fetch_assets(client=client, assets_last_run=last_run)
 
-                demisto.debug('sending assets to XSIAM.')
+                demisto.debug(f'sending {len(assets)} assets to XSIAM.')
                 send_data_to_xsiam(data=assets, vendor=VENDOR, product='assets', data_type='assets', snapshot_id=str(snapshot_id),
                                    items_count=total_assets, should_update_health_module=False)
                 demisto.setAssetsLastRun(last_run)
